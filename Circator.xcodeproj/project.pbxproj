@@ -10,6 +10,8 @@
 		781EE1201BAF3C9F00E6DDA1 /* AddViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 781EE11D1BAF3C9F00E6DDA1 /* AddViewController.swift */; settings = {ASSET_TAGS = (); }; };
 		781EE1211BAF3C9F00E6DDA1 /* CollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 781EE11E1BAF3C9F00E6DDA1 /* CollectionViewCell.swift */; settings = {ASSET_TAGS = (); }; };
 		781EE1221BAF3C9F00E6DDA1 /* DataModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 781EE11F1BAF3C9F00E6DDA1 /* DataModel.swift */; settings = {ASSET_TAGS = (); }; };
+		781EE1251BAF3F6B00E6DDA1 /* Podfile in Resources */ = {isa = PBXBuildFile; fileRef = 781EE1231BAF3F6B00E6DDA1 /* Podfile */; settings = {ASSET_TAGS = (); }; };
+		781EE1261BAF3F6B00E6DDA1 /* README.md in Sources */ = {isa = PBXBuildFile; fileRef = 781EE1241BAF3F6B00E6DDA1 /* README.md */; settings = {ASSET_TAGS = (); }; };
 		7881A3E11BAF3B3E00ECB3C6 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7881A3E01BAF3B3E00ECB3C6 /* AppDelegate.swift */; };
 		7881A3E31BAF3B3E00ECB3C6 /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7881A3E21BAF3B3E00ECB3C6 /* ViewController.swift */; };
 		7881A3E61BAF3B3E00ECB3C6 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 7881A3E41BAF3B3E00ECB3C6 /* Main.storyboard */; };
@@ -43,6 +45,8 @@
 		781EE11D1BAF3C9F00E6DDA1 /* AddViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AddViewController.swift; sourceTree = "<group>"; };
 		781EE11E1BAF3C9F00E6DDA1 /* CollectionViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CollectionViewCell.swift; sourceTree = "<group>"; };
 		781EE11F1BAF3C9F00E6DDA1 /* DataModel.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DataModel.swift; sourceTree = "<group>"; };
+		781EE1231BAF3F6B00E6DDA1 /* Podfile */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = Podfile; sourceTree = "<group>"; };
+		781EE1241BAF3F6B00E6DDA1 /* README.md */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
 		7881A3DD1BAF3B3E00ECB3C6 /* Circator.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Circator.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		7881A3E01BAF3B3E00ECB3C6 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		7881A3E21BAF3B3E00ECB3C6 /* ViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewController.swift; sourceTree = "<group>"; };
@@ -97,6 +101,8 @@
 		7881A3D41BAF3B3E00ECB3C6 = {
 			isa = PBXGroup;
 			children = (
+				781EE1231BAF3F6B00E6DDA1 /* Podfile */,
+				781EE1241BAF3F6B00E6DDA1 /* README.md */,
 				7881A3DF1BAF3B3E00ECB3C6 /* Circator */,
 				7881A3F41BAF3B3E00ECB3C6 /* CircatorTests */,
 				7881A3FF1BAF3B3E00ECB3C6 /* CircatorUITests */,
@@ -266,6 +272,7 @@
 			files = (
 				7881A3EB1BAF3B3E00ECB3C6 /* LaunchScreen.storyboard in Resources */,
 				7881A3E81BAF3B3E00ECB3C6 /* Assets.xcassets in Resources */,
+				781EE1251BAF3F6B00E6DDA1 /* Podfile in Resources */,
 				7881A3E61BAF3B3E00ECB3C6 /* Main.storyboard in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -339,6 +346,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				781EE1261BAF3F6B00E6DDA1 /* README.md in Sources */,
 				781EE1221BAF3C9F00E6DDA1 /* DataModel.swift in Sources */,
 				7881A3E31BAF3B3E00ECB3C6 /* ViewController.swift in Sources */,
 				7881A3E11BAF3B3E00ECB3C6 /* AppDelegate.swift in Sources */,
