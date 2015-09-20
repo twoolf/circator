@@ -60,14 +60,20 @@ class ViewController: UIViewController, UICollectionViewDelegateFlowLayout, UICo
         let navController = UINavigationController(rootViewController: addViewController)
         presentViewController(navController, animated: true, completion: nil)
     }
+
+    func plotButtonAction(sender: PlotButton!) {
+        let plotViewController = PlotViewController(plotType: sender.plotType, nibName: nil, bundle: nil)
+        let navController = UINavigationController(rootViewController: plotViewController)
+        presentViewController(navController, animated: true, completion: nil)
+    }
     
     func numberOfSectionsInCollectionView(collectionView: UICollectionView) -> Int {
-        return 2
+        return 3
     }
     
     func collectionView(collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
         let n = Sample.attributes().count + 1
-        return samples.count > 0 ? n * n : 0
+        return section == 2 ? 2 : (samples.count > 0 ? n * n : 0)
     }
     
     // headers
@@ -92,26 +98,34 @@ class ViewController: UIViewController, UICollectionViewDelegateFlowLayout, UICo
         let n = Sample.attributes().count + 1
         let index = Int(indexPath.row)
         cell.backgroundColor = UIColor.whiteColor()
-        if ( index == 0 ) {
-            cell.textLabel?.text = indexPath.section == 0 ? "User" : "Pop"
-            cell.backgroundColor = UIColor.redColor()
-        } else if ( index < n ) {
-            cell.textLabel?.text = Sample.attributes()[index-1]
-        } else if ( index % n == 0 ) {
-            cell.textLabel?.text = Sample.attributes()[(index / n)-1]
+        if ( indexPath.section < 2 ) {
+            if ( index == 0 ) {
+                cell.textLabel?.text = indexPath.section == 0 ? "User" : "Pop"
+                cell.backgroundColor = UIColor.redColor()
+            } else if ( index < n ) {
+                cell.textLabel?.text = Sample.attributes()[index-1]
+            } else if ( index % n == 0 ) {
+                cell.textLabel?.text = Sample.attributes()[(index / n)-1]
+            } else {
+                // TODO: compute correlation between attribute pair.
+                let row = Sample.attrnames()[(index / n)-1]
+                let col = Sample.attrnames()[(index % n)-1]
+                let realm = try! Realm()
+                let rowavg : Double? = realm.objects(Sample).average(row)
+                let colavg : Double? = realm.objects(Sample).average(col)
+                cell.textLabel?.text = "\(rowavg!),\(colavg!)"
+                cell.backgroundColor = UIColor.init(white: CGFloat(1 / rowavg!), alpha: 0.3)
+            }
         } else {
-            // TODO: compute correlation between attribute pair.
-            let row = Sample.attrnames()[(index / n)-1]
-            let col = Sample.attrnames()[(index % n)-1]
-            let realm = try! Realm()
-            let rowavg : Double? = realm.objects(Sample).average(row)
-            let colavg : Double? = realm.objects(Sample).average(col)
-            cell.textLabel?.text = "\(rowavg!),\(colavg!)"
-            cell.backgroundColor = UIColor.init(white: CGFloat(1 / rowavg!), alpha: 0.3)
+            for view in cell.contentView.subviews {
+                view.removeFromSuperview()
+            }
+            cell.asButton(index)
+            cell.button.addTarget(self, action: "plotButtonAction:", forControlEvents: .TouchUpInside)
         }
         return cell
     }
-
+    
     override func didReceiveMemoryWarning() {
         super.didReceiveMemoryWarning()
         // Dispose of any resources that can be recreated.
