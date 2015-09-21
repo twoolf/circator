@@ -7,10 +7,9 @@
 //
 
 import UIKit
-import RealmSwift
 
 class AddViewController: UIViewController, UITextFieldDelegate {
-    var textFields : [(n: String, tf: UITextField)] = []
+    var textFields : [(n: String, msg: String, tf: UITextField)] = []
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -24,16 +23,16 @@ class AddViewController: UIViewController, UITextFieldDelegate {
     }
     
     func setupTextField() {
-        textFields = [("user_id",        UITextField(frame: CGRectZero)),
-                      ("sample_id",      UITextField(frame: CGRectZero)),
-                      ("sleep",          UITextField(frame: CGRectZero)),
-                      ("weight",         UITextField(frame: CGRectZero)),
-                      ("heart_rate",     UITextField(frame: CGRectZero)),
-                      ("total_calories", UITextField(frame: CGRectZero)),
-                      ("blood_pressure", UITextField(frame: CGRectZero))]
+        textFields = [("user_id",        "#users",           UITextField(frame: CGRectZero)),
+                      ("sample_id",      "samples per user", UITextField(frame: CGRectZero)),
+                      ("sleep",          "sleep",            UITextField(frame: CGRectZero)),
+                      ("weight",         "weight",           UITextField(frame: CGRectZero)),
+                      ("heart_rate",     "heart rate",       UITextField(frame: CGRectZero)),
+                      ("total_calories", "total calories",   UITextField(frame: CGRectZero)),
+                      ("blood_pressure", "blood pressure",   UITextField(frame: CGRectZero))]
 
-        for (n,tf) in textFields {
-            tf.placeholder = "Enter " + n
+        for (_,msg,tf) in textFields {
+            tf.placeholder = "Enter " + msg
             tf.delegate = self
             view.addSubview(tf)
         }
@@ -52,23 +51,22 @@ class AddViewController: UIViewController, UITextFieldDelegate {
     }
     
     func doneAction() {
-        let realm = try! Realm()
-        let (uid, sid) = (self.textFields[0], self.textFields[1])
-        if uid.tf.text!.utf16.count > 0 && sid.tf.text!.utf16.count > 0 {
-            var argdict : Dictionary<String, AnyObject> =
-                ["user_id": (uid.tf.text! as NSString).integerValue, "sample_id": (sid.tf.text! as NSString).integerValue]
-
+        let valid = self.textFields.reduce(true, combine: {$0 && $1.tf.text!.utf16.count > 0})
+        if valid {
+            let num_users = (self.textFields[0].tf.text! as NSString).integerValue
+            let user_samples = (self.textFields[1].tf.text! as NSString).floatValue
+            var param_dict = [String:(Float, Float)]()
+            
             for elem in self.textFields[2..<self.textFields.count] {
                 if ( elem.tf.text != nil ) {
-                    argdict[elem.n] = (elem.tf.text! as NSString).doubleValue
+                    param_dict[elem.n] = ((elem.tf.text! as NSString).floatValue, 10.0)
                 } else {
-                    argdict[elem.n] = 0.0
+                    param_dict[elem.n] = (100.0, 0.0)
                 }
             }
-
-            let sample = Sample(value: argdict)
-            sample.refreshKey()
-            try! realm.write { realm.add(sample) }
+            
+            let w = WorkloadGenerator()
+            w.generate(num_users, samples_per_user: user_samples, param_dict: param_dict)
         }
         dismissViewControllerAnimated(true, completion: nil)
     }
