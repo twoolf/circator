@@ -81,14 +81,17 @@ class ViewController: UIViewController, UICollectionViewDelegateFlowLayout, UICo
         }
 
         if ( indexPath.section < 2 ) {
-            cell.asText()
+            cell.asButton(5)
             if ( index == 0 ) {
-                cell.textLabel?.text = indexPath.section == 0 ? "User" : "Pop"
+                cell.setPlotType(0)
+                cell.setText(indexPath.section == 0 ? "User" : "Pop")
                 cell.backgroundColor = UIColor.redColor()
             } else if ( index < n ) {
-                cell.textLabel?.text = Sample.attributes()[index-1]
+                cell.setPlotType(index-1)
+                cell.setText(Sample.attributes()[index-1])
             } else if ( index % n == 0 ) {
-                cell.textLabel?.text = Sample.attributes()[(index / n)-1]
+                cell.setPlotType((index / n)-1)
+                cell.setText(Sample.attributes()[(index / n)-1])
             } else {
                 // TODO: compute correlation between attribute pair.
                 let row = Sample.attrnames()[(index / n)-1]
@@ -96,11 +99,12 @@ class ViewController: UIViewController, UICollectionViewDelegateFlowLayout, UICo
                 let realm = try! Realm()
                 let rowavg : Double? = realm.objects(Sample).average(row)
                 let colavg : Double? = realm.objects(Sample).average(col)
-                cell.textLabel?.text = "\(rowavg!),\(colavg!)"
+                cell.setText("\(rowavg!),\(colavg!)")
                 cell.backgroundColor = UIColor.init(white: CGFloat(1 / rowavg!), alpha: 0.3)
             }
+            cell.button.addTarget(self, action: "plotButtonAction:", forControlEvents: .TouchUpInside)
         } else {
-            cell.asButton(index)
+            cell.asButton(index + 5)
             cell.button.addTarget(self, action: "plotButtonAction:", forControlEvents: .TouchUpInside)
         }
         return cell

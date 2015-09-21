@@ -31,10 +31,35 @@ class PlotViewController : UIViewController {
         setupChart()
     }
     
+    func getValue(v: Sample, i: Int) -> Double {
+        switch(i) {
+        case 0: return v.sleep
+        case 1: return v.weight
+        case 2: return v.heart_rate
+        case 3: return v.total_calories
+        case 4: return v.blood_pressure
+        default: return 0.0
+        }
+    }
     func setupChart() {
         let realm = try! Realm()
         let n = realm.objects(Sample).count
-        if ( plotType == 0 ) {
+        if ( plotType < 5 ) {
+            var dataEntries: [ChartDataEntry] = []
+            for (i, v) in realm.objects(Sample).enumerate() {
+                let dataEntry = ChartDataEntry(value: getValue(v, i:plotType), xIndex: i)
+                dataEntries.append(dataEntry)
+            }
+            
+            let chartDataSet = ScatterChartDataSet(yVals: dataEntries, label: Sample.attributes()[plotType])
+            let chartData = ScatterChartData(xVals: (0..<n).map({String($0)}), dataSet: chartDataSet)
+            
+            let chartFrame = CGRect(x: 0, y: 0, width: self.view.frame.size.width, height: self.view.frame.size.height)
+            scatterChartView = ScatterChartView(frame: chartFrame)
+            scatterChartView.data = chartData
+            self.view.addSubview(scatterChartView)
+        }
+        else if ( plotType == 5 ) {
             var dataEntries: [BarChartDataEntry] = []
             for (i, v) in realm.objects(Sample).enumerate() {
                 let dataEntry = BarChartDataEntry(value: v.weight, xIndex: i)
@@ -49,7 +74,7 @@ class PlotViewController : UIViewController {
             barChartView.data = chartData
             self.view.addSubview(barChartView)
         }
-        else if ( plotType == 1 ) {
+        else if ( plotType == 6 ) {
             var dataEntries: [ChartDataEntry] = []
             for (i, v) in realm.objects(Sample).enumerate() {
                 let dataEntry = ChartDataEntry(value: v.weight, xIndex: i)
