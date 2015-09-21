@@ -19,6 +19,10 @@ class CollectionViewCell: UICollectionViewCell {
     
     override init(frame: CGRect) {
         super.init(frame: frame)
+        asText()
+    }
+
+    func asText() {
         let textFrame = CGRect(x: 0, y: 0, width: frame.size.width, height: frame.size.height)
         button = nil
         textLabel = UILabel(frame: textFrame)
@@ -26,7 +30,7 @@ class CollectionViewCell: UICollectionViewCell {
         textLabel.textAlignment = .Center
         contentView.addSubview(textLabel)
     }
-    
+
     func asButton(plotType : Int) {
         textLabel = nil
         let buttonFrame = CGRect(x: 0, y: 0, width: frame.size.width, height: frame.size.height)
@@ -34,5 +38,9 @@ class CollectionViewCell: UICollectionViewCell {
         button.setTitle("Button \(plotType)", forState: .Normal)
         button.setTitleColor(UIColor.blueColor(), forState: .Normal)
         contentView.addSubview(button)
+    }
+    
+    func isButton() -> Bool {
+        return button != nil
     }
 }

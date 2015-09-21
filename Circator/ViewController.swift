@@ -28,11 +28,6 @@ class ViewController: UIViewController, UICollectionViewDelegateFlowLayout, UICo
         
         collectionView!.registerClass(CollectionViewCell.self, forCellWithReuseIdentifier: "CollectionViewCell")
         
-        // register headers
-        collectionView!.registerClass(UICollectionReusableView.self,
-            forSupplementaryViewOfKind:UICollectionElementKindSectionHeader,
-            withReuseIdentifier:"Header")
-        
         self.view.addSubview(collectionView!)
         let flow = self.collectionView!.collectionViewLayout as! UICollectionViewFlowLayout
         setupFlowLayout(flow)
@@ -63,8 +58,7 @@ class ViewController: UIViewController, UICollectionViewDelegateFlowLayout, UICo
 
     func plotButtonAction(sender: PlotButton!) {
         let plotViewController = PlotViewController(plotType: sender.plotType, nibName: nil, bundle: nil)
-        let navController = UINavigationController(rootViewController: plotViewController)
-        presentViewController(navController, animated: true, completion: nil)
+        navigationController?.pushViewController(plotViewController, animated: true)
     }
     
     func numberOfSectionsInCollectionView(collectionView: UICollectionView) -> Int {
@@ -76,29 +70,18 @@ class ViewController: UIViewController, UICollectionViewDelegateFlowLayout, UICo
         return section == 2 ? 2 : (samples.count > 0 ? n * n : 0)
     }
     
-    // headers
-    func collectionView(collectionView: UICollectionView, viewForSupplementaryElementOfKind kind: String, atIndexPath indexPath: NSIndexPath) -> UICollectionReusableView {
-        
-        var v : UICollectionReusableView! = nil
-        if kind == UICollectionElementKindSectionHeader {
-            v = collectionView.dequeueReusableSupplementaryViewOfKind(UICollectionElementKindSectionHeader, withReuseIdentifier:"Header", forIndexPath:indexPath)
-            if v.subviews.count == 0 {
-                let lab = UILabel(frame: v.frame)
-                v.addSubview(lab)
-                lab.textAlignment = .Center
-            }
-            let lab = v.subviews[0] as! UILabel
-            lab.text = ""
-        }
-        return v
-    }
-    
     func collectionView(collectionView: UICollectionView, cellForItemAtIndexPath indexPath: NSIndexPath) -> UICollectionViewCell {
         let cell = collectionView.dequeueReusableCellWithReuseIdentifier("CollectionViewCell", forIndexPath: indexPath) as! CollectionViewCell
         let n = Sample.attributes().count + 1
         let index = Int(indexPath.row)
         cell.backgroundColor = UIColor.whiteColor()
+
+        for view in cell.contentView.subviews {
+            view.removeFromSuperview()
+        }
+
         if ( indexPath.section < 2 ) {
+            cell.asText()
             if ( index == 0 ) {
                 cell.textLabel?.text = indexPath.section == 0 ? "User" : "Pop"
                 cell.backgroundColor = UIColor.redColor()
@@ -117,9 +100,6 @@ class ViewController: UIViewController, UICollectionViewDelegateFlowLayout, UICo
                 cell.backgroundColor = UIColor.init(white: CGFloat(1 / rowavg!), alpha: 0.3)
             }
         } else {
-            for view in cell.contentView.subviews {
-                view.removeFromSuperview()
-            }
             cell.asButton(index)
             cell.button.addTarget(self, action: "plotButtonAction:", forControlEvents: .TouchUpInside)
         }
