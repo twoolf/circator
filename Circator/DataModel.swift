@@ -8,6 +8,7 @@
 
 import RealmSwift
 import GameplayKit
+import SwiftyJSON
 
 class Sample : Object {
 
@@ -37,6 +38,16 @@ class Sample : Object {
 
     override static func primaryKey() -> String? {
         return "id"
+    }
+    
+    func asDict() -> [String:AnyObject] {
+        return ["user_id":user_id, "sample_id":sample_id,
+                "sleep":sleep, "weight":weight, "heart_rate":heart_rate,
+                "total_calories":total_calories, "blood_pressure":blood_pressure]
+    }
+
+    func asJSON () -> JSON {
+        return JSON(self.asDict())
     }
 
     static func attributes() -> [String] {
