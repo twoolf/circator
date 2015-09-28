@@ -41,6 +41,7 @@ class PlotViewController : UIViewController {
         default: return 0.0
         }
     }
+    
     func setupChart() {
         let realm = try! Realm()
         let n = realm.objects(Sample).count

@@ -10,106 +10,70 @@ import UIKit
 import Realm
 import RealmSwift
 
-class ViewController: UIViewController, UICollectionViewDelegateFlowLayout, UICollectionViewDataSource {
+class ViewController: UIViewController {
 
-    @IBOutlet var collectionView : UICollectionView?
-    
-    var samples : Results<Sample> = try! Realm().objects(Sample)
+    var appName = "Circator"
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        // Do any additional setup after loading the view, typically from a nib.
-        let layout : UICollectionViewFlowLayout = UICollectionViewFlowLayout()
-        
-        collectionView = UICollectionView(frame: self.view.frame, collectionViewLayout: layout)
-        collectionView!.backgroundColor = UIColor.whiteColor()
-        collectionView!.dataSource = self
-        collectionView!.delegate = self
-        
-        collectionView!.registerClass(CollectionViewCell.self, forCellWithReuseIdentifier: "CollectionViewCell")
-        
-        self.view.addSubview(collectionView!)
-        let flow = self.collectionView!.collectionViewLayout as! UICollectionViewFlowLayout
-        setupFlowLayout(flow)
-        setupNavigationBar()
-    }
-    
-    func setupFlowLayout(flow:UICollectionViewFlowLayout) {
-        flow.sectionInset = UIEdgeInsets(top: -20, left: 10, bottom: 0, right: 10)
-        flow.headerReferenceSize = CGSizeMake(50, 60)
-        flow.itemSize = CGSize(width: 50, height: 30)
-    }
-    
-    override func viewWillAppear(animated: Bool) {
-        super.viewWillAppear(animated)
-        collectionView?.reloadData()
-    }
-    
-    func setupNavigationBar() {
-        navigationItem.title = "Correlations"
-        navigationItem.rightBarButtonItem = UIBarButtonItem(barButtonSystemItem: .Add, target: self, action: "addButtonAction")
-    }
-    
-    func addButtonAction() {
-        let addViewController = AddViewController(nibName: nil, bundle: nil)
-        let navController = UINavigationController(rootViewController: addViewController)
-        presentViewController(navController, animated: true, completion: nil)
-    }
 
-    func plotButtonAction(sender: PlotButton!) {
-        let plotViewController = PlotViewController(plotType: sender.plotType, nibName: nil, bundle: nil)
-        navigationController?.pushViewController(plotViewController, animated: true)
-    }
-    
-    func numberOfSectionsInCollectionView(collectionView: UICollectionView) -> Int {
-        return 3
-    }
-    
-    func collectionView(collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        let n = Sample.attributes().count + 1
-        return section == 2 ? 2 : (samples.count > 0 ? n * n : 0)
-    }
-    
-    func collectionView(collectionView: UICollectionView, cellForItemAtIndexPath indexPath: NSIndexPath) -> UICollectionViewCell {
-        let cell = collectionView.dequeueReusableCellWithReuseIdentifier("CollectionViewCell", forIndexPath: indexPath) as! CollectionViewCell
-        let n = Sample.attributes().count + 1
-        let index = Int(indexPath.row)
-        cell.backgroundColor = UIColor.whiteColor()
+        let realm = try! Realm()
+        let labels = [appName] + Sample.attributes()
 
-        for view in cell.contentView.subviews {
-            view.removeFromSuperview()
-        }
-
-        if ( indexPath.section < 2 ) {
-            cell.asButton(5)
-            if ( index == 0 ) {
-                cell.setPlotType(0)
-                cell.setText(indexPath.section == 0 ? "User" : "Pop")
-                cell.backgroundColor = UIColor.redColor()
-            } else if ( index < n ) {
-                cell.setPlotType(index-1)
-                cell.setText(Sample.attributes()[index-1])
-            } else if ( index % n == 0 ) {
-                cell.setPlotType((index / n)-1)
-                cell.setText(Sample.attributes()[(index / n)-1])
+        for (i,ltxt) in labels.enumerate() {
+            var labeltxt = ""
+            if i > 0 {
+                let attr = Sample.attrnames()[i-1]
+                let statistic : Double? = realm.objects(Sample).average(attr)
+                labeltxt = statistic == nil ? ltxt : ltxt + ": " + statistic!.description
             } else {
-                // TODO: compute correlation between attribute pair.
-                let row = Sample.attrnames()[(index / n)-1]
-                let col = Sample.attrnames()[(index % n)-1]
-                let realm = try! Realm()
-                let rowavg : Double? = realm.objects(Sample).average(row)
-                let colavg : Double? = realm.objects(Sample).average(col)
-                cell.setText("\(rowavg!),\(colavg!)")
-                cell.backgroundColor = UIColor.init(white: CGFloat(1 / rowavg!), alpha: 0.3)
+                labeltxt = ltxt
             }
-            cell.button.addTarget(self, action: "plotButtonAction:", forControlEvents: .TouchUpInside)
-        } else {
-            cell.asButton(index + 5)
-            cell.button.addTarget(self, action: "plotButtonAction:", forControlEvents: .TouchUpInside)
+
+            let lbl = UILabel()
+            lbl.text = labeltxt
+            lbl.textColor = UIColor.blackColor()
+            lbl.textAlignment = .Center
+            lbl.font = i == 0 ? UIFont.systemFontOfSize(64) : UIFont.systemFontOfSize(20)
+            lbl.frame = i == 0 ? CGRectMake(0, 100, 300, 100) : CGRectMake(0, 200+CGFloat(i-1)*30, 300, 30)
+            self.view.addSubview(lbl)
         }
-        return cell
+        
+        let analyzeButton = UIButton()
+        analyzeButton.setTitle("Analyze", forState: .Normal)
+        analyzeButton.setTitleColor(UIColor.whiteColor(), forState: .Normal)
+        
+        let buttonWidth = (UIScreen.mainScreen().bounds.width - 80) / 2
+        analyzeButton.frame = CGRectMake(35, 230+(CGFloat(labels.count-1) * 30), buttonWidth, 50)
+        analyzeButton.titleLabel!.textAlignment = .Center
+        analyzeButton.addTarget(self, action: "analyzePressed", forControlEvents: .TouchUpInside)
+        analyzeButton.layer.cornerRadius = 7.0
+        analyzeButton.backgroundColor = UIColor(red: 67/255.0, green: 114/255.0, blue: 170/255.0, alpha: 1.0)
+        
+        let settingsButton = UIButton()
+        settingsButton.setTitle("Settings", forState: .Normal)
+        settingsButton.setTitleColor(UIColor.whiteColor(), forState: .Normal)
+
+        settingsButton.frame = CGRectMake(45+buttonWidth, 230+(CGFloat(labels.count-1) * 30), buttonWidth, 50)
+        settingsButton.titleLabel!.textAlignment = .Center
+        settingsButton.addTarget(self, action: "settingsPressed", forControlEvents: .TouchUpInside)
+        settingsButton.layer.cornerRadius = 7.0
+        settingsButton.backgroundColor = UIColor(red: 69/255.0, green: 139/255.0, blue: 0.0, alpha: 1.0)
+        
+        self.view.addSubview(analyzeButton)
+        self.view.addSubview(settingsButton)
     }
-    
+
+    func analyzePressed() {
+        let correlationViewController = CorrelationViewController()
+        navigationController?.pushViewController(correlationViewController, animated: true)
+    }
+
+    func settingsPressed() {
+        let settingsViewController = SettingsViewController()
+        navigationController?.pushViewController(settingsViewController, animated: true)
+    }
+
     override func didReceiveMemoryWarning() {
         super.didReceiveMemoryWarning()
         // Dispose of any resources that can be recreated.

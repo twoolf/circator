@@ -7,6 +7,8 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		780FA3381BB89A1A00D3085D /* SettingsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 780FA3371BB89A1A00D3085D /* SettingsViewController.swift */; settings = {ASSET_TAGS = (); }; };
+		780FA33A1BB89DCC00D3085D /* HealthManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 780FA3391BB89DCC00D3085D /* HealthManager.swift */; settings = {ASSET_TAGS = (); }; };
 		781EE1201BAF3C9F00E6DDA1 /* AddViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 781EE11D1BAF3C9F00E6DDA1 /* AddViewController.swift */; settings = {ASSET_TAGS = (); }; };
 		781EE1211BAF3C9F00E6DDA1 /* CollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 781EE11E1BAF3C9F00E6DDA1 /* CollectionViewCell.swift */; settings = {ASSET_TAGS = (); }; };
 		781EE1221BAF3C9F00E6DDA1 /* DataModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 781EE11F1BAF3C9F00E6DDA1 /* DataModel.swift */; settings = {ASSET_TAGS = (); }; };
@@ -16,9 +18,10 @@
 		781EE12A1BAF59D700E6DDA1 /* PlotButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 781EE1291BAF59D700E6DDA1 /* PlotButton.swift */; settings = {ASSET_TAGS = (); }; };
 		7881A3E11BAF3B3E00ECB3C6 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7881A3E01BAF3B3E00ECB3C6 /* AppDelegate.swift */; };
 		7881A3E31BAF3B3E00ECB3C6 /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7881A3E21BAF3B3E00ECB3C6 /* ViewController.swift */; };
-		7881A3E81BAF3B3E00ECB3C6 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 7881A3E71BAF3B3E00ECB3C6 /* Assets.xcassets */; };
 		7881A3F61BAF3B3E00ECB3C6 /* CircatorTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7881A3F51BAF3B3E00ECB3C6 /* CircatorTests.swift */; };
 		7881A4011BAF3B3E00ECB3C6 /* CircatorUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7881A4001BAF3B3E00ECB3C6 /* CircatorUITests.swift */; };
+		788606E71BB8A7DA00F33B5E /* HealthKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 788606E61BB8A7DA00F33B5E /* HealthKit.framework */; };
+		78DBD7561BB8841900F42626 /* CorrelationViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 78DBD7551BB8841900F42626 /* CorrelationViewController.swift */; settings = {ASSET_TAGS = (); }; };
 		C42F8A2092CA2296635A0F13 /* Pods_Circator.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 06103AD5E3EB4C84C4980CB1 /* Pods_Circator.framework */; settings = {ATTRIBUTES = (Weak, ); }; };
 /* End PBXBuildFile section */
 
@@ -42,17 +45,19 @@
 /* Begin PBXFileReference section */
 		06103AD5E3EB4C84C4980CB1 /* Pods_Circator.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_Circator.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		4768419D940426F855957056 /* Pods-Circator.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Circator.debug.xcconfig"; path = "Pods/Target Support Files/Pods-Circator/Pods-Circator.debug.xcconfig"; sourceTree = "<group>"; };
+		780FA3371BB89A1A00D3085D /* SettingsViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SettingsViewController.swift; sourceTree = "<group>"; };
+		780FA3391BB89DCC00D3085D /* HealthManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = HealthManager.swift; sourceTree = "<group>"; };
+		780FA33B1BB8A1B100D3085D /* Circator.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.xml; path = Circator.entitlements; sourceTree = "<group>"; };
 		781EE11D1BAF3C9F00E6DDA1 /* AddViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AddViewController.swift; sourceTree = "<group>"; };
 		781EE11E1BAF3C9F00E6DDA1 /* CollectionViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CollectionViewCell.swift; sourceTree = "<group>"; };
 		781EE11F1BAF3C9F00E6DDA1 /* DataModel.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DataModel.swift; sourceTree = "<group>"; };
-		781EE1231BAF3F6B00E6DDA1 /* Podfile */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = Podfile; sourceTree = "<group>"; };
+		781EE1231BAF3F6B00E6DDA1 /* Podfile */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = Podfile; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.ruby; };
 		781EE1241BAF3F6B00E6DDA1 /* README.md */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
 		781EE1271BAF452800E6DDA1 /* PlotViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PlotViewController.swift; sourceTree = "<group>"; };
 		781EE1291BAF59D700E6DDA1 /* PlotButton.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PlotButton.swift; sourceTree = "<group>"; };
 		7881A3DD1BAF3B3E00ECB3C6 /* Circator.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Circator.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		7881A3E01BAF3B3E00ECB3C6 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		7881A3E21BAF3B3E00ECB3C6 /* ViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewController.swift; sourceTree = "<group>"; };
-		7881A3E71BAF3B3E00ECB3C6 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		7881A3EC1BAF3B3E00ECB3C6 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		7881A3F11BAF3B3E00ECB3C6 /* CircatorTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = CircatorTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		7881A3F51BAF3B3E00ECB3C6 /* CircatorTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CircatorTests.swift; sourceTree = "<group>"; };
@@ -60,6 +65,8 @@
 		7881A3FC1BAF3B3E00ECB3C6 /* CircatorUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = CircatorUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		7881A4001BAF3B3E00ECB3C6 /* CircatorUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CircatorUITests.swift; sourceTree = "<group>"; };
 		7881A4021BAF3B3E00ECB3C6 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		788606E61BB8A7DA00F33B5E /* HealthKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = HealthKit.framework; path = System/Library/Frameworks/HealthKit.framework; sourceTree = SDKROOT; };
+		78DBD7551BB8841900F42626 /* CorrelationViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CorrelationViewController.swift; sourceTree = "<group>"; };
 		8B4A08D995498CDA94BBB258 /* Pods-Circator.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Circator.release.xcconfig"; path = "Pods/Target Support Files/Pods-Circator/Pods-Circator.release.xcconfig"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -69,6 +76,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				C42F8A2092CA2296635A0F13 /* Pods_Circator.framework in Frameworks */,
+				788606E71BB8A7DA00F33B5E /* HealthKit.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -125,15 +133,18 @@
 		7881A3DF1BAF3B3E00ECB3C6 /* Circator */ = {
 			isa = PBXGroup;
 			children = (
+				780FA33B1BB8A1B100D3085D /* Circator.entitlements */,
 				7881A3E01BAF3B3E00ECB3C6 /* AppDelegate.swift */,
 				7881A3E21BAF3B3E00ECB3C6 /* ViewController.swift */,
-				7881A3E71BAF3B3E00ECB3C6 /* Assets.xcassets */,
-				7881A3EC1BAF3B3E00ECB3C6 /* Info.plist */,
+				780FA3371BB89A1A00D3085D /* SettingsViewController.swift */,
+				78DBD7551BB8841900F42626 /* CorrelationViewController.swift */,
+				781EE1271BAF452800E6DDA1 /* PlotViewController.swift */,
 				781EE11D1BAF3C9F00E6DDA1 /* AddViewController.swift */,
+				7881A3EC1BAF3B3E00ECB3C6 /* Info.plist */,
 				781EE11E1BAF3C9F00E6DDA1 /* CollectionViewCell.swift */,
 				781EE11F1BAF3C9F00E6DDA1 /* DataModel.swift */,
-				781EE1271BAF452800E6DDA1 /* PlotViewController.swift */,
 				781EE1291BAF59D700E6DDA1 /* PlotButton.swift */,
+				780FA3391BB89DCC00D3085D /* HealthManager.swift */,
 			);
 			path = Circator;
 			sourceTree = "<group>";
@@ -159,6 +170,7 @@
 		EA5EDF2A50FCED6ADBAA03DD /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				788606E61BB8A7DA00F33B5E /* HealthKit.framework */,
 				06103AD5E3EB4C84C4980CB1 /* Pods_Circator.framework */,
 			);
 			name = Frameworks;
@@ -234,6 +246,12 @@
 				TargetAttributes = {
 					7881A3DC1BAF3B3E00ECB3C6 = {
 						CreatedOnToolsVersion = 7.0;
+						DevelopmentTeam = E4SL9A9Z96;
+						SystemCapabilities = {
+							com.apple.HealthKit = {
+								enabled = 1;
+							};
+						};
 					};
 					7881A3F01BAF3B3E00ECB3C6 = {
 						CreatedOnToolsVersion = 7.0;
@@ -270,7 +288,6 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				7881A3E81BAF3B3E00ECB3C6 /* Assets.xcassets in Resources */,
 				781EE1251BAF3F6B00E6DDA1 /* Podfile in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -347,6 +364,9 @@
 				781EE1261BAF3F6B00E6DDA1 /* README.md in Sources */,
 				781EE1221BAF3C9F00E6DDA1 /* DataModel.swift in Sources */,
 				7881A3E31BAF3B3E00ECB3C6 /* ViewController.swift in Sources */,
+				780FA3381BB89A1A00D3085D /* SettingsViewController.swift in Sources */,
+				780FA33A1BB89DCC00D3085D /* HealthManager.swift in Sources */,
+				78DBD7561BB8841900F42626 /* CorrelationViewController.swift in Sources */,
 				7881A3E11BAF3B3E00ECB3C6 /* AppDelegate.swift in Sources */,
 				781EE1281BAF452800E6DDA1 /* PlotViewController.swift in Sources */,
 				781EE1211BAF3C9F00E6DDA1 /* CollectionViewCell.swift in Sources */,
@@ -474,10 +494,14 @@
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = 4768419D940426F855957056 /* Pods-Circator.debug.xcconfig */;
 			buildSettings = {
+				CODE_SIGN_ENTITLEMENTS = Circator/Circator.entitlements;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				INFOPLIST_FILE = Circator/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
-				PRODUCT_BUNDLE_IDENTIFIER = edu.jhu.cs.damsl.Circator;
+				PRODUCT_BUNDLE_IDENTIFIER = edu.jhu.cs.damsl.Circator.dev;
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				PROVISIONING_PROFILE = "";
 			};
 			name = Debug;
 		};
@@ -485,10 +509,14 @@
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = 8B4A08D995498CDA94BBB258 /* Pods-Circator.release.xcconfig */;
 			buildSettings = {
+				CODE_SIGN_ENTITLEMENTS = Circator/Circator.entitlements;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				INFOPLIST_FILE = Circator/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
-				PRODUCT_BUNDLE_IDENTIFIER = edu.jhu.cs.damsl.Circator;
+				PRODUCT_BUNDLE_IDENTIFIER = edu.jhu.cs.damsl.Circator.dev;
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				PROVISIONING_PROFILE = "";
 			};
 			name = Release;
 		};
