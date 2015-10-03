@@ -13,7 +13,7 @@
 		781EE1221BAF3C9F00E6DDA1 /* DataModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 781EE11F1BAF3C9F00E6DDA1 /* DataModel.swift */; settings = {ASSET_TAGS = (); }; };
 		781EE1281BAF452800E6DDA1 /* PlotViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 781EE1271BAF452800E6DDA1 /* PlotViewController.swift */; settings = {ASSET_TAGS = (); }; };
 		7881A3E11BAF3B3E00ECB3C6 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7881A3E01BAF3B3E00ECB3C6 /* AppDelegate.swift */; };
-		7881A3E31BAF3B3E00ECB3C6 /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7881A3E21BAF3B3E00ECB3C6 /* ViewController.swift */; };
+		7881A3E31BAF3B3E00ECB3C6 /* IntroViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7881A3E21BAF3B3E00ECB3C6 /* IntroViewController.swift */; };
 		7881A3F61BAF3B3E00ECB3C6 /* CircatorTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7881A3F51BAF3B3E00ECB3C6 /* CircatorTests.swift */; };
 		7881A4011BAF3B3E00ECB3C6 /* CircatorUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7881A4001BAF3B3E00ECB3C6 /* CircatorUITests.swift */; };
 		788606E71BB8A7DA00F33B5E /* HealthKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 788606E61BB8A7DA00F33B5E /* HealthKit.framework */; };
@@ -23,6 +23,9 @@
 		F43A7C571BBDF29D00B6FA56 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = F43A7C561BBDF29D00B6FA56 /* LaunchScreen.storyboard */; settings = {ASSET_TAGS = (); }; };
 		F43A7C5D1BBDF43600B6FA56 /* CollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = F43A7C5B1BBDF43600B6FA56 /* CollectionViewCell.swift */; settings = {ASSET_TAGS = (); }; };
 		F43A7C5E1BBDF43600B6FA56 /* PlotButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = F43A7C5C1BBDF43600B6FA56 /* PlotButton.swift */; settings = {ASSET_TAGS = (); }; };
+		F43A7C641BBE308300B6FA56 /* Theme.swift in Sources */ = {isa = PBXBuildFile; fileRef = F43A7C631BBE308300B6FA56 /* Theme.swift */; settings = {ASSET_TAGS = (); }; };
+		F43A7C681BBE508D00B6FA56 /* IntroCompareDataTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = F43A7C671BBE508D00B6FA56 /* IntroCompareDataTableViewCell.swift */; settings = {ASSET_TAGS = (); }; };
+		F43A7C6A1BBF53F800B6FA56 /* DataSample.swift in Sources */ = {isa = PBXBuildFile; fileRef = F43A7C691BBF53F800B6FA56 /* DataSample.swift */; settings = {ASSET_TAGS = (); }; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -54,7 +57,7 @@
 		781EE1271BAF452800E6DDA1 /* PlotViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PlotViewController.swift; sourceTree = "<group>"; };
 		7881A3DD1BAF3B3E00ECB3C6 /* Circator.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Circator.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		7881A3E01BAF3B3E00ECB3C6 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
-		7881A3E21BAF3B3E00ECB3C6 /* ViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewController.swift; sourceTree = "<group>"; };
+		7881A3E21BAF3B3E00ECB3C6 /* IntroViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IntroViewController.swift; sourceTree = "<group>"; };
 		7881A3EC1BAF3B3E00ECB3C6 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		7881A3F11BAF3B3E00ECB3C6 /* CircatorTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = CircatorTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		7881A3F51BAF3B3E00ECB3C6 /* CircatorTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CircatorTests.swift; sourceTree = "<group>"; };
@@ -70,6 +73,9 @@
 		F43A7C5B1BBDF43600B6FA56 /* CollectionViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CollectionViewCell.swift; sourceTree = "<group>"; };
 		F43A7C5C1BBDF43600B6FA56 /* PlotButton.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PlotButton.swift; sourceTree = "<group>"; };
 		F43A7C601BBDF49D00B6FA56 /* Circator.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.xml; path = Circator.entitlements; sourceTree = "<group>"; };
+		F43A7C631BBE308300B6FA56 /* Theme.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Theme.swift; sourceTree = "<group>"; };
+		F43A7C671BBE508D00B6FA56 /* IntroCompareDataTableViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = IntroCompareDataTableViewCell.swift; sourceTree = "<group>"; };
+		F43A7C691BBF53F800B6FA56 /* DataSample.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DataSample.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -187,6 +193,8 @@
 			children = (
 				781EE11F1BAF3C9F00E6DDA1 /* DataModel.swift */,
 				780FA3391BB89DCC00D3085D /* HealthManager.swift */,
+				F43A7C691BBF53F800B6FA56 /* DataSample.swift */,
+				F43A7C631BBE308300B6FA56 /* Theme.swift */,
 			);
 			path = Model;
 			sourceTree = "<group>";
@@ -196,6 +204,7 @@
 			children = (
 				F43A7C5B1BBDF43600B6FA56 /* CollectionViewCell.swift */,
 				F43A7C5C1BBDF43600B6FA56 /* PlotButton.swift */,
+				F43A7C671BBE508D00B6FA56 /* IntroCompareDataTableViewCell.swift */,
 			);
 			path = View;
 			sourceTree = "<group>";
@@ -203,7 +212,7 @@
 		F43A7C5F1BBDF43C00B6FA56 /* View Controller */ = {
 			isa = PBXGroup;
 			children = (
-				7881A3E21BAF3B3E00ECB3C6 /* ViewController.swift */,
+				7881A3E21BAF3B3E00ECB3C6 /* IntroViewController.swift */,
 				780FA3371BB89A1A00D3085D /* SettingsViewController.swift */,
 				78DBD7551BB8841900F42626 /* CorrelationViewController.swift */,
 				781EE1271BAF452800E6DDA1 /* PlotViewController.swift */,
@@ -282,7 +291,7 @@
 				TargetAttributes = {
 					7881A3DC1BAF3B3E00ECB3C6 = {
 						CreatedOnToolsVersion = 7.0;
-						DevelopmentTeam = 8B5EFZ2UMB;
+						DevelopmentTeam = 52RD2GH5DP;
 						SystemCapabilities = {
 							com.apple.HealthKit = {
 								enabled = 1;
@@ -400,13 +409,16 @@
 			files = (
 				F43A7C5D1BBDF43600B6FA56 /* CollectionViewCell.swift in Sources */,
 				781EE1221BAF3C9F00E6DDA1 /* DataModel.swift in Sources */,
-				7881A3E31BAF3B3E00ECB3C6 /* ViewController.swift in Sources */,
+				7881A3E31BAF3B3E00ECB3C6 /* IntroViewController.swift in Sources */,
 				780FA3381BB89A1A00D3085D /* SettingsViewController.swift in Sources */,
+				F43A7C641BBE308300B6FA56 /* Theme.swift in Sources */,
 				780FA33A1BB89DCC00D3085D /* HealthManager.swift in Sources */,
+				F43A7C6A1BBF53F800B6FA56 /* DataSample.swift in Sources */,
 				78DBD7561BB8841900F42626 /* CorrelationViewController.swift in Sources */,
 				F43A7C5E1BBDF43600B6FA56 /* PlotButton.swift in Sources */,
 				7881A3E11BAF3B3E00ECB3C6 /* AppDelegate.swift in Sources */,
 				781EE1281BAF452800E6DDA1 /* PlotViewController.swift in Sources */,
+				F43A7C681BBE508D00B6FA56 /* IntroCompareDataTableViewCell.swift in Sources */,
 				781EE1201BAF3C9F00E6DDA1 /* AddViewController.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
