@@ -20,8 +20,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         window = UIWindow(frame: UIScreen.mainScreen().bounds)
         window?.backgroundColor = UIColor.whiteColor()
         window?.tintColor = themeColor
-        
-        let viewController = ViewController(nibName: nil, bundle: nil)
+        let viewController = IntroViewController(nibName: nil, bundle: nil)
         let navController = UINavigationController(rootViewController: viewController)
         
         window?.rootViewController = navController
