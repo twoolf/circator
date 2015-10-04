@@ -75,6 +75,11 @@ class SettingsViewController: UIViewController {
       print("Device samples: " + json["samples"]!.count.description)
       Alamofire.request(.POST, "http://45.55.194.186/post", parameters: json, encoding: .JSON)
   }
+    
+    override func viewWillAppear(animated: Bool) {
+        super.viewWillAppear(animated)
+        navigationController?.setNavigationBarHidden(false, animated: false)
+    }
 
   func authorizeHealthKit()
   {
