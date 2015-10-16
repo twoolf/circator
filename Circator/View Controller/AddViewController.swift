@@ -23,13 +23,13 @@ class AddViewController: UIViewController, UITextFieldDelegate {
     }
     
     func setupTextField() {
-        textFields = [("user_id",        "#users",           UITextField(frame: CGRectZero)),
-                      ("sample_id",      "samples per user", UITextField(frame: CGRectZero)),
+        textFields = [("userID",        "#users",           UITextField(frame: CGRectZero)),
+                      ("sampleID",      "samples per user", UITextField(frame: CGRectZero)),
                       ("sleep",          "sleep",            UITextField(frame: CGRectZero)),
                       ("weight",         "weight",           UITextField(frame: CGRectZero)),
-                      ("heart_rate",     "heart rate",       UITextField(frame: CGRectZero)),
-                      ("total_calories", "total calories",   UITextField(frame: CGRectZero)),
-                      ("blood_pressure", "blood pressure",   UITextField(frame: CGRectZero))]
+                      ("heartRate",     "heart rate",       UITextField(frame: CGRectZero)),
+                      ("totalCalories", "total calories",   UITextField(frame: CGRectZero)),
+                      ("bloodPressure", "blood pressure",   UITextField(frame: CGRectZero))]
 
         for (_,msg,tf) in textFields {
             tf.placeholder = "Enter " + msg
