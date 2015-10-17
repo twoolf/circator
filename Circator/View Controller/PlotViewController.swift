@@ -31,6 +31,11 @@ class PlotViewController : UIViewController {
         setupChart()
     }
     
+    override func viewWillAppear(animated: Bool) {
+        super.viewWillAppear(animated)
+        navigationController?.setNavigationBarHidden(false, animated: false)
+    }
+    
     func getValue(v: Sample, i: Int) -> Double {
         switch(i) {
         case 0: return v.sleep

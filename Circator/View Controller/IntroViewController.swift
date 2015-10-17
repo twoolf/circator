@@ -84,37 +84,40 @@ class IntroViewController: UIViewController, UITableViewDelegate, UITableViewDat
         return tableView
     }()
     
+    let dataTypes = [
+        HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierBodyMass)!,
+        HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierHeartRate)!,
+        HKObjectType.categoryTypeForIdentifier(HKCategoryTypeIdentifierSleepAnalysis)!,
+        HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierDietaryEnergyConsumed)!,
+        HKObjectType.correlationTypeForIdentifier(HKCorrelationTypeIdentifierBloodPressure)!
+    ]
+    var userData = [HKSampleType: [HKSample]]()
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         configureViews()
         tableView.layoutIfNeeded()
-        
-//        let realm = try! Realm()
-//        let labels = Sample.attributes()
-//
-//        for (i,ltxt) in labels.enumerate() {
-//            var labeltxt = ""
-//            if i > 0 {
-//                let attr = Sample.attrnames()[i-1]
-//                let statistic : Double? = realm.objects(Sample).average(attr)
-//                labeltxt = statistic == nil ? ltxt : ltxt + ": " + statistic!.description
-//            } else {
-//                labeltxt = ltxt
-//            }
-//
-//            let lbl = UILabel()
-//            lbl.text = labeltxt
-//            lbl.textColor = UIColor.blackColor()
-//            lbl.textAlignment = .Center
-//            lbl.font = UIFont.systemFontOfSize(20)
-//            lbl.frame = CGRectMake(0, 200+CGFloat(i)*30, 300, 30)
-//            self.view.addSubview(lbl)
-//        }
     }
     
     override func viewWillAppear(animated: Bool) {
         super.viewWillAppear(animated)
         navigationController?.setNavigationBarHidden(true, animated: false)
+    }
+    
+    override func viewDidAppear(animated: Bool) {
+        super.viewDidAppear(animated)
+        HealthManager.sharedManager.authorizeHealthKit { (success, error) -> Void in
+            guard error == nil else {
+                return
+            }
+            HealthManager.sharedManager.fetchMostRecentSamplesForTypes(self.dataTypes) { (samples, error) -> Void in
+                guard error == nil else {
+                    return
+                }
+                self.userData = samples
+                self.tableView.reloadData()
+            }
+        }
     }
     
     override func viewDidLayoutSubviews() {
@@ -177,21 +180,13 @@ class IntroViewController: UIViewController, UITableViewDelegate, UITableViewDat
     
     // MARK: - Table View
     
-    let userData = [
-        DataSample(type: HealthManager.Parameter.BodyMass, data: HKQuantity(unit: HKUnit.meterUnit(), doubleValue: 70)),
-        DataSample(type: HealthManager.Parameter.EnergyIntake, data: HKQuantity(unit: HKUnit.kilocalorieUnit(), doubleValue: 2000)),
-        DataSample(type: HealthManager.Parameter.HeartRate, data: HKQuantity(unit: HKUnit.countUnit().unitDividedByUnit(HKUnit.minuteUnit()), doubleValue: 70)),
-        DataSample(type: HealthManager.Parameter.BloodPressure, data: HKQuantity(unit: HKUnit.millimeterOfMercuryUnit(), doubleValue: 120)),
-        DataSample(type: HealthManager.Parameter.Sleep, data: HKQuantity(unit: HKUnit.hourUnit(), doubleValue: 6.2))
-    ]
-    
-    let populationAverageData = [
-        DataSample(type: HealthManager.Parameter.BodyMass, data: HKQuantity(unit: HKUnit.meterUnit(), doubleValue: 77)),
-        DataSample(type: HealthManager.Parameter.EnergyIntake, data: HKQuantity(unit: HKUnit.kilocalorieUnit(), doubleValue: 2500)),
-        DataSample(type: HealthManager.Parameter.HeartRate, data: HKQuantity(unit: HKUnit.countUnit().unitDividedByUnit(HKUnit.minuteUnit()), doubleValue: 76)),
-        DataSample(type: HealthManager.Parameter.BloodPressure, data: HKQuantity(unit: HKUnit.millimeterOfMercuryUnit(), doubleValue: 118)),
-        DataSample(type: HealthManager.Parameter.Sleep, data: HKQuantity(unit: HKUnit.hourUnit(), doubleValue: 7.1))
-    ]
+//    let populationAverageData = [
+//        DataSample(type: DataSample.SampleType.BodyMass, data: HKQuantity(unit: HKUnit.meterUnit(), doubleValue: 77)),
+//        DataSample(type: DataSample.SampleType.EnergyIntake, data: HKQuantity(unit: HKUnit.kilocalorieUnit(), doubleValue: 2500)),
+//        DataSample(type: DataSample.SampleType.HeartRate, data: HKQuantity(unit: HKUnit.countUnit().unitDividedByUnit(HKUnit.minuteUnit()), doubleValue: 76)),
+//        DataSample(type: DataSample.SampleType.BloodPressure, data: HKQuantity(unit: HKUnit.millimeterOfMercuryUnit(), doubleValue: 118)),
+//        DataSample(type: DataSample.SampleType.Sleep, data: HKQuantity(unit: HKUnit.hourUnit(), doubleValue: 7.1))
+//    ]
     
     func numberOfSectionsInTableView(tableView: UITableView) -> Int {
         return 1
@@ -203,7 +198,9 @@ class IntroViewController: UIViewController, UITableViewDelegate, UITableViewDat
     
     func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCellWithIdentifier(IntroViewTableViewCellIdentifier, forIndexPath: indexPath) as! IntroCompareDataTableViewCell
-        cell.setUserData(userData[indexPath.row], populationAverageData: populationAverageData[indexPath.row])
+        let sampleType = dataTypes[indexPath.row]
+        cell.sampleType = sampleType
+        cell.setUserData(userData[sampleType] ?? [], populationAverageData: [])
         return cell
     }
 

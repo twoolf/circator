@@ -8,84 +8,110 @@
 
 import HealthKit
 
+typealias HealthManagerAuthorizationBlock = (success: Bool, error: NSError?) -> Void
+typealias HealthManagerFetchSampleBlock = (samples: [HKSample], error: NSError?) -> Void
+
+let HealthManagerErrorDomain = "HealthManagerErrorDomain"
+let HealthManagerSampleTypeIdentifierSleepDuration = "HealthManagerSampleTypeIdentifierSleepDuration"
+
 class HealthManager {
     
-    enum Parameter {
-        case BloodPressure
-        case Sleep
-        case HeartRate
-        case BodyMass
-        case EnergyIntake
-    }
+    static let sharedManager = HealthManager()
     
-    let healthKitStore:HKHealthStore = HKHealthStore()
+    lazy var healthKitStore: HKHealthStore = HKHealthStore()
     
-    func authorizeHealthKit(completion: ((success:Bool, error:NSError!) -> Void)!)
+    // Not guaranteed to be on main thread
+    func authorizeHealthKit(completion: HealthManagerAuthorizationBlock)
     {
-        // 1. Set the types you want to read from HK Store
         let healthKitTypesToRead : Set<HKObjectType>? = [
             HKObjectType.characteristicTypeForIdentifier(HKCharacteristicTypeIdentifierDateOfBirth)!,
             HKObjectType.characteristicTypeForIdentifier(HKCharacteristicTypeIdentifierBloodType)!,
             HKObjectType.characteristicTypeForIdentifier(HKCharacteristicTypeIdentifierBiologicalSex)!,
             HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierBodyMass)!,
-            HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierHeight)!]
+            HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierHeight)!,
+            HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierBodyMass)!,
+            HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierHeartRate)!,
+            HKObjectType.categoryTypeForIdentifier(HKCategoryTypeIdentifierSleepAnalysis)!,
+            HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierDietaryEnergyConsumed)!,
+            HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierBloodPressureDiastolic)!,
+            HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierBloodPressureSystolic)!
+        ]
         
-        // 2. Set the types you want to write to HK Store
         let healthKitTypesToWrite : Set<HKSampleType>? = []
         
-        // 3. If the store is not available (for instance, iPad) return an error and don't go on.
-        if !HKHealthStore.isHealthDataAvailable()
-        {
-            let error = NSError(domain: "circator", code: 2, userInfo: [NSLocalizedDescriptionKey:"HealthKit is not available in this Device"])
-            if( completion != nil )
-            {
-                completion(success:false, error:error)
-            }
-            return;
+        guard HKHealthStore.isHealthDataAvailable() else {
+            let error = NSError(domain: HealthManagerErrorDomain, code: 2, userInfo: [NSLocalizedDescriptionKey: "HealthKit is not available in this Device"])
+            completion(success: false, error:error)
+            return
         }
         
-        // 4.  Request HealthKit authorization
         healthKitStore.requestAuthorizationToShareTypes(healthKitTypesToWrite, readTypes: healthKitTypesToRead)
             { (success, error) -> Void in
-                if( completion != nil )
-                {
-                    completion(success:success,error:error)
-                }
+                completion(success: success, error: error)
         }
+        
     }
     
-    func readMostRecentSample(sampleType:HKSampleType , completion: ((HKSample!, NSError!) -> Void)!)
+    func fetchMostRecentSample(sampleType: HKSampleType, completion: HealthManagerFetchSampleBlock)
     {
+        let mostRecentPredicate: NSPredicate
+        let limit: Int
         
-        // 1. Build the Predicate
-        let past = NSDate.distantPast()
-        let now  = NSDate()
-        let mostRecentPredicate = HKQuery.predicateForSamplesWithStartDate(past, endDate:now, options: .None)
+        let aDay = NSDateComponents()
+        aDay.day = -1
+        let aDayAgo = NSCalendar.currentCalendar().dateByAddingComponents(aDay, toDate: NSDate(), options: NSCalendarOptions())!
+        let now = NSDate()
+        if sampleType.identifier == HKCategoryTypeIdentifierSleepAnalysis {
+            mostRecentPredicate = HKQuery.predicateForSamplesWithStartDate(aDayAgo, endDate: now, options: .None)
+            limit = Int(HKObjectQueryNoLimit)
+        } else {
+            mostRecentPredicate = HKQuery.predicateForSamplesWithStartDate(NSDate.distantPast(), endDate: now, options: .None)
+            limit = 1
+        }
         
-        // 2. Build the sort descriptor to return the samples in descending order
-        let sortDescriptor = NSSortDescriptor(key:HKSampleSortIdentifierStartDate, ascending: false)
-        // 3. we want to limit the number of samples returned by the query to just 1 (the most recent)
-        let limit = 1
+        let sortDescriptor = NSSortDescriptor(key: HKSampleSortIdentifierStartDate, ascending: false)
         
-        // 4. Build samples query
         let sampleQuery = HKSampleQuery(sampleType: sampleType, predicate: mostRecentPredicate, limit: limit, sortDescriptors: [sortDescriptor])
             { (sampleQuery, results, error ) -> Void in
-                
-                if let queryError = error {
-                    completion(nil,error)
-                    return;
+                guard error == nil else {
+                    completion(samples: [], error: error)
+                    return
                 }
-                
-                // Get the first sample
-                let mostRecentSample = results!.first as? HKQuantitySample
-                
-                // Execute the completion closure
-                if completion != nil {
-                    completion(mostRecentSample,nil)
-                }
+                completion(samples: results!, error: nil)
         }
-        // 5. Execute the Query
         self.healthKitStore.executeQuery(sampleQuery)
     }
     
+    func fetchMostRecentSamplesForTypes(types: [HKSampleType], completion: (samples: [HKSampleType: [HKSample]], error: NSError?) -> Void) {
+        let group = dispatch_group_create()
+        var samples = [HKSampleType: [HKSample]]()
+        types.forEach { (type) -> () in
+            dispatch_group_enter(group)
+            fetchMostRecentSample(type) { (sampleCollection, error) -> Void in
+                dispatch_group_leave(group)
+                guard error == nil else {
+                    return
+                }
+                guard sampleCollection.isEmpty == false else {
+                    return
+                }
+                samples[sampleCollection[0].sampleType] = sampleCollection
+            }
+        }
+        dispatch_group_notify(group, dispatch_get_main_queue()) {
+            // TODO: partial error handling
+            completion(samples: samples, error: nil)
+        }
+    }
+}
+
+extension Array where Element: HKSample {
+    var sleepDuration: NSTimeInterval? {
+        return filter { (sample) -> Bool in
+            let categorySample = sample as! HKCategorySample
+            return categorySample.sampleType.identifier == HKCategoryTypeIdentifierSleepAnalysis && categorySample.value == HKCategoryValueSleepAnalysis.Asleep.rawValue
+            }.map { (sample) -> NSTimeInterval in
+                return sample.endDate.timeIntervalSinceDate(sample.startDate)
+            }.reduce(0) { $0 + $1 }
+    }
 }
