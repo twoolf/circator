@@ -103,16 +103,16 @@ class SettingsViewController: UIViewController {
     let sampleType = HKSampleType.quantityTypeForIdentifier(HKQuantityTypeIdentifierHeight)!
 
     // 2. Call the method to read the most recent Height sample
-    self.healthManager.readMostRecentSample(sampleType, completion: { (mostRecentHeight, error) -> Void in
+    self.healthManager.fetchMostRecentSample(sampleType, completion: { (mostRecentHeight, error) -> Void in
 
       if( error != nil )
       {
-        print("Error reading height from HealthKit Store: \(error.localizedDescription)")
+        print("Error reading height from HealthKit Store: \(error!.localizedDescription)")
         return;
       }
 
       var heightLocalizedString = self.kUnknownString;
-      self.height = mostRecentHeight as? HKQuantitySample;
+      self.height = mostRecentHeight.first as? HKQuantitySample
 
       // 3. Format the height to display it on the screen
       if let meters = self.height?.quantity.doubleValueForUnit(HKUnit.meterUnit()) {
@@ -133,16 +133,16 @@ class SettingsViewController: UIViewController {
         let sampleType = HKSampleType.quantityTypeForIdentifier(HKQuantityTypeIdentifierBodyMass)!
         
         // 2. Call the method to read the most recent Height sample
-        self.healthManager.readMostRecentSample(sampleType, completion: { (mostRecentBodyMass, error) -> Void in
+        self.healthManager.fetchMostRecentSample(sampleType, completion: { (mostRecentBodyMass, error) -> Void in
             
             if( error != nil )
             {
-                print("Error reading body mass from HealthKit Store: \(error.localizedDescription)")
+                print("Error reading body mass from HealthKit Store: \(error!.localizedDescription)")
                 return;
             }
             
             var bodymassLocalizedString = self.kUnknownString;
-            self.bodymass = mostRecentBodyMass as? HKQuantitySample;
+            self.bodymass = mostRecentBodyMass.first as? HKQuantitySample
             
             // 3. Format the body mass to display it on the screen
             if let kilograms = self.bodymass?.quantity.doubleValueForUnit(HKUnit.gramUnitWithMetricPrefix(.Kilo)) {

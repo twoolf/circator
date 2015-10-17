@@ -49,6 +49,7 @@ class CorrelationViewController: UIViewController, UICollectionViewDelegateFlowL
     override func viewWillAppear(animated: Bool) {
         super.viewWillAppear(animated)
         collectionView?.reloadData()
+        navigationController?.setNavigationBarHidden(false, animated: false)
     }
     
     func setupNavigationBar() {
