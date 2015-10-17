@@ -25,7 +25,7 @@
 		F43A7C5E1BBDF43600B6FA56 /* PlotButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = F43A7C5C1BBDF43600B6FA56 /* PlotButton.swift */; settings = {ASSET_TAGS = (); }; };
 		F43A7C641BBE308300B6FA56 /* Theme.swift in Sources */ = {isa = PBXBuildFile; fileRef = F43A7C631BBE308300B6FA56 /* Theme.swift */; settings = {ASSET_TAGS = (); }; };
 		F43A7C681BBE508D00B6FA56 /* IntroCompareDataTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = F43A7C671BBE508D00B6FA56 /* IntroCompareDataTableViewCell.swift */; settings = {ASSET_TAGS = (); }; };
-		F43A7C6A1BBF53F800B6FA56 /* DataSample.swift in Sources */ = {isa = PBXBuildFile; fileRef = F43A7C691BBF53F800B6FA56 /* DataSample.swift */; settings = {ASSET_TAGS = (); }; };
+		F43A7C6A1BBF53F800B6FA56 /* SampleFormatter.swift in Sources */ = {isa = PBXBuildFile; fileRef = F43A7C691BBF53F800B6FA56 /* SampleFormatter.swift */; settings = {ASSET_TAGS = (); }; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -75,7 +75,7 @@
 		F43A7C601BBDF49D00B6FA56 /* Circator.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.xml; path = Circator.entitlements; sourceTree = "<group>"; };
 		F43A7C631BBE308300B6FA56 /* Theme.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Theme.swift; sourceTree = "<group>"; };
 		F43A7C671BBE508D00B6FA56 /* IntroCompareDataTableViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = IntroCompareDataTableViewCell.swift; sourceTree = "<group>"; };
-		F43A7C691BBF53F800B6FA56 /* DataSample.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DataSample.swift; sourceTree = "<group>"; };
+		F43A7C691BBF53F800B6FA56 /* SampleFormatter.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SampleFormatter.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -193,7 +193,7 @@
 			children = (
 				781EE11F1BAF3C9F00E6DDA1 /* DataModel.swift */,
 				780FA3391BB89DCC00D3085D /* HealthManager.swift */,
-				F43A7C691BBF53F800B6FA56 /* DataSample.swift */,
+				F43A7C691BBF53F800B6FA56 /* SampleFormatter.swift */,
 				F43A7C631BBE308300B6FA56 /* Theme.swift */,
 			);
 			path = Model;
@@ -413,7 +413,7 @@
 				780FA3381BB89A1A00D3085D /* SettingsViewController.swift in Sources */,
 				F43A7C641BBE308300B6FA56 /* Theme.swift in Sources */,
 				780FA33A1BB89DCC00D3085D /* HealthManager.swift in Sources */,
-				F43A7C6A1BBF53F800B6FA56 /* DataSample.swift in Sources */,
+				F43A7C6A1BBF53F800B6FA56 /* SampleFormatter.swift in Sources */,
 				78DBD7561BB8841900F42626 /* CorrelationViewController.swift in Sources */,
 				F43A7C5E1BBDF43600B6FA56 /* PlotButton.swift in Sources */,
 				7881A3E11BAF3B3E00ECB3C6 /* AppDelegate.swift in Sources */,
