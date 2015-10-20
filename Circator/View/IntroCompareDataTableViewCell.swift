@@ -51,23 +51,40 @@ class IntroCompareDataTableViewCell: UITableViewCell {
         return stackView
     }()
     
-    func setUserData(userData: DataSample, populationAverageData: DataSample) {
-        let image: UIImage
-        switch userData.type {
-        case .BloodPressure:
-            image = UIImage(named: "icon_blood_pressure")!
-        case .BodyMass:
-            image = UIImage(named: "icon_weight")!
-        case .EnergyIntake:
-            image = UIImage(named: "icon_food")!
-        case .HeartRate:
-            image = UIImage(named: "icon_heart_rate")!
-        case .Sleep:
-            image = UIImage(named: "icon_sleep")!
+    var sampleType: HKSampleType? {
+        didSet {
+            let image: UIImage
+            guard sampleType != nil else {
+                healthParameterImageView.image = nil
+                return
+            }
+            switch sampleType!.identifier {
+            case HKQuantityTypeIdentifierBodyMass:
+                image = UIImage(named: "icon_weight")!
+            case HKQuantityTypeIdentifierHeartRate:
+                image = UIImage(named: "icon_heart_rate")!
+            case HKCategoryTypeIdentifierSleepAnalysis:
+                image = UIImage(named: "icon_sleep")!
+            case HKQuantityTypeIdentifierDietaryEnergyConsumed:
+                image = UIImage(named: "icon_food")!
+            case HKCorrelationTypeIdentifierBloodPressure:
+                image = UIImage(named: "icon_blood_pressure")!
+            default:
+                image = UIImage()
+            }
+            healthParameterImageView.image = image
         }
-        healthParameterImageView.image = image
-        userDataLabel.text = "\(userData)"
-        populationAverageLabel.text = "\(populationAverageData)"
+    }
+    
+    static let healthFormatter = SampleFormatter()
+    
+    func setUserData(userData: [HKSample], populationAverageData: [HKSample]) {
+        loadSamples(userData, toLabel: userDataLabel)
+        loadSamples(populationAverageData, toLabel: populationAverageLabel)
+    }
+    
+    private func loadSamples(samples: [HKSample], toLabel label: UILabel) {
+        label.text = "\(IntroCompareDataTableViewCell.healthFormatter.stringFromSamples(samples))"
     }
     
     override init(style: UITableViewCellStyle, reuseIdentifier: String?) {

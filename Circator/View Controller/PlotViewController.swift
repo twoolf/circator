@@ -31,13 +31,18 @@ class PlotViewController : UIViewController {
         setupChart()
     }
     
+    override func viewWillAppear(animated: Bool) {
+        super.viewWillAppear(animated)
+        navigationController?.setNavigationBarHidden(false, animated: false)
+    }
+    
     func getValue(v: Sample, i: Int) -> Double {
         switch(i) {
         case 0: return v.sleep
         case 1: return v.weight
-        case 2: return v.heart_rate
-        case 3: return v.total_calories
-        case 4: return v.blood_pressure
+        case 2: return v.heartRate
+        case 3: return v.totalCalories
+        case 4: return v.bloodPressure
         default: return 0.0
         }
     }
