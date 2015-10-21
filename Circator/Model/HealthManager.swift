@@ -14,11 +14,23 @@ typealias HealthManagerFetchSampleBlock = (samples: [HKSample], error: NSError?)
 let HealthManagerErrorDomain = "HealthManagerErrorDomain"
 let HealthManagerSampleTypeIdentifierSleepDuration = "HealthManagerSampleTypeIdentifierSleepDuration"
 
+let HealthManagerDidUpdateRecentSamplesNotification = "HealthManagerDidUpdateRecentSamplesNotification"
+
 class HealthManager {
     
     static let sharedManager = HealthManager()
     
     lazy var healthKitStore: HKHealthStore = HKHealthStore()
+    
+    static let previewSampleTypes = [
+        HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierBodyMass)!,
+        HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierHeartRate)!,
+        HKObjectType.categoryTypeForIdentifier(HKCategoryTypeIdentifierSleepAnalysis)!,
+        HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierDietaryEnergyConsumed)!,
+        HKObjectType.correlationTypeForIdentifier(HKCorrelationTypeIdentifierBloodPressure)!
+    ]
+    
+    var mostRecentSamples = [HKSampleType: [HKSample]]()
     
     // Not guaranteed to be on main thread
     func authorizeHealthKit(completion: HealthManagerAuthorizationBlock)
@@ -82,7 +94,7 @@ class HealthManager {
         self.healthKitStore.executeQuery(sampleQuery)
     }
     
-    func fetchMostRecentSamplesForTypes(types: [HKSampleType], completion: (samples: [HKSampleType: [HKSample]], error: NSError?) -> Void) {
+    func fetchMostRecentSamples(forTypes types: [HKSampleType] = previewSampleTypes, completion: (samples: [HKSampleType: [HKSample]], error: NSError?) -> Void) {
         let group = dispatch_group_create()
         var samples = [HKSampleType: [HKSample]]()
         types.forEach { (type) -> () in
@@ -100,6 +112,7 @@ class HealthManager {
         }
         dispatch_group_notify(group, dispatch_get_main_queue()) {
             // TODO: partial error handling
+            self.mostRecentSamples = samples
             completion(samples: samples, error: nil)
         }
     }

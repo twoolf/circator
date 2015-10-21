@@ -84,40 +84,18 @@ class IntroViewController: UIViewController, UITableViewDelegate, UITableViewDat
         return tableView
     }()
     
-    let dataTypes = [
-        HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierBodyMass)!,
-        HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierHeartRate)!,
-        HKObjectType.categoryTypeForIdentifier(HKCategoryTypeIdentifierSleepAnalysis)!,
-        HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierDietaryEnergyConsumed)!,
-        HKObjectType.correlationTypeForIdentifier(HKCorrelationTypeIdentifierBloodPressure)!
-    ]
-    var userData = [HKSampleType: [HKSample]]()
-    
     override func viewDidLoad() {
         super.viewDidLoad()
         configureViews()
         tableView.layoutIfNeeded()
+        NSNotificationCenter.defaultCenter().addObserverForName(HealthManagerDidUpdateRecentSamplesNotification, object: nil, queue: NSOperationQueue.mainQueue()) { (_) -> Void in
+            self.tableView.reloadData()
+        }
     }
     
     override func viewWillAppear(animated: Bool) {
         super.viewWillAppear(animated)
         navigationController?.setNavigationBarHidden(true, animated: false)
-    }
-    
-    override func viewDidAppear(animated: Bool) {
-        super.viewDidAppear(animated)
-        HealthManager.sharedManager.authorizeHealthKit { (success, error) -> Void in
-            guard error == nil else {
-                return
-            }
-            HealthManager.sharedManager.fetchMostRecentSamplesForTypes(self.dataTypes) { (samples, error) -> Void in
-                guard error == nil else {
-                    return
-                }
-                self.userData = samples
-                self.tableView.reloadData()
-            }
-        }
     }
     
     override func viewDidLayoutSubviews() {
@@ -198,9 +176,9 @@ class IntroViewController: UIViewController, UITableViewDelegate, UITableViewDat
     
     func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCellWithIdentifier(IntroViewTableViewCellIdentifier, forIndexPath: indexPath) as! IntroCompareDataTableViewCell
-        let sampleType = dataTypes[indexPath.row]
+        let sampleType = HealthManager.previewSampleTypes[indexPath.row]
         cell.sampleType = sampleType
-        cell.setUserData(userData[sampleType] ?? [], populationAverageData: [])
+        cell.setUserData(HealthManager.sharedManager.mostRecentSamples[sampleType] ?? [], populationAverageData: [])
         return cell
     }
 
