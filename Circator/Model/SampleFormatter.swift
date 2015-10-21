@@ -47,9 +47,20 @@ class SampleFormatter: NSObject {
         return formatter
     }()
     
+    private let emptyString: String
+    
+    convenience override init() {
+        self.init(emptyString: "--")
+    }
+    
+    init(emptyString: String) {
+        self.emptyString = emptyString
+        super.init()
+    }
+    
     func stringFromSamples(samples: [HKSample]) -> String {
         guard samples.isEmpty == false else {
-            return ""
+            return emptyString
         }
         switch samples.first!.sampleType.identifier {
         case HKQuantityTypeIdentifierBodyMass:
@@ -68,13 +79,13 @@ class SampleFormatter: NSObject {
             let diastolicSample = correlationSample.objectsForType(HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierBloodPressureDiastolic)!).first as? HKQuantitySample
             let systolicSample = correlationSample.objectsForType(HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierBloodPressureSystolic)!).first as? HKQuantitySample
             guard diastolicSample != nil && systolicSample != nil else {
-                return ""
+                return emptyString
             }
             let diastolicNumber = SampleFormatter.integerFormatter.stringFromNumber(diastolicSample!.quantity.doubleValueForUnit(HKUnit.millimeterOfMercuryUnit()))!
             let systolicNumber = SampleFormatter.integerFormatter.stringFromNumber(systolicSample!.quantity.doubleValueForUnit(HKUnit.millimeterOfMercuryUnit()))!
             return "\(diastolicNumber)/\(systolicNumber)"
         default:
-            return ""
+            return emptyString
         }
     }
     

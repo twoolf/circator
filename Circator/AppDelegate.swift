@@ -12,7 +12,21 @@ import UIKit
 class AppDelegate: UIResponder, UIApplicationDelegate {
 
     var window: UIWindow?
-
+    
+    func fetchRecentSamples() {
+        HealthManager.sharedManager.authorizeHealthKit { (success, error) -> Void in
+            guard error == nil else {
+                return
+            }
+            HealthManager.sharedManager.fetchMostRecentSamples() { (samples, error) -> Void in
+                guard error == nil else {
+                    return
+                }
+                NSNotificationCenter.defaultCenter().postNotificationName(HealthManagerDidUpdateRecentSamplesNotification, object: self)
+            }
+        }
+    }
+    
     func application(application: UIApplication, didFinishLaunchingWithOptions launchOptions: [NSObject: AnyObject]?) -> Bool {
         // Override point for customization after application launch.
         let themeColor = UIColor(red: 0.01, green: 0.41, blue: 0.22, alpha: 1.0)
@@ -25,9 +39,11 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         
         window?.rootViewController = navController
         window?.makeKeyAndVisible()
+        
+        fetchRecentSamples()
+        
         return true
     }
-    
 
     func applicationWillResignActive(application: UIApplication) {
         // Sent when the application is about to move from active to inactive state. This can occur for certain types of temporary interruptions (such as an incoming phone call or SMS message) or when the user quits the application and it begins the transition to the background state.
@@ -40,7 +56,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     }
 
     func applicationWillEnterForeground(application: UIApplication) {
-        // Called as part of the transition from the background to the inactive state; here you can undo many of the changes made on entering the background.
+        fetchRecentSamples()
     }
 
     func applicationDidBecomeActive(application: UIApplication) {
