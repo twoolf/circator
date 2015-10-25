@@ -19,6 +19,13 @@ class SampleFormatter: NSObject {
         return formatter
     }()
     
+    static let chartDateFormatter: NSDateFormatter = {
+        let formatter: NSDateFormatter = NSDateFormatter()
+        formatter.dateStyle = .ShortStyle
+        formatter.timeStyle = .NoStyle
+        return formatter
+    }()
+    
     static let numberFormatter: NSNumberFormatter = {
         let formatter: NSNumberFormatter = NSNumberFormatter()
         formatter.numberStyle = .DecimalStyle

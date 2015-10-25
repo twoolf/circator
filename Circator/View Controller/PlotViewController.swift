@@ -2,98 +2,144 @@
 //  PlotViewController.swift
 //  Circator
 //
-//  Created by Yanif Ahmad on 9/20/15.
+//  Created by Sihao Lu on 10/23/15.
 //  Copyright © 2015 Yanif Ahmad, Tom Woolf. All rights reserved.
 //
 
 import UIKit
-import Realm
-import RealmSwift
 import Charts
+import HealthKit
 
-class PlotViewController : UIViewController {
-    dynamic var plotType = 0
-    @IBOutlet var barChartView: BarChartView!
-    @IBOutlet var scatterChartView: ScatterChartView!
+class PlotViewController: UIViewController, ChartViewDelegate {
     
-    required init?(coder aDecoder: NSCoder) {
-        super.init(coder: aDecoder)
-    }
+    lazy var scrollView: UIScrollView = {
+        let view = UIScrollView(frame: self.view.bounds)
+        return view
+    }()
     
-    init(plotType: Int, nibName: String?, bundle: NSBundle?) {
-        super.init(nibName : nibName, bundle : bundle)
-        self.plotType = plotType
+    lazy var historyLabel: UILabel = {
+        let label: UILabel = UILabel()
+        label.font = UIFont.systemFontOfSize(16, weight: UIFontWeightSemibold)
+        label.textColor = Theme.universityDarkTheme.titleTextColor
+        label.textAlignment = .Center
+        label.text = NSLocalizedString("Personal History", comment: "Plot view section title label")
+        return label
+    }()
+    
+    lazy var populationLabel: UILabel = {
+        let label: UILabel = UILabel()
+        label.font = UIFont.systemFontOfSize(16, weight: UIFontWeightSemibold)
+        label.textColor = Theme.universityDarkTheme.titleTextColor
+        label.text = NSLocalizedString("Population", comment: "Plot view section title label")
+        return label
+    }()
+    
+    lazy var historyChart: LineChartView = {
+        let chart = LineChartView()
+        chart.delegate = self
+        chart.rightAxis.enabled = false
+        chart.doubleTapToZoomEnabled = false
+        chart.leftAxis.startAtZeroEnabled = false
+        chart.drawGridBackgroundEnabled = false
+        chart.xAxis.labelPosition = .Bottom
+        chart.xAxis.avoidFirstLastClippingEnabled = true
+        chart.xAxis.drawAxisLineEnabled = true
+        chart.xAxis.drawGridLinesEnabled = true
+        chart.legend.enabled = false
+        chart.descriptionText = ""
+        chart.xAxis.labelTextColor = Theme.universityDarkTheme.titleTextColor
+        chart.leftAxis.labelTextColor = Theme.universityDarkTheme.titleTextColor
+        chart.leftAxis.valueFormatter = SampleFormatter.numberFormatter
+        return chart
+    }()
+    
+    lazy var populationChart: LineChartView = {
+        let chart = LineChartView()
+        chart.delegate = self
+        chart.doubleTapToZoomEnabled = false
+        return chart
+    }()
+    
+    var sampleType: HKSampleType! {
+        didSet {
+            navigationItem.title = sampleType.displayText!
+            HealthManager.sharedManager.fetchSamplesOfType(sampleType) { (samples, error) -> Void in
+                dispatch_async(dispatch_get_main_queue()) {
+                    guard error == nil else {
+                        return
+                    }
+                    if self.sampleType is HKCorrelationType {
+                        
+                    } else {
+                        let analyzer = SampleDataAnalyzer(sampleType: self.sampleType, samples: samples)
+                        analyzer.dataSetConfigurator = { dataSet in
+                            dataSet.drawCircleHoleEnabled = true
+                            dataSet.circleRadius = 7
+                            dataSet.valueFormatter = SampleFormatter.numberFormatter
+                            dataSet.circleHoleColor = Theme.universityDarkTheme.complementForegroundColors!.colorWithVibrancy(0.1)!
+                            dataSet.circleColors = [Theme.universityDarkTheme.complementForegroundColors!.colorWithVibrancy(0.6)!]
+                            dataSet.colors = [Theme.universityDarkTheme.complementForegroundColors!.colorWithVibrancy(0.1)!]
+                            dataSet.lineWidth = 2
+                            dataSet.fillColor = Theme.universityDarkTheme.complementForegroundColors!.colorWithVibrancy(0.1)!
+                        }
+                        self.historyChart.data = analyzer.lineChartData
+                        self.historyChart.data?.setValueTextColor(Theme.universityDarkTheme.bodyTextColor)
+                        self.historyChart.data?.setValueFont(UIFont.systemFontOfSize(10, weight: UIFontWeightThin))
+                    }
+                }
+            }
+        }
     }
 
     override func viewDidLoad() {
         super.viewDidLoad()
-        self.title = "Plot \(plotType)"
-        setupChart()
+        configureViews()
     }
-    
+
     override func viewWillAppear(animated: Bool) {
         super.viewWillAppear(animated)
         navigationController?.setNavigationBarHidden(false, animated: false)
     }
     
-    func getValue(v: Sample, i: Int) -> Double {
-        switch(i) {
-        case 0: return v.sleep
-        case 1: return v.weight
-        case 2: return v.heartRate
-        case 3: return v.totalCalories
-        case 4: return v.bloodPressure
-        default: return 0.0
-        }
+    override func didReceiveMemoryWarning() {
+        super.didReceiveMemoryWarning()
+        // Dispose of any resources that can be recreated.
     }
     
-    func setupChart() {
-        let realm = try! Realm()
-        let n = realm.objects(Sample).count
-        if ( plotType < 5 ) {
-            var dataEntries: [ChartDataEntry] = []
-            for (i, v) in realm.objects(Sample).enumerate() {
-                let dataEntry = ChartDataEntry(value: getValue(v, i:plotType), xIndex: i)
-                dataEntries.append(dataEntry)
-            }
-            
-            let chartDataSet = ScatterChartDataSet(yVals: dataEntries, label: Sample.attributes()[plotType])
-            let chartData = ScatterChartData(xVals: (0..<n).map({String($0)}), dataSet: chartDataSet)
-            
-            let chartFrame = CGRect(x: 0, y: 0, width: self.view.frame.size.width, height: self.view.frame.size.height)
-            scatterChartView = ScatterChartView(frame: chartFrame)
-            scatterChartView.data = chartData
-            self.view.addSubview(scatterChartView)
-        }
-        else if ( plotType == 5 ) {
-            var dataEntries: [BarChartDataEntry] = []
-            for (i, v) in realm.objects(Sample).enumerate() {
-                let dataEntry = BarChartDataEntry(value: v.weight, xIndex: i)
-                dataEntries.append(dataEntry)
-            }
-            
-            let chartDataSet = BarChartDataSet(yVals: dataEntries, label: "Some Value")
-            let chartData = BarChartData(xVals: (0..<n).map({String($0)}), dataSet: chartDataSet)
-
-            let chartFrame = CGRect(x: 0, y: 0, width: self.view.frame.size.width, height: self.view.frame.size.height)
-            barChartView = BarChartView(frame: chartFrame)
-            barChartView.data = chartData
-            self.view.addSubview(barChartView)
-        }
-        else if ( plotType == 6 ) {
-            var dataEntries: [ChartDataEntry] = []
-            for (i, v) in realm.objects(Sample).enumerate() {
-                let dataEntry = ChartDataEntry(value: v.weight, xIndex: i)
-                dataEntries.append(dataEntry)
-            }
-            
-            let chartDataSet = ScatterChartDataSet(yVals: dataEntries, label: "Some Value")
-            let chartData = ScatterChartData(xVals: (0..<n).map({String($0)}), dataSet: chartDataSet)
-            
-            let chartFrame = CGRect(x: 0, y: 0, width: self.view.frame.size.width, height: self.view.frame.size.height)
-            scatterChartView = ScatterChartView(frame: chartFrame)
-            scatterChartView.data = chartData
-            self.view.addSubview(scatterChartView)
-        }
+    private func configureViews() {
+        view.addSubview(scrollView)
+        scrollView.backgroundColor = Theme.universityDarkTheme.backgroundColor
+        historyLabel.translatesAutoresizingMaskIntoConstraints = false
+        scrollView.addSubview(historyLabel)
+        populationLabel.translatesAutoresizingMaskIntoConstraints = false
+//        scrollView.addSubview(populationLabel)
+        historyChart.translatesAutoresizingMaskIntoConstraints = false
+        scrollView.addSubview(historyChart)
+        populationChart.translatesAutoresizingMaskIntoConstraints = false
+//        scrollView.addSubview(populationChart)
+        let constraints: [NSLayoutConstraint] = [
+            historyLabel.leadingAnchor.constraintEqualToAnchor(scrollView.layoutMarginsGuide.leadingAnchor),
+            historyLabel.trailingAnchor.constraintEqualToAnchor(scrollView.layoutMarginsGuide.trailingAnchor),
+            historyLabel.topAnchor.constraintEqualToAnchor(scrollView.topAnchor, constant: 12),
+            historyChart.topAnchor.constraintEqualToAnchor(historyLabel.bottomAnchor, constant: 8),
+            historyChart.leadingAnchor.constraintEqualToAnchor(historyLabel.leadingAnchor),
+            historyChart.trailingAnchor.constraintEqualToAnchor(historyLabel.trailingAnchor),
+        ]
+        scrollView.addConstraints(constraints)
+        historyChart.translatesAutoresizingMaskIntoConstraints = false
+        historyChart.heightAnchor.constraintEqualToConstant(200).active = true
+        populationChart.translatesAutoresizingMaskIntoConstraints = false
+        populationChart.heightAnchor.constraintEqualToConstant(200).active = true
     }
+
+    /*
+    // MARK: - Navigation
+
+    // In a storyboard-based application, you will often want to do a little preparation before navigation
+    override func prepareForSegue(segue: UIStoryboardSegue, sender: AnyObject?) {
+        // Get the new view controller using segue.destinationViewController.
+        // Pass the selected object to the new view controller.
+    }
+    */
+
 }
