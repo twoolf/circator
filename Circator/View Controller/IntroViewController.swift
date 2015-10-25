@@ -13,7 +13,7 @@ import HealthKit
 
 let IntroViewTableViewCellIdentifier = "IntroViewTableViewCellIdentifier"
 
-class IntroViewController: UIViewController, UITableViewDelegate, UITableViewDataSource {
+class IntroViewController: UIViewController, UITableViewDelegate, UITableViewDataSource, UIPickerViewDataSource, UIPickerViewDelegate {
     
     lazy var logoImageView: UIImageView = {
         let view = UIImageView(image: UIImage(named: "logo_university")!)
@@ -21,14 +21,27 @@ class IntroViewController: UIViewController, UITableViewDelegate, UITableViewDat
         return view
     }()
 
-    lazy var analyzeButton: UIButton = {
+    lazy var plotButton: UIButton = {
         let button = UIButton(type: .Custom)
-        button.addTarget(self, action: "analyze:", forControlEvents: .TouchUpInside)
-        button.setTitle("Analyze", forState: .Normal)
+        button.addTarget(self, action: "showAttributes:", forControlEvents: .TouchUpInside)
+        button.setTitle("Plot", forState: .Normal)
         button.setTitleColor(UIColor.whiteColor(), forState: .Normal)
         button.titleLabel!.textAlignment = .Center
         button.layer.cornerRadius = 7.0
         button.backgroundColor = Theme.universityDarkTheme.complementForegroundColors?.colorWithVibrancy(0.8)
+        button.setTitleColor(Theme.universityDarkTheme.bodyTextColor, forState: .Normal)
+        button.titleLabel?.font = UIFont.systemFontOfSize(20, weight: UIFontWeightLight)
+        return button
+    }()
+    
+    lazy var correlateButton: UIButton = {
+        let button = UIButton(type: .Custom)
+        button.setTitle("Correlate", forState: .Normal)
+        button.setTitleColor(UIColor.whiteColor(), forState: .Normal)
+        button.titleLabel!.textAlignment = .Center
+        button.addTarget(self, action: "showAttributes:", forControlEvents: .TouchUpInside)
+        button.layer.cornerRadius = 7.0
+        button.backgroundColor = Theme.universityDarkTheme.complementForegroundColors?.colorWithVibrancy(0.2)
         button.setTitleColor(Theme.universityDarkTheme.bodyTextColor, forState: .Normal)
         button.titleLabel?.font = UIFont.systemFontOfSize(20, weight: UIFontWeightLight)
         return button
@@ -48,7 +61,7 @@ class IntroViewController: UIViewController, UITableViewDelegate, UITableViewDat
     }()
     
     lazy var buttonsContainerView: UIStackView = {
-        let stackView: UIStackView = UIStackView(arrangedSubviews: [self.analyzeButton, self.settingsButton])
+        let stackView: UIStackView = UIStackView(arrangedSubviews: [self.plotButton, self.correlateButton])
         stackView.axis = .Horizontal
         stackView.distribution = UIStackViewDistribution.FillEqually
         stackView.alignment = UIStackViewAlignment.Fill
@@ -83,6 +96,39 @@ class IntroViewController: UIViewController, UITableViewDelegate, UITableViewDat
         tableView.scrollEnabled = false
         return tableView
     }()
+    
+    static let sampleFormatter = SampleFormatter()
+    static let previewTypeStrings = HealthManager.previewSampleTypes.map { $0.displayText! }
+    
+    lazy var dummyTextField: UITextField = {
+        let textField = UITextField()
+        textField.inputView = self.pickerView
+        textField.inputAccessoryView = {
+            let view = UIToolbar()
+            view.frame = CGRectMake(0, 0, 0, 44)
+            view.items = [
+                UIBarButtonItem(barButtonSystemItem: .Cancel, target: self, action: "dismissPopup:"),
+                UIBarButtonItem(barButtonSystemItem: .FlexibleSpace, target: nil, action: ""),
+                UIBarButtonItem(barButtonSystemItem: .Done, target: self, action: "selectAttribute:")
+            ]
+            return view
+        }()
+        return textField
+    }()
+    
+    private lazy var pickerView: UIPickerView = {
+        let pickerView = UIPickerView()
+        pickerView.dataSource = self
+        pickerView.delegate = self
+        return pickerView
+    }()
+    
+    enum GraphMode {
+        case Plot(HKSampleType)
+        case Correlate(HKSampleType, HKSampleType)
+    }
+    
+    private var selectedMode: GraphMode!
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -142,29 +188,51 @@ class IntroViewController: UIViewController, UITableViewDelegate, UITableViewDat
             tableTitleContainerView.heightAnchor.constraintEqualToConstant(34)
         ]
         view.addConstraints(tableTitleConstraints)
+        
+        dummyTextField.translatesAutoresizingMaskIntoConstraints = false
+        view.addSubview(dummyTextField)
     }
 
     // MARK: - Button Events
     
-    func analyze(sender: UIButton) {
-        let correlationViewController = CorrelationViewController()
-        navigationController?.pushViewController(correlationViewController, animated: true)
+    func showAttributes(sender: UIButton) {
+        if sender == correlateButton {
+            selectedMode = GraphMode.Correlate(HealthManager.previewSampleTypes[0], HealthManager.previewSampleTypes[1])
+            pickerView.reloadAllComponents()
+        } else {
+            selectedMode = GraphMode.Plot(HealthManager.previewSampleTypes[0])
+            pickerView.reloadAllComponents()
+        }
+        dummyTextField.becomeFirstResponder()
     }
-
+    
+    func dismissPopup(sender: UIBarButtonItem) {
+        dummyTextField.resignFirstResponder()
+    }
+    
+    func selectAttribute(sender: UIBarButtonItem) {
+        dummyTextField.resignFirstResponder()
+        if case .Correlate(_) = selectedMode! {
+            // Correlate
+        } else {
+            // Plot
+            let plotVC = PlotViewController()
+            switch selectedMode! {
+            case .Plot(let type):
+                plotVC.sampleType = type
+                navigationController?.pushViewController(plotVC, animated: true)
+            default:
+                break
+            }
+        }
+    }
+    
     func showSettings(sender: UIButton) {
         let settingsViewController = SettingsViewController()
         navigationController?.pushViewController(settingsViewController, animated: true)
     }
     
     // MARK: - Table View
-    
-//    let populationAverageData = [
-//        DataSample(type: DataSample.SampleType.BodyMass, data: HKQuantity(unit: HKUnit.meterUnit(), doubleValue: 77)),
-//        DataSample(type: DataSample.SampleType.EnergyIntake, data: HKQuantity(unit: HKUnit.kilocalorieUnit(), doubleValue: 2500)),
-//        DataSample(type: DataSample.SampleType.HeartRate, data: HKQuantity(unit: HKUnit.countUnit().unitDividedByUnit(HKUnit.minuteUnit()), doubleValue: 76)),
-//        DataSample(type: DataSample.SampleType.BloodPressure, data: HKQuantity(unit: HKUnit.millimeterOfMercuryUnit(), doubleValue: 118)),
-//        DataSample(type: DataSample.SampleType.Sleep, data: HKQuantity(unit: HKUnit.hourUnit(), doubleValue: 7.1))
-//    ]
     
     func numberOfSectionsInTableView(tableView: UITableView) -> Int {
         return 1
@@ -180,6 +248,52 @@ class IntroViewController: UIViewController, UITableViewDelegate, UITableViewDat
         cell.sampleType = sampleType
         cell.setUserData(HealthManager.sharedManager.mostRecentSamples[sampleType] ?? [], populationAverageData: [])
         return cell
+    }
+    
+    // MARK: - Picker view delegate
+    
+    func numberOfComponentsInPickerView(pickerView: UIPickerView) -> Int {
+        if case .Plot(_) = selectedMode! {
+            return 1
+        } else {
+            return 2
+        }
+    }
+    
+    func pickerView(pickerView: UIPickerView, numberOfRowsInComponent component: Int) -> Int {
+        if case .Correlate(_) = selectedMode! {
+            if component == 0 {
+                return IntroViewController.previewTypeStrings.count
+            } else {
+                return IntroViewController.previewTypeStrings.count - 1
+            }
+        } else {
+            return IntroViewController.previewTypeStrings.count
+        }
+    }
+    
+    func pickerView(pickerView: UIPickerView, titleForRow row: Int, forComponent component: Int) -> String? {
+        if case .Correlate(_) = selectedMode! {
+            if component == 0 {
+                return IntroViewController.previewTypeStrings[row]
+            } else {
+                return IntroViewController.previewTypeStrings.filter { $0 != IntroViewController.previewTypeStrings[pickerView.selectedRowInComponent(0)] }[row]
+            }
+        } else {
+            return IntroViewController.previewTypeStrings[row]
+        }
+    }
+    
+    func pickerView(pickerView: UIPickerView, didSelectRow row: Int, inComponent component: Int) {
+        if case .Correlate(_) = selectedMode! {
+            if component == 0 {
+                pickerView.reloadComponent(1)
+            } else {
+                selectedMode = GraphMode.Correlate(HealthManager.previewSampleTypes.filter { $0.displayText == HealthManager.previewSampleTypes[pickerView.selectedRowInComponent(0)].displayText }.first!, HealthManager.previewSampleTypes.filter { $0.displayText == HealthManager.previewSampleTypes[row].displayText }.first!)
+            }
+        } else {
+            selectedMode = GraphMode.Plot(HealthManager.previewSampleTypes.filter { $0.displayText == HealthManager.previewSampleTypes[row].displayText }.first!)
+        }
     }
 
 }
