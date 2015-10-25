@@ -10,14 +10,17 @@
 import UIKit
 
 class Theme: NSObject {
-    static let universityDarkTheme = Theme(.White, .Blue, .White, .Custom(Color.White.color.colorWithAlphaComponent(0.75)), complementForegroundColors: [.Emerald, .Gray])!
+    static let universityDarkTheme = Theme(.White, .Blue, .White, .Custom(Color.White.color.colorWithAlphaComponent(0.75)), complementForegroundColors: [.Emerald, .Gray, .MilkyGreen, .Crimson])!
     
     enum Color {
         case Blue
         case Emerald
         case White
         case Gray
+        case LightGray
         case Black
+        case MilkyGreen
+        case Crimson
         case Custom(UIColor)
         
         var color: UIColor {
@@ -28,10 +31,16 @@ class Theme: NSObject {
                 return UIColor(red: 71 / 255.0, green: 201 / 255.0, blue: 113 / 255.0, alpha: 1)
             case .White:
                 return UIColor.whiteColor()
+            case .LightGray:
+                return UIColor(red: 239 / 255.0, green: 241 / 255.0, blue: 243 / 255.0, alpha: 1)
             case .Gray:
-                return UIColor(white: 155 / 255.0, alpha: 1)
+                return UIColor(red: 203 / 255.0, green: 212 / 255.0, blue: 194 / 255.0, alpha: 1)
             case .Blue:
                 return UIColor(red: 0, green: 45 / 255.0, blue: 114 / 255.0, alpha: 1)
+            case .MilkyGreen:
+                return UIColor(red: 219 / 255.0, green: 235 / 255.0, blue: 192 / 255.0, alpha: 1)
+            case .Crimson:
+                return UIColor(red: 215 / 255.0, green: 122 / 255.0, blue: 97 / 255.0, alpha: 1)
             case .Custom(let color):
                 return color
             }

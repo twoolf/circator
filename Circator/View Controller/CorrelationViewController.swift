@@ -64,7 +64,7 @@ class CorrelationViewController: UIViewController, UICollectionViewDelegateFlowL
     }
     
     func plotButtonAction(sender: PlotButton!) {
-        let plotViewController = PlotViewController(plotType: sender.plotType, nibName: nil, bundle: nil)
+        let plotViewController = RealmPlotViewController(plotType: sender.plotType, nibName: nil, bundle: nil)
         navigationController?.pushViewController(plotViewController, animated: true)
     }
     

@@ -94,7 +94,7 @@ class HealthManager {
         self.healthKitStore.executeQuery(sampleQuery)
     }
     
-    func fetchMostRecentSamples(forTypes types: [HKSampleType] = previewSampleTypes, completion: (samples: [HKSampleType: [HKSample]], error: NSError?) -> Void) {
+    func fetchMostRecentSamples(ofTypes types: [HKSampleType] = previewSampleTypes, completion: (samples: [HKSampleType: [HKSample]], error: NSError?) -> Void) {
         let group = dispatch_group_create()
         var samples = [HKSampleType: [HKSample]]()
         types.forEach { (type) -> () in
@@ -114,6 +114,97 @@ class HealthManager {
             // TODO: partial error handling
             self.mostRecentSamples = samples
             completion(samples: samples, error: nil)
+        }
+    }
+    
+    func fetchSamplesOfType(sampleType: HKSampleType, limit: Int = 20, completion: HealthManagerFetchSampleBlock) {
+        let query = HKSampleQuery(sampleType: sampleType, predicate: nil, limit: limit, sortDescriptors: [NSSortDescriptor(key: HKSampleSortIdentifierStartDate, ascending: true)]) { (query, samples, error) -> Void in
+            guard error == nil else {
+                completion(samples: [], error: error)
+                return
+            }
+            completion(samples: samples!, error: nil)
+        }
+        healthKitStore.executeQuery(query)
+    }
+}
+
+extension HKSampleType {
+    var displayText: String? {
+        switch identifier {
+        case HKQuantityTypeIdentifierBodyMass:
+            return NSLocalizedString("Weight", comment: "HealthKit data type")
+        case HKQuantityTypeIdentifierHeartRate:
+            return NSLocalizedString("Heart beat", comment: "HealthKit data type")
+        case HKCategoryTypeIdentifierSleepAnalysis:
+            return NSLocalizedString("Sleep", comment: "HealthKit data type")
+        case HKQuantityTypeIdentifierDietaryEnergyConsumed:
+            return NSLocalizedString("Food calories", comment: "HealthKit data type")
+        case HKCorrelationTypeIdentifierBloodPressure:
+            return NSLocalizedString("Blood pressure", comment: "HealthKit data type")
+        default:
+            return nil
+        }
+    }
+}
+
+extension HKSample {
+    var numeralValue: Double? {
+        guard defaultUnit != nil else {
+            return nil
+        }
+        switch sampleType.identifier {
+        case HKQuantityTypeIdentifierBodyMass:
+            fallthrough
+        case HKQuantityTypeIdentifierDietaryEnergyConsumed:
+            fallthrough
+        case HKQuantityTypeIdentifierHeartRate:
+            return (self as! HKQuantitySample).quantity.doubleValueForUnit(defaultUnit!)
+        case HKCategoryTypeIdentifierSleepAnalysis:
+            // TODO: implement sleep analysis
+            return 0
+        case HKCorrelationTypeIdentifierBloodPressure:
+            return ((self as! HKCorrelation).objects.first as! HKQuantitySample).quantity.doubleValueForUnit(defaultUnit!)
+        default:
+            return nil
+        }
+    }
+    
+    var allNumeralValues: [Double]? {
+        return numeralValue != nil ? [numeralValue!] : nil
+    }
+    
+    var defaultUnit: HKUnit? {
+        let isMetric: Bool = NSLocale.currentLocale().objectForKey(NSLocaleUsesMetricSystem)!.boolValue
+        switch sampleType.identifier {
+        case HKQuantityTypeIdentifierBodyMass:
+            return isMetric ? HKUnit.gramUnitWithMetricPrefix(.Kilo) : HKUnit.poundUnit()
+        case HKQuantityTypeIdentifierHeartRate:
+            return HKUnit.countUnit().unitDividedByUnit(HKUnit.minuteUnit())
+        case HKCategoryTypeIdentifierSleepAnalysis:
+            return HKUnit.hourUnit()
+        case HKQuantityTypeIdentifierDietaryEnergyConsumed:
+            return HKUnit.kilocalorieUnit()
+        case HKCorrelationTypeIdentifierBloodPressure:
+            return HKUnit.millimeterOfMercuryUnit()
+        default:
+            return nil
+        }
+    }
+}
+
+extension HKCorrelation {
+    override var allNumeralValues: [Double]? {
+        guard defaultUnit != nil else {
+            return nil
+        }
+        switch sampleType.identifier {
+        case HKCorrelationTypeIdentifierBloodPressure:
+            return objects.map { (sample) -> Double in
+                (sample as! HKQuantitySample).quantity.doubleValueForUnit(defaultUnit!)
+            }
+        default:
+            return nil
         }
     }
 }
