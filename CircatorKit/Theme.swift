@@ -9,10 +9,10 @@
 
 import UIKit
 
-class Theme: NSObject {
-    static let universityDarkTheme = Theme(.White, .Blue, .White, .Custom(Color.White.color.colorWithAlphaComponent(0.75)), complementForegroundColors: [.Emerald, .Gray, .MilkyGreen, .Crimson])!
+public class Theme: NSObject {
+    public static let universityDarkTheme = Theme(.White, .Blue, .White, .Custom(Color.White.color.colorWithAlphaComponent(0.75)), complementForegroundColors: [.Emerald, .Gray, .MilkyGreen, .Crimson])!
     
-    enum Color {
+    public enum Color {
         case Blue
         case Emerald
         case White
@@ -23,7 +23,7 @@ class Theme: NSObject {
         case Crimson
         case Custom(UIColor)
         
-        var color: UIColor {
+        public var color: UIColor {
             switch self {
             case .Black:
                 return UIColor.blackColor()
@@ -47,14 +47,14 @@ class Theme: NSObject {
         }
     }
     
-    class ForegroundColorGroup: ArrayLiteralConvertible {
+    public class ForegroundColorGroup: ArrayLiteralConvertible {
         let foregroundColors: [Color]
         
-        required convenience init(arrayLiteral elements: Color...) {
+        public required convenience init(arrayLiteral elements: Color...) {
             self.init(foregroundColors: elements)
         }
         
-        init(foregroundColors: [Color]) {
+        public init(foregroundColors: [Color]) {
             self.foregroundColors = foregroundColors.sort { c1, c2 -> Bool in
                 var saturation1: CGFloat = 0
                 var saturation2: CGFloat = 0
@@ -70,7 +70,7 @@ class Theme: NSObject {
             - parameter vibrancy: The desired vibrancy, ranged from 0.0 to 1.0.
             - returns: A color with desired vibrancy.
         */
-        func colorWithVibrancy(vibrancy: CGFloat) -> UIColor? {
+        public func colorWithVibrancy(vibrancy: CGFloat) -> UIColor? {
             let index = Int(floor(vibrancy * CGFloat(foregroundColors.count)))
             if index < 0 {
                 return foregroundColors.first?.color
@@ -82,15 +82,15 @@ class Theme: NSObject {
         }
     }
     
-    var foregroundColor: UIColor
+    public var foregroundColor: UIColor
     
-    var backgroundColor: UIColor
+    public var backgroundColor: UIColor
     
-    var titleTextColor: UIColor
+    public var titleTextColor: UIColor
     
-    var bodyTextColor: UIColor
+    public var bodyTextColor: UIColor
     
-    var complementForegroundColors: ForegroundColorGroup?
+    public var complementForegroundColors: ForegroundColorGroup?
 
     init?(_ colors: Color..., complementForegroundColors: ForegroundColorGroup? = nil) {
         guard colors.count >= 4 else {

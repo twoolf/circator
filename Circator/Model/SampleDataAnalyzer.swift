@@ -7,6 +7,7 @@
 //
 
 import UIKit
+import CircatorKit
 import HealthKit
 import Charts
 

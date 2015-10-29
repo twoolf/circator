@@ -10,6 +10,7 @@ import UIKit
 import Realm
 import RealmSwift
 import HealthKit
+import CircatorKit
 
 let IntroViewTableViewCellIdentifier = "IntroViewTableViewCellIdentifier"
 
