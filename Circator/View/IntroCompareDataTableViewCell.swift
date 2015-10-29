@@ -8,6 +8,7 @@
 
 import UIKit
 import HealthKit
+import CircatorKit
 
 class IntroCompareDataTableViewCell: UITableViewCell {
     

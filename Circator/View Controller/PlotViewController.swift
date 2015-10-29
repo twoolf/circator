@@ -9,6 +9,7 @@
 import UIKit
 import Charts
 import HealthKit
+import CircatorKit
 
 class PlotViewController: UIViewController, ChartViewDelegate {
     
