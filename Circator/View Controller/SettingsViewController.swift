@@ -7,6 +7,7 @@
 //
 
 import UIKit
+import CircatorKit
 import HealthKit
 import Realm
 import RealmSwift
@@ -15,7 +16,6 @@ import Alamofire
 
 class SettingsViewController: UIViewController {
 
-  let healthManager = HealthManager()
   let kUnknownString = "Unknown"
   var height : HKQuantitySample?
   var bodymass : HKQuantitySample?
@@ -83,7 +83,7 @@ class SettingsViewController: UIViewController {
 
   func authorizeHealthKit()
   {
-    healthManager.authorizeHealthKit { (authorized,  error) -> Void in
+    HealthManager.sharedManager.authorizeHealthKit { (authorized,  error) -> Void in
       if authorized {
         print("HealthKit authorization received.")
       }
@@ -103,7 +103,7 @@ class SettingsViewController: UIViewController {
     let sampleType = HKSampleType.quantityTypeForIdentifier(HKQuantityTypeIdentifierHeight)!
 
     // 2. Call the method to read the most recent Height sample
-    self.healthManager.fetchMostRecentSample(sampleType, completion: { (mostRecentHeight, error) -> Void in
+    HealthManager.sharedManager.fetchMostRecentSample(sampleType, completion: { (mostRecentHeight, error) -> Void in
 
       if( error != nil )
       {
@@ -133,7 +133,7 @@ class SettingsViewController: UIViewController {
         let sampleType = HKSampleType.quantityTypeForIdentifier(HKQuantityTypeIdentifierBodyMass)!
         
         // 2. Call the method to read the most recent Height sample
-        self.healthManager.fetchMostRecentSample(sampleType, completion: { (mostRecentBodyMass, error) -> Void in
+        HealthManager.sharedManager.fetchMostRecentSample(sampleType, completion: { (mostRecentBodyMass, error) -> Void in
             
             if( error != nil )
             {

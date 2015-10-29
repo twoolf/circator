@@ -10,3 +10,7 @@ target 'Circator' do
   pod 'Alamofire', '~> 2.0'
 end
 
+target 'CircatorWatch' do
+  platform :watchos, '2.0'
+end
+
