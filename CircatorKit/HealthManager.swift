@@ -7,22 +7,28 @@
 //
 
 import HealthKit
+import WatchConnectivity
 
-typealias HealthManagerAuthorizationBlock = (success: Bool, error: NSError?) -> Void
-typealias HealthManagerFetchSampleBlock = (samples: [HKSample], error: NSError?) -> Void
+public typealias HealthManagerAuthorizationBlock = (success: Bool, error: NSError?) -> Void
+public typealias HealthManagerFetchSampleBlock = (samples: [HKSample], error: NSError?) -> Void
 
-let HealthManagerErrorDomain = "HealthManagerErrorDomain"
-let HealthManagerSampleTypeIdentifierSleepDuration = "HealthManagerSampleTypeIdentifierSleepDuration"
+public let HealthManagerErrorDomain = "HealthManagerErrorDomain"
+public let HealthManagerSampleTypeIdentifierSleepDuration = "HealthManagerSampleTypeIdentifierSleepDuration"
 
-let HealthManagerDidUpdateRecentSamplesNotification = "HealthManagerDidUpdateRecentSamplesNotification"
+public let HealthManagerDidUpdateRecentSamplesNotification = "HealthManagerDidUpdateRecentSamplesNotification"
 
-class HealthManager {
+public class HealthManager: NSObject, WCSessionDelegate {
     
-    static let sharedManager = HealthManager()
+    public static let sharedManager = HealthManager()
     
     lazy var healthKitStore: HKHealthStore = HKHealthStore()
     
-    static let previewSampleTypes = [
+    private override init() {
+        super.init()
+        connectWatch()
+    }
+    
+    public static let previewSampleTypes = [
         HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierBodyMass)!,
         HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierHeartRate)!,
         HKObjectType.categoryTypeForIdentifier(HKCategoryTypeIdentifierSleepAnalysis)!,
@@ -30,10 +36,14 @@ class HealthManager {
         HKObjectType.correlationTypeForIdentifier(HKCorrelationTypeIdentifierBloodPressure)!
     ]
     
-    var mostRecentSamples = [HKSampleType: [HKSample]]()
+    public var mostRecentSamples = [HKSampleType: [HKSample]]() {
+        didSet {
+            self.updateWatchContext()
+        }
+    }
     
     // Not guaranteed to be on main thread
-    func authorizeHealthKit(completion: HealthManagerAuthorizationBlock)
+    public func authorizeHealthKit(completion: HealthManagerAuthorizationBlock)
     {
         let healthKitTypesToRead : Set<HKObjectType>? = [
             HKObjectType.characteristicTypeForIdentifier(HKCharacteristicTypeIdentifierDateOfBirth)!,
@@ -64,7 +74,7 @@ class HealthManager {
         
     }
     
-    func fetchMostRecentSample(sampleType: HKSampleType, completion: HealthManagerFetchSampleBlock)
+    public func fetchMostRecentSample(sampleType: HKSampleType, completion: HealthManagerFetchSampleBlock)
     {
         let mostRecentPredicate: NSPredicate
         let limit: Int
@@ -94,7 +104,7 @@ class HealthManager {
         self.healthKitStore.executeQuery(sampleQuery)
     }
     
-    func fetchMostRecentSamples(ofTypes types: [HKSampleType] = previewSampleTypes, completion: (samples: [HKSampleType: [HKSample]], error: NSError?) -> Void) {
+    public func fetchMostRecentSamples(ofTypes types: [HKSampleType] = previewSampleTypes, completion: (samples: [HKSampleType: [HKSample]], error: NSError?) -> Void) {
         let group = dispatch_group_create()
         var samples = [HKSampleType: [HKSample]]()
         types.forEach { (type) -> () in
@@ -117,7 +127,7 @@ class HealthManager {
         }
     }
     
-    func fetchSamplesOfType(sampleType: HKSampleType, limit: Int = 20, completion: HealthManagerFetchSampleBlock) {
+    public func fetchSamplesOfType(sampleType: HKSampleType, limit: Int = 20, completion: HealthManagerFetchSampleBlock) {
         let query = HKSampleQuery(sampleType: sampleType, predicate: nil, limit: limit, sortDescriptors: [NSSortDescriptor(key: HKSampleSortIdentifierStartDate, ascending: true)]) { (query, samples, error) -> Void in
             guard error == nil else {
                 completion(samples: [], error: error)
@@ -127,10 +137,40 @@ class HealthManager {
         }
         healthKitStore.executeQuery(query)
     }
+    
+    // MARK: - Apple Watch
+    
+    func connectWatch() {
+        if WCSession.isSupported() {
+            let session = WCSession.defaultSession()
+            session.delegate = self
+            session.activateSession()
+        }
+    }
+    
+    func updateWatchContext() {
+        // This release currently removed watch support
+        guard WCSession.isSupported() && WCSession.defaultSession().watchAppInstalled else {
+            return
+        }
+        do {
+            let sampleFormatter = SampleFormatter()
+            let applicationContext = mostRecentSamples.map { (sampleType, samples) -> [String: String] in
+                return [
+                    "sampleTypeIdentifier": sampleType.identifier,
+                    "displaySampleType": sampleType.displayText!,
+                    "value": sampleFormatter.stringFromSamples(samples)
+                ]
+            }
+            try WCSession.defaultSession().updateApplicationContext(["context": applicationContext])
+        } catch {
+            print(error)
+        }
+    }
 }
 
-extension HKSampleType {
-    var displayText: String? {
+public extension HKSampleType {
+    public var displayText: String? {
         switch identifier {
         case HKQuantityTypeIdentifierBodyMass:
             return NSLocalizedString("Weight", comment: "HealthKit data type")
@@ -148,8 +188,8 @@ extension HKSampleType {
     }
 }
 
-extension HKSample {
-    var numeralValue: Double? {
+public extension HKSample {
+    public var numeralValue: Double? {
         guard defaultUnit != nil else {
             return nil
         }
@@ -170,11 +210,11 @@ extension HKSample {
         }
     }
     
-    var allNumeralValues: [Double]? {
+    public var allNumeralValues: [Double]? {
         return numeralValue != nil ? [numeralValue!] : nil
     }
     
-    var defaultUnit: HKUnit? {
+    public var defaultUnit: HKUnit? {
         let isMetric: Bool = NSLocale.currentLocale().objectForKey(NSLocaleUsesMetricSystem)!.boolValue
         switch sampleType.identifier {
         case HKQuantityTypeIdentifierBodyMass:
@@ -193,8 +233,8 @@ extension HKSample {
     }
 }
 
-extension HKCorrelation {
-    override var allNumeralValues: [Double]? {
+public extension HKCorrelation {
+    public override var allNumeralValues: [Double]? {
         guard defaultUnit != nil else {
             return nil
         }
@@ -209,8 +249,8 @@ extension HKCorrelation {
     }
 }
 
-extension Array where Element: HKSample {
-    var sleepDuration: NSTimeInterval? {
+public extension Array where Element: HKSample {
+    public var sleepDuration: NSTimeInterval? {
         return filter { (sample) -> Bool in
             let categorySample = sample as! HKCategorySample
             return categorySample.sampleType.identifier == HKCategoryTypeIdentifierSleepAnalysis && categorySample.value == HKCategoryValueSleepAnalysis.Asleep.rawValue

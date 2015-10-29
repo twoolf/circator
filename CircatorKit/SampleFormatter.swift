@@ -9,9 +9,9 @@
 import UIKit
 import HealthKit
 
-class SampleFormatter: NSObject {
+public class SampleFormatter: NSObject {
     
-    static let bodyMassFormatter: NSMassFormatter = {
+    public static let bodyMassFormatter: NSMassFormatter = {
         let formatter = NSMassFormatter()
         formatter.forPersonMassUse = true
         formatter.unitStyle = .Medium
@@ -19,35 +19,35 @@ class SampleFormatter: NSObject {
         return formatter
     }()
     
-    static let chartDateFormatter: NSDateFormatter = {
+    public static let chartDateFormatter: NSDateFormatter = {
         let formatter: NSDateFormatter = NSDateFormatter()
         formatter.dateStyle = .ShortStyle
         formatter.timeStyle = .NoStyle
         return formatter
     }()
     
-    static let numberFormatter: NSNumberFormatter = {
+    public static let numberFormatter: NSNumberFormatter = {
         let formatter: NSNumberFormatter = NSNumberFormatter()
         formatter.numberStyle = .DecimalStyle
         formatter.maximumFractionDigits = 1
         return formatter
     }()
     
-    static let integerFormatter: NSNumberFormatter = {
+    public static let integerFormatter: NSNumberFormatter = {
         let formatter: NSNumberFormatter = NSNumberFormatter()
         formatter.numberStyle = NSNumberFormatterStyle.NoStyle
         formatter.maximumFractionDigits = 0
         return formatter
     }()
 
-    static let calorieFormatter: NSEnergyFormatter = {
+    public static let calorieFormatter: NSEnergyFormatter = {
         let formatter = NSEnergyFormatter()
         formatter.unitStyle = NSFormattingUnitStyle.Medium
         formatter.forFoodEnergyUse = true
         return formatter
     }()
     
-    static let timeIntervalFormatter: NSDateComponentsFormatter = {
+    public static let timeIntervalFormatter: NSDateComponentsFormatter = {
         let formatter = NSDateComponentsFormatter()
         formatter.unitsStyle = .Abbreviated
         formatter.allowedUnits = [.Hour, .Minute]
@@ -56,16 +56,16 @@ class SampleFormatter: NSObject {
     
     private let emptyString: String
     
-    convenience override init() {
+    public convenience override init() {
         self.init(emptyString: "--")
     }
     
-    init(emptyString: String) {
+    public init(emptyString: String) {
         self.emptyString = emptyString
         super.init()
     }
     
-    func stringFromSamples(samples: [HKSample]) -> String {
+    public func stringFromSamples(samples: [HKSample]) -> String {
         guard samples.isEmpty == false else {
             return emptyString
         }
