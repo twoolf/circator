@@ -15,7 +15,11 @@ class InterfaceController: WKInterfaceController {
     
     override func awakeWithContext(context: AnyObject?) {
         super.awakeWithContext(context)
-        guard let contextDict = context?["context"], info = contextDict as? [[String: String]] else {
+        var theContext = context
+        if context == nil {
+            theContext = NSUserDefaults.standardUserDefaults().objectForKey("context")
+        }
+        guard let contextDict = theContext?["context"], info = contextDict as? [[String: String]] else {
             return
         }
         updateBioPreviewTableWithContext(info)
