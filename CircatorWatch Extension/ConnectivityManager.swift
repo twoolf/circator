@@ -15,5 +15,6 @@ class ConnectivityManager: NSObject, WCSessionDelegate {
     
     func session(session: WCSession, didReceiveApplicationContext applicationContext: [String : AnyObject]) {
         WKInterfaceController.reloadRootControllersWithNames(["BioPreview"], contexts: [applicationContext])
+        NSUserDefaults.standardUserDefaults().setObject(applicationContext, forKey: "context")
     }
 }
