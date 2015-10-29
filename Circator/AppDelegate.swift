@@ -7,6 +7,7 @@
 //
 
 import UIKit
+import CircatorKit
 
 @UIApplicationMain
 class AppDelegate: UIResponder, UIApplicationDelegate {
