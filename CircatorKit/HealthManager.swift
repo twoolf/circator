@@ -11,6 +11,8 @@ import WatchConnectivity
 
 public typealias HealthManagerAuthorizationBlock = (success: Bool, error: NSError?) -> Void
 public typealias HealthManagerFetchSampleBlock = (samples: [HKSample], error: NSError?) -> Void
+public typealias HealthManagerStatisticsBlock = (statistics: [HKStatistics], error: NSError?) -> Void
+public typealias HealthManagerCorrelationStatisticsBlock = ([HKStatistics], [HKStatistics], NSError?) -> Void
 
 public let HealthManagerErrorDomain = "HealthManagerErrorDomain"
 public let HealthManagerSampleTypeIdentifierSleepDuration = "HealthManagerSampleTypeIdentifierSleepDuration"
@@ -127,8 +129,9 @@ public class HealthManager: NSObject, WCSessionDelegate {
         }
     }
     
-    public func fetchSamplesOfType(sampleType: HKSampleType, limit: Int = 20, completion: HealthManagerFetchSampleBlock) {
-        let query = HKSampleQuery(sampleType: sampleType, predicate: nil, limit: limit, sortDescriptors: [NSSortDescriptor(key: HKSampleSortIdentifierStartDate, ascending: true)]) { (query, samples, error) -> Void in
+    // Completion handler is on background queue
+    public func fetchSamplesOfType(sampleType: HKSampleType, predicate: NSPredicate? = nil, limit: Int = Int(HKObjectQueryNoLimit), completion: HealthManagerFetchSampleBlock) {
+        let query = HKSampleQuery(sampleType: sampleType, predicate: predicate, limit: limit, sortDescriptors: [NSSortDescriptor(key: HKSampleSortIdentifierStartDate, ascending: true)]) { (query, samples, error) -> Void in
             guard error == nil else {
                 completion(samples: [], error: error)
                 return
@@ -136,6 +139,98 @@ public class HealthManager: NSObject, WCSessionDelegate {
             completion(samples: samples!, error: nil)
         }
         healthKitStore.executeQuery(query)
+    }
+    
+    // Completion handler is on background queue
+    public func fetchStatisticsOfType(sampleType: HKSampleType, completion: HealthManagerStatisticsBlock) {
+        if sampleType is HKQuantityType {
+            let calendar = NSCalendar.currentCalendar()
+            
+            let interval = NSDateComponents()
+            interval.day = 1
+            
+            // Set the anchor date to midnight today. Should be able to change according to user settings
+            let anchorComponents =
+            calendar.components([.Year, .Month, .Day, .Hour], fromDate: NSDate())
+            anchorComponents.hour = 0
+            let anchorDate = calendar.dateFromComponents(anchorComponents)!
+            
+            let quantityType = HKObjectType.quantityTypeForIdentifier(sampleType.identifier)!
+            
+            // Create the query
+            let query = HKStatisticsCollectionQuery(quantityType: quantityType,
+                quantitySamplePredicate: nil,
+                options: quantityType.aggregationOptions,
+                anchorDate: anchorDate,
+                intervalComponents: interval)
+            
+            // Set the results handler
+            query.initialResultsHandler = {
+                query, results, error in
+                
+                guard error == nil else {
+                    print("*** An error occurred while calculating the statistics: \(error!.localizedDescription) ***")
+                    completion(statistics: [], error: error)
+                    return
+                }
+                
+                completion(statistics: results!.statistics(), error: nil)
+            }
+            
+            healthKitStore.executeQuery(query)
+        } else {
+            completion(statistics: [], error: NSError(domain: HealthManagerErrorDomain, code: 1048576, userInfo: [NSLocalizedDescriptionKey: "Not implemented"]))
+        }
+    }
+    
+    // Completion hander is on main queue
+    public func correlateStatisticsOfType(type: HKSampleType, withType type2: HKSampleType, completion: HealthManagerCorrelationStatisticsBlock) {
+        var stat1: [HKStatistics]?
+        var stat2: [HKStatistics]?
+        
+        let group = dispatch_group_create()
+        dispatch_group_enter(group)
+        fetchStatisticsOfType(type) { (statistics, error) -> Void in
+            dispatch_group_leave(group)
+            guard error == nil else {
+                completion([], [], error)
+                return
+            }
+            stat1 = statistics
+        }
+        dispatch_group_enter(group)
+        fetchStatisticsOfType(type2) { (statistics, error) -> Void in
+            dispatch_group_leave(group)
+            guard error == nil else {
+                completion([], [], error)
+                return
+            }
+            stat2 = statistics
+        }
+        
+        dispatch_group_notify(group, dispatch_get_main_queue()) {
+            guard stat1 != nil && stat2 != nil else {
+                return
+            }
+            stat1 = stat1!.filter { (statistics) -> Bool in
+                return stat2!.hasSamplesAtStartDate(statistics.startDate)
+            }
+            stat2 = stat2!.filter { (statistics) -> Bool in
+                return stat1!.hasSamplesAtStartDate(statistics.startDate)
+            }
+            for i in 1..<stat1!.count {
+                var j = i
+                let target = stat1![i]
+                
+                while j > 0 && target.quantity!.compare(stat1![j - 1].quantity!) == .OrderedAscending {
+                    swap(&stat1![j], &stat1![j - 1])
+                    swap(&stat2![j], &stat2![j - 1])
+                    j--
+                }
+                stat1![j] = target
+            }
+            completion(stat1!, stat2!, nil)
+        }
     }
     
     // MARK: - Apple Watch
@@ -184,6 +279,37 @@ public extension HKSampleType {
             return NSLocalizedString("Blood pressure", comment: "HealthKit data type")
         default:
             return nil
+        }
+    }
+}
+
+public extension HKQuantityType {
+    var aggregationOptions: HKStatisticsOptions {
+        switch identifier {
+        case HKQuantityTypeIdentifierHeartRate:
+            fallthrough
+        case HKQuantityTypeIdentifierBodyMass:
+            return .DiscreteAverage
+        case HKQuantityTypeIdentifierDietaryEnergyConsumed:
+            return .CumulativeSum
+        default:
+            return .None
+        }
+    }
+}
+
+public extension HKStatistics {
+    var quantity: HKQuantity? {
+        switch quantityType.identifier {
+        case HKQuantityTypeIdentifierHeartRate:
+            fallthrough
+        case HKQuantityTypeIdentifierBodyMass:
+            return averageQuantity()
+        case HKQuantityTypeIdentifierDietaryEnergyConsumed:
+            return sumQuantity()
+        default:
+            print("Invalid quantity type \(quantityType.identifier) for HKStatistics")
+            return sumQuantity()
         }
     }
 }
@@ -246,6 +372,17 @@ public extension HKCorrelation {
         default:
             return nil
         }
+    }
+}
+
+public extension Array where Element: HKStatistics {
+    public func hasSamplesAtStartDate(startDate: NSDate) -> Bool  {
+        for statistics in self {
+            if startDate.compare(statistics.startDate) == .OrderedSame && statistics.quantity != nil {
+                return true
+            }
+        }
+        return false
     }
 }
 
