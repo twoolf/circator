@@ -70,7 +70,7 @@ class PlotViewController: UIViewController, ChartViewDelegate {
                         return
                     }
                     if self.sampleType is HKCorrelationType {
-                        
+                        // Sleep
                     } else {
                         let analyzer = SampleDataAnalyzer(sampleType: self.sampleType, samples: samples)
                         analyzer.dataSetConfigurator = { dataSet in
