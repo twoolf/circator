@@ -213,18 +213,16 @@ class IntroViewController: UIViewController, UITableViewDelegate, UITableViewDat
     
     func selectAttribute(sender: UIBarButtonItem) {
         dummyTextField.resignFirstResponder()
-        if case .Correlate(_) = selectedMode! {
-            // Correlate
-        } else {
-            // Plot
+        switch selectedMode! {
+        case let .Correlate(type1, type2):
+            let correlateVC = CorrelationViewController()
+            correlateVC.sampleTypes = [type1, type2]
+            navigationController?.pushViewController(correlateVC, animated: true)
+            break
+        case .Plot(let type):
             let plotVC = PlotViewController()
-            switch selectedMode! {
-            case .Plot(let type):
-                plotVC.sampleType = type
-                navigationController?.pushViewController(plotVC, animated: true)
-            default:
-                break
-            }
+            plotVC.sampleType = type
+            navigationController?.pushViewController(plotVC, animated: true)
         }
     }
     

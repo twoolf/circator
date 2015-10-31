@@ -16,8 +16,8 @@
 		7881A3F61BAF3B3E00ECB3C6 /* CircatorTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7881A3F51BAF3B3E00ECB3C6 /* CircatorTests.swift */; };
 		7881A4011BAF3B3E00ECB3C6 /* CircatorUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7881A4001BAF3B3E00ECB3C6 /* CircatorUITests.swift */; };
 		788606E71BB8A7DA00F33B5E /* HealthKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 788606E61BB8A7DA00F33B5E /* HealthKit.framework */; };
-		78DBD7561BB8841900F42626 /* CorrelationViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 78DBD7551BB8841900F42626 /* CorrelationViewController.swift */; };
-		C42F8A2092CA2296635A0F13 /* Pods_Circator.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 06103AD5E3EB4C84C4980CB1 /* Pods_Circator.framework */; settings = {ATTRIBUTES = (Weak, ); }; };
+		78DBD7561BB8841900F42626 /* RealmCorrelationViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 78DBD7551BB8841900F42626 /* RealmCorrelationViewController.swift */; };
+		C42F8A2092CA2296635A0F13 /* Pods_Circator.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 06103AD5E3EB4C84C4980CB1 /* Pods_Circator.framework */; };
 		F42F5ADD1BDC85AF00195490 /* SampleDataAnalyzer.swift in Sources */ = {isa = PBXBuildFile; fileRef = F42F5ADC1BDC85AF00195490 /* SampleDataAnalyzer.swift */; };
 		F42F5B351BE1FD1E00195490 /* CircatorKit.h in Headers */ = {isa = PBXBuildFile; fileRef = F42F5B341BE1FD1E00195490 /* CircatorKit.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		F42F5B391BE1FD1E00195490 /* CircatorKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F42F5B321BE1FD1E00195490 /* CircatorKit.framework */; };
@@ -38,6 +38,7 @@
 		F42F5B6E1BE20CDD00195490 /* CircatorWatch.app in Embed Watch Content */ = {isa = PBXBuildFile; fileRef = F42F5B4C1BE20CDD00195490 /* CircatorWatch.app */; };
 		F42F5B791BE2292D00195490 /* BioPreviewRow.swift in Sources */ = {isa = PBXBuildFile; fileRef = F42F5B781BE2292D00195490 /* BioPreviewRow.swift */; };
 		F42F5B7B1BE22AC700195490 /* ConnectivityManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = F42F5B7A1BE22AC700195490 /* ConnectivityManager.swift */; };
+		F42F5B951BE2C89200195490 /* CorrelationViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = F42F5B941BE2C89200195490 /* CorrelationViewController.swift */; };
 		F43A7C551BBDF25E00B6FA56 /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = F43A7C541BBDF25E00B6FA56 /* Images.xcassets */; };
 		F43A7C571BBDF29D00B6FA56 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = F43A7C561BBDF29D00B6FA56 /* LaunchScreen.storyboard */; };
 		F43A7C5D1BBDF43600B6FA56 /* CollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = F43A7C5B1BBDF43600B6FA56 /* CollectionViewCell.swift */; };
@@ -150,7 +151,7 @@
 		7881A4001BAF3B3E00ECB3C6 /* CircatorUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CircatorUITests.swift; sourceTree = "<group>"; };
 		7881A4021BAF3B3E00ECB3C6 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		788606E61BB8A7DA00F33B5E /* HealthKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = HealthKit.framework; path = System/Library/Frameworks/HealthKit.framework; sourceTree = SDKROOT; };
-		78DBD7551BB8841900F42626 /* CorrelationViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CorrelationViewController.swift; sourceTree = "<group>"; };
+		78DBD7551BB8841900F42626 /* RealmCorrelationViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RealmCorrelationViewController.swift; sourceTree = "<group>"; };
 		8B4A08D995498CDA94BBB258 /* Pods-Circator.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Circator.release.xcconfig"; path = "Pods/Target Support Files/Pods-Circator/Pods-Circator.release.xcconfig"; sourceTree = "<group>"; };
 		F42F5ADC1BDC85AF00195490 /* SampleDataAnalyzer.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SampleDataAnalyzer.swift; sourceTree = "<group>"; };
 		F42F5B321BE1FD1E00195490 /* CircatorKit.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = CircatorKit.framework; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -174,6 +175,7 @@
 		F42F5B6B1BE20CDD00195490 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		F42F5B781BE2292D00195490 /* BioPreviewRow.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BioPreviewRow.swift; sourceTree = "<group>"; };
 		F42F5B7A1BE22AC700195490 /* ConnectivityManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ConnectivityManager.swift; sourceTree = "<group>"; };
+		F42F5B941BE2C89200195490 /* CorrelationViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CorrelationViewController.swift; sourceTree = "<group>"; };
 		F43A7C541BBDF25E00B6FA56 /* Images.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Images.xcassets; sourceTree = "<group>"; };
 		F43A7C561BBDF29D00B6FA56 /* LaunchScreen.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; path = LaunchScreen.storyboard; sourceTree = "<group>"; };
 		F43A7C5B1BBDF43600B6FA56 /* CollectionViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CollectionViewCell.swift; sourceTree = "<group>"; };
@@ -386,8 +388,9 @@
 			children = (
 				7881A3E21BAF3B3E00ECB3C6 /* IntroViewController.swift */,
 				F44B1A2C1BDAC20D002238E6 /* PlotViewController.swift */,
+				F42F5B941BE2C89200195490 /* CorrelationViewController.swift */,
 				780FA3371BB89A1A00D3085D /* SettingsViewController.swift */,
-				78DBD7551BB8841900F42626 /* CorrelationViewController.swift */,
+				78DBD7551BB8841900F42626 /* RealmCorrelationViewController.swift */,
 				781EE1271BAF452800E6DDA1 /* RealmPlotViewController.swift */,
 				781EE11D1BAF3C9F00E6DDA1 /* AddViewController.swift */,
 			);
@@ -536,7 +539,7 @@
 						DevelopmentTeam = 98F8ES2768;
 						SystemCapabilities = {
 							com.apple.ApplicationGroups.iOS = {
-								enabled = 1;
+								enabled = 0;
 							};
 							com.apple.HealthKit = {
 								enabled = 1;
@@ -694,8 +697,9 @@
 				781EE1221BAF3C9F00E6DDA1 /* DataModel.swift in Sources */,
 				7881A3E31BAF3B3E00ECB3C6 /* IntroViewController.swift in Sources */,
 				780FA3381BB89A1A00D3085D /* SettingsViewController.swift in Sources */,
-				78DBD7561BB8841900F42626 /* CorrelationViewController.swift in Sources */,
+				78DBD7561BB8841900F42626 /* RealmCorrelationViewController.swift in Sources */,
 				F43A7C5E1BBDF43600B6FA56 /* PlotButton.swift in Sources */,
+				F42F5B951BE2C89200195490 /* CorrelationViewController.swift in Sources */,
 				F42F5ADD1BDC85AF00195490 /* SampleDataAnalyzer.swift in Sources */,
 				7881A3E11BAF3B3E00ECB3C6 /* AppDelegate.swift in Sources */,
 				781EE1281BAF452800E6DDA1 /* RealmPlotViewController.swift in Sources */,
@@ -807,6 +811,7 @@
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				COPY_PHASE_STRIP = NO;
 				DEBUG_INFORMATION_FORMAT = dwarf;
+				EMBEDDED_CONTENT_CONTAINS_SWIFT = YES;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
 				ENABLE_TESTABILITY = YES;
 				GCC_C_LANGUAGE_STANDARD = gnu99;
@@ -852,6 +857,7 @@
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				COPY_PHASE_STRIP = NO;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				EMBEDDED_CONTENT_CONTAINS_SWIFT = YES;
 				ENABLE_NS_ASSERTIONS = NO;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
 				GCC_C_LANGUAGE_STANDARD = gnu99;
