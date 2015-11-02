@@ -56,8 +56,8 @@ class CorrelationViewController: UIViewController, ChartViewDelegate {
                     return
                 }
                 for (i, stat) in stat1.enumerate() {
-                    print(stat.quantity)
-                    print(stat2[i].quantity)
+                    print("stat1,\(stat.quantity)")
+                    print("stat2,'\(stat2[i].quantity)")
                 }
             }
             // TODO: considering changing the title
