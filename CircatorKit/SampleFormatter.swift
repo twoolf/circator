@@ -90,7 +90,7 @@ public class SampleFormatter: NSObject {
             }
             let diastolicNumber = SampleFormatter.integerFormatter.stringFromNumber(diastolicSample!.quantity.doubleValueForUnit(HKUnit.millimeterOfMercuryUnit()))!
             let systolicNumber = SampleFormatter.integerFormatter.stringFromNumber(systolicSample!.quantity.doubleValueForUnit(HKUnit.millimeterOfMercuryUnit()))!
-            return "\(diastolicNumber)/\(systolicNumber)"
+            return "\(systolicNumber)/\(diastolicNumber)"
         default:
             return emptyString
         }
