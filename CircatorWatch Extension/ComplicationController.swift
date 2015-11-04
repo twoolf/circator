@@ -7,57 +7,77 @@
 //
 
 import ClockKit
-
+import HealthKit
 
 class ComplicationController: NSObject, CLKComplicationDataSource {
     
-    // MARK: - Timeline Configuration
-    
-    func getSupportedTimeTravelDirectionsForComplication(complication: CLKComplication, withHandler handler: (CLKComplicationTimeTravelDirections) -> Void) {
-        handler([.Forward, .Backward])
+    func getNextRequestedUpdateDateWithHandler(handler: (NSDate?) -> Void) {
+        // Update hourly
+        handler(NSDate(timeIntervalSinceNow: 60*60))
     }
     
-    func getTimelineStartDateForComplication(complication: CLKComplication, withHandler handler: (NSDate?) -> Void) {
-        handler(nil)
-    }
-    
-    func getTimelineEndDateForComplication(complication: CLKComplication, withHandler handler: (NSDate?) -> Void) {
-        handler(nil)
+    func getPlaceholderTemplateForComplication(complication: CLKComplication, withHandler handler: (CLKComplicationTemplate?) -> Void) {
+        var template: CLKComplicationTemplate? = nil
+        switch complication.family {
+        case .ModularSmall:
+            template = nil
+        case .ModularLarge:
+            template = nil
+        case .UtilitarianSmall:
+            let smallFlat = CLKComplicationTemplateUtilitarianSmallFlat()
+            smallFlat.textProvider = CLKSimpleTextProvider(text: "125 lbs")
+            //smallFlat.imageProvider = CLKImageProvider(onePieceImage: "icon_weight")
+            template = smallFlat
+        case .UtilitarianLarge:
+            let largeFlat = CLKComplicationTemplateUtilitarianLargeFlat()
+            largeFlat.textProvider = CLKSimpleTextProvider(text: "Weight: ", shortText:"125 lbs")
+            //largeFlat.imageProvider = CLKImageProvider("icon_weight")
+            template = largeFlat
+        case .CircularSmall:
+            let modularTemplate = CLKComplicationTemplateCircularSmallRingText()
+            modularTemplate.textProvider = CLKSimpleTextProvider(text: "125 lbs")
+            modularTemplate.fillFraction = 0.7
+            modularTemplate.ringStyle = CLKComplicationRingStyle.Closed
+            template = modularTemplate
+        }
+        handler(template)
     }
     
     func getPrivacyBehaviorForComplication(complication: CLKComplication, withHandler handler: (CLKComplicationPrivacyBehavior) -> Void) {
-        handler(.ShowOnLockScreen)
+        handler(CLKComplicationPrivacyBehavior.ShowOnLockScreen)
     }
     
-    // MARK: - Timeline Population
+    func getCurrentTimelineEntryForComplication(complication: CLKComplication, withHandler handler: (CLKComplicationTimelineEntry?) -> Void) {
+        
+        if complication.family == .CircularSmall {
+            let template = CLKComplicationTemplateCircularSmallRingText()
+            template.textProvider = CLKSimpleTextProvider(text: "health metric")
+            template.ringStyle = CLKComplicationRingStyle.Closed
+            
+            let timelineEntry = CLKComplicationTimelineEntry(date: NSDate(), complicationTemplate: template)
+            handler(timelineEntry)
+        } else {
+            handler(nil)
+        }
+    }
     
-    func getCurrentTimelineEntryForComplication(complication: CLKComplication, withHandler handler: ((CLKComplicationTimelineEntry?) -> Void)) {
-        // Call the handler with the current timeline entry
+    func getTimelineEntriesForComplication(complication: CLKComplication, beforeDate date: NSDate, limit: Int, withHandler handler: ([CLKComplicationTimelineEntry]?) -> Void) {
         handler(nil)
     }
     
-    func getTimelineEntriesForComplication(complication: CLKComplication, beforeDate date: NSDate, limit: Int, withHandler handler: (([CLKComplicationTimelineEntry]?) -> Void)) {
-        // Call the handler with the timeline entries prior to the given date
-        handler(nil)
+    func getTimelineEntriesForComplication(complication: CLKComplication, afterDate date: NSDate, limit: Int, withHandler handler: ([CLKComplicationTimelineEntry]?) -> Void) {
+        handler([])
     }
     
-    func getTimelineEntriesForComplication(complication: CLKComplication, afterDate date: NSDate, limit: Int, withHandler handler: (([CLKComplicationTimelineEntry]?) -> Void)) {
-        // Call the handler with the timeline entries after to the given date
-        handler(nil)
+    func getSupportedTimeTravelDirectionsForComplication(complication: CLKComplication, withHandler handler: (CLKComplicationTimeTravelDirections) -> Void) {
+        handler([.Backward, .Forward])
     }
     
-    // MARK: - Update Scheduling
-    
-    func getNextRequestedUpdateDateWithHandler(handler: (NSDate?) -> Void) {
-        // Call the handler with the date when you would next like to be given the opportunity to update your complication content
-        handler(nil);
+    func getTimelineStartDateForComplication(complication: CLKComplication, withHandler handler: (NSDate?) -> Void) {
+        handler(NSDate())
     }
     
-    // MARK: - Placeholder Templates
-    
-    func getPlaceholderTemplateForComplication(complication: CLKComplication, withHandler handler: (CLKComplicationTemplate?) -> Void) {
-        // This method will be called once per supported complication, and the results will be cached
-        handler(nil)
+    func getTimelineEndDateForComplication(complication: CLKComplication, withHandler handler: (NSDate?) -> Void) {
+        handler(NSDate())
     }
-    
 }

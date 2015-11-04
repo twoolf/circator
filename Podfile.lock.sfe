@@ -1,6 +1,6 @@
 PODS:
   - Alamofire (2.0.2)
-  - Charts (2.1.6)
+  - Charts (2.1.5)
   - Realm (0.96.2):
     - Realm/Headers (= 0.96.2)
   - Realm/Headers (0.96.2)
@@ -29,21 +29,21 @@ EXTERNAL SOURCES:
 
 CHECKOUT OPTIONS:
   Charts:
-    :commit: a942a4a4faf520cef323fa23fb103c6ec7e16670
+    :commit: 530cbabce9a2aae56f39e0f0a9356eac53b8ed6b
     :git: https://github.com/danielgindi/ios-charts.git
   Realm:
-    :commit: fc595537dba4ee7dbf27ada61ff1d82f6fda9b01
+    :commit: a4e4fbb8dc285ea7c2a794f00ef7f2fb4996ec95
     :git: https://github.com/realm/realm-cocoa.git
   RealmSwift:
-    :commit: fc595537dba4ee7dbf27ada61ff1d82f6fda9b01
+    :commit: a4e4fbb8dc285ea7c2a794f00ef7f2fb4996ec95
     :git: https://github.com/realm/realm-cocoa.git
   SwiftyJSON:
-    :commit: ece271ab33839d11c2153d71fb59c53545132cf9
+    :commit: 646f7e8813e6627bd9b09c77d5e775b67988de72
     :git: https://github.com/SwiftyJSON/SwiftyJSON.git
 
 SPEC CHECKSUMS:
   Alamofire: 8edbab00802a752bb5240cc2abe70e7e881488ad
-  Charts: 5e1e5ac23898e5b09d226a2fc3e9d86bc281937e
+  Charts: d2c4099ed2b7e8c35df9561386bb6e3ca6608ba6
   Realm: 962a3daeb000dfd379e0a9ccb2a752a352a88205
   RealmSwift: 485599fe54e35461c4a0daa7d01d8fbf11424873
   SwiftyJSON: 592b53bee5ef3dd9b3bebc6b9cb7ee35426ae8c3
