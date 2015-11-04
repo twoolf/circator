@@ -56,6 +56,11 @@ class SampleDataAnalyzer: NSObject {
             }
             let dataSet = LineChartDataSet(yVals: entries)
             dataSetConfigurator?(dataSet)
+            let summaryData : [Double] = samples.map { (sample) -> Double in
+                return sample.numeralValue!
+            }
+            let summaryDataMin = summaryData.sort().first
+            let summaryDataMax = summaryData.sort().last
             return LineChartData(xVals: xVals, dataSet: dataSet)
         } else {
             let xVals: [String] = samples.map { (sample) -> String in
@@ -67,6 +72,11 @@ class SampleDataAnalyzer: NSObject {
             }
             let dataSet = LineChartDataSet(yVals: entries)
             dataSetConfigurator?(dataSet)
+            let summaryData : [Double] = samples.map { (sample) -> Double in
+                return sample.numeralValue!
+            }
+            let summaryDataMin = summaryData.sort().first
+            let summaryDataMax = summaryData.sort().last
             return LineChartData(xVals: xVals, dataSet: dataSet)
         }
     }
