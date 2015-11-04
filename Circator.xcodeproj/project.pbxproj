@@ -17,7 +17,7 @@
 		7881A4011BAF3B3E00ECB3C6 /* CircatorUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7881A4001BAF3B3E00ECB3C6 /* CircatorUITests.swift */; };
 		788606E71BB8A7DA00F33B5E /* HealthKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 788606E61BB8A7DA00F33B5E /* HealthKit.framework */; };
 		78DBD7561BB8841900F42626 /* CorrelationViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 78DBD7551BB8841900F42626 /* CorrelationViewController.swift */; };
-		C42F8A2092CA2296635A0F13 /* Pods_Circator.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 06103AD5E3EB4C84C4980CB1 /* Pods_Circator.framework */; settings = {ATTRIBUTES = (Weak, ); }; };
+		C42F8A2092CA2296635A0F13 /* Pods_Circator.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 06103AD5E3EB4C84C4980CB1 /* Pods_Circator.framework */; };
 		F42F5ADD1BDC85AF00195490 /* SampleDataAnalyzer.swift in Sources */ = {isa = PBXBuildFile; fileRef = F42F5ADC1BDC85AF00195490 /* SampleDataAnalyzer.swift */; };
 		F42F5B351BE1FD1E00195490 /* CircatorKit.h in Headers */ = {isa = PBXBuildFile; fileRef = F42F5B341BE1FD1E00195490 /* CircatorKit.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		F42F5B391BE1FD1E00195490 /* CircatorKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F42F5B321BE1FD1E00195490 /* CircatorKit.framework */; };
