@@ -47,6 +47,7 @@ class PlotViewController: UIViewController, ChartViewDelegate {
     
     lazy var historyChart: LineChartView = {
         let chart = LineChartView()
+        chart.animate(xAxisDuration: 1.0, yAxisDuration: 1.0)
         chart.delegate = self
         chart.rightAxis.enabled = false
         chart.doubleTapToZoomEnabled = false
@@ -64,22 +65,23 @@ class PlotViewController: UIViewController, ChartViewDelegate {
         return chart
     }()
     
-    lazy var summaryChart: BarChartView = {
-        let chart = BarChartView()
+    lazy var summaryChart: BubbleChartView = {
+        let chart = BubbleChartView()
         chart.delegate = self
-//        chart.rightAxis.enabled = false
-//        chart.doubleTapToZoomEnabled = false
-//        chart.leftAxis.startAtZeroEnabled = false
-//        chart.drawGridBackgroundEnabled = false
-//        chart.xAxis.labelPosition = .Bottom
-//        chart.xAxis.avoidFirstLastClippingEnabled = true
-//        chart.xAxis.drawAxisLineEnabled = true
-//        chart.xAxis.drawGridLinesEnabled = true
+        chart.animate(xAxisDuration: 2.0, yAxisDuration: 2.0)
+        chart.rightAxis.enabled = false
+        chart.doubleTapToZoomEnabled = false
+        chart.leftAxis.startAtZeroEnabled = false
+        chart.drawGridBackgroundEnabled = false
+        chart.xAxis.labelPosition = .Bottom
+        chart.xAxis.avoidFirstLastClippingEnabled = true
+        chart.xAxis.drawAxisLineEnabled = true
+        chart.xAxis.drawGridLinesEnabled = true
         chart.legend.enabled = false
         chart.descriptionText = ""
-//        chart.xAxis.labelTextColor = Theme.universityDarkTheme.titleTextColor
-//        chart.leftAxis.labelTextColor = Theme.universityDarkTheme.titleTextColor
-//        chart.leftAxis.valueFormatter = SampleFormatter.numberFormatter
+        chart.xAxis.labelTextColor = Theme.universityDarkTheme.titleTextColor
+        chart.leftAxis.labelTextColor = Theme.universityDarkTheme.titleTextColor
+        chart.leftAxis.valueFormatter = SampleFormatter.numberFormatter
         return chart
     }()
     
@@ -115,7 +117,7 @@ class PlotViewController: UIViewController, ChartViewDelegate {
                         self.historyChart.data = analyzer.lineChartData
                         self.historyChart.data?.setValueTextColor(Theme.universityDarkTheme.bodyTextColor)
                         self.historyChart.data?.setValueFont(UIFont.systemFontOfSize(10, weight: UIFontWeightThin))
-                        self.summaryChart.data = analyzer.barChartData
+                        self.summaryChart.data = analyzer.bubbleChartData
                         self.summaryChart.data?.setValueTextColor(Theme.universityDarkTheme.bodyTextColor)
                         self.summaryChart.data?.setValueFont(UIFont.systemFontOfSize(10, weight: UIFontWeightThin))
                     }
