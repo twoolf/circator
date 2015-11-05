@@ -30,7 +30,7 @@ class SampleDataAnalyzer: NSObject {
     var dataGroupingMode: DataGroupingMode = .ByDate
     
     var dataSetConfigurator: ((LineChartDataSet) -> Void)?
-    var dataSetConfiguratorBarChart: ((BarChartDataSet) -> Void)?
+    var dataSetConfiguratorBubbleChart: ((BubbleChartDataSet) -> Void)?
     
     var lineChartData: LineChartData {
         guard samples.isEmpty == false else {
@@ -80,95 +80,63 @@ class SampleDataAnalyzer: NSObject {
         }
     }
     
-    var barChartData: BarChartData {
+    var bubbleChartData: BubbleChartData {
         guard samples.isEmpty == false else {
-            return BarChartData(xVals: [""])
+            return BubbleChartData(xVals: [""])
         }
         if dataGroupingMode == .ByDate {
-            var dataEntries: [BarChartDataEntry] = []
-            let calendar = NSCalendar.currentCalendar()
-            var finalDate = samples.last!.startDate
-            // Offset final date by one
-            finalDate = calendar.dateByAddingUnit(.Day, value: 1, toDate: finalDate, options: NSCalendarOptions())!
-            // Offset first date by negative one
-            var currentDate = calendar.dateByAddingUnit(.Day, value: -1, toDate: samples.first!.startDate, options: NSCalendarOptions())!
-            var dates: [NSDate] = []
-            while currentDate.compare(finalDate) != NSComparisonResult.OrderedDescending {
-                currentDate = calendar.dateByAddingUnit(.Day, value: 1, toDate: currentDate, options: NSCalendarOptions())!
-                dates.append(currentDate)
-            }
-            let xVals: [String] = dates.map { (date) -> String in
-                SampleFormatter.chartDateFormatter.stringFromDate(date)
-            }
+            var dataEntries: [BubbleChartDataEntry] = []
+
             let summaryData : [Double] = samples.map { (sample) -> Double in
                 return sample.numeralValue!
             }
             let summaryDataSorted = summaryData.sort()
-//            let entries: [ChartDataEntry] = samples.map { (sample) -> ChartDataEntry in
-//                let components = calendar.components(.Day, fromDate: samples.first!.startDate, toDate: sample.startDate, options: NSCalendarOptions())
-//            }
-//            switch summaryDataSorted.count {
-//            case 0:
-//                dataEntries.append(BarChartDataEntry(value: 0.0, xIndex: 0))
-//            case 1:
-//                dataEntries.append(BarChartDataEntry(value: summaryDataSorted[0], xIndex: 0))
-//            case 2:
-//                dataEntries.append(BarChartDataEntry(value: summaryDataSorted[0], xIndex: 0))
-//                dataEntries.append(BarChartDataEntry(value: summaryDataSorted[1], xIndex: 1))
-//            case 3:
-//                dataEntries.append(BarChartDataEntry(value: summaryDataSorted[0], xIndex: 0))
-//                dataEntries.append(BarChartDataEntry(value: summaryDataSorted[1], xIndex: 1))
-//                dataEntries.append(BarChartDataEntry(value: summaryDataSorted[2], xIndex: 2))
-//            case 4:
-//                dataEntries.append(BarChartDataEntry(value: summaryDataSorted[0], xIndex: 0))
-//                dataEntries.append(BarChartDataEntry(value: summaryDataSorted[1], xIndex: 1))
-//                dataEntries.append(BarChartDataEntry(value: summaryDataSorted[2], xIndex: 2))
-//                dataEntries.append(BarChartDataEntry(value: summaryDataSorted[3], xIndex: 3))
-//            case 5:
-//                for i in 0..<summaryDataSorted.count {
-//                    let dataEntry = BarChartDataEntry(value: summaryDataSorted[i], xIndex: i)
-//                    dataEntries.append(dataEntry)
-//                }
-//            case _ where summaryDataSorted.count > 5:
-//                dataEntries.append(BarChartDataEntry(value: summaryDataSorted[0], xIndex: 0))
-//                dataEntries.append(BarChartDataEntry(value: 0.0, xIndex: 1))
-//                for i in 2..<(summaryDataSorted.count-1) {
-//                    let dataEntry = BarChartDataEntry(value: summaryDataSorted[i], xIndex: i)
-//                    dataEntries.append(dataEntry)
-//                }
-//                dataEntries.append(BarChartDataEntry(value: summaryDataSorted[summaryDataSorted.count], xIndex: summaryDataSorted.count))
-//            default:
-//                dataEntries.append(BarChartDataEntry(value: 0.0, xIndex: 0))
-//            }
+
             let sortedDataLength = summaryDataSorted.count
-            dataEntries.append(BarChartDataEntry(value: summaryDataSorted[0], xIndex: 0))
-            dataEntries.append(BarChartDataEntry(value: 0.0, xIndex: 1))
-            for i in 0..<(summaryDataSorted.count) {
-                let j=i+2
-                let dataEntry = BarChartDataEntry(value: summaryDataSorted[i], xIndex: j)
-                dataEntries.append(dataEntry)
+            var xVals = ["Min"]
+            var size = summaryDataSorted[0]
+//            BubbleChartDataEntry(
+            dataEntries.append(BubbleChartDataEntry(xIndex: 0, value: summaryDataSorted[0], size: CGFloat(summaryDataSorted[0]) ))
+// 1st third
+            var sum = 0.0
+            var ave = 0.0
+            var count = 0.0
+            let oneThird = summaryDataSorted.count/3
+            for i in 0..<oneThird {
+                sum = sum + summaryDataSorted[i]
+                count = count + 1.0
                 }
-            dataEntries.append(BarChartDataEntry(value: 120.0, xIndex: summaryDataSorted.count+1 ))
-//            dataEntries.append(BarChartDataEntry(value: summaryDataSorted[sortedDataLength], xIndex: summaryDataSorted.count+1 ))
-//            dataEntries.append(BarChartDataEntry(value: summaryDataSorted[summaryDataSorted.count], xIndex: summaryDataSorted.count))
-            
-//            default:
-//                dataEntries.append(BarChartDataEntry(value: 0.0, xIndex: 0))
-//            for i in 0..<summaryDataSorted.count {
-//                let dataEntry = BarChartDataEntry(value: summaryDataSorted[i], xIndex: i)
-//                dataEntries.append(dataEntry)
-//            }
-//            let entries: [ChartDataEntry] = samples.map { (sample) -> ChartDataEntry in
-//                let components = calendar.components(.Day, fromDate: samples.first!.startDate, toDate: sample.startDate, options: NSCalendarOptions())
-//                return ChartDataEntry(value: sample.numeralValue!, xIndex: components.day + 1)
-//            }
-//            let summaryData: [ChartDataEntry] = samples.map { (sample) -> ChartDataEntry in
-//                let components = calendar.components(.Day, fromDate: samples.first!.startDate, toDate: sample.startDate, options: NSCalendarOptions())
-//                return ChartDataEntry(value: sample.numeralValue!, xIndex: components.day + 1)
-//            }
-            let dataSet = BarChartDataSet(yVals: dataEntries)
-            dataSetConfiguratorBarChart?(dataSet)
-            return BarChartData(xVals: xVals, dataSet: dataSet)
+            ave = sum/count
+            xVals.append("1st third")
+            dataEntries.append(BubbleChartDataEntry(xIndex: 1, value: ave, size: CGFloat(ave) ))
+// 2nd third
+            sum = 0.0
+            ave = 0.0
+            count = 0.0
+            let twoThirds = 2*(summaryDataSorted.count/3)
+            for i in oneThird..<twoThirds {
+                sum = sum + summaryDataSorted[i]
+                count = count + 1.0
+            }
+            ave = sum/count
+            xVals.append("2nd third")
+            dataEntries.append(BubbleChartDataEntry(xIndex: 2, value: ave, size: CGFloat(ave) ))
+// last third
+            sum = 0.0
+            ave = 0.0
+            count = 0.0
+            for i in twoThirds..<summaryDataSorted.count {
+                sum = sum + summaryDataSorted[i]
+                count = count + 1.0
+            }
+            ave = sum/count
+            xVals.append("last third")
+            dataEntries.append(BubbleChartDataEntry(xIndex: 3, value: ave, size: CGFloat(ave) ))
+            xVals.append("max")
+            dataEntries.append(BubbleChartDataEntry(xIndex: 4, value: summaryDataSorted.last!, size: CGFloat(summaryDataSorted.last!) ))
+            let dataSet = BubbleChartDataSet(yVals: dataEntries)
+            dataSetConfiguratorBubbleChart?(dataSet)
+            return BubbleChartData(xVals: xVals, dataSet: dataSet)
         } else {
             let xVals: [String] = samples.map { (sample) -> String in
                 return SampleFormatter.chartDateFormatter.stringFromDate(sample.startDate)
@@ -180,10 +148,10 @@ class SampleDataAnalyzer: NSObject {
             let summaryData: [ChartDataEntry] = samples.map { (sample) -> ChartDataEntry in
                 return ChartDataEntry(value: sample.numeralValue!, xIndex: index++)
             }
-            let dataSet = BarChartDataSet(yVals: summaryData)
-            dataSetConfiguratorBarChart?(dataSet)
+            let dataSet = BubbleChartDataSet(yVals: summaryData)
+            dataSetConfiguratorBubbleChart?(dataSet)
             
-            return BarChartData(xVals: xVals, dataSet: dataSet)
+            return BubbleChartData(xVals: xVals, dataSet: dataSet)
         }
     }
     
