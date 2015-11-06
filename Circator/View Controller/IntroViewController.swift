@@ -52,6 +52,45 @@ class IntroViewController: UIViewController, UITableViewDelegate, UITableViewDat
         return button
     }()
     
+    lazy var timerButton: UIButton = {
+        let button = UIButton(type: .Custom)
+        button.addTarget(self, action: "showTimerAttributes:", forControlEvents: .TouchUpInside)
+        button.setTitle("Timer", forState: .Normal)
+        button.setTitleColor(UIColor.whiteColor(), forState: .Normal)
+        button.titleLabel!.textAlignment = .Center
+        button.layer.cornerRadius = 7.0
+        button.backgroundColor = Theme.universityDarkTheme.complementForegroundColors?.colorWithVibrancy(0.8)
+        button.setTitleColor(Theme.universityDarkTheme.bodyTextColor, forState: .Normal)
+        button.titleLabel?.font = UIFont.systemFontOfSize(20, weight: UIFontWeightLight)
+        return button
+    }()
+    
+    lazy var startButton: UIButton = {
+        let button = UIButton(type: .Custom)
+        button.addTarget(self, action: "showTimerAttributes:", forControlEvents: .TouchUpInside)
+        button.setTitle("Start", forState: .Normal)
+        button.setTitleColor(UIColor.whiteColor(), forState: .Normal)
+        button.titleLabel!.textAlignment = .Center
+        button.layer.cornerRadius = 7.0
+        button.backgroundColor = Theme.universityDarkTheme.complementForegroundColors?.colorWithVibrancy(0.8)
+        button.setTitleColor(Theme.universityDarkTheme.bodyTextColor, forState: .Normal)
+        button.titleLabel?.font = UIFont.systemFontOfSize(20, weight: UIFontWeightLight)
+        return button
+    }()
+    
+    lazy var stopButton: UIButton = {
+        let button = UIButton(type: .Custom)
+        button.setTitle("Stop", forState: .Normal)
+        button.setTitleColor(UIColor.whiteColor(), forState: .Normal)
+        button.titleLabel!.textAlignment = .Center
+        button.addTarget(self, action: "showTimerAttributes:", forControlEvents: .TouchUpInside)
+        button.layer.cornerRadius = 7.0
+        button.backgroundColor = Theme.universityDarkTheme.complementForegroundColors?.colorWithVibrancy(0.2)
+        button.setTitleColor(Theme.universityDarkTheme.bodyTextColor, forState: .Normal)
+        button.titleLabel?.font = UIFont.systemFontOfSize(20, weight: UIFontWeightLight)
+        return button
+    }()
+    
     lazy var settingsButton: UIButton = {
         let button = UIButton(type: .Custom)
         button.setTitle("Settings", forState: .Normal)
@@ -67,6 +106,15 @@ class IntroViewController: UIViewController, UITableViewDelegate, UITableViewDat
     
     lazy var buttonsContainerView: UIStackView = {
         let stackView: UIStackView = UIStackView(arrangedSubviews: [self.plotButton, self.correlateButton])
+        stackView.axis = .Horizontal
+        stackView.distribution = UIStackViewDistribution.FillEqually
+        stackView.alignment = UIStackViewAlignment.Fill
+        stackView.spacing = 15
+        return stackView
+    }()
+    
+    lazy var timerButtonsContainerView: UIStackView = {
+        let stackView: UIStackView = UIStackView(arrangedSubviews: [self.timerButton, self.startButton, self.stopButton])
         stackView.axis = .Horizontal
         stackView.distribution = UIStackViewDistribution.FillEqually
         stackView.alignment = UIStackViewAlignment.Fill
@@ -174,7 +222,17 @@ class IntroViewController: UIViewController, UITableViewDelegate, UITableViewDat
             buttonsContainerView.centerXAnchor.constraintEqualToAnchor(view.centerXAnchor),
             buttonsContainerView.heightAnchor.constraintEqualToConstant(44)
         ]
+        view.addConstraints(constraints)
+        timerButtonsContainerView.translatesAutoresizingMaskIntoConstraints = false
+        view.addSubview(timerButtonsContainerView)
+        let timerButtonContainerConstraints: [NSLayoutConstraint] = [
+            timerButtonsContainerView.bottomAnchor.constraintEqualToAnchor(bottomLayoutGuide.bottomAnchor, constant: -90),
+            timerButtonsContainerView.leadingAnchor.constraintEqualToAnchor(view.layoutMarginsGuide.leadingAnchor, constant: 20),
+            timerButtonsContainerView.centerXAnchor.constraintEqualToAnchor(view.centerXAnchor),
+            timerButtonsContainerView.heightAnchor.constraintEqualToConstant(44)
+        ]
         view.addConstraints(buttonContainerConstraints)
+        view.addConstraints(timerButtonContainerConstraints)
         tableView.translatesAutoresizingMaskIntoConstraints = false
         view.addSubview(tableView)
         let tableViewConstraints: [NSLayoutConstraint] = [
@@ -211,6 +269,43 @@ class IntroViewController: UIViewController, UITableViewDelegate, UITableViewDat
         }
         dummyTextField.becomeFirstResponder()
     }
+    
+    func timeString(time:NSTimeInterval) -> String {
+        let minutes = Int(time) / 60
+        //let seconds = Int(time) % 60
+        let seconds = time - Double(minutes) * 60
+        let secondsFraction = seconds - Double(Int(seconds))
+        return String(format:"%02i:%02i.%01i",minutes,Int(seconds),Int(secondsFraction * 10.0))
+    }
+    
+//    func resetTimeCount(){
+//        if countingDown.on{
+//            timeCount = timerEnd
+//        } else {
+//            timeCount = 0.0
+//        }
+//    }
+    
+    func showTimerAttributes(sender: UIButton) {
+        var timer = NSTimer()
+        let timeInterval:NSTimeInterval = 0.05
+        var timeCount:NSTimeInterval = 0.0
+        if sender == startButton {
+            func startTimer(sender: UIButton) {
+                startButton.setTitle(timeString(timeCount), forState:UIControlState.Normal)
+                timer = NSTimer.scheduledTimerWithTimeInterval(timeInterval,
+                    target: self,
+                    selector: "timerDidEnd:",
+                    userInfo: "Meal Done",
+                    repeats: true)
+            }
+        } else {
+            selectedMode = GraphMode.Plot(HealthManager.previewSampleTypes[0])
+            pickerView.reloadAllComponents()
+        }
+        dummyTextField.becomeFirstResponder()
+    }
+    
     
     func dismissPopup(sender: UIBarButtonItem) {
         dummyTextField.resignFirstResponder()
