@@ -62,7 +62,7 @@ class CorrelationViewController: UIViewController, ChartViewDelegate {
             }
             // TODO: considering changing the title
 //            navigationItem.title = "Correlation"
-
+//
 //                    if self.sampleTypes[0] is HKCorrelationType {
 //                        // Sleep
 //                    } else {
