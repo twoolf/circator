@@ -19,6 +19,10 @@ class IntroViewController: UIViewController, UITableViewDelegate, UITableViewDat
     lazy var logoImageView: UIImageView = {
         let view = UIImageView(image: UIImage(named: "logo_university")!)
         view.tintColor = Theme.universityDarkTheme.foregroundColor
+        view.autoresizingMask = UIViewAutoresizing.FlexibleBottomMargin
+        view.clipsToBounds = true
+        view.contentMode = UIViewContentMode.ScaleAspectFit
+        view.contentScaleFactor = 0.2
         return view
     }()
 
@@ -153,11 +157,12 @@ class IntroViewController: UIViewController, UITableViewDelegate, UITableViewDat
     private func configureViews() {
         view.backgroundColor = Theme.universityDarkTheme.backgroundColor
         logoImageView.translatesAutoresizingMaskIntoConstraints = false
+        logoImageView.contentScaleFactor = 0.2
         view.addSubview(logoImageView)
         let constraints: [NSLayoutConstraint] = [
-            logoImageView.widthAnchor.constraintEqualToAnchor(view.widthAnchor, multiplier: 0.6),
+            logoImageView.widthAnchor.constraintEqualToAnchor(view.widthAnchor, multiplier: 0.3),
             logoImageView.heightAnchor.constraintEqualToAnchor(logoImageView.widthAnchor, multiplier: 1.0744),
-            NSLayoutConstraint(item: logoImageView, attribute: .CenterX, relatedBy: .Equal, toItem: view, attribute: .CenterX, multiplier: 0.25, constant: 0),
+            NSLayoutConstraint(item: logoImageView, attribute: .CenterX, relatedBy: .Equal, toItem: view, attribute: .CenterX, multiplier: 0.10, constant: 0),
             logoImageView.topAnchor.constraintEqualToAnchor(view.topAnchor, constant: 20)
         ]
         view.addConstraints(constraints)
