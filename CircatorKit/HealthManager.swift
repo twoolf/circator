@@ -37,6 +37,12 @@ public class HealthManager: NSObject, WCSessionDelegate {
         HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierDietaryEnergyConsumed)!,
         HKObjectType.correlationTypeForIdentifier(HKCorrelationTypeIdentifierBloodPressure)!
     ]
+    public static let previewSampleMeals = [
+        "Breakfast",
+        "Lunch",
+        "Dinner",
+        "Snack"
+    ]
     
     public var mostRecentSamples = [HKSampleType: [HKSample]]() {
         didSet {
@@ -58,10 +64,13 @@ public class HealthManager: NSObject, WCSessionDelegate {
             HKObjectType.categoryTypeForIdentifier(HKCategoryTypeIdentifierSleepAnalysis)!,
             HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierDietaryEnergyConsumed)!,
             HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierBloodPressureDiastolic)!,
-            HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierBloodPressureSystolic)!
+            HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierBloodPressureSystolic)!,
+            HKObjectType.workoutType()
         ]
         
-        let healthKitTypesToWrite : Set<HKSampleType>? = []
+        let healthKitTypesToWrite : Set<HKSampleType>? = [
+            HKQuantityType.workoutType()
+        ]
         
         guard HKHealthStore.isHealthDataAvailable() else {
             let error = NSError(domain: HealthManagerErrorDomain, code: 2, userInfo: [NSLocalizedDescriptionKey: "HealthKit is not available in this Device"])
@@ -231,6 +240,29 @@ public class HealthManager: NSObject, WCSessionDelegate {
             }
             completion(stat1!, stat2!, nil)
         }
+    }
+    
+    // MARK: - for writing into HealthKit
+    func saveRunningWorkout(startDate:NSDate , endDate:NSDate , distance:Double, distanceUnit:HKUnit , kiloCalories:Double,
+        completion: ( (Bool, NSError!) -> Void)!) {
+            
+            // 1. Create quantities for the distance and energy burned
+            let distanceQuantity = HKQuantity(unit: distanceUnit, doubleValue: distance)
+            let caloriesQuantity = HKQuantity(unit: HKUnit.kilocalorieUnit(), doubleValue: kiloCalories)
+            
+            // 2. Save Running Workout
+            let workout = HKWorkout(activityType: HKWorkoutActivityType.Running, startDate: startDate, endDate: endDate, duration: abs(endDate.timeIntervalSinceDate(startDate)), totalEnergyBurned: caloriesQuantity, totalDistance: distanceQuantity, metadata: nil)
+            healthKitStore.saveObject(workout, withCompletion: { (success, error) -> Void in
+                if( error != nil  ) {
+                    // Error saving the workout
+                    completion(success,error)
+                }
+                else {
+                    // Workout saved
+                    completion(success,nil)
+                    
+                }
+            })
     }
     
     // MARK: - Apple Watch

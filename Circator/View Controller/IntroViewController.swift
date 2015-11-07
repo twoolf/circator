@@ -55,7 +55,7 @@ class IntroViewController: UIViewController, UITableViewDelegate, UITableViewDat
     lazy var timerButton: UIButton = {
         let button = UIButton(type: .Custom)
         button.addTarget(self, action: "showTimerAttributes:", forControlEvents: .TouchUpInside)
-        button.setTitle("Timer", forState: .Normal)
+        button.setTitle("Meal", forState: .Normal)
         button.setTitleColor(UIColor.whiteColor(), forState: .Normal)
         button.titleLabel!.textAlignment = .Center
         button.layer.cornerRadius = 7.0
@@ -169,6 +169,22 @@ class IntroViewController: UIViewController, UITableViewDelegate, UITableViewDat
         return textField
     }()
     
+    lazy var timeTextField: UITextField = {
+        let textField = UITextField()
+        textField.inputView = self.pickerView
+        textField.inputAccessoryView = {
+            let view = UIToolbar()
+            view.frame = CGRectMake(0, 0, 0, 44)
+            view.items = [
+                UIBarButtonItem(barButtonSystemItem: .Cancel, target: self, action: "dismissPopup:"),
+                UIBarButtonItem(barButtonSystemItem: .FlexibleSpace, target: nil, action: ""),
+                UIBarButtonItem(barButtonSystemItem: .Done, target: self, action: "selectAttribute:")
+            ]
+            return view
+            }()
+        return textField
+    }()
+    
     private lazy var pickerView: UIPickerView = {
         let pickerView = UIPickerView()
         pickerView.dataSource = self
@@ -270,40 +286,15 @@ class IntroViewController: UIViewController, UITableViewDelegate, UITableViewDat
         dummyTextField.becomeFirstResponder()
     }
     
-    func timeString(time:NSTimeInterval) -> String {
-        let minutes = Int(time) / 60
-        //let seconds = Int(time) % 60
-        let seconds = time - Double(minutes) * 60
-        let secondsFraction = seconds - Double(Int(seconds))
-        return String(format:"%02i:%02i.%01i",minutes,Int(seconds),Int(secondsFraction * 10.0))
-    }
-    
-//    func resetTimeCount(){
-//        if countingDown.on{
-//            timeCount = timerEnd
-//        } else {
-//            timeCount = 0.0
-//        }
-//    }
-    
     func showTimerAttributes(sender: UIButton) {
-        var timer = NSTimer()
-        let timeInterval:NSTimeInterval = 0.05
-        var timeCount:NSTimeInterval = 0.0
         if sender == startButton {
-            func startTimer(sender: UIButton) {
-                startButton.setTitle(timeString(timeCount), forState:UIControlState.Normal)
-                timer = NSTimer.scheduledTimerWithTimeInterval(timeInterval,
-                    target: self,
-                    selector: "timerDidEnd:",
-                    userInfo: "Meal Done",
-                    repeats: true)
-            }
+            startButton.setTitle("pushed", forState:UIControlState.Normal)
+            pickerView.reloadAllComponents()
         } else {
-            selectedMode = GraphMode.Plot(HealthManager.previewSampleTypes[0])
+            stopButton.setTitle("button pushed", forState:UIControlState.Normal)
             pickerView.reloadAllComponents()
         }
-        dummyTextField.becomeFirstResponder()
+        timeTextField.becomeFirstResponder()
     }
     
     
@@ -394,6 +385,32 @@ class IntroViewController: UIViewController, UITableViewDelegate, UITableViewDat
             selectedMode = GraphMode.Plot(HealthManager.previewSampleTypes.filter { $0.displayText == HealthManager.previewSampleTypes[row].displayText }.first!)
         }
     }
+
+    //    var timer = NSTimer()
+    //    let timeInterval:NSTimeInterval = 10.0
+    //    var timeCount:NSTimeInterval = 0.0
+    //    func timeString(time:NSTimeInterval) -> String {
+    //        let minutes = Int(time) / 60
+    //        //let seconds = Int(time) % 60
+    //        let seconds = time - Double(minutes) * 60
+    //        let secondsFraction = seconds - Double(Int(seconds))
+    //        return String(format:"%02i:%02i.%01i",minutes,Int(seconds),Int(secondsFraction * 10.0))
+    //    }
+    
+    //    func resetTimeCount(){
+    //        if countingDown.on{
+    //            timeCount = timerEnd
+    //        } else {
+    //            timeCount = 0.0
+    //        }
+    //    }
+    //            selectedMode = startButton.setTitle(timeString(timeCount), forState:UIControlState.Normal)
+    //            timer = NSTimer.scheduledTimerWithTimeInterval(timeInterval,
+    //                target: self,
+    //                selector: "timerDidEnd:",
+    //                userInfo: "Meal Done",
+    //                repeats: true)
+
 
 }
 
