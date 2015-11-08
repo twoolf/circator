@@ -43,6 +43,9 @@ public class HealthManager: NSObject, WCSessionDelegate {
         "Dinner",
         "Snack"
     ]
+    public static let previewSampleTimes = [
+        NSDate.init()
+    ]
     
     public var mostRecentSamples = [HKSampleType: [HKSample]]() {
         didSet {
