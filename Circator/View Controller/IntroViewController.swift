@@ -39,6 +39,19 @@ class IntroViewController: UIViewController, UITableViewDelegate, UITableViewDat
         return button
     }()
     
+    lazy var mealButton: UIButton = {
+        let button = UIButton(type: .Custom)
+        button.addTarget(self, action: "showAttributes:", forControlEvents: .TouchUpInside)
+        button.setTitle("Meal", forState: .Normal)
+        button.setTitleColor(UIColor.whiteColor(), forState: .Normal)
+        button.titleLabel!.textAlignment = .Center
+        button.layer.cornerRadius = 7.0
+        button.backgroundColor = Theme.universityDarkTheme.complementForegroundColors?.colorWithVibrancy(0.8)
+        button.setTitleColor(Theme.universityDarkTheme.bodyTextColor, forState: .Normal)
+        button.titleLabel?.font = UIFont.systemFontOfSize(20, weight: UIFontWeightLight)
+        return button
+    }()
+    
     lazy var correlateButton: UIButton = {
         let button = UIButton(type: .Custom)
         button.setTitle("Correlate", forState: .Normal)
@@ -52,60 +65,59 @@ class IntroViewController: UIViewController, UITableViewDelegate, UITableViewDat
         return button
     }()
     
-    lazy var timerButton: UIButton = {
-        let button = UIButton(type: .Custom)
-        button.addTarget(self, action: "showTimerAttributes:", forControlEvents: .TouchUpInside)
-        button.setTitle("Meal", forState: .Normal)
-        button.setTitleColor(UIColor.whiteColor(), forState: .Normal)
-        button.titleLabel!.textAlignment = .Center
-        button.layer.cornerRadius = 7.0
-        button.backgroundColor = Theme.universityDarkTheme.complementForegroundColors?.colorWithVibrancy(0.8)
-        button.setTitleColor(Theme.universityDarkTheme.bodyTextColor, forState: .Normal)
-        button.titleLabel?.font = UIFont.systemFontOfSize(20, weight: UIFontWeightLight)
-        return button
-    }()
+//    let mealPickerData = ["Breakfast", "Lunch", "Dinner"]
+//    lazy var mealPicker: UIPickerView = {
+//        let meal = UIPickerView(frame: <#T##CGRect#>)
+//        meal.
+//    }
+//    lazy var mealPickerLabel: UILabel = {
+//        let label = UILabel(frame: <#T##CGRect#>)
+//        label.
+//    }
     
-    lazy var startButton: UIButton = {
-        let button = UIButton(type: .Custom)
-        button.addTarget(self, action: "showTimerAttributes:", forControlEvents: .TouchUpInside)
-        button.setTitle("Start", forState: .Normal)
-        button.setTitleColor(UIColor.whiteColor(), forState: .Normal)
-        button.titleLabel!.textAlignment = .Center
-        button.layer.cornerRadius = 7.0
-        button.backgroundColor = Theme.universityDarkTheme.complementForegroundColors?.colorWithVibrancy(0.8)
-        button.setTitleColor(Theme.universityDarkTheme.bodyTextColor, forState: .Normal)
-        button.titleLabel?.font = UIFont.systemFontOfSize(20, weight: UIFontWeightLight)
-        return button
-    }()
     
-    lazy var stopButton: UIButton = {
-        let button = UIButton(type: .Custom)
-        button.setTitle("Stop", forState: .Normal)
-        button.setTitleColor(UIColor.whiteColor(), forState: .Normal)
-        button.titleLabel!.textAlignment = .Center
-        button.addTarget(self, action: "showTimerAttributes:", forControlEvents: .TouchUpInside)
-        button.layer.cornerRadius = 7.0
-        button.backgroundColor = Theme.universityDarkTheme.complementForegroundColors?.colorWithVibrancy(0.2)
-        button.setTitleColor(Theme.universityDarkTheme.bodyTextColor, forState: .Normal)
-        button.titleLabel?.font = UIFont.systemFontOfSize(20, weight: UIFontWeightLight)
-        return button
-    }()
+//    lazy var timerButton: UIButton = {
+//        let button = UIButton(type: .Custom)
+//        button.addTarget(self, action: "showTimerAttributes:", forControlEvents: .TouchUpInside)
+//        button.setTitle("Meal", forState: .Normal)
+//        button.setTitleColor(UIColor.whiteColor(), forState: .Normal)
+//        button.titleLabel!.textAlignment = .Center
+//        button.layer.cornerRadius = 7.0
+//        button.backgroundColor = Theme.universityDarkTheme.complementForegroundColors?.colorWithVibrancy(0.8)
+//        button.setTitleColor(Theme.universityDarkTheme.bodyTextColor, forState: .Normal)
+//        button.titleLabel?.font = UIFont.systemFontOfSize(20, weight: UIFontWeightLight)
+//        return button
+//    }()
     
-    lazy var settingsButton: UIButton = {
-        let button = UIButton(type: .Custom)
-        button.setTitle("Settings", forState: .Normal)
-        button.setTitleColor(UIColor.whiteColor(), forState: .Normal)
-        button.titleLabel!.textAlignment = .Center
-        button.addTarget(self, action: "showSettings:", forControlEvents: .TouchUpInside)
-        button.layer.cornerRadius = 7.0
-        button.backgroundColor = Theme.universityDarkTheme.complementForegroundColors?.colorWithVibrancy(0.2)
-        button.setTitleColor(Theme.universityDarkTheme.bodyTextColor, forState: .Normal)
-        button.titleLabel?.font = UIFont.systemFontOfSize(20, weight: UIFontWeightLight)
-        return button
-    }()
+
+//    lazy var stopButton: UIButton = {
+//        let button = UIButton(type: .Custom)
+//        button.setTitle("Stop", forState: .Normal)
+//        button.setTitleColor(UIColor.whiteColor(), forState: .Normal)
+//        button.titleLabel!.textAlignment = .Center
+//        button.addTarget(self, action: "showTimerAttributes:", forControlEvents: .TouchUpInside)
+//        button.layer.cornerRadius = 7.0
+//        button.backgroundColor = Theme.universityDarkTheme.complementForegroundColors?.colorWithVibrancy(0.2)
+//        button.setTitleColor(Theme.universityDarkTheme.bodyTextColor, forState: .Normal)
+//        button.titleLabel?.font = UIFont.systemFontOfSize(20, weight: UIFontWeightLight)
+//        return button
+//    }()
+    
+//    lazy var settingsButton: UIButton = {
+//        let button = UIButton(type: .Custom)
+//        button.setTitle("Settings", forState: .Normal)
+//        button.setTitleColor(UIColor.whiteColor(), forState: .Normal)
+//        button.titleLabel!.textAlignment = .Center
+//        button.addTarget(self, action: "showSettings:", forControlEvents: .TouchUpInside)
+//        button.layer.cornerRadius = 7.0
+//        button.backgroundColor = Theme.universityDarkTheme.complementForegroundColors?.colorWithVibrancy(0.2)
+//        button.setTitleColor(Theme.universityDarkTheme.bodyTextColor, forState: .Normal)
+//        button.titleLabel?.font = UIFont.systemFontOfSize(20, weight: UIFontWeightLight)
+//        return button
+//    }()
     
     lazy var buttonsContainerView: UIStackView = {
-        let stackView: UIStackView = UIStackView(arrangedSubviews: [self.plotButton, self.correlateButton])
+        let stackView: UIStackView = UIStackView(arrangedSubviews: [self.plotButton, self.correlateButton, self.mealButton])
         stackView.axis = .Horizontal
         stackView.distribution = UIStackViewDistribution.FillEqually
         stackView.alignment = UIStackViewAlignment.Fill
@@ -113,14 +125,14 @@ class IntroViewController: UIViewController, UITableViewDelegate, UITableViewDat
         return stackView
     }()
     
-    lazy var timerButtonsContainerView: UIStackView = {
-        let stackView: UIStackView = UIStackView(arrangedSubviews: [self.timerButton, self.startButton, self.stopButton])
-        stackView.axis = .Horizontal
-        stackView.distribution = UIStackViewDistribution.FillEqually
-        stackView.alignment = UIStackViewAlignment.Fill
-        stackView.spacing = 15
-        return stackView
-    }()
+//    lazy var timerButtonsContainerView: UIStackView = {
+//        let stackView: UIStackView = UIStackView(arrangedSubviews: [self.stopButton])
+//        stackView.axis = .Horizontal
+//        stackView.distribution = UIStackViewDistribution.FillEqually
+//        stackView.alignment = UIStackViewAlignment.Fill
+//        stackView.spacing = 15
+//        return stackView
+//    }()
     
     lazy var tableTitleContainerView: UIStackView = {
         let userImageView = UIImageView(image: UIImage(named: "icon_user")!)
@@ -152,6 +164,8 @@ class IntroViewController: UIViewController, UITableViewDelegate, UITableViewDat
     
     static let sampleFormatter = SampleFormatter()
     static let previewTypeStrings = HealthManager.previewSampleTypes.map { $0.displayText! }
+    static let previewMealTypeStrings = ["Breakfast", "Lunch", "Dinner", "Snack"]
+    static let previewMealTimeStarts = ["noon", "1 PM", "3 PM", "6 PM"]
     
     lazy var dummyTextField: UITextField = {
         let textField = UITextField()
@@ -169,21 +183,21 @@ class IntroViewController: UIViewController, UITableViewDelegate, UITableViewDat
         return textField
     }()
     
-    lazy var timeTextField: UITextField = {
-        let textField = UITextField()
-        textField.inputView = self.pickerView
-        textField.inputAccessoryView = {
-            let view = UIToolbar()
-            view.frame = CGRectMake(0, 0, 0, 44)
-            view.items = [
-                UIBarButtonItem(barButtonSystemItem: .Cancel, target: self, action: "dismissPopup:"),
-                UIBarButtonItem(barButtonSystemItem: .FlexibleSpace, target: nil, action: ""),
-                UIBarButtonItem(barButtonSystemItem: .Done, target: self, action: "selectAttribute:")
-            ]
-            return view
-            }()
-        return textField
-    }()
+//    lazy var timeTextField: UITextField = {
+//        let textField = UITextField()
+//        textField.inputView = self.pickerView
+//        textField.inputAccessoryView = {
+//            let view = UIToolbar()
+//            view.frame = CGRectMake(0, 0, 0, 44)
+//            view.items = [
+//                UIBarButtonItem(barButtonSystemItem: .Cancel, target: self, action: "dismissPopup:"),
+//                UIBarButtonItem(barButtonSystemItem: .FlexibleSpace, target: nil, action: ""),
+//                UIBarButtonItem(barButtonSystemItem: .Done, target: self, action: "selectAttribute:")
+//            ]
+//            return view
+//            }()
+//        return textField
+//    }()
     
     private lazy var pickerView: UIPickerView = {
         let pickerView = UIPickerView()
@@ -195,6 +209,9 @@ class IntroViewController: UIViewController, UITableViewDelegate, UITableViewDat
     enum GraphMode {
         case Plot(HKSampleType)
         case Correlate(HKSampleType, HKSampleType)
+//        case Plot2(NSDate)
+        case previewMealTypeStrings
+        case previewMealTimeStarts
     }
     
     private var selectedMode: GraphMode!
@@ -203,10 +220,36 @@ class IntroViewController: UIViewController, UITableViewDelegate, UITableViewDat
         super.viewDidLoad()
         configureViews()
         tableView.layoutIfNeeded()
+//        if mealPicker != nil && mealPickerLabel != nil  {
+//          mealPicker!.delegate = self
+//          mealPicker!.dataSource = self
+//        }
         NSNotificationCenter.defaultCenter().addObserverForName(HealthManagerDidUpdateRecentSamplesNotification, object: nil, queue: NSOperationQueue.mainQueue()) { (_) -> Void in
             self.tableView.reloadData()
         }
     }
+    
+//    func numberOfComponentsInMealPickerView(mealPickerView: UIPickerView) -> Int {
+//        return 1
+//    }
+    
+//    func mealPickerView(mealPickerView: UIPickerView, numberOfRowsInComponent component: Int) -> Int {
+//        return mealPickerData.count
+//    }
+    
+//    func mealPickerView(mealPickerView: UIPickerView, titleForRow row: Int, forComponent component: Int) -> String? {
+//        return mealPickerData[row]
+//    }
+    
+//    func mealPickerView(mealPickerView: UIPickerView, didSelectRow row: Int, inComponent component: Int) {
+//        mealPickerLabel!.text = mealPickerData[row]
+//    }
+    
+//    func mealPickerView(mealPickerView: UIPickerView, attributedTitleForRow row: Int, forComponent component: Int) -> NSAttributedString? {
+//        let titleData = mealPickerData[row]
+//        let mealPickerTitle = NSAttributedString(string: titleData, attributes: [NSFontAttributeName:UIFont(name: "Georgia", size: 26.0)!,NSForegroundColorAttributeName:UIColor.blueColor()])
+//        return mealPickerTitle
+//    }
     
     override func viewWillAppear(animated: Bool) {
         super.viewWillAppear(animated)
@@ -239,16 +282,16 @@ class IntroViewController: UIViewController, UITableViewDelegate, UITableViewDat
             buttonsContainerView.heightAnchor.constraintEqualToConstant(44)
         ]
         view.addConstraints(constraints)
-        timerButtonsContainerView.translatesAutoresizingMaskIntoConstraints = false
-        view.addSubview(timerButtonsContainerView)
-        let timerButtonContainerConstraints: [NSLayoutConstraint] = [
-            timerButtonsContainerView.bottomAnchor.constraintEqualToAnchor(bottomLayoutGuide.bottomAnchor, constant: -90),
-            timerButtonsContainerView.leadingAnchor.constraintEqualToAnchor(view.layoutMarginsGuide.leadingAnchor, constant: 20),
-            timerButtonsContainerView.centerXAnchor.constraintEqualToAnchor(view.centerXAnchor),
-            timerButtonsContainerView.heightAnchor.constraintEqualToConstant(44)
-        ]
+//        timerButtonsContainerView.translatesAutoresizingMaskIntoConstraints = false
+//        view.addSubview(timerButtonsContainerView)
+//        let timerButtonContainerConstraints: [NSLayoutConstraint] = [
+//            timerButtonsContainerView.bottomAnchor.constraintEqualToAnchor(bottomLayoutGuide.bottomAnchor, constant: -90),
+//            timerButtonsContainerView.leadingAnchor.constraintEqualToAnchor(view.layoutMarginsGuide.leadingAnchor, constant: 20),
+//            timerButtonsContainerView.centerXAnchor.constraintEqualToAnchor(view.centerXAnchor),
+//            timerButtonsContainerView.heightAnchor.constraintEqualToConstant(44)
+//        ]
         view.addConstraints(buttonContainerConstraints)
-        view.addConstraints(timerButtonContainerConstraints)
+//        view.addConstraints(timerButtonContainerConstraints)
         tableView.translatesAutoresizingMaskIntoConstraints = false
         view.addSubview(tableView)
         let tableViewConstraints: [NSLayoutConstraint] = [
@@ -279,23 +322,43 @@ class IntroViewController: UIViewController, UITableViewDelegate, UITableViewDat
         if sender == correlateButton {
             selectedMode = GraphMode.Correlate(HealthManager.previewSampleTypes[0], HealthManager.previewSampleTypes[1])
             pickerView.reloadAllComponents()
-        } else {
+//            print("in graph mode: correlate")
+        } else if sender == plotButton {
             selectedMode = GraphMode.Plot(HealthManager.previewSampleTypes[0])
             pickerView.reloadAllComponents()
+//            print("in graph mode: plot")
+        } else if sender == mealButton {
+            selectedMode = GraphMode.previewMealTypeStrings
+//            selectedMode = GraphMode.Plot2(HealthManager.previewSampleTimes[0])
+            pickerView.reloadAllComponents()
+//            print("in graph mode: start")
         }
         dummyTextField.becomeFirstResponder()
     }
     
-    func showTimerAttributes(sender: UIButton) {
-        if sender == startButton {
-            startButton.setTitle("pushed", forState:UIControlState.Normal)
-            pickerView.reloadAllComponents()
-        } else {
-            stopButton.setTitle("button pushed", forState:UIControlState.Normal)
-            pickerView.reloadAllComponents()
-        }
-        timeTextField.becomeFirstResponder()
-    }
+//    func showTimerAttributes(sender: UIButton) {
+//        if sender == correlateButton {
+//            selectedMode = GraphMode.Correlate(HealthManager.previewSampleTypes[0], HealthManager.previewSampleTypes[1])
+//            pickerView.reloadAllComponents()
+////            print("in graph mode: correlate")
+//        } else {
+//            selectedMode = GraphMode.Plot(HealthManager.previewSampleTypes[0])
+//            pickerView.reloadAllComponents()
+////            print("in graph mode: plot")
+//        }
+//        dummyTextField.becomeFirstResponder()
+//    }
+    
+//    func showTimerAttributes(sender: UIButton) {
+//        if sender == startButton {
+//            startButton.setTitle("pushed", forState:UIControlState.Normal)
+//            pickerView.reloadAllComponents()
+//        } else {
+//            stopButton.setTitle("button pushed", forState:UIControlState.Normal)
+//            pickerView.reloadAllComponents()
+//        }
+//        timeTextField.becomeFirstResponder()
+//    }
     
     
     func dismissPopup(sender: UIBarButtonItem) {
@@ -314,6 +377,13 @@ class IntroViewController: UIViewController, UITableViewDelegate, UITableViewDat
             let plotVC = PlotViewController()
             plotVC.sampleType = type
             navigationController?.pushViewController(plotVC, animated: true)
+        case .previewMealTypeStrings:
+            return
+        case .previewMealTimeStarts:
+            return
+//            let plotVC = PlotViewController()
+//            plotVC.sampleType = type
+//            navigationController?.pushViewController(plotVC, animated: true)
         }
     }
     
@@ -345,6 +415,8 @@ class IntroViewController: UIViewController, UITableViewDelegate, UITableViewDat
     func numberOfComponentsInPickerView(pickerView: UIPickerView) -> Int {
         if case .Plot(_) = selectedMode! {
             return 1
+        } else if case .previewMealTypeStrings(_) = selectedMode! {
+            return 2
         } else {
             return 2
         }
@@ -357,8 +429,10 @@ class IntroViewController: UIViewController, UITableViewDelegate, UITableViewDat
             } else {
                 return IntroViewController.previewTypeStrings.count - 1
             }
-        } else {
+        } else if case .Plot(_) = selectedMode! {
             return IntroViewController.previewTypeStrings.count
+        } else {
+            return IntroViewController.previewMealTypeStrings.count
         }
     }
     
@@ -366,11 +440,17 @@ class IntroViewController: UIViewController, UITableViewDelegate, UITableViewDat
         if case .Correlate(_) = selectedMode! {
             if component == 0 {
                 return IntroViewController.previewTypeStrings[row]
-            } else {
+            } else if case .Plot(_) = selectedMode! {
                 return IntroViewController.previewTypeStrings.filter { $0 != IntroViewController.previewTypeStrings[pickerView.selectedRowInComponent(0)] }[row]
+            } else {
+                return IntroViewController.previewMealTypeStrings[row]
             }
-        } else {
+        } else if case .Plot(_) = selectedMode! {
             return IntroViewController.previewTypeStrings[row]
+        } else if case .previewMealTypeStrings = selectedMode! {
+            return IntroViewController.previewMealTypeStrings[row]
+        } else {
+            return IntroViewController.previewMealTypeStrings[row]
         }
     }
     
@@ -381,8 +461,12 @@ class IntroViewController: UIViewController, UITableViewDelegate, UITableViewDat
             } else {
                 selectedMode = GraphMode.Correlate(HealthManager.previewSampleTypes.filter { $0.displayText == HealthManager.previewSampleTypes[pickerView.selectedRowInComponent(0)].displayText }.first!, HealthManager.previewSampleTypes.filter { $0.displayText == HealthManager.previewSampleTypes[row].displayText }.first!)
             }
-        } else {
+        } else if case .Plot(_) = selectedMode! {
             selectedMode = GraphMode.Plot(HealthManager.previewSampleTypes.filter { $0.displayText == HealthManager.previewSampleTypes[row].displayText }.first!)
+        } else {
+//            selectedMode = GraphMode.previewMealTypeStrings, GraphMode.previewMealTimeStarts
+//            selectedMode = GraphMode.Plot(HealthManager.previewSampleTypes.filter { $0.displayText == HealthManager.previewSampleTypes[row].displayText }.first!)
+//            selectedMode = GraphMode.Plot2(HealthManager.previewSampleTimes.filter { $0.accessibilityHint == HealthManager.previewSampleTimes[row].accessibilityHint }.first!)
         }
     }
 
