@@ -370,15 +370,27 @@ class IntroViewController: UIViewController, UITableViewDelegate, UITableViewDat
         dummyTextField.resignFirstResponder()
         switch selectedMode! {
         case let .Correlate(type1, type2):
+//            print ("selectAttribute Correlate, \(type1) and \(type2)")
             let correlateVC = CorrelationViewController()
             correlateVC.sampleTypes = [type1, type2]
             navigationController?.pushViewController(correlateVC, animated: true)
             break
         case .Plot(let type):
+//            print ("selectAttribute Plot, \(type)")
             let plotVC = PlotViewController()
             plotVC.sampleType = type
             navigationController?.pushViewController(plotVC, animated: true)
         case .previewMealTypeStrings:
+//            print ("selectAttribute Meal")
+            print ("selectAttribute 0, \(pickerView.selectedRowInComponent(0))")
+            print ("selectAttribute 1, \(pickerView.selectedRowInComponent(1))")
+            print ("selectAttribute 2, \(pickerView.selectedRowInComponent(2))")
+            print ("selected time, \(IntroViewController.previewMealTypeStrings[0][pickerView.selectedRowInComponent(0)])")
+            print ("selected time, \(IntroViewController.previewMealTypeStrings[1][pickerView.selectedRowInComponent(1)])")
+            print ("selected time, \(IntroViewController.previewMealTypeStrings[2][pickerView.selectedRowInComponent(2)])")
+        
+//            print ("selected, \(previewMealTypeStrings[pickerView.selectedRowInComponent(0)][pickerView.selectedRowInComponent(1)][pickerView.selectedRowInComponent(2)])")
+
             return
 //        case .previewMealTimeStarts:
 //            return
@@ -466,6 +478,9 @@ class IntroViewController: UIViewController, UITableViewDelegate, UITableViewDat
         } else if case .Plot(_) = selectedMode! {
             selectedMode = GraphMode.Plot(HealthManager.previewSampleTypes.filter { $0.displayText == HealthManager.previewSampleTypes[row].displayText }.first!)
         } else {
+//            print ("selected 0, \(pickerView.selectedRowInComponent(0))")
+//            print ("selected 1, \(pickerView.selectedRowInComponent(1))")
+//            print ("selected 2, \(pickerView.selectedRowInComponent(2))")
 //            selectedMode = GraphMode.previewMealTypeStrings, GraphMode.previewMealTimeStarts
 //            selectedMode = GraphMode.Plot(HealthManager.previewSampleTypes.filter { $0.displayText == HealthManager.previewSampleTypes[row].displayText }.first!)
 //            selectedMode = GraphMode.Plot2(HealthManager.previewSampleTimes.filter { $0.accessibilityHint == HealthManager.previewSampleTimes[row].accessibilityHint }.first!)
