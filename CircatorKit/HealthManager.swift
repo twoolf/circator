@@ -246,7 +246,7 @@ public class HealthManager: NSObject, WCSessionDelegate {
     }
     
     // MARK: - for writing into HealthKit
-    func saveRunningWorkout(startDate:NSDate , endDate:NSDate , distance:Double, distanceUnit:HKUnit , kiloCalories:Double,
+    public func saveRunningWorkout(startDate:NSDate , endDate:NSDate , distance:Double, distanceUnit:HKUnit , kiloCalories:Double,
         completion: ( (Bool, NSError!) -> Void)!) {
             
             // 1. Create quantities for the distance and energy burned

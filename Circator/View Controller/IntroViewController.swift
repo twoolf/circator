@@ -388,6 +388,15 @@ class IntroViewController: UIViewController, UITableViewDelegate, UITableViewDat
             print ("selected time, \(IntroViewController.previewMealTypeStrings[0][pickerView.selectedRowInComponent(0)])")
             print ("selected time, \(IntroViewController.previewMealTypeStrings[1][pickerView.selectedRowInComponent(1)])")
             print ("selected time, \(IntroViewController.previewMealTypeStrings[2][pickerView.selectedRowInComponent(2)])")
+            IntroViewController.healthManager.saveRunningWorkout(startDate!, endDate: , distance:  , distanceUnit:hkUnit, kiloCalories: , completion: { (success, error ) -> Void in
+                if( success )
+                {
+                    println("Meal saved as workout-type")
+                }
+                else if( error != nil ) {
+                    println("\(error)")
+                }
+            })
         
 //            print ("selected, \(previewMealTypeStrings[pickerView.selectedRowInComponent(0)][pickerView.selectedRowInComponent(1)][pickerView.selectedRowInComponent(2)])")
 
