@@ -164,8 +164,9 @@ class IntroViewController: UIViewController, UITableViewDelegate, UITableViewDat
     
     static let sampleFormatter = SampleFormatter()
     static let previewTypeStrings = HealthManager.previewSampleTypes.map { $0.displayText! }
-    static let previewMealTypeStrings = ["Breakfast", "Lunch", "Dinner", "Snack"]
-    static let previewMealTimeStarts = ["noon", "1 PM", "3 PM", "6 PM"]
+    static let previewMealTypeStrings = [["Breakfast", "Lunch", "Dinner", "Snack"],["5 AM", "6 AM", "7 AM", "8 AM", "9 AM", "10 AM", "11 AM", "noon", "1 PM", "2 PM", "3 PM", "4 PM", "5 PM", "6 PM", "7 PM", "8 PM", "9 PM", "10 PM", "11 PM", "midnight", "1 AM", "2 AM", "3 AM", "4 AM"],["15 min", "1/2 hr", "3/4 hr", "1 hr", "1 1/4 hr", "1 1/2 hr", "1 3/4 hr", "2 hr", "2 1/4 hr", "2 1/2 hr", "2 3/4 hr", "3 hr", "3 1/4 hr", "3 1/2 hr", "3 3/4 hr", "4 hr"]]
+    
+//    static let previewMealTimeStarts = ["noon", "1 PM", "2 PM", "3 PM", "4 PM", "5 PM", "6 PM", "7 PM", "8 PM", "9 PM", "10 PM"]
     
     lazy var dummyTextField: UITextField = {
         let textField = UITextField()
@@ -211,7 +212,7 @@ class IntroViewController: UIViewController, UITableViewDelegate, UITableViewDat
         case Correlate(HKSampleType, HKSampleType)
 //        case Plot2(NSDate)
         case previewMealTypeStrings
-        case previewMealTimeStarts
+//        case previewMealTimeStarts
     }
     
     private var selectedMode: GraphMode!
@@ -379,8 +380,8 @@ class IntroViewController: UIViewController, UITableViewDelegate, UITableViewDat
             navigationController?.pushViewController(plotVC, animated: true)
         case .previewMealTypeStrings:
             return
-        case .previewMealTimeStarts:
-            return
+//        case .previewMealTimeStarts:
+//            return
 //            let plotVC = PlotViewController()
 //            plotVC.sampleType = type
 //            navigationController?.pushViewController(plotVC, animated: true)
@@ -416,7 +417,7 @@ class IntroViewController: UIViewController, UITableViewDelegate, UITableViewDat
         if case .Plot(_) = selectedMode! {
             return 1
         } else if case .previewMealTypeStrings(_) = selectedMode! {
-            return 2
+            return 3
         } else {
             return 2
         }
@@ -432,7 +433,7 @@ class IntroViewController: UIViewController, UITableViewDelegate, UITableViewDat
         } else if case .Plot(_) = selectedMode! {
             return IntroViewController.previewTypeStrings.count
         } else {
-            return IntroViewController.previewMealTypeStrings.count
+            return IntroViewController.previewMealTypeStrings[component].count
         }
     }
     
@@ -440,17 +441,18 @@ class IntroViewController: UIViewController, UITableViewDelegate, UITableViewDat
         if case .Correlate(_) = selectedMode! {
             if component == 0 {
                 return IntroViewController.previewTypeStrings[row]
-            } else if case .Plot(_) = selectedMode! {
+            } else  {
                 return IntroViewController.previewTypeStrings.filter { $0 != IntroViewController.previewTypeStrings[pickerView.selectedRowInComponent(0)] }[row]
-            } else {
-                return IntroViewController.previewMealTypeStrings[row]
             }
+//            } else {
+//                return IntroViewController.previewTypeStrings[row]
+//            }
         } else if case .Plot(_) = selectedMode! {
             return IntroViewController.previewTypeStrings[row]
         } else if case .previewMealTypeStrings = selectedMode! {
-            return IntroViewController.previewMealTypeStrings[row]
+            return IntroViewController.previewMealTypeStrings[component][row]
         } else {
-            return IntroViewController.previewMealTypeStrings[row]
+            return IntroViewController.previewMealTypeStrings[component][row]
         }
     }
     
