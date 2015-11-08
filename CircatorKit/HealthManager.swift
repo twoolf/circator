@@ -246,15 +246,16 @@ public class HealthManager: NSObject, WCSessionDelegate {
     }
     
     // MARK: - for writing into HealthKit
-    public func saveRunningWorkout(startDate:NSDate , endDate:NSDate , distance:Double, distanceUnit:HKUnit , kiloCalories:Double,
-        completion: ( (Bool, NSError!) -> Void)!) {
+    public func savePreparationAndRecoveryWorkout(startDate:NSDate , endDate:NSDate , distance:Double, distanceUnit:HKUnit , kiloCalories:Double,
+        metadata:NSDictionary, completion: ( (Bool, NSError!) -> Void)!) {
             
             // 1. Create quantities for the distance and energy burned
             let distanceQuantity = HKQuantity(unit: distanceUnit, doubleValue: distance)
             let caloriesQuantity = HKQuantity(unit: HKUnit.kilocalorieUnit(), doubleValue: kiloCalories)
+            let mealMeta = ["check": "breakfast"] as NSDictionary
             
-            // 2. Save Running Workout
-            let workout = HKWorkout(activityType: HKWorkoutActivityType.Running, startDate: startDate, endDate: endDate, duration: abs(endDate.timeIntervalSinceDate(startDate)), totalEnergyBurned: caloriesQuantity, totalDistance: distanceQuantity, metadata: nil)
+            // 2. Save Preparation and Recovery Workout as surrogate for Eating (Meal)
+            let workout = HKWorkout(activityType: HKWorkoutActivityType.PreparationAndRecovery, startDate: startDate, endDate: endDate, duration: abs(endDate.timeIntervalSinceDate(startDate)), totalEnergyBurned: caloriesQuantity, totalDistance: distanceQuantity, metadata: metadata  as! [String:String])
             healthKitStore.saveObject(workout, withCompletion: { (success, error) -> Void in
                 if( error != nil  ) {
                     // Error saving the workout

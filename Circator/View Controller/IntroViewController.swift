@@ -164,7 +164,7 @@ class IntroViewController: UIViewController, UITableViewDelegate, UITableViewDat
     
     static let sampleFormatter = SampleFormatter()
     static let previewTypeStrings = HealthManager.previewSampleTypes.map { $0.displayText! }
-    static let previewMealTypeStrings = [["Breakfast", "Lunch", "Dinner", "Snack"],["5 AM", "6 AM", "7 AM", "8 AM", "9 AM", "10 AM", "11 AM", "noon", "1 PM", "2 PM", "3 PM", "4 PM", "5 PM", "6 PM", "7 PM", "8 PM", "9 PM", "10 PM", "11 PM", "midnight", "1 AM", "2 AM", "3 AM", "4 AM"],["15 min", "1/2 hr", "3/4 hr", "1 hr", "1 1/4 hr", "1 1/2 hr", "1 3/4 hr", "2 hr", "2 1/4 hr", "2 1/2 hr", "2 3/4 hr", "3 hr", "3 1/4 hr", "3 1/2 hr", "3 3/4 hr", "4 hr"]]
+    static let previewMealTypeStrings = [["Bkfast", "Lunch", "Dinner", "Snack"],["5:00 AM","5:30 AM","6:00 AM","6:30 AM","7:00 AM","7:30 AM","8:00 AM","8:30 AM","9:00 AM","9:30 AM", "10:00 AM","10:30 AM","11:00 AM","11:30 AM","12:00","12:30 PM","1:00 PM","1:30 PM","2:00 PM","2:30 PM","3:30 PM","3:30 PM","4:00 PM","4:30 PM"], ["15 min", "30 min", "45 min", "60 min", "75 min", "90 min", "105 min", "120 min", "2 1/4 hr", "2 1/2 hr", "2 3/4 hr", "3 hr", "3 1/4 hr", "3 1/2 hr", "3 3/4 hr", "4 hr"],["1✮", "2✮", "3✮", "4✮", "5✮"]]
     
 //    static let previewMealTimeStarts = ["noon", "1 PM", "2 PM", "3 PM", "4 PM", "5 PM", "6 PM", "7 PM", "8 PM", "9 PM", "10 PM"]
     
@@ -368,6 +368,25 @@ class IntroViewController: UIViewController, UITableViewDelegate, UITableViewDat
     
     func selectAttribute(sender: UIBarButtonItem) {
         dummyTextField.resignFirstResponder()
+//        let currentDatePlus = NSDate(timeInterval: 1, sinceDate: currentDate)
+//        let calendar = NSCalendar.currentCalendar()
+//        let dateComponents = calendar.components([NSCalendarUnit.Day, NSCalendarUnit.Month, NSCalendarUnit.Year, NSCalendarUnit.WeekOfYear, NSCalendarUnit.Hour, NSCalendarUnit.Minute, NSCalendarUnit.Second, NSCalendarUnit.Nanosecond], fromDate: currentDate)
+//        let components = NSDateComponents()
+//            components.day = 5
+//            components.month = 01
+//            components.year = 2016
+//            components.hour = 19
+//            components.minute = 30
+//        let newDate = calendar.dateFromComponents(components)
+//        let newDateComponents = NSDateComponents()
+//            newDateComponents.month = 2
+//            newDateComponents.day = 5
+//        let calculatedDate = NSCalendar.currentCalendar().dateByAddingComponents(newDateComponents, toDate: currentDate, options: NSCalendarOptions.init(rawValue: 0))
+        
+//        print("date-1:\(calendar)")
+//        print("date-2:\(newDate)")
+//        print("date-3:\(calculatedDate)")
+
         switch selectedMode! {
         case let .Correlate(type1, type2):
 //            print ("selectAttribute Correlate, \(type1) and \(type2)")
@@ -381,20 +400,58 @@ class IntroViewController: UIViewController, UITableViewDelegate, UITableViewDat
             plotVC.sampleType = type
             navigationController?.pushViewController(plotVC, animated: true)
         case .previewMealTypeStrings:
-//            print ("selectAttribute Meal")
+            print ("selectAttribute Meal")
             print ("selectAttribute 0, \(pickerView.selectedRowInComponent(0))")
             print ("selectAttribute 1, \(pickerView.selectedRowInComponent(1))")
             print ("selectAttribute 2, \(pickerView.selectedRowInComponent(2))")
-            print ("selected time, \(IntroViewController.previewMealTypeStrings[0][pickerView.selectedRowInComponent(0)])")
+            print ("selectAttribute 3, \(pickerView.selectedRowInComponent(3))")
+//            print ("selectAttribute 4, \(pickerView.selectedRowInComponent(4))")
+            print ("selected meal, \(IntroViewController.previewMealTypeStrings[0][pickerView.selectedRowInComponent(0)])")
             print ("selected time, \(IntroViewController.previewMealTypeStrings[1][pickerView.selectedRowInComponent(1)])")
-            print ("selected time, \(IntroViewController.previewMealTypeStrings[2][pickerView.selectedRowInComponent(2)])")
-            IntroViewController.healthManager.saveRunningWorkout(startDate!, endDate: , distance:  , distanceUnit:hkUnit, kiloCalories: , completion: { (success, error ) -> Void in
+            print ("selected duration, \(IntroViewController.previewMealTypeStrings[2][pickerView.selectedRowInComponent(2)])")
+            print ("selected rating, \(IntroViewController.previewMealTypeStrings[3][pickerView.selectedRowInComponent(3)])")
+//            print ("selected time, \(IntroViewController.previewMealTypeStrings[4][pickerView.selectedRowInComponent(4)])")
+            let calendar = NSCalendar.currentCalendar()
+            let currentDate = NSDate()
+            let dateComponents = calendar.components([NSCalendarUnit.Day, NSCalendarUnit.Month, NSCalendarUnit.Year, NSCalendarUnit.WeekOfYear, NSCalendarUnit.Hour, NSCalendarUnit.Minute, NSCalendarUnit.Second, NSCalendarUnit.Nanosecond], fromDate: currentDate)
+//            print("current day = \(dateComponents.day)", "month = \(dateComponents.month)", "year = \(dateComponents.year)", "week of year = \(dateComponents.weekOfYear)", "hour = \(dateComponents.hour)", "minute = \(dateComponents.minute)", "second = \(dateComponents.second)", "nanosecond = \(dateComponents.nanosecond)" , separator: ", ", terminator: "")
+            print(" ")
+            var delimiter = ":"
+            var updatedTime = IntroViewController.previewMealTypeStrings[1][pickerView.selectedRowInComponent(1)].componentsSeparatedByString(delimiter)
+            var delimiter2 = " "
+            var updatedTimeMinute = updatedTime[1].componentsSeparatedByString(delimiter2)
+            print ("updatedTime-hour: \(updatedTime[0])")
+            print ("updatedTime-minute: \(updatedTimeMinute)")
+            var updatedDurationMinute = IntroViewController.previewMealTypeStrings[2][pickerView.selectedRowInComponent(2)].componentsSeparatedByString(delimiter2)
+            print ("updatedDurationMinute: \(updatedDurationMinute[0])")
+            let components = NSDateComponents()
+              components.day = dateComponents.day
+              components.month = dateComponents.month
+              components.year = dateComponents.year
+              components.hour = Int(updatedTime[0])!
+              components.minute = Int(updatedTimeMinute[0])!
+            let newDate = calendar.dateFromComponents(components)
+            let newDateComponents2 = calendar.components([NSCalendarUnit.Day, NSCalendarUnit.Month, NSCalendarUnit.Year, NSCalendarUnit.WeekOfYear, NSCalendarUnit.Hour, NSCalendarUnit.Minute, NSCalendarUnit.Second, NSCalendarUnit.Nanosecond], fromDate: newDate!)
+            print("adjusted day (start) = \(newDateComponents2.day)", "month = \(newDateComponents2.month)", "year = \(newDateComponents2.year)", "week of year = \(newDateComponents2.weekOfYear)", "hour = \(newDateComponents2.hour)", "minute = \(newDateComponents2.minute)", "second = \(newDateComponents2.second)", "nanosecond = \(newDateComponents2.nanosecond)" , separator: ", ", terminator: "")
+            print(" ")
+            let newDateComponents = NSDateComponents()
+//              newDateComponents.hour = Int(updatedTime[0])!
+              newDateComponents.minute = Int(updatedDurationMinute[0])!
+            let calculatedDate = NSCalendar.currentCalendar().dateByAddingComponents(newDateComponents, toDate: newDate!, options: NSCalendarOptions.init(rawValue: 0))
+            let calculatedDateComponents = calendar.components([NSCalendarUnit.Day, NSCalendarUnit.Month, NSCalendarUnit.Year, NSCalendarUnit.WeekOfYear, NSCalendarUnit.Hour, NSCalendarUnit.Minute, NSCalendarUnit.Second, NSCalendarUnit.Nanosecond], fromDate: calculatedDate!)
+            print("adjusted day (end) = \(calculatedDateComponents.day)", "month = \(calculatedDateComponents.month)", "year = \(calculatedDateComponents.year)", "week of year = \(calculatedDateComponents.weekOfYear)", "hour = \(calculatedDateComponents.hour)", "minute = \(calculatedDateComponents.minute)", "second = \(calculatedDateComponents.second)", "nanosecond = \(calculatedDateComponents.nanosecond)" , separator: ", ", terminator: "")
+            
+            let distanceHold = 0.0
+            let kiloCaloriesHold = 0.0
+            let kmUnit = HKUnit(fromString: "km")
+            let metaMeals = [String(IntroViewController.previewMealTypeStrings[3][pickerView.selectedRowInComponent(3)]):"Meal Rating", String(IntroViewController.previewMealTypeStrings[0][pickerView.selectedRowInComponent(0)]):"Meal Type"]
+            HealthManager.sharedManager.savePreparationAndRecoveryWorkout(newDate!, endDate: calculatedDate!, distance: distanceHold, distanceUnit:kmUnit, kiloCalories: kiloCaloriesHold, metadata: metaMeals, completion: { (success, error ) -> Void in
                 if( success )
                 {
-                    println("Meal saved as workout-type")
+                    print("Meal saved as workout-type")
                 }
                 else if( error != nil ) {
-                    println("\(error)")
+                    print("error made: \(error)")
                 }
             })
         
@@ -438,7 +495,7 @@ class IntroViewController: UIViewController, UITableViewDelegate, UITableViewDat
         if case .Plot(_) = selectedMode! {
             return 1
         } else if case .previewMealTypeStrings(_) = selectedMode! {
-            return 3
+            return 4
         } else {
             return 2
         }
