@@ -23,7 +23,7 @@ class CorrelationViewController: UIViewController, ChartViewDelegate {
         label.font = UIFont.systemFontOfSize(16, weight: UIFontWeightSemibold)
         label.textColor = Theme.universityDarkTheme.titleTextColor
         label.textAlignment = .Center
-        label.text = NSLocalizedString("Personal History", comment: "Plot view section title label")
+        label.text = NSLocalizedString("Time Correlations: Min to Max (x-axis) vs Value at time (y-axis)", comment: "Plot view section title label")
         return label
     }()
     
@@ -55,9 +55,10 @@ class CorrelationViewController: UIViewController, ChartViewDelegate {
                 guard error == nil else {
                     return
                 }
+ //               print("entire stat1, \(stat1.)")
                 for (i, stat) in stat1.enumerate() {
                     print("stat1,\(stat.quantity)")
-                    print("stat2,'\(stat2[i].quantity)")
+                    print("stat2,\(stat2[i].quantity)")
                 }
             }
             // TODO: considering changing the title
