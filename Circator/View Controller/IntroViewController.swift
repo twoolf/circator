@@ -164,7 +164,7 @@ class IntroViewController: UIViewController, UITableViewDelegate, UITableViewDat
     
     static let sampleFormatter = SampleFormatter()
     static let previewTypeStrings = HealthManager.previewSampleTypes.map { $0.displayText! }
-    static let previewMealTypeStrings = [["Bkfast", "Lunch", "Dinner", "Snack"],["5:00 AM","5:30 AM","6:00 AM","6:30 AM","7:00 AM","7:30 AM","8:00 AM","8:30 AM","9:00 AM","9:30 AM", "10:00 AM","10:30 AM","11:00 AM","11:30 AM","12:00","12:30 PM","1:00 PM","1:30 PM","2:00 PM","2:30 PM","3:30 PM","3:30 PM","4:00 PM","4:30 PM"], ["15 min", "30 min", "45 min", "60 min", "75 min", "90 min", "105 min", "120 min", "2 1/4 hr", "2 1/2 hr", "2 3/4 hr", "3 hr", "3 1/4 hr", "3 1/2 hr", "3 3/4 hr", "4 hr"],["1✮", "2✮", "3✮", "4✮", "5✮"]]
+    static let previewMealTypeStrings = [["Bkfast", "Lunch", "Dinner", "Snack"],["AM", "5:00","5:30","6:00","6:30","7:00","7:30","8:00","8:30","9:00","9:30", "10:00","10:30","11:00","11:30","12:00","PM", "12:30","13:00","13:30","14:00","14:30","15:00","15:30","16:00","16:30","17:00", "17:30", "18:00", "18:30", "19:00", "19:30", "20:00", "20:30", "21:00", "21:30", "22:00", "22:30", "23:00", "23:30", "24:00", "AM", "00:30", "1:00", "1:30", "2:00", "2:30", "3:00", "3:30", "4:00", "4:30"], ["Min", "15", "30", "45", "60", "90", "120", "150", "180", "210", "240"],["1✮", "2✮", "3✮", "4✮", "5✮"]]
     
 //    static let previewMealTimeStarts = ["noon", "1 PM", "2 PM", "3 PM", "4 PM", "5 PM", "6 PM", "7 PM", "8 PM", "9 PM", "10 PM"]
     
@@ -416,13 +416,14 @@ class IntroViewController: UIViewController, UITableViewDelegate, UITableViewDat
             let dateComponents = calendar.components([NSCalendarUnit.Day, NSCalendarUnit.Month, NSCalendarUnit.Year, NSCalendarUnit.WeekOfYear, NSCalendarUnit.Hour, NSCalendarUnit.Minute, NSCalendarUnit.Second, NSCalendarUnit.Nanosecond], fromDate: currentDate)
 //            print("current day = \(dateComponents.day)", "month = \(dateComponents.month)", "year = \(dateComponents.year)", "week of year = \(dateComponents.weekOfYear)", "hour = \(dateComponents.hour)", "minute = \(dateComponents.minute)", "second = \(dateComponents.second)", "nanosecond = \(dateComponents.nanosecond)" , separator: ", ", terminator: "")
             print(" ")
-            var delimiter = ":"
+            let delimiter = ":"
             var updatedTime = IntroViewController.previewMealTypeStrings[1][pickerView.selectedRowInComponent(1)].componentsSeparatedByString(delimiter)
-            var delimiter2 = " "
+            let delimiter2 = " "
+            let delimiter3 = "min"
             var updatedTimeMinute = updatedTime[1].componentsSeparatedByString(delimiter2)
 //            print ("updatedTime-hour: \(updatedTime[0])")
 //            print ("updatedTime-minute: \(updatedTimeMinute)")
-            var updatedDurationMinute = IntroViewController.previewMealTypeStrings[2][pickerView.selectedRowInComponent(2)].componentsSeparatedByString(delimiter2)
+            var updatedDurationMinute = IntroViewController.previewMealTypeStrings[2][pickerView.selectedRowInComponent(2)].componentsSeparatedByString(delimiter3)
 //            print ("updatedDurationMinute: \(updatedDurationMinute[0])")
             let components = NSDateComponents()
               components.day = dateComponents.day
