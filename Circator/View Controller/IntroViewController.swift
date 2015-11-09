@@ -400,16 +400,16 @@ class IntroViewController: UIViewController, UITableViewDelegate, UITableViewDat
             plotVC.sampleType = type
             navigationController?.pushViewController(plotVC, animated: true)
         case .previewMealTypeStrings:
-            print ("selectAttribute Meal")
-            print ("selectAttribute 0, \(pickerView.selectedRowInComponent(0))")
-            print ("selectAttribute 1, \(pickerView.selectedRowInComponent(1))")
-            print ("selectAttribute 2, \(pickerView.selectedRowInComponent(2))")
-            print ("selectAttribute 3, \(pickerView.selectedRowInComponent(3))")
+//            print ("selectAttribute Meal")
+//            print ("selectAttribute 0, \(pickerView.selectedRowInComponent(0))")
+//            print ("selectAttribute 1, \(pickerView.selectedRowInComponent(1))")
+//            print ("selectAttribute 2, \(pickerView.selectedRowInComponent(2))")
+//            print ("selectAttribute 3, \(pickerView.selectedRowInComponent(3))")
 //            print ("selectAttribute 4, \(pickerView.selectedRowInComponent(4))")
-            print ("selected meal, \(IntroViewController.previewMealTypeStrings[0][pickerView.selectedRowInComponent(0)])")
-            print ("selected time, \(IntroViewController.previewMealTypeStrings[1][pickerView.selectedRowInComponent(1)])")
-            print ("selected duration, \(IntroViewController.previewMealTypeStrings[2][pickerView.selectedRowInComponent(2)])")
-            print ("selected rating, \(IntroViewController.previewMealTypeStrings[3][pickerView.selectedRowInComponent(3)])")
+//            print ("selected meal, \(IntroViewController.previewMealTypeStrings[0][pickerView.selectedRowInComponent(0)])")
+//            print ("selected time, \(IntroViewController.previewMealTypeStrings[1][pickerView.selectedRowInComponent(1)])")
+//            print ("selected duration, \(IntroViewController.previewMealTypeStrings[2][pickerView.selectedRowInComponent(2)])")
+//            print ("selected rating, \(IntroViewController.previewMealTypeStrings[3][pickerView.selectedRowInComponent(3)])")
 //            print ("selected time, \(IntroViewController.previewMealTypeStrings[4][pickerView.selectedRowInComponent(4)])")
             let calendar = NSCalendar.currentCalendar()
             let currentDate = NSDate()
@@ -420,10 +420,10 @@ class IntroViewController: UIViewController, UITableViewDelegate, UITableViewDat
             var updatedTime = IntroViewController.previewMealTypeStrings[1][pickerView.selectedRowInComponent(1)].componentsSeparatedByString(delimiter)
             var delimiter2 = " "
             var updatedTimeMinute = updatedTime[1].componentsSeparatedByString(delimiter2)
-            print ("updatedTime-hour: \(updatedTime[0])")
-            print ("updatedTime-minute: \(updatedTimeMinute)")
+//            print ("updatedTime-hour: \(updatedTime[0])")
+//            print ("updatedTime-minute: \(updatedTimeMinute)")
             var updatedDurationMinute = IntroViewController.previewMealTypeStrings[2][pickerView.selectedRowInComponent(2)].componentsSeparatedByString(delimiter2)
-            print ("updatedDurationMinute: \(updatedDurationMinute[0])")
+//            print ("updatedDurationMinute: \(updatedDurationMinute[0])")
             let components = NSDateComponents()
               components.day = dateComponents.day
               components.month = dateComponents.month
@@ -432,14 +432,14 @@ class IntroViewController: UIViewController, UITableViewDelegate, UITableViewDat
               components.minute = Int(updatedTimeMinute[0])!
             let newDate = calendar.dateFromComponents(components)
             let newDateComponents2 = calendar.components([NSCalendarUnit.Day, NSCalendarUnit.Month, NSCalendarUnit.Year, NSCalendarUnit.WeekOfYear, NSCalendarUnit.Hour, NSCalendarUnit.Minute, NSCalendarUnit.Second, NSCalendarUnit.Nanosecond], fromDate: newDate!)
-            print("adjusted day (start) = \(newDateComponents2.day)", "month = \(newDateComponents2.month)", "year = \(newDateComponents2.year)", "week of year = \(newDateComponents2.weekOfYear)", "hour = \(newDateComponents2.hour)", "minute = \(newDateComponents2.minute)", "second = \(newDateComponents2.second)", "nanosecond = \(newDateComponents2.nanosecond)" , separator: ", ", terminator: "")
+//            print("adjusted day (start) = \(newDateComponents2.day)", "month = \(newDateComponents2.month)", "year = \(newDateComponents2.year)", "week of year = \(newDateComponents2.weekOfYear)", "hour = \(newDateComponents2.hour)", "minute = \(newDateComponents2.minute)", "second = \(newDateComponents2.second)", "nanosecond = \(newDateComponents2.nanosecond)" , separator: ", ", terminator: "")
             print(" ")
             let newDateComponents = NSDateComponents()
 //              newDateComponents.hour = Int(updatedTime[0])!
               newDateComponents.minute = Int(updatedDurationMinute[0])!
             let calculatedDate = NSCalendar.currentCalendar().dateByAddingComponents(newDateComponents, toDate: newDate!, options: NSCalendarOptions.init(rawValue: 0))
             let calculatedDateComponents = calendar.components([NSCalendarUnit.Day, NSCalendarUnit.Month, NSCalendarUnit.Year, NSCalendarUnit.WeekOfYear, NSCalendarUnit.Hour, NSCalendarUnit.Minute, NSCalendarUnit.Second, NSCalendarUnit.Nanosecond], fromDate: calculatedDate!)
-            print("adjusted day (end) = \(calculatedDateComponents.day)", "month = \(calculatedDateComponents.month)", "year = \(calculatedDateComponents.year)", "week of year = \(calculatedDateComponents.weekOfYear)", "hour = \(calculatedDateComponents.hour)", "minute = \(calculatedDateComponents.minute)", "second = \(calculatedDateComponents.second)", "nanosecond = \(calculatedDateComponents.nanosecond)" , separator: ", ", terminator: "")
+//            print("adjusted day (end) = \(calculatedDateComponents.day)", "month = \(calculatedDateComponents.month)", "year = \(calculatedDateComponents.year)", "week of year = \(calculatedDateComponents.weekOfYear)", "hour = \(calculatedDateComponents.hour)", "minute = \(calculatedDateComponents.minute)", "second = \(calculatedDateComponents.second)", "nanosecond = \(calculatedDateComponents.nanosecond)" , separator: ", ", terminator: "")
             
             let distanceHold = 0.0
             let kiloCaloriesHold = 0.0
