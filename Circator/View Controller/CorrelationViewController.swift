@@ -18,16 +18,16 @@ class CorrelationViewController: UIViewController, ChartViewDelegate {
         return view
     }()
     
-    lazy var historyLabel: UILabel = {
+    lazy var correlationLabel: UILabel = {
         let label: UILabel = UILabel()
         label.font = UIFont.systemFontOfSize(16, weight: UIFontWeightSemibold)
         label.textColor = Theme.universityDarkTheme.titleTextColor
         label.textAlignment = .Center
-        label.text = NSLocalizedString("Personal History", comment: "Plot view section title label")
+        label.text = "aaa vs bbb"
         return label
     }()
     
-    lazy var historyChart: LineChartView = {
+    lazy var correlationChart: LineChartView = {
         let chart = LineChartView()
         chart.delegate = self
         chart.rightAxis.enabled = true
@@ -39,13 +39,16 @@ class CorrelationViewController: UIViewController, ChartViewDelegate {
         chart.xAxis.avoidFirstLastClippingEnabled = true
         chart.xAxis.drawAxisLineEnabled = true
         chart.xAxis.drawGridLinesEnabled = true
-        chart.legend.enabled = false
         chart.descriptionText = ""
         chart.xAxis.labelTextColor = Theme.universityDarkTheme.titleTextColor
         chart.leftAxis.labelTextColor = Theme.universityDarkTheme.titleTextColor
         chart.leftAxis.valueFormatter = SampleFormatter.numberFormatter
         chart.rightAxis.labelTextColor = Theme.universityDarkTheme.titleTextColor
         chart.rightAxis.valueFormatter = SampleFormatter.numberFormatter
+        chart.legend.position = .BelowChartCenter
+        chart.legend.form = .Circle
+        chart.legend.font = UIFont.systemFontOfSize(UIFont.smallSystemFontSize())
+        chart.legend.textColor = Theme.universityDarkTheme.bodyTextColor
         return chart
     }()
     
@@ -55,32 +58,33 @@ class CorrelationViewController: UIViewController, ChartViewDelegate {
                 guard error == nil else {
                     return
                 }
-                for (i, stat) in stat1.enumerate() {
-                    print(stat.quantity)
-                    print(stat2[i].quantity)
+                let analyzer = CorrelationDataAnalyzer(sampleTypes: self.sampleTypes, statistics: [stat1, stat2])!
+                let configurator: ((LineChartDataSet) -> Void)? = { dataSet in
+                    dataSet.drawCircleHoleEnabled = false
+                    dataSet.circleRadius = 6
+                    dataSet.valueFormatter = SampleFormatter.numberFormatter
+                    dataSet.circleColors = [Theme.universityDarkTheme.complementForegroundColors!.colorWithVibrancy(0.6)!]
+                    dataSet.colors = [Theme.universityDarkTheme.complementForegroundColors!.colorWithVibrancy(0.6)!]
+                    dataSet.lineWidth = 2
+                    dataSet.fillColor = Theme.universityDarkTheme.complementForegroundColors!.colorWithVibrancy(0.6)!
+                    dataSet.axisDependency = .Left
                 }
+                let configurator2: ((LineChartDataSet) -> Void)? = { dataSet in
+                    dataSet.drawCircleHoleEnabled = false
+                    dataSet.circleRadius = 6
+                    dataSet.valueFormatter = SampleFormatter.numberFormatter
+                    dataSet.circleColors = [Theme.universityDarkTheme.complementForegroundColors!.colorWithVibrancy(0.9)!]
+                    dataSet.colors = [Theme.universityDarkTheme.complementForegroundColors!.colorWithVibrancy(0.9)!]
+                    dataSet.lineWidth = 2
+                    dataSet.fillColor = Theme.universityDarkTheme.complementForegroundColors!.colorWithVibrancy(0.9)!
+                    dataSet.axisDependency = .Right
+                }
+                analyzer.dataSetConfigurators = [configurator, configurator2]
+                self.correlationChart.data = analyzer.correlationChartData
+                self.correlationChart.data?.setValueTextColor(Theme.universityDarkTheme.bodyTextColor)
+                self.correlationChart.data?.setValueFont(UIFont.systemFontOfSize(10, weight: UIFontWeightThin))
             }
-            // TODO: considering changing the title
-//            navigationItem.title = "Correlation"
-
-//                    if self.sampleTypes[0] is HKCorrelationType {
-//                        // Sleep
-//                    } else {
-//                        let analyzer = SampleDataAnalyzer(sampleType: self.sampleTypes[0], samples: samples)
-//                        analyzer.dataSetConfigurator = { dataSet in
-//                            dataSet.drawCircleHoleEnabled = true
-//                            dataSet.circleRadius = 7
-//                            dataSet.valueFormatter = SampleFormatter.numberFormatter
-//                            dataSet.circleHoleColor = Theme.universityDarkTheme.complementForegroundColors!.colorWithVibrancy(0.1)!
-//                            dataSet.circleColors = [Theme.universityDarkTheme.complementForegroundColors!.colorWithVibrancy(0.6)!]
-//                            dataSet.colors = [Theme.universityDarkTheme.complementForegroundColors!.colorWithVibrancy(0.1)!]
-//                            dataSet.lineWidth = 2
-//                            dataSet.fillColor = Theme.universityDarkTheme.complementForegroundColors!.colorWithVibrancy(0.1)!
-//                        }
-//                        self.historyChart.data = analyzer.lineChartData
-//                        self.historyChart.data?.setValueTextColor(Theme.universityDarkTheme.bodyTextColor)
-//                        self.historyChart.data?.setValueFont(UIFont.systemFontOfSize(10, weight: UIFontWeightThin))
-//                    }
+            navigationItem.title = "Correlation"
         }
     }
     
@@ -102,21 +106,21 @@ class CorrelationViewController: UIViewController, ChartViewDelegate {
     private func configureViews() {
         view.addSubview(scrollView)
         scrollView.backgroundColor = Theme.universityDarkTheme.backgroundColor
-        historyLabel.translatesAutoresizingMaskIntoConstraints = false
-        scrollView.addSubview(historyLabel)
-        historyChart.translatesAutoresizingMaskIntoConstraints = false
-        scrollView.addSubview(historyChart)
+        correlationLabel.translatesAutoresizingMaskIntoConstraints = false
+        scrollView.addSubview(correlationLabel)
+        correlationChart.translatesAutoresizingMaskIntoConstraints = false
+        scrollView.addSubview(correlationChart)
         let constraints: [NSLayoutConstraint] = [
-            historyLabel.leadingAnchor.constraintEqualToAnchor(scrollView.layoutMarginsGuide.leadingAnchor),
-            historyLabel.trailingAnchor.constraintEqualToAnchor(scrollView.layoutMarginsGuide.trailingAnchor),
-            historyLabel.topAnchor.constraintEqualToAnchor(scrollView.topAnchor, constant: 12),
-            historyChart.topAnchor.constraintEqualToAnchor(historyLabel.bottomAnchor, constant: 8),
-            historyChart.leadingAnchor.constraintEqualToAnchor(historyLabel.leadingAnchor),
-            historyChart.trailingAnchor.constraintEqualToAnchor(historyLabel.trailingAnchor),
+            correlationLabel.leadingAnchor.constraintEqualToAnchor(scrollView.layoutMarginsGuide.leadingAnchor),
+            correlationLabel.trailingAnchor.constraintEqualToAnchor(scrollView.layoutMarginsGuide.trailingAnchor),
+            correlationLabel.topAnchor.constraintEqualToAnchor(scrollView.topAnchor, constant: 12),
+            correlationChart.topAnchor.constraintEqualToAnchor(correlationLabel.bottomAnchor, constant: 8),
+            correlationChart.leadingAnchor.constraintEqualToAnchor(correlationLabel.leadingAnchor),
+            correlationChart.trailingAnchor.constraintEqualToAnchor(correlationLabel.trailingAnchor),
         ]
         scrollView.addConstraints(constraints)
-        historyChart.translatesAutoresizingMaskIntoConstraints = false
-        historyChart.heightAnchor.constraintEqualToConstant(200).active = true
+        correlationChart.translatesAutoresizingMaskIntoConstraints = false
+        correlationChart.heightAnchor.constraintEqualToConstant(200).active = true
     }
 
 }
