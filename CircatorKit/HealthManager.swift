@@ -209,6 +209,7 @@ public class HealthManager: NSObject, WCSessionDelegate {
                 return
             }
             stat1 = statistics
+            print ("statistics of type 1, \(stat1?.enumerate())")
         }
         dispatch_group_enter(group)
         fetchStatisticsOfType(type2) { (statistics, error) -> Void in
@@ -218,6 +219,7 @@ public class HealthManager: NSObject, WCSessionDelegate {
                 return
             }
             stat2 = statistics
+            print ("statistics of type 2, \(stat2?.enumerate())")
         }
         
         dispatch_group_notify(group, dispatch_get_main_queue()) {
@@ -242,6 +244,7 @@ public class HealthManager: NSObject, WCSessionDelegate {
                 stat1![j] = target
             }
             completion(stat1!, stat2!, nil)
+            print ("statistics of both types, \(stat1),and \(stat2)")
         }
     }
     

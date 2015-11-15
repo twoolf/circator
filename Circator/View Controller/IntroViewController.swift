@@ -65,6 +65,32 @@ class IntroViewController: UIViewController, UITableViewDelegate, UITableViewDat
         return button
     }()
     
+    lazy var bestWeightButton: UIButton = {
+        let button = UIButton(type: .Custom)
+        button.setTitle("Best Weight", forState: .Normal)
+        button.setTitleColor(UIColor.whiteColor(), forState: .Normal)
+        button.titleLabel!.textAlignment = .Center
+        button.addTarget(self, action: "showAttributes:", forControlEvents: .TouchUpInside)
+        button.layer.cornerRadius = 7.0
+        button.backgroundColor = Theme.universityDarkTheme.complementForegroundColors?.colorWithVibrancy(0.2)
+        button.setTitleColor(Theme.universityDarkTheme.bodyTextColor, forState: .Normal)
+        button.titleLabel?.font = UIFont.systemFontOfSize(20, weight: UIFontWeightLight)
+        return button
+    }()
+    
+    lazy var changeSettingsButton: UIButton = {
+        let button = UIButton(type: .Custom)
+        button.setTitle("Settings", forState: .Normal)
+        button.setTitleColor(UIColor.whiteColor(), forState: .Normal)
+        button.titleLabel!.textAlignment = .Center
+        button.addTarget(self, action: "showAttributes:", forControlEvents: .TouchUpInside)
+        button.layer.cornerRadius = 7.0
+        button.backgroundColor = Theme.universityDarkTheme.complementForegroundColors?.colorWithVibrancy(0.2)
+        button.setTitleColor(Theme.universityDarkTheme.bodyTextColor, forState: .Normal)
+        button.titleLabel?.font = UIFont.systemFontOfSize(20, weight: UIFontWeightLight)
+        return button
+    }()
+    
 //    let mealPickerData = ["Breakfast", "Lunch", "Dinner"]
 //    lazy var mealPicker: UIPickerView = {
 //        let meal = UIPickerView(frame: <#T##CGRect#>)
@@ -118,6 +144,15 @@ class IntroViewController: UIViewController, UITableViewDelegate, UITableViewDat
     
     lazy var buttonsContainerView: UIStackView = {
         let stackView: UIStackView = UIStackView(arrangedSubviews: [self.plotButton, self.correlateButton, self.mealButton])
+        stackView.axis = .Horizontal
+        stackView.distribution = UIStackViewDistribution.FillEqually
+        stackView.alignment = UIStackViewAlignment.Fill
+        stackView.spacing = 15
+        return stackView
+    }()
+    
+    lazy var topButtonsContainerView: UIStackView = {
+        let stackView: UIStackView = UIStackView(arrangedSubviews: [self.bestWeightButton, self.changeSettingsButton])
         stackView.axis = .Horizontal
         stackView.distribution = UIStackViewDistribution.FillEqually
         stackView.alignment = UIStackViewAlignment.Fill
@@ -282,17 +317,20 @@ class IntroViewController: UIViewController, UITableViewDelegate, UITableViewDat
             buttonsContainerView.centerXAnchor.constraintEqualToAnchor(view.centerXAnchor),
             buttonsContainerView.heightAnchor.constraintEqualToConstant(44)
         ]
-        view.addConstraints(constraints)
-//        timerButtonsContainerView.translatesAutoresizingMaskIntoConstraints = false
-//        view.addSubview(timerButtonsContainerView)
-//        let timerButtonContainerConstraints: [NSLayoutConstraint] = [
-//            timerButtonsContainerView.bottomAnchor.constraintEqualToAnchor(bottomLayoutGuide.bottomAnchor, constant: -90),
-//            timerButtonsContainerView.leadingAnchor.constraintEqualToAnchor(view.layoutMarginsGuide.leadingAnchor, constant: 20),
-//            timerButtonsContainerView.centerXAnchor.constraintEqualToAnchor(view.centerXAnchor),
-//            timerButtonsContainerView.heightAnchor.constraintEqualToConstant(44)
-//        ]
         view.addConstraints(buttonContainerConstraints)
-//        view.addConstraints(timerButtonContainerConstraints)
+        
+        topButtonsContainerView.translatesAutoresizingMaskIntoConstraints = false
+        view.addSubview(topButtonsContainerView)
+        let topButtonsContainerConstraints: [NSLayoutConstraint] = [
+            topButtonsContainerView.topAnchor.constraintEqualToAnchor(view.topAnchor, constant: 40),
+            topButtonsContainerView.widthAnchor.constraintEqualToAnchor(view.widthAnchor, multiplier: 0.7),
+            topButtonsContainerView.leadingAnchor.constraintLessThanOrEqualToAnchor(view.layoutMarginsGuide.leadingAnchor, constant: 47 + 37),
+//            topButtonsContainerView.centerXAnchor.constraintEqualToAnchor(view.centerXAnchor),
+//            topButtonsContainerView.leadingAnchor.constraintGreaterThanOrEqualToAnchor(view.layoutMarginsGuide,leadingAnchor, constant: 27 + 37)
+            topButtonsContainerView.heightAnchor.constraintEqualToConstant(27)
+        ]
+        view.addConstraints(topButtonsContainerConstraints)
+        
         tableView.translatesAutoresizingMaskIntoConstraints = false
         view.addSubview(tableView)
         let tableViewConstraints: [NSLayoutConstraint] = [
