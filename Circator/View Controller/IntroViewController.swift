@@ -67,7 +67,7 @@ class IntroViewController: UIViewController, UITableViewDelegate, UITableViewDat
     
     lazy var bestWeightButton: UIButton = {
         let button = UIButton(type: .Custom)
-        button.setTitle("Best Weight", forState: .Normal)
+        button.setTitle("High Lights", forState: .Normal)
         button.setTitleColor(UIColor.whiteColor(), forState: .Normal)
         button.titleLabel!.textAlignment = .Center
         button.addTarget(self, action: "showAttributes:", forControlEvents: .TouchUpInside)
