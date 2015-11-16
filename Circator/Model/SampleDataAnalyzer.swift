@@ -179,16 +179,6 @@ class SampleDataAnalyzer: NSObject {
         }
     }
     
-//    var correlateChartData: LineChartData {
-//        guard samples.isEmpty == false else {
-//            return LineChartData(xVals: [""])
-//        }
-//        let xVals: [String] = stat1[0]
-//        let entries: [ChartDataEntry] = stat2[0]
-//        let dataSet = LineChartDataSet(yVals: entries)
-//        dataSetConfigurator?(dataSet)
-//        return LineChartData(xVals: xVals, dataSet: dataSet)
-//    }
     
     var summaryData: Double  {
         guard samples.isEmpty == false else {
@@ -197,6 +187,6 @@ class SampleDataAnalyzer: NSObject {
         let summaryData : [Double] = samples.map { (sample) -> Double in
             return sample.numeralValue! }
         return summaryData.sort().first!
-//        let summaryDataMax = summaryData.sort().last
+
     }
 }
