@@ -36,15 +36,7 @@ class PlotViewController: UIViewController, ChartViewDelegate {
         label.text = NSLocalizedString("Summary of Personal History", comment: "Summary view section title label")
         return label
     }()
-    
-//    lazy var populationLabel: UILabel = {
-//        let label: UILabel = UILabel()
-//        label.font = UIFont.systemFontOfSize(16, weight: UIFontWeightSemibold)
-//        label.textColor = Theme.universityDarkTheme.titleTextColor
-//        label.text = NSLocalizedString("Population", comment: "Plot view section title label")
-//        return label
-//    }()
-    
+        
     lazy var historyChart: LineChartView = {
         let chart = LineChartView()
         chart.animate(xAxisDuration: 1.0, yAxisDuration: 1.0)
@@ -85,13 +77,6 @@ class PlotViewController: UIViewController, ChartViewDelegate {
         return chart
     }()
     
-//    lazy var populationChart: LineChartView = {
-//        let chart = LineChartView()
-//        chart.delegate = self
-//        chart.doubleTapToZoomEnabled = false
-//        return chart
-//    }()
-    
     var sampleType: HKSampleType! {
         didSet {
             navigationItem.title = sampleType.displayText!
@@ -129,40 +114,6 @@ class PlotViewController: UIViewController, ChartViewDelegate {
         }
     }
     
-//    var sampleType: HKSampleType! {
-//        didSet {
-//            navigationItem.title = sampleType.displayText!
-//            HealthManager.sharedManager.fetchSamplesOfType(sampleType) { (samples, error) -> Void in
-//                dispatch_async(dispatch_get_main_queue()) {
-//                    guard error == nil else {
-//                        return
-//                    }
-//                    if self.sampleType is HKCorrelationType {
-//                        // Sleep
-//                    } else {
-//                        for _ in samples.enumerate() {
-//                            print("in plot,\(samples)")
-//                        }
-//                        let analyzer = SampleDataAnalyzer(sampleType: self.sampleType, samples: samples)
-//                        analyzer.dataSetConfigurator = { dataSet in
-//                            dataSet.drawCircleHoleEnabled = true
-//                            dataSet.circleRadius = 7
-//                            dataSet.valueFormatter = SampleFormatter.numberFormatter
-//                            dataSet.circleHoleColor = Theme.universityDarkTheme.complementForegroundColors!.colorWithVibrancy(0.1)!
-//                            dataSet.circleColors = [Theme.universityDarkTheme.complementForegroundColors!.colorWithVibrancy(0.6)!]
-//                            dataSet.colors = [Theme.universityDarkTheme.complementForegroundColors!.colorWithVibrancy(0.1)!]
-//                            dataSet.lineWidth = 2
-//                            dataSet.fillColor = Theme.universityDarkTheme.complementForegroundColors!.colorWithVibrancy(0.1)!
-//                        }
-//                        self.summaryChart.data = analyzer.lineChartData
-//                        self.summaryChart.data?.setValueTextColor(Theme.universityDarkTheme.bodyTextColor)
-//                        self.summaryChart.data?.setValueFont(UIFont.systemFontOfSize(10, weight: UIFontWeightThin))
-//                    }
-//                }
-//            }
-//        }
-//    }
-
     override func viewDidLoad() {
         super.viewDidLoad()
         configureViews()
@@ -185,14 +136,12 @@ class PlotViewController: UIViewController, ChartViewDelegate {
         summaryLabel.translatesAutoresizingMaskIntoConstraints = false
         scrollView.addSubview(historyLabel)
         scrollView.addSubview(summaryLabel)
-//        populationLabel.translatesAutoresizingMaskIntoConstraints = false
-//        scrollView.addSubview(populationLabel)
+
         historyChart.translatesAutoresizingMaskIntoConstraints = false
         summaryChart.translatesAutoresizingMaskIntoConstraints = false
         scrollView.addSubview(historyChart)
         scrollView.addSubview(summaryChart)
-//        populationChart.translatesAutoresizingMaskIntoConstraints = false
-//        scrollView.addSubview(populationChart)
+
         let constraints: [NSLayoutConstraint] = [
             historyLabel.leadingAnchor.constraintEqualToAnchor(scrollView.layoutMarginsGuide.leadingAnchor),
             historyLabel.trailingAnchor.constraintEqualToAnchor(scrollView.layoutMarginsGuide.trailingAnchor),
@@ -212,8 +161,7 @@ class PlotViewController: UIViewController, ChartViewDelegate {
         historyChart.heightAnchor.constraintEqualToConstant(200).active = true
         summaryChart.translatesAutoresizingMaskIntoConstraints = false
         summaryChart.heightAnchor.constraintEqualToConstant(200).active = true
-//        populationChart.translatesAutoresizingMaskIntoConstraints = false
-//        populationChart.heightAnchor.constraintEqualToConstant(200).active = true
+
     }
 
     /*

@@ -90,58 +90,7 @@ class IntroViewController: UIViewController, UITableViewDelegate, UITableViewDat
         button.titleLabel?.font = UIFont.systemFontOfSize(20, weight: UIFontWeightLight)
         return button
     }()
-    
-//    let mealPickerData = ["Breakfast", "Lunch", "Dinner"]
-//    lazy var mealPicker: UIPickerView = {
-//        let meal = UIPickerView(frame: <#T##CGRect#>)
-//        meal.
-//    }
-//    lazy var mealPickerLabel: UILabel = {
-//        let label = UILabel(frame: <#T##CGRect#>)
-//        label.
-//    }
-    
-    
-//    lazy var timerButton: UIButton = {
-//        let button = UIButton(type: .Custom)
-//        button.addTarget(self, action: "showTimerAttributes:", forControlEvents: .TouchUpInside)
-//        button.setTitle("Meal", forState: .Normal)
-//        button.setTitleColor(UIColor.whiteColor(), forState: .Normal)
-//        button.titleLabel!.textAlignment = .Center
-//        button.layer.cornerRadius = 7.0
-//        button.backgroundColor = Theme.universityDarkTheme.complementForegroundColors?.colorWithVibrancy(0.8)
-//        button.setTitleColor(Theme.universityDarkTheme.bodyTextColor, forState: .Normal)
-//        button.titleLabel?.font = UIFont.systemFontOfSize(20, weight: UIFontWeightLight)
-//        return button
-//    }()
-    
-
-//    lazy var stopButton: UIButton = {
-//        let button = UIButton(type: .Custom)
-//        button.setTitle("Stop", forState: .Normal)
-//        button.setTitleColor(UIColor.whiteColor(), forState: .Normal)
-//        button.titleLabel!.textAlignment = .Center
-//        button.addTarget(self, action: "showTimerAttributes:", forControlEvents: .TouchUpInside)
-//        button.layer.cornerRadius = 7.0
-//        button.backgroundColor = Theme.universityDarkTheme.complementForegroundColors?.colorWithVibrancy(0.2)
-//        button.setTitleColor(Theme.universityDarkTheme.bodyTextColor, forState: .Normal)
-//        button.titleLabel?.font = UIFont.systemFontOfSize(20, weight: UIFontWeightLight)
-//        return button
-//    }()
-    
-//    lazy var settingsButton: UIButton = {
-//        let button = UIButton(type: .Custom)
-//        button.setTitle("Settings", forState: .Normal)
-//        button.setTitleColor(UIColor.whiteColor(), forState: .Normal)
-//        button.titleLabel!.textAlignment = .Center
-//        button.addTarget(self, action: "showSettings:", forControlEvents: .TouchUpInside)
-//        button.layer.cornerRadius = 7.0
-//        button.backgroundColor = Theme.universityDarkTheme.complementForegroundColors?.colorWithVibrancy(0.2)
-//        button.setTitleColor(Theme.universityDarkTheme.bodyTextColor, forState: .Normal)
-//        button.titleLabel?.font = UIFont.systemFontOfSize(20, weight: UIFontWeightLight)
-//        return button
-//    }()
-    
+        
     lazy var buttonsContainerView: UIStackView = {
         let stackView: UIStackView = UIStackView(arrangedSubviews: [self.plotButton, self.correlateButton, self.mealButton])
         stackView.axis = .Horizontal
@@ -159,15 +108,6 @@ class IntroViewController: UIViewController, UITableViewDelegate, UITableViewDat
         stackView.spacing = 15
         return stackView
     }()
-    
-//    lazy var timerButtonsContainerView: UIStackView = {
-//        let stackView: UIStackView = UIStackView(arrangedSubviews: [self.stopButton])
-//        stackView.axis = .Horizontal
-//        stackView.distribution = UIStackViewDistribution.FillEqually
-//        stackView.alignment = UIStackViewAlignment.Fill
-//        stackView.spacing = 15
-//        return stackView
-//    }()
     
     lazy var tableTitleContainerView: UIStackView = {
         let userImageView = UIImageView(image: UIImage(named: "icon_user")!)
@@ -201,8 +141,6 @@ class IntroViewController: UIViewController, UITableViewDelegate, UITableViewDat
     static let previewTypeStrings = HealthManager.previewSampleTypes.map { $0.displayText! }
     static let previewMealTypeStrings = [["Bkfast", "Lunch", "Dinner", "Snack"],["AM", "5:00","5:30","6:00","6:30","7:00","7:30","8:00","8:30","9:00","9:30", "10:00","10:30","11:00","11:30","12:00","PM", "12:30","13:00","13:30","14:00","14:30","15:00","15:30","16:00","16:30","17:00", "17:30", "18:00", "18:30", "19:00", "19:30", "20:00", "20:30", "21:00", "21:30", "22:00", "22:30", "23:00", "23:30", "24:00", "AM", "00:30", "1:00", "1:30", "2:00", "2:30", "3:00", "3:30", "4:00", "4:30"], ["Min", "15", "30", "45", "60", "90", "120", "150", "180", "210", "240"],["1✮", "2✮", "3✮", "4✮", "5✮"]]
     
-//    static let previewMealTimeStarts = ["noon", "1 PM", "2 PM", "3 PM", "4 PM", "5 PM", "6 PM", "7 PM", "8 PM", "9 PM", "10 PM"]
-    
     lazy var dummyTextField: UITextField = {
         let textField = UITextField()
         textField.inputView = self.pickerView
@@ -219,22 +157,6 @@ class IntroViewController: UIViewController, UITableViewDelegate, UITableViewDat
         return textField
     }()
     
-//    lazy var timeTextField: UITextField = {
-//        let textField = UITextField()
-//        textField.inputView = self.pickerView
-//        textField.inputAccessoryView = {
-//            let view = UIToolbar()
-//            view.frame = CGRectMake(0, 0, 0, 44)
-//            view.items = [
-//                UIBarButtonItem(barButtonSystemItem: .Cancel, target: self, action: "dismissPopup:"),
-//                UIBarButtonItem(barButtonSystemItem: .FlexibleSpace, target: nil, action: ""),
-//                UIBarButtonItem(barButtonSystemItem: .Done, target: self, action: "selectAttribute:")
-//            ]
-//            return view
-//            }()
-//        return textField
-//    }()
-    
     private lazy var pickerView: UIPickerView = {
         let pickerView = UIPickerView()
         pickerView.dataSource = self
@@ -245,9 +167,7 @@ class IntroViewController: UIViewController, UITableViewDelegate, UITableViewDat
     enum GraphMode {
         case Plot(HKSampleType)
         case Correlate(HKSampleType, HKSampleType)
-//        case Plot2(NSDate)
         case previewMealTypeStrings
-//        case previewMealTimeStarts
     }
     
     private var selectedMode: GraphMode!
@@ -256,36 +176,10 @@ class IntroViewController: UIViewController, UITableViewDelegate, UITableViewDat
         super.viewDidLoad()
         configureViews()
         tableView.layoutIfNeeded()
-//        if mealPicker != nil && mealPickerLabel != nil  {
-//          mealPicker!.delegate = self
-//          mealPicker!.dataSource = self
-//        }
         NSNotificationCenter.defaultCenter().addObserverForName(HealthManagerDidUpdateRecentSamplesNotification, object: nil, queue: NSOperationQueue.mainQueue()) { (_) -> Void in
             self.tableView.reloadData()
         }
     }
-    
-//    func numberOfComponentsInMealPickerView(mealPickerView: UIPickerView) -> Int {
-//        return 1
-//    }
-    
-//    func mealPickerView(mealPickerView: UIPickerView, numberOfRowsInComponent component: Int) -> Int {
-//        return mealPickerData.count
-//    }
-    
-//    func mealPickerView(mealPickerView: UIPickerView, titleForRow row: Int, forComponent component: Int) -> String? {
-//        return mealPickerData[row]
-//    }
-    
-//    func mealPickerView(mealPickerView: UIPickerView, didSelectRow row: Int, inComponent component: Int) {
-//        mealPickerLabel!.text = mealPickerData[row]
-//    }
-    
-//    func mealPickerView(mealPickerView: UIPickerView, attributedTitleForRow row: Int, forComponent component: Int) -> NSAttributedString? {
-//        let titleData = mealPickerData[row]
-//        let mealPickerTitle = NSAttributedString(string: titleData, attributes: [NSFontAttributeName:UIFont(name: "Georgia", size: 26.0)!,NSForegroundColorAttributeName:UIColor.blueColor()])
-//        return mealPickerTitle
-//    }
     
     override func viewWillAppear(animated: Bool) {
         super.viewWillAppear(animated)
@@ -325,8 +219,6 @@ class IntroViewController: UIViewController, UITableViewDelegate, UITableViewDat
             topButtonsContainerView.topAnchor.constraintEqualToAnchor(view.topAnchor, constant: 40),
             topButtonsContainerView.widthAnchor.constraintEqualToAnchor(view.widthAnchor, multiplier: 0.7),
             topButtonsContainerView.leadingAnchor.constraintLessThanOrEqualToAnchor(view.layoutMarginsGuide.leadingAnchor, constant: 47 + 37),
-//            topButtonsContainerView.centerXAnchor.constraintEqualToAnchor(view.centerXAnchor),
-//            topButtonsContainerView.leadingAnchor.constraintGreaterThanOrEqualToAnchor(view.layoutMarginsGuide,leadingAnchor, constant: 27 + 37)
             topButtonsContainerView.heightAnchor.constraintEqualToConstant(27)
         ]
         view.addConstraints(topButtonsContainerConstraints)
@@ -361,44 +253,16 @@ class IntroViewController: UIViewController, UITableViewDelegate, UITableViewDat
         if sender == correlateButton {
             selectedMode = GraphMode.Correlate(HealthManager.previewSampleTypes[0], HealthManager.previewSampleTypes[1])
             pickerView.reloadAllComponents()
-//            print("in graph mode: correlate")
         } else if sender == plotButton {
             selectedMode = GraphMode.Plot(HealthManager.previewSampleTypes[0])
             pickerView.reloadAllComponents()
-//            print("in graph mode: plot")
         } else if sender == mealButton {
             selectedMode = GraphMode.previewMealTypeStrings
-//            selectedMode = GraphMode.Plot2(HealthManager.previewSampleTimes[0])
             pickerView.reloadAllComponents()
-//            print("in graph mode: start")
+
         }
         dummyTextField.becomeFirstResponder()
     }
-    
-//    func showTimerAttributes(sender: UIButton) {
-//        if sender == correlateButton {
-//            selectedMode = GraphMode.Correlate(HealthManager.previewSampleTypes[0], HealthManager.previewSampleTypes[1])
-//            pickerView.reloadAllComponents()
-////            print("in graph mode: correlate")
-//        } else {
-//            selectedMode = GraphMode.Plot(HealthManager.previewSampleTypes[0])
-//            pickerView.reloadAllComponents()
-////            print("in graph mode: plot")
-//        }
-//        dummyTextField.becomeFirstResponder()
-//    }
-    
-//    func showTimerAttributes(sender: UIButton) {
-//        if sender == startButton {
-//            startButton.setTitle("pushed", forState:UIControlState.Normal)
-//            pickerView.reloadAllComponents()
-//        } else {
-//            stopButton.setTitle("button pushed", forState:UIControlState.Normal)
-//            pickerView.reloadAllComponents()
-//        }
-//        timeTextField.becomeFirstResponder()
-//    }
-    
     
     func dismissPopup(sender: UIBarButtonItem) {
         dummyTextField.resignFirstResponder()
@@ -406,63 +270,27 @@ class IntroViewController: UIViewController, UITableViewDelegate, UITableViewDat
     
     func selectAttribute(sender: UIBarButtonItem) {
         dummyTextField.resignFirstResponder()
-//        let currentDatePlus = NSDate(timeInterval: 1, sinceDate: currentDate)
-//        let calendar = NSCalendar.currentCalendar()
-//        let dateComponents = calendar.components([NSCalendarUnit.Day, NSCalendarUnit.Month, NSCalendarUnit.Year, NSCalendarUnit.WeekOfYear, NSCalendarUnit.Hour, NSCalendarUnit.Minute, NSCalendarUnit.Second, NSCalendarUnit.Nanosecond], fromDate: currentDate)
-//        let components = NSDateComponents()
-//            components.day = 5
-//            components.month = 01
-//            components.year = 2016
-//            components.hour = 19
-//            components.minute = 30
-//        let newDate = calendar.dateFromComponents(components)
-//        let newDateComponents = NSDateComponents()
-//            newDateComponents.month = 2
-//            newDateComponents.day = 5
-//        let calculatedDate = NSCalendar.currentCalendar().dateByAddingComponents(newDateComponents, toDate: currentDate, options: NSCalendarOptions.init(rawValue: 0))
-        
-//        print("date-1:\(calendar)")
-//        print("date-2:\(newDate)")
-//        print("date-3:\(calculatedDate)")
-
         switch selectedMode! {
         case let .Correlate(type1, type2):
-//            print ("selectAttribute Correlate, \(type1) and \(type2)")
             let correlateVC = CorrelationViewController()
             correlateVC.sampleTypes = [type1, type2]
             navigationController?.pushViewController(correlateVC, animated: true)
             break
         case .Plot(let type):
-//            print ("selectAttribute Plot, \(type)")
             let plotVC = PlotViewController()
             plotVC.sampleType = type
             navigationController?.pushViewController(plotVC, animated: true)
         case .previewMealTypeStrings:
-//            print ("selectAttribute Meal")
-//            print ("selectAttribute 0, \(pickerView.selectedRowInComponent(0))")
-//            print ("selectAttribute 1, \(pickerView.selectedRowInComponent(1))")
-//            print ("selectAttribute 2, \(pickerView.selectedRowInComponent(2))")
-//            print ("selectAttribute 3, \(pickerView.selectedRowInComponent(3))")
-//            print ("selectAttribute 4, \(pickerView.selectedRowInComponent(4))")
-//            print ("selected meal, \(IntroViewController.previewMealTypeStrings[0][pickerView.selectedRowInComponent(0)])")
-//            print ("selected time, \(IntroViewController.previewMealTypeStrings[1][pickerView.selectedRowInComponent(1)])")
-//            print ("selected duration, \(IntroViewController.previewMealTypeStrings[2][pickerView.selectedRowInComponent(2)])")
-//            print ("selected rating, \(IntroViewController.previewMealTypeStrings[3][pickerView.selectedRowInComponent(3)])")
-//            print ("selected time, \(IntroViewController.previewMealTypeStrings[4][pickerView.selectedRowInComponent(4)])")
             let calendar = NSCalendar.currentCalendar()
             let currentDate = NSDate()
             let dateComponents = calendar.components([NSCalendarUnit.Day, NSCalendarUnit.Month, NSCalendarUnit.Year, NSCalendarUnit.WeekOfYear, NSCalendarUnit.Hour, NSCalendarUnit.Minute, NSCalendarUnit.Second, NSCalendarUnit.Nanosecond], fromDate: currentDate)
-//            print("current day = \(dateComponents.day)", "month = \(dateComponents.month)", "year = \(dateComponents.year)", "week of year = \(dateComponents.weekOfYear)", "hour = \(dateComponents.hour)", "minute = \(dateComponents.minute)", "second = \(dateComponents.second)", "nanosecond = \(dateComponents.nanosecond)" , separator: ", ", terminator: "")
             print(" ")
             let delimiter = ":"
             var updatedTime = IntroViewController.previewMealTypeStrings[1][pickerView.selectedRowInComponent(1)].componentsSeparatedByString(delimiter)
             let delimiter2 = " "
             let delimiter3 = "min"
             var updatedTimeMinute = updatedTime[1].componentsSeparatedByString(delimiter2)
-//            print ("updatedTime-hour: \(updatedTime[0])")
-//            print ("updatedTime-minute: \(updatedTimeMinute)")
             var updatedDurationMinute = IntroViewController.previewMealTypeStrings[2][pickerView.selectedRowInComponent(2)].componentsSeparatedByString(delimiter3)
-//            print ("updatedDurationMinute: \(updatedDurationMinute[0])")
             let components = NSDateComponents()
               components.day = dateComponents.day
               components.month = dateComponents.month
@@ -471,15 +299,11 @@ class IntroViewController: UIViewController, UITableViewDelegate, UITableViewDat
               components.minute = Int(updatedTimeMinute[0])!
             let newDate = calendar.dateFromComponents(components)
             let newDateComponents2 = calendar.components([NSCalendarUnit.Day, NSCalendarUnit.Month, NSCalendarUnit.Year, NSCalendarUnit.WeekOfYear, NSCalendarUnit.Hour, NSCalendarUnit.Minute, NSCalendarUnit.Second, NSCalendarUnit.Nanosecond], fromDate: newDate!)
-//            print("adjusted day (start) = \(newDateComponents2.day)", "month = \(newDateComponents2.month)", "year = \(newDateComponents2.year)", "week of year = \(newDateComponents2.weekOfYear)", "hour = \(newDateComponents2.hour)", "minute = \(newDateComponents2.minute)", "second = \(newDateComponents2.second)", "nanosecond = \(newDateComponents2.nanosecond)" , separator: ", ", terminator: "")
             print(" ")
             let newDateComponents = NSDateComponents()
-//              newDateComponents.hour = Int(updatedTime[0])!
               newDateComponents.minute = Int(updatedDurationMinute[0])!
             let calculatedDate = NSCalendar.currentCalendar().dateByAddingComponents(newDateComponents, toDate: newDate!, options: NSCalendarOptions.init(rawValue: 0))
             let calculatedDateComponents = calendar.components([NSCalendarUnit.Day, NSCalendarUnit.Month, NSCalendarUnit.Year, NSCalendarUnit.WeekOfYear, NSCalendarUnit.Hour, NSCalendarUnit.Minute, NSCalendarUnit.Second, NSCalendarUnit.Nanosecond], fromDate: calculatedDate!)
-//            print("adjusted day (end) = \(calculatedDateComponents.day)", "month = \(calculatedDateComponents.month)", "year = \(calculatedDateComponents.year)", "week of year = \(calculatedDateComponents.weekOfYear)", "hour = \(calculatedDateComponents.hour)", "minute = \(calculatedDateComponents.minute)", "second = \(calculatedDateComponents.second)", "nanosecond = \(calculatedDateComponents.nanosecond)" , separator: ", ", terminator: "")
-            
             let distanceHold = 0.0
             let kiloCaloriesHold = 0.0
             let kmUnit = HKUnit(fromString: "km")
@@ -494,14 +318,9 @@ class IntroViewController: UIViewController, UITableViewDelegate, UITableViewDat
                 }
             })
         
-//            print ("selected, \(previewMealTypeStrings[pickerView.selectedRowInComponent(0)][pickerView.selectedRowInComponent(1)][pickerView.selectedRowInComponent(2)])")
 
             return
-//        case .previewMealTimeStarts:
-//            return
-//            let plotVC = PlotViewController()
-//            plotVC.sampleType = type
-//            navigationController?.pushViewController(plotVC, animated: true)
+
         }
     }
     
@@ -561,9 +380,6 @@ class IntroViewController: UIViewController, UITableViewDelegate, UITableViewDat
             } else  {
                 return IntroViewController.previewTypeStrings.filter { $0 != IntroViewController.previewTypeStrings[pickerView.selectedRowInComponent(0)] }[row]
             }
-//            } else {
-//                return IntroViewController.previewTypeStrings[row]
-//            }
         } else if case .Plot(_) = selectedMode! {
             return IntroViewController.previewTypeStrings[row]
         } else if case .previewMealTypeStrings = selectedMode! {
@@ -572,7 +388,6 @@ class IntroViewController: UIViewController, UITableViewDelegate, UITableViewDat
             return IntroViewController.previewMealTypeStrings[component][row]
         }
     }
-    
     func pickerView(pickerView: UIPickerView, didSelectRow row: Int, inComponent component: Int) {
         if case .Correlate(_) = selectedMode! {
             if component == 0 {
@@ -583,40 +398,8 @@ class IntroViewController: UIViewController, UITableViewDelegate, UITableViewDat
         } else if case .Plot(_) = selectedMode! {
             selectedMode = GraphMode.Plot(HealthManager.previewSampleTypes.filter { $0.displayText == HealthManager.previewSampleTypes[row].displayText }.first!)
         } else {
-//            print ("selected 0, \(pickerView.selectedRowInComponent(0))")
-//            print ("selected 1, \(pickerView.selectedRowInComponent(1))")
-//            print ("selected 2, \(pickerView.selectedRowInComponent(2))")
-//            selectedMode = GraphMode.previewMealTypeStrings, GraphMode.previewMealTimeStarts
-//            selectedMode = GraphMode.Plot(HealthManager.previewSampleTypes.filter { $0.displayText == HealthManager.previewSampleTypes[row].displayText }.first!)
-//            selectedMode = GraphMode.Plot2(HealthManager.previewSampleTimes.filter { $0.accessibilityHint == HealthManager.previewSampleTimes[row].accessibilityHint }.first!)
+
         }
     }
-
-    //    var timer = NSTimer()
-    //    let timeInterval:NSTimeInterval = 10.0
-    //    var timeCount:NSTimeInterval = 0.0
-    //    func timeString(time:NSTimeInterval) -> String {
-    //        let minutes = Int(time) / 60
-    //        //let seconds = Int(time) % 60
-    //        let seconds = time - Double(minutes) * 60
-    //        let secondsFraction = seconds - Double(Int(seconds))
-    //        return String(format:"%02i:%02i.%01i",minutes,Int(seconds),Int(secondsFraction * 10.0))
-    //    }
-    
-    //    func resetTimeCount(){
-    //        if countingDown.on{
-    //            timeCount = timerEnd
-    //        } else {
-    //            timeCount = 0.0
-    //        }
-    //    }
-    //            selectedMode = startButton.setTitle(timeString(timeCount), forState:UIControlState.Normal)
-    //            timer = NSTimer.scheduledTimerWithTimeInterval(timeInterval,
-    //                target: self,
-    //                selector: "timerDidEnd:",
-    //                userInfo: "Meal Done",
-    //                repeats: true)
-
-
 }
 

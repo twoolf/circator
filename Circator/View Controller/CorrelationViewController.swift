@@ -55,33 +55,12 @@ class CorrelationViewController: UIViewController, ChartViewDelegate {
                 guard error == nil else {
                     return
                 }
- //               print("entire stat1, \(stat1.)")
                 for (i, stat) in stat1.enumerate() {
                     print("stat1,\(stat.quantity)")
                     print("stat2,\(stat2[i].quantity)")
                 }
             }
-            // TODO: considering changing the title
-//            navigationItem.title = "Correlation"
-//
-//                    if self.sampleTypes[0] is HKCorrelationType {
-//                        // Sleep
-//                    } else {
-//                        let analyzer = SampleDataAnalyzer(sampleType: self.sampleTypes[0], samples: samples)
-//                        analyzer.dataSetConfigurator = { dataSet in
-//                            dataSet.drawCircleHoleEnabled = true
-//                            dataSet.circleRadius = 7
-//                            dataSet.valueFormatter = SampleFormatter.numberFormatter
-//                            dataSet.circleHoleColor = Theme.universityDarkTheme.complementForegroundColors!.colorWithVibrancy(0.1)!
-//                            dataSet.circleColors = [Theme.universityDarkTheme.complementForegroundColors!.colorWithVibrancy(0.6)!]
-//                            dataSet.colors = [Theme.universityDarkTheme.complementForegroundColors!.colorWithVibrancy(0.1)!]
-//                            dataSet.lineWidth = 2
-//                            dataSet.fillColor = Theme.universityDarkTheme.complementForegroundColors!.colorWithVibrancy(0.1)!
-//                        }
-//                        self.historyChart.data = analyzer.lineChartData
-//                        self.historyChart.data?.setValueTextColor(Theme.universityDarkTheme.bodyTextColor)
-//                        self.historyChart.data?.setValueFont(UIFont.systemFontOfSize(10, weight: UIFontWeightThin))
-//                    }
+
         }
     }
     
