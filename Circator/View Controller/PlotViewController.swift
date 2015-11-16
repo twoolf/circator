@@ -91,7 +91,7 @@ class PlotViewController: UIViewController, ChartViewDelegate {
                     if self.sampleType is HKCorrelationType {
                         // Sleep
                     } else {
-                        let analyzer = SampleDataAnalyzer(sampleType: self.sampleType, samples: samples)
+                        let analyzer = PlotDataAnalyzer(sampleType: self.sampleType, samples: samples)
                         analyzer.dataSetConfigurator = { dataSet in
                             dataSet.drawCircleHoleEnabled = true
                             dataSet.circleRadius = 7
