@@ -11,8 +11,39 @@ import CircatorKit
 import HealthKit
 import Charts
 
-class SampleDataAnalyzer: NSObject {
+class CorrelationDataAnalyzer: SampleDataAnalyzer {
+    let sampleTypes: [HKSampleType]
+    let statistics: [[HKStatistics]]
+    var dataSetConfigurators: [((LineChartDataSet) -> Void)?] = []
     
+    init?(sampleTypes: [HKSampleType], statistics: [[HKStatistics]]) {
+        guard sampleTypes.count == 2 && statistics.count == 2 else {
+            self.sampleTypes = []
+            self.statistics = []
+            super.init()
+            return nil
+        }
+        self.sampleTypes = sampleTypes
+        self.statistics = statistics
+        super.init()
+    }
+    
+    var correlationChartData: LineChartData {
+        let firstParamEntries = statistics[0].enumerate().map { (i, stats) -> ChartDataEntry in
+            return ChartDataEntry(value: stats.numeralValue!, xIndex: i + 1)
+        }
+        let firstParamDataSet = LineChartDataSet(yVals: firstParamEntries, label: sampleTypes[0].displayText)
+        dataSetConfigurators[0]?(firstParamDataSet)
+        let secondParamEntries = statistics[1].enumerate().map { (i, stats) -> ChartDataEntry in
+            return ChartDataEntry(value: stats.numeralValue!, xIndex: i + 1)
+        }
+        let secondParamDataSet = LineChartDataSet(yVals: secondParamEntries, label: sampleTypes[1].displayText)
+        dataSetConfigurators[1]?(secondParamDataSet)
+        return LineChartData(xVals: Array(0...statistics[0].count + 1), dataSets: [firstParamDataSet, secondParamDataSet])
+    }
+}
+
+class PlotDataAnalyzer: SampleDataAnalyzer {
     let samples: [HKSample]
     let sampleType: HKSampleType
     
@@ -28,10 +59,10 @@ class SampleDataAnalyzer: NSObject {
     }
     
     var dataGroupingMode: DataGroupingMode = .ByDate
-    
     var dataSetConfigurator: ((LineChartDataSet) -> Void)?
     var dataSetConfiguratorBubbleChart: ((BubbleChartDataSet) -> Void)?
     
+
     var lineChartData: LineChartData {
         guard samples.isEmpty == false else {
             return LineChartData(xVals: [""])
@@ -189,4 +220,8 @@ class SampleDataAnalyzer: NSObject {
         return summaryData.sort().first!
 
     }
+}
+
+class SampleDataAnalyzer: NSObject {
+    static let sampleFormatter = SampleFormatter()
 }

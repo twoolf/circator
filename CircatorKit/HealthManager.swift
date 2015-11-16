@@ -309,7 +309,7 @@ public extension HKSampleType {
         case HKQuantityTypeIdentifierBodyMass:
             return NSLocalizedString("Weight", comment: "HealthKit data type")
         case HKQuantityTypeIdentifierHeartRate:
-            return NSLocalizedString("Heart beat", comment: "HealthKit data type")
+            return NSLocalizedString("Heartbeat", comment: "HealthKit data type")
         case HKCategoryTypeIdentifierSleepAnalysis:
             return NSLocalizedString("Sleep", comment: "HealthKit data type")
         case HKQuantityTypeIdentifierDietaryEnergyConsumed:
@@ -349,6 +349,36 @@ public extension HKStatistics {
         default:
             print("Invalid quantity type \(quantityType.identifier) for HKStatistics")
             return sumQuantity()
+        }
+    }
+    
+    public var numeralValue: Double? {
+        guard defaultUnit != nil && quantity != nil else {
+            return nil
+        }
+        switch quantityType.identifier {
+        case HKQuantityTypeIdentifierBodyMass:
+            fallthrough
+        case HKQuantityTypeIdentifierDietaryEnergyConsumed:
+            fallthrough
+        case HKQuantityTypeIdentifierHeartRate:
+            return quantity!.doubleValueForUnit(defaultUnit!)
+        default:
+            return nil
+        }
+    }
+    
+    public var defaultUnit: HKUnit? {
+        let isMetric: Bool = NSLocale.currentLocale().objectForKey(NSLocaleUsesMetricSystem)!.boolValue
+        switch quantityType.identifier {
+        case HKQuantityTypeIdentifierBodyMass:
+            return isMetric ? HKUnit.gramUnitWithMetricPrefix(.Kilo) : HKUnit.poundUnit()
+        case HKQuantityTypeIdentifierHeartRate:
+            return HKUnit.countUnit().unitDividedByUnit(HKUnit.minuteUnit())
+        case HKQuantityTypeIdentifierDietaryEnergyConsumed:
+            return HKUnit.kilocalorieUnit()
+        default:
+            return nil
         }
     }
 }
