@@ -65,6 +65,18 @@ public class SampleFormatter: NSObject {
         super.init()
     }
     
+    public func stringFromResults(results: [Result]) -> String {
+        if let stat = results as? [HKStatistics] {
+            guard stat.isEmpty == false else {
+                return emptyString
+            }
+            return stringFromStatistics(stat[0])
+        } else if let samples = results as? [HKSample] {
+            return stringFromSamples(samples)
+        }
+        return emptyString
+    }
+    
     public func stringFromStatistics(statistics: HKStatistics) -> String {
         // Guaranteed to be quantity sample here
         // TODO: Need implementation for correlation and sleep

@@ -284,7 +284,6 @@ class IntroViewController: UIViewController, UITableViewDelegate, UITableViewDat
             let calendar = NSCalendar.currentCalendar()
             let currentDate = NSDate()
             let dateComponents = calendar.components([NSCalendarUnit.Day, NSCalendarUnit.Month, NSCalendarUnit.Year, NSCalendarUnit.WeekOfYear, NSCalendarUnit.Hour, NSCalendarUnit.Minute, NSCalendarUnit.Second, NSCalendarUnit.Nanosecond], fromDate: currentDate)
-            print(" ")
             let delimiter = ":"
             var updatedTime = IntroViewController.previewMealTypeStrings[1][pickerView.selectedRowInComponent(1)].componentsSeparatedByString(delimiter)
             let delimiter2 = " "
@@ -298,12 +297,9 @@ class IntroViewController: UIViewController, UITableViewDelegate, UITableViewDat
               components.hour = Int(updatedTime[0])!
               components.minute = Int(updatedTimeMinute[0])!
             let newDate = calendar.dateFromComponents(components)
-            let newDateComponents2 = calendar.components([NSCalendarUnit.Day, NSCalendarUnit.Month, NSCalendarUnit.Year, NSCalendarUnit.WeekOfYear, NSCalendarUnit.Hour, NSCalendarUnit.Minute, NSCalendarUnit.Second, NSCalendarUnit.Nanosecond], fromDate: newDate!)
-            print(" ")
             let newDateComponents = NSDateComponents()
               newDateComponents.minute = Int(updatedDurationMinute[0])!
             let calculatedDate = NSCalendar.currentCalendar().dateByAddingComponents(newDateComponents, toDate: newDate!, options: NSCalendarOptions.init(rawValue: 0))
-            let calculatedDateComponents = calendar.components([NSCalendarUnit.Day, NSCalendarUnit.Month, NSCalendarUnit.Year, NSCalendarUnit.WeekOfYear, NSCalendarUnit.Hour, NSCalendarUnit.Minute, NSCalendarUnit.Second, NSCalendarUnit.Nanosecond], fromDate: calculatedDate!)
             let distanceHold = 0.0
             let kiloCaloriesHold = 0.0
             let kmUnit = HKUnit(fromString: "km")
@@ -343,7 +339,7 @@ class IntroViewController: UIViewController, UITableViewDelegate, UITableViewDat
         let cell = tableView.dequeueReusableCellWithIdentifier(IntroViewTableViewCellIdentifier, forIndexPath: indexPath) as! IntroCompareDataTableViewCell
         let sampleType = HealthManager.previewSampleTypes[indexPath.row]
         cell.sampleType = sampleType
-        cell.setUserData(HealthManager.sharedManager.mostRecentSamples[sampleType] ?? [], populationAverageData: [])
+        cell.setUserData(HealthManager.sharedManager.mostRecentSamples[sampleType] ?? [HKSample](), populationAverageData: [])
         return cell
     }
     

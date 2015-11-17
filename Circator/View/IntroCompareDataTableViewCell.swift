@@ -79,13 +79,13 @@ class IntroCompareDataTableViewCell: UITableViewCell {
     
     static let healthFormatter = SampleFormatter()
     
-    func setUserData(userData: [HKSample], populationAverageData: [HKSample]) {
+    func setUserData(userData: [Result], populationAverageData: [Result]) {
         loadSamples(userData, toLabel: userDataLabel)
         loadSamples(populationAverageData, toLabel: populationAverageLabel)
     }
     
-    private func loadSamples(samples: [HKSample], toLabel label: UILabel) {
-        label.text = "\(IntroCompareDataTableViewCell.healthFormatter.stringFromSamples(samples))"
+    private func loadSamples(results: [Result], toLabel label: UILabel) {
+        label.text = "\(IntroCompareDataTableViewCell.healthFormatter.stringFromResults(results))"
     }
     
     override init(style: UITableViewCellStyle, reuseIdentifier: String?) {
