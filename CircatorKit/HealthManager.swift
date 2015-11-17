@@ -30,7 +30,7 @@ public class HealthManager: NSObject, WCSessionDelegate {
         connectWatch()
     }
     
-    public static let previewSampleTypes = [
+    public static let previewSampleTypes: [HKSampleType] = [
         HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierBodyMass)!,
         HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierHeartRate)!,
         HKObjectType.categoryTypeForIdentifier(HKCategoryTypeIdentifierSleepAnalysis)!,
@@ -217,6 +217,10 @@ public class HealthManager: NSObject, WCSessionDelegate {
             }
             stat2 = stat2!.filter { (statistics) -> Bool in
                 return stat1!.hasSamplesAtStartDate(statistics.startDate)
+            }
+            guard stat1!.isEmpty == false && stat2!.isEmpty == false else {
+                completion(stat1!, stat2!, nil)
+                return
             }
             for i in 1..<stat1!.count {
                 var j = i
