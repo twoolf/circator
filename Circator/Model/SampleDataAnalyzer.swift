@@ -88,10 +88,6 @@ class PlotDataAnalyzer: SampleDataAnalyzer {
             }
             let dataSet = LineChartDataSet(yVals: entries)
             dataSetConfigurator?(dataSet)
-            let summaryData : [Double] = samples.map { (sample) -> Double in
-                return sample.numeralValue!
-            }
-
             return LineChartData(xVals: xVals, dataSet: dataSet)
         } else {
             let xVals: [String] = samples.map { (sample) -> String in
@@ -103,10 +99,6 @@ class PlotDataAnalyzer: SampleDataAnalyzer {
             }
             let dataSet = LineChartDataSet(yVals: entries)
             dataSetConfigurator?(dataSet)
-            let summaryData : [Double] = samples.map { (sample) -> Double in
-                return sample.numeralValue!
-            }
-
             return LineChartData(xVals: xVals, dataSet: dataSet)
         }
     }
@@ -122,73 +114,22 @@ class PlotDataAnalyzer: SampleDataAnalyzer {
                 return sample.numeralValue!
             }
             let summaryDataSorted = summaryData.sort()
-
-            let sortedDataLength = summaryDataSorted.count
-            var xVals = ["Min"]
-            var size = summaryDataSorted[0]
-//            BubbleChartDataEntry(
-            dataEntries.append(BubbleChartDataEntry(xIndex: 0, value: summaryDataSorted[0], size: CGFloat(summaryDataSorted[0]) ))
-// 1st fifth
-            var sum = 0.0
-            var ave = 0.0
-            var count = 0.0
-            let oneFifth = summaryDataSorted.count/5
-            for i in 0..<oneFifth {
-                sum = sum + summaryDataSorted[i]
-                count = count + 1.0
+            guard summaryData.isEmpty == false else {
+                return BubbleChartData(xVals: [String](), dataSet: nil)
+            }
+            let xVals = ["Min", "1st", "2nd", "3rd", "4th", "Last 5th", "Max"]
+            dataEntries.append(BubbleChartDataEntry(xIndex: 0, value: summaryDataSorted[0], size: CGFloat(summaryDataSorted[0])))
+            for partition in 1...5 {
+                let prevFifth = summaryDataSorted.count / 5 * (partition - 1)
+                let fifth = summaryDataSorted.count / 5 * partition
+                let sum = summaryDataSorted[prevFifth..<fifth].reduce(0) { $0 + $1 }
+                guard sum > 0 else {
+                    continue
                 }
-            ave = sum/count
-            xVals.append("1st")
-            dataEntries.append(BubbleChartDataEntry(xIndex: 1, value: ave, size: CGFloat(ave) ))
-// 2nd fifth
-            sum = 0.0
-            ave = 0.0
-            count = 0.0
-            let twoFifths = 2*(summaryDataSorted.count/5)
-            for i in oneFifth..<twoFifths {
-                sum = sum + summaryDataSorted[i]
-                count = count + 1.0
+                let average = sum / Double(fifth - prevFifth)
+                dataEntries.append(BubbleChartDataEntry(xIndex: partition, value: average, size: CGFloat(average)))
             }
-            ave = sum/count
-            xVals.append("2nd")
-            dataEntries.append(BubbleChartDataEntry(xIndex: 2, value: ave, size: CGFloat(ave) ))
-// 3rd fifth
-            sum = 0.0
-            ave = 0.0
-            count = 0.0
-            let threeFifths = 3*(summaryDataSorted.count/5)
-            for i in twoFifths..<threeFifths {
-                sum = sum + summaryDataSorted[i]
-                count = count + 1.0
-            }
-            ave = sum/count
-            xVals.append("3rd")
-            dataEntries.append(BubbleChartDataEntry(xIndex: 3, value: ave, size: CGFloat(ave) ))
-// 4th fifth
-            sum = 0.0
-            ave = 0.0
-            count = 0.0
-            let fourFifths = 4*(summaryDataSorted.count/5)
-            for i in threeFifths..<fourFifths {
-                sum = sum + summaryDataSorted[i]
-                count = count + 1.0
-            }
-            ave = sum/count
-            xVals.append("4th")
-            dataEntries.append(BubbleChartDataEntry(xIndex: 4, value: ave, size: CGFloat(ave) ))
-// last fifth
-            sum = 0.0
-            ave = 0.0
-            count = 0.0
-            for i in fourFifths..<summaryDataSorted.count {
-                sum = sum + summaryDataSorted[i]
-                count = count + 1.0
-            }
-            ave = sum/count
-            xVals.append("last fifth")
-            dataEntries.append(BubbleChartDataEntry(xIndex: 5, value: ave, size: CGFloat(ave) ))
-            xVals.append("max")
-            dataEntries.append(BubbleChartDataEntry(xIndex: 6, value: summaryDataSorted.last!, size: CGFloat(summaryDataSorted.last!) ))
+            dataEntries.append(BubbleChartDataEntry(xIndex: 6, value: summaryDataSorted.last!, size: CGFloat(summaryDataSorted.last!)))
             let dataSet = BubbleChartDataSet(yVals: dataEntries)
             dataSetConfiguratorBubbleChart?(dataSet)
             return BubbleChartData(xVals: xVals, dataSet: dataSet)
@@ -197,9 +138,6 @@ class PlotDataAnalyzer: SampleDataAnalyzer {
                 return SampleFormatter.chartDateFormatter.stringFromDate(sample.startDate)
             }
             var index = 0
-            let entries: [ChartDataEntry] = samples.map { (sample) -> ChartDataEntry in
-                return ChartDataEntry(value: sample.numeralValue!, xIndex: index++)
-            }
             let summaryData: [ChartDataEntry] = samples.map { (sample) -> ChartDataEntry in
                 return ChartDataEntry(value: sample.numeralValue!, xIndex: index++)
             }

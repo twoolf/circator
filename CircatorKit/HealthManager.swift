@@ -47,7 +47,7 @@ public class HealthManager: NSObject, WCSessionDelegate {
         NSDate.init()
     ]
     
-    public var mostRecentSamples = [HKSampleType: [HKSample]]() {
+    public var mostRecentSamples = [HKSampleType: [Result]]() {
         didSet {
             self.updateWatchContext()
         }
@@ -118,20 +118,21 @@ public class HealthManager: NSObject, WCSessionDelegate {
         self.healthKitStore.executeQuery(sampleQuery)
     }
     
-    public func fetchMostRecentSamples(ofTypes types: [HKSampleType] = previewSampleTypes, completion: (samples: [HKSampleType: [HKSample]], error: NSError?) -> Void) {
+    public func fetchMostRecentSamples(ofTypes types: [HKSampleType] = previewSampleTypes, completion: (samples: [HKSampleType: [Result]], error: NSError?) -> Void) {
         let group = dispatch_group_create()
-        var samples = [HKSampleType: [HKSample]]()
+        var samples = [HKSampleType: [Result]]()
         types.forEach { (type) -> () in
             dispatch_group_enter(group)
-            fetchMostRecentSample(type) { (sampleCollection, error) -> Void in
+            let predicate = HKSampleQuery.predicateForSamplesWithStartDate(NSDate().dateByAddingTimeInterval(-3600 * 24), endDate: nil, options: HKQueryOptions())
+            fetchStatisticsOfType(type, predicate: predicate) { (statistics, error) -> Void in
                 dispatch_group_leave(group)
                 guard error == nil else {
                     return
                 }
-                guard sampleCollection.isEmpty == false else {
+                guard statistics.isEmpty == false else {
                     return
                 }
-                samples[sampleCollection[0].sampleType] = sampleCollection
+                samples[type] = statistics
             }
         }
         dispatch_group_notify(group, dispatch_get_main_queue()) {
@@ -154,7 +155,7 @@ public class HealthManager: NSObject, WCSessionDelegate {
     }
     
     // Completion handler is on background queue
-    public func fetchStatisticsOfType(sampleType: HKSampleType, completion: HealthManagerStatisticsBlock) {
+    public func fetchStatisticsOfType(sampleType: HKSampleType, predicate: NSPredicate? = nil, completion: HealthManagerStatisticsBlock) {
         if sampleType is HKQuantityType {
             let calendar = NSCalendar.currentCalendar()
             
@@ -162,8 +163,7 @@ public class HealthManager: NSObject, WCSessionDelegate {
             interval.day = 1
             
             // Set the anchor date to midnight today. Should be able to change according to user settings
-            let anchorComponents =
-            calendar.components([.Year, .Month, .Day, .Hour], fromDate: NSDate())
+            let anchorComponents = calendar.components([.Year, .Month, .Day, .Hour], fromDate: NSDate())
             anchorComponents.hour = 0
             let anchorDate = calendar.dateFromComponents(anchorComponents)!
             
@@ -171,7 +171,7 @@ public class HealthManager: NSObject, WCSessionDelegate {
             
             // Create the query
             let query = HKStatisticsCollectionQuery(quantityType: quantityType,
-                quantitySamplePredicate: nil,
+                quantitySamplePredicate: predicate,
                 options: quantityType.aggregationOptions,
                 anchorDate: anchorDate,
                 intervalComponents: interval)
@@ -188,7 +188,6 @@ public class HealthManager: NSObject, WCSessionDelegate {
                 
                 completion(statistics: results!.statistics(), error: nil)
             }
-            
             healthKitStore.executeQuery(query)
         } else {
             completion(statistics: [], error: NSError(domain: HealthManagerErrorDomain, code: 1048576, userInfo: [NSLocalizedDescriptionKey: "Not implemented"]))
@@ -252,14 +251,14 @@ public class HealthManager: NSObject, WCSessionDelegate {
         }
     }
     
-    // MARK: - for writing into HealthKit
+    // MARK: - Writing into HealthKit
+    
     public func savePreparationAndRecoveryWorkout(startDate:NSDate , endDate:NSDate , distance:Double, distanceUnit:HKUnit , kiloCalories:Double,
         metadata:NSDictionary, completion: ( (Bool, NSError!) -> Void)!) {
             
             // 1. Create quantities for the distance and energy burned
             let distanceQuantity = HKQuantity(unit: distanceUnit, doubleValue: distance)
             let caloriesQuantity = HKQuantity(unit: HKUnit.kilocalorieUnit(), doubleValue: kiloCalories)
-            let mealMeta = ["check": "breakfast"] as NSDictionary
             
             // 2. Save Preparation and Recovery Workout as surrogate for Eating (Meal)
             let workout = HKWorkout(activityType: HKWorkoutActivityType.PreparationAndRecovery, startDate: startDate, endDate: endDate, duration: abs(endDate.timeIntervalSinceDate(startDate)), totalEnergyBurned: caloriesQuantity, totalDistance: distanceQuantity, metadata: metadata  as! [String:String])
@@ -293,11 +292,11 @@ public class HealthManager: NSObject, WCSessionDelegate {
         }
         do {
             let sampleFormatter = SampleFormatter()
-            let applicationContext = mostRecentSamples.map { (sampleType, samples) -> [String: String] in
+            let applicationContext = mostRecentSamples.map { (sampleType, results) -> [String: String] in
                 return [
                     "sampleTypeIdentifier": sampleType.identifier,
                     "displaySampleType": sampleType.displayText!,
-                    "value": sampleFormatter.stringFromSamples(samples)
+                    "value": sampleFormatter.stringFromResults(results)
                 ]
             }
             try WCSession.defaultSession().updateApplicationContext(["context": applicationContext])
@@ -306,6 +305,13 @@ public class HealthManager: NSObject, WCSessionDelegate {
         }
     }
 }
+
+@objc public protocol Result {
+    
+}
+
+extension HKStatistics: Result { }
+extension HKSample: Result { }
 
 public extension HKSampleType {
     public var displayText: String? {
