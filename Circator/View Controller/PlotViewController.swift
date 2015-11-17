@@ -85,9 +85,6 @@ class PlotViewController: UIViewController, ChartViewDelegate {
                     guard error == nil else {
                         return
                     }
-                    for (i, stat) in samples.enumerate() {
-                        print("plot-stats,\(stat.allNumeralValues)")
-                    }
                     if self.sampleType is HKCorrelationType {
                         // Sleep
                     } else {
