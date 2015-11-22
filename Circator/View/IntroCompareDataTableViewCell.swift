@@ -54,26 +54,11 @@ class IntroCompareDataTableViewCell: UITableViewCell {
     
     var sampleType: HKSampleType? {
         didSet {
-            let image: UIImage
             guard sampleType != nil else {
                 healthParameterImageView.image = nil
                 return
             }
-            switch sampleType!.identifier {
-            case HKQuantityTypeIdentifierBodyMass:
-                image = UIImage(named: "icon_weight")!
-            case HKQuantityTypeIdentifierHeartRate:
-                image = UIImage(named: "icon_heart_rate")!
-            case HKCategoryTypeIdentifierSleepAnalysis:
-                image = UIImage(named: "icon_sleep")!
-            case HKQuantityTypeIdentifierDietaryEnergyConsumed:
-                image = UIImage(named: "icon_food")!
-            case HKCorrelationTypeIdentifierBloodPressure:
-                image = UIImage(named: "icon_blood_pressure")!
-            default:
-                image = UIImage()
-            }
-            healthParameterImageView.image = image
+            healthParameterImageView.image = PreviewManager.iconForSampleType(sampleType!)
         }
     }
     

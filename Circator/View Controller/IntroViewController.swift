@@ -70,7 +70,6 @@ class IntroViewController: UIViewController, UITableViewDelegate, UITableViewDat
         button.setTitle("High Lights", forState: .Normal)
         button.setTitleColor(UIColor.whiteColor(), forState: .Normal)
         button.titleLabel!.textAlignment = .Center
-        button.addTarget(self, action: "showAttributes:", forControlEvents: .TouchUpInside)
         button.layer.cornerRadius = 7.0
         button.backgroundColor = Theme.universityDarkTheme.complementForegroundColors?.colorWithVibrancy(0.2)
         button.setTitleColor(Theme.universityDarkTheme.bodyTextColor, forState: .Normal)
@@ -78,12 +77,12 @@ class IntroViewController: UIViewController, UITableViewDelegate, UITableViewDat
         return button
     }()
     
-    lazy var changeSettingsButton: UIButton = {
+    lazy var settingsButton: UIButton = {
         let button = UIButton(type: .Custom)
         button.setTitle("Settings", forState: .Normal)
         button.setTitleColor(UIColor.whiteColor(), forState: .Normal)
         button.titleLabel!.textAlignment = .Center
-        button.addTarget(self, action: "showAttributes:", forControlEvents: .TouchUpInside)
+        button.addTarget(self, action: "showSettings:", forControlEvents: .TouchUpInside)
         button.layer.cornerRadius = 7.0
         button.backgroundColor = Theme.universityDarkTheme.complementForegroundColors?.colorWithVibrancy(0.2)
         button.setTitleColor(Theme.universityDarkTheme.bodyTextColor, forState: .Normal)
@@ -101,7 +100,7 @@ class IntroViewController: UIViewController, UITableViewDelegate, UITableViewDat
     }()
     
     lazy var topButtonsContainerView: UIStackView = {
-        let stackView: UIStackView = UIStackView(arrangedSubviews: [self.bestWeightButton, self.changeSettingsButton])
+        let stackView: UIStackView = UIStackView(arrangedSubviews: [self.bestWeightButton, self.settingsButton])
         stackView.axis = .Horizontal
         stackView.distribution = UIStackViewDistribution.FillEqually
         stackView.alignment = UIStackViewAlignment.Fill
@@ -138,7 +137,7 @@ class IntroViewController: UIViewController, UITableViewDelegate, UITableViewDat
     }()
     
     static let sampleFormatter = SampleFormatter()
-    static let previewTypeStrings = HealthManager.previewSampleTypes.map { $0.displayText! }
+    static let previewTypeStrings = PreviewManager.previewSampleTypes.map { $0.displayText! }
     static let previewMealTypeStrings = [["Bkfast", "Lunch", "Dinner", "Snack"],["AM", "5:00","5:30","6:00","6:30","7:00","7:30","8:00","8:30","9:00","9:30", "10:00","10:30","11:00","11:30","12:00","PM", "12:30","13:00","13:30","14:00","14:30","15:00","15:30","16:00","16:30","17:00", "17:30", "18:00", "18:30", "19:00", "19:30", "20:00", "20:30", "21:00", "21:30", "22:00", "22:30", "23:00", "23:30", "24:00", "AM", "00:30", "1:00", "1:30", "2:00", "2:30", "3:00", "3:30", "4:00", "4:30"], ["Min", "15", "30", "45", "60", "90", "120", "150", "180", "210", "240"],["1✮", "2✮", "3✮", "4✮", "5✮"]]
     
     lazy var dummyTextField: UITextField = {
@@ -251,10 +250,10 @@ class IntroViewController: UIViewController, UITableViewDelegate, UITableViewDat
     
     func showAttributes(sender: UIButton) {
         if sender == correlateButton {
-            selectedMode = GraphMode.Correlate(HealthManager.previewSampleTypes[0], HealthManager.previewSampleTypes[1])
+            selectedMode = GraphMode.Correlate(PreviewManager.previewSampleTypes[0], PreviewManager.previewSampleTypes[1])
             pickerView.reloadAllComponents()
         } else if sender == plotButton {
-            selectedMode = GraphMode.Plot(HealthManager.previewSampleTypes[0])
+            selectedMode = GraphMode.Plot(PreviewManager.previewSampleTypes[0])
             pickerView.reloadAllComponents()
         } else if sender == mealButton {
             selectedMode = GraphMode.previewMealTypeStrings
@@ -313,10 +312,6 @@ class IntroViewController: UIViewController, UITableViewDelegate, UITableViewDat
                     print("error made: \(error)")
                 }
             })
-        
-
-            return
-
         }
     }
     
@@ -337,7 +332,7 @@ class IntroViewController: UIViewController, UITableViewDelegate, UITableViewDat
     
     func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCellWithIdentifier(IntroViewTableViewCellIdentifier, forIndexPath: indexPath) as! IntroCompareDataTableViewCell
-        let sampleType = HealthManager.previewSampleTypes[indexPath.row]
+        let sampleType = PreviewManager.previewSampleTypes[indexPath.row]
         cell.sampleType = sampleType
         cell.setUserData(HealthManager.sharedManager.mostRecentSamples[sampleType] ?? [HKSample](), populationAverageData: [])
         return cell
@@ -389,10 +384,10 @@ class IntroViewController: UIViewController, UITableViewDelegate, UITableViewDat
             if component == 0 {
                 pickerView.reloadComponent(1)
             } else {
-                selectedMode = GraphMode.Correlate(HealthManager.previewSampleTypes.filter { $0.displayText == HealthManager.previewSampleTypes[pickerView.selectedRowInComponent(0)].displayText }.first!, HealthManager.previewSampleTypes.filter { $0.displayText == HealthManager.previewSampleTypes[row].displayText }.first!)
+                selectedMode = GraphMode.Correlate(PreviewManager.previewSampleTypes.filter { $0.displayText == PreviewManager.previewSampleTypes[pickerView.selectedRowInComponent(0)].displayText }.first!, PreviewManager.previewSampleTypes.filter { $0.displayText == PreviewManager.previewSampleTypes[row].displayText }.first!)
             }
         } else if case .Plot(_) = selectedMode! {
-            selectedMode = GraphMode.Plot(HealthManager.previewSampleTypes.filter { $0.displayText == HealthManager.previewSampleTypes[row].displayText }.first!)
+            selectedMode = GraphMode.Plot(PreviewManager.previewSampleTypes.filter { $0.displayText == PreviewManager.previewSampleTypes[row].displayText }.first!)
         } else {
 
         }
