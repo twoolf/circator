@@ -30,21 +30,15 @@ public class HealthManager: NSObject, WCSessionDelegate {
         connectWatch()
     }
     
-    public static let previewSampleTypes: [HKSampleType] = [
-        HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierBodyMass)!,
-        HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierHeartRate)!,
-        HKObjectType.categoryTypeForIdentifier(HKCategoryTypeIdentifierSleepAnalysis)!,
-        HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierDietaryEnergyConsumed)!,
-        HKObjectType.correlationTypeForIdentifier(HKCorrelationTypeIdentifierBloodPressure)!
-    ]
     public static let previewSampleMeals = [
         "Breakfast",
         "Lunch",
         "Dinner",
         "Snack"
     ]
+    
     public static let previewSampleTimes = [
-        NSDate.init()
+        NSDate()
     ]
     
     public var mostRecentSamples = [HKSampleType: [Result]]() {
@@ -134,7 +128,7 @@ public class HealthManager: NSObject, WCSessionDelegate {
         self.healthKitStore.executeQuery(sampleQuery)
     }
     
-    public func fetchMostRecentSamples(ofTypes types: [HKSampleType] = previewSampleTypes, completion: (samples: [HKSampleType: [Result]], error: NSError?) -> Void) {
+    public func fetchMostRecentSamples(ofTypes types: [HKSampleType] = PreviewManager.previewSampleTypes, completion: (samples: [HKSampleType: [Result]], error: NSError?) -> Void) {
         let group = dispatch_group_create()
         var samples = [HKSampleType: [Result]]()
         types.forEach { (type) -> () in
@@ -342,6 +336,24 @@ public extension HKSampleType {
             return NSLocalizedString("Food calories", comment: "HealthKit data type")
         case HKCorrelationTypeIdentifierBloodPressure:
             return NSLocalizedString("Blood pressure", comment: "HealthKit data type")
+        case HKQuantityTypeIdentifierBodyMassIndex:
+            return NSLocalizedString("Body Mass Index", comment: "HealthKit data type")
+        case HKQuantityTypeIdentifierDistanceWalkingRunning:
+            return NSLocalizedString("Walking and Running Distance", comment: "HealthKit data type")
+        case HKQuantityTypeIdentifierStepCount:
+            return NSLocalizedString("Total Step Count", comment: "HealthKit data type")
+        case HKQuantityTypeIdentifierDietaryCarbohydrates:
+            return NSLocalizedString("Total Carbohydrates", comment: "HealthKit data type")
+        case HKQuantityTypeIdentifierDietaryFatTotal:
+            return NSLocalizedString("Total Fat", comment: "HealthKit data type")
+        case HKQuantityTypeIdentifierDietaryProtein:
+            return NSLocalizedString("Total Protein", comment: "HealthKit data type")
+        case HKQuantityTypeIdentifierDietarySugar:
+            return NSLocalizedString("Total Sugar", comment: "HealthKit data type")
+        case HKQuantityTypeIdentifierDietaryCholesterol:
+            return NSLocalizedString("Total Cholesterol", comment: "HealthKit data type")
+        case HKQuantityTypeIdentifierDietarySodium:
+            return NSLocalizedString("Total Salt", comment: "HealthKit data type")
         default:
             return nil
         }

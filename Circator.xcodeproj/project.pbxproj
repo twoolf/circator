@@ -7,7 +7,6 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		780FA3381BB89A1A00D3085D /* SettingsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 780FA3371BB89A1A00D3085D /* SettingsViewController.swift */; };
 		781EE1201BAF3C9F00E6DDA1 /* AddViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 781EE11D1BAF3C9F00E6DDA1 /* AddViewController.swift */; };
 		781EE1221BAF3C9F00E6DDA1 /* DataModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 781EE11F1BAF3C9F00E6DDA1 /* DataModel.swift */; };
 		781EE1281BAF452800E6DDA1 /* RealmPlotViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 781EE1271BAF452800E6DDA1 /* RealmPlotViewController.swift */; };
@@ -45,6 +44,9 @@
 		F43A7C5E1BBDF43600B6FA56 /* PlotButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = F43A7C5C1BBDF43600B6FA56 /* PlotButton.swift */; };
 		F43A7C681BBE508D00B6FA56 /* IntroCompareDataTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = F43A7C671BBE508D00B6FA56 /* IntroCompareDataTableViewCell.swift */; };
 		F44B1A2D1BDAC20D002238E6 /* PlotViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = F44B1A2C1BDAC20D002238E6 /* PlotViewController.swift */; };
+		F4F4DA581C0257130073E9EE /* SettingsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = F4F4DA571C0257130073E9EE /* SettingsViewController.swift */; };
+		F4F4DA5A1C025BE30073E9EE /* PreviewManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = F4F4DA591C025BE30073E9EE /* PreviewManager.swift */; };
+		F4F4DA5C1C0271660073E9EE /* RowSettingsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = F4F4DA5B1C0271660073E9EE /* RowSettingsViewController.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -134,7 +136,6 @@
 /* Begin PBXFileReference section */
 		06103AD5E3EB4C84C4980CB1 /* Pods_Circator.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_Circator.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		4768419D940426F855957056 /* Pods-Circator.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Circator.debug.xcconfig"; path = "Pods/Target Support Files/Pods-Circator/Pods-Circator.debug.xcconfig"; sourceTree = "<group>"; };
-		780FA3371BB89A1A00D3085D /* SettingsViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SettingsViewController.swift; sourceTree = "<group>"; };
 		781EE11D1BAF3C9F00E6DDA1 /* AddViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AddViewController.swift; sourceTree = "<group>"; };
 		781EE11F1BAF3C9F00E6DDA1 /* DataModel.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DataModel.swift; sourceTree = "<group>"; };
 		781EE1231BAF3F6B00E6DDA1 /* Podfile */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = Podfile; path = ../Podfile; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.ruby; };
@@ -183,6 +184,9 @@
 		F43A7C601BBDF49D00B6FA56 /* Circator.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.xml; path = Circator.entitlements; sourceTree = "<group>"; };
 		F43A7C671BBE508D00B6FA56 /* IntroCompareDataTableViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = IntroCompareDataTableViewCell.swift; sourceTree = "<group>"; };
 		F44B1A2C1BDAC20D002238E6 /* PlotViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PlotViewController.swift; sourceTree = "<group>"; };
+		F4F4DA571C0257130073E9EE /* SettingsViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SettingsViewController.swift; sourceTree = "<group>"; };
+		F4F4DA591C025BE30073E9EE /* PreviewManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PreviewManager.swift; sourceTree = "<group>"; };
+		F4F4DA5B1C0271660073E9EE /* RowSettingsViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RowSettingsViewController.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -309,6 +313,7 @@
 			children = (
 				F42F5B341BE1FD1E00195490 /* CircatorKit.h */,
 				F42F5B421BE2048400195490 /* HealthManager.swift */,
+				F4F4DA591C025BE30073E9EE /* PreviewManager.swift */,
 				F42F5B431BE2048400195490 /* SampleFormatter.swift */,
 				F42F5B441BE2048400195490 /* Theme.swift */,
 				F42F5B361BE1FD1E00195490 /* Info.plist */,
@@ -389,7 +394,8 @@
 				7881A3E21BAF3B3E00ECB3C6 /* IntroViewController.swift */,
 				F44B1A2C1BDAC20D002238E6 /* PlotViewController.swift */,
 				F42F5B941BE2C89200195490 /* CorrelationViewController.swift */,
-				780FA3371BB89A1A00D3085D /* SettingsViewController.swift */,
+				F4F4DA571C0257130073E9EE /* SettingsViewController.swift */,
+				F4F4DA5B1C0271660073E9EE /* RowSettingsViewController.swift */,
 				78DBD7551BB8841900F42626 /* RealmCorrelationViewController.swift */,
 				781EE1271BAF452800E6DDA1 /* RealmPlotViewController.swift */,
 				781EE11D1BAF3C9F00E6DDA1 /* AddViewController.swift */,
@@ -696,13 +702,14 @@
 				F43A7C5D1BBDF43600B6FA56 /* CollectionViewCell.swift in Sources */,
 				781EE1221BAF3C9F00E6DDA1 /* DataModel.swift in Sources */,
 				7881A3E31BAF3B3E00ECB3C6 /* IntroViewController.swift in Sources */,
-				780FA3381BB89A1A00D3085D /* SettingsViewController.swift in Sources */,
+				F4F4DA581C0257130073E9EE /* SettingsViewController.swift in Sources */,
 				78DBD7561BB8841900F42626 /* RealmCorrelationViewController.swift in Sources */,
 				F43A7C5E1BBDF43600B6FA56 /* PlotButton.swift in Sources */,
 				F42F5B951BE2C89200195490 /* CorrelationViewController.swift in Sources */,
 				F42F5ADD1BDC85AF00195490 /* SampleDataAnalyzer.swift in Sources */,
 				7881A3E11BAF3B3E00ECB3C6 /* AppDelegate.swift in Sources */,
 				781EE1281BAF452800E6DDA1 /* RealmPlotViewController.swift in Sources */,
+				F4F4DA5C1C0271660073E9EE /* RowSettingsViewController.swift in Sources */,
 				F44B1A2D1BDAC20D002238E6 /* PlotViewController.swift in Sources */,
 				F43A7C681BBE508D00B6FA56 /* IntroCompareDataTableViewCell.swift in Sources */,
 				781EE1201BAF3C9F00E6DDA1 /* AddViewController.swift in Sources */,
@@ -729,6 +736,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				F4F4DA5A1C025BE30073E9EE /* PreviewManager.swift in Sources */,
 				F42F5B471BE2048400195490 /* Theme.swift in Sources */,
 				F42F5B461BE2048400195490 /* SampleFormatter.swift in Sources */,
 				F42F5B451BE2048400195490 /* HealthManager.swift in Sources */,
