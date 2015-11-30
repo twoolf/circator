@@ -1,6 +1,9 @@
 PODS:
   - Alamofire (2.0.2)
-  - Charts (2.1.5)
+  - Charts (2.1.6)
+  - Granola (0.3.0):
+    - ObjectiveSugar (~> 1.1)
+  - ObjectiveSugar (1.1.0)
   - Realm (0.96.2):
     - Realm/Headers (= 0.96.2)
   - Realm/Headers (0.96.2)
@@ -11,6 +14,7 @@ PODS:
 DEPENDENCIES:
   - Alamofire (~> 2.0)
   - Charts (from `https://github.com/danielgindi/ios-charts.git`)
+  - Granola
   - Realm (from `https://github.com/realm/realm-cocoa.git`, branch `swift-2.0`)
   - RealmSwift (from `https://github.com/realm/realm-cocoa.git`, branch `swift-2.0`)
   - SwiftyJSON (from `https://github.com/SwiftyJSON/SwiftyJSON.git`)
@@ -29,21 +33,23 @@ EXTERNAL SOURCES:
 
 CHECKOUT OPTIONS:
   Charts:
-    :commit: 530cbabce9a2aae56f39e0f0a9356eac53b8ed6b
+    :commit: 3f88894f31683888862cf14312db74b05c1a0101
     :git: https://github.com/danielgindi/ios-charts.git
   Realm:
-    :commit: a4e4fbb8dc285ea7c2a794f00ef7f2fb4996ec95
+    :commit: 3a1cd20562c236385ba027fd68e9096f6de9e893
     :git: https://github.com/realm/realm-cocoa.git
   RealmSwift:
-    :commit: a4e4fbb8dc285ea7c2a794f00ef7f2fb4996ec95
+    :commit: 3a1cd20562c236385ba027fd68e9096f6de9e893
     :git: https://github.com/realm/realm-cocoa.git
   SwiftyJSON:
-    :commit: 646f7e8813e6627bd9b09c77d5e775b67988de72
+    :commit: a4cce2ec0bf31bfec2cf4cc7f1030a59a7bc95d2
     :git: https://github.com/SwiftyJSON/SwiftyJSON.git
 
 SPEC CHECKSUMS:
   Alamofire: 8edbab00802a752bb5240cc2abe70e7e881488ad
-  Charts: d2c4099ed2b7e8c35df9561386bb6e3ca6608ba6
+  Charts: 5e1e5ac23898e5b09d226a2fc3e9d86bc281937e
+  Granola: 9363048b8cc0309b43ed1f6b700af47b55b74f35
+  ObjectiveSugar: a6a25f23d657c19df0a0b972466d5b5ca9f5295c
   Realm: 962a3daeb000dfd379e0a9ccb2a752a352a88205
   RealmSwift: 485599fe54e35461c4a0daa7d01d8fbf11424873
   SwiftyJSON: 592b53bee5ef3dd9b3bebc6b9cb7ee35426ae8c3
