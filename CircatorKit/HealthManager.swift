@@ -125,6 +125,10 @@ public class HealthManager: NSObject, WCSessionDelegate {
                 }
                 completion(samples: results!, error: nil)
         }
+//        let serializer = OMHSerializer()
+//        let json = try serializer.jsonForSample(sampleType)
+//        print(json)
+        
         self.healthKitStore.executeQuery(sampleQuery)
     }
     
