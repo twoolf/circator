@@ -11,7 +11,6 @@ import Realm
 import RealmSwift
 import HealthKit
 import CircatorKit
-import Granola
 
 let IntroViewTableViewCellIdentifier = "IntroViewTableViewCellIdentifier"
 
@@ -66,17 +65,17 @@ class IntroViewController: UIViewController, UITableViewDelegate, UITableViewDat
         return button
     }()
     
-    lazy var bestWeightButton: UIButton = {
-        let button = UIButton(type: .Custom)
-        button.setTitle("High Lights", forState: .Normal)
-        button.setTitleColor(UIColor.whiteColor(), forState: .Normal)
-        button.titleLabel!.textAlignment = .Center
-        button.layer.cornerRadius = 7.0
-        button.backgroundColor = Theme.universityDarkTheme.complementForegroundColors?.colorWithVibrancy(0.2)
-        button.setTitleColor(Theme.universityDarkTheme.bodyTextColor, forState: .Normal)
-        button.titleLabel?.font = UIFont.systemFontOfSize(20, weight: UIFontWeightLight)
-        return button
-    }()
+//    lazy var bestWeightButton: UIButton = {
+//        let button = UIButton(type: .Custom)
+//        button.setTitle("High Lights", forState: .Normal)
+//        button.setTitleColor(UIColor.whiteColor(), forState: .Normal)
+//        button.titleLabel!.textAlignment = .Center
+//        button.layer.cornerRadius = 7.0
+//        button.backgroundColor = Theme.universityDarkTheme.complementForegroundColors?.colorWithVibrancy(0.2)
+//        button.setTitleColor(Theme.universityDarkTheme.bodyTextColor, forState: .Normal)
+//        button.titleLabel?.font = UIFont.systemFontOfSize(20, weight: UIFontWeightLight)
+//        return button
+//    }()
     
     lazy var settingsButton: UIButton = {
         let button = UIButton(type: .Custom)
@@ -101,7 +100,7 @@ class IntroViewController: UIViewController, UITableViewDelegate, UITableViewDat
     }()
     
     lazy var topButtonsContainerView: UIStackView = {
-        let stackView: UIStackView = UIStackView(arrangedSubviews: [self.bestWeightButton, self.settingsButton])
+        let stackView: UIStackView = UIStackView(arrangedSubviews: [self.settingsButton])
         stackView.axis = .Horizontal
         stackView.distribution = UIStackViewDistribution.FillEqually
         stackView.alignment = UIStackViewAlignment.Fill
@@ -156,14 +155,6 @@ class IntroViewController: UIViewController, UITableViewDelegate, UITableViewDat
         }()
         return textField
     }()
-    
-    var jsonSample: String = " "
-    func printSample(sample: HKSample) throws {
-        let serializer = OMHSerializer()
-        jsonSample = try serializer.jsonForSample(sample)
-        print(jsonSample)
-    }
-    
     
     private lazy var pickerView: UIPickerView = {
         let pickerView = UIPickerView()
@@ -336,7 +327,7 @@ class IntroViewController: UIViewController, UITableViewDelegate, UITableViewDat
     }
     
     func tableView(tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return 5
+        return 6
     }
     
     func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell {
