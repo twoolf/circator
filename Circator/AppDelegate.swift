@@ -25,6 +25,12 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
                 }
                 NSNotificationCenter.defaultCenter().postNotificationName(HealthManagerDidUpdateRecentSamplesNotification, object: self)
             }
+//            HealthManager.sharedManager.startBackGroundGlucoseObserver() { (samples, error) -> Void in
+//                guard error == nil else {
+//                    return
+//                }
+//                NSNotificationCenter.defaultCenter().postNotificationName(HealthManagerDidUpdateRecentSamplesNotification, object: self)
+//            }
         }
     }
     
