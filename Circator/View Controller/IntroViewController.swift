@@ -11,7 +11,6 @@ import Realm
 import RealmSwift
 import HealthKit
 import CircatorKit
-import Granola
 
 let IntroViewTableViewCellIdentifier = "IntroViewTableViewCellIdentifier"
 
@@ -156,14 +155,6 @@ class IntroViewController: UIViewController, UITableViewDelegate, UITableViewDat
         }()
         return textField
     }()
-    
-    var jsonSample: String = " "
-    func printSample(sample: HKSample) throws {
-        let serializer = OMHSerializer()
-        jsonSample = try serializer.jsonForSample(sample)
-        print(jsonSample)
-    }
-    
     
     private lazy var pickerView: UIPickerView = {
         let pickerView = UIPickerView()

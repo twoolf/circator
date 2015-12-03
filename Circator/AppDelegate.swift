@@ -8,6 +8,8 @@
 
 import UIKit
 import CircatorKit
+import Granola
+import Alamofire
 
 @UIApplicationMain
 class AppDelegate: UIResponder, UIApplicationDelegate {
@@ -25,12 +27,29 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
                 }
                 NSNotificationCenter.defaultCenter().postNotificationName(HealthManagerDidUpdateRecentSamplesNotification, object: self)
             }
-//            HealthManager.sharedManager.startBackGroundGlucoseObserver() { (samples, error) -> Void in
-//                guard error == nil else {
-//                    return
-//                }
-//                NSNotificationCenter.defaultCenter().postNotificationName(HealthManagerDidUpdateRecentSamplesNotification, object: self)
-//            }
+            let serializer = OMHSerializer()
+            HealthManager.sharedManager.startBackgroundGlucoseObserver() { (added, _, _, error) -> Void in
+                guard error == nil else {
+                    debugPrint(error)
+                    return
+                }
+                do {
+                    let jsons = try added.map { (sample) -> [String: AnyObject] in
+                        let json = try serializer.jsonForSample(sample)
+                        let data = json.dataUsingEncoding(NSUTF8StringEncoding)!
+                        let serializedObject = try NSJSONSerialization.JSONObjectWithData(data, options: NSJSONReadingOptions()) as! [String: AnyObject]
+                        return serializedObject
+                    }
+                    print("check on format: \(jsons)")
+                    jsons.forEach { (json) -> () in
+                        Alamofire.request(.POST, "http://45.55.194.186:3000/api/v1/todos", parameters: json, encoding: .JSON).responseString {_, response, result in
+                            print(result)
+                        }
+                    }
+                } catch {
+                    debugPrint(error)
+                }
+            }
         }
     }
     
