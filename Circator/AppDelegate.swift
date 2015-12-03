@@ -14,7 +14,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 
     var window: UIWindow?
     
-    func fetchRecentSamples() {
+    private func fetchRecentSamples() {
         HealthManager.sharedManager.authorizeHealthKit { (success, error) -> Void in
             guard error == nil else {
                 return
@@ -25,12 +25,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
                 }
                 NSNotificationCenter.defaultCenter().postNotificationName(HealthManagerDidUpdateRecentSamplesNotification, object: self)
             }
-//            HealthManager.sharedManager.startBackGroundGlucoseObserver() { (samples, error) -> Void in
-//                guard error == nil else {
-//                    return
-//                }
-//                NSNotificationCenter.defaultCenter().postNotificationName(HealthManagerDidUpdateRecentSamplesNotification, object: self)
-//            }
         }
     }
     
@@ -48,6 +42,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         window?.makeKeyAndVisible()
         
         fetchRecentSamples()
+        HealthManager.sharedManager.registerObservers()
         
         return true
     }

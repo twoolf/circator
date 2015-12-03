@@ -8,6 +8,8 @@
 
 import HealthKit
 import WatchConnectivity
+import Granola
+import Alamofire
 
 public typealias HealthManagerAuthorizationBlock = (success: Bool, error: NSError?) -> Void
 public typealias HealthManagerFetchSampleBlock = (samples: [HKSample], error: NSError?) -> Void
@@ -19,18 +21,11 @@ public let HealthManagerSampleTypeIdentifierSleepDuration = "HealthManagerSample
 
 public let HealthManagerDidUpdateRecentSamplesNotification = "HealthManagerDidUpdateRecentSamplesNotification"
 
+private let HealthManagerAnchorKey = "HKClientAnchorKey"
+
 public class HealthManager: NSObject, WCSessionDelegate {
     
     public static let sharedManager = HealthManager()
-    
-    lazy var healthKitStore: HKHealthStore = HKHealthStore()
-   
-    let glucoseType : HKObjectType = HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierBloodGlucose)!
-    
-    private override init() {
-        super.init()
-        connectWatch()
-    }
     
     public static let previewSampleMeals = [
         "Breakfast",
@@ -47,6 +42,13 @@ public class HealthManager: NSObject, WCSessionDelegate {
         didSet {
             self.updateWatchContext()
         }
+    }
+    
+    lazy var healthKitStore: HKHealthStore = HKHealthStore()
+    
+    private override init() {
+        super.init()
+        connectWatch()
     }
     
     // Not guaranteed to be on main thread
@@ -128,9 +130,6 @@ public class HealthManager: NSObject, WCSessionDelegate {
                 }
                 completion(samples: results!, error: nil)
         }
-//        let serializer = OMHSerializer()
-//        let json = try serializer.jsonForSample(sampleType)
-//        print(json)
         
         self.healthKitStore.executeQuery(sampleQuery)
     }
@@ -140,7 +139,7 @@ public class HealthManager: NSObject, WCSessionDelegate {
         var samples = [HKSampleType: [Result]]()
         types.forEach { (type) -> () in
             dispatch_group_enter(group)
-            let predicate = HKSampleQuery.predicateForSamplesWithStartDate(NSDate().dateByAddingTimeInterval(-3600 * 24), endDate: nil, options: HKQueryOptions())
+            let predicate = HKSampleQuery.predicateForSamplesWithStartDate(NSDate().dateByAddingTimeInterval(-3600 * 96), endDate: nil, options: HKQueryOptions())
             fetchStatisticsOfType(type, predicate: predicate) { (statistics, error) -> Void in
                 dispatch_group_leave(group)
                 guard error == nil else {
@@ -157,104 +156,6 @@ public class HealthManager: NSObject, WCSessionDelegate {
             self.mostRecentSamples = samples
             completion(samples: samples, error: nil)
         }
-    }
-    
-    public func startBackgroundGlucoseObserver(maxResultsPerQuery: Int, anchorQueryCallback: ((source: HealthManager, added: [String]?, deleted: [String]?, newAnchor: HKQueryAnchor?, error: NSError?)->Void)!)->Void {
-        let onBackgroundStarted = {(success: Bool, nsError : NSError?)->Void in
-            if(success){
-
-            } else {
-                debugPrint(nsError)
-            }
-            
-            let obsQuery = HKObserverQuery(sampleType: self.glucoseType as! HKSampleType, predicate: nil) {
-                query, completion, obsError in
-                
-                if(obsError != nil){
-                    //Handle error
-                    debugPrint(obsError)
-                    abort()
-                }
-                
-                var hkAnchor = self.getAnchor()
-                if(hkAnchor == nil) {
-                    hkAnchor = HKQueryAnchor(fromValue: Int(HKAnchoredObjectQueryNoAnchor))
-                }
-                
-                self.getGlucoseSinceAnchor(hkAnchor, maxResults: maxResultsPerQuery, callContinuosly:false, callback: { (source, added, deleted, newAnchor, error) -> Void in
-                    anchorQueryCallback(source: self, added: added, deleted: deleted, newAnchor: newAnchor, error: error)
-                    
-                    completion()
-                })
-            }
-            
-            self.healthKitStore.executeQuery(obsQuery)
-        }
-        
-        healthKitStore.enableBackgroundDeliveryForType(glucoseType, frequency: HKUpdateFrequency.Immediate, withCompletion: onBackgroundStarted )
-    }
-    
-    func getGlucoseSinceAnchor(anchor:HKQueryAnchor?, maxResults:Int, callContinuosly:Bool, callback: ((source: HealthManager, added: [String]?, deleted: [String]?, newAnchor: HKQueryAnchor?, error: NSError?)->Void)!){
-        
-        let sampleType: HKSampleType = glucoseType as! HKSampleType
-        var hkAnchor: HKQueryAnchor;
-        
-        if(anchor != nil){
-            hkAnchor = anchor!
-        } else {
-            hkAnchor = HKQueryAnchor(fromValue: Int(HKAnchoredObjectQueryNoAnchor))
-        }
-        
-        let onAnchorQueryResults : ((HKAnchoredObjectQuery, [HKSample]?, [HKDeletedObject]?, HKQueryAnchor?, NSError?) -> Void)! = {
-            (query:HKAnchoredObjectQuery, addedObjects:[HKSample]?, deletedObjects:[HKDeletedObject]?, newAnchor:HKQueryAnchor?, nsError:NSError?) -> Void in
-            
-            var added = [String]()
-            var deleted = [String]()
-            
-            if (addedObjects?.count > 0){
-                for obj in addedObjects! {
-                    let quant = obj as? HKQuantitySample
-                    if(quant?.UUID.UUIDString != nil){
-                        let val = Double( (quant?.quantity.doubleValueForUnit(HKUnit(fromString: "mg/dL")))! )
-                        let msg : String = (quant?.UUID.UUIDString)! + " " + String(val)
-                        added.append(msg)
-                    }
-                }
-            }
-            
-            if (deletedObjects?.count > 0){
-                for del in deletedObjects! {
-                    let value : String = del.UUID.UUIDString
-                    deleted.append(value)
-                }
-            }
-            
-            if(callback != nil){
-                callback(source:self, added: added, deleted: deleted, newAnchor: newAnchor, error: nsError)
-            }
-        }
-        let anchoredQuery = HKAnchoredObjectQuery(type: sampleType, predicate: nil, anchor: hkAnchor, limit: Int(maxResults), resultsHandler: onAnchorQueryResults)
-        if(callContinuosly){
-            //The updatehandler should not be set when responding to background observerqueries since this will cause multiple callbacks
-            anchoredQuery.updateHandler = onAnchorQueryResults
-        }
-        healthKitStore.executeQuery(anchoredQuery)
-    }
-    
-    let AnchorKey = "HKClientAnchorKey"
-    func getAnchor() -> HKQueryAnchor? {
-        let encoded = NSUserDefaults.standardUserDefaults().dataForKey(AnchorKey)
-        if(encoded == nil){
-            return nil
-        }
-        let anchor = NSKeyedUnarchiver.unarchiveObjectWithData(encoded!) as? HKQueryAnchor
-        return anchor
-    }
-    
-    func saveAnchor(anchor : HKQueryAnchor) {
-        let encoded = NSKeyedArchiver.archivedDataWithRootObject(anchor)
-        NSUserDefaults.standardUserDefaults().setValue(encoded, forKey: AnchorKey)
-        NSUserDefaults.standardUserDefaults().synchronize()
     }
     
     // Completion handler is on background queue
@@ -366,6 +267,110 @@ public class HealthManager: NSObject, WCSessionDelegate {
         }
     }
     
+    // MARK: - Observers
+    
+    public func registerObservers() {
+        authorizeHealthKit { (success, _) -> Void in
+            guard success else {
+                return
+            }
+            let serializer = OMHSerializer()
+            let types = [
+                HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierBloodGlucose)!,
+                HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierBodyMass)!
+            ]
+            types.forEach { (type) in
+                self.startBackgroundObserverForType(type) { (added, _, _, error) -> Void in
+                    guard error == nil else {
+                        debugPrint(error)
+                        return
+                    }
+                    do {
+                        let jsons = try added.map { (sample) -> [String : AnyObject] in
+                            let json = try serializer.jsonForSample(sample)
+                            let data = json.dataUsingEncoding(NSUTF8StringEncoding)!
+                            let serializedObject = try NSJSONSerialization.JSONObjectWithData(data, options: NSJSONReadingOptions()) as! [String : AnyObject]
+                            return serializedObject
+                        }
+                        print(jsons)
+                        jsons.forEach { json -> () in
+                            Alamofire.request(.POST, "http://45.55.194.186:3000/measures", parameters: json, encoding: .JSON).responseString {_, response, result in
+                                print(result)
+                            }
+                        }
+                    } catch {
+                        debugPrint(error)
+                    }
+                }
+            }
+        }
+
+    }
+    
+    public func startBackgroundObserverForType(type: HKSampleType, maxResultsPerQuery: Int = Int(HKObjectQueryNoLimit), anchorQueryCallback: (addedObjects: [HKSample], deletedObjects: [HKDeletedObject], newAnchor: HKQueryAnchor?, error: NSError?) -> Void) -> Void {
+        let onBackgroundStarted = {(success: Bool, nsError: NSError?) -> Void in
+            guard success else {
+                debugPrint(nsError)
+                return
+            }
+            let obsQuery = HKObserverQuery(sampleType: type, predicate: nil) {
+                query, completion, obsError in
+                guard obsError == nil else {
+                    debugPrint(obsError)
+                    return
+                }
+                self.fetchSamplesOfType(type, anchor: self.getAnchorForType(type), maxResults: maxResultsPerQuery, callContinuosly: false) { (added, deleted, newAnchor, error) -> Void in
+                    anchorQueryCallback(addedObjects: added, deletedObjects: deleted, newAnchor: newAnchor, error: error)
+                    if let anchor = newAnchor {
+                        self.setAnchor(anchor, forType: type)
+                    }
+                    completion()
+                }
+            }
+            self.healthKitStore.executeQuery(obsQuery)
+        }
+        healthKitStore.enableBackgroundDeliveryForType(type, frequency: HKUpdateFrequency.Immediate, withCompletion: onBackgroundStarted)
+    }
+    
+    func fetchSamplesOfType(type: HKSampleType, anchor: HKQueryAnchor?, maxResults: Int, callContinuosly: Bool, completion: (added: [HKSample], deleted: [HKDeletedObject], newAnchor: HKQueryAnchor?, error: NSError?) -> Void) {
+        
+        let hkAnchor = anchor ?? HKQueryAnchor(fromValue: Int(HKAnchoredObjectQueryNoAnchor))
+        let onAnchorQueryResults: (HKAnchoredObjectQuery, [HKSample]?, [HKDeletedObject]?, HKQueryAnchor?, NSError?) -> Void = {
+            (query:HKAnchoredObjectQuery, addedObjects: [HKSample]?, deletedObjects: [HKDeletedObject]?, newAnchor: HKQueryAnchor?, nsError: NSError?) -> Void in
+            completion(added: addedObjects ?? [], deleted: deletedObjects ?? [], newAnchor: newAnchor, error: nsError)
+        }
+        let anchoredQuery = HKAnchoredObjectQuery(type: type, predicate: nil, anchor: hkAnchor, limit: Int(maxResults), resultsHandler: onAnchorQueryResults)
+        if callContinuosly {
+            anchoredQuery.updateHandler = onAnchorQueryResults
+        }
+        healthKitStore.executeQuery(anchoredQuery)
+    }
+    
+    
+    private func getAnchorForType(type: HKSampleType) -> HKQueryAnchor {
+        if let anchorDict = NSUserDefaults.standardUserDefaults().objectForKey(HealthManagerAnchorKey) as? [String: NSData] {
+            let encodedAnchor = anchorDict[type.identifier]
+            guard encodedAnchor != nil else {
+                return HKQueryAnchor(fromValue: Int(HKAnchoredObjectQueryNoAnchor))
+            }
+            return NSKeyedUnarchiver.unarchiveObjectWithData(encodedAnchor!) as! HKQueryAnchor
+        } else {
+            return HKQueryAnchor(fromValue: Int(HKAnchoredObjectQueryNoAnchor))
+        }
+    }
+    
+    private func setAnchor(anchor: HKQueryAnchor, forType type: HKSampleType) {
+        let encodedAnchor: NSData = NSKeyedArchiver.archivedDataWithRootObject(anchor)
+        if var anchorDict = NSUserDefaults.standardUserDefaults().objectForKey(HealthManagerAnchorKey) as? [String: NSData] {
+            anchorDict[type.identifier] = encodedAnchor
+            NSUserDefaults.standardUserDefaults().setValue(anchorDict, forKey: HealthManagerAnchorKey)
+        } else {
+            let anchorDict = [type.identifier: encodedAnchor]
+            NSUserDefaults.standardUserDefaults().setValue(anchorDict, forKey: HealthManagerAnchorKey)
+        }
+        NSUserDefaults.standardUserDefaults().synchronize()
+    }
+    
     // MARK: - Writing into HealthKit
     
     public func savePreparationAndRecoveryWorkout(startDate:NSDate , endDate:NSDate , distance:Double, distanceUnit:HKUnit , kiloCalories:Double,
@@ -420,6 +425,8 @@ public class HealthManager: NSObject, WCSessionDelegate {
         }
     }
 }
+
+// MARK: - Categories & Extensions
 
 @objc public protocol Result {
     
@@ -488,6 +495,8 @@ public extension HKStatistics {
         case HKQuantityTypeIdentifierBodyMass:
             return averageQuantity()
         case HKQuantityTypeIdentifierDietaryEnergyConsumed:
+            return sumQuantity()
+        case HKQuantityTypeIdentifierDietaryCarbohydrates:
             return sumQuantity()
         default:
             print("Invalid quantity type \(quantityType.identifier) for HKStatistics")
