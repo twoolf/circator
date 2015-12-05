@@ -155,25 +155,19 @@ public class HealthManager: NSObject, WCSessionDelegate {
     }
     
     public func startBackgroundGlucoseObserver(maxResultsPerQuery: Int = Int(HKObjectQueryNoLimit), anchorQueryCallback: (addedObjects: [HKSample], deletedObjects: [HKDeletedObject], newAnchor: HKQueryAnchor?, error: NSError?) -> Void) -> Void {
-        
         let glucoseType = HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierBloodGlucose)!
-
         let onBackgroundStarted = {(success: Bool, nsError: NSError?) -> Void in
             guard success else {
                 debugPrint(nsError)
                 return
             }
-            
             let obsQuery = HKObserverQuery(sampleType: glucoseType, predicate: nil) {
                 query, completion, obsError in
-                
                 guard obsError == nil else {
                     debugPrint(obsError)
                     return
                 }
-                
                 let hkAnchor = self.getAnchor() ?? HKQueryAnchor(fromValue: Int(HKAnchoredObjectQueryNoAnchor))
-                
                 self.getGlucoseSinceAnchor(hkAnchor, maxResults: maxResultsPerQuery, callContinuosly: false) { (added, deleted, newAnchor, error) -> Void in
                     anchorQueryCallback(addedObjects: added, deletedObjects: deleted, newAnchor: newAnchor, error: error)
                     if let anchor = newAnchor {
@@ -182,27 +176,63 @@ public class HealthManager: NSObject, WCSessionDelegate {
                     completion()
                 }
             }
-            
             self.healthKitStore.executeQuery(obsQuery)
         }
-        
         healthKitStore.enableBackgroundDeliveryForType(glucoseType, frequency: HKUpdateFrequency.Immediate, withCompletion: onBackgroundStarted )
     }
     
     func getGlucoseSinceAnchor(anchor: HKQueryAnchor?, maxResults: Int, callContinuosly: Bool, completion: (added: [HKSample], deleted: [HKDeletedObject], newAnchor: HKQueryAnchor?, error: NSError?) -> Void) {
         
         let glucoseType = HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierBloodGlucose)!
-
         let hkAnchor = anchor ?? HKQueryAnchor(fromValue: Int(HKAnchoredObjectQueryNoAnchor))
-        
         let onAnchorQueryResults: (HKAnchoredObjectQuery, [HKSample]?, [HKDeletedObject]?, HKQueryAnchor?, NSError?) -> Void = {
             (query:HKAnchoredObjectQuery, addedObjects:[HKSample]?, deletedObjects:[HKDeletedObject]?, newAnchor:HKQueryAnchor?, nsError:NSError?) -> Void in
             completion(added: addedObjects ?? [], deleted: deletedObjects ?? [], newAnchor: newAnchor, error: nsError)
         }
-        
         let anchoredQuery = HKAnchoredObjectQuery(type: glucoseType, predicate: nil, anchor: hkAnchor, limit: Int(maxResults), resultsHandler: onAnchorQueryResults)
         if(callContinuosly){
-            //The updatehandler should not be set when responding to background observerqueries since this will cause multiple callbacks
+            anchoredQuery.updateHandler = onAnchorQueryResults
+        }
+        healthKitStore.executeQuery(anchoredQuery)
+    }
+
+    public func startBackgroundWeightObserver(maxResultsPerQuery: Int = Int(HKObjectQueryNoLimit), anchorQueryCallback: (addedObjects: [HKSample], deletedObjects: [HKDeletedObject], newAnchor: HKQueryAnchor?, error: NSError?) -> Void) -> Void {
+        let weightType = HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierBodyMass)!
+        let onBackgroundStarted = {(success: Bool, nsError: NSError?) -> Void in
+            guard success else {
+                debugPrint(nsError)
+                return
+            }
+            let obsQuery = HKObserverQuery(sampleType: weightType, predicate: nil) {
+                query, completion, obsError in
+                guard obsError == nil else {
+                    debugPrint(obsError)
+                    return
+                }
+                let hkAnchor = self.getAnchor() ?? HKQueryAnchor(fromValue: Int(HKAnchoredObjectQueryNoAnchor))
+                self.getWeightSinceAnchor(hkAnchor, maxResults: maxResultsPerQuery, callContinuosly: false) { (added, deleted, newAnchor, error) -> Void in
+                    anchorQueryCallback(addedObjects: added, deletedObjects: deleted, newAnchor: newAnchor, error: error)
+                    if let anchor = newAnchor {
+                        self.saveAnchor(anchor)
+                    }
+                    completion()
+                }
+            }
+            self.healthKitStore.executeQuery(obsQuery)
+        }
+        healthKitStore.enableBackgroundDeliveryForType(weightType, frequency: HKUpdateFrequency.Immediate, withCompletion: onBackgroundStarted )
+    }
+    
+    func getWeightSinceAnchor(anchor: HKQueryAnchor?, maxResults: Int, callContinuosly: Bool, completion: (added: [HKSample], deleted: [HKDeletedObject], newAnchor: HKQueryAnchor?, error: NSError?) -> Void) {
+        
+        let weightType = HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierBodyMass)!
+        let hkAnchor = anchor ?? HKQueryAnchor(fromValue: Int(HKAnchoredObjectQueryNoAnchor))
+        let onAnchorQueryResults: (HKAnchoredObjectQuery, [HKSample]?, [HKDeletedObject]?, HKQueryAnchor?, NSError?) -> Void = {
+            (query:HKAnchoredObjectQuery, addedObjects:[HKSample]?, deletedObjects:[HKDeletedObject]?, newAnchor:HKQueryAnchor?, nsError:NSError?) -> Void in
+            completion(added: addedObjects ?? [], deleted: deletedObjects ?? [], newAnchor: newAnchor, error: nsError)
+        }
+        let anchoredQuery = HKAnchoredObjectQuery(type: weightType, predicate: nil, anchor: hkAnchor, limit: Int(maxResults), resultsHandler: onAnchorQueryResults)
+        if(callContinuosly){
             anchoredQuery.updateHandler = onAnchorQueryResults
         }
         healthKitStore.executeQuery(anchoredQuery)
@@ -455,6 +485,8 @@ public extension HKStatistics {
         case HKQuantityTypeIdentifierBodyMass:
             return averageQuantity()
         case HKQuantityTypeIdentifierDietaryEnergyConsumed:
+            return sumQuantity()
+        case HKQuantityTypeIdentifierDietaryCarbohydrates:
             return sumQuantity()
         default:
             print("Invalid quantity type \(quantityType.identifier) for HKStatistics")

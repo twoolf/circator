@@ -34,15 +34,15 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
                     return
                 }
                 do {
-                    let jsons = try added.map { (sample) -> [String: AnyObject] in
+                    let jsons = try added.map { (sample) -> [String : AnyObject] in
                         let json = try serializer.jsonForSample(sample)
                         let data = json.dataUsingEncoding(NSUTF8StringEncoding)!
-                        let serializedObject = try NSJSONSerialization.JSONObjectWithData(data, options: NSJSONReadingOptions()) as! [String: AnyObject]
+                        let serializedObject = try NSJSONSerialization.JSONObjectWithData(data, options: NSJSONReadingOptions()) as! [String : AnyObject]
                         return serializedObject
                     }
                     print("check on format: \(jsons)")
-                    jsons.forEach { (json) -> () in
-                        Alamofire.request(.POST, "http://45.55.194.186:3000/api/v1/todos", parameters: json, encoding: .JSON).responseString {_, response, result in
+                    jsons.forEach { json -> () in
+                        Alamofire.request(.POST, "http://45.55.194.186:3000/measures", parameters: json, encoding: .JSON).responseString {_, response, result in
                             print(result)
                         }
                     }
