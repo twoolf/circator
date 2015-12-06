@@ -135,7 +135,7 @@ public class HealthManager: NSObject, WCSessionDelegate {
         var samples = [HKSampleType: [Result]]()
         types.forEach { (type) -> () in
             dispatch_group_enter(group)
-            let predicate = HKSampleQuery.predicateForSamplesWithStartDate(NSDate().dateByAddingTimeInterval(-3600 * 24), endDate: nil, options: HKQueryOptions())
+            let predicate = HKSampleQuery.predicateForSamplesWithStartDate(NSDate().dateByAddingTimeInterval(-3600 * 96), endDate: nil, options: HKQueryOptions())
             fetchStatisticsOfType(type, predicate: predicate) { (statistics, error) -> Void in
                 dispatch_group_leave(group)
                 guard error == nil else {
