@@ -44,6 +44,8 @@
 		F43A7C5E1BBDF43600B6FA56 /* PlotButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = F43A7C5C1BBDF43600B6FA56 /* PlotButton.swift */; };
 		F43A7C681BBE508D00B6FA56 /* IntroCompareDataTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = F43A7C671BBE508D00B6FA56 /* IntroCompareDataTableViewCell.swift */; };
 		F44B1A2D1BDAC20D002238E6 /* PlotViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = F44B1A2C1BDAC20D002238E6 /* PlotViewController.swift */; };
+		F466546F1C16503F004E7A3F /* Pods_Circator.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F466546E1C16503F004E7A3F /* Pods_Circator.framework */; };
+		F46654711C16519A004E7A3F /* main.swift in Sources */ = {isa = PBXBuildFile; fileRef = F46654701C16519A004E7A3F /* main.swift */; };
 		F4F4DA581C0257130073E9EE /* SettingsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = F4F4DA571C0257130073E9EE /* SettingsViewController.swift */; };
 		F4F4DA5A1C025BE30073E9EE /* PreviewManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = F4F4DA591C025BE30073E9EE /* PreviewManager.swift */; };
 		F4F4DA5C1C0271660073E9EE /* RowSettingsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = F4F4DA5B1C0271660073E9EE /* RowSettingsViewController.swift */; };
@@ -84,6 +86,62 @@
 			proxyType = 1;
 			remoteGlobalIDString = F42F5B4B1BE20CDD00195490;
 			remoteInfo = CircatorWatch;
+		};
+		F46654141C1644D6004E7A3F /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = F46654091C1644D6004E7A3F /* BridgeSDK.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 80855F5019BE258C006601C7;
+			remoteInfo = BridgeSDK;
+		};
+		F46654161C1644D6004E7A3F /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = F46654091C1644D6004E7A3F /* BridgeSDK.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 80855F5B19BE258C006601C7;
+			remoteInfo = BridgeSDKTests;
+		};
+		F46654181C1644D6004E7A3F /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = F46654091C1644D6004E7A3F /* BridgeSDK.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 807AE2871B603309002588BB;
+			remoteInfo = BridgeSDKIntegration;
+		};
+		F466541A1C1644D6004E7A3F /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = F46654091C1644D6004E7A3F /* BridgeSDK.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 807AE29F1B60330C002588BB;
+			remoteInfo = BridgeSDKIntegrationTests;
+		};
+		F466541E1C1644E5004E7A3F /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = F46654091C1644D6004E7A3F /* BridgeSDK.xcodeproj */;
+			proxyType = 1;
+			remoteGlobalIDString = 80855F4F19BE258C006601C7;
+			remoteInfo = BridgeSDK;
+		};
+		F46654521C164D71004E7A3F /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = F466544D1C164D71004E7A3F /* APCAppCore.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = F5179B2919D09128001DCCB7;
+			remoteInfo = APCAppCore;
+		};
+		F46654541C164D71004E7A3F /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = F466544D1C164D71004E7A3F /* APCAppCore.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = F5179B3419D09128001DCCB7;
+			remoteInfo = APCAppCoreTests;
+		};
+		F46654561C164D79004E7A3F /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = F466544D1C164D71004E7A3F /* APCAppCore.xcodeproj */;
+			proxyType = 1;
+			remoteGlobalIDString = F5179B2819D09128001DCCB7;
+			remoteInfo = APCAppCore;
 		};
 /* End PBXContainerItemProxy section */
 
@@ -184,6 +242,11 @@
 		F43A7C601BBDF49D00B6FA56 /* Circator.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.xml; path = Circator.entitlements; sourceTree = "<group>"; };
 		F43A7C671BBE508D00B6FA56 /* IntroCompareDataTableViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = IntroCompareDataTableViewCell.swift; sourceTree = "<group>"; };
 		F44B1A2C1BDAC20D002238E6 /* PlotViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PlotViewController.swift; sourceTree = "<group>"; };
+		F4664DA11C164371004E7A3F /* Circator-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "Circator-Bridging-Header.h"; sourceTree = "<group>"; };
+		F46654091C1644D6004E7A3F /* BridgeSDK.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = BridgeSDK.xcodeproj; path = "Bridge-iOS-SDK/BridgeSDK.xcodeproj"; sourceTree = "<group>"; };
+		F466544D1C164D71004E7A3F /* APCAppCore.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = APCAppCore.xcodeproj; path = "Bridge-iOS-SDK/AppCore/APCAppCore/APCAppCore.xcodeproj"; sourceTree = "<group>"; };
+		F466546E1C16503F004E7A3F /* Pods_Circator.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Pods_Circator.framework; path = "Pods/../build/Debug-iphoneos/Pods_Circator.framework"; sourceTree = "<group>"; };
+		F46654701C16519A004E7A3F /* main.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = main.swift; sourceTree = "<group>"; };
 		F4F4DA571C0257130073E9EE /* SettingsViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SettingsViewController.swift; sourceTree = "<group>"; };
 		F4F4DA591C025BE30073E9EE /* PreviewManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PreviewManager.swift; sourceTree = "<group>"; };
 		F4F4DA5B1C0271660073E9EE /* RowSettingsViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RowSettingsViewController.swift; sourceTree = "<group>"; };
@@ -218,6 +281,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				F466546F1C16503F004E7A3F /* Pods_Circator.framework in Frameworks */,
 				F42F5B491BE20A5700195490 /* HealthKit.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -244,6 +308,8 @@
 		7881A3D41BAF3B3E00ECB3C6 = {
 			isa = PBXGroup;
 			children = (
+				F466544D1C164D71004E7A3F /* APCAppCore.xcodeproj */,
+				F46654091C1644D6004E7A3F /* BridgeSDK.xcodeproj */,
 				F42F5B331BE1FD1E00195490 /* CircatorKit */,
 				7881A3DF1BAF3B3E00ECB3C6 /* Circator */,
 				7881A3F41BAF3B3E00ECB3C6 /* CircatorTests */,
@@ -273,6 +339,7 @@
 			isa = PBXGroup;
 			children = (
 				7881A3E01BAF3B3E00ECB3C6 /* AppDelegate.swift */,
+				F46654701C16519A004E7A3F /* main.swift */,
 				F43A7C591BBDF3D800B6FA56 /* Model */,
 				F43A7C5A1BBDF3FD00B6FA56 /* View */,
 				F43A7C5F1BBDF43C00B6FA56 /* View Controller */,
@@ -302,6 +369,7 @@
 		EA5EDF2A50FCED6ADBAA03DD /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				F466546E1C16503F004E7A3F /* Pods_Circator.framework */,
 				788606E61BB8A7DA00F33B5E /* HealthKit.framework */,
 				06103AD5E3EB4C84C4980CB1 /* Pods_Circator.framework */,
 			);
@@ -365,6 +433,7 @@
 				781EE1231BAF3F6B00E6DDA1 /* Podfile */,
 				781EE1241BAF3F6B00E6DDA1 /* README.md */,
 				7881A3EC1BAF3B3E00ECB3C6 /* Info.plist */,
+				F4664DA11C164371004E7A3F /* Circator-Bridging-Header.h */,
 			);
 			name = "Supporting Files";
 			sourceTree = "<group>";
@@ -403,6 +472,26 @@
 			path = "View Controller";
 			sourceTree = "<group>";
 		};
+		F466540A1C1644D6004E7A3F /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				F46654151C1644D6004E7A3F /* BridgeSDK.framework */,
+				F46654171C1644D6004E7A3F /* BridgeSDKTests.xctest */,
+				F46654191C1644D6004E7A3F /* BridgeSDKIntegration.app */,
+				F466541B1C1644D6004E7A3F /* BridgeSDKIntegrationTests.xctest */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		F466544E1C164D71004E7A3F /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				F46654531C164D71004E7A3F /* APCAppCore.framework */,
+				F46654551C164D71004E7A3F /* APCAppCoreTests.xctest */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
 /* End PBXGroup section */
 
 /* Begin PBXHeadersBuildPhase section */
@@ -435,6 +524,8 @@
 			dependencies = (
 				F42F5B381BE1FD1E00195490 /* PBXTargetDependency */,
 				F42F5B6D1BE20CDD00195490 /* PBXTargetDependency */,
+				F46654571C164D79004E7A3F /* PBXTargetDependency */,
+				F466541F1C1644E5004E7A3F /* PBXTargetDependency */,
 			);
 			name = Circator;
 			productName = Circator;
@@ -584,6 +675,16 @@
 			mainGroup = 7881A3D41BAF3B3E00ECB3C6;
 			productRefGroup = 7881A3DE1BAF3B3E00ECB3C6 /* Products */;
 			projectDirPath = "";
+			projectReferences = (
+				{
+					ProductGroup = F466544E1C164D71004E7A3F /* Products */;
+					ProjectRef = F466544D1C164D71004E7A3F /* APCAppCore.xcodeproj */;
+				},
+				{
+					ProductGroup = F466540A1C1644D6004E7A3F /* Products */;
+					ProjectRef = F46654091C1644D6004E7A3F /* BridgeSDK.xcodeproj */;
+				},
+			);
 			projectRoot = "";
 			targets = (
 				F42F5B311BE1FD1E00195490 /* CircatorKit */,
@@ -595,6 +696,51 @@
 			);
 		};
 /* End PBXProject section */
+
+/* Begin PBXReferenceProxy section */
+		F46654151C1644D6004E7A3F /* BridgeSDK.framework */ = {
+			isa = PBXReferenceProxy;
+			fileType = wrapper.framework;
+			path = BridgeSDK.framework;
+			remoteRef = F46654141C1644D6004E7A3F /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		F46654171C1644D6004E7A3F /* BridgeSDKTests.xctest */ = {
+			isa = PBXReferenceProxy;
+			fileType = wrapper.cfbundle;
+			path = BridgeSDKTests.xctest;
+			remoteRef = F46654161C1644D6004E7A3F /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		F46654191C1644D6004E7A3F /* BridgeSDKIntegration.app */ = {
+			isa = PBXReferenceProxy;
+			fileType = wrapper.application;
+			path = BridgeSDKIntegration.app;
+			remoteRef = F46654181C1644D6004E7A3F /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		F466541B1C1644D6004E7A3F /* BridgeSDKIntegrationTests.xctest */ = {
+			isa = PBXReferenceProxy;
+			fileType = wrapper.cfbundle;
+			path = BridgeSDKIntegrationTests.xctest;
+			remoteRef = F466541A1C1644D6004E7A3F /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		F46654531C164D71004E7A3F /* APCAppCore.framework */ = {
+			isa = PBXReferenceProxy;
+			fileType = wrapper.framework;
+			path = APCAppCore.framework;
+			remoteRef = F46654521C164D71004E7A3F /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		F46654551C164D71004E7A3F /* APCAppCoreTests.xctest */ = {
+			isa = PBXReferenceProxy;
+			fileType = wrapper.cfbundle;
+			path = APCAppCoreTests.xctest;
+			remoteRef = F46654541C164D71004E7A3F /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+/* End PBXReferenceProxy section */
 
 /* Begin PBXResourcesBuildPhase section */
 		7881A3DB1BAF3B3E00ECB3C6 /* Resources */ = {
@@ -710,6 +856,7 @@
 				7881A3E11BAF3B3E00ECB3C6 /* AppDelegate.swift in Sources */,
 				781EE1281BAF452800E6DDA1 /* RealmPlotViewController.swift in Sources */,
 				F4F4DA5C1C0271660073E9EE /* RowSettingsViewController.swift in Sources */,
+				F46654711C16519A004E7A3F /* main.swift in Sources */,
 				F44B1A2D1BDAC20D002238E6 /* PlotViewController.swift in Sources */,
 				F43A7C681BBE508D00B6FA56 /* IntroCompareDataTableViewCell.swift in Sources */,
 				781EE1201BAF3C9F00E6DDA1 /* AddViewController.swift in Sources */,
@@ -784,6 +931,16 @@
 			isa = PBXTargetDependency;
 			target = F42F5B4B1BE20CDD00195490 /* CircatorWatch */;
 			targetProxy = F42F5B6C1BE20CDD00195490 /* PBXContainerItemProxy */;
+		};
+		F466541F1C1644E5004E7A3F /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = BridgeSDK;
+			targetProxy = F466541E1C1644E5004E7A3F /* PBXContainerItemProxy */;
+		};
+		F46654571C164D79004E7A3F /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = APCAppCore;
+			targetProxy = F46654561C164D79004E7A3F /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
 
@@ -893,11 +1050,13 @@
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				EMBEDDED_CONTENT_CONTAINS_SWIFT = YES;
+				HEADER_SEARCH_PATHS = "$(inherited)";
 				INFOPLIST_FILE = Circator/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = edu.jhu.cs.damsl.Circator.dev4;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE = "";
+				SWIFT_OBJC_BRIDGING_HEADER = "Circator/Circator-Bridging-Header.h";
 				TARGETED_DEVICE_FAMILY = 1;
 			};
 			name = Debug;
@@ -911,11 +1070,13 @@
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				EMBEDDED_CONTENT_CONTAINS_SWIFT = YES;
+				HEADER_SEARCH_PATHS = "$(inherited)";
 				INFOPLIST_FILE = Circator/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = edu.jhu.cs.damsl.Circator.dev4;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE = "";
+				SWIFT_OBJC_BRIDGING_HEADER = "Circator/Circator-Bridging-Header.h";
 				TARGETED_DEVICE_FAMILY = 1;
 			};
 			name = Release;
@@ -979,6 +1140,10 @@
 				DYLIB_COMPATIBILITY_VERSION = 1;
 				DYLIB_CURRENT_VERSION = 1;
 				DYLIB_INSTALL_NAME_BASE = "@rpath";
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(PROJECT_DIR)/build/Debug-iphoneos",
+				);
 				GCC_PREFIX_HEADER = "Target Support Files/Granola/Granola-prefix.pch";
 				INFOPLIST_FILE = CircatorKit/Info.plist;
 				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
@@ -1007,6 +1172,10 @@
 				DYLIB_COMPATIBILITY_VERSION = 1;
 				DYLIB_CURRENT_VERSION = 1;
 				DYLIB_INSTALL_NAME_BASE = "@rpath";
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(PROJECT_DIR)/build/Debug-iphoneos",
+				);
 				GCC_PREFIX_HEADER = "Target Support Files/Granola/Granola-prefix.pch";
 				INFOPLIST_FILE = CircatorKit/Info.plist;
 				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
