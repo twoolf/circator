@@ -9,7 +9,7 @@
 import UIKit
 import CircatorKit
 
-@UIApplicationMain
+//@UIApplicationMain
 class AppDelegate: UIResponder, UIApplicationDelegate {
 
     var window: UIWindow?
