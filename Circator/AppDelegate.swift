@@ -16,7 +16,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 
     var window: UIWindow?
     
-    func fetchRecentSamples() {
+    private func fetchRecentSamples() {
         HealthManager.sharedManager.authorizeHealthKit { (success, error) -> Void in
             guard error == nil else {
                 return
@@ -26,51 +26,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
                     return
                 }
                 NSNotificationCenter.defaultCenter().postNotificationName(HealthManagerDidUpdateRecentSamplesNotification, object: self)
-            }
-            let serializer = OMHSerializer()
-            HealthManager.sharedManager.startBackgroundGlucoseObserver() { (added, _, _, error) -> Void in
-                guard error == nil else {
-                    debugPrint(error)
-                    return
-                }
-                do {
-                    let jsons = try added.map { (sample) -> [String : AnyObject] in
-                        let json = try serializer.jsonForSample(sample)
-                        let data = json.dataUsingEncoding(NSUTF8StringEncoding)!
-                        let serializedObject = try NSJSONSerialization.JSONObjectWithData(data, options: NSJSONReadingOptions()) as! [String : AnyObject]
-                        return serializedObject
-                    }
-                    print("check on format: \(jsons)")
-                    jsons.forEach { json -> () in
-                        Alamofire.request(.POST, "http://45.55.194.186:3000/measures", parameters: json, encoding: .JSON).responseString {_, response, result in
-                            print(result)
-                        }
-                    }
-                } catch {
-                    debugPrint(error)
-                }
-            }
-            HealthManager.sharedManager.startBackgroundWeightObserver() { (added, _, _, error) -> Void in
-                guard error == nil else {
-                    debugPrint(error)
-                    return
-                }
-                do {
-                    let jsons = try added.map { (sample) -> [String : AnyObject] in
-                        let json = try serializer.jsonForSample(sample)
-                        let data = json.dataUsingEncoding(NSUTF8StringEncoding)!
-                        let serializedObject = try NSJSONSerialization.JSONObjectWithData(data, options: NSJSONReadingOptions()) as! [String : AnyObject]
-                        return serializedObject
-                    }
-                    print("check on format: \(jsons)")
-                    jsons.forEach { json -> () in
-                        Alamofire.request(.POST, "http://45.55.194.186:3000/measures", parameters: json, encoding: .JSON).responseString {_, response, result in
-                            print(result)
-                        }
-                    }
-                } catch {
-                    debugPrint(error)
-                }
             }
         }
     }
@@ -89,6 +44,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         window?.makeKeyAndVisible()
         
         fetchRecentSamples()
+        HealthManager.sharedManager.registerObservers()
         
         return true
     }
