@@ -50,14 +50,7 @@ public class HealthManager: NSObject, WCSessionDelegate {
             self.updateWatchContext()
         }
     }
-    
-    lazy var healthKitStore: HKHealthStore = HKHealthStore()
-    
-    private override init() {
-        super.init()
-        connectWatch()
-    }
-    
+        
     // Not guaranteed to be on main thread
     public func authorizeHealthKit(completion: HealthManagerAuthorizationBlock)
     {
