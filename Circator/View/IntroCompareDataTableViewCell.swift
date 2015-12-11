@@ -54,38 +54,23 @@ class IntroCompareDataTableViewCell: UITableViewCell {
     
     var sampleType: HKSampleType? {
         didSet {
-            let image: UIImage
             guard sampleType != nil else {
                 healthParameterImageView.image = nil
                 return
             }
-            switch sampleType!.identifier {
-            case HKQuantityTypeIdentifierBodyMass:
-                image = UIImage(named: "icon_weight")!
-            case HKQuantityTypeIdentifierHeartRate:
-                image = UIImage(named: "icon_heart_rate")!
-            case HKCategoryTypeIdentifierSleepAnalysis:
-                image = UIImage(named: "icon_sleep")!
-            case HKQuantityTypeIdentifierDietaryEnergyConsumed:
-                image = UIImage(named: "icon_food")!
-            case HKCorrelationTypeIdentifierBloodPressure:
-                image = UIImage(named: "icon_blood_pressure")!
-            default:
-                image = UIImage()
-            }
-            healthParameterImageView.image = image
+            healthParameterImageView.image = PreviewManager.iconForSampleType(sampleType!)
         }
     }
     
     static let healthFormatter = SampleFormatter()
     
-    func setUserData(userData: [HKSample], populationAverageData: [HKSample]) {
+    func setUserData(userData: [Result], populationAverageData: [Result]) {
         loadSamples(userData, toLabel: userDataLabel)
         loadSamples(populationAverageData, toLabel: populationAverageLabel)
     }
     
-    private func loadSamples(samples: [HKSample], toLabel label: UILabel) {
-        label.text = "\(IntroCompareDataTableViewCell.healthFormatter.stringFromSamples(samples))"
+    private func loadSamples(results: [Result], toLabel label: UILabel) {
+        label.text = "\(IntroCompareDataTableViewCell.healthFormatter.stringFromResults(results))"
     }
     
     override init(style: UITableViewCellStyle, reuseIdentifier: String?) {
