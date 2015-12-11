@@ -8,6 +8,12 @@
 
 #import <UIKit/UIKit.h>
 
+//#import "Pods/Pods/Granola/OMHError.h"
+//#import <Granola/OMHHealthKitConstantsMapper.h>
+//#import <Granola/OMHSerializer.h>
+//#import <Granola/NSDate+RFC3339.h>
+//#import <Granola/Support Files/Granola-umbrella.h>
+
 //! Project version number for CircatorKit.
 FOUNDATION_EXPORT double CircatorKitVersionNumber;
 
@@ -15,5 +21,4 @@ FOUNDATION_EXPORT double CircatorKitVersionNumber;
 FOUNDATION_EXPORT const unsigned char CircatorKitVersionString[];
 
 // In this header, you should import all the public headers of your framework using statements like #import <CircatorKit/PublicHeader.h>
-
 

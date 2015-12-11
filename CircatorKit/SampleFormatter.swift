@@ -65,22 +65,37 @@ public class SampleFormatter: NSObject {
         super.init()
     }
     
+    public func stringFromResults(results: [Result]) -> String {
+        if let stat = results as? [HKStatistics] {
+            guard stat.isEmpty == false else {
+                return emptyString
+            }
+            return stringFromStatistics(stat[0])
+        } else if let samples = results as? [HKSample] {
+            return stringFromSamples(samples)
+        }
+        return emptyString
+    }
+    
+    public func stringFromStatistics(statistics: HKStatistics) -> String {
+        // Guaranteed to be quantity sample here
+        // TODO: Need implementation for correlation and sleep
+        guard let quantity = statistics.quantity else {
+            return emptyString
+        }
+        return stringFromQuantity(quantity, type: statistics.quantityType)
+    }
+    
     public func stringFromSamples(samples: [HKSample]) -> String {
         guard samples.isEmpty == false else {
             return emptyString
         }
+        if let type = samples.first!.sampleType as? HKQuantityType {
+            return stringFromQuantity((samples.first as! HKQuantitySample).quantity, type: type)
+        }
         switch samples.first!.sampleType.identifier {
-        case HKQuantityTypeIdentifierBodyMass:
-            let quantitySample = samples.first as! HKQuantitySample
-            return SampleFormatter.bodyMassFormatter.stringFromKilograms(quantitySample.quantity.doubleValueForUnit(HKUnit.gramUnitWithMetricPrefix(.Kilo)))
-        case HKQuantityTypeIdentifierHeartRate:
-            let quantitySample = samples.first as! HKQuantitySample
-            return "\(SampleFormatter.numberFormatter.stringFromNumber(quantitySample.quantity.doubleValueForUnit(HKUnit.countUnit().unitDividedByUnit(HKUnit.minuteUnit())))!) bpm"
         case HKCategoryTypeIdentifierSleepAnalysis:
             return "\(SampleFormatter.timeIntervalFormatter.stringFromTimeInterval(samples.sleepDuration!)!)"
-        case HKQuantityTypeIdentifierDietaryEnergyConsumed:
-            let quantitySample = samples.first as! HKQuantitySample
-            return SampleFormatter.calorieFormatter.stringFromJoules(quantitySample.quantity.doubleValueForUnit(HKUnit.jouleUnit()))
         case HKCorrelationTypeIdentifierBloodPressure:
             let correlationSample = samples.first as! HKCorrelation
             let diastolicSample = correlationSample.objectsForType(HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierBloodPressureDiastolic)!).first as? HKQuantitySample
@@ -90,7 +105,20 @@ public class SampleFormatter: NSObject {
             }
             let diastolicNumber = SampleFormatter.integerFormatter.stringFromNumber(diastolicSample!.quantity.doubleValueForUnit(HKUnit.millimeterOfMercuryUnit()))!
             let systolicNumber = SampleFormatter.integerFormatter.stringFromNumber(systolicSample!.quantity.doubleValueForUnit(HKUnit.millimeterOfMercuryUnit()))!
-            return "\(diastolicNumber)/\(systolicNumber)"
+            return "\(systolicNumber)/\(diastolicNumber)"
+        default:
+            return emptyString
+        }
+    }
+    
+    private func stringFromQuantity(quantity: HKQuantity, type: HKQuantityType) -> String {
+        switch type.identifier {
+        case HKQuantityTypeIdentifierBodyMass:
+            return SampleFormatter.bodyMassFormatter.stringFromKilograms(quantity.doubleValueForUnit(HKUnit.gramUnitWithMetricPrefix(.Kilo)))
+        case HKQuantityTypeIdentifierHeartRate:
+            return "\(SampleFormatter.numberFormatter.stringFromNumber(quantity.doubleValueForUnit(HKUnit.countUnit().unitDividedByUnit(HKUnit.minuteUnit())))!) bpm"
+        case HKQuantityTypeIdentifierDietaryEnergyConsumed:
+            return SampleFormatter.calorieFormatter.stringFromJoules(quantity.doubleValueForUnit(HKUnit.jouleUnit()))
         default:
             return emptyString
         }
