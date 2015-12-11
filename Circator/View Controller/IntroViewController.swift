@@ -19,6 +19,10 @@ class IntroViewController: UIViewController, UITableViewDelegate, UITableViewDat
     lazy var logoImageView: UIImageView = {
         let view = UIImageView(image: UIImage(named: "logo_university")!)
         view.tintColor = Theme.universityDarkTheme.foregroundColor
+        view.autoresizingMask = UIViewAutoresizing.FlexibleBottomMargin
+        view.clipsToBounds = true
+        view.contentMode = UIViewContentMode.ScaleAspectFit
+        view.contentScaleFactor = 0.2
         return view
     }()
 
@@ -26,6 +30,19 @@ class IntroViewController: UIViewController, UITableViewDelegate, UITableViewDat
         let button = UIButton(type: .Custom)
         button.addTarget(self, action: "showAttributes:", forControlEvents: .TouchUpInside)
         button.setTitle("Plot", forState: .Normal)
+        button.setTitleColor(UIColor.whiteColor(), forState: .Normal)
+        button.titleLabel!.textAlignment = .Center
+        button.layer.cornerRadius = 7.0
+        button.backgroundColor = Theme.universityDarkTheme.complementForegroundColors?.colorWithVibrancy(0.8)
+        button.setTitleColor(Theme.universityDarkTheme.bodyTextColor, forState: .Normal)
+        button.titleLabel?.font = UIFont.systemFontOfSize(20, weight: UIFontWeightLight)
+        return button
+    }()
+    
+    lazy var mealButton: UIButton = {
+        let button = UIButton(type: .Custom)
+        button.addTarget(self, action: "showAttributes:", forControlEvents: .TouchUpInside)
+        button.setTitle("Meal", forState: .Normal)
         button.setTitleColor(UIColor.whiteColor(), forState: .Normal)
         button.titleLabel!.textAlignment = .Center
         button.layer.cornerRadius = 7.0
@@ -48,6 +65,18 @@ class IntroViewController: UIViewController, UITableViewDelegate, UITableViewDat
         return button
     }()
     
+//    lazy var bestWeightButton: UIButton = {
+//        let button = UIButton(type: .Custom)
+//        button.setTitle("High Lights", forState: .Normal)
+//        button.setTitleColor(UIColor.whiteColor(), forState: .Normal)
+//        button.titleLabel!.textAlignment = .Center
+//        button.layer.cornerRadius = 7.0
+//        button.backgroundColor = Theme.universityDarkTheme.complementForegroundColors?.colorWithVibrancy(0.2)
+//        button.setTitleColor(Theme.universityDarkTheme.bodyTextColor, forState: .Normal)
+//        button.titleLabel?.font = UIFont.systemFontOfSize(20, weight: UIFontWeightLight)
+//        return button
+//    }()
+    
     lazy var settingsButton: UIButton = {
         let button = UIButton(type: .Custom)
         button.setTitle("Settings", forState: .Normal)
@@ -60,9 +89,18 @@ class IntroViewController: UIViewController, UITableViewDelegate, UITableViewDat
         button.titleLabel?.font = UIFont.systemFontOfSize(20, weight: UIFontWeightLight)
         return button
     }()
-    
+        
     lazy var buttonsContainerView: UIStackView = {
-        let stackView: UIStackView = UIStackView(arrangedSubviews: [self.plotButton, self.correlateButton])
+        let stackView: UIStackView = UIStackView(arrangedSubviews: [self.plotButton, self.correlateButton, self.mealButton])
+        stackView.axis = .Horizontal
+        stackView.distribution = UIStackViewDistribution.FillEqually
+        stackView.alignment = UIStackViewAlignment.Fill
+        stackView.spacing = 15
+        return stackView
+    }()
+    
+    lazy var topButtonsContainerView: UIStackView = {
+        let stackView: UIStackView = UIStackView(arrangedSubviews: [self.settingsButton])
         stackView.axis = .Horizontal
         stackView.distribution = UIStackViewDistribution.FillEqually
         stackView.alignment = UIStackViewAlignment.Fill
@@ -99,7 +137,8 @@ class IntroViewController: UIViewController, UITableViewDelegate, UITableViewDat
     }()
     
     static let sampleFormatter = SampleFormatter()
-    static let previewTypeStrings = HealthManager.previewSampleTypes.map { $0.displayText! }
+    static let previewTypeStrings = PreviewManager.previewSampleTypes.map { $0.displayText! }
+    static let previewMealTypeStrings = [["Bkfast", "Lunch", "Dinner", "Snack"],["AM", "5:00","5:30","6:00","6:30","7:00","7:30","8:00","8:30","9:00","9:30", "10:00","10:30","11:00","11:30","12:00","PM", "12:30","13:00","13:30","14:00","14:30","15:00","15:30","16:00","16:30","17:00", "17:30", "18:00", "18:30", "19:00", "19:30", "20:00", "20:30", "21:00", "21:30", "22:00", "22:30", "23:00", "23:30", "24:00", "AM", "00:30", "1:00", "1:30", "2:00", "2:30", "3:00", "3:30", "4:00", "4:30"], ["Min", "15", "30", "45", "60", "90", "120", "150", "180", "210", "240"],["1✮", "2✮", "3✮", "4✮", "5✮"]]
     
     lazy var dummyTextField: UITextField = {
         let textField = UITextField()
@@ -127,6 +166,7 @@ class IntroViewController: UIViewController, UITableViewDelegate, UITableViewDat
     enum GraphMode {
         case Plot(HKSampleType)
         case Correlate(HKSampleType, HKSampleType)
+        case previewMealTypeStrings
     }
     
     private var selectedMode: GraphMode!
@@ -153,11 +193,12 @@ class IntroViewController: UIViewController, UITableViewDelegate, UITableViewDat
     private func configureViews() {
         view.backgroundColor = Theme.universityDarkTheme.backgroundColor
         logoImageView.translatesAutoresizingMaskIntoConstraints = false
+        logoImageView.contentScaleFactor = 0.2
         view.addSubview(logoImageView)
         let constraints: [NSLayoutConstraint] = [
-            logoImageView.widthAnchor.constraintEqualToAnchor(view.widthAnchor, multiplier: 0.6),
+            logoImageView.widthAnchor.constraintEqualToAnchor(view.widthAnchor, multiplier: 0.3),
             logoImageView.heightAnchor.constraintEqualToAnchor(logoImageView.widthAnchor, multiplier: 1.0744),
-            NSLayoutConstraint(item: logoImageView, attribute: .CenterX, relatedBy: .Equal, toItem: view, attribute: .CenterX, multiplier: 0.25, constant: 0),
+            NSLayoutConstraint(item: logoImageView, attribute: .CenterX, relatedBy: .Equal, toItem: view, attribute: .CenterX, multiplier: 0.10, constant: 0),
             logoImageView.topAnchor.constraintEqualToAnchor(view.topAnchor, constant: 20)
         ]
         view.addConstraints(constraints)
@@ -170,6 +211,17 @@ class IntroViewController: UIViewController, UITableViewDelegate, UITableViewDat
             buttonsContainerView.heightAnchor.constraintEqualToConstant(44)
         ]
         view.addConstraints(buttonContainerConstraints)
+        
+        topButtonsContainerView.translatesAutoresizingMaskIntoConstraints = false
+        view.addSubview(topButtonsContainerView)
+        let topButtonsContainerConstraints: [NSLayoutConstraint] = [
+            topButtonsContainerView.topAnchor.constraintEqualToAnchor(view.topAnchor, constant: 40),
+            topButtonsContainerView.widthAnchor.constraintEqualToAnchor(view.widthAnchor, multiplier: 0.7),
+            topButtonsContainerView.leadingAnchor.constraintLessThanOrEqualToAnchor(view.layoutMarginsGuide.leadingAnchor, constant: 47 + 37),
+            topButtonsContainerView.heightAnchor.constraintEqualToConstant(27)
+        ]
+        view.addConstraints(topButtonsContainerConstraints)
+        
         tableView.translatesAutoresizingMaskIntoConstraints = false
         view.addSubview(tableView)
         let tableViewConstraints: [NSLayoutConstraint] = [
@@ -198,11 +250,15 @@ class IntroViewController: UIViewController, UITableViewDelegate, UITableViewDat
     
     func showAttributes(sender: UIButton) {
         if sender == correlateButton {
-            selectedMode = GraphMode.Correlate(HealthManager.previewSampleTypes[0], HealthManager.previewSampleTypes[1])
+            selectedMode = GraphMode.Correlate(PreviewManager.previewSampleTypes[0], PreviewManager.previewSampleTypes[1])
             pickerView.reloadAllComponents()
-        } else {
-            selectedMode = GraphMode.Plot(HealthManager.previewSampleTypes[0])
+        } else if sender == plotButton {
+            selectedMode = GraphMode.Plot(PreviewManager.previewSampleTypes[0])
             pickerView.reloadAllComponents()
+        } else if sender == mealButton {
+            selectedMode = GraphMode.previewMealTypeStrings
+            pickerView.reloadAllComponents()
+
         }
         dummyTextField.becomeFirstResponder()
     }
@@ -213,18 +269,49 @@ class IntroViewController: UIViewController, UITableViewDelegate, UITableViewDat
     
     func selectAttribute(sender: UIBarButtonItem) {
         dummyTextField.resignFirstResponder()
-        if case .Correlate(_) = selectedMode! {
-            // Correlate
-        } else {
-            // Plot
+        switch selectedMode! {
+        case let .Correlate(type1, type2):
+            let correlateVC = CorrelationViewController()
+            correlateVC.sampleTypes = [type1, type2]
+            navigationController?.pushViewController(correlateVC, animated: true)
+            break
+        case .Plot(let type):
             let plotVC = PlotViewController()
-            switch selectedMode! {
-            case .Plot(let type):
-                plotVC.sampleType = type
-                navigationController?.pushViewController(plotVC, animated: true)
-            default:
-                break
-            }
+            plotVC.sampleType = type
+            navigationController?.pushViewController(plotVC, animated: true)
+        case .previewMealTypeStrings:
+            let calendar = NSCalendar.currentCalendar()
+            let currentDate = NSDate()
+            let dateComponents = calendar.components([NSCalendarUnit.Day, NSCalendarUnit.Month, NSCalendarUnit.Year, NSCalendarUnit.WeekOfYear, NSCalendarUnit.Hour, NSCalendarUnit.Minute, NSCalendarUnit.Second, NSCalendarUnit.Nanosecond], fromDate: currentDate)
+            let delimiter = ":"
+            var updatedTime = IntroViewController.previewMealTypeStrings[1][pickerView.selectedRowInComponent(1)].componentsSeparatedByString(delimiter)
+            let delimiter2 = " "
+            let delimiter3 = "min"
+            var updatedTimeMinute = updatedTime[1].componentsSeparatedByString(delimiter2)
+            var updatedDurationMinute = IntroViewController.previewMealTypeStrings[2][pickerView.selectedRowInComponent(2)].componentsSeparatedByString(delimiter3)
+            let components = NSDateComponents()
+              components.day = dateComponents.day
+              components.month = dateComponents.month
+              components.year = dateComponents.year
+              components.hour = Int(updatedTime[0])!
+              components.minute = Int(updatedTimeMinute[0])!
+            let newDate = calendar.dateFromComponents(components)
+            let newDateComponents = NSDateComponents()
+              newDateComponents.minute = Int(updatedDurationMinute[0])!
+            let calculatedDate = NSCalendar.currentCalendar().dateByAddingComponents(newDateComponents, toDate: newDate!, options: NSCalendarOptions.init(rawValue: 0))
+            let distanceHold = 0.0
+            let kiloCaloriesHold = 0.0
+            let kmUnit = HKUnit(fromString: "km")
+            let metaMeals = [String(IntroViewController.previewMealTypeStrings[3][pickerView.selectedRowInComponent(3)]):"Meal Rating", String(IntroViewController.previewMealTypeStrings[0][pickerView.selectedRowInComponent(0)]):"Meal Type"]
+            HealthManager.sharedManager.savePreparationAndRecoveryWorkout(newDate!, endDate: calculatedDate!, distance: distanceHold, distanceUnit:kmUnit, kiloCalories: kiloCaloriesHold, metadata: metaMeals, completion: { (success, error ) -> Void in
+                if( success )
+                {
+                    print("Meal saved as workout-type")
+                }
+                else if( error != nil ) {
+                    print("error made: \(error)")
+                }
+            })
         }
     }
     
@@ -240,14 +327,14 @@ class IntroViewController: UIViewController, UITableViewDelegate, UITableViewDat
     }
     
     func tableView(tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return 5
+        return 6
     }
     
     func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCellWithIdentifier(IntroViewTableViewCellIdentifier, forIndexPath: indexPath) as! IntroCompareDataTableViewCell
-        let sampleType = HealthManager.previewSampleTypes[indexPath.row]
+        let sampleType = PreviewManager.previewSampleTypes[indexPath.row]
         cell.sampleType = sampleType
-        cell.setUserData(HealthManager.sharedManager.mostRecentSamples[sampleType] ?? [], populationAverageData: [])
+        cell.setUserData(HealthManager.sharedManager.mostRecentSamples[sampleType] ?? [HKSample](), populationAverageData: [])
         return cell
     }
     
@@ -256,6 +343,8 @@ class IntroViewController: UIViewController, UITableViewDelegate, UITableViewDat
     func numberOfComponentsInPickerView(pickerView: UIPickerView) -> Int {
         if case .Plot(_) = selectedMode! {
             return 1
+        } else if case .previewMealTypeStrings(_) = selectedMode! {
+            return 4
         } else {
             return 2
         }
@@ -268,8 +357,10 @@ class IntroViewController: UIViewController, UITableViewDelegate, UITableViewDat
             } else {
                 return IntroViewController.previewTypeStrings.count - 1
             }
-        } else {
+        } else if case .Plot(_) = selectedMode! {
             return IntroViewController.previewTypeStrings.count
+        } else {
+            return IntroViewController.previewMealTypeStrings[component].count
         }
     }
     
@@ -277,25 +368,29 @@ class IntroViewController: UIViewController, UITableViewDelegate, UITableViewDat
         if case .Correlate(_) = selectedMode! {
             if component == 0 {
                 return IntroViewController.previewTypeStrings[row]
-            } else {
+            } else  {
                 return IntroViewController.previewTypeStrings.filter { $0 != IntroViewController.previewTypeStrings[pickerView.selectedRowInComponent(0)] }[row]
             }
-        } else {
+        } else if case .Plot(_) = selectedMode! {
             return IntroViewController.previewTypeStrings[row]
+        } else if case .previewMealTypeStrings = selectedMode! {
+            return IntroViewController.previewMealTypeStrings[component][row]
+        } else {
+            return IntroViewController.previewMealTypeStrings[component][row]
         }
     }
-    
     func pickerView(pickerView: UIPickerView, didSelectRow row: Int, inComponent component: Int) {
         if case .Correlate(_) = selectedMode! {
             if component == 0 {
                 pickerView.reloadComponent(1)
             } else {
-                selectedMode = GraphMode.Correlate(HealthManager.previewSampleTypes.filter { $0.displayText == HealthManager.previewSampleTypes[pickerView.selectedRowInComponent(0)].displayText }.first!, HealthManager.previewSampleTypes.filter { $0.displayText == HealthManager.previewSampleTypes[row].displayText }.first!)
+                selectedMode = GraphMode.Correlate(PreviewManager.previewSampleTypes.filter { $0.displayText == PreviewManager.previewSampleTypes[pickerView.selectedRowInComponent(0)].displayText }.first!, PreviewManager.previewSampleTypes.filter { $0.displayText == PreviewManager.previewSampleTypes[row].displayText }.first!)
             }
+        } else if case .Plot(_) = selectedMode! {
+            selectedMode = GraphMode.Plot(PreviewManager.previewSampleTypes.filter { $0.displayText == PreviewManager.previewSampleTypes[row].displayText }.first!)
         } else {
-            selectedMode = GraphMode.Plot(HealthManager.previewSampleTypes.filter { $0.displayText == HealthManager.previewSampleTypes[row].displayText }.first!)
+
         }
     }
-
 }
 
