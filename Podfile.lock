@@ -1,23 +1,33 @@
 PODS:
   - Alamofire (2.0.2)
   - Charts (2.1.6)
+  - Granola (0.3.0):
+    - ObjectiveSugar (~> 1.1)
+  - ObjectiveSugar (1.1.0)
+  - ReachabilitySwift (2.3)
   - Realm (0.96.2):
     - Realm/Headers (= 0.96.2)
   - Realm/Headers (0.96.2)
   - RealmSwift (0.96.2):
     - Realm (= 0.96.2)
-  - SwiftyJSON (2.3.1)
+  - ResearchKit (1.2.1)
+  - SwiftyJSON (2.3.2)
 
 DEPENDENCIES:
   - Alamofire (~> 2.0)
   - Charts (from `https://github.com/danielgindi/ios-charts.git`)
+  - Granola
+  - ReachabilitySwift (from `https://github.com/ashleymills/Reachability.swift`)
   - Realm (from `https://github.com/realm/realm-cocoa.git`, branch `swift-2.0`)
   - RealmSwift (from `https://github.com/realm/realm-cocoa.git`, branch `swift-2.0`)
+  - ResearchKit (~> 1.2.0)
   - SwiftyJSON (from `https://github.com/SwiftyJSON/SwiftyJSON.git`)
 
 EXTERNAL SOURCES:
   Charts:
     :git: https://github.com/danielgindi/ios-charts.git
+  ReachabilitySwift:
+    :git: https://github.com/ashleymills/Reachability.swift
   Realm:
     :branch: swift-2.0
     :git: https://github.com/realm/realm-cocoa.git
@@ -29,23 +39,30 @@ EXTERNAL SOURCES:
 
 CHECKOUT OPTIONS:
   Charts:
-    :commit: a942a4a4faf520cef323fa23fb103c6ec7e16670
+    :commit: 3f88894f31683888862cf14312db74b05c1a0101
     :git: https://github.com/danielgindi/ios-charts.git
+  ReachabilitySwift:
+    :commit: 35aa812197a0f5f964febfe74be6c000edc8f850
+    :git: https://github.com/ashleymills/Reachability.swift
   Realm:
-    :commit: fc595537dba4ee7dbf27ada61ff1d82f6fda9b01
+    :commit: 5250353d2b6a744493a1e5100f91d2344e1e670c
     :git: https://github.com/realm/realm-cocoa.git
   RealmSwift:
-    :commit: fc595537dba4ee7dbf27ada61ff1d82f6fda9b01
+    :commit: 5250353d2b6a744493a1e5100f91d2344e1e670c
     :git: https://github.com/realm/realm-cocoa.git
   SwiftyJSON:
-    :commit: ece271ab33839d11c2153d71fb59c53545132cf9
+    :commit: 8e618c8baf6323a5079c6549bb38d48357b31630
     :git: https://github.com/SwiftyJSON/SwiftyJSON.git
 
 SPEC CHECKSUMS:
   Alamofire: 8edbab00802a752bb5240cc2abe70e7e881488ad
   Charts: 5e1e5ac23898e5b09d226a2fc3e9d86bc281937e
+  Granola: 9363048b8cc0309b43ed1f6b700af47b55b74f35
+  ObjectiveSugar: a6a25f23d657c19df0a0b972466d5b5ca9f5295c
+  ReachabilitySwift: 2ac9df18a443901f06caae38a9f5431219a4c36a
   Realm: 962a3daeb000dfd379e0a9ccb2a752a352a88205
   RealmSwift: 485599fe54e35461c4a0daa7d01d8fbf11424873
-  SwiftyJSON: 592b53bee5ef3dd9b3bebc6b9cb7ee35426ae8c3
+  ResearchKit: 606d20301e576157fb0accc57f63aba5e1f3a15f
+  SwiftyJSON: 04ccea08915aa0109039157c7974cf0298da292a
 
 COCOAPODS: 0.39.0

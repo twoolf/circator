@@ -27,16 +27,19 @@ class PlotViewController: UIViewController, ChartViewDelegate {
         return label
     }()
     
-    lazy var populationLabel: UILabel = {
+    lazy var summaryLabel: UILabel = {
         let label: UILabel = UILabel()
+        let number = 5
         label.font = UIFont.systemFontOfSize(16, weight: UIFontWeightSemibold)
         label.textColor = Theme.universityDarkTheme.titleTextColor
-        label.text = NSLocalizedString("Population", comment: "Plot view section title label")
+        label.textAlignment = .Center
+        label.text = NSLocalizedString("Summary of Personal History", comment: "Summary view section title label")
         return label
     }()
-    
+        
     lazy var historyChart: LineChartView = {
         let chart = LineChartView()
+        chart.animate(xAxisDuration: 1.0, yAxisDuration: 1.0)
         chart.delegate = self
         chart.rightAxis.enabled = false
         chart.doubleTapToZoomEnabled = false
@@ -54,10 +57,23 @@ class PlotViewController: UIViewController, ChartViewDelegate {
         return chart
     }()
     
-    lazy var populationChart: LineChartView = {
-        let chart = LineChartView()
+    lazy var summaryChart: BubbleChartView = {
+        let chart = BubbleChartView()
         chart.delegate = self
+        chart.animate(xAxisDuration: 2.0, yAxisDuration: 2.0)
+        chart.rightAxis.enabled = false
         chart.doubleTapToZoomEnabled = false
+        chart.leftAxis.startAtZeroEnabled = false
+        chart.drawGridBackgroundEnabled = false
+        chart.xAxis.labelPosition = .Bottom
+        chart.xAxis.avoidFirstLastClippingEnabled = true
+        chart.xAxis.drawAxisLineEnabled = true
+        chart.xAxis.drawGridLinesEnabled = true
+        chart.legend.enabled = false
+        chart.descriptionText = ""
+        chart.xAxis.labelTextColor = Theme.universityDarkTheme.titleTextColor
+        chart.leftAxis.labelTextColor = Theme.universityDarkTheme.titleTextColor
+        chart.leftAxis.valueFormatter = SampleFormatter.numberFormatter
         return chart
     }()
     
@@ -70,9 +86,9 @@ class PlotViewController: UIViewController, ChartViewDelegate {
                         return
                     }
                     if self.sampleType is HKCorrelationType {
-                        
+                        // Sleep
                     } else {
-                        let analyzer = SampleDataAnalyzer(sampleType: self.sampleType, samples: samples)
+                        let analyzer = PlotDataAnalyzer(sampleType: self.sampleType, samples: samples)
                         analyzer.dataSetConfigurator = { dataSet in
                             dataSet.drawCircleHoleEnabled = true
                             dataSet.circleRadius = 7
@@ -86,12 +102,15 @@ class PlotViewController: UIViewController, ChartViewDelegate {
                         self.historyChart.data = analyzer.lineChartData
                         self.historyChart.data?.setValueTextColor(Theme.universityDarkTheme.bodyTextColor)
                         self.historyChart.data?.setValueFont(UIFont.systemFontOfSize(10, weight: UIFontWeightThin))
+                        self.summaryChart.data = analyzer.bubbleChartData
+                        self.summaryChart.data?.setValueTextColor(Theme.universityDarkTheme.bodyTextColor)
+                        self.summaryChart.data?.setValueFont(UIFont.systemFontOfSize(10, weight: UIFontWeightThin))
                     }
                 }
             }
         }
     }
-
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         configureViews()
@@ -111,13 +130,15 @@ class PlotViewController: UIViewController, ChartViewDelegate {
         view.addSubview(scrollView)
         scrollView.backgroundColor = Theme.universityDarkTheme.backgroundColor
         historyLabel.translatesAutoresizingMaskIntoConstraints = false
+        summaryLabel.translatesAutoresizingMaskIntoConstraints = false
         scrollView.addSubview(historyLabel)
-        populationLabel.translatesAutoresizingMaskIntoConstraints = false
-//        scrollView.addSubview(populationLabel)
+        scrollView.addSubview(summaryLabel)
+
         historyChart.translatesAutoresizingMaskIntoConstraints = false
+        summaryChart.translatesAutoresizingMaskIntoConstraints = false
         scrollView.addSubview(historyChart)
-        populationChart.translatesAutoresizingMaskIntoConstraints = false
-//        scrollView.addSubview(populationChart)
+        scrollView.addSubview(summaryChart)
+
         let constraints: [NSLayoutConstraint] = [
             historyLabel.leadingAnchor.constraintEqualToAnchor(scrollView.layoutMarginsGuide.leadingAnchor),
             historyLabel.trailingAnchor.constraintEqualToAnchor(scrollView.layoutMarginsGuide.trailingAnchor),
@@ -125,12 +146,19 @@ class PlotViewController: UIViewController, ChartViewDelegate {
             historyChart.topAnchor.constraintEqualToAnchor(historyLabel.bottomAnchor, constant: 8),
             historyChart.leadingAnchor.constraintEqualToAnchor(historyLabel.leadingAnchor),
             historyChart.trailingAnchor.constraintEqualToAnchor(historyLabel.trailingAnchor),
+            summaryLabel.leadingAnchor.constraintEqualToAnchor(historyChart.layoutMarginsGuide.leadingAnchor),
+            summaryLabel.trailingAnchor.constraintEqualToAnchor(historyChart.layoutMarginsGuide.trailingAnchor),
+            summaryLabel.topAnchor.constraintEqualToAnchor(historyChart.bottomAnchor, constant: 24),
+            summaryChart.topAnchor.constraintEqualToAnchor(summaryLabel.bottomAnchor, constant: 8),
+            summaryChart.leadingAnchor.constraintEqualToAnchor(summaryLabel.leadingAnchor),
+            summaryChart.trailingAnchor.constraintEqualToAnchor(summaryLabel.trailingAnchor),
         ]
         scrollView.addConstraints(constraints)
         historyChart.translatesAutoresizingMaskIntoConstraints = false
         historyChart.heightAnchor.constraintEqualToConstant(200).active = true
-        populationChart.translatesAutoresizingMaskIntoConstraints = false
-        populationChart.heightAnchor.constraintEqualToConstant(200).active = true
+        summaryChart.translatesAutoresizingMaskIntoConstraints = false
+        summaryChart.heightAnchor.constraintEqualToConstant(200).active = true
+
     }
 
     /*
