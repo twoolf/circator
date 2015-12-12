@@ -3,8 +3,6 @@ platform :ios, '9.0'
 use_frameworks!
 
 target 'Circator' do
-  pod 'ReachabilitySwift', git: 'https://github.com/ashleymills/Reachability.swift'
-  pod 'ResearchKit', '~> 1.2.0'
   pod 'Realm', :git => 'https://github.com/realm/realm-cocoa.git', :branch => 'swift-2.0'
   pod 'RealmSwift', :git => 'https://github.com/realm/realm-cocoa.git', :branch => 'swift-2.0'
   pod 'Charts', :git => 'https://github.com/danielgindi/ios-charts.git'

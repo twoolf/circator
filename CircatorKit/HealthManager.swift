@@ -8,8 +8,8 @@
 
 import HealthKit
 import WatchConnectivity
-import Alamofire
 import Granola
+import Alamofire
 
 public typealias HealthManagerAuthorizationBlock = (success: Bool, error: NSError?) -> Void
 public typealias HealthManagerFetchSampleBlock = (samples: [HKSample], error: NSError?) -> Void
