@@ -27,6 +27,13 @@ public class HealthManager: NSObject, WCSessionDelegate {
     
     public static let sharedManager = HealthManager()
     
+    lazy var healthKitStore: HKHealthStore = HKHealthStore()
+    
+    private override init() {
+        super.init()
+        connectWatch()
+    }
+    
     public static let previewSampleMeals = [
         "Breakfast",
         "Lunch",
@@ -43,14 +50,7 @@ public class HealthManager: NSObject, WCSessionDelegate {
             self.updateWatchContext()
         }
     }
-    
-    lazy var healthKitStore: HKHealthStore = HKHealthStore()
-    
-    private override init() {
-        super.init()
-        connectWatch()
-    }
-    
+        
     // Not guaranteed to be on main thread
     public func authorizeHealthKit(completion: HealthManagerAuthorizationBlock)
     {
@@ -276,8 +276,31 @@ public class HealthManager: NSObject, WCSessionDelegate {
             }
             let serializer = OMHSerializer()
             let types = [
+                HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierBodyMass)!,
+                HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierHeight)!,
+                HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierBodyMassIndex)!,
+                HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierHeartRate)!,
+                HKObjectType.categoryTypeForIdentifier(HKCategoryTypeIdentifierSleepAnalysis)!,
                 HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierBloodGlucose)!,
-                HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierBodyMass)!
+                HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierDietaryEnergyConsumed)!,
+                HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierDietarySugar)!,
+                HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierDietaryCopper)!,
+                HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierDietaryCalcium)!,
+                HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierDietaryCarbohydrates)!,
+                HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierDietaryCholesterol)!,
+                HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierDietaryFiber)!,
+                HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierDietaryIron)!,
+                HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierDietaryFatMonounsaturated)!,
+                HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierDietaryFatPolyunsaturated)!,
+                HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierDietaryFatSaturated)!,
+                HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierDietaryFatTotal)!,
+                HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierDietaryPotassium)!,
+                HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierDietaryProtein)!,
+                HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierDietarySodium)!,
+                HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierDietaryCaffeine)!,
+                HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierDietaryWater)!,
+                HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierBloodPressureDiastolic)!,
+                HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierBloodPressureSystolic)!
             ]
             types.forEach { (type) in
                 self.startBackgroundObserverForType(type) { (added, _, _, error) -> Void in
@@ -294,7 +317,7 @@ public class HealthManager: NSObject, WCSessionDelegate {
                         }
                         print(jsons)
                         jsons.forEach { json -> () in
-                            Alamofire.request(.POST, "http://45.55.194.186:3000/measures", parameters: json, encoding: .JSON).responseString {_, response, result in
+                            Alamofire.request(.POST, "http://app.metaboliccompass.com/measures", parameters: json, encoding: .JSON).responseString {_, response, result in
                                 print(result)
                             }
                         }
