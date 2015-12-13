@@ -154,8 +154,6 @@ public class EventManager : NSObject, WCSessionDelegate {
                         if let matches = eventIndex[dkey] {
                             let newItems = matches.filter { (eid) -> Bool in eid.0 != Int(d["EventId"] as! String)! }
                             eventIndex.updateValue(newItems, forKey: dkey)
-                        } else {
-                            print("No match found for " + (d["EventId"] as! String))
                         }
                     }
                 }
