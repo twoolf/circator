@@ -210,6 +210,20 @@ public class HealthManager: NSObject, WCSessionDelegate {
         }
     }
     
+    // Query food diary events stored as prep and recovery workouts in HealthKit
+    func fetchPreparationAndRecoveryWorkout(completion: (([AnyObject]!, NSError!) -> Void)!) {
+        let predicate =  HKQuery.predicateForWorkoutsWithWorkoutActivityType(HKWorkoutActivityType.PreparationAndRecovery)
+        let sortDescriptor = NSSortDescriptor(key:HKSampleSortIdentifierStartDate, ascending: false)
+        let sampleQuery = HKSampleQuery(sampleType: HKWorkoutType.workoutType(), predicate: predicate, limit: 0, sortDescriptors: [sortDescriptor])
+            { (sampleQuery, results, error ) -> Void in
+                if let queryError = error {
+                    print( "There was an error while reading the samples: \(queryError.localizedDescription)")
+                }
+                completion(results,error)
+        }
+        healthKitStore.executeQuery(sampleQuery)
+    }
+    
     // Completion hander is on main queue
     public func correlateStatisticsOfType(type: HKSampleType, withType type2: HKSampleType, completion: HealthManagerCorrelationStatisticsBlock) {
         var stat1: [HKStatistics]?
@@ -315,7 +329,6 @@ public class HealthManager: NSObject, WCSessionDelegate {
                             let serializedObject = try NSJSONSerialization.JSONObjectWithData(data, options: NSJSONReadingOptions()) as! [String : AnyObject]
                             return serializedObject
                         }
-                        print(jsons)
                         jsons.forEach { json -> () in
                             Alamofire.request(.POST, "http://app.metaboliccompass.com/measures", parameters: json, encoding: .JSON).responseString {_, response, result in
                                 print(result)
