@@ -331,7 +331,7 @@ public class HealthManager: NSObject, WCSessionDelegate {
                         }
                         jsons.forEach { json -> () in
                             Alamofire.request(.POST, "http://app.metaboliccompass.com/measures", parameters: json, encoding: .JSON).responseString {_, response, result in
-                                print(result)
+                                print("POST: " + (result.isSuccess ? "SUCCESS" : "FAILED"))
                             }
                         }
                     } catch {
@@ -411,6 +411,7 @@ public class HealthManager: NSObject, WCSessionDelegate {
     
     public func savePreparationAndRecoveryWorkout(startDate:NSDate , endDate:NSDate , distance:Double, distanceUnit:HKUnit , kiloCalories:Double,
         metadata:NSDictionary, completion: ( (Bool, NSError!) -> Void)!) {
+            print("Saving workout")
             
             // 1. Create quantities for the distance and energy burned
             let distanceQuantity = HKQuantity(unit: distanceUnit, doubleValue: distance)
