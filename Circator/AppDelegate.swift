@@ -16,17 +16,22 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 
     var window: UIWindow?
     
-    private func fetchRecentSamples() {
+    private func authorizeApp() {
         HealthManager.sharedManager.authorizeHealthKit { (success, error) -> Void in
             guard error == nil else {
                 return
             }
-            HealthManager.sharedManager.fetchMostRecentSamples() { (samples, error) -> Void in
-                guard error == nil else {
-                    return
-                }
-                NSNotificationCenter.defaultCenter().postNotificationName(HealthManagerDidUpdateRecentSamplesNotification, object: self)
+            EventManager.sharedManager.checkCalendarAuthorizationStatus()
+            self.fetchRecentSamples()
+        }
+    }
+    
+    private func fetchRecentSamples() {
+        HealthManager.sharedManager.fetchMostRecentSamples() { (samples, error) -> Void in
+            guard error == nil else {
+                return
             }
+            NSNotificationCenter.defaultCenter().postNotificationName(HealthManagerDidUpdateRecentSamplesNotification, object: self)
         }
     }
 
@@ -44,9 +49,8 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         window?.rootViewController = navController
         window?.makeKeyAndVisible()
         
-        fetchRecentSamples()
+        authorizeApp()
         HealthManager.sharedManager.registerObservers()
-        EventManager.sharedManager.registerHealthkitObserver()
         return true
     }
     

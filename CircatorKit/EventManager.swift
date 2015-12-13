@@ -2,7 +2,7 @@
 //  EventManager.swift
 //  Circator
 //
-//  Created by Thomas Woolf on 12/11/15.
+//  Created by Yanif Ahmad on 12/11/15.
 //  Copyright © 2015 Yanif Ahmad, Tom Woolf. All rights reserved.
 //
 
@@ -10,6 +10,8 @@ import Foundation
 import EventKit
 import WatchConnectivity
 import HealthKit
+
+public let EKMStartSessionNotification = "EKMStartSessionNotification"
 
 private let EventManagerAccessKey = "EKAccessKey"
 private let EventManagerCounterKey = "EKCounterKey"
@@ -59,7 +61,6 @@ public class EventManager : NSObject, WCSessionDelegate {
 
         case EKAuthorizationStatus.Authorized:
             self.hasAccess = true
-            print("Giving cal access 1")
             initializeCalendarSession()
         
         case EKAuthorizationStatus.Restricted, EKAuthorizationStatus.Denied:
@@ -67,25 +68,11 @@ public class EventManager : NSObject, WCSessionDelegate {
         }
     }
     
-    public func registerHealthkitObserver() {
-        NSNotificationCenter.defaultCenter().addObserver(
-            self,
-            selector: "refreshCalendarAccess:",
-            name: HealthManagerDidUpdateRecentSamplesNotification,
-            object: nil)
-    }
-
-    @objc public func refreshCalendarAccess(notification: NSNotification) {
-        print("Refresh cal access")
-        checkCalendarAuthorizationStatus()
-    }
-
     func requestAccessToCalendar() {
         eventKitStore.requestAccessToEntityType(EKEntityType.Event, completion: {
             (accessGranted: Bool, error: NSError?) in
             
             if accessGranted == true {
-                print("Giving cal access 2")
                 self.hasAccess = true
                 dispatch_async(dispatch_get_main_queue(), {
                     self.initializeCalendarSession()
@@ -95,6 +82,8 @@ public class EventManager : NSObject, WCSessionDelegate {
     }
     
     func initializeCalendarSession() {
+        self.calendar = eventKitStore.defaultCalendarForNewEvents
+
         // Perform an initial refresh.
         fetchEventsfromCalendar(false)
         
@@ -111,21 +100,19 @@ public class EventManager : NSObject, WCSessionDelegate {
     }
     
     @objc func refreshCalendarEvents(notification: NSNotification) {
-        print("Refresh cal events")
         fetchEventsfromCalendar(true)
     }
     
     public func fetchEventsfromCalendar(onRefresh : Bool) {
         if let doAccess = hasAccess where doAccess {
-            self.calendar = eventKitStore.defaultCalendarForNewEvents
 
+            var doCommit = false
             let events = eventKitStore.eventsMatchingPredicate(
                             eventKitStore.predicateForEventsWithStartDate(
                                 lastAccess, endDate: NSDate.distantFuture(), calendars: [self.calendar!]))
             
             let dateFormatter = NSDateFormatter()
             dateFormatter.dateFormat = "HH:mm:ss"
-            print("Got cal events: " + String(events.count))
 
             var eventIndex : [DiningEventKey:[(Int, String)]] = [:]
             for ev in events {
@@ -142,7 +129,8 @@ public class EventManager : NSObject, WCSessionDelegate {
                         eventId = newCounter()
                         ev.notes = String(eventId)
                         do {
-                            try eventKitStore.saveEvent(ev, span: EKSpan.ThisEvent)
+                            try eventKitStore.saveEvent(ev, span: EKSpan.ThisEvent, commit: false)
+                            doCommit = true
                         } catch {
                             print("Error saving event id: \(error)")
                         }
@@ -157,14 +145,6 @@ public class EventManager : NSObject, WCSessionDelegate {
                         eventIndex.updateValue([(eventId, edata)], forKey: key)
                     }
                 }
-            }
-
-            // Commit new event ids.
-            do {
-                try eventKitStore.commit()
-                setEventCounter()
-            } catch {
-                print("Error committing event ids: \(error)")
             }
 
             HealthManager.sharedManager.fetchPreparationAndRecoveryWorkout { (results, error) in
@@ -184,16 +164,31 @@ public class EventManager : NSObject, WCSessionDelegate {
                     for eid in eitems.1 {
                         let sstr = dateFormatter.stringFromDate(eitems.0.start)
                         let estr = dateFormatter.stringFromDate(eitems.0.end)
-                        print("Writing event " + sstr + "->" + estr + " " + eid.1)
+                        print("Writing food log " + sstr + "->" + estr + " " + eid.1)
                         
                         let emeta = ["EventId":String(eid.0), "Data":eid.1]
-                        HealthManager.sharedManager.savePreparationAndRecoveryWorkout(eitems.0.start, endDate: eitems.0.end, distance: 0.0, distanceUnit: HKUnit.meterUnit(), kiloCalories: 0.0, metadata: emeta, completion: { (success, error ) -> Void in
-                            if( success ) {
-                                print("Calendar event saved as workout-type")
-                            } else if( error != nil ) {
-                                print("error made: \(error)")
+                        HealthManager.sharedManager.savePreparationAndRecoveryWorkout(
+                            eitems.0.start, endDate: eitems.0.end,
+                            distance: 0.0, distanceUnit: HKUnit.meterUnit(), kiloCalories: 0.0,
+                            metadata: emeta,
+                            completion: { (success, error ) -> Void in
+                                if( success ) {
+                                    print("Food log event saved")
+                                } else if( error != nil ) {
+                                    print("error made: \(error)")
+                                }
                             }
-                        })
+                        )
+                    }
+                }
+                
+                // Commit new event ids.
+                if ( doCommit ) {
+                    do {
+                        try self.eventKitStore.commit()
+                        self.setEventCounter()
+                    } catch {
+                        print("Error committing event ids: \(error)")
                     }
                 }
             }
