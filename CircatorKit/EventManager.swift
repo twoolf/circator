@@ -164,7 +164,7 @@ public class EventManager : NSObject, WCSessionDelegate {
                         let estr = dateFormatter.stringFromDate(eitems.0.end)
                         print("Writing food log " + sstr + "->" + estr + " " + eid.1)
                         
-                        let emeta = ["EventId":String(eid.0), "Data":eid.1]
+                        let emeta = ["Source":"Calendar","EventId":String(eid.0), "Data":eid.1]
                         HealthManager.sharedManager.savePreparationAndRecoveryWorkout(
                             eitems.0.start, endDate: eitems.0.end,
                             distance: 0.0, distanceUnit: HKUnit.meterUnit(), kiloCalories: 0.0,

@@ -26,16 +26,24 @@ class IntroViewController: UIViewController, UITableViewDelegate, UITableViewDat
         return view
     }()
 
+    lazy var titleLabel : UILabel = {
+        let label: UILabel = UILabel()
+        label.font = UIFont.systemFontOfSize(22, weight: UIFontWeightRegular)
+        label.textColor = Theme.universityDarkTheme.titleTextColor
+        label.textAlignment = .Center
+        label.text = NSLocalizedString("Metabolic Compass", comment: "Metabolic Compass")
+        return label
+    }()
+    
     lazy var plotButton: UIButton = {
         let button = UIButton(type: .Custom)
         button.addTarget(self, action: "showAttributes:", forControlEvents: .TouchUpInside)
         button.setTitle("Plot", forState: .Normal)
-        button.setTitleColor(UIColor.whiteColor(), forState: .Normal)
         button.titleLabel!.textAlignment = .Center
         button.layer.cornerRadius = 7.0
         button.backgroundColor = Theme.universityDarkTheme.complementForegroundColors?.colorWithVibrancy(0.8)
         button.setTitleColor(Theme.universityDarkTheme.bodyTextColor, forState: .Normal)
-        button.titleLabel?.font = UIFont.systemFontOfSize(20, weight: UIFontWeightLight)
+        button.titleLabel?.font = UIFont.systemFontOfSize(16, weight: UIFontWeightRegular)
         return button
     }()
     
@@ -43,68 +51,90 @@ class IntroViewController: UIViewController, UITableViewDelegate, UITableViewDat
         let button = UIButton(type: .Custom)
         button.addTarget(self, action: "showAttributes:", forControlEvents: .TouchUpInside)
         button.setTitle("Meal", forState: .Normal)
-        button.setTitleColor(UIColor.whiteColor(), forState: .Normal)
         button.titleLabel!.textAlignment = .Center
         button.layer.cornerRadius = 7.0
         button.backgroundColor = Theme.universityDarkTheme.complementForegroundColors?.colorWithVibrancy(0.8)
         button.setTitleColor(Theme.universityDarkTheme.bodyTextColor, forState: .Normal)
-        button.titleLabel?.font = UIFont.systemFontOfSize(20, weight: UIFontWeightLight)
+        button.titleLabel?.font = UIFont.systemFontOfSize(16, weight: UIFontWeightRegular)
         return button
     }()
     
     lazy var correlateButton: UIButton = {
         let button = UIButton(type: .Custom)
         button.setTitle("Correlate", forState: .Normal)
-        button.setTitleColor(UIColor.whiteColor(), forState: .Normal)
         button.titleLabel!.textAlignment = .Center
         button.addTarget(self, action: "showAttributes:", forControlEvents: .TouchUpInside)
         button.layer.cornerRadius = 7.0
-        button.backgroundColor = Theme.universityDarkTheme.complementForegroundColors?.colorWithVibrancy(0.2)
+        button.backgroundColor = Theme.universityDarkTheme.complementForegroundColors?.colorWithVibrancy(0.8)
         button.setTitleColor(Theme.universityDarkTheme.bodyTextColor, forState: .Normal)
-        button.titleLabel?.font = UIFont.systemFontOfSize(20, weight: UIFontWeightLight)
+        button.titleLabel?.font = UIFont.systemFontOfSize(16, weight: UIFontWeightRegular)
         return button
     }()
-    
-//    lazy var bestWeightButton: UIButton = {
-//        let button = UIButton(type: .Custom)
-//        button.setTitle("High Lights", forState: .Normal)
-//        button.setTitleColor(UIColor.whiteColor(), forState: .Normal)
-//        button.titleLabel!.textAlignment = .Center
-//        button.layer.cornerRadius = 7.0
-//        button.backgroundColor = Theme.universityDarkTheme.complementForegroundColors?.colorWithVibrancy(0.2)
-//        button.setTitleColor(Theme.universityDarkTheme.bodyTextColor, forState: .Normal)
-//        button.titleLabel?.font = UIFont.systemFontOfSize(20, weight: UIFontWeightLight)
-//        return button
-//    }()
     
     lazy var settingsButton: UIButton = {
+        let image = UIImage(named: "noun_18964_inverted_cc") as UIImage?
         let button = UIButton(type: .Custom)
-        button.setTitle("Settings", forState: .Normal)
-        button.setTitleColor(UIColor.whiteColor(), forState: .Normal)
-        button.titleLabel!.textAlignment = .Center
+        button.setImage(image, forState: .Normal)
         button.addTarget(self, action: "showSettings:", forControlEvents: .TouchUpInside)
-        button.layer.cornerRadius = 7.0
-        button.backgroundColor = Theme.universityDarkTheme.complementForegroundColors?.colorWithVibrancy(0.2)
-        button.setTitleColor(Theme.universityDarkTheme.bodyTextColor, forState: .Normal)
-        button.titleLabel?.font = UIFont.systemFontOfSize(20, weight: UIFontWeightLight)
+        button.backgroundColor = Theme.universityDarkTheme.backgroundColor
+        let wConstraint = NSLayoutConstraint(item: button,
+                                             attribute: NSLayoutAttribute.Width,
+                                             relatedBy: NSLayoutRelation.Equal, toItem: nil,
+                                             attribute: NSLayoutAttribute.NotAnAttribute, multiplier: 1, constant: 27)
+        let hConstraint = NSLayoutConstraint(item: button,
+                                             attribute: NSLayoutAttribute.Height,
+                                             relatedBy: NSLayoutRelation.Equal, toItem: nil,
+                                             attribute: NSLayoutAttribute.NotAnAttribute, multiplier: 1, constant: 27)
+        button.addConstraints([wConstraint, hConstraint])
         return button
     }()
-        
+
+    lazy var timerLabel : UILabel = {
+        let label: UILabel = UILabel()
+        label.font = UIFont.systemFontOfSize(28, weight: UIFontWeightRegular)
+        label.textColor = Theme.universityDarkTheme.titleTextColor
+        label.textAlignment = .Center
+        label.text = NSLocalizedString("00:00", comment: "Meal Timer")
+        return label
+    }()
+    
+    lazy var startButton: UIButton = {
+        let button = UIButton(type: .Custom)
+        button.setTitle("Timer", forState: .Normal)
+        button.titleLabel!.textAlignment = .Center
+        button.addTarget(self, action: "toggleTimer:", forControlEvents: .TouchUpInside)
+        button.layer.cornerRadius = 7.0
+        button.backgroundColor = Theme.universityDarkTheme.complementForegroundColors?.colorWithVibrancy(0.8)
+        button.setTitleColor(Theme.universityDarkTheme.bodyTextColor, forState: .Normal)
+        button.titleLabel?.font = UIFont.systemFontOfSize(16, weight: UIFontWeightRegular)
+        return button
+    }()
+    
     lazy var buttonsContainerView: UIStackView = {
-        let stackView: UIStackView = UIStackView(arrangedSubviews: [self.plotButton, self.correlateButton, self.mealButton])
+        let stackView: UIStackView = UIStackView(arrangedSubviews: [self.plotButton, self.correlateButton, self.mealButton, self.startButton])
         stackView.axis = .Horizontal
         stackView.distribution = UIStackViewDistribution.FillEqually
+        stackView.alignment = UIStackViewAlignment.Fill
+        stackView.spacing = 7
+        return stackView
+    }()
+    
+    lazy var timerContainerView: UIStackView = {
+        let stackView: UIStackView = UIStackView(arrangedSubviews: [self.timerLabel])
+        stackView.axis = .Horizontal
+        //stackView.distribution = UIStackViewDistribution.FillEqually
         stackView.alignment = UIStackViewAlignment.Fill
         stackView.spacing = 15
         return stackView
     }()
     
     lazy var topButtonsContainerView: UIStackView = {
-        let stackView: UIStackView = UIStackView(arrangedSubviews: [self.settingsButton])
+        let stackView: UIStackView = UIStackView(arrangedSubviews: [self.titleLabel, self.settingsButton])
         stackView.axis = .Horizontal
-        stackView.distribution = UIStackViewDistribution.FillEqually
+        //stackView.distribution = UIStackViewDistribution.FillEqually
         stackView.alignment = UIStackViewAlignment.Fill
         stackView.spacing = 15
+
         return stackView
     }()
     
@@ -202,16 +232,27 @@ class IntroViewController: UIViewController, UITableViewDelegate, UITableViewDat
             logoImageView.topAnchor.constraintEqualToAnchor(view.topAnchor, constant: 20)
         ]
         view.addConstraints(constraints)
+        
         buttonsContainerView.translatesAutoresizingMaskIntoConstraints = false
         view.addSubview(buttonsContainerView)
         let buttonContainerConstraints: [NSLayoutConstraint] = [
             buttonsContainerView.bottomAnchor.constraintEqualToAnchor(bottomLayoutGuide.bottomAnchor, constant: -30),
-            buttonsContainerView.leadingAnchor.constraintEqualToAnchor(view.layoutMarginsGuide.leadingAnchor, constant: 20),
+            buttonsContainerView.leadingAnchor.constraintEqualToAnchor(view.layoutMarginsGuide.leadingAnchor, constant: 0),
             buttonsContainerView.centerXAnchor.constraintEqualToAnchor(view.centerXAnchor),
             buttonsContainerView.heightAnchor.constraintEqualToConstant(44)
         ]
         view.addConstraints(buttonContainerConstraints)
-        
+
+        timerContainerView.translatesAutoresizingMaskIntoConstraints = false
+        view.addSubview(timerContainerView)
+        let timerContainerConstraints: [NSLayoutConstraint] = [
+            timerContainerView.bottomAnchor.constraintEqualToAnchor(buttonsContainerView.topAnchor, constant: -30),
+            timerContainerView.leadingAnchor.constraintEqualToAnchor(view.layoutMarginsGuide.leadingAnchor, constant: 0),
+            timerContainerView.centerXAnchor.constraintEqualToAnchor(view.centerXAnchor),
+            timerContainerView.heightAnchor.constraintEqualToConstant(44)
+        ]
+        view.addConstraints(timerContainerConstraints)
+
         topButtonsContainerView.translatesAutoresizingMaskIntoConstraints = false
         view.addSubview(topButtonsContainerView)
         let topButtonsContainerConstraints: [NSLayoutConstraint] = [
@@ -379,6 +420,7 @@ class IntroViewController: UIViewController, UITableViewDelegate, UITableViewDat
             return IntroViewController.previewMealTypeStrings[component][row]
         }
     }
+    
     func pickerView(pickerView: UIPickerView, didSelectRow row: Int, inComponent component: Int) {
         if case .Correlate(_) = selectedMode! {
             if component == 0 {
@@ -391,6 +433,71 @@ class IntroViewController: UIViewController, UITableViewDelegate, UITableViewDat
         } else {
 
         }
+    }
+    
+    // MARK: - Timer
+    var timer = NSTimer()
+    var timerStartDate = NSDate()
+    var startTime = NSTimeInterval()
+    
+    func toggleTimer(sender: AnyObject) {
+        if !timer.valid {
+            let actionSelector : Selector = "updateTimer"
+            timer = NSTimer.scheduledTimerWithTimeInterval(0.01, target:self, selector:actionSelector, userInfo: nil, repeats: true)
+            timerStartDate = NSDate()
+            startTime = NSDate.timeIntervalSinceReferenceDate()
+            if let b = sender as? UIButton {
+                b.backgroundColor = UIColor.redColor()
+            }
+        } else {
+            timer.invalidate()
+            if let b = sender as? UIButton {
+                b.backgroundColor = Theme.universityDarkTheme.complementForegroundColors?.colorWithVibrancy(0.8)
+            }
+            saveMealTime()
+            resetTimer()
+        }
+    }
+    
+    func resetTimer() {
+        timerLabel.text = "00:00"
+    }
+    
+    func updateTimer() {
+        let currentTime = NSDate.timeIntervalSinceReferenceDate()
+        
+        // Find the difference between current time and strart time
+        var elapsedTime: NSTimeInterval = currentTime - startTime
+        
+        // calculate the minutes in elapsed time
+        let minutes = UInt8(elapsedTime / 60.0)
+        elapsedTime -= (NSTimeInterval(minutes) * 60)
+        
+        // calculate the seconds in elapsed time
+        let seconds = UInt8(elapsedTime)
+        elapsedTime -= NSTimeInterval(seconds)
+        
+        // add the leading zero for minutes, seconds and millseconds and store them as string constants
+        let startMinutes  = minutes > 9 ? String(minutes):"0" + String(minutes)
+        let startSeconds  = seconds > 9 ? String(seconds):"0" + String(seconds)
+        
+        timerLabel.text = "\(startMinutes):\(startSeconds)"
+    }
+    
+    func saveMealTime() {
+        let timerEndDate = NSDate()
+        let kmUnit = HKUnit(fromString: "km")
+        let metaMeals = ["Source":"Timer"]
+
+        HealthManager.sharedManager.savePreparationAndRecoveryWorkout(timerStartDate, endDate: timerEndDate,
+            distance: 0.0, distanceUnit:kmUnit, kiloCalories: 0.0, metadata: metaMeals,
+            completion: { (success, error ) -> Void in
+                if( success ) {
+                    print("Timed meal saved as workout-type")
+                } else if( error != nil ) {
+                    print("error made: \(error)")
+                }
+            })
     }
 }
 
