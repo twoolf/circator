@@ -38,21 +38,43 @@ class SettingsViewController: UITableViewController, UITextFieldDelegate {
     // MARK: - Table view data source & delegate
 
     override func numberOfSectionsInTableView(tableView: UITableView) -> Int {
-        return 2
+        return 3
     }
 
     override func tableView(tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return (section == 0 ? 2 : 6)
+        var result = 0
+        switch section {
+        case 0:
+            result = 2
+        case 1:
+            result = 1
+        case 2:
+            result = 6
+        default:
+            result = 0
+        }
+        return result
     }
 
     override func tableView(tableView: UITableView, titleForHeaderInSection section: Int) -> String? {
-        return (section == 0 ? "Login" : "Preview Rows")
+        var result = ""
+        switch section {
+        case 0:
+            result = "Login"
+        case 1:
+            result = "Settings"
+        case 2:
+            result = "Preview Rows"
+        default:
+            result = ""
+        }
+        return result
     }
 
     override func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCellWithIdentifier("settingsCell", forIndexPath: indexPath)
-        if ( indexPath.section == 0 ) {
-
+        switch indexPath.section {
+        case 0, 1:
             let cellInput = UITextField()
             cell.detailTextLabel?.hidden = true
             cellInput.adjustsFontSizeToFitWidth = true
@@ -62,25 +84,43 @@ class SettingsViewController: UITableViewController, UITextFieldDelegate {
             cellInput.autocapitalizationType = UITextAutocapitalizationType.None // no auto capitalization support
             cellInput.textAlignment = NSTextAlignment.Left
 
-            if (indexPath.row == 0) {
-                cellInput.text = UserManager.sharedManager.getUserId()
-                cellInput.keyboardType = UIKeyboardType.EmailAddress
-                cellInput.returnKeyType = UIReturnKeyType.Next
-                cellInput.tag = 0
-            }
-            else {
-                cellInput.placeholder = "Required"
-                cellInput.keyboardType = UIKeyboardType.Default
+            switch indexPath.section {
+            case 0:
+                if (indexPath.row == 0) {
+                    cellInput.text = UserManager.sharedManager.getUserId()
+                    cellInput.keyboardType = UIKeyboardType.EmailAddress
+                    cellInput.returnKeyType = UIReturnKeyType.Next
+                    cellInput.tag = 0
+                    cell.textLabel?.text = "User"
+                }
+                else {
+                    if let pass = UserManager.sharedManager.getPassword() {
+                        cellInput.text = pass
+                    } else {
+                        cellInput.placeholder = "Required"
+                    }
+                    cellInput.keyboardType = UIKeyboardType.Default
+                    cellInput.returnKeyType = UIReturnKeyType.Done
+                    cellInput.secureTextEntry = true
+                    cellInput.tag = 1
+                    cell.textLabel?.text = "Password"
+                }
+
+            case 1:
+                cellInput.text = UserManager.sharedManager.getHotWords()
+                cellInput.keyboardType = UIKeyboardType.Alphabet
                 cellInput.returnKeyType = UIReturnKeyType.Done
-                cellInput.secureTextEntry = true
-                cellInput.tag = 1
+                cellInput.tag = 2
+                cell.textLabel?.text = "Siri hotword"
+
+            default:
+                print("Invalid settings tableview section")
             }
 
             cellInput.clearButtonMode = UITextFieldViewMode.Never // no clear 'x' button to the right
             cellInput.enabled = true
             cellInput.delegate = self
 
-            cell.textLabel?.text = (indexPath.row == 0 ? "User" : "Password")
             cell.textLabel?.translatesAutoresizingMaskIntoConstraints = false
 
             cellInput.translatesAutoresizingMaskIntoConstraints = false
@@ -89,12 +129,12 @@ class SettingsViewController: UITableViewController, UITextFieldDelegate {
             cell.addConstraint(NSLayoutConstraint(
                 item:cell.textLabel!, attribute: NSLayoutAttribute.Width,
                 relatedBy:NSLayoutRelation.Equal, toItem:cell.contentView,
-                attribute:NSLayoutAttribute.Width, multiplier:0.3, constant:0))
+                attribute:NSLayoutAttribute.Width, multiplier:0.33, constant:0))
 
             cell.addConstraint(NSLayoutConstraint(
                 item: cellInput, attribute:NSLayoutAttribute.Width,
                 relatedBy:NSLayoutRelation.Equal, toItem:cell.contentView,
-                attribute:NSLayoutAttribute.Width, multiplier:0.7, constant:0))
+                attribute:NSLayoutAttribute.Width, multiplier:0.67, constant:0))
 
             cell.addConstraint(NSLayoutConstraint(
                 item:cellInput, attribute: NSLayoutAttribute.Leading,
@@ -109,19 +149,21 @@ class SettingsViewController: UITableViewController, UITextFieldDelegate {
             cell.addConstraint(NSLayoutConstraint(
                 item: cellInput, attribute: NSLayoutAttribute.Top,
                 relatedBy:NSLayoutRelation.Equal, toItem:cell.contentView,
-                attribute:NSLayoutAttribute.Top, multiplier:1, constant:8))
+                attribute:NSLayoutAttribute.Top, multiplier:1, constant:8.5))
 
             cell.addConstraint(NSLayoutConstraint(
                 item: cellInput, attribute: NSLayoutAttribute.Bottom,
                 relatedBy:NSLayoutRelation.Equal, toItem:cell.contentView,
-                attribute:NSLayoutAttribute.Bottom, multiplier:1, constant:-8))
+                attribute:NSLayoutAttribute.Bottom, multiplier:1, constant:-7.5))
             
-
-        } else {
+        case 2:
             cell.tintColor = Theme.universityDarkTheme.backgroundColor
             cell.imageView?.image = PreviewManager.rowIcons[indexPath.row]
             cell.textLabel?.text = PreviewManager.previewSampleTypes[indexPath.row].displayText
             cell.accessoryType = .DisclosureIndicator
+
+        default:
+            print("Invalid settings tableview section")
         }
         return cell
     }
@@ -138,10 +180,15 @@ class SettingsViewController: UITableViewController, UITextFieldDelegate {
     
     func textFieldShouldReturn(textField: UITextField) -> Bool {
         if let txt = textField.text {
-            if ( textField.tag == 0 ) {
+            switch textField.tag {
+            case 0:
                 UserManager.sharedManager.setUserId(txt)
-            } else if ( textField.tag == 1 ) {
-                UserManager.sharedManager.userLogin(txt)
+            case 1:
+                UserManager.sharedManager.login(txt)
+            case 2:
+                UserManager.sharedManager.setHotWords(txt)
+            default:
+                return false
             }
         }
         return false

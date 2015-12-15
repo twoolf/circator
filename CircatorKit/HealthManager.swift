@@ -330,7 +330,7 @@ public class HealthManager: NSObject, WCSessionDelegate {
                             return serializedObject
                         }
                         jsons.forEach { json -> () in
-                            Alamofire.request(.POST, "http://app.metaboliccompass.com/measures", parameters: json, encoding: .JSON).responseString {_, response, result in
+                            Alamofire.request(MCRouter.UploadHKMeasures(json)).responseString {_, response, result in
                                 print("POST: " + (result.isSuccess ? "SUCCESS" : "FAILED"))
                             }
                         }
