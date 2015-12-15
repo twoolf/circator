@@ -116,7 +116,9 @@ public class EventManager : NSObject, WCSessionDelegate {
 
             var eventIndex : [DiningEventKey:[(Int, String)]] = [:]
             for ev in events {
-                if let rng = ev.title.lowercaseString.rangeOfString("food log") {
+                if let hotword = UserManager.sharedManager.getHotWords(),
+                       rng = ev.title.lowercaseString.rangeOfString(hotword)
+                {
                     let key = DiningEventKey(start: ev.startDate, end: ev.endDate)
 
                     var eventId = 0

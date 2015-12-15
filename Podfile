@@ -9,5 +9,8 @@ target 'Circator' do
   pod 'SwiftyJSON', :git => 'https://github.com/SwiftyJSON/SwiftyJSON.git'
   pod 'Alamofire', '~> 2.0'
   pod 'Granola'
+  pod 'Locksmith'
+  pod 'Stormpath'
+  pod 'SwiftyButton'
 end
 
