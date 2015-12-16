@@ -47,7 +47,7 @@ class SettingsViewController: UITableViewController, UITextFieldDelegate {
         case 0:
             result = 2
         case 1:
-            result = 1
+            result = 2
         case 2:
             result = 6
         default:
@@ -107,11 +107,19 @@ class SettingsViewController: UITableViewController, UITextFieldDelegate {
                 }
 
             case 1:
-                cellInput.text = UserManager.sharedManager.getHotWords()
+                if (indexPath.row == 0) {
+                    cellInput.text = UserManager.sharedManager.getHotWords()
+                    cell.textLabel?.text = "Siri hotword"
+                    cellInput.tag = 2
+                } else {
+                    let freq = UserManager.sharedManager.getRefreshFrequency() ?? UserManager.defaultRefreshFrequency
+                    cellInput.text = String(freq)
+                    cell.textLabel?.text = "Refresh"
+                    cellInput.tag = 3
+                }
+
                 cellInput.keyboardType = UIKeyboardType.Alphabet
                 cellInput.returnKeyType = UIReturnKeyType.Done
-                cellInput.tag = 2
-                cell.textLabel?.text = "Siri hotword"
 
             default:
                 print("Invalid settings tableview section")
@@ -140,7 +148,7 @@ class SettingsViewController: UITableViewController, UITextFieldDelegate {
                 item:cellInput, attribute: NSLayoutAttribute.Leading,
                 relatedBy:NSLayoutRelation.Equal, toItem:cell.textLabel,
                 attribute:NSLayoutAttribute.Trailing, multiplier:1, constant:8))
-            
+
             cell.addConstraint(NSLayoutConstraint(
                 item: cellInput, attribute:NSLayoutAttribute.Trailing,
                 relatedBy:NSLayoutRelation.Equal, toItem:cell.contentView,
@@ -155,7 +163,7 @@ class SettingsViewController: UITableViewController, UITextFieldDelegate {
                 item: cellInput, attribute: NSLayoutAttribute.Bottom,
                 relatedBy:NSLayoutRelation.Equal, toItem:cell.contentView,
                 attribute:NSLayoutAttribute.Bottom, multiplier:1, constant:-7.5))
-            
+
         case 2:
             cell.tintColor = Theme.universityDarkTheme.backgroundColor
             cell.imageView?.image = PreviewManager.rowIcons[indexPath.row]
@@ -177,7 +185,7 @@ class SettingsViewController: UITableViewController, UITextFieldDelegate {
             navigationController?.pushViewController(rowSettingsVC, animated: true)
         }
     }
-    
+
     func textFieldShouldReturn(textField: UITextField) -> Bool {
         if let txt = textField.text {
             switch textField.tag {
@@ -187,6 +195,10 @@ class SettingsViewController: UITableViewController, UITextFieldDelegate {
                 UserManager.sharedManager.login(txt)
             case 2:
                 UserManager.sharedManager.setHotWords(txt)
+            case 3:
+                if let freq = Int(txt) {
+                    UserManager.sharedManager.setRefreshFrequency(freq)
+                }
             default:
                 return false
             }

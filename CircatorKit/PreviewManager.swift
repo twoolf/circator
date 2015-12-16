@@ -38,11 +38,11 @@ public class PreviewManager: NSObject {
             HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierDietarySodium)!,
         ]
     ]
-    
+
     public static let rowIcons: [UIImage] = {
         return ["icon_scale", "icon_heart_rate", "icon_sleep", "icon_run", "icon_food", "icon_blood_pressure"].map { UIImage(named: $0)! }
     }()
-    
+
     public static var previewSampleTypes: [HKSampleType] {
         if let rawTypes = NSUserDefaults.standardUserDefaults().objectForKey("previewSampleTypes") as? [NSData] {
             return rawTypes.map { (data) -> HKSampleType in
@@ -64,14 +64,14 @@ public class PreviewManager: NSObject {
             return defaultTypes
         }
     }
-    
+
     public static func iconForSampleType(sampleType: HKSampleType) -> UIImage {
         let index = previewChoices.indexOf { (row) -> Bool in
             return row.indexOf(sampleType) != nil
         }
         return index != nil ? rowIcons[index!] : UIImage()
     }
-    
+
     public static func reselectSampleType(sampleType: HKSampleType, forPreviewRow row: Int) {
         guard row >= 0 && row < previewChoices.count else {
             return

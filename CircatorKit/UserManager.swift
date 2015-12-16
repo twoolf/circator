@@ -13,24 +13,37 @@ import Stormpath
 
 private let UserManagerLoginKey = "UMLoginKey"
 private let UserManagerHotwordKey = "UMHotwordKey"
+private let UserManagerFrequencyKey = "UMFrequencyKey"
 
 public class UserManager {
     public static let sharedManager = UserManager()
-    
+
+    // Defaults.
+    public static let defaultRefreshFrequency = 10
+
     var userId: String?
     var hotWords: String?
+    var refreshFrequency: Int? // Aggregate refresh frequency in seconds.
     
     init() {
-        Stormpath.setUpWithURL(MCRouter.baseURLString)
+        self.setupStormpath()
         self.userId = NSUserDefaults.standardUserDefaults().stringForKey(UserManagerLoginKey)
         self.hotWords = NSUserDefaults.standardUserDefaults().stringForKey(UserManagerHotwordKey)
+        self.refreshFrequency = NSUserDefaults.standardUserDefaults().integerForKey(UserManagerFrequencyKey) ?? UserManager.defaultRefreshFrequency
         if ( self.hotWords == nil ) {
             self.setHotWords("food log")
         }
     }
 
     // Mark: - Authentication
-    
+    public func setupStormpath() {
+        Stormpath.setUpWithURL(MCRouter.baseURLString)
+        MCRouter.OAuthToken = Stormpath.accessToken
+        if let token = MCRouter.OAuthToken {
+            print("User token: \(token)")
+        }
+    }
+
     public func getUserId() -> String? {
         return self.userId
     }
@@ -108,6 +121,7 @@ public class UserManager {
                     debugPrint(err)
                     return
                 }
+                MCRouter.OAuthToken = Stormpath.accessToken
                 print("Access token: \(Stormpath.accessToken)")
             })
         }
@@ -130,6 +144,16 @@ public class UserManager {
     public func setHotWords(hotWords: String) {
         self.hotWords = hotWords
         NSUserDefaults.standardUserDefaults().setValue(self.hotWords, forKey: UserManagerHotwordKey)
+        NSUserDefaults.standardUserDefaults().synchronize()
+    }
+
+    public func getRefreshFrequency() -> Int? {
+        return self.refreshFrequency
+    }
+    
+    public func setRefreshFrequency(frequency: Int) {
+        self.refreshFrequency = frequency
+        NSUserDefaults.standardUserDefaults().setValue(self.refreshFrequency, forKey: UserManagerFrequencyKey)
         NSUserDefaults.standardUserDefaults().synchronize()
     }
 

@@ -7,15 +7,16 @@
 //
 
 import UIKit
-import Realm
-import RealmSwift
 import HealthKit
 import CircatorKit
+import Async
+import Realm
+import RealmSwift
 
 let IntroViewTableViewCellIdentifier = "IntroViewTableViewCellIdentifier"
 
 class IntroViewController: UIViewController, UITableViewDelegate, UITableViewDataSource, UIPickerViewDataSource, UIPickerViewDelegate {
-    
+
     lazy var logoImageView: UIImageView = {
         let view = UIImageView(image: UIImage(named: "logo_university")!)
         view.tintColor = Theme.universityDarkTheme.foregroundColor
@@ -34,7 +35,7 @@ class IntroViewController: UIViewController, UITableViewDelegate, UITableViewDat
         label.text = NSLocalizedString("Metabolic Compass", comment: "Metabolic Compass")
         return label
     }()
-    
+
     lazy var plotButton: UIButton = {
         let button = UIButton(type: .Custom)
         button.addTarget(self, action: "showAttributes:", forControlEvents: .TouchUpInside)
@@ -46,7 +47,7 @@ class IntroViewController: UIViewController, UITableViewDelegate, UITableViewDat
         button.titleLabel?.font = UIFont.systemFontOfSize(16, weight: UIFontWeightRegular)
         return button
     }()
-    
+
     lazy var mealButton: UIButton = {
         let button = UIButton(type: .Custom)
         button.addTarget(self, action: "showAttributes:", forControlEvents: .TouchUpInside)
@@ -58,7 +59,7 @@ class IntroViewController: UIViewController, UITableViewDelegate, UITableViewDat
         button.titleLabel?.font = UIFont.systemFontOfSize(16, weight: UIFontWeightRegular)
         return button
     }()
-    
+
     lazy var correlateButton: UIButton = {
         let button = UIButton(type: .Custom)
         button.setTitle("Correlate", forState: .Normal)
@@ -70,7 +71,7 @@ class IntroViewController: UIViewController, UITableViewDelegate, UITableViewDat
         button.titleLabel?.font = UIFont.systemFontOfSize(16, weight: UIFontWeightRegular)
         return button
     }()
-    
+
     lazy var settingsButton: UIButton = {
         let image = UIImage(named: "noun_18964_inverted_cc") as UIImage?
         let button = UIButton(type: .Custom)
@@ -97,7 +98,7 @@ class IntroViewController: UIViewController, UITableViewDelegate, UITableViewDat
         label.text = NSLocalizedString("00:00", comment: "Meal Timer")
         return label
     }()
-    
+
     lazy var startButton: UIButton = {
         let button = UIButton(type: .Custom)
         button.setTitle("Timer", forState: .Normal)
@@ -109,7 +110,7 @@ class IntroViewController: UIViewController, UITableViewDelegate, UITableViewDat
         button.titleLabel?.font = UIFont.systemFontOfSize(16, weight: UIFontWeightRegular)
         return button
     }()
-    
+
     lazy var buttonsContainerView: UIStackView = {
         let stackView: UIStackView = UIStackView(arrangedSubviews: [self.plotButton, self.correlateButton, self.mealButton, self.startButton])
         stackView.axis = .Horizontal
@@ -118,7 +119,7 @@ class IntroViewController: UIViewController, UITableViewDelegate, UITableViewDat
         stackView.spacing = 7
         return stackView
     }()
-    
+
     lazy var timerContainerView: UIStackView = {
         let stackView: UIStackView = UIStackView(arrangedSubviews: [self.timerLabel])
         stackView.axis = .Horizontal
@@ -127,7 +128,7 @@ class IntroViewController: UIViewController, UITableViewDelegate, UITableViewDat
         stackView.spacing = 15
         return stackView
     }()
-    
+
     lazy var topButtonsContainerView: UIStackView = {
         let stackView: UIStackView = UIStackView(arrangedSubviews: [self.titleLabel, self.settingsButton])
         stackView.axis = .Horizontal
@@ -137,7 +138,7 @@ class IntroViewController: UIViewController, UITableViewDelegate, UITableViewDat
 
         return stackView
     }()
-    
+
     lazy var tableTitleContainerView: UIStackView = {
         let userImageView = UIImageView(image: UIImage(named: "icon_user")!)
         userImageView.contentMode = .ScaleAspectFit
@@ -151,7 +152,7 @@ class IntroViewController: UIViewController, UITableViewDelegate, UITableViewDat
         stackView.tintColor = Theme.universityDarkTheme.foregroundColor
         return stackView
     }()
-    
+
     lazy var tableView: UITableView = {
         let tableView = UITableView(frame: CGRectMake(0, 0, 1000, 1000), style: UITableViewStyle.Plain)
         tableView.dataSource = self
@@ -165,11 +166,17 @@ class IntroViewController: UIViewController, UITableViewDelegate, UITableViewDat
         tableView.scrollEnabled = false
         return tableView
     }()
-    
+
     static let sampleFormatter = SampleFormatter()
     static let previewTypeStrings = PreviewManager.previewSampleTypes.map { $0.displayText! }
-    static let previewMealTypeStrings = [["Bkfast", "Lunch", "Dinner", "Snack"],["AM", "5:00","5:30","6:00","6:30","7:00","7:30","8:00","8:30","9:00","9:30", "10:00","10:30","11:00","11:30","12:00","PM", "12:30","13:00","13:30","14:00","14:30","15:00","15:30","16:00","16:30","17:00", "17:30", "18:00", "18:30", "19:00", "19:30", "20:00", "20:30", "21:00", "21:30", "22:00", "22:30", "23:00", "23:30", "24:00", "AM", "00:30", "1:00", "1:30", "2:00", "2:30", "3:00", "3:30", "4:00", "4:30"], ["Min", "15", "30", "45", "60", "90", "120", "150", "180", "210", "240"],["1✮", "2✮", "3✮", "4✮", "5✮"]]
-    
+    static let previewMealTypeStrings = [["Bkfast", "Lunch", "Dinner", "Snack"],
+                                         ["AM", "5:00","5:30","6:00","6:30","7:00","7:30","8:00","8:30","9:00","9:30","10:00","10:30","11:00","11:30","12:00",
+                                          "PM", "12:30","13:00","13:30","14:00","14:30","15:00","15:30","16:00","16:30","17:00", "17:30", "18:00", "18:30",
+                                                "19:00", "19:30", "20:00", "20:30", "21:00", "21:30", "22:00", "22:30", "23:00", "23:30", "24:00",
+                                          "AM", "00:30", "1:00", "1:30", "2:00", "2:30", "3:00", "3:30", "4:00", "4:30"],
+                                         ["Min", "15", "30", "45", "60", "90", "120", "150", "180", "210", "240"],
+                                         ["1✮", "2✮", "3✮", "4✮", "5✮"]]
+
     lazy var dummyTextField: UITextField = {
         let textField = UITextField()
         textField.inputView = self.pickerView
@@ -185,22 +192,22 @@ class IntroViewController: UIViewController, UITableViewDelegate, UITableViewDat
         }()
         return textField
     }()
-    
+
     private lazy var pickerView: UIPickerView = {
         let pickerView = UIPickerView()
         pickerView.dataSource = self
         pickerView.delegate = self
         return pickerView
     }()
-    
+
     enum GraphMode {
         case Plot(HKSampleType)
         case Correlate(HKSampleType, HKSampleType)
         case previewMealTypeStrings
     }
-    
+
     private var selectedMode: GraphMode!
-    
+
     override func viewDidLoad() {
         super.viewDidLoad()
         configureViews()
@@ -209,17 +216,17 @@ class IntroViewController: UIViewController, UITableViewDelegate, UITableViewDat
             self.tableView.reloadData()
         }
     }
-    
+
     override func viewWillAppear(animated: Bool) {
         super.viewWillAppear(animated)
         navigationController?.setNavigationBarHidden(true, animated: false)
     }
-    
+
     override func viewDidLayoutSubviews() {
         super.viewDidLayoutSubviews()
         tableView.separatorInset = UIEdgeInsets(top: 0, left: self.view.frame.width, bottom: 0, right: 0)
     }
-    
+
     private func configureViews() {
         view.backgroundColor = Theme.universityDarkTheme.backgroundColor
         logoImageView.translatesAutoresizingMaskIntoConstraints = false
@@ -232,7 +239,7 @@ class IntroViewController: UIViewController, UITableViewDelegate, UITableViewDat
             logoImageView.topAnchor.constraintEqualToAnchor(view.topAnchor, constant: 20)
         ]
         view.addConstraints(constraints)
-        
+
         buttonsContainerView.translatesAutoresizingMaskIntoConstraints = false
         view.addSubview(buttonsContainerView)
         let buttonContainerConstraints: [NSLayoutConstraint] = [
@@ -262,7 +269,7 @@ class IntroViewController: UIViewController, UITableViewDelegate, UITableViewDat
             topButtonsContainerView.heightAnchor.constraintEqualToConstant(27)
         ]
         view.addConstraints(topButtonsContainerConstraints)
-        
+
         tableView.translatesAutoresizingMaskIntoConstraints = false
         view.addSubview(tableView)
         let tableViewConstraints: [NSLayoutConstraint] = [
@@ -272,7 +279,7 @@ class IntroViewController: UIViewController, UITableViewDelegate, UITableViewDat
             tableView.bottomAnchor.constraintEqualToAnchor(buttonsContainerView.topAnchor, constant: -30)
         ]
         view.addConstraints(tableViewConstraints)
-        
+
         tableTitleContainerView.translatesAutoresizingMaskIntoConstraints = false
         view.addSubview(tableTitleContainerView)
         let tableTitleConstraints: [NSLayoutConstraint] = [
@@ -282,13 +289,13 @@ class IntroViewController: UIViewController, UITableViewDelegate, UITableViewDat
             tableTitleContainerView.heightAnchor.constraintEqualToConstant(34)
         ]
         view.addConstraints(tableTitleConstraints)
-        
+
         dummyTextField.translatesAutoresizingMaskIntoConstraints = false
         view.addSubview(dummyTextField)
     }
 
     // MARK: - Button Events
-    
+
     func showAttributes(sender: UIButton) {
         if sender == correlateButton {
             selectedMode = GraphMode.Correlate(PreviewManager.previewSampleTypes[0], PreviewManager.previewSampleTypes[1])
@@ -303,11 +310,11 @@ class IntroViewController: UIViewController, UITableViewDelegate, UITableViewDat
         }
         dummyTextField.becomeFirstResponder()
     }
-    
+
     func dismissPopup(sender: UIBarButtonItem) {
         dummyTextField.resignFirstResponder()
     }
-    
+
     func selectAttribute(sender: UIBarButtonItem) {
         dummyTextField.resignFirstResponder()
         switch selectedMode! {
@@ -355,32 +362,34 @@ class IntroViewController: UIViewController, UITableViewDelegate, UITableViewDat
             })
         }
     }
-    
+
     func showSettings(sender: UIButton) {
         let settingsViewController = SettingsViewController()
         navigationController?.pushViewController(settingsViewController, animated: true)
     }
-    
+
     // MARK: - Table View
-    
+
     func numberOfSectionsInTableView(tableView: UITableView) -> Int {
         return 1
     }
-    
+
     func tableView(tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         return 6
     }
-    
+
     func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCellWithIdentifier(IntroViewTableViewCellIdentifier, forIndexPath: indexPath) as! IntroCompareDataTableViewCell
         let sampleType = PreviewManager.previewSampleTypes[indexPath.row]
         cell.sampleType = sampleType
-        cell.setUserData(HealthManager.sharedManager.mostRecentSamples[sampleType] ?? [HKSample](), populationAverageData: [])
+        cell.setUserData(HealthManager.sharedManager.mostRecentSamples[sampleType] ?? [HKSample](),
+                         populationAverageData: HealthManager.sharedManager.mostRecentAggregates[sampleType]
+                                                    ?? [DerivedQuantity(quantity: nil, quantityType: nil)])
         return cell
     }
-    
+
     // MARK: - Picker view delegate
-    
+
     func numberOfComponentsInPickerView(pickerView: UIPickerView) -> Int {
         if case .Plot(_) = selectedMode! {
             return 1
@@ -390,7 +399,7 @@ class IntroViewController: UIViewController, UITableViewDelegate, UITableViewDat
             return 2
         }
     }
-    
+
     func pickerView(pickerView: UIPickerView, numberOfRowsInComponent component: Int) -> Int {
         if case .Correlate(_) = selectedMode! {
             if component == 0 {
@@ -404,7 +413,7 @@ class IntroViewController: UIViewController, UITableViewDelegate, UITableViewDat
             return IntroViewController.previewMealTypeStrings[component].count
         }
     }
-    
+
     func pickerView(pickerView: UIPickerView, titleForRow row: Int, forComponent component: Int) -> String? {
         if case .Correlate(_) = selectedMode! {
             if component == 0 {
@@ -420,7 +429,7 @@ class IntroViewController: UIViewController, UITableViewDelegate, UITableViewDat
             return IntroViewController.previewMealTypeStrings[component][row]
         }
     }
-    
+
     func pickerView(pickerView: UIPickerView, didSelectRow row: Int, inComponent component: Int) {
         if case .Correlate(_) = selectedMode! {
             if component == 0 {
@@ -434,56 +443,69 @@ class IntroViewController: UIViewController, UITableViewDelegate, UITableViewDat
 
         }
     }
-    
+
     // MARK: - Timer
-    var timer = NSTimer()
+    var timerLoop : Async? = nil
+    let timerLoopFrequency : Double? = 1.0
+    var timerCancel : Bool = false  //  TODO: atomic
+
     var timerStartDate = NSDate()
     var startTime = NSTimeInterval()
-    
+
     func toggleTimer(sender: AnyObject) {
-        if !timer.valid {
-            let actionSelector : Selector = "updateTimer"
-            timer = NSTimer.scheduledTimerWithTimeInterval(0.01, target:self, selector:actionSelector, userInfo: nil, repeats: true)
+        guard timerLoop != nil else {
             timerStartDate = NSDate()
             startTime = NSDate.timeIntervalSinceReferenceDate()
-            if let b = sender as? UIButton {
-                b.backgroundColor = UIColor.redColor()
-            }
-        } else {
-            timer.invalidate()
-            if let b = sender as? UIButton {
-                b.backgroundColor = Theme.universityDarkTheme.complementForegroundColors?.colorWithVibrancy(0.8)
-            }
-            saveMealTime()
-            resetTimer()
+            if let b = sender as? UIButton { b.backgroundColor = UIColor.redColor() }
+            timerLoop = Async.main(after: timerLoopFrequency) { self.updateTimerPeriodically() }
+            return
         }
+        cancelTimer(sender)
     }
     
-    func resetTimer() {
+    func cancelTimer(sender: AnyObject) {
+        if let b = sender as? UIButton {
+            b.backgroundColor = Theme.universityDarkTheme.complementForegroundColors?.colorWithVibrancy(0.8)
+        }
+        timerCancel = true
         timerLabel.text = "00:00"
+        saveMealTime()
     }
     
+    func updateTimerPeriodically() {
+        guard timerCancel else {
+            self.updateTimer()
+            timerLoop = Async.main(after: timerLoopFrequency) {
+                            self.updateTimerPeriodically()
+                        }
+            return
+        }
+        timerLoop = nil
+        timerCancel = false
+    }
+
     func updateTimer() {
         let currentTime = NSDate.timeIntervalSinceReferenceDate()
-        
+
         // Find the difference between current time and strart time
         var elapsedTime: NSTimeInterval = currentTime - startTime
-        
+
         // calculate the minutes in elapsed time
         let minutes = UInt8(elapsedTime / 60.0)
         elapsedTime -= (NSTimeInterval(minutes) * 60)
-        
+
         // calculate the seconds in elapsed time
         let seconds = UInt8(elapsedTime)
         elapsedTime -= NSTimeInterval(seconds)
-        
+
         // add the leading zero for minutes, seconds and millseconds and store them as string constants
         let startMinutes  = minutes > 9 ? String(minutes):"0" + String(minutes)
         let startSeconds  = seconds > 9 ? String(seconds):"0" + String(seconds)
-        
+
         timerLabel.text = "\(startMinutes):\(startSeconds)"
+        print("Updated timer: \(timerLabel.text!)")
     }
-    
+
     func saveMealTime() {
         let timerEndDate = NSDate()
         let kmUnit = HKUnit(fromString: "km")
