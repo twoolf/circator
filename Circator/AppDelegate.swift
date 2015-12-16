@@ -8,30 +8,39 @@
 
 import UIKit
 import CircatorKit
-import Granola
+import Async
 import Alamofire
+import Granola
 
 @UIApplicationMain
 class AppDelegate: UIResponder, UIApplicationDelegate {
 
     var window: UIWindow?
-    
-    private func authorizeApp() {
-        HealthManager.sharedManager.authorizeHealthKit { (success, error) -> Void in
-            guard error == nil else {
-                return
-            }
-            EventManager.sharedManager.checkCalendarAuthorizationStatus()
-            self.fetchRecentSamples()
+
+    private func fetchInitialAggregates() {
+        UserManager.sharedManager.setupStormpath()
+        Async.userInteractive {
+            self.fetchAggregatesPeriodically()
         }
     }
-    
-    private func fetchRecentSamples() {
-        HealthManager.sharedManager.fetchMostRecentSamples() { (samples, error) -> Void in
-            guard error == nil else {
-                return
+
+    private func fetchAggregatesPeriodically() {
+        HealthManager.sharedManager.fetchAggregates()
+        if let freq = UserManager.sharedManager.getRefreshFrequency() {
+            Async.background(after: Double(freq)) {
+                self.fetchAggregatesPeriodically()
             }
-            NSNotificationCenter.defaultCenter().postNotificationName(HealthManagerDidUpdateRecentSamplesNotification, object: self)
+        }
+    }
+
+    private func fetchRecentSamples() {
+        HealthManager.sharedManager.authorizeHealthKit { (success, error) -> Void in
+            guard error == nil else { return }
+            EventManager.sharedManager.checkCalendarAuthorizationStatus()
+            HealthManager.sharedManager.fetchMostRecentSamples() { (samples, error) -> Void in
+                guard error == nil else { return }
+                NSNotificationCenter.defaultCenter().postNotificationName(HealthManagerDidUpdateRecentSamplesNotification, object: self)
+            }
         }
     }
 
@@ -45,15 +54,16 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         window?.tintColor = themeColor
         let viewController = IntroViewController(nibName: nil, bundle: nil)
         let navController = UINavigationController(rootViewController: viewController)
-        
+
         window?.rootViewController = navController
         window?.makeKeyAndVisible()
-        
-        authorizeApp()
+
+        fetchInitialAggregates()
+        fetchRecentSamples()
         HealthManager.sharedManager.registerObservers()
         return true
     }
-    
+
     func applicationWillResignActive(application: UIApplication) {
         // Sent when the application is about to move from active to inactive state. This can occur for certain types of temporary interruptions (such as an incoming phone call or SMS message) or when the user quits the application and it begins the transition to the background state.
         // Use this method to pause ongoing tasks, disable timers, and throttle down OpenGL ES frame rates. Games should use this method to pause the game.
