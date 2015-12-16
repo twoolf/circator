@@ -1,5 +1,6 @@
 PODS:
   - Alamofire (2.0.2)
+  - AsyncSwift (1.6.4)
   - Charts (2.1.6)
   - Granola (0.3.0):
     - ObjectiveSugar (~> 1.1)
@@ -20,6 +21,7 @@ PODS:
 
 DEPENDENCIES:
   - Alamofire (~> 2.0)
+  - AsyncSwift
   - Charts (from `https://github.com/danielgindi/ios-charts.git`)
   - Granola
   - Locksmith
@@ -57,6 +59,7 @@ CHECKOUT OPTIONS:
 
 SPEC CHECKSUMS:
   Alamofire: 8edbab00802a752bb5240cc2abe70e7e881488ad
+  AsyncSwift: 3c90beed237324f1b57e1f1c414dc5501985d208
   Charts: 5e1e5ac23898e5b09d226a2fc3e9d86bc281937e
   Granola: 9363048b8cc0309b43ed1f6b700af47b55b74f35
   Locksmith: 7f2b68448449a7712348f9a4ed60604c1cc8dfa6

@@ -8,6 +8,7 @@ target 'Circator' do
   pod 'Charts', :git => 'https://github.com/danielgindi/ios-charts.git'
   pod 'SwiftyJSON', :git => 'https://github.com/SwiftyJSON/SwiftyJSON.git'
   pod 'Alamofire', '~> 2.0'
+  pod 'AsyncSwift'
   pod 'Granola'
   pod 'Locksmith'
   pod 'Stormpath'

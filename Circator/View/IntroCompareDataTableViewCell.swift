@@ -11,14 +11,14 @@ import HealthKit
 import CircatorKit
 
 class IntroCompareDataTableViewCell: UITableViewCell {
-    
+
     lazy var healthParameterImageView: UIImageView = {
         let imageView = UIImageView()
         imageView.contentMode = .ScaleAspectFit
         imageView.tintColor = Theme.universityDarkTheme.foregroundColor
         return imageView
     }()
-    
+
     lazy var userDataLabel: UILabel = {
         let label = UILabel()
         label.textColor = Theme.universityDarkTheme.bodyTextColor
@@ -30,7 +30,7 @@ class IntroCompareDataTableViewCell: UITableViewCell {
         label.adjustsFontSizeToFitWidth = true
         return label
     }()
-    
+
     lazy var populationAverageLabel: UILabel = {
         let label = UILabel()
         label.textColor = Theme.universityDarkTheme.bodyTextColor
@@ -42,7 +42,7 @@ class IntroCompareDataTableViewCell: UITableViewCell {
         label.adjustsFontSizeToFitWidth = true
         return label
     }()
-    
+
     lazy var labelContainerView: UIStackView = {
         let stackView = UIStackView(arrangedSubviews: [self.userDataLabel, self.populationAverageLabel])
         stackView.axis = .Horizontal
@@ -51,7 +51,7 @@ class IntroCompareDataTableViewCell: UITableViewCell {
         stackView.spacing = 10
         return stackView
     }()
-    
+
     var sampleType: HKSampleType? {
         didSet {
             guard sampleType != nil else {
@@ -61,28 +61,28 @@ class IntroCompareDataTableViewCell: UITableViewCell {
             healthParameterImageView.image = PreviewManager.iconForSampleType(sampleType!)
         }
     }
-    
+
     static let healthFormatter = SampleFormatter()
-    
+
     func setUserData(userData: [Result], populationAverageData: [Result]) {
         loadSamples(userData, toLabel: userDataLabel)
         loadSamples(populationAverageData, toLabel: populationAverageLabel)
     }
-    
+
     private func loadSamples(results: [Result], toLabel label: UILabel) {
         label.text = "\(IntroCompareDataTableViewCell.healthFormatter.stringFromResults(results))"
     }
-    
+
     override init(style: UITableViewCellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
         configureView()
     }
-    
+
     required init?(coder aDecoder: NSCoder) {
         super.init(coder: aDecoder)
         configureView()
     }
-    
+
     private func configureView() {
         backgroundColor = UIColor.clearColor()
         contentView.addSubview(healthParameterImageView)
@@ -106,7 +106,7 @@ class IntroCompareDataTableViewCell: UITableViewCell {
         contentView.addConstraints(labelConstraints)
 
     }
-    
+
     override func setSelected(selected: Bool, animated: Bool) {
         super.setSelected(selected, animated: animated)
 

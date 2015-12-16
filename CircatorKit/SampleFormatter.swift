@@ -10,7 +10,7 @@ import UIKit
 import HealthKit
 
 public class SampleFormatter: NSObject {
-    
+
     public static let bodyMassFormatter: NSMassFormatter = {
         let formatter = NSMassFormatter()
         formatter.forPersonMassUse = true
@@ -18,21 +18,21 @@ public class SampleFormatter: NSObject {
         formatter.numberFormatter = numberFormatter
         return formatter
     }()
-    
+
     public static let chartDateFormatter: NSDateFormatter = {
         let formatter: NSDateFormatter = NSDateFormatter()
         formatter.dateStyle = .ShortStyle
         formatter.timeStyle = .NoStyle
         return formatter
     }()
-    
+
     public static let numberFormatter: NSNumberFormatter = {
         let formatter: NSNumberFormatter = NSNumberFormatter()
         formatter.numberStyle = .DecimalStyle
         formatter.maximumFractionDigits = 1
         return formatter
     }()
-    
+
     public static let integerFormatter: NSNumberFormatter = {
         let formatter: NSNumberFormatter = NSNumberFormatter()
         formatter.numberStyle = NSNumberFormatterStyle.NoStyle
@@ -46,25 +46,25 @@ public class SampleFormatter: NSObject {
         formatter.forFoodEnergyUse = true
         return formatter
     }()
-    
+
     public static let timeIntervalFormatter: NSDateComponentsFormatter = {
         let formatter = NSDateComponentsFormatter()
         formatter.unitsStyle = .Abbreviated
         formatter.allowedUnits = [.Hour, .Minute]
         return formatter
     }()
-    
+
     private let emptyString: String
-    
+
     public convenience override init() {
         self.init(emptyString: "--")
     }
-    
+
     public init(emptyString: String) {
         self.emptyString = emptyString
         super.init()
     }
-    
+
     public func stringFromResults(results: [Result]) -> String {
         if let stat = results as? [HKStatistics] {
             guard stat.isEmpty == false else {
@@ -73,10 +73,12 @@ public class SampleFormatter: NSObject {
             return stringFromStatistics(stat[0])
         } else if let samples = results as? [HKSample] {
             return stringFromSamples(samples)
+        } else if let derived = results as? [DerivedQuantity] {
+            return stringFromDerivedQuantities(derived)
         }
         return emptyString
     }
-    
+
     public func stringFromStatistics(statistics: HKStatistics) -> String {
         // Guaranteed to be quantity sample here
         // TODO: Need implementation for correlation and sleep
@@ -85,7 +87,7 @@ public class SampleFormatter: NSObject {
         }
         return stringFromQuantity(quantity, type: statistics.quantityType)
     }
-    
+
     public func stringFromSamples(samples: [HKSample]) -> String {
         guard samples.isEmpty == false else {
             return emptyString
@@ -110,7 +112,23 @@ public class SampleFormatter: NSObject {
             return emptyString
         }
     }
-    
+
+    private func stringFromDerivedQuantities(derived: [DerivedQuantity]) -> String {
+        guard derived.isEmpty == false else {
+            return emptyString
+        }
+        if let fst      = derived.first as DerivedQuantity?,
+               quantity = fst.quantity,
+               type     = fst.quantityType as? HKQuantityType
+        {
+            return stringFromDerivedQuantity(quantity, type: type)
+        }
+        // TODO: HKCategoryTypeIdentifierSleepAnalysis
+        // TODO: HKCorrelationTypeIdentifierBloodPressure
+        return emptyString
+    }
+
+    // TODO: handle other quantities.
     private func stringFromQuantity(quantity: HKQuantity, type: HKQuantityType) -> String {
         switch type.identifier {
         case HKQuantityTypeIdentifierBodyMass:
@@ -123,5 +141,17 @@ public class SampleFormatter: NSObject {
             return emptyString
         }
     }
-    
+
+    private func stringFromDerivedQuantity(quantity: Double, type: HKQuantityType) -> String {
+        switch type.identifier {
+        case HKQuantityTypeIdentifierBodyMass:
+            return SampleFormatter.bodyMassFormatter.stringFromKilograms(quantity)
+        case HKQuantityTypeIdentifierHeartRate:
+            return "\(SampleFormatter.numberFormatter.stringFromNumber(quantity)!) bpm"
+        case HKQuantityTypeIdentifierDietaryEnergyConsumed:
+            return SampleFormatter.calorieFormatter.stringFromJoules(quantity)
+        default:
+            return SampleFormatter.numberFormatter.stringFromNumber(quantity) ?? "<nil>"
+        }
+    }
 }

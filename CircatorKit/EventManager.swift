@@ -37,12 +37,14 @@ public class EventManager : NSObject, WCSessionDelegate {
     
     var calendar   : EKCalendar?
     var lastAccess : NSDate
+    var pending    : Bool
     var hasAccess  : Bool?
     var eventCounter : Int
     
     private override init() {
         self.calendar = nil
         self.lastAccess = NSDate.distantPast()
+        self.pending = false
         self.hasAccess = nil
         self.eventCounter = 0
 
@@ -53,10 +55,12 @@ public class EventManager : NSObject, WCSessionDelegate {
     }
     
     public func checkCalendarAuthorizationStatus() {
+        if self.pending { return }
         let status = EKEventStore.authorizationStatusForEntityType(EKEntityType.Event)
         
         switch (status) {
         case EKAuthorizationStatus.NotDetermined:
+            self.pending = true
             requestAccessToCalendar()
 
         case EKAuthorizationStatus.Authorized:
@@ -89,6 +93,9 @@ public class EventManager : NSObject, WCSessionDelegate {
         
         // Set up the observer for event changes.
         registerCalendarObserver()
+        
+        // Initialization completed, reset.
+        self.pending = false
     }
     
     func registerCalendarObserver() {
