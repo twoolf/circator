@@ -14,9 +14,13 @@ enum MCRouter : URLRequestConvertible {
     static let baseURLString = "https://app.metaboliccompass.com"
     static var OAuthToken: String?
 
+    // Data API
     case UploadHKMeasures([String: AnyObject])
     case AggMeasures([String: AnyObject])
     case MealMeasures([String: AnyObject])
+
+    // User management API
+    case UserToken([String: AnyObject])
 
     var method: Alamofire.Method {
         switch self {
@@ -26,6 +30,9 @@ enum MCRouter : URLRequestConvertible {
             return .POST
         case .MealMeasures:
             return .GET
+
+        case .UserToken:
+            return .POST
         }
     }
 
@@ -37,6 +44,9 @@ enum MCRouter : URLRequestConvertible {
             return "/measures/aggregates"
         case .MealMeasures:
             return "/measures/meals"
+
+        case .UserToken:
+            return "/measures"
         }
     }
 
@@ -52,13 +62,19 @@ enum MCRouter : URLRequestConvertible {
         }
 
         switch self {
-        case .UploadHKMeasures(let parameters):
+        case .UploadHKMeasures(var parameters):
+            parameters["userid"] = MCRouter.OAuthToken ?? ""
             return Alamofire.ParameterEncoding.JSON.encode(mutableURLRequest, parameters: parameters).0
 
         case .AggMeasures(let parameters):
             return Alamofire.ParameterEncoding.JSON.encode(mutableURLRequest, parameters: parameters).0
 
         case .MealMeasures(let parameters):
+            return Alamofire.ParameterEncoding.JSON.encode(mutableURLRequest, parameters: parameters).0
+
+        case .UserToken(var parameters):
+            parameters["userid"] = UserManager.sharedManager.getUserIdHash() ?? ""
+            parameters["token"] = MCRouter.OAuthToken ?? ""
             return Alamofire.ParameterEncoding.JSON.encode(mutableURLRequest, parameters: parameters).0
         }
     }
@@ -68,7 +84,7 @@ enum MCRouter : URLRequestConvertible {
 public class DerivedQuantity : Result {
     var quantity : Double? = nil
     var quantityType : HKSampleType? = nil
-    
+
     public init(quantity: Double?, quantityType: HKSampleType?) {
         self.quantity = quantity
         self.quantityType = quantityType

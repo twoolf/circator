@@ -18,7 +18,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     var window: UIWindow?
 
     private func fetchInitialAggregates() {
-        UserManager.sharedManager.setupStormpath()
         Async.userInteractive {
             self.fetchAggregatesPeriodically()
         }

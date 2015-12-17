@@ -2,6 +2,7 @@ PODS:
   - Alamofire (2.0.2)
   - AsyncSwift (1.6.4)
   - Charts (2.1.6)
+  - CryptoSwift (0.2.1)
   - Granola (0.3.0):
     - ObjectiveSugar (~> 1.1)
   - Locksmith (2.0.2)
@@ -23,6 +24,7 @@ DEPENDENCIES:
   - Alamofire (~> 2.0)
   - AsyncSwift
   - Charts (from `https://github.com/danielgindi/ios-charts.git`)
+  - CryptoSwift
   - Granola
   - Locksmith
   - Realm (from `https://github.com/realm/realm-cocoa.git`, branch `swift-2.0`)
@@ -61,6 +63,7 @@ SPEC CHECKSUMS:
   Alamofire: 8edbab00802a752bb5240cc2abe70e7e881488ad
   AsyncSwift: 3c90beed237324f1b57e1f1c414dc5501985d208
   Charts: 5e1e5ac23898e5b09d226a2fc3e9d86bc281937e
+  CryptoSwift: f137af19c369362debf82957d0366c8d79329341
   Granola: 9363048b8cc0309b43ed1f6b700af47b55b74f35
   Locksmith: 7f2b68448449a7712348f9a4ed60604c1cc8dfa6
   ObjectiveSugar: a6a25f23d657c19df0a0b972466d5b5ca9f5295c
