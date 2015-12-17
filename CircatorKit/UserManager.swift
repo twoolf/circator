@@ -10,6 +10,7 @@ import Foundation
 import Alamofire
 import Locksmith
 import Stormpath
+import CryptoSwift
 
 private let UserManagerLoginKey = "UMLoginKey"
 private let UserManagerHotwordKey = "UMHotwordKey"
@@ -24,14 +25,13 @@ public class UserManager {
     var userId: String?
     var hotWords: String?
     var refreshFrequency: Int? // Aggregate refresh frequency in seconds.
-    
+
     init() {
         self.setupStormpath()
         self.userId = NSUserDefaults.standardUserDefaults().stringForKey(UserManagerLoginKey)
         self.hotWords = NSUserDefaults.standardUserDefaults().stringForKey(UserManagerHotwordKey)
         let freq = NSUserDefaults.standardUserDefaults().integerForKey(UserManagerFrequencyKey)
         self.refreshFrequency = freq == 0 ? UserManager.defaultRefreshFrequency : freq
-        print("Freq: " + String(self.refreshFrequency))
         if ( self.hotWords == nil ) {
             self.setHotWords("food log")
         }
@@ -40,22 +40,34 @@ public class UserManager {
     // Mark: - Authentication
     public func setupStormpath() {
         Stormpath.setUpWithURL(MCRouter.baseURLString)
-        MCRouter.OAuthToken = Stormpath.accessToken
-        if let token = MCRouter.OAuthToken {
+        if Stormpath.accessToken == nil {
+            print("Logging into Stormpath...")
+            self.login()
+        }
+
+        if let token = Stormpath.accessToken {
+            MCRouter.OAuthToken = Stormpath.accessToken
             print("User token: \(token)")
+        } else {
+            // TODO: start login screen here.
+            print("Login failed, please do so manually.")
         }
     }
 
     public func getUserId() -> String? {
         return self.userId
     }
-    
+
+    public func getUserIdHash() -> String? {
+        return self.userId?.md5()
+    }
+
     public func setUserId(userId: String) {
         self.userId = userId
         NSUserDefaults.standardUserDefaults().setValue(self.userId, forKey: UserManagerLoginKey)
         NSUserDefaults.standardUserDefaults().synchronize()
     }
-    
+
     public func getAccountData() -> [String:AnyObject]? {
         if let user = userId {
             let account = UserAccount(username: user, password: "")
@@ -90,7 +102,7 @@ public class UserManager {
             }
         }
     }
-    
+
     public func hasAccount() -> Bool {
         if let user = userId {
             let account = UserAccount(username: user, password: "")
@@ -98,7 +110,7 @@ public class UserManager {
         }
         return false
     }
-    
+
     func createAccount(userId: String, userPass: String) {
         let account = UserAccount(username: userId, password: userPass)
         do {
@@ -107,14 +119,14 @@ public class UserManager {
             debugPrint("error: \(error)")
         }
     }
-    
+
     func validateAccount(userPass: String) -> Bool {
         if let pass = getPassword() {
             return pass == userPass
         }
         return false
     }
-    
+
     public func login() {
         if let user = userId, pass = getPassword() {
             Stormpath.login(username: user, password: pass, completionHandler: {
@@ -125,6 +137,10 @@ public class UserManager {
                 }
                 MCRouter.OAuthToken = Stormpath.accessToken
                 print("Access token: \(Stormpath.accessToken)")
+                Alamofire.request(MCRouter.UserToken([:])).responseString {_, response, result in
+                    print("POST: " + (result.isSuccess ? "SUCCESS" : "FAILED"))
+                    print(result.value)
+                }
             })
         }
     }
@@ -136,13 +152,13 @@ public class UserManager {
         }
     }
 
-    
+
     // Mark : - Configuration
 
     public func getHotWords() -> String? {
         return self.hotWords
     }
-    
+
     public func setHotWords(hotWords: String) {
         self.hotWords = hotWords
         NSUserDefaults.standardUserDefaults().setValue(self.hotWords, forKey: UserManagerHotwordKey)
@@ -152,7 +168,7 @@ public class UserManager {
     public func getRefreshFrequency() -> Int? {
         return self.refreshFrequency
     }
-    
+
     public func setRefreshFrequency(frequency: Int) {
         self.refreshFrequency = frequency
         NSUserDefaults.standardUserDefaults().setValue(self.refreshFrequency, forKey: UserManagerFrequencyKey)
