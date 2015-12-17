@@ -90,7 +90,16 @@ class IntroViewController: UIViewController, UITableViewDelegate, UITableViewDat
         return button
     }()
 
-    lazy var timerLabel : UILabel = {
+    lazy var timerStashLabel : UILabel = {
+        let label: UILabel = UILabel()
+        label.font = UIFont.systemFontOfSize(16, weight: UIFontWeightRegular)
+        label.textColor = Theme.universityDarkTheme.complementForegroundColors?.colorWithVibrancy(0.8)
+        label.textAlignment = .Center
+        label.text = NSLocalizedString("00:00", comment: "Last Meal")
+        return label
+    }()
+
+    lazy var activeTimerLabel : UILabel = {
         let label: UILabel = UILabel()
         label.font = UIFont.systemFontOfSize(28, weight: UIFontWeightRegular)
         label.textColor = Theme.universityDarkTheme.titleTextColor
@@ -121,11 +130,11 @@ class IntroViewController: UIViewController, UITableViewDelegate, UITableViewDat
     }()
 
     lazy var timerContainerView: UIStackView = {
-        let stackView: UIStackView = UIStackView(arrangedSubviews: [self.timerLabel])
+        let stackView: UIStackView = UIStackView(arrangedSubviews: [self.timerStashLabel, self.activeTimerLabel])
         stackView.axis = .Horizontal
         //stackView.distribution = UIStackViewDistribution.FillEqually
         stackView.alignment = UIStackViewAlignment.Fill
-        stackView.spacing = 15
+        stackView.spacing = 25
         return stackView
     }()
 
@@ -447,39 +456,43 @@ class IntroViewController: UIViewController, UITableViewDelegate, UITableViewDat
     // MARK: - Timer
     var timerLoop : Async? = nil
     let timerLoopFrequency : Double? = 1.0
-    var timerCancel : Bool = false  //  TODO: atomic
+    var timerCancel : Bool = false
 
     var timerStartDate = NSDate()
     var startTime = NSTimeInterval()
 
+    // All timer functions run in the main thread.
     func toggleTimer(sender: AnyObject) {
-        guard timerLoop != nil else {
-            timerStartDate = NSDate()
-            startTime = NSDate.timeIntervalSinceReferenceDate()
-            if let b = sender as? UIButton { b.backgroundColor = UIColor.redColor() }
+        Async.main { self.timerLoop == nil ? self.startTimer(sender) : self.stopTimer(sender) }
+    }
+
+    func updateTimerPeriodically() {
+        guard timerCancel else {
+            self.updateTimer()
             timerLoop = Async.main(after: timerLoopFrequency) { self.updateTimerPeriodically() }
             return
         }
-        cancelTimer(sender)
+        resetTimer()
     }
-    
-    func cancelTimer(sender: AnyObject) {
+
+    func startTimer(sender: AnyObject) {
+        timerStartDate = NSDate()
+        startTime = NSDate.timeIntervalSinceReferenceDate()
+        if let b = sender as? UIButton { b.backgroundColor = UIColor.redColor() }
+        timerLoop = Async.main(after: timerLoopFrequency) { self.updateTimerPeriodically() }
+    }
+
+    func stopTimer(sender: AnyObject) {
         if let b = sender as? UIButton {
             b.backgroundColor = Theme.universityDarkTheme.complementForegroundColors?.colorWithVibrancy(0.8)
         }
         timerCancel = true
-        timerLabel.text = "00:00"
+        timerStashLabel.text = activeTimerLabel.text
+        activeTimerLabel.text = "00:00"
         saveMealTime()
     }
-    
-    func updateTimerPeriodically() {
-        guard timerCancel else {
-            self.updateTimer()
-            timerLoop = Async.main(after: timerLoopFrequency) {
-                            self.updateTimerPeriodically()
-                        }
-            return
-        }
+
+    func resetTimer() {
         timerLoop = nil
         timerCancel = false
     }
@@ -502,8 +515,7 @@ class IntroViewController: UIViewController, UITableViewDelegate, UITableViewDat
         let startMinutes  = minutes > 9 ? String(minutes):"0" + String(minutes)
         let startSeconds  = seconds > 9 ? String(seconds):"0" + String(seconds)
 
-        timerLabel.text = "\(startMinutes):\(startSeconds)"
-        print("Updated timer: \(timerLabel.text!)")
+        activeTimerLabel.text = "\(startMinutes):\(startSeconds)"
     }
 
     func saveMealTime() {

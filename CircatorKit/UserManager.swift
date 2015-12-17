@@ -19,7 +19,7 @@ public class UserManager {
     public static let sharedManager = UserManager()
 
     // Defaults.
-    public static let defaultRefreshFrequency = 10
+    public static let defaultRefreshFrequency = 30
 
     var userId: String?
     var hotWords: String?
@@ -29,7 +29,9 @@ public class UserManager {
         self.setupStormpath()
         self.userId = NSUserDefaults.standardUserDefaults().stringForKey(UserManagerLoginKey)
         self.hotWords = NSUserDefaults.standardUserDefaults().stringForKey(UserManagerHotwordKey)
-        self.refreshFrequency = NSUserDefaults.standardUserDefaults().integerForKey(UserManagerFrequencyKey) ?? UserManager.defaultRefreshFrequency
+        let freq = NSUserDefaults.standardUserDefaults().integerForKey(UserManagerFrequencyKey)
+        self.refreshFrequency = freq == 0 ? UserManager.defaultRefreshFrequency : freq
+        print("Freq: " + String(self.refreshFrequency))
         if ( self.hotWords == nil ) {
             self.setHotWords("food log")
         }
