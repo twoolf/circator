@@ -29,14 +29,14 @@ class IntroViewController: UIViewController, UITableViewDelegate, UITableViewDat
         return view
     }()
 
-//    lazy var titleLabel : UILabel = {
-//        let label: UILabel = UILabel()
-//        label.font = UIFont.systemFontOfSize(22, weight: UIFontWeightRegular)
-//        label.textColor = Theme.universityDarkTheme.titleTextColor
-//        label.textAlignment = .Center
-//        label.text = NSLocalizedString("Metabolic Compass", comment: "Metabolic Compass")
-//        return label
-//    }()
+    lazy var titleLabel: UILabel = {
+        let label: UILabel = UILabel()
+        label.font = UIFont.systemFontOfSize(22, weight: UIFontWeightRegular)
+        label.textColor = Theme.universityDarkTheme.titleTextColor
+        label.textAlignment = .Center
+        label.text = NSLocalizedString("Dashboard", comment: "Metabolic Compass")
+        return label
+    }()
 
     lazy var plotButton: UIButton = {
         let image = UIImage(named: "icon_plot") as UIImage?
@@ -243,7 +243,7 @@ class IntroViewController: UIViewController, UITableViewDelegate, UITableViewDat
     }()
 
     lazy var topButtonsContainerView: UIStackView = {
-        let stackView: UIStackView = UIStackView(arrangedSubviews: [/*self.titleLabel,*/ self.logoutButton, self.settingsButton])
+        let stackView: UIStackView = UIStackView(arrangedSubviews: [self.titleLabel, self.logoutButton, self.settingsButton])
         stackView.axis = .Horizontal
         //stackView.distribution = UIStackViewDistribution.FillEqually
         stackView.distribution = UIStackViewDistribution.FillProportionally
