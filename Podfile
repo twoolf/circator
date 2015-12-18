@@ -15,5 +15,6 @@ target 'Circator' do
   pod 'Stormpath'
   pod "Former"
   pod 'Dodo', '~> 2.0'
+  pod 'HTPressableButton'
 end
 
