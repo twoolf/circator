@@ -8,9 +8,14 @@
 
 import CircatorKit
 import UIKit
+import Former
 
 class SettingsViewController: UITableViewController, UITextFieldDelegate {
 
+    private lazy var former: Former = Former(tableView: self.tableView)
+    private var userCell: FormTextFieldCell?
+    private var passCell: FormTextFieldCell?
+    
     init() {
         super.init(style: UITableViewStyle.Grouped)
     }
@@ -75,46 +80,50 @@ class SettingsViewController: UITableViewController, UITextFieldDelegate {
         let cell = tableView.dequeueReusableCellWithIdentifier("settingsCell", forIndexPath: indexPath)
         switch indexPath.section {
         case 0, 1:
-            let cellInput = UITextField()
-            cell.detailTextLabel?.hidden = true
-            cellInput.adjustsFontSizeToFitWidth = true
+            let formCell = FormTextFieldCell()
+            let cellInput = formCell.formTextField()
+            let cellLabel = formCell.formTitleLabel()
+
             cellInput.textColor = UIColor.blackColor()
             cellInput.backgroundColor = UIColor.whiteColor()
+
+            cellInput.textAlignment = NSTextAlignment.Right
             cellInput.autocorrectionType = UITextAutocorrectionType.No // no auto correction support
             cellInput.autocapitalizationType = UITextAutocapitalizationType.None // no auto capitalization support
-            cellInput.textAlignment = NSTextAlignment.Left
 
             switch indexPath.section {
             case 0:
                 if (indexPath.row == 0) {
-                    cellInput.text = UserManager.sharedManager.getUserId()
                     cellInput.keyboardType = UIKeyboardType.EmailAddress
                     cellInput.returnKeyType = UIReturnKeyType.Next
+                    cellInput.placeholder = "User"
+                    cellInput.text = UserManager.sharedManager.getUserId()
+                    cellLabel?.text = "User"
+                    userCell = formCell
                     cellInput.tag = 0
-                    cell.textLabel?.text = "User"
                 }
                 else {
-                    if let pass = UserManager.sharedManager.getPassword() {
-                        cellInput.text = pass
-                    } else {
-                        cellInput.placeholder = "Required"
-                    }
                     cellInput.keyboardType = UIKeyboardType.Default
                     cellInput.returnKeyType = UIReturnKeyType.Done
                     cellInput.secureTextEntry = true
+                    cellInput.placeholder = "Password"
+                    cellInput.text = UserManager.sharedManager.getPassword()
+                    cellLabel?.text = "Password"
+                    passCell = formCell
                     cellInput.tag = 1
-                    cell.textLabel?.text = "Password"
                 }
 
             case 1:
                 if (indexPath.row == 0) {
+                    cellInput.placeholder = "Siri hotword"
                     cellInput.text = UserManager.sharedManager.getHotWords()
-                    cell.textLabel?.text = "Siri hotword"
+                    cellLabel?.text = "Siri hotword"
                     cellInput.tag = 2
                 } else {
                     let freq = UserManager.sharedManager.getRefreshFrequency() ?? UserManager.defaultRefreshFrequency
+                    cellInput.placeholder = "Data refresh"
                     cellInput.text = String(freq)
-                    cell.textLabel?.text = "Refresh"
+                    cellLabel?.text = "Data refresh"
                     cellInput.tag = 3
                 }
 
@@ -125,44 +134,11 @@ class SettingsViewController: UITableViewController, UITextFieldDelegate {
                 print("Invalid settings tableview section")
             }
 
-            cellInput.clearButtonMode = UITextFieldViewMode.Never // no clear 'x' button to the right
+            cell.contentView.addSubview(formCell)
+
             cellInput.enabled = true
             cellInput.delegate = self
 
-            cell.textLabel?.translatesAutoresizingMaskIntoConstraints = false
-
-            cellInput.translatesAutoresizingMaskIntoConstraints = false
-            cell.contentView.addSubview(cellInput)
-
-            cell.addConstraint(NSLayoutConstraint(
-                item:cell.textLabel!, attribute: NSLayoutAttribute.Width,
-                relatedBy:NSLayoutRelation.Equal, toItem:cell.contentView,
-                attribute:NSLayoutAttribute.Width, multiplier:0.33, constant:0))
-
-            cell.addConstraint(NSLayoutConstraint(
-                item: cellInput, attribute:NSLayoutAttribute.Width,
-                relatedBy:NSLayoutRelation.Equal, toItem:cell.contentView,
-                attribute:NSLayoutAttribute.Width, multiplier:0.67, constant:0))
-
-            cell.addConstraint(NSLayoutConstraint(
-                item:cellInput, attribute: NSLayoutAttribute.Leading,
-                relatedBy:NSLayoutRelation.Equal, toItem:cell.textLabel,
-                attribute:NSLayoutAttribute.Trailing, multiplier:1, constant:8))
-
-            cell.addConstraint(NSLayoutConstraint(
-                item: cellInput, attribute:NSLayoutAttribute.Trailing,
-                relatedBy:NSLayoutRelation.Equal, toItem:cell.contentView,
-                attribute:NSLayoutAttribute.Trailing, multiplier:1, constant:0))
-
-            cell.addConstraint(NSLayoutConstraint(
-                item: cellInput, attribute: NSLayoutAttribute.Top,
-                relatedBy:NSLayoutRelation.Equal, toItem:cell.contentView,
-                attribute:NSLayoutAttribute.Top, multiplier:1, constant:8.5))
-
-            cell.addConstraint(NSLayoutConstraint(
-                item: cellInput, attribute: NSLayoutAttribute.Bottom,
-                relatedBy:NSLayoutRelation.Equal, toItem:cell.contentView,
-                attribute:NSLayoutAttribute.Bottom, multiplier:1, constant:-7.5))
 
         case 2:
             cell.tintColor = Theme.universityDarkTheme.backgroundColor
@@ -191,8 +167,18 @@ class SettingsViewController: UITableViewController, UITextFieldDelegate {
             switch textField.tag {
             case 0:
                 UserManager.sharedManager.setUserId(txt)
+                userCell?.textField.resignFirstResponder()
+                passCell?.textField.becomeFirstResponder()
             case 1:
+                // Take any text entered as the username if we have nothing saved.
+                if UserManager.sharedManager.getUserId() == nil {
+                    if let currentUser = userCell?.textField.text {
+                        UserManager.sharedManager.setUserId(currentUser)
+                    }
+                }
                 UserManager.sharedManager.login(txt)
+                passCell?.textField.resignFirstResponder()
+                userCell?.textField.becomeFirstResponder()
             case 2:
                 UserManager.sharedManager.setHotWords(txt)
             case 3:

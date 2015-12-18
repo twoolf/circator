@@ -52,8 +52,11 @@ public class HealthManager: NSObject, WCSessionDelegate {
         }
     }
 
+    public var aggregateRefreshDate : NSDate = NSDate()
+
     public var mostRecentAggregates = [HKSampleType: [Result]]() {
         didSet {
+            aggregateRefreshDate = NSDate()
             self.updateWatchContext()
         }
     }
@@ -303,47 +306,48 @@ public class HealthManager: NSObject, WCSessionDelegate {
             let json = try NSJSONSerialization.dataWithJSONObject(params, options: NSJSONWritingOptions.PrettyPrinted)
             let serializedAttrs = try NSJSONSerialization.JSONObjectWithData(json, options: NSJSONReadingOptions()) as! [String : AnyObject]
 
-            Alamofire.request(MCRouter.AggMeasures(serializedAttrs)).responseString {_, response, result in
-                print("AGGPOST: " + (result.isSuccess ? "SUCCESS" : "FAILED"))
-
-                var populationAggregates : [HKSampleType: [Result]] = [:]
-
-                do {
-                    if let aggjson = result.value,
-                           aggdata = aggjson.dataUsingEncoding(NSUTF8StringEncoding)
-                    {
-                        let aggregates = try NSJSONSerialization.JSONObjectWithData(aggdata, options: NSJSONReadingOptions()) as! [[String: AnyObject]]
-                        var failed = false
-                        for kvdict in aggregates {
-                            if let sampleName = kvdict["key"] as? String,
-                                   sampleType = samplesByName[sampleName]
-                            {
-                                if let sampleValue = kvdict["value"] as? Double {
-                                    populationAggregates[sampleType] = [DerivedQuantity(quantity: sampleValue, quantityType: sampleType)]
-                                } else {
-                                    populationAggregates[sampleType] = [DerivedQuantity(quantity: nil, quantityType: nil)]
-                                }
-                            } else {
-                                failed = true
-                                break
-                            }
-                        }
-                        if ( !failed ) {
-                            Async.main {
-                                self.mostRecentAggregates = populationAggregates
-                                NSNotificationCenter.defaultCenter().postNotificationName(HealthManagerDidUpdateRecentSamplesNotification, object: self)
-                            }
-                        }
+            Alamofire.request(MCRouter.AggMeasures(serializedAttrs))
+                .validate(statusCode: 200..<300)
+                .validate(contentType: ["application/json"])
+                .responseJSON {_, response, result in
+                    print("AGGPOST: " + (result.isSuccess ? "SUCCESS" : "FAILED"))
+                    guard !result.isSuccess else {
+                        self.refreshAggregatesFromMsg(samplesByName, payload: result.value)
+                        return
                     }
-                } catch {
-                    debugPrint(error)
-                }
             }
         } catch {
             debugPrint(error)
         }
     }
 
+    func refreshAggregatesFromMsg(samplesByName: [String:HKSampleType], payload: AnyObject?) {
+        var populationAggregates : [HKSampleType: [Result]] = [:]
+        if let aggregates = payload as? [[String: AnyObject]] {
+            var failed = false
+            for kvdict in aggregates {
+                if let sampleName = kvdict["key"] as? String,
+                       sampleType = samplesByName[sampleName]
+                {
+                    if let sampleValue = kvdict["value"] as? Double {
+                        populationAggregates[sampleType] = [DerivedQuantity(quantity: sampleValue, quantityType: sampleType)]
+                    } else {
+                        populationAggregates[sampleType] = [DerivedQuantity(quantity: nil, quantityType: nil)]
+                    }
+                } else {
+                    failed = true
+                    break
+                }
+            }
+            if ( !failed ) {
+                Async.main {
+                    self.mostRecentAggregates = populationAggregates
+                    NSNotificationCenter.defaultCenter().postNotificationName(HealthManagerDidUpdateRecentSamplesNotification, object: self)
+                }
+            }
+        }
+    }
+    
     public func fetchMealAggregates() {
         print("Fetching meals")
         Alamofire.request(MCRouter.MealMeasures([:])).responseString {_, response, result in
