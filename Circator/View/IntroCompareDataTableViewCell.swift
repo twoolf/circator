@@ -93,10 +93,12 @@ class IntroCompareDataTableViewCell: UITableViewCell {
         backgroundColor = UIColor.clearColor()
         contentView.addSubview(healthParameterImageView)
         healthParameterImageView.translatesAutoresizingMaskIntoConstraints = false
+        let topConstraint = healthParameterImageView.topAnchor.constraintEqualToAnchor(contentView.topAnchor, constant: 8)
+        topConstraint.priority = 999
         let imageViewConstraints: [NSLayoutConstraint] = [
             healthParameterImageView.leadingAnchor.constraintEqualToAnchor(contentView.layoutMarginsGuide.leadingAnchor, constant: 10),
             healthParameterImageView.widthAnchor.constraintEqualToAnchor(healthParameterImageView.heightAnchor),
-            healthParameterImageView.topAnchor.constraintEqualToAnchor(contentView.topAnchor, constant: 8),
+            topConstraint,
             healthParameterImageView.bottomAnchor.constraintEqualToAnchor(contentView.bottomAnchor, constant: -8),
             healthParameterImageView.heightAnchor.constraintEqualToConstant(37)
         ]
