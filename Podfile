@@ -13,6 +13,7 @@ target 'Circator' do
   pod 'Granola'
   pod 'Locksmith'
   pod 'Stormpath'
-  pod 'SwiftyButton'
+  pod "Former"
+  pod 'Dodo', '~> 2.0'
 end
 

@@ -16,33 +16,7 @@ import Granola
 class AppDelegate: UIResponder, UIApplicationDelegate {
 
     var window: UIWindow?
-
-    private func fetchInitialAggregates() {
-        Async.userInteractive {
-            self.fetchAggregatesPeriodically()
-        }
-    }
-
-    private func fetchAggregatesPeriodically() {
-        HealthManager.sharedManager.fetchAggregates()
-        if let freq = UserManager.sharedManager.getRefreshFrequency() {
-            Async.background(after: Double(freq)) {
-                self.fetchAggregatesPeriodically()
-            }
-        }
-    }
-
-    private func fetchRecentSamples() {
-        HealthManager.sharedManager.authorizeHealthKit { (success, error) -> Void in
-            guard error == nil else { return }
-            EventManager.sharedManager.checkCalendarAuthorizationStatus()
-            HealthManager.sharedManager.fetchMostRecentSamples() { (samples, error) -> Void in
-                guard error == nil else { return }
-                NSNotificationCenter.defaultCenter().postNotificationName(HealthManagerDidUpdateRecentSamplesNotification, object: self)
-            }
-        }
-    }
-
+    var mainViewController: IntroViewController!
 
     func application(application: UIApplication, didFinishLaunchingWithOptions launchOptions: [NSObject: AnyObject]?) -> Bool {
         // Override point for customization after application launch.
@@ -51,15 +25,13 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         window = UIWindow(frame: UIScreen.mainScreen().bounds)
         window?.backgroundColor = UIColor.whiteColor()
         window?.tintColor = themeColor
-        let viewController = IntroViewController(nibName: nil, bundle: nil)
-        let navController = UINavigationController(rootViewController: viewController)
+        mainViewController = IntroViewController(nibName: nil, bundle: nil)
+        let navController = UINavigationController(rootViewController: mainViewController)
 
         window?.rootViewController = navController
         window?.makeKeyAndVisible()
 
-        fetchInitialAggregates()
-        fetchRecentSamples()
-        HealthManager.sharedManager.registerObservers()
+        mainViewController.loginAndInitialize()
         return true
     }
 
@@ -74,7 +46,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     }
 
     func applicationWillEnterForeground(application: UIApplication) {
-        fetchRecentSamples()
+        mainViewController.fetchRecentSamples()
     }
 
     func applicationDidBecomeActive(application: UIApplication) {

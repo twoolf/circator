@@ -67,6 +67,12 @@ public class UserManager {
         NSUserDefaults.standardUserDefaults().setValue(self.userId, forKey: UserManagerLoginKey)
         NSUserDefaults.standardUserDefaults().synchronize()
     }
+    
+    public func resetUserId() {
+        self.userId = nil
+        NSUserDefaults.standardUserDefaults().removeObjectForKey(UserManagerLoginKey)
+        NSUserDefaults.standardUserDefaults().synchronize()
+    }
 
     public func getAccountData() -> [String:AnyObject]? {
         if let user = userId {
@@ -102,7 +108,11 @@ public class UserManager {
             }
         }
     }
-
+    
+    public func setPassword(userPass: String) {
+        createAccount(userPass)
+    }
+    
     public func hasAccount() -> Bool {
         if let user = userId {
             let account = UserAccount(username: user, password: "")
@@ -116,7 +126,18 @@ public class UserManager {
         do {
             try account.createInSecureStore()
         } catch {
-            debugPrint("error: \(error)")
+            debugPrint(error)
+        }
+    }
+
+    func createAccount(userPass: String) {
+        if let user = userId {
+            let account = UserAccount(username: user, password: userPass)
+            do {
+                try account.createInSecureStore()
+            } catch {
+                debugPrint(error)
+            }
         }
     }
 
@@ -125,6 +146,17 @@ public class UserManager {
             return pass == userPass
         }
         return false
+    }
+    
+    func resetAccount() {
+        if let user = userId {
+            let account = UserAccount(username: user, password: "")
+            do {
+                try account.deleteFromSecureStore()
+            } catch {
+                debugPrint(error)
+            }
+        }
     }
 
     public func login() {
@@ -152,6 +184,15 @@ public class UserManager {
         }
     }
 
+    public func logout() {
+        Stormpath.logout(completionHandler: { (error) -> Void in
+            if error == nil { return }
+            else { print("Error logging out of Stormpath") }
+        })
+        MCRouter.OAuthToken = nil
+        resetAccount()
+        resetUserId()
+    }
 
     // Mark : - Configuration
 
