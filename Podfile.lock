@@ -3,21 +3,18 @@ PODS:
   - AsyncSwift (1.6.4)
   - Charts (2.1.6)
   - CryptoSwift (0.2.1)
+  - Dodo (2.0.13)
+  - Former (1.1.0)
   - Granola (0.3.0):
     - ObjectiveSugar (~> 1.1)
   - Locksmith (2.0.2)
   - ObjectiveSugar (1.1.0)
-  - PureLayout (3.0.1)
   - Realm (0.96.2):
     - Realm/Headers (= 0.96.2)
   - Realm/Headers (0.96.2)
   - RealmSwift (0.96.2):
     - Realm (= 0.96.2)
   - Stormpath (0.10.0)
-  - SwiftyButton (0.4.0):
-    - SwiftyButton/CustomContent (= 0.4.0)
-  - SwiftyButton/CustomContent (0.4.0):
-    - PureLayout (~> 3.0)
   - SwiftyJSON (2.3.1)
 
 DEPENDENCIES:
@@ -25,12 +22,13 @@ DEPENDENCIES:
   - AsyncSwift
   - Charts (from `https://github.com/danielgindi/ios-charts.git`)
   - CryptoSwift
+  - Dodo (~> 2.0)
+  - Former
   - Granola
   - Locksmith
   - Realm (from `https://github.com/realm/realm-cocoa.git`, branch `swift-2.0`)
   - RealmSwift (from `https://github.com/realm/realm-cocoa.git`, branch `swift-2.0`)
   - Stormpath
-  - SwiftyButton
   - SwiftyJSON (from `https://github.com/SwiftyJSON/SwiftyJSON.git`)
 
 EXTERNAL SOURCES:
@@ -64,14 +62,14 @@ SPEC CHECKSUMS:
   AsyncSwift: 3c90beed237324f1b57e1f1c414dc5501985d208
   Charts: 5e1e5ac23898e5b09d226a2fc3e9d86bc281937e
   CryptoSwift: f137af19c369362debf82957d0366c8d79329341
+  Dodo: 0d783bc1f55e59d53fb698b3380ad8553079540e
+  Former: 5b2ac5acdc8b059e1346d048c26a9d5dbd751c55
   Granola: 9363048b8cc0309b43ed1f6b700af47b55b74f35
   Locksmith: 7f2b68448449a7712348f9a4ed60604c1cc8dfa6
   ObjectiveSugar: a6a25f23d657c19df0a0b972466d5b5ca9f5295c
-  PureLayout: f35f5384c9c4e4479df041dbe33ad7577b71ddfb
   Realm: 962a3daeb000dfd379e0a9ccb2a752a352a88205
   RealmSwift: 485599fe54e35461c4a0daa7d01d8fbf11424873
   Stormpath: bf8cbf42e3e3df36d5d604889f95b3e7a917f7d5
-  SwiftyButton: fffcc0d82b2b5f9ec1681f20ee9c67bed0d5c73b
   SwiftyJSON: 592b53bee5ef3dd9b3bebc6b9cb7ee35426ae8c3
 
 COCOAPODS: 0.39.0

@@ -12,6 +12,7 @@ import CircatorKit
 import Async
 import Realm
 import RealmSwift
+import Dodo
 
 let IntroViewTableViewCellIdentifier = "IntroViewTableViewCellIdentifier"
 
@@ -72,36 +73,54 @@ class IntroViewController: UIViewController, UITableViewDelegate, UITableViewDat
         return button
     }()
 
+    lazy var logoutButton: UIButton = {
+        let image = UIImage(named: "icon_logout") as UIImage?
+        let button = UIButton(type: .Custom)
+        button.setImage(image, forState: .Normal)
+        button.addTarget(self, action: "toggleLogin:", forControlEvents: .TouchUpInside)
+        button.backgroundColor = Theme.universityDarkTheme.backgroundColor
+        return button
+    }()
+    
     lazy var settingsButton: UIButton = {
-        let image = UIImage(named: "noun_18964_inverted_cc") as UIImage?
+        let image = UIImage(named: "icon_settings") as UIImage?
         let button = UIButton(type: .Custom)
         button.setImage(image, forState: .Normal)
         button.addTarget(self, action: "showSettings:", forControlEvents: .TouchUpInside)
         button.backgroundColor = Theme.universityDarkTheme.backgroundColor
-        let wConstraint = NSLayoutConstraint(item: button,
-                                             attribute: NSLayoutAttribute.Width,
-                                             relatedBy: NSLayoutRelation.Equal, toItem: nil,
-                                             attribute: NSLayoutAttribute.NotAnAttribute, multiplier: 1, constant: 27)
-        let hConstraint = NSLayoutConstraint(item: button,
-                                             attribute: NSLayoutAttribute.Height,
-                                             relatedBy: NSLayoutRelation.Equal, toItem: nil,
-                                             attribute: NSLayoutAttribute.NotAnAttribute, multiplier: 1, constant: 27)
-        button.addConstraints([wConstraint, hConstraint])
         return button
+    }()
+
+    lazy var timerStashDescLabel : UILabel = {
+        let label: UILabel = UILabel()
+        label.font = UIFont.systemFontOfSize(12, weight: UIFontWeightLight)
+        label.textColor = Theme.universityDarkTheme.complementForegroundColors?.colorWithVibrancy(0.01)
+        label.textAlignment = .Center
+        label.text = NSLocalizedString("Last Meal Duration", comment: "Last Meal Duration")
+        return label
     }()
 
     lazy var timerStashLabel : UILabel = {
         let label: UILabel = UILabel()
-        label.font = UIFont.systemFontOfSize(16, weight: UIFontWeightRegular)
-        label.textColor = Theme.universityDarkTheme.complementForegroundColors?.colorWithVibrancy(0.8)
+        label.font = UIFont.systemFontOfSize(24, weight: UIFontWeightLight)
+        label.textColor = Theme.universityDarkTheme.complementForegroundColors?.colorWithVibrancy(0.01)
         label.textAlignment = .Center
         label.text = NSLocalizedString("00:00", comment: "Last Meal")
         return label
     }()
 
+    lazy var activeTimerDescLabel : UILabel = {
+        let label: UILabel = UILabel()
+        label.font = UIFont.systemFontOfSize(12, weight: UIFontWeightRegular)
+        label.textColor = Theme.universityDarkTheme.titleTextColor
+        label.textAlignment = .Center
+        label.text = NSLocalizedString("Meal Duration", comment: "Meal Duration")
+        return label
+    }()
+
     lazy var activeTimerLabel : UILabel = {
         let label: UILabel = UILabel()
-        label.font = UIFont.systemFontOfSize(28, weight: UIFontWeightRegular)
+        label.font = UIFont.systemFontOfSize(24, weight: UIFontWeightSemibold)
         label.textColor = Theme.universityDarkTheme.titleTextColor
         label.textAlignment = .Center
         label.text = NSLocalizedString("00:00", comment: "Meal Timer")
@@ -129,22 +148,39 @@ class IntroViewController: UIViewController, UITableViewDelegate, UITableViewDat
         return stackView
     }()
 
-    lazy var timerContainerView: UIStackView = {
-        let stackView: UIStackView = UIStackView(arrangedSubviews: [self.timerStashLabel, self.activeTimerLabel])
-        stackView.axis = .Horizontal
-        //stackView.distribution = UIStackViewDistribution.FillEqually
+    lazy var timerStashContainerView: UIStackView = {
+        let stackView: UIStackView = UIStackView(arrangedSubviews: [self.timerStashDescLabel, self.timerStashLabel])
+        stackView.axis = .Vertical
+        stackView.distribution = UIStackViewDistribution.FillEqually
         stackView.alignment = UIStackViewAlignment.Fill
-        stackView.spacing = 25
+        stackView.spacing = 0
+        return stackView
+    }()
+
+    lazy var activeTimerContainerView: UIStackView = {
+        let stackView: UIStackView = UIStackView(arrangedSubviews: [self.activeTimerDescLabel, self.activeTimerLabel])
+        stackView.axis = .Vertical
+        stackView.distribution = UIStackViewDistribution.FillEqually
+        stackView.alignment = UIStackViewAlignment.Fill
+        stackView.spacing = 0
+        return stackView
+    }()
+
+    lazy var timerContainerView: UIStackView = {
+        let stackView: UIStackView = UIStackView(arrangedSubviews: [self.timerStashContainerView, self.activeTimerContainerView])
+        stackView.axis = .Horizontal
+        stackView.distribution = UIStackViewDistribution.FillEqually
+        stackView.alignment = UIStackViewAlignment.Fill
+        stackView.spacing = 0
         return stackView
     }()
 
     lazy var topButtonsContainerView: UIStackView = {
-        let stackView: UIStackView = UIStackView(arrangedSubviews: [self.titleLabel, self.settingsButton])
+        let stackView: UIStackView = UIStackView(arrangedSubviews: [self.titleLabel, self.logoutButton, self.settingsButton])
         stackView.axis = .Horizontal
         //stackView.distribution = UIStackViewDistribution.FillEqually
         stackView.alignment = UIStackViewAlignment.Fill
-        stackView.spacing = 15
-
+        stackView.spacing = 0
         return stackView
     }()
 
@@ -157,7 +193,7 @@ class IntroViewController: UIViewController, UITableViewDelegate, UITableViewDat
         stackView.axis = .Horizontal
         stackView.distribution = UIStackViewDistribution.FillEqually
         stackView.alignment = UIStackViewAlignment.Fill
-        stackView.spacing = 0
+        stackView.spacing = 5
         stackView.tintColor = Theme.universityDarkTheme.foregroundColor
         return stackView
     }()
@@ -217,12 +253,70 @@ class IntroViewController: UIViewController, UITableViewDelegate, UITableViewDat
 
     private var selectedMode: GraphMode!
 
+    // MARK: - Background Work
+    
+    func fetchInitialAggregates() {
+        Async.userInteractive {
+            self.fetchAggregatesPeriodically()
+        }
+    }
+    
+    func fetchAggregatesPeriodically() {
+        HealthManager.sharedManager.fetchAggregates()
+        if let freq = UserManager.sharedManager.getRefreshFrequency() {
+            Async.background(after: Double(freq)) {
+                self.fetchAggregatesPeriodically()
+            }
+        } else {
+            
+        }
+    }
+    
+    func fetchRecentSamples() {
+        HealthManager.sharedManager.authorizeHealthKit { (success, error) -> Void in
+            guard error == nil else { return }
+            EventManager.sharedManager.checkCalendarAuthorizationStatus()
+            HealthManager.sharedManager.fetchMostRecentSamples() { (samples, error) -> Void in
+                guard error == nil else { return }
+                NSNotificationCenter.defaultCenter().postNotificationName(HealthManagerDidUpdateRecentSamplesNotification, object: self)
+            }
+        }
+    }
+    
+    func loginAndInitialize() {
+        // Jump to the login screen if either the username or password are unavailable.
+        guard !(UserManager.sharedManager.getUserId() == nil
+            || UserManager.sharedManager.getPassword() == nil)
+            else
+        {
+            toggleLogin(asInitial: true)
+            return
+        }
+        initializeBackgroundWork()
+    }
+    
+    func initializeBackgroundWork() {
+        Async.main(after: 2) {
+            self.fetchInitialAggregates()
+            self.fetchRecentSamples()
+            HealthManager.sharedManager.registerObservers()
+        }
+    }
+    
+
+    // MARK: - View Event Handlers
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         configureViews()
         tableView.layoutIfNeeded()
         NSNotificationCenter.defaultCenter().addObserverForName(HealthManagerDidUpdateRecentSamplesNotification, object: nil, queue: NSOperationQueue.mainQueue()) { (_) -> Void in
             self.tableView.reloadData()
+        }
+        Async.main(after: 2) {
+            self.view.dodo.style.bar.hideAfterDelaySeconds = 3
+            self.view.dodo.style.bar.hideOnTap = true
+            self.view.dodo.error("Welcome " + (UserManager.sharedManager.getUserId() ?? ""))
         }
     }
 
@@ -274,8 +368,12 @@ class IntroViewController: UIViewController, UITableViewDelegate, UITableViewDat
         let topButtonsContainerConstraints: [NSLayoutConstraint] = [
             topButtonsContainerView.topAnchor.constraintEqualToAnchor(view.topAnchor, constant: 40),
             topButtonsContainerView.widthAnchor.constraintEqualToAnchor(view.widthAnchor, multiplier: 0.7),
-            topButtonsContainerView.leadingAnchor.constraintLessThanOrEqualToAnchor(view.layoutMarginsGuide.leadingAnchor, constant: 47 + 37),
-            topButtonsContainerView.heightAnchor.constraintEqualToConstant(27)
+            topButtonsContainerView.leadingAnchor.constraintLessThanOrEqualToAnchor(view.layoutMarginsGuide.leadingAnchor, constant: 43 + 37),
+            topButtonsContainerView.heightAnchor.constraintEqualToConstant(27),
+            //logoutButton.leadingAnchor.constraintEqualToAnchor(titleLabel.trailingAnchor, constant: 10),
+            logoutButton.widthAnchor.constraintEqualToConstant(27),
+            settingsButton.leadingAnchor.constraintEqualToAnchor(logoutButton.trailingAnchor, constant: 0),
+            settingsButton.widthAnchor.constraintEqualToConstant(27)
         ]
         view.addConstraints(topButtonsContainerConstraints)
 
@@ -304,6 +402,24 @@ class IntroViewController: UIViewController, UITableViewDelegate, UITableViewDat
     }
 
     // MARK: - Button Events
+
+    func toggleLogin(sender: UIButton) {
+        toggleLogin(asInitial: false)
+    }
+
+    func toggleLogin(asInitial initial: Bool) {
+        if let user = UserManager.sharedManager.getUserId() {
+            UserManager.sharedManager.logout()
+            view.dodo.style.bar.hideAfterDelaySeconds = 3
+            view.dodo.style.bar.hideOnTap = true
+            view.dodo.error("Goodbye \(user)")
+        } else {
+            let loginViewController = LoginViewController()
+            loginViewController.parentView = self
+            if initial { loginViewController.fetchWhenDone = true }
+            navigationController?.pushViewController(loginViewController, animated: true)
+        }
+    }
 
     func showAttributes(sender: UIButton) {
         if sender == correlateButton {
@@ -391,9 +507,13 @@ class IntroViewController: UIViewController, UITableViewDelegate, UITableViewDat
         let cell = tableView.dequeueReusableCellWithIdentifier(IntroViewTableViewCellIdentifier, forIndexPath: indexPath) as! IntroCompareDataTableViewCell
         let sampleType = PreviewManager.previewSampleTypes[indexPath.row]
         cell.sampleType = sampleType
+        let timeSinceRefresh = NSDate().timeIntervalSinceDate(HealthManager.sharedManager.aggregateRefreshDate)
+        let refreshPeriod = UserManager.sharedManager.getRefreshFrequency() ?? Int.max
+        let stale = timeSinceRefresh > Double(refreshPeriod)
         cell.setUserData(HealthManager.sharedManager.mostRecentSamples[sampleType] ?? [HKSample](),
                          populationAverageData: HealthManager.sharedManager.mostRecentAggregates[sampleType]
-                                                    ?? [DerivedQuantity(quantity: nil, quantityType: nil)])
+                                                    ?? [DerivedQuantity(quantity: nil, quantityType: nil)],
+                         stalePopulation: stale)
         return cell
     }
 
