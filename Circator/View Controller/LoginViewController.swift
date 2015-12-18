@@ -99,15 +99,15 @@ class LoginViewController: UIViewController, UITableViewDelegate, UITableViewDat
         let constraints: [NSLayoutConstraint] = [
             NSLayoutConstraint(item: loginLabelButton, attribute: .Width, relatedBy: .Equal, toItem: nil, attribute: .NotAnAttribute, multiplier: 1, constant: 100),
             NSLayoutConstraint(item: loginButton, attribute: .Width, relatedBy: .Equal, toItem: nil, attribute: .NotAnAttribute, multiplier: 1, constant: 44),
-            logoImageView.topAnchor.constraintEqualToAnchor(view.layoutMarginsGuide.topAnchor, constant: 150),
+            logoImageView.topAnchor.constraintEqualToAnchor(view.layoutMarginsGuide.topAnchor, constant: 110),
             logoImageView.centerXAnchor.constraintEqualToAnchor(view.layoutMarginsGuide.centerXAnchor),
             logoImageView.widthAnchor.constraintEqualToConstant(100),
             logoImageView.heightAnchor.constraintEqualToConstant(100),
-            tableView.topAnchor.constraintEqualToAnchor(logoImageView.bottomAnchor, constant: 30),
+            tableView.topAnchor.constraintEqualToAnchor(logoImageView.bottomAnchor, constant: 10),
             tableView.leadingAnchor.constraintEqualToAnchor(view.layoutMarginsGuide.leadingAnchor, constant: 10),
             tableView.trailingAnchor.constraintEqualToAnchor(view.layoutMarginsGuide.trailingAnchor, constant: -10),
             tableView.bottomAnchor.constraintEqualToAnchor(view.layoutMarginsGuide.bottomAnchor, constant: -30),
-            loginContainerView.topAnchor.constraintEqualToAnchor(view.layoutMarginsGuide.centerYAnchor, constant: 60),
+            loginContainerView.topAnchor.constraintEqualToAnchor(view.layoutMarginsGuide.centerYAnchor),
             loginContainerView.centerXAnchor.constraintEqualToAnchor(tableView.centerXAnchor),
             loginContainerView.heightAnchor.constraintEqualToConstant(44)
         ]
