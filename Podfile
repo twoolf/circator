@@ -4,6 +4,7 @@ use_frameworks!
 
 link_with 'Circator', 'CircatorKit'
 
+pod 'ResearchKit', :git => 'https://github.com/DJBen/ResearchKit.git'
 pod 'Realm', :git => 'https://github.com/realm/realm-cocoa.git', :branch => 'swift-2.0'
 pod 'RealmSwift', :git => 'https://github.com/realm/realm-cocoa.git', :branch => 'swift-2.0'
 pod 'Charts', :git => 'https://github.com/danielgindi/ios-charts.git'
