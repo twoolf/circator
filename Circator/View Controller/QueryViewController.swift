@@ -60,9 +60,18 @@ class QueryViewController: UITableViewController {
         let editButton = MGSwipeButton(title: "Edit", backgroundColor: .ht_carrotColor(), callback: {
             (sender: MGSwipeTableCell!) -> Bool in
             if let idx = tableView.indexPathForCell(sender) {
-                let builder = QueryBuilderViewController()
-                builder.buildMode = BuilderMode.Editing(idx.row)
-                self.navigationController?.pushViewController(builder, animated: true)
+                switch QueryManager.sharedManager.getQueries()[idx.row].1 {
+                case Query.ConjunctiveQuery(_):
+                    let builder = QueryBuilderViewController()
+                    builder.buildMode = BuilderMode.Editing(idx.row)
+                    self.navigationController?.pushViewController(builder, animated: true)
+
+                case Query.UserDefinedQuery(_):
+                    let builder = QueryWriterViewController()
+                    builder.buildMode = BuilderMode.Editing(idx.row)
+                    builder.fromPredicateBuilder = false
+                    self.navigationController?.pushViewController(builder, animated: true)
+                }
                 return false
             }
             return true

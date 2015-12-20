@@ -7,8 +7,7 @@
 //
 
 public typealias Predicate = (String, Comparator, String)
-public typealias ConjunctiveQuery = (String, [Predicate])
-public typealias Queries = [ConjunctiveQuery]
+public typealias Queries = [(String, Query)]
 
 public enum Comparator : Int {
     case LT
@@ -17,6 +16,11 @@ public enum Comparator : Int {
     case NEQ
     case GT
     case GTE
+}
+
+public enum Query {
+    case ConjunctiveQuery([Predicate])
+    case UserDefinedQuery(String)
 }
 
 private let QueryManagerQueriesKey = "QMQueriesKey"
@@ -54,7 +58,7 @@ public class QueryManager {
         return queries
     }
     
-    public func addQuery(name: String, query: [Predicate]) {
+    public func addQuery(name: String, query: Query) {
         queries.append((name, query))
         saveQueries()
     }
@@ -67,7 +71,7 @@ public class QueryManager {
         save()
     }
     
-    public func updateQuery(index: Int, name: String, query: [Predicate]) {
+    public func updateQuery(index: Int, name: String, query: Query) {
         queries[index] = (name, query)
         saveQueries()
     }
@@ -87,9 +91,13 @@ public class QueryManager {
     }
 }
 
-private let AKey = "hasAttr"
-private let CKey = "hasComparator"
-private let VKey = "hasValue"
+private let AKey = "attr"
+private let CKey = "comp"
+private let VKey = "pval"
+
+private let NKey = "qname"
+private let UKey = "qudef"
+private let QKey = "query"
 
 func serializePredicate(p: Predicate) -> [String: AnyObject] {
     return [
@@ -99,8 +107,20 @@ func serializePredicate(p: Predicate) -> [String: AnyObject] {
     ]
 }
 
-func serializeQueries(q: Queries) -> [[String: AnyObject]] {
-    return q.map { (n,p) in return ["key": n, "value": p.map(serializePredicate)] }
+func serializeQueries(qs: Queries) -> [[String: AnyObject]] {
+    return qs.map { (n,q) in
+        switch q {
+        case .ConjunctiveQuery(let ps):
+            return [NKey: n,
+                    UKey: false,
+                    QKey: ps.map(serializePredicate)]
+
+        case .UserDefinedQuery(let s):
+            return [NKey: n,
+                    UKey: true,
+                    QKey: s]
+        }
+    }
 }
 
 func deserializePredicate(p: [String: AnyObject]) -> Predicate {
@@ -110,19 +130,35 @@ func deserializePredicate(p: [String: AnyObject]) -> Predicate {
         p[VKey] as! String)
 }
 
-func deserializeQueries(q: [[String: AnyObject]]) -> Queries {
-    return q.map { dict in
-        let name = dict["key"] as! String
-        let preds = (dict["value"] as! [[String: AnyObject]]).map(deserializePredicate)
-        return (name, preds)
+func deserializeQueries(qs: [[String: AnyObject]]) -> Queries {
+    print(qs)
+    return qs.map { dict in
+        let name = dict[NKey] as! String
+        let udef = dict[UKey] as! Bool
+        if udef {
+            let query = dict[QKey] as! String
+            return (name, .UserDefinedQuery(query))
+        } else {
+            let preds = (dict[QKey] as! [[String: AnyObject]]).map(deserializePredicate)
+            return (name, .ConjunctiveQuery(preds))
+        }
     }
 }
 
-func sqlize(p: Predicate) -> String {
+func sqlizePredicate(p: Predicate) -> String {
     let comparisonOperators = ["<", "<=", "==", "!=", "=>", ">"]
     return "\(p.0) \(comparisonOperators[p.1.rawValue]) \(p.2)"
 }
 
-func sqlize(q: ConjunctiveQuery) -> String {
-    return q.1.map(sqlize).joinWithSeparator(" and ")
+func sqlizeQuery(q: Query) -> String {
+    switch q {
+    case .ConjunctiveQuery(let p):
+        return p.map(sqlizePredicate).joinWithSeparator(" and ")
+    case .UserDefinedQuery(let s):
+        return s
+    }
+}
+
+func sqlize(q: (String, Query)) -> String {
+    return sqlizeQuery(q.1)
 }

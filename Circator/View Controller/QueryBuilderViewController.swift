@@ -28,8 +28,8 @@ class QueryBuilderViewController: UIViewController, UITextFieldDelegate {
     var buildMode : BuilderMode! = nil
 
     var attribute : String = QueryBuilderViewController.attributeOptions.first!
-    var name : String = ""
     var value : String = "0"
+    var queryName : String = ""
     var comparisonSelected = 0
 
     lazy var addPredicateButton: UIButton = {
@@ -56,12 +56,24 @@ class QueryBuilderViewController: UIViewController, UITextFieldDelegate {
         return button
     }()
 
+    lazy var writeQueryButton: UIButton = {
+        let button = MCButton(frame: CGRectMake(0, 0, 100, 25), buttonStyle: .Rounded)
+        button.cornerRadius = 4.0
+        button.buttonColor = UIColor.ht_emeraldColor()
+        button.shadowColor = UIColor.ht_nephritisColor()
+        button.shadowHeight = 4
+        button.setTitle("Write Query", forState: .Normal)
+        button.titleLabel?.font = UIFont.systemFontOfSize(14, weight: UIFontWeightRegular)
+        button.addTarget(self, action: "writeQuery:", forControlEvents: .TouchUpInside)
+        return button
+    }()
+
     lazy var buttonStack: UIStackView = {
-        let stack = UIStackView(arrangedSubviews: [self.addPredicateButton, self.saveQueryButton])
+        let stack = UIStackView(arrangedSubviews: [self.writeQueryButton, self.addPredicateButton, self.saveQueryButton])
         stack.axis = .Horizontal
         stack.distribution = UIStackViewDistribution.FillEqually
         stack.alignment = UIStackViewAlignment.Fill
-        stack.spacing = 15
+        stack.spacing = 5
         return stack
     }()
 
@@ -78,11 +90,17 @@ class QueryBuilderViewController: UIViewController, UITextFieldDelegate {
 
         switch buildMode! {
         case .Creating:
-            self.name = "Query \(String(QueryManager.sharedManager.getQueries().count))"
+            self.queryName = "Query \(String(QueryManager.sharedManager.getQueries().count))"
             self.dataTableView.predicates = []
         case .Editing(let row):
-            self.name = QueryManager.sharedManager.getQueries()[row].0
-            self.dataTableView.predicates = QueryManager.sharedManager.getQueries()[row].1
+            self.queryName = QueryManager.sharedManager.getQueries()[row].0
+
+            switch QueryManager.sharedManager.getQueries()[row].1 {
+            case .ConjunctiveQuery(let pred):
+                self.dataTableView.predicates = pred
+            case .UserDefinedQuery(_):
+                self.dataTableView.predicates = []
+            }
         }
 
         dataTableView.registerClass(MGSwipeTableCell.self, forCellReuseIdentifier: "predicateCell")
@@ -161,9 +179,9 @@ class QueryBuilderViewController: UIViewController, UITextFieldDelegate {
             $0.textField.returnKeyType = .Next
             $0.tintColor = .blueColor()
             }.configure {
-                $0.attributedPlaceholder = NSAttributedString(string:self.name, attributes:[NSForegroundColorAttributeName: UIColor.whiteColor()])
+                $0.attributedPlaceholder = NSAttributedString(string:self.queryName, attributes:[NSForegroundColorAttributeName: UIColor.whiteColor()])
             }.onTextChanged { [weak self] txt in
-                self?.name = txt
+                self?.queryName = txt
         }
 
         let section = SectionFormer(rowFormer: comparatorPickerRow, attributeSelectorRow, valueRow, queryNameRow)
@@ -171,10 +189,6 @@ class QueryBuilderViewController: UIViewController, UITextFieldDelegate {
     }
 
     func donePicker() {
-        self.view.endEditing(true)
-    }
-
-    func cancelPicker() {
         self.view.endEditing(true)
     }
 
@@ -228,12 +242,18 @@ class QueryBuilderViewController: UIViewController, UITextFieldDelegate {
     func saveQuery(sender: UIButton) {
         switch buildMode! {
         case .Creating:
-            QueryManager.sharedManager.addQuery(self.name, query: dataTableView.predicates)
+            QueryManager.sharedManager.addQuery(self.queryName, query: Query.ConjunctiveQuery(dataTableView.predicates))
             
         case .Editing(let row):
-            QueryManager.sharedManager.updateQuery(row, name: self.name, query: dataTableView.predicates)
+            QueryManager.sharedManager.updateQuery(row, name: self.queryName, query: Query.ConjunctiveQuery(dataTableView.predicates))
         }
         self.navigationController?.popViewControllerAnimated(true)
+    }
+    
+    func writeQuery(sender: UIButton) {
+        let writerVC = QueryWriterViewController()
+        writerVC.buildMode = buildMode
+        self.navigationController?.pushViewController(writerVC, animated: true)
     }
 }
 
