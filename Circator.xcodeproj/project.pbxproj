@@ -238,8 +238,8 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				F4E1B7701C24B967000C2B45 /* Pods_Circator.framework in Frameworks */,
 				F42F5B491BE20A5700195490 /* HealthKit.framework in Frameworks */,
+				F4E1B7701C24B967000C2B45 /* Pods_Circator.framework in Frameworks */,
 				02BD8FB160A8602974B374F2 /* Pods.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -1050,6 +1050,10 @@
 				DYLIB_COMPATIBILITY_VERSION = 1;
 				DYLIB_CURRENT_VERSION = 1;
 				DYLIB_INSTALL_NAME_BASE = "@rpath";
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(PROJECT_DIR)/build/Debug-iphoneos",
+				);
 				GCC_PREFIX_HEADER = "Target Support Files/Granola/Granola-prefix.pch";
 				INFOPLIST_FILE = CircatorKit/Info.plist;
 				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
@@ -1079,6 +1083,10 @@
 				DYLIB_COMPATIBILITY_VERSION = 1;
 				DYLIB_CURRENT_VERSION = 1;
 				DYLIB_INSTALL_NAME_BASE = "@rpath";
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(PROJECT_DIR)/build/Debug-iphoneos",
+				);
 				GCC_PREFIX_HEADER = "Target Support Files/Granola/Granola-prefix.pch";
 				INFOPLIST_FILE = CircatorKit/Info.plist;
 				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
