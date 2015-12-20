@@ -42,8 +42,8 @@ public class SampleFormatter: NSObject {
 
     public static let calorieFormatter: NSEnergyFormatter = {
         let formatter = NSEnergyFormatter()
+        formatter.numberFormatter = SampleFormatter.numberFormatter
         formatter.unitStyle = NSFormattingUnitStyle.Medium
-        formatter.forFoodEnergyUse = true
         return formatter
     }()
 
@@ -119,12 +119,32 @@ public class SampleFormatter: NSObject {
         }
         if let fst      = derived.first as DerivedQuantity?,
                quantity = fst.quantity,
-               type     = fst.quantityType as? HKQuantityType
+               type     = fst.quantityType
         {
-            return stringFromDerivedQuantity(quantity, type: type)
+            if let qtype = type as? HKQuantityType {
+                return stringFromDerivedQuantity(quantity, type: qtype)
+            }
+            
+            switch type.identifier {
+            case HKCategoryTypeIdentifierSleepAnalysis:
+                return "\(SampleFormatter.timeIntervalFormatter.stringFromTimeInterval(quantity)!)"
+
+            /* TODO: both systolic and diastolic.
+            case HKCorrelationTypeIdentifierBloodPressure:
+                let correlationSample = samples.first as! HKCorrelation
+                let diastolicSample = correlationSample.objectsForType(HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierBloodPressureDiastolic)!).first as? HKQuantitySample
+                let systolicSample = correlationSample.objectsForType(HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierBloodPressureSystolic)!).first as? HKQuantitySample
+                guard diastolicSample != nil && systolicSample != nil else {
+                    return emptyString
+                }
+                let diastolicNumber = SampleFormatter.integerFormatter.stringFromNumber(diastolicSample!.quantity.doubleValueForUnit(HKUnit.millimeterOfMercuryUnit()))!
+                let systolicNumber = SampleFormatter.integerFormatter.stringFromNumber(systolicSample!.quantity.doubleValueForUnit(HKUnit.millimeterOfMercuryUnit()))!
+                return "\(systolicNumber)/\(diastolicNumber)"
+            */
+            default:
+                return emptyString
+            }
         }
-        // TODO: HKCategoryTypeIdentifierSleepAnalysis
-        // TODO: HKCorrelationTypeIdentifierBloodPressure
         return emptyString
     }
 
@@ -145,11 +165,16 @@ public class SampleFormatter: NSObject {
     private func stringFromDerivedQuantity(quantity: Double, type: HKQuantityType) -> String {
         switch type.identifier {
         case HKQuantityTypeIdentifierBodyMass:
-            return SampleFormatter.bodyMassFormatter.stringFromKilograms(quantity)
+            let hkquantity = HKQuantity(unit: HKUnit.poundUnit(), doubleValue: quantity)
+            let kilos = hkquantity.doubleValueForUnit(HKUnit.gramUnitWithMetricPrefix(.Kilo))
+            return SampleFormatter.bodyMassFormatter.stringFromKilograms(kilos)
+
         case HKQuantityTypeIdentifierHeartRate:
             return "\(SampleFormatter.numberFormatter.stringFromNumber(quantity)!) bpm"
+
         case HKQuantityTypeIdentifierDietaryEnergyConsumed:
-            return SampleFormatter.calorieFormatter.stringFromJoules(quantity)
+            return SampleFormatter.calorieFormatter.stringFromValue(quantity, unit: .Kilocalorie)
+
         default:
             return SampleFormatter.numberFormatter.stringFromNumber(quantity) ?? "<nil>"
         }
