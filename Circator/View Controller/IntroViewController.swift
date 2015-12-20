@@ -14,6 +14,7 @@ import Realm
 import RealmSwift
 import Dodo
 import HTPressableButton
+import ResearchKit
 
 let IntroViewTableViewCellIdentifier = "IntroViewTableViewCellIdentifier"
 
@@ -441,10 +442,29 @@ class IntroViewController: UIViewController, UITableViewDelegate, UITableViewDat
         super.viewWillAppear(animated)
         navigationController?.setNavigationBarHidden(true, animated: false)
     }
-
+    
+    private var firstTimeConsent = true
+    
+    override func viewDidAppear(animated: Bool) {
+        super.viewDidAppear(animated)
+        checkConsent(firstTimeConsent)
+        if firstTimeConsent {
+            firstTimeConsent = false
+        }
+    }
+    
     override func viewDidLayoutSubviews() {
         super.viewDidLayoutSubviews()
         tableView.separatorInset = UIEdgeInsets(top: 0, left: self.view.frame.width, bottom: 0, right: 0)
+    }
+    
+    private func checkConsent(firstTime: Bool) {
+        ConsentManager.sharedManager.checkConsentWithBaseViewController(self, withEligibility: firstTime) { [weak self] (consented) -> Void in
+            guard consented else {
+                return
+            }
+            self!.loginAndInitialize()
+        }
     }
 
     private func configureViews() {
