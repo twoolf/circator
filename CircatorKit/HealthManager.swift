@@ -235,7 +235,9 @@ public class HealthManager: NSObject, WCSessionDelegate {
     }
 
     // TODO: pull this from Granola
-    static let attributeNamesBySampleType : [HKSampleType:(String,String,String?)] =
+    // TODO: make this a dictionary with a list value to support multiple fields per sampleType,
+    // e.g., blood_pressure needs both systolic and diastolic
+    public static let attributeNamesBySampleType : [HKSampleType:(String,String,String?)] =
         PreviewManager.previewChoices.flatten().reduce([:]) { (var dict, sampleType) in
             switch sampleType.identifier {
             case HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierBodyMass)!.identifier:
@@ -247,13 +249,16 @@ public class HealthManager: NSObject, WCSessionDelegate {
             case HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierHeartRate)!.identifier:
                 dict[sampleType] = ("heart_rate", "heart_rate", nil)
 
-            case HKObjectType.correlationTypeForIdentifier(HKCorrelationTypeIdentifierBloodPressure)!.identifier:
-                dict[sampleType] = ("systolic_blood_pressure", "systolic_blood_pressure", nil)
+            case HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierBloodPressureDiastolic)!.identifier:
+                dict[sampleType] = ("unit_value", "diastolic_blood_pressure", "HKQuantityTypeIdentifierBloodPressureDiastolic")
+
+            case HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierBloodPressureSystolic)!.identifier:
+                dict[sampleType] = ("unit_value", "systolic_blood_pressure", "HKQuantityTypeIdentifierBloodPressureSystolic")
 
             case HKObjectType.categoryTypeForIdentifier(HKCategoryTypeIdentifierSleepAnalysis)!.identifier:
                 dict[sampleType] = ("sleep_duration", "sleep_duration", nil)
 
-            case HKWorkoutType.quantityTypeForIdentifier(HKQuantityTypeIdentifierDistanceWalkingRunning)!.identifier:
+            case HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierDistanceWalkingRunning)!.identifier:
                 dict[sampleType] = ("unit_value", "distance_walkrun", "HKQuantityTypeIdentifierDistanceWalkingRunning")
 
             case HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierDietaryEnergyConsumed)!.identifier:
@@ -279,6 +284,11 @@ public class HealthManager: NSObject, WCSessionDelegate {
 
             case HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierDietarySodium)!.identifier:
                 dict[sampleType] = ("unit_value", "sodium", "HKQuantityTypeIdentifierDietarySodium")
+
+            case HKObjectType.workoutType().identifier:
+                print("WORKOUT: " + sampleType.identifier)
+                //dict[sampleType] = ("effective_time_frame", "workout", nil)
+
             default:
                 print("Mismatched sample types: ")
             }
@@ -312,6 +322,7 @@ public class HealthManager: NSObject, WCSessionDelegate {
                 .responseJSON {_, response, result in
                     print("AGGPOST: " + (result.isSuccess ? "SUCCESS" : "FAILED"))
                     guard !result.isSuccess else {
+                        print(result.value)
                         self.refreshAggregatesFromMsg(samplesByName, payload: result.value)
                         return
                     }
@@ -446,7 +457,8 @@ public class HealthManager: NSObject, WCSessionDelegate {
                 HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierDietaryCaffeine)!,
                 HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierDietaryWater)!,
                 HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierBloodPressureDiastolic)!,
-                HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierBloodPressureSystolic)!
+                HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierBloodPressureSystolic)!,
+                HKObjectType.workoutType()
             ]
             types.forEach { (type) in
                 self.startBackgroundObserverForType(type) { (added, _, _, error) -> Void in
@@ -636,6 +648,8 @@ public extension HKSampleType {
             return NSLocalizedString("Total Cholesterol", comment: "HealthKit data type")
         case HKQuantityTypeIdentifierDietarySodium:
             return NSLocalizedString("Total Salt", comment: "HealthKit data type")
+        case HKWorkoutTypeIdentifier:
+            return NSLocalizedString("Workout", comment: "HealthKit data type")
         default:
             return nil
         }
@@ -717,11 +731,15 @@ public extension HKSample {
             fallthrough
         case HKQuantityTypeIdentifierHeartRate:
             return (self as! HKQuantitySample).quantity.doubleValueForUnit(defaultUnit!)
+
         case HKCategoryTypeIdentifierSleepAnalysis:
-            // TODO: implement sleep analysis
-            return 0
+            let sample = (self as! HKCategorySample)
+            let secs = HKQuantity(unit: HKUnit.secondUnit(), doubleValue: sample.endDate.timeIntervalSinceDate(sample.startDate))
+            return secs.doubleValueForUnit(defaultUnit!)
+
         case HKCorrelationTypeIdentifierBloodPressure:
             return ((self as! HKCorrelation).objects.first as! HKQuantitySample).quantity.doubleValueForUnit(defaultUnit!)
+
         default:
             return nil
         }

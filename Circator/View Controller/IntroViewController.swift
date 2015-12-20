@@ -133,6 +133,15 @@ class IntroViewController: UIViewController, UITableViewDelegate, UITableViewDat
         return button
     }()
 
+    lazy var queryButton: UIButton = {
+        let image = UIImage(named: "icon_query") as UIImage?
+        let button = UIButton(type: .Custom)
+        button.setImage(image, forState: .Normal)
+        button.addTarget(self, action: "showQuery:", forControlEvents: .TouchUpInside)
+        button.backgroundColor = Theme.universityDarkTheme.backgroundColor
+        return button
+    }()
+
     lazy var settingsButton: UIButton = {
         let image = UIImage(named: "icon_settings") as UIImage?
         let button = UIButton(type: .Custom)
@@ -243,7 +252,7 @@ class IntroViewController: UIViewController, UITableViewDelegate, UITableViewDat
     }()
 
     lazy var topButtonsContainerView: UIStackView = {
-        let stackView: UIStackView = UIStackView(arrangedSubviews: [self.titleLabel, self.logoutButton, self.settingsButton])
+        let stackView: UIStackView = UIStackView(arrangedSubviews: [self.titleLabel, self.logoutButton, self.queryButton, self.settingsButton])
         stackView.axis = .Horizontal
         //stackView.distribution = UIStackViewDistribution.FillEqually
         stackView.distribution = UIStackViewDistribution.FillProportionally
@@ -476,7 +485,9 @@ class IntroViewController: UIViewController, UITableViewDelegate, UITableViewDat
             topButtonsContainerView.leadingAnchor.constraintLessThanOrEqualToAnchor(view.layoutMarginsGuide.leadingAnchor, constant: 43 + 37),
             topButtonsContainerView.heightAnchor.constraintEqualToConstant(27),
             logoutButton.widthAnchor.constraintEqualToConstant(27),
-            settingsButton.leadingAnchor.constraintEqualToAnchor(logoutButton.trailingAnchor, constant: 0),
+            queryButton.leadingAnchor.constraintEqualToAnchor(logoutButton.trailingAnchor, constant: 0),
+            queryButton.widthAnchor.constraintEqualToConstant(27),
+            settingsButton.leadingAnchor.constraintEqualToAnchor(queryButton.trailingAnchor, constant: 0),
             settingsButton.widthAnchor.constraintEqualToConstant(27)
         ]
         view.addConstraints(topButtonsContainerConstraints)
@@ -606,6 +617,11 @@ class IntroViewController: UIViewController, UITableViewDelegate, UITableViewDat
     func showSettings(sender: UIButton) {
         let settingsViewController = SettingsViewController()
         navigationController?.pushViewController(settingsViewController, animated: true)
+    }
+
+    func showQuery(sender: UIButton) {
+        let queryViewController = QueryViewController()
+        navigationController?.pushViewController(queryViewController, animated: true)
     }
 
     // MARK: - Table View
