@@ -14,7 +14,7 @@ pod 'AsyncSwift'
 pod 'Granola'
 pod 'Locksmith'
 pod 'Stormpath'
-pod "Former"
+pod 'Former'
 pod 'Dodo', '~> 2.0'
 pod 'HTPressableButton'
-
+pod 'MGSwipeTableCell'
