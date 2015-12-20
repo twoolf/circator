@@ -59,37 +59,37 @@ public class ConsentManager: NSObject, ORKTaskViewControllerDelegate {
     }
     
     private var loremIpsumText: String {
-        return "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua."
+        return "The “Metabolic Compass” app will use surveys and phone sensor data to collect and track symptoms of metabolic syndrome: fatigue, cognitive difficulties, sleep disturbances, mood changes and reduction in exercise.  Participants are encouraged to keep a health diary."
     }
     
     private var loremIpsumShortText: String {
-        return "Lorem ipsum dolor sit amet, consectetur adipiscing elit."
+        return "We hope to learn the differences in how you navigate your daily tasks; to assess whether mobile devices and sensors can help better measure and manage our lives; and to ultimately improve the quality of life for people.  This study is unique in that it allows participants to step up as equal partners in both the monitoring and the sharing of their aggregate data as well as in the research process and analysis."
     }
     
     private var loremIpsumMediumText: String {
-        return "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nam adhuc, meo fortasse vitio, quid ego quaeram non perspicis. Plane idem, inquit, et maxima quidem, qua fieri nulla maior potest. Quonam, inquit, modo?"
+        return "How can we better manage the complexities of metabolic syndrome and the lives of those at risk for having metabolic diseases? We want to understand why some individuals at risk or having been diagnosed with metabolic syndrome recover faster than others, why their symptoms vary over time, and what can be done to make those symptoms improve.  We at Johns Hopkins University are proposing a new approach to allow participants to monitor their health in real time as well as partner in research studies. This app is designed for research and educational purposes only.  You should not rely on this information as a substitute for personal medical attention, diagnosis or hands-on treatment.  If you are concerned about your health or that of a child, please consult your family's health provider immediately.  Do not wait for a response from our professionals."
     }
     
     private var loremIpsumLongText: String {
-        return "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nam adhuc, meo fortasse vitio, quid ego quaeram non perspicis. Plane idem, inquit, et maxima quidem, qua fieri nulla maior potest. Quonam, inquit, modo? An potest, inquit ille, quicquam esse suavius quam nihil dolere? Cave putes quicquam esse verius. Quonam, inquit, modo?"
+        return "We hope to learn the differences in how people navigate through their days; to assess whether mobile devices and sensors can help better measure and manage metabolic disease and its progression; and to ultimately improve the quality of life for people. We are looking for volunteers to participate in this research study. If you are over 18 years old with a history of metabolic disease or without any history of metabolic disease, but at risk, we invite you to join this study. You do not need to have had metabolic syndrome to join this study."
     }
     
     private var eligibilitySteps: [ORKStep] {
         get {
             // Intro step
             let introStep = ORKInstructionStep(identifier: String(Identifier.EligibilityIntroStep))
-            introStep.title = NSLocalizedString("Eligibility Task Example", comment: "")
+            introStep.title = NSLocalizedString("Welcome to Metabolic Compass", comment: "")
             
             // Form step
             let formStep = ORKFormStep(identifier: String(Identifier.EligibilityFormStep))
             formStep.optional = false
             
             // Form items
-            let formItem01 = ORKFormItem(identifier: String(Identifier.EligibilityFormItem01), text: "Question 1", answerFormat: ORKAnswerFormat.eligibilityAnswerFormat())
+            let formItem01 = ORKFormItem(identifier: String(Identifier.EligibilityFormItem01), text: "Are you over 18?", answerFormat: ORKAnswerFormat.eligibilityAnswerFormat())
             formItem01.optional = false
-            let formItem02 = ORKFormItem(identifier: String(Identifier.EligibilityFormItem02), text: "Question 2", answerFormat: ORKAnswerFormat.eligibilityAnswerFormat())
+            let formItem02 = ORKFormItem(identifier: String(Identifier.EligibilityFormItem02), text: "Do you worry about your diet?", answerFormat: ORKAnswerFormat.eligibilityAnswerFormat())
             formItem02.optional = false
-            let formItem03 = ORKFormItem(identifier: String(Identifier.EligibilityFormItem03), text: "Question 3", answerFormat: ORKAnswerFormat.eligibilityAnswerFormat())
+            let formItem03 = ORKFormItem(identifier: String(Identifier.EligibilityFormItem03), text: "Do you live in the United States of America?", answerFormat: ORKAnswerFormat.eligibilityAnswerFormat())
             formItem03.optional = false
             
             formStep.formItems = [
@@ -123,7 +123,7 @@ public class ConsentManager: NSObject, ORKTaskViewControllerDelegate {
         This is the title of the document, displayed both for review and in
         the generated PDF.
         */
-        consentDocument.title = NSLocalizedString("Example Consent", comment: "")
+        consentDocument.title = NSLocalizedString("Metabolic Compass", comment: "How can we better understand and manage the problems associated with metabolic syndrome?")
         
         // This is the title of the signature page in the generated document.
         consentDocument.signaturePageTitle = NSLocalizedString("Consent", comment: "")
@@ -236,9 +236,9 @@ public class ConsentManager: NSObject, ORKTaskViewControllerDelegate {
         */
         let visualConsentStep = ORKVisualConsentStep(identifier: String(Identifier.VisualConsentStep), document: consentDocument)
         
-        let investigatorShortDescription = NSLocalizedString("Institution", comment: "")
+        let investigatorShortDescription = NSLocalizedString("Johns Hopkins University", comment: "")
         let investigatorLongDescription = NSLocalizedString("Institution and its partners", comment: "")
-        let localizedLearnMoreHTMLContent = NSLocalizedString("Your sharing learn more content here.", comment: "")
+        let localizedLearnMoreHTMLContent = NSLocalizedString("Funded, in part, by NIH", comment: "")
         
         /*
         If you want to share the data you collect with other researchers for
