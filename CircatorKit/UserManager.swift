@@ -193,6 +193,29 @@ public class UserManager {
         resetAccount()
         resetUserId()
     }
+    
+    public func register(firstName: String, lastName: String, consentFilePath: String?) {
+        if let user = userId, pass = getPassword()
+        {
+            let stormpathAccountDict : [String:String] = [
+                "email": user,
+                "password": pass,
+                "givenName": firstName,
+                "surname": lastName
+            ]
+            
+            print(stormpathAccountDict)
+            Stormpath.register(userDictionary: stormpathAccountDict, completionHandler: {
+                (registerDict, error) -> Void in
+                if error == nil {
+                    // Registration succeeded, createdUserDictionary holds your new user's data
+                    print(registerDict)
+                } else {
+                    debugPrint(error)
+                }
+            })
+        }
+    }
 
     // Mark : - Configuration
 

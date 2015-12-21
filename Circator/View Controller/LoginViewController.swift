@@ -53,19 +53,36 @@ class LoginViewController: UIViewController, UITableViewDelegate, UITableViewDat
     }()
     
     lazy var loginLabelButton : UIButton = {
-        let label: UILabel = UILabel()
         let button = UIButton(type: .Custom)
         button.setTitle("Login", forState: .Normal)
         button.addTarget(self, action: "doLogin:", forControlEvents: .TouchUpInside)
-        button.titleLabel?.font = UIFont.systemFontOfSize(24, weight: UIFontWeightSemibold)
-        button.titleLabel!.textAlignment = .Center
+        button.titleLabel?.font = UIFont.systemFontOfSize(20, weight: UIFontWeightSemibold)
+        button.setTitleColor(Theme.universityDarkTheme.titleTextColor, forState: .Normal)
+        button.backgroundColor = Theme.universityDarkTheme.backgroundColor
+        return button
+    }()
+
+    lazy var orLabel : UILabel = {
+        let label = UILabel()
+        label.font = UIFont.systemFontOfSize(20, weight: UIFontWeightRegular)
+        label.textColor = Theme.universityDarkTheme.titleTextColor
+        label.text = NSLocalizedString("or", comment: "")
+        return label
+    }()
+
+    lazy var signupLabelButton : UIButton = {
+        let button = UIButton(type: .Custom)
+        button.setTitle("Signup", forState: .Normal)
+        button.addTarget(self, action: "doSignup:", forControlEvents: .TouchUpInside)
+        button.titleLabel?.font = UIFont.systemFontOfSize(20, weight: UIFontWeightSemibold)
         button.setTitleColor(Theme.universityDarkTheme.titleTextColor, forState: .Normal)
         button.backgroundColor = Theme.universityDarkTheme.backgroundColor
         return button
     }()
 
     lazy var loginContainerView: UIStackView = {
-        let stackView: UIStackView = UIStackView(arrangedSubviews: [self.loginButton, self.loginLabelButton])
+        let stackView: UIStackView = UIStackView(arrangedSubviews:
+                            [self.loginButton, self.loginLabelButton, self.orLabel, self.signupLabelButton])
         stackView.axis = .Horizontal
         //stackView.distribution = UIStackViewDistribution.FillEqually
         stackView.alignment = UIStackViewAlignment.Fill
@@ -107,9 +124,14 @@ class LoginViewController: UIViewController, UITableViewDelegate, UITableViewDat
             tableView.leadingAnchor.constraintEqualToAnchor(view.layoutMarginsGuide.leadingAnchor, constant: 10),
             tableView.trailingAnchor.constraintEqualToAnchor(view.layoutMarginsGuide.trailingAnchor, constant: -10),
             tableView.bottomAnchor.constraintEqualToAnchor(view.layoutMarginsGuide.bottomAnchor, constant: -30),
+
             loginContainerView.topAnchor.constraintEqualToAnchor(view.layoutMarginsGuide.centerYAnchor),
             loginContainerView.centerXAnchor.constraintEqualToAnchor(tableView.centerXAnchor),
-            loginContainerView.heightAnchor.constraintEqualToConstant(44)
+            loginContainerView.heightAnchor.constraintEqualToConstant(44),
+
+            loginLabelButton.leadingAnchor.constraintEqualToAnchor(loginButton.trailingAnchor, constant: 5),
+            orLabel.leadingAnchor.constraintEqualToAnchor(loginLabelButton.trailingAnchor, constant: 5),
+            signupLabelButton.leadingAnchor.constraintEqualToAnchor(orLabel.trailingAnchor, constant: 5)
         ]
         view.addConstraints(constraints)
     }
@@ -118,22 +140,23 @@ class LoginViewController: UIViewController, UITableViewDelegate, UITableViewDat
         super.viewDidLayoutSubviews()
         tableView.separatorInset = UIEdgeInsets(top: 0, left: self.view.frame.width, bottom: 0, right: 0)
     }
-
-    func doLogin(sender: UIButton) {
-        // Take any text entered as the username if we have nothing saved.
+    
+    // Take any text entered as the username or password if we have nothing saved.
+    func ensureUserPass() {
         if UserManager.sharedManager.getUserId() == nil {
             if let currentUser = userCell?.textField.text {
                 UserManager.sharedManager.setUserId(currentUser)
             }
         }
-
+        
         if UserManager.sharedManager.getPassword() == nil {
             if let currentPass = passCell?.textField.text {
                 UserManager.sharedManager.setPassword(currentPass)
             }
         }
-
-        UserManager.sharedManager.login()
+    }
+    
+    func doWelcome() {
         navigationController?.popViewControllerAnimated(true)
         Async.main {
             self.parentView?.view.dodo.style.bar.hideAfterDelaySeconds = 3
@@ -141,6 +164,19 @@ class LoginViewController: UIViewController, UITableViewDelegate, UITableViewDat
             self.parentView?.view.dodo.success("Welcome " + (UserManager.sharedManager.getUserId() ?? ""))
             self.parentView?.initializeBackgroundWork()
         }
+    }
+
+    func doLogin(sender: UIButton) {
+        ensureUserPass()
+        UserManager.sharedManager.login()
+        doWelcome()
+    }
+    
+    func doSignup(sender: UIButton) {
+        ensureUserPass()
+        let (firstName, lastName) = ("Unknown", "Unknown")
+        UserManager.sharedManager.register(firstName, lastName: lastName, consentFilePath: ConsentManager.sharedManager.getConsentFilePath())
+        doWelcome()
     }
 
     // MARK: - Table View

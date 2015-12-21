@@ -393,24 +393,30 @@ class IntroViewController: UIViewController, UITableViewDelegate, UITableViewDat
     func fetchRecentSamples() {
         HealthManager.sharedManager.authorizeHealthKit { (success, error) -> Void in
             guard error == nil else { return }
-            EventManager.sharedManager.checkCalendarAuthorizationStatus()
-            HealthManager.sharedManager.fetchMostRecentSamples() { (samples, error) -> Void in
-                guard error == nil else { return }
-                NSNotificationCenter.defaultCenter().postNotificationName(HealthManagerDidUpdateRecentSamplesNotification, object: self)
+            EventManager.sharedManager.checkCalendarAuthorizationStatus {
+                HealthManager.sharedManager.fetchMostRecentSamples() { (samples, error) -> Void in
+                    guard error == nil else { return }
+                    NSNotificationCenter.defaultCenter().postNotificationName(HealthManagerDidUpdateRecentSamplesNotification, object: self)
+                }
             }
         }
     }
 
     func loginAndInitialize() {
-        // Jump to the login screen if either the username or password are unavailable.
-        guard !(UserManager.sharedManager.getUserId() == nil
-            || UserManager.sharedManager.getPassword() == nil)
-            else
-        {
-            toggleLogin(asInitial: true)
-            return
+        HealthManager.sharedManager.authorizeHealthKit { (success, error) -> Void in
+            guard error == nil else { return }
+            EventManager.sharedManager.checkCalendarAuthorizationStatus {
+                // Jump to the login screen if either the username or password are unavailable.
+                guard !(UserManager.sharedManager.getUserId() == nil
+                    || UserManager.sharedManager.getPassword() == nil)
+                    else
+                {
+                    self.toggleLogin(asInitial: true)
+                    return
+                }
+                self.initializeBackgroundWork()
+            }
         }
-        initializeBackgroundWork()
     }
 
     func initializeBackgroundWork() {
@@ -426,6 +432,12 @@ class IntroViewController: UIViewController, UITableViewDelegate, UITableViewDat
 
     override func viewDidLoad() {
         super.viewDidLoad()
+
+        checkConsent(firstTimeConsent)
+        if firstTimeConsent {
+            firstTimeConsent = false
+        }
+
         configureViews()
         tableView.layoutIfNeeded()
         NSNotificationCenter.defaultCenter().addObserverForName(HealthManagerDidUpdateRecentSamplesNotification, object: nil, queue: NSOperationQueue.mainQueue()) { (_) -> Void in
@@ -447,10 +459,6 @@ class IntroViewController: UIViewController, UITableViewDelegate, UITableViewDat
     
     override func viewDidAppear(animated: Bool) {
         super.viewDidAppear(animated)
-        checkConsent(firstTimeConsent)
-        if firstTimeConsent {
-            firstTimeConsent = false
-        }
     }
     
     override func viewDidLayoutSubviews() {

@@ -6,7 +6,7 @@
 //  Copyright © 2015 Yanif Ahmad, Tom Woolf. All rights reserved.
 //
 
-public typealias Predicate = (String, Comparator, String)
+public typealias Predicate = (Aggregate, String, Comparator, String)
 public typealias Queries = [(String, Query)]
 
 public enum Comparator : Int {
@@ -16,6 +16,12 @@ public enum Comparator : Int {
     case NEQ
     case GT
     case GTE
+}
+
+public enum Aggregate : Int {
+    case AggAvg
+    case AggMin
+    case AggMax
 }
 
 public enum Query {
@@ -30,7 +36,7 @@ public class QueryManager {
     public static let sharedManager = QueryManager()
 
     var queries: Queries = []
-    var querySelected : Int = 0
+    var querySelected : Int = -1
 
     init() { load() }
     
@@ -86,11 +92,12 @@ public class QueryManager {
     }
 
     public func deselectQuery() {
-        querySelected = 0
+        querySelected = -1
         saveIndex()
     }
 }
 
+private let GKey = "aggr"
 private let AKey = "attr"
 private let CKey = "comp"
 private let VKey = "pval"
@@ -101,9 +108,10 @@ private let QKey = "query"
 
 func serializePredicate(p: Predicate) -> [String: AnyObject] {
     return [
-        AKey : p.0,
-        CKey : p.1.rawValue,
-        VKey : p.2
+        GKey : p.0.rawValue,
+        AKey : p.1,
+        CKey : p.2.rawValue,
+        VKey : p.3
     ]
 }
 
@@ -125,6 +133,7 @@ func serializeQueries(qs: Queries) -> [[String: AnyObject]] {
 
 func deserializePredicate(p: [String: AnyObject]) -> Predicate {
     return Predicate(
+        Aggregate(rawValue: p[GKey] as! Int)!,
         p[AKey] as! String,
         Comparator(rawValue: p[CKey] as! Int)!,
         p[VKey] as! String)
@@ -145,9 +154,23 @@ func deserializeQueries(qs: [[String: AnyObject]]) -> Queries {
     }
 }
 
-func sqlizePredicate(p: Predicate) -> String {
+// Conversions for REST API.
+func serializeREST(p: Predicate) -> [String: AnyObject] {
+    let aggregateOperators = ["avg", "min", "max"]
     let comparisonOperators = ["<", "<=", "==", "!=", "=>", ">"]
-    return "\(p.0) \(comparisonOperators[p.1.rawValue]) \(p.2)"
+    return [
+        GKey : aggregateOperators[p.0.rawValue],
+        AKey : p.1,
+        CKey : comparisonOperators[p.2.rawValue],
+        VKey : p.3
+    ]
+}
+
+// Conversions for SQL.
+func sqlizePredicate(p: Predicate) -> String {
+    let aggregateOperators = ["avg", "min", "max"]
+    let comparisonOperators = ["<", "<=", "==", "!=", "=>", ">"]
+    return "\(aggregateOperators[p.0.rawValue])(\(p.1)) \(comparisonOperators[p.2.rawValue]) \(p.3)"
 }
 
 func sqlizeQuery(q: Query) -> String {

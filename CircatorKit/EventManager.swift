@@ -54,38 +54,39 @@ public class EventManager : NSObject, WCSessionDelegate {
         connectWatch()
     }
     
-    public func checkCalendarAuthorizationStatus() {
+    public func checkCalendarAuthorizationStatus(completion: (Void -> Void)) {
         if self.pending { return }
         let status = EKEventStore.authorizationStatusForEntityType(EKEntityType.Event)
         
         switch (status) {
         case EKAuthorizationStatus.NotDetermined:
             self.pending = true
-            requestAccessToCalendar()
+            requestAccessToCalendar(completion)
 
         case EKAuthorizationStatus.Authorized:
             self.hasAccess = true
-            initializeCalendarSession()
+            initializeCalendarSession(completion)
         
         case EKAuthorizationStatus.Restricted, EKAuthorizationStatus.Denied:
             self.hasAccess = false
+            completion()
         }
     }
     
-    func requestAccessToCalendar() {
+    func requestAccessToCalendar(completion: (Void -> Void)) {
         eventKitStore.requestAccessToEntityType(EKEntityType.Event, completion: {
             (accessGranted: Bool, error: NSError?) in
             
             if accessGranted == true {
                 self.hasAccess = true
                 dispatch_async(dispatch_get_main_queue(), {
-                    self.initializeCalendarSession()
+                    self.initializeCalendarSession(completion)
                 })
             }
         })
     }
     
-    func initializeCalendarSession() {
+    func initializeCalendarSession(completion: (Void -> Void)) {
         self.calendar = eventKitStore.defaultCalendarForNewEvents
 
         // Perform an initial refresh.
@@ -96,6 +97,8 @@ public class EventManager : NSObject, WCSessionDelegate {
         
         // Initialization completed, reset.
         self.pending = false
+        
+        completion()
     }
     
     func registerCalendarObserver() {
