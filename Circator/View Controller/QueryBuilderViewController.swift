@@ -24,6 +24,7 @@ class QueryBuilderViewController: UIViewController, UITextFieldDelegate {
 
     static let attributeOptions = HealthManager.attributeNamesBySampleType.map { (key, value) in value.1 }
     static let comparisonOperators = ["<", "<=", "==", "!=", "=>", ">"]
+    static let aggregateOperators = ["avg", "min", "max"]
 
     var buildMode : BuilderMode! = nil
 
@@ -31,6 +32,7 @@ class QueryBuilderViewController: UIViewController, UITextFieldDelegate {
     var value : String = "0"
     var queryName : String = ""
     var comparisonSelected = 0
+    var aggregateSelected = 0
 
     lazy var addPredicateButton: UIButton = {
         let button = MCButton(frame: CGRectMake(0, 0, 100, 25), buttonStyle: .Rounded)
@@ -151,6 +153,19 @@ class QueryBuilderViewController: UIViewController, UITextFieldDelegate {
                 self?.comparisonSelected = index
         }
 
+        let aggregatePickerRow = SegmentedRowFormer<FormSegmentedCell>(instantiateType: .Class) {
+            $0.backgroundColor = Theme.universityDarkTheme.backgroundColor
+            $0.titleLabel.text = "Aggregate"
+            $0.titleLabel.textColor = .whiteColor()
+            $0.titleLabel.font = .boldSystemFontOfSize(16)
+            $0.tintColor = .whiteColor()
+            }.configure {
+                $0.segmentTitles = QueryBuilderViewController.aggregateOperators
+                $0.selectedIndex = 0
+            }.onSegmentSelected { [weak self] index, _ in
+                self?.aggregateSelected = index
+        }
+
         let valueRow = TextFieldRowFormer<FormTextFieldCell>() {
             $0.backgroundColor = Theme.universityDarkTheme.backgroundColor
             $0.titleLabel.text = "Value"
@@ -184,7 +199,7 @@ class QueryBuilderViewController: UIViewController, UITextFieldDelegate {
                 self?.queryName = txt
         }
 
-        let section = SectionFormer(rowFormer: comparatorPickerRow, attributeSelectorRow, valueRow, queryNameRow)
+        let section = SectionFormer(rowFormer: queryNameRow, aggregatePickerRow, attributeSelectorRow, comparatorPickerRow, valueRow)
         former.append(sectionFormer: section)
     }
 
@@ -235,7 +250,8 @@ class QueryBuilderViewController: UIViewController, UITextFieldDelegate {
     }
 
     func addPredicate(sender: UIButton) {
-        dataTableView.predicates.append((attribute, Comparator(rawValue: comparisonSelected)!, value))
+        let pred = (Aggregate(rawValue: aggregateSelected)!, attribute, Comparator(rawValue: comparisonSelected)!, value)
+        dataTableView.predicates.append(pred)
         dataTableView.reloadData()
     }
 
@@ -259,7 +275,7 @@ class QueryBuilderViewController: UIViewController, UITextFieldDelegate {
 
 class PredicateTableView : UITableView, UITableViewDelegate, UITableViewDataSource {
 
-    var predicates : [(String, Comparator, String)] = []
+    var predicates : [(Aggregate, String, Comparator, String)] = []
 
     override init(frame: CGRect, style: UITableViewStyle) {
         super.init(frame: frame, style: style)
@@ -289,10 +305,12 @@ class PredicateTableView : UITableView, UITableViewDelegate, UITableViewDataSour
         let cell = tableView.dequeueReusableCellWithIdentifier("predicateCell", forIndexPath: indexPath) as! MGSwipeTableCell
 
         cell.backgroundColor = Theme.universityDarkTheme.backgroundColor
-        let (attr,op,val) = predicates[indexPath.row]
+        let (aggr,attr,op,val) = predicates[indexPath.row]
+        let aggstr = QueryBuilderViewController.aggregateOperators[aggr.rawValue]
+        let cmpstr = QueryBuilderViewController.comparisonOperators[op.rawValue]
         cell.textLabel?.textColor = UIColor.whiteColor()
         cell.textLabel?.font = .boldSystemFontOfSize(14)
-        cell.textLabel?.text = "\(attr) \(QueryBuilderViewController.comparisonOperators[op.rawValue]) \(val)"
+        cell.textLabel?.text = "\(aggstr)(\(attr)) \(cmpstr) \(val)"
 
         let deleteButton = MGSwipeButton(title: "Delete", backgroundColor: .ht_carrotColor(), callback: {
             (sender: MGSwipeTableCell!) -> Bool in

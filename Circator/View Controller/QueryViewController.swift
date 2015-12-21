@@ -96,15 +96,24 @@ class QueryViewController: UITableViewController {
     }
 
     override func tableView(tableView: UITableView, didSelectRowAtIndexPath indexPath: NSIndexPath) {
-        if let oldcell = tableView.cellForRowAtIndexPath(NSIndexPath(forRow: QueryManager.sharedManager.getSelectedQuery(), inSection: 0)) {
-            oldcell.accessoryType = .None
-            oldcell.tintColor = UIColor.ht_sunflowerColor()
-        }
+        if QueryManager.sharedManager.getSelectedQuery() == indexPath.row {
+            // Deselect query
+            if let cell = tableView.cellForRowAtIndexPath(indexPath) {
+                QueryManager.sharedManager.deselectQuery()
+                cell.accessoryType = .None
+                cell.tintColor = UIColor.ht_sunflowerColor()
+            }
+        } else {
+            if let oldcell = tableView.cellForRowAtIndexPath(NSIndexPath(forRow: QueryManager.sharedManager.getSelectedQuery(), inSection: 0)) {
+                oldcell.accessoryType = .None
+                oldcell.tintColor = UIColor.ht_sunflowerColor()
+            }
 
-        if let cell = tableView.cellForRowAtIndexPath(indexPath) {
-            QueryManager.sharedManager.selectQuery(indexPath.row)
-            cell.accessoryType = .Checkmark
-            cell.tintColor = UIColor.ht_belizeHoleColor()
+            if let cell = tableView.cellForRowAtIndexPath(indexPath) {
+                QueryManager.sharedManager.selectQuery(indexPath.row)
+                cell.accessoryType = .Checkmark
+                cell.tintColor = UIColor.ht_belizeHoleColor()
+            }
         }
     }
 
