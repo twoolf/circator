@@ -290,11 +290,16 @@ public class HealthManager: NSObject, WCSessionDelegate {
                 //dict[sampleType] = ("effective_time_frame", "workout", nil)
 
             default:
-                print("Mismatched sample types: ")
+                print("Mismatched sample types on: " + sampleType.identifier)
             }
             return dict
         }
 
+    public static let attributesByName : [String: (HKSampleType, String, String?)] =
+        attributeNamesBySampleType
+            .map { $0 }
+            .reduce([:]) { (var dict, kv) in dict[kv.1.1] = (kv.0, kv.1.0, kv.1.2); return dict }
+    
     // Retrieve aggregates for all previewed rows.
     public func fetchAggregates() {
         do {
@@ -312,7 +317,36 @@ public class HealthManager: NSObject, WCSessionDelegate {
                 }
             }
 
-            let params = ["attributes":attributes, "names":names, "predicates":predicates]
+            var params : [String:AnyObject] = ["attributes":attributes, "names":names, "predicates":predicates]
+            
+            // Add population filter parameters.
+            let popQueryIndex = QueryManager.sharedManager.getSelectedQuery()
+            let popQueries = QueryManager.sharedManager.getQueries()
+            if popQueryIndex >= 0 && popQueryIndex < popQueries.count  {
+                switch popQueries[popQueryIndex].1 {
+                case Query.UserDefinedQuery(_):
+                    print("NYI: UserDefinedQueries")
+
+                case Query.ConjunctiveQuery(let aggpreds):
+                    let pfdict : [[String: AnyObject]] = aggpreds.map { (aggr, attr, cmp, val) in
+                            var dict : [String: AnyObject] = [:]
+                            if let attrspec = HealthManager.attributesByName[attr] {
+                                dict = serializeREST((aggr, attrspec.1, cmp, val))
+                                dict["name"] = attr
+                                if let attrAsPred = attrspec.2 {
+                                    dict["predicate"] = attrAsPred
+                                }
+                            } else {
+                                print(HealthManager.attributesByName)
+                                print("Internal error: could not find attribute '\(attr)' while building a conjunctive query")
+                            }
+                            return dict
+                        }.filter { dict in !dict.isEmpty }
+
+                    params["popfilter"] = pfdict
+                }
+            }
+
             let json = try NSJSONSerialization.dataWithJSONObject(params, options: NSJSONWritingOptions.PrettyPrinted)
             let serializedAttrs = try NSJSONSerialization.JSONObjectWithData(json, options: NSJSONReadingOptions()) as! [String : AnyObject]
 

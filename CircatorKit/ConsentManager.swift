@@ -11,6 +11,9 @@ import Locksmith
 
 public typealias ConsentBlock = ((consented: Bool) -> Void)?
 
+private let ConsentFilePathKey = "CMConsentFileKey"
+private let unnamedAccount = "default"
+
 public class ConsentManager: NSObject, ORKTaskViewControllerDelegate {
     private enum Identifier {
         case EligibilityTask
@@ -42,7 +45,9 @@ public class ConsentManager: NSObject, ORKTaskViewControllerDelegate {
     
     public var obtainedUserConsent: Bool {
         get {
-            if let dictionary = Locksmith.loadDataForUserAccount("default"), consented = dictionary["consent"] as? Bool {
+            if let dictionary = Locksmith.loadDataForUserAccount(unnamedAccount),
+                   consented = dictionary["consent"] as? Bool
+            {
                 return consented
             } else {
                 return false
@@ -52,7 +57,26 @@ public class ConsentManager: NSObject, ORKTaskViewControllerDelegate {
     
     private func setUserConsentObtained(consentObtained: Bool = true) {
         do {
-            try Locksmith.saveData(["consent" : consentObtained], forUserAccount: "default")
+            try Locksmith.saveData(["consent" : consentObtained], forUserAccount: unnamedAccount)
+        } catch {
+            print("Error: Cannot save to keychain!")
+        }
+    }
+    
+    public func getConsentFilePath() -> String? {
+        if let dictionary = Locksmith.loadDataForUserAccount(unnamedAccount),
+            consentFilePath = dictionary["consentfile"] as? String
+        {
+            return consentFilePath
+        }
+        return nil
+    }
+    
+    private func setConsentFilePath(consentFilePath: String) {
+        do {
+            try Locksmith.updateData(["consent": obtainedUserConsent,
+                                      "consentfile": consentFilePath],
+                                     forUserAccount: unnamedAccount)
         } catch {
             print("Error: Cannot save to keychain!")
         }
@@ -283,7 +307,7 @@ public class ConsentManager: NSObject, ORKTaskViewControllerDelegate {
             let predicateFormItem02 = ORKResultPredicate.predicateForBooleanQuestionResultWithResultSelector(resultSelector, expectedAnswer: true)
             
             resultSelector = ORKResultSelector(stepIdentifier: String(Identifier.EligibilityFormStep), resultIdentifier: String(Identifier.EligibilityFormItem03))
-            let predicateFormItem03 = ORKResultPredicate.predicateForBooleanQuestionResultWithResultSelector(resultSelector, expectedAnswer: false)
+            let predicateFormItem03 = ORKResultPredicate.predicateForBooleanQuestionResultWithResultSelector(resultSelector, expectedAnswer: true)
             
             let predicateEligible = NSCompoundPredicate(andPredicateWithSubpredicates: [predicateFormItem01, predicateFormItem02, predicateFormItem03])
             
@@ -325,6 +349,7 @@ public class ConsentManager: NSObject, ORKTaskViewControllerDelegate {
                 }
                 let path = (NSTemporaryDirectory() as NSString).stringByAppendingPathComponent("consent.pdf")
                 print(path)
+                self.setConsentFilePath(path)
                 data!.writeToFile(path, atomically: true)
             }
             setUserConsentObtained()
