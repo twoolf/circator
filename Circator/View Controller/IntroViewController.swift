@@ -441,16 +441,14 @@ class IntroViewController: UIViewController, UITableViewDelegate, UITableViewDat
                     Async.main { self.loginError() }
                     return
                 }
-                UserManager.sharedManager.accountData { _ in
-                    // Jump to the login screen if either the username or password are unavailable.
-                    guard let _ = UserManager.sharedManager.getUserId(),
-                        let _ = UserManager.sharedManager.getPassword()
-                        else {
-                            self.doToggleLogin { self.initializeBackgroundWork() }
-                            return
-                    }
-                    self.initializeBackgroundWork()
+                // Jump to the login screen if either the username or password are unavailable.
+                guard let _ = UserManager.sharedManager.getUserId(),
+                    let _ = UserManager.sharedManager.getPassword()
+                    else {
+                        self.doToggleLogin { self.initializeBackgroundWork() }
+                        return
                 }
+                self.initializeBackgroundWork()
             }
         }
     }

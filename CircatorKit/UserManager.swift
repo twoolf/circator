@@ -210,10 +210,12 @@ public class UserManager {
                     .validate(statusCode: 200..<300)
                     .responseString {_, response, result in
                         print("LOGIN: " + (result.isSuccess ? "SUCCESS" : "FAILED"))
-                        if let comp = completion {
-                            comp(result.value)
-                        } else {
-                            print(result.value)
+                        UserManager.sharedManager.accountData { _ in
+                            if let comp = completion {
+                                comp(result.value)
+                            } else {
+                                print(result.value)
+                            }
                         }
                     }
             })
@@ -239,6 +241,7 @@ public class UserManager {
         MCRouter.OAuthToken = nil
         resetAccount()
         resetUserId()
+        resetAccountDataCache()
         if let comp = completion { comp() }
     }
 
@@ -308,6 +311,8 @@ public class UserManager {
     
     public func getAccountDataCache() -> [String: AnyObject] { return accountDataCache }
     
+    public func resetAccountDataCache() { accountDataCache = [:] }
+    
     func refreshAccountCache(dict: [String: AnyObject]) {
         for (k,v) in dict {
             accountDataCache[k] = v
@@ -355,7 +360,11 @@ public class UserManager {
             if let token = Stormpath.accessToken {
                 MCRouter.OAuthToken = Stormpath.accessToken
                 print("Refreshed token: \(token)")
-                self.ensureAccessToken(tried+1, completion: completion)
+                Alamofire.request(MCRouter.UserToken([:]))
+                    .validate(statusCode: 200..<300)
+                    .responseString {_, response, result in
+                        self.ensureAccessToken(tried+1, completion: completion)
+                }
             } else {
                 print("Login failed, please do so manually.")
             }
