@@ -21,18 +21,34 @@ enum MCRouter : URLRequestConvertible {
 
     // User management API
     case UserToken([String: AnyObject])
+    
+    // Stormpath wrapper API
+    case GetUserAccountData([String: AnyObject])
+    case SetUserAccountData([String: AnyObject])
+    case TokenExpiry([String: AnyObject])
 
     var method: Alamofire.Method {
         switch self {
         case .UploadHKMeasures:
             return .POST
+
         case .AggMeasures:
             return .POST
+
         case .MealMeasures:
             return .GET
 
         case .UserToken:
             return .POST
+
+        case .GetUserAccountData:
+            return .GET
+
+        case .SetUserAccountData:
+            return .POST
+            
+        case .TokenExpiry:
+            return .GET
         }
     }
 
@@ -47,6 +63,12 @@ enum MCRouter : URLRequestConvertible {
 
         case .UserToken:
             return "/measures"
+            
+        case .GetUserAccountData, .SetUserAccountData:
+            return "/profile"
+
+        case .TokenExpiry:
+            return "/expiry"
         }
     }
 
@@ -75,6 +97,15 @@ enum MCRouter : URLRequestConvertible {
         case .UserToken(var parameters):
             parameters["userid"] = UserManager.sharedManager.getUserIdHash() ?? ""
             parameters["token"] = MCRouter.OAuthToken ?? ""
+            return Alamofire.ParameterEncoding.JSON.encode(mutableURLRequest, parameters: parameters).0
+            
+        case .GetUserAccountData(let parameters):
+            return Alamofire.ParameterEncoding.JSON.encode(mutableURLRequest, parameters: parameters).0
+
+        case .SetUserAccountData(let parameters):
+            return Alamofire.ParameterEncoding.JSON.encode(mutableURLRequest, parameters: parameters).0
+            
+        case .TokenExpiry(let parameters):
             return Alamofire.ParameterEncoding.JSON.encode(mutableURLRequest, parameters: parameters).0
         }
     }

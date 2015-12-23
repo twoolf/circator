@@ -356,7 +356,6 @@ public class HealthManager: NSObject, WCSessionDelegate {
                 .responseJSON {_, response, result in
                     print("AGGPOST: " + (result.isSuccess ? "SUCCESS" : "FAILED"))
                     guard !result.isSuccess else {
-                        print(result.value)
                         self.refreshAggregatesFromMsg(samplesByName, payload: result.value)
                         return
                     }

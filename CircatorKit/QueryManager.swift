@@ -140,7 +140,6 @@ func deserializePredicate(p: [String: AnyObject]) -> Predicate {
 }
 
 func deserializeQueries(qs: [[String: AnyObject]]) -> Queries {
-    print(qs)
     return qs.map { dict in
         let name = dict[NKey] as! String
         let udef = dict[UKey] as! Bool
