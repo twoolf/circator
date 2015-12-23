@@ -373,6 +373,13 @@ class IntroViewController: UIViewController, UITableViewDelegate, UITableViewDat
 
     // MARK: - Background Work
 
+    func withHKCalAuth(completion: Void -> Void) {
+        HealthManager.sharedManager.authorizeHealthKit { (success, error) -> Void in
+            guard error == nil else { return }
+            EventManager.sharedManager.checkCalendarAuthorizationStatus(completion)
+        }
+    }
+    
     func fetchInitialAggregates() {
         Async.userInteractive {
             self.fetchAggregatesPeriodically()
@@ -391,30 +398,59 @@ class IntroViewController: UIViewController, UITableViewDelegate, UITableViewDat
     }
 
     func fetchRecentSamples() {
-        HealthManager.sharedManager.authorizeHealthKit { (success, error) -> Void in
-            guard error == nil else { return }
-            EventManager.sharedManager.checkCalendarAuthorizationStatus {
-                HealthManager.sharedManager.fetchMostRecentSamples() { (samples, error) -> Void in
-                    guard error == nil else { return }
-                    NSNotificationCenter.defaultCenter().postNotificationName(HealthManagerDidUpdateRecentSamplesNotification, object: self)
-                }
+        withHKCalAuth {
+            HealthManager.sharedManager.fetchMostRecentSamples() { (samples, error) -> Void in
+                guard error == nil else { return }
+                NSNotificationCenter.defaultCenter().postNotificationName(HealthManagerDidUpdateRecentSamplesNotification, object: self)
             }
         }
     }
 
+    private func checkConsent(firstTime: Bool) {
+        ConsentManager.sharedManager.checkConsentWithBaseViewController(self, withEligibility: firstTime) { [weak self] (consented) -> Void in
+            guard consented else {
+                return
+            }
+            if firstTime {
+                self!.registerParticipant()
+            } else {
+                self!.loginAndInitialize()
+            }
+        }
+    }
+    
+    func registerParticipant() {
+        withHKCalAuth {
+            let registerVC = RegisterViewController()
+            registerVC.parentView = self
+            self.navigationController?.pushViewController(registerVC, animated: true)
+            self.initializeBackgroundWork()
+        }
+    }
+    
+    func loginError() {
+        self.view.dodo.style.bar.hideAfterDelaySeconds = 3
+        self.view.dodo.style.bar.hideOnTap = true
+        self.view.dodo.error("Failed to login!")
+    }
+
     func loginAndInitialize() {
-        HealthManager.sharedManager.authorizeHealthKit { (success, error) -> Void in
-            guard error == nil else { return }
-            EventManager.sharedManager.checkCalendarAuthorizationStatus {
-                // Jump to the login screen if either the username or password are unavailable.
-                guard !(UserManager.sharedManager.getUserId() == nil
-                    || UserManager.sharedManager.getPassword() == nil)
-                    else
-                {
-                    self.toggleLogin(asInitial: true)
+        withHKCalAuth {
+            UserManager.sharedManager.ensureAccessToken { error in
+                guard !error else {
+                    Async.main { self.loginError() }
                     return
                 }
-                self.initializeBackgroundWork()
+                UserManager.sharedManager.accountData { _ in
+                    // Jump to the login screen if either the username or password are unavailable.
+                    guard let _ = UserManager.sharedManager.getUserId(),
+                        let _ = UserManager.sharedManager.getPassword()
+                        else {
+                            self.doToggleLogin { self.initializeBackgroundWork() }
+                            return
+                    }
+                    self.initializeBackgroundWork()
+                }
             }
         }
     }
@@ -433,10 +469,7 @@ class IntroViewController: UIViewController, UITableViewDelegate, UITableViewDat
     override func viewDidLoad() {
         super.viewDidLoad()
 
-        checkConsent(firstTimeConsent)
-        if firstTimeConsent {
-            firstTimeConsent = false
-        }
+        checkConsent(!UserManager.sharedManager.registered)
 
         configureViews()
         tableView.layoutIfNeeded()
@@ -455,8 +488,6 @@ class IntroViewController: UIViewController, UITableViewDelegate, UITableViewDat
         navigationController?.setNavigationBarHidden(true, animated: false)
     }
     
-    private var firstTimeConsent = true
-    
     override func viewDidAppear(animated: Bool) {
         super.viewDidAppear(animated)
     }
@@ -466,15 +497,6 @@ class IntroViewController: UIViewController, UITableViewDelegate, UITableViewDat
         tableView.separatorInset = UIEdgeInsets(top: 0, left: self.view.frame.width, bottom: 0, right: 0)
     }
     
-    private func checkConsent(firstTime: Bool) {
-        ConsentManager.sharedManager.checkConsentWithBaseViewController(self, withEligibility: firstTime) { [weak self] (consented) -> Void in
-            guard consented else {
-                return
-            }
-            self!.loginAndInitialize()
-        }
-    }
-
     private func configureViews() {
         view.backgroundColor = Theme.universityDarkTheme.backgroundColor
         logoImageView.translatesAutoresizingMaskIntoConstraints = false
@@ -558,20 +580,20 @@ class IntroViewController: UIViewController, UITableViewDelegate, UITableViewDat
     // MARK: - Button Events
 
     func toggleLogin(sender: UIButton) {
-        toggleLogin(asInitial: false)
+        doToggleLogin(nil)
     }
 
-    func toggleLogin(asInitial initial: Bool) {
+    func doToggleLogin(completion: (Void -> Void)?) {
         if let user = UserManager.sharedManager.getUserId() {
-            UserManager.sharedManager.logout()
+            UserManager.sharedManager.logoutWithCompletion(completion)
             view.dodo.style.bar.hideAfterDelaySeconds = 3
             view.dodo.style.bar.hideOnTap = true
             view.dodo.error("Goodbye \(user)")
         } else {
-            let loginViewController = LoginViewController()
-            loginViewController.parentView = self
-            if initial { loginViewController.fetchWhenDone = true }
-            navigationController?.pushViewController(loginViewController, animated: true)
+            let loginVC = LoginViewController()
+            loginVC.parentView = self
+            loginVC.completion = completion
+            navigationController?.pushViewController(loginVC, animated: true)
         }
     }
 

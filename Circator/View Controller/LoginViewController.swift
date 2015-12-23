@@ -16,8 +16,8 @@ class LoginViewController: UIViewController, UITableViewDelegate, UITableViewDat
 
     private var userCell: FormTextFieldCell?
     private var passCell: FormTextFieldCell?
-    internal var parentView: IntroViewController?
-    internal var fetchWhenDone: Bool = false
+    var parentView: IntroViewController?
+    var completion: (Void -> Void)?
 
     lazy var logoImageView: UIImageView = {
         let img = UIImageView(frame: CGRectMake(0,0,100,100))
@@ -43,15 +43,6 @@ class LoginViewController: UIViewController, UITableViewDelegate, UITableViewDat
         return tableView
     }()
     
-    lazy var loginButton: UIButton = {
-        let image = UIImage(named: "icon_logout") as UIImage?
-        let button = UIButton(type: .Custom)
-        button.setImage(image, forState: .Normal)
-        button.addTarget(self, action: "doLogin:", forControlEvents: .TouchUpInside)
-        button.backgroundColor = Theme.universityDarkTheme.backgroundColor
-        return button
-    }()
-    
     lazy var loginLabelButton : UIButton = {
         let button = UIButton(type: .Custom)
         button.setTitle("Login", forState: .Normal)
@@ -60,14 +51,6 @@ class LoginViewController: UIViewController, UITableViewDelegate, UITableViewDat
         button.setTitleColor(Theme.universityDarkTheme.titleTextColor, forState: .Normal)
         button.backgroundColor = Theme.universityDarkTheme.backgroundColor
         return button
-    }()
-
-    lazy var orLabel : UILabel = {
-        let label = UILabel()
-        label.font = UIFont.systemFontOfSize(20, weight: UIFontWeightRegular)
-        label.textColor = Theme.universityDarkTheme.titleTextColor
-        label.text = NSLocalizedString("or", comment: "")
-        return label
     }()
 
     lazy var signupLabelButton : UIButton = {
@@ -82,18 +65,17 @@ class LoginViewController: UIViewController, UITableViewDelegate, UITableViewDat
 
     lazy var loginContainerView: UIStackView = {
         let stackView: UIStackView = UIStackView(arrangedSubviews:
-                            [self.loginButton, self.loginLabelButton, self.orLabel, self.signupLabelButton])
+                            [self.loginLabelButton, self.signupLabelButton])
         stackView.axis = .Horizontal
-        //stackView.distribution = UIStackViewDistribution.FillEqually
+        stackView.distribution = UIStackViewDistribution.FillEqually
         stackView.alignment = UIStackViewAlignment.Fill
-        stackView.spacing = 5
+        stackView.spacing = 20
         return stackView
     }()
 
     override func viewWillAppear(animated: Bool) {
         super.viewWillAppear(animated)
         navigationController?.setNavigationBarHidden(false, animated: false)
-        //navigationItem.title = "Login"
         tableView.reloadData()
     }
 
@@ -109,13 +91,12 @@ class LoginViewController: UIViewController, UITableViewDelegate, UITableViewDat
         logoImageView.translatesAutoresizingMaskIntoConstraints = false
         tableView.translatesAutoresizingMaskIntoConstraints = false
         loginContainerView.translatesAutoresizingMaskIntoConstraints = false
+
         view.addSubview(logoImageView)
         view.addSubview(tableView)
         view.addSubview(loginContainerView)
 
         let constraints: [NSLayoutConstraint] = [
-            NSLayoutConstraint(item: loginLabelButton, attribute: .Width, relatedBy: .Equal, toItem: nil, attribute: .NotAnAttribute, multiplier: 1, constant: 100),
-            NSLayoutConstraint(item: loginButton, attribute: .Width, relatedBy: .Equal, toItem: nil, attribute: .NotAnAttribute, multiplier: 1, constant: 44),
             logoImageView.topAnchor.constraintEqualToAnchor(view.layoutMarginsGuide.topAnchor, constant: 110),
             logoImageView.centerXAnchor.constraintEqualToAnchor(view.layoutMarginsGuide.centerXAnchor),
             logoImageView.widthAnchor.constraintEqualToConstant(100),
@@ -125,14 +106,12 @@ class LoginViewController: UIViewController, UITableViewDelegate, UITableViewDat
             tableView.trailingAnchor.constraintEqualToAnchor(view.layoutMarginsGuide.trailingAnchor, constant: -10),
             tableView.bottomAnchor.constraintEqualToAnchor(view.layoutMarginsGuide.bottomAnchor, constant: -30),
 
-            loginContainerView.topAnchor.constraintEqualToAnchor(view.layoutMarginsGuide.centerYAnchor),
+            loginContainerView.topAnchor.constraintEqualToAnchor(logoImageView.bottomAnchor, constant: 110),
             loginContainerView.centerXAnchor.constraintEqualToAnchor(tableView.centerXAnchor),
-            loginContainerView.heightAnchor.constraintEqualToConstant(44),
-
-            loginLabelButton.leadingAnchor.constraintEqualToAnchor(loginButton.trailingAnchor, constant: 5),
-            orLabel.leadingAnchor.constraintEqualToAnchor(loginLabelButton.trailingAnchor, constant: 5),
-            signupLabelButton.leadingAnchor.constraintEqualToAnchor(orLabel.trailingAnchor, constant: 5)
+            loginContainerView.widthAnchor.constraintEqualToAnchor(view.layoutMarginsGuide.widthAnchor, multiplier: 0.7),
+            loginContainerView.heightAnchor.constraintEqualToConstant(44)
         ]
+
         view.addConstraints(constraints)
     }
 
@@ -141,42 +120,27 @@ class LoginViewController: UIViewController, UITableViewDelegate, UITableViewDat
         tableView.separatorInset = UIEdgeInsets(top: 0, left: self.view.frame.width, bottom: 0, right: 0)
     }
     
-    // Take any text entered as the username or password if we have nothing saved.
-    func ensureUserPass() {
-        if UserManager.sharedManager.getUserId() == nil {
-            if let currentUser = userCell?.textField.text {
-                UserManager.sharedManager.setUserId(currentUser)
-            }
-        }
-        
-        if UserManager.sharedManager.getPassword() == nil {
-            if let currentPass = passCell?.textField.text {
-                UserManager.sharedManager.setPassword(currentPass)
-            }
-        }
-    }
-    
     func doWelcome() {
         navigationController?.popViewControllerAnimated(true)
         Async.main {
             self.parentView?.view.dodo.style.bar.hideAfterDelaySeconds = 3
             self.parentView?.view.dodo.style.bar.hideOnTap = true
             self.parentView?.view.dodo.success("Welcome " + (UserManager.sharedManager.getUserId() ?? ""))
-            self.parentView?.initializeBackgroundWork()
         }
     }
 
     func doLogin(sender: UIButton) {
-        ensureUserPass()
-        UserManager.sharedManager.login()
-        doWelcome()
+        UserManager.sharedManager.ensureUserPass(userCell?.textField.text, pass: passCell?.textField.text)
+        UserManager.sharedManager.loginWithCompletion { _ in
+            if let comp = self.completion { comp() }
+            self.doWelcome()
+        }
     }
     
     func doSignup(sender: UIButton) {
-        ensureUserPass()
-        let (firstName, lastName) = ("Unknown", "Unknown")
-        UserManager.sharedManager.register(firstName, lastName: lastName, consentFilePath: ConsentManager.sharedManager.getConsentFilePath())
-        doWelcome()
+        let registerVC = RegisterViewController()
+        registerVC.parentView = parentView
+        self.navigationController?.pushViewController(registerVC, animated: true)
     }
 
     // MARK: - Table View
