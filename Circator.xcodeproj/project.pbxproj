@@ -12,6 +12,7 @@
 		542D162D1C29C0640071DF0E /* QueryBuilderViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 542D162A1C29C0640071DF0E /* QueryBuilderViewController.swift */; };
 		542D162E1C29C0640071DF0E /* QueryViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 542D162B1C29C0640071DF0E /* QueryViewController.swift */; };
 		542D162F1C29C0640071DF0E /* QueryWriterViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 542D162C1C29C0640071DF0E /* QueryWriterViewController.swift */; };
+		54DC15891C2B6FAF002EC139 /* RegisterViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 54DC15881C2B6FAF002EC139 /* RegisterViewController.swift */; };
 		781EE1201BAF3C9F00E6DDA1 /* AddViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 781EE11D1BAF3C9F00E6DDA1 /* AddViewController.swift */; };
 		781EE1221BAF3C9F00E6DDA1 /* DataModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 781EE11F1BAF3C9F00E6DDA1 /* DataModel.swift */; };
 		781EE1281BAF452800E6DDA1 /* RealmPlotViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 781EE1271BAF452800E6DDA1 /* RealmPlotViewController.swift */; };
@@ -22,7 +23,6 @@
 		788606E71BB8A7DA00F33B5E /* HealthKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 788606E61BB8A7DA00F33B5E /* HealthKit.framework */; };
 		78DBD7561BB8841900F42626 /* RealmCorrelationViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 78DBD7551BB8841900F42626 /* RealmCorrelationViewController.swift */; };
 		89D3A39C0B159699ACC77321 /* Pods.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4B4DA3DC74ED2F046184F79B /* Pods.framework */; };
-		C42F8A2092CA2296635A0F13 /* Pods_Circator.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 06103AD5E3EB4C84C4980CB1 /* Pods_Circator.framework */; };
 		F42F5ADD1BDC85AF00195490 /* SampleDataAnalyzer.swift in Sources */ = {isa = PBXBuildFile; fileRef = F42F5ADC1BDC85AF00195490 /* SampleDataAnalyzer.swift */; };
 		F42F5B351BE1FD1E00195490 /* CircatorKit.h in Headers */ = {isa = PBXBuildFile; fileRef = F42F5B341BE1FD1E00195490 /* CircatorKit.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		F42F5B391BE1FD1E00195490 /* CircatorKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F42F5B321BE1FD1E00195490 /* CircatorKit.framework */; };
@@ -54,7 +54,6 @@
 		F4E1B76B1C24B893000C2B45 /* UserAccount.swift in Sources */ = {isa = PBXBuildFile; fileRef = F4E1B7691C24B893000C2B45 /* UserAccount.swift */; };
 		F4E1B76C1C24B893000C2B45 /* UserManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = F4E1B76A1C24B893000C2B45 /* UserManager.swift */; };
 		F4E1B76E1C24B8D4000C2B45 /* LoginViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = F4E1B76D1C24B8D4000C2B45 /* LoginViewController.swift */; };
-		F4E1B7701C24B967000C2B45 /* Pods_Circator.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F4E1B76F1C24B967000C2B45 /* Pods_Circator.framework */; };
 		F4E1B7721C24BAB0000C2B45 /* EventManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = F4E1B7711C24BAB0000C2B45 /* EventManager.swift */; };
 		F4E1B77F1C25EDF0000C2B45 /* ConsentManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = F4E1B77E1C25EDF0000C2B45 /* ConsentManager.swift */; };
 		F4F4DA581C0257130073E9EE /* SettingsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = F4F4DA571C0257130073E9EE /* SettingsViewController.swift */; };
@@ -155,6 +154,7 @@
 		542D162A1C29C0640071DF0E /* QueryBuilderViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = QueryBuilderViewController.swift; sourceTree = "<group>"; };
 		542D162B1C29C0640071DF0E /* QueryViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = QueryViewController.swift; sourceTree = "<group>"; };
 		542D162C1C29C0640071DF0E /* QueryWriterViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = QueryWriterViewController.swift; sourceTree = "<group>"; };
+		54DC15881C2B6FAF002EC139 /* RegisterViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RegisterViewController.swift; sourceTree = "<group>"; };
 		781EE11D1BAF3C9F00E6DDA1 /* AddViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AddViewController.swift; sourceTree = "<group>"; };
 		781EE11F1BAF3C9F00E6DDA1 /* DataModel.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DataModel.swift; sourceTree = "<group>"; };
 		781EE1231BAF3F6B00E6DDA1 /* Podfile */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = Podfile; path = ../Podfile; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.ruby; };
@@ -222,7 +222,6 @@
 			buildActionMask = 2147483647;
 			files = (
 				F42F5B391BE1FD1E00195490 /* CircatorKit.framework in Frameworks */,
-				C42F8A2092CA2296635A0F13 /* Pods_Circator.framework in Frameworks */,
 				788606E71BB8A7DA00F33B5E /* HealthKit.framework in Frameworks */,
 				89D3A39C0B159699ACC77321 /* Pods.framework in Frameworks */,
 			);
@@ -247,7 +246,6 @@
 			buildActionMask = 2147483647;
 			files = (
 				F42F5B491BE20A5700195490 /* HealthKit.framework in Frameworks */,
-				F4E1B7701C24B967000C2B45 /* Pods_Circator.framework in Frameworks */,
 				02BD8FB160A8602974B374F2 /* Pods.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -431,6 +429,7 @@
 		F43A7C5F1BBDF43C00B6FA56 /* View Controller */ = {
 			isa = PBXGroup;
 			children = (
+				54DC15881C2B6FAF002EC139 /* RegisterViewController.swift */,
 				7881A3E21BAF3B3E00ECB3C6 /* IntroViewController.swift */,
 				F4E1B76D1C24B8D4000C2B45 /* LoginViewController.swift */,
 				F44B1A2C1BDAC20D002238E6 /* PlotViewController.swift */,
@@ -779,6 +778,7 @@
 				781EE1221BAF3C9F00E6DDA1 /* DataModel.swift in Sources */,
 				7881A3E31BAF3B3E00ECB3C6 /* IntroViewController.swift in Sources */,
 				F4E1B76E1C24B8D4000C2B45 /* LoginViewController.swift in Sources */,
+				54DC15891C2B6FAF002EC139 /* RegisterViewController.swift in Sources */,
 				F4F4DA581C0257130073E9EE /* SettingsViewController.swift in Sources */,
 				78DBD7561BB8841900F42626 /* RealmCorrelationViewController.swift in Sources */,
 				F43A7C5E1BBDF43600B6FA56 /* PlotButton.swift in Sources */,
