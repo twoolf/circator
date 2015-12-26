@@ -14,7 +14,8 @@ public typealias ConsentBlock = ((consented: Bool) -> Void)?
 private let ConsentFilePathKey = "CMConsentFileKey"
 private let unnamedAccount = "default"
 
-public class ConsentManager: NSObject, ORKTaskViewControllerDelegate {
+//public class ConsentManager: NSObject, ORKTaskViewControllerDelegate {
+public class ConsentManager: NSObject {
     private enum Identifier {
         case EligibilityTask
 
@@ -374,7 +375,7 @@ public class ConsentManager: NSObject, ORKTaskViewControllerDelegate {
             reviewConsentStep
         ]
     }
-    
+ /*
     private func consentTaskWithEligibilitySection(withEligibility: Bool = true) -> ORKTask {
         if withEligibility {
             let consentTask = ORKNavigableOrderedTask(identifier: String(Identifier.EligibilityAndConsentTask), steps: Array([eligibilitySteps, consentSteps].flatten()))
@@ -445,5 +446,5 @@ public class ConsentManager: NSObject, ORKTaskViewControllerDelegate {
             self.consentHandler?(consented: reason == .Completed)
         }
     }
-    
+  */
 }
