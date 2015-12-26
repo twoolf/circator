@@ -405,7 +405,7 @@ class IntroViewController: UIViewController, UITableViewDelegate, UITableViewDat
             }
         }
     }
-
+/*
     private func checkConsent(firstTime: Bool) {
         ConsentManager.sharedManager.checkConsentWithBaseViewController(self, withEligibility: firstTime) { [weak self] (consented) -> Void in
             guard consented else {
@@ -418,7 +418,7 @@ class IntroViewController: UIViewController, UITableViewDelegate, UITableViewDat
             }
         }
     }
-    
+*/
     func registerParticipant() {
         withHKCalAuth {
             let registerVC = RegisterViewController()
@@ -467,7 +467,7 @@ class IntroViewController: UIViewController, UITableViewDelegate, UITableViewDat
     override func viewDidLoad() {
         super.viewDidLoad()
 
-        checkConsent(!UserManager.sharedManager.registered)
+//        checkConsent(!UserManager.sharedManager.registered)
 
         configureViews()
         tableView.layoutIfNeeded()
