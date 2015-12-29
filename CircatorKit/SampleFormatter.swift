@@ -73,12 +73,15 @@ public class SampleFormatter: NSObject {
     }
 
     public func stringFromResults(results: [Result]) -> String {
-        if let stat = results as? [HKStatistics] {
+        if var stat = results as? [HKStatistics] {
             guard stat.isEmpty == false else {
                 return emptyString
             }
-            return stringFromStatistics(stat[0])
+            return stringFromStatistics(stat.removeLast())
         } else if let samples = results as? [HKSample] {
+//            for t: HKStatistics in stat!.statistics() {
+//                print("after string from results: \(sampleType)  \(t.numeralValue)")
+//            }
             return stringFromSamples(samples)
         } else if let derived = results as? [DerivedQuantity] {
             return stringFromDerivedQuantities(derived)
@@ -99,10 +102,10 @@ public class SampleFormatter: NSObject {
         guard samples.isEmpty == false else {
             return emptyString
         }
-        if let type = samples.first!.sampleType as? HKQuantityType {
-            return stringFromQuantity((samples.first as! HKQuantitySample).quantity, type: type)
+        if let type = samples.last!.sampleType as? HKQuantityType {
+            return stringFromQuantity((samples.last as! HKQuantitySample).quantity, type: type)
         }
-        switch samples.first!.sampleType.identifier {
+        switch samples.last!.sampleType.identifier {
         case HKCategoryTypeIdentifierSleepAnalysis:
             return "\(SampleFormatter.timeIntervalFormatter.stringFromTimeInterval(samples.sleepDuration!)!)"
         case HKCorrelationTypeIdentifierBloodPressure:
@@ -135,10 +138,8 @@ public class SampleFormatter: NSObject {
             switch type.identifier {
             case HKCategoryTypeIdentifierSleepAnalysis:
                 return "\(SampleFormatter.timeIntervalFormatter.stringFromTimeInterval(quantity)!)"
-
-            /* TODO: both systolic and diastolic.
             case HKCorrelationTypeIdentifierBloodPressure:
-                let correlationSample = samples.first as! HKCorrelation
+                let correlationSample = derived.first as! HKCorrelation
                 let diastolicSample = correlationSample.objectsForType(HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierBloodPressureDiastolic)!).first as? HKQuantitySample
                 let systolicSample = correlationSample.objectsForType(HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierBloodPressureSystolic)!).first as? HKQuantitySample
                 guard diastolicSample != nil && systolicSample != nil else {
@@ -147,7 +148,7 @@ public class SampleFormatter: NSObject {
                 let diastolicNumber = SampleFormatter.integerFormatter.stringFromNumber(diastolicSample!.quantity.doubleValueForUnit(HKUnit.millimeterOfMercuryUnit()))!
                 let systolicNumber = SampleFormatter.integerFormatter.stringFromNumber(systolicSample!.quantity.doubleValueForUnit(HKUnit.millimeterOfMercuryUnit()))!
                 return "\(systolicNumber)/\(diastolicNumber)"
-            */
+            
             default:
                 return emptyString
             }
@@ -166,6 +167,10 @@ public class SampleFormatter: NSObject {
             return SampleFormatter.calorieFormatter.stringFromJoules(quantity.doubleValueForUnit(HKUnit.jouleUnit()))
         case HKQuantityTypeIdentifierDietaryCarbohydrates:
             return SampleFormatter.foodMassFormatter.stringFromValue(quantity.doubleValueForUnit(HKUnit.gramUnit()), unit: .Gram)
+        case HKQuantityTypeIdentifierBloodPressureDiastolic:
+            return SampleFormatter.integerFormatter.stringFromNumber(quantity.doubleValueForUnit(HKUnit.millimeterOfMercuryUnit()))!
+        case HKQuantityTypeIdentifierDistanceWalkingRunning:
+            return SampleFormatter.numberFormatter.stringFromNumber(quantity.doubleValueForUnit(HKUnit.mileUnit()))!
         case HKQuantityTypeIdentifierDietaryProtein:
             return SampleFormatter.foodMassFormatter.stringFromValue(quantity.doubleValueForUnit(HKUnit.gramUnit()), unit: .Gram)
         case HKQuantityTypeIdentifierDietaryFatTotal:
@@ -202,6 +207,9 @@ public class SampleFormatter: NSObject {
             
         case HKQuantityTypeIdentifierDietaryCarbohydrates:
             return "\(SampleFormatter.numberFormatter.stringFromNumber(quantity)!) gms"
+            
+        case HKQuantityTypeIdentifierDistanceWalkingRunning:
+            return "\(SampleFormatter.numberFormatter.stringFromNumber(quantity)!) miles"
             
         case HKQuantityTypeIdentifierDietaryProtein:
             return "\(SampleFormatter.numberFormatter.stringFromNumber(quantity)!) gms"

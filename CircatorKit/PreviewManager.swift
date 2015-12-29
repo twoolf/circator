@@ -15,8 +15,8 @@ public class PreviewManager: NSObject {
             HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierBodyMassIndex)!
         ],
         [
-            HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierHeartRate)!,
-            HKObjectType.correlationTypeForIdentifier(HKCorrelationTypeIdentifierBloodPressure)!
+            HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierBloodPressureDiastolic)!,
+            HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierHeartRate)!
         ],
         [
             HKObjectType.categoryTypeForIdentifier(HKCategoryTypeIdentifierSleepAnalysis)!,
@@ -25,23 +25,23 @@ public class PreviewManager: NSObject {
         ],
         [
             HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierDietaryEnergyConsumed)!,
-            HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierStepCount)!,
+            HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierStepCount)!
         ],
         [
             HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierDietaryCarbohydrates)!,
             HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierDietaryFatTotal)!,
-            HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierDietaryProtein)!,
+            HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierDietaryProtein)!
         ],
         [
             HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierDietarySugar)!,
             HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierDietaryCholesterol)!,
             HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierDietaryCaffeine)!,
-            HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierDietarySodium)!,
+            HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierDietarySodium)!
         ],
         [
             HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierDietaryFatPolyunsaturated)!,
             HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierDietaryFatSaturated)!,
-            HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierDietaryFatMonounsaturated)!,
+            HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierDietaryFatMonounsaturated)!
         ]
     ]
 
@@ -57,7 +57,7 @@ public class PreviewManager: NSObject {
         } else {
             let defaultTypes = [
                 HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierBodyMass)!,
-                HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierHeartRate)!,
+                HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierBloodPressureDiastolic)!,
                 HKObjectType.categoryTypeForIdentifier(HKCategoryTypeIdentifierSleepAnalysis)!,
                 HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierDietaryEnergyConsumed)!,
                 HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierDietaryCarbohydrates)!,
