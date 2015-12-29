@@ -272,6 +272,15 @@ public class HealthManager: NSObject, WCSessionDelegate {
 
             case HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierDietaryFatTotal)!.identifier:
                 dict[sampleType] = ("unit_value", "fat_total", "HKQuantityTypeIdentifierDietaryFatTotal")
+                
+            case HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierDietaryFatPolyunsaturated)!.identifier:
+                dict[sampleType] = ("unit_value", "fat_polyunsaturated", "HKQuantityTypeIdentifierDietaryFatPolyunsaturated")
+                
+            case HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierDietaryFatMonounsaturated)!.identifier:
+                dict[sampleType] = ("unit_value", "fat_monounsaturated", "HKQuantityTypeIdentifierDietaryFatMonounsaturated")
+                
+            case HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierDietaryFatSaturated)!.identifier:
+                dict[sampleType] = ("unit_value", "fat_saturated", "HKQuantityTypeIdentifierDietaryFatSaturated")
 
             case HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierDietaryProtein)!.identifier:
                 dict[sampleType] = ("unit_value", "protein", "HKQuantityTypeIdentifierDietaryProtein")
@@ -673,6 +682,12 @@ public extension HKSampleType {
             return NSLocalizedString("Total Carbohydrates", comment: "HealthKit data type")
         case HKQuantityTypeIdentifierDietaryFatTotal:
             return NSLocalizedString("Total Fat", comment: "HealthKit data type")
+        case HKQuantityTypeIdentifierDietaryFatSaturated:
+            return NSLocalizedString("Monounsaturated Fat", comment: "HealthKit data type")
+        case HKQuantityTypeIdentifierDietaryFatMonounsaturated:
+            return NSLocalizedString("Polyunsaturated Fat", comment: "HealthKit data type")
+        case HKQuantityTypeIdentifierDietaryFatPolyunsaturated:
+            return NSLocalizedString("Saturated Fat", comment: "HealthKit data type")
         case HKQuantityTypeIdentifierDietaryProtein:
             return NSLocalizedString("Total Protein", comment: "HealthKit data type")
         case HKQuantityTypeIdentifierDietarySugar:
@@ -696,7 +711,29 @@ public extension HKQuantityType {
             fallthrough
         case HKQuantityTypeIdentifierBodyMass:
             return .DiscreteAverage
+        case HKQuantityTypeIdentifierBodyMassIndex:
+            return .DiscreteAverage
         case HKQuantityTypeIdentifierDietaryEnergyConsumed:
+            return .CumulativeSum
+        case HKQuantityTypeIdentifierDietaryCarbohydrates:
+            return .CumulativeSum
+        case HKQuantityTypeIdentifierDietaryProtein:
+            return .CumulativeSum
+        case HKQuantityTypeIdentifierDietaryFatTotal:
+            return .CumulativeSum
+        case HKQuantityTypeIdentifierDietaryFatSaturated:
+            return .CumulativeSum
+        case HKQuantityTypeIdentifierDietaryFatPolyunsaturated:
+            return .CumulativeSum
+        case HKQuantityTypeIdentifierDietaryFatMonounsaturated:
+            return .CumulativeSum
+        case HKQuantityTypeIdentifierDietarySugar:
+            return .CumulativeSum
+        case HKQuantityTypeIdentifierDietarySodium:
+            return .CumulativeSum
+        case HKQuantityTypeIdentifierDietaryCholesterol:
+            return .CumulativeSum
+        case HKQuantityTypeIdentifierDietaryCaffeine:
             return .CumulativeSum
         default:
             return .None
@@ -711,9 +748,29 @@ public extension HKStatistics {
             fallthrough
         case HKQuantityTypeIdentifierBodyMass:
             return averageQuantity()
+        case HKQuantityTypeIdentifierBodyMassIndex:
+            return averageQuantity()
         case HKQuantityTypeIdentifierDietaryEnergyConsumed:
             return sumQuantity()
         case HKQuantityTypeIdentifierDietaryCarbohydrates:
+            return sumQuantity()
+        case HKQuantityTypeIdentifierDietaryProtein:
+            return sumQuantity()
+        case HKQuantityTypeIdentifierDietaryFatTotal:
+            return sumQuantity()
+        case HKQuantityTypeIdentifierDietaryFatSaturated:
+            return sumQuantity()
+        case HKQuantityTypeIdentifierDietaryFatMonounsaturated:
+            return sumQuantity()
+        case HKQuantityTypeIdentifierDietaryFatPolyunsaturated:
+            return sumQuantity()
+        case HKQuantityTypeIdentifierDietarySugar:
+            return sumQuantity()
+        case HKQuantityTypeIdentifierDietaryCholesterol:
+            return sumQuantity()
+        case HKQuantityTypeIdentifierDietarySodium:
+            return sumQuantity()
+        case HKQuantityTypeIdentifierDietaryCaffeine:
             return sumQuantity()
         default:
             print("Invalid quantity type \(quantityType.identifier) for HKStatistics")
@@ -728,7 +785,27 @@ public extension HKStatistics {
         switch quantityType.identifier {
         case HKQuantityTypeIdentifierBodyMass:
             fallthrough
+        case HKQuantityTypeIdentifierBodyMassIndex:
+            fallthrough
         case HKQuantityTypeIdentifierDietaryEnergyConsumed:
+            fallthrough
+        case HKQuantityTypeIdentifierDietaryCarbohydrates:
+            fallthrough
+        case HKQuantityTypeIdentifierDietaryProtein:
+            fallthrough
+        case HKQuantityTypeIdentifierDietaryFatTotal:
+            fallthrough
+        case HKQuantityTypeIdentifierDietaryFatSaturated:
+            fallthrough
+        case HKQuantityTypeIdentifierDietaryFatMonounsaturated:
+            fallthrough
+        case HKQuantityTypeIdentifierDietaryFatPolyunsaturated:
+            fallthrough
+        case HKQuantityTypeIdentifierDietarySugar:
+            fallthrough
+        case HKQuantityTypeIdentifierDietarySodium:
+            fallthrough
+        case HKQuantityTypeIdentifierDietaryCaffeine:
             fallthrough
         case HKQuantityTypeIdentifierHeartRate:
             return quantity!.doubleValueForUnit(defaultUnit!)
@@ -746,6 +823,24 @@ public extension HKStatistics {
             return HKUnit.countUnit().unitDividedByUnit(HKUnit.minuteUnit())
         case HKQuantityTypeIdentifierDietaryEnergyConsumed:
             return HKUnit.kilocalorieUnit()
+        case HKQuantityTypeIdentifierDietaryCarbohydrates:
+            return HKUnit.gramUnit()
+        case HKQuantityTypeIdentifierDietaryProtein:
+            return HKUnit.gramUnit()
+        case HKQuantityTypeIdentifierDietaryFatTotal:
+            return HKUnit.gramUnit()
+        case HKQuantityTypeIdentifierDietaryFatSaturated:
+            return HKUnit.gramUnit()
+        case HKQuantityTypeIdentifierDietaryFatPolyunsaturated:
+            return HKUnit.gramUnit()
+        case HKQuantityTypeIdentifierDietaryFatMonounsaturated:
+            return HKUnit.gramUnit()
+        case HKQuantityTypeIdentifierDietarySugar:
+            return HKUnit.gramUnit()
+        case HKQuantityTypeIdentifierDietarySodium:
+            return HKUnit.gramUnit()
+        case HKQuantityTypeIdentifierDietaryCaffeine:
+            return HKUnit.gramUnit()
         default:
             return nil
         }
@@ -760,7 +855,27 @@ public extension HKSample {
         switch sampleType.identifier {
         case HKQuantityTypeIdentifierBodyMass:
             fallthrough
+        case HKQuantityTypeIdentifierBodyMassIndex:
+            fallthrough
         case HKQuantityTypeIdentifierDietaryEnergyConsumed:
+            fallthrough
+        case HKQuantityTypeIdentifierDietaryCarbohydrates:
+            fallthrough
+        case HKQuantityTypeIdentifierDietaryProtein:
+            fallthrough
+        case HKQuantityTypeIdentifierDietaryFatTotal:
+            fallthrough
+        case HKQuantityTypeIdentifierDietaryFatSaturated:
+            fallthrough
+        case HKQuantityTypeIdentifierDietaryFatMonounsaturated:
+            fallthrough
+        case HKQuantityTypeIdentifierDietaryFatPolyunsaturated:
+            fallthrough
+        case HKQuantityTypeIdentifierDietarySugar:
+            fallthrough
+        case HKQuantityTypeIdentifierDietarySodium:
+            fallthrough
+        case HKQuantityTypeIdentifierDietaryCaffeine:
             fallthrough
         case HKQuantityTypeIdentifierHeartRate:
             return (self as! HKQuantitySample).quantity.doubleValueForUnit(defaultUnit!)
@@ -793,6 +908,24 @@ public extension HKSample {
             return HKUnit.hourUnit()
         case HKQuantityTypeIdentifierDietaryEnergyConsumed:
             return HKUnit.kilocalorieUnit()
+        case HKQuantityTypeIdentifierDietaryCarbohydrates:
+            return HKUnit.gramUnit()
+        case HKQuantityTypeIdentifierDietaryProtein:
+            return HKUnit.gramUnit()
+        case HKQuantityTypeIdentifierDietaryFatTotal:
+            return HKUnit.gramUnit()
+        case HKQuantityTypeIdentifierDietaryFatSaturated:
+            return HKUnit.gramUnit()
+        case HKQuantityTypeIdentifierDietaryFatPolyunsaturated:
+            return HKUnit.gramUnit()
+        case HKQuantityTypeIdentifierDietaryFatMonounsaturated:
+            return HKUnit.gramUnit()
+        case HKQuantityTypeIdentifierDietarySugar:
+            return HKUnit.gramUnit()
+        case HKQuantityTypeIdentifierDietarySodium:
+            return HKUnit.gramUnit()
+        case HKQuantityTypeIdentifierDietaryCaffeine:
+            return HKUnit.gramUnit()
         case HKCorrelationTypeIdentifierBloodPressure:
             return HKUnit.millimeterOfMercuryUnit()
         default:
