@@ -20,7 +20,7 @@ public class PreviewManager: NSObject {
         ],
         [
             HKObjectType.categoryTypeForIdentifier(HKCategoryTypeIdentifierSleepAnalysis)!,
-            /* Fasting, relating to Realm. Consider new data type */
+            /* Fasting, need to pull from workout type */
             HKWorkoutType.quantityTypeForIdentifier(HKQuantityTypeIdentifierDistanceWalkingRunning)!
         ],
         [
@@ -35,12 +35,18 @@ public class PreviewManager: NSObject {
         [
             HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierDietarySugar)!,
             HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierDietaryCholesterol)!,
+            HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierDietaryCaffeine)!,
             HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierDietarySodium)!,
+        ],
+        [
+            HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierDietaryFatPolyunsaturated)!,
+            HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierDietaryFatSaturated)!,
+            HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierDietaryFatMonounsaturated)!,
         ]
     ]
 
     public static let rowIcons: [UIImage] = {
-        return ["icon_scale", "icon_heart_rate", "icon_sleep", "icon_run", "icon_food", "icon_blood_pressure"].map { UIImage(named: $0)! }
+        return ["icon_scale", "icon_heart_rate", "icon_sleep", "icon_run", "icon_food", "icon_blood_pressure", "icon_meal"].map { UIImage(named: $0)! }
     }()
 
     public static var previewSampleTypes: [HKSampleType] {
@@ -55,7 +61,8 @@ public class PreviewManager: NSObject {
                 HKObjectType.categoryTypeForIdentifier(HKCategoryTypeIdentifierSleepAnalysis)!,
                 HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierDietaryEnergyConsumed)!,
                 HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierDietaryCarbohydrates)!,
-                HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierDietarySugar)!
+                HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierDietarySugar)!,
+                HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierDietaryFatMonounsaturated)!
             ]
             let rawTypes = defaultTypes.map { (sampleType) -> NSData in
                 return NSKeyedArchiver.archivedDataWithRootObject(sampleType)

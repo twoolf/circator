@@ -405,7 +405,7 @@ class IntroViewController: UIViewController, UITableViewDelegate, UITableViewDat
             }
         }
     }
-/*
+
     private func checkConsent(firstTime: Bool) {
         ConsentManager.sharedManager.checkConsentWithBaseViewController(self, withEligibility: firstTime) { [weak self] (consented) -> Void in
             guard consented else {
@@ -418,7 +418,7 @@ class IntroViewController: UIViewController, UITableViewDelegate, UITableViewDat
             }
         }
     }
-*/
+
     func registerParticipant() {
         withHKCalAuth {
             let registerVC = RegisterViewController()
@@ -467,7 +467,7 @@ class IntroViewController: UIViewController, UITableViewDelegate, UITableViewDat
     override func viewDidLoad() {
         super.viewDidLoad()
 
-//        checkConsent(!UserManager.sharedManager.registered)
+        checkConsent(!UserManager.sharedManager.registered)
 
         configureViews()
         tableView.layoutIfNeeded()
@@ -679,7 +679,17 @@ class IntroViewController: UIViewController, UITableViewDelegate, UITableViewDat
     }
 
     func tableView(tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return 6
+        let screenSize = UIScreen.mainScreen().bounds.size
+        let screenHeight = screenSize.height
+        var tableInt = 6  /* change at future point to support larger screens */
+        if (screenHeight < 569)
+        {
+           tableInt=5
+        } else if (570 < screenHeight && screenHeight < 734)
+        {
+           tableInt=6
+        }
+        return tableInt
     }
 
     func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell {
