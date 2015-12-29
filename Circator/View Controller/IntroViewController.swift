@@ -10,8 +10,6 @@ import UIKit
 import HealthKit
 import CircatorKit
 import Async
-import Realm
-import RealmSwift
 import Dodo
 import HTPressableButton
 import ResearchKit
@@ -391,6 +389,7 @@ class IntroViewController: UIViewController, UITableViewDelegate, UITableViewDat
         if let freq = UserManager.sharedManager.getRefreshFrequency() {
             Async.background(after: Double(freq)) {
                 self.fetchAggregatesPeriodically()
+                self.fetchRecentSamples()
             }
         } else {
 
