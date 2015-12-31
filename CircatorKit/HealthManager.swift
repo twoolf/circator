@@ -154,17 +154,52 @@ public class HealthManager: NSObject, WCSessionDelegate {
         var samples = [HKSampleType: [Result]]()
         types.forEach { (type) -> () in
             dispatch_group_enter(group)
-            let predicate = HKSampleQuery.predicateForSamplesWithStartDate(NSDate().dateByAddingTimeInterval(-3600 * 96), endDate: nil, options: HKQueryOptions())
-            fetchStatisticsOfType(type, predicate: predicate) { (statistics, error) -> Void in
-                dispatch_group_leave(group)
-                guard error == nil else {
-                    return
+            print("entering update labels stage for: \(type)")
+            if ( (type.description != "HKCategoryTypeIdentifierSleepAnalysis") && (type.description != "HKCorrelationTypeIdentifierBloodPressure")) {
+                let predicate = HKSampleQuery.predicateForSamplesWithStartDate(NSDate().dateByAddingTimeInterval(-3600 * 96), endDate: nil, options: HKQueryOptions())
+                fetchStatisticsOfType(type, predicate: predicate) { (statistics, error) -> Void in
+                    dispatch_group_leave(group)
+                    guard error == nil else {
+                        print("hit nil in main loop for type \(type)")
+                        return
+                    }
+                    guard statistics.isEmpty == false else {
+                        print("hit empty stats in main loop for type \(type)")
+                        return
+                    }
+                    print("generating stats in main loop for type \(type)")
+                    samples[type] = statistics
                 }
-                guard statistics.isEmpty == false else {
-                    return
+            } else if (type.description == "HKCategoryTypeIdentifierSleepAnalysis" ) {
+                print("inside update for sleep: \(samples[type])")
+                fetchMostRecentSample(type) { (statistics, error) -> Void in
+                    dispatch_group_leave(group)
+                    guard error == nil else {
+                        print("hit nil in sleep loop for type \(type)")
+                        return
+                    }
+                    guard statistics.isEmpty == false else {
+                        print("hit empty stats in sleep loop for type \(type)")
+                        return
+                    }
+                    print("generating samples in sleep loop for type \(type)")
+                    samples[type] = statistics
                 }
-                samples[type] = statistics
-//                print("fetched: \(samples[type])")
+            } else if (type.description == "HKCorrelationTypeIdentifierBloodPressure") {
+                print("inside update for blood pressure: \(samples[type])")
+                fetchMostRecentSample(type) { (statistics, error) -> Void in
+                    dispatch_group_leave(group)
+                    guard error == nil else {
+                        print("hit nil in blood pressure loop for type \(type)")
+                        return
+                    }
+                    guard statistics.isEmpty == false else {
+                        print("hit empty stats in blood pressure loop for type \(type)")
+                        return
+                    }
+                    print("generating samples in blood pressure loop for type \(type)")
+                    samples[type] = statistics
+                }
             }
         }
         dispatch_group_notify(group, dispatch_get_main_queue()) {
@@ -765,7 +800,7 @@ public extension HKQuantityType {
         case HKQuantityTypeIdentifierBodyMassIndex:
             return .DiscreteAverage
         case HKQuantityTypeIdentifierActiveEnergyBurned:
-            return .DiscreteAverage
+            return .CumulativeSum
         case HKQuantityTypeIdentifierBasalEnergyBurned:
             return .DiscreteAverage
         case HKCategoryTypeIdentifierSleepAnalysis:
@@ -830,7 +865,7 @@ public extension HKStatistics {
         case HKCategoryTypeIdentifierSleepAnalysis:
             return averageQuantity()
         case HKQuantityTypeIdentifierActiveEnergyBurned:
-            return averageQuantity()
+            return sumQuantity()
         case HKQuantityTypeIdentifierBasalEnergyBurned:
             return averageQuantity()
         case HKQuantityTypeIdentifierDistanceWalkingRunning:
@@ -947,6 +982,8 @@ public extension HKStatistics {
         case HKQuantityTypeIdentifierHeartRate:
             return HKUnit.countUnit().unitDividedByUnit(HKUnit.minuteUnit())
         case HKQuantityTypeIdentifierDietaryEnergyConsumed:
+            return HKUnit.kilocalorieUnit()
+        case HKQuantityTypeIdentifierActiveEnergyBurned:
             return HKUnit.kilocalorieUnit()
         case HKQuantityTypeIdentifierDistanceWalkingRunning:
             return HKUnit.mileUnit()
@@ -1068,6 +1105,8 @@ public extension HKSample {
         case HKCategoryTypeIdentifierSleepAnalysis:
             return HKUnit.hourUnit()
         case HKQuantityTypeIdentifierDietaryEnergyConsumed:
+            return HKUnit.kilocalorieUnit()
+        case HKQuantityTypeIdentifierActiveEnergyBurned:
             return HKUnit.kilocalorieUnit()
         case HKQuantityTypeIdentifierDietaryCarbohydrates:
             return HKUnit.gramUnit()
