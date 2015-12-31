@@ -144,6 +144,7 @@ public class HealthManager: NSObject, WCSessionDelegate {
                     return
                 }
                 completion(samples: results!, error: nil)
+                
         }
 
         self.healthKitStore.executeQuery(sampleQuery)
@@ -155,7 +156,7 @@ public class HealthManager: NSObject, WCSessionDelegate {
         types.forEach { (type) -> () in
             dispatch_group_enter(group)
             print("entering update labels stage for: \(type)")
-            if ( (type.description != "HKCategoryTypeIdentifierSleepAnalysis") && (type.description != "HKCorrelationTypeIdentifierBloodPressure")) {
+            if ( (type.description != "HKCategoryTypeIdentifierSleepAnalysis") && (type.description != "HKCorrelationTypeIdentifierBloodPressure") && (type.description != "HKWorkoutTypeIdentifier")) {
                 let predicate = HKSampleQuery.predicateForSamplesWithStartDate(NSDate().dateByAddingTimeInterval(-3600 * 96), endDate: nil, options: HKQueryOptions())
                 fetchStatisticsOfType(type, predicate: predicate) { (statistics, error) -> Void in
                     dispatch_group_leave(group)
@@ -171,7 +172,7 @@ public class HealthManager: NSObject, WCSessionDelegate {
                     samples[type] = statistics
                 }
             } else if (type.description == "HKCategoryTypeIdentifierSleepAnalysis" ) {
-                print("inside update for sleep: \(samples[type])")
+                
                 fetchMostRecentSample(type) { (statistics, error) -> Void in
                     dispatch_group_leave(group)
                     guard error == nil else {
@@ -183,10 +184,10 @@ public class HealthManager: NSObject, WCSessionDelegate {
                         return
                     }
                     print("generating samples in sleep loop for type \(type)")
+                    print("inside update for sleep: \(samples[type])")
                     samples[type] = statistics
                 }
             } else if (type.description == "HKCorrelationTypeIdentifierBloodPressure") {
-                print("inside update for blood pressure: \(samples[type])")
                 fetchMostRecentSample(type) { (statistics, error) -> Void in
                     dispatch_group_leave(group)
                     guard error == nil else {
@@ -198,6 +199,22 @@ public class HealthManager: NSObject, WCSessionDelegate {
                         return
                     }
                     print("generating samples in blood pressure loop for type \(type)")
+                    print("inside update for blood pressure: \(samples[type])")
+                    samples[type] = statistics
+                }
+            } else if (type.description == "HKWorkoutTypeIdentifier") {
+                fetchPreparationAndRecoveryWorkout(type) { (statistics, error) -> Void in
+                    dispatch_group_leave(group)
+                    guard error == nil else {
+                        print("hit nil in workout type loop for type \(type)")
+                        return
+                    }
+                    guard statistics.isEmpty == false else {
+                        print("hit empty stats in workout type loop for type \(type)")
+                        return
+                    }
+                    print("generating samples in workout type loop for type \(type)")
+                    print("inside update for workout type: \(samples[type])")
                     samples[type] = statistics
                 }
             }
@@ -263,8 +280,8 @@ public class HealthManager: NSObject, WCSessionDelegate {
         }
     }
 
-    // Query food diary events stored as prep and recovery workouts in HealthKit
-    public func fetchPreparationAndRecoveryWorkout(completion: (([AnyObject]!, NSError!) -> Void)!) {
+ // for use with iCal
+    public func fetchPreparationAndRecoveryWorkoutCal(completion: (([AnyObject]!, NSError!) -> Void)!) {
         let predicate =  HKQuery.predicateForWorkoutsWithWorkoutActivityType(HKWorkoutActivityType.PreparationAndRecovery)
         let sortDescriptor = NSSortDescriptor(key:HKSampleSortIdentifierStartDate, ascending: false)
         let sampleQuery = HKSampleQuery(sampleType: HKWorkoutType.workoutType(), predicate: predicate, limit: 0, sortDescriptors: [sortDescriptor])
@@ -273,6 +290,21 @@ public class HealthManager: NSObject, WCSessionDelegate {
                     print( "There was an error while reading the samples: \(queryError.localizedDescription)")
                 }
                 completion(results,error)
+        }
+        healthKitStore.executeQuery(sampleQuery)
+    }
+    
+    // Query food diary events stored as prep and recovery workouts in HealthKit
+    public func fetchPreparationAndRecoveryWorkout(sampleType: HKSampleType, completion: (([HKSample]!, NSError!) -> Void)!) {
+        let predicate =  HKQuery.predicateForWorkoutsWithWorkoutActivityType(HKWorkoutActivityType.PreparationAndRecovery)
+        let sortDescriptor = NSSortDescriptor(key:HKSampleSortIdentifierStartDate, ascending: false)
+        let sampleQuery = HKSampleQuery(sampleType: HKWorkoutType.workoutType(), predicate: predicate, limit: 0, sortDescriptors: [sortDescriptor])
+            { (sampleQuery, results, error ) -> Void in
+                if let queryError = error {
+                    print( "There was an error while reading the samples: \(queryError.localizedDescription)")
+                }
+                completion(results as [HKSample]!, nil)
+                print("fetch value: \(results.enumerate())")
         }
         healthKitStore.executeQuery(sampleQuery)
     }
@@ -845,8 +877,8 @@ public extension HKQuantityType {
             return .CumulativeSum
         case HKQuantityTypeIdentifierDietaryCaffeine:
             return .CumulativeSum
-//        case HKWorkoutActivityTypeSwimming:
-//            return .CumulativeSum
+        case HKWorkoutTypeIdentifier:
+            return .CumulativeSum
         default:
             return .None
         }
@@ -906,8 +938,8 @@ public extension HKStatistics {
             return sumQuantity()
         case HKQuantityTypeIdentifierDietaryWater:
             return sumQuantity()
-//        case is HKWorkoutActivityType:
-//            return sumQuantity()
+        case HKWorkoutTypeIdentifier:
+            return sumQuantity()
         default:
             print("Invalid quantity type \(quantityType.identifier) for HKStatistics")
             return sumQuantity()
@@ -965,8 +997,8 @@ public extension HKStatistics {
             fallthrough
         case HKQuantityTypeIdentifierDietaryWater:
             fallthrough
-//        case is HKWorkoutActivityType:
-//            fallthrough
+        case HKWorkoutTypeIdentifier:
+            fallthrough
         case HKQuantityTypeIdentifierHeartRate:
             return quantity!.doubleValueForUnit(defaultUnit!)
         default:
@@ -1073,8 +1105,8 @@ public extension HKSample {
             fallthrough
         case HKQuantityTypeIdentifierDietaryWater:
             fallthrough
-//        case is HKWorkoutActivityType:
-//            fallthrough
+        case HKWorkoutTypeIdentifier:
+            fallthrough
         case HKQuantityTypeIdentifierHeartRate:
             return (self as! HKQuantitySample).quantity.doubleValueForUnit(defaultUnit!)
 
@@ -1132,7 +1164,7 @@ public extension HKSample {
             return HKUnit.gramUnit()
         case HKQuantityTypeIdentifierDietaryCaffeine:
             return HKUnit.gramUnit()
-        case is HKWorkoutActivityType:
+        case HKWorkoutTypeIdentifier:
             return HKUnit.hourUnit()
         default:
             return nil
