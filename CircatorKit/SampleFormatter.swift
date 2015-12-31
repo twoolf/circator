@@ -110,6 +110,8 @@ public class SampleFormatter: NSObject {
             return stringFromQuantity((samples.last as! HKQuantitySample).quantity, type: type)
         }
         switch samples.last!.sampleType.identifier {
+//        case HKWorkoutTypeIdentifier:
+//            return "\(SampleFormatter.timeIntervalFormatter.stringFromTimeInterval(samples.workoutDuration!)!)"
         case HKCategoryTypeIdentifierSleepAnalysis:
             return "\(SampleFormatter.timeIntervalFormatter.stringFromTimeInterval(samples.sleepDuration!)!)"
         case HKCorrelationTypeIdentifierBloodPressure:
