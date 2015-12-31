@@ -213,6 +213,9 @@ public class SampleFormatter: NSObject {
         case HKQuantityTypeIdentifierDietaryEnergyConsumed:
             return SampleFormatter.calorieFormatter.stringFromValue(quantity, unit: .Kilocalorie)
             
+        case HKQuantityTypeIdentifierActiveEnergyBurned:
+            return SampleFormatter.calorieFormatter.stringFromValue(quantity, unit: .Kilocalorie)
+            
         case HKQuantityTypeIdentifierDietaryCarbohydrates:
             return "\(SampleFormatter.numberFormatter.stringFromNumber(quantity)!) gms"
             
