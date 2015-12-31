@@ -159,7 +159,7 @@ public class EventManager : NSObject, WCSessionDelegate {
                 }
             }
 
-            HealthManager.sharedManager.fetchPreparationAndRecoveryWorkout { (results, error) in
+            HealthManager.sharedManager.fetchPreparationAndRecoveryWorkoutCal { (results, error) in
                 for workout in (results as! [HKWorkout]) {
                     let dkey = DiningEventKey(start: workout.startDate, end: workout.endDate)
                     if let d = workout.metadata {
