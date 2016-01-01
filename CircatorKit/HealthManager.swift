@@ -144,7 +144,9 @@ public class HealthManager: NSObject, WCSessionDelegate {
                     return
                 }
                 completion(samples: results!, error: nil)
-                
+                for (index,value) in results!.enumerate() {
+                    print("\(index) \(value)")
+                }
         }
 
         self.healthKitStore.executeQuery(sampleQuery)
@@ -214,7 +216,6 @@ public class HealthManager: NSObject, WCSessionDelegate {
                         return
                     }
                     print("generating samples in workout type loop for type \(type)")
-                    print("inside update for workout type: \(samples[type])")
                     samples[type] = statistics
                 }
             }
@@ -304,7 +305,9 @@ public class HealthManager: NSObject, WCSessionDelegate {
                     print( "There was an error while reading the samples: \(queryError.localizedDescription)")
                 }
                 completion(results as [HKSample]!, nil)
-                print("fetch value: \(results.enumerate())")
+                for (index,value) in results!.enumerate() {
+                    print("\(index) \(value)")
+                }
         }
         healthKitStore.executeQuery(sampleQuery)
     }
@@ -817,7 +820,7 @@ public extension HKSampleType {
         case HKQuantityTypeIdentifierDietaryWater:
             return NSLocalizedString("Water", comment: "HealthKit data type")
         case HKWorkoutTypeIdentifier:
-            return NSLocalizedString("Workout", comment: "HealthKit data type")
+            return NSLocalizedString("Net Eating Time", comment: "HealthKit data type")
         default:
             return nil
         }
@@ -1199,6 +1202,16 @@ public extension Array where Element: HKStatistics {
     }
 }
 
+public func <(a: NSDate, b: NSDate) -> Bool {
+    return a.compare(b) == NSComparisonResult.OrderedAscending
+}
+
+public func ==(a: NSDate, b: NSDate) -> Bool {
+    return a.compare(b) == NSComparisonResult.OrderedSame
+}
+
+extension NSDate: Comparable { }
+
 public extension Array where Element: HKSample {
     public var sleepDuration: NSTimeInterval? {
         return filter { (sample) -> Bool in
@@ -1208,4 +1221,20 @@ public extension Array where Element: HKSample {
                 return sample.endDate.timeIntervalSinceDate(sample.startDate)
             }.reduce(0) { $0 + $1 }
     }
+    public var workoutDuration: NSTimeInterval? {
+        return filter { (sample) -> Bool in
+            let categorySample = sample as! HKWorkout
+            return categorySample.sampleType.identifier == HKWorkoutTypeIdentifier
+            }.map { (sample) -> NSTimeInterval in
+                return sample.endDate.timeIntervalSinceDate(sample.startDate)
+            }.reduce(0) { $0 + $1 }
+    }
+//    public var workoutDuration: NSDate? {
+//        return filter { (sample) -> Bool in
+//            let categorySample = sample as! HKWorkout
+//            let now = NSDate()
+//            return categorySample.sampleType.identifier == HKWorkoutTypeIdentifier && categorySample.startDate < now
+//            
+//        }
+//    }
 }
