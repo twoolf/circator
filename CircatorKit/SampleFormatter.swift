@@ -181,6 +181,8 @@ public class SampleFormatter: NSObject {
             return SampleFormatter.numberFormatter.stringFromNumber(quantity.doubleValueForUnit(HKUnit.mileUnit()))!
         case HKQuantityTypeIdentifierStepCount:
             return SampleFormatter.numberFormatter.stringFromNumber(quantity.doubleValueForUnit(HKUnit.countUnit()))!
+        case HKQuantityTypeIdentifierUVExposure:
+            return SampleFormatter.numberFormatter.stringFromNumber(quantity.doubleValueForUnit(HKUnit.countUnit()))!
         case HKQuantityTypeIdentifierDietaryProtein:
             return SampleFormatter.foodMassFormatter.stringFromValue(quantity.doubleValueForUnit(HKUnit.gramUnit()), unit: .Gram)
         case HKQuantityTypeIdentifierDietaryFatTotal:
@@ -226,6 +228,9 @@ public class SampleFormatter: NSObject {
             
         case HKQuantityTypeIdentifierStepCount:
             return "\(SampleFormatter.numberFormatter.stringFromNumber(quantity)!) steps"
+            
+        case HKQuantityTypeIdentifierUVExposure:
+            return "\(SampleFormatter.numberFormatter.stringFromNumber(quantity)!) exposure"
             
         case HKQuantityTypeIdentifierDietaryProtein:
             return "\(SampleFormatter.numberFormatter.stringFromNumber(quantity)!) gms"

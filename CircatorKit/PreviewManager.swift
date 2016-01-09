@@ -23,7 +23,7 @@ public class PreviewManager: NSObject {
         [
             HKObjectType.categoryTypeForIdentifier(HKCategoryTypeIdentifierSleepAnalysis)!,
             HKObjectType.workoutType(),
-            HKObjectType.workoutType(),
+            HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierUVExposure)!
             
         ],
         [   HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierDietaryProtein)!,
@@ -32,7 +32,7 @@ public class PreviewManager: NSObject {
         ],
         [   HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierDietarySugar)!,
             HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierDietaryCholesterol)!,
-            HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierDietarySodium)!,
+            HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierDietarySodium)!
 
         ],
         [   HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierActiveEnergyBurned)!,
@@ -52,11 +52,9 @@ public class PreviewManager: NSObject {
         [
             HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierBloodGlucose)!,
             HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierBasalEnergyBurned)!,
-            HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierUVExposure)!,
-            
+            HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierDietaryFiber)!
         ],
         [
-            HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierDietaryFiber)!,
             HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierDietaryIron)!,
             HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierDietaryCalcium)!
         ]
