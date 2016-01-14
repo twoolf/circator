@@ -338,6 +338,7 @@ public class HealthManager: NSObject, WCSessionDelegate {
                 dict[sampleType] = ("basal_energy_burned", "basal_energy_burned", nil)
 
             case HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierHeartRate)!.identifier:
+                print("\(dict[sampleType]) Mariano")
                 dict[sampleType] = ("heart_rate", "heart_rate", nil)
                 
             case HKObjectType.correlationTypeForIdentifier(HKCorrelationTypeIdentifierBloodPressure)!.identifier:

@@ -123,6 +123,8 @@ public class EventManager : NSObject, WCSessionDelegate {
             
             let dateFormatter = NSDateFormatter()
             dateFormatter.dateFormat = "HH:mm:ss"
+            dateFormatter.AMSymbol = "AM"
+            dateFormatter.PMSymbol = "PM"
 
             var eventIndex : [DiningEventKey:[(Int, String)]] = [:]
             for ev in events {

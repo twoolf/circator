@@ -144,8 +144,8 @@ public class SampleFormatter: NSObject {
             switch type.identifier {
             case HKCategoryTypeIdentifierSleepAnalysis:
                 return "\(SampleFormatter.timeIntervalFormatter.stringFromTimeInterval(quantity)!)"
-            case HKCorrelationTypeIdentifierBloodPressure:
-                let correlationSample = derived
+            //case HKCorrelationTypeIdentifierBloodPressure:
+                //let correlationSample = derived
 /*                let diastolicSample = correlationSample.objectsForType(HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierBloodPressureDiastolic)!).first as? HKQuantitySample
                 let systolicSample = correlationSample.objectsForType(HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierBloodPressureSystolic)!).first as? HKQuantitySample
                 guard diastolicSample != nil && systolicSample != nil else {
@@ -221,7 +221,7 @@ public class SampleFormatter: NSObject {
             return SampleFormatter.calorieFormatter.stringFromValue(quantity, unit: .Kilocalorie)
             
         case HKQuantityTypeIdentifierDietaryCarbohydrates:
-            return "\(SampleFormatter.numberFormatter.stringFromNumber(quantity)!) gms"
+            return "\(SampleFormatter.numberFormatter.stringFromNumber(quantity)!) g"
             
         case HKQuantityTypeIdentifierDistanceWalkingRunning:
             return "\(SampleFormatter.numberFormatter.stringFromNumber(quantity)!) miles"
@@ -233,28 +233,28 @@ public class SampleFormatter: NSObject {
             return "\(SampleFormatter.numberFormatter.stringFromNumber(quantity)!) exposure"
             
         case HKQuantityTypeIdentifierDietaryProtein:
-            return "\(SampleFormatter.numberFormatter.stringFromNumber(quantity)!) gms"
+            return "\(SampleFormatter.numberFormatter.stringFromNumber(quantity)!) g"
             
         case HKQuantityTypeIdentifierDietaryFatTotal:
-            return "\(SampleFormatter.numberFormatter.stringFromNumber(quantity)!) gms"
+            return "\(SampleFormatter.numberFormatter.stringFromNumber(quantity)!) g"
             
         case HKQuantityTypeIdentifierDietaryFatSaturated:
-            return "\(SampleFormatter.numberFormatter.stringFromNumber(quantity)!) gms"
+            return "\(SampleFormatter.numberFormatter.stringFromNumber(quantity)!) g"
             
         case HKQuantityTypeIdentifierDietaryFatMonounsaturated:
-            return "\(SampleFormatter.numberFormatter.stringFromNumber(quantity)!) gms"
+            return "\(SampleFormatter.numberFormatter.stringFromNumber(quantity)!) g"
             
         case HKQuantityTypeIdentifierDietaryFatPolyunsaturated:
-            return "\(SampleFormatter.numberFormatter.stringFromNumber(quantity)!) gms"
+            return "\(SampleFormatter.numberFormatter.stringFromNumber(quantity)!) g"
             
         case HKQuantityTypeIdentifierDietarySugar:
-            return "\(SampleFormatter.numberFormatter.stringFromNumber(quantity)!) gms"
+            return "\(SampleFormatter.numberFormatter.stringFromNumber(quantity)!) g"
             
         case HKQuantityTypeIdentifierDietarySodium:
-            return "\(SampleFormatter.numberFormatter.stringFromNumber(quantity)!) gms"
+            return "\(SampleFormatter.numberFormatter.stringFromNumber(quantity)!) g"
             
         case HKQuantityTypeIdentifierDietaryCaffeine:
-            return "\(SampleFormatter.numberFormatter.stringFromNumber(quantity)!) gms"
+            return "\(SampleFormatter.numberFormatter.stringFromNumber(quantity)!) g"
 
         default:
             return SampleFormatter.numberFormatter.stringFromNumber(quantity) ?? "<nil>"

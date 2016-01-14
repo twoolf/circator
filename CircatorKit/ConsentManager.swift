@@ -67,6 +67,7 @@ public class ConsentManager: NSObject, ORKTaskViewControllerDelegate {
         if let dictionary = Locksmith.loadDataForUserAccount(unnamedAccount),
             consentFilePath = dictionary["consentfile"] as? String
         {
+            print("file path for pdf files is: \(consentFilePath)")
             return consentFilePath
         }
         return nil
