@@ -331,12 +331,9 @@ class IntroViewController: UIViewController, UITableViewDelegate, UITableViewDat
     static let sampleFormatter = SampleFormatter()
     static let previewTypeStrings = PreviewManager.previewSampleTypes.map { $0.displayText! }
     static let previewMealTypeStrings = [["Bkfast", "Lunch", "Dinner", "Snack"],
-                                         ["AM", "5:00","5:30","6:00","6:30","7:00","7:30","8:00","8:30","9:00","9:30","10:00","10:30","11:00","11:30","12:00",
-                                          "PM", "12:30","13:00","13:30","14:00","14:30","15:00","15:30","16:00","16:30","17:00", "17:30", "18:00", "18:30",
-                                                "19:00", "19:30", "20:00", "20:30", "21:00", "21:30", "22:00", "22:30", "23:00", "23:30", "24:00",
-                                          "AM", "00:30", "1:00", "1:30", "2:00", "2:30", "3:00", "3:30", "4:00", "4:30"],
-                                         ["Min", "15", "30", "45", "60", "90", "120", "150", "180", "210", "240"],
-                                         ["1✮", "2✮", "3✮", "4✮", "5✮"]]
+            ["5:00 AM","5:30 AM","6:00 AM","6:30 AM","7:00 AM","7:30 AM","8:00 AM","8:30 AM","9:00 AM","9:30 AM","10:00 AM","10:30 AM","11:00 AM","11:30 AM","12:00 PM", "12:30 PM", "1:00 PM", "1:30 PM", "2:00 PM", "2:30 PM", "3:00 PM", "3:30 PM", "4:00 PM", "4:30 PM", "5:00 PM", "5:30 PM", "6:00 PM", "6:30 PM", "7:00 PM", "7:30 PM", "8:00 PM", "8:30 PM", "9:00 PM", "9:30 PM", "10:00 PM", "10:30 PM", "11:00 PM", "11:30 PM", "12:00 AM", "12:30 AM", "1:00 AM", "1:30 AM", "2:00 AM", "2:30 AM", "3:00 AM", "3:30 AM", "4:00 AM", "4:30 AM"],
+            ["15 Min", "30 Min", "45 Min", "60 Min", "90 Min", "120 Min", "150 Min", "180 Min", "210 Min", "240 Min"]]/*,
+                                         ["1✮", "2✮", "3✮", "4✮", "5✮"]*/
 
     lazy var dummyTextField: UITextField = {
         let textField = UITextField()
@@ -349,6 +346,7 @@ class IntroViewController: UIViewController, UITableViewDelegate, UITableViewDat
                 UIBarButtonItem(barButtonSystemItem: .FlexibleSpace, target: nil, action: ""),
                 UIBarButtonItem(barButtonSystemItem: .Done, target: self, action: "selectAttribute:")
             ]
+            
             return view
         }()
         return textField
@@ -379,8 +377,8 @@ class IntroViewController: UIViewController, UITableViewDelegate, UITableViewDat
     }
     
     func fetchInitialAggregates() {
-        Async.userInteractive {
-            self.fetchAggregatesPeriodically()
+        Async.userInteractive() {
+            HealthManager.sharedManager.fetchAggregates()
         }
     }
 
@@ -392,7 +390,7 @@ class IntroViewController: UIViewController, UITableViewDelegate, UITableViewDat
                 self.fetchRecentSamples()
             }
         } else {
-
+            
         }
     }
 
@@ -455,6 +453,7 @@ class IntroViewController: UIViewController, UITableViewDelegate, UITableViewDat
     func initializeBackgroundWork() {
         Async.main(after: 2) {
             self.fetchInitialAggregates()
+            //HealthManager.sharedManager.fetchAggregates()
             self.fetchRecentSamples()
             HealthManager.sharedManager.registerObservers()
         }
@@ -612,7 +611,8 @@ class IntroViewController: UIViewController, UITableViewDelegate, UITableViewDat
     func dismissPopup(sender: UIBarButtonItem) {
         dummyTextField.resignFirstResponder()
     }
-
+    
+    //MODIFIED BY MARIANO
     func selectAttribute(sender: UIBarButtonItem) {
         dummyTextField.resignFirstResponder()
         switch selectedMode! {
@@ -632,9 +632,15 @@ class IntroViewController: UIViewController, UITableViewDelegate, UITableViewDat
             let delimiter = ":"
             var updatedTime = IntroViewController.previewMealTypeStrings[1][pickerView.selectedRowInComponent(1)].componentsSeparatedByString(delimiter)
             let delimiter2 = " "
-            let delimiter3 = "min"
+            let delimiter3 = " Min"
             var updatedTimeMinute = updatedTime[1].componentsSeparatedByString(delimiter2)
             var updatedDurationMinute = IntroViewController.previewMealTypeStrings[2][pickerView.selectedRowInComponent(2)].componentsSeparatedByString(delimiter3)
+            let amOrPM = updatedTimeMinute[1]
+            if(amOrPM == "PM"){
+                var tempTime:Int = Int(updatedTime[0])!
+                tempTime += 12
+                updatedTime[0] = String(tempTime)
+            }
             let components = NSDateComponents()
               components.day = dateComponents.day
               components.month = dateComponents.month
@@ -648,7 +654,7 @@ class IntroViewController: UIViewController, UITableViewDelegate, UITableViewDat
             let distanceHold = 0.0
             let kiloCaloriesHold = 0.0
             let kmUnit = HKUnit(fromString: "km")
-            let metaMeals = [String(IntroViewController.previewMealTypeStrings[3][pickerView.selectedRowInComponent(3)]):"Meal Rating", String(IntroViewController.previewMealTypeStrings[0][pickerView.selectedRowInComponent(0)]):"Meal Type"]
+            let metaMeals = [/*String(IntroViewController.previewMealTypeStrings[3][pickerView.selectedRowInComponent(3)]):"Meal Rating", */String(IntroViewController.previewMealTypeStrings[0][pickerView.selectedRowInComponent(0)]):"Meal Type"]
             HealthManager.sharedManager.savePreparationAndRecoveryWorkout(newDate!, endDate: calculatedDate!, distance: distanceHold, distanceUnit:kmUnit, kiloCalories: kiloCaloriesHold, metadata: metaMeals, completion: { (success, error ) -> Void in
                 if( success )
                 {
@@ -711,7 +717,7 @@ class IntroViewController: UIViewController, UITableViewDelegate, UITableViewDat
         if case .Plot(_) = selectedMode! {
             return 1
         } else if case .previewMealTypeStrings(_) = selectedMode! {
-            return 4
+            return 3
         } else {
             return 2
         }
@@ -741,6 +747,7 @@ class IntroViewController: UIViewController, UITableViewDelegate, UITableViewDat
         } else if case .Plot(_) = selectedMode! {
             return IntroViewController.previewTypeStrings[row]
         } else if case .previewMealTypeStrings = selectedMode! {
+            
             return IntroViewController.previewMealTypeStrings[component][row]
         } else {
             return IntroViewController.previewMealTypeStrings[component][row]
@@ -756,8 +763,15 @@ class IntroViewController: UIViewController, UITableViewDelegate, UITableViewDat
             }
         } else if case .Plot(_) = selectedMode! {
             selectedMode = GraphMode.Plot(PreviewManager.previewSampleTypes.filter { $0.displayText == PreviewManager.previewSampleTypes[row].displayText }.first!)
-        } else {
-
+        } else if case .previewMealTypeStrings = selectedMode!{
+            /*if(IntroViewController.previewMealTypeStrings[component][row] == "AM"){
+                print("IN AM")
+                
+                //pickerView.resignFirstResponder()
+            
+            } else if(IntroViewController.previewMealTypeStrings[component][row] == "Min") {
+                print("IN MIN")
+            }*/
         }
     }
 
