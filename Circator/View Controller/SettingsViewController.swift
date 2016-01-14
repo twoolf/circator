@@ -166,8 +166,9 @@ class SettingsViewController: UITableViewController, UITextFieldDelegate {
 
             case 2:
                 cell.tintColor = Theme.universityDarkTheme.backgroundColor
+                
                 cell.imageView?.image = PreviewManager.rowIcons[indexPath.row]
-                cell.textLabel?.text = PreviewManager.previewSampleTypes[indexPath.row].displayText
+               // cell.textLabel?.text = //PreviewManager.previewSampleTypes[indexPath.row].displayText
                 cell.accessoryType = .DisclosureIndicator
                 
             default:
@@ -194,6 +195,7 @@ class SettingsViewController: UITableViewController, UITextFieldDelegate {
             cell.tintColor = Theme.universityDarkTheme.backgroundColor
             cell.imageView?.image = PreviewManager.rowIcons[indexPath.row]
             cell.textLabel?.text = PreviewManager.previewSampleTypes[indexPath.row].displayText
+            //cell.contentView.preservesSuperviewLayoutMargins = false;
             cell.accessoryType = .DisclosureIndicator
 
         default:
