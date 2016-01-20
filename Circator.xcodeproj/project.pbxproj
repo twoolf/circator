@@ -129,16 +129,6 @@
 			name = "Embed App Extensions";
 			runOnlyForDeploymentPostprocessing = 0;
 		};
-		F42F5B931BE22EA900195490 /* Embed Frameworks */ = {
-			isa = PBXCopyFilesBuildPhase;
-			buildActionMask = 2147483647;
-			dstPath = "";
-			dstSubfolderSpec = 10;
-			files = (
-			);
-			name = "Embed Frameworks";
-			runOnlyForDeploymentPostprocessing = 0;
-		};
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
@@ -200,7 +190,6 @@
 		F4E1B7691C24B893000C2B45 /* UserAccount.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = UserAccount.swift; sourceTree = "<group>"; };
 		F4E1B76A1C24B893000C2B45 /* UserManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = UserManager.swift; sourceTree = "<group>"; };
 		F4E1B76D1C24B8D4000C2B45 /* LoginViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LoginViewController.swift; sourceTree = "<group>"; };
-		F4E1B76F1C24B967000C2B45 /* Pods_Circator.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Pods_Circator.framework; path = "Pods/../build/Debug-iphoneos/Pods_Circator.framework"; sourceTree = "<group>"; };
 		F4E1B7711C24BAB0000C2B45 /* EventManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = EventManager.swift; sourceTree = "<group>"; };
 		F4E1B77E1C25EDF0000C2B45 /* ConsentManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ConsentManager.swift; sourceTree = "<group>"; };
 		F4F4DA571C0257130073E9EE /* SettingsViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SettingsViewController.swift; sourceTree = "<group>"; };
@@ -324,7 +313,6 @@
 		EA5EDF2A50FCED6ADBAA03DD /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
-				F4E1B76F1C24B967000C2B45 /* Pods_Circator.framework */,
 				788606E61BB8A7DA00F33B5E /* HealthKit.framework */,
 				06103AD5E3EB4C84C4980CB1 /* Pods_Circator.framework */,
 				4B4DA3DC74ED2F046184F79B /* Pods.framework */,
@@ -552,7 +540,6 @@
 				F42F5B541BE20CDD00195490 /* Sources */,
 				F42F5B551BE20CDD00195490 /* Frameworks */,
 				F42F5B561BE20CDD00195490 /* Resources */,
-				F42F5B931BE22EA900195490 /* Embed Frameworks */,
 			);
 			buildRules = (
 			);
@@ -595,7 +582,6 @@
 					};
 					F42F5B311BE1FD1E00195490 = {
 						CreatedOnToolsVersion = 7.1;
-						DevelopmentTeam = 98F8ES2768;
 					};
 					F42F5B4B1BE20CDD00195490 = {
 						CreatedOnToolsVersion = 7.1;
@@ -1105,6 +1091,12 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_COMPLICATION_NAME = Complication;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(PROJECT_DIR)/build/Debug-iphoneos",
+				);
 				INFOPLIST_FILE = "CircatorWatch Extension/Info.plist";
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @executable_path/../../Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = edu.jhu.cs.damsl.Circator.dev4.watchkitapp.watchkitextension;
@@ -1120,6 +1112,12 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_COMPLICATION_NAME = Complication;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(PROJECT_DIR)/build/Debug-iphoneos",
+				);
 				INFOPLIST_FILE = "CircatorWatch Extension/Info.plist";
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @executable_path/../../Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = edu.jhu.cs.damsl.Circator.dev4.watchkitapp.watchkitextension;
