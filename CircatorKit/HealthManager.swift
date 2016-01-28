@@ -71,6 +71,9 @@ public class HealthManager: NSObject, WCSessionDelegate {
             HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierBodyMass)!,
             HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierHeight)!,
             HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierBodyMassIndex)!,
+            HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierActiveEnergyBurned)!,
+            HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierBasalEnergyBurned)!,
+            HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierFlightsClimbed)!,
             HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierHeartRate)!,
             HKObjectType.categoryTypeForIdentifier(HKCategoryTypeIdentifierSleepAnalysis)!,
             HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierBloodGlucose)!,
@@ -91,8 +94,11 @@ public class HealthManager: NSObject, WCSessionDelegate {
             HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierDietarySodium)!,
             HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierDietaryCaffeine)!,
             HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierDietaryWater)!,
+            HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierDistanceWalkingRunning)!,
+            HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierStepCount)!,
             HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierBloodPressureDiastolic)!,
             HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierBloodPressureSystolic)!,
+            HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierUVExposure)!,
             HKObjectType.workoutType()
         ]
 
@@ -139,6 +145,9 @@ public class HealthManager: NSObject, WCSessionDelegate {
                     return
                 }
                 completion(samples: results!, error: nil)
+                for (index,value) in results!.enumerate() {
+                    print("\(index) \(value)")
+                }
         }
 
         self.healthKitStore.executeQuery(sampleQuery)
@@ -149,16 +158,67 @@ public class HealthManager: NSObject, WCSessionDelegate {
         var samples = [HKSampleType: [Result]]()
         types.forEach { (type) -> () in
             dispatch_group_enter(group)
-            let predicate = HKSampleQuery.predicateForSamplesWithStartDate(NSDate().dateByAddingTimeInterval(-3600 * 96), endDate: nil, options: HKQueryOptions())
-            fetchStatisticsOfType(type, predicate: predicate) { (statistics, error) -> Void in
-                dispatch_group_leave(group)
-                guard error == nil else {
-                    return
+            print("entering update labels stage for: \(type)")
+            if ( (type.description != "HKCategoryTypeIdentifierSleepAnalysis") && (type.description != "HKCorrelationTypeIdentifierBloodPressure") && (type.description != "HKWorkoutTypeIdentifier")) {
+                let predicate = HKSampleQuery.predicateForSamplesWithStartDate(NSDate().dateByAddingTimeInterval(-3600 * 96), endDate: nil, options: HKQueryOptions())
+                fetchStatisticsOfType(type, predicate: predicate) { (statistics, error) -> Void in
+                    dispatch_group_leave(group)
+                    guard error == nil else {
+                        print("hit nil in main loop for type \(type)")
+                        return
+                    }
+                    guard statistics.isEmpty == false else {
+                        print("hit empty stats in main loop for type \(type)")
+                        return
+                    }
+                    print("generating stats in main loop for type \(type)")
+                    samples[type] = statistics
                 }
-                guard statistics.isEmpty == false else {
-                    return
+            } else if (type.description == "HKCategoryTypeIdentifierSleepAnalysis" ) {
+                
+                fetchMostRecentSample(type) { (statistics, error) -> Void in
+                    dispatch_group_leave(group)
+                    guard error == nil else {
+                        print("hit nil in sleep loop for type \(type)")
+                        return
+                    }
+                    guard statistics.isEmpty == false else {
+                        print("hit empty stats in sleep loop for type \(type)")
+                        return
+                    }
+                    print("generating samples in sleep loop for type \(type)")
+                    print("inside update for sleep: \(samples[type])")
+                    samples[type] = statistics
                 }
-                samples[type] = statistics
+            } else if (type.description == "HKCorrelationTypeIdentifierBloodPressure") {
+                fetchMostRecentSample(type) { (statistics, error) -> Void in
+                    dispatch_group_leave(group)
+                    guard error == nil else {
+                        print("hit nil in blood pressure loop for type \(type)")
+                        return
+                    }
+                    guard statistics.isEmpty == false else {
+                        print("hit empty stats in blood pressure loop for type \(type)")
+                        return
+                    }
+                    print("generating samples in blood pressure loop for type \(type)")
+                    print("inside update for blood pressure: \(samples[type])")
+                    samples[type] = statistics
+                }
+            } else if (type.description == "HKWorkoutTypeIdentifier") {
+                fetchPreparationAndRecoveryWorkout(type) { (statistics, error) -> Void in
+                    dispatch_group_leave(group)
+                    guard error == nil else {
+                        print("hit nil in workout type loop for type \(type)")
+                        return
+                    }
+                    guard statistics.isEmpty == false else {
+                        print("hit empty stats in workout type loop for type \(type)")
+                        return
+                    }
+                    print("generating samples in workout type loop for type \(type)")
+                    samples[type] = statistics
+                }
             }
         }
         dispatch_group_notify(group, dispatch_get_main_queue()) {
@@ -184,7 +244,6 @@ public class HealthManager: NSObject, WCSessionDelegate {
     public func fetchStatisticsOfType(sampleType: HKSampleType, predicate: NSPredicate? = nil, completion: HealthManagerStatisticsBlock) {
         if sampleType is HKQuantityType {
             let calendar = NSCalendar.currentCalendar()
-
             let interval = NSDateComponents()
             interval.day = 1
 
@@ -192,7 +251,6 @@ public class HealthManager: NSObject, WCSessionDelegate {
             let anchorComponents = calendar.components([.Year, .Month, .Day, .Hour], fromDate: NSDate())
             anchorComponents.hour = 0
             let anchorDate = calendar.dateFromComponents(anchorComponents)!
-
             let quantityType = HKObjectType.quantityTypeForIdentifier(sampleType.identifier)!
 
             // Create the query
@@ -201,27 +259,31 @@ public class HealthManager: NSObject, WCSessionDelegate {
                 options: quantityType.aggregationOptions,
                 anchorDate: anchorDate,
                 intervalComponents: interval)
-
+            
             // Set the results handler
             query.initialResultsHandler = {
                 query, results, error in
 
                 guard error == nil else {
-                    print("*** An error occurred while calculating the statistics: \(error!.localizedDescription) ***")
+                    print("*** An error occurred while calculating the statistics: \(sampleType) \(error!.localizedDescription) ***")
                     completion(statistics: [], error: error)
                     return
                 }
-
+                
                 completion(statistics: results!.statistics(), error: nil)
+                for t: HKStatistics in results!.statistics() {
+                    print("after collection query: \(sampleType)  \(t.numeralValue)")
+                }
             }
             healthKitStore.executeQuery(query)
+            
         } else {
             completion(statistics: [], error: NSError(domain: HealthManagerErrorDomain, code: 1048576, userInfo: [NSLocalizedDescriptionKey: "Not implemented"]))
         }
     }
 
-    // Query food diary events stored as prep and recovery workouts in HealthKit
-    public func fetchPreparationAndRecoveryWorkout(completion: (([AnyObject]!, NSError!) -> Void)!) {
+ // for use with iCal
+    public func fetchPreparationAndRecoveryWorkoutCal(completion: (([AnyObject]!, NSError!) -> Void)!) {
         let predicate =  HKQuery.predicateForWorkoutsWithWorkoutActivityType(HKWorkoutActivityType.PreparationAndRecovery)
         let sortDescriptor = NSSortDescriptor(key:HKSampleSortIdentifierStartDate, ascending: false)
         let sampleQuery = HKSampleQuery(sampleType: HKWorkoutType.workoutType(), predicate: predicate, limit: 0, sortDescriptors: [sortDescriptor])
@@ -230,6 +292,23 @@ public class HealthManager: NSObject, WCSessionDelegate {
                     print( "There was an error while reading the samples: \(queryError.localizedDescription)")
                 }
                 completion(results,error)
+        }
+        healthKitStore.executeQuery(sampleQuery)
+    }
+    
+    // Query food diary events stored as prep and recovery workouts in HealthKit
+    public func fetchPreparationAndRecoveryWorkout(sampleType: HKSampleType, completion: (([HKSample]!, NSError!) -> Void)!) {
+        let predicate =  HKQuery.predicateForWorkoutsWithWorkoutActivityType(HKWorkoutActivityType.PreparationAndRecovery)
+        let sortDescriptor = NSSortDescriptor(key:HKSampleSortIdentifierStartDate, ascending: false)
+        let sampleQuery = HKSampleQuery(sampleType: HKWorkoutType.workoutType(), predicate: predicate, limit: 0, sortDescriptors: [sortDescriptor])
+            { (sampleQuery, results, error ) -> Void in
+                if let queryError = error {
+                    print( "There was an error while reading the samples: \(queryError.localizedDescription)")
+                }
+                completion(results as [HKSample]!, nil)
+                for (index,value) in results!.enumerate() {
+                    print("\(index) \(value)")
+                }
         }
         healthKitStore.executeQuery(sampleQuery)
     }
@@ -245,9 +324,25 @@ public class HealthManager: NSObject, WCSessionDelegate {
 
             case HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierBodyMassIndex)!.identifier:
                 dict[sampleType] = ("body_mass_index", "body_mass_index", nil)
+                
+            case HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierFlightsClimbed)!.identifier:
+                dict[sampleType] = ("flights_climbed", "flights_climbed", nil)
+                
+            case HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierBloodGlucose)!.identifier:
+                dict[sampleType] = ("blood_glucose", "blood_glucose", nil)
+                
+            case HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierActiveEnergyBurned)!.identifier:
+                dict[sampleType] = ("active_energy_burned", "active_energy_burned", nil)
+                
+            case HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierBasalEnergyBurned)!.identifier:
+                dict[sampleType] = ("basal_energy_burned", "basal_energy_burned", nil)
 
             case HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierHeartRate)!.identifier:
+                print("\(dict[sampleType]) Mariano")
                 dict[sampleType] = ("heart_rate", "heart_rate", nil)
+                
+            case HKObjectType.correlationTypeForIdentifier(HKCorrelationTypeIdentifierBloodPressure)!.identifier:
+                dict[sampleType] = ("unit_value", "blood_pressure", "HKCorrelationTypeIdentifierBloodPressure")
 
             case HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierBloodPressureDiastolic)!.identifier:
                 dict[sampleType] = ("unit_value", "diastolic_blood_pressure", "HKQuantityTypeIdentifierBloodPressureDiastolic")
@@ -259,19 +354,28 @@ public class HealthManager: NSObject, WCSessionDelegate {
                 dict[sampleType] = ("sleep_duration", "sleep_duration", nil)
 
             case HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierDistanceWalkingRunning)!.identifier:
-                dict[sampleType] = ("unit_value", "distance_walkrun", "HKQuantityTypeIdentifierDistanceWalkingRunning")
+                dict[sampleType] = ("unit_value", "distance_walkingrunning", "HKQuantityTypeIdentifierDistanceWalkingRunning")
 
             case HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierDietaryEnergyConsumed)!.identifier:
                 dict[sampleType] = ("unit_value", "energy_consumed", "HKQuantityTypeIdentifierDietaryEnergyConsumed")
 
             case HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierStepCount)!.identifier:
-                dict[sampleType] = ("step_count", "step_count", nil)
+                dict[sampleType] = ("unit_value", "step_count", "HKQuantityTypeIdentifierStepCount")
 
             case HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierDietaryCarbohydrates)!.identifier:
                 dict[sampleType] = ("unit_value", "carbs", "HKQuantityTypeIdentifierDietaryCarbohydrates")
 
             case HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierDietaryFatTotal)!.identifier:
                 dict[sampleType] = ("unit_value", "fat_total", "HKQuantityTypeIdentifierDietaryFatTotal")
+                
+            case HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierDietaryFatPolyunsaturated)!.identifier:
+                dict[sampleType] = ("unit_value", "fat_polyunsaturated", "HKQuantityTypeIdentifierDietaryFatPolyunsaturated")
+                
+            case HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierDietaryFatMonounsaturated)!.identifier:
+                dict[sampleType] = ("unit_value", "fat_monounsaturated", "HKQuantityTypeIdentifierDietaryFatMonounsaturated")
+                
+            case HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierDietaryFatSaturated)!.identifier:
+                dict[sampleType] = ("unit_value", "fat_saturated", "HKQuantityTypeIdentifierDietaryFatSaturated")
 
             case HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierDietaryProtein)!.identifier:
                 dict[sampleType] = ("unit_value", "protein", "HKQuantityTypeIdentifierDietaryProtein")
@@ -284,9 +388,23 @@ public class HealthManager: NSObject, WCSessionDelegate {
 
             case HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierDietarySodium)!.identifier:
                 dict[sampleType] = ("unit_value", "sodium", "HKQuantityTypeIdentifierDietarySodium")
+                
+            case HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierDietaryCaffeine)!.identifier:
+                dict[sampleType] = ("unit_value", "caffeine", "HKQuantityTypeIdentifierDietaryCaffeine")
+                
+            case HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierDietaryWater)!.identifier:
+                dict[sampleType] = ("unit_value", "water", "HKQuantityTypeIdentifierDietaryWater")
+                
+            case HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierUVExposure)!.identifier:
+                dict[sampleType] = ("unit_value", "UV_exposure", "HKQuantityTypeIdentifierUVExposure")
 
-            case HKObjectType.workoutType().identifier:
-                print("WORKOUT: " + sampleType.identifier)
+            case HKObjectType.workoutType().identifier:HKWorkoutActivityType.PreparationAndRecovery
+                dict[sampleType] = ("effective_time_frame", "workout", "HKWorkoutActivityType")
+                
+//                (HKWorkoutActivityTypePreparationAndRecovery)
+                
+//            case HKObjectType.workoutType().identifier:
+//                print("WORKOUT: " + sampleType.identifier)
                 //dict[sampleType] = ("effective_time_frame", "workout", nil)
 
             default:
@@ -350,11 +468,13 @@ public class HealthManager: NSObject, WCSessionDelegate {
             let json = try NSJSONSerialization.dataWithJSONObject(params, options: NSJSONWritingOptions.PrettyPrinted)
             let serializedAttrs = try NSJSONSerialization.JSONObjectWithData(json, options: NSJSONReadingOptions()) as! [String : AnyObject]
 
+//            print("sent to server: \(serializedAttrs)")
             Alamofire.request(MCRouter.AggMeasures(serializedAttrs))
                 .validate(statusCode: 200..<300)
                 .validate(contentType: ["application/json"])
                 .responseJSON {_, response, result in
                     print("AGGPOST: " + (result.isSuccess ? "SUCCESS" : "FAILED"))
+                    print("return : \(response) \(result)")
                     guard !result.isSuccess else {
                         self.refreshAggregatesFromMsg(samplesByName, payload: result.value)
                         return
@@ -424,7 +544,7 @@ public class HealthManager: NSObject, WCSessionDelegate {
                 return
             }
             stat2 = statistics
-            print ("statistics of type 2, \(stat2?.enumerate())")
+//            print ("statistics of type 2, \(stat2?.enumerate())")
         }
 
         dispatch_group_notify(group, dispatch_get_main_queue()) {
@@ -453,7 +573,7 @@ public class HealthManager: NSObject, WCSessionDelegate {
                 stat1![j] = target
             }
             completion(stat1!, stat2!, nil)
-            print ("statistics of both types, \(stat1),and \(stat2)")
+//            print ("statistics of both types, \(stat1),and \(stat2)")
         }
     }
 
@@ -469,14 +589,19 @@ public class HealthManager: NSObject, WCSessionDelegate {
                 HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierBodyMass)!,
                 HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierHeight)!,
                 HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierBodyMassIndex)!,
+                HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierFlightsClimbed)!,
+                HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierActiveEnergyBurned)!,
+                HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierBasalEnergyBurned)!,
                 HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierHeartRate)!,
                 HKObjectType.categoryTypeForIdentifier(HKCategoryTypeIdentifierSleepAnalysis)!,
                 HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierBloodGlucose)!,
+                HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierDistanceWalkingRunning)!,
                 HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierDietaryEnergyConsumed)!,
                 HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierDietarySugar)!,
                 HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierDietaryCopper)!,
                 HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierDietaryCalcium)!,
                 HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierDietaryCarbohydrates)!,
+                HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierStepCount)!,
                 HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierDietaryCholesterol)!,
                 HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierDietaryFiber)!,
                 HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierDietaryIron)!,
@@ -491,6 +616,7 @@ public class HealthManager: NSObject, WCSessionDelegate {
                 HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierDietaryWater)!,
                 HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierBloodPressureDiastolic)!,
                 HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierBloodPressureSystolic)!,
+                HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierUVExposure)!,
                 HKObjectType.workoutType()
             ]
             types.forEach { (type) in
@@ -656,33 +782,57 @@ public extension HKSampleType {
         case HKQuantityTypeIdentifierBodyMass:
             return NSLocalizedString("Weight", comment: "HealthKit data type")
         case HKQuantityTypeIdentifierHeartRate:
-            return NSLocalizedString("Heartbeat", comment: "HealthKit data type")
+            return NSLocalizedString("Heartrate", comment: "HealthKit data type")
         case HKCategoryTypeIdentifierSleepAnalysis:
             return NSLocalizedString("Sleep", comment: "HealthKit data type")
         case HKQuantityTypeIdentifierDietaryEnergyConsumed:
             return NSLocalizedString("Food calories", comment: "HealthKit data type")
         case HKCorrelationTypeIdentifierBloodPressure:
             return NSLocalizedString("Blood pressure", comment: "HealthKit data type")
+        case HKQuantityTypeIdentifierBloodGlucose:
+            return NSLocalizedString("Blood Glucose", comment: "HealthKit data type")
         case HKQuantityTypeIdentifierBodyMassIndex:
             return NSLocalizedString("Body Mass Index", comment: "HealthKit data type")
+        case HKQuantityTypeIdentifierFlightsClimbed:
+            return NSLocalizedString("Flights Climbed", comment: "HealthKit data type")
+        case HKQuantityTypeIdentifierActiveEnergyBurned:
+            return NSLocalizedString("Active Energy Burned", comment: "HealthKit data type")
+        case HKQuantityTypeIdentifierBasalEnergyBurned:
+            return NSLocalizedString("Basal Energy Burned", comment: "HealthKit data type")
         case HKQuantityTypeIdentifierDistanceWalkingRunning:
             return NSLocalizedString("Walking and Running Distance", comment: "HealthKit data type")
         case HKQuantityTypeIdentifierStepCount:
-            return NSLocalizedString("Total Step Count", comment: "HealthKit data type")
+            return NSLocalizedString("Step Count", comment: "HealthKit data type")
         case HKQuantityTypeIdentifierDietaryCarbohydrates:
-            return NSLocalizedString("Total Carbohydrates", comment: "HealthKit data type")
+            return NSLocalizedString("Carbohydrates", comment: "HealthKit data type")
+        case HKQuantityTypeIdentifierBloodPressureDiastolic:
+            return NSLocalizedString("Blood Pressure Diastolic", comment: "HealthKit data type")
+        case HKQuantityTypeIdentifierBloodPressureSystolic:
+            return NSLocalizedString("Blood Pressure Systolic", comment: "HealthKit data type") 
         case HKQuantityTypeIdentifierDietaryFatTotal:
-            return NSLocalizedString("Total Fat", comment: "HealthKit data type")
+            return NSLocalizedString("Fat", comment: "HealthKit data type")
+        case HKQuantityTypeIdentifierDietaryFatSaturated:
+            return NSLocalizedString("Monounsaturated Fat", comment: "HealthKit data type")
+        case HKQuantityTypeIdentifierDietaryFatMonounsaturated:
+            return NSLocalizedString("Polyunsaturated Fat", comment: "HealthKit data type")
+        case HKQuantityTypeIdentifierDietaryFatPolyunsaturated:
+            return NSLocalizedString("Saturated Fat", comment: "HealthKit data type")
         case HKQuantityTypeIdentifierDietaryProtein:
-            return NSLocalizedString("Total Protein", comment: "HealthKit data type")
+            return NSLocalizedString("Protein", comment: "HealthKit data type")
         case HKQuantityTypeIdentifierDietarySugar:
-            return NSLocalizedString("Total Sugar", comment: "HealthKit data type")
+            return NSLocalizedString("Sugar", comment: "HealthKit data type")
         case HKQuantityTypeIdentifierDietaryCholesterol:
-            return NSLocalizedString("Total Cholesterol", comment: "HealthKit data type")
+            return NSLocalizedString("Cholesterol", comment: "HealthKit data type")
         case HKQuantityTypeIdentifierDietarySodium:
-            return NSLocalizedString("Total Salt", comment: "HealthKit data type")
+            return NSLocalizedString("Salt", comment: "HealthKit data type")
+        case HKQuantityTypeIdentifierDietaryWater:
+            return NSLocalizedString("Water", comment: "HealthKit data type")
+        case HKQuantityTypeIdentifierUVExposure:
+            return NSLocalizedString("UV Exposure", comment: "HealthKit data type")
         case HKWorkoutTypeIdentifier:
-            return NSLocalizedString("Workout", comment: "HealthKit data type")
+            return NSLocalizedString("Eating Window", comment: "HealthKit data type")
+        case HKQuantityTypeIdentifierDietaryCaffeine:
+            return NSLocalizedString("Caffeine", comment: "HealthKit data type")
         default:
             return nil
         }
@@ -692,11 +842,59 @@ public extension HKSampleType {
 public extension HKQuantityType {
     var aggregationOptions: HKStatisticsOptions {
         switch identifier {
-        case HKQuantityTypeIdentifierHeartRate:
-            fallthrough
         case HKQuantityTypeIdentifierBodyMass:
             return .DiscreteAverage
+        case HKQuantityTypeIdentifierBodyMassIndex:
+            return .DiscreteAverage
+        case HKQuantityTypeIdentifierActiveEnergyBurned:
+            return .CumulativeSum
+        case HKQuantityTypeIdentifierBasalEnergyBurned:
+            return .DiscreteAverage
+        case HKCategoryTypeIdentifierSleepAnalysis:
+            return .DiscreteAverage
+        case HKQuantityTypeIdentifierHeartRate:
+            return .DiscreteAverage
         case HKQuantityTypeIdentifierDietaryEnergyConsumed:
+            return .CumulativeSum
+        case HKQuantityTypeIdentifierDistanceWalkingRunning:
+            return .CumulativeSum
+        case HKQuantityTypeIdentifierFlightsClimbed:
+            return .CumulativeSum
+        case HKQuantityTypeIdentifierStepCount:
+            return .CumulativeSum
+        case HKQuantityTypeIdentifierDietaryCarbohydrates:
+            return .CumulativeSum
+        case HKCorrelationTypeIdentifierBloodPressure:
+            return .DiscreteAverage
+        case HKQuantityTypeIdentifierBloodPressureSystolic:
+            return .DiscreteAverage
+        case HKQuantityTypeIdentifierBloodPressureDiastolic:
+            return .DiscreteAverage
+        case HKQuantityTypeIdentifierBloodGlucose:
+            return .DiscreteAverage
+        case HKQuantityTypeIdentifierDietaryProtein:
+            return .CumulativeSum
+        case HKQuantityTypeIdentifierDietaryFatTotal:
+            return .CumulativeSum
+        case HKQuantityTypeIdentifierDietaryFatSaturated:
+            return .CumulativeSum
+        case HKQuantityTypeIdentifierDietaryFatPolyunsaturated:
+            return .CumulativeSum
+        case HKQuantityTypeIdentifierDietaryFatMonounsaturated:
+            return .CumulativeSum
+        case HKQuantityTypeIdentifierDietarySugar:
+            return .CumulativeSum
+        case HKQuantityTypeIdentifierDietarySodium:
+            return .CumulativeSum
+        case HKQuantityTypeIdentifierDietaryCholesterol:
+            return .CumulativeSum
+        case HKQuantityTypeIdentifierDietaryWater:
+            return .CumulativeSum
+        case HKQuantityTypeIdentifierDietaryCaffeine:
+            return .CumulativeSum
+        case HKQuantityTypeIdentifierUVExposure:
+            return .DiscreteAverage
+        case HKWorkoutTypeIdentifier:
             return .CumulativeSum
         default:
             return .None
@@ -711,9 +909,55 @@ public extension HKStatistics {
             fallthrough
         case HKQuantityTypeIdentifierBodyMass:
             return averageQuantity()
+        case HKQuantityTypeIdentifierBodyMassIndex:
+            return averageQuantity()
+        case HKCategoryTypeIdentifierSleepAnalysis:
+            return averageQuantity()
+        case HKQuantityTypeIdentifierActiveEnergyBurned:
+            return sumQuantity()
+        case HKQuantityTypeIdentifierBasalEnergyBurned:
+            return averageQuantity()
+        case HKQuantityTypeIdentifierDistanceWalkingRunning:
+            return sumQuantity()
+        case HKQuantityTypeIdentifierStepCount:
+            return sumQuantity()
+        case HKQuantityTypeIdentifierFlightsClimbed:
+            return sumQuantity()
         case HKQuantityTypeIdentifierDietaryEnergyConsumed:
             return sumQuantity()
         case HKQuantityTypeIdentifierDietaryCarbohydrates:
+            return sumQuantity()
+        case HKCorrelationTypeIdentifierBloodPressure:
+            return sumQuantity()
+        case HKQuantityTypeIdentifierBloodGlucose:
+            return sumQuantity()
+        case HKQuantityTypeIdentifierBloodPressureSystolic:
+            return sumQuantity()
+        case HKQuantityTypeIdentifierBloodPressureDiastolic:
+            return sumQuantity()
+        case HKQuantityTypeIdentifierDietaryProtein:
+            return sumQuantity()
+        case HKQuantityTypeIdentifierDietaryFatTotal:
+            return sumQuantity()
+        case HKQuantityTypeIdentifierDietaryFatSaturated:
+            return sumQuantity()
+        case HKQuantityTypeIdentifierDietaryFatMonounsaturated:
+            return sumQuantity()
+        case HKQuantityTypeIdentifierDietaryFatPolyunsaturated:
+            return sumQuantity()
+        case HKQuantityTypeIdentifierDietarySugar:
+            return sumQuantity()
+        case HKQuantityTypeIdentifierDietaryCholesterol:
+            return sumQuantity()
+        case HKQuantityTypeIdentifierDietarySodium:
+            return sumQuantity()
+        case HKQuantityTypeIdentifierDietaryCaffeine:
+            return sumQuantity()
+        case HKQuantityTypeIdentifierDietaryWater:
+            return sumQuantity()
+        case HKQuantityTypeIdentifierUVExposure:
+            return sumQuantity()
+        case HKWorkoutTypeIdentifier:
             return sumQuantity()
         default:
             print("Invalid quantity type \(quantityType.identifier) for HKStatistics")
@@ -728,7 +972,53 @@ public extension HKStatistics {
         switch quantityType.identifier {
         case HKQuantityTypeIdentifierBodyMass:
             fallthrough
+        case HKQuantityTypeIdentifierBodyMassIndex:
+            fallthrough
+        case HKCategoryTypeIdentifierSleepAnalysis:
+            fallthrough
+        case HKQuantityTypeIdentifierBloodGlucose:
+            fallthrough
+        case HKQuantityTypeIdentifierActiveEnergyBurned:
+            fallthrough
+        case HKQuantityTypeIdentifierBasalEnergyBurned:
+            fallthrough
         case HKQuantityTypeIdentifierDietaryEnergyConsumed:
+            fallthrough
+        case HKQuantityTypeIdentifierDistanceWalkingRunning:
+            fallthrough
+        case HKQuantityTypeIdentifierStepCount:
+            fallthrough
+        case HKQuantityTypeIdentifierFlightsClimbed:
+            fallthrough
+        case HKQuantityTypeIdentifierDietaryCarbohydrates:
+            fallthrough
+        case HKCorrelationTypeIdentifierBloodPressure:
+            fallthrough
+        case HKQuantityTypeIdentifierBloodPressureSystolic:
+           fallthrough
+        case HKQuantityTypeIdentifierBloodPressureDiastolic:
+            fallthrough
+        case HKQuantityTypeIdentifierDietaryProtein:
+            fallthrough
+        case HKQuantityTypeIdentifierDietaryFatTotal:
+            fallthrough
+        case HKQuantityTypeIdentifierDietaryFatSaturated:
+            fallthrough
+        case HKQuantityTypeIdentifierDietaryFatMonounsaturated:
+            fallthrough
+        case HKQuantityTypeIdentifierDietaryFatPolyunsaturated:
+            fallthrough
+        case HKQuantityTypeIdentifierDietarySugar:
+            fallthrough
+        case HKQuantityTypeIdentifierDietarySodium:
+            fallthrough
+        case HKQuantityTypeIdentifierDietaryCaffeine:
+            fallthrough
+        case HKQuantityTypeIdentifierDietaryWater:
+            fallthrough
+        case HKQuantityTypeIdentifierUVExposure:
+            fallthrough
+        case HKWorkoutTypeIdentifier:
             fallthrough
         case HKQuantityTypeIdentifierHeartRate:
             return quantity!.doubleValueForUnit(defaultUnit!)
@@ -746,6 +1036,40 @@ public extension HKStatistics {
             return HKUnit.countUnit().unitDividedByUnit(HKUnit.minuteUnit())
         case HKQuantityTypeIdentifierDietaryEnergyConsumed:
             return HKUnit.kilocalorieUnit()
+        case HKQuantityTypeIdentifierActiveEnergyBurned:
+            return HKUnit.kilocalorieUnit()
+        case HKQuantityTypeIdentifierDistanceWalkingRunning:
+            return HKUnit.mileUnit()
+        case HKQuantityTypeIdentifierStepCount:
+            return HKUnit.countUnit()
+        case HKQuantityTypeIdentifierDietaryCarbohydrates:
+            return HKUnit.gramUnit()
+        case HKCorrelationTypeIdentifierBloodPressure:
+            return HKUnit.millimeterOfMercuryUnit()
+        case HKQuantityTypeIdentifierBloodPressureSystolic:
+            return HKUnit.millimeterOfMercuryUnit()
+        case HKQuantityTypeIdentifierBloodPressureDiastolic:
+            return HKUnit.millimeterOfMercuryUnit()
+        case HKQuantityTypeIdentifierDietaryProtein:
+            return HKUnit.gramUnit()
+        case HKQuantityTypeIdentifierDietaryFatTotal:
+            return HKUnit.gramUnit()
+        case HKQuantityTypeIdentifierDietaryFatSaturated:
+            return HKUnit.gramUnit()
+        case HKQuantityTypeIdentifierDietaryFatPolyunsaturated:
+            return HKUnit.gramUnit()
+        case HKQuantityTypeIdentifierDietaryFatMonounsaturated:
+            return HKUnit.gramUnit()
+        case HKQuantityTypeIdentifierDietarySugar:
+            return HKUnit.gramUnit()
+        case HKQuantityTypeIdentifierDietarySodium:
+            return HKUnit.gramUnit()
+        case HKQuantityTypeIdentifierDietaryCaffeine:
+            return HKUnit.gramUnit()
+        case HKQuantityTypeIdentifierUVExposure:
+            return HKUnit.countUnit()
+        case is HKWorkoutActivityType:
+            return HKUnit.hourUnit()
         default:
             return nil
         }
@@ -760,7 +1084,53 @@ public extension HKSample {
         switch sampleType.identifier {
         case HKQuantityTypeIdentifierBodyMass:
             fallthrough
+        case HKQuantityTypeIdentifierBodyMassIndex:
+            fallthrough
+        case HKCategoryTypeIdentifierSleepAnalysis:
+            fallthrough
+        case HKQuantityTypeIdentifierBloodGlucose:
+            fallthrough
+        case HKQuantityTypeIdentifierActiveEnergyBurned:
+            fallthrough
+        case HKQuantityTypeIdentifierBasalEnergyBurned:
+            fallthrough
         case HKQuantityTypeIdentifierDietaryEnergyConsumed:
+            fallthrough
+        case HKQuantityTypeIdentifierDietaryCarbohydrates:
+            fallthrough
+        case HKQuantityTypeIdentifierDistanceWalkingRunning:
+            fallthrough
+        case HKQuantityTypeIdentifierStepCount:
+            fallthrough
+        case HKQuantityTypeIdentifierFlightsClimbed:
+            fallthrough
+        case HKCorrelationTypeIdentifierBloodPressure:
+            fallthrough
+        case HKQuantityTypeIdentifierBloodPressureSystolic:
+            fallthrough
+        case HKQuantityTypeIdentifierBloodPressureDiastolic:
+            fallthrough
+        case HKQuantityTypeIdentifierDietaryProtein:
+            fallthrough
+        case HKQuantityTypeIdentifierDietaryFatTotal:
+            fallthrough
+        case HKQuantityTypeIdentifierDietaryFatSaturated:
+            fallthrough
+        case HKQuantityTypeIdentifierDietaryFatMonounsaturated:
+            fallthrough
+        case HKQuantityTypeIdentifierDietaryFatPolyunsaturated:
+            fallthrough
+        case HKQuantityTypeIdentifierDietarySugar:
+            fallthrough
+        case HKQuantityTypeIdentifierDietarySodium:
+            fallthrough
+        case HKQuantityTypeIdentifierDietaryCaffeine:
+            fallthrough
+        case HKQuantityTypeIdentifierDietaryWater:
+            fallthrough
+        case HKQuantityTypeIdentifierUVExposure:
+            fallthrough
+        case HKWorkoutTypeIdentifier:
             fallthrough
         case HKQuantityTypeIdentifierHeartRate:
             return (self as! HKQuantitySample).quantity.doubleValueForUnit(defaultUnit!)
@@ -793,8 +1163,36 @@ public extension HKSample {
             return HKUnit.hourUnit()
         case HKQuantityTypeIdentifierDietaryEnergyConsumed:
             return HKUnit.kilocalorieUnit()
+        case HKQuantityTypeIdentifierActiveEnergyBurned:
+            return HKUnit.kilocalorieUnit()
+        case HKQuantityTypeIdentifierDietaryCarbohydrates:
+            return HKUnit.gramUnit()
+        case HKQuantityTypeIdentifierDistanceWalkingRunning:
+            return HKUnit.mileUnit()
+        case HKQuantityTypeIdentifierStepCount:
+            return HKUnit.countUnit()
         case HKCorrelationTypeIdentifierBloodPressure:
             return HKUnit.millimeterOfMercuryUnit()
+        case HKQuantityTypeIdentifierDietaryProtein:
+            return HKUnit.gramUnit()
+        case HKQuantityTypeIdentifierDietaryFatTotal:
+            return HKUnit.gramUnit()
+        case HKQuantityTypeIdentifierDietaryFatSaturated:
+            return HKUnit.gramUnit()
+        case HKQuantityTypeIdentifierDietaryFatPolyunsaturated:
+            return HKUnit.gramUnit()
+        case HKQuantityTypeIdentifierDietaryFatMonounsaturated:
+            return HKUnit.gramUnit()
+        case HKQuantityTypeIdentifierDietarySugar:
+            return HKUnit.gramUnit()
+        case HKQuantityTypeIdentifierDietarySodium:
+            return HKUnit.gramUnit()
+        case HKQuantityTypeIdentifierDietaryCaffeine:
+            return HKUnit.gramUnit()
+        case HKQuantityTypeIdentifierUVExposure:
+            return HKUnit.countUnit()
+        case HKWorkoutTypeIdentifier:
+            return HKUnit.hourUnit()
         default:
             return nil
         }
@@ -828,6 +1226,16 @@ public extension Array where Element: HKStatistics {
     }
 }
 
+public func <(a: NSDate, b: NSDate) -> Bool {
+    return a.compare(b) == NSComparisonResult.OrderedAscending
+}
+
+public func ==(a: NSDate, b: NSDate) -> Bool {
+    return a.compare(b) == NSComparisonResult.OrderedSame
+}
+
+extension NSDate: Comparable { }
+
 public extension Array where Element: HKSample {
     public var sleepDuration: NSTimeInterval? {
         return filter { (sample) -> Bool in
@@ -837,4 +1245,20 @@ public extension Array where Element: HKSample {
                 return sample.endDate.timeIntervalSinceDate(sample.startDate)
             }.reduce(0) { $0 + $1 }
     }
+    public var workoutDuration: NSTimeInterval? {
+        return filter { (sample) -> Bool in
+            let categorySample = sample as! HKWorkout
+            return categorySample.sampleType.identifier == HKWorkoutTypeIdentifier
+            }.map { (sample) -> NSTimeInterval in
+                return sample.endDate.timeIntervalSinceDate(sample.startDate)
+            }.reduce(0) { $0 + $1 }
+    }
+//    public var workoutDuration: NSDate? {
+//        return filter { (sample) -> Bool in
+//            let categorySample = sample as! HKWorkout
+//            let now = NSDate()
+//            return categorySample.sampleType.identifier == HKWorkoutTypeIdentifier && categorySample.startDate < now
+//            
+//        }
+//    }
 }

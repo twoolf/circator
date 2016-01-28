@@ -67,6 +67,7 @@ public class ConsentManager: NSObject, ORKTaskViewControllerDelegate {
         if let dictionary = Locksmith.loadDataForUserAccount(unnamedAccount),
             consentFilePath = dictionary["consentfile"] as? String
         {
+            print("file path for pdf files is: \(consentFilePath)")
             return consentFilePath
         }
         return nil
@@ -374,7 +375,7 @@ public class ConsentManager: NSObject, ORKTaskViewControllerDelegate {
             reviewConsentStep
         ]
     }
-    
+ 
     private func consentTaskWithEligibilitySection(withEligibility: Bool = true) -> ORKTask {
         if withEligibility {
             let consentTask = ORKNavigableOrderedTask(identifier: String(Identifier.EligibilityAndConsentTask), steps: Array([eligibilitySteps, consentSteps].flatten()))
@@ -415,7 +416,7 @@ public class ConsentManager: NSObject, ORKTaskViewControllerDelegate {
             self.consentHandler?(consented: true)
         }
     }
-    
+   
     // MARK: - Task view controller delegate
     
     public func taskViewController(taskViewController: ORKTaskViewController, didFinishWithReason reason: ORKTaskViewControllerFinishReason, error: NSError?) {
@@ -445,5 +446,5 @@ public class ConsentManager: NSObject, ORKTaskViewControllerDelegate {
             self.consentHandler?(consented: reason == .Completed)
         }
     }
-    
+  
 }
