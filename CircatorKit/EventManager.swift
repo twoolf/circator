@@ -123,6 +123,8 @@ public class EventManager : NSObject, WCSessionDelegate {
             
             let dateFormatter = NSDateFormatter()
             dateFormatter.dateFormat = "HH:mm:ss"
+            dateFormatter.AMSymbol = "AM"
+            dateFormatter.PMSymbol = "PM"
 
             var eventIndex : [DiningEventKey:[(Int, String)]] = [:]
             for ev in events {
@@ -159,7 +161,7 @@ public class EventManager : NSObject, WCSessionDelegate {
                 }
             }
 
-            HealthManager.sharedManager.fetchPreparationAndRecoveryWorkout { (results, error) in
+            HealthManager.sharedManager.fetchPreparationAndRecoveryWorkoutCal { (results, error) in
                 for workout in (results as! [HKWorkout]) {
                     let dkey = DiningEventKey(start: workout.startDate, end: workout.endDate)
                     if let d = workout.metadata {
