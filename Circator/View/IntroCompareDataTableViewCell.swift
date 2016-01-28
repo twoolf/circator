@@ -69,7 +69,7 @@ class IntroCompareDataTableViewCell: UITableViewCell {
         loadPopSamples(populationAverageData, toLabel: populationAverageLabel, stale: stalePopulation)
     }
 
-    private func loadUserSamples(results: [Result], toLabel label: UILabel) {
+    private func loadUserSamples(var results: [Result], toLabel label: UILabel) {
         label.text = "\(IntroCompareDataTableViewCell.healthFormatter.stringFromResults(results))"
     }
 
