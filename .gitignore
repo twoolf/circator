@@ -44,3 +44,6 @@ Pods/
 
 Carthage/Build
 
+## Yanif's local scripts.
+stash.sh
+unstash.sh
