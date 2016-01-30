@@ -140,6 +140,7 @@ class LoginViewController: UIViewController, UITableViewDelegate, UITableViewDat
     func doSignup(sender: UIButton) {
         let registerVC = RegisterViewController()
         registerVC.parentView = parentView
+        registerVC.consentOnLoad = true
         self.navigationController?.pushViewController(registerVC, animated: true)
     }
 
@@ -219,7 +220,7 @@ class LoginViewController: UIViewController, UITableViewDelegate, UITableViewDat
                         UserManager.sharedManager.setUserId(currentUser)
                     }
                 }
-                UserManager.sharedManager.setPassword(txt)
+                UserManager.sharedManager.setAccountPassword(txt)
                 passCell?.textField.resignFirstResponder()
                 userCell?.textField.becomeFirstResponder()
             default:

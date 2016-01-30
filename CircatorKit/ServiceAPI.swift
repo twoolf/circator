@@ -9,6 +9,9 @@
 import Foundation
 import HealthKit
 import Alamofire
+import SwiftyBeaver
+
+let log = SwiftyBeaver.self
 
 enum MCRouter : URLRequestConvertible {
     static let baseURLString = "https://app.metaboliccompass.com"
@@ -56,8 +59,10 @@ enum MCRouter : URLRequestConvertible {
         switch self {
         case .UploadHKMeasures:
             return "/measures"
+
         case .AggMeasures:
             return "/measures/aggregates"
+
         case .MealMeasures:
             return "/measures/meals"
 
@@ -107,6 +112,45 @@ enum MCRouter : URLRequestConvertible {
             
         case .TokenExpiry(let parameters):
             return Alamofire.ParameterEncoding.JSON.encode(mutableURLRequest, parameters: parameters).0
+        }
+    }
+    
+}
+
+public class Service {
+    internal static func string<S: SequenceType where S.Generator.Element == Int>
+        (route: MCRouter, statusCode: S, tag: String,
+        completion: (NSURLRequest?, NSHTTPURLResponse?, Alamofire.Result<String>) -> Void)
+        -> Alamofire.Request
+    {
+        return Alamofire.request(route).validate(statusCode: statusCode).logResponseString(tag, completion: completion)
+    }
+    
+    internal static func json<S: SequenceType where S.Generator.Element == Int>
+        (route: MCRouter, statusCode: S, tag: String,
+        completion: (NSURLRequest?, NSHTTPURLResponse?, Alamofire.Result<AnyObject>) -> Void)
+        -> Alamofire.Request
+    {
+        return Alamofire.request(route).validate(statusCode: statusCode).logResponseJSON(tag, completion: completion)
+    }
+}
+
+extension Alamofire.Request {
+    public func logResponseString(tag: String, completion: (NSURLRequest?, NSHTTPURLResponse?, Alamofire.Result<String>) -> Void)
+        -> Self
+    {
+        return self.responseString() { req, resp, result in
+            log.debug("\(tag): " + (result.isSuccess ? "SUCCESS" : "FAILED"))
+            completion(req, resp, result)
+        }
+    }
+    
+    public func logResponseJSON(tag: String, completion: (NSURLRequest?, NSHTTPURLResponse?, Alamofire.Result<AnyObject>) -> Void)
+        -> Self
+    {
+        return self.responseJSON() { req, resp, result in
+            log.debug("\(tag): " + (result.isSuccess ? "SUCCESS" : "FAILED"))
+            completion(req, resp, result)
         }
     }
 }

@@ -39,7 +39,6 @@ class RowSettingsViewController: UITableViewController {
     }
     
     override func tableView(tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-//        print("number of rows, \(PreviewManager.previewChoices[section]), \(PreviewManager.previewChoices[section].count)")
         return PreviewManager.previewChoices[section].count
     }
     

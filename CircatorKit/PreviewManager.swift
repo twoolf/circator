@@ -33,7 +33,7 @@ public class PreviewManager: NSObject {
         [   HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierDietarySugar)!,
             HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierDietaryCholesterol)!,
             HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierDietarySodium)!
-
+            
         ],
         [   HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierActiveEnergyBurned)!,
             HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierDietaryWater)!,
@@ -43,22 +43,10 @@ public class PreviewManager: NSObject {
             HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierDietaryFatPolyunsaturated)!,
             HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierDietaryFatSaturated)!,
             HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierDietaryFatMonounsaturated)!
-        ],
-        [
-            HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierDistanceWalkingRunning)!,
-            HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierDistanceCycling)!,
-            HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierFlightsClimbed)!
-        ],
-        [
-            HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierBloodGlucose)!,
-            HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierBasalEnergyBurned)!,
-            HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierDietaryFiber)!
-        ],
-        [
-            HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierDietaryIron)!,
-            HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierDietaryCalcium)!
         ]
     ]
+
+
 
     public static let rowIcons: [UIImage] = {
         return ["icon_scale", "icon_heart_rate", "icon_sleep", "icon_meal", "icon_food", "icon_run", "icon_blood_pressure"].map { UIImage(named: $0)! }
@@ -72,12 +60,12 @@ public class PreviewManager: NSObject {
         } else {
             let defaultTypes = [
                 HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierBodyMass)!,
-                HKObjectType.correlationTypeForIdentifier(HKCorrelationTypeIdentifierBloodPressure)!,
+                HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierHeartRate)!,
                 HKObjectType.categoryTypeForIdentifier(HKCategoryTypeIdentifierSleepAnalysis)!,
-                HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierDietaryEnergyConsumed)!,
-                HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierDietaryCarbohydrates)!,
+                HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierDietaryProtein)!,
                 HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierDietarySugar)!,
-                HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierDietaryFatMonounsaturated)!
+                HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierActiveEnergyBurned)!,
+                HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierDietaryFatSaturated)!
             ]
             let rawTypes = defaultTypes.map { (sampleType) -> NSData in
                 return NSKeyedArchiver.archivedDataWithRootObject(sampleType)

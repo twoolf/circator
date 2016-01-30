@@ -141,7 +141,7 @@ class SettingsViewController: UITableViewController, UITextFieldDelegate {
                     cellInput.delegate = self
                     
                 case 3:
-                    let cachedProfile : [String: AnyObject] = UserManager.sharedManager.getAccountDataCache()
+                    let cachedProfile : [String: AnyObject] = UserManager.sharedManager.getProfileCache()
                     cellLabel?.text = profile[indexPath.row].0
                     cellInput.placeholder = profile[indexPath.row].2
                     cellInput.tag = profile[indexPath.row].3
@@ -166,9 +166,8 @@ class SettingsViewController: UITableViewController, UITextFieldDelegate {
 
             case 2:
                 cell.tintColor = Theme.universityDarkTheme.backgroundColor
-                
                 cell.imageView?.image = PreviewManager.rowIcons[indexPath.row]
-               // cell.textLabel?.text = //PreviewManager.previewSampleTypes[indexPath.row].displayText
+                cell.textLabel?.text = PreviewManager.previewSampleTypes[indexPath.row].displayText
                 cell.accessoryType = .DisclosureIndicator
                 
             default:
@@ -249,17 +248,17 @@ class SettingsViewController: UITableViewController, UITextFieldDelegate {
                 }
                 
             case 4:
-                UserManager.sharedManager.updateAccountData(["age":txt], completion: {_ in return})
+                UserManager.sharedManager.pushProfile(["age":txt], completion: {_ in return})
                 textField.resignFirstResponder()
                 Async.main { self.profileUpdated() }
 
             case 5:
-                UserManager.sharedManager.updateAccountData(["weight":txt], completion: {_ in return})
+                UserManager.sharedManager.pushProfile(["weight":txt], completion: {_ in return})
                 textField.resignFirstResponder()
                 Async.main { self.profileUpdated() }
 
             case 6:
-                UserManager.sharedManager.updateAccountData(["height":txt], completion: {_ in return})
+                UserManager.sharedManager.pushProfile(["height":txt], completion: {_ in return})
                 textField.resignFirstResponder()
                 Async.main { self.profileUpdated() }
 
@@ -284,7 +283,7 @@ class ConsentViewController : UIViewController {
         let doneButton = UIBarButtonItem(barButtonSystemItem: .Done, target: self, action: "consentViewDone")
         navigationItem.rightBarButtonItem = doneButton
 
-        let accountCache = UserManager.sharedManager.getAccountDataCache()
+        let accountCache = UserManager.sharedManager.getProfileCache()
         if let pdfstr = accountCache["consent"] as? String,
                pdfdata = NSData(base64EncodedString: pdfstr, options: NSDataBase64DecodingOptions())
         {

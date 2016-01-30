@@ -11,6 +11,8 @@ import WatchConnectivity
 import Async
 import Granola
 import Alamofire
+import SwiftyJSON
+import SwiftyBeaver
 
 public typealias HealthManagerAuthorizationBlock = (success: Bool, error: NSError?) -> Void
 public typealias HealthManagerFetchSampleBlock = (samples: [HKSample], error: NSError?) -> Void
@@ -27,6 +29,7 @@ private let HealthManagerAnchorKey = "HKClientAnchorKey"
 public class HealthManager: NSObject, WCSessionDelegate {
 
     public static let sharedManager = HealthManager()
+    public static let serializer = OMHSerializer()
 
     lazy var healthKitStore: HKHealthStore = HKHealthStore()
 
@@ -64,19 +67,19 @@ public class HealthManager: NSObject, WCSessionDelegate {
     // Not guaranteed to be on main thread
     public func authorizeHealthKit(completion: HealthManagerAuthorizationBlock)
     {
+        // Note: keep this in alphabetical order.
         let healthKitTypesToRead : Set<HKObjectType>? = [
+            HKObjectType.categoryTypeForIdentifier(HKCategoryTypeIdentifierSleepAnalysis)!,
             HKObjectType.characteristicTypeForIdentifier(HKCharacteristicTypeIdentifierDateOfBirth)!,
             HKObjectType.characteristicTypeForIdentifier(HKCharacteristicTypeIdentifierBloodType)!,
             HKObjectType.characteristicTypeForIdentifier(HKCharacteristicTypeIdentifierBiologicalSex)!,
-            HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierBodyMass)!,
-            HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierHeight)!,
-            HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierBodyMassIndex)!,
             HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierActiveEnergyBurned)!,
             HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierBasalEnergyBurned)!,
-            HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierFlightsClimbed)!,
-            HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierHeartRate)!,
-            HKObjectType.categoryTypeForIdentifier(HKCategoryTypeIdentifierSleepAnalysis)!,
             HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierBloodGlucose)!,
+            HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierBloodPressureDiastolic)!,
+            HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierBloodPressureSystolic)!,
+            HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierBodyMass)!,
+            HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierBodyMassIndex)!,
             HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierDietaryEnergyConsumed)!,
             HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierDietarySugar)!,
             HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierDietaryCopper)!,
@@ -95,9 +98,10 @@ public class HealthManager: NSObject, WCSessionDelegate {
             HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierDietaryCaffeine)!,
             HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierDietaryWater)!,
             HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierDistanceWalkingRunning)!,
+            HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierFlightsClimbed)!,
+            HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierHeartRate)!,
+            HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierHeight)!,
             HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierStepCount)!,
-            HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierBloodPressureDiastolic)!,
-            HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierBloodPressureSystolic)!,
             HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierUVExposure)!,
             HKObjectType.workoutType()
         ]
@@ -118,6 +122,8 @@ public class HealthManager: NSObject, WCSessionDelegate {
         }
 
     }
+
+    // MARK: - HealthKit sample retrieval.
 
     public func fetchMostRecentSample(sampleType: HKSampleType, completion: HealthManagerFetchSampleBlock)
     {
@@ -282,14 +288,72 @@ public class HealthManager: NSObject, WCSessionDelegate {
         }
     }
 
- // for use with iCal
+    // Completion hander is on main queue
+    public func correlateStatisticsOfType(type: HKSampleType, withType type2: HKSampleType, completion: HealthManagerCorrelationStatisticsBlock) {
+        var stat1: [HKStatistics]?
+        var stat2: [HKStatistics]?
+        
+        let group = dispatch_group_create()
+        dispatch_group_enter(group)
+        fetchStatisticsOfType(type) { (statistics, error) -> Void in
+            dispatch_group_leave(group)
+            guard error == nil else {
+                completion([], [], error)
+                return
+            }
+            stat1 = statistics
+            print ("statistics of type 1, \(stat1?.enumerate())")
+        }
+        dispatch_group_enter(group)
+        fetchStatisticsOfType(type2) { (statistics, error) -> Void in
+            dispatch_group_leave(group)
+            guard error == nil else {
+                completion([], [], error)
+                return
+            }
+            stat2 = statistics
+            //            print ("statistics of type 2, \(stat2?.enumerate())")
+        }
+        
+        dispatch_group_notify(group, dispatch_get_main_queue()) {
+            guard stat1 != nil && stat2 != nil else {
+                return
+            }
+            stat1 = stat1!.filter { (statistics) -> Bool in
+                return stat2!.hasSamplesAtStartDate(statistics.startDate)
+            }
+            stat2 = stat2!.filter { (statistics) -> Bool in
+                return stat1!.hasSamplesAtStartDate(statistics.startDate)
+            }
+            guard stat1!.isEmpty == false && stat2!.isEmpty == false else {
+                completion(stat1!, stat2!, nil)
+                return
+            }
+            for i in 1..<stat1!.count {
+                var j = i
+                let target = stat1![i]
+                
+                while j > 0 && target.quantity!.compare(stat1![j - 1].quantity!) == .OrderedAscending {
+                    swap(&stat1![j], &stat1![j - 1])
+                    swap(&stat2![j], &stat2![j - 1])
+                    j--
+                }
+                stat1![j] = target
+            }
+            completion(stat1!, stat2!, nil)
+            //            print ("statistics of both types, \(stat1),and \(stat2)")
+        }
+    }
+
+    // MARK: - Meal timing event retrieval.
+
     public func fetchPreparationAndRecoveryWorkoutCal(completion: (([AnyObject]!, NSError!) -> Void)!) {
         let predicate =  HKQuery.predicateForWorkoutsWithWorkoutActivityType(HKWorkoutActivityType.PreparationAndRecovery)
         let sortDescriptor = NSSortDescriptor(key:HKSampleSortIdentifierStartDate, ascending: false)
         let sampleQuery = HKSampleQuery(sampleType: HKWorkoutType.workoutType(), predicate: predicate, limit: 0, sortDescriptors: [sortDescriptor])
             { (sampleQuery, results, error ) -> Void in
                 if let queryError = error {
-                    print( "There was an error while reading the samples: \(queryError.localizedDescription)")
+                    log.error("Error reading HK samples: \(queryError.localizedDescription)")
                 }
                 completion(results,error)
         }
@@ -303,7 +367,7 @@ public class HealthManager: NSObject, WCSessionDelegate {
         let sampleQuery = HKSampleQuery(sampleType: HKWorkoutType.workoutType(), predicate: predicate, limit: 0, sortDescriptors: [sortDescriptor])
             { (sampleQuery, results, error ) -> Void in
                 if let queryError = error {
-                    print( "There was an error while reading the samples: \(queryError.localizedDescription)")
+                    log.error("Error reading HK samples: \(queryError.localizedDescription)")
                 }
                 completion(results as [HKSample]!, nil)
                 for (index,value) in results!.enumerate() {
@@ -313,54 +377,46 @@ public class HealthManager: NSObject, WCSessionDelegate {
         healthKitStore.executeQuery(sampleQuery)
     }
 
+    // MARK: - Population query execution.
+
     // TODO: pull this from Granola
     // TODO: make this a dictionary with a list value to support multiple fields per sampleType,
     // e.g., blood_pressure needs both systolic and diastolic
     public static let attributeNamesBySampleType : [HKSampleType:(String,String,String?)] =
         PreviewManager.previewChoices.flatten().reduce([:]) { (var dict, sampleType) in
             switch sampleType.identifier {
+            case HKObjectType.correlationTypeForIdentifier(HKCorrelationTypeIdentifierBloodPressure)!.identifier:
+                dict[sampleType] = ("blood_pressure", "blood_pressure", "HKCorrelationTypeIdentifierBloodPressure")
+
+            case HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierActiveEnergyBurned)!.identifier:
+                dict[sampleType] = ("active_energy_burned", "active_energy_burned", nil)
+                
+            case HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierBasalEnergyBurned)!.identifier:
+                dict[sampleType] = ("unit_value", "basal_energy_burned", "HKQuantityTypeIdentifierBasalEnergyBurned")
+
+            case HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierBloodPressureDiastolic)!.identifier:
+                dict[sampleType] = ("unit_value", "diastolic_blood_pressure", "HKQuantityTypeIdentifierBloodPressureDiastolic")
+                
+            case HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierBloodPressureSystolic)!.identifier:
+                dict[sampleType] = ("unit_value", "systolic_blood_pressure", "HKQuantityTypeIdentifierBloodPressureSystolic")
+                
             case HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierBodyMass)!.identifier:
                 dict[sampleType] = ("body_weight", "body_weight", nil)
 
             case HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierBodyMassIndex)!.identifier:
                 dict[sampleType] = ("body_mass_index", "body_mass_index", nil)
                 
-            case HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierFlightsClimbed)!.identifier:
-                dict[sampleType] = ("flights_climbed", "flights_climbed", nil)
-                
             case HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierBloodGlucose)!.identifier:
                 dict[sampleType] = ("blood_glucose", "blood_glucose", nil)
                 
-            case HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierActiveEnergyBurned)!.identifier:
-                dict[sampleType] = ("active_energy_burned", "active_energy_burned", nil)
-                
-            case HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierBasalEnergyBurned)!.identifier:
-                dict[sampleType] = ("basal_energy_burned", "basal_energy_burned", nil)
-
             case HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierHeartRate)!.identifier:
-                print("\(dict[sampleType]) Mariano")
                 dict[sampleType] = ("heart_rate", "heart_rate", nil)
                 
-            case HKObjectType.correlationTypeForIdentifier(HKCorrelationTypeIdentifierBloodPressure)!.identifier:
-                dict[sampleType] = ("unit_value", "blood_pressure", "HKCorrelationTypeIdentifierBloodPressure")
-
-            case HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierBloodPressureDiastolic)!.identifier:
-                dict[sampleType] = ("unit_value", "diastolic_blood_pressure", "HKQuantityTypeIdentifierBloodPressureDiastolic")
-
-            case HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierBloodPressureSystolic)!.identifier:
-                dict[sampleType] = ("unit_value", "systolic_blood_pressure", "HKQuantityTypeIdentifierBloodPressureSystolic")
-
             case HKObjectType.categoryTypeForIdentifier(HKCategoryTypeIdentifierSleepAnalysis)!.identifier:
                 dict[sampleType] = ("sleep_duration", "sleep_duration", nil)
 
-            case HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierDistanceWalkingRunning)!.identifier:
-                dict[sampleType] = ("unit_value", "distance_walkingrunning", "HKQuantityTypeIdentifierDistanceWalkingRunning")
-
             case HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierDietaryEnergyConsumed)!.identifier:
                 dict[sampleType] = ("unit_value", "energy_consumed", "HKQuantityTypeIdentifierDietaryEnergyConsumed")
-
-            case HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierStepCount)!.identifier:
-                dict[sampleType] = ("unit_value", "step_count", "HKQuantityTypeIdentifierStepCount")
 
             case HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierDietaryCarbohydrates)!.identifier:
                 dict[sampleType] = ("unit_value", "carbs", "HKQuantityTypeIdentifierDietaryCarbohydrates")
@@ -394,6 +450,18 @@ public class HealthManager: NSObject, WCSessionDelegate {
                 
             case HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierDietaryWater)!.identifier:
                 dict[sampleType] = ("unit_value", "water", "HKQuantityTypeIdentifierDietaryWater")
+
+            case HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierDistanceWalkingRunning)!.identifier:
+                dict[sampleType] = ("unit_value", "distance_walkingrunning", "HKQuantityTypeIdentifierDistanceWalkingRunning")
+
+            case HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierFlightsClimbed)!.identifier:
+                dict[sampleType] = ("unit_value", "flights_climbed", "HKQuantityTypeIdentifierFlightsClimbed")
+
+            case HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierHeight)!.identifier:
+                dict[sampleType] = ("body_height", "body_height", nil)
+
+            case HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierStepCount)!.identifier:
+                dict[sampleType] = ("step_count", "step_count", nil)
                 
             case HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierUVExposure)!.identifier:
                 dict[sampleType] = ("unit_value", "UV_exposure", "HKQuantityTypeIdentifierUVExposure")
@@ -401,14 +469,8 @@ public class HealthManager: NSObject, WCSessionDelegate {
             case HKObjectType.workoutType().identifier:HKWorkoutActivityType.PreparationAndRecovery
                 dict[sampleType] = ("effective_time_frame", "workout", "HKWorkoutActivityType")
                 
-//                (HKWorkoutActivityTypePreparationAndRecovery)
-                
-//            case HKObjectType.workoutType().identifier:
-//                print("WORKOUT: " + sampleType.identifier)
-                //dict[sampleType] = ("effective_time_frame", "workout", nil)
-
             default:
-                print("Mismatched sample types on: " + sampleType.identifier)
+                log.warning("Mismatched sample types on: " + sampleType.identifier)
             }
             return dict
         }
@@ -443,7 +505,7 @@ public class HealthManager: NSObject, WCSessionDelegate {
             if popQueryIndex >= 0 && popQueryIndex < popQueries.count  {
                 switch popQueries[popQueryIndex].1 {
                 case Query.UserDefinedQuery(_):
-                    print("NYI: UserDefinedQueries")
+                    log.error("NYI: UserDefinedQueries")
 
                 case Query.ConjunctiveQuery(let aggpreds):
                     let pfdict : [[String: AnyObject]] = aggpreds.map { (aggr, attr, cmp, val) in
@@ -455,8 +517,8 @@ public class HealthManager: NSObject, WCSessionDelegate {
                                     dict["predicate"] = attrAsPred
                                 }
                             } else {
-                                print(HealthManager.attributesByName)
-                                print("Internal error: could not find attribute '\(attr)' while building a conjunctive query")
+                                log.error(HealthManager.attributesByName)
+                                log.error("Could not find attribute '\(attr)' for a conjunctive query")
                             }
                             return dict
                         }.filter { dict in !dict.isEmpty }
@@ -468,20 +530,15 @@ public class HealthManager: NSObject, WCSessionDelegate {
             let json = try NSJSONSerialization.dataWithJSONObject(params, options: NSJSONWritingOptions.PrettyPrinted)
             let serializedAttrs = try NSJSONSerialization.JSONObjectWithData(json, options: NSJSONReadingOptions()) as! [String : AnyObject]
 
-//            print("sent to server: \(serializedAttrs)")
-            Alamofire.request(MCRouter.AggMeasures(serializedAttrs))
-                .validate(statusCode: 200..<300)
-                .validate(contentType: ["application/json"])
-                .responseJSON {_, response, result in
-                    print("AGGPOST: " + (result.isSuccess ? "SUCCESS" : "FAILED"))
-                    print("return : \(response) \(result)")
-                    guard !result.isSuccess else {
-                        self.refreshAggregatesFromMsg(samplesByName, payload: result.value)
-                        return
-                    }
+            Service.json(MCRouter.AggMeasures(serializedAttrs), statusCode: 200..<300, tag: "AGGPOST") {
+                _, response, result in
+                guard !result.isSuccess else {
+                    self.refreshAggregatesFromMsg(samplesByName, payload: result.value)
+                    return
+                }
             }
         } catch {
-            debugPrint(error)
+            log.error(error)
         }
     }
 
@@ -513,95 +570,54 @@ public class HealthManager: NSObject, WCSessionDelegate {
     }
     
     public func fetchMealAggregates() {
-        print("Fetching meals")
-        Alamofire.request(MCRouter.MealMeasures([:])).responseString {_, response, result in
-            print("POST: " + (result.isSuccess ? "SUCCESS" : "FAILED"))
-            print(result.value)
+        Service.string(MCRouter.MealMeasures([:]), statusCode: 200..<300, tag: "MEALS") {
+            _, response, result in
+            log.info(result.value)
         }
     }
 
-    // Completion hander is on main queue
-    public func correlateStatisticsOfType(type: HKSampleType, withType type2: HKSampleType, completion: HealthManagerCorrelationStatisticsBlock) {
-        var stat1: [HKStatistics]?
-        var stat2: [HKStatistics]?
-
-        let group = dispatch_group_create()
-        dispatch_group_enter(group)
-        fetchStatisticsOfType(type) { (statistics, error) -> Void in
-            dispatch_group_leave(group)
-            guard error == nil else {
-                completion([], [], error)
-                return
-            }
-            stat1 = statistics
-            print ("statistics of type 1, \(stat1?.enumerate())")
-        }
-        dispatch_group_enter(group)
-        fetchStatisticsOfType(type2) { (statistics, error) -> Void in
-            dispatch_group_leave(group)
-            guard error == nil else {
-                completion([], [], error)
-                return
-            }
-            stat2 = statistics
-//            print ("statistics of type 2, \(stat2?.enumerate())")
-        }
-
-        dispatch_group_notify(group, dispatch_get_main_queue()) {
-            guard stat1 != nil && stat2 != nil else {
-                return
-            }
-            stat1 = stat1!.filter { (statistics) -> Bool in
-                return stat2!.hasSamplesAtStartDate(statistics.startDate)
-            }
-            stat2 = stat2!.filter { (statistics) -> Bool in
-                return stat1!.hasSamplesAtStartDate(statistics.startDate)
-            }
-            guard stat1!.isEmpty == false && stat2!.isEmpty == false else {
-                completion(stat1!, stat2!, nil)
-                return
-            }
-            for i in 1..<stat1!.count {
-                var j = i
-                let target = stat1![i]
-
-                while j > 0 && target.quantity!.compare(stat1![j - 1].quantity!) == .OrderedAscending {
-                    swap(&stat1![j], &stat1![j - 1])
-                    swap(&stat2![j], &stat2![j - 1])
-                    j--
-                }
-                stat1![j] = target
-            }
-            completion(stat1!, stat2!, nil)
-//            print ("statistics of both types, \(stat1),and \(stat2)")
-        }
-    }
 
     // MARK: - Observers
+
+    func jsonifySample(sample : HKSample) throws -> [String : AnyObject] {
+        return try HealthManager.serializer.dictForSample(sample)
+    }
+
+    func uploadSample(jsonObj: [String: AnyObject]) -> () {
+        Service.string(MCRouter.UploadHKMeasures(jsonObj), statusCode: 200..<300, tag: "UPLOAD") {
+            _, response, result in
+            log.info("Upload: \(result.value)")
+        }
+    }
+    
+    func uploadSampleBlock(jsonObjBlock: [[String:AnyObject]]) -> () {
+        Service.string(MCRouter.UploadHKMeasures(["block":jsonObjBlock]), statusCode: 200..<300, tag: "UPLOAD") {
+            _, response, result in
+            log.info("Upload: \(result.value)")
+        }
+    }
 
     public func registerObservers() {
         authorizeHealthKit { (success, _) -> Void in
             guard success else {
                 return
             }
-            let serializer = OMHSerializer()
+            
+            // Note: keep this sorted by objectType, then alphabetically.
             let types = [
-                HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierBodyMass)!,
-                HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierHeight)!,
-                HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierBodyMassIndex)!,
-                HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierFlightsClimbed)!,
+                HKObjectType.categoryTypeForIdentifier(HKCategoryTypeIdentifierSleepAnalysis)!,
                 HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierActiveEnergyBurned)!,
                 HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierBasalEnergyBurned)!,
-                HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierHeartRate)!,
-                HKObjectType.categoryTypeForIdentifier(HKCategoryTypeIdentifierSleepAnalysis)!,
                 HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierBloodGlucose)!,
-                HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierDistanceWalkingRunning)!,
+                HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierBloodPressureDiastolic)!,
+                HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierBloodPressureSystolic)!,
+                HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierBodyMass)!,
+                HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierBodyMassIndex)!,
                 HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierDietaryEnergyConsumed)!,
                 HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierDietarySugar)!,
                 HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierDietaryCopper)!,
                 HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierDietaryCalcium)!,
                 HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierDietaryCarbohydrates)!,
-                HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierStepCount)!,
                 HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierDietaryCholesterol)!,
                 HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierDietaryFiber)!,
                 HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierDietaryIron)!,
@@ -614,32 +630,43 @@ public class HealthManager: NSObject, WCSessionDelegate {
                 HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierDietarySodium)!,
                 HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierDietaryCaffeine)!,
                 HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierDietaryWater)!,
-                HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierBloodPressureDiastolic)!,
-                HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierBloodPressureSystolic)!,
+                HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierDistanceWalkingRunning)!,
+                HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierFlightsClimbed)!,
+                HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierHeartRate)!,
+                HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierHeight)!,
+                HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierStepCount)!,
                 HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierUVExposure)!,
                 HKObjectType.workoutType()
             ]
+
             types.forEach { (type) in
                 self.startBackgroundObserverForType(type) { (added, _, _, error) -> Void in
-                    guard error == nil else {
-                        debugPrint(error)
+                    guard error == nil else {	
+                        log.error("Failed to register observers: \(error)")
                         return
                     }
                     do {
-                        let jsons = try added.map { (sample) -> [String : AnyObject] in
-                            let json = try serializer.jsonForSample(sample)
-                            let data = json.dataUsingEncoding(NSUTF8StringEncoding)!
-                            let serializedObject = try NSJSONSerialization.JSONObjectWithData(data, options: NSJSONReadingOptions()) as! [String : AnyObject]
-                            return serializedObject
-                        }
-                        jsons.forEach { json -> () in
-                            Alamofire.request(MCRouter.UploadHKMeasures(json)).responseString {_, response, result in
-                                print("POST: " + (result.isSuccess ? "SUCCESS" : "FAILED"))
-                                print(result.value)
+                        log.info("Uploading \(added.count) \(type.displayText) samples")
+                        let blockSize = 100
+                        let totalBlocks = ((added.count / blockSize)+1)
+                        if ( added.count > 20 ) {
+                            for i in 0..<totalBlocks {
+                                autoreleasepool { _ in
+                                    do {
+                                        log.info("Uploading block \(i) / \(totalBlocks)")
+                                        let jsonObjs = try added[(i*blockSize)..<(min((i+1)*blockSize, added.count))].map(self.jsonifySample)
+                                        self.uploadSampleBlock(jsonObjs)
+                                    } catch {
+                                        log.error(error)
+                                    }
+                                }
                             }
+                        } else {
+                            let jsons = try added.map(self.jsonifySample)
+                            jsons.forEach(self.uploadSample)
                         }
                     } catch {
-                        debugPrint(error)
+                        log.error(error)
                     }
                 }
             }
@@ -650,13 +677,13 @@ public class HealthManager: NSObject, WCSessionDelegate {
     public func startBackgroundObserverForType(type: HKSampleType, maxResultsPerQuery: Int = Int(HKObjectQueryNoLimit), anchorQueryCallback: (addedObjects: [HKSample], deletedObjects: [HKDeletedObject], newAnchor: HKQueryAnchor?, error: NSError?) -> Void) -> Void {
         let onBackgroundStarted = {(success: Bool, nsError: NSError?) -> Void in
             guard success else {
-                debugPrint(nsError)
+                log.error(nsError)
                 return
             }
             let obsQuery = HKObserverQuery(sampleType: type, predicate: nil) {
                 query, completion, obsError in
                 guard obsError == nil else {
-                    debugPrint(obsError)
+                    log.error(obsError)
                     return
                 }
                 self.fetchSamplesOfType(type, anchor: self.getAnchorForType(type), maxResults: maxResultsPerQuery, callContinuosly: false) { (added, deleted, newAnchor, error) -> Void in
@@ -715,7 +742,7 @@ public class HealthManager: NSObject, WCSessionDelegate {
 
     public func savePreparationAndRecoveryWorkout(startDate:NSDate , endDate:NSDate , distance:Double, distanceUnit:HKUnit , kiloCalories:Double,
         metadata:NSDictionary, completion: ( (Bool, NSError!) -> Void)!) {
-            print("Saving workout")
+            log.debug("Saving workout")
 
             // 1. Create quantities for the distance and energy burned
             let distanceQuantity = HKQuantity(unit: distanceUnit, doubleValue: distance)
@@ -723,6 +750,7 @@ public class HealthManager: NSObject, WCSessionDelegate {
 
             // 2. Save Preparation and Recovery Workout as surrogate for Eating (Meal)
             let workout = HKWorkout(activityType: HKWorkoutActivityType.PreparationAndRecovery, startDate: startDate, endDate: endDate, duration: abs(endDate.timeIntervalSinceDate(startDate)), totalEnergyBurned: caloriesQuantity, totalDistance: distanceQuantity, metadata: metadata  as! [String:String])
+
             healthKitStore.saveObject(workout, withCompletion: { (success, error) -> Void in
                 if( error != nil  ) {
                     // Error saving the workout
@@ -731,11 +759,11 @@ public class HealthManager: NSObject, WCSessionDelegate {
                 else {
                     // Workout saved
                     completion(success,nil)
-
                 }
             })
     }
 
+    
     // MARK: - Apple Watch
 
     func connectWatch() {
@@ -762,7 +790,7 @@ public class HealthManager: NSObject, WCSessionDelegate {
             }
             try WCSession.defaultSession().updateApplicationContext(["context": applicationContext])
         } catch {
-            print(error)
+            log.error(error)
         }
     }
 }
@@ -1068,8 +1096,6 @@ public extension HKStatistics {
             return HKUnit.gramUnit()
         case HKQuantityTypeIdentifierUVExposure:
             return HKUnit.countUnit()
-        case is HKWorkoutActivityType:
-            return HKUnit.hourUnit()
         default:
             return nil
         }
