@@ -367,6 +367,31 @@ class IntroViewController: UIViewController, UITableViewDelegate, UITableViewDat
 
     private var selectedMode: GraphMode!
 
+    // MARK: - Dodo messages
+    func loginWelcome() {
+        self.view.dodo.style.bar.hideAfterDelaySeconds = 3
+        self.view.dodo.style.bar.hideOnTap = true
+        self.view.dodo.error("Welcome " + (UserManager.sharedManager.getUserId() ?? ""))
+    }
+
+    func loginRequest() {
+        self.view.dodo.style.bar.hideAfterDelaySeconds = 3
+        self.view.dodo.style.bar.hideOnTap = true
+        self.view.dodo.error("Please log in")
+    }
+
+    func loginError() {
+        self.view.dodo.style.bar.hideAfterDelaySeconds = 3
+        self.view.dodo.style.bar.hideOnTap = true
+        self.view.dodo.error("Failed to login!")
+    }
+    
+    func loginGoodbye(user: String) {
+        self.view.dodo.style.bar.hideAfterDelaySeconds = 3
+        self.view.dodo.style.bar.hideOnTap = true
+        self.view.dodo.error("Goodbye \(user)")
+    }
+    
     // MARK: - Background Work
 
     func withHKCalAuth(completion: Void -> Void) {
@@ -378,19 +403,15 @@ class IntroViewController: UIViewController, UITableViewDelegate, UITableViewDat
     
     func fetchInitialAggregates() {
         Async.userInteractive() {
-            HealthManager.sharedManager.fetchAggregates()
+            self.fetchAggregatesPeriodically()
         }
     }
 
     func fetchAggregatesPeriodically() {
         HealthManager.sharedManager.fetchAggregates()
-        if let freq = UserManager.sharedManager.getRefreshFrequency() {
-            Async.background(after: Double(freq)) {
-                self.fetchAggregatesPeriodically()
-                self.fetchRecentSamples()
-            }
-        } else {
-            
+        let freq = UserManager.sharedManager.getRefreshFrequency()
+        Async.background(after: Double(freq)) {
+            self.fetchAggregatesPeriodically()
         }
     }
 
@@ -402,50 +423,41 @@ class IntroViewController: UIViewController, UITableViewDelegate, UITableViewDat
             }
         }
     }
-
-    private func checkConsent(firstTime: Bool) {
-        ConsentManager.sharedManager.checkConsentWithBaseViewController(self, withEligibility: firstTime) { [weak self] (consented) -> Void in
-            guard consented else {
-                return
-            }
-            if firstTime {
-                self!.registerParticipant()
-            } else {
-                self!.loginAndInitialize()
-            }
+    
+    func loginOrRegister() {
+        if UserManager.sharedManager.hasUserId() {
+            loginAndInitialize()
+        } else {
+            registerParticipant()
         }
     }
 
     func registerParticipant() {
-        withHKCalAuth {
-            let registerVC = RegisterViewController()
-            registerVC.parentView = self
-            self.navigationController?.pushViewController(registerVC, animated: true)
-            self.initializeBackgroundWork()
-        }
+        let registerVC = RegisterViewController()
+        registerVC.parentView = self
+        registerVC.consentOnLoad = true
+        registerVC.registerCompletion = { self.initializeBackgroundWork() }
+        self.navigationController?.pushViewController(registerVC, animated: true)
     }
     
-    func loginError() {
-        self.view.dodo.style.bar.hideAfterDelaySeconds = 3
-        self.view.dodo.style.bar.hideOnTap = true
-        self.view.dodo.error("Failed to login!")
-    }
-
     func loginAndInitialize() {
         withHKCalAuth {
             UserManager.sharedManager.ensureAccessToken { error in
                 guard !error else {
-                    Async.main { self.loginError() }
+                    Async.main { self.loginRequest() }
                     return
                 }
-                // Jump to the login screen if either the username or password are unavailable.
-                guard let _ = UserManager.sharedManager.getUserId(),
-                    let _ = UserManager.sharedManager.getPassword()
+
+                guard UserManager.sharedManager.hasAccount()
                     else {
                         self.doToggleLogin { self.initializeBackgroundWork() }
                         return
                 }
-                self.initializeBackgroundWork()
+                
+                UserManager.sharedManager.pullProfile { _ in
+                    self.initializeBackgroundWork()
+                    Async.main(after: 2) { self.loginWelcome() }
+                }
             }
         }
     }
@@ -453,7 +465,6 @@ class IntroViewController: UIViewController, UITableViewDelegate, UITableViewDat
     func initializeBackgroundWork() {
         Async.main(after: 2) {
             self.fetchInitialAggregates()
-            //HealthManager.sharedManager.fetchAggregates()
             self.fetchRecentSamples()
             HealthManager.sharedManager.registerObservers()
         }
@@ -464,18 +475,11 @@ class IntroViewController: UIViewController, UITableViewDelegate, UITableViewDat
 
     override func viewDidLoad() {
         super.viewDidLoad()
-
-        checkConsent(!UserManager.sharedManager.registered)
-
+        loginOrRegister()
         configureViews()
         tableView.layoutIfNeeded()
         NSNotificationCenter.defaultCenter().addObserverForName(HealthManagerDidUpdateRecentSamplesNotification, object: nil, queue: NSOperationQueue.mainQueue()) { (_) -> Void in
             self.tableView.reloadData()
-        }
-        Async.main(after: 2) {
-            self.view.dodo.style.bar.hideAfterDelaySeconds = 3
-            self.view.dodo.style.bar.hideOnTap = true
-            self.view.dodo.error("Welcome " + (UserManager.sharedManager.getUserId() ?? ""))
         }
     }
 
@@ -580,17 +584,15 @@ class IntroViewController: UIViewController, UITableViewDelegate, UITableViewDat
     }
 
     func doToggleLogin(completion: (Void -> Void)?) {
-        if let user = UserManager.sharedManager.getUserId() {
-            UserManager.sharedManager.logoutWithCompletion(completion)
-            view.dodo.style.bar.hideAfterDelaySeconds = 3
-            view.dodo.style.bar.hideOnTap = true
-            view.dodo.error("Goodbye \(user)")
-        } else {
+        guard UserManager.sharedManager.hasAccount() else {
             let loginVC = LoginViewController()
             loginVC.parentView = self
             loginVC.completion = completion
             navigationController?.pushViewController(loginVC, animated: true)
+            return
         }
+        UserManager.sharedManager.logoutWithCompletion(completion)
+        self.loginGoodbye(UserManager.sharedManager.getUserId()!)
     }
 
     func showAttributes(sender: UIButton) {

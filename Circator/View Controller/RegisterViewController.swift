@@ -13,21 +13,45 @@ import Former
 
 class RegisterViewController : FormViewController {
 
+
     static let profileFields = ["Email", "Password", "First name", "Last name", "Age", "Weight", "Height"]
     static let profilePlaceholders = ["example@gmail.com", "Required", "Jane or John", "Doe", "24", "160lb" ,"180cm"]
     var profileValues : [String: String] = [:]
 
     // TODO: gender, race, marital status, education level, annual income
 
+    internal var consentOnLoad : Bool = false
+    internal var registerCompletion : (Void -> Void)?
     internal var parentView: IntroViewController?
 
+    private var stashedUserId : String?
+
     override func viewWillAppear(animated: Bool) {
+        super.viewWillAppear(animated)
         navigationController?.setNavigationBarHidden(false, animated: false)
         navigationItem.title = "User Registration"
     }
 
+    func doConsent() {
+        stashedUserId = UserManager.sharedManager.getUserId()
+        UserManager.sharedManager.resetFull()
+        ConsentManager.sharedManager.checkConsentWithBaseViewController(self) {
+            [weak self] (consented) -> Void in
+            guard consented else {
+                UserManager.sharedManager.resetFull()
+                if let user = self!.stashedUserId {
+                    UserManager.sharedManager.setUserId(user)
+                }
+                self!.navigationController?.popViewControllerAnimated(true)
+                return
+            }
+        }
+    }
+
     override func viewDidLoad() {
         super.viewDidLoad()
+        if ( consentOnLoad ) { doConsent() }
+        
         view.backgroundColor = Theme.universityDarkTheme.backgroundColor
         
         let profileDoneButton = UIBarButtonItem(barButtonSystemItem: .Done, target: self, action: "doSignup:")
@@ -122,7 +146,16 @@ class RegisterViewController : FormViewController {
             self.parentView?.view.dodo.error("ResearchKit study not consented!")
         }
     }
-    
+
+    func registrationError() {
+        navigationController?.popViewControllerAnimated(true)
+        Async.main {
+            self.parentView?.view.dodo.style.bar.hideAfterDelaySeconds = 3
+            self.parentView?.view.dodo.style.bar.hideOnTap = true
+            self.parentView?.view.dodo.error("Error in signing up, please try later.")
+        }
+    }
+
     func invalidProfile() {
         self.view.dodo.style.bar.hideAfterDelaySeconds = 3
         self.view.dodo.style.bar.hideOnTap = true
@@ -140,15 +173,28 @@ class RegisterViewController : FormViewController {
             return
         }
 
-        UserManager.sharedManager.ensureUserPass(user, pass: pass)
-        UserManager.sharedManager.register(fname, lastName: lname) { _ in
-            UserManager.sharedManager.setRegistered()
+        UserManager.sharedManager.overrideUserPass(user, pass: pass)
+        UserManager.sharedManager.register(fname, lastName: lname) { (_, error) in
+            guard !error else {
+                // Reset to previous user id, and clean up any partial consent document on registration errors.
+                UserManager.sharedManager.resetFull()
+                if let user = self.stashedUserId {
+                    UserManager.sharedManager.setUserId(user)
+                }
+                ConsentManager.sharedManager.removeConsentFile(consentPath)
+                self.registrationError()
+                return
+            }
+
+            // Log in and update profile metadata after successful registration.
             UserManager.sharedManager.loginWithCompletion { _ in
                 let userKeys = ["Age": "age", "Weight": "weight", "Height": "height"]
                 let userDict = self.profileValues.filter { (k,v) in userKeys[k] != nil }.map { (k,v) in (userKeys[k]!, v) }
-                UserManager.sharedManager.updateAccountData(Dictionary(pairs: userDict)) { _ in
-                    UserManager.sharedManager.updateAccountConsent(consentPath) { _ in
-                        self.doWelcome()
+                UserManager.sharedManager.pushProfileWithConsent(consentPath, metadata: Dictionary(pairs: userDict)) { _ in
+                    ConsentManager.sharedManager.removeConsentFile(consentPath)
+                    self.doWelcome()
+                    if let comp = self.registerCompletion {
+                        comp()
                     }
                 }
             }

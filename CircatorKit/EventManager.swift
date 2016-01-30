@@ -75,7 +75,12 @@ public class EventManager : NSObject, WCSessionDelegate {
     
     func requestAccessToCalendar(completion: (Void -> Void)) {
         eventKitStore.requestAccessToEntityType(EKEntityType.Event, completion: {
-            (accessGranted: Bool, error: NSError?) in
+            (accessGranted, error) in
+            
+            guard error == nil else {
+                log.error("Calendar access error: \(error)")
+                return
+            }
             
             if accessGranted == true {
                 self.hasAccess = true
@@ -128,8 +133,8 @@ public class EventManager : NSObject, WCSessionDelegate {
 
             var eventIndex : [DiningEventKey:[(Int, String)]] = [:]
             for ev in events {
-                if let hotword = UserManager.sharedManager.getHotWords(),
-                       rng = ev.title.lowercaseString.rangeOfString(hotword)
+                let hotword = UserManager.sharedManager.getHotWords()
+                if let rng = ev.title.lowercaseString.rangeOfString(hotword)
                 {
                     let key = DiningEventKey(start: ev.startDate, end: ev.endDate)
 
@@ -146,7 +151,7 @@ public class EventManager : NSObject, WCSessionDelegate {
                             try eventKitStore.saveEvent(ev, span: EKSpan.ThisEvent, commit: false)
                             doCommit = true
                         } catch {
-                            print("Error saving event id: \(error)")
+                            log.error("Error saving event id: \(error)")
                         }
                     }
 
@@ -176,7 +181,7 @@ public class EventManager : NSObject, WCSessionDelegate {
                     for eid in eitems.1 {
                         let sstr = dateFormatter.stringFromDate(eitems.0.start)
                         let estr = dateFormatter.stringFromDate(eitems.0.end)
-                        print("Writing food log " + sstr + "->" + estr + " " + eid.1)
+                        log.debug("Writing food log " + sstr + "->" + estr + " " + eid.1)
                         
                         let emeta = ["Source":"Calendar","EventId":String(eid.0), "Data":eid.1]
                         HealthManager.sharedManager.savePreparationAndRecoveryWorkout(
@@ -185,9 +190,9 @@ public class EventManager : NSObject, WCSessionDelegate {
                             metadata: emeta,
                             completion: { (success, error ) -> Void in
                                 if( success ) {
-                                    print("Food log event saved")
+                                    log.debug("Food log event saved")
                                 } else if( error != nil ) {
-                                    print("error made: \(error)")
+                                    log.error("error made: \(error)")
                                 }
                             }
                         )
@@ -200,7 +205,7 @@ public class EventManager : NSObject, WCSessionDelegate {
                         try self.eventKitStore.commit()
                         self.setEventCounter()
                     } catch {
-                        print("Error committing event ids: \(error)")
+                        log.error("Error committing event ids: \(error)")
                     }
                 }
             }
@@ -246,8 +251,6 @@ public class EventManager : NSObject, WCSessionDelegate {
             session.activateSession()
         }
     }
-    
-
 }
 
 

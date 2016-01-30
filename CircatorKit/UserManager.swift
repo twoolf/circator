@@ -12,105 +12,63 @@ import Locksmith
 import Stormpath
 import CryptoSwift
 
-private let UserManagerAccStateKey  = "UMAccStateKey"
-private let UserManagerLoginKey     = "UMLoginKey"
-private let UserManagerHotwordKey   = "UMHotwordKey"
-private let UserManagerFrequencyKey = "UMFrequencyKey"
+private let UMPrimaryUserKey = "UMPrimaryUserKey"
 
-public enum AccountState : Int {
-    case Unregistered
-    case Registered
-    case Validated
-}
-
-private let maxTokenRetries = 2
+// Profile entry keys
+private let UMPHotwordKey   = "UMPHotwordKey"
+private let UMPFrequencyKey = "UMPFrequencyKey"
 
 public class UserManager {
     public static let sharedManager = UserManager()
 
-    // Defaults.
+    // Constants.
+    public static let maxTokenRetries  = 2
     public static let defaultRefreshFrequency = 30
+    public static let defaultHotwords = "food log"
 
-    var userId: String?
-    var hotWords: String?
-    var refreshFrequency: Int? // Aggregate refresh frequency in seconds.
-
-    var accountDataCache : [String: AnyObject] = [:]
-    var accountStatus : AccountState = .Unregistered
-
-    public var validated : Bool {
-        get { return accountStatus == AccountState.Validated }
+    // Primary user
+    public var userId: String? {
+        get {
+            if let dictionary = Locksmith.loadDataForUserAccount(UMPrimaryUserKey)
+            {
+                return dictionary["userId"] as? String
+            } else {
+                return nil
+            }
+        }
+        set(newUser) {
+            do {
+                try Locksmith.updateData(["userId" : newUser ?? ""], forUserAccount: UMPrimaryUserKey)
+            } catch {
+                log.error("userId.set: \(error)")
+            }
+        }
     }
 
-    public var registered : Bool {
-        get { return (accountStatus == AccountState.Registered) || validated }
-    }
-
-    // Expiry in time interval since 1970.
-    var tokenExpiry : NSTimeInterval = NSDate().timeIntervalSince1970
+    var tokenExpiry : NSTimeInterval = NSDate().timeIntervalSince1970   // Expiry in time interval since 1970.
+    var profileCache : [String: AnyObject] = [:]                        // Stormpath account dictionary cache.
 
     init() {
-        self.setupStormpath()
-        self.accountStatus = AccountState(rawValue: NSUserDefaults.standardUserDefaults().integerForKey(UserManagerAccStateKey))!
-        self.userId        = NSUserDefaults.standardUserDefaults().stringForKey(UserManagerLoginKey)
-        self.hotWords      = NSUserDefaults.standardUserDefaults().stringForKey(UserManagerHotwordKey)
-        
-        let freq = NSUserDefaults.standardUserDefaults().integerForKey(UserManagerFrequencyKey)
-        self.refreshFrequency = freq == 0 ? UserManager.defaultRefreshFrequency : freq
-
-        if ( self.hotWords == nil ) { self.setHotWords("food log") }
-        self.accountDataCache = [:]
-    }
-
-    // Mark: - Stormpath initialization
-
-    public func setupStormpath() {
         Stormpath.setUpWithURL(MCRouter.baseURLString)
-        if Stormpath.accessToken == nil {
-            print("Logging into Stormpath...")
-            self.login()
-        }
-        
-        if let token = Stormpath.accessToken {
-            MCRouter.OAuthToken = Stormpath.accessToken
-            print("User token: \(token)")
-        } else {
-            print("Login failed, please do so manually.")
-        }
+        self.profileCache = [:]
     }
 
     // Mark: - Account status, and authentication
-
-    public func setRegistered() {
-        NSUserDefaults.standardUserDefaults().setInteger(AccountState.Registered.rawValue, forKey: UserManagerAccStateKey)
-        NSUserDefaults.standardUserDefaults().synchronize()
+    
+    public func hasUserId() -> Bool {
+        if let user = userId {
+            return !user.isEmpty
+        }
+        return false
     }
     
-    public func setValidated() {
-        NSUserDefaults.standardUserDefaults().setInteger(AccountState.Validated.rawValue, forKey: UserManagerAccStateKey)
-        NSUserDefaults.standardUserDefaults().synchronize()
-    }
+    public func getUserId()     -> String? { return userId }
+    public func getUserIdHash() -> String? { return userId?.md5() }
+    public func setUserId(userId: String)  { self.userId = userId }
+    public func resetUserId()              { self.userId = nil }
 
-    public func getUserId() -> String? {
-        return self.userId
-    }
-
-    public func getUserIdHash() -> String? {
-        return self.userId?.md5()
-    }
-
-    public func setUserId(userId: String) {
-        self.userId = userId
-        NSUserDefaults.standardUserDefaults().setValue(self.userId, forKey: UserManagerLoginKey)
-        NSUserDefaults.standardUserDefaults().synchronize()
-    }
+    // Mark: - Account metadata accessors for fields stored in keychain.
     
-    public func resetUserId() {
-        self.userId = nil
-        NSUserDefaults.standardUserDefaults().removeObjectForKey(UserManagerLoginKey)
-        NSUserDefaults.standardUserDefaults().synchronize()
-    }
-
     public func getAccountData() -> [String:AnyObject]? {
         if let user = userId {
             let account = UserAccount(username: user, password: "")
@@ -120,6 +78,19 @@ public class UserManager {
         return nil
     }
 
+    public func setAccountData(items: [String:AnyObject]) {
+        withUserId { user in
+            if var datadict = Locksmith.loadDataForUserAccount(user) {
+                for (k,v) in items { datadict[k] = v }
+                do {
+                    try Locksmith.updateData(datadict, forUserAccount: user)
+                } catch {
+                    log.error("setAccountData: \(error)")
+                }
+            }
+        }
+    }
+
     public func getPassword() -> String? {
         if let data = getAccountData() {
             if let pass = data["password"] {
@@ -127,27 +98,6 @@ public class UserManager {
             }
         }
         return nil
-    }
-
-    public func getAccessToken() -> String? {
-        return Stormpath.accessToken
-    }
-
-    public func setAccountData(items: [String:AnyObject]) {
-        if let user = userId {
-            if var datadict = Locksmith.loadDataForUserAccount(user) {
-                for (k,v) in items { datadict[k] = v }
-                do {
-                    try Locksmith.updateData(datadict, forUserAccount: user)
-                } catch {
-                    debugPrint(error)
-                }
-            }
-        }
-    }
-    
-    public func setPassword(userPass: String) {
-        createAccount(userPass)
     }
     
     public func hasAccount() -> Bool {
@@ -163,21 +113,21 @@ public class UserManager {
         do {
             try account.createInSecureStore()
         } catch {
-            debugPrint(error)
+            log.error("createAccount: \(error)")
         }
     }
 
     func createAccount(userPass: String) {
-        if let user = userId {
+        withUserId { user in
             let account = UserAccount(username: user, password: userPass)
             do {
                 try account.createInSecureStore()
             } catch {
-                debugPrint(error)
+                log.error("createAccount: \(error)")
             }
         }
     }
-
+    
     func validateAccount(userPass: String) -> Bool {
         if let pass = getPassword() {
             return pass == userPass
@@ -186,35 +136,63 @@ public class UserManager {
     }
     
     func resetAccount() {
-        if let user = userId {
+        withUserId { user in
             let account = UserAccount(username: user, password: "")
             do {
                 try account.deleteFromSecureStore()
             } catch {
-                debugPrint(error)
+                log.warning("resetAccount: \(error)")
             }
         }
     }
 
+    public func setAccountPassword(userPass: String) {
+        createAccount(userPass)
+    }
+
+    // Override the username and password in the local store if we have nothing saved.
+    public func ensureUserPass(user: String?, pass: String?) {
+        if getUserId() == nil {
+            if let currentUser = user {
+                UserManager.sharedManager.setUserId(currentUser)
+            }
+        }
+        
+        if UserManager.sharedManager.getPassword() == nil {
+            if let currentPass = pass {
+                UserManager.sharedManager.setAccountPassword(currentPass)
+            }
+        }
+    }
+    
+    // Set the username and password in keychain.
+    public func overrideUserPass(user: String?, pass: String?) {
+        withUserPass(user, password: pass) { (newUser, newPass) in
+            UserManager.sharedManager.setUserId(newUser)
+            UserManager.sharedManager.setAccountPassword(newPass)
+        }
+    }
+
+
+    // Mark: - Stormpath-based account creation and authentication
+
     public func loginWithCompletion(completion: (String? -> Void)?) {
-        if let user = userId, pass = getPassword() {
+        withUserPass (getPassword()) { (user, pass) in
             Stormpath.login(username: user, password: pass, completionHandler: {
                 (accessToken, err) -> Void in
                 guard err == nil else {
-                    debugPrint(err)
+                    log.error(err)
                     return
                 }
+                log.verbose("Access token: \(Stormpath.accessToken)")
                 MCRouter.OAuthToken = Stormpath.accessToken
-                print("Access token: \(Stormpath.accessToken)")
-                Alamofire.request(MCRouter.UserToken([:]))
-                    .validate(statusCode: 200..<300)
-                    .responseString {_, response, result in
-                        print("LOGIN: " + (result.isSuccess ? "SUCCESS" : "FAILED"))
-                        UserManager.sharedManager.accountData { _ in
+                Service.string(MCRouter.UserToken([:]), statusCode: 200..<300, tag: "LOGIN") {
+                    _, response, result in
+                        UserManager.sharedManager.pullProfile { _ in
                             if let comp = completion {
                                 comp(result.value)
                             } else {
-                                print(result.value)
+                                log.verbose("pullProfile result: \(result.value)")
                             }
                         }
                     }
@@ -227,21 +205,21 @@ public class UserManager {
     }
 
     public func login(userPass: String) {
-        if let user = userId {
-            if !validateAccount(userPass) { createAccount(user, userPass: userPass) }
-            login()
+        withUserId { user in
+            if !self.validateAccount(userPass) { self.createAccount(user, userPass: userPass) }
+            self.login()
         }
     }
 
     public func logoutWithCompletion(completion: (Void -> Void)?) {
         Stormpath.logout(completionHandler: { (error) -> Void in
-            if error == nil { return }
-            else { print("Error logging out of Stormpath") }
+            guard error == nil else {
+                log.error("Error logging out of Stormpath: \(error)")
+                return
+            }
         })
         MCRouter.OAuthToken = nil
-        resetAccount()
-        resetUserId()
-        resetAccountDataCache()
+        resetUser()
         if let comp = completion { comp() }
     }
 
@@ -249,9 +227,8 @@ public class UserManager {
         logoutWithCompletion(nil)
     }
     
-    public func register(firstName: String, lastName: String, completion: (NSDictionary? -> Void)) {
-        if let user = userId, pass = getPassword()
-        {
+    public func register(firstName: String, lastName: String, completion: ((NSDictionary?, Bool) -> Void)) {
+        withUserPass(getPassword()) { (user,pass) in
             let stormpathAccountDict : [String:String] = [
                 "email": user,
                 "password": pass,
@@ -261,82 +238,34 @@ public class UserManager {
 
             Stormpath.register(userDictionary: stormpathAccountDict, completionHandler: {
                 (registerDict, error) -> Void in
-                if error == nil {
-                    completion(registerDict)
-                } else {
-                    debugPrint(error)
-                }
+                if error != nil { log.error("Register failed: \(error)") }
+                completion(registerDict, error != nil)
             })
         }
     }
 
-    public func updateAccountConsent(consentFilePath: String?, completion: (String? -> Void)) {
-        if let path = consentFilePath {
-            if let data = NSData(contentsOfFile: path) {
-                let dict = ["consent": data.base64EncodedStringWithOptions(NSDataBase64EncodingOptions())]
-                updateAccountData(dict, completion: completion)
-            } else {
-                debugPrint("Failed to read consent file at: \(path)")
-            }
-        } else {
-            debugPrint("Invalid consent file path: \(consentFilePath)")
-        }
-    }
-
-    public func updateAccountData(metadata: [String: AnyObject], completion: (String? -> Void)) {
-        // Refresh cache.
-        refreshAccountCache(metadata)
-
-        // Post to the service.
-        Alamofire.request(MCRouter.SetUserAccountData(metadata))
-            .validate(statusCode: 200..<300)
-            .responseString {_, response, result in
-                print("UPDATEACC: " + (result.isSuccess ? "SUCCESS" : "FAILED"))
-                completion(result.value)
-            }
+    
+    // Mark: - Stormpath token management.
+    
+    public func getAccessToken() -> String? {
+        return Stormpath.accessToken
     }
     
-    public func accountData(completion: (AnyObject? -> Void)) {
-        Alamofire.request(MCRouter.GetUserAccountData(["exclude": ["consent"]]))
-            .validate(statusCode: 200..<300)
-            .responseJSON {_, response, result in
-                print("ACCDATA: " + (result.isSuccess ? "SUCCESS" : "FAILED"))
-                // Refresh cache.
-                if let dict = result.value as? [String: AnyObject] { self.refreshAccountCache(dict) }
-                
-                // Evaluate the completion.
-                completion(result.value)
-        }
-    }
-    
-    public func getAccountDataCache() -> [String: AnyObject] { return accountDataCache }
-    
-    public func resetAccountDataCache() { accountDataCache = [:] }
-    
-    func refreshAccountCache(dict: [String: AnyObject]) {
-        for (k,v) in dict {
-            accountDataCache[k] = v
-        }
-    }
-    
-    // Mark: - token refreshing.
     public func ensureAccessToken(tried: Int, completion: (Bool -> Void)) {
-        guard tried < maxTokenRetries else {
-            debugPrint("Failed to get access token within \(maxTokenRetries) iterations")
+        guard tried < UserManager.maxTokenRetries else {
+            debugPrint("Failed to get access token within \(UserManager.maxTokenRetries) iterations")
             completion(true)
             return
         }
         
-        Alamofire.request(MCRouter.TokenExpiry([:]))
-            .validate(statusCode: 200..<300)
-            .responseJSON {_, response, result in
-                print("ACCTOK: " + (result.isSuccess ? "SUCCESS" : "FAILED"))
+        Service.json(MCRouter.TokenExpiry([:]), statusCode: 200..<300, tag: "ACCTOK") {
+            _, response, result in
                 guard result.isSuccess else {
                     self.refreshAccessToken(tried, completion: completion)
                     return
                 }
                 guard let jwtDict = result.value as? [String:[String:AnyObject]],
-                          expiry  = jwtDict["body"]?["exp"] as? NSTimeInterval
+                    expiry  = jwtDict["body"]?["exp"] as? NSTimeInterval
                     where expiry > NSDate().timeIntervalSince1970 else
                 {
                     self.refreshAccessToken(tried, completion: completion)
@@ -348,25 +277,28 @@ public class UserManager {
     }
     
     public func ensureAccessToken(completion: (Bool -> Void)) {
+        if let _ = Stormpath.accessToken {
+            MCRouter.OAuthToken = Stormpath.accessToken
+        }
         ensureAccessToken(0, completion: completion)
     }
     
     public func refreshAccessToken(tried: Int, completion: (Bool -> Void)) {
         Stormpath.refreshAccesToken { (_, error) in
             guard error == nil else {
-                print("Refresh failed: \(error)")
+                log.error("Refresh failed: \(error)")
+                completion(true)
                 return
             }
             if let token = Stormpath.accessToken {
+                log.verbose("Refreshed token: \(token)")
                 MCRouter.OAuthToken = Stormpath.accessToken
-                print("Refreshed token: \(token)")
-                Alamofire.request(MCRouter.UserToken([:]))
-                    .validate(statusCode: 200..<300)
-                    .responseString {_, response, result in
+                Service.string(MCRouter.UserToken([:]), statusCode: 200..<300, tag: "REFTOK") {
+                    _, response, result in
                         self.ensureAccessToken(tried+1, completion: completion)
                 }
             } else {
-                print("Login failed, please do so manually.")
+                log.error("RefreshAccessToken failed, please login manually.")
             }
         }
     }
@@ -374,43 +306,108 @@ public class UserManager {
     public func refreshAccessToken(completion: (Bool -> Void)) {
         refreshAccessToken(0, completion: completion)
     }
+    
 
-    // Mark : - Configuration
+    // Mark: - Profile (i.e., Stormpath account data) management
 
-    public func getHotWords() -> String? {
-        return self.hotWords
+    public func syncProfile(completion: (String? -> Void)) {
+        // Post to the service.
+        Service.string(MCRouter.SetUserAccountData(profileCache), statusCode: 200..<300, tag: "UPDATEACC") {
+            _, response, result in completion(result.value)
+        }
+    }
+
+    public func pushProfile(metadata: [String: AnyObject], completion: (String? -> Void)) {
+        // Refresh profile cache, and post to Stormpath.
+        refreshProfileCache(metadata)
+        syncProfile(completion)
+    }
+    
+    public func pullProfile(completion: (AnyObject? -> Void)) {
+        Service.json(MCRouter.GetUserAccountData(["exclude": ["consent"]]), statusCode: 200..<300, tag: "ACCDATA") {
+            _, response, result in
+                // Refresh cache.
+                if let dict = result.value as? [String: AnyObject] { self.refreshProfileCache(dict) }
+                
+                // Evaluate the completion.
+                completion(result.value)
+        }
+    }
+    
+    public func pushProfileWithConsent(consentFilePath: String?, metadata: [String: AnyObject], completion: (String? -> Void)) {
+        if let path = consentFilePath {
+            if let data = NSData(contentsOfFile: path) {
+                var dict = metadata
+                dict["consent"] = data.base64EncodedStringWithOptions(NSDataBase64EncodingOptions())
+                pushProfile(dict, completion: completion)
+            } else {
+                log.error("Failed to read consent file at: \(path)")
+            }
+        } else {
+            log.error("Invalid consent file path: \(consentFilePath)")
+        }
+    }
+    
+    public func getProfileCache() -> [String: AnyObject] { return profileCache }
+    
+    public func resetProfileCache() { profileCache = [:] }
+    
+    func refreshProfileCache(dict: [String: AnyObject]) {
+        for (k,v) in dict {
+            profileCache[k] = v
+        }
+    }
+    
+    
+    // Mark : - Profile accessors
+
+    public func getHotWords() -> String {
+        return (profileCache[UMPHotwordKey] as? String) ?? UserManager.defaultHotwords
     }
 
     public func setHotWords(hotWords: String) {
-        self.hotWords = hotWords
-        NSUserDefaults.standardUserDefaults().setValue(self.hotWords, forKey: UserManagerHotwordKey)
-        NSUserDefaults.standardUserDefaults().synchronize()
+        profileCache[UMPHotwordKey] = hotWords
+        syncProfile { _ in () }
     }
 
-    public func getRefreshFrequency() -> Int? {
-        return self.refreshFrequency
+    public func getRefreshFrequency() -> Int {
+        return (profileCache[UMPFrequencyKey] as? Int) ?? UserManager.defaultRefreshFrequency
     }
 
     public func setRefreshFrequency(frequency: Int) {
-        self.refreshFrequency = frequency
-        NSUserDefaults.standardUserDefaults().setValue(self.refreshFrequency, forKey: UserManagerFrequencyKey)
-        NSUserDefaults.standardUserDefaults().synchronize()
+        profileCache[UMPFrequencyKey] = frequency
+        syncProfile { _ in () }
     }
 
+    
     // Mark : - Utility functions
+    
+    func withUserId (completion: (String -> Void)) {
+        if let user = userId { completion(user) }
+        else { log.error("No user id available") }
+    }
 
-    // Override the username and password in the local store if we have nothing saved.
-    public func ensureUserPass(user: String?, pass: String?) {
-        if getUserId() == nil {
-            if let currentUser = user {
-                UserManager.sharedManager.setUserId(currentUser)
-            }
-        }
-        
-        if UserManager.sharedManager.getPassword() == nil {
-            if let currentPass = pass {
-                UserManager.sharedManager.setPassword(currentPass)
-            }
-        }
+    func withUserPass (password: String?, completion: ((String, String) -> Void)) {
+        if let user = userId, pass = password { completion(user, pass) }
+        else { log.error("No user/password available") }
+    }
+
+    func withUserPass (username: String?, password: String?, completion: ((String, String) -> Void)) {
+        if let user = username, pass = password { completion(user, pass) }
+        else { log.error("No user/password available") }
+    }
+    
+    // Resets all user-specific data, but preserves the last user id.
+    public func resetUser() {
+        resetAccount()
+        resetProfileCache()
+    }
+
+    // Resets all user-related data, including the user id.
+    public func resetFull() {
+        resetAccount()
+        resetProfileCache()
+        resetUserId()
     }
 }
+
