@@ -43,31 +43,12 @@ public class ConsentManager: NSObject, ORKTaskViewControllerDelegate {
     
     private var consentHandler: ((consented: Bool) -> Void)?
     
-    public var obtainedUserConsent: Bool {
-        get {
-            if let dictionary = Locksmith.loadDataForUserAccount(unnamedAccount),
-                   consented = dictionary["consent"] as? Bool
-            {
-                return consented
-            } else {
-                return false
-            }
-        }
-    }
-    
-    private func setUserConsentObtained(consentObtained: Bool = true) {
-        do {
-            try Locksmith.saveData(["consent" : consentObtained], forUserAccount: unnamedAccount)
-        } catch {
-            print("Error: Cannot save to keychain!")
-        }
-    }
+    // MARK: - Temporary consent document utilities.
     
     public func getConsentFilePath() -> String? {
         if let dictionary = Locksmith.loadDataForUserAccount(unnamedAccount),
             consentFilePath = dictionary["consentfile"] as? String
         {
-            print("file path for pdf files is: \(consentFilePath)")
             return consentFilePath
         }
         return nil
@@ -75,14 +56,25 @@ public class ConsentManager: NSObject, ORKTaskViewControllerDelegate {
     
     private func setConsentFilePath(consentFilePath: String) {
         do {
-            try Locksmith.updateData(["consent": obtainedUserConsent,
-                                      "consentfile": consentFilePath],
+            try Locksmith.updateData(["consentfile": consentFilePath],
                                      forUserAccount: unnamedAccount)
         } catch {
             print("Error: Cannot save to keychain!")
         }
     }
     
+    public func removeConsentFile(consentFilePath: String) {
+        do {
+            print("Removing file at: \(consentFilePath)")
+            try NSFileManager.defaultManager().removeItemAtPath(consentFilePath)
+        }
+        catch let error as NSError {
+            print("Failed to remove consent file: \(error)")
+        }
+    }
+    
+    // MARK: - Consent descriptions.
+
     private var welcomeText: String {
         return "This simple walkthrough will explain the research study, the impact it may have on your life and will allow you to provide your consent to participate."
     }
@@ -230,29 +222,29 @@ public class ConsentManager: NSObject, ORKTaskViewControllerDelegate {
         If your content is just text, you can use the `content` property
         instead of the `htmlContent` property of `ORKConsentSection`.
         */
-        let activitiesContentString = "<body><p>We will ask you to:</p><ul><li>Answer an initial questionnaire about your health, exercise, diet, sleep and medicines.</li><li>Rate your fatigue, thinking, sleep, mood and exercise performance on a scale of 1 to 5 daily.</li><li>Track changes by answering a weekly and monthly survey</li><li>Keep a health diary on the app</li></ul><p>We will send notices on your phone asking you to complete these activities and surveys.  You may choose to act at your convenience, (either then or later) and you may choose to participate in all or only in some parts of the study. You may skip any questions that you do not wish to answer.</p></body>"
-        
+        //let activitiesContentString = "<body><p>We will ask you to:</p><ul><li>Answer an initial questionnaire about your health, exercise, diet, sleep and medicines.</li><li>Rate your fatigue, thinking, sleep, mood and exercise performance on a scale of 1 to 5 daily.</li><li>Track changes by answering a weekly and monthly survey</li><li>Keep a health diary on the app</li></ul><p>We will send notices on your phone asking you to complete these activities and surveys.  You may choose to act at your convenience, (either then or later) and you may choose to participate in all or only in some parts of the study. You may skip any questions that you do not wish to answer.</p></body>"
+
         let sensorDataContentString = "<body><p>You have the option to contribute activity data collected through:</p><ul><li>The sensors on your iPhone or any wearable activity device (like iPhone, iPod, Apple Watch, or third-party device) </li><li>Other applications and data available through Apple Health app.</li></ul><p>You can choose not to provide this data and still participate in the study.</p><p>We will NOT access your personal contacts, personal photos, text or email messages.</p></p></body>"
         
-        let dataProcessingString = "<body><p>We will electronically process your data.<br /><br />We will separate your account information (name, email, contact information, etc.) from your study data (your responses to surveys and the measurements from the phone itself when you perform activities).<br /><br />We will combine your coded study data (without your name) with those of other study participants to be analyzed.<br /><br />WE WILL NEVER SELL, RENT OR LEASE YOUR CONTACT INFORMATION. <br /><br /></body>"
+        //let dataProcessingString = "<body><p>We will electronically process your data.<br /><br />We will separate your account information (name, email, contact information, etc.) from your study data (your responses to surveys and the measurements from the phone itself when you perform activities).<br /><br />We will combine your coded study data (without your name) with those of other study participants to be analyzed.<br /><br />WE WILL NEVER SELL, RENT OR LEASE YOUR CONTACT INFORMATION. <br /><br /></body>"
         
         let protectingDataString = "<body><p>We will electronically process your data.<br /><br />We will separate your account information (name, email, contact information, etc.) from your study data (your responses to surveys and the measurements from the phone itself when you perform activities).<br /><br />We will combine your coded study data (without your name) with those of other study participants to be analyzed.<br /><br />WE WILL NEVER SELL, RENT OR LEASE YOUR CONTACT INFORMATION. <br /><br /></body>"
         
         let dataUseString = "<body><p>By analyzing the data from all app users, we may be able to better understand how people adjust their activity levels, their eating profiles, and their sleep patterns to achieve optimal health.</p><p>We hope that together we can learn:</p><ul><li>The ways you have found to navigate from poor health to improved health</li><li>To help us assess whether mobile devices and sensors can measure and better understand our own behavior and contribute (in anonymous aggregate) to improving the health of others as well</li><li>Ultimately to improve the quality of life for all those either suffering from or at risk for metabolic disease.</li></ul></body>"
         
-        let timeString = "<body><p>We will send notices on your phone asking you to complete these tasks and surveys. You may choose to act at your convenience, either then or later, and you may choose to participate in all or only in some parts of the study.</p><p>Transmitting data collected in this study may count against your existing mobile data plan. You may configure the application to only use WiFi connections to limit the impact this data collection has on your data plan.</p><p>This study should take you about 20 minutes each week.</p></body>"
+        //let timeString = "<body><p>We will send notices on your phone asking you to complete these tasks and surveys. You may choose to act at your convenience, either then or later, and you may choose to participate in all or only in some parts of the study.</p><p>Transmitting data collected in this study may count against your existing mobile data plan. You may configure the application to only use WiFi connections to limit the impact this data collection has on your data plan.</p><p>This study should take you about 20 minutes each week.</p></body>"
         
-        let yourInsightString = "<body><p>We encourage you to provide insights to the researchers. This study is unique in that it allows you to step up as an equal partner in the research process.</p></body>"
+        //let yourInsightString = "<body><p>We encourage you to provide insights to the researchers. This study is unique in that it allows you to step up as an equal partner in the research process.</p></body>"
         
         let withDrawingString = "<body><p>Your participation in this study is voluntary. You may decide not to participate or you may leave the study at any time. If you withdraw from the study, we will stop collecting new data, but the coded study data that you have already provided, and that have already been distributed will not be able to be destroyed or deleted.</p><p>To withdraw from this study please contact  Dr. Thomas Woolf by email <a href='mailto:twoolf@jhmi.edu'>twoolf@jhmi.edu</a>  or call <a href='tel:14106142643'>+1-410-614-2643</a> or tap on the 'Leave Study' link in the profile page of the application.</p></body>"
         
-        let potentialBenefitsString = "<body><p>The benefits of this study are primarily the creation of insights to help current and future people with metabolic syndrome and their families to better understand and manage their health.</p><p>We will return the insights learned from analysis of the study data through the study website, blogs and/or research publications, but these insights may not be of direct benefit to you. We cannot, and thus we do not, guarantee or promise that you will personally receive any direct benefits from this study. However, you will be able to track your health and export your data at will to share with your medical doctor and anyone you choose.</p></body>"
+        //let potentialBenefitsString = "<body><p>The benefits of this study are primarily the creation of insights to help current and future people with metabolic syndrome and their families to better understand and manage their health.</p><p>We will return the insights learned from analysis of the study data through the study website, blogs and/or research publications, but these insights may not be of direct benefit to you. We cannot, and thus we do not, guarantee or promise that you will personally receive any direct benefits from this study. However, you will be able to track your health and export your data at will to share with your medical doctor and anyone you choose.</p></body>"
         
-        let issuesSurveyString = "<body><p>This is not a treatment study and we do not expect any medical side effects from participating. </p><p>Some survey questions may make you feel uncomfortable. Know that the information you provide is entirely up to you and you are free to skip questions that you do not want to answer. Other people may glimpse the study notifications and/or reminders on your phone and realize you are enrolled in this study. This can make some people feel self-conscious.</p></body>"
+        //let issuesSurveyString = "<body><p>This is not a treatment study and we do not expect any medical side effects from participating. </p><p>Some survey questions may make you feel uncomfortable. Know that the information you provide is entirely up to you and you are free to skip questions that you do not want to answer. Other people may glimpse the study notifications and/or reminders on your phone and realize you are enrolled in this study. This can make some people feel self-conscious.</p></body>"
         
-        let issuesMoodString = "<body><p>Participating in this study may change how you feel. You may feel tired, sad, energized or happy.</p><p>Participation in this study may involve risks that are not known at this time. You will be told about any new information that might change your decision to be in this study.</p></body>"
+        //let issuesMoodString = "<body><p>Participating in this study may change how you feel. You may feel tired, sad, energized or happy.</p><p>Participation in this study may involve risks that are not known at this time. You will be told about any new information that might change your decision to be in this study.</p></body>"
         
-        let privacyRiskString = "<body><p>Participating in this study may change how you feel. You may feel tired, sad, energized or happy.</p><p>Participation in this study may involve risks that are not known at this time. You will be told about any new information that might change your decision to be in this study.</p></body>"
+        //let privacyRiskString = "<body><p>Participating in this study may change how you feel. You may feel tired, sad, energized or happy.</p><p>Participation in this study may involve risks that are not known at this time. You will be told about any new information that might change your decision to be in this study.</p></body>"
         
         let sharingResearchString = "<body><p>This study gives you the option to share your data in 2 ways:</p><p><strong>1- Share broadly with the research world:</strong>  You can choose to share your coded study data with qualified researchers worldwide for use in this research and beyond. Coded study data is data that does not include personal information such as your name or email. Qualified researchers are registered users of Synapse who have agreed to use the data in an ethical manner for research purposes, and have agreed to not attempt to re-identify you. If you choose to share your coded study data, the coded data will be added to a shared dataset available to qualified researchers on the Sage Bionetworks Synapse servers. (www.synapse.org). Johns Hopkins University will have no oversight onthe future research that qualified researchers may conduct with the coded study data.</p><p><strong>2- Share with Johns Hopkins University and its partners only:</strong> You can choose to share your study data only with the study team and its partners. The study team includes the sponsor of the research and any other researchers or partners named in the consent document. Sharing your data only with Johns Hopkins means that your data will not be made available to anyone other than those listed inthe consent document and for the purposes of this study only.</p><p>If required by law, your data (study data and account information), and the signed consent form may be disclosed to:</p><ul><li>The US National Institute of health, Department of Health and Human Services agencies, Office for Human Research Protection, and other agencies as required,</li><li>Institutional Review Board who monitors the safety, effectiveness and conduct of the research being conducted,</li><li>Others, if the law requires</li></ul><p>The results of this research study may be presented at meetings or in publications. If the results of this study are made public, only coded study data will be used, that is, your personal information will not be disclosed.</p><p>You can change the data sharing setting though the app preference at anytime.  For additional information review the study website <a href='http://MetabolicCompass.org'>MetabolicCompass.org</a> </p></body>"
         
@@ -376,45 +368,41 @@ public class ConsentManager: NSObject, ORKTaskViewControllerDelegate {
         ]
     }
  
-    private func consentTaskWithEligibilitySection(withEligibility: Bool = true) -> ORKTask {
-        if withEligibility {
-            let consentTask = ORKNavigableOrderedTask(identifier: String(Identifier.EligibilityAndConsentTask), steps: Array([eligibilitySteps, consentSteps].flatten()))
-            
-            // Build navigation rules.
-            var resultSelector = ORKResultSelector(stepIdentifier: String(Identifier.EligibilityFormStep), resultIdentifier: String(Identifier.EligibilityFormItem01))
-            let predicateFormItem01 = ORKResultPredicate.predicateForBooleanQuestionResultWithResultSelector(resultSelector, expectedAnswer: true)
-            
-            resultSelector = ORKResultSelector(stepIdentifier: String(Identifier.EligibilityFormStep), resultIdentifier: String(Identifier.EligibilityFormItem02))
-            let predicateFormItem02 = ORKResultPredicate.predicateForBooleanQuestionResultWithResultSelector(resultSelector, expectedAnswer: true)
-            
-            resultSelector = ORKResultSelector(stepIdentifier: String(Identifier.EligibilityFormStep), resultIdentifier: String(Identifier.EligibilityFormItem03))
-            let predicateFormItem03 = ORKResultPredicate.predicateForBooleanQuestionResultWithResultSelector(resultSelector, expectedAnswer: true)
-            
-            let predicateEligible = NSCompoundPredicate(andPredicateWithSubpredicates: [predicateFormItem01, predicateFormItem02, predicateFormItem03])
-            
-            let predicateRule = ORKPredicateStepNavigationRule(resultPredicates: [predicateEligible], destinationStepIdentifiers: [String(Identifier.EligibilityEligibleStep)], defaultStepIdentifier: nil, validateArrays: false)
-            
-            consentTask.setNavigationRule(predicateRule, forTriggerStepIdentifier:String(Identifier.EligibilityFormStep))
-            
-            // Add end direct rules to skip unneeded steps
-            let directRule = ORKDirectStepNavigationRule(destinationStepIdentifier: ORKNullStepIdentifier)
-            consentTask.setNavigationRule(directRule, forTriggerStepIdentifier:String(Identifier.EligibilityIneligibleStep))
-            return consentTask
-        } else {
-            return ORKOrderedTask(identifier: String(Identifier.ConsentTask), steps: consentSteps)
-        }
+    private func consentTaskWithEligibilitySection() -> ORKTask {
+        let consentTask = ORKNavigableOrderedTask(identifier: String(Identifier.EligibilityAndConsentTask), steps: Array([eligibilitySteps, consentSteps].flatten()))
+        
+        // Build navigation rules.
+        var resultSelector = ORKResultSelector(stepIdentifier: String(Identifier.EligibilityFormStep), resultIdentifier: String(Identifier.EligibilityFormItem01))
+        let predicateFormItem01 = ORKResultPredicate.predicateForBooleanQuestionResultWithResultSelector(resultSelector, expectedAnswer: true)
+        
+        resultSelector = ORKResultSelector(stepIdentifier: String(Identifier.EligibilityFormStep), resultIdentifier: String(Identifier.EligibilityFormItem02))
+        let predicateFormItem02 = ORKResultPredicate.predicateForBooleanQuestionResultWithResultSelector(resultSelector, expectedAnswer: true)
+        
+        resultSelector = ORKResultSelector(stepIdentifier: String(Identifier.EligibilityFormStep), resultIdentifier: String(Identifier.EligibilityFormItem03))
+        let predicateFormItem03 = ORKResultPredicate.predicateForBooleanQuestionResultWithResultSelector(resultSelector, expectedAnswer: true)
+        
+        let predicateEligible = NSCompoundPredicate(andPredicateWithSubpredicates: [predicateFormItem01, predicateFormItem02, predicateFormItem03])
+        
+        let predicateRule = ORKPredicateStepNavigationRule(resultPredicates: [predicateEligible], destinationStepIdentifiers: [String(Identifier.EligibilityEligibleStep)], defaultStepIdentifier: nil, validateArrays: false)
+        
+        consentTask.setNavigationRule(predicateRule, forTriggerStepIdentifier:String(Identifier.EligibilityFormStep))
+        
+        // Add end direct rules to skip unneeded steps
+        let directRule = ORKDirectStepNavigationRule(destinationStepIdentifier: ORKNullStepIdentifier)
+        consentTask.setNavigationRule(directRule, forTriggerStepIdentifier:String(Identifier.EligibilityIneligibleStep))
+        return consentTask
     }
     
-    public func checkConsentWithBaseViewController(viewController: UIViewController, withEligibility: Bool = true, consentBlock: ConsentBlock) {
+    public func checkConsentWithBaseViewController(viewController: UIViewController, consentBlock: ConsentBlock) {
         self.consentHandler = consentBlock
-        if obtainedUserConsent == false {
-            let taskViewController = ORKTaskViewController(task: consentTaskWithEligibilitySection(withEligibility), taskRunUUID: nil)
+        guard UserManager.sharedManager.hasUserId() else {
+            let taskViewController = ORKTaskViewController(task: consentTaskWithEligibilitySection(), taskRunUUID: nil)
             taskViewController.delegate = self
             taskViewController.view.tintColor = Theme.universityDarkTheme.backgroundColor
             viewController.presentViewController(taskViewController, animated: true, completion: nil)
-        } else {
-            self.consentHandler?(consented: true)
+            return
         }
+        self.consentHandler?(consented: true)
     }
    
     // MARK: - Task view controller delegate
@@ -430,11 +418,9 @@ public class ConsentManager: NSObject, ORKTaskViewControllerDelegate {
                     return
                 }
                 let path = (NSTemporaryDirectory() as NSString).stringByAppendingPathComponent("consent.pdf")
-                print(path)
                 self.setConsentFilePath(path)
                 data!.writeToFile(path, atomically: true)
             }
-            setUserConsentObtained()
         case .Discarded:
             break
         case .Failed:
@@ -446,5 +432,4 @@ public class ConsentManager: NSObject, ORKTaskViewControllerDelegate {
             self.consentHandler?(consented: reason == .Completed)
         }
     }
-  
 }

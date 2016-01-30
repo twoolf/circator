@@ -8,6 +8,9 @@
 
 import UIKit
 import CircatorKit
+import SwiftyBeaver
+
+let log = SwiftyBeaver.self
 
 @UIApplicationMain
 class AppDelegate: UIResponder, UIApplicationDelegate {
@@ -15,7 +18,10 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     var window: UIWindow?
     var mainViewController: IntroViewController!
 
-    func application(application: UIApplication, didFinishLaunchingWithOptions launchOptions: [NSObject: AnyObject]?) -> Bool {
+    func application(application: UIApplication, didFinishLaunchingWithOptions launchOptions: [NSObject: AnyObject]?) -> Bool
+    {
+        configureLogging()
+
         // Override point for customization after application launch.
         let themeColor = UIColor(red: 0.01, green: 0.41, blue: 0.22, alpha: 1.0)
 
@@ -53,6 +59,19 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         // Called when the application is about to terminate. Save data if appropriate. See also applicationDidEnterBackground:.
     }
 
+    func configureLogging() {
+        // add log destinations. at least one is needed!
+        let console = ConsoleDestination()
+        console.colored = false
+        console.minLevel = .Info
 
+        let paths : [String : SwiftyBeaver.Level] = ["ServiceAPI":.Verbose, "HealthManager":.Verbose]
+        let pathfuns : [String : (String, SwiftyBeaver.Level)] = [:]
+
+        for (p,l) in paths { console.addMinLevelFilter(l, path: p) }
+        for (p,(f,l)) in pathfuns { console.addMinLevelFilter(l, path: p, function: f) }
+
+        log.addDestination(console)
+    }
 }
 

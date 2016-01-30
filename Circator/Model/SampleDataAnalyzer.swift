@@ -86,7 +86,7 @@ class PlotDataAnalyzer: SampleDataAnalyzer {
                 let components = calendar.components(.Day, fromDate: samples.first!.startDate, toDate: sample.startDate, options: NSCalendarOptions())
                 return ChartDataEntry(value: sample.numeralValue!, xIndex: components.day + 1)
             }
-            let dataSet = LineChartDataSet(yVals: entries)
+            let dataSet = LineChartDataSet(yVals: entries, label: "")
             dataSetConfigurator?(dataSet)
             return LineChartData(xVals: xVals, dataSet: dataSet)
         } else {
@@ -97,7 +97,7 @@ class PlotDataAnalyzer: SampleDataAnalyzer {
             let entries: [ChartDataEntry] = samples.map { (sample) -> ChartDataEntry in
                 return ChartDataEntry(value: sample.numeralValue!, xIndex: index++)
             }
-            let dataSet = LineChartDataSet(yVals: entries)
+            let dataSet = LineChartDataSet(yVals: entries, label: "")
             dataSetConfigurator?(dataSet)
             return LineChartData(xVals: xVals, dataSet: dataSet)
         }
