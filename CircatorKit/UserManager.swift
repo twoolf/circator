@@ -11,12 +11,17 @@ import Alamofire
 import Locksmith
 import Stormpath
 import CryptoSwift
+import SwiftDate
 
 private let UMPrimaryUserKey = "UMPrimaryUserKey"
 
 // Profile entry keys
-private let UMPHotwordKey   = "UMPHotwordKey"
-private let UMPFrequencyKey = "UMPFrequencyKey"
+private let UMPHotwordKey    = "UMPHotwordKey"
+private let UMPFrequencyKey  = "UMPFrequencyKey"
+
+private let HMHRangeStartKey = "HKHRStart"
+private let HMHRangeEndKey   = "HKHREnd"
+private let HMHRangeMinKey   = "HKHRMin"
 
 public class UserManager {
     public static let sharedManager = UserManager()
@@ -91,15 +96,6 @@ public class UserManager {
         }
     }
 
-    public func getPassword() -> String? {
-        if let data = getAccountData() {
-            if let pass = data["password"] {
-                return pass as? String
-            }
-        }
-        return nil
-    }
-    
     public func hasAccount() -> Bool {
         if let user = userId {
             let account = UserAccount(username: user, password: "")
@@ -117,21 +113,8 @@ public class UserManager {
         }
     }
 
-    func createAccount(userPass: String) {
-        withUserId { user in
-            let account = UserAccount(username: user, password: userPass)
-            do {
-                try account.createInSecureStore()
-            } catch {
-                log.error("createAccount: \(error)")
-            }
-        }
-    }
-    
     func validateAccount(userPass: String) -> Bool {
-        if let pass = getPassword() {
-            return pass == userPass
-        }
+        if let pass = getPassword() { return pass == userPass }
         return false
     }
     
@@ -146,22 +129,38 @@ public class UserManager {
         }
     }
 
-    public func setAccountPassword(userPass: String) {
-        createAccount(userPass)
+    public func getPassword() -> String? {
+        if let data = getAccountData(), pass = data["password"] as? String {
+            return pass
+        }
+        return nil
     }
 
-    // Override the username and password in the local store if we have nothing saved.
-    public func ensureUserPass(user: String?, pass: String?) {
-        if getUserId() == nil {
-            if let currentUser = user {
-                UserManager.sharedManager.setUserId(currentUser)
-            }
+    public func hasPassword() -> Bool {
+        if let data = getAccountData(), pass = data["password"] as? String {
+            return !pass.isEmpty
         }
-        
-        if UserManager.sharedManager.getPassword() == nil {
-            if let currentPass = pass {
-                UserManager.sharedManager.setAccountPassword(currentPass)
+        return false
+    }
+
+    public func setPassword(userPass: String) {
+        if hasAccount() {
+            setAccountData(["password": userPass])
+        } else {
+            withUserId { user in self.createAccount(user, userPass: userPass) }
+        }
+    }
+
+    // Set a username and password in keychain, invoking a completion with an error status.
+    public func ensureUserPass(user: String?, pass: String?, completion: Bool -> Void) {
+        if let u = user, p = pass {
+            guard !(u.isEmpty || p.isEmpty) else {
+                completion(true)
+                return
             }
+            UserManager.sharedManager.setUserId(u)
+            UserManager.sharedManager.setPassword(p)
+            completion(false)
         }
     }
     
@@ -169,45 +168,43 @@ public class UserManager {
     public func overrideUserPass(user: String?, pass: String?) {
         withUserPass(user, password: pass) { (newUser, newPass) in
             UserManager.sharedManager.setUserId(newUser)
-            UserManager.sharedManager.setAccountPassword(newPass)
+            UserManager.sharedManager.setPassword(newPass)
         }
     }
 
 
     // Mark: - Stormpath-based account creation and authentication
 
-    public func loginWithCompletion(completion: (String? -> Void)?) {
+    public func loginWithCompletion(completion: SvcStringCompletion) {
         withUserPass (getPassword()) { (user, pass) in
             Stormpath.login(username: user, password: pass, completionHandler: {
                 (accessToken, err) -> Void in
                 guard err == nil else {
-                    log.error(err)
+                    log.error("Stormpath login failed: \(err!.localizedDescription)")
+                    self.resetFull()
+                    completion(true, err!.localizedDescription)
                     return
                 }
+
                 log.verbose("Access token: \(Stormpath.accessToken)")
                 MCRouter.OAuthToken = Stormpath.accessToken
                 Service.string(MCRouter.UserToken([:]), statusCode: 200..<300, tag: "LOGIN") {
                     _, response, result in
                         UserManager.sharedManager.pullProfile { _ in
-                            if let comp = completion {
-                                comp(result.value)
-                            } else {
-                                log.verbose("pullProfile result: \(result.value)")
-                            }
+                            completion(!result.isSuccess, result.value)
                         }
                     }
             })
         }
     }
-    
-    public func login() {
-        loginWithCompletion(nil)
-    }
 
-    public func login(userPass: String) {
+    public func login(userPass: String, completion: SvcStringCompletion) {
         withUserId { user in
-            if !self.validateAccount(userPass) { self.createAccount(user, userPass: userPass) }
-            self.login()
+            if !self.validateAccount(userPass) {
+                self.resetAccount()
+                self.createAccount(user, userPass: userPass)
+            }
+            self.loginWithCompletion(completion)
         }
     }
 
@@ -253,7 +250,8 @@ public class UserManager {
     
     public func ensureAccessToken(tried: Int, completion: (Bool -> Void)) {
         guard tried < UserManager.maxTokenRetries else {
-            debugPrint("Failed to get access token within \(UserManager.maxTokenRetries) iterations")
+            log.error("Failed to get access token within \(UserManager.maxTokenRetries) iterations")
+            self.resetFull()
             completion(true)
             return
         }
@@ -286,10 +284,17 @@ public class UserManager {
     public func refreshAccessToken(tried: Int, completion: (Bool -> Void)) {
         Stormpath.refreshAccesToken { (_, error) in
             guard error == nil else {
-                log.error("Refresh failed: \(error)")
-                completion(true)
+                log.warning("Refresh failed: \(error!.localizedDescription)")
+                log.warning("Attempting login: \(self.hasAccount()) \(self.hasPassword())")
+
+                if self.hasAccount() && self.hasPassword() {
+                    self.loginWithCompletion { (error,_) in completion(error) }
+                } else {
+                    completion(true)
+                }
                 return
             }
+
             if let token = Stormpath.accessToken {
                 log.verbose("Refreshed token: \(token)")
                 MCRouter.OAuthToken = Stormpath.accessToken
@@ -299,6 +304,7 @@ public class UserManager {
                 }
             } else {
                 log.error("RefreshAccessToken failed, please login manually.")
+                completion(true)
             }
         }
     }
@@ -310,31 +316,31 @@ public class UserManager {
 
     // Mark: - Profile (i.e., Stormpath account data) management
 
-    public func syncProfile(completion: (String? -> Void)) {
+    public func syncProfile(completion: SvcStringCompletion) {
         // Post to the service.
         Service.string(MCRouter.SetUserAccountData(profileCache), statusCode: 200..<300, tag: "UPDATEACC") {
-            _, response, result in completion(result.value)
+            _, response, result in completion(!result.isSuccess, result.value)
         }
     }
 
-    public func pushProfile(metadata: [String: AnyObject], completion: (String? -> Void)) {
+    public func pushProfile(metadata: [String: AnyObject], completion: SvcStringCompletion) {
         // Refresh profile cache, and post to Stormpath.
         refreshProfileCache(metadata)
         syncProfile(completion)
     }
     
-    public func pullProfile(completion: (AnyObject? -> Void)) {
+    public func pullProfile(completion: SvcObjectCompletion) {
         Service.json(MCRouter.GetUserAccountData(["exclude": ["consent"]]), statusCode: 200..<300, tag: "ACCDATA") {
             _, response, result in
                 // Refresh cache.
                 if let dict = result.value as? [String: AnyObject] { self.refreshProfileCache(dict) }
                 
                 // Evaluate the completion.
-                completion(result.value)
+                completion(!result.isSuccess, result.value)
         }
     }
     
-    public func pushProfileWithConsent(consentFilePath: String?, metadata: [String: AnyObject], completion: (String? -> Void)) {
+    public func pushProfileWithConsent(consentFilePath: String?, metadata: [String: AnyObject], completion: SvcStringCompletion) {
         if let path = consentFilePath {
             if let data = NSData(contentsOfFile: path) {
                 var dict = metadata
@@ -377,6 +383,70 @@ public class UserManager {
     public func setRefreshFrequency(frequency: Int) {
         profileCache[UMPFrequencyKey] = frequency
         syncProfile { _ in () }
+    }
+
+    // MARK: - Historical ranges for anchor query bulk ingestion
+
+    private let hrk = { (key1:String, key2:String) in return key1 + ":" + key2 }
+
+    // Returns a global historical range over all HKSampleTypes.
+    public func getHistoricalRange() -> (NSTimeInterval, NSTimeInterval)? {
+        let start = profileCache.filter { (key,_) -> Bool in key.hasPrefix(HMHRangeMinKey) }.minElement { (a, b) in
+            return (a.1 as! NSTimeInterval) < (b.1 as! NSTimeInterval)
+        }
+
+        let end = profileCache.filter { (key,_) -> Bool in key.hasPrefix(HMHRangeEndKey) }.maxElement { (a, b) in
+            return (a.1 as! NSTimeInterval) < (b.1 as! NSTimeInterval)
+        }
+
+        if let s = start?.1 as? NSTimeInterval, e = end?.1 as? NSTimeInterval { return (s, e) }
+        return nil
+    }
+
+    public func getHistoricalRangeForType(key: String) -> (NSTimeInterval, NSTimeInterval)? {
+        if let s = profileCache[hrk(HMHRangeStartKey, key)] as? NSTimeInterval,
+               e = profileCache[hrk(HMHRangeEndKey, key)] as? NSTimeInterval
+        {
+            return (s, e)
+        }
+        return nil
+    }
+
+    public func initializeHistoricalRangeForType(key: String) -> (NSTimeInterval, NSTimeInterval) {
+        let (start, end) = (decrAnchorDate(NSDate()).timeIntervalSinceReferenceDate, NSDate().timeIntervalSinceReferenceDate)
+        profileCache[hrk(HMHRangeStartKey, key)] = start
+        profileCache[hrk(HMHRangeEndKey, key)] = end
+//        syncProfile { _ in () }
+        return (start, end)
+    }
+
+
+    public func getHistoricalRangeStartForType(key: String) -> NSTimeInterval? {
+        return profileCache[hrk(HMHRangeStartKey, key)] as? NSTimeInterval
+    }
+
+    public func decrHistoricalRangeStartForType(key: String) {
+        let skey = hrk(HMHRangeStartKey, key)
+        if let start = profileCache[skey] as? NSTimeInterval {
+            profileCache[skey] = decrAnchorDate(NSDate(timeIntervalSinceReferenceDate: start)).timeIntervalSinceReferenceDate
+//            syncProfile { _ in () }
+        } else {
+            log.error("Could not find historical sample range for \(key)")
+        }
+    }
+
+    public func getHistoricalRangeMinForType(key: String) -> NSTimeInterval? {
+        return profileCache[hrk(HMHRangeMinKey, key)] as? NSTimeInterval
+    }
+
+    public func setHistoricalRangeMinForType(key: String, min: NSDate) {
+        profileCache[hrk(HMHRangeMinKey, key)] = min.timeIntervalSinceReferenceDate
+//        syncProfile { _ in () }
+    }
+
+    public func decrAnchorDate(d: NSDate) -> NSDate {
+        let region = Region()
+        return (d - 1.months).startOf(.Day, inRegion: region).startOf(.Month, inRegion: region)
     }
 
     

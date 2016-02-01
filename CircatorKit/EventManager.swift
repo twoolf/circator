@@ -8,13 +8,14 @@
 
 import Foundation
 import EventKit
-import WatchConnectivity
 import HealthKit
+import WatchConnectivity
+import SwiftyUserDefaults
 
 public let EKMStartSessionNotification = "EKMStartSessionNotification"
 
-private let EventManagerAccessKey = "EKAccessKey"
-private let EventManagerCounterKey = "EKCounterKey"
+private let EMAccessKey  = DefaultsKey<NSDate?>("EKAccessKey")
+private let EMCounterKey = DefaultsKey<Int>("EKCounterKey")
 
 struct DiningEventKey : Equatable, Hashable {
     var start : NSDate
@@ -30,17 +31,17 @@ func ==(lhs: DiningEventKey, rhs: DiningEventKey) -> Bool
 }
 
 public class EventManager : NSObject, WCSessionDelegate {
-    
+
     public static let sharedManager = EventManager()
 
     lazy var eventKitStore: EKEventStore = EKEventStore()
-    
+
     var calendar   : EKCalendar?
     var lastAccess : NSDate
     var pending    : Bool
     var hasAccess  : Bool?
     var eventCounter : Int
-    
+
     private override init() {
         self.calendar = nil
         self.lastAccess = NSDate.distantPast()
@@ -53,11 +54,11 @@ public class EventManager : NSObject, WCSessionDelegate {
         self.eventCounter = getEventCounter()
         connectWatch()
     }
-    
+
     public func checkCalendarAuthorizationStatus(completion: (Void -> Void)) {
         if self.pending { return }
         let status = EKEventStore.authorizationStatusForEntityType(EKEntityType.Event)
-        
+
         switch (status) {
         case EKAuthorizationStatus.NotDetermined:
             self.pending = true
@@ -66,22 +67,22 @@ public class EventManager : NSObject, WCSessionDelegate {
         case EKAuthorizationStatus.Authorized:
             self.hasAccess = true
             initializeCalendarSession(completion)
-        
+
         case EKAuthorizationStatus.Restricted, EKAuthorizationStatus.Denied:
             self.hasAccess = false
             completion()
         }
     }
-    
+
     func requestAccessToCalendar(completion: (Void -> Void)) {
         eventKitStore.requestAccessToEntityType(EKEntityType.Event, completion: {
             (accessGranted, error) in
-            
+
             guard error == nil else {
                 log.error("Calendar access error: \(error)")
                 return
             }
-            
+
             if accessGranted == true {
                 self.hasAccess = true
                 dispatch_async(dispatch_get_main_queue(), {
@@ -90,22 +91,22 @@ public class EventManager : NSObject, WCSessionDelegate {
             }
         })
     }
-    
+
     func initializeCalendarSession(completion: (Void -> Void)) {
         self.calendar = eventKitStore.defaultCalendarForNewEvents
 
         // Perform an initial refresh.
         fetchEventsfromCalendar(false)
-        
+
         // Set up the observer for event changes.
         registerCalendarObserver()
-        
+
         // Initialization completed, reset.
         self.pending = false
-        
+
         completion()
     }
-    
+
     func registerCalendarObserver() {
         NSNotificationCenter.defaultCenter().addObserver(
             self,
@@ -113,11 +114,11 @@ public class EventManager : NSObject, WCSessionDelegate {
             name: EKEventStoreChangedNotification,
             object: nil)
     }
-    
+
     @objc func refreshCalendarEvents(notification: NSNotification) {
         fetchEventsfromCalendar(true)
     }
-    
+
     public func fetchEventsfromCalendar(onRefresh : Bool) {
         if let doAccess = hasAccess where doAccess {
 
@@ -125,7 +126,7 @@ public class EventManager : NSObject, WCSessionDelegate {
             let events = eventKitStore.eventsMatchingPredicate(
                             eventKitStore.predicateForEventsWithStartDate(
                                 lastAccess, endDate: NSDate.distantFuture(), calendars: [self.calendar!]))
-            
+
             let dateFormatter = NSDateFormatter()
             dateFormatter.dateFormat = "HH:mm:ss"
             dateFormatter.AMSymbol = "AM"
@@ -182,7 +183,7 @@ public class EventManager : NSObject, WCSessionDelegate {
                         let sstr = dateFormatter.stringFromDate(eitems.0.start)
                         let estr = dateFormatter.stringFromDate(eitems.0.end)
                         log.debug("Writing food log " + sstr + "->" + estr + " " + eid.1)
-                        
+
                         let emeta = ["Source":"Calendar","EventId":String(eid.0), "Data":eid.1]
                         HealthManager.sharedManager.savePreparationAndRecoveryWorkout(
                             eitems.0.start, endDate: eitems.0.end,
@@ -198,7 +199,7 @@ public class EventManager : NSObject, WCSessionDelegate {
                         )
                     }
                 }
-                
+
                 // Commit new event ids.
                 if ( doCommit ) {
                     do {
@@ -214,9 +215,9 @@ public class EventManager : NSObject, WCSessionDelegate {
             setLastAccess()
         }
     }
-    
+
     private func getLastAccess() -> NSDate {
-        if let access = NSUserDefaults.standardUserDefaults().objectForKey(EventManagerAccessKey) as? NSDate {
+        if let access = Defaults[EMAccessKey] {
             return access
         } else {
             return NSDate.distantPast()
@@ -224,26 +225,26 @@ public class EventManager : NSObject, WCSessionDelegate {
     }
 
     private func setLastAccess() {
-        NSUserDefaults.standardUserDefaults().setValue(lastAccess, forKey: EventManagerAccessKey)
-        NSUserDefaults.standardUserDefaults().synchronize()
+        Defaults[EMAccessKey] = lastAccess
+        Defaults.synchronize()
     }
-    
+
     private func newCounter() -> Int {
         self.eventCounter += 1
         return self.eventCounter
     }
 
     private func getEventCounter() -> Int {
-        return NSUserDefaults.standardUserDefaults().integerForKey(EventManagerCounterKey)
+        return Defaults[EMCounterKey]
     }
-    
+
     private func setEventCounter() {
-        NSUserDefaults.standardUserDefaults().setInteger(eventCounter, forKey: EventManagerCounterKey)
-        NSUserDefaults.standardUserDefaults().synchronize()
+        Defaults[EMCounterKey] = eventCounter
+        Defaults.synchronize()
     }
 
     // MARK: - Apple Watch
-    
+
     func connectWatch() {
         if WCSession.isSupported() {
             let session = WCSession.defaultSession()

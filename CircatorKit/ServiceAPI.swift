@@ -13,6 +13,9 @@ import SwiftyBeaver
 
 let log = SwiftyBeaver.self
 
+public typealias SvcStringCompletion = (Bool, String?) -> Void
+public typealias SvcObjectCompletion = (Bool, AnyObject?) -> Void
+
 enum MCRouter : URLRequestConvertible {
     static let baseURLString = "https://app.metaboliccompass.com"
     static var OAuthToken: String?
@@ -24,7 +27,7 @@ enum MCRouter : URLRequestConvertible {
 
     // User management API
     case UserToken([String: AnyObject])
-    
+
     // Stormpath wrapper API
     case GetUserAccountData([String: AnyObject])
     case SetUserAccountData([String: AnyObject])
@@ -49,7 +52,7 @@ enum MCRouter : URLRequestConvertible {
 
         case .SetUserAccountData:
             return .POST
-            
+
         case .TokenExpiry:
             return .GET
         }
@@ -68,7 +71,7 @@ enum MCRouter : URLRequestConvertible {
 
         case .UserToken:
             return "/measures"
-            
+
         case .GetUserAccountData, .SetUserAccountData:
             return "/profile"
 
@@ -103,18 +106,18 @@ enum MCRouter : URLRequestConvertible {
             parameters["userid"] = UserManager.sharedManager.getUserIdHash() ?? ""
             parameters["token"] = MCRouter.OAuthToken ?? ""
             return Alamofire.ParameterEncoding.JSON.encode(mutableURLRequest, parameters: parameters).0
-            
+
         case .GetUserAccountData(let parameters):
             return Alamofire.ParameterEncoding.JSON.encode(mutableURLRequest, parameters: parameters).0
 
         case .SetUserAccountData(let parameters):
             return Alamofire.ParameterEncoding.JSON.encode(mutableURLRequest, parameters: parameters).0
-            
+
         case .TokenExpiry(let parameters):
             return Alamofire.ParameterEncoding.JSON.encode(mutableURLRequest, parameters: parameters).0
         }
     }
-    
+
 }
 
 public class Service {
@@ -125,7 +128,7 @@ public class Service {
     {
         return Alamofire.request(route).validate(statusCode: statusCode).logResponseString(tag, completion: completion)
     }
-    
+
     internal static func json<S: SequenceType where S.Generator.Element == Int>
         (route: MCRouter, statusCode: S, tag: String,
         completion: (NSURLRequest?, NSHTTPURLResponse?, Alamofire.Result<AnyObject>) -> Void)
@@ -144,7 +147,7 @@ extension Alamofire.Request {
             completion(req, resp, result)
         }
     }
-    
+
     public func logResponseJSON(tag: String, completion: (NSURLRequest?, NSHTTPURLResponse?, Alamofire.Result<AnyObject>) -> Void)
         -> Self
     {

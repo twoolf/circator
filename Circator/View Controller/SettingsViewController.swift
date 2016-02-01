@@ -10,17 +10,23 @@ import CircatorKit
 import UIKit
 import Async
 import Former
+import SwiftDate
 
 class SettingsViewController: UITableViewController, UITextFieldDelegate {
 
     private var userCell: FormTextFieldCell?
     private var passCell: FormTextFieldCell?
     
-    private var sectionSizes : [Int] = [2,2,6,4]
-    private var sectionTitles : [String] = ["Login", "Settings", "Preview Rows", "Profile"]
+    private var sectionSizes : [Int] = [2,2,6,4,2]
+    private var sectionTitles : [String] = ["Login", "Settings", "Preview Rows", "Profile", "Bulk Upload"]
 
     private var formCells : [Int:[FormTextFieldCell?]] = [:]
-    
+    private var historySlider : FormSliderCell? = nil
+    private var hMin = 0.0
+    private var hMax = 0.0
+
+    private var uploadButton: UIButton? = nil
+
     let profile : [(String, String, String, Int)] = [
             ("Age",     "age",     "Not specified/Offline", 4),
             ("Weight",  "weight",  "Not specified/Offline", 5),
@@ -66,6 +72,11 @@ class SettingsViewController: UITableViewController, UITextFieldDelegate {
         return section < sectionTitles.count ? sectionTitles[section] : ""
     }
 
+    override func tableView(tableView: UITableView, heightForRowAtIndexPath indexPath: NSIndexPath) -> CGFloat {
+        if indexPath.section == 4 && indexPath.row == 0 { return 65.0 }
+        else { return 44.0 }
+    }
+
     func formInput() -> FormTextFieldCell {
         let formCell = FormTextFieldCell()
         let cellInput = formCell.formTextField()
@@ -82,6 +93,59 @@ class SettingsViewController: UITableViewController, UITextFieldDelegate {
     
     override func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCellWithIdentifier("settingsCell", forIndexPath: indexPath)
+
+        if indexPath.section == 4 {
+            if indexPath.row == 0 && historySlider == nil {
+                historySlider = FormSliderCell()
+                historySlider?.formSlider().minimumValue = 0.0
+                historySlider?.formSlider().maximumValue = 100.0
+                historySlider?.formSlider().continuous = true
+                historySlider?.formSlider().value = 100.0
+                historySlider?.formSlider().addTarget(self, action: "sliderValueDidChange:", forControlEvents: .ValueChanged)
+                let disable : Void -> Void = { _ in
+                    log.info("No historical range available")
+                    self.hMin = 0.0
+                    self.hMax = 0.0
+                    self.historySlider?.formSlider().enabled = false
+                    self.uploadButton?.enabled = false
+                    self.historySlider?.formSlider().tintColor = UIColor.grayColor()
+                    self.historySlider?.formTitleLabel()?.text = "No data to upload"
+                }
+
+                if let (start, end) = UserManager.sharedManager.getHistoricalRange() {
+                    log.info("Historical range: \(start) --- \(end)")
+                    hMin = start
+                    hMax = end
+                    if abs(hMax - hMin) < 10.0 {
+                        disable()
+                    } else {
+                        historySlider?.formSlider().tintColor = UIColor.redColor()
+                        historySlider?.formTitleLabel()?.text = NSDate(timeIntervalSinceReferenceDate: start).toString(DateFormat.Custom("MM/dd/YYYY"))
+                    }
+                } else {
+                    disable()
+                }
+
+            } else if indexPath.row == 1 && uploadButton == nil {
+                uploadButton = {
+                    let button = MCButton(frame: cell.contentView.frame, buttonStyle: .Rounded)
+                    button.cornerRadius = 4.0
+                    button.buttonColor = UIColor.ht_emeraldColor()
+                    button.shadowColor = UIColor.ht_nephritisColor()
+                    button.shadowHeight = 4
+                    button.setTitle("Upload Now", forState: .Normal)
+                    button.titleLabel?.font = UIFont.systemFontOfSize(18, weight: UIFontWeightRegular)
+                    button.addTarget(self, action: "doUpload:", forControlEvents: .TouchUpInside)
+                    button.enabled = historySlider?.formSlider().enabled ?? false
+                    return button
+                }()
+            }
+
+            for sv in cell.contentView.subviews { sv.removeFromSuperview() }
+            if indexPath.row == 0 { cell.contentView.addSubview(historySlider!) }
+            else { cell.contentView.addSubview(uploadButton!) }
+            return cell
+        }
 
         if formCells[indexPath.section] == nil {
             formCells[indexPath.section] = [FormTextFieldCell?](count: self.sectionSizes[indexPath.section], repeatedValue: nil)
@@ -217,50 +281,56 @@ class SettingsViewController: UITableViewController, UITextFieldDelegate {
         }
     }
 
-    func profileUpdated() {
-        self.navigationController!.view.dodo.style.bar.hideAfterDelaySeconds = 3
-        self.navigationController!.view.dodo.style.bar.hideOnTap = true
-        self.navigationController!.view.dodo.success("Profile updated")
-    }
-
     func textFieldShouldReturn(textField: UITextField) -> Bool {
         if let txt = textField.text {
             switch textField.tag {
             case 0:
-                UserManager.sharedManager.setUserId(txt)
                 userCell?.textField.resignFirstResponder()
                 passCell?.textField.becomeFirstResponder()
+                UserManager.sharedManager.setUserId(txt)
             case 1:
-                // Take any text entered as the username if we have nothing saved.
-                if UserManager.sharedManager.getUserId() == nil {
-                    if let currentUser = userCell?.textField.text {
-                        UserManager.sharedManager.setUserId(currentUser)
-                    }
-                }
-                UserManager.sharedManager.login(txt)
                 passCell?.textField.resignFirstResponder()
                 userCell?.textField.becomeFirstResponder()
+
+                // Take the current username text as well as the password.
+                UserManager.sharedManager.ensureUserPass(userCell?.textField.text, pass: txt) { error in
+                    guard !error else {
+                        UINotifications.invalidUserPass(self.navigationController!)
+                        return
+                    }
+                    UserManager.sharedManager.login(txt) { (error, reason) in
+                        guard !error else {
+                            UINotifications.loginFailed(self.navigationController!, pop: false, reason: reason)
+                            return
+                        }
+                    }
+                }
             case 2:
                 UserManager.sharedManager.setHotWords(txt)
+                textField.resignFirstResponder()
+                UINotifications.profileUpdated(self.navigationController!)
+
             case 3:
+                textField.resignFirstResponder()
                 if let freq = Int(txt) {
                     UserManager.sharedManager.setRefreshFrequency(freq)
+                    UINotifications.profileUpdated(self.navigationController!)
                 }
                 
             case 4:
                 UserManager.sharedManager.pushProfile(["age":txt], completion: {_ in return})
                 textField.resignFirstResponder()
-                Async.main { self.profileUpdated() }
+                UINotifications.profileUpdated(self.navigationController!)
 
             case 5:
                 UserManager.sharedManager.pushProfile(["weight":txt], completion: {_ in return})
                 textField.resignFirstResponder()
-                Async.main { self.profileUpdated() }
+                UINotifications.profileUpdated(self.navigationController!)
 
             case 6:
                 UserManager.sharedManager.pushProfile(["height":txt], completion: {_ in return})
                 textField.resignFirstResponder()
-                Async.main { self.profileUpdated() }
+                UINotifications.profileUpdated(self.navigationController!)
 
             default:
                 return false
@@ -269,6 +339,19 @@ class SettingsViewController: UITableViewController, UITextFieldDelegate {
         return false
     }
 
+    func sliderValueDidChange(sender:UISlider!) {
+        log.warning("Slider: \(sender.value)")
+        if hMin != 0.0 {
+            let d = NSDate(timeIntervalSinceReferenceDate: hMin + Double(1.0 - (sender.value / 100.0))  * (hMax - hMin))
+            historySlider?.formTitleLabel()?.text = d.toString(DateFormat.Custom("MM/dd/YYYY"))
+        } else {
+            historySlider?.formTitleLabel()?.text = "\(sender.value)"
+        }
+    }
+
+    func doUpload(sender: UIButton) {
+        log.warning("Upload clicked")
+    }
 }
 
 class ConsentViewController : UIViewController {

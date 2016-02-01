@@ -13,7 +13,6 @@ import Former
 
 class RegisterViewController : FormViewController {
 
-
     static let profileFields = ["Email", "Password", "First name", "Last name", "Age", "Weight", "Height"]
     static let profilePlaceholders = ["example@gmail.com", "Required", "Jane or John", "Doe", "24", "160lb" ,"180cm"]
     var profileValues : [String: String] = [:]
@@ -137,39 +136,15 @@ class RegisterViewController : FormViewController {
             self.parentView?.initializeBackgroundWork()
         }
     }
-    
-    func noConsent() {
-        navigationController?.popViewControllerAnimated(true)
-        Async.main {
-            self.parentView?.view.dodo.style.bar.hideAfterDelaySeconds = 3
-            self.parentView?.view.dodo.style.bar.hideOnTap = true
-            self.parentView?.view.dodo.error("ResearchKit study not consented!")
-        }
-    }
-
-    func registrationError() {
-        navigationController?.popViewControllerAnimated(true)
-        Async.main {
-            self.parentView?.view.dodo.style.bar.hideAfterDelaySeconds = 3
-            self.parentView?.view.dodo.style.bar.hideOnTap = true
-            self.parentView?.view.dodo.error("Error in signing up, please try later.")
-        }
-    }
-
-    func invalidProfile() {
-        self.view.dodo.style.bar.hideAfterDelaySeconds = 3
-        self.view.dodo.style.bar.hideOnTap = true
-        self.view.dodo.error("Please fill in all required fields!")
-    }
 
     func doSignup(sender: UIButton) {
         guard let consentPath = ConsentManager.sharedManager.getConsentFilePath() else {
-            noConsent()
+            UINotifications.noConsent(self, pop: true)
             return
         }
         
         guard let (user, pass, fname, lname) = validateProfile() else {
-            invalidProfile()
+            UINotifications.invalidProfile(self)
             return
         }
 
@@ -182,12 +157,16 @@ class RegisterViewController : FormViewController {
                     UserManager.sharedManager.setUserId(user)
                 }
                 ConsentManager.sharedManager.removeConsentFile(consentPath)
-                self.registrationError()
+                UINotifications.registrationError(self, pop: true)
                 return
             }
 
             // Log in and update profile metadata after successful registration.
-            UserManager.sharedManager.loginWithCompletion { _ in
+            UserManager.sharedManager.loginWithCompletion { (error, reason) in
+                guard !error else {
+                    UINotifications.loginFailed(self, pop: true, reason: reason)
+                    return
+                }
                 let userKeys = ["Age": "age", "Weight": "weight", "Height": "height"]
                 let userDict = self.profileValues.filter { (k,v) in userKeys[k] != nil }.map { (k,v) in (userKeys[k]!, v) }
                 UserManager.sharedManager.pushProfileWithConsent(consentPath, metadata: Dictionary(pairs: userDict)) { _ in

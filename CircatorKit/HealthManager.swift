@@ -13,18 +13,32 @@ import Granola
 import Alamofire
 import SwiftyJSON
 import SwiftyBeaver
+import SwiftyUserDefaults
+import SwiftDate
 
-public typealias HealthManagerAuthorizationBlock = (success: Bool, error: NSError?) -> Void
-public typealias HealthManagerFetchSampleBlock = (samples: [HKSample], error: NSError?) -> Void
-public typealias HealthManagerStatisticsBlock = (statistics: [HKStatistics], error: NSError?) -> Void
-public typealias HealthManagerCorrelationStatisticsBlock = ([HKStatistics], [HKStatistics], NSError?) -> Void
+public typealias HMAuthorizationBlock         = (success: Bool, error: NSError?) -> Void
+public typealias HMFetchSampleBlock           = (samples: [HKSample], error: NSError?) -> Void
+public typealias HMFetchManySampleBlock       = (samples: [HKSampleType: [Result]], error: NSError?) -> Void
+public typealias HMStatisticsBlock            = (statistics: [HKStatistics], error: NSError?) -> Void
+public typealias HMCorrelationStatisticsBlock = ([HKStatistics], [HKStatistics], NSError?) -> Void
+public typealias HMAnchorQueryBlock           = (HKAnchoredObjectQuery, [HKSample]?, [HKDeletedObject]?, HKQueryAnchor?, NSError?) -> Void
+public typealias HMAnchorSamplesBlock         = (added: [HKSample], deleted: [HKDeletedObject], newAnchor: HKQueryAnchor?, error: NSError?) -> Void
 
-public let HealthManagerErrorDomain = "HealthManagerErrorDomain"
-public let HealthManagerSampleTypeIdentifierSleepDuration = "HealthManagerSampleTypeIdentifierSleepDuration"
+public let HMErrorDomain                        = "HMErrorDomain"
+public let HMSampleTypeIdentifierSleepDuration  = "HMSampleTypeIdentifierSleepDuration"
+public let HMDidUpdateRecentSamplesNotification = "HMDidUpdateRecentSamplesNotification"
 
-public let HealthManagerDidUpdateRecentSamplesNotification = "HealthManagerDidUpdateRecentSamplesNotification"
+private let HMAnchorKey      = DefaultsKey<[String: AnyObject]?>("HKClientAnchorKey")
+private let HMHRangeStartKey = DefaultsKey<[String: AnyObject]>("HKHRangeStartKey")
+private let HMHRangeEndKey   = DefaultsKey<[String: AnyObject]>("HKHRangeEndKey")
+private let HMHRangeMinKey   = DefaultsKey<[String: AnyObject]>("HKHRangeMinKey")
 
-private let HealthManagerAnchorKey = "HKClientAnchorKey"
+// Constants.
+private let refDate  = NSDate(timeIntervalSinceReferenceDate: 0)
+private let noLimit  = Int(HKObjectQueryNoLimit)
+private let noAnchor = HKQueryAnchor(fromValue: Int(HKAnchoredObjectQueryNoAnchor))
+private let dateAsc  = NSSortDescriptor(key: HKSampleSortIdentifierStartDate, ascending: true)
+private let dateDesc = NSSortDescriptor(key: HKSampleSortIdentifierStartDate, ascending: false)
 
 public class HealthManager: NSObject, WCSessionDelegate {
 
@@ -55,17 +69,8 @@ public class HealthManager: NSObject, WCSessionDelegate {
         }
     }
 
-    public var aggregateRefreshDate : NSDate = NSDate()
-
-    public var mostRecentAggregates = [HKSampleType: [Result]]() {
-        didSet {
-            aggregateRefreshDate = NSDate()
-            self.updateWatchContext()
-        }
-    }
-
     // Not guaranteed to be on main thread
-    public func authorizeHealthKit(completion: HealthManagerAuthorizationBlock)
+    public func authorizeHealthKit(completion: HMAuthorizationBlock)
     {
         // Note: keep this in alphabetical order.
         let healthKitTypesToRead : Set<HKObjectType>? = [
@@ -111,7 +116,7 @@ public class HealthManager: NSObject, WCSessionDelegate {
         ]
 
         guard HKHealthStore.isHealthDataAvailable() else {
-            let error = NSError(domain: HealthManagerErrorDomain, code: 2, userInfo: [NSLocalizedDescriptionKey: "HealthKit is not available in this Device"])
+            let error = NSError(domain: HMErrorDomain, code: 2, userInfo: [NSLocalizedDescriptionKey: "HealthKit is not available in this Device"])
             completion(success: false, error:error)
             return
         }
@@ -125,108 +130,86 @@ public class HealthManager: NSObject, WCSessionDelegate {
 
     // MARK: - HealthKit sample retrieval.
 
-    public func fetchMostRecentSample(sampleType: HKSampleType, completion: HealthManagerFetchSampleBlock)
+    // Fetches HealthKit samples of the given type for the last day, ordered by their collection date.
+    public func fetchMostRecentSample(sampleType: HKSampleType, completion: HMFetchSampleBlock)
     {
         let mostRecentPredicate: NSPredicate
         let limit: Int
 
-        let aDay = NSDateComponents()
-        aDay.day = -1
-        let aDayAgo = NSCalendar.currentCalendar().dateByAddingComponents(aDay, toDate: NSDate(), options: NSCalendarOptions())!
-        let now = NSDate()
         if sampleType.identifier == HKCategoryTypeIdentifierSleepAnalysis {
-            mostRecentPredicate = HKQuery.predicateForSamplesWithStartDate(aDayAgo, endDate: now, options: .None)
-            limit = Int(HKObjectQueryNoLimit)
+            mostRecentPredicate = HKQuery.predicateForSamplesWithStartDate(1.days.ago, endDate: NSDate(), options: .None)
+            limit = noLimit
         } else {
-            mostRecentPredicate = HKQuery.predicateForSamplesWithStartDate(NSDate.distantPast(), endDate: now, options: .None)
+            mostRecentPredicate = HKQuery.predicateForSamplesWithStartDate(NSDate.distantPast(), endDate: NSDate(), options: .None)
             limit = 1
         }
 
-        let sortDescriptor = NSSortDescriptor(key: HKSampleSortIdentifierStartDate, ascending: false)
-
-        let sampleQuery = HKSampleQuery(sampleType: sampleType, predicate: mostRecentPredicate, limit: limit, sortDescriptors: [sortDescriptor])
+        let sampleQuery = HKSampleQuery(sampleType: sampleType, predicate: mostRecentPredicate, limit: limit, sortDescriptors: [dateDesc])
             { (sampleQuery, results, error ) -> Void in
                 guard error == nil else {
                     completion(samples: [], error: error)
                     return
                 }
                 completion(samples: results!, error: nil)
-                for (index,value) in results!.enumerate() {
-                    print("\(index) \(value)")
-                }
         }
 
         self.healthKitStore.executeQuery(sampleQuery)
     }
 
-    public func fetchMostRecentSamples(ofTypes types: [HKSampleType] = PreviewManager.previewSampleTypes, completion: (samples: [HKSampleType: [Result]], error: NSError?) -> Void) {
+    // Fetches HealthKit samples for multiple types, using GCD to retrieve each type asynchronously and concurrently.
+    public func fetchMostRecentSamples(ofTypes types: [HKSampleType] = PreviewManager.previewSampleTypes, completion: HMFetchManySampleBlock)
+    {
         let group = dispatch_group_create()
         var samples = [HKSampleType: [Result]]()
-        types.forEach { (type) -> () in
-            dispatch_group_enter(group)
-            print("entering update labels stage for: \(type)")
-            if ( (type.description != "HKCategoryTypeIdentifierSleepAnalysis") && (type.description != "HKCorrelationTypeIdentifierBloodPressure") && (type.description != "HKWorkoutTypeIdentifier")) {
-                let predicate = HKSampleQuery.predicateForSamplesWithStartDate(NSDate().dateByAddingTimeInterval(-3600 * 96), endDate: nil, options: HKQueryOptions())
-                fetchStatisticsOfType(type, predicate: predicate) { (statistics, error) -> Void in
-                    dispatch_group_leave(group)
-                    guard error == nil else {
-                        print("hit nil in main loop for type \(type)")
-                        return
-                    }
-                    guard statistics.isEmpty == false else {
-                        print("hit empty stats in main loop for type \(type)")
-                        return
-                    }
-                    print("generating stats in main loop for type \(type)")
-                    samples[type] = statistics
-                }
-            } else if (type.description == "HKCategoryTypeIdentifierSleepAnalysis" ) {
-                
-                fetchMostRecentSample(type) { (statistics, error) -> Void in
-                    dispatch_group_leave(group)
-                    guard error == nil else {
-                        print("hit nil in sleep loop for type \(type)")
-                        return
-                    }
-                    guard statistics.isEmpty == false else {
-                        print("hit empty stats in sleep loop for type \(type)")
-                        return
-                    }
-                    print("generating samples in sleep loop for type \(type)")
-                    print("inside update for sleep: \(samples[type])")
-                    samples[type] = statistics
-                }
-            } else if (type.description == "HKCorrelationTypeIdentifierBloodPressure") {
-                fetchMostRecentSample(type) { (statistics, error) -> Void in
-                    dispatch_group_leave(group)
-                    guard error == nil else {
-                        print("hit nil in blood pressure loop for type \(type)")
-                        return
-                    }
-                    guard statistics.isEmpty == false else {
-                        print("hit empty stats in blood pressure loop for type \(type)")
-                        return
-                    }
-                    print("generating samples in blood pressure loop for type \(type)")
-                    print("inside update for blood pressure: \(samples[type])")
-                    samples[type] = statistics
-                }
-            } else if (type.description == "HKWorkoutTypeIdentifier") {
-                fetchPreparationAndRecoveryWorkout(type) { (statistics, error) -> Void in
-                    dispatch_group_leave(group)
-                    guard error == nil else {
-                        print("hit nil in workout type loop for type \(type)")
-                        return
-                    }
-                    guard statistics.isEmpty == false else {
-                        print("hit empty stats in workout type loop for type \(type)")
-                        return
-                    }
-                    print("generating samples in workout type loop for type \(type)")
-                    samples[type] = statistics
-                }
+
+        let updateSamples : (HKSampleType, [Result], NSError?) -> Void = { (type, statistics, error) in
+            dispatch_group_leave(group)
+            guard error == nil else {
+                log.error("Could not fetch recent samples for \(type.displayText): \(error)")
+                return
+            }
+            guard statistics.isEmpty == false else {
+                log.warning("No recent samples available for \(type.displayText)")
+                return
+            }
+            samples[type] = statistics
+        }
+
+        let onStatistic : HKSampleType -> Void = { type in
+            let predicate = HKSampleQuery.predicateForSamplesWithStartDate(4.days.ago, endDate: nil, options: HKQueryOptions())
+            self.fetchStatisticsOfType(type, predicate: predicate) { (statistics, error) in
+                updateSamples(type, statistics, error)
             }
         }
+
+        let onCatOrCorr = { type in
+            self.fetchMostRecentSample(type) { (statistics, error) in
+                updateSamples(type, statistics, error)
+            }
+        }
+
+        let onWorkout = { type in
+            self.fetchPreparationAndRecoveryWorkout(type) { (statistics, error) in
+                updateSamples(type, statistics, error)
+            }
+        }
+
+        types.forEach { (type) -> () in
+            dispatch_group_enter(group)
+            if ( (type.description != "HKCategoryTypeIdentifierSleepAnalysis")
+                    && (type.description != "HKCorrelationTypeIdentifierBloodPressure")
+                    && (type.description != "HKWorkoutTypeIdentifier"))
+            {
+                onStatistic(type)
+            } else if (type.description == "HKCategoryTypeIdentifierSleepAnalysis" ) {
+                onCatOrCorr(type)
+            } else if (type.description == "HKCorrelationTypeIdentifierBloodPressure") {
+                onCatOrCorr(type)
+            } else if (type.description == "HKWorkoutTypeIdentifier") {
+                onWorkout(type)
+            }
+        }
+
         dispatch_group_notify(group, dispatch_get_main_queue()) {
             // TODO: partial error handling
             self.mostRecentSamples = samples
@@ -235,8 +218,9 @@ public class HealthManager: NSObject, WCSessionDelegate {
     }
 
     // Completion handler is on background queue
-    public func fetchSamplesOfType(sampleType: HKSampleType, predicate: NSPredicate? = nil, limit: Int = Int(HKObjectQueryNoLimit), completion: HealthManagerFetchSampleBlock) {
-        let query = HKSampleQuery(sampleType: sampleType, predicate: predicate, limit: limit, sortDescriptors: [NSSortDescriptor(key: HKSampleSortIdentifierStartDate, ascending: true)]) { (query, samples, error) -> Void in
+    public func fetchSamplesOfType(sampleType: HKSampleType, predicate: NSPredicate? = nil, limit: Int = noLimit, completion: HMFetchSampleBlock) {
+        let query = HKSampleQuery(sampleType: sampleType, predicate: predicate, limit: limit, sortDescriptors: [dateAsc]) {
+            (query, samples, error) -> Void in
             guard error == nil else {
                 completion(samples: [], error: error)
                 return
@@ -247,16 +231,13 @@ public class HealthManager: NSObject, WCSessionDelegate {
     }
 
     // Completion handler is on background queue
-    public func fetchStatisticsOfType(sampleType: HKSampleType, predicate: NSPredicate? = nil, completion: HealthManagerStatisticsBlock) {
+    public func fetchStatisticsOfType(sampleType: HKSampleType, predicate: NSPredicate? = nil, completion: HMStatisticsBlock) {
         if sampleType is HKQuantityType {
-            let calendar = NSCalendar.currentCalendar()
             let interval = NSDateComponents()
             interval.day = 1
 
             // Set the anchor date to midnight today. Should be able to change according to user settings
-            let anchorComponents = calendar.components([.Year, .Month, .Day, .Hour], fromDate: NSDate())
-            anchorComponents.hour = 0
-            let anchorDate = calendar.dateFromComponents(anchorComponents)!
+            let anchorDate = NSDate().startOf(.Day, inRegion: Region())
             let quantityType = HKObjectType.quantityTypeForIdentifier(sampleType.identifier)!
 
             // Create the query
@@ -265,34 +246,31 @@ public class HealthManager: NSObject, WCSessionDelegate {
                 options: quantityType.aggregationOptions,
                 anchorDate: anchorDate,
                 intervalComponents: interval)
-            
+
             // Set the results handler
             query.initialResultsHandler = {
                 query, results, error in
 
                 guard error == nil else {
-                    print("*** An error occurred while calculating the statistics: \(sampleType) \(error!.localizedDescription) ***")
+                    log.error("Failed to fetch \(sampleType.displayText) statistics: \(error!)")
                     completion(statistics: [], error: error)
                     return
                 }
-                
+
                 completion(statistics: results!.statistics(), error: nil)
-                for t: HKStatistics in results!.statistics() {
-                    print("after collection query: \(sampleType)  \(t.numeralValue)")
-                }
             }
             healthKitStore.executeQuery(query)
-            
+
         } else {
-            completion(statistics: [], error: NSError(domain: HealthManagerErrorDomain, code: 1048576, userInfo: [NSLocalizedDescriptionKey: "Not implemented"]))
+            completion(statistics: [], error: NSError(domain: HMErrorDomain, code: 1048576, userInfo: [NSLocalizedDescriptionKey: "Not implemented"]))
         }
     }
 
-    // Completion hander is on main queue
-    public func correlateStatisticsOfType(type: HKSampleType, withType type2: HKSampleType, completion: HealthManagerCorrelationStatisticsBlock) {
+    // Completion handler is on main queue
+    public func correlateStatisticsOfType(type: HKSampleType, withType type2: HKSampleType, completion: HMCorrelationStatisticsBlock) {
         var stat1: [HKStatistics]?
         var stat2: [HKStatistics]?
-        
+
         let group = dispatch_group_create()
         dispatch_group_enter(group)
         fetchStatisticsOfType(type) { (statistics, error) -> Void in
@@ -302,7 +280,6 @@ public class HealthManager: NSObject, WCSessionDelegate {
                 return
             }
             stat1 = statistics
-            print ("statistics of type 1, \(stat1?.enumerate())")
         }
         dispatch_group_enter(group)
         fetchStatisticsOfType(type2) { (statistics, error) -> Void in
@@ -312,9 +289,8 @@ public class HealthManager: NSObject, WCSessionDelegate {
                 return
             }
             stat2 = statistics
-            //            print ("statistics of type 2, \(stat2?.enumerate())")
         }
-        
+
         dispatch_group_notify(group, dispatch_get_main_queue()) {
             guard stat1 != nil && stat2 != nil else {
                 return
@@ -332,7 +308,7 @@ public class HealthManager: NSObject, WCSessionDelegate {
             for i in 1..<stat1!.count {
                 var j = i
                 let target = stat1![i]
-                
+
                 while j > 0 && target.quantity!.compare(stat1![j - 1].quantity!) == .OrderedAscending {
                     swap(&stat1![j], &stat1![j - 1])
                     swap(&stat2![j], &stat2![j - 1])
@@ -341,7 +317,6 @@ public class HealthManager: NSObject, WCSessionDelegate {
                 stat1![j] = target
             }
             completion(stat1!, stat2!, nil)
-            //            print ("statistics of both types, \(stat1),and \(stat2)")
         }
     }
 
@@ -359,7 +334,7 @@ public class HealthManager: NSObject, WCSessionDelegate {
         }
         healthKitStore.executeQuery(sampleQuery)
     }
-    
+
     // Query food diary events stored as prep and recovery workouts in HealthKit
     public func fetchPreparationAndRecoveryWorkout(sampleType: HKSampleType, completion: (([HKSample]!, NSError!) -> Void)!) {
         let predicate =  HKQuery.predicateForWorkoutsWithWorkoutActivityType(HKWorkoutActivityType.PreparationAndRecovery)
@@ -377,232 +352,14 @@ public class HealthManager: NSObject, WCSessionDelegate {
         healthKitStore.executeQuery(sampleQuery)
     }
 
-    // MARK: - Population query execution.
-
-    // TODO: pull this from Granola
-    // TODO: make this a dictionary with a list value to support multiple fields per sampleType,
-    // e.g., blood_pressure needs both systolic and diastolic
-    public static let attributeNamesBySampleType : [HKSampleType:(String,String,String?)] =
-        PreviewManager.previewChoices.flatten().reduce([:]) { (var dict, sampleType) in
-            switch sampleType.identifier {
-            case HKObjectType.correlationTypeForIdentifier(HKCorrelationTypeIdentifierBloodPressure)!.identifier:
-                dict[sampleType] = ("blood_pressure", "blood_pressure", "HKCorrelationTypeIdentifierBloodPressure")
-
-            case HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierActiveEnergyBurned)!.identifier:
-                dict[sampleType] = ("active_energy_burned", "active_energy_burned", nil)
-                
-            case HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierBasalEnergyBurned)!.identifier:
-                dict[sampleType] = ("unit_value", "basal_energy_burned", "HKQuantityTypeIdentifierBasalEnergyBurned")
-
-            case HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierBloodPressureDiastolic)!.identifier:
-                dict[sampleType] = ("unit_value", "diastolic_blood_pressure", "HKQuantityTypeIdentifierBloodPressureDiastolic")
-                
-            case HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierBloodPressureSystolic)!.identifier:
-                dict[sampleType] = ("unit_value", "systolic_blood_pressure", "HKQuantityTypeIdentifierBloodPressureSystolic")
-                
-            case HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierBodyMass)!.identifier:
-                dict[sampleType] = ("body_weight", "body_weight", nil)
-
-            case HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierBodyMassIndex)!.identifier:
-                dict[sampleType] = ("body_mass_index", "body_mass_index", nil)
-                
-            case HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierBloodGlucose)!.identifier:
-                dict[sampleType] = ("blood_glucose", "blood_glucose", nil)
-                
-            case HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierHeartRate)!.identifier:
-                dict[sampleType] = ("heart_rate", "heart_rate", nil)
-                
-            case HKObjectType.categoryTypeForIdentifier(HKCategoryTypeIdentifierSleepAnalysis)!.identifier:
-                dict[sampleType] = ("sleep_duration", "sleep_duration", nil)
-
-            case HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierDietaryEnergyConsumed)!.identifier:
-                dict[sampleType] = ("unit_value", "energy_consumed", "HKQuantityTypeIdentifierDietaryEnergyConsumed")
-
-            case HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierDietaryCarbohydrates)!.identifier:
-                dict[sampleType] = ("unit_value", "carbs", "HKQuantityTypeIdentifierDietaryCarbohydrates")
-
-            case HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierDietaryFatTotal)!.identifier:
-                dict[sampleType] = ("unit_value", "fat_total", "HKQuantityTypeIdentifierDietaryFatTotal")
-                
-            case HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierDietaryFatPolyunsaturated)!.identifier:
-                dict[sampleType] = ("unit_value", "fat_polyunsaturated", "HKQuantityTypeIdentifierDietaryFatPolyunsaturated")
-                
-            case HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierDietaryFatMonounsaturated)!.identifier:
-                dict[sampleType] = ("unit_value", "fat_monounsaturated", "HKQuantityTypeIdentifierDietaryFatMonounsaturated")
-                
-            case HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierDietaryFatSaturated)!.identifier:
-                dict[sampleType] = ("unit_value", "fat_saturated", "HKQuantityTypeIdentifierDietaryFatSaturated")
-
-            case HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierDietaryProtein)!.identifier:
-                dict[sampleType] = ("unit_value", "protein", "HKQuantityTypeIdentifierDietaryProtein")
-
-            case HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierDietarySugar)!.identifier:
-                dict[sampleType] = ("unit_value", "sugar", "HKQuantityTypeIdentifierDietarySugar")
-
-            case HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierDietaryCholesterol)!.identifier:
-                dict[sampleType] = ("unit_value", "cholesterol", "HKQuantityTypeIdentifierDietaryCholesterol")
-
-            case HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierDietarySodium)!.identifier:
-                dict[sampleType] = ("unit_value", "sodium", "HKQuantityTypeIdentifierDietarySodium")
-                
-            case HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierDietaryCaffeine)!.identifier:
-                dict[sampleType] = ("unit_value", "caffeine", "HKQuantityTypeIdentifierDietaryCaffeine")
-                
-            case HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierDietaryWater)!.identifier:
-                dict[sampleType] = ("unit_value", "water", "HKQuantityTypeIdentifierDietaryWater")
-
-            case HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierDistanceWalkingRunning)!.identifier:
-                dict[sampleType] = ("unit_value", "distance_walkingrunning", "HKQuantityTypeIdentifierDistanceWalkingRunning")
-
-            case HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierFlightsClimbed)!.identifier:
-                dict[sampleType] = ("unit_value", "flights_climbed", "HKQuantityTypeIdentifierFlightsClimbed")
-
-            case HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierHeight)!.identifier:
-                dict[sampleType] = ("body_height", "body_height", nil)
-
-            case HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierStepCount)!.identifier:
-                dict[sampleType] = ("step_count", "step_count", nil)
-                
-            case HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierUVExposure)!.identifier:
-                dict[sampleType] = ("unit_value", "UV_exposure", "HKQuantityTypeIdentifierUVExposure")
-
-            case HKObjectType.workoutType().identifier:HKWorkoutActivityType.PreparationAndRecovery
-                dict[sampleType] = ("effective_time_frame", "workout", "HKWorkoutActivityType")
-                
-            default:
-                log.warning("Mismatched sample types on: " + sampleType.identifier)
-            }
-            return dict
-        }
-
-    public static let attributesByName : [String: (HKSampleType, String, String?)] =
-        attributeNamesBySampleType
-            .map { $0 }
-            .reduce([:]) { (var dict, kv) in dict[kv.1.1] = (kv.0, kv.1.0, kv.1.2); return dict }
-    
-    // Retrieve aggregates for all previewed rows.
-    public func fetchAggregates() {
-        do {
-            var attributes    : [String] = []
-            var names         : [String] = []
-            var predicates    : [String] = []
-            var samplesByName : [String:HKSampleType] = [:]
-
-            for hksType in PreviewManager.previewSampleTypes {
-                if let (attr, name, predicate) = HealthManager.attributeNamesBySampleType[hksType] {
-                    attributes.append(attr)
-                    names.append(name)
-                    predicates.append(predicate ?? "")
-                    samplesByName[name] = hksType
-                }
-            }
-
-            var params : [String:AnyObject] = ["attributes":attributes, "names":names, "predicates":predicates]
-            
-            // Add population filter parameters.
-            let popQueryIndex = QueryManager.sharedManager.getSelectedQuery()
-            let popQueries = QueryManager.sharedManager.getQueries()
-            if popQueryIndex >= 0 && popQueryIndex < popQueries.count  {
-                switch popQueries[popQueryIndex].1 {
-                case Query.UserDefinedQuery(_):
-                    log.error("NYI: UserDefinedQueries")
-
-                case Query.ConjunctiveQuery(let aggpreds):
-                    let pfdict : [[String: AnyObject]] = aggpreds.map { (aggr, attr, cmp, val) in
-                            var dict : [String: AnyObject] = [:]
-                            if let attrspec = HealthManager.attributesByName[attr] {
-                                dict = serializeREST((aggr, attrspec.1, cmp, val))
-                                dict["name"] = attr
-                                if let attrAsPred = attrspec.2 {
-                                    dict["predicate"] = attrAsPred
-                                }
-                            } else {
-                                log.error(HealthManager.attributesByName)
-                                log.error("Could not find attribute '\(attr)' for a conjunctive query")
-                            }
-                            return dict
-                        }.filter { dict in !dict.isEmpty }
-
-                    params["popfilter"] = pfdict
-                }
-            }
-
-            let json = try NSJSONSerialization.dataWithJSONObject(params, options: NSJSONWritingOptions.PrettyPrinted)
-            let serializedAttrs = try NSJSONSerialization.JSONObjectWithData(json, options: NSJSONReadingOptions()) as! [String : AnyObject]
-
-            Service.json(MCRouter.AggMeasures(serializedAttrs), statusCode: 200..<300, tag: "AGGPOST") {
-                _, response, result in
-                guard !result.isSuccess else {
-                    self.refreshAggregatesFromMsg(samplesByName, payload: result.value)
-                    return
-                }
-            }
-        } catch {
-            log.error(error)
-        }
-    }
-
-    func refreshAggregatesFromMsg(samplesByName: [String:HKSampleType], payload: AnyObject?) {
-        var populationAggregates : [HKSampleType: [Result]] = [:]
-        if let aggregates = payload as? [[String: AnyObject]] {
-            var failed = false
-            for kvdict in aggregates {
-                if let sampleName = kvdict["key"] as? String,
-                       sampleType = samplesByName[sampleName]
-                {
-                    if let sampleValue = kvdict["value"] as? Double {
-                        populationAggregates[sampleType] = [DerivedQuantity(quantity: sampleValue, quantityType: sampleType)]
-                    } else {
-                        populationAggregates[sampleType] = [DerivedQuantity(quantity: nil, quantityType: nil)]
-                    }
-                } else {
-                    failed = true
-                    break
-                }
-            }
-            if ( !failed ) {
-                Async.main {
-                    self.mostRecentAggregates = populationAggregates
-                    NSNotificationCenter.defaultCenter().postNotificationName(HealthManagerDidUpdateRecentSamplesNotification, object: self)
-                }
-            }
-        }
-    }
-    
-    public func fetchMealAggregates() {
-        Service.string(MCRouter.MealMeasures([:]), statusCode: 200..<300, tag: "MEALS") {
-            _, response, result in
-            log.info(result.value)
-        }
-    }
-
-
     // MARK: - Observers
-
-    func jsonifySample(sample : HKSample) throws -> [String : AnyObject] {
-        return try HealthManager.serializer.dictForSample(sample)
-    }
-
-    func uploadSample(jsonObj: [String: AnyObject]) -> () {
-        Service.string(MCRouter.UploadHKMeasures(jsonObj), statusCode: 200..<300, tag: "UPLOAD") {
-            _, response, result in
-            log.info("Upload: \(result.value)")
-        }
-    }
-    
-    func uploadSampleBlock(jsonObjBlock: [[String:AnyObject]]) -> () {
-        Service.string(MCRouter.UploadHKMeasures(["block":jsonObjBlock]), statusCode: 200..<300, tag: "UPLOAD") {
-            _, response, result in
-            log.info("Upload: \(result.value)")
-        }
-    }
 
     public func registerObservers() {
         authorizeHealthKit { (success, _) -> Void in
             guard success else {
                 return
             }
-            
+
             // Note: keep this sorted by objectType, then alphabetically.
             let types = [
                 HKObjectType.categoryTypeForIdentifier(HKCategoryTypeIdentifierSleepAnalysis)!,
@@ -641,53 +398,61 @@ public class HealthManager: NSObject, WCSessionDelegate {
 
             types.forEach { (type) in
                 self.startBackgroundObserverForType(type) { (added, _, _, error) -> Void in
-                    guard error == nil else {	
+                    guard error == nil else {
                         log.error("Failed to register observers: \(error)")
                         return
                     }
-                    do {
-                        log.info("Uploading \(added.count) \(type.displayText) samples")
-                        let blockSize = 100
-                        let totalBlocks = ((added.count / blockSize)+1)
-                        if ( added.count > 20 ) {
-                            for i in 0..<totalBlocks {
-                                autoreleasepool { _ in
-                                    do {
-                                        log.info("Uploading block \(i) / \(totalBlocks)")
-                                        let jsonObjs = try added[(i*blockSize)..<(min((i+1)*blockSize, added.count))].map(self.jsonifySample)
-                                        self.uploadSampleBlock(jsonObjs)
-                                    } catch {
-                                        log.error(error)
-                                    }
-                                }
-                            }
-                        } else {
-                            let jsons = try added.map(self.jsonifySample)
-                            jsons.forEach(self.uploadSample)
-                        }
-                    } catch {
-                        log.error(error)
-                    }
+                    self.uploadSamplesForType(type, added: added)
                 }
             }
         }
 
     }
 
-    public func startBackgroundObserverForType(type: HKSampleType, maxResultsPerQuery: Int = Int(HKObjectQueryNoLimit), anchorQueryCallback: (addedObjects: [HKSample], deletedObjects: [HKDeletedObject], newAnchor: HKQueryAnchor?, error: NSError?) -> Void) -> Void {
+    public func startBackgroundObserverForType(type: HKSampleType, maxResultsPerQuery: Int = noLimit, anchorQueryCallback: HMAnchorSamplesBlock)
+                -> Void
+    {
         let onBackgroundStarted = {(success: Bool, nsError: NSError?) -> Void in
             guard success else {
                 log.error(nsError)
                 return
             }
+            // Create and execute an observer query that itself issues an anchored query every
+            // time new data is added or deleted in HealthKit.
             let obsQuery = HKObserverQuery(sampleType: type, predicate: nil) {
                 query, completion, obsError in
                 guard obsError == nil else {
                     log.error(obsError)
                     return
                 }
-                self.fetchSamplesOfType(type, anchor: self.getAnchorForType(type), maxResults: maxResultsPerQuery, callContinuosly: false) { (added, deleted, newAnchor, error) -> Void in
-                    anchorQueryCallback(addedObjects: added, deletedObjects: deleted, newAnchor: newAnchor, error: error)
+
+                let anchor = self.getAnchorForType(type)
+                let tname = type.displayText ?? type.identifier
+                log.verbose("Anchor for type \(tname): \(anchor) \(anchor == noAnchor)")
+
+                var predicate : NSPredicate? = nil
+
+                // When initializing an anchor query, apply a predicate to limit the initial results.
+                // If we already have a historical range, we filter samples to the current timestamp.
+                if anchor == noAnchor
+                {
+                    if UserManager.sharedManager.getHistoricalRangeForType(type.identifier) == nil {
+                        let (start, end) = UserManager.sharedManager.initializeHistoricalRangeForType(type.identifier)
+                        let (dstart, dend) = (NSDate(timeIntervalSinceReferenceDate: start), NSDate(timeIntervalSinceReferenceDate: end))
+                        predicate = HKQuery.predicateForSamplesWithStartDate(dstart, endDate: dend, options: .None)
+
+                        Async.background(after: 0.5) {
+                            log.verbose("Registering bulk ingestion availability for: \(tname)")
+                            self.getOldestSampleForType(type) { _ in () }
+                        }
+                    } else {
+                        predicate = HKQuery.predicateForSamplesWithStartDate(NSDate(), endDate: NSDate(), options: .None)
+                    }
+                }
+
+                self.fetchAnchoredSamplesOfType(type, predicate: predicate, anchor: anchor, maxResults: maxResultsPerQuery, callContinuously: false) {
+                    (added, deleted, newAnchor, error) -> Void in
+                    anchorQueryCallback(added: added, deleted: deleted, newAnchor: newAnchor, error: error)
                     if let anchor = newAnchor {
                         self.setAnchor(anchor, forType: type)
                     }
@@ -699,44 +464,40 @@ public class HealthManager: NSObject, WCSessionDelegate {
         healthKitStore.enableBackgroundDeliveryForType(type, frequency: HKUpdateFrequency.Immediate, withCompletion: onBackgroundStarted)
     }
 
-    func fetchSamplesOfType(type: HKSampleType, anchor: HKQueryAnchor?, maxResults: Int, callContinuosly: Bool, completion: (added: [HKSample], deleted: [HKDeletedObject], newAnchor: HKQueryAnchor?, error: NSError?) -> Void) {
-
-        let hkAnchor = anchor ?? HKQueryAnchor(fromValue: Int(HKAnchoredObjectQueryNoAnchor))
-        let onAnchorQueryResults: (HKAnchoredObjectQuery, [HKSample]?, [HKDeletedObject]?, HKQueryAnchor?, NSError?) -> Void = {
-            (query:HKAnchoredObjectQuery, addedObjects: [HKSample]?, deletedObjects: [HKDeletedObject]?, newAnchor: HKQueryAnchor?, nsError: NSError?) -> Void in
+    private func fetchAnchoredSamplesOfType(type: HKSampleType, predicate: NSPredicate?, anchor: HKQueryAnchor?,
+                                            maxResults: Int, callContinuously: Bool, completion: HMAnchorSamplesBlock)
+    {
+        let hkAnchor = anchor ?? noAnchor
+        let onAnchorQueryResults: HMAnchorQueryBlock = {
+            (query, addedObjects, deletedObjects, newAnchor, nsError) -> Void in
             completion(added: addedObjects ?? [], deleted: deletedObjects ?? [], newAnchor: newAnchor, error: nsError)
         }
-        let anchoredQuery = HKAnchoredObjectQuery(type: type, predicate: nil, anchor: hkAnchor, limit: Int(maxResults), resultsHandler: onAnchorQueryResults)
-        if callContinuosly {
+        let anchoredQuery = HKAnchoredObjectQuery(type: type, predicate: predicate, anchor: hkAnchor, limit: Int(maxResults), resultsHandler: onAnchorQueryResults)
+        if callContinuously {
             anchoredQuery.updateHandler = onAnchorQueryResults
         }
         healthKitStore.executeQuery(anchoredQuery)
     }
 
-
     private func getAnchorForType(type: HKSampleType) -> HKQueryAnchor {
-        if let anchorDict = NSUserDefaults.standardUserDefaults().objectForKey(HealthManagerAnchorKey) as? [String: NSData] {
-            let encodedAnchor = anchorDict[type.identifier]
-            guard encodedAnchor != nil else {
-                return HKQueryAnchor(fromValue: Int(HKAnchoredObjectQueryNoAnchor))
+        if let anchorDict = Defaults[HMAnchorKey] {
+            if let encodedAnchor = anchorDict[type.identifier] as? NSData {
+                return NSKeyedUnarchiver.unarchiveObjectWithData(encodedAnchor) as! HKQueryAnchor
             }
-            return NSKeyedUnarchiver.unarchiveObjectWithData(encodedAnchor!) as! HKQueryAnchor
-        } else {
-            return HKQueryAnchor(fromValue: Int(HKAnchoredObjectQueryNoAnchor))
         }
+        return noAnchor
     }
 
     private func setAnchor(anchor: HKQueryAnchor, forType type: HKSampleType) {
-        let encodedAnchor: NSData = NSKeyedArchiver.archivedDataWithRootObject(anchor)
-        if var anchorDict = NSUserDefaults.standardUserDefaults().objectForKey(HealthManagerAnchorKey) as? [String: NSData] {
-            anchorDict[type.identifier] = encodedAnchor
-            NSUserDefaults.standardUserDefaults().setValue(anchorDict, forKey: HealthManagerAnchorKey)
+        let encodedAnchor = NSKeyedArchiver.archivedDataWithRootObject(anchor)
+        if !Defaults.hasKey(HMAnchorKey) {
+            Defaults[HMAnchorKey] = [type.identifier: encodedAnchor]
         } else {
-            let anchorDict = [type.identifier: encodedAnchor]
-            NSUserDefaults.standardUserDefaults().setValue(anchorDict, forKey: HealthManagerAnchorKey)
+            Defaults[HMAnchorKey]![type.identifier] = encodedAnchor
         }
-        NSUserDefaults.standardUserDefaults().synchronize()
+        Defaults.synchronize()
     }
+
 
     // MARK: - Writing into HealthKit
 
@@ -763,7 +524,115 @@ public class HealthManager: NSObject, WCSessionDelegate {
             })
     }
 
-    
+    // MARK: - Upload helpers.
+    func jsonifySample(sample : HKSample) throws -> [String : AnyObject] {
+        return try HealthManager.serializer.dictForSample(sample)
+    }
+
+    func uploadSample(jsonObj: [String: AnyObject]) -> () {
+        Service.string(MCRouter.UploadHKMeasures(jsonObj), statusCode: 200..<300, tag: "UPLOAD") {
+            _, response, result in
+            log.info("Upload: \(result.value)")
+        }
+    }
+
+    func uploadSampleBlock(jsonObjBlock: [[String:AnyObject]]) -> () {
+        Service.string(MCRouter.UploadHKMeasures(["block":jsonObjBlock]), statusCode: 200..<300, tag: "UPLOAD") {
+            _, response, result in
+            log.info("Upload: \(result.value)")
+        }
+    }
+
+    func uploadSamplesForType(type: HKSampleType, added: [HKSample]) {
+        do {
+            let tname = type.displayText ?? type.identifier
+            log.info("Uploading \(added.count) \(tname) samples")
+
+            let blockSize = 100
+            let totalBlocks = ((added.count / blockSize)+1)
+            if ( added.count > 20 ) {
+                for i in 0..<totalBlocks {
+                    autoreleasepool { _ in
+                        do {
+                            log.info("Uploading block \(i) / \(totalBlocks)")
+                            let jsonObjs = try added[(i*blockSize)..<(min((i+1)*blockSize, added.count))].map(self.jsonifySample)
+                            self.uploadSampleBlock(jsonObjs)
+                        } catch {
+                            log.error(error)
+                        }
+                    }
+                }
+            } else {
+                let jsons = try added.map(self.jsonifySample)
+                jsons.forEach(self.uploadSample)
+            }
+        } catch {
+            log.error(error)
+        }
+    }
+
+    private func uploadInitialAnchorForType(type: HKSampleType, completion: (Bool, (Bool, NSDate)?) -> Void) {
+        let tname = type.displayText ?? type.identifier
+        if let wend = UserManager.sharedManager.getHistoricalRangeStartForType(type.identifier) {
+            let dwend = NSDate(timeIntervalSinceReferenceDate: wend)
+            let dwstart = UserManager.sharedManager.decrAnchorDate(dwend)
+            let pred = HKQuery.predicateForSamplesWithStartDate(dwstart, endDate: dwend, options: .None)
+            fetchSamplesOfType(type, predicate: pred, limit: noLimit) { (samples, error) in
+                guard error == nil else {
+                    log.error("Could not get initial anchor samples for: \(tname) \(dwstart) \(dwend)")
+                    return
+                }
+
+                self.uploadSamplesForType(type, added: samples)
+                UserManager.sharedManager.decrHistoricalRangeStartForType(type.identifier)
+
+                log.info("Uploaded \(tname) to \(dwstart)")
+                if let min = UserManager.sharedManager.getHistoricalRangeMinForType(type.identifier) {
+                    let dmin = NSDate(timeIntervalSinceReferenceDate: min)
+                    if dwstart > dmin {
+                        completion(false, (false, dwstart))
+                        Async.background(after: 0.5) {
+                            self.uploadInitialAnchorForType(type, completion: completion)
+                        }
+                    } else {
+                        completion(false, (true, dmin))
+                    }
+                } else {
+                    log.error("No earliest sample found for \(tname)")
+                }
+            }
+        } else {
+            log.info("No bulk anchor date found for \(tname)")
+        }
+    }
+
+    private func getOldestSampleForType(type: HKSampleType, completion: HKSampleType -> ()) {
+        let tname = type.displayText ?? type.identifier
+        fetchSamplesOfType(type, predicate: nil, limit: 1) { (samples, error) in
+            guard error == nil else {
+                log.error("Could not get oldest sample for: \(tname)")
+                return
+            }
+            let minDate = samples.isEmpty ? NSDate() : samples[0].startDate
+            UserManager.sharedManager.setHistoricalRangeMinForType(type.identifier, min: minDate)
+            log.info("Lower bound date for \(tname): \(minDate)")
+            completion(type)
+        }
+    }
+
+    private func backgroundUploadForType(type: HKSampleType, completion: (Bool, (Bool, NSDate)?) -> Void) {
+        let tname = type.displayText ?? type.identifier
+        if let _ = UserManager.sharedManager.getHistoricalRangeForType(type.identifier),
+               _ = UserManager.sharedManager.getHistoricalRangeMinForType(type.identifier)
+        {
+            self.uploadInitialAnchorForType(type, completion: completion)
+        } else {
+            log.warning("No historical range found for \(tname)")
+            completion(true, nil)
+        }
+    }
+
+
     // MARK: - Apple Watch
 
     func connectWatch() {
@@ -836,7 +705,7 @@ public extension HKSampleType {
         case HKQuantityTypeIdentifierBloodPressureDiastolic:
             return NSLocalizedString("Blood Pressure Diastolic", comment: "HealthKit data type")
         case HKQuantityTypeIdentifierBloodPressureSystolic:
-            return NSLocalizedString("Blood Pressure Systolic", comment: "HealthKit data type") 
+            return NSLocalizedString("Blood Pressure Systolic", comment: "HealthKit data type")
         case HKQuantityTypeIdentifierDietaryFatTotal:
             return NSLocalizedString("Fat", comment: "HealthKit data type")
         case HKQuantityTypeIdentifierDietaryFatSaturated:
@@ -1260,8 +1129,6 @@ public func ==(a: NSDate, b: NSDate) -> Bool {
     return a.compare(b) == NSComparisonResult.OrderedSame
 }
 
-extension NSDate: Comparable { }
-
 public extension Array where Element: HKSample {
     public var sleepDuration: NSTimeInterval? {
         return filter { (sample) -> Bool in
@@ -1284,7 +1151,7 @@ public extension Array where Element: HKSample {
 //            let categorySample = sample as! HKWorkout
 //            let now = NSDate()
 //            return categorySample.sampleType.identifier == HKWorkoutTypeIdentifier && categorySample.startDate < now
-//            
+//
 //        }
 //    }
 }
