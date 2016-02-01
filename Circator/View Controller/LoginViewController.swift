@@ -119,21 +119,23 @@ class LoginViewController: UIViewController, UITableViewDelegate, UITableViewDat
         super.viewDidLayoutSubviews()
         tableView.separatorInset = UIEdgeInsets(top: 0, left: self.view.frame.width, bottom: 0, right: 0)
     }
-    
-    func doWelcome() {
-        navigationController?.popViewControllerAnimated(true)
-        Async.main {
-            self.parentView?.view.dodo.style.bar.hideAfterDelaySeconds = 3
-            self.parentView?.view.dodo.style.bar.hideOnTap = true
-            self.parentView?.view.dodo.success("Welcome " + (UserManager.sharedManager.getUserId() ?? ""))
-        }
-    }
 
     func doLogin(sender: UIButton) {
-        UserManager.sharedManager.ensureUserPass(userCell?.textField.text, pass: passCell?.textField.text)
-        UserManager.sharedManager.loginWithCompletion { _ in
-            if let comp = self.completion { comp() }
-            self.doWelcome()
+        UserManager.sharedManager.ensureUserPass(userCell?.textField.text, pass: passCell?.textField.text) {
+            error in
+            guard !error else {
+                UINotifications.invalidUserPass(self.navigationController!)
+                return
+            }
+            UserManager.sharedManager.loginWithCompletion { (error, _) in
+                guard !error else {
+                    UINotifications.invalidUserPass(self.navigationController!)
+                    return
+                }
+                if let comp = self.completion { comp() }
+                UINotifications.doWelcome(self.parentView!, pop: true, user: UserManager.sharedManager.getUserId() ?? "")
+                Async.main { self.parentView?.initializeBackgroundWork() }
+            }
         }
     }
     
@@ -210,19 +212,21 @@ class LoginViewController: UIViewController, UITableViewDelegate, UITableViewDat
         if let txt = textField.text {
             switch textField.tag {
             case 0:
-                UserManager.sharedManager.setUserId(txt)
                 userCell?.textField.resignFirstResponder()
                 passCell?.textField.becomeFirstResponder()
+                UserManager.sharedManager.setUserId(txt)
+
             case 1:
-                // Take any text entered as the username if we have nothing saved.
-                if UserManager.sharedManager.getUserId() == nil {
-                    if let currentUser = userCell?.textField.text {
-                        UserManager.sharedManager.setUserId(currentUser)
-                    }
-                }
-                UserManager.sharedManager.setAccountPassword(txt)
                 passCell?.textField.resignFirstResponder()
                 userCell?.textField.becomeFirstResponder()
+
+                // Take the current username text as well as the password.
+                UserManager.sharedManager.ensureUserPass(userCell?.textField.text, pass: txt) { error in
+                    guard !error else {
+                        UINotifications.invalidUserPass(self.navigationController!)
+                        return
+                    }
+                }
             default:
                 return false
             }

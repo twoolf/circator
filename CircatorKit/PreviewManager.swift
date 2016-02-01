@@ -7,6 +7,9 @@
 //
 
 import HealthKit
+import SwiftyUserDefaults
+
+private let PMSampleTypesKey = DefaultsKey<[NSData]?>("previewSampleTypes")
 
 public class PreviewManager: NSObject {
     public static let previewChoices: [[HKSampleType]] = [
@@ -24,7 +27,7 @@ public class PreviewManager: NSObject {
             HKObjectType.categoryTypeForIdentifier(HKCategoryTypeIdentifierSleepAnalysis)!,
             HKObjectType.workoutType(),
             HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierUVExposure)!
-            
+
         ],
         [   HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierDietaryProtein)!,
             HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierDietaryFatTotal)!,
@@ -33,7 +36,7 @@ public class PreviewManager: NSObject {
         [   HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierDietarySugar)!,
             HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierDietaryCholesterol)!,
             HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierDietarySodium)!
-            
+
         ],
         [   HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierActiveEnergyBurned)!,
             HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierDietaryWater)!,
@@ -53,7 +56,7 @@ public class PreviewManager: NSObject {
     }()
 
     public static var previewSampleTypes: [HKSampleType] {
-        if let rawTypes = NSUserDefaults.standardUserDefaults().objectForKey("previewSampleTypes") as? [NSData] {
+        if let rawTypes = Defaults[PMSampleTypesKey] {
             return rawTypes.map { (data) -> HKSampleType in
                 return NSKeyedUnarchiver.unarchiveObjectWithData(data) as! HKSampleType
             }
@@ -70,7 +73,7 @@ public class PreviewManager: NSObject {
             let rawTypes = defaultTypes.map { (sampleType) -> NSData in
                 return NSKeyedArchiver.archivedDataWithRootObject(sampleType)
             }
-            NSUserDefaults.standardUserDefaults().setObject(rawTypes, forKey: "previewSampleTypes")
+            Defaults[PMSampleTypesKey] = rawTypes
             return defaultTypes
         }
     }
@@ -92,7 +95,7 @@ public class PreviewManager: NSObject {
         let rawTypes = types.map { (sampleType) -> NSData in
             return NSKeyedArchiver.archivedDataWithRootObject(sampleType)
         }
-        NSUserDefaults.standardUserDefaults().setObject(rawTypes, forKey: "previewSampleTypes")
+        Defaults[PMSampleTypesKey] = rawTypes
     }
 }
 

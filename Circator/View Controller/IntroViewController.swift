@@ -18,6 +18,8 @@ let IntroViewTableViewCellIdentifier = "IntroViewTableViewCellIdentifier"
 
 class IntroViewController: UIViewController, UITableViewDelegate, UITableViewDataSource, UIPickerViewDataSource, UIPickerViewDelegate {
 
+    private var aggregateFetchTask : Async?
+
     lazy var logoImageView: UIImageView = {
         let view = UIImageView(image: UIImage(named: "logo_university")!)
         view.tintColor = Theme.universityDarkTheme.foregroundColor
@@ -346,7 +348,7 @@ class IntroViewController: UIViewController, UITableViewDelegate, UITableViewDat
                 UIBarButtonItem(barButtonSystemItem: .FlexibleSpace, target: nil, action: ""),
                 UIBarButtonItem(barButtonSystemItem: .Done, target: self, action: "selectAttribute:")
             ]
-            
+
             return view
         }()
         return textField
@@ -367,50 +369,29 @@ class IntroViewController: UIViewController, UITableViewDelegate, UITableViewDat
 
     private var selectedMode: GraphMode!
 
-    // MARK: - Dodo messages
-    func loginWelcome() {
-        self.view.dodo.style.bar.hideAfterDelaySeconds = 3
-        self.view.dodo.style.bar.hideOnTap = true
-        self.view.dodo.error("Welcome " + (UserManager.sharedManager.getUserId() ?? ""))
-    }
 
-    func loginRequest() {
-        self.view.dodo.style.bar.hideAfterDelaySeconds = 3
-        self.view.dodo.style.bar.hideOnTap = true
-        self.view.dodo.error("Please log in")
-    }
-
-    func loginError() {
-        self.view.dodo.style.bar.hideAfterDelaySeconds = 3
-        self.view.dodo.style.bar.hideOnTap = true
-        self.view.dodo.error("Failed to login!")
-    }
-    
-    func loginGoodbye(user: String) {
-        self.view.dodo.style.bar.hideAfterDelaySeconds = 3
-        self.view.dodo.style.bar.hideOnTap = true
-        self.view.dodo.error("Goodbye \(user)")
-    }
-    
     // MARK: - Background Work
 
     func withHKCalAuth(completion: Void -> Void) {
         HealthManager.sharedManager.authorizeHealthKit { (success, error) -> Void in
-            guard error == nil else { return }
+            guard error == nil else {
+                UINotifications.noHealthKit(self)
+                return
+            }
             EventManager.sharedManager.checkCalendarAuthorizationStatus(completion)
         }
     }
-    
+
     func fetchInitialAggregates() {
-        Async.userInteractive() {
+        aggregateFetchTask = Async.background {
             self.fetchAggregatesPeriodically()
         }
     }
 
     func fetchAggregatesPeriodically() {
-        HealthManager.sharedManager.fetchAggregates()
+        PopulationHealthManager.sharedManager.fetchAggregates()
         let freq = UserManager.sharedManager.getRefreshFrequency()
-        Async.background(after: Double(freq)) {
+        aggregateFetchTask = Async.background(after: Double(freq)) {
             self.fetchAggregatesPeriodically()
         }
     }
@@ -419,17 +400,48 @@ class IntroViewController: UIViewController, UITableViewDelegate, UITableViewDat
         withHKCalAuth {
             HealthManager.sharedManager.fetchMostRecentSamples() { (samples, error) -> Void in
                 guard error == nil else { return }
-                NSNotificationCenter.defaultCenter().postNotificationName(HealthManagerDidUpdateRecentSamplesNotification, object: self)
+                NSNotificationCenter.defaultCenter().postNotificationName(HMDidUpdateRecentSamplesNotification, object: self)
             }
         }
     }
-    
+
+    internal func initializeBackgroundWork() {
+        Async.main(after: 2) {
+            self.fetchInitialAggregates()
+            self.fetchRecentSamples()
+            HealthManager.sharedManager.registerObservers()
+        }
+    }
+
+
+    // MARK: - Initial, and toggling login/logout handlers.
+
     func loginOrRegister() {
         if UserManager.sharedManager.hasUserId() {
             loginAndInitialize()
         } else {
             registerParticipant()
         }
+    }
+
+    func doLogin(completion: (Void -> Void)?) {
+        let loginVC = LoginViewController()
+        loginVC.parentView = self
+        loginVC.completion = completion
+        navigationController?.pushViewController(loginVC, animated: true)
+    }
+
+    func doLogout(completion: (Void -> Void)?) {
+        UserManager.sharedManager.logoutWithCompletion(completion)
+        UINotifications.loginGoodbye(self, pop: false, user: UserManager.sharedManager.getUserId()!)
+
+        // Clean up aggregate data fetched via the prior account.
+        if let task = aggregateFetchTask {
+            task.cancel()
+            aggregateFetchTask = nil
+        }
+        PopulationHealthManager.sharedManager.resetAggregates()
+        Async.main { self.tableView.reloadData() }
     }
 
     func registerParticipant() {
@@ -439,34 +451,25 @@ class IntroViewController: UIViewController, UITableViewDelegate, UITableViewDat
         registerVC.registerCompletion = { self.initializeBackgroundWork() }
         self.navigationController?.pushViewController(registerVC, animated: true)
     }
-    
+
     func loginAndInitialize() {
         withHKCalAuth {
             UserManager.sharedManager.ensureAccessToken { error in
                 guard !error else {
-                    Async.main { self.loginRequest() }
+                    UINotifications.loginRequest(self)
                     return
                 }
 
-                guard UserManager.sharedManager.hasAccount()
-                    else {
-                        self.doToggleLogin { self.initializeBackgroundWork() }
-                        return
+                guard UserManager.sharedManager.hasAccount() else {
+                    self.doToggleLogin { self.initializeBackgroundWork() }
+                    return
                 }
-                
+
                 UserManager.sharedManager.pullProfile { _ in
                     self.initializeBackgroundWork()
-                    Async.main(after: 2) { self.loginWelcome() }
+                    Async.main(after: 2) { UINotifications.doWelcome(self, pop: false, user: UserManager.sharedManager.getUserId() ?? "") }
                 }
             }
-        }
-    }
-
-    func initializeBackgroundWork() {
-        Async.main(after: 2) {
-            self.fetchInitialAggregates()
-            self.fetchRecentSamples()
-            HealthManager.sharedManager.registerObservers()
         }
     }
 
@@ -478,7 +481,7 @@ class IntroViewController: UIViewController, UITableViewDelegate, UITableViewDat
         loginOrRegister()
         configureViews()
         tableView.layoutIfNeeded()
-        NSNotificationCenter.defaultCenter().addObserverForName(HealthManagerDidUpdateRecentSamplesNotification, object: nil, queue: NSOperationQueue.mainQueue()) { (_) -> Void in
+        NSNotificationCenter.defaultCenter().addObserverForName(HMDidUpdateRecentSamplesNotification, object: nil, queue: NSOperationQueue.mainQueue()) { (_) -> Void in
             self.tableView.reloadData()
         }
     }
@@ -487,16 +490,16 @@ class IntroViewController: UIViewController, UITableViewDelegate, UITableViewDat
         super.viewWillAppear(animated)
         navigationController?.setNavigationBarHidden(true, animated: false)
     }
-    
+
     override func viewDidAppear(animated: Bool) {
         super.viewDidAppear(animated)
     }
-    
+
     override func viewDidLayoutSubviews() {
         super.viewDidLayoutSubviews()
         tableView.separatorInset = UIEdgeInsets(top: 0, left: self.view.frame.width, bottom: 0, right: 0)
     }
-    
+
     private func configureViews() {
         view.backgroundColor = Theme.universityDarkTheme.backgroundColor
         logoImageView.translatesAutoresizingMaskIntoConstraints = false
@@ -561,7 +564,7 @@ class IntroViewController: UIViewController, UITableViewDelegate, UITableViewDat
             timerContainerView.heightAnchor.constraintEqualToConstant(44)
         ]
         view.addConstraints(timerContainerConstraints)
-        
+
         tableTitleContainerView.translatesAutoresizingMaskIntoConstraints = false
         view.addSubview(tableTitleContainerView)
         let tableTitleConstraints: [NSLayoutConstraint] = [
@@ -585,14 +588,10 @@ class IntroViewController: UIViewController, UITableViewDelegate, UITableViewDat
 
     func doToggleLogin(completion: (Void -> Void)?) {
         guard UserManager.sharedManager.hasAccount() else {
-            let loginVC = LoginViewController()
-            loginVC.parentView = self
-            loginVC.completion = completion
-            navigationController?.pushViewController(loginVC, animated: true)
+            doLogin(completion)
             return
         }
-        UserManager.sharedManager.logoutWithCompletion(completion)
-        self.loginGoodbye(UserManager.sharedManager.getUserId()!)
+        doLogout(completion)
     }
 
     func showAttributes(sender: UIButton) {
@@ -613,7 +612,7 @@ class IntroViewController: UIViewController, UITableViewDelegate, UITableViewDat
     func dismissPopup(sender: UIBarButtonItem) {
         dummyTextField.resignFirstResponder()
     }
-    
+
     //MODIFIED BY MARIANO
     func selectAttribute(sender: UIBarButtonItem) {
         dummyTextField.resignFirstResponder()
@@ -703,11 +702,11 @@ class IntroViewController: UIViewController, UITableViewDelegate, UITableViewDat
         let cell = tableView.dequeueReusableCellWithIdentifier(IntroViewTableViewCellIdentifier, forIndexPath: indexPath) as! IntroCompareDataTableViewCell
         let sampleType = PreviewManager.previewSampleTypes[indexPath.row]
         cell.sampleType = sampleType
-        let timeSinceRefresh = NSDate().timeIntervalSinceDate(HealthManager.sharedManager.aggregateRefreshDate)
+        let timeSinceRefresh = NSDate().timeIntervalSinceDate(PopulationHealthManager.sharedManager.aggregateRefreshDate)
         let refreshPeriod = UserManager.sharedManager.getRefreshFrequency() ?? Int.max
         let stale = timeSinceRefresh > Double(refreshPeriod)
         cell.setUserData(HealthManager.sharedManager.mostRecentSamples[sampleType] ?? [HKSample](),
-                         populationAverageData: HealthManager.sharedManager.mostRecentAggregates[sampleType]
+                         populationAverageData: PopulationHealthManager.sharedManager.mostRecentAggregates[sampleType]
                                                     ?? [DerivedQuantity(quantity: nil, quantityType: nil)],
                          stalePopulation: stale)
         return cell
@@ -749,7 +748,7 @@ class IntroViewController: UIViewController, UITableViewDelegate, UITableViewDat
         } else if case .Plot(_) = selectedMode! {
             return IntroViewController.previewTypeStrings[row]
         } else if case .previewMealTypeStrings = selectedMode! {
-            
+
             return IntroViewController.previewMealTypeStrings[component][row]
         } else {
             return IntroViewController.previewMealTypeStrings[component][row]
@@ -768,9 +767,9 @@ class IntroViewController: UIViewController, UITableViewDelegate, UITableViewDat
         } else if case .previewMealTypeStrings = selectedMode!{
             /*if(IntroViewController.previewMealTypeStrings[component][row] == "AM"){
                 print("IN AM")
-                
+
                 //pickerView.resignFirstResponder()
-            
+
             } else if(IntroViewController.previewMealTypeStrings[component][row] == "Min") {
                 print("IN MIN")
             }*/

@@ -6,6 +6,8 @@
 //  Copyright © 2015 Yanif Ahmad, Tom Woolf. All rights reserved.
 //
 
+import SwiftyUserDefaults
+
 public typealias Predicate = (Aggregate, String, Comparator, String)
 public typealias Queries = [(String, Query)]
 
@@ -29,8 +31,8 @@ public enum Query {
     case UserDefinedQuery(String)
 }
 
-private let QueryManagerQueriesKey = "QMQueriesKey"
-private let QueryManagerSelectedKey = "QMSelectedKey"
+private let QMQueriesKey  = DefaultsKey<[AnyObject]?>("QMQueriesKey")
+private let QMSelectedKey = DefaultsKey<Int>("QMSelectedKey")
 
 public class QueryManager {
     public static let sharedManager = QueryManager()
@@ -39,11 +41,11 @@ public class QueryManager {
     var querySelected : Int = -1
 
     init() { load() }
-    
+
     func load() {
-        let qs = NSUserDefaults.standardUserDefaults().objectForKey(QueryManagerQueriesKey) as? [[String:AnyObject]] ?? []
+        let qs = Defaults[QMQueriesKey] as? [[String:AnyObject]] ?? []
         queries = deserializeQueries(qs)
-        querySelected = NSUserDefaults.standardUserDefaults().integerForKey(QueryManagerSelectedKey)
+        querySelected = Defaults[QMSelectedKey]
     }
 
     func save() {
@@ -53,17 +55,17 @@ public class QueryManager {
 
     func saveQueries() {
         let q = serializeQueries(queries)
-        NSUserDefaults.standardUserDefaults().setObject(q, forKey: QueryManagerQueriesKey)
+        Defaults[QMQueriesKey] = q
     }
 
     func saveIndex() {
-        NSUserDefaults.standardUserDefaults().setInteger(querySelected, forKey: QueryManagerSelectedKey)
+        Defaults[QMSelectedKey] = querySelected
     }
 
     public func getQueries() -> Queries {
         return queries
     }
-    
+
     public func addQuery(name: String, query: Query) {
         queries.append((name, query))
         saveQueries()
@@ -76,7 +78,7 @@ public class QueryManager {
         }
         save()
     }
-    
+
     public func updateQuery(index: Int, name: String, query: Query) {
         queries[index] = (name, query)
         saveQueries()

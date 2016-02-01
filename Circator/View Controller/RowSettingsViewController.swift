@@ -11,41 +11,41 @@ import CircatorKit
 import UIKit
 
 class RowSettingsViewController: UITableViewController {
-    
+
     var selectedRow: Int!
-    
+
     init() {
         super.init(style: UITableViewStyle.Grouped)
     }
-    
+
     required init?(coder aDecoder: NSCoder) {
         super.init(coder: aDecoder)
     }
-    
+
     override func viewDidLoad() {
         super.viewDidLoad()
         tableView.registerClass(UITableViewCell.self, forCellReuseIdentifier: "settingsCell")
         navigationItem.title = "Preview Row \(selectedRow)"
     }
-    
+
     override func didReceiveMemoryWarning() {
         super.didReceiveMemoryWarning()
     }
-    
+
     // MARK: - Table view data source
-    
+
     override func numberOfSectionsInTableView(tableView: UITableView) -> Int {
         return 1
     }
-    
+
     override func tableView(tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         return PreviewManager.previewChoices[section].count
     }
-    
+
     override func tableView(tableView: UITableView, titleForHeaderInSection section: Int) -> String? {
         return nil
     }
-    
+
     override func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCellWithIdentifier("settingsCell", forIndexPath: indexPath)
         cell.tintColor = Theme.universityDarkTheme.backgroundColor
@@ -58,12 +58,12 @@ class RowSettingsViewController: UITableViewController {
         }
         return cell
     }
-    
+
     override func tableView(tableView: UITableView, didSelectRowAtIndexPath indexPath: NSIndexPath) {
         let chosenSampleType = PreviewManager.previewChoices[selectedRow][indexPath.row]
         PreviewManager.reselectSampleType(chosenSampleType, forPreviewRow: selectedRow)
         tableView.reloadData()
-        NSNotificationCenter.defaultCenter().postNotificationName(HealthManagerDidUpdateRecentSamplesNotification, object: self)
+        NSNotificationCenter.defaultCenter().postNotificationName(HMDidUpdateRecentSamplesNotification, object: self)
     }
-    
+
 }
