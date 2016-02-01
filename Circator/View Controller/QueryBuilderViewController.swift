@@ -22,7 +22,7 @@ class QueryBuilderViewController: UIViewController, UITextFieldDelegate {
     let queryTableView: UITableView = UITableView(frame: CGRect.zero, style: .Plain)
     lazy var former: Former = Former(tableView: self.queryTableView)
 
-    static let attributeOptions = HealthManager.attributeNamesBySampleType.map { (key, value) in value.1 }
+    static let attributeOptions = PopulationHealthManager.attributeNamesBySampleType.map { (key, value) in value.1 }
     static let comparisonOperators = ["<", "<=", "==", "!=", "=>", ">"]
     static let aggregateOperators = ["avg", "min", "max"]
 
