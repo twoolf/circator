@@ -45,24 +45,26 @@ platform :ios do
   desc "Fastlane/match execution"
   private_lane :circatormatches do |options|
     type = options[:type]
+    ro   = options[:readonly]
 
-    match(type: type, app_identifier: "edu.jhu.cs.damsl.Circator.dev8")
-    match(type: type, app_identifier: "edu.jhu.cs.damsl.CircatorKit")
-    match(type: type, app_identifier: "edu.jhu.cs.damsl.Circator.dev8.watchkitapp2")
-    match(type: type, app_identifier: "edu.jhu.cs.damsl.Circator.dev8.watchkitapp2.watchextension")
+    match(type: type, readonly: ro, app_identifier: "edu.jhu.cs.damsl.Circator.dev8")
+    match(type: type, readonly: ro, app_identifier: "edu.jhu.cs.damsl.CircatorKit")
+    match(type: type, readonly: ro, app_identifier: "edu.jhu.cs.damsl.Circator.dev8.watchkitapp2")
+    match(type: type, readonly: ro, app_identifier: "edu.jhu.cs.damsl.Circator.dev8.watchkitapp2.watchextension")
   end
 
   desc "Prepare for command line build"
   lane :prepbuild do |options|
     type = options[:type]
+    ro   = options[:readonly]
 
     cocoapods
-    circatormatches(type: type)
+    circatormatches(type: type, readonly: ro)
   end
 
   desc "Build locally from the command line"
   lane :build do
-    preparebuild(type: type)
+    preparebuild(type: type, readonly: true)
     gym(scheme: "Circator")
   end
 
@@ -70,7 +72,7 @@ platform :ios do
   desc "This will also make sure the profile is up to date"
   lane :beta do
     cocoapods
-    circatormatches(type: "appstore")
+    circatormatches(type: "appstore", readonly: true)
     gym(scheme: "Circator")
     pilot
 
@@ -81,7 +83,7 @@ platform :ios do
   desc "Deploy a new version to the App Store"
   lane :appstore do
     cocoapods
-    circatormatches(type: "appstore")
+    circatormatches(type: "appstore", readonly: true)
     # snapshot
     gym(scheme: "Circator")
     deliver(force: true)
@@ -106,7 +108,3 @@ platform :ios do
   end
 end
 
-
-
-# More information about multiple platforms in fastlane: https://github.com/fastlane/fastlane/blob/master/docs/Platforms.md
-# All available actions: https://github.com/fastlane/fastlane/blob/master/docs/Actions.md
