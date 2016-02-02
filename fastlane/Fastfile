@@ -53,8 +53,8 @@ platform :ios do
     match(type: type, readonly: ro, app_identifier: "edu.jhu.cs.damsl.Circator.dev8.watchkitapp2.watchextension")
   end
 
-  desc "Prepare for command line build"
-  lane :prepbuild do |options|
+  desc "Private lane for command line build preparation"
+  private_lane :prepbuild do |options|
     type = options[:type]
     ro   = options[:readonly]
 
@@ -62,17 +62,21 @@ platform :ios do
     circatormatches(type: type, readonly: ro)
   end
 
+  desc "Prepare for command line build"
+  lane :preparebuild do
+    prepbuild(type: 'development', readonly: true)
+  end
+
   desc "Build locally from the command line"
   lane :build do
-    preparebuild(type: type, readonly: true)
+    prepbuild(type: type, readonly: true)
     gym(scheme: "Circator")
   end
 
   desc "Submit a new Beta Build to Apple TestFlight"
   desc "This will also make sure the profile is up to date"
   lane :beta do
-    cocoapods
-    circatormatches(type: "appstore", readonly: true)
+    prepbuild(type: "appstore", readonly: true)
     gym(scheme: "Circator")
     pilot
 
@@ -82,8 +86,7 @@ platform :ios do
 
   desc "Deploy a new version to the App Store"
   lane :appstore do
-    cocoapods
-    circatormatches(type: "appstore", readonly: true)
+    prepbuild(type: "appstore", readonly: true)
     # snapshot
     gym(scheme: "Circator")
     deliver(force: true)
