@@ -52,10 +52,17 @@ platform :ios do
     match(type: type, app_identifier: "edu.jhu.cs.damsl.Circator.dev8.watchkitapp2.watchextension")
   end
 
+  desc "Prepare for command line build"
+  lane :prepbuild do |options|
+    type = options[:type]
+
+    cocoapods
+    circatormatches(type: type)
+  end
+
   desc "Build locally from the command line"
   lane :build do
-    cocoapods
-    circatormatches(type: "development")
+    preparebuild(type: type)
     gym(scheme: "Circator")
   end
 
