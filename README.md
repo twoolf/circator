@@ -4,7 +4,7 @@ iOS HealthKit/ResearchKit/WatchKit app for circadian monitoring.
 
 ---
 ##Getting started
-We use [fastlane](https://fastlane.tools/) and [match](https://github.com/fastlane/match) to manage and guild Circator.
+We use [fastlane](https://fastlane.tools/) and [match](https://github.com/fastlane/match) to manage and build Circator.
 
 ###XCode setup
 First, set up Xcode's command line tools with:
