@@ -1,0 +1,9 @@
+git_url "git@github.com:yanif/circator-certs.git"
+
+type "development" # The default type, can be: appstore, adhoc or development
+
+app_identifier "edu.jhu.cs.damsl.Circator.dev8"
+username "yanif.ahmad@gmail.com"
+
+# For all available options run `match --help`
+# Remove the # in the beginning of the line to enable the other options

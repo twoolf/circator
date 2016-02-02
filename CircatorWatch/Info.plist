@@ -28,7 +28,7 @@
 		<string>UIInterfaceOrientationPortraitUpsideDown</string>
 	</array>
 	<key>WKCompanionAppBundleIdentifier</key>
-	<string>edu.jhu.cs.damsl.Circator.dev4</string>
+	<string>edu.jhu.cs.damsl.Circator.dev8</string>
 	<key>WKWatchKitApp</key>
 	<true/>
 </dict>
