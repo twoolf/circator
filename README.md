@@ -65,3 +65,4 @@ That's it... Enjoy!
 
 The Circator Team
 Contributors: Yanif Ahmad, Tom Woolf, Sihao Lu, Anuj Mendhiratta, Mariano Pennini
+Circator is available under the Apache 2.0 License (see the LICENSE file)
