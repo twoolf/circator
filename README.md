@@ -3,10 +3,10 @@
 iOS HealthKit/ResearchKit/WatchKit app for circadian monitoring.
 
 ---
-##Getting started
+## Getting started
 We use [fastlane](https://fastlane.tools/) and [match](https://github.com/fastlane/match) to manage and build Circator.
 
-###XCode setup
+### XCode setup
 First, set up Xcode's command line tools with:
 
 ```
@@ -39,8 +39,16 @@ Next, we'll retrieve our code signing and provisioning profiles with:
 match development --readonly
 ```
 
-####Build
-We can build Circator either manually from XCode, or from the command line.
+### Build from XCode or command line
+We can build Circator either manually from XCode (XCode > Product > Build or Run), or from the command line.
+
+If you are building from XCode, do
+
+```
+fastlane preparebuild
+```
+
+otherwise run
 
 ```
 fastlane build
