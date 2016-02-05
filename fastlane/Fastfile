@@ -46,12 +46,12 @@ platform :ios do
   private_lane :circatormatches do |options|
     type  = options[:type]
     ro    = options[:readonly]
-    force = options[:force]
+    frc   = options[:force]
 
-    match(type: type, readonly: ro, app_identifier: "edu.jhu.cs.damsl.Circator.dev8")
-    match(type: type, readonly: ro, app_identifier: "edu.jhu.cs.damsl.CircatorKit")
-    match(type: type, readonly: ro, app_identifier: "edu.jhu.cs.damsl.Circator.dev8.watchkitapp2")
-    match(type: type, readonly: ro, app_identifier: "edu.jhu.cs.damsl.Circator.dev8.watchkitapp2.watchextension")
+    match(type: type, force: frc, readonly: ro, app_identifier: "edu.jhu.cs.damsl.Circator.dev8")
+    match(type: type, force: frc, readonly: ro, app_identifier: "edu.jhu.cs.damsl.CircatorKit")
+    match(type: type, force: frc, readonly: ro, app_identifier: "edu.jhu.cs.damsl.Circator.dev8.watchkitapp2")
+    match(type: type, force: frc, readonly: ro, app_identifier: "edu.jhu.cs.damsl.Circator.dev8.watchkitapp2.watchextension")
   end
 
   desc "Private lane for command line build preparation"
