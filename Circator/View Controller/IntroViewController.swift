@@ -536,12 +536,12 @@ class IntroViewController: UIViewController, UITableViewDelegate, UITableViewDat
             topButtonsContainerView.topAnchor.constraintEqualToAnchor(view.topAnchor, constant: 40),
             topButtonsContainerView.widthAnchor.constraintEqualToAnchor(view.widthAnchor, multiplier: 0.7),
             topButtonsContainerView.leadingAnchor.constraintLessThanOrEqualToAnchor(view.layoutMarginsGuide.leadingAnchor, constant: 43 + 37),
-            topButtonsContainerView.heightAnchor.constraintEqualToConstant(27),
-            logoutButton.widthAnchor.constraintEqualToConstant(27),
+            topButtonsContainerView.heightAnchor.constraintEqualToConstant(44),
+            logoutButton.widthAnchor.constraintEqualToConstant(44),
             queryButton.leadingAnchor.constraintEqualToAnchor(logoutButton.trailingAnchor, constant: 0),
-            queryButton.widthAnchor.constraintEqualToConstant(27),
+            queryButton.widthAnchor.constraintEqualToConstant(44),
             settingsButton.leadingAnchor.constraintEqualToAnchor(queryButton.trailingAnchor, constant: 0),
-            settingsButton.widthAnchor.constraintEqualToConstant(27)
+            settingsButton.widthAnchor.constraintEqualToConstant(44	)
         ]
         view.addConstraints(topButtonsContainerConstraints)
 

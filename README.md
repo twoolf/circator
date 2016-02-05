@@ -39,6 +39,13 @@ Next, we'll retrieve our code signing and provisioning profiles with:
 match development --readonly
 ```
 
+### Register new devices
+If this is the first time you're using your device (iPhone or watch)
+
+```
+fastlane newdevices
+```
+
 ### Build from XCode or command line
 We can build Circator either manually from XCode (XCode > Product > Build or Run), or from the command line.
 

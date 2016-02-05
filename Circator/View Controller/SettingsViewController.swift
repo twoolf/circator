@@ -12,13 +12,21 @@ import Async
 import Former
 import SwiftDate
 
+private let debugSectionSizes    : [Int] = [2,2,6,4,2,1]
+private let releaseSectionSizes  : [Int] = [2,2,6,4,2]
+
+private let debugSectionTitles    : [String] = ["Login", "Settings", "Preview Rows", "Profile", "Bulk Upload", "Debug"]
+private let releaseSectionTitles  : [String] = ["Login", "Settings", "Preview Rows", "Profile", "Bulk Upload"]
+
+private let withDebugView = true
+
 class SettingsViewController: UITableViewController, UITextFieldDelegate {
 
     private var userCell: FormTextFieldCell?
     private var passCell: FormTextFieldCell?
-    
-    private var sectionSizes : [Int] = [2,2,6,4,2]
-    private var sectionTitles : [String] = ["Login", "Settings", "Preview Rows", "Profile", "Bulk Upload"]
+
+    private var sectionSizes  : [Int]    = withDebugView ? debugSectionSizes  : releaseSectionSizes
+    private var sectionTitles : [String] = withDebugView ? debugSectionTitles : releaseSectionTitles
 
     private var formCells : [Int:[FormTextFieldCell?]] = [:]
     private var historySlider : FormSliderCell? = nil
@@ -93,6 +101,16 @@ class SettingsViewController: UITableViewController, UITextFieldDelegate {
     
     override func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCellWithIdentifier("settingsCell", forIndexPath: indexPath)
+
+        if withDebugView && indexPath.section == 5 {
+            cell.tintColor = Theme.universityDarkTheme.backgroundColor
+            cell.textLabel?.text = "Debug"
+            cell.imageView?.image = nil
+            cell.accessoryType = .DisclosureIndicator
+            for sv in cell.contentView.subviews { sv.removeFromSuperview() }
+            cell.clipsToBounds = true
+            return cell
+        }
 
         if indexPath.section == 4 {
             if indexPath.row == 0 && historySlider == nil {
@@ -279,6 +297,11 @@ class SettingsViewController: UITableViewController, UITextFieldDelegate {
             let consentVC = ConsentViewController()
             navigationController?.pushViewController(consentVC, animated: true)
         }
+        else if ( withDebugView && indexPath.section == 5 ) {
+            let debugVC = DebugViewController()
+            navigationController?.pushViewController(debugVC, animated: true)
+        }
+
     }
 
     func textFieldShouldReturn(textField: UITextField) -> Bool {
@@ -349,6 +372,7 @@ class SettingsViewController: UITableViewController, UITextFieldDelegate {
         }
     }
 
+    // TODO: Dodo dialog for wifi-availability warning
     func doUpload(sender: UIButton) {
         log.warning("Upload clicked")
     }

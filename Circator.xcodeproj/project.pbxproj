@@ -12,6 +12,7 @@
 		7843F9121C1FAD9900AB8978 /* ServiceAPI.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7843F9111C1FAD9900AB8978 /* ServiceAPI.swift */; };
 		7859783F1C1BC418008377F9 /* HealthKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 7859783E1C1BC418008377F9 /* HealthKit.framework */; };
 		785978411C1BD4F1008377F9 /* EventManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 785978401C1BD4F1008377F9 /* EventManager.swift */; };
+		7860E9131C61C470004C9741 /* DebugViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7860E9121C61C470004C9741 /* DebugViewController.swift */; };
 		7861300D1C25E05600F50DB3 /* QueryViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7861300C1C25E05600F50DB3 /* QueryViewController.swift */; };
 		7861300F1C25F42B00F50DB3 /* QueryManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7861300E1C25F42B00F50DB3 /* QueryManager.swift */; };
 		7863EA9C1C27302B0038DE7A /* ConsentManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7863EA9B1C27302B0038DE7A /* ConsentManager.swift */; };
@@ -155,6 +156,7 @@
 		7843F9111C1FAD9900AB8978 /* ServiceAPI.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ServiceAPI.swift; sourceTree = "<group>"; };
 		7859783E1C1BC418008377F9 /* HealthKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = HealthKit.framework; path = System/Library/Frameworks/HealthKit.framework; sourceTree = SDKROOT; };
 		785978401C1BD4F1008377F9 /* EventManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = EventManager.swift; sourceTree = "<group>"; };
+		7860E9121C61C470004C9741 /* DebugViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DebugViewController.swift; sourceTree = "<group>"; };
 		7861300C1C25E05600F50DB3 /* QueryViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = QueryViewController.swift; sourceTree = "<group>"; };
 		7861300E1C25F42B00F50DB3 /* QueryManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = QueryManager.swift; sourceTree = "<group>"; };
 		7863EA9B1C27302B0038DE7A /* ConsentManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ConsentManager.swift; sourceTree = "<group>"; };
@@ -436,6 +438,7 @@
 				78DA2D731C28ED2A005CC2DB /* RegisterViewController.swift */,
 				7881A3E21BAF3B3E00ECB3C6 /* IntroViewController.swift */,
 				F4F4DA571C0257130073E9EE /* SettingsViewController.swift */,
+				7860E9121C61C470004C9741 /* DebugViewController.swift */,
 				7861300C1C25E05600F50DB3 /* QueryViewController.swift */,
 				78F65A4C1C25126E0074449D /* QueryBuilderViewController.swift */,
 				7863EA9D1C27332C0038DE7A /* QueryWriterViewController.swift */,
@@ -776,6 +779,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				7860E9131C61C470004C9741 /* DebugViewController.swift in Sources */,
 				F43A7C5D1BBDF43600B6FA56 /* CollectionViewCell.swift in Sources */,
 				7863EA9E1C27332C0038DE7A /* QueryWriterViewController.swift in Sources */,
 				7881A3E31BAF3B3E00ECB3C6 /* IntroViewController.swift in Sources */,

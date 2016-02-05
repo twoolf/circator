@@ -62,6 +62,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     func configureLogging() {
         // add log destinations. at least one is needed!
         let console = ConsoleDestination()
+        console.detailOutput = true
         console.colored = false
         console.minLevel = .Info
 

@@ -12,6 +12,7 @@ import Locksmith
 import Stormpath
 import CryptoSwift
 import SwiftDate
+import Async
 
 private let UMPrimaryUserKey = "UMPrimaryUserKey"
 
@@ -22,6 +23,7 @@ private let UMPFrequencyKey  = "UMPFrequencyKey"
 private let HMHRangeStartKey = "HKHRStart"
 private let HMHRangeEndKey   = "HKHREnd"
 private let HMHRangeMinKey   = "HKHRMin"
+private let HMQueryTSKey     = "HKQueryTS"
 
 public class UserManager {
     public static let sharedManager = UserManager()
@@ -53,12 +55,21 @@ public class UserManager {
     var tokenExpiry : NSTimeInterval = NSDate().timeIntervalSince1970   // Expiry in time interval since 1970.
     var profileCache : [String: AnyObject] = [:]                        // Stormpath account dictionary cache.
 
+    // Batched profile synchronization.
+    var profileAsync : Async?
+    let profileDelay = 1.0
+
+    var acqAsync : Async?
+    let acqDelay = 1.0
+
     init() {
         Stormpath.setUpWithURL(MCRouter.baseURLString)
         self.profileCache = [:]
+        self.profileAsync = nil
+        self.acqAsync = nil
     }
 
-    // Mark: - Account status, and authentication
+    // MARK: - Account status, and authentication
     
     public func hasUserId() -> Bool {
         if let user = userId {
@@ -72,7 +83,7 @@ public class UserManager {
     public func setUserId(userId: String)  { self.userId = userId }
     public func resetUserId()              { self.userId = nil }
 
-    // Mark: - Account metadata accessors for fields stored in keychain.
+    // MARK: - Account metadata accessors for fields stored in keychain.
     
     public func getAccountData() -> [String:AnyObject]? {
         if let user = userId {
@@ -173,7 +184,7 @@ public class UserManager {
     }
 
 
-    // Mark: - Stormpath-based account creation and authentication
+    // MARK: - Stormpath-based account creation and authentication
 
     public func loginWithCompletion(completion: SvcStringCompletion) {
         withUserPass (getPassword()) { (user, pass) in
@@ -242,7 +253,7 @@ public class UserManager {
     }
 
     
-    // Mark: - Stormpath token management.
+    // MARK: - Stormpath token management.
     
     public func getAccessToken() -> String? {
         return Stormpath.accessToken
@@ -314,7 +325,7 @@ public class UserManager {
     }
     
 
-    // Mark: - Profile (i.e., Stormpath account data) management
+    // MARK: - Profile (i.e., Stormpath account data) and metadata management
 
     public func syncProfile(completion: SvcStringCompletion) {
         // Post to the service.
@@ -363,9 +374,20 @@ public class UserManager {
             profileCache[k] = v
         }
     }
+
+    public func syncAcquisitionTimes(completion: SvcStringCompletion) {
+        guard let ts = profileCache[HMQueryTSKey] as? [String: AnyObject] else {
+            completion(true, "")
+            return
+        }
+
+        Service.string(MCRouter.UploadHKTSAcquired(ts), statusCode: 200..<300, tag: "UPDATETS") {
+            _, response, result in completion(!result.isSuccess, result.value)
+        }
+    }
     
     
-    // Mark : - Profile accessors
+    // MARK : - Profile accessors
 
     public func getHotWords() -> String {
         return (profileCache[UMPHotwordKey] as? String) ?? UserManager.defaultHotwords
@@ -387,61 +409,74 @@ public class UserManager {
 
     // MARK: - Historical ranges for anchor query bulk ingestion
 
-    private let hrk = { (key1:String, key2:String) in return key1 + ":" + key2 }
-
     // Returns a global historical range over all HKSampleTypes.
     public func getHistoricalRange() -> (NSTimeInterval, NSTimeInterval)? {
-        let start = profileCache.filter { (key,_) -> Bool in key.hasPrefix(HMHRangeMinKey) }.minElement { (a, b) in
-            return (a.1 as! NSTimeInterval) < (b.1 as! NSTimeInterval)
-        }
+        if let mdict = profileCache[HMHRangeMinKey] as? [String: AnyObject],
+               edict = profileCache[HMHRangeEndKey] as? [String: AnyObject]
+        {
+            let start = mdict.minElement { (a, b) in return (a.1 as! NSTimeInterval) < (b.1 as! NSTimeInterval) }
+            let end   = edict.maxElement { (a, b) in return (a.1 as! NSTimeInterval) < (b.1 as! NSTimeInterval) }
 
-        let end = profileCache.filter { (key,_) -> Bool in key.hasPrefix(HMHRangeEndKey) }.maxElement { (a, b) in
-            return (a.1 as! NSTimeInterval) < (b.1 as! NSTimeInterval)
+            if let s = start?.1 as? NSTimeInterval, e = end?.1 as? NSTimeInterval { return (s, e) }
         }
-
-        if let s = start?.1 as? NSTimeInterval, e = end?.1 as? NSTimeInterval { return (s, e) }
         return nil
     }
 
     public func getHistoricalRangeForType(key: String) -> (NSTimeInterval, NSTimeInterval)? {
-        if let s = profileCache[hrk(HMHRangeStartKey, key)] as? NSTimeInterval,
-               e = profileCache[hrk(HMHRangeEndKey, key)] as? NSTimeInterval
+        if let s = profileCache[HMHRangeStartKey]?[key] as? NSTimeInterval,
+               e = profileCache[HMHRangeEndKey]?[key] as? NSTimeInterval
         {
             return (s, e)
         }
         return nil
     }
 
-    public func initializeHistoricalRangeForType(key: String) -> (NSTimeInterval, NSTimeInterval) {
+    public func initializeHistoricalRangeForType(key: String, sync: Bool = false) -> (NSTimeInterval, NSTimeInterval) {
         let (start, end) = (decrAnchorDate(NSDate()).timeIntervalSinceReferenceDate, NSDate().timeIntervalSinceReferenceDate)
-        profileCache[hrk(HMHRangeStartKey, key)] = start
-        profileCache[hrk(HMHRangeEndKey, key)] = end
-//        syncProfile { _ in () }
+        if profileCache[HMHRangeStartKey] == nil { profileCache[HMHRangeStartKey] = [:] }
+        if profileCache[HMHRangeEndKey] == nil { profileCache[HMHRangeEndKey] = [:] }
+
+        if var sdict = profileCache[HMHRangeStartKey] as? [String: AnyObject],
+               edict = profileCache[HMHRangeEndKey] as? [String: AnyObject]
+        {
+            sdict.updateValue(start, forKey: key)
+            edict.updateValue(end, forKey: key)
+            profileCache[HMHRangeStartKey] = sdict
+            profileCache[HMHRangeEndKey] = edict
+            deferProfile(sync)
+        }
+
         return (start, end)
     }
 
 
     public func getHistoricalRangeStartForType(key: String) -> NSTimeInterval? {
-        return profileCache[hrk(HMHRangeStartKey, key)] as? NSTimeInterval
+        return profileCache[HMHRangeStartKey]?[key] as? NSTimeInterval
     }
 
-    public func decrHistoricalRangeStartForType(key: String) {
-        let skey = hrk(HMHRangeStartKey, key)
-        if let start = profileCache[skey] as? NSTimeInterval {
-            profileCache[skey] = decrAnchorDate(NSDate(timeIntervalSinceReferenceDate: start)).timeIntervalSinceReferenceDate
-//            syncProfile { _ in () }
+    public func decrHistoricalRangeStartForType(key: String, sync: Bool = false) {
+        if var sdict = profileCache[HMHRangeStartKey] as? [String: AnyObject],
+           let start = sdict[key] as? NSTimeInterval
+        {
+            sdict.updateValue(decrAnchorDate(NSDate(timeIntervalSinceReferenceDate: start)).timeIntervalSinceReferenceDate, forKey: key)
+            profileCache[HMHRangeStartKey] = sdict
+            deferProfile(sync)
         } else {
             log.error("Could not find historical sample range for \(key)")
         }
     }
 
     public func getHistoricalRangeMinForType(key: String) -> NSTimeInterval? {
-        return profileCache[hrk(HMHRangeMinKey, key)] as? NSTimeInterval
+        return profileCache[HMHRangeMinKey]?[key] as? NSTimeInterval
     }
 
-    public func setHistoricalRangeMinForType(key: String, min: NSDate) {
-        profileCache[hrk(HMHRangeMinKey, key)] = min.timeIntervalSinceReferenceDate
-//        syncProfile { _ in () }
+    public func setHistoricalRangeMinForType(key: String, min: NSDate, sync: Bool = false) {
+        if profileCache[HMHRangeMinKey] == nil { profileCache[HMHRangeMinKey] = [:] }
+        if var mdict = profileCache[HMHRangeMinKey] as? [String: AnyObject] {
+            mdict.updateValue(min.timeIntervalSinceReferenceDate, forKey: key)
+            profileCache[HMHRangeMinKey] = mdict
+            deferProfile(sync)
+        }
     }
 
     public func decrAnchorDate(d: NSDate) -> NSDate {
@@ -449,8 +484,31 @@ public class UserManager {
         return (d - 1.months).startOf(.Day, inRegion: region).startOf(.Month, inRegion: region)
     }
 
-    
-    // Mark : - Utility functions
+    private func deferProfile(sync: Bool) {
+        if sync {
+            profileAsync?.cancel()
+            profileAsync = Async.background(after: profileDelay) { self.syncProfile { _ in () } }
+        }
+    }
+
+    // Last acquisition times.
+    public func getAcquisitionTimes() -> [String: AnyObject]? {
+        return profileCache[HMQueryTSKey] as? [String: AnyObject]
+    }
+
+    public func setAcquisitionTimes(timestamps: [String: AnyObject], sync: Bool = false) {
+        profileCache[HMQueryTSKey] = timestamps
+        deferAcquisitions(sync)
+    }
+
+    private func deferAcquisitions(sync: Bool) {
+        if sync {
+            acqAsync?.cancel()
+            acqAsync = Async.background(after: acqDelay) { self.syncAcquisitionTimes { _ in () } }
+        }
+    }
+
+    // MARK : - Utility functions
     
     func withUserId (completion: (String -> Void)) {
         if let user = userId { completion(user) }
@@ -466,7 +524,7 @@ public class UserManager {
         if let user = username, pass = password { completion(user, pass) }
         else { log.error("No user/password available") }
     }
-    
+
     // Resets all user-specific data, but preserves the last user id.
     public func resetUser() {
         resetAccount()

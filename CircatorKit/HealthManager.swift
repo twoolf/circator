@@ -29,6 +29,7 @@ public let HMSampleTypeIdentifierSleepDuration  = "HMSampleTypeIdentifierSleepDu
 public let HMDidUpdateRecentSamplesNotification = "HMDidUpdateRecentSamplesNotification"
 
 private let HMAnchorKey      = DefaultsKey<[String: AnyObject]?>("HKClientAnchorKey")
+private let HMAnchorTSKey    = DefaultsKey<[String: AnyObject]?>("HKAnchorTSKey")
 private let HMHRangeStartKey = DefaultsKey<[String: AnyObject]>("HKHRangeStartKey")
 private let HMHRangeEndKey   = DefaultsKey<[String: AnyObject]>("HKHRangeEndKey")
 private let HMHRangeMinKey   = DefaultsKey<[String: AnyObject]>("HKHRangeMinKey")
@@ -63,6 +64,84 @@ public class HealthManager: NSObject, WCSessionDelegate {
         NSDate()
     ]
 
+    // Note: keep these in alphabetical order.
+    public static let healthKitTypesToRead : Set<HKObjectType>? = [
+        HKObjectType.categoryTypeForIdentifier(HKCategoryTypeIdentifierSleepAnalysis)!,
+        HKObjectType.characteristicTypeForIdentifier(HKCharacteristicTypeIdentifierDateOfBirth)!,
+        HKObjectType.characteristicTypeForIdentifier(HKCharacteristicTypeIdentifierBloodType)!,
+        HKObjectType.characteristicTypeForIdentifier(HKCharacteristicTypeIdentifierBiologicalSex)!,
+        HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierActiveEnergyBurned)!,
+        HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierBasalEnergyBurned)!,
+        HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierBloodGlucose)!,
+        HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierBloodPressureDiastolic)!,
+        HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierBloodPressureSystolic)!,
+        HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierBodyMass)!,
+        HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierBodyMassIndex)!,
+        HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierDietaryEnergyConsumed)!,
+        HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierDietarySugar)!,
+        HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierDietaryCopper)!,
+        HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierDietaryCalcium)!,
+        HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierDietaryCarbohydrates)!,
+        HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierDietaryCholesterol)!,
+        HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierDietaryFiber)!,
+        HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierDietaryIron)!,
+        HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierDietaryFatMonounsaturated)!,
+        HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierDietaryFatPolyunsaturated)!,
+        HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierDietaryFatSaturated)!,
+        HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierDietaryFatTotal)!,
+        HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierDietaryPotassium)!,
+        HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierDietaryProtein)!,
+        HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierDietarySodium)!,
+        HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierDietaryCaffeine)!,
+        HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierDietaryWater)!,
+        HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierDistanceWalkingRunning)!,
+        HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierFlightsClimbed)!,
+        HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierHeartRate)!,
+        HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierHeight)!,
+        HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierStepCount)!,
+        HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierUVExposure)!,
+        HKObjectType.workoutType()
+    ]
+
+    public static let healthKitTypesToWrite : Set<HKSampleType>? = [
+        HKQuantityType.workoutType()
+    ]
+
+    public static let healthKitTypesToObserve : [HKSampleType] = [
+        HKObjectType.categoryTypeForIdentifier(HKCategoryTypeIdentifierSleepAnalysis)!,
+        HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierActiveEnergyBurned)!,
+        HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierBasalEnergyBurned)!,
+        HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierBloodGlucose)!,
+        HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierBloodPressureDiastolic)!,
+        HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierBloodPressureSystolic)!,
+        HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierBodyMass)!,
+        HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierBodyMassIndex)!,
+        HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierDietaryEnergyConsumed)!,
+        HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierDietarySugar)!,
+        HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierDietaryCopper)!,
+        HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierDietaryCalcium)!,
+        HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierDietaryCarbohydrates)!,
+        HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierDietaryCholesterol)!,
+        HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierDietaryFiber)!,
+        HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierDietaryIron)!,
+        HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierDietaryFatMonounsaturated)!,
+        HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierDietaryFatPolyunsaturated)!,
+        HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierDietaryFatSaturated)!,
+        HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierDietaryFatTotal)!,
+        HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierDietaryPotassium)!,
+        HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierDietaryProtein)!,
+        HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierDietarySodium)!,
+        HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierDietaryCaffeine)!,
+        HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierDietaryWater)!,
+        HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierDistanceWalkingRunning)!,
+        HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierFlightsClimbed)!,
+        HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierHeartRate)!,
+        HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierHeight)!,
+        HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierStepCount)!,
+        HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierUVExposure)!,
+        HKObjectType.workoutType()
+    ]
+
     public var mostRecentSamples = [HKSampleType: [Result]]() {
         didSet {
             self.updateWatchContext()
@@ -72,48 +151,6 @@ public class HealthManager: NSObject, WCSessionDelegate {
     // Not guaranteed to be on main thread
     public func authorizeHealthKit(completion: HMAuthorizationBlock)
     {
-        // Note: keep this in alphabetical order.
-        let healthKitTypesToRead : Set<HKObjectType>? = [
-            HKObjectType.categoryTypeForIdentifier(HKCategoryTypeIdentifierSleepAnalysis)!,
-            HKObjectType.characteristicTypeForIdentifier(HKCharacteristicTypeIdentifierDateOfBirth)!,
-            HKObjectType.characteristicTypeForIdentifier(HKCharacteristicTypeIdentifierBloodType)!,
-            HKObjectType.characteristicTypeForIdentifier(HKCharacteristicTypeIdentifierBiologicalSex)!,
-            HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierActiveEnergyBurned)!,
-            HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierBasalEnergyBurned)!,
-            HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierBloodGlucose)!,
-            HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierBloodPressureDiastolic)!,
-            HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierBloodPressureSystolic)!,
-            HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierBodyMass)!,
-            HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierBodyMassIndex)!,
-            HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierDietaryEnergyConsumed)!,
-            HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierDietarySugar)!,
-            HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierDietaryCopper)!,
-            HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierDietaryCalcium)!,
-            HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierDietaryCarbohydrates)!,
-            HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierDietaryCholesterol)!,
-            HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierDietaryFiber)!,
-            HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierDietaryIron)!,
-            HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierDietaryFatMonounsaturated)!,
-            HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierDietaryFatPolyunsaturated)!,
-            HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierDietaryFatSaturated)!,
-            HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierDietaryFatTotal)!,
-            HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierDietaryPotassium)!,
-            HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierDietaryProtein)!,
-            HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierDietarySodium)!,
-            HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierDietaryCaffeine)!,
-            HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierDietaryWater)!,
-            HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierDistanceWalkingRunning)!,
-            HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierFlightsClimbed)!,
-            HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierHeartRate)!,
-            HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierHeight)!,
-            HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierStepCount)!,
-            HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierUVExposure)!,
-            HKObjectType.workoutType()
-        ]
-
-        let healthKitTypesToWrite : Set<HKSampleType>? = [
-            HKQuantityType.workoutType()
-        ]
 
         guard HKHealthStore.isHealthDataAvailable() else {
             let error = NSError(domain: HMErrorDomain, code: 2, userInfo: [NSLocalizedDescriptionKey: "HealthKit is not available in this Device"])
@@ -121,7 +158,7 @@ public class HealthManager: NSObject, WCSessionDelegate {
             return
         }
 
-        healthKitStore.requestAuthorizationToShareTypes(healthKitTypesToWrite, readTypes: healthKitTypesToRead)
+        healthKitStore.requestAuthorizationToShareTypes(HealthManager.healthKitTypesToWrite, readTypes: HealthManager.healthKitTypesToRead)
             { (success, error) -> Void in
                 completion(success: success, error: error)
         }
@@ -360,43 +397,7 @@ public class HealthManager: NSObject, WCSessionDelegate {
                 return
             }
 
-            // Note: keep this sorted by objectType, then alphabetically.
-            let types = [
-                HKObjectType.categoryTypeForIdentifier(HKCategoryTypeIdentifierSleepAnalysis)!,
-                HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierActiveEnergyBurned)!,
-                HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierBasalEnergyBurned)!,
-                HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierBloodGlucose)!,
-                HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierBloodPressureDiastolic)!,
-                HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierBloodPressureSystolic)!,
-                HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierBodyMass)!,
-                HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierBodyMassIndex)!,
-                HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierDietaryEnergyConsumed)!,
-                HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierDietarySugar)!,
-                HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierDietaryCopper)!,
-                HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierDietaryCalcium)!,
-                HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierDietaryCarbohydrates)!,
-                HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierDietaryCholesterol)!,
-                HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierDietaryFiber)!,
-                HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierDietaryIron)!,
-                HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierDietaryFatMonounsaturated)!,
-                HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierDietaryFatPolyunsaturated)!,
-                HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierDietaryFatSaturated)!,
-                HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierDietaryFatTotal)!,
-                HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierDietaryPotassium)!,
-                HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierDietaryProtein)!,
-                HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierDietarySodium)!,
-                HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierDietaryCaffeine)!,
-                HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierDietaryWater)!,
-                HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierDistanceWalkingRunning)!,
-                HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierFlightsClimbed)!,
-                HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierHeartRate)!,
-                HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierHeight)!,
-                HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierStepCount)!,
-                HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierUVExposure)!,
-                HKObjectType.workoutType()
-            ]
-
-            types.forEach { (type) in
+            HealthManager.healthKitTypesToObserve.forEach { (type) in
                 self.startBackgroundObserverForType(type) { (added, _, _, error) -> Void in
                     guard error == nil else {
                         log.error("Failed to register observers: \(error)")
@@ -428,7 +429,7 @@ public class HealthManager: NSObject, WCSessionDelegate {
 
                 let anchor = self.getAnchorForType(type)
                 let tname = type.displayText ?? type.identifier
-                log.verbose("Anchor for type \(tname): \(anchor) \(anchor == noAnchor)")
+                //log.verbose("Anchor for type \(tname): \(anchor) \(anchor == noAnchor)")
 
                 var predicate : NSPredicate? = nil
 
@@ -436,8 +437,23 @@ public class HealthManager: NSObject, WCSessionDelegate {
                 // If we already have a historical range, we filter samples to the current timestamp.
                 if anchor == noAnchor
                 {
-                    if UserManager.sharedManager.getHistoricalRangeForType(type.identifier) == nil {
-                        let (start, end) = UserManager.sharedManager.initializeHistoricalRangeForType(type.identifier)
+                    if let (_, hend) = UserManager.sharedManager.getHistoricalRangeForType(type.identifier) {
+                        // We use acquisition times stored in the profile if available rather than the current time,
+                        // to grab all data since the last remote upload to the server.
+                        if let  lastAcqTS = UserManager.sharedManager.getAcquisitionTimes(),
+                            typeTS = lastAcqTS[type.identifier] as? NSTimeInterval
+                        {
+                            let importStart = NSDate(timeIntervalSinceReferenceDate: typeTS)
+                            predicate = HKQuery.predicateForSamplesWithStartDate(importStart, endDate: NSDate(), options: .None)
+                            log.info("Data import since \(importStart): \(tname)")
+                        } else {
+                            let nearFuture = 1.minutes.fromNow
+                            let pstart = NSDate(timeIntervalSinceReferenceDate: hend)
+                            predicate = HKQuery.predicateForSamplesWithStartDate(pstart, endDate: nearFuture, options: .None)
+                            log.info("Data import from \(pstart) \(nearFuture): \(tname)")
+                        }
+                    } else {
+                        let (start, end) = UserManager.sharedManager.initializeHistoricalRangeForType(type.identifier, sync: true)
                         let (dstart, dend) = (NSDate(timeIntervalSinceReferenceDate: start), NSDate(timeIntervalSinceReferenceDate: end))
                         predicate = HKQuery.predicateForSamplesWithStartDate(dstart, endDate: dend, options: .None)
 
@@ -445,8 +461,6 @@ public class HealthManager: NSObject, WCSessionDelegate {
                             log.verbose("Registering bulk ingestion availability for: \(tname)")
                             self.getOldestSampleForType(type) { _ in () }
                         }
-                    } else {
-                        predicate = HKQuery.predicateForSamplesWithStartDate(NSDate(), endDate: NSDate(), options: .None)
                     }
                 }
 
@@ -454,7 +468,21 @@ public class HealthManager: NSObject, WCSessionDelegate {
                     (added, deleted, newAnchor, error) -> Void in
                     anchorQueryCallback(added: added, deleted: deleted, newAnchor: newAnchor, error: error)
                     if let anchor = newAnchor {
-                        self.setAnchor(anchor, forType: type)
+                        self.setAnchorForType(anchor, forType: type)
+
+                        // Refresh the latest acquisition timestamp for this measure.
+                        let ts  = self.getAnchorTSForType(type)
+                        let nts = added.reduce(ts, combine: { (acc,x) in return max(acc, x.startDate.timeIntervalSinceReferenceDate) })
+                        if nts > ts {
+                            self.setAnchorTSForType(nts, forType: type)
+
+                            // Push acquisition times into profile, and subsequently Stormpath.
+                            // This should be used to implement profile-level delta queries with anchors, independently of whether
+                            // the local session on the application has been started. Thus, we should also use the profile anchor
+                            // to initialize the historical range, to prevent duplicate data from being uploaded to the server.
+                            self.pushAcquisition(type)
+                        }
+                        log.info("\(tname) \(ts) \(nts) \(anchor == noAnchor)")
                     }
                     completion()
                 }
@@ -479,7 +507,14 @@ public class HealthManager: NSObject, WCSessionDelegate {
         healthKitStore.executeQuery(anchoredQuery)
     }
 
-    private func getAnchorForType(type: HKSampleType) -> HKQueryAnchor {
+    // Note: the UserManager batches timestamps based on cancelling a deferred synchronization timer.
+    private func pushAcquisition(type: HKSampleType) {
+        syncAnchorTS(true)
+    }
+
+    // MARK: - Anchor metadata accessors
+
+    public func getAnchorForType(type: HKSampleType) -> HKQueryAnchor {
         if let anchorDict = Defaults[HMAnchorKey] {
             if let encodedAnchor = anchorDict[type.identifier] as? NSData {
                 return NSKeyedUnarchiver.unarchiveObjectWithData(encodedAnchor) as! HKQueryAnchor
@@ -488,7 +523,7 @@ public class HealthManager: NSObject, WCSessionDelegate {
         return noAnchor
     }
 
-    private func setAnchor(anchor: HKQueryAnchor, forType type: HKSampleType) {
+    public func setAnchorForType(anchor: HKQueryAnchor, forType type: HKSampleType) {
         let encodedAnchor = NSKeyedArchiver.archivedDataWithRootObject(anchor)
         if !Defaults.hasKey(HMAnchorKey) {
             Defaults[HMAnchorKey] = [type.identifier: encodedAnchor]
@@ -498,12 +533,52 @@ public class HealthManager: NSObject, WCSessionDelegate {
         Defaults.synchronize()
     }
 
+    public func getAnchorAndTSForType(type: HKSampleType) -> (HKQueryAnchor, NSTimeInterval) {
+        if let anchorDict = Defaults[HMAnchorKey], tsDict = Defaults[HMAnchorTSKey] {
+            if let encodedAnchor = anchorDict[type.identifier] as? NSData,
+                   ts = tsDict[type.identifier] as? NSTimeInterval
+            {
+                return (NSKeyedUnarchiver.unarchiveObjectWithData(encodedAnchor) as! HKQueryAnchor, ts)
+            }
+        }
+        return (noAnchor, refDate.timeIntervalSinceReferenceDate)
+    }
+
+    public func getAnchorTSForType(type: HKSampleType) -> NSTimeInterval {
+        return Defaults[HMAnchorTSKey]?[type.identifier] as? NSTimeInterval ?? refDate.timeIntervalSinceReferenceDate
+    }
+
+    public func setAnchorTSForType(ts: NSTimeInterval, forType type: HKSampleType) {
+        if !Defaults.hasKey(HMAnchorTSKey) {
+            Defaults[HMAnchorTSKey] = [type.identifier: ts]
+        } else {
+            Defaults[HMAnchorTSKey]![type.identifier] = ts
+        }
+        Defaults.synchronize()
+    }
+
+    public func getAnchorTS() -> [String: AnyObject]? { return Defaults[HMAnchorTSKey] }
+
+    // Pushes the anchor timestamps (i.e., last acquisition times) to the user's profile.
+    public func syncAnchorTS(sync: Bool = false) {
+        if let ts = Defaults[HMAnchorTSKey] {
+            UserManager.sharedManager.setAcquisitionTimes(ts, sync: sync)
+        }
+    }
+
+    public func resetAnchors() {
+        HealthManager.healthKitTypesToObserve.forEach { type in
+            self.setAnchorForType(noAnchor, forType: type)
+            self.setAnchorTSForType(refDate.timeIntervalSinceReferenceDate, forType: type)
+        }
+    }
+
 
     // MARK: - Writing into HealthKit
 
     public func savePreparationAndRecoveryWorkout(startDate:NSDate , endDate:NSDate , distance:Double, distanceUnit:HKUnit , kiloCalories:Double,
         metadata:NSDictionary, completion: ( (Bool, NSError!) -> Void)!) {
-            log.debug("Saving workout")
+            log.debug("Saving workout \(startDate) \(endDate)")
 
             // 1. Create quantities for the distance and energy burned
             let distanceQuantity = HKQuantity(unit: distanceUnit, doubleValue: distance)
@@ -614,7 +689,7 @@ public class HealthManager: NSObject, WCSessionDelegate {
                 return
             }
             let minDate = samples.isEmpty ? NSDate() : samples[0].startDate
-            UserManager.sharedManager.setHistoricalRangeMinForType(type.identifier, min: minDate)
+            UserManager.sharedManager.setHistoricalRangeMinForType(type.identifier, min: minDate, sync: true)
             log.info("Lower bound date for \(tname): \(minDate)")
             completion(type)
         }

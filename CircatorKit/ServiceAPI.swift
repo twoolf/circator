@@ -25,6 +25,9 @@ enum MCRouter : URLRequestConvertible {
     case AggMeasures([String: AnyObject])
     case MealMeasures([String: AnyObject])
 
+    // Timestamps API
+    case UploadHKTSAcquired([String: AnyObject])
+
     // User management API
     case UserToken([String: AnyObject])
 
@@ -43,6 +46,9 @@ enum MCRouter : URLRequestConvertible {
 
         case .MealMeasures:
             return .GET
+
+        case .UploadHKTSAcquired:
+            return .POST
 
         case .UserToken:
             return .POST
@@ -68,6 +74,9 @@ enum MCRouter : URLRequestConvertible {
 
         case .MealMeasures:
             return "/measures/meals"
+
+        case .UploadHKTSAcquired:
+            return "/timestamps/acquired"
 
         case .UserToken:
             return "/measures"
@@ -100,6 +109,9 @@ enum MCRouter : URLRequestConvertible {
             return Alamofire.ParameterEncoding.JSON.encode(mutableURLRequest, parameters: parameters).0
 
         case .MealMeasures(let parameters):
+            return Alamofire.ParameterEncoding.JSON.encode(mutableURLRequest, parameters: parameters).0
+
+        case .UploadHKTSAcquired(let parameters):
             return Alamofire.ParameterEncoding.JSON.encode(mutableURLRequest, parameters: parameters).0
 
         case .UserToken(var parameters):
