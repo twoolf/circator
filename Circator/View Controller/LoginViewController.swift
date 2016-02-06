@@ -42,7 +42,7 @@ class LoginViewController: UIViewController, UITableViewDelegate, UITableViewDat
         tableView.scrollEnabled = false
         return tableView
     }()
-    
+
     lazy var loginLabelButton : UIButton = {
         let button = UIButton(type: .Custom)
         button.setTitle("Login", forState: .Normal)
@@ -87,7 +87,7 @@ class LoginViewController: UIViewController, UITableViewDelegate, UITableViewDat
 
     private func configureViews() {
         view.backgroundColor = Theme.universityDarkTheme.backgroundColor
-        
+
         logoImageView.translatesAutoresizingMaskIntoConstraints = false
         tableView.translatesAutoresizingMaskIntoConstraints = false
         loginContainerView.translatesAutoresizingMaskIntoConstraints = false
@@ -138,7 +138,7 @@ class LoginViewController: UIViewController, UITableViewDelegate, UITableViewDat
             }
         }
     }
-    
+
     func doSignup(sender: UIButton) {
         let registerVC = RegisterViewController()
         registerVC.parentView = parentView
@@ -147,32 +147,32 @@ class LoginViewController: UIViewController, UITableViewDelegate, UITableViewDat
     }
 
     // MARK: - Table View
-    
+
     func numberOfSectionsInTableView(tableView: UITableView) -> Int {
         return 1
     }
-    
+
     func tableView(tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         return 2
     }
-    
+
     func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCellWithIdentifier("loginCell", forIndexPath: indexPath)
-        
+
         let formCell = FormTextFieldCell()
         let cellInput = formCell.formTextField()
         let cellLabel = formCell.formTitleLabel()
-        
+
         cell.backgroundColor = Theme.universityDarkTheme.backgroundColor
         cellInput.textColor = Theme.universityDarkTheme.titleTextColor
         cellInput.backgroundColor = Theme.universityDarkTheme.backgroundColor
         cellLabel?.textColor = Theme.universityDarkTheme.titleTextColor
         cellLabel?.backgroundColor = Theme.universityDarkTheme.backgroundColor
-        
+
         cellInput.textAlignment = NSTextAlignment.Right
         cellInput.autocorrectionType = UITextAutocorrectionType.No // no auto correction support
         cellInput.autocapitalizationType = UITextAutocapitalizationType.None // no auto capitalization support
-        
+
         switch indexPath.section {
         case 0:
             if (indexPath.row == 0) {
@@ -200,9 +200,9 @@ class LoginViewController: UIViewController, UITableViewDelegate, UITableViewDat
         default:
             print("Invalid settings tableview section")
         }
-        
+
         cell.contentView.addSubview(formCell)
-        
+
         cellInput.enabled = true
         cellInput.delegate = self
         return cell

@@ -13,12 +13,21 @@ import Async
 import Dodo
 import HTPressableButton
 import ResearchKit
+import Pages
+import Charts
 
 let IntroViewTableViewCellIdentifier = "IntroViewTableViewCellIdentifier"
+private let mcControlButtonHeight : CGFloat = 35.0
 
-class IntroViewController: UIViewController, UITableViewDelegate, UITableViewDataSource, UIPickerViewDataSource, UIPickerViewDelegate {
-
+class IntroViewController: UIViewController,
+                           UITableViewDataSource, UIPickerViewDataSource,
+                           UITableViewDelegate, UIPickerViewDelegate
+{
     private var aggregateFetchTask : Async?
+
+    private var pagesController: PagesController!
+
+    lazy var radarController: RadarViewController = { return RadarViewController() }()
 
     lazy var logoImageView: UIImageView = {
         let view = UIImageView(image: UIImage(named: "logo_university")!)
@@ -441,7 +450,10 @@ class IntroViewController: UIViewController, UITableViewDelegate, UITableViewDat
             aggregateFetchTask = nil
         }
         PopulationHealthManager.sharedManager.resetAggregates()
-        Async.main { self.tableView.reloadData() }
+        Async.main {
+            self.tableView.reloadData()
+            self.radarController.reloadData()
+        }
     }
 
     func registerParticipant() {
@@ -483,6 +495,7 @@ class IntroViewController: UIViewController, UITableViewDelegate, UITableViewDat
         tableView.layoutIfNeeded()
         NSNotificationCenter.defaultCenter().addObserverForName(HMDidUpdateRecentSamplesNotification, object: nil, queue: NSOperationQueue.mainQueue()) { (_) -> Void in
             self.tableView.reloadData()
+            self.radarController.reloadData()
         }
     }
 
@@ -497,7 +510,6 @@ class IntroViewController: UIViewController, UITableViewDelegate, UITableViewDat
 
     override func viewDidLayoutSubviews() {
         super.viewDidLayoutSubviews()
-        tableView.separatorInset = UIEdgeInsets(top: 0, left: self.view.frame.width, bottom: 0, right: 0)
     }
 
     private func configureViews() {
@@ -536,24 +548,14 @@ class IntroViewController: UIViewController, UITableViewDelegate, UITableViewDat
             topButtonsContainerView.topAnchor.constraintEqualToAnchor(view.topAnchor, constant: 40),
             topButtonsContainerView.widthAnchor.constraintEqualToAnchor(view.widthAnchor, multiplier: 0.7),
             topButtonsContainerView.leadingAnchor.constraintLessThanOrEqualToAnchor(view.layoutMarginsGuide.leadingAnchor, constant: 43 + 37),
-            topButtonsContainerView.heightAnchor.constraintEqualToConstant(44),
-            logoutButton.widthAnchor.constraintEqualToConstant(44),
+            topButtonsContainerView.heightAnchor.constraintEqualToConstant(mcControlButtonHeight),
+            logoutButton.widthAnchor.constraintEqualToConstant(mcControlButtonHeight),
             queryButton.leadingAnchor.constraintEqualToAnchor(logoutButton.trailingAnchor, constant: 0),
-            queryButton.widthAnchor.constraintEqualToConstant(44),
+            queryButton.widthAnchor.constraintEqualToConstant(mcControlButtonHeight),
             settingsButton.leadingAnchor.constraintEqualToAnchor(queryButton.trailingAnchor, constant: 0),
-            settingsButton.widthAnchor.constraintEqualToConstant(44	)
+            settingsButton.widthAnchor.constraintEqualToConstant(mcControlButtonHeight	)
         ]
         view.addConstraints(topButtonsContainerConstraints)
-
-        tableView.translatesAutoresizingMaskIntoConstraints = false
-        view.addSubview(tableView)
-        let tableViewConstraints: [NSLayoutConstraint] = [
-            tableView.topAnchor.constraintEqualToAnchor(logoImageView.bottomAnchor, constant: 15),
-            tableView.leadingAnchor.constraintEqualToAnchor(view.layoutMarginsGuide.leadingAnchor, constant: 10),
-            tableView.trailingAnchor.constraintEqualToAnchor(view.layoutMarginsGuide.trailingAnchor, constant: -10),
-            tableView.bottomAnchor.constraintEqualToAnchor(buttonsContainerView.topAnchor, constant: -30)
-        ]
-        view.addConstraints(tableViewConstraints)
 
         timerContainerView.translatesAutoresizingMaskIntoConstraints = false
         view.addSubview(timerContainerView)
@@ -565,19 +567,58 @@ class IntroViewController: UIViewController, UITableViewDelegate, UITableViewDat
         ]
         view.addConstraints(timerContainerConstraints)
 
+        // Set up the page view controller.
+        let tableContainer = UIViewController()
+        let tcView = tableContainer.view
+
         tableTitleContainerView.translatesAutoresizingMaskIntoConstraints = false
-        view.addSubview(tableTitleContainerView)
+        tcView.addSubview(tableTitleContainerView)
         let tableTitleConstraints: [NSLayoutConstraint] = [
-            tableTitleContainerView.bottomAnchor.constraintEqualToAnchor(tableView.topAnchor, constant: -10),
-            tableTitleContainerView.leadingAnchor.constraintEqualToAnchor(tableView.leadingAnchor, constant: 37 + 27),
-            tableTitleContainerView.trailingAnchor.constraintEqualToAnchor(tableView.trailingAnchor, constant: 0),
+            tableTitleContainerView.topAnchor.constraintEqualToAnchor(tcView.topAnchor),
+            tableTitleContainerView.leadingAnchor.constraintEqualToAnchor(tcView.leadingAnchor, constant: 37 + 27),
+            tableTitleContainerView.trailingAnchor.constraintEqualToAnchor(tcView.trailingAnchor),
             userImageView.heightAnchor.constraintEqualToConstant(34),
             peopleImageView.heightAnchor.constraintEqualToConstant(34)
         ]
-        view.addConstraints(tableTitleConstraints)
+        tcView.addConstraints(tableTitleConstraints)
+
+        tableView.translatesAutoresizingMaskIntoConstraints = false
+        tableView.separatorInset = UIEdgeInsets(top: 0, left: tcView.frame.width, bottom: 0, right: 0)
+
+        tcView.addSubview(tableView)
+        let tableViewConstraints: [NSLayoutConstraint] = [
+            tableView.topAnchor.constraintEqualToAnchor(tableTitleContainerView.bottomAnchor),
+            tableView.leadingAnchor.constraintEqualToAnchor(tcView.layoutMarginsGuide.leadingAnchor),
+            tableView.trailingAnchor.constraintEqualToAnchor(tcView.layoutMarginsGuide.trailingAnchor),
+            tableView.bottomAnchor.constraintEqualToAnchor(tcView.bottomAnchor)
+        ]
+        tcView.addConstraints(tableViewConstraints)
+
+        pagesController = PagesController([tableContainer, radarController])
+        pagesController.enableSwipe = true
+        pagesController.showBottomLine = false
+        pagesController.showPageControl = true
+
+        let pageView = pagesController.view
+        pageView.translatesAutoresizingMaskIntoConstraints = false
+        self.addChildViewController(pagesController)
+        view.addSubview(pageView)
+        let pageViewConstraints: [NSLayoutConstraint] = [
+            pageView.topAnchor.constraintEqualToAnchor(topButtonsContainerView.bottomAnchor, constant: 20),
+            pageView.leadingAnchor.constraintEqualToAnchor(view.layoutMarginsGuide.leadingAnchor, constant: 10),
+            pageView.trailingAnchor.constraintEqualToAnchor(view.layoutMarginsGuide.trailingAnchor, constant: -10),
+            pageView.bottomAnchor.constraintEqualToAnchor(timerContainerView.topAnchor, constant: -3)
+        ]
+        view.addConstraints(pageViewConstraints)
+        pagesController.didMoveToParentViewController(self)
 
         dummyTextField.translatesAutoresizingMaskIntoConstraints = false
         view.addSubview(dummyTextField)
+    }
+
+
+    override func preferredStatusBarStyle() -> UIStatusBarStyle {
+        return UIStatusBarStyle.LightContent
     }
 
     // MARK: - Button Events
@@ -617,15 +658,18 @@ class IntroViewController: UIViewController, UITableViewDelegate, UITableViewDat
     func selectAttribute(sender: UIBarButtonItem) {
         dummyTextField.resignFirstResponder()
         switch selectedMode! {
+
         case let .Correlate(type1, type2):
             let correlateVC = CorrelationViewController()
             correlateVC.sampleTypes = [type1, type2]
             navigationController?.pushViewController(correlateVC, animated: true)
             break
+
         case .Plot(let type):
             let plotVC = PlotViewController()
             plotVC.sampleType = type
             navigationController?.pushViewController(plotVC, animated: true)
+
         case .previewMealTypeStrings:
             let calendar = NSCalendar.currentCalendar()
             let currentDate = NSDate()
@@ -677,6 +721,7 @@ class IntroViewController: UIViewController, UITableViewDelegate, UITableViewDat
         let queryViewController = QueryViewController()
         navigationController?.pushViewController(queryViewController, animated: true)
     }
+
 
     // MARK: - Table View
 

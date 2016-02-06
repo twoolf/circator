@@ -12,12 +12,12 @@ import HealthKit
 import CircatorKit
 
 class PlotViewController: UIViewController, ChartViewDelegate {
-    
+
     lazy var scrollView: UIScrollView = {
         let view = UIScrollView(frame: self.view.bounds)
         return view
     }()
-    
+
     lazy var historyLabel: UILabel = {
         let label: UILabel = UILabel()
         label.font = UIFont.systemFontOfSize(16, weight: UIFontWeightSemibold)
@@ -26,7 +26,7 @@ class PlotViewController: UIViewController, ChartViewDelegate {
         label.text = NSLocalizedString("Personal History", comment: "Plot view section title label")
         return label
     }()
-    
+
     lazy var summaryLabel: UILabel = {
         let label: UILabel = UILabel()
         let number = 5
@@ -36,7 +36,7 @@ class PlotViewController: UIViewController, ChartViewDelegate {
         label.text = NSLocalizedString("Summary of Personal History", comment: "Summary view section title label")
         return label
     }()
-        
+
     lazy var historyChart: LineChartView = {
         let chart = LineChartView()
         chart.animate(xAxisDuration: 1.0, yAxisDuration: 1.0)
@@ -56,7 +56,7 @@ class PlotViewController: UIViewController, ChartViewDelegate {
         chart.leftAxis.valueFormatter = SampleFormatter.numberFormatter
         return chart
     }()
-    
+
     lazy var summaryChart: BubbleChartView = {
         let chart = BubbleChartView()
         chart.delegate = self
@@ -76,7 +76,7 @@ class PlotViewController: UIViewController, ChartViewDelegate {
         chart.leftAxis.valueFormatter = SampleFormatter.numberFormatter
         return chart
     }()
-    
+
     var sampleType: HKSampleType! {
         didSet {
             navigationItem.title = sampleType.displayText!
@@ -110,7 +110,7 @@ class PlotViewController: UIViewController, ChartViewDelegate {
             }
         }
     }
-    
+
     override func viewDidLoad() {
         super.viewDidLoad()
         configureViews()
@@ -120,12 +120,12 @@ class PlotViewController: UIViewController, ChartViewDelegate {
         super.viewWillAppear(animated)
         navigationController?.setNavigationBarHidden(false, animated: false)
     }
-    
+
     override func didReceiveMemoryWarning() {
         super.didReceiveMemoryWarning()
         // Dispose of any resources that can be recreated.
     }
-    
+
     private func configureViews() {
         view.addSubview(scrollView)
         scrollView.backgroundColor = Theme.universityDarkTheme.backgroundColor

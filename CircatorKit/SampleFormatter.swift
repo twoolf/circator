@@ -18,7 +18,7 @@ public class SampleFormatter: NSObject {
         formatter.numberFormatter = numberFormatter
         return formatter
     }()
-    
+
     public static let foodMassFormatter: NSMassFormatter = {
         let formatter = NSMassFormatter()
         formatter.unitStyle = .Medium
@@ -72,25 +72,41 @@ public class SampleFormatter: NSObject {
         super.init()
     }
 
+    public func numberFromResults(results: [Result]) -> Double {
+        if var stat = results as? [HKStatistics] {
+            guard stat.isEmpty == false else {
+                return Double.quietNaN
+            }
+            return numberFromStatistics(stat.removeLast())
+        } else if let samples = results as? [HKSample] {
+            return numberFromSamples(samples)
+        } else if let derived = results as? [DerivedQuantity] {
+            return numberFromDerivedQuantities(derived)
+        }
+        return Double.quietNaN
+    }
+
     public func stringFromResults(results: [Result]) -> String {
         if var stat = results as? [HKStatistics] {
             guard stat.isEmpty == false else {
                 return emptyString
             }
-//            print("first level: \(results.))")
-//        for t: HKStatistics in stat {
-//            print("after string from results: \(stat.removeFirst())")
-//            }
             return stringFromStatistics(stat.removeLast())
         } else if let samples = results as? [HKSample] {
-//            for t: HKStatistics in stat!.statistics() {
-//                print("after string from results: \(sampleType)  \(t.numeralValue)")
-//            }
             return stringFromSamples(samples)
         } else if let derived = results as? [DerivedQuantity] {
             return stringFromDerivedQuantities(derived)
         }
         return emptyString
+    }
+
+    public func numberFromStatistics(statistics: HKStatistics) -> Double {
+        // Guaranteed to be quantity sample here
+        // TODO: Need implementation for correlation and sleep
+        guard let quantity = statistics.quantity else {
+            return Double.quietNaN
+        }
+        return numberFromQuantity(quantity, type: statistics.quantityType)
     }
 
     public func stringFromStatistics(statistics: HKStatistics) -> String {
@@ -100,6 +116,34 @@ public class SampleFormatter: NSObject {
             return emptyString
         }
         return stringFromQuantity(quantity, type: statistics.quantityType)
+    }
+
+    public func numberFromSamples(samples: [HKSample]) -> Double {
+        guard samples.isEmpty == false else {
+            return Double.quietNaN
+        }
+        if let type = samples.last!.sampleType as? HKQuantityType {
+            return numberFromQuantity((samples.last as! HKQuantitySample).quantity, type: type)
+        }
+        switch samples.last!.sampleType.identifier {
+        case HKWorkoutTypeIdentifier:
+            let d = NSDate(timeIntervalSinceReferenceDate: samples.workoutDuration!)
+            return d.hours + (Double(d.minutes) / 60.0)
+
+        case HKCategoryTypeIdentifierSleepAnalysis:
+            let d = NSDate(timeIntervalSinceReferenceDate: samples.sleepDuration!)
+            return d.hours + (Double(d.minutes) / 60.0)
+
+        case HKCorrelationTypeIdentifierBloodPressure:
+            // Return the systeolic for blood pressure, since this is the larger number.
+            let correlationSample = samples.first as! HKCorrelation
+            let systolicSample = correlationSample.objectsForType(HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierBloodPressureSystolic)!).first as? HKQuantitySample
+            guard systolicSample != nil else { return Double.quietNaN }
+            return systolicSample!.quantity.doubleValueForUnit(HKUnit.millimeterOfMercuryUnit())
+
+        default:
+            return Double.quietNaN
+        }
     }
 
     public func stringFromSamples(samples: [HKSample]) -> String {
@@ -112,8 +156,10 @@ public class SampleFormatter: NSObject {
         switch samples.last!.sampleType.identifier {
         case HKWorkoutTypeIdentifier:
             return "\(SampleFormatter.timeIntervalFormatter.stringFromTimeInterval(samples.workoutDuration!)!)"
+
         case HKCategoryTypeIdentifierSleepAnalysis:
             return "\(SampleFormatter.timeIntervalFormatter.stringFromTimeInterval(samples.sleepDuration!)!)"
+
         case HKCorrelationTypeIdentifierBloodPressure:
             let correlationSample = samples.first as! HKCorrelation
             let diastolicSample = correlationSample.objectsForType(HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierBloodPressureDiastolic)!).first as? HKQuantitySample
@@ -124,9 +170,34 @@ public class SampleFormatter: NSObject {
             let diastolicNumber = SampleFormatter.integerFormatter.stringFromNumber(diastolicSample!.quantity.doubleValueForUnit(HKUnit.millimeterOfMercuryUnit()))!
             let systolicNumber = SampleFormatter.integerFormatter.stringFromNumber(systolicSample!.quantity.doubleValueForUnit(HKUnit.millimeterOfMercuryUnit()))!
             return "\(systolicNumber)/\(diastolicNumber)"
+
         default:
             return emptyString
         }
+    }
+
+    private func numberFromDerivedQuantities(derived: [DerivedQuantity]) -> Double {
+        guard derived.isEmpty == false else {
+            return Double.quietNaN
+        }
+        if let fst      = derived.first as DerivedQuantity?,
+               quantity = fst.quantity,
+               type     = fst.quantityType
+        {
+            if let qtype = type as? HKQuantityType {
+                return numberFromDerivedQuantity(quantity, type: qtype)
+            }
+
+            switch type.identifier {
+            case HKCategoryTypeIdentifierSleepAnalysis:
+                let d = NSDate(timeIntervalSinceReferenceDate: quantity)
+                return d.hours + (Double(d.minutes) / 60.0)
+
+            default:
+                return Double.quietNaN
+            }
+        }
+        return Double.quietNaN
     }
 
     private func stringFromDerivedQuantities(derived: [DerivedQuantity]) -> String {
@@ -140,26 +211,71 @@ public class SampleFormatter: NSObject {
             if let qtype = type as? HKQuantityType {
                 return stringFromDerivedQuantity(quantity, type: qtype)
             }
-            
+
             switch type.identifier {
             case HKCategoryTypeIdentifierSleepAnalysis:
                 return "\(SampleFormatter.timeIntervalFormatter.stringFromTimeInterval(quantity)!)"
-            //case HKCorrelationTypeIdentifierBloodPressure:
-                //let correlationSample = derived
-/*                let diastolicSample = correlationSample.objectsForType(HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierBloodPressureDiastolic)!).first as? HKQuantitySample
+
+/*
+            case HKCorrelationTypeIdentifierBloodPressure:
+                let correlationSample = derived
+                let diastolicSample = correlationSample.objectsForType(HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierBloodPressureDiastolic)!).first as? HKQuantitySample
                 let systolicSample = correlationSample.objectsForType(HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierBloodPressureSystolic)!).first as? HKQuantitySample
                 guard diastolicSample != nil && systolicSample != nil else {
                     return emptyString
                 }
                 let diastolicNumber = SampleFormatter.integerFormatter.stringFromNumber(diastolicSample!.quantity.doubleValueForUnit(HKUnit.millimeterOfMercuryUnit()))!
                 let systolicNumber = SampleFormatter.integerFormatter.stringFromNumber(systolicSample!.quantity.doubleValueForUnit(HKUnit.millimeterOfMercuryUnit()))!
-                return "\(systolicNumber)/\(diastolicNumber)" */
-            
+                return "\(systolicNumber)/\(diastolicNumber)"
+*/
+
             default:
-                return emptyString
+                return Double.quietNaN
             }
         }
-        return emptyString
+        return Double.quietNaN
+    }
+
+    // TODO: handle other quantities.
+    private func numberFromQuantity(quantity: HKQuantity, type: HKQuantityType) -> Double {
+        switch type.identifier {
+        case HKQuantityTypeIdentifierBodyMass:
+            return quantity.doubleValueForUnit(HKUnit.gramUnitWithMetricPrefix(.Kilo))
+        case HKQuantityTypeIdentifierHeartRate:
+            return quantity.doubleValueForUnit(HKUnit.countUnit().unitDividedByUnit(HKUnit.minuteUnit())))!
+        case HKQuantityTypeIdentifierDietaryEnergyConsumed:
+            return quantity.doubleValueForUnit(HKUnit.jouleUnit())
+        case HKQuantityTypeIdentifierDietaryCarbohydrates:
+            return quantity.doubleValueForUnit(HKUnit.gramUnit())
+        case HKQuantityTypeIdentifierBloodPressureDiastolic:
+            return quantity.doubleValueForUnit(HKUnit.millimeterOfMercuryUnit())
+        case HKQuantityTypeIdentifierBloodPressureSystolic:
+            return quantity.doubleValueForUnit(HKUnit.millimeterOfMercuryUnit())
+        case HKQuantityTypeIdentifierDistanceWalkingRunning:
+            return quantity.doubleValueForUnit(HKUnit.mileUnit())
+        case HKQuantityTypeIdentifierStepCount:
+            return quantity.doubleValueForUnit(HKUnit.countUnit())
+        case HKQuantityTypeIdentifierUVExposure:
+            return quantity.doubleValueForUnit(HKUnit.countUnit())
+        case HKQuantityTypeIdentifierDietaryProtein:
+            return quantity.doubleValueForUnit(HKUnit.gramUnit())
+        case HKQuantityTypeIdentifierDietaryFatTotal:
+            return quantity.doubleValueForUnit(HKUnit.gramUnit())
+        case HKQuantityTypeIdentifierDietaryFatSaturated:
+            return quantity.doubleValueForUnit(HKUnit.gramUnit())
+        case HKQuantityTypeIdentifierDietaryFatMonounsaturated:
+            return quantity.doubleValueForUnit(HKUnit.gramUnit())
+        case HKQuantityTypeIdentifierDietaryFatPolyunsaturated:
+            return quantity.doubleValueForUnit(HKUnit.gramUnit())
+        case HKQuantityTypeIdentifierDietarySugar:
+            return quantity.doubleValueForUnit(HKUnit.gramUnit())
+        case HKQuantityTypeIdentifierDietarySodium:
+            return quantity.doubleValueForUnit(HKUnit.gramUnit())
+        case HKQuantityTypeIdentifierDietaryCaffeine:
+            return quantity.doubleValueForUnit(HKUnit.gramUnit())
+        default:
+            return Double.quietNaN
+        }
     }
 
     // TODO: handle other quantities.
@@ -204,6 +320,17 @@ public class SampleFormatter: NSObject {
         }
     }
 
+    private func numberFromDerivedQuantity(quantity: Double, type: HKQuantityType) -> Double {
+        switch type.identifier {
+        case HKQuantityTypeIdentifierBodyMass:
+            let hkquantity = HKQuantity(unit: HKUnit.poundUnit(), doubleValue: quantity)
+            return hkquantity.doubleValueForUnit(HKUnit.gramUnitWithMetricPrefix(.Kilo))
+
+        default:
+            return quantity
+        }
+    }
+
     private func stringFromDerivedQuantity(quantity: Double, type: HKQuantityType) -> String {
         switch type.identifier {
         case HKQuantityTypeIdentifierBodyMass:
@@ -216,43 +343,43 @@ public class SampleFormatter: NSObject {
 
         case HKQuantityTypeIdentifierDietaryEnergyConsumed:
             return SampleFormatter.calorieFormatter.stringFromValue(quantity, unit: .Kilocalorie)
-            
+
         case HKQuantityTypeIdentifierActiveEnergyBurned:
             return SampleFormatter.calorieFormatter.stringFromValue(quantity, unit: .Kilocalorie)
-            
+
         case HKQuantityTypeIdentifierDietaryCarbohydrates:
             return "\(SampleFormatter.numberFormatter.stringFromNumber(quantity)!) g"
-            
+
         case HKQuantityTypeIdentifierDistanceWalkingRunning:
             return "\(SampleFormatter.numberFormatter.stringFromNumber(quantity)!) miles"
-            
+
         case HKQuantityTypeIdentifierStepCount:
             return "\(SampleFormatter.numberFormatter.stringFromNumber(quantity)!) steps"
-            
+
         case HKQuantityTypeIdentifierUVExposure:
             return "\(SampleFormatter.numberFormatter.stringFromNumber(quantity)!) exposure"
-            
+
         case HKQuantityTypeIdentifierDietaryProtein:
             return "\(SampleFormatter.numberFormatter.stringFromNumber(quantity)!) g"
-            
+
         case HKQuantityTypeIdentifierDietaryFatTotal:
             return "\(SampleFormatter.numberFormatter.stringFromNumber(quantity)!) g"
-            
+
         case HKQuantityTypeIdentifierDietaryFatSaturated:
             return "\(SampleFormatter.numberFormatter.stringFromNumber(quantity)!) g"
-            
+
         case HKQuantityTypeIdentifierDietaryFatMonounsaturated:
             return "\(SampleFormatter.numberFormatter.stringFromNumber(quantity)!) g"
-            
+
         case HKQuantityTypeIdentifierDietaryFatPolyunsaturated:
             return "\(SampleFormatter.numberFormatter.stringFromNumber(quantity)!) g"
-            
+
         case HKQuantityTypeIdentifierDietarySugar:
             return "\(SampleFormatter.numberFormatter.stringFromNumber(quantity)!) g"
-            
+
         case HKQuantityTypeIdentifierDietarySodium:
             return "\(SampleFormatter.numberFormatter.stringFromNumber(quantity)!) g"
-            
+
         case HKQuantityTypeIdentifierDietaryCaffeine:
             return "\(SampleFormatter.numberFormatter.stringFromNumber(quantity)!) g"
 

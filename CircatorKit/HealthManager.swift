@@ -142,6 +142,42 @@ public class HealthManager: NSObject, WCSessionDelegate {
         HKObjectType.workoutType()
     ]
 
+    public static let healthKitShortNames : [String: String] = [
+        HKCorrelationTypeIdentifierBloodPressure          : "BP",
+        HKCategoryTypeIdentifierSleepAnalysis             : "Sleep",
+        HKQuantityTypeIdentifierActiveEnergyBurned        : "Cal burned",
+        HKQuantityTypeIdentifierBasalEnergyBurned         : "Cal burned(B)",
+        HKQuantityTypeIdentifierBloodGlucose              : "Glucose",
+        HKQuantityTypeIdentifierBloodPressureDiastolic    : "BP Diastolic",
+        HKQuantityTypeIdentifierBloodPressureSystolic     : "BP Systolic",
+        HKQuantityTypeIdentifierBodyMass                  : "Weight",
+        HKQuantityTypeIdentifierBodyMassIndex             : "BMI",
+        HKQuantityTypeIdentifierDietaryEnergyConsumed     : "Net Calories",
+        HKQuantityTypeIdentifierDietarySugar              : "Sugar",
+        HKQuantityTypeIdentifierDietaryCopper             : "Copper",
+        HKQuantityTypeIdentifierDietaryCalcium            : "Calcium",
+        HKQuantityTypeIdentifierDietaryCarbohydrates      : "Carbs",
+        HKQuantityTypeIdentifierDietaryCholesterol        : "Cholesterol",
+        HKQuantityTypeIdentifierDietaryFiber              : "Fiber",
+        HKQuantityTypeIdentifierDietaryIron               : "Iron",
+        HKQuantityTypeIdentifierDietaryFatMonounsaturated : "Fat(MS)",
+        HKQuantityTypeIdentifierDietaryFatPolyunsaturated : "Fat(PS)",
+        HKQuantityTypeIdentifierDietaryFatSaturated       : "Fat(S)",
+        HKQuantityTypeIdentifierDietaryFatTotal           : "Fat",
+        HKQuantityTypeIdentifierDietaryPotassium          : "Potassium",
+        HKQuantityTypeIdentifierDietaryProtein            : "Protein",
+        HKQuantityTypeIdentifierDietarySodium             : "Salt",
+        HKQuantityTypeIdentifierDietaryCaffeine           : "Caffeine",
+        HKQuantityTypeIdentifierDietaryWater              : "Water",
+        HKQuantityTypeIdentifierDistanceWalkingRunning    : "Distance",
+        HKQuantityTypeIdentifierFlightsClimbed            : "Climbed",
+        HKQuantityTypeIdentifierHeartRate                 : "Heart rate",
+        HKQuantityTypeIdentifierHeight                    : "Height",
+        HKQuantityTypeIdentifierStepCount                 : "Steps",
+        HKQuantityTypeIdentifierUVExposure                : "Light",
+        HKObjectType.workoutType().identifier             : "Workouts/Meals"
+   ]
+
     public var mostRecentSamples = [HKSampleType: [Result]]() {
         didSet {
             self.updateWatchContext()

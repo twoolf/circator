@@ -15,7 +15,7 @@ class CorrelationDataAnalyzer: SampleDataAnalyzer {
     let sampleTypes: [HKSampleType]
     let statistics: [[HKStatistics]]
     var dataSetConfigurators: [((LineChartDataSet) -> Void)?] = []
-    
+
     init?(sampleTypes: [HKSampleType], statistics: [[HKStatistics]]) {
         guard sampleTypes.count == 2 && statistics.count == 2 else {
             self.sampleTypes = []
@@ -27,7 +27,7 @@ class CorrelationDataAnalyzer: SampleDataAnalyzer {
         self.statistics = statistics
         super.init()
     }
-    
+
     var correlationChartData: LineChartData {
         let firstParamEntries = statistics[0].enumerate().map { (i, stats) -> ChartDataEntry in
             return ChartDataEntry(value: stats.numeralValue!, xIndex: i + 1)
@@ -46,22 +46,22 @@ class CorrelationDataAnalyzer: SampleDataAnalyzer {
 class PlotDataAnalyzer: SampleDataAnalyzer {
     let samples: [HKSample]
     let sampleType: HKSampleType
-    
+
     init(sampleType: HKSampleType, samples: [HKSample]) {
         self.sampleType = sampleType
         self.samples = samples
         super.init()
     }
-    
+
     enum DataGroupingMode {
         case ByInstance
         case ByDate
     }
-    
+
     var dataGroupingMode: DataGroupingMode = .ByDate
     var dataSetConfigurator: ((LineChartDataSet) -> Void)?
     var dataSetConfiguratorBubbleChart: ((BubbleChartDataSet) -> Void)?
-    
+
 
     var lineChartData: LineChartData {
         guard samples.isEmpty == false else {
@@ -102,7 +102,7 @@ class PlotDataAnalyzer: SampleDataAnalyzer {
             return LineChartData(xVals: xVals, dataSet: dataSet)
         }
     }
-    
+
     var bubbleChartData: BubbleChartData {
         guard samples.isEmpty == false else {
             return BubbleChartData(xVals: [""])
@@ -143,12 +143,11 @@ class PlotDataAnalyzer: SampleDataAnalyzer {
             }
             let dataSet = BubbleChartDataSet(yVals: summaryData)
             dataSetConfiguratorBubbleChart?(dataSet)
-            
+
             return BubbleChartData(xVals: xVals, dataSet: dataSet)
         }
     }
-    
-    
+
     var summaryData: Double  {
         guard samples.isEmpty == false else {
             return 0.0

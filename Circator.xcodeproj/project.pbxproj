@@ -25,6 +25,7 @@
 		7886EADF1C22AC2A00D7E3D4 /* LoginViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7886EADE1C22AC2A00D7E3D4 /* LoginViewController.swift */; };
 		78AC90CC1C1E859F008C931B /* UserAccount.swift in Sources */ = {isa = PBXBuildFile; fileRef = 78AC90CB1C1E859F008C931B /* UserAccount.swift */; };
 		78BEAC9E1C5E7EE800F0B541 /* PopulationHealthManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 78BEAC9D1C5E7EE800F0B541 /* PopulationHealthManager.swift */; };
+		78CE00AD1C65CC5A005E955C /* RadarViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 78CE00AC1C65CC5A005E955C /* RadarViewController.swift */; };
 		78DA2D741C28ED2A005CC2DB /* RegisterViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 78DA2D731C28ED2A005CC2DB /* RegisterViewController.swift */; };
 		78E521A01C25687900FAE56A /* Pods.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 78E5219F1C25687900FAE56A /* Pods.framework */; };
 		78F65A4D1C25126E0074449D /* QueryBuilderViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 78F65A4C1C25126E0074449D /* QueryBuilderViewController.swift */; };
@@ -175,6 +176,7 @@
 		7886EADE1C22AC2A00D7E3D4 /* LoginViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LoginViewController.swift; sourceTree = "<group>"; };
 		78AC90CB1C1E859F008C931B /* UserAccount.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = UserAccount.swift; sourceTree = "<group>"; };
 		78BEAC9D1C5E7EE800F0B541 /* PopulationHealthManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PopulationHealthManager.swift; sourceTree = "<group>"; };
+		78CE00AC1C65CC5A005E955C /* RadarViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RadarViewController.swift; sourceTree = "<group>"; };
 		78DA2D731C28ED2A005CC2DB /* RegisterViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RegisterViewController.swift; sourceTree = "<group>"; };
 		78E5219F1C25687900FAE56A /* Pods.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Pods.framework; path = "Pods/../build/Debug-iphoneos/Pods.framework"; sourceTree = "<group>"; };
 		78F65A4C1C25126E0074449D /* QueryBuilderViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = QueryBuilderViewController.swift; sourceTree = "<group>"; };
@@ -446,6 +448,7 @@
 				F42F5B941BE2C89200195490 /* CorrelationViewController.swift */,
 				F4F4DA5B1C0271660073E9EE /* RowSettingsViewController.swift */,
 				7884E8E71C5F0804000261EE /* UINotifications.swift */,
+				78CE00AC1C65CC5A005E955C /* RadarViewController.swift */,
 			);
 			path = "View Controller";
 			sourceTree = "<group>";
@@ -788,6 +791,7 @@
 				F42F5B951BE2C89200195490 /* CorrelationViewController.swift in Sources */,
 				7816FFB91C1E2DC5002E2ED8 /* TextInputTableViewCell.swift in Sources */,
 				F42F5ADD1BDC85AF00195490 /* SampleDataAnalyzer.swift in Sources */,
+				78CE00AD1C65CC5A005E955C /* RadarViewController.swift in Sources */,
 				78F65A4D1C25126E0074449D /* QueryBuilderViewController.swift in Sources */,
 				78DA2D741C28ED2A005CC2DB /* RegisterViewController.swift in Sources */,
 				7881A3E11BAF3B3E00ECB3C6 /* AppDelegate.swift in Sources */,

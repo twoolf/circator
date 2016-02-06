@@ -49,8 +49,6 @@ public class PreviewManager: NSObject {
         ]
     ]
 
-
-
     public static let rowIcons: [UIImage] = {
         return ["icon_scale", "icon_heart_rate", "icon_sleep", "icon_meal", "icon_food", "icon_run", "icon_blood_pressure"].map { UIImage(named: $0)! }
     }()
