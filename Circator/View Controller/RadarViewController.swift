@@ -7,10 +7,13 @@
 //
 
 import Foundation
+import HealthKit
 import CircatorKit
 import Charts
 
 class RadarViewController : UIViewController, ChartViewDelegate {
+
+    var logisticParametersByType : [String: (Double, Double)] = [:]
 
     lazy var healthFormatter : SampleFormatter = { return SampleFormatter() }()
 
@@ -19,6 +22,7 @@ class RadarViewController : UIViewController, ChartViewDelegate {
         chart.animate(xAxisDuration: 1.0, yAxisDuration: 1.0)
         chart.delegate = self
         chart.descriptionText = ""
+        chart.rotationEnabled = false
 
         let legend = chart.legend
         legend.enabled = true
@@ -56,37 +60,40 @@ class RadarViewController : UIViewController, ChartViewDelegate {
 
     // MARK: - Radar chart
 
-    // TODO: lookup logistic function parameters for each type, for normalization
-    public var logisticParametersByType : [HKSampleType: (Double, Double)] = [:]
-
-    func normalizeType(type: HKSampleType, quantity: Double) {
-        guard let (a, b) = logisticParametersByType[type.identifier] else {
-            return quantity
+    func normalizeType(type: HKSampleType, quantity: Double) -> Double {
+        if let (a, b) = logisticParametersByType[type.identifier] {
+            return 1 / (1 + a * exp(-b * quantity))
         }
-        return 1 / (1 + a * exp(-b * quantity))
+        return 1 / (1 + exp(-quantity))
+    }
+
+    func indEntry(i: Int) -> ChartDataEntry {
+        let type = PreviewManager.previewSampleTypes[i]
+        let samples = HealthManager.sharedManager.mostRecentSamples[type] ?? [HKSample]()
+        let val = healthFormatter.numberFromResults(samples)
+        guard !val.isNaN else {
+            return ChartDataEntry(value: 1.0, xIndex: i)
+        }
+        let nval = normalizeType(type, quantity: val)
+        return ChartDataEntry(value: nval, xIndex: i)
+    }
+
+    func popEntry(i: Int) -> ChartDataEntry {
+        let type = PreviewManager.previewSampleTypes[i]
+        let samples = PopulationHealthManager.sharedManager.mostRecentAggregates[type]
+            ?? [DerivedQuantity(quantity: nil, quantityType: nil)]
+        let val = healthFormatter.numberFromResults(samples)
+        guard !val.isNaN else {
+            return ChartDataEntry(value: 1.0, xIndex: i)
+        }
+        let nval = normalizeType(type, quantity: val)
+        return ChartDataEntry(value: nval, xIndex: i)
     }
 
     // TODO: color NaN values differently to indicate error.
     func reloadData() {
-        let indData = (0..<PreviewManager.previewSampleTypes.count).map { i in
-            let type = PreviewManager.previewSampleTypes[i]
-            let samples = HealthManager.sharedManager.mostRecentSamples[type] ?? [HKSample]()
-            let val = healthFormatter.numberFromResults(samples)
-            guard !val.isNan else {
-                return ChartDataEntry(value: 0.0, xIndex: i)
-            }
-            return ChartDataEntry(value: normalizeType(type, quantity: val), xIndex: i)
-        }
-
-        let popData = (0..<PreviewManager.previewSampleTypes.count).map { i in
-            let type = PreviewManager.previewSampleTypes[i]
-            let samples = HealthManager.sharedManager.mostRecentAggregates[type]
-                            ?? [DerivedQuantity(quantity: nil, quantityType: nil)]
-            let val = healthFormatter.numberFromResults(samples)
-            guard !val.isNan else {
-                return ChartDataEntry(value: 0.0, xIndex: i)
-            }
-            return ChartDataEntry(value: normalizeType(type, quantity: val), xIndex: i) }
+        let indData = (0..<PreviewManager.previewSampleTypes.count).map(indEntry)
+        let popData = (0..<PreviewManager.previewSampleTypes.count).map(popEntry)
 
         let indDataSet = RadarChartDataSet(yVals: indData, label: "Individual")
         indDataSet.fillColor = .redColor()
@@ -100,16 +107,17 @@ class RadarViewController : UIViewController, ChartViewDelegate {
         popDataSet.drawFilledEnabled = true
         popDataSet.lineWidth = 2.0
 
-        let data = radarChart.data
-        data.xVals = PreviewManager.previewSampleTypes.map { type in return HealthManager.healthKitShortNames[type.identifier]! }
-        data.dataSets = [indDataSet, popDataSet]
+        let xVals = PreviewManager.previewSampleTypes.map { type in
+                        return HealthManager.healthKitShortNames[type.identifier]! }
+
+        let data = RadarChartData(xVals: xVals, dataSets: [indDataSet, popDataSet])
         data.setDrawValues(false)
+        radarChart.data = data
 
         radarChart.xAxis.labelTextColor = .whiteColor()
         radarChart.xAxis.labelFont = UIFont.systemFontOfSize(12, weight: UIFontWeightRegular)
         radarChart.yAxis.drawLabelsEnabled = false
         radarChart.notifyDataSetChanged()
-        radarChart.invalidate()
     }
 
 }

@@ -128,11 +128,11 @@ public class SampleFormatter: NSObject {
         switch samples.last!.sampleType.identifier {
         case HKWorkoutTypeIdentifier:
             let d = NSDate(timeIntervalSinceReferenceDate: samples.workoutDuration!)
-            return d.hours + (Double(d.minutes) / 60.0)
+            return Double(d.hour) + (Double(d.minute) / 60.0)
 
         case HKCategoryTypeIdentifierSleepAnalysis:
             let d = NSDate(timeIntervalSinceReferenceDate: samples.sleepDuration!)
-            return d.hours + (Double(d.minutes) / 60.0)
+            return Double(d.hour) + (Double(d.minute) / 60.0)
 
         case HKCorrelationTypeIdentifierBloodPressure:
             // Return the systeolic for blood pressure, since this is the larger number.
@@ -191,7 +191,7 @@ public class SampleFormatter: NSObject {
             switch type.identifier {
             case HKCategoryTypeIdentifierSleepAnalysis:
                 let d = NSDate(timeIntervalSinceReferenceDate: quantity)
-                return d.hours + (Double(d.minutes) / 60.0)
+                return Double(d.hour) + (Double(d.minute) / 60.0)
 
             default:
                 return Double.quietNaN
@@ -230,10 +230,10 @@ public class SampleFormatter: NSObject {
 */
 
             default:
-                return Double.quietNaN
+                return emptyString
             }
         }
-        return Double.quietNaN
+        return emptyString
     }
 
     // TODO: handle other quantities.
@@ -242,7 +242,7 @@ public class SampleFormatter: NSObject {
         case HKQuantityTypeIdentifierBodyMass:
             return quantity.doubleValueForUnit(HKUnit.gramUnitWithMetricPrefix(.Kilo))
         case HKQuantityTypeIdentifierHeartRate:
-            return quantity.doubleValueForUnit(HKUnit.countUnit().unitDividedByUnit(HKUnit.minuteUnit())))!
+            return quantity.doubleValueForUnit(HKUnit.countUnit().unitDividedByUnit(HKUnit.minuteUnit()))
         case HKQuantityTypeIdentifierDietaryEnergyConsumed:
             return quantity.doubleValueForUnit(HKUnit.jouleUnit())
         case HKQuantityTypeIdentifierDietaryCarbohydrates:
