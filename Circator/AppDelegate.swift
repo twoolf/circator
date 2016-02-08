@@ -9,6 +9,8 @@
 import UIKit
 import CircatorKit
 import SwiftyBeaver
+import Fabric
+import Crashlytics
 
 let log = SwiftyBeaver.self
 
@@ -21,6 +23,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     func application(application: UIApplication, didFinishLaunchingWithOptions launchOptions: [NSObject: AnyObject]?) -> Bool
     {
         configureLogging()
+        Fabric.with([Crashlytics.self])
 
         // Override point for customization after application launch.
         let themeColor = UIColor(red: 0.01, green: 0.41, blue: 0.22, alpha: 1.0)

@@ -21,6 +21,21 @@ Clean DerivedData
 fastlane ios test
 ```
 Runs all the tests
+### ios newdevices
+```
+fastlane ios newdevices
+```
+Ensure all devices are added to the provisioning profile
+### ios preparebuild
+```
+fastlane ios preparebuild
+```
+Prepare for command line build
+### ios preparedeploy
+```
+fastlane ios preparedeploy
+```
+Prepare for command line deployment to the App Store
 ### ios build
 ```
 fastlane ios build
@@ -30,14 +45,12 @@ Build locally from the command line
 ```
 fastlane ios beta
 ```
-Submit a new Beta Build to Apple TestFlight
-
-This will also make sure the profile is up to date
-### ios appstore
+Build and submit a new Beta Build to Apple TestFlight
+### ios betaupload
 ```
-fastlane ios appstore
+fastlane ios betaupload
 ```
-Deploy a new version to the App Store
+Upload a Beta Build to Apple TestFlight
 
 ----
 

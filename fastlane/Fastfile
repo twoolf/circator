@@ -73,37 +73,50 @@ platform :ios do
     prepbuild(type: 'development', readonly: true)
   end
 
+  desc "Prepare for command line deployment to the App Store"
+  lane :preparedeploy do
+    circatormatches(type: 'appstore')
+  end
+
   desc "Build locally from the command line"
   lane :build do
-    prepbuild(type: type, readonly: true)
+    prepbuild(type: 'development', readonly: true)
     gym(scheme: "Circator")
   end
 
-  desc "Submit a new Beta Build to Apple TestFlight"
-  desc "This will also make sure the profile is up to date"
+  desc "Build and submit a new Beta Build to Apple TestFlight"
   lane :beta do
     prepbuild(type: "appstore", readonly: true)
+    increment_build_number
     gym(scheme: "Circator")
-    pilot
-
-    # sh "your_script.sh"
-    # You can also use other beta testing services here (run `fastlane actions`)
+    pilot(skip_submission: true)
   end
 
-  desc "Deploy a new version to the App Store"
-  lane :appstore do
+  desc "Build a new Beta release"
+  lane :betabuild do
     prepbuild(type: "appstore", readonly: true)
-    # snapshot
+    increment_build_number
     gym(scheme: "Circator")
-    deliver(force: true)
-    # frameit
   end
+
+  desc "Upload a Beta Build to Apple TestFlight"
+  lane :betaupload do
+    pilot(skip_submission: true)
+  end
+
+  #desc "Deploy a new version to the App Store"
+  #lane :appstore do
+  #  prepbuild(type: "appstore", readonly: true)
+  #  snapshot
+  #  gym(scheme: "Circator")
+  #  deliver(force: true)
+  #  frameit
+  #end
 
   # You can define as many lanes as you want
 
   after_all do |lane|
     # This block is called, only if the executed lane was successful
-
     # slack(
     #   message: "Successfully deployed new App Update."
     # )
