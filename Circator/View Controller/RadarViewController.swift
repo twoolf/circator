@@ -13,7 +13,56 @@ import Charts
 
 class RadarViewController : UIViewController, ChartViewDelegate {
 
-    var logisticParametersByType : [String: (Double, Double)] = [:]
+    var logisticParametersByType : [Bool: [String: (Double, Double)]] =
+    [ true: [[HKCategoryTypeIdentifierSleepAnalysis:(6.5,0.338)],
+            [HKQuantityTypeIdentifierBodyMass:(215.0,0.0102)],
+            [HKQuantityTypeIdentifierBodyMassIndex:(25.0,0.08789)],
+            [HKQuantityTypeIdentifierHeartRate:(80.0,0.0275)],
+            [HKQuantityTypeIdentifierBloodPressureSystolic:(120.0,0.0183)],
+            [HKQuantityTypeIdentifierStepCount:(6000,0.000366)],
+            [HKQuantityTypeIdentifierActiveEnergyBurned:(2750,0.00079899)],
+            [HKQuantityTypeIdentifierUVExposure:(12.0,0.183)],
+            [HKWorkoutTypeIdentifier:(12.0,0.183)],
+            [HKWorkoutTypeIdentifier:(12.0,0.183)],
+            [HKQuantityTypeIdentifierDietaryEnergyConsumed:(2757,0.000797)],
+            [HKQuantityTypeIdentifierDietaryProtein:(88.3,0.02488)],
+            [HKQuantityTypeIdentifierDietaryCarbohydrates:(327,0.0067)],
+            [HKQuantityTypeIdentifierDietarySugar:(143.3,0.01533)],
+        [HKQuantityTypeIdentifierDietaryFiber:(20.6,0.10666)],
+        [HKQuantityTypeIdentifierDietaryFatTotal:(103.2,0.2129)],
+        [HKQuantityTypeIdentifierDietaryFatSaturated:(33.4,0.0658)],
+        [HKQuantityTypeIdentifierDietaryFatMonounsaturated:(36.9,0.05955)],
+        [HKQuantityTypeIdentifierDietaryFatPolyunsaturated:(24.3,0.0904)],
+        [HKQuantityTypeIdentifierDietaryCholesterol:(352,0.00624)],
+        [HKQuantityTypeIdentifierDietarySodium:(4560.7,0.00048177)],
+        [HKQuantityTypeIdentifierDietaryCaffeine:(166.4,0.0132)],
+        [HKQuantityTypeIdentifierDietaryWater:(5.0,0.43944)]
+        ],
+     false: [[HKCategoryTypeIdentifierSleepAnalysis:(6.5,0.338)],
+            [HKQuantityTypeIdentifierBodyMass:(215,0.0102)],
+            [HKQuantityTypeIdentifierBodyMassIndex:(25,0.08789)],
+            [HKQuantityTypeIdentifierHeartRate:(80,0.0275)],
+            [HKQuantityTypeIdentifierBloodPressureSystolic:(120,0.0183)],
+            [HKQuantityTypeIdentifierStepCount:(6000,0.000366)],
+            [HKQuantityTypeIdentifierActiveEnergyBurned:(2750,0.00079899)],
+            [HKQuantityTypeIdentifierUVExposure:(12,0.183)],
+            [HKWorkoutTypeIdentifier:(12.0,0.183)],
+            [HKWorkoutTypeIdentifier:(12.0,0.183)],
+            [HKQuantityTypeIdentifierDietaryEnergyConsumed:(1957.0,0.0011)],
+            [HKQuantityTypeIdentifierDietaryProtein:(71.3,0.0308)],
+            [HKQuantityTypeIdentifierDietaryCarbohydrates:(246.3,0.0089)],
+            [HKQuantityTypeIdentifierDietarySugar:(112.0,0.0196)],
+           [HKQuantityTypeIdentifierDietaryFiber:(16.2,0.1356)],
+           [HKQuantityTypeIdentifierDietaryFatTotal:(73.1,0.3058)],
+        [HKQuantityTypeIdentifierDietaryFatSaturated:(23.9,0.091934)],
+        [HKQuantityTypeIdentifierDietaryFatMonounsaturated:(25.7,0.0855)],
+        [HKQuantityTypeIdentifierDietaryFatPolyunsaturated:(17.4,0.1263)],
+         [HKQuantityTypeIdentifierDietaryCholesterol:(235.7,0.009322)],
+            [HKQuantityTypeIdentifierDietarySodium:(3187.3,0.000689)],
+            [HKQuantityTypeIdentifierDietaryCaffeine:(142.7,0.015398)],
+            [HKQuantityTypeIdentifierDietaryWater:(4.7,0.46795)]
+        ]]
+        
 
     lazy var healthFormatter : SampleFormatter = { return SampleFormatter() }()
 

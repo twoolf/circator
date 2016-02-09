@@ -13,8 +13,8 @@ import Former
 
 class RegisterViewController : FormViewController {
 
-    static let profileFields = ["Email", "Password", "First name", "Last name", "Age", "Weight", "Height"]
-    static let profilePlaceholders = ["example@gmail.com", "Required", "Jane or John", "Doe", "24", "160lb" ,"180cm"]
+    static let profileFields = ["Email", "Password", "First name", "Last name", "Age", "Weight", "Height", "usual sleep amount", "estimated bmi", "usual resting heartrate", "most common systolic blood pressure", "estimate daily step count", "estimate active energy burned", "estimate awake time during daylight", "estimated overnight fasting", "estimated eating window", "estimated average daily calorie intake", "estimated daily protein intake", "estimated daily carbohydrate intake", "estimated daily sugar intake", "estimated daily fiber intake", "estimated daily dietary fat intake", "estimated daily dietary saturated fat intake", "estimated daily dietary mono-unsaturated fat intake", "estimated daily dietary poly-unsaturated fat intake", "estimated daily cholesterol intake", "estimated daily salt intake", "estimated daily caffeine intake", "estimated daily water intake"]
+    static let profilePlaceholders = ["example@gmail.com", "Required", "Jane or John", "Doe", "24", "160lb" ,"180cm", "7hours", "25", "60", "120", "6000", "2750", "12", "12", "12", "2757(m) or 1957(f)", "88.3(m) or 71.3(f)", "327(m) or 246.3(f)", "143.3(m) or 112(f)", "20.6(m) or 16.2(f)", "103.2(m) or 73.1(f)", "33.4(m) or 23.9(f)", "36.9(m) or 25.7(f)", "24.3(m) or 17.4(f)", "352(m) or 235.7(f)", "4560.7(m) or 3187.3(f)", "166.4(m) or 142.7(f)", "5(m) or 4.7(f)"]
     var profileValues : [String: String] = [:]
 
     // TODO: gender, race, marital status, education level, annual income
