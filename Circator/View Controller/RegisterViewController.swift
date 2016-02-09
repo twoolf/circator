@@ -231,6 +231,7 @@ class RegisterViewController : FormViewController {
                 }
                 ConsentManager.sharedManager.removeConsentFile(consentPath)
                 UINotifications.registrationError(self, pop: true)
+                BehaviorMonitor.sharedInstance.register(false)
                 return
             }
 
@@ -238,6 +239,7 @@ class RegisterViewController : FormViewController {
             UserManager.sharedManager.loginWithCompletion { (error, reason) in
                 guard !error else {
                     UINotifications.loginFailed(self, pop: true, reason: reason)
+                    BehaviorMonitor.sharedInstance.register(false)
                     return
                 }
                 let userKeys = ["Age": "age", "Weight": "weight", "Height": "height"]
@@ -248,6 +250,7 @@ class RegisterViewController : FormViewController {
                     if let comp = self.registerCompletion {
                         comp()
                     }
+                    BehaviorMonitor.sharedInstance.register(true)
                 }
             }
         }

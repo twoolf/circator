@@ -22,6 +22,11 @@ class RowSettingsViewController: UITableViewController {
         super.init(coder: aDecoder)
     }
 
+    override func viewDidAppear(animated: Bool) {
+        super.viewDidAppear(animated)
+        BehaviorMonitor.sharedInstance.showView("RowSettings", contentType: String(selectedRow))
+    }
+
     override func viewDidLoad() {
         super.viewDidLoad()
         tableView.registerClass(UITableViewCell.self, forCellReuseIdentifier: "settingsCell")

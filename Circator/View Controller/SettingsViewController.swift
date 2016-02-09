@@ -57,6 +57,11 @@ class SettingsViewController: UITableViewController, UITextFieldDelegate {
         tableView.reloadData()
     }
 
+    override func viewDidAppear(animated: Bool) {
+        super.viewDidAppear(animated)
+        BehaviorMonitor.sharedInstance.showView("Settings", contentType: "")
+    }
+
     override func viewDidLoad() {
         super.viewDidLoad()
         tableView.registerClass(UITableViewCell.self, forCellReuseIdentifier: "settingsCell")

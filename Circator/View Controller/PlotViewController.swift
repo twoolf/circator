@@ -10,6 +10,8 @@ import UIKit
 import Charts
 import HealthKit
 import CircatorKit
+import Crashlytics
+import SwiftDate
 
 class PlotViewController: UIViewController, ChartViewDelegate {
 
@@ -99,13 +101,17 @@ class PlotViewController: UIViewController, ChartViewDelegate {
                             dataSet.lineWidth = 2
                             dataSet.fillColor = Theme.universityDarkTheme.complementForegroundColors!.colorWithVibrancy(0.1)!
                         }
-                        self.historyChart.data = analyzer.lineChartData
+                        let ldata = analyzer.lineChartData
+                        self.historyChart.data = ldata.yValCount == 0 ? nil : ldata
                         self.historyChart.data?.setValueTextColor(Theme.universityDarkTheme.bodyTextColor)
                         self.historyChart.data?.setValueFont(UIFont.systemFontOfSize(10, weight: UIFontWeightThin))
-                        self.summaryChart.data = analyzer.bubbleChartData
+
+                        let sdata = analyzer.bubbleChartData
+                        self.summaryChart.data = sdata.yValCount == 0 ? nil : sdata
                         self.summaryChart.data?.setValueTextColor(Theme.universityDarkTheme.bodyTextColor)
                         self.summaryChart.data?.setValueFont(UIFont.systemFontOfSize(10, weight: UIFontWeightThin))
                     }
+                    BehaviorMonitor.sharedInstance.setValue("Plot", contentType: self.sampleType.identifier)
                 }
             }
         }
@@ -119,6 +125,11 @@ class PlotViewController: UIViewController, ChartViewDelegate {
     override func viewWillAppear(animated: Bool) {
         super.viewWillAppear(animated)
         navigationController?.setNavigationBarHidden(false, animated: false)
+    }
+
+    override func viewDidAppear(animated: Bool) {
+        super.viewDidAppear(animated)
+        BehaviorMonitor.sharedInstance.showView("Plot", contentType: sampleType.identifier)
     }
 
     override func didReceiveMemoryWarning() {

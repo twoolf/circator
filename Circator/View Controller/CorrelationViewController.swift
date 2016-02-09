@@ -10,6 +10,8 @@ import UIKit
 import Charts
 import CircatorKit
 import HealthKit
+import Crashlytics
+import SwiftDate
 
 class CorrelationViewController: UIViewController, ChartViewDelegate {
     
@@ -84,16 +86,18 @@ class CorrelationViewController: UIViewController, ChartViewDelegate {
                     dataSet.axisDependency = .Right
                 }
                 analyzer.dataSetConfigurators = [configurator, configurator2]
-                self.correlationChart.data = analyzer.correlationChartData
+                let cdata = analyzer.correlationChartData
+                self.correlationChart.data = cdata.yValCount == 0 ? nil : cdata
                 self.correlationChart.data?.setValueTextColor(Theme.universityDarkTheme.bodyTextColor)
                 self.correlationChart.data?.setValueFont(UIFont.systemFontOfSize(10, weight: UIFontWeightThin))
             }
 
-//            navigationItem.title = "Correlation"
+            // navigationItem.title = "Correlation"
+            BehaviorMonitor.sharedInstance.setValue("Correlate", contentType: self.getSampleDescriptor())
         }
       }
     }
-    
+
     override func viewDidLoad() {
         super.viewDidLoad()
         configureViews()
@@ -103,7 +107,12 @@ class CorrelationViewController: UIViewController, ChartViewDelegate {
         super.viewWillAppear(animated)
         navigationController?.setNavigationBarHidden(false, animated: false)
     }
-    
+
+    override func viewDidAppear(animated: Bool) {
+        super.viewDidAppear(animated)
+        BehaviorMonitor.sharedInstance.showView("Correlate", contentType: getSampleDescriptor())
+    }
+
     override func didReceiveMemoryWarning() {
         super.didReceiveMemoryWarning()
         // Dispose of any resources that can be recreated.
@@ -127,6 +136,10 @@ class CorrelationViewController: UIViewController, ChartViewDelegate {
         scrollView.addConstraints(constraints)
         correlationChart.translatesAutoresizingMaskIntoConstraints = false
         correlationChart.heightAnchor.constraintEqualToConstant(200).active = true
+    }
+
+    func getSampleDescriptor() -> String {
+        return sampleTypes.reduce("", combine: { (acc, t) in acc + ":" + t.identifier })
     }
 
 }

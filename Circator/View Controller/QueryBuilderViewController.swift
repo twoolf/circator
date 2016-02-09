@@ -87,6 +87,11 @@ class QueryBuilderViewController: UIViewController, UITextFieldDelegate {
         queryTableView.reloadData()
     }
 
+    override func viewDidAppear(animated: Bool) {
+        super.viewDidAppear(animated)
+        BehaviorMonitor.sharedInstance.showView("QueryBuilder", contentType: "")
+    }
+
     override func viewDidLoad() {
         super.viewDidLoad()
 

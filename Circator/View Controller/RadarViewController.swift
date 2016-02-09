@@ -10,6 +10,8 @@ import Foundation
 import HealthKit
 import CircatorKit
 import Charts
+import Crashlytics
+import SwiftDate
 
 class RadarViewController : UIViewController, ChartViewDelegate {
 
@@ -89,6 +91,11 @@ class RadarViewController : UIViewController, ChartViewDelegate {
     override func viewWillAppear(animated: Bool) {
         super.viewWillAppear(animated)
         navigationController?.setNavigationBarHidden(true, animated: false)
+    }
+
+    override func viewDidAppear(animated: Bool) {
+        super.viewDidAppear(animated)
+        BehaviorMonitor.sharedInstance.showView("Radar", contentType: "")
     }
 
     override func viewDidLoad() {

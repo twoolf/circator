@@ -47,3 +47,6 @@ Carthage/Build
 ## Yanif's local scripts.
 stash.sh
 unstash.sh
+
+## Fastlane private files
+.env

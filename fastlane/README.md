@@ -41,11 +41,6 @@ Prepare for command line deployment to the App Store
 fastlane ios build
 ```
 Build locally from the command line
-### ios beta
-```
-fastlane ios beta
-```
-Build and submit a new Beta Build to Apple TestFlight
 ### ios betabuild
 ```
 fastlane ios betabuild
@@ -56,6 +51,21 @@ Build a new Beta release
 fastlane ios betaupload
 ```
 Upload a Beta Build to Apple TestFlight
+### ios betauploadfabric
+```
+fastlane ios betauploadfabric
+```
+Upload a Beta Build to Fabric/Crashlytics
+### ios beta
+```
+fastlane ios beta
+```
+Build and submit a new Beta Build to Apple TestFlight
+### ios betafabric
+```
+fastlane ios betafabric
+```
+Build and submit a new Beta Build to Fabric/Crashlytics
 
 ----
 

@@ -129,12 +129,16 @@ class LoginViewController: UIViewController, UITableViewDelegate, UITableViewDat
             }
             UserManager.sharedManager.loginWithCompletion { (error, _) in
                 guard !error else {
+                    BehaviorMonitor.sharedInstance.login(false)
                     UINotifications.invalidUserPass(self.navigationController!)
                     return
                 }
                 if let comp = self.completion { comp() }
                 UINotifications.doWelcome(self.parentView!, pop: true, user: UserManager.sharedManager.getUserId() ?? "")
-                Async.main { self.parentView?.initializeBackgroundWork() }
+                Async.main {
+                    BehaviorMonitor.sharedInstance.login(true)
+                    self.parentView?.initializeBackgroundWork()
+                }
             }
         }
     }

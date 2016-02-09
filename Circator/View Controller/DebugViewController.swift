@@ -12,6 +12,7 @@ import CircatorKit
 import UIKit
 import Async
 import Former
+import Crashlytics
 
 private let refDate  = NSDate(timeIntervalSinceReferenceDate: 0)
 private let noAnchor = HKQueryAnchor(fromValue: Int(HKAnchoredObjectQueryNoAnchor))
@@ -68,6 +69,16 @@ class DebugViewController : FormViewController {
                                 $0.enabled = true
                             }.onSelected { row in
                                 HealthManager.sharedManager.syncAnchorTS(true)
+            })
+
+        labelRows.append(LabelRowFormer<FormLabelCell>() {
+            $0.textLabel?.text = "Force a crash"
+            $0.textLabel?.textColor = .redColor()
+            $0.textLabel?.font = .boldSystemFontOfSize(22)
+            }.configure {
+                $0.enabled = true
+            }.onSelected { row in
+                Crashlytics.sharedInstance().crash()
             })
 
         let debugAnchorsHeader = LabelViewFormer<FormLabelHeaderView> {

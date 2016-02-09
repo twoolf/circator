@@ -25,6 +25,11 @@ class QueryWriterViewController : FormViewController {
         navigationItem.title = "Query Writer"
     }
 
+    override func viewDidAppear(animated: Bool) {
+        super.viewDidAppear(animated)
+        BehaviorMonitor.sharedInstance.showView("QueryWriter", contentType: "")
+    }
+
     override func viewDidLoad() {
         super.viewDidLoad()
 

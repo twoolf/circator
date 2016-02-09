@@ -22,7 +22,7 @@ default_platform :ios
 
 platform :ios do
   before_all do
-    # ENV["SLACK_URL"] = "https://hooks.slack.com/services/..."
+    # 
   end
 
   desc "Install FixCode for c&p management"
@@ -41,6 +41,11 @@ platform :ios do
   lane :test do
     scan
   end
+
+
+  ########################################
+  ## Cert and provisioning profile prep
+  ## 
 
   desc "Fastlane/match execution"
   private_lane :circatormatches do |options|
@@ -78,30 +83,65 @@ platform :ios do
     circatormatches(type: 'appstore')
   end
 
+
+  ################################
+  ## Build
+  ##
+
   desc "Build locally from the command line"
   lane :build do
     prepbuild(type: 'development', readonly: true)
     gym(scheme: "Circator")
   end
 
+
+  ######################################
+  ## Beta release
+  ##
+
   desc "Build a new Beta release"
-  lane :betabuild do
+  lane :beta_build do
     prepbuild(type: "appstore", readonly: true)
     increment_build_number
     gym(scheme: "Circator")
   end
 
   desc "Upload a Beta Build to Apple TestFlight"
-  lane :betaupload do
+  lane :beta_upload_testflight do
     ENV["DELIVER_ITMSTRANSPORTER_ADDITIONAL_UPLOAD_PARAMETERS"] = "-t DAV"
+
     pilot(skip_submission: true)
+    post_to_slack(scheme: "Circator", destination: "TestFlight")
+  end
+
+  desc "Upload a Beta Build to Fabric/Crashlytics"
+  lane :beta_upload_fabric do
+    crashlytics(ipa_path: "./Circator.ipa")
+    post_to_slack(scheme: "Circator", destination: "Fabric")
   end
 
   desc "Build and submit a new Beta Build to Apple TestFlight"
-  lane :beta do
-    betabuild
-    betaupload
+  lane :beta_testflight do
+    beta_build
+    beta_upload_testflight
   end
+
+  desc "Build and submit a new Beta Build to Fabric/Crashlytics"
+  lane :beta_fabric do
+    beta_build
+    beta_upload_fabric
+  end
+
+  desc "Build and submit a new Beta Build to Apple TestFlight and Fabric/Crashlytics"
+  lane :beta do
+    beta_build
+    beta_upload_testflight
+    beta_upload_fabric
+  end
+
+  ############################################
+  ## TODO: AppStore
+  ##
 
   #desc "Deploy a new version to the App Store"
   #lane :appstore do
@@ -112,7 +152,23 @@ platform :ios do
   #  frameit
   #end
 
-  # You can define as many lanes as you want
+
+  ###############################
+  ## Utilities
+  ##
+
+  desc "Post a message to #circator-alerts on Slack"
+  private_lane :post_to_slack do |options|
+    scheme      = options[:scheme]
+    version     = get_version_number(xcodeproj: "Circator.xcodeproj")
+    build       = get_build_number(xcodeproj: "Circator.xcodeproj")
+    environment = scheme.upcase
+    destination = options[:destination]
+
+    slack(
+      message: "New :ios: *#{version}* (#{build}) running `#{environment}` has been submitted to *#{destination}*  :rocket:",
+    )
+  end
 
   after_all do |lane|
     # This block is called, only if the executed lane was successful

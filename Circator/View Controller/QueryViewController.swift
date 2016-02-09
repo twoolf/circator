@@ -18,6 +18,11 @@ class QueryViewController: UITableViewController {
         navigationItem.title = "Queries"
         tableView.reloadData()
     }
+
+    override func viewDidAppear(animated: Bool) {
+        super.viewDidAppear(animated)
+        BehaviorMonitor.sharedInstance.showView("Query", contentType: "")
+    }
     
     override func viewDidLoad() {
         super.viewDidLoad()
