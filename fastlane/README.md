@@ -46,6 +46,11 @@ Build locally from the command line
 fastlane ios beta
 ```
 Build and submit a new Beta Build to Apple TestFlight
+### ios betabuild
+```
+fastlane ios betabuild
+```
+Build a new Beta release
 ### ios betaupload
 ```
 fastlane ios betaupload

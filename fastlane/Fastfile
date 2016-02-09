@@ -84,14 +84,6 @@ platform :ios do
     gym(scheme: "Circator")
   end
 
-  desc "Build and submit a new Beta Build to Apple TestFlight"
-  lane :beta do
-    prepbuild(type: "appstore", readonly: true)
-    increment_build_number
-    gym(scheme: "Circator")
-    pilot(skip_submission: true)
-  end
-
   desc "Build a new Beta release"
   lane :betabuild do
     prepbuild(type: "appstore", readonly: true)
@@ -101,7 +93,14 @@ platform :ios do
 
   desc "Upload a Beta Build to Apple TestFlight"
   lane :betaupload do
+    ENV["DELIVER_ITMSTRANSPORTER_ADDITIONAL_UPLOAD_PARAMETERS"] = "-t DAV"
     pilot(skip_submission: true)
+  end
+
+  desc "Build and submit a new Beta Build to Apple TestFlight"
+  lane :beta do
+    betabuild
+    betaupload
   end
 
   #desc "Deploy a new version to the App Store"
