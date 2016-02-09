@@ -57,7 +57,7 @@ platform :ios do
   end
 
   desc "Stop a Circator development session"
-  lane :stop do
+  lane :stop_coding do
     sh scripts/blackbox_edit_stop.sh
   end
 
