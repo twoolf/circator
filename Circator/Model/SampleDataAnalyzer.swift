@@ -10,6 +10,7 @@ import UIKit
 import CircatorKit
 import HealthKit
 import Charts
+import SwiftDate
 
 class CorrelationDataAnalyzer: SampleDataAnalyzer {
     let sampleTypes: [HKSampleType]
@@ -64,19 +65,17 @@ class PlotDataAnalyzer: SampleDataAnalyzer {
 
 
     var lineChartData: LineChartData {
-        guard samples.isEmpty == false else {
+        guard !samples.isEmpty else {
             return LineChartData(xVals: [""])
         }
         if dataGroupingMode == .ByDate {
             let calendar = NSCalendar.currentCalendar()
-            var finalDate = samples.last!.startDate
-            // Offset final date by one
-            finalDate = calendar.dateByAddingUnit(.Day, value: 1, toDate: finalDate, options: NSCalendarOptions())!
-            // Offset first date by negative one
-            var currentDate = calendar.dateByAddingUnit(.Day, value: -1, toDate: samples.first!.startDate, options: NSCalendarOptions())!
+            // Offset final date by one and first date by negative one
+            let finalDate = samples.last!.startDate + 1.days
+            var currentDate = samples.first!.startDate - 1.days
             var dates: [NSDate] = []
             while currentDate.compare(finalDate) != NSComparisonResult.OrderedDescending {
-                currentDate = calendar.dateByAddingUnit(.Day, value: 1, toDate: currentDate, options: NSCalendarOptions())!
+                currentDate = currentDate + 1.days
                 dates.append(currentDate)
             }
             let xVals: [String] = dates.map { (date) -> String in

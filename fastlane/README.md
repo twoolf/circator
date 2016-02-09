@@ -11,6 +11,11 @@ sudo gem install fastlane
 fastlane ios setupxcode
 ```
 Install FixCode for c&p management
+### ios setupbb
+```
+fastlane ios setupbb
+```
+Install Blackbox for secure git files
 ### ios cleanderived
 ```
 fastlane ios cleanderived
@@ -21,6 +26,16 @@ Clean DerivedData
 fastlane ios test
 ```
 Runs all the tests
+### ios start_coding
+```
+fastlane ios start_coding
+```
+Start a Circator development session
+### ios stop_coding
+```
+fastlane ios stop_coding
+```
+Stop a Circator development session
 ### ios newdevices
 ```
 fastlane ios newdevices
@@ -41,31 +56,36 @@ Prepare for command line deployment to the App Store
 fastlane ios build
 ```
 Build locally from the command line
-### ios betabuild
+### ios beta_build
 ```
-fastlane ios betabuild
+fastlane ios beta_build
 ```
 Build a new Beta release
-### ios betaupload
+### ios beta_upload_testflight
 ```
-fastlane ios betaupload
+fastlane ios beta_upload_testflight
 ```
 Upload a Beta Build to Apple TestFlight
-### ios betauploadfabric
+### ios beta_upload_fabric
 ```
-fastlane ios betauploadfabric
+fastlane ios beta_upload_fabric
 ```
 Upload a Beta Build to Fabric/Crashlytics
+### ios beta_testflight
+```
+fastlane ios beta_testflight
+```
+Build and submit a new Beta Build to Apple TestFlight
+### ios beta_fabric
+```
+fastlane ios beta_fabric
+```
+Build and submit a new Beta Build to Fabric/Crashlytics
 ### ios beta
 ```
 fastlane ios beta
 ```
-Build and submit a new Beta Build to Apple TestFlight
-### ios betafabric
-```
-fastlane ios betafabric
-```
-Build and submit a new Beta Build to Fabric/Crashlytics
+Build and submit a new Beta Build to Apple TestFlight and Fabric/Crashlytics
 
 ----
 

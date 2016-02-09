@@ -272,7 +272,7 @@ public class HealthManager: NSObject, WCSessionDelegate {
         }
 
         let onWorkout = { type in
-            self.fetchPreparationAndRecoveryWorkout(type) { (statistics, error) in
+            self.fetchPreparationAndRecoveryWorkout { (statistics, error) in
                 updateSamples(type, statistics, error)
             }
         }
@@ -405,7 +405,8 @@ public class HealthManager: NSObject, WCSessionDelegate {
 
     // MARK: - Meal timing event retrieval.
 
-    public func fetchPreparationAndRecoveryWorkoutCal(completion: (([AnyObject]!, NSError!) -> Void)!) {
+    // Query food diary events stored as prep and recovery workouts in HealthKit
+    public func fetchPreparationAndRecoveryWorkout(completion: (([HKSample]!, NSError!) -> Void)!) {
         let predicate =  HKQuery.predicateForWorkoutsWithWorkoutActivityType(HKWorkoutActivityType.PreparationAndRecovery)
         let sortDescriptor = NSSortDescriptor(key:HKSampleSortIdentifierStartDate, ascending: false)
         let sampleQuery = HKSampleQuery(sampleType: HKWorkoutType.workoutType(), predicate: predicate, limit: 0, sortDescriptors: [sortDescriptor])
@@ -414,23 +415,6 @@ public class HealthManager: NSObject, WCSessionDelegate {
                     log.error("Error reading HK samples: \(queryError.localizedDescription)")
                 }
                 completion(results,error)
-        }
-        healthKitStore.executeQuery(sampleQuery)
-    }
-
-    // Query food diary events stored as prep and recovery workouts in HealthKit
-    public func fetchPreparationAndRecoveryWorkout(sampleType: HKSampleType, completion: (([HKSample]!, NSError!) -> Void)!) {
-        let predicate =  HKQuery.predicateForWorkoutsWithWorkoutActivityType(HKWorkoutActivityType.PreparationAndRecovery)
-        let sortDescriptor = NSSortDescriptor(key:HKSampleSortIdentifierStartDate, ascending: false)
-        let sampleQuery = HKSampleQuery(sampleType: HKWorkoutType.workoutType(), predicate: predicate, limit: 0, sortDescriptors: [sortDescriptor])
-            { (sampleQuery, results, error ) -> Void in
-                if let queryError = error {
-                    log.error("Error reading HK samples: \(queryError.localizedDescription)")
-                }
-                completion(results as [HKSample]!, nil)
-                for (index,value) in results!.enumerate() {
-                    print("\(index) \(value)")
-                }
         }
         healthKitStore.executeQuery(sampleQuery)
     }
@@ -1146,10 +1130,13 @@ public extension HKSample {
             fallthrough
         case HKQuantityTypeIdentifierUVExposure:
             fallthrough
-        case HKWorkoutTypeIdentifier:
-            fallthrough
         case HKQuantityTypeIdentifierHeartRate:
             return (self as! HKQuantitySample).quantity.doubleValueForUnit(defaultUnit!)
+
+        case HKWorkoutTypeIdentifier:
+            let sample = (self as! HKWorkout)
+            let secs = HKQuantity(unit: HKUnit.secondUnit(), doubleValue: sample.duration)
+            return secs.doubleValueForUnit(defaultUnit!)
 
         case HKCategoryTypeIdentifierSleepAnalysis:
             let sample = (self as! HKCategorySample)

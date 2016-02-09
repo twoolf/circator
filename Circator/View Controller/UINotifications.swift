@@ -116,6 +116,26 @@ public class UINotifications {
         }
     }
 
+    public static func showCount(vc: UIViewController, count: Int, pop: Bool = false) {
+        withPop(vc, pop: pop) {
+            Async.main {
+                vc.view.dodo.style.bar.hideAfterDelaySeconds = 3
+                vc.view.dodo.style.bar.hideOnTap = true
+                vc.view.dodo.info("Count: \(count)")
+            }
+        }
+    }
+
+    public static func genericMsg(vc: UIViewController, msg: String, pop: Bool = false) {
+        withPop(vc, pop: pop) {
+            Async.main {
+                vc.view.dodo.style.bar.hideAfterDelaySeconds = 3
+                vc.view.dodo.style.bar.hideOnTap = true
+                vc.view.dodo.info(msg)
+            }
+        }
+    }
+
     private static func withPop(vc: UIViewController, pop: Bool, msg: () -> ()) {
         if pop {
             vc.navigationController?.popViewControllerAnimated(true)

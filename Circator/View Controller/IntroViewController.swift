@@ -28,6 +28,7 @@ class IntroViewController: UIViewController,
     private var pagesController: PagesController!
 
     lazy var radarController: RadarViewController = { return RadarViewController() }()
+    lazy var mealController: MealTimeViewController = { return MealTimeViewController() }()
 
     lazy var logoImageView: UIImageView = {
         let view = UIImageView(image: UIImage(named: "logo_university")!)
@@ -594,7 +595,7 @@ class IntroViewController: UIViewController,
         ]
         tcView.addConstraints(tableViewConstraints)
 
-        pagesController = PagesController([tableContainer, radarController])
+        pagesController = PagesController([tableContainer, radarController, mealController])
         pagesController.enableSwipe = true
         pagesController.showBottomLine = false
         pagesController.showPageControl = true
@@ -901,10 +902,11 @@ class IntroViewController: UIViewController,
             distance: 0.0, distanceUnit:kmUnit, kiloCalories: 0.0, metadata: metaMeals,
             completion: { (success, error ) -> Void in
                 if( success ) {
-                    print("Timed meal saved as workout-type")
+                    log.info("Timed meal saved as workout-type")
                 } else if( error != nil ) {
-                    print("error made: \(error)")
+                    log.error("Failed to save meal time: \(error)")
                 }
+                Async.main { self.mealController.reloadData() }
             })
     }
 }
