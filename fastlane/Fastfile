@@ -32,6 +32,11 @@ platform :ios do
     )
   end
 
+  desc "Install Blackbox for secure git files"
+  lane :setupbb do
+    sh scripts/install_blackbox.sh
+  end
+
   desc "Clean DerivedData"
   lane :cleanderived do
     clear_derived_data
@@ -42,6 +47,19 @@ platform :ios do
     scan
   end
 
+  #######################################
+  ## Development sessions
+  ##
+
+  desc "Start a Circator development session"
+  lane :start_coding do
+    sh scripts/blackbox_edit_start_all.sh
+  end
+
+  desc "Stop a Circator development session"
+  lane :stop do
+    sh scripts/blackbox_edit_stop.sh
+  end
 
   ########################################
   ## Cert and provisioning profile prep

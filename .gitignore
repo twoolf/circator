@@ -48,10 +48,12 @@ Carthage/Build
 stash.sh
 unstash.sh
 
-## Fastlane private files
-.env
+## Blackbox
+blackbox
 
 ## Blackbox keyring
 /keyrings/live/pubring.gpg~
 /keyrings/live/pubring.kbx~
 /keyrings/live/secring.gpg
+/fastlane/.env
+/CircatorKit/SecureConstants.swift

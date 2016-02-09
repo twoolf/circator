@@ -102,7 +102,7 @@ enum MCRouter : URLRequestConvertible {
 
         switch self {
         case .UploadHKMeasures(var parameters):
-            parameters["userid"] = MCRouter.OAuthToken ?? ""
+            parameters["userid"] = UserManager.sharedManager.getUserIdHash() ?? ""
             return Alamofire.ParameterEncoding.JSON.encode(mutableURLRequest, parameters: parameters).0
 
         case .AggMeasures(let parameters):

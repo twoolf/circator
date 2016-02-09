@@ -25,6 +25,8 @@ private let HMHRangeEndKey   = "HKHREnd"
 private let HMHRangeMinKey   = "HKHRMin"
 private let HMQueryTSKey     = "HKQueryTS"
 
+private let UserSaltKey      = "UserSaltKey"
+
 public class UserManager {
     public static let sharedManager = UserManager()
 
@@ -78,10 +80,16 @@ public class UserManager {
         return false
     }
     
-    public func getUserId()     -> String? { return userId }
-    public func getUserIdHash() -> String? { return userId?.md5() }
+    public func getUserId() -> String?     { return userId }
     public func setUserId(userId: String)  { self.userId = userId }
     public func resetUserId()              { self.userId = nil }
+
+    public func getUserIdHash() -> String? {
+        if let u = userId {
+            return (u + SecureConstants.User.salt).sha256()
+        }
+        return nil
+    }
 
     // MARK: - Account metadata accessors for fields stored in keychain.
     

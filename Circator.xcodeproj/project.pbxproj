@@ -9,6 +9,7 @@
 /* Begin PBXBuildFile section */
 		7816FFB91C1E2DC5002E2ED8 /* TextInputTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7816FFB81C1E2DC5002E2ED8 /* TextInputTableViewCell.swift */; };
 		7816FFBB1C1E45D3002E2ED8 /* UserManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7816FFBA1C1E45D3002E2ED8 /* UserManager.swift */; };
+		781CF2BF1C6A4781001DF3B2 /* SecureConstants.swift in Sources */ = {isa = PBXBuildFile; fileRef = 781CF2BE1C6A4781001DF3B2 /* SecureConstants.swift */; };
 		7843F9121C1FAD9900AB8978 /* ServiceAPI.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7843F9111C1FAD9900AB8978 /* ServiceAPI.swift */; };
 		7848A7E01C699007003241FF /* BehaviorMonitor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7848A7DF1C699007003241FF /* BehaviorMonitor.swift */; };
 		7859783F1C1BC418008377F9 /* HealthKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 7859783E1C1BC418008377F9 /* HealthKit.framework */; };
@@ -153,6 +154,7 @@
 		780211581C20E36B000120CE /* Pods_Circator.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Pods_Circator.framework; path = "Pods/../build/Debug-iphoneos/Pods_Circator.framework"; sourceTree = "<group>"; };
 		7816FFB81C1E2DC5002E2ED8 /* TextInputTableViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TextInputTableViewCell.swift; sourceTree = "<group>"; };
 		7816FFBA1C1E45D3002E2ED8 /* UserManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = UserManager.swift; sourceTree = "<group>"; };
+		781CF2BE1C6A4781001DF3B2 /* SecureConstants.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SecureConstants.swift; sourceTree = "<group>"; };
 		781EE1231BAF3F6B00E6DDA1 /* Podfile */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = Podfile; path = ../Podfile; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.ruby; };
 		781EE1241BAF3F6B00E6DDA1 /* README.md */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = net.daringfireball.markdown; name = README.md; path = ../README.md; sourceTree = "<group>"; };
 		7843F9111C1FAD9900AB8978 /* ServiceAPI.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ServiceAPI.swift; sourceTree = "<group>"; };
@@ -360,6 +362,7 @@
 				F4F4DA591C025BE30073E9EE /* PreviewManager.swift */,
 				7861300E1C25F42B00F50DB3 /* QueryManager.swift */,
 				F42F5B431BE2048400195490 /* SampleFormatter.swift */,
+				781CF2BE1C6A4781001DF3B2 /* SecureConstants.swift */,
 				7843F9111C1FAD9900AB8978 /* ServiceAPI.swift */,
 				F42F5B441BE2048400195490 /* Theme.swift */,
 				78AC90CB1C1E859F008C931B /* UserAccount.swift */,
@@ -866,6 +869,7 @@
 				F42F5B451BE2048400195490 /* HealthManager.swift in Sources */,
 				7848A7E01C699007003241FF /* BehaviorMonitor.swift in Sources */,
 				7843F9121C1FAD9900AB8978 /* ServiceAPI.swift in Sources */,
+				781CF2BF1C6A4781001DF3B2 /* SecureConstants.swift in Sources */,
 				7863EA9C1C27302B0038DE7A /* ConsentManager.swift in Sources */,
 				78AC90CC1C1E859F008C931B /* UserAccount.swift in Sources */,
 			);
