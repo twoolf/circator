@@ -446,9 +446,9 @@
 				7863EA9D1C27332C0038DE7A /* QueryWriterViewController.swift */,
 				F44B1A2C1BDAC20D002238E6 /* PlotViewController.swift */,
 				F42F5B941BE2C89200195490 /* CorrelationViewController.swift */,
+				78CE00AC1C65CC5A005E955C /* RadarViewController.swift */,
 				F4F4DA5B1C0271660073E9EE /* RowSettingsViewController.swift */,
 				7884E8E71C5F0804000261EE /* UINotifications.swift */,
-				78CE00AC1C65CC5A005E955C /* RadarViewController.swift */,
 			);
 			path = "View Controller";
 			sourceTree = "<group>";

@@ -13,9 +13,71 @@ import Former
 
 class RegisterViewController : FormViewController {
 
-    static let profileFields = ["Email", "Password", "First name", "Last name", "Age", "Weight", "Height", "usual sleep amount", "estimated bmi", "usual resting heartrate", "most common systolic blood pressure", "estimate daily step count", "estimate active energy burned", "estimate awake time during daylight", "estimated overnight fasting", "estimated eating window", "estimated average daily calorie intake", "estimated daily protein intake", "estimated daily carbohydrate intake", "estimated daily sugar intake", "estimated daily fiber intake", "estimated daily dietary fat intake", "estimated daily dietary saturated fat intake", "estimated daily dietary mono-unsaturated fat intake", "estimated daily dietary poly-unsaturated fat intake", "estimated daily cholesterol intake", "estimated daily salt intake", "estimated daily caffeine intake", "estimated daily water intake"]
-    static let profilePlaceholders = ["example@gmail.com", "Required", "Jane or John", "Doe", "24", "160lb" ,"180cm", "7hours", "25", "60", "120", "6000", "2750", "12", "12", "12", "2757(m) or 1957(f)", "88.3(m) or 71.3(f)", "327(m) or 246.3(f)", "143.3(m) or 112(f)", "20.6(m) or 16.2(f)", "103.2(m) or 73.1(f)", "33.4(m) or 23.9(f)", "36.9(m) or 25.7(f)", "24.3(m) or 17.4(f)", "352(m) or 235.7(f)", "4560.7(m) or 3187.3(f)", "166.4(m) or 142.7(f)", "5(m) or 4.7(f)"]
+    static let profileFields = ["Email",
+                                "Password",
+                                "First name",
+                                "Last name",
+                                "Age",
+                                "Weight",
+                                "Height",
+                                "Usual sleep amount",
+                                "Estimated bmi",
+                                "Usual resting heartrate",
+                                "Most common systolic blood pressure",
+                                "Estimate daily step count",
+                                "Estimate active energy burned",
+                                "Estimate awake time during daylight",
+                                "Estimated overnight fasting",
+                                "Estimated eating window",
+                                "Estimated average daily calorie intake",
+                                "Estimated daily protein intake",
+                                "Estimated daily carbohydrate intake",
+                                "Estimated daily sugar intake",
+                                "Estimated daily fiber intake",
+                                "Estimated daily dietary fat intake",
+                                "Estimated daily dietary saturated fat intake",
+                                "Estimated daily dietary mono-unsaturated fat intake",
+                                "Estimated daily dietary poly-unsaturated fat intake",
+                                "Estimated daily cholesterol intake",
+                                "Estimated daily salt intake",
+                                "Estimated daily caffeine intake",
+                                "Estimated daily water intake"]
+
+    static let profilePlaceholders = ["example@gmail.com",
+                                      "Required",
+                                      "Jane or John",
+                                      "Doe",
+                                      "24",
+                                      "160lb",
+                                      "180cm",
+                                      "7hours",
+                                      "25",
+                                      "60",
+                                      "120",
+                                      "6000",
+                                      "2750",
+                                      "12",
+                                      "12",
+                                      "12",
+                                      "2757(m) or 1957(f)",
+                                      "88.3(m) or 71.3(f)",
+                                      "327(m) or 246.3(f)",
+                                      "143.3(m) or 112(f)",
+                                      "20.6(m) or 16.2(f)",
+                                      "103.2(m) or 73.1(f)",
+                                      "33.4(m) or 23.9(f)",
+                                      "36.9(m) or 25.7(f)",
+                                      "24.3(m) or 17.4(f)",
+                                      "352(m) or 235.7(f)",
+                                      "4560.7(m) or 3187.3(f)",
+                                      "166.4(m) or 142.7(f)",
+                                      "5(m) or 4.7(f)" ]
+
     var profileValues : [String: String] = [:]
+
+    let requiredRange = 0..<7
+    let recommendedRange = 7..<12
+    let optionalRange = 12..<29
 
     // TODO: gender, race, marital status, education level, annual income
 
@@ -90,7 +152,7 @@ class RegisterViewController : FormViewController {
             }
         }
 
-        let requiredFields = profileFieldRows[0...3]
+        let requiredFields = profileFieldRows[requiredRange]
         let requiredHeader = LabelViewFormer<FormLabelHeaderView> {
             $0.contentView.backgroundColor = Theme.universityDarkTheme.backgroundColor
             $0.titleLabel.backgroundColor = Theme.universityDarkTheme.backgroundColor
@@ -101,7 +163,18 @@ class RegisterViewController : FormViewController {
         }
         let requiredSection = SectionFormer(rowFormers: Array(requiredFields)).set(headerViewFormer: requiredHeader)
 
-        let optionalFields = profileFieldRows[4...6]
+        let recommendedFields = profileFieldRows[recommendedRange]
+        let recommendedHeader = LabelViewFormer<FormLabelHeaderView> {
+            $0.contentView.backgroundColor = Theme.universityDarkTheme.backgroundColor
+            $0.titleLabel.backgroundColor = Theme.universityDarkTheme.backgroundColor
+            $0.titleLabel.textColor = .whiteColor()
+            }.configure { view in
+                view.viewHeight = 44
+                view.text = "Recommended"
+        }
+        let recommendedSection = SectionFormer(rowFormers: Array(recommendedFields)).set(headerViewFormer: recommendedHeader)
+
+        let optionalFields = profileFieldRows[optionalRange]
         let optionalHeader = LabelViewFormer<FormLabelHeaderView> {
             $0.contentView.backgroundColor = Theme.universityDarkTheme.backgroundColor
             $0.titleLabel.backgroundColor = Theme.universityDarkTheme.backgroundColor
@@ -112,7 +185,7 @@ class RegisterViewController : FormViewController {
         }
         let optionalSection = SectionFormer(rowFormers: Array(optionalFields)).set(headerViewFormer: optionalHeader)
         
-        former.append(sectionFormer: requiredSection, optionalSection)
+        former.append(sectionFormer: requiredSection, recommendedSection, optionalSection)
     }
 
     func validateProfile() -> (String, String, String, String)? {

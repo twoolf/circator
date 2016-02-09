@@ -201,6 +201,16 @@ public class HealthManager: NSObject, WCSessionDelegate {
 
     }
 
+    // MARK: - Characteristic type queries
+    public func getBiologicalSex() -> HKBiologicalSexObject? {
+        do {
+            return try self.healthKitStore.biologicalSex()
+        } catch {
+            log.error("Failed to get biological sex.")
+        }
+        return nil
+    }
+
     // MARK: - HealthKit sample retrieval.
 
     // Fetches HealthKit samples of the given type for the last day, ordered by their collection date.
