@@ -3,24 +3,22 @@
   <testsuite name="fastlane.lanes">
     
       
-      <testcase classname="fastlane.lanes" name="0: opt_out_usage" time="0.000729">
+      <testcase classname="fastlane.lanes" name="0: opt_out_usage" time="0.00172">
         
       </testcase>
     
       
-      <testcase classname="fastlane.lanes" name="1: Verifying required fastlane version" time="0.000893">
+      <testcase classname="fastlane.lanes" name="1: Verifying required fastlane version" time="0.001464">
         
       </testcase>
     
       
-      <testcase classname="fastlane.lanes" name="2: default_platform" time="0.00052">
+      <testcase classname="fastlane.lanes" name="2: default_platform" time="0.012557">
         
       </testcase>
     
       
-      <testcase classname="fastlane.lanes" name="3: scripts/blackbox_edit_start_all.sh" time="0.004024">
-        
-          <failure message="/Library/Ruby/Gems/2.0.0/gems/fastlane-1.57.0/lib/fastlane/actions/actions_helper.rb:33:in `execute_action'&#10;/Library/Ruby/Gems/2.0.0/gems/fastlane-1.57.0/lib/fastlane/fast_file.rb:181:in `sh'&#10;Fastfile:56:in `block (2 levels) in parsing_binding'&#10;/Library/Ruby/Gems/2.0.0/gems/fastlane-1.57.0/lib/fastlane/lane.rb:36:in `call'&#10;/Library/Ruby/Gems/2.0.0/gems/fastlane-1.57.0/lib/fastlane/lane.rb:36:in `call'&#10;/Library/Ruby/Gems/2.0.0/gems/fastlane-1.57.0/lib/fastlane/runner.rb:52:in `block in execute'&#10;/Library/Ruby/Gems/2.0.0/gems/fastlane-1.57.0/lib/fastlane/runner.rb:46:in `chdir'&#10;/Library/Ruby/Gems/2.0.0/gems/fastlane-1.57.0/lib/fastlane/runner.rb:46:in `execute'&#10;/Library/Ruby/Gems/2.0.0/gems/fastlane-1.57.0/lib/fastlane/lane_manager.rb:46:in `cruise_lane'&#10;/Library/Ruby/Gems/2.0.0/gems/fastlane-1.57.0/lib/fastlane/command_line_handler.rb:30:in `handle'&#10;/Library/Ruby/Gems/2.0.0/gems/fastlane-1.57.0/bin/fastlane:38:in `block (2 levels) in run'&#10;/Library/Ruby/Gems/2.0.0/gems/commander-4.3.5/lib/commander/command.rb:178:in `call'&#10;/Library/Ruby/Gems/2.0.0/gems/commander-4.3.5/lib/commander/command.rb:178:in `call'&#10;/Library/Ruby/Gems/2.0.0/gems/commander-4.3.5/lib/commander/command.rb:153:in `run'&#10;/Library/Ruby/Gems/2.0.0/gems/commander-4.3.5/lib/commander/runner.rb:428:in `run_active_command'&#10;/Library/Ruby/Gems/2.0.0/gems/fastlane_core-0.36.1/lib/fastlane_core/ui/fastlane_runner.rb:23:in `run!'&#10;/Library/Ruby/Gems/2.0.0/gems/commander-4.3.5/lib/commander/delegates.rb:15:in `run!'&#10;/Library/Ruby/Gems/2.0.0/gems/fastlane-1.57.0/bin/fastlane:150:in `run'&#10;/Library/Ruby/Gems/2.0.0/gems/fastlane-1.57.0/bin/fastlane:156:in `&lt;top (required)&gt;'&#10;/usr/local/bin/fastlane:23:in `load'&#10;/usr/local/bin/fastlane:23:in `&lt;main&gt;'&#10;&#10;No such file or directory - scripts/blackbox_edit_start_all.sh" />
+      <testcase classname="fastlane.lanes" name="3: cd .. &amp;&amp; ./scripts/blackbox_edit_start_all.sh" time="0.446169">
         
       </testcase>
     

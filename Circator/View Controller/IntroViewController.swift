@@ -21,7 +21,7 @@ private let mcControlButtonHeight : CGFloat = 35.0
 
 class IntroViewController: UIViewController,
                            UITableViewDataSource, UIPickerViewDataSource,
-                           UITableViewDelegate, UIPickerViewDelegate
+                           UITableViewDelegate, UIPickerViewDelegate, PagesControllerDelegate
 {
     private var aggregateFetchTask : Async?
 
@@ -599,6 +599,7 @@ class IntroViewController: UIViewController,
         pagesController.enableSwipe = true
         pagesController.showBottomLine = false
         pagesController.showPageControl = true
+        pagesController.pagesDelegate = self
 
         let pageView = pagesController.view
         pageView.translatesAutoresizingMaskIntoConstraints = false
@@ -822,7 +823,18 @@ class IntroViewController: UIViewController,
         }
     }
 
+    // MARK: - PageController delegate
+    func pageViewController(pageViewController: UIPageViewController, setViewController viewController: UIViewController, atPage page: Int) {
+        switch page {
+        case 2:
+            (viewController as! MealTimeViewController).reloadData()
+        default:
+            return
+        }
+    }
+
     // MARK: - Timer
+
     var timerLoop : Async? = nil
     let timerLoopFrequency : Double? = 1.0
     var timerCancel : Bool = false

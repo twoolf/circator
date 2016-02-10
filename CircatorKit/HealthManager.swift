@@ -272,7 +272,7 @@ public class HealthManager: NSObject, WCSessionDelegate {
         }
 
         let onWorkout = { type in
-            self.fetchPreparationAndRecoveryWorkout { (statistics, error) in
+            self.fetchPreparationAndRecoveryWorkout(false) { (statistics, error) in
                 updateSamples(type, statistics, error)
             }
         }
@@ -406,9 +406,20 @@ public class HealthManager: NSObject, WCSessionDelegate {
     // MARK: - Meal timing event retrieval.
 
     // Query food diary events stored as prep and recovery workouts in HealthKit
-    public func fetchPreparationAndRecoveryWorkout(completion: (([HKSample]!, NSError!) -> Void)!) {
-        let predicate =  HKQuery.predicateForWorkoutsWithWorkoutActivityType(HKWorkoutActivityType.PreparationAndRecovery)
-        let sortDescriptor = NSSortDescriptor(key:HKSampleSortIdentifierStartDate, ascending: false)
+    public func fetchPreparationAndRecoveryWorkout(oldestFirst: Bool, beginDate: NSDate? = nil, completion: (([HKSample]!, NSError!) -> Void)!)
+    {
+        var predicate : NSPredicate! = nil
+        if let b = beginDate {
+            let conjuncts = [
+                HKQuery.predicateForSamplesWithStartDate(b, endDate: NSDate(), options: .None),
+                HKQuery.predicateForWorkoutsWithWorkoutActivityType(HKWorkoutActivityType.PreparationAndRecovery)
+            ]
+            predicate = NSCompoundPredicate(andPredicateWithSubpredicates: conjuncts)
+        } else {
+            predicate = HKQuery.predicateForWorkoutsWithWorkoutActivityType(HKWorkoutActivityType.PreparationAndRecovery)
+        }
+
+        let sortDescriptor = NSSortDescriptor(key:HKSampleSortIdentifierStartDate, ascending: oldestFirst)
         let sampleQuery = HKSampleQuery(sampleType: HKWorkoutType.workoutType(), predicate: predicate, limit: 0, sortDescriptors: [sortDescriptor])
             { (sampleQuery, results, error ) -> Void in
                 if let queryError = error {
