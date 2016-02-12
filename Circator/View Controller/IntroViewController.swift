@@ -55,6 +55,7 @@ class IntroViewController: UIViewController,
         let button = MCButton(frame: CGRectMake(110, 300, 100, 100), buttonStyle: .Circular)
         button.setImage(image, forState: .Normal)
         button.imageEdgeInsets = UIEdgeInsetsMake(13,12,12,13)
+        button.tintColor = Theme.universityDarkTheme.foregroundColor
         button.buttonColor = UIColor.ht_emeraldColor()
         button.shadowColor = UIColor.ht_nephritisColor()
         button.shadowHeight = 6
@@ -84,6 +85,7 @@ class IntroViewController: UIViewController,
         let button = MCButton(frame: CGRectMake(110, 300, 100, 100), buttonStyle: .Circular)
         button.setImage(image, forState: .Normal)
         button.imageEdgeInsets = UIEdgeInsetsMake(11,11,10,10)
+        button.tintColor = Theme.universityDarkTheme.foregroundColor
         button.buttonColor = UIColor.ht_sunflowerColor()
         button.shadowColor = UIColor.ht_citrusColor()
         button.shadowHeight = 6
@@ -113,6 +115,7 @@ class IntroViewController: UIViewController,
         let button = MCButton(frame: CGRectMake(110, 300, 100, 100), buttonStyle: .Circular)
         button.setImage(image, forState: .Normal)
         button.imageEdgeInsets = UIEdgeInsetsMake(11,12,11,11)
+        button.tintColor = Theme.universityDarkTheme.foregroundColor
         button.buttonColor = UIColor.ht_peterRiverColor()
         button.shadowColor = UIColor.ht_belizeHoleColor()
         button.shadowHeight = 6
@@ -204,6 +207,7 @@ class IntroViewController: UIViewController,
         let button = MCButton(frame: CGRectMake(110, 300, 100, 100), buttonStyle: .Circular)
         button.setImage(image, forState: .Normal)
         button.imageEdgeInsets = UIEdgeInsetsMake(10,11,10,10)
+        button.tintColor = Theme.universityDarkTheme.foregroundColor
         button.buttonColor = UIColor.ht_mediumColor()
         button.shadowColor = UIColor.ht_mediumDarkColor()
         button.shadowHeight = 6
@@ -663,15 +667,10 @@ class IntroViewController: UIViewController,
         switch selectedMode! {
 
         case let .Correlate(type1, type2):
-            let correlateVC = CorrelationViewController()
-            correlateVC.sampleTypes = [type1, type2]
-            navigationController?.pushViewController(correlateVC, animated: true)
-            break
+            correlateView(type1, type2: type2)
 
         case .Plot(let type):
-            let plotVC = PlotViewController()
-            plotVC.sampleType = type
-            navigationController?.pushViewController(plotVC, animated: true)
+            plotView(type)
 
         case .previewMealTypeStrings:
             let calendar = NSCalendar.currentCalendar()
@@ -713,6 +712,34 @@ class IntroViewController: UIViewController,
                 self.refreshMealController()
             })
         }
+    }
+
+    private func plotView(type: HKSampleType) {
+        let plotVC = PlotViewController()
+        plotVC.sampleType = type
+
+        let errorVC = ErrorViewController()
+        errorVC.image = UIImage(named: "icon_broken_heart")
+        errorVC.msg = "We're heartbroken to see you\nhave no \(type.displayText!) data"
+
+        let variantVC = VariantViewController()
+        variantVC.pages = [plotVC, errorVC]
+        variantVC.startIndex = ( plotVC.historyChart.data == nil || plotVC.summaryChart.data == nil ) ? 1 : 0
+        navigationController?.pushViewController(variantVC, animated: true)
+    }
+
+    private func correlateView(type1: HKSampleType, type2: HKSampleType) {
+        let correlateVC = CorrelationViewController()
+        correlateVC.sampleTypes = [type1, type2]
+
+        let errorVC = ErrorViewController()
+        errorVC.image = UIImage(named: "icon_broken_heart")
+        errorVC.msg = "We're heartbroken to see you have no\n\(type1.displayText!) or \(type2.displayText!) data"
+
+        let variantVC = VariantViewController()
+        variantVC.pages = [correlateVC, errorVC]
+        variantVC.startIndex = correlateVC.correlationChart.data == nil ? 1 : 0
+        navigationController?.pushViewController(variantVC, animated: true)
     }
 
     func showSettings(sender: UIButton) {
