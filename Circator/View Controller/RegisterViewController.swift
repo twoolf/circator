@@ -13,71 +13,10 @@ import Former
 
 class RegisterViewController : FormViewController {
 
-    static let profileFields = ["Email",
-                                "Password",
-                                "First name",
-                                "Last name",
-                                "Age",
-                                "Weight",
-                                "Height",
-                                "Usual sleep",
-                                "Estimated bmi",
-                                "Resting Heartrate",
-                                "Systolic blood pressure",
-                                "Step Count",
-                                "Active Energy",
-                                "Awake time w/light",
-                                "Fasting",
-                                "Eating",
-                                "Calorie intake",
-                                "Protein intake",
-                                "Carbohydrate intake",
-                                "Sugar intake",
-                                "Fiber intake",
-                                "Fat intake",
-                                "Saturated fat",
-                                "Monounsaturated fat",
-                                "Polyunsaturated fat",
-                                "Cholesterol",
-                                "Salt",
-                                "Caffeine",
-                                "Water"]
-
-    static let profilePlaceholders = ["example@gmail.com",
-                                      "Required",
-                                      "Jane or John",
-                                      "Doe",
-                                      "24",
-                                      "160 lbs",
-                                      "180 cm",
-                                      "7 hours",
-                                      "25",
-                                      "60 bpm",
-                                      "120",
-                                      "6000 steps",
-                                      "2750 calories",
-                                      "12 hours",
-                                      "12 hours",
-                                      "12 hours",
-                                      "2757(m) or 1957(f)",
-                                      "88.3(m) or 71.3(f)",
-                                      "327(m) or 246.3(f)",
-                                      "143.3(m) or 112(f)",
-                                      "20.6(m) or 16.2(f)",
-                                      "103.2(m) or 73.1(f)",
-                                      "33.4(m) or 23.9(f)",
-                                      "36.9(m) or 25.7(f)",
-                                      "24.3(m) or 17.4(f)",
-                                      "352(m) or 235.7(f)",
-                                      "4560.7(m) or 3187.3(f)",
-                                      "166.4(m) or 142.7(f)",
-                                      "5(m) or 4.7(f)" ]
-
     var profileValues : [String: String] = [:]
 
-    let requiredRange = 0..<7
-    let recommendedRange = 7..<12
-    let optionalRange = 12..<29
+    var recommendedSubview : ProfileSubviewController! = nil
+    var optionalSubview : ProfileSubviewController! = nil
 
     // TODO: gender, race, marital status, education level, annual income
 
@@ -112,15 +51,15 @@ class RegisterViewController : FormViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         if ( consentOnLoad ) { doConsent() }
-        
+
         view.backgroundColor = Theme.universityDarkTheme.backgroundColor
-        
+
         let profileDoneButton = UIBarButtonItem(barButtonSystemItem: .Done, target: self, action: "doSignup:")
         navigationItem.rightBarButtonItem = profileDoneButton
 
-        var profileFieldRows = (0..<RegisterViewController.profileFields.count).map { index -> RowFormer in
-            let text = RegisterViewController.profileFields[index]
-            let placeholder = RegisterViewController.profilePlaceholders[index]
+        var profileFieldRows = (0..<UserProfile.profileFields.count).map { index -> RowFormer in
+            let text = UserProfile.profileFields[index]
+            let placeholder = UserProfile.profilePlaceholders[index]
 
             return TextFieldRowFormer<FormTextFieldCell>() {
                 $0.backgroundColor = Theme.universityDarkTheme.backgroundColor
@@ -143,7 +82,7 @@ class RegisterViewController : FormViewController {
                 else if text == "Email" {
                     $0.textField.keyboardType = UIKeyboardType.EmailAddress
                 }
-                
+
                 }.configure {
                     let attrs = [NSForegroundColorAttributeName: UIColor.lightGrayColor()]
                     $0.attributedPlaceholder = NSAttributedString(string:placeholder, attributes: attrs)
@@ -152,7 +91,7 @@ class RegisterViewController : FormViewController {
             }
         }
 
-        let requiredFields = profileFieldRows[requiredRange]
+        let requiredFields = profileFieldRows[UserProfile.requiredRange]
         let requiredHeader = LabelViewFormer<FormLabelHeaderView> {
             $0.contentView.backgroundColor = Theme.universityDarkTheme.backgroundColor
             $0.titleLabel.backgroundColor = Theme.universityDarkTheme.backgroundColor
@@ -163,36 +102,34 @@ class RegisterViewController : FormViewController {
         }
         let requiredSection = SectionFormer(rowFormers: Array(requiredFields)).set(headerViewFormer: requiredHeader)
 
-        let recommendedFields = profileFieldRows[recommendedRange]
-        let recommendedHeader = LabelViewFormer<FormLabelHeaderView> {
-            $0.contentView.backgroundColor = Theme.universityDarkTheme.backgroundColor
-            $0.titleLabel.backgroundColor = Theme.universityDarkTheme.backgroundColor
-            $0.titleLabel.textColor = .whiteColor()
-            }.configure { view in
-                view.viewHeight = 44
-                view.text = "Recommended"
-        }
-        let recommendedSection = SectionFormer(rowFormers: Array(recommendedFields)).set(headerViewFormer: recommendedHeader)
+        let recFields = UserProfile.profileFields[UserProfile.recommendedRange]
+        let recPlaceholders = UserProfile.profilePlaceholders[UserProfile.recommendedRange]
 
-        let optionalFields = profileFieldRows[optionalRange]
-        let optionalHeader = LabelViewFormer<FormLabelHeaderView> {
+        let optFields = UserProfile.profileFields[UserProfile.optionalRange]
+        let optPlaceholders = UserProfile.profilePlaceholders[UserProfile.optionalRange]
+
+        let submenuFields = [ submenu("Recommended", fields: Array(recFields), placeholders: Array(recPlaceholders)),
+                              submenu("Optional", fields: Array(optFields), placeholders: Array(optPlaceholders))
+                            ]
+
+        let submenuHeader = LabelViewFormer<FormLabelHeaderView> {
             $0.contentView.backgroundColor = Theme.universityDarkTheme.backgroundColor
             $0.titleLabel.backgroundColor = Theme.universityDarkTheme.backgroundColor
             $0.titleLabel.textColor = .whiteColor()
             }.configure { view in
                 view.viewHeight = 44
-                view.text = "Optional"
+                view.text = "Physiological Profile"
         }
-        let optionalSection = SectionFormer(rowFormers: Array(optionalFields)).set(headerViewFormer: optionalHeader)
-        
-        former.append(sectionFormer: requiredSection, recommendedSection, optionalSection)
+        let submenuSection = SectionFormer(rowFormers: Array(submenuFields)).set(headerViewFormer: submenuHeader)
+
+        former.append(sectionFormer: requiredSection, submenuSection)
     }
 
     func validateProfile() -> (String, String, String, String)? {
-        if let em = profileValues["Email"],
-           let pw = profileValues["Password"],
-           let fn = profileValues["First name"],
-           let ln = profileValues["Last name"]
+        if let em = profileValues[UserProfile.profileFields[UserProfile.emailIdx]],
+           let pw = profileValues[UserProfile.profileFields[UserProfile.passwIdx]],
+           let fn = profileValues[UserProfile.profileFields[UserProfile.fnameIdx]],
+           let ln = profileValues[UserProfile.profileFields[UserProfile.lnameIdx]]
         {
             return (em, pw, fn, ln)
         } else {
@@ -215,7 +152,7 @@ class RegisterViewController : FormViewController {
             UINotifications.noConsent(self, pop: true)
             return
         }
-        
+
         guard let (user, pass, fname, lname) = validateProfile() else {
             UINotifications.invalidProfile(self)
             return
@@ -242,8 +179,11 @@ class RegisterViewController : FormViewController {
                     BehaviorMonitor.sharedInstance.register(false)
                     return
                 }
-                let userKeys = ["Age": "age", "Weight": "weight", "Height": "height"]
-                let userDict = self.profileValues.filter { (k,v) in userKeys[k] != nil }.map { (k,v) in (userKeys[k]!, v) }
+
+                let userDict = self.profileValues.filter { (k,v) in UserProfile.updateableMapping[k] != nil }.map { (k,v) in
+                    (UserProfile.updateableMapping[k]!, v)
+                }
+
                 UserManager.sharedManager.pushProfileWithConsent(consentPath, metadata: Dictionary(pairs: userDict)) { _ in
                     ConsentManager.sharedManager.removeConsentFile(consentPath)
                     self.doWelcome()
@@ -253,6 +193,24 @@ class RegisterViewController : FormViewController {
                     BehaviorMonitor.sharedInstance.register(true)
                 }
             }
+        }
+    }
+
+    func submenu(text: String, fields: [String], placeholders: [String]) -> RowFormer {
+        return LabelRowFormer<FormLabelCell>() { row in
+            row.backgroundColor = Theme.universityDarkTheme.backgroundColor
+            row.tintColor = .blueColor()
+            row.textLabel?.text = text
+            row.textLabel?.textColor = .whiteColor()
+            row.textLabel?.font = .boldSystemFontOfSize(16)
+            row.accessoryType = .DisclosureIndicator
+            }.onSelected { _ in
+                let subVC = ProfileSubviewController()
+                subVC.profileFields = fields
+                subVC.profilePlaceholders = placeholders
+                subVC.profileUpdater = { (k,v) in self.profileValues[k] = v }
+                subVC.subviewDesc = "\(text) profile"
+                self.navigationController?.pushViewController(subVC, animated: true)
         }
     }
 }

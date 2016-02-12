@@ -28,6 +28,7 @@ private let HMQueryTSKey     = "HKQueryTS"
 private let UserSaltKey      = "UserSaltKey"
 
 public class UserManager {
+
     public static let sharedManager = UserManager()
 
     // Constants.
@@ -72,14 +73,14 @@ public class UserManager {
     }
 
     // MARK: - Account status, and authentication
-    
+
     public func hasUserId() -> Bool {
         if let user = userId {
             return !user.isEmpty
         }
         return false
     }
-    
+
     public func getUserId() -> String?     { return userId }
     public func setUserId(userId: String)  { self.userId = userId }
     public func resetUserId()              { self.userId = nil }
@@ -92,7 +93,7 @@ public class UserManager {
     }
 
     // MARK: - Account metadata accessors for fields stored in keychain.
-    
+
     public func getAccountData() -> [String:AnyObject]? {
         if let user = userId {
             let account = UserAccount(username: user, password: "")
@@ -136,7 +137,7 @@ public class UserManager {
         if let pass = getPassword() { return pass == userPass }
         return false
     }
-    
+
     func resetAccount() {
         withUserId { user in
             let account = UserAccount(username: user, password: "")
@@ -182,7 +183,7 @@ public class UserManager {
             completion(false)
         }
     }
-    
+
     // Set the username and password in keychain.
     public func overrideUserPass(user: String?, pass: String?) {
         withUserPass(user, password: pass) { (newUser, newPass) in
@@ -242,7 +243,7 @@ public class UserManager {
     public func logout() {
         logoutWithCompletion(nil)
     }
-    
+
     public func register(firstName: String, lastName: String, completion: ((NSDictionary?, Bool) -> Void)) {
         withUserPass(getPassword()) { (user,pass) in
             let stormpathAccountDict : [String:String] = [
@@ -260,13 +261,13 @@ public class UserManager {
         }
     }
 
-    
+
     // MARK: - Stormpath token management.
-    
+
     public func getAccessToken() -> String? {
         return Stormpath.accessToken
     }
-    
+
     public func ensureAccessToken(tried: Int, completion: (Bool -> Void)) {
         guard tried < UserManager.maxTokenRetries else {
             log.error("Failed to get access token within \(UserManager.maxTokenRetries) iterations")
@@ -274,7 +275,7 @@ public class UserManager {
             completion(true)
             return
         }
-        
+
         Service.json(MCRouter.TokenExpiry([:]), statusCode: 200..<300, tag: "ACCTOK") {
             _, response, result in
                 guard result.isSuccess else {
@@ -292,14 +293,14 @@ public class UserManager {
                 completion(false)
         }
     }
-    
+
     public func ensureAccessToken(completion: (Bool -> Void)) {
         if let _ = Stormpath.accessToken {
             MCRouter.OAuthToken = Stormpath.accessToken
         }
         ensureAccessToken(0, completion: completion)
     }
-    
+
     public func refreshAccessToken(tried: Int, completion: (Bool -> Void)) {
         Stormpath.refreshAccesToken { (_, error) in
             guard error == nil else {
@@ -327,11 +328,11 @@ public class UserManager {
             }
         }
     }
-    
+
     public func refreshAccessToken(completion: (Bool -> Void)) {
         refreshAccessToken(0, completion: completion)
     }
-    
+
 
     // MARK: - Profile (i.e., Stormpath account data) and metadata management
 
@@ -347,18 +348,18 @@ public class UserManager {
         refreshProfileCache(metadata)
         syncProfile(completion)
     }
-    
+
     public func pullProfile(completion: SvcObjectCompletion) {
         Service.json(MCRouter.GetUserAccountData(["exclude": ["consent"]]), statusCode: 200..<300, tag: "ACCDATA") {
             _, response, result in
                 // Refresh cache.
                 if let dict = result.value as? [String: AnyObject] { self.refreshProfileCache(dict) }
-                
+
                 // Evaluate the completion.
                 completion(!result.isSuccess, result.value)
         }
     }
-    
+
     public func pushProfileWithConsent(consentFilePath: String?, metadata: [String: AnyObject], completion: SvcStringCompletion) {
         if let path = consentFilePath {
             if let data = NSData(contentsOfFile: path) {
@@ -372,11 +373,11 @@ public class UserManager {
             log.error("Invalid consent file path: \(consentFilePath)")
         }
     }
-    
+
     public func getProfileCache() -> [String: AnyObject] { return profileCache }
-    
+
     public func resetProfileCache() { profileCache = [:] }
-    
+
     func refreshProfileCache(dict: [String: AnyObject]) {
         for (k,v) in dict {
             profileCache[k] = v
@@ -393,8 +394,8 @@ public class UserManager {
             _, response, result in completion(!result.isSuccess, result.value)
         }
     }
-    
-    
+
+
     // MARK : - Profile accessors
 
     public func getHotWords() -> String {
@@ -517,7 +518,7 @@ public class UserManager {
     }
 
     // MARK : - Utility functions
-    
+
     func withUserId (completion: (String -> Void)) {
         if let user = userId { completion(user) }
         else { log.error("No user id available") }
@@ -545,5 +546,123 @@ public class UserManager {
         resetProfileCache()
         resetUserId()
     }
+}
+
+/*
+ * User profiles
+ */
+
+public struct UserProfile {
+    public static let emailIdx = 0
+    public static let passwIdx = 1
+    public static let fnameIdx = 2
+    public static let lnameIdx = 3
+    public static let updateableIdx = 4
+
+    public static let requiredRange = 0..<7
+    public static let updateableReqRange = 4..<7
+    public static let recommendedRange = 7..<12
+    public static let optionalRange = 12..<29
+    public static let updateableRange = 4..<29
+
+    public static let profileFields = [
+        "Email",
+        "Password",
+        "First name",
+        "Last name",
+        "Age",
+        "Weight",
+        "Height",
+        "Usual sleep",
+        "Estimated bmi",
+        "Resting heartrate",
+        "Systolic blood pressure",
+        "Step count",
+        "Active energy",
+        "Awake time w/light",
+        "Fasting",
+        "Eating",
+        "Calorie intake",
+        "Protein intake",
+        "Carbohydrate intake",
+        "Sugar intake",
+        "Fiber intake",
+        "Fat intake",
+        "Saturated fat",
+        "Monounsaturated fat",
+        "Polyunsaturated fat",
+        "Cholesterol",
+        "Salt",
+        "Caffeine",
+        "Water"]
+
+    public static let profilePlaceholders = [
+        "example@gmail.com",
+        "Required",
+        "Jane or John",
+        "Doe",
+        "24",
+        "160 lbs",
+        "180 cm",
+        "7 hours",
+        "25",
+        "60 bpm",
+        "120",
+        "6000 steps",
+        "2750 calories",
+        "12 hours",
+        "12 hours",
+        "12 hours",
+        "2757(m) or 1957(f)",
+        "88.3(m) or 71.3(f)",
+        "327(m) or 246.3(f)",
+        "143.3(m) or 112(f)",
+        "20.6(m) or 16.2(f)",
+        "103.2(m) or 73.1(f)",
+        "33.4(m) or 23.9(f)",
+        "36.9(m) or 25.7(f)",
+        "24.3(m) or 17.4(f)",
+        "352(m) or 235.7(f)",
+        "4560.7(m) or 3187.3(f)",
+        "166.4(m) or 142.7(f)",
+        "5(m) or 4.7(f)"
+    ]
+
+    public static let profileMapping = [
+        "Email"                    : "email",
+        "Password"                 : "password",
+        "First name"               : "firstname",
+        "Last name"                : "lastname",
+        "Age"                      : "age",
+        "Weight"                   : "weight",
+        "Height"                   : "height",
+        "Usual sleep"              : "sleep",
+        "Estimated bmi"            : "bmi",
+        "Resting heartrate"        : "heartrate",
+        "Systolic blood pressure"  : "systolic",
+        "Step count"               : "steps",
+        "Active energy"            : "energy",
+        "Awake time w/light"       : "awake",
+        "Fasting"                  : "fasting",
+        "Eating"                   : "eating",
+        "Calorie intake"           : "calories",
+        "Protein intake"           : "protein",
+        "Carbohydrate intake"      : "carbs",
+        "Sugar intake"             : "sugar",
+        "Fiber intake"             : "fiber",
+        "Fat intake"               : "fat",
+        "Saturated fat"            : "satfat",
+        "Monounsaturated fat"      : "monfat",
+        "Polyunsaturated fat"      : "polyfat",
+        "Cholesterol"              : "cholesterol",
+        "Salt"                     : "salt",
+        "Caffeine"                 : "caffeine",
+        "Water"                    : "water"
+    ]
+
+    public static let updateableMapping = {
+        return Dictionary(pairs: profileFields[4..<29].map { k in (k, profileMapping[k]!) })
+    }()
+
 }
 

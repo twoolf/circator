@@ -190,11 +190,11 @@ public class EventManager : NSObject, WCSessionDelegate {
                             distance: 0.0, distanceUnit: HKUnit.meterUnit(), kiloCalories: 0.0,
                             metadata: emeta,
                             completion: { (success, error ) -> Void in
-                                if( success ) {
-                                    log.debug("Food log event saved")
-                                } else if( error != nil ) {
-                                    log.error("error made: \(error)")
+                                guard error == nil else {
+                                    log.error(error)
+                                    return
                                 }
+                                log.debug("Food log event saved")
                             }
                         )
                     }

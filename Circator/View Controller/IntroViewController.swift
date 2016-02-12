@@ -21,7 +21,7 @@ private let mcControlButtonHeight : CGFloat = 35.0
 
 class IntroViewController: UIViewController,
                            UITableViewDataSource, UIPickerViewDataSource,
-                           UITableViewDelegate, UIPickerViewDelegate, PagesControllerDelegate
+                           UITableViewDelegate, UIPickerViewDelegate
 {
     private var aggregateFetchTask : Async?
 
@@ -29,6 +29,7 @@ class IntroViewController: UIViewController,
 
     lazy var radarController: RadarViewController = { return RadarViewController() }()
     lazy var mealController: MealTimeViewController = { return MealTimeViewController() }()
+    private var mealCIndex : Int = 0
 
     lazy var logoImageView: UIImageView = {
         let view = UIImageView(image: UIImage(named: "logo_university")!)
@@ -599,7 +600,7 @@ class IntroViewController: UIViewController,
         pagesController.enableSwipe = true
         pagesController.showBottomLine = false
         pagesController.showPageControl = true
-        pagesController.pagesDelegate = self
+        mealCIndex = 2
 
         let pageView = pagesController.view
         pageView.translatesAutoresizingMaskIntoConstraints = false
@@ -702,14 +703,14 @@ class IntroViewController: UIViewController,
             let kiloCaloriesHold = 0.0
             let kmUnit = HKUnit(fromString: "km")
             let metaMeals = [/*String(IntroViewController.previewMealTypeStrings[3][pickerView.selectedRowInComponent(3)]):"Meal Rating", */String(IntroViewController.previewMealTypeStrings[0][pickerView.selectedRowInComponent(0)]):"Meal Type"]
-            HealthManager.sharedManager.savePreparationAndRecoveryWorkout(newDate!, endDate: calculatedDate!, distance: distanceHold, distanceUnit:kmUnit, kiloCalories: kiloCaloriesHold, metadata: metaMeals, completion: { (success, error ) -> Void in
-                if( success )
-                {
-                    print("Meal saved as workout-type")
+            HealthManager.sharedManager.savePreparationAndRecoveryWorkout(newDate!, endDate: calculatedDate!, distance: distanceHold, distanceUnit:kmUnit, kiloCalories: kiloCaloriesHold, metadata: metaMeals, completion: {
+                    (success, error ) -> Void in
+                guard error == nil else {
+                    log.error(error)
+                    return
                 }
-                else if( error != nil ) {
-                    print("error made: \(error)")
-                }
+                log.info("Meal saved as workout-type")
+                self.refreshMealController()
             })
         }
     }
@@ -795,7 +796,6 @@ class IntroViewController: UIViewController,
         } else if case .Plot(_) = selectedMode! {
             return IntroViewController.previewTypeStrings[row]
         } else if case .previewMealTypeStrings = selectedMode! {
-
             return IntroViewController.previewMealTypeStrings[component][row]
         } else {
             return IntroViewController.previewMealTypeStrings[component][row]
@@ -823,15 +823,13 @@ class IntroViewController: UIViewController,
         }
     }
 
-    // MARK: - PageController delegate
-    func pageViewController(pageViewController: UIPageViewController, setViewController viewController: UIViewController, atPage page: Int) {
-        switch page {
-        case 2:
-            (viewController as! MealTimeViewController).reloadData()
-        default:
-            return
+    // MARK: - Pages refresh
+    private func refreshMealController() {
+        if pagesController.currentIndex == mealCIndex {
+            Async.main { self.mealController.reloadData() }
         }
     }
+
 
     // MARK: - Timer
 
@@ -913,12 +911,12 @@ class IntroViewController: UIViewController,
         HealthManager.sharedManager.savePreparationAndRecoveryWorkout(timerStartDate, endDate: timerEndDate,
             distance: 0.0, distanceUnit:kmUnit, kiloCalories: 0.0, metadata: metaMeals,
             completion: { (success, error ) -> Void in
-                if( success ) {
-                    log.info("Timed meal saved as workout-type")
-                } else if( error != nil ) {
+                guard error == nil else {
                     log.error("Failed to save meal time: \(error)")
+                    return
                 }
-                Async.main { self.mealController.reloadData() }
+                log.info("Timed meal saved as workout-type")
+                self.refreshMealController()
             })
     }
 }

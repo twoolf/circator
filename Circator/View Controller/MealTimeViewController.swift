@@ -186,15 +186,13 @@ class MealTimeViewController : UIViewController {
     func reloadData() {
         HealthManager.sharedManager.fetchPreparationAndRecoveryWorkout(true, beginDate: 24.hours.ago) { (samples, error) -> Void in
             Async.main {
-                //UINotifications.genericMsg(self, msg: "MTVC Reload")
-
                 guard error == nil else {
                     log.error("Failed to fetch meal times: \(error)")
                     return
                 }
 
                 self.mealChart.removeSeries()
-                log.info("Reloading meal chart")
+
                 if samples.isEmpty {
                     let series = ChartSeries(data: [(x: 0.0, y: 0.0), (x: 24.0, y:0.0)])
                     series.area = true
@@ -237,7 +235,7 @@ class MealTimeViewController : UIViewController {
                     self.eatingLabel.text  = (today + Int(acc.0).seconds).toString(DateFormat.Custom("HH:mm"))!
                     self.lastAteLabel.text = NSDate(timeIntervalSinceReferenceDate: acc.1).toString(DateFormat.Custom("HH:mm"))!
                 }
-                self.view.setNeedsDisplay()
+                self.mealChart.setNeedsDisplay()
                 BehaviorMonitor.sharedInstance.setValue("MealTimes", contentType: HKWorkoutType.workoutType().identifier)
             }
         }

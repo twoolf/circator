@@ -169,7 +169,6 @@ class PlotViewController: UIViewController, ChartViewDelegate {
         historyChart.heightAnchor.constraintEqualToConstant(200).active = true
         summaryChart.translatesAutoresizingMaskIntoConstraints = false
         summaryChart.heightAnchor.constraintEqualToConstant(200).active = true
-
     }
 
     /*

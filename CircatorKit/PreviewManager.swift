@@ -49,9 +49,35 @@ public class PreviewManager: NSObject {
         ]
     ]
 
-    public static let rowIcons: [UIImage] = {
-        return ["icon_scale", "icon_egg_shell", "icon_water_droplet", "icon_run", "icon_sleep", "icon_meal", "icon_heart_rate"].map { UIImage(named: $0)! }
+    public static let rowIcons: [HKSampleType: UIImage] = { _ in
+        let previewIcons : [HKSampleType: String] = [
+            HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierBodyMass)!                  : "icon_scale",
+            HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierBodyMassIndex)!             : "icon_scale",         //"scale_white_for_BMI",
+            HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierDietaryProtein)!            : "icon_egg_shell",     //"icon_steak_for_protein",
+            HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierDietaryFatTotal)!           : "icon_egg_shell",     //"icon_for_fat_using_mayannoise",
+            HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierDietaryCarbohydrates)!      : "icon_egg_shell",     //"icon_jelly_donut_for_carbs",
+            HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierDietaryEnergyConsumed)!     : "icon_egg_shell",     //"icon_eating_at_table",
+            HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierDietaryWater)!              : "icon_water_droplet", //"icon_hydrate_person_for_water",
+            HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierDietaryCaffeine)!           : "icon_water_droplet", //"icon_coffee_for_caffeine",
+            HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierActiveEnergyBurned)!        : "icon_run",
+            HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierStepCount)!                 : "icon_run",           // "icon_steps_white",
+            HKObjectType.categoryTypeForIdentifier(HKCategoryTypeIdentifierSleepAnalysis)!             : "icon_sleep",
+            HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierUVExposure)!                : "icon_sun",
+            HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierDietarySugar)!              : "icon_sugar_cubes_three",
+            HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierDietaryCholesterol)!        : "icon_meal",          // "icon_cholesterol",
+            HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierDietarySodium)!             : "icon_meal",          // "icon_salt_for_sodium_entry",
+            HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierDietaryFatPolyunsaturated)! : "icon_meal",          // "icon_corn_for_polyunsaturated_fat",
+            HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierDietaryFatSaturated)!       : "icon_meal",          // "icon_coconut_for_saturated_fat",
+            HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierDietaryFatMonounsaturated)! : "icon_meal",          // "icon_olive_oil_jug_for_monounsaturated_fat",
+            HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierHeartRate)!                 : "icon_heart_rate",
+            HKObjectType.correlationTypeForIdentifier(HKCorrelationTypeIdentifierBloodPressure)!       : "icon_blood_pressure"
+        ]
+        return Dictionary(pairs: previewIcons.map { (k,v) in return (k, UIImage(named: v)!) })
     }()
+
+    // public static let rowIcons: [UIImage] = {
+    //     return ["icon_scale", "icon_egg_shell", "icon_water_droplet", "icon_run", "icon_sleep", "icon_meal", "icon_heart_rate"].map { UIImage(named: $0)! }
+    // }()
 
     public static var previewSampleTypes: [HKSampleType] {
         if let rawTypes = Defaults[PMSampleTypesKey] {
@@ -62,9 +88,9 @@ public class PreviewManager: NSObject {
             let defaultTypes = [
                 HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierBodyMass)!,
                 HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierDietaryProtein)!,
-                HKObjectType.categoryTypeForIdentifier(HKQuantityTypeIdentifierDietaryWater)!,
+                HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierDietaryWater)!,
                 HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierActiveEnergyBurned)!,
-                HKObjectType.quantityTypeForIdentifier(HKCategoryTypeIdentifierSleepAnalysis)!,
+                HKObjectType.categoryTypeForIdentifier(HKCategoryTypeIdentifierSleepAnalysis)!,
                 HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierDietarySugar)!,
                 HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierHeartRate)!
             ]
@@ -77,10 +103,7 @@ public class PreviewManager: NSObject {
     }
 
     public static func iconForSampleType(sampleType: HKSampleType) -> UIImage {
-        let index = previewChoices.indexOf { (row) -> Bool in
-            return row.indexOf(sampleType) != nil
-        }
-        return index != nil ? rowIcons[index!] : UIImage()
+        return rowIcons[sampleType] ?? UIImage()
     }
 
     public static func reselectSampleType(sampleType: HKSampleType, forPreviewRow row: Int) {
