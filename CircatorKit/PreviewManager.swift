@@ -75,10 +75,6 @@ public class PreviewManager: NSObject {
         return Dictionary(pairs: previewIcons.map { (k,v) in return (k, UIImage(named: v)!) })
     }()
 
-    // public static let rowIcons: [UIImage] = {
-    //     return ["icon_scale", "icon_egg_shell", "icon_water_droplet", "icon_run", "icon_sleep", "icon_meal", "icon_heart_rate"].map { UIImage(named: $0)! }
-    // }()
-
     public static var previewSampleTypes: [HKSampleType] {
         if let rawTypes = Defaults[PMSampleTypesKey] {
             return rawTypes.map { (data) -> HKSampleType in
