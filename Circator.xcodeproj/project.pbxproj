@@ -10,7 +10,7 @@
 		7816FFB91C1E2DC5002E2ED8 /* TextInputTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7816FFB81C1E2DC5002E2ED8 /* TextInputTableViewCell.swift */; };
 		7816FFBB1C1E45D3002E2ED8 /* UserManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7816FFBA1C1E45D3002E2ED8 /* UserManager.swift */; };
 		781CF2BF1C6A4781001DF3B2 /* SecureConstants.swift in Sources */ = {isa = PBXBuildFile; fileRef = 781CF2BE1C6A4781001DF3B2 /* SecureConstants.swift */; };
-		781CF2C11C6A6A36001DF3B2 /* MealTimeViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 781CF2C01C6A6A36001DF3B2 /* MealTimeViewController.swift */; };
+		781CF2C11C6A6A36001DF3B2 /* EventTimeViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 781CF2C01C6A6A36001DF3B2 /* EventTimeViewController.swift */; };
 		7840A4991C6E53A80005B66F /* VariantViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7840A4981C6E53A80005B66F /* VariantViewController.swift */; };
 		7840A49B1C6E5A680005B66F /* ErrorViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7840A49A1C6E5A680005B66F /* ErrorViewController.swift */; };
 		7843F9121C1FAD9900AB8978 /* ServiceAPI.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7843F9111C1FAD9900AB8978 /* ServiceAPI.swift */; };
@@ -159,7 +159,7 @@
 		7816FFB81C1E2DC5002E2ED8 /* TextInputTableViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TextInputTableViewCell.swift; sourceTree = "<group>"; };
 		7816FFBA1C1E45D3002E2ED8 /* UserManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = UserManager.swift; sourceTree = "<group>"; };
 		781CF2BE1C6A4781001DF3B2 /* SecureConstants.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SecureConstants.swift; sourceTree = "<group>"; };
-		781CF2C01C6A6A36001DF3B2 /* MealTimeViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MealTimeViewController.swift; sourceTree = "<group>"; };
+		781CF2C01C6A6A36001DF3B2 /* EventTimeViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = EventTimeViewController.swift; sourceTree = "<group>"; };
 		781EE1231BAF3F6B00E6DDA1 /* Podfile */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = Podfile; path = ../Podfile; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.ruby; };
 		781EE1241BAF3F6B00E6DDA1 /* README.md */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = net.daringfireball.markdown; name = README.md; path = ../README.md; sourceTree = "<group>"; };
 		7840A4981C6E53A80005B66F /* VariantViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = VariantViewController.swift; sourceTree = "<group>"; };
@@ -460,7 +460,7 @@
 				78F65A4C1C25126E0074449D /* QueryBuilderViewController.swift */,
 				7863EA9D1C27332C0038DE7A /* QueryWriterViewController.swift */,
 				78CE00AC1C65CC5A005E955C /* RadarViewController.swift */,
-				781CF2C01C6A6A36001DF3B2 /* MealTimeViewController.swift */,
+				781CF2C01C6A6A36001DF3B2 /* EventTimeViewController.swift */,
 				F44B1A2C1BDAC20D002238E6 /* PlotViewController.swift */,
 				F42F5B941BE2C89200195490 /* CorrelationViewController.swift */,
 				7860E9121C61C470004C9741 /* DebugViewController.swift */,
@@ -834,7 +834,7 @@
 				F43A7C5D1BBDF43600B6FA56 /* CollectionViewCell.swift in Sources */,
 				7863EA9E1C27332C0038DE7A /* QueryWriterViewController.swift in Sources */,
 				7881A3E31BAF3B3E00ECB3C6 /* IntroViewController.swift in Sources */,
-				781CF2C11C6A6A36001DF3B2 /* MealTimeViewController.swift in Sources */,
+				781CF2C11C6A6A36001DF3B2 /* EventTimeViewController.swift in Sources */,
 				F4F4DA581C0257130073E9EE /* SettingsViewController.swift in Sources */,
 				F43A7C5E1BBDF43600B6FA56 /* PlotButton.swift in Sources */,
 				F42F5B951BE2C89200195490 /* CorrelationViewController.swift in Sources */,

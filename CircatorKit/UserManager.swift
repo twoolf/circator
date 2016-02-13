@@ -15,6 +15,7 @@ import SwiftDate
 import Async
 
 private let UMPrimaryUserKey = "UMPrimaryUserKey"
+private let UMUserHashKey    = "UMUserHashKey"
 
 // Profile entry keys
 private let UMPHotwordKey    = "UMPHotwordKey"
@@ -26,6 +27,8 @@ private let HMHRangeMinKey   = "HKHRMin"
 private let HMQueryTSKey     = "HKQueryTS"
 
 private let UserSaltKey      = "UserSaltKey"
+
+private let profileExcludes  = ["consent", "id"]
 
 public class UserManager {
 
@@ -84,13 +87,6 @@ public class UserManager {
     public func getUserId() -> String?     { return userId }
     public func setUserId(userId: String)  { self.userId = userId }
     public func resetUserId()              { self.userId = nil }
-
-    public func getUserIdHash() -> String? {
-        if let u = userId {
-            return (u + SecureConstants.User.salt).sha256()
-        }
-        return nil
-    }
 
     // MARK: - Account metadata accessors for fields stored in keychain.
 
@@ -208,12 +204,10 @@ public class UserManager {
 
                 log.verbose("Access token: \(Stormpath.accessToken)")
                 MCRouter.OAuthToken = Stormpath.accessToken
-                Service.string(MCRouter.UserToken([:]), statusCode: 200..<300, tag: "LOGIN") {
-                    _, response, result in
-                        UserManager.sharedManager.pullProfile { _ in
-                            completion(!result.isSuccess, result.value)
-                        }
-                    }
+                self.pullProfile { error, _ in
+                    if !error { self.pullConsent(completion) }
+                    else { completion(error, nil) }
+                }
             })
         }
     }
@@ -318,10 +312,7 @@ public class UserManager {
             if let token = Stormpath.accessToken {
                 log.verbose("Refreshed token: \(token)")
                 MCRouter.OAuthToken = Stormpath.accessToken
-                Service.string(MCRouter.UserToken([:]), statusCode: 200..<300, tag: "REFTOK") {
-                    _, response, result in
-                        self.ensureAccessToken(tried+1, completion: completion)
-                }
+                self.ensureAccessToken(tried+1, completion: completion)
             } else {
                 log.error("RefreshAccessToken failed, please login manually.")
                 completion(true)
@@ -334,26 +325,48 @@ public class UserManager {
     }
 
 
+    // MARK: - Consent accessors
+    public func syncConsent(completion: SvcStringCompletion) {
+        let dict = ["consent": profileCache["consent"] ?? ("" as AnyObject)]
+        Service.string(MCRouter.SetConsent(dict), statusCode: 200..<300, tag: "SCONSENT") {
+            _, response, result in completion(!result.isSuccess, result.value)
+        }
+    }
+
+    public func pullConsent(completion: SvcStringCompletion) {
+        Service.string(MCRouter.GetConsent, statusCode: 200..<300, tag: "GCONSENT") {
+            _, response, result in
+            self.profileCache["consent"] = result.value
+            completion(!result.isSuccess, "Retrieved consent")
+        }
+    }
+
     // MARK: - Profile (i.e., Stormpath account data) and metadata management
 
     public func syncProfile(completion: SvcStringCompletion) {
         // Post to the service.
-        Service.string(MCRouter.SetUserAccountData(profileCache), statusCode: 200..<300, tag: "UPDATEACC") {
+        let dict = Dictionary(pairs: profileCache.filter { kv in return !profileExcludes.contains(kv.0) })
+        Service.string(MCRouter.SetUserAccountData(dict), statusCode: 200..<300, tag: "UPDATEACC") {
             _, response, result in completion(!result.isSuccess, result.value)
         }
     }
 
     public func pushProfile(metadata: [String: AnyObject], completion: SvcStringCompletion) {
-        // Refresh profile cache, and post to Stormpath.
+        // Refresh profile cache, and post to the backend.
         refreshProfileCache(metadata)
         syncProfile(completion)
     }
 
     public func pullProfile(completion: SvcObjectCompletion) {
-        Service.json(MCRouter.GetUserAccountData(["exclude": ["consent"]]), statusCode: 200..<300, tag: "ACCDATA") {
+        Service.json(MCRouter.GetUserAccountData, statusCode: 200..<300, tag: "ACCDATA") {
             _, response, result in
                 // Refresh cache.
-                if let dict = result.value as? [String: AnyObject] { self.refreshProfileCache(dict) }
+                if let dict = result.value as? [String: AnyObject], id = dict["id"],
+                   var profile = dict["profile"] as? [String: AnyObject]
+                {
+                    profile[UMUserHashKey] = id
+                    self.refreshProfileCache(profile)
+                }
 
                 // Evaluate the completion.
                 completion(!result.isSuccess, result.value)
@@ -365,12 +378,25 @@ public class UserManager {
             if let data = NSData(contentsOfFile: path) {
                 var dict = metadata
                 dict["consent"] = data.base64EncodedStringWithOptions(NSDataBase64EncodingOptions())
-                pushProfile(dict, completion: completion)
+                refreshProfileCache(metadata)
+                syncProfile { error, _ in
+                    if !error { self.syncConsent(completion) }
+                    else { completion(error, nil) }
+                }
             } else {
                 log.error("Failed to read consent file at: \(path)")
+                completion(true, nil)
             }
         } else {
             log.error("Invalid consent file path: \(consentFilePath)")
+            completion(true, nil)
+        }
+    }
+
+    public func pullProfileWithConsent(completion: SvcStringCompletion) {
+        pullProfile { (error, _) in
+            if !error { self.pullConsent(completion) }
+            else { completion(error, nil) }
         }
     }
 
@@ -396,7 +422,11 @@ public class UserManager {
     }
 
 
-    // MARK : - Profile accessors
+    // MARK: - Profile accessors
+
+    public func getUserIdHash() -> String? {
+        return (profileCache[UMUserHashKey] as? String)
+    }
 
     public func getHotWords() -> String {
         return (profileCache[UMPHotwordKey] as? String) ?? UserManager.defaultHotwords

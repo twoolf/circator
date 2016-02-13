@@ -28,7 +28,7 @@ class IntroViewController: UIViewController,
     private var pagesController: PagesController!
 
     lazy var radarController: RadarViewController = { return RadarViewController() }()
-    lazy var mealController: MealTimeViewController = { return MealTimeViewController() }()
+    lazy var mealController: EventTimeViewController = { return EventTimeViewController() }()
     private var mealCIndex : Int = 0
 
     lazy var logoImageView: UIImageView = {
@@ -483,9 +483,13 @@ class IntroViewController: UIViewController,
                     return
                 }
 
-                UserManager.sharedManager.pullProfile { _ in
-                    self.initializeBackgroundWork()
-                    Async.main(after: 2) { UINotifications.doWelcome(self, pop: false, user: UserManager.sharedManager.getUserId() ?? "") }
+                UserManager.sharedManager.pullProfileWithConsent { (error, _) in
+                    if !error {
+                        self.initializeBackgroundWork()
+                        Async.main(after: 2) { UINotifications.doWelcome(self, pop: false, user: UserManager.sharedManager.getUserId() ?? "") }
+                    } else {
+                        log.error("Failed to retrieve initial profile and consent")
+                    }
                 }
             }
         }

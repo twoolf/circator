@@ -18,7 +18,8 @@ import SwiftDate
 
 public typealias HMAuthorizationBlock         = (success: Bool, error: NSError?) -> Void
 public typealias HMFetchSampleBlock           = (samples: [HKSample], error: NSError?) -> Void
-public typealias HMFetchManySampleBlock       = (samples: [HKSampleType: [Result]], error: NSError?) -> Void
+public typealias HMFetchManyResultBlock       = (samples: [HKSampleType: [Result]], error: NSError?) -> Void
+public typealias HMFetchManySampleBlock       = (samples: [HKSampleType: [HKSample]], error: NSError?) -> Void
 public typealias HMStatisticsBlock            = (statistics: [HKStatistics], error: NSError?) -> Void
 public typealias HMCorrelationStatisticsBlock = ([HKStatistics], [HKStatistics], NSError?) -> Void
 public typealias HMAnchorQueryBlock           = (HKAnchoredObjectQuery, [HKSample]?, [HKDeletedObject]?, HKQueryAnchor?, NSError?) -> Void
@@ -286,7 +287,24 @@ public class HealthManager: NSObject, WCSessionDelegate {
 
     }
 
+    // MARK: - Predicate construction
+
+    public func mealsSincePredicate(startDate: NSDate? = nil, endDate: NSDate = NSDate()) -> NSPredicate? {
+        var predicate : NSPredicate? = nil
+        if let st = startDate {
+            let conjuncts = [
+                HKQuery.predicateForSamplesWithStartDate(st, endDate: endDate, options: .None),
+                HKQuery.predicateForWorkoutsWithWorkoutActivityType(HKWorkoutActivityType.PreparationAndRecovery)
+            ]
+            predicate = NSCompoundPredicate(andPredicateWithSubpredicates: conjuncts)
+        } else {
+            predicate = HKQuery.predicateForWorkoutsWithWorkoutActivityType(HKWorkoutActivityType.PreparationAndRecovery)
+        }
+        return predicate
+    }
+
     // MARK: - Characteristic type queries
+
     public func getBiologicalSex() -> HKBiologicalSexObject? {
         do {
             return try self.healthKitStore.biologicalSex()
@@ -325,7 +343,7 @@ public class HealthManager: NSObject, WCSessionDelegate {
     }
 
     // Fetches HealthKit samples for multiple types, using GCD to retrieve each type asynchronously and concurrently.
-    public func fetchMostRecentSamples(ofTypes types: [HKSampleType] = PreviewManager.previewSampleTypes, completion: HMFetchManySampleBlock)
+    public func fetchMostRecentSamples(ofTypes types: [HKSampleType] = PreviewManager.previewSampleTypes, completion: HMFetchManyResultBlock)
     {
         let group = dispatch_group_create()
         var samples = [HKSampleType: [Result]]()
@@ -386,8 +404,11 @@ public class HealthManager: NSObject, WCSessionDelegate {
     }
 
     // Completion handler is on background queue
-    public func fetchSamplesOfType(sampleType: HKSampleType, predicate: NSPredicate? = nil, limit: Int = noLimit, completion: HMFetchSampleBlock) {
-        let query = HKSampleQuery(sampleType: sampleType, predicate: predicate, limit: limit, sortDescriptors: [dateAsc]) {
+    public func fetchSamplesOfType(sampleType: HKSampleType, predicate: NSPredicate? = nil,
+                                   limit: Int = noLimit, sortDescriptors: [NSSortDescriptor]? = [dateAsc],
+                                   completion: HMFetchSampleBlock)
+    {
+        let query = HKSampleQuery(sampleType: sampleType, predicate: predicate, limit: limit, sortDescriptors: sortDescriptors) {
             (query, samples, error) -> Void in
             guard error == nil else {
                 completion(samples: [], error: error)
@@ -404,7 +425,8 @@ public class HealthManager: NSObject, WCSessionDelegate {
             let interval = NSDateComponents()
             interval.day = 1
 
-            // Set the anchor date to midnight today. Should be able to change according to user settings
+            // Set the anchor date to midnight today.
+            // TOSO: Should be able to change according to user settings
             let anchorDate = NSDate().startOf(.Day, inRegion: Region())
             let quantityType = HKObjectType.quantityTypeForIdentifier(sampleType.identifier)!
 
@@ -488,31 +510,48 @@ public class HealthManager: NSObject, WCSessionDelegate {
         }
     }
 
+
+    // MARK: - Bulk generic retrieval
+
+    // Fetches HealthKit samples for multiple types, using GCD to retrieve each type asynchronously and concurrently.
+    public func fetchSamples(typesAndPredicates: [HKSampleType: NSPredicate?], completion: HMFetchManySampleBlock)
+    {
+        let group = dispatch_group_create()
+        var samplesByType = [HKSampleType: [HKSample]]()
+
+        let updateSamples : (HKSampleType, [HKSample], NSError?) -> Void = { (type, samples, error) in
+            dispatch_group_leave(group)
+            guard error == nil else {
+                log.error("Could not fetch recent samples for \(type.displayText): \(error)")
+                return
+            }
+            guard samples.isEmpty == false else {
+                log.warning("No recent samples available for \(type.displayText)")
+                return
+            }
+            samplesByType[type] = samples
+        }
+
+        typesAndPredicates.forEach { (type, predicate) -> () in
+            dispatch_group_enter(group)
+            self.fetchSamplesOfType(type, predicate: predicate, limit: noLimit) { (samples, error) in
+                updateSamples(type, samples, error)
+            }
+        }
+
+        dispatch_group_notify(group, dispatch_get_main_queue()) {
+            completion(samples: samplesByType, error: nil)
+        }
+    }
+
     // MARK: - Meal timing event retrieval.
 
     // Query food diary events stored as prep and recovery workouts in HealthKit
-    public func fetchPreparationAndRecoveryWorkout(oldestFirst: Bool, beginDate: NSDate? = nil, completion: (([HKSample]!, NSError!) -> Void)!)
+    public func fetchPreparationAndRecoveryWorkout(oldestFirst: Bool, beginDate: NSDate? = nil, completion: HMFetchSampleBlock!)
     {
-        var predicate : NSPredicate! = nil
-        if let b = beginDate {
-            let conjuncts = [
-                HKQuery.predicateForSamplesWithStartDate(b, endDate: NSDate(), options: .None),
-                HKQuery.predicateForWorkoutsWithWorkoutActivityType(HKWorkoutActivityType.PreparationAndRecovery)
-            ]
-            predicate = NSCompoundPredicate(andPredicateWithSubpredicates: conjuncts)
-        } else {
-            predicate = HKQuery.predicateForWorkoutsWithWorkoutActivityType(HKWorkoutActivityType.PreparationAndRecovery)
-        }
-
+        let predicate = mealsSincePredicate(beginDate)
         let sortDescriptor = NSSortDescriptor(key:HKSampleSortIdentifierStartDate, ascending: oldestFirst)
-        let sampleQuery = HKSampleQuery(sampleType: HKWorkoutType.workoutType(), predicate: predicate, limit: 0, sortDescriptors: [sortDescriptor])
-            { (sampleQuery, results, error ) -> Void in
-                if let queryError = error {
-                    log.error("Error reading HK samples: \(queryError.localizedDescription)")
-                }
-                completion(results,error)
-        }
-        healthKitStore.executeQuery(sampleQuery)
+        fetchSamplesOfType(HKWorkoutType.workoutType(), predicate: predicate, limit: 0, sortDescriptors: [sortDescriptor], completion: completion)
     }
 
     // MARK: - Observers
@@ -1323,14 +1362,6 @@ public extension Array where Element: HKStatistics {
         }
         return false
     }
-}
-
-public func <(a: NSDate, b: NSDate) -> Bool {
-    return a.compare(b) == NSComparisonResult.OrderedAscending
-}
-
-public func ==(a: NSDate, b: NSDate) -> Bool {
-    return a.compare(b) == NSComparisonResult.OrderedSame
 }
 
 public extension Array where Element: HKSample {

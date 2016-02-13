@@ -28,12 +28,13 @@ enum MCRouter : URLRequestConvertible {
     // Timestamps API
     case UploadHKTSAcquired([String: AnyObject])
 
-    // User management API
-    case UserToken([String: AnyObject])
-
-    // Stormpath wrapper API
-    case GetUserAccountData([String: AnyObject])
+    // User and profile management API
+    case GetUserAccountData
     case SetUserAccountData([String: AnyObject])
+
+    case GetConsent
+    case SetConsent([String: AnyObject])
+
     case TokenExpiry([String: AnyObject])
 
     var method: Alamofire.Method {
@@ -50,13 +51,16 @@ enum MCRouter : URLRequestConvertible {
         case .UploadHKTSAcquired:
             return .POST
 
-        case .UserToken:
-            return .POST
-
         case .GetUserAccountData:
             return .GET
 
         case .SetUserAccountData:
+            return .POST
+
+        case GetConsent:
+            return .GET
+
+        case SetConsent:
             return .POST
 
         case .TokenExpiry:
@@ -78,14 +82,14 @@ enum MCRouter : URLRequestConvertible {
         case .UploadHKTSAcquired:
             return "/timestamps/acquired"
 
-        case .UserToken:
-            return "/measures"
-
         case .GetUserAccountData, .SetUserAccountData:
-            return "/profile"
+            return "/user/profile"
+
+        case .GetConsent, .SetConsent:
+            return "/user/consent"
 
         case .TokenExpiry:
-            return "/expiry"
+            return "/user/expiry"
         }
     }
 
@@ -114,15 +118,16 @@ enum MCRouter : URLRequestConvertible {
         case .UploadHKTSAcquired(let parameters):
             return Alamofire.ParameterEncoding.JSON.encode(mutableURLRequest, parameters: parameters).0
 
-        case .UserToken(var parameters):
-            parameters["userid"] = UserManager.sharedManager.getUserIdHash() ?? ""
-            parameters["token"] = MCRouter.OAuthToken ?? ""
-            return Alamofire.ParameterEncoding.JSON.encode(mutableURLRequest, parameters: parameters).0
-
-        case .GetUserAccountData(let parameters):
-            return Alamofire.ParameterEncoding.JSON.encode(mutableURLRequest, parameters: parameters).0
+        case .GetUserAccountData:
+            return mutableURLRequest
 
         case .SetUserAccountData(let parameters):
+            return Alamofire.ParameterEncoding.JSON.encode(mutableURLRequest, parameters: parameters).0
+
+        case .GetConsent:
+            return mutableURLRequest
+
+        case .SetConsent(let parameters):
             return Alamofire.ParameterEncoding.JSON.encode(mutableURLRequest, parameters: parameters).0
 
         case .TokenExpiry(let parameters):

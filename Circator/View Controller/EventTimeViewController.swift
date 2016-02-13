@@ -14,7 +14,12 @@ import SwiftDate
 import Async
 import SwiftChart
 
-class MealTimeViewController : UIViewController {
+private let stWorkout = 0.0
+private let stSleep = 0.33
+private let stFast = 0.66
+private let stEat = 1.0
+
+class EventTimeViewController : UIViewController {
     lazy var healthFormatter : SampleFormatter = { return SampleFormatter() }()
 
     lazy var fastingDescLabel : UILabel = {
@@ -127,13 +132,17 @@ class MealTimeViewController : UIViewController {
             return d.toString(DateFormat.Custom("HH:mm"))!
         }
 
-        chart.yLabels = [0.0, 1.0]
+        chart.yLabels = [0.0, 0.33, 0.66, 1.0]
         chart.yLabelsOnRightSide = true
         chart.yLabelsFormatter = { (labelIndex: Int, labelValue: Float) -> String in
             switch labelIndex {
             case 0:
-                return "Fasting"
+                return "Exercise"
             case 1:
+                return "Sleep"
+            case 2:
+                return "Fasting"
+            case 3:
                 return "Eating"
             default:
                 return SampleFormatter.numberFormatter.stringFromNumber(labelValue)!
@@ -184,7 +193,15 @@ class MealTimeViewController : UIViewController {
     }
 
     func reloadData() {
-        HealthManager.sharedManager.fetchPreparationAndRecoveryWorkout(true, beginDate: 24.hours.ago) { (samples, error) -> Void in
+        // Fetch all sleep and workout data since yesterday.
+        let (epsilon, yesterday, now) = (1.seconds, 1.days.ago, NSDate())
+        let sleepTy = HKObjectType.categoryTypeForIdentifier(HKCategoryTypeIdentifierSleepAnalysis)!
+        let workoutTy = HKWorkoutType.workoutType()
+        let datePredicate = HKQuery.predicateForSamplesWithStartDate(yesterday, endDate: now, options: .None)
+        let typesAndPredicates = [sleepTy: datePredicate, workoutTy: datePredicate]
+
+        // Aggregate sleep, exercise and meal events.
+        HealthManager.sharedManager.fetchSamples(typesAndPredicates) { (samples, error) -> Void in
             Async.main {
                 guard error == nil else {
                     log.error("Failed to fetch meal times: \(error)")
@@ -194,7 +211,7 @@ class MealTimeViewController : UIViewController {
                 self.mealChart.removeSeries()
 
                 if samples.isEmpty {
-                    let series = ChartSeries(data: [(x: 0.0, y: 0.0), (x: 24.0, y:0.0)])
+                    let series = ChartSeries(data: [(x: 0.0, y: stFast), (x: 24.0, y: stFast)])
                     series.area = true
                     series.color = .whiteColor()
                     self.mealChart.addSeries(series)
@@ -203,37 +220,96 @@ class MealTimeViewController : UIViewController {
                     self.eatingLabel.text  = "N/A"
                     self.lastAteLabel.text = "N/A"
                 } else {
-                    let epsilon = 1.seconds
-                    let yesterday = 24.hours.ago
 
-                    let svals : [(x: Double, y: Double)] =
-                        samples.reduce([], combine: { (acc, s) in
-                            let st = s.startDate
-                            let en = s.endDate
-                            let points = [(st-epsilon, 0.0), (st, 1.0), (en, 1.0), (en+epsilon, 0.0)]
-                            return acc + (points.map { (a,b) in return (x: a.timeIntervalSinceDate(yesterday) / 3600.0, y: b) })
-                        })
-                    let vals = [(x: 0.0, y: 0.0)] + svals + [(x: 24.0, y: 0.0)]
+                    var lastAte : NSDate? = nil
+                    let events = samples.flatMap { (ty,vals) -> [(NSDate, Double)]? in
+                        switch ty {
+                        case is HKWorkoutType:
+                            return vals.flatMap { s -> [(NSDate, Double)] in
+                                let st = s.startDate
+                                let en = s.endDate
+                                guard let v = s as? HKWorkout else {
+                                    return []
+                                }
+                                switch v.workoutActivityType {
+                                case HKWorkoutActivityType.PreparationAndRecovery:
+                                    lastAte = lastAte == nil ? en : (lastAte! > en ? lastAte! : en)
+                                    return [(st, stEat), (en, stEat), (en + epsilon, stFast)]
+                                default:
+                                    return [(st, stWorkout), (en, stWorkout), (en + epsilon, stFast)]
+                                }
+                            }
+
+                        case is HKCategoryType:
+                            guard ty.identifier == HKCategoryTypeIdentifierSleepAnalysis else {
+                                return nil
+                            }
+                            return vals.flatMap { s -> [(NSDate, Double)] in
+                                let st = s.startDate
+                                let en = s.endDate
+                                return [(st, stSleep), (en, stSleep), (en + epsilon, stFast)]
+                            }
+
+                        default:
+                            log.error("Unexpected type \(ty.identifier) in event plot")
+                            return nil
+                        }
+                    }
+
+                    var sortedEvents = events.flatten().sort { (a,b) in return a.0 < b.0 }
+                    let firstev = sortedEvents.first!
+                    let lastev = sortedEvents.last ?? firstev
+
+                    // Add a leading sleep or fast segment
+                    let zst = (firstev.1 == stEat || firstev.1 == stWorkout) ?
+                                [(yesterday, stFast), (firstev.0 - epsilon, stFast)] : [(yesterday, firstev.1)]
+
+                    // Add a trailing segment, which is guaranteed to be a fasting since we always add a fasting suffix.
+                    let lst = [(now, lastev.1)]
+
+                    let z = (zst, firstev)
+                    sortedEvents = sortedEvents.reduce(z, combine: { (acc, e) in
+                        //let eventBlip = e.0.timeIntervalSinceDate(acc.1.0) <= Double(2*epsilon.second)
+                        if e.1 == stFast || acc.1.1 == e.1 /*|| eventBlip*/ {
+                            return (acc.0 + [e], e)
+                        } else {
+                            return (acc.0 + [(e.0 - epsilon, stFast), e], e)
+                        }
+                    }).0 + lst
+
+                    let vals = sortedEvents.map { e in (x: e.0.timeIntervalSinceDate(yesterday) / 3600.0, y: e.1) }
                     let series = ChartSeries(data: vals)
                     series.area = true
                     series.color = .whiteColor()
                     self.mealChart.addSeries(series)
 
-                    var fdacc : [Double] = []
-                    let acc = samples.reduce((0.0, 0.0), combine: { (acc, s) in
-                        let st = s.startDate
-                        let en = s.endDate
-                        let fdelta = st.timeIntervalSinceReferenceDate - (acc.1 == 0.0 ? 24.hours.ago.timeIntervalSinceReferenceDate : acc.1)
-                        let edelta = en.timeIntervalSinceDate(st)
-                        fdacc.append(fdelta)
-                        return (acc.0 + edelta, en.timeIntervalSinceReferenceDate)
+                    let acc = vals.reduce((0.0, 0.0, vals.first!, false, 0.0), combine: { (acc, e) in
+                        var nacc = acc
+                        let transition = acc.2.1 != e.1
+                        let prevFast = acc.3
+                        if !transition {
+                            let duration = e.0 - acc.2.0
+                            let fast = e.1 == stSleep || e.1 == stFast
+                            var fastacc = 0.0
+
+                            if prevFast && fast {
+                                fastacc = acc.4 + duration
+                                nacc.0 = nacc.0 > fastacc ? nacc.0 : fastacc
+                            } else if fast {
+                                fastacc = duration
+                                nacc.0 = nacc.0 > fastacc ? nacc.0 : fastacc
+                            } else if e.1 == stEat {
+                                nacc.1 += duration
+                            }
+                            return (nacc.0, nacc.1, e, fast, fastacc)
+                        }
+                        return (nacc.0, nacc.1, e, false, 0.0)
                     })
 
                     let today = NSDate().startOf(.Day, inRegion: Region())
-                    let mdf = fdacc.maxElement { (a,b) in return a < b }
-                    self.fastingLabel.text = (today + Int(mdf!).seconds).toString(DateFormat.Custom("HH:mm"))!
-                    self.eatingLabel.text  = (today + Int(acc.0).seconds).toString(DateFormat.Custom("HH:mm"))!
-                    self.lastAteLabel.text = NSDate(timeIntervalSinceReferenceDate: acc.1).toString(DateFormat.Custom("HH:mm"))!
+                    self.fastingLabel.text = (today + Int(acc.0 * 3600.0).seconds).toString(DateFormat.Custom("HH:mm"))!
+                    self.eatingLabel.text  = (today + Int(acc.1 * 3600.0).seconds).toString(DateFormat.Custom("HH:mm"))!
+                    self.lastAteLabel.text = lastAte == nil ? "N/A" : lastAte!.toString(DateFormat.Custom("HH:mm"))!
                 }
                 self.mealChart.setNeedsDisplay()
                 BehaviorMonitor.sharedInstance.setValue("MealTimes", contentType: HKWorkoutType.workoutType().identifier)
