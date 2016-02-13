@@ -13,8 +13,8 @@ import Former
 import SwiftDate
 
 private let fieldCount           : Int   = UserProfile.updateableReqRange.count+3
-private let debugSectionSizes    : [Int] = [2,2,6,fieldCount,2,1]
-private let releaseSectionSizes  : [Int] = [2,2,6,fieldCount,2]
+private let debugSectionSizes    : [Int] = [2,2,4,fieldCount,2,1]
+private let releaseSectionSizes  : [Int] = [2,2,4,fieldCount,2]
 
 private let debugSectionTitles    : [String] = ["Login", "Settings", "Preview Rows", "Profile", "Bulk Upload", "Debug"]
 private let releaseSectionTitles  : [String] = ["Login", "Settings", "Preview Rows", "Profile", "Bulk Upload"]

@@ -15,62 +15,56 @@ public class PreviewManager: NSObject {
     public static let previewChoices: [[HKSampleType]] = [
         [
             HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierBodyMass)!,
-            HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierBodyMassIndex)!
+            HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierBodyMassIndex)!,
+            HKObjectType.categoryTypeForIdentifier(HKCategoryTypeIdentifierSleepAnalysis)!,
+            HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierDietarySugar)!,
+            HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierUVExposure)!
         ],
         [
             HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierDietaryProtein)!,
             HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierDietaryFatTotal)!,
             HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierDietaryCarbohydrates)!,
+            HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierDietaryCholesterol)!,
             HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierDietaryEnergyConsumed)!
         ],
         [
             HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierDietaryWater)!,
-            HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierDietaryCaffeine)!
+            HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierDietaryCaffeine)!,
+            HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierHeartRate)!,
+            HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierDietarySodium)!,
+            HKObjectType.correlationTypeForIdentifier(HKCorrelationTypeIdentifierBloodPressure)!
         ],
         [
             HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierActiveEnergyBurned)!,
-            HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierStepCount)!
-        ],
-        [
-            HKObjectType.categoryTypeForIdentifier(HKCategoryTypeIdentifierSleepAnalysis)!,
-            HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierUVExposure)!
-        ],
-        [
-            HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierDietarySugar)!,
-            HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierDietaryCholesterol)!,
-            HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierDietarySodium)!,
+            HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierStepCount)!,
             HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierDietaryFatPolyunsaturated)!,
             HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierDietaryFatSaturated)!,
             HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierDietaryFatMonounsaturated)!
-        ],
-        [
-            HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierHeartRate)!,
-            HKObjectType.correlationTypeForIdentifier(HKCorrelationTypeIdentifierBloodPressure)!,
         ]
     ]
 
     public static let rowIcons: [HKSampleType: UIImage] = { _ in
         let previewIcons : [HKSampleType: String] = [
             HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierBodyMass)!                  : "icon_scale",
-            HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierBodyMassIndex)!             : "icon_scale",         //"scale_white_for_BMI",
-            HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierDietaryProtein)!            : "icon_egg_shell",     //"icon_steak_for_protein",
-            HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierDietaryFatTotal)!           : "icon_egg_shell",     //"icon_for_fat_using_mayannoise",
-            HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierDietaryCarbohydrates)!      : "icon_egg_shell",     //"icon_jelly_donut_for_carbs",
-            HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierDietaryEnergyConsumed)!     : "icon_egg_shell",     //"icon_eating_at_table",
-            HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierDietaryWater)!              : "icon_water_droplet", //"icon_hydrate_person_for_water",
-            HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierDietaryCaffeine)!           : "icon_water_droplet", //"icon_coffee_for_caffeine",
-            HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierActiveEnergyBurned)!        : "icon_run",
-            HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierStepCount)!                 : "icon_run",           // "icon_steps_white",
+            HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierBodyMassIndex)!             : "scale_white_for_BMI",
             HKObjectType.categoryTypeForIdentifier(HKCategoryTypeIdentifierSleepAnalysis)!             : "icon_sleep",
-            HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierUVExposure)!                : "icon_sun",
             HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierDietarySugar)!              : "icon_sugar_cubes_three",
-            HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierDietaryCholesterol)!        : "icon_meal",          // "icon_cholesterol",
-            HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierDietarySodium)!             : "icon_meal",          // "icon_salt_for_sodium_entry",
-            HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierDietaryFatPolyunsaturated)! : "icon_meal",          // "icon_corn_for_polyunsaturated_fat",
-            HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierDietaryFatSaturated)!       : "icon_meal",          // "icon_coconut_for_saturated_fat",
-            HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierDietaryFatMonounsaturated)! : "icon_meal",          // "icon_olive_oil_jug_for_monounsaturated_fat",
+            HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierUVExposure)!                : "icon_sun",
+            HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierDietaryProtein)!            : "icon_steak_for_protein",
+            HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierDietaryFatTotal)!           : "icon_for_fat_using_mayannoise",
+            HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierDietaryCarbohydrates)!      : "icon_jelly_donut_for_carbs",
+            HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierDietaryCholesterol)!        : "icon_egg_shell",
+            HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierDietaryEnergyConsumed)!     : "icon_eating_at_table",
+            HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierDietaryWater)!              : "icon_water_droplet",
+            HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierDietaryCaffeine)!           : "icon_coffee_for_caffeine",
             HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierHeartRate)!                 : "icon_heart_rate",
-            HKObjectType.correlationTypeForIdentifier(HKCorrelationTypeIdentifierBloodPressure)!       : "icon_blood_pressure"
+            HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierDietarySodium)!             : "icon_salt_for_sodium_entry",
+            HKObjectType.correlationTypeForIdentifier(HKCorrelationTypeIdentifierBloodPressure)!       : "icon_blood_pressure",
+            HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierActiveEnergyBurned)!        : "icon_run",
+            HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierStepCount)!                 : "icon_steps_white",
+            HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierDietaryFatPolyunsaturated)! : "icon_corn_for_polyunsaturated_fat",
+            HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierDietaryFatSaturated)!       : "icon_cocunut_for_saturated_fat",
+            HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierDietaryFatMonounsaturated)! : "icon_olive_oil_jug_for_monounsaturated_fat"
         ]
         return Dictionary(pairs: previewIcons.map { (k,v) in return (k, UIImage(named: v)!) })
     }()
@@ -85,10 +79,7 @@ public class PreviewManager: NSObject {
                 HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierBodyMass)!,
                 HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierDietaryProtein)!,
                 HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierDietaryWater)!,
-                HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierActiveEnergyBurned)!,
-                HKObjectType.categoryTypeForIdentifier(HKCategoryTypeIdentifierSleepAnalysis)!,
-                HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierDietarySugar)!,
-                HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierHeartRate)!
+                HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierActiveEnergyBurned)!
             ]
             let rawTypes = defaultTypes.map { (sampleType) -> NSData in
                 return NSKeyedArchiver.archivedDataWithRootObject(sampleType)

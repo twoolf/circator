@@ -910,11 +910,11 @@ public extension HKSampleType {
         case HKQuantityTypeIdentifierDietaryFatTotal:
             return NSLocalizedString("Fat", comment: "HealthKit data type")
         case HKQuantityTypeIdentifierDietaryFatSaturated:
-            return NSLocalizedString("Monounsaturated Fat", comment: "HealthKit data type")
-        case HKQuantityTypeIdentifierDietaryFatMonounsaturated:
-            return NSLocalizedString("Polyunsaturated Fat", comment: "HealthKit data type")
-        case HKQuantityTypeIdentifierDietaryFatPolyunsaturated:
             return NSLocalizedString("Saturated Fat", comment: "HealthKit data type")
+        case HKQuantityTypeIdentifierDietaryFatMonounsaturated:
+            return NSLocalizedString("Monounsaturated Fat", comment: "HealthKit data type")
+        case HKQuantityTypeIdentifierDietaryFatPolyunsaturated:
+            return NSLocalizedString("Polyunsaturated Fat", comment: "HealthKit data type")
         case HKQuantityTypeIdentifierDietaryProtein:
             return NSLocalizedString("Protein", comment: "HealthKit data type")
         case HKQuantityTypeIdentifierDietarySugar:
