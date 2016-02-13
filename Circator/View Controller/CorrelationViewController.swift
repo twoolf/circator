@@ -26,7 +26,8 @@ class CorrelationViewController: UIViewController, ChartViewDelegate {
         label.textColor = Theme.universityDarkTheme.titleTextColor
         label.textAlignment = .Center
         label.text = NSLocalizedString("Time Correlations: Min to Max (x-axis) vs Value at time (y-axis)", comment: "Plot view section title label")
-//        label.text = "aaa vs bbb"
+        label.lineBreakMode = .ByWordWrapping
+        label.numberOfLines = 0
         return label
     }()
     
