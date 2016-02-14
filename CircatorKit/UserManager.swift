@@ -204,11 +204,31 @@ public class UserManager {
 
                 log.verbose("Access token: \(Stormpath.accessToken)")
                 MCRouter.OAuthToken = Stormpath.accessToken
-                self.pullProfile { error, _ in
-                    if !error { self.pullConsent(completion) }
-                    else { completion(error, nil) }
-                }
+                completion(false, nil)
             })
+        }
+    }
+
+    public func loginWithPush(profile: [String: AnyObject], completion: SvcStringCompletion) {
+        loginWithCompletion { (error, why) in
+            guard !error else {
+                completion(true, why)
+                return
+            }
+            self.pushProfile(profile, completion: completion)
+        }
+    }
+
+    public func loginWithPull(completion: SvcStringCompletion) {
+        loginWithCompletion { (error, why) in
+            guard !error else {
+                completion(true, why)
+                return
+            }
+            self.pullProfile { error, _ in
+                if !error { self.pullConsent(completion) }
+                else { completion(error, nil) }
+            }
         }
     }
 
@@ -218,7 +238,7 @@ public class UserManager {
                 self.resetAccount()
                 self.createAccount(user, userPass: userPass)
             }
-            self.loginWithCompletion(completion)
+            self.loginWithPull(completion)
         }
     }
 
@@ -238,7 +258,8 @@ public class UserManager {
         logoutWithCompletion(nil)
     }
 
-    public func register(firstName: String, lastName: String, completion: ((NSDictionary?, Bool) -> Void)) {
+    public func register(firstName: String, lastName: String, completion: ((NSDictionary?, Bool) -> Void))
+    {
         withUserPass(getPassword()) { (user,pass) in
             let stormpathAccountDict : [String:String] = [
                 "email": user,
@@ -302,7 +323,7 @@ public class UserManager {
                 log.warning("Attempting login: \(self.hasAccount()) \(self.hasPassword())")
 
                 if self.hasAccount() && self.hasPassword() {
-                    self.loginWithCompletion { (error,_) in completion(error) }
+                    self.loginWithPull { (error,_) in completion(error) }
                 } else {
                     completion(true)
                 }
@@ -333,10 +354,27 @@ public class UserManager {
         }
     }
 
+    public func pushConsent(consentFilePath: String?, completion: SvcStringCompletion) {
+        if let path = consentFilePath {
+            if let data = NSData(contentsOfFile: path) {
+                let metadata = ["consent": data.base64EncodedStringWithOptions(NSDataBase64EncodingOptions())]
+                refreshProfileCache(metadata)
+                syncConsent(completion)
+            } else {
+                log.error("Failed to read consent file at: \(path)")
+                completion(true, nil)
+            }
+        } else {
+            log.error("Invalid consent file path: \(consentFilePath)")
+            completion(true, nil)
+        }
+
+    }
+
     public func pullConsent(completion: SvcStringCompletion) {
         Service.string(MCRouter.GetConsent, statusCode: 200..<300, tag: "GCONSENT") {
             _, response, result in
-            self.profileCache["consent"] = result.value
+            if result.isSuccess { self.profileCache["consent"] = result.value }
             completion(!result.isSuccess, "Retrieved consent")
         }
     }
@@ -359,17 +397,19 @@ public class UserManager {
 
     public func pullProfile(completion: SvcObjectCompletion) {
         Service.json(MCRouter.GetUserAccountData, statusCode: 200..<300, tag: "ACCDATA") {
-            _, response, result in
+            _, _, result in
+            if result.isSuccess {
                 // Refresh cache.
                 if let dict = result.value as? [String: AnyObject], id = dict["id"],
-                   var profile = dict["profile"] as? [String: AnyObject]
+                    var profile = dict["profile"] as? [String: AnyObject]
                 {
                     profile[UMUserHashKey] = id
                     self.refreshProfileCache(profile)
                 }
+            }
 
-                // Evaluate the completion.
-                completion(!result.isSuccess, result.value)
+            // Evaluate the completion.
+            completion(!result.isSuccess, result.value)
         }
     }
 
@@ -381,7 +421,7 @@ public class UserManager {
                 refreshProfileCache(metadata)
                 syncProfile { error, _ in
                     if !error { self.syncConsent(completion) }
-                    else { completion(error, nil) }
+                    else { completion(error, "Failed to sync profile") }
                 }
             } else {
                 log.error("Failed to read consent file at: \(path)")
@@ -396,7 +436,7 @@ public class UserManager {
     public func pullProfileWithConsent(completion: SvcStringCompletion) {
         pullProfile { (error, _) in
             if !error { self.pullConsent(completion) }
-            else { completion(error, nil) }
+            else { completion(error, "Failed to pull profile") }
         }
     }
 

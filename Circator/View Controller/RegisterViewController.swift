@@ -172,24 +172,23 @@ class RegisterViewController : FormViewController {
                 return
             }
 
-            // Log in and update profile metadata after successful registration.
-            UserManager.sharedManager.loginWithCompletion { (error, reason) in
+            let initialProfile = Dictionary(pairs:
+                self.profileValues.filter { (k,v) in UserProfile.updateableMapping[k] != nil }.map { (k,v) in
+                    (UserProfile.updateableMapping[k]!, v)
+                })
+
+            // Log in and update consent after successful registration.
+            UserManager.sharedManager.loginWithPush(initialProfile) { (error, reason) in
                 guard !error else {
                     UINotifications.loginFailed(self, pop: true, reason: reason)
                     BehaviorMonitor.sharedInstance.register(false)
                     return
                 }
 
-                let userDict = self.profileValues.filter { (k,v) in UserProfile.updateableMapping[k] != nil }.map { (k,v) in
-                    (UserProfile.updateableMapping[k]!, v)
-                }
-
-                UserManager.sharedManager.pushProfileWithConsent(consentPath, metadata: Dictionary(pairs: userDict)) { _ in
+                UserManager.sharedManager.pushConsent(consentPath) { _ in
                     ConsentManager.sharedManager.removeConsentFile(consentPath)
                     self.doWelcome()
-                    if let comp = self.registerCompletion {
-                        comp()
-                    }
+                    if let comp = self.registerCompletion { comp() }
                     BehaviorMonitor.sharedInstance.register(true)
                 }
             }

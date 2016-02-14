@@ -96,6 +96,16 @@ public class UINotifications {
         }
     }
 
+    public static func profileFetchFailed(vc: UIViewController, pop: Bool = false) {
+        withPop(vc, pop: pop) {
+            Async.main {
+                vc.view.dodo.style.bar.hideAfterDelaySeconds = 3
+                vc.view.dodo.style.bar.hideOnTap = true
+                vc.view.dodo.error("Could not fetch your profile")
+            }
+        }
+    }
+
     public static func profileUpdated(vc: UIViewController, pop: Bool = false) {
         withPop(vc, pop: pop) {
             Async.main {

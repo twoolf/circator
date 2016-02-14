@@ -483,12 +483,13 @@ class IntroViewController: UIViewController,
                     return
                 }
 
-                UserManager.sharedManager.pullProfileWithConsent { (error, _) in
+                UserManager.sharedManager.pullProfileWithConsent { (error, msg) in
                     if !error {
                         self.initializeBackgroundWork()
                         Async.main(after: 2) { UINotifications.doWelcome(self, pop: false, user: UserManager.sharedManager.getUserId() ?? "") }
                     } else {
-                        log.error("Failed to retrieve initial profile and consent")
+                        log.error("Failed to retrieve initial profile and consent: \(msg)")
+                        UINotifications.profileFetchFailed(self)
                     }
                 }
             }

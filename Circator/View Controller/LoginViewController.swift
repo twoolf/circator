@@ -127,7 +127,7 @@ class LoginViewController: UIViewController, UITableViewDelegate, UITableViewDat
                 UINotifications.invalidUserPass(self.navigationController!)
                 return
             }
-            UserManager.sharedManager.loginWithCompletion { (error, _) in
+            UserManager.sharedManager.loginWithPull { (error, _) in
                 guard !error else {
                     BehaviorMonitor.sharedInstance.login(false)
                     UINotifications.invalidUserPass(self.navigationController!)
