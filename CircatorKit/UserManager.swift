@@ -51,7 +51,12 @@ public class UserManager {
         }
         set(newUser) {
             do {
-                try Locksmith.updateData(["userId" : newUser ?? ""], forUserAccount: UMPrimaryUserKey)
+                if let _ = Locksmith.loadDataForUserAccount(UMPrimaryUserKey)
+                {
+                    try Locksmith.updateData(["userId" : newUser ?? ""], forUserAccount: UMPrimaryUserKey)
+                } else {
+                    try Locksmith.saveData(["userId" : newUser ?? ""], forUserAccount: UMPrimaryUserKey)
+                }
             } catch {
                 log.error("userId.set: \(error)")
             }

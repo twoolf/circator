@@ -56,8 +56,12 @@ public class ConsentManager: NSObject, ORKTaskViewControllerDelegate {
     
     private func setConsentFilePath(consentFilePath: String) {
         do {
-            try Locksmith.updateData(["consentfile": consentFilePath],
-                                     forUserAccount: unnamedAccount)
+            if let _ = Locksmith.loadDataForUserAccount(unnamedAccount)
+            {
+                try Locksmith.updateData(["consentfile": consentFilePath], forUserAccount: unnamedAccount)
+            } else {
+                try Locksmith.saveData(["consentfile": consentFilePath], forUserAccount: unnamedAccount)
+            }
         } catch {
             print("Error: Cannot save to keychain!")
         }
