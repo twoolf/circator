@@ -15,15 +15,20 @@ import HTPressableButton
 import ResearchKit
 import Pages
 import Charts
+import SwiftDate
 
 let IntroViewTableViewCellIdentifier = "IntroViewTableViewCellIdentifier"
 private let mcControlButtonHeight : CGFloat = 35.0
+
+private let hkAccessTimeout = 60.seconds
 
 class IntroViewController: UIViewController,
                            UITableViewDataSource, UIPickerViewDataSource,
                            UITableViewDelegate, UIPickerViewDelegate
 {
-    private var aggregateFetchTask : Async?
+    private var hkAccessTime : NSDate? = nil         // Time of initial access attempt.
+    private var hkAccessAsync : Async? = nil         // Background task to notify if HealthKit is slow to access.
+    private var aggregateFetchTask : Async? = nil    // Background task to fetch population aggregates.
 
     private var pagesController: PagesController!
 
@@ -387,12 +392,30 @@ class IntroViewController: UIViewController,
 
     // MARK: - Background Work
 
+    func hkAccessNotifyLoop() {
+        hkAccessAsync = Async.main(after: 10.0) {
+            UINotifications.retryingHealthkit(self)
+            if self.hkAccessAsync != nil {
+                if let accessTime = self.hkAccessTime {
+                    if NSDate() > (accessTime + hkAccessTimeout) {
+                        UINotifications.genericError(self, msg: "Timed out accessing HealthKit... please reboot.", nohide: true)
+                        return
+                    }
+                }
+                self.hkAccessNotifyLoop()
+            }
+        }
+    }
+
     func withHKCalAuth(completion: Void -> Void) {
+        hkAccessTime = NSDate()
+        hkAccessNotifyLoop()
         HealthManager.sharedManager.authorizeHealthKit { (success, error) -> Void in
             guard error == nil else {
                 UINotifications.noHealthKit(self)
                 return
             }
+            Async.main { if let a = self.hkAccessAsync { a.cancel(); self.hkAccessAsync = nil } }
             EventManager.sharedManager.checkCalendarAuthorizationStatus(completion)
         }
     }
@@ -479,6 +502,7 @@ class IntroViewController: UIViewController,
                 }
 
                 guard UserManager.sharedManager.hasAccount() else {
+                    UINotifications.loginRequest(self)
                     self.doToggleLogin { self.initializeBackgroundWork() }
                     return
                 }

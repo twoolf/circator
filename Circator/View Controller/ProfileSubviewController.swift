@@ -15,7 +15,7 @@ class ProfileSubviewController : FormViewController {
     var profileFields       : [String] = []
     var profilePlaceholders : [String] = []
 
-    var profileUpdater : ((String, String) -> Void)? = nil
+    var profileUpdater : ((String, String, UIViewController?) -> Void)? = nil
 
     internal var subviewDesc : String = "Subview"
     internal var bgColor : UIColor = Theme.universityDarkTheme.backgroundColor
@@ -58,7 +58,10 @@ class ProfileSubviewController : FormViewController {
                     let attrs = [NSForegroundColorAttributeName: plcColor]
                     $0.attributedPlaceholder = NSAttributedString(string:placeholder, attributes: attrs)
                 }.onTextChanged { [weak self] txt in
-                    if let f = self!.profileUpdater{ f(text, txt) }
+                    if let f = self?.profileUpdater {
+                        log.info("Updating profile: \(text) = \(txt)")
+                        f(text, txt, self?.navigationController)
+                    }
             }
         }
 

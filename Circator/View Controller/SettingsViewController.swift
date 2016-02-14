@@ -449,8 +449,17 @@ class SettingsViewController: UITableViewController, UITextFieldDelegate {
         subVC.plcColor = .grayColor()
         subVC.profileFields = fields
         subVC.profilePlaceholders = placeholders
-        subVC.profileUpdater = { (k,v) in UserManager.sharedManager.pushProfile([k:v], completion: {_ in return}) }
+        subVC.profileUpdater = { kvv in self.updateProfile(kvv) }
         navigationController?.pushViewController(subVC, animated: true)
+    }
+
+    func updateProfile(kvv: (String, String, UIViewController?)) {
+        if let mappedK = UserProfile.profileMapping[kvv.0] {
+            UserManager.sharedManager.pushProfile([mappedK:kvv.1], completion: {_ in return})
+        } else {
+            log.error("No mapping found for profile update: \(kvv.0) = \(kvv.1)")
+            if let vc = kvv.2 { UINotifications.genericError(vc, msg: "Invalid profile field") }
+        }
     }
 
     func sliderValueDidChange(sender:UISlider!) {
