@@ -8,6 +8,7 @@
 
 import ResearchKit
 import Locksmith
+import Async
 
 public typealias ConsentBlock = ((consented: Bool) -> Void)?
 
@@ -403,7 +404,7 @@ public class ConsentManager: NSObject, ORKTaskViewControllerDelegate {
             let taskViewController = ORKTaskViewController(task: consentTaskWithEligibilitySection(), taskRunUUID: nil)
             taskViewController.delegate = self
             taskViewController.view.tintColor = Theme.universityDarkTheme.backgroundColor
-            viewController.presentViewController(taskViewController, animated: true, completion: nil)
+            viewController.view.window?.rootViewController!.presentViewController(taskViewController, animated: true, completion: nil)
             return
         }
         self.consentHandler?(consented: true)
@@ -412,6 +413,7 @@ public class ConsentManager: NSObject, ORKTaskViewControllerDelegate {
     // MARK: - Task view controller delegate
     
     public func taskViewController(taskViewController: ORKTaskViewController, didFinishWithReason reason: ORKTaskViewControllerFinishReason, error: NSError?) {
+        log.info("CVC task \(reason)")
         switch reason {
         case .Completed:
             let document = consentDocument.copy() as! ORKConsentDocument
@@ -428,7 +430,7 @@ public class ConsentManager: NSObject, ORKTaskViewControllerDelegate {
         case .Discarded:
             break
         case .Failed:
-            print(error)
+            log.error("Consent view failed: \(error)")
         case .Saved:
             break
         }

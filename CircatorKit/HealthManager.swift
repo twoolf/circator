@@ -65,205 +65,6 @@ public class HealthManager: NSObject, WCSessionDelegate {
         NSDate()
     ]
 
-    // Note: keep these in alphabetical order.
-    public static let healthKitTypesToRead : Set<HKObjectType>? = [
-        HKObjectType.categoryTypeForIdentifier(HKCategoryTypeIdentifierSleepAnalysis)!,
-        HKObjectType.categoryTypeForIdentifier(HKCategoryTypeIdentifierAppleStandHour)!,
-        HKObjectType.characteristicTypeForIdentifier(HKCharacteristicTypeIdentifierBloodType)!,
-        HKObjectType.characteristicTypeForIdentifier(HKCharacteristicTypeIdentifierBiologicalSex)!,
-        HKObjectType.characteristicTypeForIdentifier(HKCharacteristicTypeIdentifierDateOfBirth)!,
-        HKObjectType.characteristicTypeForIdentifier(HKCharacteristicTypeIdentifierFitzpatrickSkinType)!,
-        HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierActiveEnergyBurned)!,
-        HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierBasalEnergyBurned)!,
-        HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierBloodGlucose)!,
-        HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierBloodPressureDiastolic)!,
-        HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierBloodPressureSystolic)!,
-        HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierBodyMass)!,
-        HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierBodyMassIndex)!,
-        HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierDietaryEnergyConsumed)!,
-        HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierDietarySugar)!,
-        HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierDietaryCopper)!,
-        HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierDietaryCalcium)!,
-        HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierDietaryCarbohydrates)!,
-        HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierDietaryCholesterol)!,
-        HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierDietaryFiber)!,
-        HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierDietaryIron)!,
-        HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierDietaryFatMonounsaturated)!,
-        HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierDietaryFatPolyunsaturated)!,
-        HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierDietaryFatSaturated)!,
-        HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierDietaryFatTotal)!,
-        HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierDietaryPotassium)!,
-        HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierDietaryProtein)!,
-        HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierDietarySodium)!,
-        HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierDietaryCaffeine)!,
-        HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierDietaryWater)!,
-        HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierDistanceWalkingRunning)!,
-        HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierFlightsClimbed)!,
-        HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierHeartRate)!,
-        HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierHeight)!,
-        HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierStepCount)!,
-        HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierUVExposure)!,
-        HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierBasalBodyTemperature)!,
-        HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierBloodAlcoholContent)!,
-        HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierBodyFatPercentage)!,
-        HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierBodyTemperature)!,
-        HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierDietaryBiotin)!,
-        HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierDietaryCalcium)!,
-        HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierDietaryChloride)!,
-        HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierDietaryChromium)!,
-        HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierDietaryCopper)!,
-        HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierDietaryFolate)!,
-        HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierDietaryIodine)!,
-        HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierDietaryIron)!,
-        HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierDietaryMagnesium)!,
-        HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierDietaryManganese)!,
-        HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierDietaryMolybdenum)!,
-        HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierDietaryNiacin)!,
-        HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierDietaryPantothenicAcid)!,
-        HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierDietaryPhosphorus)!,
-        HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierDietaryPotassium)!,
-        HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierDietaryRiboflavin)!,
-        HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierDietarySelenium)!,
-        HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierDietaryThiamin)!,
-        HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierDietaryVitaminA)!,
-        HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierDietaryVitaminB12)!,
-        HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierDietaryVitaminB6)!,
-        HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierDietaryVitaminC)!,
-        HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierDietaryVitaminD)!,
-        HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierDietaryVitaminE)!,
-        HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierDietaryVitaminK)!,
-        HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierDietaryZinc)!,
-        HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierElectrodermalActivity)!,
-        HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierForcedExpiratoryVolume1)!,
-        HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierForcedVitalCapacity)!,
-        HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierInhalerUsage)!,
-        HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierLeanBodyMass)!,
-        HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierNikeFuel)!,
-        HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierNumberOfTimesFallen)!,
-        HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierOxygenSaturation)!,
-        HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierPeakExpiratoryFlowRate)!,
-        HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierPeripheralPerfusionIndex)!,
-        HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierRespiratoryRate)!,
-        HKObjectType.workoutType()
-    ]
-
-    public static let healthKitTypesToWrite : Set<HKSampleType>? = [
-        HKQuantityType.workoutType()
-    ]
-
-    public static let healthKitTypesToObserve : [HKSampleType] = [
-        HKObjectType.categoryTypeForIdentifier(HKCategoryTypeIdentifierSleepAnalysis)!,
-        HKObjectType.categoryTypeForIdentifier(HKCategoryTypeIdentifierAppleStandHour)!,
-        HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierActiveEnergyBurned)!,
-        HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierBasalEnergyBurned)!,
-        HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierBloodGlucose)!,
-        HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierBloodPressureDiastolic)!,
-        HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierBloodPressureSystolic)!,
-        HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierBodyMass)!,
-        HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierBodyMassIndex)!,
-        HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierDietaryEnergyConsumed)!,
-        HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierDietarySugar)!,
-        HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierDietaryCopper)!,
-        HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierDietaryCalcium)!,
-        HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierDietaryCarbohydrates)!,
-        HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierDietaryCholesterol)!,
-        HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierDietaryFiber)!,
-        HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierDietaryIron)!,
-        HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierDietaryFatMonounsaturated)!,
-        HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierDietaryFatPolyunsaturated)!,
-        HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierDietaryFatSaturated)!,
-        HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierDietaryFatTotal)!,
-        HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierDietaryPotassium)!,
-        HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierDietaryProtein)!,
-        HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierDietarySodium)!,
-        HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierDietaryCaffeine)!,
-        HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierDietaryWater)!,
-        HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierDistanceWalkingRunning)!,
-        HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierFlightsClimbed)!,
-        HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierHeartRate)!,
-        HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierHeight)!,
-        HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierStepCount)!,
-        HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierUVExposure)!,
-        HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierBasalBodyTemperature)!,
-        HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierBloodAlcoholContent)!,
-        HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierBodyFatPercentage)!,
-        HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierBodyTemperature)!,
-        HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierDietaryBiotin)!,
-        HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierDietaryCalcium)!,
-        HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierDietaryChloride)!,
-        HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierDietaryChromium)!,
-        HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierDietaryCopper)!,
-        HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierDietaryFolate)!,
-        HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierDietaryIodine)!,
-        HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierDietaryIron)!,
-        HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierDietaryMagnesium)!,
-        HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierDietaryManganese)!,
-        HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierDietaryMolybdenum)!,
-        HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierDietaryNiacin)!,
-        HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierDietaryPantothenicAcid)!,
-        HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierDietaryPhosphorus)!,
-        HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierDietaryPotassium)!,
-        HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierDietaryRiboflavin)!,
-        HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierDietarySelenium)!,
-        HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierDietaryThiamin)!,
-        HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierDietaryVitaminA)!,
-        HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierDietaryVitaminB12)!,
-        HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierDietaryVitaminB6)!,
-        HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierDietaryVitaminC)!,
-        HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierDietaryVitaminD)!,
-        HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierDietaryVitaminE)!,
-        HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierDietaryVitaminK)!,
-        HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierDietaryZinc)!,
-        HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierElectrodermalActivity)!,
-        HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierForcedExpiratoryVolume1)!,
-        HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierForcedVitalCapacity)!,
-        HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierInhalerUsage)!,
-        HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierLeanBodyMass)!,
-        HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierNikeFuel)!,
-        HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierNumberOfTimesFallen)!,
-        HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierOxygenSaturation)!,
-        HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierPeakExpiratoryFlowRate)!,
-        HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierPeripheralPerfusionIndex)!,
-        HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierRespiratoryRate)!,
-        HKObjectType.workoutType()
-    ]
-
-    public static let healthKitShortNames : [String: String] = [
-        HKCorrelationTypeIdentifierBloodPressure          : "BP",
-        HKCategoryTypeIdentifierSleepAnalysis             : "Sleep",
-        HKQuantityTypeIdentifierActiveEnergyBurned        : "Cal burned",
-        HKQuantityTypeIdentifierBasalEnergyBurned         : "Cal burned(B)",
-        HKQuantityTypeIdentifierBloodGlucose              : "Glucose",
-        HKQuantityTypeIdentifierBloodPressureDiastolic    : "BP Diastolic",
-        HKQuantityTypeIdentifierBloodPressureSystolic     : "BP Systolic",
-        HKQuantityTypeIdentifierBodyMass                  : "Weight",
-        HKQuantityTypeIdentifierBodyMassIndex             : "BMI",
-        HKQuantityTypeIdentifierDietaryEnergyConsumed     : "Net Calories",
-        HKQuantityTypeIdentifierDietarySugar              : "Sugar",
-        HKQuantityTypeIdentifierDietaryCopper             : "Copper",
-        HKQuantityTypeIdentifierDietaryCalcium            : "Calcium",
-        HKQuantityTypeIdentifierDietaryCarbohydrates      : "Carbs",
-        HKQuantityTypeIdentifierDietaryCholesterol        : "Cholesterol",
-        HKQuantityTypeIdentifierDietaryFiber              : "Fiber",
-        HKQuantityTypeIdentifierDietaryIron               : "Iron",
-        HKQuantityTypeIdentifierDietaryFatMonounsaturated : "Fat(MS)",
-        HKQuantityTypeIdentifierDietaryFatPolyunsaturated : "Fat(PS)",
-        HKQuantityTypeIdentifierDietaryFatSaturated       : "Fat(S)",
-        HKQuantityTypeIdentifierDietaryFatTotal           : "Fat",
-        HKQuantityTypeIdentifierDietaryPotassium          : "Potassium",
-        HKQuantityTypeIdentifierDietaryProtein            : "Protein",
-        HKQuantityTypeIdentifierDietarySodium             : "Salt",
-        HKQuantityTypeIdentifierDietaryCaffeine           : "Caffeine",
-        HKQuantityTypeIdentifierDietaryWater              : "Water",
-        HKQuantityTypeIdentifierDistanceWalkingRunning    : "Distance",
-        HKQuantityTypeIdentifierFlightsClimbed            : "Climbed",
-        HKQuantityTypeIdentifierHeartRate                 : "Heart rate",
-        HKQuantityTypeIdentifierHeight                    : "Height",
-        HKQuantityTypeIdentifierStepCount                 : "Steps",
-        HKQuantityTypeIdentifierUVExposure                : "Light",
-        HKObjectType.workoutType().identifier             : "Workouts/Meals"
-   ]
-
     public var mostRecentSamples = [HKSampleType: [Result]]() {
         didSet {
             self.updateWatchContext()
@@ -280,7 +81,7 @@ public class HealthManager: NSObject, WCSessionDelegate {
             return
         }
 
-        healthKitStore.requestAuthorizationToShareTypes(HealthManager.healthKitTypesToWrite, readTypes: HealthManager.healthKitTypesToRead)
+        healthKitStore.requestAuthorizationToShareTypes(HMConstants.sharedInstance.healthKitTypesToWrite, readTypes: HMConstants.sharedInstance.healthKitTypesToRead)
             { (success, error) -> Void in
                 completion(success: success, error: error)
         }
@@ -562,7 +363,7 @@ public class HealthManager: NSObject, WCSessionDelegate {
                 return
             }
 
-            HealthManager.healthKitTypesToObserve.forEach { (type) in
+            HMConstants.sharedInstance.healthKitTypesToObserve.forEach { (type) in
                 self.startBackgroundObserverForType(type) { (added, _, _, error) -> Void in
                     guard error == nil else {
                         log.error("Failed to register observers: \(error)")
@@ -606,7 +407,8 @@ public class HealthManager: NSObject, WCSessionDelegate {
                         // We use acquisition times stored in the profile if available rather than the current time,
                         // to grab all data since the last remote upload to the server.
                         if let  lastAcqTS = UserManager.sharedManager.getAcquisitionTimes(),
-                            typeTS = lastAcqTS[type.identifier] as? NSTimeInterval
+                                acqK = UserManager.sharedManager.shortId(type.identifier),
+                                typeTS = lastAcqTS[acqK] as? NSTimeInterval
                         {
                             let importStart = NSDate(timeIntervalSinceReferenceDate: typeTS)
                             predicate = HKQuery.predicateForSamplesWithStartDate(importStart, endDate: NSDate(), options: .None)
@@ -679,6 +481,7 @@ public class HealthManager: NSObject, WCSessionDelegate {
 
     // MARK: - Anchor metadata accessors
 
+    // Setter and getter for the anchor object returned by HealthKit, as stored in user defaults.
     public func getAnchorForType(type: HKSampleType) -> HKQueryAnchor {
         if let anchorDict = Defaults[HMAnchorKey] {
             if let encodedAnchor = anchorDict[type.identifier] as? NSData {
@@ -698,17 +501,7 @@ public class HealthManager: NSObject, WCSessionDelegate {
         Defaults.synchronize()
     }
 
-    public func getAnchorAndTSForType(type: HKSampleType) -> (HKQueryAnchor, NSTimeInterval) {
-        if let anchorDict = Defaults[HMAnchorKey], tsDict = Defaults[HMAnchorTSKey] {
-            if let encodedAnchor = anchorDict[type.identifier] as? NSData,
-                   ts = tsDict[type.identifier] as? NSTimeInterval
-            {
-                return (NSKeyedUnarchiver.unarchiveObjectWithData(encodedAnchor) as! HKQueryAnchor, ts)
-            }
-        }
-        return (noAnchor, refDate.timeIntervalSinceReferenceDate)
-    }
-
+    // Setter and getter for anchor timestamps (i.e., the date associated with the anchor as the acquisition time).
     public func getAnchorTSForType(type: HKSampleType) -> NSTimeInterval {
         return Defaults[HMAnchorTSKey]?[type.identifier] as? NSTimeInterval ?? refDate.timeIntervalSinceReferenceDate
     }
@@ -722,21 +515,38 @@ public class HealthManager: NSObject, WCSessionDelegate {
         Defaults.synchronize()
     }
 
-    public func getAnchorTS() -> [String: AnyObject]? { return Defaults[HMAnchorTSKey] }
-
     // Pushes the anchor timestamps (i.e., last acquisition times) to the user's profile.
     public func syncAnchorTS(sync: Bool = false) {
         if let ts = Defaults[HMAnchorTSKey] {
-            UserManager.sharedManager.setAcquisitionTimes(ts, sync: sync)
+            let mappedTS = Dictionary(pairs: ts.flatMap { (kv) -> (String, AnyObject)? in
+                if let sk = UserManager.sharedManager.shortId(kv.0) { return (sk, kv.1) }
+                return nil
+            })
+            UserManager.sharedManager.setAcquisitionTimes(mappedTS, sync: sync)
         }
     }
 
     public func resetAnchors() {
-        HealthManager.healthKitTypesToObserve.forEach { type in
+        HMConstants.sharedInstance.healthKitTypesToObserve.forEach { type in
             self.setAnchorForType(noAnchor, forType: type)
             self.setAnchorTSForType(refDate.timeIntervalSinceReferenceDate, forType: type)
         }
     }
+
+    // Get both the anchor object and its timestamp.
+    public func getAnchorAndTSForType(type: HKSampleType) -> (HKQueryAnchor, NSTimeInterval) {
+        if let anchorDict = Defaults[HMAnchorKey], tsDict = Defaults[HMAnchorTSKey] {
+            if let encodedAnchor = anchorDict[type.identifier] as? NSData,
+                ts = tsDict[type.identifier] as? NSTimeInterval
+            {
+                return (NSKeyedUnarchiver.unarchiveObjectWithData(encodedAnchor) as! HKQueryAnchor, ts)
+            }
+        }
+        return (noAnchor, refDate.timeIntervalSinceReferenceDate)
+    }
+
+    // Return acquisition times for all measures.
+    public func getAnchorTS() -> [String: AnyObject]? { return Defaults[HMAnchorTSKey] }
 
 
     // MARK: - Writing into HealthKit
@@ -831,9 +641,7 @@ public class HealthManager: NSObject, WCSessionDelegate {
                     let dmin = NSDate(timeIntervalSinceReferenceDate: min)
                     if dwstart > dmin {
                         completion(false, (false, dwstart))
-                        Async.background(after: 0.5) {
-                            self.uploadInitialAnchorForType(type, completion: completion)
-                        }
+                        Async.background(after: 0.5) { self.uploadInitialAnchorForType(type, completion: completion) }
                     } else {
                         completion(false, (true, dmin))
                     }

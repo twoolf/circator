@@ -28,7 +28,7 @@ class DebugViewController : FormViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
 
-        var labelRows = HealthManager.healthKitTypesToObserve.map { type -> RowFormer in
+        var labelRows = HMConstants.sharedInstance.healthKitTypesToObserve.map { type -> RowFormer in
             let tname = type.displayText ?? type.identifier
             return LabelRowFormer<FormLabelCell>() {
                     $0.textLabel?.textColor = .grayColor()

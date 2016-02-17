@@ -12,7 +12,7 @@ import Async
 import Former
 import SwiftDate
 
-private let fieldCount           : Int   = UserProfile.updateableReqRange.count+3
+private let fieldCount           : Int   = UserProfile.sharedInstance.updateableReqRange.count+3
 private let debugSectionSizes    : [Int] = [2,2,4,fieldCount,2,1]
 private let releaseSectionSizes  : [Int] = [2,2,4,fieldCount,2]
 
@@ -52,10 +52,10 @@ class SettingsViewController: UITableViewController, UITextFieldDelegate {
     }
 
     func initProfile() {
-        profile = UserProfile.updateableReqRange.enumerate().map { (i, j) in
-            let k = UserProfile.profileFields[j]
-            let v = UserProfile.updateableMapping[k]!
-            let p = UserProfile.profilePlaceholders[j]
+        profile = UserProfile.sharedInstance.updateableReqRange.enumerate().map { (i, j) in
+            let k = UserProfile.sharedInstance.profileFields[j]
+            let v = UserProfile.sharedInstance.updateableMapping[k]!
+            let p = UserProfile.sharedInstance.profilePlaceholders[j]
             return (k, v, p, 4+i)
         }
         let n = profile.count
@@ -236,7 +236,7 @@ class SettingsViewController: UITableViewController, UITextFieldDelegate {
                     stackView.axis = .Horizontal
                     stackView.distribution = UIStackViewDistribution.FillProportionally
                     stackView.alignment = UIStackViewAlignment.Fill
-                    stackView.spacing = 10
+                    stackView.spacing = 15
                     return stackView
                 }()
             }
@@ -253,18 +253,16 @@ class SettingsViewController: UITableViewController, UITextFieldDelegate {
                 cell.contentView.addSubview(measureCells![indexPath.row]!)
                 let constraints: [NSLayoutConstraint] = [
                     img.widthAnchor.constraintEqualToConstant(44),
-                    img.heightAnchor.constraintEqualToConstant(44),
-                    img.leadingAnchor.constraintEqualToAnchor(cell.contentView.leadingAnchor),
-                    lbl.leadingAnchor.constraintEqualToAnchor(img.trailingAnchor, constant: 10),
+                    img.heightAnchor.constraintEqualToAnchor(measureCells![indexPath.row]!.heightAnchor),
+                    lbl.trailingAnchor.constraintEqualToAnchor(measureCells![indexPath.row]!.trailingAnchor),
                     measureCells![indexPath.row]!.topAnchor.constraintEqualToAnchor(cell.contentView.topAnchor),
                     measureCells![indexPath.row]!.leadingAnchor.constraintEqualToAnchor(cell.contentView.leadingAnchor),
                     measureCells![indexPath.row]!.widthAnchor.constraintEqualToAnchor(cell.contentView.widthAnchor),
-                    measureCells![indexPath.row]!.heightAnchor.constraintEqualToAnchor(cell.contentView.heightAnchor),
+                    measureCells![indexPath.row]!.heightAnchor.constraintEqualToAnchor(cell.contentView.heightAnchor)
                 ]
                 cell.contentView.addConstraints(constraints)
             }
             cell.accessoryType = .DisclosureIndicator
-
 
             cell.clipsToBounds = true
             return cell
@@ -377,13 +375,13 @@ class SettingsViewController: UITableViewController, UITextFieldDelegate {
         }
         else if ( indexPath.section == 3 && profile[indexPath.row].0 == "Recommended" ) {
             profileSubview("Recommended",
-                fields: Array(UserProfile.profileFields[UserProfile.recommendedRange]),
-                placeholders: Array(UserProfile.profilePlaceholders[UserProfile.recommendedRange]))
+                fields: Array(UserProfile.sharedInstance.profileFields[UserProfile.sharedInstance.recommendedRange]),
+                placeholders: Array(UserProfile.sharedInstance.profilePlaceholders[UserProfile.sharedInstance.recommendedRange]))
         }
         else if ( indexPath.section == 3 && profile[indexPath.row].0 == "Optional" ) {
             profileSubview("Optional",
-                fields: Array(UserProfile.profileFields[UserProfile.optionalRange]),
-                placeholders: Array(UserProfile.profilePlaceholders[UserProfile.optionalRange]))
+                fields: Array(UserProfile.sharedInstance.profileFields[UserProfile.sharedInstance.optionalRange]),
+                placeholders: Array(UserProfile.sharedInstance.profilePlaceholders[UserProfile.sharedInstance.optionalRange]))
         }
         else if ( withDebugView && indexPath.section == 5 ) {
             let debugVC = DebugViewController()
@@ -454,7 +452,7 @@ class SettingsViewController: UITableViewController, UITextFieldDelegate {
     }
 
     func updateProfile(kvv: (String, String, UIViewController?)) {
-        if let mappedK = UserProfile.profileMapping[kvv.0] {
+        if let mappedK = UserProfile.sharedInstance.profileMapping[kvv.0] {
             UserManager.sharedManager.pushProfile([mappedK:kvv.1], completion: {_ in return})
         } else {
             log.error("No mapping found for profile update: \(kvv.0) = \(kvv.1)")

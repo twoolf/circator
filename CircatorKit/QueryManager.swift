@@ -34,18 +34,35 @@ public enum Query {
 private let QMQueriesKey  = DefaultsKey<[AnyObject]?>("QMQueriesKey")
 private let QMSelectedKey = DefaultsKey<Int>("QMSelectedKey")
 
+// TODO: Male/Female, age ranges (as profile queries).
+private let defaultQueries : Queries = [
+        ("Weight <50",     Query.ConjunctiveQuery([Predicate(Aggregate.AggAvg, "body_weight", Comparator.LT, "50")])),
+
+        ("Weight 50-100",  Query.ConjunctiveQuery([Predicate(Aggregate.AggAvg, "body_weight", Comparator.GTE, "50"),
+                                                   Predicate(Aggregate.AggAvg, "body_weight", Comparator.LT, "100")])),
+
+        ("Weight 100-150", Query.ConjunctiveQuery([Predicate(Aggregate.AggAvg, "body_weight", Comparator.GTE, "100"),
+                                                   Predicate(Aggregate.AggAvg, "body_weight", Comparator.LT, "150")])),
+
+        ("Weight 150-200", Query.ConjunctiveQuery([Predicate(Aggregate.AggAvg, "body_weight", Comparator.GTE, "150"),
+                                                   Predicate(Aggregate.AggAvg, "body_weight", Comparator.LT, "200")])),
+
+        ("Weight >200",    Query.ConjunctiveQuery([Predicate(Aggregate.AggAvg, "body_weight", Comparator.GTE, "200")]))
+    ]
+
 public class QueryManager {
     public static let sharedManager = QueryManager()
 
-    var queries: Queries = []
+    var queries: Queries = defaultQueries
     var querySelected : Int = -1
 
     init() { load() }
 
     func load() {
         let qs = Defaults[QMQueriesKey] as? [[String:AnyObject]] ?? []
-        queries = deserializeQueries(qs)
-        querySelected = Defaults[QMSelectedKey]
+        let dsQueries = deserializeQueries(qs)
+        queries = dsQueries.isEmpty ? defaultQueries : dsQueries
+        querySelected = dsQueries.isEmpty ? -1 : Defaults[QMSelectedKey]
     }
 
     func save() {

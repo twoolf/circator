@@ -18,8 +18,6 @@ class RegisterViewController : FormViewController {
     var recommendedSubview : ProfileSubviewController! = nil
     var optionalSubview : ProfileSubviewController! = nil
 
-    // TODO: gender, race, marital status, education level, annual income
-
     internal var consentOnLoad : Bool = false
     internal var registerCompletion : (Void -> Void)?
     internal var parentView: IntroViewController?
@@ -32,34 +30,17 @@ class RegisterViewController : FormViewController {
         navigationItem.title = "User Registration"
     }
 
-    func doConsent() {
-        stashedUserId = UserManager.sharedManager.getUserId()
-        UserManager.sharedManager.resetFull()
-        ConsentManager.sharedManager.checkConsentWithBaseViewController(self) {
-            [weak self] (consented) -> Void in
-            guard consented else {
-                UserManager.sharedManager.resetFull()
-                if let user = self!.stashedUserId {
-                    UserManager.sharedManager.setUserId(user)
-                }
-                self!.navigationController?.popViewControllerAnimated(true)
-                return
-            }
-        }
-    }
-
     override func viewDidLoad() {
         super.viewDidLoad()
-        if ( consentOnLoad ) { doConsent() }
 
         view.backgroundColor = Theme.universityDarkTheme.backgroundColor
 
         let profileDoneButton = UIBarButtonItem(barButtonSystemItem: .Done, target: self, action: "doSignup:")
         navigationItem.rightBarButtonItem = profileDoneButton
 
-        var profileFieldRows = (0..<UserProfile.profileFields.count).map { index -> RowFormer in
-            let text = UserProfile.profileFields[index]
-            let placeholder = UserProfile.profilePlaceholders[index]
+        var profileFieldRows = (0..<UserProfile.sharedInstance.profileFields.count).map { index -> RowFormer in
+            let text = UserProfile.sharedInstance.profileFields[index]
+            let placeholder = UserProfile.sharedInstance.profilePlaceholders[index]
 
             return TextFieldRowFormer<FormTextFieldCell>() {
                 $0.backgroundColor = Theme.universityDarkTheme.backgroundColor
@@ -91,7 +72,7 @@ class RegisterViewController : FormViewController {
             }
         }
 
-        let requiredFields = profileFieldRows[UserProfile.requiredRange]
+        let requiredFields = profileFieldRows[UserProfile.sharedInstance.requiredRange]
         let requiredHeader = LabelViewFormer<FormLabelHeaderView> {
             $0.contentView.backgroundColor = Theme.universityDarkTheme.backgroundColor
             $0.titleLabel.backgroundColor = Theme.universityDarkTheme.backgroundColor
@@ -102,11 +83,11 @@ class RegisterViewController : FormViewController {
         }
         let requiredSection = SectionFormer(rowFormers: Array(requiredFields)).set(headerViewFormer: requiredHeader)
 
-        let recFields = UserProfile.profileFields[UserProfile.recommendedRange]
-        let recPlaceholders = UserProfile.profilePlaceholders[UserProfile.recommendedRange]
+        let recFields = UserProfile.sharedInstance.profileFields[UserProfile.sharedInstance.recommendedRange]
+        let recPlaceholders = UserProfile.sharedInstance.profilePlaceholders[UserProfile.sharedInstance.recommendedRange]
 
-        let optFields = UserProfile.profileFields[UserProfile.optionalRange]
-        let optPlaceholders = UserProfile.profilePlaceholders[UserProfile.optionalRange]
+        let optFields = UserProfile.sharedInstance.profileFields[UserProfile.sharedInstance.optionalRange]
+        let optPlaceholders = UserProfile.sharedInstance.profilePlaceholders[UserProfile.sharedInstance.optionalRange]
 
         let submenuFields = [ submenu("Recommended", fields: Array(recFields), placeholders: Array(recPlaceholders)),
                               submenu("Optional", fields: Array(optFields), placeholders: Array(optPlaceholders))
@@ -123,17 +104,35 @@ class RegisterViewController : FormViewController {
         let submenuSection = SectionFormer(rowFormers: Array(submenuFields)).set(headerViewFormer: submenuHeader)
 
         former.append(sectionFormer: requiredSection, submenuSection)
+
+        if ( consentOnLoad ) { doConsent() }
     }
 
     func validateProfile() -> (String, String, String, String)? {
-        if let em = profileValues[UserProfile.profileFields[UserProfile.emailIdx]],
-           let pw = profileValues[UserProfile.profileFields[UserProfile.passwIdx]],
-           let fn = profileValues[UserProfile.profileFields[UserProfile.fnameIdx]],
-           let ln = profileValues[UserProfile.profileFields[UserProfile.lnameIdx]]
+        if let em = profileValues[UserProfile.sharedInstance.profileFields[UserProfile.sharedInstance.emailIdx]],
+           let pw = profileValues[UserProfile.sharedInstance.profileFields[UserProfile.sharedInstance.passwIdx]],
+           let fn = profileValues[UserProfile.sharedInstance.profileFields[UserProfile.sharedInstance.fnameIdx]],
+           let ln = profileValues[UserProfile.sharedInstance.profileFields[UserProfile.sharedInstance.lnameIdx]]
         {
             return (em, pw, fn, ln)
         } else {
             return nil
+        }
+    }
+
+    func doConsent() {
+        stashedUserId = UserManager.sharedManager.getUserId()
+        UserManager.sharedManager.resetFull()
+        ConsentManager.sharedManager.checkConsentWithBaseViewController(self.navigationController!) {
+            [weak self] (consented) -> Void in
+            guard consented else {
+                UserManager.sharedManager.resetFull()
+                if let user = self!.stashedUserId {
+                    UserManager.sharedManager.setUserId(user)
+                }
+                self!.navigationController?.popViewControllerAnimated(true)
+                return
+            }
         }
     }
 
@@ -173,8 +172,8 @@ class RegisterViewController : FormViewController {
             }
 
             let initialProfile = Dictionary(pairs:
-                self.profileValues.filter { (k,v) in UserProfile.updateableMapping[k] != nil }.map { (k,v) in
-                    (UserProfile.updateableMapping[k]!, v)
+                self.profileValues.filter { (k,v) in UserProfile.sharedInstance.updateableMapping[k] != nil }.map { (k,v) in
+                    (UserProfile.sharedInstance.updateableMapping[k]!, v)
                 })
 
             // Log in and update consent after successful registration.
@@ -214,7 +213,7 @@ class RegisterViewController : FormViewController {
     }
 
     func updateProfile(kvv: (String, String, UIViewController?)) {
-        if let mappedK = UserProfile.profileMapping[kvv.0] {
+        if let mappedK = UserProfile.sharedInstance.profileMapping[kvv.0] {
             UserManager.sharedManager.pushProfile([mappedK:kvv.1], completion: {_ in return})
         } else {
             log.error("No mapping found for profile update: \(kvv.0) = \(kvv.1)")

@@ -507,8 +507,9 @@ public class UserManager {
     }
 
     public func getHistoricalRangeForType(key: String) -> (NSTimeInterval, NSTimeInterval)? {
-        if let s = profileCache[HMHRangeStartKey]?[key] as? NSTimeInterval,
-               e = profileCache[HMHRangeEndKey]?[key] as? NSTimeInterval
+        if let k = shortId(key),
+               s = profileCache[HMHRangeStartKey]?[k] as? NSTimeInterval,
+               e = profileCache[HMHRangeEndKey]?[k] as? NSTimeInterval
         {
             return (s, e)
         }
@@ -520,11 +521,12 @@ public class UserManager {
         if profileCache[HMHRangeStartKey] == nil { profileCache[HMHRangeStartKey] = [:] }
         if profileCache[HMHRangeEndKey] == nil { profileCache[HMHRangeEndKey] = [:] }
 
-        if var sdict = profileCache[HMHRangeStartKey] as? [String: AnyObject],
-               edict = profileCache[HMHRangeEndKey] as? [String: AnyObject]
+        if let k = shortId(key),
+           var sdict = profileCache[HMHRangeStartKey] as? [String: AnyObject],
+           var edict = profileCache[HMHRangeEndKey] as? [String: AnyObject]
         {
-            sdict.updateValue(start, forKey: key)
-            edict.updateValue(end, forKey: key)
+            sdict.updateValue(start, forKey: k)
+            edict.updateValue(end, forKey: k)
             profileCache[HMHRangeStartKey] = sdict
             profileCache[HMHRangeEndKey] = edict
             deferProfile(sync)
@@ -535,14 +537,18 @@ public class UserManager {
 
 
     public func getHistoricalRangeStartForType(key: String) -> NSTimeInterval? {
-        return profileCache[HMHRangeStartKey]?[key] as? NSTimeInterval
+        if let k = shortId(key) {
+            return profileCache[HMHRangeStartKey]?[k] as? NSTimeInterval
+        }
+        return nil
     }
 
     public func decrHistoricalRangeStartForType(key: String, sync: Bool = false) {
-        if var sdict = profileCache[HMHRangeStartKey] as? [String: AnyObject],
-           let start = sdict[key] as? NSTimeInterval
+        if let k = shortId(key),
+           var sdict = profileCache[HMHRangeStartKey] as? [String: AnyObject],
+           let start = sdict[k] as? NSTimeInterval
         {
-            sdict.updateValue(decrAnchorDate(NSDate(timeIntervalSinceReferenceDate: start)).timeIntervalSinceReferenceDate, forKey: key)
+            sdict.updateValue(decrAnchorDate(NSDate(timeIntervalSinceReferenceDate: start)).timeIntervalSinceReferenceDate, forKey: k)
             profileCache[HMHRangeStartKey] = sdict
             deferProfile(sync)
         } else {
@@ -551,13 +557,18 @@ public class UserManager {
     }
 
     public func getHistoricalRangeMinForType(key: String) -> NSTimeInterval? {
-        return profileCache[HMHRangeMinKey]?[key] as? NSTimeInterval
+        if let k = shortId(key) {
+            return profileCache[HMHRangeMinKey]?[k] as? NSTimeInterval
+        }
+        return nil
     }
 
     public func setHistoricalRangeMinForType(key: String, min: NSDate, sync: Bool = false) {
         if profileCache[HMHRangeMinKey] == nil { profileCache[HMHRangeMinKey] = [:] }
-        if var mdict = profileCache[HMHRangeMinKey] as? [String: AnyObject] {
-            mdict.updateValue(min.timeIntervalSinceReferenceDate, forKey: key)
+        if let k = shortId(key),
+           var mdict = profileCache[HMHRangeMinKey] as? [String: AnyObject]
+        {
+            mdict.updateValue(min.timeIntervalSinceReferenceDate, forKey: k)
             profileCache[HMHRangeMinKey] = mdict
             deferProfile(sync)
         }
@@ -609,6 +620,8 @@ public class UserManager {
         else { log.error("No user/password available") }
     }
 
+    func shortId(key: String) -> String? { return HMConstants.sharedInstance.healthKitShortIds[key] }
+
     // Resets all user-specific data, but preserves the last user id.
     public func resetUser() {
         resetAccount()
@@ -622,122 +635,3 @@ public class UserManager {
         resetUserId()
     }
 }
-
-/*
- * User profiles
- */
-
-public struct UserProfile {
-    public static let emailIdx = 0
-    public static let passwIdx = 1
-    public static let fnameIdx = 2
-    public static let lnameIdx = 3
-    public static let updateableIdx = 4
-
-    public static let requiredRange = 0..<7
-    public static let updateableReqRange = 4..<7
-    public static let recommendedRange = 7..<12
-    public static let optionalRange = 12..<29
-    public static let updateableRange = 4..<29
-
-    public static let profileFields = [
-        "Email",
-        "Password",
-        "First name",
-        "Last name",
-        "Age",
-        "Weight",
-        "Height",
-        "Usual sleep",
-        "Estimated bmi",
-        "Resting heartrate",
-        "Systolic blood pressure",
-        "Step count",
-        "Active energy",
-        "Awake time w/light",
-        "Fasting",
-        "Eating",
-        "Calorie intake",
-        "Protein intake",
-        "Carbohydrate intake",
-        "Sugar intake",
-        "Fiber intake",
-        "Fat intake",
-        "Saturated fat",
-        "Monounsaturated fat",
-        "Polyunsaturated fat",
-        "Cholesterol",
-        "Salt",
-        "Caffeine",
-        "Water"]
-
-    public static let profilePlaceholders = [
-        "example@gmail.com",
-        "Required",
-        "Jane or John",
-        "Doe",
-        "24",
-        "160 lbs",
-        "180 cm",
-        "7 hours",
-        "25",
-        "60 bpm",
-        "120",
-        "6000 steps",
-        "2750 calories",
-        "12 hours",
-        "12 hours",
-        "12 hours",
-        "2757(m) or 1957(f)",
-        "88.3(m) or 71.3(f)",
-        "327(m) or 246.3(f)",
-        "143.3(m) or 112(f)",
-        "20.6(m) or 16.2(f)",
-        "103.2(m) or 73.1(f)",
-        "33.4(m) or 23.9(f)",
-        "36.9(m) or 25.7(f)",
-        "24.3(m) or 17.4(f)",
-        "352(m) or 235.7(f)",
-        "4560.7(m) or 3187.3(f)",
-        "166.4(m) or 142.7(f)",
-        "5(m) or 4.7(f)"
-    ]
-
-    public static let profileMapping = [
-        "Email"                    : "email",
-        "Password"                 : "password",
-        "First name"               : "firstname",
-        "Last name"                : "lastname",
-        "Age"                      : "age",
-        "Weight"                   : "weight",
-        "Height"                   : "height",
-        "Usual sleep"              : "sleep",
-        "Estimated bmi"            : "bmi",
-        "Resting heartrate"        : "heartrate",
-        "Systolic blood pressure"  : "systolic",
-        "Step count"               : "steps",
-        "Active energy"            : "energy",
-        "Awake time w/light"       : "awake",
-        "Fasting"                  : "fasting",
-        "Eating"                   : "eating",
-        "Calorie intake"           : "calories",
-        "Protein intake"           : "protein",
-        "Carbohydrate intake"      : "carbs",
-        "Sugar intake"             : "sugar",
-        "Fiber intake"             : "fiber",
-        "Fat intake"               : "fat",
-        "Saturated fat"            : "satfat",
-        "Monounsaturated fat"      : "monfat",
-        "Polyunsaturated fat"      : "polyfat",
-        "Cholesterol"              : "cholesterol",
-        "Salt"                     : "salt",
-        "Caffeine"                 : "caffeine",
-        "Water"                    : "water"
-    ]
-
-    public static let updateableMapping = {
-        return Dictionary(pairs: profileFields[4..<29].map { k in (k, profileMapping[k]!) })
-    }()
-
-}
-

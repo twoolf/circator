@@ -168,7 +168,7 @@ class RadarViewController : UIViewController, ChartViewDelegate {
         popDataSet.lineWidth = 2.0
 
         let xVals = PreviewManager.previewSampleTypes.map { type in
-                        return HealthManager.healthKitShortNames[type.identifier]! }
+                        return HMConstants.sharedInstance.healthKitShortNames[type.identifier]! }
 
         let data = RadarChartData(xVals: xVals, dataSets: [indDataSet, popDataSet])
         data.setDrawValues(false)

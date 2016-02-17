@@ -351,9 +351,17 @@ class IntroViewController: UIViewController,
     }()
 
     static let sampleFormatter = SampleFormatter()
-    static let previewTypeStrings = PreviewManager.previewSampleTypes.map { $0.displayText! }
+
+    static let previewTypes = Array(PreviewManager.previewChoices.flatten())
+    static let previewTypeStrings = PreviewManager.previewChoices.flatten().map { $0.displayText ?? HMConstants.sharedInstance.healthKitShortNames[$0.identifier]! }
+
     static let previewMealTypeStrings = [["Bkfast", "Lunch", "Dinner", "Snack"],
-            ["5:00 AM","5:30 AM","6:00 AM","6:30 AM","7:00 AM","7:30 AM","8:00 AM","8:30 AM","9:00 AM","9:30 AM","10:00 AM","10:30 AM","11:00 AM","11:30 AM","12:00 PM", "12:30 PM", "1:00 PM", "1:30 PM", "2:00 PM", "2:30 PM", "3:00 PM", "3:30 PM", "4:00 PM", "4:30 PM", "5:00 PM", "5:30 PM", "6:00 PM", "6:30 PM", "7:00 PM", "7:30 PM", "8:00 PM", "8:30 PM", "9:00 PM", "9:30 PM", "10:00 PM", "10:30 PM", "11:00 PM", "11:30 PM", "12:00 AM", "12:30 AM", "1:00 AM", "1:30 AM", "2:00 AM", "2:30 AM", "3:00 AM", "3:30 AM", "4:00 AM", "4:30 AM"],
+            ["5:00 AM","5:30 AM","6:00 AM","6:30 AM","7:00 AM","7:30 AM","8:00 AM","8:30 AM",
+             "9:00 AM","9:30 AM","10:00 AM","10:30 AM","11:00 AM","11:30 AM","12:00 PM", "12:30 PM",
+             "1:00 PM", "1:30 PM", "2:00 PM", "2:30 PM", "3:00 PM", "3:30 PM", "4:00 PM", "4:30 PM",
+             "5:00 PM", "5:30 PM", "6:00 PM", "6:30 PM", "7:00 PM", "7:30 PM", "8:00 PM", "8:30 PM",
+             "9:00 PM", "9:30 PM", "10:00 PM", "10:30 PM", "11:00 PM", "11:30 PM", "12:00 AM", "12:30 AM",
+             "1:00 AM", "1:30 AM", "2:00 AM", "2:30 AM", "3:00 AM", "3:30 AM", "4:00 AM", "4:30 AM"],
             ["15 Min", "30 Min", "45 Min", "60 Min", "90 Min", "120 Min", "150 Min", "180 Min", "210 Min", "240 Min"]]/*,
                                          ["1✮", "2✮", "3✮", "4✮", "5✮"]*/
 
@@ -673,10 +681,10 @@ class IntroViewController: UIViewController,
 
     func showAttributes(sender: UIButton) {
         if sender == correlateButton {
-            selectedMode = GraphMode.Correlate(PreviewManager.previewSampleTypes[0], PreviewManager.previewSampleTypes[1])
+            selectedMode = GraphMode.Correlate(IntroViewController.previewTypes[0], IntroViewController.previewTypes[1])
             pickerView.reloadAllComponents()
         } else if sender == plotButton {
-            selectedMode = GraphMode.Plot(PreviewManager.previewSampleTypes[0])
+            selectedMode = GraphMode.Plot(IntroViewController.previewTypes[0])
             pickerView.reloadAllComponents()
         } else if sender == mealButton {
             selectedMode = GraphMode.previewMealTypeStrings
@@ -690,7 +698,6 @@ class IntroViewController: UIViewController,
         dummyTextField.resignFirstResponder()
     }
 
-    //MODIFIED BY MARIANO
     func selectAttribute(sender: UIBarButtonItem) {
         dummyTextField.resignFirstResponder()
         switch selectedMode! {
@@ -702,44 +709,31 @@ class IntroViewController: UIViewController,
             plotView(type)
 
         case .previewMealTypeStrings:
-            let calendar = NSCalendar.currentCalendar()
-            let currentDate = NSDate()
-            let dateComponents = calendar.components([NSCalendarUnit.Day, NSCalendarUnit.Month, NSCalendarUnit.Year, NSCalendarUnit.WeekOfYear, NSCalendarUnit.Hour, NSCalendarUnit.Minute, NSCalendarUnit.Second, NSCalendarUnit.Nanosecond], fromDate: currentDate)
-            let delimiter = ":"
-            var updatedTime = IntroViewController.previewMealTypeStrings[1][pickerView.selectedRowInComponent(1)].componentsSeparatedByString(delimiter)
-            let delimiter2 = " "
-            let delimiter3 = " Min"
-            var updatedTimeMinute = updatedTime[1].componentsSeparatedByString(delimiter2)
-            var updatedDurationMinute = IntroViewController.previewMealTypeStrings[2][pickerView.selectedRowInComponent(2)].componentsSeparatedByString(delimiter3)
-            let amOrPM = updatedTimeMinute[1]
-            if(amOrPM == "PM"){
-                var tempTime:Int = Int(updatedTime[0])!
-                tempTime += 12
-                updatedTime[0] = String(tempTime)
+            let chosenTime = IntroViewController.previewMealTypeStrings[1][pickerView.selectedRowInComponent(1)]
+            let chosenDuration = IntroViewController.previewMealTypeStrings[2][pickerView.selectedRowInComponent(2)]
+            var updatedTime = chosenTime.componentsSeparatedByString(":")
+            var updatedTimeMinute = updatedTime[1].componentsSeparatedByString(" ")
+            var updatedDurationMinute = chosenDuration.componentsSeparatedByString(" Min")
+
+            if (updatedTimeMinute[1] == "PM") {
+                updatedTime[0] = String(Int(updatedTime[0])! + 12)
             }
-            let components = NSDateComponents()
-              components.day = dateComponents.day
-              components.month = dateComponents.month
-              components.year = dateComponents.year
-              components.hour = Int(updatedTime[0])!
-              components.minute = Int(updatedTimeMinute[0])!
-            let newDate = calendar.dateFromComponents(components)
-            let newDateComponents = NSDateComponents()
-              newDateComponents.minute = Int(updatedDurationMinute[0])!
-            let calculatedDate = NSCalendar.currentCalendar().dateByAddingComponents(newDateComponents, toDate: newDate!, options: NSCalendarOptions.init(rawValue: 0))
-            let distanceHold = 0.0
-            let kiloCaloriesHold = 0.0
-            let kmUnit = HKUnit(fromString: "km")
-            let metaMeals = [/*String(IntroViewController.previewMealTypeStrings[3][pickerView.selectedRowInComponent(3)]):"Meal Rating", */String(IntroViewController.previewMealTypeStrings[0][pickerView.selectedRowInComponent(0)]):"Meal Type"]
-            HealthManager.sharedManager.savePreparationAndRecoveryWorkout(newDate!, endDate: calculatedDate!, distance: distanceHold, distanceUnit:kmUnit, kiloCalories: kiloCaloriesHold, metadata: metaMeals, completion: {
-                    (success, error ) -> Void in
-                guard error == nil else {
-                    log.error(error)
-                    return
-                }
+
+            let mealStart = NSDate().startOf(.Day, inRegion: Region()) + Int(updatedTime[0])!.hours + Int(updatedTimeMinute[0])!.minutes
+            let mealEnd = mealStart + Int(updatedDurationMinute[0])!.minutes
+
+            let metaMeals = [/*String(IntroViewController.previewMealTypeStrings[3][pickerView.selectedRowInComponent(3)]):"Meal Rating", */
+                             String(IntroViewController.previewMealTypeStrings[0][pickerView.selectedRowInComponent(0)]):"Meal Type"]
+
+            HealthManager.sharedManager.savePreparationAndRecoveryWorkout(
+                mealStart, endDate: mealEnd, distance: 0.0, distanceUnit: HKUnit(fromString: "km"),
+                kiloCalories: 0.0, metadata: metaMeals)
+            {
+                (success, error ) -> Void in
+                guard error == nil else { log.error(error); return }
                 log.info("Meal saved as workout-type")
                 self.refreshMealController()
-            })
+            }
         }
     }
 
@@ -830,11 +824,7 @@ class IntroViewController: UIViewController,
 
     func pickerView(pickerView: UIPickerView, numberOfRowsInComponent component: Int) -> Int {
         if case .Correlate(_) = selectedMode! {
-            if component == 0 {
-                return IntroViewController.previewTypeStrings.count
-            } else {
-                return IntroViewController.previewTypeStrings.count - 1
-            }
+            return IntroViewController.previewTypeStrings.count
         } else if case .Plot(_) = selectedMode! {
             return IntroViewController.previewTypeStrings.count
         } else {
@@ -844,11 +834,7 @@ class IntroViewController: UIViewController,
 
     func pickerView(pickerView: UIPickerView, titleForRow row: Int, forComponent component: Int) -> String? {
         if case .Correlate(_) = selectedMode! {
-            if component == 0 {
-                return IntroViewController.previewTypeStrings[row]
-            } else  {
-                return IntroViewController.previewTypeStrings.filter { $0 != IntroViewController.previewTypeStrings[pickerView.selectedRowInComponent(0)] }[row]
-            }
+            return IntroViewController.previewTypeStrings[row]
         } else if case .Plot(_) = selectedMode! {
             return IntroViewController.previewTypeStrings[row]
         } else if case .previewMealTypeStrings = selectedMode! {
@@ -860,22 +846,13 @@ class IntroViewController: UIViewController,
 
     func pickerView(pickerView: UIPickerView, didSelectRow row: Int, inComponent component: Int) {
         if case .Correlate(_) = selectedMode! {
-            if component == 0 {
-                pickerView.reloadComponent(1)
-            } else {
-                selectedMode = GraphMode.Correlate(PreviewManager.previewSampleTypes.filter { $0.displayText == PreviewManager.previewSampleTypes[pickerView.selectedRowInComponent(0)].displayText }.first!, PreviewManager.previewSampleTypes.filter { $0.displayText == PreviewManager.previewSampleTypes[row].displayText }.first!)
-            }
+            let ltype = IntroViewController.previewTypes[pickerView.selectedRowInComponent(0)]
+            let rtype = IntroViewController.previewTypes[pickerView.selectedRowInComponent(1)]
+            selectedMode = GraphMode.Correlate(ltype, rtype)
         } else if case .Plot(_) = selectedMode! {
-            selectedMode = GraphMode.Plot(PreviewManager.previewSampleTypes.filter { $0.displayText == PreviewManager.previewSampleTypes[row].displayText }.first!)
-        } else if case .previewMealTypeStrings = selectedMode!{
-            /*if(IntroViewController.previewMealTypeStrings[component][row] == "AM"){
-                print("IN AM")
-
-                //pickerView.resignFirstResponder()
-
-            } else if(IntroViewController.previewMealTypeStrings[component][row] == "Min") {
-                print("IN MIN")
-            }*/
+            selectedMode = GraphMode.Plot(IntroViewController.previewTypes[row])
+        } else if case .previewMealTypeStrings = selectedMode! {
+            // Add configuration as necessary...
         }
     }
 

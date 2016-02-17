@@ -23,6 +23,7 @@
 		7863EA9C1C27302B0038DE7A /* ConsentManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7863EA9B1C27302B0038DE7A /* ConsentManager.swift */; };
 		7863EA9E1C27332C0038DE7A /* QueryWriterViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7863EA9D1C27332C0038DE7A /* QueryWriterViewController.swift */; };
 		786817611C6CF37D0018ABB5 /* ProfileSubviewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 786817601C6CF37D0018ABB5 /* ProfileSubviewController.swift */; };
+		786DF10D1C72AFE0007C2D4C /* Constants.swift in Sources */ = {isa = PBXBuildFile; fileRef = 786DF10C1C72AFE0007C2D4C /* Constants.swift */; };
 		7881A3E11BAF3B3E00ECB3C6 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7881A3E01BAF3B3E00ECB3C6 /* AppDelegate.swift */; };
 		7881A3E31BAF3B3E00ECB3C6 /* IntroViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7881A3E21BAF3B3E00ECB3C6 /* IntroViewController.swift */; };
 		7881A3F61BAF3B3E00ECB3C6 /* CircatorTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7881A3F51BAF3B3E00ECB3C6 /* CircatorTests.swift */; };
@@ -174,6 +175,7 @@
 		7863EA9B1C27302B0038DE7A /* ConsentManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ConsentManager.swift; sourceTree = "<group>"; };
 		7863EA9D1C27332C0038DE7A /* QueryWriterViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = QueryWriterViewController.swift; sourceTree = "<group>"; };
 		786817601C6CF37D0018ABB5 /* ProfileSubviewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ProfileSubviewController.swift; sourceTree = "<group>"; };
+		786DF10C1C72AFE0007C2D4C /* Constants.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Constants.swift; sourceTree = "<group>"; };
 		7881A3DD1BAF3B3E00ECB3C6 /* Circator.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Circator.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		7881A3E01BAF3B3E00ECB3C6 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		7881A3E21BAF3B3E00ECB3C6 /* IntroViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IntroViewController.swift; sourceTree = "<group>"; };
@@ -364,6 +366,7 @@
 				7848A7DF1C699007003241FF /* BehaviorMonitor.swift */,
 				F42F5B341BE1FD1E00195490 /* CircatorKit.h */,
 				7863EA9B1C27302B0038DE7A /* ConsentManager.swift */,
+				786DF10C1C72AFE0007C2D4C /* Constants.swift */,
 				785978401C1BD4F1008377F9 /* EventManager.swift */,
 				F42F5B421BE2048400195490 /* HealthManager.swift */,
 				78BEAC9D1C5E7EE800F0B541 /* PopulationHealthManager.swift */,
@@ -886,6 +889,7 @@
 				7848A7E01C699007003241FF /* BehaviorMonitor.swift in Sources */,
 				7843F9121C1FAD9900AB8978 /* ServiceAPI.swift in Sources */,
 				781CF2BF1C6A4781001DF3B2 /* SecureConstants.swift in Sources */,
+				786DF10D1C72AFE0007C2D4C /* Constants.swift in Sources */,
 				7863EA9C1C27302B0038DE7A /* ConsentManager.swift in Sources */,
 				78AC90CC1C1E859F008C931B /* UserAccount.swift in Sources */,
 			);
@@ -1029,12 +1033,14 @@
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
 				EMBEDDED_CONTENT_CONTAINS_SWIFT = "$(inherited)";
 				FRAMEWORK_SEARCH_PATHS = "$(inherited)";
+				GCC_OPTIMIZATION_LEVEL = s;
 				INFOPLIST_FILE = Circator/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 9.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = edu.jhu.cs.damsl.Circator.dev8;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE = "42a32386-aafe-47b8-8713-7034adb33f05";
+				SWIFT_OPTIMIZATION_LEVEL = "-O";
 				TARGETED_DEVICE_FAMILY = 1;
 			};
 			name = Debug;
@@ -1156,12 +1162,14 @@
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
 				EMBEDDED_CONTENT_CONTAINS_SWIFT = "$(inherited)";
 				FRAMEWORK_SEARCH_PATHS = "$(inherited)";
+				GCC_OPTIMIZATION_LEVEL = s;
 				INFOPLIST_FILE = Circator/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 9.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = edu.jhu.cs.damsl.Circator.dev8;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE = "42a32386-aafe-47b8-8713-7034adb33f05";
+				SWIFT_OPTIMIZATION_LEVEL = "-O";
 				TARGETED_DEVICE_FAMILY = 1;
 			};
 			name = Release;

@@ -9,12 +9,14 @@
 import Foundation
 import CircatorKit
 import Former
+import Async
 
 class ProfileSubviewController : FormViewController {
 
     var profileFields       : [String] = []
     var profilePlaceholders : [String] = []
 
+    var profileUpdateAsyncs : [Async?] = []
     var profileUpdater : ((String, String, UIViewController?) -> Void)? = nil
 
     internal var subviewDesc : String = "Subview"
@@ -35,9 +37,12 @@ class ProfileSubviewController : FormViewController {
         let profileDoneButton = UIBarButtonItem(barButtonSystemItem: .Done, target: self, action: "updateProfile")
         navigationItem.rightBarButtonItem = profileDoneButton
 
+        profileUpdateAsyncs = Array(count: profileFields.count, repeatedValue: nil)
+
         let profileFieldRows = (0..<profileFields.count).map { index -> RowFormer in
             let text = profileFields[index]
             let placeholder = profilePlaceholders[index]
+            let profile = UserManager.sharedManager.getProfileCache()
 
             return TextFieldRowFormer<FormTextFieldCell>() {
                 $0.backgroundColor = self.bgColor
@@ -57,10 +62,18 @@ class ProfileSubviewController : FormViewController {
                 }.configure {
                     let attrs = [NSForegroundColorAttributeName: plcColor]
                     $0.attributedPlaceholder = NSAttributedString(string:placeholder, attributes: attrs)
+
+                    if let k = UserProfile.sharedInstance.profileMapping[text], v = profile[k] as? String {
+                        $0.text = v
+                    }
                 }.onTextChanged { [weak self] txt in
                     if let f = self?.profileUpdater {
-                        log.info("Updating profile: \(text) = \(txt)")
-                        f(text, txt, self?.navigationController)
+                        if let s = self {
+                            if let a = s.profileUpdateAsyncs[index] { a.cancel() }
+                            s.profileUpdateAsyncs[index] = Async.background(after: 4.0) { f(text, txt, s.navigationController) }
+                        } else {
+                            f(text, txt, self?.navigationController)
+                        }
                     }
             }
         }
