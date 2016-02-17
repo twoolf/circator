@@ -785,7 +785,7 @@ class IntroViewController: UIViewController,
     func tableView(tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         let screenSize = UIScreen.mainScreen().bounds.size
         let screenHeight = screenSize.height
-        var tableInt = 4  /* change at future point to support larger screens */
+        var tableInt = 6  /* change at future point to support larger screens */
 /*        if (screenHeight < 569)
         {
            tableInt=5
