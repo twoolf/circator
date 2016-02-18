@@ -44,7 +44,7 @@ class RowSettingsViewController: UITableViewController {
     }
 
     override func tableView(tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return PreviewManager.previewChoices[section].count
+        return PreviewManager.previewChoices[selectedRow].count
     }
 
     override func tableView(tableView: UITableView, titleForHeaderInSection section: Int) -> String? {
