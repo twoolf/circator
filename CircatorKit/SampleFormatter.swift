@@ -135,7 +135,7 @@ public class SampleFormatter: NSObject {
             return Double(d.hour) + (Double(d.minute) / 60.0)
 
         case HKCorrelationTypeIdentifierBloodPressure:
-            // Return the systeolic for blood pressure, since this is the larger number.
+            // Return the systolic for blood pressure, since this is the larger number.
             let correlationSample = samples.first as! HKCorrelation
             let systolicSample = correlationSample.objectsForType(HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierBloodPressureSystolic)!).first as? HKQuantitySample
             guard systolicSample != nil else { return Double.quietNaN }
@@ -189,6 +189,10 @@ public class SampleFormatter: NSObject {
             }
 
             switch type.identifier {
+            case HKWorkoutTypeIdentifier:
+                let d = NSDate(timeIntervalSinceReferenceDate: quantity)
+                return Double(d.hour) + (Double(d.minute) / 60.0)
+
             case HKCategoryTypeIdentifierSleepAnalysis:
                 let d = NSDate(timeIntervalSinceReferenceDate: quantity)
                 return Double(d.hour) + (Double(d.minute) / 60.0)
@@ -213,6 +217,9 @@ public class SampleFormatter: NSObject {
             }
 
             switch type.identifier {
+            case HKWorkoutTypeIdentifier:
+                return "\(SampleFormatter.timeIntervalFormatter.stringFromTimeInterval(quantity)!)"
+
             case HKCategoryTypeIdentifierSleepAnalysis:
                 return "\(SampleFormatter.timeIntervalFormatter.stringFromTimeInterval(quantity)!)"
 
@@ -236,85 +243,141 @@ public class SampleFormatter: NSObject {
         return emptyString
     }
 
-    // TODO: handle other quantities.
     private func numberFromQuantity(quantity: HKQuantity, type: HKQuantityType) -> Double {
         switch type.identifier {
-        case HKQuantityTypeIdentifierBodyMass:
-            return quantity.doubleValueForUnit(HKUnit.gramUnitWithMetricPrefix(.Kilo))
-        case HKQuantityTypeIdentifierHeartRate:
-            return quantity.doubleValueForUnit(HKUnit.countUnit().unitDividedByUnit(HKUnit.minuteUnit()))
-        case HKQuantityTypeIdentifierDietaryEnergyConsumed:
-            return quantity.doubleValueForUnit(HKUnit.jouleUnit())
-        case HKQuantityTypeIdentifierDietaryCarbohydrates:
-            return quantity.doubleValueForUnit(HKUnit.gramUnit())
+        case HKQuantityTypeIdentifierActiveEnergyBurned:
+            return quantity.doubleValueForUnit(HKUnit.kilocalorieUnit())
+
         case HKQuantityTypeIdentifierBloodPressureDiastolic:
             return quantity.doubleValueForUnit(HKUnit.millimeterOfMercuryUnit())
+
         case HKQuantityTypeIdentifierBloodPressureSystolic:
             return quantity.doubleValueForUnit(HKUnit.millimeterOfMercuryUnit())
-        case HKQuantityTypeIdentifierDistanceWalkingRunning:
-            return quantity.doubleValueForUnit(HKUnit.mileUnit())
-        case HKQuantityTypeIdentifierStepCount:
+            
+        case HKQuantityTypeIdentifierBodyMass:
+            return quantity.doubleValueForUnit(HKUnit.gramUnitWithMetricPrefix(.Kilo))
+
+        case HKQuantityTypeIdentifierBodyMassIndex:
             return quantity.doubleValueForUnit(HKUnit.countUnit())
-        case HKQuantityTypeIdentifierUVExposure:
-            return quantity.doubleValueForUnit(HKUnit.countUnit())
-        case HKQuantityTypeIdentifierDietaryProtein:
+
+        case HKQuantityTypeIdentifierDietaryCaffeine:
+            return quantity.doubleValueForUnit(HKUnit.gramUnitWithMetricPrefix(.Milli))
+
+        case HKQuantityTypeIdentifierDietaryCarbohydrates:
             return quantity.doubleValueForUnit(HKUnit.gramUnit())
+
+        case HKQuantityTypeIdentifierDietaryCholesterol:
+            return quantity.doubleValueForUnit(HKUnit.gramUnitWithMetricPrefix(.Milli))
+
+        case HKQuantityTypeIdentifierDietaryEnergyConsumed:
+            return quantity.doubleValueForUnit(HKUnit.kilocalorieUnit())
+
+        case HKQuantityTypeIdentifierDietaryFatMonounsaturated:
+            return quantity.doubleValueForUnit(HKUnit.gramUnitWithMetricPrefix(.Milli))
+
+        case HKQuantityTypeIdentifierDietaryFatPolyunsaturated:
+            return quantity.doubleValueForUnit(HKUnit.gramUnitWithMetricPrefix(.Milli))
+
+        case HKQuantityTypeIdentifierDietaryFatSaturated:
+            return quantity.doubleValueForUnit(HKUnit.gramUnitWithMetricPrefix(.Milli))
+
         case HKQuantityTypeIdentifierDietaryFatTotal:
             return quantity.doubleValueForUnit(HKUnit.gramUnit())
-        case HKQuantityTypeIdentifierDietaryFatSaturated:
+
+        case HKQuantityTypeIdentifierDietaryProtein:
             return quantity.doubleValueForUnit(HKUnit.gramUnit())
-        case HKQuantityTypeIdentifierDietaryFatMonounsaturated:
-            return quantity.doubleValueForUnit(HKUnit.gramUnit())
-        case HKQuantityTypeIdentifierDietaryFatPolyunsaturated:
-            return quantity.doubleValueForUnit(HKUnit.gramUnit())
-        case HKQuantityTypeIdentifierDietarySugar:
-            return quantity.doubleValueForUnit(HKUnit.gramUnit())
+
         case HKQuantityTypeIdentifierDietarySodium:
-            return quantity.doubleValueForUnit(HKUnit.gramUnit())
-        case HKQuantityTypeIdentifierDietaryCaffeine:
-            return quantity.doubleValueForUnit(HKUnit.gramUnit())
+            return quantity.doubleValueForUnit(HKUnit.gramUnitWithMetricPrefix(.Milli))
+
+        case HKQuantityTypeIdentifierDietarySugar:
+            return quantity.doubleValueForUnit(HKUnit.gramUnitWithMetricPrefix(.Milli))
+
+        case HKQuantityTypeIdentifierDistanceWalkingRunning:
+            return quantity.doubleValueForUnit(HKUnit.mileUnit())
+
+        case HKQuantityTypeIdentifierDietaryWater:
+            return quantity.doubleValueForUnit(HKUnit.literUnitWithMetricPrefix(.Milli))
+
+        case HKQuantityTypeIdentifierHeartRate:
+            return quantity.doubleValueForUnit(HKUnit.countUnit().unitDividedByUnit(HKUnit.minuteUnit()))
+
+        case HKQuantityTypeIdentifierStepCount:
+            return quantity.doubleValueForUnit(HKUnit.countUnit())
+
+        case HKQuantityTypeIdentifierUVExposure:
+            return quantity.doubleValueForUnit(HKUnit.countUnit())
+            
         default:
             return Double.quietNaN
         }
     }
 
-    // TODO: handle other quantities.
     private func stringFromQuantity(quantity: HKQuantity, type: HKQuantityType) -> String {
         switch type.identifier {
-        case HKQuantityTypeIdentifierBodyMass:
-            return SampleFormatter.bodyMassFormatter.stringFromKilograms(quantity.doubleValueForUnit(HKUnit.gramUnitWithMetricPrefix(.Kilo)))
-        case HKQuantityTypeIdentifierHeartRate:
-            return "\(SampleFormatter.numberFormatter.stringFromNumber(quantity.doubleValueForUnit(HKUnit.countUnit().unitDividedByUnit(HKUnit.minuteUnit())))!) bpm"
-        case HKQuantityTypeIdentifierDietaryEnergyConsumed:
-            return SampleFormatter.calorieFormatter.stringFromJoules(quantity.doubleValueForUnit(HKUnit.jouleUnit()))
-        case HKQuantityTypeIdentifierDietaryCarbohydrates:
-            return SampleFormatter.foodMassFormatter.stringFromValue(quantity.doubleValueForUnit(HKUnit.gramUnit()), unit: .Gram)
+        case HKQuantityTypeIdentifierActiveEnergyBurned:
+            return SampleFormatter.calorieFormatter.stringFromValue(quantity.doubleValueForUnit(HKUnit.kilocalorieUnit()), unit: .Kilocalorie)
+
         case HKQuantityTypeIdentifierBloodPressureDiastolic:
             return SampleFormatter.integerFormatter.stringFromNumber(quantity.doubleValueForUnit(HKUnit.millimeterOfMercuryUnit()))!
+
         case HKQuantityTypeIdentifierBloodPressureSystolic:
             return SampleFormatter.integerFormatter.stringFromNumber(quantity.doubleValueForUnit(HKUnit.millimeterOfMercuryUnit()))!
-        case HKQuantityTypeIdentifierDistanceWalkingRunning:
-            return SampleFormatter.numberFormatter.stringFromNumber(quantity.doubleValueForUnit(HKUnit.mileUnit()))!
-        case HKQuantityTypeIdentifierStepCount:
+
+        case HKQuantityTypeIdentifierBodyMass:
+            return SampleFormatter.bodyMassFormatter.stringFromKilograms(quantity.doubleValueForUnit(HKUnit.gramUnitWithMetricPrefix(.Kilo)))
+
+        case HKQuantityTypeIdentifierBodyMassIndex:
             return SampleFormatter.numberFormatter.stringFromNumber(quantity.doubleValueForUnit(HKUnit.countUnit()))!
-        case HKQuantityTypeIdentifierUVExposure:
-            return SampleFormatter.numberFormatter.stringFromNumber(quantity.doubleValueForUnit(HKUnit.countUnit()))!
-        case HKQuantityTypeIdentifierDietaryProtein:
+
+        case HKQuantityTypeIdentifierDietaryCaffeine:
+            return SampleFormatter.foodMassFormatter.stringFromValue(quantity.doubleValueForUnit(HKUnit.gramUnitWithMetricPrefix(.Milli)), unit: .Gram)
+
+        case HKQuantityTypeIdentifierDietaryCarbohydrates:
             return SampleFormatter.foodMassFormatter.stringFromValue(quantity.doubleValueForUnit(HKUnit.gramUnit()), unit: .Gram)
+
+        case HKQuantityTypeIdentifierDietaryCholesterol:
+            return SampleFormatter.foodMassFormatter.stringFromValue(quantity.doubleValueForUnit(HKUnit.gramUnitWithMetricPrefix(.Milli)), unit: .Gram)
+
+        case HKQuantityTypeIdentifierDietaryEnergyConsumed:
+            return SampleFormatter.calorieFormatter.stringFromValue(quantity.doubleValueForUnit(HKUnit.kilocalorieUnit()), unit: .Kilocalorie)
+
+        case HKQuantityTypeIdentifierDietaryFatMonounsaturated:
+            return SampleFormatter.foodMassFormatter.stringFromValue(quantity.doubleValueForUnit(HKUnit.gramUnitWithMetricPrefix(.Milli)), unit: .Gram)
+
+        case HKQuantityTypeIdentifierDietaryFatPolyunsaturated:
+            return SampleFormatter.foodMassFormatter.stringFromValue(quantity.doubleValueForUnit(HKUnit.gramUnitWithMetricPrefix(.Milli)), unit: .Gram)
+            
+        case HKQuantityTypeIdentifierDietaryFatSaturated:
+            return SampleFormatter.foodMassFormatter.stringFromValue(quantity.doubleValueForUnit(HKUnit.gramUnitWithMetricPrefix(.Milli)), unit: .Gram)
+
         case HKQuantityTypeIdentifierDietaryFatTotal:
             return SampleFormatter.foodMassFormatter.stringFromValue(quantity.doubleValueForUnit(HKUnit.gramUnit()), unit: .Gram)
-        case HKQuantityTypeIdentifierDietaryFatSaturated:
+
+        case HKQuantityTypeIdentifierDietaryProtein:
             return SampleFormatter.foodMassFormatter.stringFromValue(quantity.doubleValueForUnit(HKUnit.gramUnit()), unit: .Gram)
-        case HKQuantityTypeIdentifierDietaryFatMonounsaturated:
-            return SampleFormatter.foodMassFormatter.stringFromValue(quantity.doubleValueForUnit(HKUnit.gramUnit()), unit: .Gram)
-        case HKQuantityTypeIdentifierDietaryFatPolyunsaturated:
-            return SampleFormatter.foodMassFormatter.stringFromValue(quantity.doubleValueForUnit(HKUnit.gramUnit()), unit: .Gram)
-        case HKQuantityTypeIdentifierDietarySugar:
-            return SampleFormatter.foodMassFormatter.stringFromValue(quantity.doubleValueForUnit(HKUnit.gramUnit()), unit: .Gram)
+
         case HKQuantityTypeIdentifierDietarySodium:
-            return SampleFormatter.foodMassFormatter.stringFromValue(quantity.doubleValueForUnit(HKUnit.gramUnit()), unit: .Gram)
-        case HKQuantityTypeIdentifierDietaryCaffeine:
-            return SampleFormatter.foodMassFormatter.stringFromValue(quantity.doubleValueForUnit(HKUnit.gramUnit()), unit: .Gram)
+            return SampleFormatter.foodMassFormatter.stringFromValue(quantity.doubleValueForUnit(HKUnit.gramUnitWithMetricPrefix(.Milli)), unit: .Gram)
+
+        case HKQuantityTypeIdentifierDietarySugar:
+            return SampleFormatter.foodMassFormatter.stringFromValue(quantity.doubleValueForUnit(HKUnit.gramUnitWithMetricPrefix(.Milli)), unit: .Gram)
+
+        case HKQuantityTypeIdentifierDistanceWalkingRunning:
+            return SampleFormatter.numberFormatter.stringFromNumber(quantity.doubleValueForUnit(HKUnit.mileUnit()))!
+
+        case HKQuantityTypeIdentifierDietaryWater:
+            return SampleFormatter.numberFormatter.stringFromNumber(quantity.doubleValueForUnit(HKUnit.literUnitWithMetricPrefix(.Milli)))!
+
+        case HKQuantityTypeIdentifierHeartRate:
+            return "\(SampleFormatter.numberFormatter.stringFromNumber(quantity.doubleValueForUnit(HKUnit.countUnit().unitDividedByUnit(HKUnit.minuteUnit())))!) bpm"
+
+        case HKQuantityTypeIdentifierStepCount:
+            return SampleFormatter.numberFormatter.stringFromNumber(quantity.doubleValueForUnit(HKUnit.countUnit()))!
+
+        case HKQuantityTypeIdentifierUVExposure:
+            return SampleFormatter.numberFormatter.stringFromNumber(quantity.doubleValueForUnit(HKUnit.countUnit()))!
+
         default:
             return emptyString
         }
@@ -333,56 +396,71 @@ public class SampleFormatter: NSObject {
 
     private func stringFromDerivedQuantity(quantity: Double, type: HKQuantityType) -> String {
         switch type.identifier {
+        case HKQuantityTypeIdentifierActiveEnergyBurned:
+            return SampleFormatter.calorieFormatter.stringFromValue(quantity, unit: .Kilocalorie)
+
+        case HKQuantityTypeIdentifierBloodPressureDiastolic:
+            return SampleFormatter.integerFormatter.stringFromNumber(quantity)!
+
+        case HKQuantityTypeIdentifierBloodPressureSystolic:
+            return SampleFormatter.integerFormatter.stringFromNumber(quantity)!
+
         case HKQuantityTypeIdentifierBodyMass:
             let hkquantity = HKQuantity(unit: HKUnit.poundUnit(), doubleValue: quantity)
             let kilos = hkquantity.doubleValueForUnit(HKUnit.gramUnitWithMetricPrefix(.Kilo))
             return SampleFormatter.bodyMassFormatter.stringFromKilograms(kilos)
 
-        case HKQuantityTypeIdentifierHeartRate:
-            return "\(SampleFormatter.numberFormatter.stringFromNumber(quantity)!) bpm"
+        case HKQuantityTypeIdentifierBodyMassIndex:
+            return SampleFormatter.numberFormatter.stringFromNumber(quantity)!
 
-        case HKQuantityTypeIdentifierDietaryEnergyConsumed:
-            return SampleFormatter.calorieFormatter.stringFromValue(quantity, unit: .Kilocalorie)
-
-        case HKQuantityTypeIdentifierActiveEnergyBurned:
-            return SampleFormatter.calorieFormatter.stringFromValue(quantity, unit: .Kilocalorie)
+        case HKQuantityTypeIdentifierDietaryCaffeine:
+            return "\(SampleFormatter.numberFormatter.stringFromNumber(quantity)!) mg"
 
         case HKQuantityTypeIdentifierDietaryCarbohydrates:
             return "\(SampleFormatter.numberFormatter.stringFromNumber(quantity)!) g"
 
+        case HKQuantityTypeIdentifierDietaryCholesterol:
+            return "\(SampleFormatter.numberFormatter.stringFromNumber(quantity)!) mg"
+
+        case HKQuantityTypeIdentifierDietaryEnergyConsumed:
+            return SampleFormatter.calorieFormatter.stringFromValue(quantity, unit: .Kilocalorie)
+
+        case HKQuantityTypeIdentifierDietaryFatMonounsaturated:
+            return "\(SampleFormatter.numberFormatter.stringFromNumber(quantity)!) mg"
+
+        case HKQuantityTypeIdentifierDietaryFatPolyunsaturated:
+            return "\(SampleFormatter.numberFormatter.stringFromNumber(quantity)!) mg"
+
+        case HKQuantityTypeIdentifierDietaryFatSaturated:
+            return "\(SampleFormatter.numberFormatter.stringFromNumber(quantity)!) mg"
+
+        case HKQuantityTypeIdentifierDietaryFatTotal:
+            return "\(SampleFormatter.numberFormatter.stringFromNumber(quantity)!) g"
+
+        case HKQuantityTypeIdentifierDietaryProtein:
+            return "\(SampleFormatter.numberFormatter.stringFromNumber(quantity)!) g"
+
+        case HKQuantityTypeIdentifierDietarySodium:
+            return "\(SampleFormatter.numberFormatter.stringFromNumber(quantity)!) mg"
+
+        case HKQuantityTypeIdentifierDietarySugar:
+            return "\(SampleFormatter.numberFormatter.stringFromNumber(quantity)!) mg"
+
         case HKQuantityTypeIdentifierDistanceWalkingRunning:
             return "\(SampleFormatter.numberFormatter.stringFromNumber(quantity)!) miles"
+
+        case HKQuantityTypeIdentifierDietaryWater:
+            return "\(SampleFormatter.numberFormatter.stringFromNumber(quantity)!) ml"
+
+        case HKQuantityTypeIdentifierHeartRate:
+            return "\(SampleFormatter.numberFormatter.stringFromNumber(quantity)!) bpm"
 
         case HKQuantityTypeIdentifierStepCount:
             return "\(SampleFormatter.numberFormatter.stringFromNumber(quantity)!) steps"
 
         case HKQuantityTypeIdentifierUVExposure:
             return "\(SampleFormatter.numberFormatter.stringFromNumber(quantity)!) exposure"
-
-        case HKQuantityTypeIdentifierDietaryProtein:
-            return "\(SampleFormatter.numberFormatter.stringFromNumber(quantity)!) g"
-
-        case HKQuantityTypeIdentifierDietaryFatTotal:
-            return "\(SampleFormatter.numberFormatter.stringFromNumber(quantity)!) g"
-
-        case HKQuantityTypeIdentifierDietaryFatSaturated:
-            return "\(SampleFormatter.numberFormatter.stringFromNumber(quantity)!) g"
-
-        case HKQuantityTypeIdentifierDietaryFatMonounsaturated:
-            return "\(SampleFormatter.numberFormatter.stringFromNumber(quantity)!) g"
-
-        case HKQuantityTypeIdentifierDietaryFatPolyunsaturated:
-            return "\(SampleFormatter.numberFormatter.stringFromNumber(quantity)!) g"
-
-        case HKQuantityTypeIdentifierDietarySugar:
-            return "\(SampleFormatter.numberFormatter.stringFromNumber(quantity)!) g"
-
-        case HKQuantityTypeIdentifierDietarySodium:
-            return "\(SampleFormatter.numberFormatter.stringFromNumber(quantity)!) g"
-
-        case HKQuantityTypeIdentifierDietaryCaffeine:
-            return "\(SampleFormatter.numberFormatter.stringFromNumber(quantity)!) g"
-
+            
         default:
             return SampleFormatter.numberFormatter.stringFromNumber(quantity) ?? "<nil>"
         }

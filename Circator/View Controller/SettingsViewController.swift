@@ -272,7 +272,34 @@ class SettingsViewController: UITableViewController, UITextFieldDelegate {
             formCells[indexPath.section] = [FormCell?](count: self.sectionSizes[indexPath.section], repeatedValue: nil)
         }
 
-        if formCells[indexPath.section]![indexPath.row] == nil
+        if indexPath.section == 3
+            && profile[indexPath.row].0 == "Sex"
+            && formCells[indexPath.section]![indexPath.row] == nil
+        {
+            let formCell = FormSegmentedCell()
+            let cellLabel = formCell.formTitleLabel()
+            let cellSegment = formCell.formSegmented()
+
+            cellLabel?.text = profile[indexPath.row].0
+            cellLabel?.textColor = UIColor.blackColor()
+            cellLabel?.backgroundColor = UIColor.whiteColor()
+
+            cellSegment.tintColor = Theme.universityDarkTheme.backgroundColor
+            cellSegment.addTarget(self, action: "sexValueChanged:", forControlEvents: .ValueChanged);
+            cellSegment.removeAllSegments()
+            cellSegment.insertSegmentWithTitle("Male",   atIndex: 0, animated: false)
+            cellSegment.insertSegmentWithTitle("Female", atIndex: 1, animated: false)
+
+            let cachedProfile : [String: AnyObject] = UserManager.sharedManager.getProfileCache()
+            if let s = cachedProfile[profile[indexPath.row].1] as? String {
+                cellSegment.selectedSegmentIndex = s == "Male" ? 0 : ( s == "Female" ? 1 : -1)
+            } else {
+                cellSegment.selectedSegmentIndex = -1
+            }
+
+            formCells[indexPath.section]!.insert(formCell, atIndex: indexPath.row)
+        }
+        else if formCells[indexPath.section]![indexPath.row] == nil
         {
             let formCell = formInput()
             let cellInput = formCell.formTextField()
@@ -426,7 +453,7 @@ class SettingsViewController: UITableViewController, UITextFieldDelegate {
                     UINotifications.profileUpdated(self.navigationController!)
                 }
                 
-            case 4...6:
+            case 4...7:
                 let key = profile[textField.tag - 4].1
                 UserManager.sharedManager.pushProfile([key:txt], completion: {_ in return})
                 textField.resignFirstResponder()
@@ -437,6 +464,13 @@ class SettingsViewController: UITableViewController, UITextFieldDelegate {
             }
         }
         return false
+    }
+
+    func sexValueChanged(sender: UISegmentedControl!) {
+        let k = "sex"
+        let v = sender.selectedSegmentIndex == 0 ? "Male" : "Female"
+        UserManager.sharedManager.pushProfile([k:v], completion: {_ in return})
+        UINotifications.profileUpdated(self.navigationController!)
     }
 
     func profileSubview(txt: String, fields: [String], placeholders: [String]) {

@@ -413,7 +413,6 @@ public class ConsentManager: NSObject, ORKTaskViewControllerDelegate {
     // MARK: - Task view controller delegate
     
     public func taskViewController(taskViewController: ORKTaskViewController, didFinishWithReason reason: ORKTaskViewControllerFinishReason, error: NSError?) {
-        log.info("CVC task \(reason)")
         switch reason {
         case .Completed:
             let document = consentDocument.copy() as! ORKConsentDocument

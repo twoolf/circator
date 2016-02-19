@@ -70,11 +70,11 @@ class IntroCompareDataTableViewCell: UITableViewCell {
     }
 
     private func loadUserSamples( results: [Result], toLabel label: UILabel) {
-        label.text = "\(IntroCompareDataTableViewCell.healthFormatter.stringFromResults(results))"
+        label.text = IntroCompareDataTableViewCell.healthFormatter.stringFromResults(results)
     }
 
     private func loadPopSamples(results: [Result], toLabel label: UILabel, stale: Bool) {
-        label.text = "\(IntroCompareDataTableViewCell.healthFormatter.stringFromResults(results))"
+        label.text = IntroCompareDataTableViewCell.healthFormatter.stringFromResults(results)
         if stale { label.textColor = UIColor.yellowColor() }
         else { label.textColor = Theme.universityDarkTheme.bodyTextColor }
     }

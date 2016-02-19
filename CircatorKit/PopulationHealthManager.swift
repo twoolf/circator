@@ -195,8 +195,7 @@ public class PopulationHealthManager {
         if let aggregates = payload as? [[String: AnyObject]] {
             var failed = false
             for kvdict in aggregates {
-                if let sampleName = kvdict["key"] as? String,
-                    sampleType = samplesByName[sampleName]
+                if let sampleName = kvdict["key"] as? String, sampleType = samplesByName[sampleName]
                 {
                     if let sampleValue = kvdict["value"] as? Double {
                         populationAggregates[sampleType] = [DerivedQuantity(quantity: sampleValue, quantityType: sampleType)]

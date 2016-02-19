@@ -27,17 +27,18 @@ public struct UserProfile {
     public let lnameIdx : Int = 3
     public let updateableIdx : Int = 4
 
-    public let requiredRange      : Range = 0..<7
-    public let updateableReqRange : Range = 4..<7
-    public let recommendedRange   : Range = 7..<12
-    public let optionalRange      : Range = 12..<29
-    public let updateableRange    : Range = 4..<29
+    public let requiredRange      : Range = 0..<8
+    public let updateableReqRange : Range = 4..<8
+    public let recommendedRange   : Range = 8..<13
+    public let optionalRange      : Range = 13..<30
+    public let updateableRange    : Range = 4..<30
 
     public let profileFields : [String]! = [
         "Email",
         "Password",
         "First name",
         "Last name",
+        "Sex",
         "Age",
         "Weight",
         "Height",
@@ -69,6 +70,7 @@ public struct UserProfile {
         "Required",
         "Jane or John",
         "Doe",
+        "Female or male",
         "24",
         "160 lbs",
         "180 cm",
@@ -101,6 +103,7 @@ public struct UserProfile {
         "Password"                 : "password",
         "First name"               : "firstname",
         "Last name"                : "lastname",
+        "Sex"                      : "sex",
         "Age"                      : "age",
         "Weight"                   : "weight",
         "Height"                   : "height",
@@ -297,9 +300,12 @@ public struct HMConstants
     ]
 
     public let healthKitShortNames : [String: String] = [
-        HKCorrelationTypeIdentifierBloodPressure          : "BP",
         HKCategoryTypeIdentifierAppleStandHour            : "Stood",
         HKCategoryTypeIdentifierSleepAnalysis             : "Sleep",
+        HKCharacteristicTypeIdentifierBloodType           : "Blood type",
+        HKCharacteristicTypeIdentifierBiologicalSex       : "Sex",
+        HKCharacteristicTypeIdentifierFitzpatrickSkinType : "Skin type",
+        HKCorrelationTypeIdentifierBloodPressure          : "BP",
         HKQuantityTypeIdentifierActiveEnergyBurned        : "Cal burned",
         HKQuantityTypeIdentifierBasalBodyTemperature      : "Temperature(B)",
         HKQuantityTypeIdentifierBasalEnergyBurned         : "Cal burned(B)",

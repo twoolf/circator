@@ -42,28 +42,41 @@ class RegisterViewController : FormViewController {
             let text = UserProfile.sharedInstance.profileFields[index]
             let placeholder = UserProfile.sharedInstance.profilePlaceholders[index]
 
+            if text == "Sex" {
+                return SegmentedRowFormer<FormSegmentedCell>() {
+                        $0.backgroundColor = Theme.universityDarkTheme.backgroundColor
+                        $0.tintColor = .whiteColor()
+                        $0.titleLabel.text = text
+                        $0.titleLabel.textColor = .whiteColor()
+                        $0.titleLabel.font = .boldSystemFontOfSize(16)
+                    }.configure {
+                        $0.segmentTitles = ["Male", "Female"]
+                    }.onSegmentSelected { [weak self] index, _ in
+                        self?.profileValues[text] = index == 0 ? "Male" : "Female"
+                }
+            }
+
             return TextFieldRowFormer<FormTextFieldCell>() {
                 $0.backgroundColor = Theme.universityDarkTheme.backgroundColor
-                $0.tintColor = .blueColor()
-                $0.titleLabel.text = text
-                $0.titleLabel.textColor = .whiteColor()
-                $0.titleLabel.font = .boldSystemFontOfSize(16)
-                $0.textField.textColor = .whiteColor()
-                $0.textField.font = .boldSystemFontOfSize(14)
-                $0.textField.textAlignment = .Right
-                $0.textField.returnKeyType = .Next
+                    $0.tintColor = .blueColor()
+                    $0.titleLabel.text = text
+                    $0.titleLabel.textColor = .whiteColor()
+                    $0.titleLabel.font = .boldSystemFontOfSize(16)
+                    $0.textField.textColor = .whiteColor()
+                    $0.textField.font = .boldSystemFontOfSize(14)
+                    $0.textField.textAlignment = .Right
+                    $0.textField.returnKeyType = .Next
 
-                $0.textField.autocorrectionType = UITextAutocorrectionType.No
-                $0.textField.autocapitalizationType = UITextAutocapitalizationType.None
-                $0.textField.keyboardType = UIKeyboardType.Default
+                    $0.textField.autocorrectionType = UITextAutocorrectionType.No
+                    $0.textField.autocapitalizationType = UITextAutocapitalizationType.None
+                    $0.textField.keyboardType = UIKeyboardType.Default
 
-                if text == "Password" {
-                    $0.textField.secureTextEntry = true
-                }
-                else if text == "Email" {
-                    $0.textField.keyboardType = UIKeyboardType.EmailAddress
-                }
-
+                    if text == "Password" {
+                        $0.textField.secureTextEntry = true
+                    }
+                    else if text == "Email" {
+                        $0.textField.keyboardType = UIKeyboardType.EmailAddress
+                    }
                 }.configure {
                     let attrs = [NSForegroundColorAttributeName: UIColor.lightGrayColor()]
                     $0.attributedPlaceholder = NSAttributedString(string:placeholder, attributes: attrs)
