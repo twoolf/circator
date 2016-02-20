@@ -16,6 +16,9 @@ enum BuilderMode {
     case Creating
 }
 
+private let lblFontSize = ScreenManager.sharedInstance.queryBuilderLabelFontSize()
+private let inputFontSize = ScreenManager.sharedInstance.queryBuilderInputFontSize()
+
 class QueryBuilderViewController: UIViewController, UITextFieldDelegate {
 
     let dataTableView: PredicateTableView = PredicateTableView(frame: CGRectMake(0, 0, 1000, 1000), style: .Plain)
@@ -41,7 +44,7 @@ class QueryBuilderViewController: UIViewController, UITextFieldDelegate {
         button.shadowColor = UIColor.ht_citrusColor()
         button.shadowHeight = 4
         button.setTitle("Add Predicate", forState: .Normal)
-        button.titleLabel?.font = UIFont.systemFontOfSize(14, weight: UIFontWeightRegular)
+        button.titleLabel?.font = UIFont.systemFontOfSize(lblFontSize, weight: UIFontWeightRegular)
         button.addTarget(self, action: "addPredicate:", forControlEvents: .TouchUpInside)
         return button
     }()
@@ -53,7 +56,7 @@ class QueryBuilderViewController: UIViewController, UITextFieldDelegate {
         button.shadowColor = UIColor.ht_pomegranateColor()
         button.shadowHeight = 4
         button.setTitle("Save Query", forState: .Normal)
-        button.titleLabel?.font = UIFont.systemFontOfSize(14, weight: UIFontWeightRegular)
+        button.titleLabel?.font = UIFont.systemFontOfSize(lblFontSize, weight: UIFontWeightRegular)
         button.addTarget(self, action: "saveQuery:", forControlEvents: .TouchUpInside)
         return button
     }()
@@ -65,7 +68,7 @@ class QueryBuilderViewController: UIViewController, UITextFieldDelegate {
         button.shadowColor = UIColor.ht_nephritisColor()
         button.shadowHeight = 4
         button.setTitle("Write Query", forState: .Normal)
-        button.titleLabel?.font = UIFont.systemFontOfSize(14, weight: UIFontWeightRegular)
+        button.titleLabel?.font = UIFont.systemFontOfSize(lblFontSize, weight: UIFontWeightRegular)
         button.addTarget(self, action: "writeQuery:", forControlEvents: .TouchUpInside)
         return button
     }()
@@ -122,9 +125,9 @@ class QueryBuilderViewController: UIViewController, UITextFieldDelegate {
             $0.backgroundColor = Theme.universityDarkTheme.backgroundColor
             $0.titleLabel.text = "Attribute"
             $0.titleLabel.textColor = .whiteColor()
-            $0.titleLabel.font = .boldSystemFontOfSize(16)
+            $0.titleLabel.font = .boldSystemFontOfSize(inputFontSize)
             $0.displayLabel.textColor = .whiteColor()
-            $0.displayLabel.font = .boldSystemFontOfSize(14)
+            $0.displayLabel.font = .boldSystemFontOfSize(lblFontSize)
             }.configure {
                 let toolBar = UIToolbar()
                 toolBar.barStyle = UIBarStyle.Default
@@ -147,11 +150,13 @@ class QueryBuilderViewController: UIViewController, UITextFieldDelegate {
 
         let comparatorPickerRow = SegmentedRowFormer<FormSegmentedCell>(instantiateType: .Class) {
             $0.backgroundColor = Theme.universityDarkTheme.backgroundColor
-            $0.titleLabel.text = "Comparator"
+            $0.titleLabel.text = "Operator"
             $0.titleLabel.textColor = .whiteColor()
-            $0.titleLabel.font = .boldSystemFontOfSize(16)
+            $0.titleLabel.font = .boldSystemFontOfSize(inputFontSize)
             $0.tintColor = .whiteColor()
             }.configure {
+                let attr = NSDictionary(object: UIFont.systemFontOfSize(inputFontSize), forKey: NSFontAttributeName)
+                $0.cell.formSegmented().setTitleTextAttributes(attr as [NSObject : AnyObject], forState: .Normal)
                 $0.segmentTitles = QueryBuilderViewController.comparisonOperators
                 $0.selectedIndex = 0
             }.onSegmentSelected { [weak self] index, _ in
@@ -162,9 +167,11 @@ class QueryBuilderViewController: UIViewController, UITextFieldDelegate {
             $0.backgroundColor = Theme.universityDarkTheme.backgroundColor
             $0.titleLabel.text = "Aggregate"
             $0.titleLabel.textColor = .whiteColor()
-            $0.titleLabel.font = .boldSystemFontOfSize(16)
+            $0.titleLabel.font = .boldSystemFontOfSize(inputFontSize)
             $0.tintColor = .whiteColor()
             }.configure {
+                let attr = NSDictionary(object: UIFont.systemFontOfSize(inputFontSize), forKey: NSFontAttributeName)
+                $0.cell.formSegmented().setTitleTextAttributes(attr as [NSObject : AnyObject], forState: .Normal)
                 $0.segmentTitles = QueryBuilderViewController.aggregateOperators
                 $0.selectedIndex = 0
             }.onSegmentSelected { [weak self] index, _ in
@@ -175,9 +182,9 @@ class QueryBuilderViewController: UIViewController, UITextFieldDelegate {
             $0.backgroundColor = Theme.universityDarkTheme.backgroundColor
             $0.titleLabel.text = "Value"
             $0.titleLabel.textColor = .whiteColor()
-            $0.titleLabel.font = .boldSystemFontOfSize(16)
+            $0.titleLabel.font = .boldSystemFontOfSize(inputFontSize)
             $0.textField.textColor = .whiteColor()
-            $0.textField.font = .boldSystemFontOfSize(14)
+            $0.textField.font = .boldSystemFontOfSize(lblFontSize)
             $0.textField.textAlignment = .Right
             $0.textField.returnKeyType = .Next
             $0.tintColor = .blueColor()
@@ -192,9 +199,9 @@ class QueryBuilderViewController: UIViewController, UITextFieldDelegate {
             $0.backgroundColor = Theme.universityDarkTheme.backgroundColor
             $0.titleLabel.text = "Query name"
             $0.titleLabel.textColor = .whiteColor()
-            $0.titleLabel.font = .boldSystemFontOfSize(16)
+            $0.titleLabel.font = .boldSystemFontOfSize(inputFontSize)
             $0.textField.textColor = .whiteColor()
-            $0.textField.font = .boldSystemFontOfSize(14)
+            $0.textField.font = .boldSystemFontOfSize(lblFontSize)
             $0.textField.textAlignment = .Right
             $0.textField.returnKeyType = .Next
             $0.tintColor = .blueColor()
@@ -314,7 +321,7 @@ class PredicateTableView : UITableView, UITableViewDelegate, UITableViewDataSour
         let aggstr = QueryBuilderViewController.aggregateOperators[aggr.rawValue]
         let cmpstr = QueryBuilderViewController.comparisonOperators[op.rawValue]
         cell.textLabel?.textColor = UIColor.whiteColor()
-        cell.textLabel?.font = .boldSystemFontOfSize(14)
+        cell.textLabel?.font = .boldSystemFontOfSize(lblFontSize)
         cell.textLabel?.text = "\(aggstr)(\(attr)) \(cmpstr) \(val)"
 
         let deleteButton = MGSwipeButton(title: "Delete", backgroundColor: .ht_carrotColor(), callback: {

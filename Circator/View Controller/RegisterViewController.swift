@@ -11,6 +11,9 @@ import UIKit
 import Async
 import Former
 
+private let lblFontSize = ScreenManager.sharedInstance.profileLabelFontSize()
+private let inputFontSize = ScreenManager.sharedInstance.profileInputFontSize()
+
 class RegisterViewController : FormViewController {
 
     var profileValues : [String: String] = [:]
@@ -48,7 +51,7 @@ class RegisterViewController : FormViewController {
                         $0.tintColor = .whiteColor()
                         $0.titleLabel.text = text
                         $0.titleLabel.textColor = .whiteColor()
-                        $0.titleLabel.font = .boldSystemFontOfSize(16)
+                        $0.titleLabel.font = .boldSystemFontOfSize(lblFontSize)
                     }.configure {
                         $0.segmentTitles = ["Male", "Female"]
                     }.onSegmentSelected { [weak self] index, _ in
@@ -61,9 +64,9 @@ class RegisterViewController : FormViewController {
                     $0.tintColor = .blueColor()
                     $0.titleLabel.text = text
                     $0.titleLabel.textColor = .whiteColor()
-                    $0.titleLabel.font = .boldSystemFontOfSize(16)
+                    $0.titleLabel.font = .boldSystemFontOfSize(lblFontSize)
                     $0.textField.textColor = .whiteColor()
-                    $0.textField.font = .boldSystemFontOfSize(14)
+                    $0.textField.font = .boldSystemFontOfSize(inputFontSize)
                     $0.textField.textAlignment = .Right
                     $0.textField.returnKeyType = .Next
 
@@ -213,14 +216,14 @@ class RegisterViewController : FormViewController {
             row.tintColor = .blueColor()
             row.textLabel?.text = text
             row.textLabel?.textColor = .whiteColor()
-            row.textLabel?.font = .boldSystemFontOfSize(16)
+            row.textLabel?.font = .boldSystemFontOfSize(lblFontSize)
             row.accessoryType = .DisclosureIndicator
             }.onSelected { _ in
                 let subVC = ProfileSubviewController()
                 subVC.profileFields = fields
                 subVC.profilePlaceholders = placeholders
                 subVC.profileUpdater = { kvv in self.updateProfile(kvv) }
-                subVC.subviewDesc = "\(text) profile"
+                subVC.subviewDesc = "\(text) inputs"
                 self.navigationController?.pushViewController(subVC, animated: true)
         }
     }

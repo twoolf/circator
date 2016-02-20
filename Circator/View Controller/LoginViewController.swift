@@ -12,6 +12,10 @@ import Async
 import Former
 import Dodo
 
+private let btnFontSize = ScreenManager.sharedInstance.loginButtonFontSize()
+private let lblFontSize = ScreenManager.sharedInstance.loginLabelFontSize()
+private let inputFontSize = ScreenManager.sharedInstance.loginInputFontSize()
+
 class LoginViewController: UIViewController, UITableViewDelegate, UITableViewDataSource, UITextFieldDelegate {
 
     private var userCell: FormTextFieldCell?
@@ -47,7 +51,7 @@ class LoginViewController: UIViewController, UITableViewDelegate, UITableViewDat
         let button = UIButton(type: .Custom)
         button.setTitle("Login", forState: .Normal)
         button.addTarget(self, action: "doLogin:", forControlEvents: .TouchUpInside)
-        button.titleLabel?.font = UIFont.systemFontOfSize(20, weight: UIFontWeightSemibold)
+        button.titleLabel?.font = UIFont.systemFontOfSize(btnFontSize, weight: UIFontWeightSemibold)
         button.setTitleColor(Theme.universityDarkTheme.titleTextColor, forState: .Normal)
         button.backgroundColor = Theme.universityDarkTheme.backgroundColor
         return button
@@ -57,7 +61,7 @@ class LoginViewController: UIViewController, UITableViewDelegate, UITableViewDat
         let button = UIButton(type: .Custom)
         button.setTitle("Signup", forState: .Normal)
         button.addTarget(self, action: "doSignup:", forControlEvents: .TouchUpInside)
-        button.titleLabel?.font = UIFont.systemFontOfSize(20, weight: UIFontWeightSemibold)
+        button.titleLabel?.font = UIFont.systemFontOfSize(btnFontSize, weight: UIFontWeightSemibold)
         button.setTitleColor(Theme.universityDarkTheme.titleTextColor, forState: .Normal)
         button.backgroundColor = Theme.universityDarkTheme.backgroundColor
         return button
@@ -166,6 +170,9 @@ class LoginViewController: UIViewController, UITableViewDelegate, UITableViewDat
         let formCell = FormTextFieldCell()
         let cellInput = formCell.formTextField()
         let cellLabel = formCell.formTitleLabel()
+
+        cellInput.font = UIFont.systemFontOfSize(inputFontSize)
+        cellLabel?.font = UIFont.systemFontOfSize(lblFontSize)
 
         cell.backgroundColor = Theme.universityDarkTheme.backgroundColor
         cellInput.textColor = Theme.universityDarkTheme.titleTextColor

@@ -20,6 +20,7 @@ private let noAnchor = HKQueryAnchor(fromValue: Int(HKAnchoredObjectQueryNoAncho
 
 class DebugViewController : FormViewController {
 
+    var genNumUsers : Int! = -1
     var genUserId : String! = "<hash>"
     var genSize   : Int! = 100
     var genStart  : String! = "1/1/2015"
@@ -102,6 +103,15 @@ class DebugViewController : FormViewController {
         var generateRows : [RowFormer] = []
 
         generateRows.append(TextFieldRowFormer<FormTextFieldCell>() {
+            $0.titleLabel.text = "# Users"
+            }.configure {
+                let attrs = [NSForegroundColorAttributeName: UIColor.lightGrayColor()]
+                $0.attributedPlaceholder = NSAttributedString(string: "100", attributes: attrs)
+            }.onTextChanged { [weak self] txt in
+                self?.genNumUsers = Int(txt)
+            })
+
+        generateRows.append(TextFieldRowFormer<FormTextFieldCell>() {
             $0.titleLabel.text = "User ID"
             }.configure {
                 let attrs = [NSForegroundColorAttributeName: UIColor.lightGrayColor()]
@@ -158,7 +168,7 @@ class DebugViewController : FormViewController {
         }
         let generateSection = SectionFormer(rowFormers: Array(generateRows)).set(headerViewFormer: generateHeader)
 
-        former.append(sectionFormer: debugAnchorsSection, generateSection)
+        former.append(sectionFormer: generateSection, debugAnchorsSection)
     }
 
     // TODO: use the cached profile rather than directly accessing the HealthManager.
@@ -170,12 +180,23 @@ class DebugViewController : FormViewController {
     }
 
     func doGenerate() {
-        if let st = self.genStart.toDate(self.genDateFormat), en = self.genEnd.toDate(self.genDateFormat) {
-            log.info("Generating data between \(st) and \(en)")
-            DataGenerator.sharedInstance.generateDataset(
-                "output.json", userId: self.genUserId, size: self.genSize, startDate: st, endDate: en)
+        if genNumUsers > 0 || genUserId != nil {
+            let asPopulation = genNumUsers > 0
+            let desc = asPopulation ? "\(genNumUsers) users" : "user \(self.genUserId!)"
+            if let st = genStart.toDate(genDateFormat), en = genEnd.toDate(genDateFormat) {
+                log.info("Generating data for \(desc) between \(st) and \(en)")
+                if asPopulation {
+                    DataGenerator.sharedInstance.generateDatasetForService(
+                        "output.json", numUsers: genNumUsers, size: genSize, startDate: st, endDate: en)
+                } else {
+                    DataGenerator.sharedInstance.generateDatasetForUser(
+                        "output.json", userId: genUserId, size: genSize, startDate: st, endDate: en)
+                }
+            } else {
+                UINotifications.genericError(self, msg: "Invalid start/end date for data generation")
+            }
         } else {
-            UINotifications.genericError(self, msg: "Invalid start/end date for data generation")
+            UINotifications.genericError(self, msg: "Please enter a valid # users or a user id for data generation")
         }
     }
 

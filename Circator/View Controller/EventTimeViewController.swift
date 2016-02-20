@@ -19,12 +19,15 @@ private let stSleep = 0.33
 private let stFast = 0.66
 private let stEat = 1.0
 
+private let summaryFontSize = ScreenManager.sharedInstance.eventTimeViewSummaryFontSize()
+private let plotFontSize = ScreenManager.sharedInstance.eventTimeViewPlotFontSize()
+
 class EventTimeViewController : UIViewController {
     lazy var healthFormatter : SampleFormatter = { return SampleFormatter() }()
 
     lazy var fastingDescLabel : UILabel = {
         let label: UILabel = UILabel()
-        label.font = UIFont.systemFontOfSize(12, weight: UIFontWeightRegular)
+        label.font = UIFont.systemFontOfSize(plotFontSize, weight: UIFontWeightRegular)
         label.textColor = Theme.universityDarkTheme.titleTextColor
         label.textAlignment = .Center
         label.text = NSLocalizedString("Max Daily Fasting", comment: "Max Daily Fasting")
@@ -33,7 +36,7 @@ class EventTimeViewController : UIViewController {
 
     lazy var fastingLabel : UILabel = {
         let label: UILabel = UILabel()
-        label.font = UIFont.systemFontOfSize(24, weight: UIFontWeightRegular)
+        label.font = UIFont.systemFontOfSize(summaryFontSize, weight: UIFontWeightRegular)
         label.textColor = Theme.universityDarkTheme.titleTextColor
         label.textAlignment = .Center
         label.text = NSLocalizedString("00:00", comment: "Max Daily Fasting")
@@ -42,7 +45,7 @@ class EventTimeViewController : UIViewController {
 
     lazy var eatingDescLabel : UILabel = {
         let label: UILabel = UILabel()
-        label.font = UIFont.systemFontOfSize(12, weight: UIFontWeightRegular)
+        label.font = UIFont.systemFontOfSize(plotFontSize, weight: UIFontWeightRegular)
         label.textColor = Theme.universityDarkTheme.titleTextColor
         label.textAlignment = .Center
         label.text = NSLocalizedString("Daily Eating", comment: "Daily Eating")
@@ -51,7 +54,7 @@ class EventTimeViewController : UIViewController {
 
     lazy var eatingLabel : UILabel = {
         let label: UILabel = UILabel()
-        label.font = UIFont.systemFontOfSize(24, weight: UIFontWeightRegular)
+        label.font = UIFont.systemFontOfSize(summaryFontSize, weight: UIFontWeightRegular)
         label.textColor = Theme.universityDarkTheme.titleTextColor
         label.textAlignment = .Center
         label.text = NSLocalizedString("00:00", comment: "Daily Eating")
@@ -60,7 +63,7 @@ class EventTimeViewController : UIViewController {
 
     lazy var lastAteDescLabel : UILabel = {
         let label: UILabel = UILabel()
-        label.font = UIFont.systemFontOfSize(12, weight: UIFontWeightRegular)
+        label.font = UIFont.systemFontOfSize(plotFontSize, weight: UIFontWeightRegular)
         label.textColor = Theme.universityDarkTheme.titleTextColor
         label.textAlignment = .Center
         label.text = NSLocalizedString("Last Ate", comment: "Last Ate")
@@ -69,7 +72,7 @@ class EventTimeViewController : UIViewController {
 
     lazy var lastAteLabel : UILabel = {
         let label: UILabel = UILabel()
-        label.font = UIFont.systemFontOfSize(24, weight: UIFontWeightRegular)
+        label.font = UIFont.systemFontOfSize(summaryFontSize, weight: UIFontWeightRegular)
         label.textColor = Theme.universityDarkTheme.titleTextColor
         label.textAlignment = .Center
         label.text = NSLocalizedString("00:00", comment: "Last Ate")
@@ -123,7 +126,7 @@ class EventTimeViewController : UIViewController {
         chart.bottomInset = 50.0
         chart.lineWidth = 2.0
         chart.labelColor = .whiteColor()
-        chart.labelFont = UIFont.systemFontOfSize(12)
+        chart.labelFont = UIFont.systemFontOfSize(plotFontSize)
 
         chart.xLabels = [0.0, 6.0, 12.0, 18.0, 24.0]
         chart.xLabelsTextAlignment = .Left
@@ -177,7 +180,7 @@ class EventTimeViewController : UIViewController {
             mealChart.topAnchor.constraintEqualToAnchor(view.topAnchor),
             mealChart.leadingAnchor.constraintEqualToAnchor(view.layoutMarginsGuide.leadingAnchor),
             mealChart.trailingAnchor.constraintEqualToAnchor(view.layoutMarginsGuide.trailingAnchor),
-            mealChart.bottomAnchor.constraintEqualToAnchor(view.bottomAnchor, constant: -100)
+            mealChart.bottomAnchor.constraintEqualToAnchor(view.bottomAnchor, constant: -(ScreenManager.sharedInstance.eventTimeViewHeight()))
         ]
         view.addConstraints(mcConstraints)
 

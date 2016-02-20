@@ -135,6 +135,10 @@ class SettingsViewController: UITableViewController, UITextFieldDelegate {
     override func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCellWithIdentifier("settingsCell", forIndexPath: indexPath)
 
+        cell.preservesSuperviewLayoutMargins = false
+        cell.separatorInset = UIEdgeInsetsZero
+        cell.layoutMargins = UIEdgeInsetsZero
+
         if withDebugView && indexPath.section == 5 {
             if debugCell == nil {
                 debugCell = FormLabelCell()
@@ -147,7 +151,6 @@ class SettingsViewController: UITableViewController, UITextFieldDelegate {
 
             for sv in cell.contentView.subviews { sv.removeFromSuperview() }
             cell.contentView.addSubview(debugCell!)
-            cell.clipsToBounds = true
             return cell
         }
 
@@ -202,9 +205,30 @@ class SettingsViewController: UITableViewController, UITextFieldDelegate {
             cell.textLabel?.hidden = true
             cell.imageView?.image = nil
             cell.accessoryType = .None
+            cell.selectionStyle = .None
 
-            if indexPath.row == 0 { cell.contentView.addSubview(historySlider!) }
-            else { cell.contentView.addSubview(uploadButton!) }
+            if indexPath.row == 0 {
+                historySlider!.translatesAutoresizingMaskIntoConstraints = false
+                cell.contentView.addSubview(historySlider!)
+                let constraints: [NSLayoutConstraint] = [
+                    historySlider!.topAnchor.constraintEqualToAnchor(cell.contentView.topAnchor),
+                    historySlider!.leadingAnchor.constraintEqualToAnchor(cell.contentView.leadingAnchor),
+                    historySlider!.trailingAnchor.constraintEqualToAnchor(cell.contentView.trailingAnchor),
+                    historySlider!.heightAnchor.constraintEqualToAnchor(cell.contentView.heightAnchor)
+                ]
+                cell.contentView.addConstraints(constraints)
+            }
+            else {
+                uploadButton!.translatesAutoresizingMaskIntoConstraints = false
+                cell.contentView.addSubview(uploadButton!)
+                let constraints: [NSLayoutConstraint] = [
+                    uploadButton!.topAnchor.constraintEqualToAnchor(cell.contentView.topAnchor),
+                    uploadButton!.leadingAnchor.constraintEqualToAnchor(cell.contentView.leadingAnchor),
+                    uploadButton!.trailingAnchor.constraintEqualToAnchor(cell.contentView.trailingAnchor),
+                    uploadButton!.heightAnchor.constraintEqualToAnchor(cell.contentView.heightAnchor)
+                ]
+                cell.contentView.addConstraints(constraints)
+            }
             return cell
         }
 
@@ -256,15 +280,13 @@ class SettingsViewController: UITableViewController, UITextFieldDelegate {
                     img.heightAnchor.constraintEqualToAnchor(measureCells![indexPath.row]!.heightAnchor),
                     lbl.trailingAnchor.constraintEqualToAnchor(measureCells![indexPath.row]!.trailingAnchor),
                     measureCells![indexPath.row]!.topAnchor.constraintEqualToAnchor(cell.contentView.topAnchor),
-                    measureCells![indexPath.row]!.leadingAnchor.constraintEqualToAnchor(cell.contentView.leadingAnchor),
-                    measureCells![indexPath.row]!.widthAnchor.constraintEqualToAnchor(cell.contentView.widthAnchor),
+                    measureCells![indexPath.row]!.leadingAnchor.constraintEqualToAnchor(cell.contentView.layoutMarginsGuide.leadingAnchor),
+                    measureCells![indexPath.row]!.trailingAnchor.constraintEqualToAnchor(cell.contentView.layoutMarginsGuide.trailingAnchor),
                     measureCells![indexPath.row]!.heightAnchor.constraintEqualToAnchor(cell.contentView.heightAnchor)
                 ]
                 cell.contentView.addConstraints(constraints)
             }
             cell.accessoryType = .DisclosureIndicator
-
-            cell.clipsToBounds = true
             return cell
         }
 
@@ -382,11 +404,20 @@ class SettingsViewController: UITableViewController, UITextFieldDelegate {
                 cell.accessoryType = .DisclosureIndicator
             } else {
                 cell.accessoryType = .None
+                cell.selectionStyle = .None
             }
+
+            formCell.translatesAutoresizingMaskIntoConstraints = false
             cell.contentView.addSubview(formCell)
+            let constraints: [NSLayoutConstraint] = [
+                formCell.topAnchor.constraintEqualToAnchor(cell.contentView.topAnchor),
+                formCell.leadingAnchor.constraintEqualToAnchor(cell.contentView.layoutMarginsGuide.leadingAnchor),
+                formCell.trailingAnchor.constraintEqualToAnchor(cell.contentView.layoutMarginsGuide.trailingAnchor, constant: -(ScreenManager.sharedInstance.settingsCellTrailing())),
+                formCell.heightAnchor.constraintEqualToAnchor(cell.contentView.heightAnchor)
+            ]
+            cell.contentView.addConstraints(constraints)
         }
 
-        cell.clipsToBounds = true
         return cell
     }
 
@@ -475,7 +506,7 @@ class SettingsViewController: UITableViewController, UITextFieldDelegate {
 
     func profileSubview(txt: String, fields: [String], placeholders: [String]) {
         let subVC = ProfileSubviewController()
-        subVC.subviewDesc = "\(txt) profile"
+        subVC.subviewDesc = "\(txt) inputs"
         subVC.bgColor = .whiteColor()
         subVC.txtColor = .blackColor()
         subVC.plcColor = .grayColor()

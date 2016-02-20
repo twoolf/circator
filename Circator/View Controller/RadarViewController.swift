@@ -78,7 +78,7 @@ class RadarViewController : UIViewController, ChartViewDelegate {
 
         let legend = chart.legend
         legend.enabled = true
-        legend.position = ChartLegend.ChartLegendPosition.RightOfChartInside
+        legend.position = ScreenManager.sharedInstance.radarLegendPosition()
         legend.font = UIFont.systemFontOfSize(12, weight: UIFontWeightRegular)
         legend.textColor = .whiteColor()
         legend.xEntrySpace = 7.0

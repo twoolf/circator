@@ -18,7 +18,7 @@ import Charts
 import SwiftDate
 
 let IntroViewTableViewCellIdentifier = "IntroViewTableViewCellIdentifier"
-private let mcControlButtonHeight : CGFloat = 35.0
+private let mcControlButtonHeight = ScreenManager.sharedInstance.dashboardButtonHeight()
 
 private let hkAccessTimeout = 60.seconds
 
@@ -275,7 +275,6 @@ class IntroViewController: UIViewController,
     lazy var topButtonsContainerView: UIStackView = {
         let stackView: UIStackView = UIStackView(arrangedSubviews: [self.titleLabel, self.logoutButton, self.queryButton, self.settingsButton])
         stackView.axis = .Horizontal
-        //stackView.distribution = UIStackViewDistribution.FillEqually
         stackView.distribution = UIStackViewDistribution.FillProportionally
         stackView.alignment = UIStackViewAlignment.Fill
         stackView.spacing = 0
@@ -590,13 +589,13 @@ class IntroViewController: UIViewController,
         let topButtonsContainerConstraints: [NSLayoutConstraint] = [
             topButtonsContainerView.topAnchor.constraintEqualToAnchor(view.topAnchor, constant: 40),
             topButtonsContainerView.widthAnchor.constraintEqualToAnchor(view.widthAnchor, multiplier: 0.7),
-            topButtonsContainerView.leadingAnchor.constraintLessThanOrEqualToAnchor(view.layoutMarginsGuide.leadingAnchor, constant: 43 + 37),
+            topButtonsContainerView.leadingAnchor.constraintLessThanOrEqualToAnchor(view.layoutMarginsGuide.leadingAnchor, constant: ScreenManager.sharedInstance.dashboardTitleLeading()),
             topButtonsContainerView.heightAnchor.constraintEqualToConstant(mcControlButtonHeight),
             logoutButton.widthAnchor.constraintEqualToConstant(mcControlButtonHeight),
             queryButton.leadingAnchor.constraintEqualToAnchor(logoutButton.trailingAnchor, constant: 0),
             queryButton.widthAnchor.constraintEqualToConstant(mcControlButtonHeight),
             settingsButton.leadingAnchor.constraintEqualToAnchor(queryButton.trailingAnchor, constant: 0),
-            settingsButton.widthAnchor.constraintEqualToConstant(mcControlButtonHeight	)
+            settingsButton.widthAnchor.constraintEqualToConstant(mcControlButtonHeight)
         ]
         view.addConstraints(topButtonsContainerConstraints)
 
@@ -783,17 +782,7 @@ class IntroViewController: UIViewController,
     }
 
     func tableView(tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        let screenSize = UIScreen.mainScreen().bounds.size
-        let screenHeight = screenSize.height
-        var tableInt = 6  /* change at future point to support larger screens */
-/*        if (screenHeight < 569)
-        {
-           tableInt=5
-        } else if (570 < screenHeight && screenHeight < 734)
-        {
-           tableInt=6
-        } */
-        return tableInt
+        return ScreenManager.sharedInstance.dashboardRows()
     }
 
     func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell {

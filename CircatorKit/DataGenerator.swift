@@ -16,12 +16,14 @@ import SwiftyJSON
 
 public typealias MCSampler = (NSDate, Double, Double?) -> HKSample?
 
+private let filteredTypeIdentifiers = [HKQuantityTypeIdentifierUVExposure, HKQuantityTypeIdentifierDietaryWater, HKCategoryTypeIdentifierSleepAnalysis]
+
 public class DataGenerator : GeneratorType {
 
     public static let sharedInstance = DataGenerator()
 
     let generatorTypes : [HKSampleType] = Array(PreviewManager.previewChoices.flatten()).filter { t in
-        return !(t.identifier == HKQuantityTypeIdentifierUVExposure || t.identifier == HKQuantityTypeIdentifierDietaryWater)
+        return !filteredTypeIdentifiers.contains(t.identifier)
     }
 
     let generatorUnits : [String: HKUnit] = [
@@ -168,13 +170,13 @@ public class DataGenerator : GeneratorType {
         case HKCategoryTypeIdentifierSleepAnalysis:
             let ct = type as! HKCategoryType
             let sleepStart = date
-            let sleepEnd = sleepStart + Int(x * 3600.0).seconds
+            let sleepEnd = sleepStart + Int(abs(x) * 3600.0).seconds
             return HKCategorySample(type: ct, value: HKCategoryValueSleepAnalysis.Asleep.rawValue, startDate: sleepStart, endDate: sleepEnd)
 
         case HKCategoryTypeIdentifierAppleStandHour:
             let ct = type as! HKCategoryType
             let standStart = date
-            let standEnd = standStart + Int(x * 60.0).seconds
+            let standEnd = standStart + Int(abs(x) * 60.0).seconds
             return HKCategorySample(type: ct, value: HKCategoryValueAppleStandHour.Stood.rawValue, startDate: standStart, endDate: standEnd)
 
             // TODO: ensure diastolic is less than systolic
@@ -225,9 +227,14 @@ public class DataGenerator : GeneratorType {
     var samplesPerDay = 10
     var sampleBuffer : [Bool: [String: [HKSample]]] = [true: [:], false: [:]]
 
-    public func next() -> Element? {
+    // Generate samples for the next day.
+    public func next() -> Element?
+    {
+        let sleepWeight = 0.99999
+        let sleepOrOther = randBinomial(sleepWeight) > 0 ? [HKObjectType.categoryTypeForIdentifier(HKCategoryTypeIdentifierSleepAnalysis)!] : []
+
         let maleOrFemale : [Int] = coinTosses(samplesPerDay)
-        let typesToSample : [HKSampleType] = sampleWithReplacement(generatorTypes, samplesPerDay)
+        let typesToSample : [HKSampleType] = sampleWithReplacement(generatorTypes, sleepOrOther.isEmpty ? samplesPerDay : samplesPerDay-1) + sleepOrOther
 
         let z : [HKSample] = []
         return zip(maleOrFemale, typesToSample).reduce(z, combine: { (var acc, mt) in
@@ -265,46 +272,104 @@ public class DataGenerator : GeneratorType {
     }
 
     // Dataset generation.
-    func writeSample(file: TextFile, sample: HKSample, asFirst: Bool) {
+    private var samplesSkipped = 0
+    private var daysSkipped = 0
+
+    func writeSample(handle: NSFileHandle, sample: HKSample, asFirst: Bool) {
         do {
             let js = try JSON(HealthManager.serializer.dictForSample(sample))
-            if let jsstr = js.rawString() {
-                if !asFirst { try "," |>> file }
-                try jsstr |>> file
+            if let jsstr = js.rawString(),
+                   jsdata = ((asFirst ? "" : ",") + jsstr).dataUsingEncoding(NSUTF8StringEncoding)
+            {
+                handle.writeData(jsdata)
+            } else {
+                ++samplesSkipped
             }
         } catch {
             log.error(error)
         }
     }
 
-    public func generateDataset(path: String, userId: String, size: Int, startDate: NSDate, endDate: NSDate) {
+    private func generateDataset(path: String, users: [String], size: Int, startDate: NSDate, endDate: NSDate) {
         let startDateDay = startDate.startOf(.Day, inRegion: Region())
         let days = Int(ceil(endDate.timeIntervalSinceDate(startDate)) / 86400.0)
+
         samplesPerDay = size / days
+        samplesSkipped = 0
+        daysSkipped = 0
 
         let output = TextFile(path: Path.UserHome + "Documents/" + path)
+
         do {
-            if !output.exists { try output.create() }
-            try "{ \"id\": \"\(userId)\", " |>> output
-            try "\"samples\": [" |>> output
-            (0..<days).forEach { i in
-                autoreleasepool { _ in
-                    currentDay = startDateDay + i.days
-                    if let samples : [HKSample] = self.next() {
-                        log.info("Writing batch \(i) / \(days),  \(samples.count) samples")
-                        var firstSample = true
-                        samples.forEach { s in
-                            writeSample(output, sample: s, asFirst: firstSample)
-                            firstSample = false
+            if output.exists { try output.delete() }
+            try output.create()
+
+            let gpreamble  = "{ users: [".dataUsingEncoding(NSUTF8StringEncoding)!
+            let gpostamble = "]}".dataUsingEncoding(NSUTF8StringEncoding)!
+            var firstUser = true
+
+            if let outhndl = output.handleForWriting {
+                outhndl.writeData(gpreamble)
+                users.forEach { userId in
+                    log.info("Generating dataset for \(userId)")
+
+                    let upreamble = ((firstUser ? "" : ",") + "{ \"id\": \"\(userId)\", \"samples\": [").dataUsingEncoding(NSUTF8StringEncoding)!
+                    let upostamble = "]}".dataUsingEncoding(NSUTF8StringEncoding)!
+
+                    firstUser = false
+
+                    outhndl.writeData(upreamble)
+                    (0..<days).forEach { i in
+                        autoreleasepool { _ in
+                            currentDay = startDateDay + i.days
+                            if let samples : [HKSample] = self.next() {
+                                if (i % 10) == 0 { log.info("Writing batch \(i) / \(days),  \(samples.count) samples") }
+                                var firstSample = true
+                                samples.forEach { s in
+                                    writeSample(outhndl, sample: s, asFirst: firstSample)
+                                    firstSample = false
+                                }
+                            } else {
+                                ++daysSkipped
+                            }
                         }
                     }
+                    outhndl.writeData(upostamble)
                 }
+                outhndl.writeData(gpostamble)
+
+                log.info("Created a HealthKit dataset of size \(output.size! / (1024*1024)) MB at: \(output.path)")
+                log.info("Skipped \(samplesSkipped) samples, \(daysSkipped) days")
+            } else {
+                log.error("Could not write dataset to \(output.path)")
             }
-            try "]}" |>> output
-            log.info("Created a HealthKit dataset of size \(output.size! / (1024*1024)) MB at: \(output.path)")
         } catch {
             log.error(error)
         }
+
+    }
+
+    public func generateDatasetForUser(path: String, userId: String, size: Int, startDate: NSDate, endDate: NSDate) {
+        generateDataset(path, users: [userId], size: size, startDate: startDate, endDate: endDate)
+    }
+
+    private func randomUser(length: Int) -> String {
+        let charactersString = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789"
+        let charactersArray = Array(charactersString.characters)
+
+        var string = ""
+        for _ in 0..<length {
+            string.append(charactersArray[Int(arc4random()) % charactersArray.count])
+        }
+        
+        return string
+    }
+
+    public func generateDatasetForService(path: String, numUsers: Int, size: Int, startDate: NSDate, endDate: NSDate) {
+        let userIdLen = 20
+        let users = (0..<numUsers).map { _ in return randomUser(userIdLen) }
+        let sizePerUser = Int(ceil(Double(size) / Double(numUsers)))
+        generateDataset(path, users: users, size: sizePerUser, startDate: startDate, endDate: endDate)
     }
 
 }

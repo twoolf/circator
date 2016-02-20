@@ -11,6 +11,9 @@ import CircatorKit
 import Former
 import Async
 
+private let lblFontSize = ScreenManager.sharedInstance.profileLabelFontSize()
+private let inputFontSize = ScreenManager.sharedInstance.profileInputFontSize()
+
 class ProfileSubviewController : FormViewController {
 
     var profileFields       : [String] = []
@@ -49,9 +52,9 @@ class ProfileSubviewController : FormViewController {
                 $0.tintColor = .blueColor()
                 $0.titleLabel.text = text
                 $0.titleLabel.textColor = self.txtColor
-                $0.titleLabel.font = .boldSystemFontOfSize(16)
+                $0.titleLabel.font = .boldSystemFontOfSize(lblFontSize)
                 $0.textField.textColor = self.txtColor
-                $0.textField.font = .boldSystemFontOfSize(14)
+                $0.textField.font = .boldSystemFontOfSize(inputFontSize)
                 $0.textField.textAlignment = .Right
                 $0.textField.returnKeyType = .Next
 
