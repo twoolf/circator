@@ -551,27 +551,52 @@ public class HealthManager: NSObject, WCSessionDelegate {
 
     // MARK: - Writing into HealthKit
 
-    public func savePreparationAndRecoveryWorkout(startDate:NSDate , endDate:NSDate , distance:Double, distanceUnit:HKUnit , kiloCalories:Double,
-        metadata:NSDictionary, completion: ( (Bool, NSError!) -> Void)!) {
-            log.debug("Saving workout \(startDate) \(endDate)")
+    public func saveSleep(startDate: NSDate, endDate: NSDate, metadata: NSDictionary, completion: ( (Bool, NSError!) -> Void)!)
+    {
+        log.debug("Saving sleep \(startDate) \(endDate)")
 
-            // 1. Create quantities for the distance and energy burned
-            let distanceQuantity = HKQuantity(unit: distanceUnit, doubleValue: distance)
-            let caloriesQuantity = HKQuantity(unit: HKUnit.kilocalorieUnit(), doubleValue: kiloCalories)
+        let type = HKObjectType.categoryTypeForIdentifier(HKCategoryTypeIdentifierSleepAnalysis)!
+        let sample = HKCategorySample(type: type, value: HKCategoryValueSleepAnalysis.Asleep.rawValue, startDate: startDate, endDate: endDate, metadata: metadata as? [String : AnyObject])
 
-            // 2. Save Preparation and Recovery Workout as surrogate for Eating (Meal)
-            let workout = HKWorkout(activityType: HKWorkoutActivityType.PreparationAndRecovery, startDate: startDate, endDate: endDate, duration: abs(endDate.timeIntervalSinceDate(startDate)), totalEnergyBurned: caloriesQuantity, totalDistance: distanceQuantity, metadata: metadata  as! [String:String])
+        healthKitStore.saveObject(sample, withCompletion: { (success, error) -> Void in
+            if( error != nil  ) { completion(success,error) }
+            else { completion(success,nil) }
+        })
+    }
 
-            healthKitStore.saveObject(workout, withCompletion: { (success, error) -> Void in
-                if( error != nil  ) {
-                    // Error saving the workout
-                    completion(success,error)
-                }
-                else {
-                    // Workout saved
-                    completion(success,nil)
-                }
-            })
+    public func saveWorkout(startDate: NSDate, endDate: NSDate, activityType: HKWorkoutActivityType, distance: Double, distanceUnit: HKUnit, kiloCalories: Double, metadata:NSDictionary, completion: ( (Bool, NSError!) -> Void)!)
+    {
+        log.debug("Saving workout \(startDate) \(endDate)")
+
+        let distanceQuantity = HKQuantity(unit: distanceUnit, doubleValue: distance)
+        let caloriesQuantity = HKQuantity(unit: HKUnit.kilocalorieUnit(), doubleValue: kiloCalories)
+
+        let workout = HKWorkout(activityType: activityType, startDate: startDate, endDate: endDate, duration: abs(endDate.timeIntervalSinceDate(startDate)), totalEnergyBurned: caloriesQuantity, totalDistance: distanceQuantity, metadata: metadata  as! [String:String])
+
+        healthKitStore.saveObject(workout, withCompletion: { (success, error) -> Void in
+            if( error != nil  ) { completion(success,error) }
+            else { completion(success,nil) }
+        })
+    }
+
+    public func saveRunningWorkout(startDate: NSDate, endDate: NSDate, distance:Double, distanceUnit: HKUnit, kiloCalories: Double, metadata: NSDictionary, completion: ( (Bool, NSError!) -> Void)!)
+    {
+        saveWorkout(startDate, endDate: endDate, activityType: HKWorkoutActivityType.Running, distance: distance, distanceUnit: distanceUnit, kiloCalories: kiloCalories, metadata: metadata, completion: completion)
+    }
+
+    public func saveCyclingWorkout(startDate: NSDate, endDate: NSDate, distance:Double, distanceUnit: HKUnit, kiloCalories: Double, metadata: NSDictionary, completion: ( (Bool, NSError!) -> Void)!)
+    {
+        saveWorkout(startDate, endDate: endDate, activityType: HKWorkoutActivityType.Cycling, distance: distance, distanceUnit: distanceUnit, kiloCalories: kiloCalories, metadata: metadata, completion: completion)
+    }
+
+    public func saveSwimmingWorkout(startDate: NSDate, endDate: NSDate, distance:Double, distanceUnit: HKUnit, kiloCalories: Double, metadata: NSDictionary, completion: ( (Bool, NSError!) -> Void)!)
+    {
+        saveWorkout(startDate, endDate: endDate, activityType: HKWorkoutActivityType.Swimming, distance: distance, distanceUnit: distanceUnit, kiloCalories: kiloCalories, metadata: metadata, completion: completion)
+    }
+
+    public func savePreparationAndRecoveryWorkout(startDate: NSDate, endDate: NSDate, distance:Double, distanceUnit: HKUnit, kiloCalories: Double, metadata: NSDictionary, completion: ( (Bool, NSError!) -> Void)!)
+    {
+        saveWorkout(startDate, endDate: endDate, activityType: HKWorkoutActivityType.PreparationAndRecovery, distance: distance, distanceUnit: distanceUnit, kiloCalories: kiloCalories, metadata: metadata, completion: completion)
     }
 
     // MARK: - Upload helpers.

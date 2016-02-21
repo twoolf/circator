@@ -223,6 +223,7 @@ public struct HMConstants
     ]
 
     public let healthKitTypesToWrite : Set<HKSampleType>? = [
+        HKObjectType.categoryTypeForIdentifier(HKCategoryTypeIdentifierSleepAnalysis)!,
         HKQuantityType.workoutType()
     ]
 
