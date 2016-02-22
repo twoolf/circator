@@ -22,15 +22,9 @@ private let mcControlButtonHeight = ScreenManager.sharedInstance.dashboardButton
 
 private let hkAccessTimeout = 60.seconds
 
-enum MCPickerMode {
-    case MCPickFood
-    case MCPickSleep
-    case MCPickExercise
-}
-
 class IntroViewController: UIViewController,
-                           UITableViewDataSource, UIPickerViewDataSource,
-                           UITableViewDelegate, UIPickerViewDelegate
+                           UITableViewDataSource,
+                           UITableViewDelegate, UIPickerViewDelegate, UIPickerViewDataSource
 {
     private var hkAccessTime : NSDate? = nil         // Time of initial access attempt.
     private var hkAccessAsync : Async? = nil         // Background task to notify if HealthKit is slow to access.
@@ -42,8 +36,8 @@ class IntroViewController: UIViewController,
     lazy var radarController: RadarViewController = { return RadarViewController() }()
     lazy var mealController: EventTimeViewController = { return EventTimeViewController() }()
 
-    private var timingPickerMode : MCPickerMode! = nil
     private var mealCIndex : Int = 0
+    private var eventManager: EventPickerManager!
 
     private var tevDisplayerCIndex : Int = 0
     private var tevSelectorCIndex : Int = 0
@@ -431,68 +425,8 @@ class IntroViewController: UIViewController,
     static let previewTypes = Array(PreviewManager.previewChoices.flatten())
     static let previewTypeStrings = PreviewManager.previewChoices.flatten().map { $0.displayText ?? HMConstants.sharedInstance.healthKitShortNames[$0.identifier]! }
 
-//    static let previewMealTypeStrings = [["Bkfast", "Lunch", "Dinner", "Snack"],
-//            ["5:00 AM","5:30 AM","6:00 AM","6:30 AM","7:00 AM","7:30 AM","8:00 AM","8:30 AM",
-//             "9:00 AM","9:30 AM","10:00 AM","10:30 AM","11:00 AM","11:30 AM","12:00 PM", "12:30 PM",
-//             "1:00 PM", "1:30 PM", "2:00 PM", "2:30 PM", "3:00 PM", "3:30 PM", "4:00 PM", "4:30 PM",
-//             "5:00 PM", "5:30 PM", "6:00 PM", "6:30 PM", "7:00 PM", "7:30 PM", "8:00 PM", "8:30 PM",
-//             "9:00 PM", "9:30 PM", "10:00 PM", "10:30 PM", "11:00 PM", "11:30 PM", "12:00 AM", "12:30 AM",
-//             "1:00 AM", "1:30 AM", "2:00 AM", "2:30 AM", "3:00 AM", "3:30 AM", "4:00 AM", "4:30 AM"],
-//            ["15 Min", "30 Min", "45 Min", "60 Min", "90 Min", "120 Min", "150 Min", "180 Min", "210 Min", "240 Min"]]/*,
-//                                         ["1✮", "2✮", "3✮", "4✮", "5✮"]*/
-
-    static let previewMealTypeStrings = [
-        ["Bkfast", "Lunch", "Dinner", "Snack"],
-        ["05:00", "05:30", "06:00", "06:30", "07:00", "07:30", "08:00", "08:30",
-         "09:00", "09:30", "10:00", "10:30", "11:00", "11:30", "12:00", "12:30",
-         "13:00", "13:30", "14:00", "14:30", "15:00", "15:30", "16:00", "16:30",
-         "17:00", "17:30", "18:00", "18:30", "19:00", "19:30", "20:00", "20:30",
-         "21:00", "21:30", "22:00", "22:30", "23:00", "23:30", "00:00", "00:30",
-         "01:00", "01:30", "02:00", "02:30", "03:00", "03:30", "04:00", "04:30"],
-        ["15 Min", "30 Min", "45 Min", "60 Min", "90 Min", "120 Min", "150 Min", "180 Min", "210 Min", "240 Min"]]
-
-    static let sleepEndpointTypeStrings = [
-           ["21:00", "21:30", "22:00", "22:30", "23:00", "23:30", "00:00", "00:30",
-            "01:00", "01:30", "02:00", "02:30", "03:00", "03:30", "04:00", "04:30",
-            "05:00", "05:30", "06:00", "06:30", "07:00", "07:30", "08:00", "08:30",
-            "09:00", "09:30", "10:00", "10:30", "11:00", "11:30", "12:00", "12:30",
-            "13:00", "13:30", "14:00", "14:30", "15:00", "15:30", "16:00", "16:30",
-            "17:00", "17:30", "18:00", "18:30", "19:00", "19:30", "20:00", "20:30"],
-           ["05:00", "05:30", "06:00", "06:30", "07:00", "07:30", "08:00", "08:30",
-            "09:00", "09:30", "10:00", "10:30", "11:00", "11:30", "12:00", "12:30",
-            "13:00", "13:30", "14:00", "14:30", "15:00", "15:30", "16:00", "16:30",
-            "17:00", "17:30", "18:00", "18:30", "19:00", "19:30", "20:00", "20:30",
-            "21:00", "21:30", "22:00", "22:30", "23:00", "23:30", "00:00", "00:30",
-            "01:00", "01:30", "02:00", "02:30", "03:00", "03:30", "04:00", "04:30"]]
-
-    static let exerciseEndpointTypeStrings = [
-           ["21:00", "21:30", "22:00", "22:30", "23:00", "23:30", "00:00", "00:30",
-            "01:00", "01:30", "02:00", "02:30", "03:00", "03:30", "04:00", "04:30",
-            "05:00", "05:30", "06:00", "06:30", "07:00", "07:30", "08:00", "08:30",
-            "09:00", "09:30", "10:00", "10:30", "11:00", "11:30", "12:00", "12:30",
-            "13:00", "13:30", "14:00", "14:30", "15:00", "15:30", "16:00", "16:30",
-            "17:00", "17:30", "18:00", "18:30", "19:00", "19:30", "20:00", "20:30"],
-           ["05:00", "05:30", "06:00", "06:30", "07:00", "07:30", "08:00", "08:30",
-            "09:00", "09:30", "10:00", "10:30", "11:00", "11:30", "12:00", "12:30",
-            "13:00", "13:30", "14:00", "14:30", "15:00", "15:30", "16:00", "16:30",
-            "17:00", "17:30", "18:00", "18:30", "19:00", "19:30", "20:00", "20:30",
-            "21:00", "21:30", "22:00", "22:30", "23:00", "23:30", "00:00", "00:30",
-            "01:00", "01:30", "02:00", "02:30", "03:00", "03:30", "04:00", "04:30"]]
-
-    static let durationTypeStrings = [
-        ["05:00", "05:30", "06:00", "06:30", "07:00", "07:30", "08:00", "08:30",
-         "09:00", "09:30", "10:00", "10:30", "11:00", "11:30", "12:00", "12:30",
-         "13:00", "13:30", "14:00", "14:30", "15:00", "15:30", "16:00", "16:30",
-         "17:00", "17:30", "18:00", "18:30", "19:00", "19:30", "20:00", "20:30",
-         "21:00", "21:30", "22:00", "22:30", "23:00", "23:30", "00:00", "00:30",
-         "01:00", "01:30", "02:00", "02:30", "03:00", "03:30", "04:00", "04:30"],
-        ["0 Hr",  "1 Hr",  "2 Hr",  "3 Hr",  "4 Hr",  "5 Hr",  "6 Hr",  "7 Hr",  "8 Hr",  "9 Hr",  "10 Hr", "11 Hr",
-         "12 Hr", "13 Hr", "14 Hr", "15 Hr", "16 Hr", "17 Hr", "18 Hr", "19 Hr", "20 Hr", "21 Hr", "22 Hr", "23 Hr"],
-        ["0 Min", "5 Min", "10 Min", "15 Min", "20 Min", "25 Min", "30 Min", "35 Min", "40 Min", "45 Min", "50 Min", "55 Min"]]
-
     lazy var dummyTextField: UITextField = {
         let textField = UITextField()
-        textField.inputView = self.pickerView
         textField.inputAccessoryView = {
             let view = UIToolbar()
             view.frame = CGRectMake(0, 0, 0, 44)
@@ -507,24 +441,15 @@ class IntroViewController: UIViewController,
         return textField
     }()
 
-    private lazy var pickerView: UIPickerView = {
-        let pickerView = UIPickerView()
-        pickerView.dataSource = self
-        pickerView.delegate = self
-        return pickerView
-    }()
+    private var pickerView: UIPickerView!
 
     enum GraphMode {
         case Plot(HKSampleType)
         case Correlate(HKSampleType, HKSampleType)
-        case TimedEvent
-        case TimedMealEvent
-        case TimedSleepEvent
-        case TimedExerciseEvent
+        case Event(EventPickerManager.Event)
     }
 
     private var selectedMode: GraphMode!
-
 
     // MARK: - Background Work
 
@@ -845,25 +770,35 @@ class IntroViewController: UIViewController,
     }
 
     func showAttributes(sender: UIButton) {
+        func initializePickerView() {
+            pickerView = UIPickerView()
+            pickerView.dataSource = self
+            pickerView.delegate = self
+        }
         if sender == correlateButton {
+            initializePickerView()
             selectedMode = GraphMode.Correlate(IntroViewController.previewTypes[0], IntroViewController.previewTypes[1])
         }
         else if sender == plotButton {
+            initializePickerView()
             selectedMode = GraphMode.Plot(IntroViewController.previewTypes[0])
+        } else {
+            var event: EventPickerManager.Event!
+            if sender == foodButton {
+                event = .Meal
+            }
+            else if sender == sleepButton {
+                event = .Sleep
+            }
+            else if sender == exerciseButton {
+                event = .Exercise
+            }
+            selectedMode = GraphMode.Event(event)
+            eventManager = EventPickerManager(event: event)
+            pickerView = eventManager.pickerView
         }
-        else if sender == timedEventButton {
-            selectedMode = GraphMode.TimedEvent
-        }
-        else if sender == foodButton {
-            selectedMode = GraphMode.TimedMealEvent
-        }
-        else if sender == sleepButton {
-            selectedMode = GraphMode.TimedSleepEvent
-        }
-        else if sender == exerciseButton {
-            selectedMode = GraphMode.TimedExerciseEvent
-        }
-        self.pickerView.reloadAllComponents()
+        self.dummyTextField.inputView = self.pickerView
+        pickerView.reloadAllComponents()
         self.dummyTextField.becomeFirstResponder()
     }
 
@@ -901,84 +836,85 @@ class IntroViewController: UIViewController,
         case .Plot(let type):
             plotView(type)
 
-        case .TimedEvent, .TimedMealEvent:
-            let chosenTimeStr = IntroViewController.previewMealTypeStrings[1][pickerView.selectedRowInComponent(1)]
-            let chosenDurationStr = IntroViewController.previewMealTypeStrings[2][pickerView.selectedRowInComponent(2)]
-
-            let startDelta = chosenTimeStr.toDate(format)!
-            let startTimeO = clampTime(today + startDelta.hour.hours + startDelta.minute.minutes, upper: now, lower: ago24)
-            let durationMinuteStr = chosenDurationStr.componentsSeparatedByString(" Min")[0]
-
-            if let startTime = startTimeO  {
-                let endTime = startTime + Int(durationMinuteStr)!.minutes
-
-                let metaMeals = [/*"Meal Rating": String(IntroViewController.previewMealTypeStrings[3][pickerView.selectedRowInComponent(3)]), */
-                    "Meal Type": String(IntroViewController.previewMealTypeStrings[0][pickerView.selectedRowInComponent(0)])]
-
-                log.info("Meal event \(startTime) \(endTime)")
-                HealthManager.sharedManager.savePreparationAndRecoveryWorkout(
-                    startTime, endDate: endTime, distance: 0.0, distanceUnit: HKUnit(fromString: "km"),
-                    kiloCalories: 0.0, metadata: metaMeals)
-                    {
-                        (success, error ) -> Void in
-                        guard error == nil else { log.error(error); return }
-                        log.info("Meal saved as workout type")
-                        self.refreshMealController()
+        case .Event(let event):
+            switch event {
+            case .Meal:
+                let chosenTimeStr = EventPickerManager.previewMealTypeStrings[1][pickerView.selectedRowInComponent(1)]
+                let chosenDurationStr = EventPickerManager.previewMealTypeStrings[2][pickerView.selectedRowInComponent(2)]
+                
+                let startDelta = chosenTimeStr.toDate(format)!
+                let startTimeO = clampTime(today + startDelta.hour.hours + startDelta.minute.minutes, upper: now, lower: ago24)
+                let durationMinuteStr = chosenDurationStr.componentsSeparatedByString(" Min")[0]
+                
+                if let startTime = startTimeO  {
+                    let endTime = startTime + Int(durationMinuteStr)!.minutes
+                    
+                    let metaMeals = [/*"Meal Rating": String(IntroViewController.previewMealTypeStrings[3][pickerView.selectedRowInComponent(3)]), */
+                        "Meal Type": String(EventPickerManager.previewMealTypeStrings[0][pickerView.selectedRowInComponent(0)])]
+                    
+                    log.info("Meal event \(startTime) \(endTime)")
+                    HealthManager.sharedManager.savePreparationAndRecoveryWorkout(
+                        startTime, endDate: endTime, distance: 0.0, distanceUnit: HKUnit(fromString: "km"),
+                        kiloCalories: 0.0, metadata: metaMeals)
+                        {
+                            (success, error ) -> Void in
+                            guard error == nil else { log.error(error); return }
+                            log.info("Meal saved as workout type")
+                            self.refreshMealController()
+                    }
+                } else {
+                    UINotifications.genericError(self, msg: "Invalid meal times, please try again")
                 }
-            } else {
-                UINotifications.genericError(self, msg: "Invalid meal times, please try again")
-            }
-
-        case .TimedSleepEvent:
-            let startTimeStr = IntroViewController.sleepEndpointTypeStrings[0][pickerView.selectedRowInComponent(0)]
-            let endTimeStr = IntroViewController.sleepEndpointTypeStrings[1][pickerView.selectedRowInComponent(1)]
-
-            let startDelta = startTimeStr.toDate(format)!
-            let endDelta = endTimeStr.toDate(format)!
-
-            let startTime : NSDate! = clampTime(today + startDelta.hour.hours + startDelta.minute.minutes, upper: now, lower: ago24)
-            let endTime : NSDate! = clampTime(today + endDelta.hour.hours + endDelta.minute.minutes, upper: now, lower: ago24)
-
-            log.info("Sleep event \(startTime) \(endTime)")
-            if startTime == nil || endTime == nil || startTime! >= endTime! {
-                UINotifications.genericError(self, msg: "Invalid sleep times, please try again")
-            } else {
+            case .Sleep:
+                let startTimeStr = EventPickerManager.sleepEndpointTypeStrings[0][pickerView.selectedRowInComponent(0)]
+                let endTimeStr = EventPickerManager.sleepEndpointTypeStrings[1][pickerView.selectedRowInComponent(1)]
+                
+                let startDelta = startTimeStr.toDate(format)!
+                let endDelta = endTimeStr.toDate(format)!
+                
+                let startTime : NSDate! = clampTime(today + startDelta.hour.hours + startDelta.minute.minutes, upper: now, lower: ago24)
+                let endTime : NSDate! = clampTime(today + endDelta.hour.hours + endDelta.minute.minutes, upper: now, lower: ago24)
+                
                 log.info("Sleep event \(startTime) \(endTime)")
-                HealthManager.sharedManager.saveSleep(startTime!, endDate: endTime!, metadata: [:], completion:
-                    {
-                        (success, error ) -> Void in
-                        guard error == nil else { log.error(error); return }
-                        log.info("Saved as sleep event")
-                        self.refreshMealController()
-                })
-            }
-
-        case .TimedExerciseEvent:
-            let startTimeStr = IntroViewController.durationTypeStrings[0][pickerView.selectedRowInComponent(0)]
-            var durationHrStr = IntroViewController.durationTypeStrings[1][pickerView.selectedRowInComponent(1)]
-            var durationMinStr = IntroViewController.durationTypeStrings[2][pickerView.selectedRowInComponent(2)]
-
-            let startDelta = startTimeStr.toDate(format)!
-            durationHrStr = durationHrStr.componentsSeparatedByString(" Hr")[0]
-            durationMinStr = durationMinStr.componentsSeparatedByString(" Min")[0]
-
-            let startTimeO = clampTime(today + startDelta.hour.hours + startDelta.minute.minutes, upper: now, lower: ago24)
-
-            if let startTime = startTimeO {
-                let endTime = startTime + Int(durationHrStr)!.hours + Int(durationMinStr)!.minutes
-
-                log.info("Exercise event \(startTime) \(endTime)")
-                HealthManager.sharedManager.saveRunningWorkout(
-                    startTime, endDate: endTime, distance: 0.0, distanceUnit: HKUnit(fromString: "km"),
-                    kiloCalories: 0.0, metadata: [:])
-                {
-                    (success, error ) -> Void in
-                    guard error == nil else { log.error(error); return }
-                    log.info("Saved as exercise workout type")
-                    self.refreshMealController()
+                if startTime == nil || endTime == nil || startTime! >= endTime! {
+                    UINotifications.genericError(self, msg: "Invalid sleep times, please try again")
+                } else {
+                    log.info("Sleep event \(startTime) \(endTime)")
+                    HealthManager.sharedManager.saveSleep(startTime!, endDate: endTime!, metadata: [:], completion:
+                        {
+                            (success, error ) -> Void in
+                            guard error == nil else { log.error(error); return }
+                            log.info("Saved as sleep event")
+                            self.refreshMealController()
+                    })
                 }
-            } else {
-                UINotifications.genericError(self, msg: "Invalid exercise times, please try again")
+            case .Exercise:
+                let startTimeStr = EventPickerManager.durationTypeStrings[0][pickerView.selectedRowInComponent(0)]
+                var durationHrStr = EventPickerManager.durationTypeStrings[1][pickerView.selectedRowInComponent(1)]
+                var durationMinStr = EventPickerManager.durationTypeStrings[2][pickerView.selectedRowInComponent(2)]
+                
+                let startDelta = startTimeStr.toDate(format)!
+                durationHrStr = durationHrStr.componentsSeparatedByString(" Hr")[0]
+                durationMinStr = durationMinStr.componentsSeparatedByString(" Min")[0]
+                
+                let startTimeO = clampTime(today + startDelta.hour.hours + startDelta.minute.minutes, upper: now, lower: ago24)
+                
+                if let startTime = startTimeO {
+                    let endTime = startTime + Int(durationHrStr)!.hours + Int(durationMinStr)!.minutes
+                    
+                    log.info("Exercise event \(startTime) \(endTime)")
+                    HealthManager.sharedManager.saveRunningWorkout(
+                        startTime, endDate: endTime, distance: 0.0, distanceUnit: HKUnit(fromString: "km"),
+                        kiloCalories: 0.0, metadata: [:])
+                        {
+                            (success, error ) -> Void in
+                            guard error == nil else { log.error(error); return }
+                            log.info("Saved as exercise workout type")
+                            self.refreshMealController()
+                    }
+                } else {
+                    UINotifications.genericError(self, msg: "Invalid exercise times, please try again")
+                }
             }
         }
     }
@@ -1021,7 +957,6 @@ class IntroViewController: UIViewController,
         navigationController?.pushViewController(queryViewController, animated: true)
     }
 
-
     // MARK: - Table View
 
     func numberOfSectionsInTableView(tableView: UITableView) -> Int {
@@ -1046,8 +981,6 @@ class IntroViewController: UIViewController,
         return cell
     }
 
-    // MARK: - Picker view delegate
-
     func numberOfComponentsInPickerView(pickerView: UIPickerView) -> Int {
         if case .Correlate(_) = selectedMode! {
             return 2
@@ -1055,17 +988,9 @@ class IntroViewController: UIViewController,
         else if case .Plot(_) = selectedMode! {
             return 1
         }
-        else if case .TimedSleepEvent(_) = selectedMode! {
-            return IntroViewController.sleepEndpointTypeStrings.count
-        }
-        else if case .TimedExerciseEvent(_) = selectedMode! {
-            return IntroViewController.durationTypeStrings.count
-        }
-        else {
-            return IntroViewController.previewMealTypeStrings.count
-        }
+        return 0
     }
-
+    
     func pickerView(pickerView: UIPickerView, numberOfRowsInComponent component: Int) -> Int {
         if case .Correlate(_) = selectedMode! {
             return IntroViewController.previewTypeStrings.count
@@ -1073,27 +998,9 @@ class IntroViewController: UIViewController,
         else if case .Plot(_) = selectedMode! {
             return IntroViewController.previewTypeStrings.count
         }
-        else if case .TimedSleepEvent(_) = selectedMode! {
-            // Note: it's not clear why this ever occurs, given #components is set before this call.
-            if component >= IntroViewController.sleepEndpointTypeStrings.count {
-                log.info("Invalid PV NRC \(pickerView.numberOfComponents) \(component)")
-                return 0
-            }
-            return IntroViewController.sleepEndpointTypeStrings[component].count
-        }
-        else if case .TimedExerciseEvent(_) = selectedMode! {
-            // Note: it's not clear why this ever occurs, given #components is set before this call.
-            if component >= IntroViewController.durationTypeStrings.count {
-                log.info("Invalid PV NRC \(pickerView.numberOfComponents) \(component)")
-                return 0
-            }
-            return IntroViewController.durationTypeStrings[component].count
-        }
-        else {
-            return IntroViewController.previewMealTypeStrings[component].count
-        }
+        return 0
     }
-
+    
     func pickerView(pickerView: UIPickerView, titleForRow row: Int, forComponent component: Int) -> String? {
         if case .Correlate(_) = selectedMode! {
             return IntroViewController.previewTypeStrings[row]
@@ -1101,26 +1008,10 @@ class IntroViewController: UIViewController,
         else if case .Plot(_) = selectedMode! {
             return IntroViewController.previewTypeStrings[row]
         }
-        else if case .TimedSleepEvent(_) = selectedMode! {
-            // Note: it's not clear why this ever occurs, given #components is set before this call.
-            if component >= IntroViewController.sleepEndpointTypeStrings.count {
-                log.info("Invalid PVRow \(pickerView.numberOfComponents) \(component)")
-                return nil
-            }
-            return IntroViewController.sleepEndpointTypeStrings[component][row]
-        }
-        else if case .TimedExerciseEvent(_) = selectedMode! {
-            // Note: it's not clear why this ever occurs, given #components is set before this call.
-            if component >= IntroViewController.durationTypeStrings.count {
-                log.info("Invalid PVRow \(pickerView.numberOfComponents) \(component)")
-                return nil
-            }
-            return IntroViewController.durationTypeStrings[component][row]
-        }
-        else {
-            return IntroViewController.previewMealTypeStrings[component][row]
-        }
+        return nil
     }
+    
+    // MARK: - Picker view delegate
 
     func pickerView(pickerView: UIPickerView, didSelectRow row: Int, inComponent component: Int) {
         if case .Correlate(_) = selectedMode! {
@@ -1230,8 +1121,4 @@ class IntroViewController: UIViewController,
                 self.refreshMealController()
             })
     }
-}
-
-class MCButton : HTPressableButton {
-
 }

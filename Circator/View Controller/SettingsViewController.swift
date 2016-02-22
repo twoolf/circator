@@ -12,7 +12,8 @@ import Async
 import Former
 import SwiftDate
 
-private let fieldCount           : Int   = UserProfile.sharedInstance.updateableReqRange.count+3
+private let fieldCount           : Int   = UserProfile.sharedInstance.updateableReqRange.count+4
+
 private let debugSectionSizes    : [Int] = [2,2,7,fieldCount,2,1]
 private let releaseSectionSizes  : [Int] = [2,2,7,fieldCount,2]
 
@@ -39,7 +40,7 @@ class SettingsViewController: UITableViewController, UITextFieldDelegate {
     private var uploadButton: UIButton? = nil
 
     private var profile : [(String, String, String, Int)] = []
-    private var subviews = ["Consent", "Recommended", "Optional"]
+    private var subviews = ["Consent", "Recommended", "Optional", "Repeated Meals"]
 
     init() {
         super.init(style: UITableViewStyle.Grouped)
@@ -62,6 +63,7 @@ class SettingsViewController: UITableViewController, UITextFieldDelegate {
         profile.append(("Consent", "consent", "PDF", 4 + n))
         profile.append(("Recommended", "",    "",    5 + n))
         profile.append(("Optional",    "",    "",    6 + n))
+        profile.append(("Repeated Meals", "", "", 7 + n))
     }
 
     override func viewWillAppear(animated: Bool) {
@@ -427,19 +429,26 @@ class SettingsViewController: UITableViewController, UITextFieldDelegate {
             rowSettingsVC.selectedRow = indexPath.row
             navigationController?.pushViewController(rowSettingsVC, animated: true)
         }
-        else if ( indexPath.section == 3 && profile[indexPath.row].0 == "Consent" ) {
-            let consentVC = ConsentViewController()
-            navigationController?.pushViewController(consentVC, animated: true)
-        }
-        else if ( indexPath.section == 3 && profile[indexPath.row].0 == "Recommended" ) {
-            profileSubview("Recommended",
+        else if (indexPath.section == 3) {
+            switch profile[indexPath.row].0 {
+            case "Consent":
+                let consentVC = ConsentViewController()
+                navigationController?.pushViewController(consentVC, animated: true)
+            case "Recommended":
+                profileSubview("Recommended",
                 fields: Array(UserProfile.sharedInstance.profileFields[UserProfile.sharedInstance.recommendedRange]),
                 placeholders: Array(UserProfile.sharedInstance.profilePlaceholders[UserProfile.sharedInstance.recommendedRange]))
-        }
-        else if ( indexPath.section == 3 && profile[indexPath.row].0 == "Optional" ) {
-            profileSubview("Optional",
+            case "Optional":
+                profileSubview("Optional",
                 fields: Array(UserProfile.sharedInstance.profileFields[UserProfile.sharedInstance.optionalRange]),
                 placeholders: Array(UserProfile.sharedInstance.profilePlaceholders[UserProfile.sharedInstance.optionalRange]))
+            case "Repeated Meals":
+                let repeatedMealsVC = RepeatedEventsController()
+                navigationController?.pushViewController(repeatedMealsVC, animated: true)
+            default:
+                fatalError()
+            }
+
         }
         else if ( withDebugView && indexPath.section == 5 ) {
             let debugVC = DebugViewController()
