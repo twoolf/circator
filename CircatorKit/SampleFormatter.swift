@@ -273,13 +273,13 @@ public class SampleFormatter: NSObject {
             return quantity.doubleValueForUnit(HKUnit.kilocalorieUnit())
 
         case HKQuantityTypeIdentifierDietaryFatMonounsaturated:
-            return quantity.doubleValueForUnit(HKUnit.gramUnitWithMetricPrefix(.Milli))
+            return quantity.doubleValueForUnit(HKUnit.gramUnit())
 
         case HKQuantityTypeIdentifierDietaryFatPolyunsaturated:
-            return quantity.doubleValueForUnit(HKUnit.gramUnitWithMetricPrefix(.Milli))
+            return quantity.doubleValueForUnit(HKUnit.gramUnit())
 
         case HKQuantityTypeIdentifierDietaryFatSaturated:
-            return quantity.doubleValueForUnit(HKUnit.gramUnitWithMetricPrefix(.Milli))
+            return quantity.doubleValueForUnit(HKUnit.gramUnit())
 
         case HKQuantityTypeIdentifierDietaryFatTotal:
             return quantity.doubleValueForUnit(HKUnit.gramUnit())
@@ -291,7 +291,7 @@ public class SampleFormatter: NSObject {
             return quantity.doubleValueForUnit(HKUnit.gramUnitWithMetricPrefix(.Milli))
 
         case HKQuantityTypeIdentifierDietarySugar:
-            return quantity.doubleValueForUnit(HKUnit.gramUnitWithMetricPrefix(.Milli))
+            return quantity.doubleValueForUnit(HKUnit.gramUnit())
 
         case HKQuantityTypeIdentifierDistanceWalkingRunning:
             return quantity.doubleValueForUnit(HKUnit.mileUnit())
@@ -343,13 +343,13 @@ public class SampleFormatter: NSObject {
             return SampleFormatter.calorieFormatter.stringFromValue(quantity.doubleValueForUnit(HKUnit.kilocalorieUnit()), unit: .Kilocalorie)
 
         case HKQuantityTypeIdentifierDietaryFatMonounsaturated:
-            return SampleFormatter.foodMassFormatter.stringFromValue(quantity.doubleValueForUnit(HKUnit.gramUnitWithMetricPrefix(.Milli)), unit: .Gram)
+            return SampleFormatter.foodMassFormatter.stringFromValue(quantity.doubleValueForUnit(HKUnit.gramUnit()), unit: .Gram)
 
         case HKQuantityTypeIdentifierDietaryFatPolyunsaturated:
-            return SampleFormatter.foodMassFormatter.stringFromValue(quantity.doubleValueForUnit(HKUnit.gramUnitWithMetricPrefix(.Milli)), unit: .Gram)
+            return SampleFormatter.foodMassFormatter.stringFromValue(quantity.doubleValueForUnit(HKUnit.gramUnit()), unit: .Gram)
             
         case HKQuantityTypeIdentifierDietaryFatSaturated:
-            return SampleFormatter.foodMassFormatter.stringFromValue(quantity.doubleValueForUnit(HKUnit.gramUnitWithMetricPrefix(.Milli)), unit: .Gram)
+            return SampleFormatter.foodMassFormatter.stringFromValue(quantity.doubleValueForUnit(HKUnit.gramUnit()), unit: .Gram)
 
         case HKQuantityTypeIdentifierDietaryFatTotal:
             return SampleFormatter.foodMassFormatter.stringFromValue(quantity.doubleValueForUnit(HKUnit.gramUnit()), unit: .Gram)
@@ -361,7 +361,7 @@ public class SampleFormatter: NSObject {
             return SampleFormatter.foodMassFormatter.stringFromValue(quantity.doubleValueForUnit(HKUnit.gramUnitWithMetricPrefix(.Milli)), unit: .Gram)
 
         case HKQuantityTypeIdentifierDietarySugar:
-            return SampleFormatter.foodMassFormatter.stringFromValue(quantity.doubleValueForUnit(HKUnit.gramUnitWithMetricPrefix(.Milli)), unit: .Gram)
+            return SampleFormatter.foodMassFormatter.stringFromValue(quantity.doubleValueForUnit(HKUnit.gramUnit()), unit: .Gram)
 
         case HKQuantityTypeIdentifierDistanceWalkingRunning:
             return SampleFormatter.numberFormatter.stringFromNumber(quantity.doubleValueForUnit(HKUnit.mileUnit()))!
@@ -426,13 +426,13 @@ public class SampleFormatter: NSObject {
             return SampleFormatter.calorieFormatter.stringFromValue(quantity, unit: .Kilocalorie)
 
         case HKQuantityTypeIdentifierDietaryFatMonounsaturated:
-            return "\(SampleFormatter.numberFormatter.stringFromNumber(quantity)!) mg"
+            return "\(SampleFormatter.numberFormatter.stringFromNumber(quantity)!) g"
 
         case HKQuantityTypeIdentifierDietaryFatPolyunsaturated:
-            return "\(SampleFormatter.numberFormatter.stringFromNumber(quantity)!) mg"
+            return "\(SampleFormatter.numberFormatter.stringFromNumber(quantity)!) g"
 
         case HKQuantityTypeIdentifierDietaryFatSaturated:
-            return "\(SampleFormatter.numberFormatter.stringFromNumber(quantity)!) mg"
+            return "\(SampleFormatter.numberFormatter.stringFromNumber(quantity)!) g"
 
         case HKQuantityTypeIdentifierDietaryFatTotal:
             return "\(SampleFormatter.numberFormatter.stringFromNumber(quantity)!) g"
@@ -444,7 +444,7 @@ public class SampleFormatter: NSObject {
             return "\(SampleFormatter.numberFormatter.stringFromNumber(quantity)!) mg"
 
         case HKQuantityTypeIdentifierDietarySugar:
-            return "\(SampleFormatter.numberFormatter.stringFromNumber(quantity)!) mg"
+            return "\(SampleFormatter.numberFormatter.stringFromNumber(quantity)!) g"
 
         case HKQuantityTypeIdentifierDistanceWalkingRunning:
             return "\(SampleFormatter.numberFormatter.stringFromNumber(quantity)!) miles"

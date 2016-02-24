@@ -10,6 +10,7 @@ import CircatorKit
 import UIKit
 import Async
 import Former
+import HTPressableButton
 import SwiftDate
 
 private let fieldCount           : Int   = UserProfile.sharedInstance.updateableReqRange.count+4
@@ -21,6 +22,10 @@ private let debugSectionTitles    : [String] = ["Login", "Settings", "Preview Ro
 private let releaseSectionTitles  : [String] = ["Login", "Settings", "Preview Rows", "Profile", "Bulk Upload"]
 
 private let withDebugView = true
+
+class MCButton : HTPressableButton {
+    
+}
 
 class SettingsViewController: UITableViewController, UITextFieldDelegate {
 
@@ -40,7 +45,7 @@ class SettingsViewController: UITableViewController, UITextFieldDelegate {
     private var uploadButton: UIButton? = nil
 
     private var profile : [(String, String, String, Int)] = []
-    private var subviews = ["Consent", "Recommended", "Optional", "Repeated Meals"]
+    private var subviews = ["Consent", "Recommended", "Optional", "Repeated Events"]
 
     init() {
         super.init(style: UITableViewStyle.Grouped)
@@ -63,7 +68,7 @@ class SettingsViewController: UITableViewController, UITextFieldDelegate {
         profile.append(("Consent", "consent", "PDF", 4 + n))
         profile.append(("Recommended", "",    "",    5 + n))
         profile.append(("Optional",    "",    "",    6 + n))
-        profile.append(("Repeated Meals", "", "", 7 + n))
+        profile.append(("Repeated Events", "", "", 7 + n))
     }
 
     override func viewWillAppear(animated: Bool) {
@@ -442,9 +447,9 @@ class SettingsViewController: UITableViewController, UITextFieldDelegate {
                 profileSubview("Optional",
                 fields: Array(UserProfile.sharedInstance.profileFields[UserProfile.sharedInstance.optionalRange]),
                 placeholders: Array(UserProfile.sharedInstance.profilePlaceholders[UserProfile.sharedInstance.optionalRange]))
-            case "Repeated Meals":
-                let repeatedMealsVC = RepeatedEventsController()
-                navigationController?.pushViewController(repeatedMealsVC, animated: true)
+            case "Repeated Events":
+                let repeatedEventsVC = RepeatedEventsController()
+                navigationController?.pushViewController(repeatedEventsVC, animated: true)
             default:
                 fatalError()
             }

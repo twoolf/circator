@@ -1121,4 +1121,7 @@ class IntroViewController: UIViewController,
                 self.refreshMealController()
             })
     }
+    class MCButton : HTPressableButton {
+
+    }
 }

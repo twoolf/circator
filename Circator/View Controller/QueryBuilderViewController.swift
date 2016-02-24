@@ -9,6 +9,7 @@
 import CircatorKit
 import UIKit
 import Former
+import HTPressableButton
 import MGSwipeTableCell
 
 enum BuilderMode {
@@ -344,5 +345,9 @@ class PredicateTableView : UITableView, UITableViewDelegate, UITableViewDataSour
         let header: UITableViewHeaderFooterView = view as! UITableViewHeaderFooterView
         header.contentView.backgroundColor = Theme.universityDarkTheme.backgroundColor
         header.textLabel?.textColor = UIColor.whiteColor()
+    }
+    
+    class MCButton : HTPressableButton {
+        
     }
 }

@@ -12,6 +12,7 @@ import CircatorKit
 import UIKit
 import Async
 import Former
+import HTPressableButton
 import Crashlytics
 import SwiftDate
 
@@ -198,6 +199,10 @@ class DebugViewController : FormViewController {
         } else {
             UINotifications.genericError(self, msg: "Please enter a valid # users or a user id for data generation")
         }
+    }
+    
+    class MCButton : HTPressableButton {
+        
     }
 
 }
