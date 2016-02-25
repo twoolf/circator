@@ -574,7 +574,6 @@
 				F42F5B2F1BE1FD1E00195490 /* Headers */,
 				F42F5B301BE1FD1E00195490 /* Resources */,
 				155EF693A3CB475595C074A3 /* Copy Pods Resources */,
-				78D9C8E61C6823D9003D6994 /* Clean CircatorKit Frameworks */,
 			);
 			buildRules = (
 			);
@@ -765,20 +764,6 @@
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
 			shellScript = "\"${PODS_ROOT}/Fabric/run\" 9c8fe07d2ebf5808e873bbb23fe7a6c8ef76a22e 0608fae6f747cbbb131bca692ade699829f49ad28507a7c04fd0a3fa82ceaa49";
-		};
-		78D9C8E61C6823D9003D6994 /* Clean CircatorKit Frameworks */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputPaths = (
-			);
-			name = "Clean CircatorKit Frameworks";
-			outputPaths = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "if [[ -d \"Frameworks\" ]]; then\necho \"Removing Frameworks\"\nrm -fr Frameworks\nfi\n\ncd \"${CONFIGURATION_BUILD_DIR}/\"\nif [[ -d \"Frameworks\" ]]; then\necho \"Removing ${CONFIGURATION_BUILD_DIR}/Frameworks\"\nrm -fr Frameworks\nfi\n\ncd \"${UNLOCALIZED_RESOURCES_FOLDER_PATH}/\"\nif [[ -d \"Frameworks\" ]]; then\necho \"Removing ${CONFIGURATION_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/Frameworks\"\nrm -fr Frameworks\nfi";
 		};
 		8D97F58FF847A9E09D7ACDED /* Copy Pods Resources */ = {
 			isa = PBXShellScriptBuildPhase;

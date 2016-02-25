@@ -63,10 +63,10 @@ platform :ios do
 
   ########################################
   ## Cert and provisioning profile prep
-  ## 
+  ##
 
   desc "Fastlane/match execution"
-  private_lane :circatormatches do |options|
+  private_lane :prepcerts do |options|
     type  = options[:type]
     ro    = options[:readonly]
     frc   = options[:force]
@@ -83,12 +83,12 @@ platform :ios do
     ro   = options[:readonly]
 
     cocoapods
-    circatormatches(type: type, readonly: ro, force: false)
+    prepcerts(type: type, readonly: ro, force: false)
   end
 
   desc "Ensure all devices are added to the provisioning profile"
   lane :newdevices do
-    circatormatches(type: 'development', readonly: false, force: true)
+    prepcerts(type: 'development', readonly: false, force: true)
   end
 
   desc "Prepare for command line build"
@@ -98,7 +98,7 @@ platform :ios do
 
   desc "Prepare for command line deployment to the App Store"
   lane :preparedeploy do
-    circatormatches(type: 'appstore')
+    prepcerts(type: 'appstore')
   end
 
 
@@ -106,9 +106,16 @@ platform :ios do
   ## Build
   ##
 
-  desc "Build locally from the command line"
-  lane :build do
+  desc "Build a development archive"
+  lane :build_dev do
     prepbuild(type: 'development', readonly: true)
+    gym(scheme: "Circator")
+  end
+
+  desc "Build a beta/release archive"
+  lane :build_app do
+    prepbuild(type: "appstore", readonly: true)
+    increment_build_number
     gym(scheme: "Circator")
   end
 
@@ -116,13 +123,6 @@ platform :ios do
   ######################################
   ## Beta release
   ##
-
-  desc "Build a new Beta release"
-  lane :beta_build do
-    prepbuild(type: "appstore", readonly: true)
-    increment_build_number
-    gym(scheme: "Circator")
-  end
 
   desc "Upload a Beta Build to Apple TestFlight"
   lane :beta_upload_testflight do
@@ -140,19 +140,19 @@ platform :ios do
 
   desc "Build and submit a new Beta Build to Apple TestFlight"
   lane :beta_testflight do
-    beta_build
+    build_app
     beta_upload_testflight
   end
 
   desc "Build and submit a new Beta Build to Fabric/Crashlytics"
   lane :beta_fabric do
-    beta_build
+    build_app
     beta_upload_fabric
   end
 
   desc "Build and submit a new Beta Build to Apple TestFlight and Fabric/Crashlytics"
   lane :beta do
-    beta_build
+    build_app
     beta_upload_testflight
     beta_upload_fabric
   end
