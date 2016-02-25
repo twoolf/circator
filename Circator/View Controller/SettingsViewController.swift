@@ -21,7 +21,7 @@ private let releaseSectionSizes  : [Int] = [2,2,7,fieldCount,2]
 private let debugSectionTitles    : [String] = ["Login", "Settings", "Preview Rows", "Profile", "Bulk Upload", "Debug"]
 private let releaseSectionTitles  : [String] = ["Login", "Settings", "Preview Rows", "Profile", "Bulk Upload"]
 
-private let withDebugView = true
+private let withDebugView = false
 
 class MCButton : HTPressableButton {
     

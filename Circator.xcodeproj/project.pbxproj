@@ -778,7 +778,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "cd \"${CONFIGURATION_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/\"\nif [[ -d \"Frameworks\" ]]; then\nrm -fr Frameworks\nfi\n\ncd \"${CONFIGURATION_BUILD_DIR}/\"\nif [[ -d \"Frameworks\" ]]; then\nrm -fr Frameworks\nfi";
+			shellScript = "if [[ -d \"Frameworks\" ]]; then\necho \"Removing Frameworks\"\nrm -fr Frameworks\nfi\n\ncd \"${CONFIGURATION_BUILD_DIR}/\"\nif [[ -d \"Frameworks\" ]]; then\necho \"Removing ${CONFIGURATION_BUILD_DIR}/Frameworks\"\nrm -fr Frameworks\nfi\n\ncd \"${UNLOCALIZED_RESOURCES_FOLDER_PATH}/\"\nif [[ -d \"Frameworks\" ]]; then\necho \"Removing ${CONFIGURATION_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/Frameworks\"\nrm -fr Frameworks\nfi";
 		};
 		8D97F58FF847A9E09D7ACDED /* Copy Pods Resources */ = {
 			isa = PBXShellScriptBuildPhase;
@@ -1007,7 +1007,7 @@
 				IPHONEOS_DEPLOYMENT_TARGET = 9.0;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				ONLY_ACTIVE_ARCH = YES;
-				PROVISIONING_PROFILE = "42a32386-aafe-47b8-8713-7034adb33f05";
+				PROVISIONING_PROFILE = "d717dd58-50ea-43cd-808f-65696d8159d4";
 				SDKROOT = iphoneos;
 				TARGETED_DEVICE_FAMILY = "1,2";
 				VALIDATE_PRODUCT = YES;
@@ -1021,12 +1021,12 @@
 				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_IDENTITY = "";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
-				CURRENT_PROJECT_VERSION = 10;
+				CURRENT_PROJECT_VERSION = 16;
 				DEFINES_MODULE = YES;
 				DYLIB_COMPATIBILITY_VERSION = 1;
-				DYLIB_CURRENT_VERSION = 10;
+				DYLIB_CURRENT_VERSION = 16;
 				DYLIB_INSTALL_NAME_BASE = "@rpath";
-				EMBEDDED_CONTENT_CONTAINS_SWIFT = "$(inherited)";
+				EMBEDDED_CONTENT_CONTAINS_SWIFT = NO;
 				FRAMEWORK_SEARCH_PATHS = "$(inherited)";
 				GCC_PREFIX_HEADER = "Target Support Files/Granola/Granola-prefix.pch";
 				INFOPLIST_FILE = CircatorKit/Info.plist;
@@ -1035,7 +1035,7 @@
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = edu.jhu.cs.damsl.CircatorKit;
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				PROVISIONING_PROFILE = "fe604c3c-887f-4ebc-9936-8f75cd94414d";
+				PROVISIONING_PROFILE = "75f6478b-5fac-4d40-bb22-4040f791bd59";
 				SKIP_INSTALL = YES;
 				TARGETED_DEVICE_FAMILY = 1;
 				VERSIONING_SYSTEM = "apple-generic";
@@ -1059,7 +1059,7 @@
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = edu.jhu.cs.damsl.Circator.dev8;
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				PROVISIONING_PROFILE = "42a32386-aafe-47b8-8713-7034adb33f05";
+				PROVISIONING_PROFILE = "d717dd58-50ea-43cd-808f-65696d8159d4";
 				SWIFT_OPTIMIZATION_LEVEL = "-O";
 				TARGETED_DEVICE_FAMILY = 1;
 			};
@@ -1104,7 +1104,7 @@
 				INFOPLIST_FILE = CircatorWatch/Info.plist;
 				PRODUCT_BUNDLE_IDENTIFIER = edu.jhu.cs.damsl.Circator.dev8.watchkitapp2;
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				PROVISIONING_PROFILE = "29bc837b-68ce-4cf5-8674-4f036088b958";
+				PROVISIONING_PROFILE = "60193fec-bc80-441f-9666-363634b8dc01";
 				SDKROOT = watchos;
 				SKIP_INSTALL = YES;
 				TARGETED_DEVICE_FAMILY = 4;
@@ -1123,7 +1123,7 @@
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @executable_path/../../Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = edu.jhu.cs.damsl.Circator.dev8.watchkitapp2.watchextension;
 				PRODUCT_NAME = "${TARGET_NAME}";
-				PROVISIONING_PROFILE = "e30b020c-ff34-4de9-bb74-b778285036df";
+				PROVISIONING_PROFILE = "b019f972-b1eb-455a-8267-20cff9e4003d";
 				SDKROOT = watchos;
 				SKIP_INSTALL = YES;
 				TARGETED_DEVICE_FAMILY = 4;
@@ -1165,7 +1165,7 @@
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				IPHONEOS_DEPLOYMENT_TARGET = 9.0;
 				MTL_ENABLE_DEBUG_INFO = NO;
-				PROVISIONING_PROFILE = "42a32386-aafe-47b8-8713-7034adb33f05";
+				PROVISIONING_PROFILE = "d717dd58-50ea-43cd-808f-65696d8159d4";
 				SDKROOT = iphoneos;
 				TARGETED_DEVICE_FAMILY = "1,2";
 				VALIDATE_PRODUCT = YES;
@@ -1188,7 +1188,7 @@
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = edu.jhu.cs.damsl.Circator.dev8;
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				PROVISIONING_PROFILE = "42a32386-aafe-47b8-8713-7034adb33f05";
+				PROVISIONING_PROFILE = "d717dd58-50ea-43cd-808f-65696d8159d4";
 				SWIFT_OPTIMIZATION_LEVEL = "-O";
 				TARGETED_DEVICE_FAMILY = 1;
 			};
@@ -1229,12 +1229,12 @@
 				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_IDENTITY = "";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
-				CURRENT_PROJECT_VERSION = 10;
+				CURRENT_PROJECT_VERSION = 16;
 				DEFINES_MODULE = YES;
 				DYLIB_COMPATIBILITY_VERSION = 1;
-				DYLIB_CURRENT_VERSION = 10;
+				DYLIB_CURRENT_VERSION = 16;
 				DYLIB_INSTALL_NAME_BASE = "@rpath";
-				EMBEDDED_CONTENT_CONTAINS_SWIFT = "$(inherited)";
+				EMBEDDED_CONTENT_CONTAINS_SWIFT = NO;
 				FRAMEWORK_SEARCH_PATHS = "$(inherited)";
 				GCC_PREFIX_HEADER = "Target Support Files/Granola/Granola-prefix.pch";
 				INFOPLIST_FILE = CircatorKit/Info.plist;
@@ -1243,7 +1243,7 @@
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = edu.jhu.cs.damsl.CircatorKit;
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				PROVISIONING_PROFILE = "fe604c3c-887f-4ebc-9936-8f75cd94414d";
+				PROVISIONING_PROFILE = "75f6478b-5fac-4d40-bb22-4040f791bd59";
 				SKIP_INSTALL = YES;
 				TARGETED_DEVICE_FAMILY = 1;
 				VERSIONING_SYSTEM = "apple-generic";
@@ -1262,7 +1262,7 @@
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @executable_path/../../Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = edu.jhu.cs.damsl.Circator.dev8.watchkitapp2.watchextension;
 				PRODUCT_NAME = "${TARGET_NAME}";
-				PROVISIONING_PROFILE = "e30b020c-ff34-4de9-bb74-b778285036df";
+				PROVISIONING_PROFILE = "b019f972-b1eb-455a-8267-20cff9e4003d";
 				SDKROOT = watchos;
 				SKIP_INSTALL = YES;
 				TARGETED_DEVICE_FAMILY = 4;
@@ -1281,7 +1281,7 @@
 				INFOPLIST_FILE = CircatorWatch/Info.plist;
 				PRODUCT_BUNDLE_IDENTIFIER = edu.jhu.cs.damsl.Circator.dev8.watchkitapp2;
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				PROVISIONING_PROFILE = "29bc837b-68ce-4cf5-8674-4f036088b958";
+				PROVISIONING_PROFILE = "60193fec-bc80-441f-9666-363634b8dc01";
 				SDKROOT = watchos;
 				SKIP_INSTALL = YES;
 				TARGETED_DEVICE_FAMILY = 4;
