@@ -6,6 +6,11 @@ sudo gem install fastlane
 ```
 # Available Actions
 ## iOS
+### ios testrb
+```
+fastlane ios testrb
+```
+
 ### ios setupxcode
 ```
 fastlane ios setupxcode
@@ -36,11 +41,31 @@ Start a Circator development session
 fastlane ios stop_coding
 ```
 Stop a Circator development session
-### ios newdevices
+### ios rename_app
 ```
-fastlane ios newdevices
+fastlane ios rename_app
 ```
-Ensure all devices are added to the provisioning profile
+Rename the app, via its app identifier
+### ios create_portal_appids
+```
+fastlane ios create_portal_appids
+```
+Create bundle identifiers on the Developer Portal
+### ios create_itc_appids
+```
+fastlane ios create_itc_appids
+```
+Create bundle identifiers on iTunes Connect
+### ios new_dev_certs
+```
+fastlane ios new_dev_certs
+```
+Force new development certificates
+### ios new_app_certs
+```
+fastlane ios new_app_certs
+```
+Force new app certificates
 ### ios preparebuild
 ```
 fastlane ios preparebuild
@@ -51,16 +76,16 @@ Prepare for command line build
 fastlane ios preparedeploy
 ```
 Prepare for command line deployment to the App Store
-### ios build
+### ios build_dev
 ```
-fastlane ios build
+fastlane ios build_dev
 ```
-Build locally from the command line
-### ios beta_build
+Build a development archive
+### ios build_app
 ```
-fastlane ios beta_build
+fastlane ios build_app
 ```
-Build a new Beta release
+Build a beta/release archive
 ### ios beta_upload_testflight
 ```
 fastlane ios beta_upload_testflight

@@ -196,6 +196,8 @@
 		7884E8E71C5F0804000261EE /* UINotifications.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = UINotifications.swift; sourceTree = "<group>"; };
 		7886EADE1C22AC2A00D7E3D4 /* LoginViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LoginViewController.swift; sourceTree = "<group>"; };
 		78AC90CB1C1E859F008C931B /* UserAccount.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = UserAccount.swift; sourceTree = "<group>"; };
+		78B279C21C80FFE5005A6249 /* CircatorWatch Extension.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.xml; path = "CircatorWatch Extension.entitlements"; sourceTree = "<group>"; };
+		78B279C31C80FFEA005A6249 /* CircatorWatch.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.xml; path = CircatorWatch.entitlements; sourceTree = "<group>"; };
 		78BEAC9D1C5E7EE800F0B541 /* PopulationHealthManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PopulationHealthManager.swift; sourceTree = "<group>"; };
 		78CE00AC1C65CC5A005E955C /* RadarViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RadarViewController.swift; sourceTree = "<group>"; };
 		78DA2D731C28ED2A005CC2DB /* RegisterViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RegisterViewController.swift; sourceTree = "<group>"; };
@@ -398,6 +400,7 @@
 		F42F5B4D1BE20CDD00195490 /* CircatorWatch */ = {
 			isa = PBXGroup;
 			children = (
+				78B279C31C80FFEA005A6249 /* CircatorWatch.entitlements */,
 				F42F5B4E1BE20CDD00195490 /* Interface.storyboard */,
 				F42F5B511BE20CDD00195490 /* Assets.xcassets */,
 				F42F5B531BE20CDD00195490 /* Info.plist */,
@@ -408,6 +411,7 @@
 		F42F5B5C1BE20CDD00195490 /* CircatorWatch Extension */ = {
 			isa = PBXGroup;
 			children = (
+				78B279C21C80FFE5005A6249 /* CircatorWatch Extension.entitlements */,
 				F42F5B7A1BE22AC700195490 /* ConnectivityManager.swift */,
 				F42F5B5F1BE20CDD00195490 /* InterfaceController.swift */,
 				F42F5B781BE2292D00195490 /* BioPreviewRow.swift */,
@@ -656,10 +660,20 @@
 					F42F5B4B1BE20CDD00195490 = {
 						CreatedOnToolsVersion = 7.1;
 						DevelopmentTeam = E4SL9A9Z96;
+						SystemCapabilities = {
+							com.apple.ApplicationGroups.iOS = {
+								enabled = 1;
+							};
+						};
 					};
 					F42F5B571BE20CDD00195490 = {
 						CreatedOnToolsVersion = 7.1;
 						DevelopmentTeam = E4SL9A9Z96;
+						SystemCapabilities = {
+							com.apple.ApplicationGroups.iOS = {
+								enabled = 1;
+							};
+						};
 					};
 				};
 			};
@@ -992,7 +1006,7 @@
 				IPHONEOS_DEPLOYMENT_TARGET = 9.0;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				ONLY_ACTIVE_ARCH = YES;
-				PROVISIONING_PROFILE = "d717dd58-50ea-43cd-808f-65696d8159d4";
+				PROVISIONING_PROFILE = "47bb7f5a-ade4-4c15-96ce-4ca0e717d74f";
 				SDKROOT = iphoneos;
 				TARGETED_DEVICE_FAMILY = "1,2";
 				VALIDATE_PRODUCT = YES;
@@ -1006,10 +1020,10 @@
 				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_IDENTITY = "";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
-				CURRENT_PROJECT_VERSION = 16;
+				CURRENT_PROJECT_VERSION = 23;
 				DEFINES_MODULE = YES;
 				DYLIB_COMPATIBILITY_VERSION = 1;
-				DYLIB_CURRENT_VERSION = 16;
+				DYLIB_CURRENT_VERSION = 23;
 				DYLIB_INSTALL_NAME_BASE = "@rpath";
 				EMBEDDED_CONTENT_CONTAINS_SWIFT = NO;
 				FRAMEWORK_SEARCH_PATHS = "$(inherited)";
@@ -1018,9 +1032,9 @@
 				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
 				IPHONEOS_DEPLOYMENT_TARGET = 9.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
-				PRODUCT_BUNDLE_IDENTIFIER = edu.jhu.cs.damsl.CircatorKit;
+				PRODUCT_BUNDLE_IDENTIFIER = edu.jhu.cs.damsl.Circator.kit;
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				PROVISIONING_PROFILE = "75f6478b-5fac-4d40-bb22-4040f791bd59";
+				PROVISIONING_PROFILE = "80e47010-8693-4018-8ece-22e8159a6fdc";
 				SKIP_INSTALL = YES;
 				TARGETED_DEVICE_FAMILY = 1;
 				VERSIONING_SYSTEM = "apple-generic";
@@ -1042,9 +1056,9 @@
 				INFOPLIST_FILE = Circator/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 9.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
-				PRODUCT_BUNDLE_IDENTIFIER = edu.jhu.cs.damsl.Circator.dev8;
+				PRODUCT_BUNDLE_IDENTIFIER = edu.jhu.cs.damsl.Circator.app;
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				PROVISIONING_PROFILE = "d717dd58-50ea-43cd-808f-65696d8159d4";
+				PROVISIONING_PROFILE = "47bb7f5a-ade4-4c15-96ce-4ca0e717d74f";
 				SWIFT_OPTIMIZATION_LEVEL = "-O";
 				TARGETED_DEVICE_FAMILY = 1;
 			};
@@ -1082,14 +1096,16 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = WatchAppIcon;
+				CODE_SIGN_ENTITLEMENTS = CircatorWatch/CircatorWatch.entitlements;
 				CODE_SIGN_IDENTITY = "";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
+				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "";
 				EMBEDDED_CONTENT_CONTAINS_SWIFT = "$(inherited)";
 				IBSC_MODULE = CircatorWatch_Extension;
 				INFOPLIST_FILE = CircatorWatch/Info.plist;
-				PRODUCT_BUNDLE_IDENTIFIER = edu.jhu.cs.damsl.Circator.dev8.watchkitapp2;
+				PRODUCT_BUNDLE_IDENTIFIER = edu.jhu.cs.damsl.Circator.app.watch;
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				PROVISIONING_PROFILE = "60193fec-bc80-441f-9666-363634b8dc01";
+				PROVISIONING_PROFILE = "c578337d-3652-4799-aa0c-c9c7c0d8d9fa";
 				SDKROOT = watchos;
 				SKIP_INSTALL = YES;
 				TARGETED_DEVICE_FAMILY = 4;
@@ -1101,14 +1117,16 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_COMPLICATION_NAME = Complication;
+				CODE_SIGN_ENTITLEMENTS = "CircatorWatch Extension/CircatorWatch Extension.entitlements";
 				CODE_SIGN_IDENTITY = "";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
+				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "";
 				EMBEDDED_CONTENT_CONTAINS_SWIFT = "$(inherited)";
 				INFOPLIST_FILE = "CircatorWatch Extension/Info.plist";
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @executable_path/../../Frameworks";
-				PRODUCT_BUNDLE_IDENTIFIER = edu.jhu.cs.damsl.Circator.dev8.watchkitapp2.watchextension;
+				PRODUCT_BUNDLE_IDENTIFIER = edu.jhu.cs.damsl.Circator.app.watch.extension;
 				PRODUCT_NAME = "${TARGET_NAME}";
-				PROVISIONING_PROFILE = "b019f972-b1eb-455a-8267-20cff9e4003d";
+				PROVISIONING_PROFILE = "9a9bdaa7-5c17-44e5-b8be-d7c2d9a73356";
 				SDKROOT = watchos;
 				SKIP_INSTALL = YES;
 				TARGETED_DEVICE_FAMILY = 4;
@@ -1150,7 +1168,7 @@
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				IPHONEOS_DEPLOYMENT_TARGET = 9.0;
 				MTL_ENABLE_DEBUG_INFO = NO;
-				PROVISIONING_PROFILE = "d717dd58-50ea-43cd-808f-65696d8159d4";
+				PROVISIONING_PROFILE = "47bb7f5a-ade4-4c15-96ce-4ca0e717d74f";
 				SDKROOT = iphoneos;
 				TARGETED_DEVICE_FAMILY = "1,2";
 				VALIDATE_PRODUCT = YES;
@@ -1171,9 +1189,9 @@
 				INFOPLIST_FILE = Circator/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 9.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
-				PRODUCT_BUNDLE_IDENTIFIER = edu.jhu.cs.damsl.Circator.dev8;
+				PRODUCT_BUNDLE_IDENTIFIER = edu.jhu.cs.damsl.Circator.app;
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				PROVISIONING_PROFILE = "d717dd58-50ea-43cd-808f-65696d8159d4";
+				PROVISIONING_PROFILE = "47bb7f5a-ade4-4c15-96ce-4ca0e717d74f";
 				SWIFT_OPTIMIZATION_LEVEL = "-O";
 				TARGETED_DEVICE_FAMILY = 1;
 			};
@@ -1214,10 +1232,10 @@
 				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_IDENTITY = "";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
-				CURRENT_PROJECT_VERSION = 16;
+				CURRENT_PROJECT_VERSION = 23;
 				DEFINES_MODULE = YES;
 				DYLIB_COMPATIBILITY_VERSION = 1;
-				DYLIB_CURRENT_VERSION = 16;
+				DYLIB_CURRENT_VERSION = 23;
 				DYLIB_INSTALL_NAME_BASE = "@rpath";
 				EMBEDDED_CONTENT_CONTAINS_SWIFT = NO;
 				FRAMEWORK_SEARCH_PATHS = "$(inherited)";
@@ -1226,9 +1244,9 @@
 				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
 				IPHONEOS_DEPLOYMENT_TARGET = 9.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
-				PRODUCT_BUNDLE_IDENTIFIER = edu.jhu.cs.damsl.CircatorKit;
+				PRODUCT_BUNDLE_IDENTIFIER = edu.jhu.cs.damsl.Circator.kit;
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				PROVISIONING_PROFILE = "75f6478b-5fac-4d40-bb22-4040f791bd59";
+				PROVISIONING_PROFILE = "80e47010-8693-4018-8ece-22e8159a6fdc";
 				SKIP_INSTALL = YES;
 				TARGETED_DEVICE_FAMILY = 1;
 				VERSIONING_SYSTEM = "apple-generic";
@@ -1240,14 +1258,16 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_COMPLICATION_NAME = Complication;
+				CODE_SIGN_ENTITLEMENTS = "CircatorWatch Extension/CircatorWatch Extension.entitlements";
 				CODE_SIGN_IDENTITY = "";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
+				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "";
 				EMBEDDED_CONTENT_CONTAINS_SWIFT = "$(inherited)";
 				INFOPLIST_FILE = "CircatorWatch Extension/Info.plist";
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @executable_path/../../Frameworks";
-				PRODUCT_BUNDLE_IDENTIFIER = edu.jhu.cs.damsl.Circator.dev8.watchkitapp2.watchextension;
+				PRODUCT_BUNDLE_IDENTIFIER = edu.jhu.cs.damsl.Circator.app.watch.extension;
 				PRODUCT_NAME = "${TARGET_NAME}";
-				PROVISIONING_PROFILE = "b019f972-b1eb-455a-8267-20cff9e4003d";
+				PROVISIONING_PROFILE = "9a9bdaa7-5c17-44e5-b8be-d7c2d9a73356";
 				SDKROOT = watchos;
 				SKIP_INSTALL = YES;
 				TARGETED_DEVICE_FAMILY = 4;
@@ -1259,14 +1279,16 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = WatchAppIcon;
+				CODE_SIGN_ENTITLEMENTS = CircatorWatch/CircatorWatch.entitlements;
 				CODE_SIGN_IDENTITY = "";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
+				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "";
 				EMBEDDED_CONTENT_CONTAINS_SWIFT = "$(inherited)";
 				IBSC_MODULE = CircatorWatch_Extension;
 				INFOPLIST_FILE = CircatorWatch/Info.plist;
-				PRODUCT_BUNDLE_IDENTIFIER = edu.jhu.cs.damsl.Circator.dev8.watchkitapp2;
+				PRODUCT_BUNDLE_IDENTIFIER = edu.jhu.cs.damsl.Circator.app.watch;
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				PROVISIONING_PROFILE = "60193fec-bc80-441f-9666-363634b8dc01";
+				PROVISIONING_PROFILE = "c578337d-3652-4799-aa0c-c9c7c0d8d9fa";
 				SDKROOT = watchos;
 				SKIP_INSTALL = YES;
 				TARGETED_DEVICE_FAMILY = 4;

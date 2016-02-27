@@ -20,9 +20,18 @@ fastlane_version "1.56.0"
 
 default_platform :ios
 
+app_ids = { 'edu.jhu.cs.damsl.Circator.app'                 => ['Metabolic Compass',  'Circator/Info.plist'],
+            'edu.jhu.cs.damsl.Circator.kit'                 => ['MC Core',            'CircatorKit/Info.plist'],
+            'edu.jhu.cs.damsl.Circator.app.watch'           => ['MC Watch',           'CircatorWatch/Info.plist'],
+            'edu.jhu.cs.damsl.Circator.app.watch.extension' => ['MC Watch Extension', 'CircatorWatch Extension/Info.plist'] }
+
 platform :ios do
   before_all do
     # 
+  end
+
+  lane :testrb do
+    app_ids.map {|n| puts "#{n}" }
   end
 
   desc "Install FixCode for c&p management"
@@ -62,6 +71,49 @@ platform :ios do
   end
 
   ########################################
+  ## Bundle management
+  ##
+
+  desc "Rename the app, via its app identifier"
+  lane :rename_app do
+    app_ids.each {|appid, metadata|
+      update_app_identifier(
+        xcodeproj: 'Circator.xcodeproj',
+        app_identifier: appid,
+        plist_path: metadata[1]
+      )
+    }
+  end
+
+  desc "Create bundle identifiers on the Developer Portal"
+  lane :create_portal_appids do
+    app_ids.each {|appid, metadata|
+      produce(
+        skip_itc: true,
+        username: 'yanif.ahmad@gmail.com',
+        app_identifier: appid,
+        app_name: metadata[0],
+        language: 'English',
+        app_version: '1.0'
+      )
+
+      sh "produce enable_services --app-group --healthkit -u yanif.ahmad@gmail.com -a #{appid}"
+    }
+  end
+
+  desc "Create bundle identifiers on iTunes Connect"
+  lane :create_itc_appids do
+    produce(
+      skip_devcenter: true,
+      username: 'yanif.ahmad@gmail.com',
+      app_identifier: 'edu.jhu.cs.damsl.Circator.app',
+      app_name: 'Metabolic Compass',
+      language: 'English',
+      app_version: '1.0'
+    )
+  end
+
+  ########################################
   ## Cert and provisioning profile prep
   ##
 
@@ -71,10 +123,17 @@ platform :ios do
     ro    = options[:readonly]
     frc   = options[:force]
 
-    match(type: type, force: frc, readonly: ro, app_identifier: "edu.jhu.cs.damsl.Circator.dev8")
-    match(type: type, force: frc, readonly: ro, app_identifier: "edu.jhu.cs.damsl.CircatorKit")
-    match(type: type, force: frc, readonly: ro, app_identifier: "edu.jhu.cs.damsl.Circator.dev8.watchkitapp2")
-    match(type: type, force: frc, readonly: ro, app_identifier: "edu.jhu.cs.damsl.Circator.dev8.watchkitapp2.watchextension")
+    app_ids.each {|appid,_| match(type: type, force: frc, readonly: ro, app_identifier: appid) }
+  end
+
+  desc "Force new development certificates"
+  lane :new_dev_certs do
+    prepcerts(type: 'development', readonly: false, force: true)
+  end
+
+  desc "Force new app certificates"
+  lane :new_app_certs do
+    prepcerts(type: 'appstore', readonly: false, force: true)
   end
 
   desc "Private lane for command line build preparation"
@@ -84,11 +143,6 @@ platform :ios do
 
     cocoapods
     prepcerts(type: type, readonly: ro, force: false)
-  end
-
-  desc "Ensure all devices are added to the provisioning profile"
-  lane :newdevices do
-    prepcerts(type: 'development', readonly: false, force: true)
   end
 
   desc "Prepare for command line build"
@@ -114,7 +168,7 @@ platform :ios do
 
   desc "Build a beta/release archive"
   lane :build_app do
-    prepbuild(type: "appstore", readonly: true)
+    #prepbuild(type: "appstore", readonly: true)
     increment_build_number
     gym(scheme: "Circator")
   end

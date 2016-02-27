@@ -3,42 +3,17 @@
   <testsuite name="fastlane.lanes">
     
       
-      <testcase classname="fastlane.lanes" name="0: opt_out_usage" time="0.001428">
+      <testcase classname="fastlane.lanes" name="0: opt_out_usage" time="0.001013">
         
       </testcase>
     
       
-      <testcase classname="fastlane.lanes" name="1: Verifying required fastlane version" time="0.001124">
+      <testcase classname="fastlane.lanes" name="1: Verifying required fastlane version" time="0.000878">
         
       </testcase>
     
       
-      <testcase classname="fastlane.lanes" name="2: default_platform" time="0.00068">
-        
-      </testcase>
-    
-      
-      <testcase classname="fastlane.lanes" name="3: crashlytics" time="24.281702">
-        
-      </testcase>
-    
-      
-      <testcase classname="fastlane.lanes" name="4: Switch to ios post_to_slack lane" time="0.000553">
-        
-      </testcase>
-    
-      
-      <testcase classname="fastlane.lanes" name="5: get_version_number" time="0.72663">
-        
-      </testcase>
-    
-      
-      <testcase classname="fastlane.lanes" name="6: get_build_number" time="0.716472">
-        
-      </testcase>
-    
-      
-      <testcase classname="fastlane.lanes" name="7: slack" time="1.892257">
+      <testcase classname="fastlane.lanes" name="2: default_platform" time="0.000562">
         
       </testcase>
     
