@@ -168,7 +168,7 @@ platform :ios do
 
   desc "Build a beta/release archive"
   lane :build_app do
-    #prepbuild(type: "appstore", readonly: true)
+    prepbuild(type: "appstore", readonly: true)
     increment_build_number
     gym(scheme: "Circator")
   end
