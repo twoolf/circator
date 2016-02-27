@@ -206,7 +206,6 @@ class EventTimeViewController : UIViewController {
         // Aggregate sleep, exercise and meal events.
         HealthManager.sharedManager.fetchSamples(typesAndPredicates) { (samples, error) -> Void in
             Async.main {
-                log.info("SQW: #samples \(samples.count)")
                 guard error == nil else {
                     log.error("Failed to fetch meal times: \(error)")
                     return
@@ -260,7 +259,6 @@ class EventTimeViewController : UIViewController {
                             return nil
                         }
                     }
-                    log.info("SQW: #events \(events.count)")
 
                     var sortedEvents = events.flatten().sort { (a,b) in return a.0 < b.0 }
                     if sortedEvents.isEmpty {

@@ -821,6 +821,27 @@ class IntroViewController: UIViewController,
         return result
     }
 
+    func validateTimedEvent(startTime: NSDate, endTime: NSDate, completion: () -> ()) {
+        // Fetch all sleep and workout data since yesterday.
+        let (yesterday, now) = (1.days.ago, NSDate())
+        let sleepTy = HKObjectType.categoryTypeForIdentifier(HKCategoryTypeIdentifierSleepAnalysis)!
+        let workoutTy = HKWorkoutType.workoutType()
+        let datePredicate = HKQuery.predicateForSamplesWithStartDate(yesterday, endDate: now, options: .None)
+        let typesAndPredicates = [sleepTy: datePredicate, workoutTy: datePredicate]
+
+        // Aggregate sleep, exercise and meal events.
+        HealthManager.sharedManager.fetchSamples(typesAndPredicates) { (samples, error) -> Void in
+            guard error == nil else { log.error(error); return }
+            let overlaps = samples.reduce(false, combine: { (acc, kv) in
+                guard !acc else { return acc }
+                return kv.1.reduce(acc, combine: { (acc, s) in return acc || !( startTime > s.endDate || endTime < s.startDate ) })
+            })
+
+            if !overlaps { completion() }
+            else { UINotifications.genericError(self, msg: "This event overlaps with another, please try again") }
+        }
+    }
+
     func selectAttribute(sender: UIBarButtonItem) {
         let now = NSDate()
         let ago24 = now - 1.days
@@ -853,14 +874,16 @@ class IntroViewController: UIViewController,
                         "Meal Type": String(EventPickerManager.previewMealTypeStrings[0][pickerView.selectedRowInComponent(0)])]
                     
                     log.info("Meal event \(startTime) \(endTime)")
-                    HealthManager.sharedManager.savePreparationAndRecoveryWorkout(
-                        startTime, endDate: endTime, distance: 0.0, distanceUnit: HKUnit(fromString: "km"),
-                        kiloCalories: 0.0, metadata: metaMeals)
+                    validateTimedEvent(startTime, endTime: endTime) {
+                        HealthManager.sharedManager.savePreparationAndRecoveryWorkout(
+                            startTime, endDate: endTime, distance: 0.0, distanceUnit: HKUnit(fromString: "km"),
+                            kiloCalories: 0.0, metadata: metaMeals)
                         {
                             (success, error ) -> Void in
                             guard error == nil else { log.error(error); return }
                             log.info("Meal saved as workout type")
                             self.refreshMealController()
+                        }
                     }
                 } else {
                     UINotifications.genericError(self, msg: "Meals can only be entered in the last 24 hours")
@@ -883,13 +906,15 @@ class IntroViewController: UIViewController,
                     UINotifications.genericError(self, msg: msg)
                 } else {
                     log.info("Sleep event \(startTime) \(endTime)")
-                    HealthManager.sharedManager.saveSleep(startTime!, endDate: endTime!, metadata: [:], completion:
+                    validateTimedEvent(startTime, endTime: endTime) {
+                        HealthManager.sharedManager.saveSleep(startTime!, endDate: endTime!, metadata: [:], completion:
                         {
                             (success, error ) -> Void in
                             guard error == nil else { log.error(error); return }
                             log.info("Saved as sleep event")
                             self.refreshMealController()
-                    })
+                        })
+                    }
                 }
             case .Exercise:
                 let startTimeStr = EventPickerManager.durationTypeStrings[0][pickerView.selectedRowInComponent(0)]
@@ -906,14 +931,16 @@ class IntroViewController: UIViewController,
                     let endTime = startTime + Int(durationHrStr)!.hours + Int(durationMinStr)!.minutes
                     
                     log.info("Exercise event \(startTime) \(endTime)")
-                    HealthManager.sharedManager.saveRunningWorkout(
-                        startTime, endDate: endTime, distance: 0.0, distanceUnit: HKUnit(fromString: "km"),
-                        kiloCalories: 0.0, metadata: [:])
+                    validateTimedEvent(startTime, endTime: endTime) {
+                        HealthManager.sharedManager.saveRunningWorkout(
+                            startTime, endDate: endTime, distance: 0.0, distanceUnit: HKUnit(fromString: "km"),
+                            kiloCalories: 0.0, metadata: [:])
                         {
                             (success, error ) -> Void in
                             guard error == nil else { log.error(error); return }
                             log.info("Saved as exercise workout type")
                             self.refreshMealController()
+                        }
                     }
                 } else {
                     UINotifications.genericError(self, msg: "Workouts can only be entered in the last 24 hours")
