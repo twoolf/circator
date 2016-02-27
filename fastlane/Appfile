@@ -1,4 +1,4 @@
-app_identifier "edu.jhu.cs.damsl.Circator.dev8" # The bundle identifier of your app
+app_identifier "edu.jhu.cs.damsl.Circator.app" # The bundle identifier of your app
 apple_id "yanif.ahmad@gmail.com" # Your Apple email address
 
 team_id "E4SL9A9Z96"  # Developer Portal Team ID

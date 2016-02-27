@@ -2,7 +2,7 @@ git_url "git@github.com:yanif/circator-certs.git"
 
 type "development" # The default type, can be: appstore, adhoc or development
 
-app_identifier "edu.jhu.cs.damsl.Circator.dev8"
+app_identifier "edu.jhu.cs.damsl.Circator.app"
 username "yanif.ahmad@gmail.com"
 
 # For all available options run `match --help`
