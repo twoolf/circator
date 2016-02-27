@@ -20,10 +20,18 @@ fastlane_version "1.56.0"
 
 default_platform :ios
 
-app_ids = { 'edu.jhu.cs.damsl.Circator.app'                 => ['Metabolic Compass',  'APP_UDID',      'Circator/Info.plist'],
-            'edu.jhu.cs.damsl.Circator.kit'                 => ['MC Core',            'KIT_UDID',      'CircatorKit/Info.plist'],
-            'edu.jhu.cs.damsl.Circator.app.watch'           => ['MC Watch',           'WATCH_UDID',    'CircatorWatch/Info.plist'],
-            'edu.jhu.cs.damsl.Circator.app.watch.extension' => ['MC Watch Extension', 'WATCHEXT_UDID', 'CircatorWatch Extension/Info.plist'] }
+project_dir = "Circator.xcodeproj"
+app_ids = { 'edu.jhu.cs.damsl.Circator.app' =>
+              ['Metabolic Compass', 'APPFOO_UUID', 'Circator', 'Circator/Info.plist'],
+
+            'edu.jhu.cs.damsl.Circator.kit' =>
+              ['MC Core', 'KITFOO_UUID', 'CircatorKit', 'CircatorKit/Info.plist'],
+
+            'edu.jhu.cs.damsl.Circator.app.watch' =>
+              ['MC Watch', 'WATCHFOO_UUID', 'CircatorWatch', 'CircatorWatch/Info.plist'],
+
+            'edu.jhu.cs.damsl.Circator.app.watch.extension' =>
+              ['MC Watch Extension', 'WATCHEXTFOO_UUID', 'CircatorWatch Extension', 'CircatorWatch Extension/Info.plist'] }
 
 platform :ios do
   before_all do
@@ -80,7 +88,7 @@ platform :ios do
       update_app_identifier(
         xcodeproj: 'Circator.xcodeproj',
         app_identifier: appid,
-        plist_path: metadata[2]
+        plist_path: metadata[3]
       )
     }
   end
@@ -162,26 +170,28 @@ platform :ios do
 
   desc "Build a development archive"
   lane :build_dev do
-    prepbuild(type: 'development', readonly: true)
+    #prepbuild(type: 'development', readonly: true)
+    prepcerts(type: 'development', readonly: true)
 
     # Set UDID environment variables
     app_ids.each {|appid, metadata|
+      set_project_provisioning_env_var(xcodeproj: project_dir, env_var: metadata[1], target_filter: metadata[2])
       udid = ENV["sigh_#{appid}_development"]
       ENV[metadata[1]] = udid
     }
 
-    gym(scheme: "Circator")
+    #gym(scheme: "Circator")
   end
 
-  desc "Build a beta/release archive"
+  desc "Build a release archive"
   lane :build_app do
     prepbuild(type: "appstore", readonly: true)
     increment_build_number
 
-    # Set UDID environment variables
+    # Set UUID environment variables
     app_ids.each {|appid, metadata|
-      udid = ENV["sigh_#{appid}_distribution"]
-      ENV[metadata[1]] = udid
+      uuid = ENV["sigh_#{appid}_appstore"]
+      ENV[metadata[1]] = uuid
     }
 
     gym(scheme: "Circator")
@@ -252,8 +262,8 @@ platform :ios do
   desc "Post a message to #circator-alerts on Slack"
   private_lane :post_to_slack do |options|
     scheme      = options[:scheme]
-    version     = get_version_number(xcodeproj: "Circator.xcodeproj")
-    build       = get_build_number(xcodeproj: "Circator.xcodeproj")
+    version     = get_version_number(xcodeproj: project_dir)
+    build       = get_build_number(xcodeproj: project_dir)
     environment = scheme.upcase
     destination = options[:destination]
 

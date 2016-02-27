@@ -85,7 +85,7 @@ Build a development archive
 ```
 fastlane ios build_app
 ```
-Build a beta/release archive
+Build a release archive
 ### ios beta_upload_testflight
 ```
 fastlane ios beta_upload_testflight
