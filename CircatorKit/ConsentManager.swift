@@ -117,7 +117,7 @@ public class ConsentManager: NSObject, ORKTaskViewControllerDelegate {
     }
     
     private var riskToPrivacy: String {
-        return "We will make every effort to protect your information, but total anonymity cannot be guaranteed"
+        return "We will make every effort to protect your information, and believe that the risk to your privacy is small"
     }
     
     private var PotentialBenefitsLong: String {
