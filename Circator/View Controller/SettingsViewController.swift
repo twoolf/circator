@@ -13,50 +13,50 @@ import Former
 import HTPressableButton
 import SwiftDate
 
-private let fieldCount           : Int   = UserProfile.sharedInstance.updateableReqRange.count+4
+private let fieldCount           : Int   = UserProfile.sharedInstance.updateableReqRange.count+3
 
-private let debugSectionSizes    : [Int] = [2,2,7,fieldCount,2,1,1]
+private let debugSectionSizes    : [Int] = [2,2,7,fieldCount,2,1]
 private let releaseSectionSizes  : [Int] = [2,2,7,fieldCount,2]
 
-private let debugSectionTitles    : [String] = ["Login", "Settings", "Preview Rows", "Profile", "Bulk Upload", "Debug", "My Circator"]
+private let debugSectionTitles    : [String] = ["Login", "Settings", "Preview Rows", "Profile", "Bulk Upload", "Debug"]
 private let releaseSectionTitles  : [String] = ["Login", "Settings", "Preview Rows", "Profile", "Bulk Upload"]
 
-private let withDebugView = true
+private let withDebugView = false
 
 class MCButton : HTPressableButton {
     
 }
 
 class SettingsViewController: UITableViewController, UITextFieldDelegate {
-    
+
     private var userCell: FormTextFieldCell?
     private var passCell: FormTextFieldCell?
     private var measureCells : [UIStackView?]?
     private var debugCell: FormLabelCell?
-    
+
     private var sectionSizes  : [Int]    = withDebugView ? debugSectionSizes  : releaseSectionSizes
     private var sectionTitles : [String] = withDebugView ? debugSectionTitles : releaseSectionTitles
-    
+
     private var formCells : [Int:[FormCell?]] = [:]
     private var historySlider : FormSliderCell? = nil
     private var hMin = 0.0
     private var hMax = 0.0
-    
+
     private var uploadButton: UIButton? = nil
-    
+
     private var profile : [(String, String, String, Int)] = []
     private var subviews = ["Consent", "Recommended", "Optional", "Repeated Events"]
-    
+
     init() {
         super.init(style: UITableViewStyle.Grouped)
         initProfile()
     }
-    
+
     required init?(coder aDecoder: NSCoder) {
         super.init(coder: aDecoder)
         initProfile()
     }
-    
+
     func initProfile() {
         profile = UserProfile.sharedInstance.updateableReqRange.enumerate().map { (i, j) in
             let k = UserProfile.sharedInstance.profileFields[j]
@@ -70,47 +70,47 @@ class SettingsViewController: UITableViewController, UITextFieldDelegate {
         profile.append(("Optional",    "",    "",    6 + n))
         profile.append(("Repeated Events", "", "", 7 + n))
     }
-    
+
     override func viewWillAppear(animated: Bool) {
         super.viewWillAppear(animated)
         navigationController?.setNavigationBarHidden(false, animated: false)
         navigationItem.title = "Settings"
         tableView.reloadData()
     }
-    
+
     override func viewDidAppear(animated: Bool) {
         super.viewDidAppear(animated)
         BehaviorMonitor.sharedInstance.showView("Settings", contentType: "")
     }
-    
+
     override func viewDidLoad() {
         super.viewDidLoad()
         tableView.registerClass(UITableViewCell.self, forCellReuseIdentifier: "settingsCell")
     }
-    
+
     override func didReceiveMemoryWarning() {
         super.didReceiveMemoryWarning()
     }
-    
+
     // MARK: - Table view data source & delegate
-    
+
     override func numberOfSectionsInTableView(tableView: UITableView) -> Int {
         return sectionSizes.count
     }
-    
+
     override func tableView(tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         return section < sectionSizes.count ? sectionSizes[section] : 0
     }
-    
+
     override func tableView(tableView: UITableView, titleForHeaderInSection section: Int) -> String? {
         return section < sectionTitles.count ? sectionTitles[section] : ""
     }
-    
+
     override func tableView(tableView: UITableView, heightForRowAtIndexPath indexPath: NSIndexPath) -> CGFloat {
         if indexPath.section == 4 && indexPath.row == 0 { return 65.0 }
         else { return 44.0 }
     }
-    
+
     func formInput() -> FormTextFieldCell {
         let formCell = FormTextFieldCell()
         let cellInput = formCell.formTextField()
@@ -124,56 +124,43 @@ class SettingsViewController: UITableViewController, UITextFieldDelegate {
         
         return formCell
     }
-    
+
     func formLabel() -> FormLabelCell {
         let formCell = FormLabelCell()
-        
+
         let cellLabel = formCell.formTextLabel()
         cellLabel?.textColor = UIColor.blackColor()
         cellLabel?.backgroundColor = UIColor.whiteColor()
-        
+
         let cellSLabel = formCell.formSubTextLabel()
         cellSLabel?.textColor = UIColor.blackColor()
         cellSLabel?.backgroundColor = UIColor.whiteColor()
-        
+
         return formCell
     }
-    
+
     override func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCellWithIdentifier("settingsCell", forIndexPath: indexPath)
-        
+
         cell.preservesSuperviewLayoutMargins = false
         cell.separatorInset = UIEdgeInsetsZero
         cell.layoutMargins = UIEdgeInsetsZero
-        
-        if indexPath.section == 6 {
-            
-            let goToDefaultSelector = FormLabelCell()
-            goToDefaultSelector.formTextLabel()?.text = "Defaults"
-            
-            cell.imageView?.image = nil
-            cell.accessoryType = .DisclosureIndicator
-            
-            for sv in cell.contentView.subviews { sv.removeFromSuperview() }
-            cell.contentView.addSubview(goToDefaultSelector)
-            return cell
-        }
-        
+
         if withDebugView && indexPath.section == 5 {
             if debugCell == nil {
                 debugCell = FormLabelCell()
                 debugCell?.tintColor = Theme.universityDarkTheme.backgroundColor
                 debugCell?.formTextLabel()?.text = "Debug"
             }
-            
+
             cell.imageView?.image = nil
             cell.accessoryType = .DisclosureIndicator
-            
+
             for sv in cell.contentView.subviews { sv.removeFromSuperview() }
             cell.contentView.addSubview(debugCell!)
             return cell
         }
-        
+
         if indexPath.section == 4 {
             if indexPath.row == 0 && historySlider == nil {
                 historySlider = FormSliderCell()
@@ -191,7 +178,7 @@ class SettingsViewController: UITableViewController, UITextFieldDelegate {
                     self.historySlider?.formSlider().tintColor = UIColor.grayColor()
                     self.historySlider?.formTitleLabel()?.text = "No data to upload"
                 }
-                
+
                 if let (start, end) = UserManager.sharedManager.getHistoricalRange() {
                     log.info("Historical range: \(start) --- \(end)")
                     hMin = start
@@ -205,7 +192,7 @@ class SettingsViewController: UITableViewController, UITextFieldDelegate {
                 } else {
                     disable()
                 }
-                
+
             } else if indexPath.row == 1 && uploadButton == nil {
                 uploadButton = {
                     let button = MCButton(frame: cell.contentView.frame, buttonStyle: .Rounded)
@@ -218,15 +205,15 @@ class SettingsViewController: UITableViewController, UITextFieldDelegate {
                     button.addTarget(self, action: "doUpload:", forControlEvents: .TouchUpInside)
                     button.enabled = historySlider?.formSlider().enabled ?? false
                     return button
-                    }()
+                }()
             }
-            
+
             for sv in cell.contentView.subviews { sv.removeFromSuperview() }
             cell.textLabel?.hidden = true
             cell.imageView?.image = nil
             cell.accessoryType = .None
             cell.selectionStyle = .None
-            
+
             if indexPath.row == 0 {
                 historySlider!.translatesAutoresizingMaskIntoConstraints = false
                 cell.contentView.addSubview(historySlider!)
@@ -251,14 +238,14 @@ class SettingsViewController: UITableViewController, UITextFieldDelegate {
             }
             return cell
         }
-        
+
         if indexPath.section == 2 {
             if measureCells == nil {
                 measureCells = [UIStackView?](count: self.sectionSizes[indexPath.section], repeatedValue: nil)
             }
-            
+
             let sampleType = PreviewManager.previewSampleTypes[indexPath.row]
-            
+
             if measureCells![indexPath.row] == nil {
                 let cellImage : UIImageView = {
                     let image: UIImageView = UIImageView()
@@ -267,14 +254,14 @@ class SettingsViewController: UITableViewController, UITextFieldDelegate {
                     image.contentMode = .ScaleAspectFit
                     return image
                 }()
-                
+
                 let cellLabel : UILabel = {
                     let label: UILabel = UILabel()
                     label.textColor = .blackColor()
                     label.text = sampleType.displayText
                     return label
                 }()
-                
+
                 measureCells![indexPath.row] = {
                     let stackView: UIStackView = UIStackView(arrangedSubviews: [cellImage, cellLabel])
                     stackView.axis = .Horizontal
@@ -282,9 +269,9 @@ class SettingsViewController: UITableViewController, UITextFieldDelegate {
                     stackView.alignment = UIStackViewAlignment.Fill
                     stackView.spacing = 15
                     return stackView
-                    }()
+                }()
             }
-            
+
             for sv in cell.contentView.subviews { sv.removeFromSuperview() }
             if let msv = measureCells![indexPath.row]
             {
@@ -292,7 +279,7 @@ class SettingsViewController: UITableViewController, UITextFieldDelegate {
                 let lbl = msv.arrangedSubviews[1] as! UILabel
                 img.image = PreviewManager.iconForSampleType(sampleType)
                 lbl.text = sampleType.displayText
-                
+
                 measureCells![indexPath.row]!.translatesAutoresizingMaskIntoConstraints = false
                 cell.contentView.addSubview(measureCells![indexPath.row]!)
                 let constraints: [NSLayoutConstraint] = [
@@ -309,11 +296,11 @@ class SettingsViewController: UITableViewController, UITextFieldDelegate {
             cell.accessoryType = .DisclosureIndicator
             return cell
         }
-        
+
         if formCells[indexPath.section] == nil {
             formCells[indexPath.section] = [FormCell?](count: self.sectionSizes[indexPath.section], repeatedValue: nil)
         }
-        
+
         if indexPath.section == 3
             && profile[indexPath.row].0 == "Sex"
             && formCells[indexPath.section]![indexPath.row] == nil
@@ -321,24 +308,24 @@ class SettingsViewController: UITableViewController, UITextFieldDelegate {
             let formCell = FormSegmentedCell()
             let cellLabel = formCell.formTitleLabel()
             let cellSegment = formCell.formSegmented()
-            
+
             cellLabel?.text = profile[indexPath.row].0
             cellLabel?.textColor = UIColor.blackColor()
             cellLabel?.backgroundColor = UIColor.whiteColor()
-            
+
             cellSegment.tintColor = Theme.universityDarkTheme.backgroundColor
             cellSegment.addTarget(self, action: "sexValueChanged:", forControlEvents: .ValueChanged);
             cellSegment.removeAllSegments()
             cellSegment.insertSegmentWithTitle("Male",   atIndex: 0, animated: false)
             cellSegment.insertSegmentWithTitle("Female", atIndex: 1, animated: false)
-            
+
             let cachedProfile : [String: AnyObject] = UserManager.sharedManager.getProfileCache()
             if let s = cachedProfile[profile[indexPath.row].1] as? String {
                 cellSegment.selectedSegmentIndex = s == "Male" ? 0 : ( s == "Female" ? 1 : -1)
             } else {
                 cellSegment.selectedSegmentIndex = -1
             }
-            
+
             formCells[indexPath.section]!.insert(formCell, atIndex: indexPath.row)
         }
         else if formCells[indexPath.section]![indexPath.row] == nil
@@ -346,7 +333,7 @@ class SettingsViewController: UITableViewController, UITextFieldDelegate {
             let formCell = formInput()
             let cellInput = formCell.formTextField()
             let cellLabel = formCell.formTitleLabel()
-            
+
             switch indexPath.section {
             case 0:
                 if (indexPath.row == 0) {
@@ -368,10 +355,10 @@ class SettingsViewController: UITableViewController, UITextFieldDelegate {
                     passCell = formCell
                     cellInput.tag = 1
                 }
-                
+
                 cellInput.enabled = true
                 cellInput.delegate = self
-                
+
             case 1:
                 if (indexPath.row == 0) {
                     cellInput.placeholder = "Siri hotword"
@@ -385,20 +372,20 @@ class SettingsViewController: UITableViewController, UITextFieldDelegate {
                     cellLabel?.text = "Data refresh"
                     cellInput.tag = 3
                 }
-                
+
                 cellInput.keyboardType = UIKeyboardType.Alphabet
                 cellInput.returnKeyType = UIReturnKeyType.Done
-                
+
                 cellInput.enabled = true
                 cellInput.delegate = self
-                
+
             case 3:
                 let cachedProfile : [String: AnyObject] = UserManager.sharedManager.getProfileCache()
                 cellLabel?.text = profile[indexPath.row].0
                 cellInput.placeholder = profile[indexPath.row].2
                 cellInput.tag = profile[indexPath.row].3
                 cellInput.delegate = self
-                
+
                 // Subviews (incl. recommended and optional fields, as well as consent PDF viewer).
                 if ( subviews.contains(profile[indexPath.row].0) ) {
                     cellInput.text = nil
@@ -409,14 +396,14 @@ class SettingsViewController: UITableViewController, UITextFieldDelegate {
                     cellInput.returnKeyType = UIReturnKeyType.Done
                     cellInput.enabled = true
                 }
-                
+
             default:
                 log.error("Invalid settings tableview section")
             }
-            
+
             formCells[indexPath.section]!.insert(formCell, atIndex: indexPath.row)
         }
-        
+
         for sv in cell.contentView.subviews { sv.removeFromSuperview() }
         if let cellArray = formCells[indexPath.section], formCell = cellArray[indexPath.row]
         {
@@ -426,7 +413,7 @@ class SettingsViewController: UITableViewController, UITextFieldDelegate {
                 cell.accessoryType = .None
                 cell.selectionStyle = .None
             }
-            
+
             formCell.translatesAutoresizingMaskIntoConstraints = false
             cell.contentView.addSubview(formCell)
             let constraints: [NSLayoutConstraint] = [
@@ -437,10 +424,10 @@ class SettingsViewController: UITableViewController, UITextFieldDelegate {
             ]
             cell.contentView.addConstraints(constraints)
         }
-        
+
         return cell
     }
-    
+
     override func tableView(tableView: UITableView, didSelectRowAtIndexPath indexPath: NSIndexPath) {
         if ( indexPath.section == 2 ) {
             let rowSettingsVC = RowSettingsViewController()
@@ -454,31 +441,27 @@ class SettingsViewController: UITableViewController, UITextFieldDelegate {
                 navigationController?.pushViewController(consentVC, animated: true)
             case "Recommended":
                 profileSubview("Recommended",
-                    fields: Array(UserProfile.sharedInstance.profileFields[UserProfile.sharedInstance.recommendedRange]),
-                    placeholders: Array(UserProfile.sharedInstance.profilePlaceholders[UserProfile.sharedInstance.recommendedRange]))
+                fields: Array(UserProfile.sharedInstance.profileFields[UserProfile.sharedInstance.recommendedRange]),
+                placeholders: Array(UserProfile.sharedInstance.profilePlaceholders[UserProfile.sharedInstance.recommendedRange]))
             case "Optional":
                 profileSubview("Optional",
-                    fields: Array(UserProfile.sharedInstance.profileFields[UserProfile.sharedInstance.optionalRange]),
-                    placeholders: Array(UserProfile.sharedInstance.profilePlaceholders[UserProfile.sharedInstance.optionalRange]))
+                fields: Array(UserProfile.sharedInstance.profileFields[UserProfile.sharedInstance.optionalRange]),
+                placeholders: Array(UserProfile.sharedInstance.profilePlaceholders[UserProfile.sharedInstance.optionalRange]))
             case "Repeated Events":
                 let repeatedEventsVC = RepeatedEventsController()
                 navigationController?.pushViewController(repeatedEventsVC, animated: true)
             default:
                 fatalError()
             }
-            
+
         }
         else if ( withDebugView && indexPath.section == 5 ) {
             let debugVC = DebugViewController()
             navigationController?.pushViewController(debugVC, animated: true)
         }
-        else if (withDebugView && indexPath.section == 6) {
-            let defaultsVC = DefaultEventPeriodSelectorViewController()
-            navigationController?.pushViewController(defaultsVC, animated: true)
-        }
-        
+
     }
-    
+
     func textFieldShouldReturn(textField: UITextField) -> Bool {
         if let txt = textField.text {
             switch textField.tag {
@@ -489,7 +472,7 @@ class SettingsViewController: UITableViewController, UITextFieldDelegate {
             case 1:
                 passCell?.textField.resignFirstResponder()
                 userCell?.textField.becomeFirstResponder()
-                
+
                 // Take the current username text as well as the password.
                 UserManager.sharedManager.ensureUserPass(userCell?.textField.text, pass: txt) { error in
                     guard !error else {
@@ -507,7 +490,7 @@ class SettingsViewController: UITableViewController, UITextFieldDelegate {
                 UserManager.sharedManager.setHotWords(txt)
                 textField.resignFirstResponder()
                 UINotifications.profileUpdated(self.navigationController!)
-                
+
             case 3:
                 textField.resignFirstResponder()
                 if let freq = Int(txt) {
@@ -520,21 +503,21 @@ class SettingsViewController: UITableViewController, UITextFieldDelegate {
                 UserManager.sharedManager.pushProfile([key:txt], completion: {_ in return})
                 textField.resignFirstResponder()
                 UINotifications.profileUpdated(self.navigationController!)
-                
+
             default:
                 return false
             }
         }
         return false
     }
-    
+
     func sexValueChanged(sender: UISegmentedControl!) {
         let k = "sex"
         let v = sender.selectedSegmentIndex == 0 ? "Male" : "Female"
         UserManager.sharedManager.pushProfile([k:v], completion: {_ in return})
         UINotifications.profileUpdated(self.navigationController!)
     }
-    
+
     func profileSubview(txt: String, fields: [String], placeholders: [String]) {
         let subVC = ProfileSubviewController()
         subVC.subviewDesc = "\(txt) inputs"
@@ -546,7 +529,7 @@ class SettingsViewController: UITableViewController, UITextFieldDelegate {
         subVC.profileUpdater = { kvv in self.updateProfile(kvv) }
         navigationController?.pushViewController(subVC, animated: true)
     }
-    
+
     func updateProfile(kvv: (String, String, UIViewController?)) {
         if let mappedK = UserProfile.sharedInstance.profileMapping[kvv.0] {
             UserManager.sharedManager.pushProfile([mappedK:kvv.1], completion: {_ in return})
@@ -555,7 +538,7 @@ class SettingsViewController: UITableViewController, UITextFieldDelegate {
             if let vc = kvv.2 { UINotifications.genericError(vc, msg: "Invalid profile field") }
         }
     }
-    
+
     func sliderValueDidChange(sender:UISlider!) {
         log.warning("Slider: \(sender.value)")
         if hMin != 0.0 {
@@ -565,7 +548,7 @@ class SettingsViewController: UITableViewController, UITextFieldDelegate {
             historySlider?.formTitleLabel()?.text = "\(sender.value)"
         }
     }
-    
+
     // TODO: Dodo dialog for wifi-availability warning
     func doUpload(sender: UIButton) {
         log.warning("Upload clicked")
@@ -577,16 +560,16 @@ class ConsentViewController : UIViewController {
         navigationController?.setNavigationBarHidden(false, animated: false)
         navigationItem.title = "Consent Form"
     }
-    
+
     override func viewDidLoad() {
         super.viewDidLoad()
-        
+
         let doneButton = UIBarButtonItem(barButtonSystemItem: .Done, target: self, action: "consentViewDone")
         navigationItem.rightBarButtonItem = doneButton
-        
+
         let accountCache = UserManager.sharedManager.getProfileCache()
         if let pdfstr = accountCache["consent"] as? String,
-            pdfdata = NSData(base64EncodedString: pdfstr, options: NSDataBase64DecodingOptions())
+               pdfdata = NSData(base64EncodedString: pdfstr, options: NSDataBase64DecodingOptions())
         {
             let webView = UIWebView(frame: CGRectMake(0,0,self.view.frame.size.width,self.view.frame.size.height))
             let url = NSURL.fileURLWithPath(NSBundle.mainBundle().bundlePath)
@@ -605,7 +588,7 @@ class ConsentViewController : UIViewController {
                 label.centerXAnchor.constraintEqualToAnchor(view.layoutMarginsGuide.centerXAnchor),
                 label.centerYAnchor.constraintEqualToAnchor(view.layoutMarginsGuide.centerYAnchor),
                 label.heightAnchor.constraintEqualToConstant(100)
-                ])
+            ])
         }
     }
     
