@@ -20,10 +20,10 @@ fastlane_version "1.56.0"
 
 default_platform :ios
 
-app_ids = { 'edu.jhu.cs.damsl.Circator.app'                 => ['Metabolic Compass',  'Circator/Info.plist'],
-            'edu.jhu.cs.damsl.Circator.kit'                 => ['MC Core',            'CircatorKit/Info.plist'],
-            'edu.jhu.cs.damsl.Circator.app.watch'           => ['MC Watch',           'CircatorWatch/Info.plist'],
-            'edu.jhu.cs.damsl.Circator.app.watch.extension' => ['MC Watch Extension', 'CircatorWatch Extension/Info.plist'] }
+app_ids = { 'edu.jhu.cs.damsl.Circator.app'                 => ['Metabolic Compass',  'APP_UDID',      'Circator/Info.plist'],
+            'edu.jhu.cs.damsl.Circator.kit'                 => ['MC Core',            'KIT_UDID',      'CircatorKit/Info.plist'],
+            'edu.jhu.cs.damsl.Circator.app.watch'           => ['MC Watch',           'WATCH_UDID',    'CircatorWatch/Info.plist'],
+            'edu.jhu.cs.damsl.Circator.app.watch.extension' => ['MC Watch Extension', 'WATCHEXT_UDID', 'CircatorWatch Extension/Info.plist'] }
 
 platform :ios do
   before_all do
@@ -80,7 +80,7 @@ platform :ios do
       update_app_identifier(
         xcodeproj: 'Circator.xcodeproj',
         app_identifier: appid,
-        plist_path: metadata[1]
+        plist_path: metadata[2]
       )
     }
   end
@@ -163,6 +163,13 @@ platform :ios do
   desc "Build a development archive"
   lane :build_dev do
     prepbuild(type: 'development', readonly: true)
+
+    # Set UDID environment variables
+    app_ids.each {|appid, metadata|
+      udid = ENV["sigh_#{appid}_development"]
+      ENV[metadata[1]] = udid
+    }
+
     gym(scheme: "Circator")
   end
 
@@ -170,6 +177,13 @@ platform :ios do
   lane :build_app do
     prepbuild(type: "appstore", readonly: true)
     increment_build_number
+
+    # Set UDID environment variables
+    app_ids.each {|appid, metadata|
+      udid = ENV["sigh_#{appid}_distribution"]
+      ENV[metadata[1]] = udid
+    }
+
     gym(scheme: "Circator")
   end
 
@@ -192,21 +206,27 @@ platform :ios do
     post_to_slack(scheme: "Circator", destination: "Fabric")
   end
 
-  desc "Build and submit a new Beta Build to Apple TestFlight"
+  desc "Build and submit a development build to Apple TestFlight"
   lane :beta_testflight do
+    build_dev
+    beta_upload_testflight
+  end
+
+  desc "Build and submit a distribution build to Apple TestFlight"
+  lane :beta_app_testflight do
     build_app
     beta_upload_testflight
   end
 
-  desc "Build and submit a new Beta Build to Fabric/Crashlytics"
+  desc "Build and submit a development build to Fabric/Crashlytics"
   lane :beta_fabric do
-    build_app
+    build_dev
     beta_upload_fabric
   end
 
-  desc "Build and submit a new Beta Build to Apple TestFlight and Fabric/Crashlytics"
+  desc "Build and submit a development build to Apple TestFlight and Fabric/Crashlytics"
   lane :beta do
-    build_app
+    build_dev
     beta_upload_testflight
     beta_upload_fabric
   end

@@ -863,7 +863,7 @@ class IntroViewController: UIViewController,
                             self.refreshMealController()
                     }
                 } else {
-                    UINotifications.genericError(self, msg: "Invalid meal times, please try again")
+                    UINotifications.genericError(self, msg: "Meals can only be entered in the last 24 hours")
                 }
             case .Sleep:
                 let startTimeStr = EventPickerManager.sleepEndpointTypeStrings[0][pickerView.selectedRowInComponent(0)]
@@ -877,7 +877,10 @@ class IntroViewController: UIViewController,
                 
                 log.info("Sleep event \(startTime) \(endTime)")
                 if startTime == nil || endTime == nil || startTime! >= endTime! {
-                    UINotifications.genericError(self, msg: "Invalid sleep times, please try again")
+                    let msg = ( startTime == nil || endTime == nil ) ?
+                        "Unspecified sleep time, please re-enter" : "Ending time greater than starting time, please re-enter"
+
+                    UINotifications.genericError(self, msg: msg)
                 } else {
                     log.info("Sleep event \(startTime) \(endTime)")
                     HealthManager.sharedManager.saveSleep(startTime!, endDate: endTime!, metadata: [:], completion:
@@ -913,7 +916,7 @@ class IntroViewController: UIViewController,
                             self.refreshMealController()
                     }
                 } else {
-                    UINotifications.genericError(self, msg: "Invalid exercise times, please try again")
+                    UINotifications.genericError(self, msg: "Workouts can only be entered in the last 24 hours")
                 }
             }
         }
