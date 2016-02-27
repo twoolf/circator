@@ -89,7 +89,7 @@ public class ConsentManager: NSObject, ORKTaskViewControllerDelegate {
     }
     
     private var sensorDataText: String {
-        return "This study will also gather sensor data from yor iPhone and personal devices with your permission."
+        return "This study will gather sensor data from your iPhone and your personal devices with your permission."
     }
     
     private var dataProcessingText: String {
@@ -101,7 +101,7 @@ public class ConsentManager: NSObject, ORKTaskViewControllerDelegate {
     }
     
     private var dataUse: String {
-        return "The data will be used for this research and may be shared with research partners worldwide."
+        return "The data will be used for research and may be shared with qualified research partners worldwide."
     }
     
     private var withdrawing: String {
@@ -121,7 +121,7 @@ public class ConsentManager: NSObject, ORKTaskViewControllerDelegate {
     }
     
     private var PotentialBenefitsLong: String {
-        return "How can we better manage the complexities of metabolic syndrome and the lives of those at risk for having metabolic diseases? We want to understand why some individuals at risk or having been diagnosed with metabolic syndrome recover faster than others, why their symptoms vary over time, and what can be done to make those symptoms improve.  We at Johns Hopkins University are proposing a new approach to allow participants to monitor their health in real time as well as partner in research studies. This app is designed for research and educational purposes only.  You should not rely on this information as a substitute for personal medical attention, diagnosis or hands-on treatment.  If you are concerned about your health or that of a child, please consult your family's health provider immediately.  Do not wait for a response from our professionals."
+        return "How can we better manage the complexities of metabolic syndrome and the lives of those at risk for having metabolic diseases? We want to understand why some individuals at risk or having been diagnosed with metabolic syndrome recover faster than others, why their symptoms vary over time, and what can be done to make those symptoms improve.  We at Johns Hopkins University are proposing an approach to allow participants to monitor their metabolic health in real time as well as partner in research studies. This app is designed for research and educational purposes only.  You should not rely on this information as a substitute for personal medical attention, diagnosis or hands-on treatment.  If you are concerned about your health or that of a child, please consult your family's health provider immediately.  Do not wait for a response from our professionals."
     }
     
     private var ConsiderLongText: String {
