@@ -22,16 +22,16 @@ default_platform :ios
 
 project_dir = "Circator.xcodeproj"
 app_ids = { 'edu.jhu.cs.damsl.Circator.app' =>
-              ['Metabolic Compass', 'APPFOO_UUID', 'Circator', 'Circator/Info.plist'],
+              ['Metabolic Compass', 'APP_UUID', '^Circator$', 'Circator/Info.plist'],
 
             'edu.jhu.cs.damsl.Circator.kit' =>
-              ['MC Core', 'KITFOO_UUID', 'CircatorKit', 'CircatorKit/Info.plist'],
+              ['MC Core', 'KIT_UUID', 'CircatorKit', 'CircatorKit/Info.plist'],
 
             'edu.jhu.cs.damsl.Circator.app.watch' =>
-              ['MC Watch', 'WATCHFOO_UUID', 'CircatorWatch', 'CircatorWatch/Info.plist'],
+              ['MC Watch', 'WATCH_UUID', '^CircatorWatch$', 'CircatorWatch/Info.plist'],
 
             'edu.jhu.cs.damsl.Circator.app.watch.extension' =>
-              ['MC Watch Extension', 'WATCHEXTFOO_UUID', 'CircatorWatch Extension', 'CircatorWatch Extension/Info.plist'] }
+              ['MC Watch Extension', 'WATCHEXT_UUID', 'CircatorWatch Extension', 'CircatorWatch Extension/Info.plist'] }
 
 platform :ios do
   before_all do
@@ -170,14 +170,14 @@ platform :ios do
 
   desc "Build a development archive"
   lane :build_dev do
-    #prepbuild(type: 'development', readonly: true)
-    prepcerts(type: 'development', readonly: true)
+    prepbuild(type: 'development', readonly: true)
+    increment_build_number
 
     # Set UDID environment variables
     app_ids.each {|appid, metadata|
       set_project_provisioning_env_var(xcodeproj: project_dir, env_var: metadata[1], target_filter: metadata[2])
-      udid = ENV["sigh_#{appid}_development"]
-      ENV[metadata[1]] = udid
+      uuid = ENV["sigh_#{appid}_development"]
+      ENV[metadata[1]] = uuid
     }
 
     #gym(scheme: "Circator")
@@ -190,6 +190,7 @@ platform :ios do
 
     # Set UUID environment variables
     app_ids.each {|appid, metadata|
+      set_project_provisioning_env_var(xcodeproj: project_dir, env_var: metadata[1], target_filter: metadata[2])
       uuid = ENV["sigh_#{appid}_appstore"]
       ENV[metadata[1]] = uuid
     }

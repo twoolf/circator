@@ -1034,7 +1034,7 @@
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = edu.jhu.cs.damsl.Circator.kit;
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				PROVISIONING_PROFILE = "$(KIT_UDID)";
+				PROVISIONING_PROFILE = "$(KIT_UUID)";
 				SKIP_INSTALL = YES;
 				TARGETED_DEVICE_FAMILY = 1;
 				VERSIONING_SYSTEM = "apple-generic";
@@ -1058,7 +1058,7 @@
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = edu.jhu.cs.damsl.Circator.app;
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				PROVISIONING_PROFILE = "$(APP_UDID)";
+				PROVISIONING_PROFILE = "$(APP_UUID)";
 				SWIFT_OPTIMIZATION_LEVEL = "-O";
 				TARGETED_DEVICE_FAMILY = 1;
 			};
@@ -1074,6 +1074,7 @@
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = edu.jhu.cs.damsl.CircatorTests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				PROVISIONING_PROFILE = "$(APP_UUID)";
 				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/Circator.app/Circator";
 			};
 			name = Debug;
@@ -1087,6 +1088,7 @@
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = edu.jhu.cs.damsl.CircatorUITests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				PROVISIONING_PROFILE = "$(APP_UUID)";
 				TEST_TARGET_NAME = Circator;
 				USES_XCTRUNNER = YES;
 			};
@@ -1105,7 +1107,7 @@
 				INFOPLIST_FILE = CircatorWatch/Info.plist;
 				PRODUCT_BUNDLE_IDENTIFIER = edu.jhu.cs.damsl.Circator.app.watch;
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				PROVISIONING_PROFILE = "$(WATCH_UDID)";
+				PROVISIONING_PROFILE = "$(WATCH_UUID)";
 				SDKROOT = watchos;
 				SKIP_INSTALL = YES;
 				TARGETED_DEVICE_FAMILY = 4;
@@ -1126,7 +1128,7 @@
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @executable_path/../../Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = edu.jhu.cs.damsl.Circator.app.watch.extension;
 				PRODUCT_NAME = "${TARGET_NAME}";
-				PROVISIONING_PROFILE = "$(WATCHEXT_UDID)";
+				PROVISIONING_PROFILE = "$(WATCHEXT_UUID)";
 				SDKROOT = watchos;
 				SKIP_INSTALL = YES;
 				TARGETED_DEVICE_FAMILY = 4;
@@ -1191,7 +1193,7 @@
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = edu.jhu.cs.damsl.Circator.app;
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				PROVISIONING_PROFILE = "$(APP_UDID)";
+				PROVISIONING_PROFILE = "$(APP_UUID)";
 				SWIFT_OPTIMIZATION_LEVEL = "-O";
 				TARGETED_DEVICE_FAMILY = 1;
 			};
@@ -1207,6 +1209,7 @@
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = edu.jhu.cs.damsl.CircatorTests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				PROVISIONING_PROFILE = "$(APP_UUID)";
 				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/Circator.app/Circator";
 			};
 			name = Release;
@@ -1220,6 +1223,7 @@
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = edu.jhu.cs.damsl.CircatorUITests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				PROVISIONING_PROFILE = "$(APP_UUID)";
 				TEST_TARGET_NAME = Circator;
 				USES_XCTRUNNER = YES;
 			};
@@ -1246,7 +1250,7 @@
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = edu.jhu.cs.damsl.Circator.kit;
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				PROVISIONING_PROFILE = "$(KIT_UDID)";
+				PROVISIONING_PROFILE = "$(KIT_UUID)";
 				SKIP_INSTALL = YES;
 				TARGETED_DEVICE_FAMILY = 1;
 				VERSIONING_SYSTEM = "apple-generic";
@@ -1267,7 +1271,7 @@
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @executable_path/../../Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = edu.jhu.cs.damsl.Circator.app.watch.extension;
 				PRODUCT_NAME = "${TARGET_NAME}";
-				PROVISIONING_PROFILE = "$(WATCHEXT_UDID)";
+				PROVISIONING_PROFILE = "$(WATCHEXT_UUID)";
 				SDKROOT = watchos;
 				SKIP_INSTALL = YES;
 				TARGETED_DEVICE_FAMILY = 4;
@@ -1288,7 +1292,7 @@
 				INFOPLIST_FILE = CircatorWatch/Info.plist;
 				PRODUCT_BUNDLE_IDENTIFIER = edu.jhu.cs.damsl.Circator.app.watch;
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				PROVISIONING_PROFILE = "$(WATCH_UDID)";
+				PROVISIONING_PROFILE = "$(WATCH_UUID)";
 				SDKROOT = watchos;
 				SKIP_INSTALL = YES;
 				TARGETED_DEVICE_FAMILY = 4;
