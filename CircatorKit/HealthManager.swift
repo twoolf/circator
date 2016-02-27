@@ -150,16 +150,18 @@ public class HealthManager: NSObject, WCSessionDelegate {
         var samples = [HKSampleType: [Result]]()
 
         let updateSamples : (HKSampleType, [Result], NSError?) -> Void = { (type, statistics, error) in
-            dispatch_group_leave(group)
             guard error == nil else {
                 log.error("Could not fetch recent samples for \(type.displayText): \(error)")
+                dispatch_group_leave(group)
                 return
             }
             guard statistics.isEmpty == false else {
                 log.warning("No recent samples available for \(type.displayText)")
+                dispatch_group_leave(group)
                 return
             }
             samples[type] = statistics
+            dispatch_group_leave(group)
         }
 
         let onStatistic : HKSampleType -> Void = { type in
@@ -265,21 +267,23 @@ public class HealthManager: NSObject, WCSessionDelegate {
         let group = dispatch_group_create()
         dispatch_group_enter(group)
         fetchStatisticsOfType(type) { (statistics, error) -> Void in
-            dispatch_group_leave(group)
             guard error == nil else {
                 completion([], [], error)
+                dispatch_group_leave(group)
                 return
             }
             stat1 = statistics
+            dispatch_group_leave(group)
         }
         dispatch_group_enter(group)
         fetchStatisticsOfType(type2) { (statistics, error) -> Void in
-            dispatch_group_leave(group)
             guard error == nil else {
                 completion([], [], error)
+                dispatch_group_leave(group)
                 return
             }
             stat2 = statistics
+            dispatch_group_leave(group)
         }
 
         dispatch_group_notify(group, dispatch_get_main_queue()) {
@@ -320,23 +324,22 @@ public class HealthManager: NSObject, WCSessionDelegate {
         let group = dispatch_group_create()
         var samplesByType = [HKSampleType: [HKSample]]()
 
-        let updateSamples : (HKSampleType, [HKSample], NSError?) -> Void = { (type, samples, error) in
-            dispatch_group_leave(group)
-            guard error == nil else {
-                log.error("Could not fetch recent samples for \(type.displayText): \(error)")
-                return
-            }
-            guard samples.isEmpty == false else {
-                log.warning("No recent samples available for \(type.displayText)")
-                return
-            }
-            samplesByType[type] = samples
-        }
-
         typesAndPredicates.forEach { (type, predicate) -> () in
             dispatch_group_enter(group)
             self.fetchSamplesOfType(type, predicate: predicate, limit: noLimit) { (samples, error) in
-                updateSamples(type, samples, error)
+                guard error == nil else {
+                    log.error("Could not fetch recent samples for \(type.displayText): \(error)")
+                    dispatch_group_leave(group)
+                    return
+                }
+                guard samples.isEmpty == false else {
+                    log.warning("No recent samples available for \(type.displayText)")
+                    dispatch_group_leave(group)
+                    return
+                }
+                log.info("fetchSamples: \(type.identifier) \(samples.count)")
+                samplesByType[type] = samples
+                dispatch_group_leave(group)
             }
         }
 

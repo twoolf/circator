@@ -3,62 +3,42 @@
   <testsuite name="fastlane.lanes">
     
       
-      <testcase classname="fastlane.lanes" name="0: opt_out_usage" time="0.000714">
+      <testcase classname="fastlane.lanes" name="0: opt_out_usage" time="0.000813">
         
       </testcase>
     
       
-      <testcase classname="fastlane.lanes" name="1: Verifying required fastlane version" time="0.000806">
+      <testcase classname="fastlane.lanes" name="1: Verifying required fastlane version" time="0.001464">
         
       </testcase>
     
       
-      <testcase classname="fastlane.lanes" name="2: default_platform" time="0.00048">
+      <testcase classname="fastlane.lanes" name="2: default_platform" time="0.000596">
         
       </testcase>
     
       
-      <testcase classname="fastlane.lanes" name="3: Switch to ios prepcerts lane" time="0.000464">
+      <testcase classname="fastlane.lanes" name="3: crashlytics" time="135.794685">
         
       </testcase>
     
       
-      <testcase classname="fastlane.lanes" name="4: match" time="20.535179">
+      <testcase classname="fastlane.lanes" name="4: Switch to ios post_to_slack lane" time="0.000635">
         
       </testcase>
     
       
-      <testcase classname="fastlane.lanes" name="5: match" time="5.970162">
+      <testcase classname="fastlane.lanes" name="5: get_version_number" time="1.702097">
         
       </testcase>
     
       
-      <testcase classname="fastlane.lanes" name="6: match" time="6.001743">
+      <testcase classname="fastlane.lanes" name="6: get_build_number" time="0.686538">
         
       </testcase>
     
       
-      <testcase classname="fastlane.lanes" name="7: match" time="6.57073">
-        
-      </testcase>
-    
-      
-      <testcase classname="fastlane.lanes" name="8: set_project_provisioning_env_var" time="5.481055">
-        
-      </testcase>
-    
-      
-      <testcase classname="fastlane.lanes" name="9: set_project_provisioning_env_var" time="0.372963">
-        
-      </testcase>
-    
-      
-      <testcase classname="fastlane.lanes" name="10: set_project_provisioning_env_var" time="0.344344">
-        
-      </testcase>
-    
-      
-      <testcase classname="fastlane.lanes" name="11: set_project_provisioning_env_var" time="0.402016">
+      <testcase classname="fastlane.lanes" name="7: slack" time="6.750749">
         
       </testcase>
     

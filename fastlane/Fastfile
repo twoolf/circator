@@ -180,7 +180,7 @@ platform :ios do
       ENV[metadata[1]] = uuid
     }
 
-    #gym(scheme: "Circator")
+    gym(scheme: "Circator")
   end
 
   desc "Build a release archive"
