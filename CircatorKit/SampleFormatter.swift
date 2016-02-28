@@ -459,7 +459,7 @@ public class SampleFormatter: NSObject {
             return "\(SampleFormatter.numberFormatter.stringFromNumber(quantity)!) steps"
 
         case HKQuantityTypeIdentifierUVExposure:
-            return "\(SampleFormatter.numberFormatter.stringFromNumber(quantity)!) exposure"
+            return "\(SampleFormatter.numberFormatter.stringFromNumber(quantity)!) hours"
             
         default:
             return SampleFormatter.numberFormatter.stringFromNumber(quantity) ?? "<nil>"
