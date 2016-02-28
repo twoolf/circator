@@ -834,7 +834,7 @@ class IntroViewController: UIViewController,
             guard error == nil else { log.error(error); return }
             let overlaps = samples.reduce(false, combine: { (acc, kv) in
                 guard !acc else { return acc }
-                return kv.1.reduce(acc, combine: { (acc, s) in return acc || !( startTime > s.endDate || endTime < s.startDate ) })
+                return kv.1.reduce(acc, combine: { (acc, s) in return acc || !( startTime >= s.endDate || endTime <= s.startDate ) })
             })
 
             if !overlaps { completion() }
