@@ -196,6 +196,9 @@ class EventTimeViewController : UIViewController {
     }
 
     func reloadData() {
+        typealias Event = (NSDate, Double)
+        typealias IEvent = (Double, Double)
+
         // Fetch all sleep and workout data since yesterday.
         let (epsilon, yesterday, now) = (1.seconds, 1.days.ago, NSDate())
         let sleepTy = HKObjectType.categoryTypeForIdentifier(HKCategoryTypeIdentifierSleepAnalysis)!
@@ -225,22 +228,22 @@ class EventTimeViewController : UIViewController {
                 }
                 else {
                     var lastAte : NSDate? = nil
-                    // Create event intervals from HKSamples. Note that each interval is delimited by a fasting timepoint.
-                    let events = samples.flatMap { (ty,vals) -> [(NSDate, Double)]? in
+
+                    // Create event intervals from HKSamples, and calculate the latest eating time.
+                    // We truncate any event starting earlier than 24 hours ago.
+                    let events = samples.flatMap { (ty,vals) -> [Event]? in
                         switch ty {
                         case is HKWorkoutType:
-                            return vals.flatMap { s -> [(NSDate, Double)] in
-                                let st = s.startDate
+                            return vals.flatMap { s -> [Event] in
+                                let st = s.startDate < yesterday ? yesterday : s.startDate
                                 let en = s.endDate
-                                guard let v = s as? HKWorkout else {
-                                    return []
-                                }
+                                guard let v = s as? HKWorkout else { return [] }
                                 switch v.workoutActivityType {
                                 case HKWorkoutActivityType.PreparationAndRecovery:
                                     lastAte = lastAte == nil ? en : (lastAte! > en ? lastAte! : en)
-                                    return [(st, stEat), (en, stEat), (en + epsilon, stFast)]
+                                    return [(st, stEat), (en, stEat)]
                                 default:
-                                    return [(st, stWorkout), (en, stWorkout), (en + epsilon, stFast)]
+                                    return [(st, stWorkout), (en, stWorkout)]
                                 }
                             }
 
@@ -248,10 +251,10 @@ class EventTimeViewController : UIViewController {
                             guard ty.identifier == HKCategoryTypeIdentifierSleepAnalysis else {
                                 return nil
                             }
-                            return vals.flatMap { s -> [(NSDate, Double)] in
-                                let st = s.startDate
+                            return vals.flatMap { s -> [Event] in
+                                let st = s.startDate < yesterday ? yesterday : s.startDate
                                 let en = s.endDate
-                                return [(st, stSleep), (en, stSleep), (en + epsilon, stFast)]
+                                return [(st, stSleep), (en, stSleep)]
                             }
 
                         default:
@@ -260,6 +263,7 @@ class EventTimeViewController : UIViewController {
                         }
                     }
 
+                    // Sort by starting times across event types (sleep, eat, exercise).
                     var sortedEvents = events.flatten().sort { (a,b) in return a.0 < b.0 }
                     if sortedEvents.isEmpty {
                         let series = ChartSeries(data: [(x: 0.0, y: stFast), (x: 24.0, y: stFast)])
@@ -271,29 +275,22 @@ class EventTimeViewController : UIViewController {
                         self.eatingLabel.text  = "N/A"
                         self.lastAteLabel.text = "N/A"
                     } else {
-                        let firstev = sortedEvents.first!
-                        let lastev = sortedEvents.last ?? firstev
+                        let lastev = sortedEvents.last ?? sortedEvents.first!
+                        let lst = lastev.0 == now ? [] : [(lastev.0, stFast), (now, stFast)]
 
-                        // Add a leading sleep or fast segment
-                        let zst = (firstev.1 == stEat || firstev.1 == stWorkout) ?
-                            [(yesterday, stFast), (firstev.0 - epsilon, stFast)] : [(yesterday, firstev.1)]
+                        let zst : ([Event], Bool, Event!) = ([], true, nil)
+                        sortedEvents = sortedEvents.reduce(zst, combine: { (acc, e) in
+                            guard acc.2 != nil else {
+                                return ((e.0 == yesterday ? [e] : [(yesterday, stFast), (e.0, stFast), e]), !acc.1, e)
+                            }
 
-                        // Add a trailing segment, which is guaranteed to be a fasting state since we always
-                        // append a fasting timepoint to any other event.
-                        let lst = [(now, lastev.1)]
-
-                        // Create event intervals from points:
-                        // i. add the event as a timepoint if it matches the previous state, or
-                        //    if the previous state was a fasting event.
-                        // ii. otherwise, we are transitioning; thus add a fasting timepoint, to close the previous
-                        //     interval, prior to adding this event.
-                        let z = (zst, firstev)
-                        sortedEvents = sortedEvents.reduce(z, combine: { (acc, e) in
-                            //let eventBlip = e.0.timeIntervalSinceDate(acc.1.0) <= Double(2*epsilon.second)
-                            if e.1 == stFast || acc.1.1 == e.1 /*|| eventBlip*/ {
-                                return (acc.0 + [e], e)
+                            // Skip a fasting interval for back-to-back events
+                            if (acc.1 && acc.2.0 == e.0) {
+                                return (acc.0 + [(e.0+epsilon, e.1)], !acc.1, e)
+                            } else if acc.1 {
+                                return (acc.0 + [(acc.2.0+epsilon, stFast), (e.0-epsilon, stFast), e], !acc.1, e)
                             } else {
-                                return (acc.0 + [(e.0 - epsilon, stFast), e], e)
+                                return (acc.0 + [e], !acc.1, e)
                             }
                         }).0 + lst
 
@@ -304,37 +301,43 @@ class EventTimeViewController : UIViewController {
                         self.mealChart.addSeries(series)
 
                         // Calculate event statistics. The accumulator is:
-                        // i. max fasting window
-                        // ii. total eating time
+                        // i. total eating time
+                        // ii. max fasting window
                         // iii. previous event
-                        // iv. a bool indicating if we are in an accumulating fasting interval
+                        // iv. a bool indicating whether the current event starts an interval
                         // v. the accumulated fasting window
-                        let acc = vals.reduce((0.0, 0.0, vals.first!, false, 0.0), combine: { (acc, e) in
+                        // vi. a bool indicating if we are in an accumulating fasting interval
+                        let szst : (Double, Double, IEvent!, Bool, Double, Bool) = (0.0, 0.0, nil, true, 0.0, false)
+                        let stats = vals.reduce(szst, combine: { (acc, e) in
                             var nacc = acc
-                            let transition = acc.2.1 != e.1
-                            let prevFast = acc.3
-                            if !transition {
-                                let duration = e.0 - acc.2.0
-                                let fast = e.1 == stSleep || e.1 == stFast
-                                var fastacc = 0.0
+                            let (iStart, prevFast) = (acc.3, acc.5)
+                            let fast = e.1 == stSleep || e.1 == stFast
 
+                            if !iStart {
+                                let duration = e.0 - acc.2.0
                                 if prevFast && fast {
-                                    fastacc = acc.4 + duration
-                                    nacc.0 = nacc.0 > fastacc ? nacc.0 : fastacc
+                                    nacc.4 += duration
+                                    nacc.1 = nacc.1 > nacc.4 ? nacc.1 : nacc.4
                                 } else if fast {
-                                    fastacc = duration
-                                    nacc.0 = nacc.0 > fastacc ? nacc.0 : fastacc
+                                    nacc.4 = duration
+                                    nacc.1 = nacc.1 > nacc.4 ? nacc.1 : nacc.4
                                 } else if e.1 == stEat {
-                                    nacc.1 += duration
+                                    nacc.0 += duration
                                 }
-                                return (nacc.0, nacc.1, e, fast, fastacc)
+                            } else {
+                                nacc.5 = acc.2 == nil ? false : (acc.2.1 == stSleep || acc.2.1 == stFast)
                             }
-                            return (nacc.0, nacc.1, e, false, 0.0)
+                            nacc.2 = e
+                            nacc.3 = !iStart
+                            return nacc
                         })
 
                         let today = NSDate().startOf(.Day, inRegion: Region())
-                        self.fastingLabel.text = (today + Int(acc.0 * 3600.0).seconds).toString(DateFormat.Custom("HH:mm"))!
-                        self.eatingLabel.text  = (today + Int(acc.1 * 3600.0).seconds).toString(DateFormat.Custom("HH:mm"))!
+                        let fastingHrs = Int(floor(stats.1))
+                        let fastingMins = (today + Int(round((stats.1 % 1.0) * 60.0)).minutes).toString(DateFormat.Custom("mm"))!
+                        self.fastingLabel.text = "\(fastingHrs):\(fastingMins)"
+
+                        self.eatingLabel.text  = (today + Int(stats.0 * 3600.0).seconds).toString(DateFormat.Custom("HH:mm"))!
                         self.lastAteLabel.text = lastAte == nil ? "N/A" : lastAte!.toString(DateFormat.Custom("HH:mm"))!
                     }
                 }

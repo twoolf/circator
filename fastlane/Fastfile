@@ -21,6 +21,8 @@ fastlane_version "1.56.0"
 default_platform :ios
 
 project_dir = "Circator.xcodeproj"
+ipa_archive = "Circator.ipa"
+
 app_ids = { 'edu.jhu.cs.damsl.Circator.app' =>
               ['Metabolic Compass', 'APP_UUID', '^Circator$', 'Circator/Info.plist'],
 
@@ -32,6 +34,14 @@ app_ids = { 'edu.jhu.cs.damsl.Circator.app' =>
 
             'edu.jhu.cs.damsl.Circator.app.watch.extension' =>
               ['MC Watch Extension', 'WATCHEXT_UUID', 'CircatorWatch Extension', 'CircatorWatch Extension/Info.plist'] }
+
+app_dist_identity = "iPhone Distribution: Yanif Ahmad (E4SL9A9Z96)"
+
+app_dist_profiles = { 'edu.jhu.cs.damsl.Circator.app' => "",
+                      'edu.jhu.cs.damsl.Circator.kit' => "",
+                      'edu.jhu.cs.damsl.Circator.app.watch' => "",
+                      'edu.jhu.cs.damsl.Circator.app.watch.extension' => ""
+                    }
 
 platform :ios do
   before_all do
@@ -160,7 +170,7 @@ platform :ios do
 
   desc "Prepare for command line deployment to the App Store"
   lane :preparedeploy do
-    prepcerts(type: 'appstore')
+    prepcerts(type: 'appstore', readonly: true)
   end
 
 
@@ -198,6 +208,19 @@ platform :ios do
     gym(scheme: "Circator")
   end
 
+  desc "Resign a development archive"
+  lane :resign_dev do
+    prepcerts(type: 'appstore', readonly: true)
+
+    app_ids.each {|appid, metadata|
+      uuid = ENV["sigh_#{appid}_appstore"]
+      homedir = ENV["HOME"]
+      app_dist_profiles[appid] = "#{homedir}/Library/MobileDevice/Provisioning Profiles/#{uuid}.mobileprovision"
+    }
+
+    resign(ipa: ipa_archive, signing_identity: app_dist_identity, provisioning_profile: app_dist_profiles)
+  end
+
 
   ######################################
   ## Beta release
@@ -217,29 +240,24 @@ platform :ios do
     post_to_slack(scheme: "Circator", destination: "Fabric")
   end
 
-  desc "Build and submit a development build to Apple TestFlight"
+  desc "Build and submit a beta build to Apple TestFlight"
   lane :beta_testflight do
-    build_dev
-    beta_upload_testflight
-  end
-
-  desc "Build and submit a distribution build to Apple TestFlight"
-  lane :beta_app_testflight do
     build_app
     beta_upload_testflight
   end
 
-  desc "Build and submit a development build to Fabric/Crashlytics"
+  desc "Build and submit a beta build to Fabric/Crashlytics"
   lane :beta_fabric do
     build_dev
     beta_upload_fabric
   end
 
-  desc "Build and submit a development build to Apple TestFlight and Fabric/Crashlytics"
+  desc "Build and submit a beta build to Apple TestFlight and Fabric/Crashlytics"
   lane :beta do
     build_dev
-    beta_upload_testflight
     beta_upload_fabric
+    resign_dev
+    beta_upload_testflight
   end
 
   ############################################

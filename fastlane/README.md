@@ -86,6 +86,11 @@ Build a development archive
 fastlane ios build_app
 ```
 Build a release archive
+### ios resign_dev
+```
+fastlane ios resign_dev
+```
+Resign a development archive
 ### ios beta_upload_testflight
 ```
 fastlane ios beta_upload_testflight
@@ -100,22 +105,17 @@ Upload a Beta Build to Fabric/Crashlytics
 ```
 fastlane ios beta_testflight
 ```
-Build and submit a development build to Apple TestFlight
-### ios beta_app_testflight
-```
-fastlane ios beta_app_testflight
-```
-Build and submit a distribution build to Apple TestFlight
+Build and submit a beta build to Apple TestFlight
 ### ios beta_fabric
 ```
 fastlane ios beta_fabric
 ```
-Build and submit a development build to Fabric/Crashlytics
+Build and submit a beta build to Fabric/Crashlytics
 ### ios beta
 ```
 fastlane ios beta
 ```
-Build and submit a development build to Apple TestFlight and Fabric/Crashlytics
+Build and submit a beta build to Apple TestFlight and Fabric/Crashlytics
 
 ----
 
