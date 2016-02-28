@@ -47,8 +47,10 @@ public class HealthManager: NSObject, WCSessionDelegate {
     public static let sharedManager = HealthManager()
     public static let serializer = OMHSerializer()
 
-    lazy var healthKitStore: HKHealthStore = HKHealthStore()
+    public var repeatedEvents = [Event]()
 
+    lazy var healthKitStore: HKHealthStore = HKHealthStore()
+    
     private override init() {
         super.init()
         connectWatch()

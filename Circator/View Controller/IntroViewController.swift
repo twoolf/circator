@@ -435,7 +435,6 @@ class IntroViewController: UIViewController,
                 UIBarButtonItem(barButtonSystemItem: .FlexibleSpace, target: nil, action: ""),
                 UIBarButtonItem(barButtonSystemItem: .Done, target: self, action: "selectAttribute:")
             ]
-
             return view
         }()
         return textField

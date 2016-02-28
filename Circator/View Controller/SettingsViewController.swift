@@ -13,7 +13,7 @@ import Former
 import HTPressableButton
 import SwiftDate
 
-private let fieldCount           : Int   = UserProfile.sharedInstance.updateableReqRange.count+3
+private let fieldCount           : Int   = UserProfile.sharedInstance.updateableReqRange.count+4
 
 private let debugSectionSizes    : [Int] = [2,2,7,fieldCount,2,1]
 private let releaseSectionSizes  : [Int] = [2,2,7,fieldCount,2]
