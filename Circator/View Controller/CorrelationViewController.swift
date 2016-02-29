@@ -12,9 +12,15 @@ import CircatorKit
 import HealthKit
 import Crashlytics
 import SwiftDate
+import Pages
+import Async
 
 class CorrelationViewController: UIViewController, ChartViewDelegate {
-    
+
+    var pageIndex  : Int! = nil
+    var loadIndex  : Int! = nil
+    var errorIndex : Int! = nil
+
     lazy var scrollView: UIScrollView = {
         let view = UIScrollView(frame: self.view.bounds)
         return view
@@ -25,7 +31,7 @@ class CorrelationViewController: UIViewController, ChartViewDelegate {
         label.font = UIFont.systemFontOfSize(16, weight: UIFontWeightSemibold)
         label.textColor = Theme.universityDarkTheme.titleTextColor
         label.textAlignment = .Center
-        label.text = NSLocalizedString("Time Correlations: Min to Max (x-axis) vs Value at time (y-axis)", comment: "Plot view section title label")
+        label.text = NSLocalizedString("Attribute 2 Relative to Increasing Attribute 1", comment: "Plot view section title label")
         label.lineBreakMode = .ByWordWrapping
         label.numberOfLines = 0
         return label
@@ -58,43 +64,58 @@ class CorrelationViewController: UIViewController, ChartViewDelegate {
     
     var sampleTypes: [HKSampleType]! {
         didSet {
-            HealthManager.sharedManager.correlateStatisticsOfType(sampleTypes[0], withType: sampleTypes[1]) { (stat1, stat2, error) -> Void in
-                guard error == nil else {
-                    return
-                }
-                for (i, stat) in stat1.enumerate() {
-                    print("stat1,\(stat.quantity)")
-                    print("stat2,\(stat2[i].quantity)")
-                let analyzer = CorrelationDataAnalyzer(sampleTypes: self.sampleTypes, statistics: [stat1, stat2])!
-                let configurator: ((LineChartDataSet) -> Void)? = { dataSet in
-                    dataSet.drawCircleHoleEnabled = false
-                    dataSet.circleRadius = 6
-                    dataSet.valueFormatter = SampleFormatter.numberFormatter
-                    dataSet.circleColors = [Theme.universityDarkTheme.complementForegroundColors!.colorWithVibrancy(0.6)!]
-                    dataSet.colors = [Theme.universityDarkTheme.complementForegroundColors!.colorWithVibrancy(0.6)!]
-                    dataSet.lineWidth = 2
-                    dataSet.fillColor = Theme.universityDarkTheme.complementForegroundColors!.colorWithVibrancy(0.6)!
-                    dataSet.axisDependency = .Left
-                }
-                let configurator2: ((LineChartDataSet) -> Void)? = { dataSet in
-                    dataSet.drawCircleHoleEnabled = false
-                    dataSet.circleRadius = 6
-                    dataSet.valueFormatter = SampleFormatter.numberFormatter
-                    dataSet.circleColors = [Theme.universityDarkTheme.complementForegroundColors!.colorWithVibrancy(0.9)!]
-                    dataSet.colors = [Theme.universityDarkTheme.complementForegroundColors!.colorWithVibrancy(0.9)!]
-                    dataSet.lineWidth = 2
-                    dataSet.fillColor = Theme.universityDarkTheme.complementForegroundColors!.colorWithVibrancy(0.9)!
-                    dataSet.axisDependency = .Right
-                }
-                analyzer.dataSetConfigurators = [configurator, configurator2]
-                let cdata = analyzer.correlationChartData
-                self.correlationChart.data = cdata.yValCount == 0 ? nil : cdata
-                self.correlationChart.data?.setValueTextColor(Theme.universityDarkTheme.bodyTextColor)
-                self.correlationChart.data?.setValueFont(UIFont.systemFontOfSize(10, weight: UIFontWeightThin))
-            }
+            Async.main {
+                let attr1 = HMConstants.sharedInstance.healthKitShortNames[self.sampleTypes[0].identifier]!
+                let attr2 = HMConstants.sharedInstance.healthKitShortNames[self.sampleTypes[1].identifier]!
+                self.correlationLabel.text = NSLocalizedString("\(attr2) Relative to Increasing \(attr1)", comment: "Plot view section title label")
 
-            // navigationItem.title = "Correlation"
-            BehaviorMonitor.sharedInstance.setValue("Correlate", contentType: self.getSampleDescriptor())
+                Async.background {
+                    HealthManager.sharedManager.correlateStatisticsOfType(self.sampleTypes[0], withType: self.sampleTypes[1]) { (stat1, stat2, error) -> Void in
+                        guard error == nil else {
+                            Async.main {
+                                if let idx = self.errorIndex, pv = self.parentViewController as? PagesController {
+                                    pv.goTo(idx)
+                                }
+                            }
+                            return
+                        }
+                        stat1.forEach { stat in
+                        let analyzer = CorrelationDataAnalyzer(sampleTypes: self.sampleTypes, statistics: [stat1, stat2])!
+                        let configurator: ((LineChartDataSet) -> Void)? = { dataSet in
+                            dataSet.drawCircleHoleEnabled = false
+                            dataSet.circleRadius = 6
+                            dataSet.valueFormatter = SampleFormatter.numberFormatter
+                            dataSet.circleColors = [Theme.universityDarkTheme.complementForegroundColors!.colorWithVibrancy(0.6)!]
+                            dataSet.colors = [Theme.universityDarkTheme.complementForegroundColors!.colorWithVibrancy(0.6)!]
+                            dataSet.lineWidth = 2
+                            dataSet.fillColor = Theme.universityDarkTheme.complementForegroundColors!.colorWithVibrancy(0.6)!
+                            dataSet.axisDependency = .Left
+                        }
+                        let configurator2: ((LineChartDataSet) -> Void)? = { dataSet in
+                            dataSet.drawCircleHoleEnabled = false
+                            dataSet.circleRadius = 6
+                            dataSet.valueFormatter = SampleFormatter.numberFormatter
+                            dataSet.circleColors = [Theme.universityDarkTheme.complementForegroundColors!.colorWithVibrancy(0.9)!]
+                            dataSet.colors = [Theme.universityDarkTheme.complementForegroundColors!.colorWithVibrancy(0.9)!]
+                            dataSet.lineWidth = 2
+                            dataSet.fillColor = Theme.universityDarkTheme.complementForegroundColors!.colorWithVibrancy(0.9)!
+                            dataSet.axisDependency = .Right
+                        }
+                        analyzer.dataSetConfigurators = [configurator, configurator2]
+                        let cdata = analyzer.correlationChartData
+                        self.correlationChart.data = cdata.yValCount == 0 ? nil : cdata
+                        self.correlationChart.data?.setValueTextColor(Theme.universityDarkTheme.bodyTextColor)
+                        self.correlationChart.data?.setValueFont(UIFont.systemFontOfSize(10, weight: UIFontWeightThin))
+
+                        Async.main {
+                            if let idx = self.pageIndex, pv = self.parentViewController as? PagesController {
+                                pv.goTo(idx)
+                            }
+                        }
+                    }
+                    BehaviorMonitor.sharedInstance.setValue("Correlate", contentType: self.getSampleDescriptor())
+                }
+            }
         }
       }
     }
@@ -120,12 +141,16 @@ class CorrelationViewController: UIViewController, ChartViewDelegate {
     }
     
     private func configureViews() {
-        view.addSubview(scrollView)
         scrollView.backgroundColor = Theme.universityDarkTheme.backgroundColor
+
+        scrollView.translatesAutoresizingMaskIntoConstraints = false
+        view.addSubview(scrollView)
+
         correlationLabel.translatesAutoresizingMaskIntoConstraints = false
-        scrollView.addSubview(correlationLabel)
         correlationChart.translatesAutoresizingMaskIntoConstraints = false
+        scrollView.addSubview(correlationLabel)
         scrollView.addSubview(correlationChart)
+
         let constraints: [NSLayoutConstraint] = [
             correlationLabel.leadingAnchor.constraintEqualToAnchor(scrollView.layoutMarginsGuide.leadingAnchor),
             correlationLabel.trailingAnchor.constraintEqualToAnchor(scrollView.layoutMarginsGuide.trailingAnchor),
@@ -137,6 +162,14 @@ class CorrelationViewController: UIViewController, ChartViewDelegate {
         scrollView.addConstraints(constraints)
         correlationChart.translatesAutoresizingMaskIntoConstraints = false
         correlationChart.heightAnchor.constraintEqualToConstant(200).active = true
+
+        let svconstraints : [NSLayoutConstraint] = [
+            scrollView.topAnchor.constraintEqualToAnchor(topLayoutGuide.bottomAnchor),
+            scrollView.bottomAnchor.constraintEqualToAnchor(view.bottomAnchor),
+            scrollView.leadingAnchor.constraintEqualToAnchor(view.leadingAnchor),
+            scrollView.trailingAnchor.constraintEqualToAnchor(view.trailingAnchor)
+        ]
+        view.addConstraints(svconstraints)
     }
 
     func getSampleDescriptor() -> String {

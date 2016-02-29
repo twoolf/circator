@@ -86,6 +86,17 @@ class RadarViewController : UIViewController, ChartViewDelegate {
         return chart
     }()
 
+    var initialImage : UIImage! = nil
+    var initialMsg : String! = "HealthKit not authorized"
+
+    var authorized : Bool = false {
+        didSet {
+            configureViews()
+            radarChart.layoutIfNeeded()
+            reloadData()
+        }
+    }
+
     override func viewWillAppear(animated: Bool) {
         super.viewWillAppear(animated)
         navigationController?.setNavigationBarHidden(true, animated: false)
@@ -104,15 +115,51 @@ class RadarViewController : UIViewController, ChartViewDelegate {
     }
 
     func configureViews() {
-        radarChart.translatesAutoresizingMaskIntoConstraints = false
-        view.addSubview(radarChart)
-        let rcConstraints: [NSLayoutConstraint] = [
-            radarChart.topAnchor.constraintEqualToAnchor(view.topAnchor),
-            radarChart.leadingAnchor.constraintEqualToAnchor(view.layoutMarginsGuide.leadingAnchor),
-            radarChart.trailingAnchor.constraintEqualToAnchor(view.layoutMarginsGuide.trailingAnchor),
-            radarChart.bottomAnchor.constraintEqualToAnchor(view.bottomAnchor)
+        if authorized {
+            view.subviews.forEach { $0.removeFromSuperview() }
+            radarChart.translatesAutoresizingMaskIntoConstraints = false
+            view.addSubview(radarChart)
+            let rcConstraints: [NSLayoutConstraint] = [
+                radarChart.topAnchor.constraintEqualToAnchor(view.topAnchor),
+                radarChart.leadingAnchor.constraintEqualToAnchor(view.layoutMarginsGuide.leadingAnchor),
+                radarChart.trailingAnchor.constraintEqualToAnchor(view.layoutMarginsGuide.trailingAnchor),
+                radarChart.bottomAnchor.constraintEqualToAnchor(view.bottomAnchor)
+            ]
+            view.addConstraints(rcConstraints)
+        } else {
+            configureUnauthorizedView()
+        }
+    }
+
+    func configureUnauthorizedView() {
+        let iview = UIImageView()
+        iview.image = initialImage
+        iview.contentMode = .ScaleAspectFit
+        iview.tintColor = Theme.universityDarkTheme.foregroundColor
+
+        let lbl = UILabel()
+        lbl.textAlignment = .Center
+        lbl.lineBreakMode = .ByWordWrapping
+        lbl.numberOfLines = 0
+        lbl.text = initialMsg
+        lbl.textColor = Theme.universityDarkTheme.foregroundColor
+
+        iview.translatesAutoresizingMaskIntoConstraints = false
+        lbl.translatesAutoresizingMaskIntoConstraints = false
+
+        view.addSubview(iview)
+        view.addSubview(lbl)
+
+        let constraints: [NSLayoutConstraint] = [
+            iview.centerXAnchor.constraintEqualToAnchor(view.centerXAnchor),
+            iview.centerYAnchor.constraintEqualToAnchor(view.centerYAnchor, constant: -50),
+            lbl.topAnchor.constraintEqualToAnchor(iview.bottomAnchor),
+            lbl.centerXAnchor.constraintEqualToAnchor(view.centerXAnchor),
+            iview.widthAnchor.constraintEqualToConstant(100),
+            iview.heightAnchor.constraintEqualToConstant(100),
+            lbl.widthAnchor.constraintEqualToAnchor(view.widthAnchor, constant: -50)
         ]
-        view.addConstraints(rcConstraints)
+        view.addConstraints(constraints)
     }
 
     // MARK: - Radar chart
