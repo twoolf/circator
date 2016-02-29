@@ -12,8 +12,14 @@ import HealthKit
 import CircatorKit
 import Crashlytics
 import SwiftDate
+import Async
+import Pages
 
 class PlotViewController: UIViewController, ChartViewDelegate {
+
+    var pageIndex  : Int! = nil
+    var loadIndex  : Int! = nil
+    var errorIndex : Int! = nil
 
     lazy var scrollView: UIScrollView = {
         let view = UIScrollView(frame: self.view.bounds)
@@ -82,36 +88,49 @@ class PlotViewController: UIViewController, ChartViewDelegate {
     var sampleType: HKSampleType! {
         didSet {
             navigationItem.title = sampleType.displayText!
-            HealthManager.sharedManager.fetchSamplesOfType(sampleType) { (samples, error) -> Void in
-                dispatch_async(dispatch_get_main_queue()) {
-                    guard error == nil else {
-                        return
-                    }
-                    if self.sampleType is HKCorrelationType {
-                        // Sleep
-                    } else {
-                        let analyzer = PlotDataAnalyzer(sampleType: self.sampleType, samples: samples)
-                        analyzer.dataSetConfigurator = { dataSet in
-                            dataSet.drawCircleHoleEnabled = true
-                            dataSet.circleRadius = 7
-                            dataSet.valueFormatter = SampleFormatter.numberFormatter
-                            dataSet.circleHoleColor = Theme.universityDarkTheme.complementForegroundColors!.colorWithVibrancy(0.1)!
-                            dataSet.circleColors = [Theme.universityDarkTheme.complementForegroundColors!.colorWithVibrancy(0.6)!]
-                            dataSet.colors = [Theme.universityDarkTheme.complementForegroundColors!.colorWithVibrancy(0.1)!]
-                            dataSet.lineWidth = 2
-                            dataSet.fillColor = Theme.universityDarkTheme.complementForegroundColors!.colorWithVibrancy(0.1)!
+            Async.main {
+                Async.background {
+                    HealthManager.sharedManager.fetchStatisticsOfType(self.sampleType) { (statistics, error) -> Void in
+                        guard error == nil else {
+                            Async.main {
+                                if let idx = self.errorIndex, pv = self.parentViewController as? PagesController {
+                                    pv.goTo(idx)
+                                }
+                            }
+                            return
                         }
-                        let ldata = analyzer.lineChartData
-                        self.historyChart.data = ldata.yValCount == 0 ? nil : ldata
-                        self.historyChart.data?.setValueTextColor(Theme.universityDarkTheme.bodyTextColor)
-                        self.historyChart.data?.setValueFont(UIFont.systemFontOfSize(10, weight: UIFontWeightThin))
+                        if self.sampleType is HKCorrelationType {
+                            // Sleep
+                        } else {
+                            let analyzer = PlotDataAnalyzer(sampleType: self.sampleType, statistics: statistics)
+                            analyzer.dataSetConfigurator = { dataSet in
+                                dataSet.drawCircleHoleEnabled = true
+                                dataSet.circleRadius = 7
+                                dataSet.valueFormatter = SampleFormatter.numberFormatter
+                                dataSet.circleHoleColor = Theme.universityDarkTheme.complementForegroundColors!.colorWithVibrancy(0.1)!
+                                dataSet.circleColors = [Theme.universityDarkTheme.complementForegroundColors!.colorWithVibrancy(0.6)!]
+                                dataSet.colors = [Theme.universityDarkTheme.complementForegroundColors!.colorWithVibrancy(0.1)!]
+                                dataSet.lineWidth = 2
+                                dataSet.fillColor = Theme.universityDarkTheme.complementForegroundColors!.colorWithVibrancy(0.1)!
+                            }
+                            let ldata = analyzer.lineChartData
+                            self.historyChart.data = ldata.yValCount == 0 ? nil : ldata
+                            self.historyChart.data?.setValueTextColor(Theme.universityDarkTheme.bodyTextColor)
+                            self.historyChart.data?.setValueFont(UIFont.systemFontOfSize(10, weight: UIFontWeightThin))
 
-                        let sdata = analyzer.bubbleChartData
-                        self.summaryChart.data = sdata.yValCount == 0 ? nil : sdata
-                        self.summaryChart.data?.setValueTextColor(Theme.universityDarkTheme.bodyTextColor)
-                        self.summaryChart.data?.setValueFont(UIFont.systemFontOfSize(10, weight: UIFontWeightThin))
+                            let sdata = analyzer.bubbleChartData
+                            self.summaryChart.data = sdata.yValCount == 0 ? nil : sdata
+                            self.summaryChart.data?.setValueTextColor(Theme.universityDarkTheme.bodyTextColor)
+                            self.summaryChart.data?.setValueFont(UIFont.systemFontOfSize(10, weight: UIFontWeightThin))
+
+                            Async.main {
+                                if let idx = self.pageIndex, pv = self.parentViewController as? PagesController {
+                                    pv.goTo(idx)
+                                }
+                            }
+                        }
+                        BehaviorMonitor.sharedInstance.setValue("Plot", contentType: self.sampleType.identifier)
                     }
-                    BehaviorMonitor.sharedInstance.setValue("Plot", contentType: self.sampleType.identifier)
                 }
             }
         }
@@ -138,8 +157,11 @@ class PlotViewController: UIViewController, ChartViewDelegate {
     }
 
     private func configureViews() {
-        view.addSubview(scrollView)
         scrollView.backgroundColor = Theme.universityDarkTheme.backgroundColor
+
+        scrollView.translatesAutoresizingMaskIntoConstraints = false
+        view.addSubview(scrollView)
+
         historyLabel.translatesAutoresizingMaskIntoConstraints = false
         summaryLabel.translatesAutoresizingMaskIntoConstraints = false
         scrollView.addSubview(historyLabel)
@@ -169,16 +191,13 @@ class PlotViewController: UIViewController, ChartViewDelegate {
         historyChart.heightAnchor.constraintEqualToConstant(200).active = true
         summaryChart.translatesAutoresizingMaskIntoConstraints = false
         summaryChart.heightAnchor.constraintEqualToConstant(200).active = true
+
+        let svconstraints : [NSLayoutConstraint] = [
+            scrollView.topAnchor.constraintEqualToAnchor(topLayoutGuide.bottomAnchor),
+            scrollView.bottomAnchor.constraintEqualToAnchor(view.bottomAnchor),
+            scrollView.leadingAnchor.constraintEqualToAnchor(view.leadingAnchor),
+            scrollView.trailingAnchor.constraintEqualToAnchor(view.trailingAnchor)
+        ]
+        view.addConstraints(svconstraints)
     }
-
-    /*
-    // MARK: - Navigation
-
-    // In a storyboard-based application, you will often want to do a little preparation before navigation
-    override func prepareForSegue(segue: UIStoryboardSegue, sender: AnyObject?) {
-        // Get the new view controller using segue.destinationViewController.
-        // Pass the selected object to the new view controller.
-    }
-    */
-
 }

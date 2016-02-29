@@ -45,12 +45,12 @@ class CorrelationDataAnalyzer: SampleDataAnalyzer {
 }
 
 class PlotDataAnalyzer: SampleDataAnalyzer {
-    let samples: [HKSample]
+    let statistics: [HKStatistics]
     let sampleType: HKSampleType
 
-    init(sampleType: HKSampleType, samples: [HKSample]) {
+    init(sampleType: HKSampleType, statistics: [HKStatistics]) {
         self.sampleType = sampleType
-        self.samples = samples
+        self.statistics = statistics
         super.init()
     }
 
@@ -63,37 +63,36 @@ class PlotDataAnalyzer: SampleDataAnalyzer {
     var dataSetConfigurator: ((LineChartDataSet) -> Void)?
     var dataSetConfiguratorBubbleChart: ((BubbleChartDataSet) -> Void)?
 
-
     var lineChartData: LineChartData {
-        guard !samples.isEmpty else {
+        guard !statistics.isEmpty else {
             return LineChartData(xVals: [""])
         }
         if dataGroupingMode == .ByDate {
-            let calendar = NSCalendar.currentCalendar()
             // Offset final date by one and first date by negative one
-            let finalDate = samples.last!.startDate + 1.days
-            var currentDate = samples.first!.startDate - 1.days
+            let zeroDate = statistics.first!.startDate.startOf(.Day, inRegion: Region()) - 1.days
+            let finalDate = statistics.last!.startDate.startOf(.Day, inRegion: Region()) + 1.days
+            var currentDate = zeroDate
             var dates: [NSDate] = []
-            while currentDate.compare(finalDate) != NSComparisonResult.OrderedDescending {
+            while currentDate <= finalDate {
                 currentDate = currentDate + 1.days
                 dates.append(currentDate)
             }
             let xVals: [String] = dates.map { (date) -> String in
                 SampleFormatter.chartDateFormatter.stringFromDate(date)
             }
-            let entries: [ChartDataEntry] = samples.map { (sample) -> ChartDataEntry in
-                let components = calendar.components(.Day, fromDate: samples.first!.startDate, toDate: sample.startDate, options: NSCalendarOptions())
-                return ChartDataEntry(value: sample.numeralValue!, xIndex: components.day + 1)
+            let entries: [ChartDataEntry] = statistics.map { (sample) -> ChartDataEntry in
+                let dayDiff = zeroDate.difference(sample.startDate.startOf(.Day, inRegion: Region()), unitFlags: .Day)
+                return ChartDataEntry(value: sample.numeralValue!, xIndex: dayDiff!.day)
             }
             let dataSet = LineChartDataSet(yVals: entries, label: "")
             dataSetConfigurator?(dataSet)
             return LineChartData(xVals: xVals, dataSet: dataSet)
         } else {
-            let xVals: [String] = samples.map { (sample) -> String in
+            let xVals: [String] = statistics.map { (sample) -> String in
                 return SampleFormatter.chartDateFormatter.stringFromDate(sample.startDate)
             }
             var index = 0
-            let entries: [ChartDataEntry] = samples.map { (sample) -> ChartDataEntry in
+            let entries: [ChartDataEntry] = statistics.map { (sample) -> ChartDataEntry in
                 return ChartDataEntry(value: sample.numeralValue!, xIndex: index++)
             }
             let dataSet = LineChartDataSet(yVals: entries, label: "")
@@ -103,13 +102,13 @@ class PlotDataAnalyzer: SampleDataAnalyzer {
     }
 
     var bubbleChartData: BubbleChartData {
-        guard samples.isEmpty == false else {
+        guard statistics.isEmpty == false else {
             return BubbleChartData(xVals: [""])
         }
         if dataGroupingMode == .ByDate {
             var dataEntries: [BubbleChartDataEntry] = []
 
-            let summaryData : [Double] = samples.map { (sample) -> Double in
+            let summaryData : [Double] = statistics.map { (sample) -> Double in
                 return sample.numeralValue!
             }
             let summaryDataSorted = summaryData.sort()
@@ -133,11 +132,11 @@ class PlotDataAnalyzer: SampleDataAnalyzer {
             dataSetConfiguratorBubbleChart?(dataSet)
             return BubbleChartData(xVals: xVals, dataSet: dataSet)
         } else {
-            let xVals: [String] = samples.map { (sample) -> String in
+            let xVals: [String] = statistics.map { (sample) -> String in
                 return SampleFormatter.chartDateFormatter.stringFromDate(sample.startDate)
             }
             var index = 0
-            let summaryData: [ChartDataEntry] = samples.map { (sample) -> ChartDataEntry in
+            let summaryData: [ChartDataEntry] = statistics.map { (sample) -> ChartDataEntry in
                 return ChartDataEntry(value: sample.numeralValue!, xIndex: index++)
             }
             let dataSet = BubbleChartDataSet(yVals: summaryData)
@@ -148,10 +147,10 @@ class PlotDataAnalyzer: SampleDataAnalyzer {
     }
 
     var summaryData: Double  {
-        guard samples.isEmpty == false else {
+        guard statistics.isEmpty == false else {
             return 0.0
         }
-        let summaryData : [Double] = samples.map { (sample) -> Double in
+        let summaryData : [Double] = statistics.map { (sample) -> Double in
             return sample.numeralValue! }
         return summaryData.sort().first!
 

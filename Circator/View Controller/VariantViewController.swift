@@ -14,6 +14,7 @@ class VariantViewController: UIViewController {
     var pages : [UIViewController]!
     var controller : PagesController!
     var startIndex : Int!
+    var withNavigation : Bool = true
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -22,7 +23,7 @@ class VariantViewController: UIViewController {
 
     override func viewWillAppear(animated: Bool) {
         super.viewWillAppear(animated)
-        navigationController?.setNavigationBarHidden(false, animated: false)
+        navigationController?.setNavigationBarHidden(!withNavigation, animated: false)
     }
 
     override func viewDidAppear(animated: Bool) {
@@ -51,22 +52,5 @@ class VariantViewController: UIViewController {
         controller.goTo(startIndex)
     }
 
-    func addViews(views: [UIView]) {
-        pages.appendContentsOf(views.map { cview in
-            let vc = UIViewController()
-            let vcview = vc.view
-
-            cview.translatesAutoresizingMaskIntoConstraints = false
-            vcview.addSubview(cview)
-            let constraints: [NSLayoutConstraint] = [
-                cview.topAnchor.constraintEqualToAnchor(vcview.topAnchor),
-                cview.leftAnchor.constraintEqualToAnchor(vcview.leftAnchor),
-                cview.rightAnchor.constraintEqualToAnchor(vcview.rightAnchor),
-                cview.bottomAnchor.constraintEqualToAnchor(vcview.bottomAnchor)
-            ]
-            vcview.addConstraints(constraints)
-            return vc
-        })
-        configureViews()
-    }
+    func goTo(index: Int) { controller.goTo(index) }
 }

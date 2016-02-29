@@ -506,6 +506,7 @@ class IntroViewController: UIViewController,
 
     internal func initializeBackgroundWork() {
         Async.main(after: 2) {
+            self.radarController.authorized = true
             self.fetchInitialAggregates()
             self.fetchRecentSamples()
             HealthManager.sharedManager.registerObservers()
@@ -710,6 +711,9 @@ class IntroViewController: UIViewController,
             tableView.bottomAnchor.constraintEqualToAnchor(tcView.bottomAnchor)
         ]
         tcView.addConstraints(tableViewConstraints)
+
+        radarController.initialImage = UIImage(named: "icon_broken_heart")
+        radarController.initialMsg = "HealthKit not authorized"
 
         pagesController = PagesController([tableContainer, radarController, mealController])
         pagesController.enableSwipe = true
@@ -950,30 +954,44 @@ class IntroViewController: UIViewController,
     }
 
     private func plotView(type: HKSampleType) {
-        let plotVC = PlotViewController()
-        plotVC.sampleType = type
-
         let errorVC = ErrorViewController()
         errorVC.image = UIImage(named: "icon_broken_heart")
         errorVC.msg = "We're heartbroken to see you\nhave no \(type.displayText!) data"
 
+        let renderVC = ErrorViewController()
+        renderVC.image = UIImage(named: "icon_broken_heart")
+        renderVC.msg = "Rendering data, please wait..."
+
+        let plotVC = PlotViewController()
+        plotVC.sampleType = type
+        plotVC.pageIndex = 0
+        plotVC.errorIndex = 1
+        plotVC.loadIndex = 2
+
         let variantVC = VariantViewController()
-        variantVC.pages = [plotVC, errorVC]
-        variantVC.startIndex = ( plotVC.historyChart.data == nil || plotVC.summaryChart.data == nil ) ? 1 : 0
+        variantVC.pages = [plotVC, errorVC, renderVC]
+        variantVC.startIndex = ( plotVC.historyChart.data == nil || plotVC.summaryChart.data == nil ) ? 2 : 0
         navigationController?.pushViewController(variantVC, animated: true)
     }
 
     private func correlateView(type1: HKSampleType, type2: HKSampleType) {
-        let correlateVC = CorrelationViewController()
-        correlateVC.sampleTypes = [type1, type2]
-
         let errorVC = ErrorViewController()
         errorVC.image = UIImage(named: "icon_broken_heart")
         errorVC.msg = "We're heartbroken to see you have no\n\(type1.displayText!) or \(type2.displayText!) data"
 
+        let renderVC = ErrorViewController()
+        renderVC.image = UIImage(named: "icon_broken_heart")
+        renderVC.msg = "Rendering data, please wait..."
+
+        let correlateVC = CorrelationViewController()
+        correlateVC.sampleTypes = [type1, type2]
+        correlateVC.pageIndex = 0
+        correlateVC.errorIndex = 1
+        correlateVC.loadIndex = 2
+
         let variantVC = VariantViewController()
-        variantVC.pages = [correlateVC, errorVC]
-        variantVC.startIndex = correlateVC.correlationChart.data == nil ? 1 : 0
+        variantVC.pages = [correlateVC, errorVC, renderVC]
+        variantVC.startIndex = correlateVC.correlationChart.data == nil ? 2 : 0
         navigationController?.pushViewController(variantVC, animated: true)
     }
 

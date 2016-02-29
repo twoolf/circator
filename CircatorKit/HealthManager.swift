@@ -229,7 +229,7 @@ public class HealthManager: NSObject, WCSessionDelegate {
             interval.day = 1
 
             // Set the anchor date to midnight today.
-            // TOSO: Should be able to change according to user settings
+            // TODO: Should be able to change according to user settings
             let anchorDate = NSDate().startOf(.Day, inRegion: Region())
             let quantityType = HKObjectType.quantityTypeForIdentifier(sampleType.identifier)!
 

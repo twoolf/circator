@@ -13,7 +13,7 @@ import Former
 import HTPressableButton
 import SwiftDate
 
-private let fieldCount           : Int   = UserProfile.sharedInstance.updateableReqRange.count+3
+private let fieldCount           : Int   = UserProfile.sharedInstance.updateableReqRange.count+4
 
 private let debugSectionSizes    : [Int] = [2,2,7,fieldCount,2,1]
 private let releaseSectionSizes  : [Int] = [2,2,7,fieldCount,2]
@@ -283,7 +283,7 @@ class SettingsViewController: UITableViewController, UITextFieldDelegate {
                 measureCells![indexPath.row]!.translatesAutoresizingMaskIntoConstraints = false
                 cell.contentView.addSubview(measureCells![indexPath.row]!)
                 let constraints: [NSLayoutConstraint] = [
-                    img.widthAnchor.constraintEqualToConstant(44),
+                    img.widthAnchor.constraintEqualToConstant(32),
                     img.heightAnchor.constraintEqualToAnchor(measureCells![indexPath.row]!.heightAnchor),
                     lbl.trailingAnchor.constraintEqualToAnchor(measureCells![indexPath.row]!.trailingAnchor),
                     measureCells![indexPath.row]!.topAnchor.constraintEqualToAnchor(cell.contentView.topAnchor),
@@ -327,9 +327,15 @@ class SettingsViewController: UITableViewController, UITextFieldDelegate {
             }
 
             formCells[indexPath.section]!.insert(formCell, atIndex: indexPath.row)
-        }
-        else if formCells[indexPath.section]![indexPath.row] == nil
+        } else if indexPath.section == 3 && subviews.contains(profile[indexPath.row].0.capitalizedString) {
+            
+            cell.textLabel?.text = profile[indexPath.row].0
+            cell.accessoryType = .DisclosureIndicator
+            return cell
+                    
+        } else if formCells[indexPath.section]![indexPath.row] == nil
         {
+            // Subviews (incl. recommended and optional fields, as well as consent PDF viewer).
             let formCell = formInput()
             let cellInput = formCell.formTextField()
             let cellLabel = formCell.formTitleLabel()
@@ -355,10 +361,10 @@ class SettingsViewController: UITableViewController, UITextFieldDelegate {
                     passCell = formCell
                     cellInput.tag = 1
                 }
-
+                
                 cellInput.enabled = true
                 cellInput.delegate = self
-
+                
             case 1:
                 if (indexPath.row == 0) {
                     cellInput.placeholder = "Siri hotword"
@@ -385,22 +391,14 @@ class SettingsViewController: UITableViewController, UITextFieldDelegate {
                 cellInput.placeholder = profile[indexPath.row].2
                 cellInput.tag = profile[indexPath.row].3
                 cellInput.delegate = self
-
-                // Subviews (incl. recommended and optional fields, as well as consent PDF viewer).
-                if ( subviews.contains(profile[indexPath.row].0) ) {
-                    cellInput.text = nil
-                    cellInput.enabled = false
-                } else {
-                    cellInput.text = cachedProfile[profile[indexPath.row].1] as? String
-                    cellInput.keyboardType = UIKeyboardType.Alphabet
-                    cellInput.returnKeyType = UIReturnKeyType.Done
-                    cellInput.enabled = true
-                }
-
+                cellInput.text = cachedProfile[profile[indexPath.row].1] as? String
+                cellInput.keyboardType = UIKeyboardType.Alphabet
+                cellInput.returnKeyType = UIReturnKeyType.Done
+                cellInput.enabled = true
+                
             default:
                 log.error("Invalid settings tableview section")
             }
-
             formCells[indexPath.section]!.insert(formCell, atIndex: indexPath.row)
         }
 
