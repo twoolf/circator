@@ -54,9 +54,9 @@ class InterfaceController: WKInterfaceController {
             default:
                 imageName = nil
             }
-            row.icon.setImageNamed(imageName)
-            row.sampleTypeLabel.setText(info["displaySampleType"]!)
-            row.valueLabel.setText(info["value"]!)
+//            row.icon.setImageNamed(imageName)
+//            row.sampleTypeLabel.setText(info["displaySampleType"]!)
+//            row.valueLabel.setText(info["value"]!)
         }
     }
 
