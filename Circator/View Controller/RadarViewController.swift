@@ -16,51 +16,51 @@ import SwiftDate
 class RadarViewController : UIViewController, ChartViewDelegate {
 
     var logisticParametersByType : [Bool: [String: (Double, Double)]] =
-    [ true: [ HKCategoryTypeIdentifierSleepAnalysis              : (6.5,0.338),
-              HKQuantityTypeIdentifierBodyMass                   : (215.0,0.0102),
-              HKQuantityTypeIdentifierBodyMassIndex              : (25.0,0.08789),
-              HKQuantityTypeIdentifierHeartRate                  : (80.0,0.0275),
-              HKQuantityTypeIdentifierBloodPressureSystolic      : (120.0,0.0183),
+    [ true: [ HKCategoryTypeIdentifierSleepAnalysis              : (6.7,0.328),
+              HKQuantityTypeIdentifierBodyMass                   : (88.7,0.0248),
+              HKQuantityTypeIdentifierBodyMassIndex              : (28.6,0.0768),
+              HKQuantityTypeIdentifierHeartRate                  : (69.0,0.0318),
+              HKQuantityTypeIdentifierBloodPressureSystolic      : (119.6,0.01837),
               HKQuantityTypeIdentifierStepCount                  : (6000,0.000366),
               HKQuantityTypeIdentifierActiveEnergyBurned         : (2750,0.00079899),
               HKQuantityTypeIdentifierUVExposure                 : (12.0,0.183),
               HKWorkoutTypeIdentifier                            : (12.0,0.183),
-              HKQuantityTypeIdentifierDietaryEnergyConsumed      : (2757,0.000797),
-              HKQuantityTypeIdentifierDietaryProtein             : (88.3,0.02488),
-              HKQuantityTypeIdentifierDietaryCarbohydrates       : (327,0.0067),
-              HKQuantityTypeIdentifierDietarySugar               : (143.3,0.01533),
-              HKQuantityTypeIdentifierDietaryFiber               : (20.6,0.10666),
-              HKQuantityTypeIdentifierDietaryFatTotal            : (103.2,0.2129),
-              HKQuantityTypeIdentifierDietaryFatSaturated        : (33.4,0.0658),
-              HKQuantityTypeIdentifierDietaryFatMonounsaturated  : (36.9,0.05955),
-              HKQuantityTypeIdentifierDietaryFatPolyunsaturated  : (24.3,0.0904),
-              HKQuantityTypeIdentifierDietaryCholesterol         : (352,0.00624),
-              HKQuantityTypeIdentifierDietarySodium              : (4560.7,0.00048177),
-              HKQuantityTypeIdentifierDietaryCaffeine            : (166.4,0.0132),
-              HKQuantityTypeIdentifierDietaryWater               : (5.0,0.43944)
+              HKQuantityTypeIdentifierDietaryEnergyConsumed      : (2794.5,0.000786),
+              HKQuantityTypeIdentifierDietaryProtein             : (106.6,0.0206),
+              HKQuantityTypeIdentifierDietaryCarbohydrates       : (333.6,0.0067),
+              HKQuantityTypeIdentifierDietarySugar               : (149.4,0.0147),
+              HKQuantityTypeIdentifierDietaryFiber               : (18.8,0.11687),
+              HKQuantityTypeIdentifierDietaryFatTotal            : (102.6,0.2142),
+              HKQuantityTypeIdentifierDietaryFatSaturated        : (33.5,0.0656),
+              HKQuantityTypeIdentifierDietaryFatMonounsaturated  : (38.2,0.0575),
+              HKQuantityTypeIdentifierDietaryFatPolyunsaturated  : (21.9,0.10003),
+              HKQuantityTypeIdentifierDietaryCholesterol         : (375.5,0.00585),
+              HKQuantityTypeIdentifierDietarySodium              : (4463.8,0.0004922),
+              HKQuantityTypeIdentifierDietaryCaffeine            : (173.1,0.01269),
+              HKQuantityTypeIdentifierDietaryWater               : (1208.5,0.001818)
             ],
-     false: [HKCategoryTypeIdentifierSleepAnalysis               : (6.5,0.338),
-             HKQuantityTypeIdentifierBodyMass                    : (215,0.0102),
-             HKQuantityTypeIdentifierBodyMassIndex               : (25,0.08789),
-             HKQuantityTypeIdentifierHeartRate                   : (80,0.0275),
-             HKQuantityTypeIdentifierBloodPressureSystolic       : (120,0.0183),
+     false: [HKCategoryTypeIdentifierSleepAnalysis               : (6.9,0.318),
+             HKQuantityTypeIdentifierBodyMass                    : (77.0,0.0285),
+             HKQuantityTypeIdentifierBodyMassIndex               : (29.1,0.0755),
+             HKQuantityTypeIdentifierHeartRate                   : (74,0.02969),
+             HKQuantityTypeIdentifierBloodPressureSystolic       : (111.1,0.01978),
              HKQuantityTypeIdentifierStepCount                   : (6000,0.000366),
              HKQuantityTypeIdentifierActiveEnergyBurned          : (2750,0.00079899),
              HKQuantityTypeIdentifierUVExposure                  : (12,0.183),
              HKWorkoutTypeIdentifier                             : (12.0,0.183),
-             HKQuantityTypeIdentifierDietaryEnergyConsumed       : (1957.0,0.0011),
-             HKQuantityTypeIdentifierDietaryProtein              : (71.3,0.0308),
-             HKQuantityTypeIdentifierDietaryCarbohydrates        : (246.3,0.0089),
-             HKQuantityTypeIdentifierDietarySugar                : (112.0,0.0196),
-             HKQuantityTypeIdentifierDietaryFiber                : (16.2,0.1356),
-             HKQuantityTypeIdentifierDietaryFatTotal             : (73.1,0.3058),
-             HKQuantityTypeIdentifierDietaryFatSaturated         : (23.9,0.091934),
-             HKQuantityTypeIdentifierDietaryFatMonounsaturated   : (25.7,0.0855),
-             HKQuantityTypeIdentifierDietaryFatPolyunsaturated   : (17.4,0.1263),
-             HKQuantityTypeIdentifierDietaryCholesterol          : (235.7,0.009322),
-             HKQuantityTypeIdentifierDietarySodium               : (3187.3,0.000689),
-             HKQuantityTypeIdentifierDietaryCaffeine             : (142.7,0.015398),
-             HKQuantityTypeIdentifierDietaryWater                : (4.7,0.46795)
+             HKQuantityTypeIdentifierDietaryEnergyConsumed       : (1956.3,0.0011),
+             HKQuantityTypeIdentifierDietaryProtein              : (73.5,0.02989),
+             HKQuantityTypeIdentifierDietaryCarbohydrates        : (246.4,0.0089),
+             HKQuantityTypeIdentifierDietarySugar                : (115.4,0.0190),
+             HKQuantityTypeIdentifierDietaryFiber                : (15.2,0.14455),
+             HKQuantityTypeIdentifierDietaryFatTotal             : (73.5,0.02989),
+             HKQuantityTypeIdentifierDietaryFatSaturated         : (24.5,0.08968),
+             HKQuantityTypeIdentifierDietaryFatMonounsaturated   : (26.6,0.0826),
+             HKQuantityTypeIdentifierDietaryFatPolyunsaturated   : (16.1,0.1365),
+             HKQuantityTypeIdentifierDietaryCholesterol          : (258,0.008516),
+             HKQuantityTypeIdentifierDietarySodium               : (3138.7,0.000700),
+             HKQuantityTypeIdentifierDietaryCaffeine             : (137.4,0.01599),
+             HKQuantityTypeIdentifierDietaryWater                : (1127.7,0.001948)
         ]]
 
     var logisticTypeAsMale = true
@@ -75,6 +75,9 @@ class RadarViewController : UIViewController, ChartViewDelegate {
         chart.rotationEnabled = false
         chart.yAxis.axisMinimum = 0.0
         chart.yAxis.axisMaximum = 1.0
+        chart.yAxis.axisRange = 1.0
+        chart.yAxis.customAxisMax = 1.0
+        chart.yAxis.customAxisMin = 0.2
 
         let legend = chart.legend
         legend.enabled = true
@@ -122,7 +125,8 @@ class RadarViewController : UIViewController, ChartViewDelegate {
                paramdict = logisticParametersByType[sex.biologicalSex == HKBiologicalSex.Male],
                (x0, k) = paramdict[type.identifier]
         {
-            return 1 / (1 + exp(-k * (quantity - x0)))
+            print ("quantity \(quantity) and value: to check \(1 / (1 + exp(-k * (quantity - x0))))  ")
+            return min(1.0,(1 / (1 + exp(-k * (quantity - x0)))) + 0.2)
         }
         return 1 / (1 + exp(-quantity))
     }
@@ -132,9 +136,10 @@ class RadarViewController : UIViewController, ChartViewDelegate {
         let samples = HealthManager.sharedManager.mostRecentSamples[type] ?? [HKSample]()
         let val = healthFormatter.numberFromResults(samples)
         guard !val.isNaN else {
-            return ChartDataEntry(value: 1.0, xIndex: i)
+            return ChartDataEntry(value: 0.8, xIndex: i)
         }
         let nval = normalizeType(type, quantity: val)
+        print("type \(type), i \(i)")
         return ChartDataEntry(value: nval, xIndex: i)
     }
 
@@ -144,7 +149,7 @@ class RadarViewController : UIViewController, ChartViewDelegate {
             ?? [DerivedQuantity(quantity: nil, quantityType: nil)]
         let val = healthFormatter.numberFromResults(samples)
         guard !val.isNaN else {
-            return ChartDataEntry(value: 1.0, xIndex: i)
+            return ChartDataEntry(value: 0.8, xIndex: i)
         }
         let nval = normalizeType(type, quantity: val)
         return ChartDataEntry(value: nval, xIndex: i)
