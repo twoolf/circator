@@ -9,7 +9,4 @@
 import WatchKit
 
 class BioPreviewRow: NSObject {
-    @IBOutlet var icon: WKInterfaceImage!
-    @IBOutlet var sampleTypeLabel: WKInterfaceLabel!
-    @IBOutlet var valueLabel: WKInterfaceLabel!
 }
