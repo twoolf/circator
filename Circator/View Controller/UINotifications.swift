@@ -168,14 +168,10 @@ public class UINotifications {
     }
 
     private static func withPop(vc: UIViewController, pop: Bool, asNav: Bool = false, msg: () -> ()) {
-        log.info("WPOP \(pop) \(asNav)")
         if pop {
             if asNav {
                 if let ctlr = vc as? UINavigationController {
-                    log.info("WPOP Valid controller... popping")
                     ctlr.popViewControllerAnimated(true)
-                } else {
-                    log.info("WPOP Invalid controller")
                 }
             } else {
                 vc.navigationController?.popViewControllerAnimated(true)
