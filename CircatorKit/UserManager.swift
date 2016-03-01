@@ -13,6 +13,7 @@ import Stormpath
 import CryptoSwift
 import SwiftDate
 import Async
+import JWTDecode
 
 private let UMPrimaryUserKey = "UMPrimaryUserKey"
 private let UMUserHashKey    = "UMUserHashKey"
@@ -291,8 +292,22 @@ public class UserManager {
     public func ensureAccessToken(tried: Int, completion: (Bool -> Void)) {
         guard tried < UserManager.maxTokenRetries else {
             log.error("Failed to get access token within \(UserManager.maxTokenRetries) iterations")
-            self.resetFull()
-            completion(true)
+            // Get the expiry time locally from the token if available.
+            // TODO: this is a temporary workaround for issue #30, to support auto-login:
+            // https://github.com/yanif/circator/issues/30
+            var doReset = true
+            if let token = Stormpath.accessToken {
+                do {
+                    let jwt = try decode(token)
+                    if let expiry = jwt.expiresAt?.timeIntervalSince1970 {
+                        doReset = false
+                        self.tokenExpiry = expiry
+                        log.info("Setting expiry as \(expiry)")
+                    }
+                } catch {}
+            }
+            if doReset { self.resetFull() }
+            completion(doReset)
             return
         }
 
