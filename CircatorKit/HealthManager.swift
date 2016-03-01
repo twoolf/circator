@@ -1008,6 +1008,8 @@ public extension HKStatistics {
         switch quantityType.identifier {
         case HKQuantityTypeIdentifierBodyMass:
             return isMetric ? HKUnit.gramUnitWithMetricPrefix(.Kilo) : HKUnit.poundUnit()
+        case HKQuantityTypeIdentifierBodyMassIndex:
+            return HKUnit.countUnit()
         case HKQuantityTypeIdentifierHeartRate:
             return HKUnit.countUnit().unitDividedByUnit(HKUnit.minuteUnit())
         case HKQuantityTypeIdentifierDietaryEnergyConsumed:
@@ -1039,11 +1041,11 @@ public extension HKStatistics {
         case HKQuantityTypeIdentifierDietarySugar:
             return HKUnit.gramUnit()
         case HKQuantityTypeIdentifierDietarySodium:
-            return HKUnit.gramUnit()
+            return HKUnit.gramUnitWithMetricPrefix(HKMetricPrefix.Milli)
         case HKQuantityTypeIdentifierDietaryCaffeine:
-            return HKUnit.gramUnit()
+            return HKUnit.gramUnitWithMetricPrefix(HKMetricPrefix.Milli)
         case HKQuantityTypeIdentifierDietaryCholesterol:
-            return HKUnit.gramUnit()
+            return HKUnit.gramUnitWithMetricPrefix(HKMetricPrefix.Milli)
         case HKQuantityTypeIdentifierDietaryWater:
             return HKUnit.literUnitWithMetricPrefix(HKMetricPrefix.Milli)
         case HKQuantityTypeIdentifierUVExposure:
