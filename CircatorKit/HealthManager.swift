@@ -988,6 +988,8 @@ public extension HKStatistics {
             fallthrough
         case HKQuantityTypeIdentifierDietaryCaffeine:
             fallthrough
+        case HKQuantityTypeIdentifierDietaryCholesterol:
+            fallthrough
         case HKQuantityTypeIdentifierDietaryWater:
             fallthrough
         case HKQuantityTypeIdentifierUVExposure:
@@ -1040,6 +1042,10 @@ public extension HKStatistics {
             return HKUnit.gramUnit()
         case HKQuantityTypeIdentifierDietaryCaffeine:
             return HKUnit.gramUnit()
+        case HKQuantityTypeIdentifierDietaryCholesterol:
+            return HKUnit.gramUnit()
+        case HKQuantityTypeIdentifierDietaryWater:
+            return HKUnit.literUnitWithMetricPrefix(HKMetricPrefix.Milli)
         case HKQuantityTypeIdentifierUVExposure:
             return HKUnit.countUnit()
         default:

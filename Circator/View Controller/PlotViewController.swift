@@ -29,7 +29,7 @@ class PlotViewController: UIViewController, ChartViewDelegate {
     lazy var historyLabel: UILabel = {
         let label: UILabel = UILabel()
         label.font = UIFont.systemFontOfSize(16, weight: UIFontWeightSemibold)
-        label.textColor = Theme.universityDarkTheme.titleTextColor
+        label.textColor = Theme.universityDarkTheme.backgroundColor
         label.textAlignment = .Center
         label.text = NSLocalizedString("Personal History", comment: "Plot view section title label")
         return label
@@ -37,11 +37,11 @@ class PlotViewController: UIViewController, ChartViewDelegate {
 
     lazy var summaryLabel: UILabel = {
         let label: UILabel = UILabel()
-        let number = 5
+        let number = 4
         label.font = UIFont.systemFontOfSize(16, weight: UIFontWeightSemibold)
-        label.textColor = Theme.universityDarkTheme.titleTextColor
+        label.textColor = Theme.universityDarkTheme.backgroundColor
         label.textAlignment = .Center
-        label.text = NSLocalizedString("Summary of Personal History", comment: "Summary view section title label")
+        label.text = NSLocalizedString("20% increments of your Data", comment: "Summary view section title label")
         return label
     }()
 
@@ -59,8 +59,8 @@ class PlotViewController: UIViewController, ChartViewDelegate {
         chart.xAxis.drawGridLinesEnabled = true
         chart.legend.enabled = false
         chart.descriptionText = ""
-        chart.xAxis.labelTextColor = Theme.universityDarkTheme.titleTextColor
-        chart.leftAxis.labelTextColor = Theme.universityDarkTheme.titleTextColor
+        chart.xAxis.labelTextColor = Theme.universityDarkTheme.backgroundColor
+        chart.leftAxis.labelTextColor = Theme.universityDarkTheme.backgroundColor
         chart.leftAxis.valueFormatter = SampleFormatter.numberFormatter
         return chart
     }()
@@ -79,8 +79,8 @@ class PlotViewController: UIViewController, ChartViewDelegate {
         chart.xAxis.drawGridLinesEnabled = true
         chart.legend.enabled = false
         chart.descriptionText = ""
-        chart.xAxis.labelTextColor = Theme.universityDarkTheme.titleTextColor
-        chart.leftAxis.labelTextColor = Theme.universityDarkTheme.titleTextColor
+        chart.xAxis.labelTextColor = Theme.universityDarkTheme.backgroundColor
+        chart.leftAxis.labelTextColor = Theme.universityDarkTheme.backgroundColor
         chart.leftAxis.valueFormatter = SampleFormatter.numberFormatter
         return chart
     }()
@@ -99,6 +99,7 @@ class PlotViewController: UIViewController, ChartViewDelegate {
                             // Sleep
                         } else {
                             let analyzer = PlotDataAnalyzer(sampleType: self.sampleType, statistics: statistics)
+ //                           print("data type for plotting, \(self.sampleType)")
                             analyzer.dataSetConfigurator = { dataSet in
                                 dataSet.drawCircleHoleEnabled = true
                                 dataSet.circleRadius = 7
@@ -116,11 +117,11 @@ class PlotViewController: UIViewController, ChartViewDelegate {
                                 self.showError()
                             } else {
                                 self.historyChart.data = ldata
-                                self.historyChart.data?.setValueTextColor(Theme.universityDarkTheme.bodyTextColor)
+                                self.historyChart.data?.setValueTextColor(Theme.universityDarkTheme.backgroundColor)
                                 self.historyChart.data?.setValueFont(UIFont.systemFontOfSize(10, weight: UIFontWeightThin))
 
                                 self.summaryChart.data = sdata
-                                self.summaryChart.data?.setValueTextColor(Theme.universityDarkTheme.bodyTextColor)
+                                self.summaryChart.data?.setValueTextColor(Theme.universityDarkTheme.backgroundColor)
                                 self.summaryChart.data?.setValueFont(UIFont.systemFontOfSize(10, weight: UIFontWeightThin))
 
                                 self.showChart()
@@ -154,7 +155,7 @@ class PlotViewController: UIViewController, ChartViewDelegate {
     }
 
     private func configureViews() {
-        scrollView.backgroundColor = Theme.universityDarkTheme.backgroundColor
+        scrollView.backgroundColor = Theme.universityDarkTheme.foregroundColor
 
         scrollView.translatesAutoresizingMaskIntoConstraints = false
         view.addSubview(scrollView)

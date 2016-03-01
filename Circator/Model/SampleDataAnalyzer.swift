@@ -82,7 +82,15 @@ class PlotDataAnalyzer: SampleDataAnalyzer {
             }
             let entries: [ChartDataEntry] = statistics.map { (sample) -> ChartDataEntry in
                 let dayDiff = zeroDate.difference(sample.startDate.startOf(.Day, inRegion: Region()), unitFlags: .Day)
-                return ChartDataEntry(value: sample.numeralValue!, xIndex: dayDiff!.day)
+//                print ("sample.numeralValue, \(sample.numeralValue)")
+                if sample.numeralValue != nil {
+                    return ChartDataEntry(value: sample.numeralValue!, xIndex: dayDiff!.day)
+                } else
+                {
+                    print ("value is not allowed")
+                    let optionalDouble = 0.0
+                    return ChartDataEntry(value: optionalDouble, xIndex: dayDiff!.day)
+                }
             }
             let dataSet = LineChartDataSet(yVals: entries, label: "")
             dataSetConfigurator?(dataSet)
@@ -109,7 +117,14 @@ class PlotDataAnalyzer: SampleDataAnalyzer {
             var dataEntries: [BubbleChartDataEntry] = []
 
             let summaryData : [Double] = statistics.map { (sample) -> Double in
-                return sample.numeralValue!
+                if sample.numeralValue != nil {
+                    return sample.numeralValue!
+                } else
+                {
+                    print("value is not allowed")
+                    let optionalDouble = 0.0
+                    return optionalDouble
+                }
             }
             let summaryDataSorted = summaryData.sort()
             guard summaryData.isEmpty == false else {
