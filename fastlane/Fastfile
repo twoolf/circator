@@ -210,7 +210,20 @@ platform :ios do
 
   desc "Resign a development archive"
   lane :resign_dev do
-    prepcerts(type: 'appstore', readonly: true)
+    prepcerts(type: 'development', readonly: false, force: true)
+
+    app_ids.each {|appid, metadata|
+      uuid = ENV["sigh_#{appid}_development"]
+      homedir = ENV["HOME"]
+      app_dist_profiles[appid] = "#{homedir}/Library/MobileDevice/Provisioning Profiles/#{uuid}.mobileprovision"
+    }
+
+    resign(ipa: ipa_archive, signing_identity: app_dist_identity, provisioning_profile: app_dist_profiles)
+  end
+
+  desc "Resign a development archive"
+  lane :resign_dev_as_dist do
+    prepcerts(type: 'appstore', readonly: false, force: true)
 
     app_ids.each {|appid, metadata|
       uuid = ENV["sigh_#{appid}_appstore"]
@@ -256,7 +269,7 @@ platform :ios do
   lane :beta do
     build_dev
     beta_upload_fabric
-    resign_dev
+    resign_dev_as_dist
     beta_upload_testflight
   end
 

@@ -479,7 +479,7 @@ class SettingsViewController: UITableViewController, UITextFieldDelegate {
                     }
                     UserManager.sharedManager.login(txt) { (error, reason) in
                         guard !error else {
-                            UINotifications.loginFailed(self.navigationController!, pop: false, reason: reason)
+                            UINotifications.loginFailed(self.navigationController!, reason: reason)
                             return
                         }
                     }

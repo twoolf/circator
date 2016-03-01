@@ -91,6 +91,11 @@ Build a release archive
 fastlane ios resign_dev
 ```
 Resign a development archive
+### ios resign_dev_as_dist
+```
+fastlane ios resign_dev_as_dist
+```
+Resign a development archive
 ### ios beta_upload_testflight
 ```
 fastlane ios beta_upload_testflight

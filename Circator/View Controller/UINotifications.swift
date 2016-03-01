@@ -16,8 +16,8 @@ import Async
  */
 public class UINotifications {
 
-    public static func doWelcome(vc: UIViewController, pop: Bool = false, user: String = "") {
-        withPop(vc, pop: pop) {
+    public static func doWelcome(vc: UIViewController, pop: Bool = false, asNav: Bool = false, user: String = "") {
+        withPop(vc, pop: pop, asNav: asNav) {
             Async.main {
                 vc.view.dodo.style.bar.hideAfterDelaySeconds = 3
                 vc.view.dodo.style.bar.hideOnTap = true
@@ -26,8 +26,8 @@ public class UINotifications {
         }
     }
 
-    public static func invalidProfile(vc: UIViewController, pop: Bool = false) {
-        withPop(vc, pop: pop) {
+    public static func invalidProfile(vc: UIViewController, pop: Bool = false, asNav: Bool = false) {
+        withPop(vc, pop: pop, asNav: asNav) {
             Async.main {
                 vc.view.dodo.style.bar.hideAfterDelaySeconds = 3
                 vc.view.dodo.style.bar.hideOnTap = true
@@ -36,8 +36,8 @@ public class UINotifications {
         }
     }
 
-    public static func invalidUserPass(vc: UIViewController, pop: Bool = false) {
-        withPop(vc, pop: pop) {
+    public static func invalidUserPass(vc: UIViewController, pop: Bool = false, asNav: Bool = false) {
+        withPop(vc, pop: pop, asNav: asNav) {
             Async.main {
                 vc.view.dodo.style.bar.hideAfterDelaySeconds = 3
                 vc.view.dodo.style.bar.hideOnTap = true
@@ -46,8 +46,8 @@ public class UINotifications {
         }
     }
 
-    public static func loginGoodbye(vc: UIViewController, pop: Bool = false, user: String = "") {
-        withPop(vc, pop: pop) {
+    public static func loginGoodbye(vc: UIViewController, pop: Bool = false, asNav: Bool = false, user: String = "") {
+        withPop(vc, pop: pop, asNav: asNav) {
             Async.main {
                 vc.view.dodo.style.bar.hideAfterDelaySeconds = 3
                 vc.view.dodo.style.bar.hideOnTap = true
@@ -56,8 +56,8 @@ public class UINotifications {
         }
     }
 
-    public static func loginFailed(vc: UIViewController, pop: Bool = false, reason: String? = nil) {
-        withPop(vc, pop: pop) {
+    public static func loginFailed(vc: UIViewController, pop: Bool = false, asNav: Bool = false, reason: String? = nil) {
+        withPop(vc, pop: pop, asNav: asNav) {
             Async.main {
                 vc.view.dodo.style.bar.hideAfterDelaySeconds = 3
                 vc.view.dodo.style.bar.hideOnTap = true
@@ -66,8 +66,8 @@ public class UINotifications {
         }
     }
 
-    public static func loginRequest(vc: UIViewController, pop: Bool = false) {
-        withPop(vc, pop: pop) {
+    public static func loginRequest(vc: UIViewController, pop: Bool = false, asNav: Bool = false) {
+        withPop(vc, pop: pop, asNav: asNav) {
             Async.main {
                 vc.view.dodo.style.bar.hideAfterDelaySeconds = 3
                 vc.view.dodo.style.bar.hideOnTap = true
@@ -76,8 +76,8 @@ public class UINotifications {
         }
     }
 
-    public static func noConsent(vc: UIViewController, pop: Bool = false) {
-        withPop(vc, pop: pop) {
+    public static func noConsent(vc: UIViewController, pop: Bool = false, asNav: Bool = false) {
+        withPop(vc, pop: pop, asNav: asNav) {
             Async.main {
                 vc.view.dodo.style.bar.hideAfterDelaySeconds = 3
                 vc.view.dodo.style.bar.hideOnTap = true
@@ -86,8 +86,8 @@ public class UINotifications {
         }
     }
 
-    public static func noHealthKit(vc: UIViewController, pop: Bool = false) {
-        withPop(vc, pop: pop) {
+    public static func noHealthKit(vc: UIViewController, pop: Bool = false, asNav: Bool = false) {
+        withPop(vc, pop: pop, asNav: asNav) {
             Async.main {
                 vc.view.dodo.style.bar.hideAfterDelaySeconds = 3
                 vc.view.dodo.style.bar.hideOnTap = true
@@ -96,8 +96,8 @@ public class UINotifications {
         }
     }
 
-    public static func profileFetchFailed(vc: UIViewController, pop: Bool = false) {
-        withPop(vc, pop: pop) {
+    public static func profileFetchFailed(vc: UIViewController, pop: Bool = false, asNav: Bool = false) {
+        withPop(vc, pop: pop, asNav: asNav) {
             Async.main {
                 vc.view.dodo.style.bar.hideAfterDelaySeconds = 3
                 vc.view.dodo.style.bar.hideOnTap = true
@@ -106,8 +106,8 @@ public class UINotifications {
         }
     }
 
-    public static func profileUpdated(vc: UIViewController, pop: Bool = false) {
-        withPop(vc, pop: pop) {
+    public static func profileUpdated(vc: UIViewController, pop: Bool = false, asNav: Bool = false) {
+        withPop(vc, pop: pop, asNav: asNav) {
             Async.main {
                 vc.view.dodo.style.bar.hideAfterDelaySeconds = 3
                 vc.view.dodo.style.bar.hideOnTap = true
@@ -116,18 +116,19 @@ public class UINotifications {
         }
     }
 
-    public static func registrationError(vc: UIViewController, pop: Bool = false) {
-        withPop(vc, pop: pop) {
+    public static func registrationError(vc: UIViewController, pop: Bool = false, asNav: Bool = false, msg: String? = nil) {
+        withPop(vc, pop: pop, asNav: asNav) {
             Async.main {
                 vc.view.dodo.style.bar.hideAfterDelaySeconds = 3
                 vc.view.dodo.style.bar.hideOnTap = true
-                vc.view.dodo.error("Error in signing up, please try later.")
+                let vmsg = msg ?? "Please try again"
+                vc.view.dodo.error("Registration failed (\(vmsg))")
             }
         }
     }
 
-    public static func retryingHealthkit(vc: UIViewController, pop: Bool = false) {
-        withPop(vc, pop: pop) {
+    public static func retryingHealthkit(vc: UIViewController, pop: Bool = false, asNav: Bool = false) {
+        withPop(vc, pop: pop, asNav: asNav) {
             Async.main {
                 vc.view.dodo.style.bar.hideAfterDelaySeconds = 3
                 vc.view.dodo.style.bar.hideOnTap = true
@@ -136,8 +137,8 @@ public class UINotifications {
         }
     }
 
-    public static func showCount(vc: UIViewController, count: Int, pop: Bool = false) {
-        withPop(vc, pop: pop) {
+    public static func showCount(vc: UIViewController, count: Int, pop: Bool = false, asNav: Bool = false) {
+        withPop(vc, pop: pop, asNav: asNav) {
             Async.main {
                 vc.view.dodo.style.bar.hideAfterDelaySeconds = 3
                 vc.view.dodo.style.bar.hideOnTap = true
@@ -146,8 +147,8 @@ public class UINotifications {
         }
     }
 
-    public static func genericMsg(vc: UIViewController, msg: String, pop: Bool = false) {
-        withPop(vc, pop: pop) {
+    public static func genericMsg(vc: UIViewController, msg: String, pop: Bool = false, asNav: Bool = false) {
+        withPop(vc, pop: pop, asNav: asNav) {
             Async.main {
                 vc.view.dodo.style.bar.hideAfterDelaySeconds = 3
                 vc.view.dodo.style.bar.hideOnTap = true
@@ -156,8 +157,8 @@ public class UINotifications {
         }
     }
 
-    public static func genericError(vc: UIViewController, msg: String, pop: Bool = false, nohide: Bool = false) {
-        withPop(vc, pop: pop) {
+    public static func genericError(vc: UIViewController, msg: String, pop: Bool = false, asNav: Bool = false, nohide: Bool = false) {
+        withPop(vc, pop: pop, asNav: asNav) {
             Async.main {
                 if !nohide { vc.view.dodo.style.bar.hideAfterDelaySeconds = 3 }
                 vc.view.dodo.style.bar.hideOnTap = true
@@ -166,9 +167,19 @@ public class UINotifications {
         }
     }
 
-    private static func withPop(vc: UIViewController, pop: Bool, msg: () -> ()) {
+    private static func withPop(vc: UIViewController, pop: Bool, asNav: Bool = false, msg: () -> ()) {
+        log.info("WPOP \(pop) \(asNav)")
         if pop {
-            vc.navigationController?.popViewControllerAnimated(true)
+            if asNav {
+                if let ctlr = vc as? UINavigationController {
+                    log.info("WPOP Valid controller... popping")
+                    ctlr.popViewControllerAnimated(true)
+                } else {
+                    log.info("WPOP Invalid controller")
+                }
+            } else {
+                vc.navigationController?.popViewControllerAnimated(true)
+            }
         }
         msg()
     }

@@ -200,7 +200,7 @@ public class HealthManager: NSObject, WCSessionDelegate {
         }
 
         dispatch_group_notify(group, dispatch_get_main_queue()) {
-            // TODO: partial error handling
+            // TODO: partial error handling, i.e., when a subset of the desired types fail in their queries.
             self.mostRecentSamples = samples
             completion(samples: samples, error: nil)
         }
@@ -255,7 +255,8 @@ public class HealthManager: NSObject, WCSessionDelegate {
             healthKitStore.executeQuery(query)
 
         } else {
-            completion(statistics: [], error: NSError(domain: HMErrorDomain, code: 1048576, userInfo: [NSLocalizedDescriptionKey: "Not implemented"]))
+            let err = NSError(domain: HMErrorDomain, code: 1048576, userInfo: [NSLocalizedDescriptionKey: "Not implemented"])
+            completion(statistics: [], error: err)
         }
     }
 
@@ -287,15 +288,14 @@ public class HealthManager: NSObject, WCSessionDelegate {
         }
 
         dispatch_group_notify(group, dispatch_get_main_queue()) {
-            guard stat1 != nil && stat2 != nil else {
+            guard !(stat1 == nil || stat2 == nil) else {
+                let desc = stat1 == nil ? (stat2 == nil ? "LHS and RHS" : "LHS") : "RHS"
+                let err = NSError(domain: HMErrorDomain, code: 1048576, userInfo: [NSLocalizedDescriptionKey: "Invalid \(desc) statistics"])
+                completion([], [], err)
                 return
             }
-            stat1 = stat1!.filter { (statistics) -> Bool in
-                return stat2!.hasSamplesAtStartDate(statistics.startDate)
-            }
-            stat2 = stat2!.filter { (statistics) -> Bool in
-                return stat1!.hasSamplesAtStartDate(statistics.startDate)
-            }
+            stat1 = stat1!.filter { (statistics) -> Bool in return stat2!.hasSamplesAtStartDate(statistics.startDate) }
+            stat2 = stat2!.filter { (statistics) -> Bool in return stat1!.hasSamplesAtStartDate(statistics.startDate) }
             guard stat1!.isEmpty == false && stat2!.isEmpty == false else {
                 completion(stat1!, stat2!, nil)
                 return
@@ -344,6 +344,7 @@ public class HealthManager: NSObject, WCSessionDelegate {
         }
 
         dispatch_group_notify(group, dispatch_get_main_queue()) {
+            // TODO: partial error handling, i.e., when a subset of the desired types fail in their queries.
             completion(samples: samplesByType, error: nil)
         }
     }

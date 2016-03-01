@@ -533,7 +533,7 @@ class IntroViewController: UIViewController,
 
     func doLogout(completion: (Void -> Void)?) {
         UserManager.sharedManager.logoutWithCompletion(completion)
-        UINotifications.loginGoodbye(self, pop: false, user: UserManager.sharedManager.getUserId()!)
+        UINotifications.loginGoodbye(self, user: UserManager.sharedManager.getUserId()!)
 
         // Clean up aggregate data fetched via the prior account.
         if let task = aggregateFetchTask {
@@ -572,7 +572,7 @@ class IntroViewController: UIViewController,
                 UserManager.sharedManager.pullProfileWithConsent { (error, msg) in
                     if !error {
                         self.initializeBackgroundWork()
-                        Async.main(after: 2) { UINotifications.doWelcome(self, pop: false, user: UserManager.sharedManager.getUserId() ?? "") }
+                        Async.main(after: 2) { UINotifications.doWelcome(self, user: UserManager.sharedManager.getUserId() ?? "") }
                     } else {
                         log.error("Failed to retrieve initial profile and consent: \(msg)")
                         UINotifications.profileFetchFailed(self)
@@ -769,11 +769,21 @@ class IntroViewController: UIViewController,
     }
 
     func toggleTimedEvent() {
+        guard UserManager.sharedManager.hasAccount() else {
+            UINotifications.loginRequest(self)
+            return
+        }
+
         let nextIndex = timeEventPagesController.currentIndex == 0 ? 1 : 0
         timeEventPagesController.goTo(nextIndex)
     }
 
     func showAttributes(sender: UIButton) {
+        guard UserManager.sharedManager.hasAccount() else {
+            UINotifications.loginRequest(self)
+            return
+        }
+
         func initializePickerView() {
             pickerView = UIPickerView()
             pickerView.dataSource = self
@@ -781,7 +791,7 @@ class IntroViewController: UIViewController,
         }
         if sender == correlateButton {
             initializePickerView()
-            selectedMode = GraphMode.Correlate(IntroViewController.previewTypes[0], IntroViewController.previewTypes[1])
+            selectedMode = GraphMode.Correlate(IntroViewController.previewTypes[0], IntroViewController.previewTypes[0])
         }
         else if sender == plotButton {
             initializePickerView()
@@ -1091,6 +1101,11 @@ class IntroViewController: UIViewController,
 
     // All timer functions run in the main thread.
     func toggleTimer(sender: AnyObject) {
+        guard UserManager.sharedManager.hasAccount() else {
+            UINotifications.loginRequest(self)
+            return
+        }
+
         Async.main { self.timerLoop == nil ? self.startTimer(sender) : self.stopTimer(sender) }
     }
 

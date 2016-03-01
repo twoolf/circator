@@ -71,7 +71,7 @@ class CorrelationViewController: UIViewController, ChartViewDelegate {
 
                 Async.background {
                     HealthManager.sharedManager.correlateStatisticsOfType(self.sampleTypes[0], withType: self.sampleTypes[1]) { (stat1, stat2, error) -> Void in
-                        guard error == nil else {
+                        guard (error == nil) && !(stat1.isEmpty || stat2.isEmpty) else {
                             Async.main {
                                 if let idx = self.errorIndex, pv = self.parentViewController as? PagesController {
                                     pv.goTo(idx)
@@ -79,7 +79,7 @@ class CorrelationViewController: UIViewController, ChartViewDelegate {
                             }
                             return
                         }
-                        stat1.forEach { stat in
+
                         let analyzer = CorrelationDataAnalyzer(sampleTypes: self.sampleTypes, statistics: [stat1, stat2])!
                         let configurator: ((LineChartDataSet) -> Void)? = { dataSet in
                             dataSet.drawCircleHoleEnabled = false
@@ -112,12 +112,12 @@ class CorrelationViewController: UIViewController, ChartViewDelegate {
                                 pv.goTo(idx)
                             }
                         }
+
+                        BehaviorMonitor.sharedInstance.setValue("Correlate", contentType: self.getSampleDescriptor())
                     }
-                    BehaviorMonitor.sharedInstance.setValue("Correlate", contentType: self.getSampleDescriptor())
                 }
             }
         }
-      }
     }
 
     override func viewDidLoad() {

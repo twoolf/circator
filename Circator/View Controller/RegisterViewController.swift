@@ -10,6 +10,7 @@ import CircatorKit
 import UIKit
 import Async
 import Former
+import FileKit
 
 private let lblFontSize = ScreenManager.sharedInstance.profileLabelFontSize()
 private let inputFontSize = ScreenManager.sharedInstance.profileInputFontSize()
@@ -124,6 +125,16 @@ class RegisterViewController : FormViewController {
         if ( consentOnLoad ) { doConsent() }
     }
 
+    override func viewDidDisappear(animated: Bool) {
+        // Remove the consent file for any scenario where we leave this view.
+        if let consentPath = ConsentManager.sharedManager.getConsentFilePath() {
+            let cPath = Path(consentPath)
+            if cPath.exists {
+                ConsentManager.sharedManager.removeConsentFile(consentPath)
+            }
+        }
+    }
+
     func validateProfile() -> (String, String, String, String)? {
         if let em = profileValues[UserProfile.sharedInstance.profileFields[UserProfile.sharedInstance.emailIdx]],
            let pw = profileValues[UserProfile.sharedInstance.profileFields[UserProfile.sharedInstance.passwIdx]],
@@ -164,25 +175,26 @@ class RegisterViewController : FormViewController {
 
     func doSignup(sender: UIButton) {
         guard let consentPath = ConsentManager.sharedManager.getConsentFilePath() else {
-            UINotifications.noConsent(self, pop: true)
+            UINotifications.noConsent(self.navigationController!, pop: true, asNav: true)
             return
         }
 
         guard let (user, pass, fname, lname) = validateProfile() else {
-            UINotifications.invalidProfile(self)
+            UINotifications.invalidProfile(self.navigationController!)
             return
         }
 
         UserManager.sharedManager.overrideUserPass(user, pass: pass)
-        UserManager.sharedManager.register(fname, lastName: lname) { (_, error) in
+        UserManager.sharedManager.register(fname, lastName: lname) { (_, error, errormsg) in
             guard !error else {
-                // Reset to previous user id, and clean up any partial consent document on registration errors.
+                // Return from this function to allow the user to try registering again with the 'Done' button.
+                // We reset the user/pass so that any view exit leaves the app without a registered user.
+                // Re-entering this function will use overrideUserPass above to re-establish the account being registered.
                 UserManager.sharedManager.resetFull()
                 if let user = self.stashedUserId {
                     UserManager.sharedManager.setUserId(user)
                 }
-                ConsentManager.sharedManager.removeConsentFile(consentPath)
-                UINotifications.registrationError(self, pop: true)
+                UINotifications.registrationError(self.navigationController!, msg: errormsg)
                 BehaviorMonitor.sharedInstance.register(false)
                 return
             }
@@ -195,7 +207,15 @@ class RegisterViewController : FormViewController {
             // Log in and update consent after successful registration.
             UserManager.sharedManager.loginWithPush(initialProfile) { (error, reason) in
                 guard !error else {
-                    UINotifications.loginFailed(self, pop: true, reason: reason)
+                    // Registration completed, but logging in failed. 
+                    // Pop this view to allow the user to try logging in again through the
+                    // login/logout functionality on the main dashboard.
+                    //
+                    // TODO: popping this view will remove the consent file prior to uploading it.
+                    // This means we have a user registered without a consent file stored in Stormpath.
+                    // We need to stash the consent path name for deferred upload.
+                    //
+                    UINotifications.loginFailed(self.navigationController!, pop: true, asNav: true, reason: reason)
                     BehaviorMonitor.sharedInstance.register(false)
                     return
                 }

@@ -263,7 +263,7 @@ public class UserManager {
         logoutWithCompletion(nil)
     }
 
-    public func register(firstName: String, lastName: String, completion: ((NSDictionary?, Bool) -> Void))
+    public func register(firstName: String, lastName: String, completion: ((NSDictionary?, Bool, String?) -> Void))
     {
         withUserPass(getPassword()) { (user,pass) in
             let stormpathAccountDict : [String:String] = [
@@ -276,7 +276,7 @@ public class UserManager {
             Stormpath.register(userDictionary: stormpathAccountDict, completionHandler: {
                 (registerDict, error) -> Void in
                 if error != nil { log.error("Register failed: \(error)") }
-                completion(registerDict, error != nil)
+                completion(registerDict, error != nil, error?.localizedDescription)
             })
         }
     }

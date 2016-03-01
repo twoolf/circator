@@ -47,7 +47,7 @@ class PlotViewController: UIViewController, ChartViewDelegate {
 
     lazy var historyChart: LineChartView = {
         let chart = LineChartView()
-        chart.animate(xAxisDuration: 1.0, yAxisDuration: 1.0)
+        chart.animate(xAxisDuration: 2.0, yAxisDuration: 2.0)
         chart.delegate = self
         chart.rightAxis.enabled = false
         chart.doubleTapToZoomEnabled = false
@@ -92,11 +92,7 @@ class PlotViewController: UIViewController, ChartViewDelegate {
                 Async.background {
                     HealthManager.sharedManager.fetchStatisticsOfType(self.sampleType) { (statistics, error) -> Void in
                         guard error == nil else {
-                            Async.main {
-                                if let idx = self.errorIndex, pv = self.parentViewController as? PagesController {
-                                    pv.goTo(idx)
-                                }
-                            }
+                            self.showError()
                             return
                         }
                         if self.sampleType is HKCorrelationType {
@@ -114,19 +110,20 @@ class PlotViewController: UIViewController, ChartViewDelegate {
                                 dataSet.fillColor = Theme.universityDarkTheme.complementForegroundColors!.colorWithVibrancy(0.1)!
                             }
                             let ldata = analyzer.lineChartData
-                            self.historyChart.data = ldata.yValCount == 0 ? nil : ldata
-                            self.historyChart.data?.setValueTextColor(Theme.universityDarkTheme.bodyTextColor)
-                            self.historyChart.data?.setValueFont(UIFont.systemFontOfSize(10, weight: UIFontWeightThin))
-
                             let sdata = analyzer.bubbleChartData
-                            self.summaryChart.data = sdata.yValCount == 0 ? nil : sdata
-                            self.summaryChart.data?.setValueTextColor(Theme.universityDarkTheme.bodyTextColor)
-                            self.summaryChart.data?.setValueFont(UIFont.systemFontOfSize(10, weight: UIFontWeightThin))
 
-                            Async.main {
-                                if let idx = self.pageIndex, pv = self.parentViewController as? PagesController {
-                                    pv.goTo(idx)
-                                }
+                            if ldata.yValCount == 0 || sdata.yValCount == 0 {
+                                self.showError()
+                            } else {
+                                self.historyChart.data = ldata
+                                self.historyChart.data?.setValueTextColor(Theme.universityDarkTheme.bodyTextColor)
+                                self.historyChart.data?.setValueFont(UIFont.systemFontOfSize(10, weight: UIFontWeightThin))
+
+                                self.summaryChart.data = sdata
+                                self.summaryChart.data?.setValueTextColor(Theme.universityDarkTheme.bodyTextColor)
+                                self.summaryChart.data?.setValueFont(UIFont.systemFontOfSize(10, weight: UIFontWeightThin))
+
+                                self.showChart()
                             }
                         }
                         BehaviorMonitor.sharedInstance.setValue("Plot", contentType: self.sampleType.identifier)
@@ -199,5 +196,21 @@ class PlotViewController: UIViewController, ChartViewDelegate {
             scrollView.trailingAnchor.constraintEqualToAnchor(view.trailingAnchor)
         ]
         view.addConstraints(svconstraints)
+    }
+
+    func showError() {
+        Async.main {
+            if let idx = self.errorIndex, pv = self.parentViewController as? PagesController {
+                pv.goTo(idx)
+            }
+        }
+    }
+
+    func showChart() {
+        Async.main {
+            if let idx = self.pageIndex, pv = self.parentViewController as? PagesController {
+                pv.goTo(idx)
+            }
+        }
     }
 }
