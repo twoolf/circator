@@ -38,8 +38,6 @@ class LoginViewController: UIViewController, UITableViewDelegate, UITableViewDat
         tableView.dataSource = self
         tableView.delegate = self
         tableView.registerClass(UITableViewCell.self, forCellReuseIdentifier: "loginCell")
-        tableView.estimatedRowHeight = 50
-        tableView.rowHeight = UITableViewAutomaticDimension
         tableView.backgroundColor = UIColor.clearColor()
         tableView.tableFooterView = UIView()
         tableView.allowsSelection = false
@@ -106,13 +104,13 @@ class LoginViewController: UIViewController, UITableViewDelegate, UITableViewDat
             logoImageView.widthAnchor.constraintEqualToConstant(100),
             logoImageView.heightAnchor.constraintEqualToConstant(100),
             tableView.topAnchor.constraintEqualToAnchor(logoImageView.bottomAnchor, constant: 10),
-            tableView.leadingAnchor.constraintEqualToAnchor(view.layoutMarginsGuide.leadingAnchor, constant: 10),
-            tableView.trailingAnchor.constraintEqualToAnchor(view.layoutMarginsGuide.trailingAnchor, constant: -10),
+            tableView.leadingAnchor.constraintEqualToAnchor(view.layoutMarginsGuide.leadingAnchor, constant: 5),
+            tableView.trailingAnchor.constraintEqualToAnchor(view.layoutMarginsGuide.trailingAnchor, constant: -5),
             tableView.bottomAnchor.constraintEqualToAnchor(view.layoutMarginsGuide.bottomAnchor, constant: -30),
 
             loginContainerView.topAnchor.constraintEqualToAnchor(logoImageView.bottomAnchor, constant: 110),
             loginContainerView.centerXAnchor.constraintEqualToAnchor(tableView.centerXAnchor),
-            loginContainerView.widthAnchor.constraintEqualToAnchor(view.layoutMarginsGuide.widthAnchor, multiplier: 0.7),
+            loginContainerView.widthAnchor.constraintEqualToAnchor(view.layoutMarginsGuide.widthAnchor, multiplier: 0.8),
             loginContainerView.heightAnchor.constraintEqualToConstant(44)
         ]
 
@@ -164,58 +162,74 @@ class LoginViewController: UIViewController, UITableViewDelegate, UITableViewDat
         return 2
     }
 
+    func tableView(tableView: UITableView, heightForRowAtIndexPath indexPath: NSIndexPath) -> CGFloat {
+        return 44.0
+    }
+
     func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCellWithIdentifier("loginCell", forIndexPath: indexPath)
 
-        let formCell = FormTextFieldCell()
-        let cellInput = formCell.formTextField()
-        let cellLabel = formCell.formTitleLabel()
-
-        cellInput.font = UIFont.systemFontOfSize(inputFontSize)
-        cellLabel?.font = UIFont.systemFontOfSize(lblFontSize)
-
-        cell.backgroundColor = Theme.universityDarkTheme.backgroundColor
-        cellInput.textColor = Theme.universityDarkTheme.titleTextColor
-        cellInput.backgroundColor = Theme.universityDarkTheme.backgroundColor
-        cellLabel?.textColor = Theme.universityDarkTheme.titleTextColor
-        cellLabel?.backgroundColor = Theme.universityDarkTheme.backgroundColor
-
-        cellInput.textAlignment = NSTextAlignment.Right
-        cellInput.autocorrectionType = UITextAutocorrectionType.No // no auto correction support
-        cellInput.autocapitalizationType = UITextAutocapitalizationType.None // no auto capitalization support
-
         switch indexPath.section {
         case 0:
-            if (indexPath.row == 0) {
-                cellInput.keyboardType = UIKeyboardType.EmailAddress
-                cellInput.returnKeyType = UIReturnKeyType.Next
-                cellInput.attributedPlaceholder = NSAttributedString(string:"example@gmail.com",
-                    attributes:[NSForegroundColorAttributeName: UIColor.lightGrayColor()])
-                cellInput.text = UserManager.sharedManager.getUserId()
-                cellLabel?.text = "User"
-                userCell = formCell
-                cellInput.tag = 0
-            }
-            else {
-                cellInput.keyboardType = UIKeyboardType.Default
-                cellInput.returnKeyType = UIReturnKeyType.Done
-                cellInput.secureTextEntry = true
-                cellInput.attributedPlaceholder = NSAttributedString(string:"Required",
-                    attributes:[NSForegroundColorAttributeName: UIColor.lightGrayColor()])
-                cellInput.text = UserManager.sharedManager.getPassword()
-                cellLabel?.text = "Password"
-                passCell = formCell
-                cellInput.tag = 1
+            if (indexPath.row == 0 && userCell == nil) || (indexPath.row == 1 && passCell == nil) {
+                let formCell = FormTextFieldCell()
+                let cellInput = formCell.formTextField()
+                let cellLabel = formCell.formTitleLabel()
+
+                cellInput.font = UIFont.systemFontOfSize(inputFontSize)
+                cellLabel?.font = UIFont.systemFontOfSize(lblFontSize)
+
+                cell.backgroundColor = Theme.universityDarkTheme.backgroundColor
+                cellInput.textColor = Theme.universityDarkTheme.titleTextColor
+                cellInput.backgroundColor = Theme.universityDarkTheme.backgroundColor
+                cellLabel?.textColor = Theme.universityDarkTheme.titleTextColor
+                cellLabel?.backgroundColor = Theme.universityDarkTheme.backgroundColor
+
+                cellInput.textAlignment = NSTextAlignment.Right
+                cellInput.autocorrectionType = UITextAutocorrectionType.No // no auto correction support
+                cellInput.autocapitalizationType = UITextAutocapitalizationType.None // no auto capitalization support
+
+                if (indexPath.row == 0) {
+                    cellInput.keyboardType = UIKeyboardType.EmailAddress
+                    cellInput.returnKeyType = UIReturnKeyType.Next
+                    cellInput.attributedPlaceholder = NSAttributedString(string:"example@gmail.com",
+                        attributes:[NSForegroundColorAttributeName: UIColor.lightGrayColor()])
+                    cellInput.text = UserManager.sharedManager.getUserId()
+                    cellLabel?.text = "User"
+                    userCell = formCell
+                    cellInput.tag = 0
+                }
+                else {
+                    cellInput.keyboardType = UIKeyboardType.Default
+                    cellInput.returnKeyType = UIReturnKeyType.Done
+                    cellInput.secureTextEntry = true
+                    cellInput.attributedPlaceholder = NSAttributedString(string:"Required",
+                        attributes:[NSForegroundColorAttributeName: UIColor.lightGrayColor()])
+                    cellInput.text = UserManager.sharedManager.getPassword()
+                    cellLabel?.text = "Password"
+                    passCell = formCell
+                    cellInput.tag = 1
+                }
+
+                formCell.translatesAutoresizingMaskIntoConstraints = false
+                cell.contentView.addSubview(formCell)
+
+                let constraints: [NSLayoutConstraint] = [
+                    formCell.topAnchor.constraintEqualToAnchor(cell.contentView.topAnchor),
+                    formCell.leadingAnchor.constraintEqualToAnchor(cell.contentView.layoutMarginsGuide.leadingAnchor),
+                    formCell.trailingAnchor.constraintEqualToAnchor(cell.contentView.layoutMarginsGuide.trailingAnchor, constant: -(ScreenManager.sharedInstance.settingsCellTrailing())),
+                    formCell.heightAnchor.constraintEqualToAnchor(cell.contentView.heightAnchor)
+                ]
+                cell.contentView.addConstraints(constraints)
+
+                cellInput.enabled = true
+                cellInput.delegate = self
             }
 
         default:
-            print("Invalid settings tableview section")
+            log.error("Invalid settings tableview section")
         }
 
-        cell.contentView.addSubview(formCell)
-
-        cellInput.enabled = true
-        cellInput.delegate = self
         return cell
     }
 
