@@ -95,8 +95,8 @@ class PlotViewController: UIViewController, ChartViewDelegate {
                             self.showError()
                             return
                         }
-                        if self.sampleType is HKCorrelationType {
-                            // Sleep
+                        if self.sampleType is HKCategorySample {
+// Sleep
                         } else {
                             let analyzer = PlotDataAnalyzer(sampleType: self.sampleType, statistics: statistics)
  //                           print("data type for plotting, \(self.sampleType)")
