@@ -712,7 +712,7 @@ class IntroViewController: UIViewController,
         ]
         tcView.addConstraints(tableViewConstraints)
 
-        radarController.initialImage = UIImage(named: "icon_locked")
+        radarController.initialImage = UIImage(named: "icon_lock")
         radarController.initialMsg = "HealthKit not authorized"
 
         pagesController = PagesController([tableContainer, radarController, mealController])
@@ -969,7 +969,7 @@ class IntroViewController: UIViewController,
         errorVC.msg = "We're heartbroken to see you\nhave no \(type.displayText!) data"
 
         let renderVC = ErrorViewController()
-        renderVC.image = UIImage(named: "icon_pencil_light")
+        renderVC.image = UIImage(named: "icon_quill")
         renderVC.msg = "Rendering data, please wait..."
 
         let plotVC = PlotViewController()
@@ -990,7 +990,7 @@ class IntroViewController: UIViewController,
         errorVC.msg = "We're heartbroken to see you have no\n\(type1.displayText!) or \(type2.displayText!) data"
 
         let renderVC = ErrorViewController()
-        renderVC.image = UIImage(named: "icon_pencil_light")
+        renderVC.image = UIImage(named: "icon_quill")
         renderVC.msg = "Rendering data, please wait..."
 
         let correlateVC = CorrelationViewController()
