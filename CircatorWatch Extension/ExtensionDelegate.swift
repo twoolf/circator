@@ -2,21 +2,16 @@
 //  ExtensionDelegate.swift
 //  CircatorWatch Extension
 //
-//  Created by Sihao Lu on 10/29/15.
-//  Copyright © 2015 Yanif Ahmad, Tom Woolf. All rights reserved.
+//  Created by Mariano on 3/2/16.
+//  Copyright © 2016 Yanif Ahmad, Tom Woolf. All rights reserved.
 //
 
 import WatchKit
-import WatchConnectivity
 
 class ExtensionDelegate: NSObject, WKExtensionDelegate {
 
     func applicationDidFinishLaunching() {
-        if WCSession.isSupported() {
-            let session = WCSession.defaultSession()
-            session.delegate = ConnectivityManager.sharedManager
-            session.activateSession()
-        }
+        // Perform any final initialization of your application.
     }
 
     func applicationDidBecomeActive() {

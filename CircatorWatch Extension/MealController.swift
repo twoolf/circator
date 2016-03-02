@@ -1,6 +1,6 @@
 //
-//  InterfaceController.swift
-//  CircatorWatch Extension
+//  MealController.swift
+//  Circator
 //
 //  Created by Mariano on 3/2/16.
 //  Copyright © 2016 Yanif Ahmad, Tom Woolf. All rights reserved.
@@ -10,7 +10,7 @@ import WatchKit
 import Foundation
 
 
-class InterfaceController: WKInterfaceController {
+class MealController: WKInterfaceController {
 
     override func awakeWithContext(context: AnyObject?) {
         super.awakeWithContext(context)

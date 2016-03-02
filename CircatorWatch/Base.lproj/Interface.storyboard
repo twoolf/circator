@@ -1,48 +1,42 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<document type="com.apple.InterfaceBuilder.WatchKit.Storyboard" version="3.0" toolsVersion="9059" systemVersion="15B42" targetRuntime="watchKit" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" initialViewController="AgC-eL-Hgc">
+<document type="com.apple.InterfaceBuilder.WatchKit.Storyboard" version="3.0" toolsVersion="9532" systemVersion="15D21" targetRuntime="watchKit" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" initialViewController="AgC-eL-Hgc">
     <dependencies>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="9049"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBWatchKitPlugin" version="9019"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="9530"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBWatchKitPlugin" version="9515"/>
     </dependencies>
     <scenes>
-        <!--Circator-->
+        <!--Interface Controller-->
         <scene sceneID="aou-V4-d1y">
             <objects>
-                <controller identifier="BioPreview" title="Circator" id="AgC-eL-Hgc" customClass="InterfaceController" customModule="CircatorWatch" customModuleProvider="target">
+                <controller id="AgC-eL-Hgc" customClass="InterfaceController" customModule="CircatorWatch" customModuleProvider="target">
                     <items>
-                        <table alignment="left" id="hC1-qr-gHM">
+                        <group width="1" height="0.40000000000000002" alignment="left" id="tjv-Ck-gEV">
                             <items>
-                                <tableRow identifier="BioPreviewCell" id="R30-af-0mQ" customClass="BioPreviewRow" customModule="CircatorWatch_Extension">
-                                    <group key="rootItem" width="1" alignment="left" id="4kN-W1-ykj">
-                                        <items>
-                                            <imageView width="30" height="0.75" alignment="left" verticalAlignment="center" image="icon_blood_pressure" contentMode="scaleAspectFit" id="IGh-pq-yoQ"/>
-                                            <group height="1" alignment="left" verticalAlignment="center" layout="vertical" spacing="0.0" id="2uv-HF-Ug5">
-                                                <items>
-                                                    <label alignment="left" text="Blood Pressure" minimumScaleFactor="0.5" id="EHN-cS-eU0">
-                                                        <color key="textColor" red="0.84313725490196079" green="0.47843137254901957" blue="0.38039215686274508" alpha="1" colorSpace="calibratedRGB"/>
-                                                    </label>
-                                                    <label height="16.5" alignment="left" text="110 / 90" id="MUc-Kp-uoS"/>
-                                                </items>
-                                                <edgeInsets key="margins" left="5" right="0.0" top="0.0" bottom="0.0"/>
-                                            </group>
-                                        </items>
-                                        <color key="backgroundColor" red="0.0" green="0.1764705882352941" blue="0.44705882352941173" alpha="1" colorSpace="calibratedRGB"/>
-                                    </group>
+                                <button width="0.5" height="1" alignment="left" title="Button" id="efV-eP-frF">
                                     <connections>
-                                        <outlet property="icon" destination="IGh-pq-yoQ" id="ZhH-nN-YNf"/>
-                                        <outlet property="sampleTypeLabel" destination="EHN-cS-eU0" id="rMW-lF-5Or"/>
-                                        <outlet property="valueLabel" destination="MUc-Kp-uoS" id="Hso-2H-OPi"/>
+                                        <segue destination="dV6-cO-szC" kind="push" id="rkI-16-Hqa"/>
                                     </connections>
-                                </tableRow>
+                                </button>
+                                <button width="0.5" height="1" alignment="right" title="Button" id="edE-qc-9uN"/>
                             </items>
-                        </table>
+                        </group>
+                        <group width="1" height="0.40000000000000002" alignment="left" id="biC-ez-bx2">
+                            <items>
+                                <button width="0.5" height="1" alignment="left" title="Button" id="hCU-mZ-gCF"/>
+                                <button width="0.5" height="1" alignment="right" title="Button" id="30E-7d-sfh"/>
+                            </items>
+                        </group>
                     </items>
-                    <connections>
-                        <outlet property="table" destination="hC1-qr-gHM" id="ct9-1p-tf3"/>
-                    </connections>
                 </controller>
             </objects>
-            <point key="canvasLocation" x="234" y="346"/>
+            <point key="canvasLocation" x="235" y="347"/>
+        </scene>
+        <!--Interface Controller-->
+        <scene sceneID="mnF-XV-dEC">
+            <objects>
+                <controller id="dV6-cO-szC"/>
+            </objects>
+            <point key="canvasLocation" x="485" y="228"/>
         </scene>
         <!--Glance Interface Controller-->
         <scene sceneID="BOz-TT-tkC">
