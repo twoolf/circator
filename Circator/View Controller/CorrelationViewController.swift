@@ -50,15 +50,15 @@ class CorrelationViewController: UIViewController, ChartViewDelegate {
         chart.xAxis.drawAxisLineEnabled = true
         chart.xAxis.drawGridLinesEnabled = true
         chart.descriptionText = ""
-        chart.xAxis.labelTextColor = Theme.universityDarkTheme.titleTextColor
-        chart.leftAxis.labelTextColor = Theme.universityDarkTheme.titleTextColor
+        chart.xAxis.labelTextColor = Theme.universityDarkTheme.backgroundColor
+        chart.leftAxis.labelTextColor = Theme.universityDarkTheme.backgroundColor
         chart.leftAxis.valueFormatter = SampleFormatter.numberFormatter
-        chart.rightAxis.labelTextColor = Theme.universityDarkTheme.titleTextColor
+        chart.rightAxis.labelTextColor = Theme.universityDarkTheme.backgroundColor
         chart.rightAxis.valueFormatter = SampleFormatter.numberFormatter
         chart.legend.position = .BelowChartCenter
         chart.legend.form = .Circle
         chart.legend.font = UIFont.systemFontOfSize(UIFont.smallSystemFontSize())
-        chart.legend.textColor = Theme.universityDarkTheme.bodyTextColor
+        chart.legend.textColor = Theme.universityDarkTheme.backgroundColor
         return chart
     }()
     
@@ -141,7 +141,7 @@ class CorrelationViewController: UIViewController, ChartViewDelegate {
     }
     
     private func configureViews() {
-        scrollView.backgroundColor = Theme.universityDarkTheme.backgroundColor
+        scrollView.backgroundColor = Theme.universityDarkTheme.foregroundColor
 
         scrollView.translatesAutoresizingMaskIntoConstraints = false
         view.addSubview(scrollView)
