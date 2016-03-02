@@ -41,7 +41,7 @@ class PlotViewController: UIViewController, ChartViewDelegate {
         label.font = UIFont.systemFontOfSize(16, weight: UIFontWeightSemibold)
         label.textColor = Theme.universityDarkTheme.backgroundColor
         label.textAlignment = .Center
-        label.text = NSLocalizedString("20% increments of your Data", comment: "Summary view section title label")
+        label.text = NSLocalizedString("20% Increments of your Data", comment: "Summary view section title label")
         return label
     }()
 

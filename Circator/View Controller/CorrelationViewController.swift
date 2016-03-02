@@ -29,7 +29,7 @@ class CorrelationViewController: UIViewController, ChartViewDelegate {
     lazy var correlationLabel: UILabel = {
         let label: UILabel = UILabel()
         label.font = UIFont.systemFontOfSize(16, weight: UIFontWeightSemibold)
-        label.textColor = Theme.universityDarkTheme.titleTextColor
+        label.textColor = Theme.universityDarkTheme.backgroundColor
         label.textAlignment = .Center
         label.text = NSLocalizedString("Attribute 2 Relative to Increasing Attribute 1", comment: "Plot view section title label")
         label.lineBreakMode = .ByWordWrapping
