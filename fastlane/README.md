@@ -76,6 +76,11 @@ Prepare for command line build
 fastlane ios preparedeploy
 ```
 Prepare for command line deployment to the App Store
+### ios build_version
+```
+fastlane ios build_version
+```
+Set a specific build number
 ### ios build_dev
 ```
 fastlane ios build_dev
