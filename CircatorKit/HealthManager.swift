@@ -224,7 +224,9 @@ public class HealthManager: NSObject, WCSessionDelegate {
 
     // Completion handler is on background queue
     public func fetchStatisticsOfType(sampleType: HKSampleType, predicate: NSPredicate? = nil, completion: HMStatisticsBlock) {
-        if sampleType is HKQuantityType {
+        switch sampleType {
+
+        case is HKQuantityType:
             let interval = NSDateComponents()
             interval.day = 1
 
@@ -254,7 +256,13 @@ public class HealthManager: NSObject, WCSessionDelegate {
             }
             healthKitStore.executeQuery(query)
 
-        } else {
+        case is HKCategoryType:
+//            fetchSamplesOfType(sampleType, predicate: predicate) {
+//                samples, error in
+//            }
+            fallthrough
+
+        default:
             let err = NSError(domain: HMErrorDomain, code: 1048576, userInfo: [NSLocalizedDescriptionKey: "Not implemented"])
             completion(statistics: [], error: err)
         }

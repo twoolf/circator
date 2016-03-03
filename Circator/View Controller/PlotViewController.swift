@@ -95,11 +95,14 @@ class PlotViewController: UIViewController, ChartViewDelegate {
                             self.showError()
                             return
                         }
-                        if self.sampleType is HKCategorySample {
-// Sleep
-                        } else {
+
+                        switch self.sampleType {
+                        case is HKCategoryType:
+                            log.info("Plotting not implemented for \(self.sampleType.identifier)")
+                            break
+
+                        case is HKQuantityType:
                             let analyzer = PlotDataAnalyzer(sampleType: self.sampleType, statistics: statistics)
- //                           print("data type for plotting, \(self.sampleType)")
                             analyzer.dataSetConfigurator = { dataSet in
                                 dataSet.drawCircleHoleEnabled = true
                                 dataSet.circleRadius = 7
@@ -126,6 +129,9 @@ class PlotViewController: UIViewController, ChartViewDelegate {
 
                                 self.showChart()
                             }
+
+                        default:
+                            log.error("Cannot plot sample type \(self.sampleType.identifier)")
                         }
                         BehaviorMonitor.sharedInstance.setValue("Plot", contentType: self.sampleType.identifier)
                     }
@@ -149,6 +155,10 @@ class PlotViewController: UIViewController, ChartViewDelegate {
         BehaviorMonitor.sharedInstance.showView("Plot", contentType: sampleType.identifier)
     }
 
+    override func viewWillDisappear(animated: Bool) {
+        super.viewWillDisappear(animated)
+    }
+
     override func didReceiveMemoryWarning() {
         super.didReceiveMemoryWarning()
         // Dispose of any resources that can be recreated.
@@ -161,13 +171,13 @@ class PlotViewController: UIViewController, ChartViewDelegate {
         view.addSubview(scrollView)
 
         historyLabel.translatesAutoresizingMaskIntoConstraints = false
-        summaryLabel.translatesAutoresizingMaskIntoConstraints = false
-        scrollView.addSubview(historyLabel)
-        scrollView.addSubview(summaryLabel)
-
         historyChart.translatesAutoresizingMaskIntoConstraints = false
-        summaryChart.translatesAutoresizingMaskIntoConstraints = false
+        scrollView.addSubview(historyLabel)
         scrollView.addSubview(historyChart)
+
+        summaryLabel.translatesAutoresizingMaskIntoConstraints = false
+        summaryChart.translatesAutoresizingMaskIntoConstraints = false
+        scrollView.addSubview(summaryLabel)
         scrollView.addSubview(summaryChart)
 
         let constraints: [NSLayoutConstraint] = [
@@ -184,9 +194,11 @@ class PlotViewController: UIViewController, ChartViewDelegate {
             summaryChart.leadingAnchor.constraintEqualToAnchor(summaryLabel.leadingAnchor),
             summaryChart.trailingAnchor.constraintEqualToAnchor(summaryLabel.trailingAnchor),
         ]
+
         scrollView.addConstraints(constraints)
         historyChart.translatesAutoresizingMaskIntoConstraints = false
         historyChart.heightAnchor.constraintEqualToConstant(200).active = true
+
         summaryChart.translatesAutoresizingMaskIntoConstraints = false
         summaryChart.heightAnchor.constraintEqualToConstant(200).active = true
 

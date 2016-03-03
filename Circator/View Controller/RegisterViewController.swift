@@ -174,6 +174,9 @@ class RegisterViewController : FormViewController {
     }
 
     func doSignup(sender: UIButton) {
+        UINotifications.genericMsg(self.navigationController!, msg: "Registering account...")
+        sender.enabled = false
+
         guard let consentPath = ConsentManager.sharedManager.getConsentFilePath() else {
             UINotifications.noConsent(self.navigationController!, pop: true, asNav: true)
             return
@@ -181,6 +184,7 @@ class RegisterViewController : FormViewController {
 
         guard let (user, pass, fname, lname) = validateProfile() else {
             UINotifications.invalidProfile(self.navigationController!)
+            sender.enabled = true
             return
         }
 
@@ -196,6 +200,7 @@ class RegisterViewController : FormViewController {
                 }
                 UINotifications.registrationError(self.navigationController!, msg: errormsg)
                 BehaviorMonitor.sharedInstance.register(false)
+                sender.enabled = true
                 return
             }
 
