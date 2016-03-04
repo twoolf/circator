@@ -110,7 +110,8 @@ class PlotDataAnalyzer: SampleDataAnalyzer {
                         let val = sample.numeralValue ?? 0.0
                         acc.updateValue(val + (acc[day] ?? 0.0), forKey: day)
                     }
-                    entries = acc.map { (day, val) -> ChartDataEntry in return ChartDataEntry(value: val, xIndex: day) }
+                    entries = acc.sort({ (a,b) in return a.0 < b.0 })
+                                 .map { (day, val) -> ChartDataEntry in return ChartDataEntry(value: val, xIndex: day) }
 
                 case HKCorrelationTypeIdentifierBloodPressure:
                     var acc : [Int: (Int, Double)] = [:]
@@ -120,7 +121,8 @@ class PlotDataAnalyzer: SampleDataAnalyzer {
                         let eacc = acc[day] ?? (0, 0.0)
                         acc.updateValue((eacc.0 + 1, val + eacc.1), forKey: day)
                     }
-                    entries = acc.map { (day, countsum) -> ChartDataEntry in return ChartDataEntry(value: countsum.1 / Double(countsum.0), xIndex: day) }
+                    entries = acc.sort({ (a,b) in return a.0 < b.0 })
+                                 .map { (day, countsum) -> ChartDataEntry in return ChartDataEntry(value: countsum.1 / Double(countsum.0), xIndex: day) }
 
                 default:
                     log.error("Cannot plot samples for \(sampleType.identifier)")

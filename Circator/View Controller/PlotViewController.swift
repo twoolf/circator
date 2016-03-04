@@ -91,7 +91,11 @@ class PlotViewController: UIViewController, ChartViewDelegate {
             Async.main {
                 Async.background {
                     switch self.sampleType {
+
                     case is HKCategoryType:
+                        fallthrough
+
+                    case is HKCorrelationType:
                         HealthManager.sharedManager.fetchSamplesOfType(self.sampleType) { (samples, error) -> Void in
                             guard error == nil else {
                                 self.showError()
