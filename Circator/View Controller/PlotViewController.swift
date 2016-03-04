@@ -90,50 +90,29 @@ class PlotViewController: UIViewController, ChartViewDelegate {
             navigationItem.title = sampleType.displayText!
             Async.main {
                 Async.background {
-                    HealthManager.sharedManager.fetchStatisticsOfType(self.sampleType) { (statistics, error) -> Void in
-                        guard error == nil else {
-                            self.showError()
-                            return
-                        }
-
-                        switch self.sampleType {
-                        case is HKCategoryType:
-                            log.info("Plotting not implemented for \(self.sampleType.identifier)")
-                            break
-
-                        case is HKQuantityType:
-                            let analyzer = PlotDataAnalyzer(sampleType: self.sampleType, statistics: statistics)
-                            analyzer.dataSetConfigurator = { dataSet in
-                                dataSet.drawCircleHoleEnabled = true
-                                dataSet.circleRadius = 7
-                                dataSet.valueFormatter = SampleFormatter.numberFormatter
-                                dataSet.circleHoleColor = Theme.universityDarkTheme.complementForegroundColors!.colorWithVibrancy(0.1)!
-                                dataSet.circleColors = [Theme.universityDarkTheme.complementForegroundColors!.colorWithVibrancy(0.6)!]
-                                dataSet.colors = [Theme.universityDarkTheme.complementForegroundColors!.colorWithVibrancy(0.1)!]
-                                dataSet.lineWidth = 2
-                                dataSet.fillColor = Theme.universityDarkTheme.complementForegroundColors!.colorWithVibrancy(0.1)!
-                            }
-                            let ldata = analyzer.lineChartData
-                            let sdata = analyzer.bubbleChartData
-
-                            if ldata.yValCount == 0 || sdata.yValCount == 0 {
+                    switch self.sampleType {
+                    case is HKCategoryType:
+                        HealthManager.sharedManager.fetchSamplesOfType(self.sampleType) { (samples, error) -> Void in
+                            guard error == nil else {
                                 self.showError()
-                            } else {
-                                self.historyChart.data = ldata
-                                self.historyChart.data?.setValueTextColor(Theme.universityDarkTheme.backgroundColor)
-                                self.historyChart.data?.setValueFont(UIFont.systemFontOfSize(10, weight: UIFontWeightThin))
-
-                                self.summaryChart.data = sdata
-                                self.summaryChart.data?.setValueTextColor(Theme.universityDarkTheme.backgroundColor)
-                                self.summaryChart.data?.setValueFont(UIFont.systemFontOfSize(10, weight: UIFontWeightThin))
-
-                                self.showChart()
+                                return
                             }
-
-                        default:
-                            log.error("Cannot plot sample type \(self.sampleType.identifier)")
+                            self.plotSamples(samples)
+                            BehaviorMonitor.sharedInstance.setValue("Plot", contentType: self.sampleType.identifier)
                         }
-                        BehaviorMonitor.sharedInstance.setValue("Plot", contentType: self.sampleType.identifier)
+
+                    case is HKQuantityType:
+                        HealthManager.sharedManager.fetchStatisticsOfType(self.sampleType) { (statistics, error) -> Void in
+                            guard error == nil else {
+                                self.showError()
+                                return
+                            }
+                            self.plotStatistics(statistics)
+                            BehaviorMonitor.sharedInstance.setValue("Plot", contentType: self.sampleType.identifier)
+                        }
+
+                    default:
+                        log.error("Cannot plot sample type \(self.sampleType.identifier)")
                     }
                 }
             }
@@ -209,6 +188,45 @@ class PlotViewController: UIViewController, ChartViewDelegate {
             scrollView.trailingAnchor.constraintEqualToAnchor(view.trailingAnchor)
         ]
         view.addConstraints(svconstraints)
+    }
+
+    func plotChart(analyzer: PlotDataAnalyzer) {
+        analyzer.dataSetConfigurator = { dataSet in
+            dataSet.drawCircleHoleEnabled = true
+            dataSet.circleRadius = 7
+            dataSet.valueFormatter = SampleFormatter.numberFormatter
+            dataSet.circleHoleColor = Theme.universityDarkTheme.complementForegroundColors!.colorWithVibrancy(0.1)!
+            dataSet.circleColors = [Theme.universityDarkTheme.complementForegroundColors!.colorWithVibrancy(0.6)!]
+            dataSet.colors = [Theme.universityDarkTheme.complementForegroundColors!.colorWithVibrancy(0.1)!]
+            dataSet.lineWidth = 2
+            dataSet.fillColor = Theme.universityDarkTheme.complementForegroundColors!.colorWithVibrancy(0.1)!
+        }
+        let ldata = analyzer.lineChartData
+        let sdata = analyzer.bubbleChartData
+
+        if ldata.yValCount == 0 || sdata.yValCount == 0 {
+            self.showError()
+        } else {
+            self.historyChart.data = ldata
+            self.historyChart.data?.setValueTextColor(Theme.universityDarkTheme.backgroundColor)
+            self.historyChart.data?.setValueFont(UIFont.systemFontOfSize(10, weight: UIFontWeightThin))
+
+            self.summaryChart.data = sdata
+            self.summaryChart.data?.setValueTextColor(Theme.universityDarkTheme.backgroundColor)
+            self.summaryChart.data?.setValueFont(UIFont.systemFontOfSize(10, weight: UIFontWeightThin))
+
+            self.showChart()
+        }
+    }
+
+    func plotStatistics(statistics: [HKStatistics]) {
+        let analyzer = PlotDataAnalyzer(sampleType: self.sampleType, statistics: statistics)
+        plotChart(analyzer)
+    }
+
+    func plotSamples(samples: [HKSample]) {
+        let analyzer = PlotDataAnalyzer(sampleType: self.sampleType, samples: samples)
+        plotChart(analyzer)
     }
 
     func showError() {
