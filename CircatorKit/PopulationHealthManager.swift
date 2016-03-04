@@ -10,6 +10,12 @@ import Foundation
 import HealthKit
 import Async
 
+/**
+ manager of information for comparison population
+ 
+ - note: initially this is NHANES data and with time will be study population defined
+ - remark: pulls from PostgreSQL store (AWS RDS) -- see MCRouter --
+ */
 public class PopulationHealthManager {
 
     public static let sharedManager = PopulationHealthManager()
@@ -24,9 +30,6 @@ public class PopulationHealthManager {
 
     // MARK: - Population query execution.
 
-    // TODO: pull this from Granola
-    // TODO: make this a dictionary with a list value to support multiple fields per sampleType,
-    // e.g., blood_pressure needs both systolic and diastolic
     public static let attributeNamesBySampleType : [HKSampleType:(String,String,String?)] =
     PreviewManager.previewChoices.flatten().reduce([:]) { (var dict, sampleType) in
         switch sampleType.identifier {

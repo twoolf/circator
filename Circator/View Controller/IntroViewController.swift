@@ -22,6 +22,12 @@ private let mcControlButtonHeight = ScreenManager.sharedInstance.dashboardButton
 
 private let hkAccessTimeout = 60.seconds
 
+/**
+ Main view controller for Metabolic Compass.
+ 
+ - note: enables branching to all three screens and to plots/settings
+ - remark: uses in-code constraint settings 
+ */
 class IntroViewController: UIViewController,
                            UITableViewDataSource,
                            UITableViewDelegate, UIPickerViewDelegate, UIPickerViewDataSource
@@ -513,7 +519,6 @@ class IntroViewController: UIViewController,
         }
     }
 
-
     // MARK: - Initial, and toggling login/logout handlers.
 
     func loginOrRegister() {
@@ -581,7 +586,6 @@ class IntroViewController: UIViewController,
             }
         }
     }
-
 
     // MARK: - View Event Handlers
 
@@ -884,8 +888,7 @@ class IntroViewController: UIViewController,
                 if let startTime = startTimeO  {
                     let endTime = startTime + Int(durationMinuteStr)!.minutes
                     
-                    let metaMeals = [/*"Meal Rating": String(IntroViewController.previewMealTypeStrings[3][pickerView.selectedRowInComponent(3)]), */
-                        "Meal Type": String(EventPickerManager.previewMealTypeStrings[0][pickerView.selectedRowInComponent(0)])]
+                    let metaMeals = ["Meal Type": String(EventPickerManager.previewMealTypeStrings[0][pickerView.selectedRowInComponent(0)])]
                     
                     log.info("Meal event \(startTime) \(endTime)")
                     validateTimedEvent(startTime, endTime: endTime) {

@@ -10,6 +10,11 @@ import CircatorKit
 import UIKit
 import MGSwipeTableCell
 
+/**
+ To support queries for filtering displayed metrics on 1st and 2nd dashboard screens
+ 
+ - note: used in IntroViewController
+ */
 class QueryViewController: UITableViewController {
 
     override func viewWillAppear(animated: Bool) {

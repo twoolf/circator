@@ -42,6 +42,12 @@ private let noAnchor = HKQueryAnchor(fromValue: Int(HKAnchoredObjectQueryNoAncho
 private let dateAsc  = NSSortDescriptor(key: HKSampleSortIdentifierStartDate, ascending: true)
 private let dateDesc = NSSortDescriptor(key: HKSampleSortIdentifierStartDate, ascending: false)
 
+/**
+ main manager of information reads/writes from HealthKit
+ 
+ - note: uses AnchorQueries to support continued updates
+ - remark: see AppleDocs for permissions syntax in reading/writing
+ */
 public class HealthManager: NSObject, WCSessionDelegate {
 
     public static let sharedManager = HealthManager()
@@ -117,7 +123,7 @@ public class HealthManager: NSObject, WCSessionDelegate {
 
     // MARK: - HealthKit sample retrieval.
 
-    // Fetches HealthKit samples of the given type for the last day, ordered by their collection date.
+    /// Fetches HealthKit samples of the given type for the last day, ordered by their collection date.
     public func fetchMostRecentSample(sampleType: HKSampleType, completion: HMFetchSampleBlock)
     {
         let mostRecentPredicate: NSPredicate
@@ -143,7 +149,7 @@ public class HealthManager: NSObject, WCSessionDelegate {
         self.healthKitStore.executeQuery(sampleQuery)
     }
 
-    // Fetches HealthKit samples for multiple types, using GCD to retrieve each type asynchronously and concurrently.
+    /// Fetches HealthKit samples for multiple types, using GCD to retrieve each type asynchronously and concurrently.
     public func fetchMostRecentSamples(ofTypes types: [HKSampleType] = PreviewManager.previewSampleTypes, completion: HMFetchManyResultBlock)
     {
         let group = dispatch_group_create()
@@ -200,7 +206,6 @@ public class HealthManager: NSObject, WCSessionDelegate {
         }
 
         dispatch_group_notify(group, dispatch_get_main_queue()) {
-            // TODO: partial error handling, i.e., when a subset of the desired types fail in their queries.
             self.mostRecentSamples = samples
             completion(samples: samples, error: nil)
         }
@@ -229,7 +234,6 @@ public class HealthManager: NSObject, WCSessionDelegate {
             interval.day = 1
 
             // Set the anchor date to midnight today.
-            // TODO: Should be able to change according to user settings
             let anchorDate = NSDate().startOf(.Day, inRegion: Region())
             let quantityType = HKObjectType.quantityTypeForIdentifier(sampleType.identifier)!
 
@@ -318,7 +322,7 @@ public class HealthManager: NSObject, WCSessionDelegate {
 
     // MARK: - Bulk generic retrieval
 
-    // Fetches HealthKit samples for multiple types, using GCD to retrieve each type asynchronously and concurrently.
+    /// Fetches HealthKit samples for multiple types, using GCD to retrieve each type asynchronously and concurrently.
     public func fetchSamples(typesAndPredicates: [HKSampleType: NSPredicate?], completion: HMFetchManySampleBlock)
     {
         let group = dispatch_group_create()
@@ -351,7 +355,7 @@ public class HealthManager: NSObject, WCSessionDelegate {
 
     // MARK: - Meal timing event retrieval.
 
-    // Query food diary events stored as prep and recovery workouts in HealthKit
+    /// Query food diary events stored as prep and recovery workouts in HealthKit
     public func fetchPreparationAndRecoveryWorkout(oldestFirst: Bool, beginDate: NSDate? = nil, completion: HMFetchSampleBlock!)
     {
         let predicate = mealsSincePredicate(beginDate)
@@ -399,7 +403,6 @@ public class HealthManager: NSObject, WCSessionDelegate {
 
                 let anchor = self.getAnchorForType(type)
                 let tname = type.displayText ?? type.identifier
-                //log.verbose("Anchor for type \(tname): \(anchor) \(anchor == noAnchor)")
 
                 var predicate : NSPredicate? = nil
 
@@ -448,9 +451,6 @@ public class HealthManager: NSObject, WCSessionDelegate {
                             self.setAnchorTSForType(nts, forType: type)
 
                             // Push acquisition times into profile, and subsequently Stormpath.
-                            // This should be used to implement profile-level delta queries with anchors, independently of whether
-                            // the local session on the application has been started. Thus, we should also use the profile anchor
-                            // to initialize the historical range, to prevent duplicate data from being uploaded to the server.
                             self.pushAcquisition(type)
                         }
                         log.info("\(tname) \(ts) \(nts) \(anchor == noAnchor)")
@@ -1218,12 +1218,4 @@ public extension Array where Element: HKSample {
                 return sample.endDate.timeIntervalSinceDate(sample.startDate)
             }.reduce(0) { $0 + $1 }
     }
-//    public var workoutDuration: NSDate? {
-//        return filter { (sample) -> Bool in
-//            let categorySample = sample as! HKWorkout
-//            let now = NSDate()
-//            return categorySample.sampleType.identifier == HKWorkoutTypeIdentifier && categorySample.startDate < now
-//
-//        }
-//    }
 }

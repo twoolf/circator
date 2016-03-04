@@ -15,6 +15,11 @@ import SwiftDate
 import Async
 import Pages
 
+/**
+ Controls display of temporal plots and summary statistics.
+ 
+ - note: LineChart and BubbleChart types used
+ */
 class PlotViewController: UIViewController, ChartViewDelegate {
 
     var pageIndex  : Int! = nil
@@ -95,9 +100,6 @@ class PlotViewController: UIViewController, ChartViewDelegate {
                             self.showError()
                             return
                         }
-                        if self.sampleType is HKCorrelationType {
-                            // Sleep
-                        } else {
                             let analyzer = PlotDataAnalyzer(sampleType: self.sampleType, statistics: statistics)
                             analyzer.dataSetConfigurator = { dataSet in
                                 dataSet.drawCircleHoleEnabled = true
@@ -125,7 +127,6 @@ class PlotViewController: UIViewController, ChartViewDelegate {
 
                                 self.showChart()
                             }
-                        }
                         BehaviorMonitor.sharedInstance.setValue("Plot", contentType: self.sampleType.identifier)
                     }
                 }

@@ -16,6 +16,12 @@ let log = SwiftyBeaver.self
 public typealias SvcStringCompletion = (Bool, String?) -> Void
 public typealias SvcObjectCompletion = (Bool, AnyObject?) -> Void
 
+/**
+ sets up API for reads/writes to cloud data store
+ 
+ - note: uses Alamofire/JSON
+ - remark: authentication using OAuthToken
+ */
 enum MCRouter : URLRequestConvertible {
     static let baseURLString = "https://app.metaboliccompass.com"
     static var OAuthToken: String?

@@ -15,6 +15,11 @@ import FileKit
 private let lblFontSize = ScreenManager.sharedInstance.profileLabelFontSize()
 private let inputFontSize = ScreenManager.sharedInstance.profileInputFontSize()
 
+/**
+ Used at end of consent flow to set-up Stormpath account and set initial metrics
+ 
+ - note: should only be needed once as part of the electronic consent process
+ */
 class RegisterViewController : FormViewController {
 
     var profileValues : [String: String] = [:]
@@ -210,11 +215,7 @@ class RegisterViewController : FormViewController {
                     // Registration completed, but logging in failed. 
                     // Pop this view to allow the user to try logging in again through the
                     // login/logout functionality on the main dashboard.
-                    //
-                    // TODO: popping this view will remove the consent file prior to uploading it.
-                    // This means we have a user registered without a consent file stored in Stormpath.
-                    // We need to stash the consent path name for deferred upload.
-                    //
+
                     UINotifications.loginFailed(self.navigationController!, pop: true, asNav: true, reason: reason)
                     BehaviorMonitor.sharedInstance.register(false)
                     return

@@ -10,8 +10,9 @@
 import UIKit
 
 public class Theme: NSObject {
+
     public static let universityDarkTheme = Theme(.White, .Blue, .White, .Custom(Color.White.color.colorWithAlphaComponent(0.75)), complementForegroundColors: [.Emerald, .Gray, .MilkyGreen, .Crimson])!
-    
+
     public enum Color {
         case Blue
         case Emerald

@@ -10,6 +10,11 @@
 import CircatorKit
 import UIKit
 
+/**
+ Enables Settings for each Row to be updated.
+ 
+ - note: this is used in SettingsViewController
+ */
 class RowSettingsViewController: UITableViewController {
 
     var selectedRow: Int!

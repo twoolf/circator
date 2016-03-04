@@ -9,14 +9,11 @@
 import Foundation
 import HealthKit
 
-/*
-* User profile constants.
-*/
-
-//"Sex",
-//"Female or Male",
-//"Sex"                      : "sex",
-
+/**
+ maintains constants and strings needed for Metabolic Compass
+ 
+ - note: includes ties into options/recommendations settings in control panel
+ */
 public struct UserProfile {
 
     public static let sharedInstance = UserProfile()
@@ -145,7 +142,7 @@ public struct HMConstants
 {
     public static let sharedInstance = HMConstants()
 
-    // Note: keep these in alphabetical order.
+    // Note: these are in alphabetical order within each type.
     public let healthKitTypesToRead : Set<HKObjectType>? = [
         HKObjectType.categoryTypeForIdentifier(HKCategoryTypeIdentifierSleepAnalysis)!,
         HKObjectType.categoryTypeForIdentifier(HKCategoryTypeIdentifierAppleStandHour)!,
@@ -227,6 +224,7 @@ public struct HMConstants
         HKQuantityType.workoutType()
     ]
 
+    // Note: these are in alphabetical order within each type.
     public let healthKitTypesToObserve : [HKSampleType] = [
         HKObjectType.categoryTypeForIdentifier(HKCategoryTypeIdentifierSleepAnalysis)!,
         HKObjectType.categoryTypeForIdentifier(HKCategoryTypeIdentifierAppleStandHour)!,
@@ -300,6 +298,7 @@ public struct HMConstants
         HKObjectType.workoutType()
     ]
 
+    // Note: these are in alphabetical order within each type.
     public let healthKitShortNames : [String: String] = [
         HKCategoryTypeIdentifierAppleStandHour            : "Stood",
         HKCategoryTypeIdentifierSleepAnalysis             : "Sleep",

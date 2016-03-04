@@ -9,6 +9,16 @@
 import UIKit
 import HealthKit
 
+/**
+ Controls the formatting and presentation style of all metrics
+
+  -note:
+  units and conversions are covered in Apple's HealthKit documentation
+ 
+  -remark:
+  stringFromSamples, stringFromDerivedQuantities, etc are all in this location
+
+ */
 public class SampleFormatter: NSObject {
 
     public static let bodyMassFormatter: NSMassFormatter = {
@@ -102,7 +112,6 @@ public class SampleFormatter: NSObject {
 
     public func numberFromStatistics(statistics: HKStatistics) -> Double {
         // Guaranteed to be quantity sample here
-        // TODO: Need implementation for correlation and sleep
         guard let quantity = statistics.quantity else {
             return Double.quietNaN
         }
@@ -111,7 +120,6 @@ public class SampleFormatter: NSObject {
 
     public func stringFromStatistics(statistics: HKStatistics) -> String {
         // Guaranteed to be quantity sample here
-        // TODO: Need implementation for correlation and sleep
         guard let quantity = statistics.quantity else {
             return emptyString
         }
@@ -135,7 +143,6 @@ public class SampleFormatter: NSObject {
             return Double(d.hour) + (Double(d.minute) / 60.0)
 
         case HKCorrelationTypeIdentifierBloodPressure:
-            // Return the systolic for blood pressure, since this is the larger number.
             let correlationSample = samples.first as! HKCorrelation
             let systolicSample = correlationSample.objectsForType(HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierBloodPressureSystolic)!).first as? HKQuantitySample
             guard systolicSample != nil else { return Double.quietNaN }
@@ -222,19 +229,6 @@ public class SampleFormatter: NSObject {
 
             case HKCategoryTypeIdentifierSleepAnalysis:
                 return "\(SampleFormatter.timeIntervalFormatter.stringFromTimeInterval(quantity)!)"
-
-/*
-            case HKCorrelationTypeIdentifierBloodPressure:
-                let correlationSample = derived
-                let diastolicSample = correlationSample.objectsForType(HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierBloodPressureDiastolic)!).first as? HKQuantitySample
-                let systolicSample = correlationSample.objectsForType(HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierBloodPressureSystolic)!).first as? HKQuantitySample
-                guard diastolicSample != nil && systolicSample != nil else {
-                    return emptyString
-                }
-                let diastolicNumber = SampleFormatter.integerFormatter.stringFromNumber(diastolicSample!.quantity.doubleValueForUnit(HKUnit.millimeterOfMercuryUnit()))!
-                let systolicNumber = SampleFormatter.integerFormatter.stringFromNumber(systolicSample!.quantity.doubleValueForUnit(HKUnit.millimeterOfMercuryUnit()))!
-                return "\(systolicNumber)/\(diastolicNumber)"
-*/
 
             default:
                 return emptyString

@@ -14,6 +14,11 @@ import Async
 private let lblFontSize = ScreenManager.sharedInstance.profileLabelFontSize()
 private let inputFontSize = ScreenManager.sharedInstance.profileInputFontSize()
 
+/**
+ To set-up and allow defaults/recommendations for metrics
+ 
+ - note: used in RegisterViewController and in SettingsViewController
+ */
 class ProfileSubviewController : FormViewController {
 
     var profileFields       : [String] = []
