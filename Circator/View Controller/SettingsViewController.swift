@@ -15,11 +15,11 @@ import SwiftDate
 
 private let fieldCount           : Int   = UserProfile.sharedInstance.updateableReqRange.count+4
 
-private let debugSectionSizes    : [Int] = [2,2,7,fieldCount,2,1]
-private let releaseSectionSizes  : [Int] = [2,2,7,fieldCount,2]
+private let debugSectionSizes    : [Int] = [2,2,7,fieldCount,2,1,1]
+private let releaseSectionSizes  : [Int] = [2,2,7,fieldCount,2,1]
 
-private let debugSectionTitles    : [String] = ["Login", "Settings", "Preview Rows", "Profile", "Bulk Upload", "Debug"]
-private let releaseSectionTitles  : [String] = ["Login", "Settings", "Preview Rows", "Profile", "Bulk Upload"]
+private let debugSectionTitles    : [String] = ["Login", "Settings", "Preview Rows", "Profile", "Bulk Upload", "", "Debug"]
+private let releaseSectionTitles  : [String] = ["Login", "Settings", "Preview Rows", "Profile", "Bulk Upload", ""]
 
 private let withDebugView = false
 
@@ -29,20 +29,22 @@ class MCButton : HTPressableButton {
 
 class SettingsViewController: UITableViewController, UITextFieldDelegate {
 
+    private var formCells : [Int:[FormCell?]] = [:]
+
     private var userCell: FormTextFieldCell?
     private var passCell: FormTextFieldCell?
     private var measureCells : [UIStackView?]?
     private var debugCell: FormLabelCell?
+    private var historySlider : FormSliderCell? = nil
 
     private var sectionSizes  : [Int]    = withDebugView ? debugSectionSizes  : releaseSectionSizes
     private var sectionTitles : [String] = withDebugView ? debugSectionTitles : releaseSectionTitles
 
-    private var formCells : [Int:[FormCell?]] = [:]
-    private var historySlider : FormSliderCell? = nil
     private var hMin = 0.0
     private var hMax = 0.0
 
     private var uploadButton: UIButton? = nil
+    private var withdrawButton: UIButton? = nil
 
     private var profile : [(String, String, String, Int)] = []
     private var subviews = ["Consent", "Recommended", "Optional", "Repeated Events"]
@@ -65,10 +67,10 @@ class SettingsViewController: UITableViewController, UITextFieldDelegate {
             return (k, v, p, 4+i)
         }
         let n = profile.count
-        profile.append(("Consent", "consent", "PDF", 4 + n))
-        profile.append(("Recommended", "",    "",    5 + n))
-        profile.append(("Optional",    "",    "",    6 + n))
-        profile.append(("Repeated Events", "", "", 7 + n))
+        profile.append(("Consent", "consent",  "PDF", 4 + n))
+        profile.append(("Recommended", "",     "",    5 + n))
+        profile.append(("Optional",    "",     "",    6 + n))
+        profile.append(("Repeated Events", "", "",    7 + n))
     }
 
     override func viewWillAppear(animated: Bool) {
@@ -107,7 +109,7 @@ class SettingsViewController: UITableViewController, UITextFieldDelegate {
     }
 
     override func tableView(tableView: UITableView, heightForRowAtIndexPath indexPath: NSIndexPath) -> CGFloat {
-        if indexPath.section == 4 && indexPath.row == 0 { return 65.0 }
+        if (indexPath.section == 4 && indexPath.row == 0) || (indexPath.section == 5 && indexPath.row == 0) { return 65.0 }
         else { return 44.0 }
     }
 
@@ -146,7 +148,7 @@ class SettingsViewController: UITableViewController, UITextFieldDelegate {
         cell.separatorInset = UIEdgeInsetsZero
         cell.layoutMargins = UIEdgeInsetsZero
 
-        if withDebugView && indexPath.section == 5 {
+        if withDebugView && indexPath.section == 6 {
             if debugCell == nil {
                 debugCell = FormLabelCell()
                 debugCell?.tintColor = Theme.universityDarkTheme.backgroundColor
@@ -158,6 +160,40 @@ class SettingsViewController: UITableViewController, UITextFieldDelegate {
 
             for sv in cell.contentView.subviews { sv.removeFromSuperview() }
             cell.contentView.addSubview(debugCell!)
+            return cell
+        }
+
+        if indexPath.section == 5 {
+            if indexPath.row == 0 && withdrawButton == nil {
+                withdrawButton = {
+                    let button = MCButton(frame: cell.contentView.frame, buttonStyle: .Rounded)
+                    button.cornerRadius = 4.0
+                    button.buttonColor = UIColor.ht_emeraldColor()
+                    button.shadowColor = UIColor.ht_nephritisColor()
+                    button.shadowHeight = 4
+                    button.setTitle("Delete Account", forState: .Normal)
+                    button.titleLabel?.font = UIFont.systemFontOfSize(18, weight: UIFontWeightRegular)
+                    button.addTarget(self, action: "doDeleteAccount:", forControlEvents: .TouchUpInside)
+                    button.enabled = true
+                    return button
+                }()
+            }
+
+            for sv in cell.contentView.subviews { sv.removeFromSuperview() }
+            cell.textLabel?.hidden = true
+            cell.imageView?.image = nil
+            cell.accessoryType = .None
+            cell.selectionStyle = .None
+
+            withdrawButton!.translatesAutoresizingMaskIntoConstraints = false
+            cell.contentView.addSubview(withdrawButton!)
+            let constraints: [NSLayoutConstraint] = [
+                withdrawButton!.topAnchor.constraintEqualToAnchor(cell.contentView.topAnchor),
+                withdrawButton!.leadingAnchor.constraintEqualToAnchor(cell.contentView.leadingAnchor),
+                withdrawButton!.trailingAnchor.constraintEqualToAnchor(cell.contentView.trailingAnchor),
+                withdrawButton!.heightAnchor.constraintEqualToAnchor(cell.contentView.heightAnchor)
+            ]
+            cell.contentView.addConstraints(constraints)
             return cell
         }
 
@@ -455,7 +491,7 @@ class SettingsViewController: UITableViewController, UITextFieldDelegate {
             }
 
         }
-        else if ( withDebugView && indexPath.section == 5 ) {
+        else if ( withDebugView && indexPath.section == 6 ) {
             let debugVC = DebugViewController()
             navigationController?.pushViewController(debugVC, animated: true)
         }
@@ -552,6 +588,18 @@ class SettingsViewController: UITableViewController, UITextFieldDelegate {
     // TODO: Dodo dialog for wifi-availability warning
     func doUpload(sender: UIButton) {
         log.warning("Upload clicked")
+    }
+
+    func doDeleteAccount(sender: UIButton) {
+        UserManager.sharedManager.withdraw { success in
+            if success {
+                let msg = "Thanks for using Metabolic Compass"
+                UINotifications.genericMsg(self.navigationController!, msg: msg, pop: true, asNav: true)
+            } else {
+                let msg = "Failed to delete account, please try again later"
+                UINotifications.genericError(self.navigationController!, msg: msg, pop: false, asNav: true)
+            }
+        }
     }
 }
 

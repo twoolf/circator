@@ -33,7 +33,13 @@ app_ids = { 'edu.jhu.cs.damsl.Circator.app' =>
               ['MC Watch', 'WATCH_UUID', '^CircatorWatch$', 'CircatorWatch/Info.plist'],
 
             'edu.jhu.cs.damsl.Circator.app.watch.extension' =>
-              ['MC Watch Extension', 'WATCHEXT_UUID', 'CircatorWatch Extension', 'CircatorWatch Extension/Info.plist'] }
+              ['MC Watch Extension', 'WATCHEXT_UUID', 'CircatorWatch Extension', 'CircatorWatch Extension/Info.plist'],
+
+            'edu.jhu.cs.damsl.CircatorTests' =>
+              ['MC Tests', 'TESTS_UUID', '^CircatorTests$', 'CircatorTests/Info.plist'],
+
+            'edu.jhu.cs.damsl.CircatorUITests' =>
+              ['MC UI Tests', 'UITESTS_UUID', '^CircatorUITests$', 'CircatorUITests/Info.plist'] }
 
 app_dist_identity = "iPhone Distribution: Yanif Ahmad (E4SL9A9Z96)"
 
@@ -177,6 +183,13 @@ platform :ios do
   ################################
   ## Build
   ##
+
+  desc "Set XCode project code signing and provisioning"
+  lane :set_codesigning do
+    app_ids.each {|appid, metadata|
+      set_project_provisioning_env_var(xcodeproj: project_dir, env_var: metadata[1], target_filter: metadata[2])
+    }
+  end
 
   desc "Build a development archive"
   lane :build_dev do

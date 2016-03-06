@@ -32,6 +32,7 @@
 		7881A4011BAF3B3E00ECB3C6 /* CircatorUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7881A4001BAF3B3E00ECB3C6 /* CircatorUITests.swift */; };
 		7884E8E81C5F0804000261EE /* UINotifications.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7884E8E71C5F0804000261EE /* UINotifications.swift */; };
 		7886EADF1C22AC2A00D7E3D4 /* LoginViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7886EADE1C22AC2A00D7E3D4 /* LoginViewController.swift */; };
+		788CF4E71C8B7B2D004E1706 /* DataTypes.swift in Sources */ = {isa = PBXBuildFile; fileRef = 788CF4E61C8B7B2D004E1706 /* DataTypes.swift */; };
 		78AC90CC1C1E859F008C931B /* UserAccount.swift in Sources */ = {isa = PBXBuildFile; fileRef = 78AC90CB1C1E859F008C931B /* UserAccount.swift */; };
 		78BEAC9E1C5E7EE800F0B541 /* PopulationHealthManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 78BEAC9D1C5E7EE800F0B541 /* PopulationHealthManager.swift */; };
 		78CE00AD1C65CC5A005E955C /* RadarViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 78CE00AC1C65CC5A005E955C /* RadarViewController.swift */; };
@@ -195,6 +196,7 @@
 		7881A4021BAF3B3E00ECB3C6 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		7884E8E71C5F0804000261EE /* UINotifications.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = UINotifications.swift; sourceTree = "<group>"; };
 		7886EADE1C22AC2A00D7E3D4 /* LoginViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LoginViewController.swift; sourceTree = "<group>"; };
+		788CF4E61C8B7B2D004E1706 /* DataTypes.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DataTypes.swift; sourceTree = "<group>"; };
 		78AC90CB1C1E859F008C931B /* UserAccount.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = UserAccount.swift; sourceTree = "<group>"; };
 		78B279C21C80FFE5005A6249 /* CircatorWatch Extension.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.xml; path = "CircatorWatch Extension.entitlements"; sourceTree = "<group>"; };
 		78B279C31C80FFEA005A6249 /* CircatorWatch.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.xml; path = CircatorWatch.entitlements; sourceTree = "<group>"; };
@@ -380,6 +382,7 @@
 				7863EA9B1C27302B0038DE7A /* ConsentManager.swift */,
 				786DF10C1C72AFE0007C2D4C /* Constants.swift */,
 				783E53D11C75856200BEBF33 /* DataGenerator.swift */,
+				788CF4E61C8B7B2D004E1706 /* DataTypes.swift */,
 				785978401C1BD4F1008377F9 /* EventManager.swift */,
 				F42F5B421BE2048400195490 /* HealthManager.swift */,
 				78BEAC9D1C5E7EE800F0B541 /* PopulationHealthManager.swift */,
@@ -899,6 +902,7 @@
 				7816FFBB1C1E45D3002E2ED8 /* UserManager.swift in Sources */,
 				785978411C1BD4F1008377F9 /* EventManager.swift in Sources */,
 				F4F4DA5A1C025BE30073E9EE /* PreviewManager.swift in Sources */,
+				788CF4E71C8B7B2D004E1706 /* DataTypes.swift in Sources */,
 				F42F5B471BE2048400195490 /* Theme.swift in Sources */,
 				F42F5B461BE2048400195490 /* SampleFormatter.swift in Sources */,
 				7861300F1C25F42B00F50DB3 /* QueryManager.swift in Sources */,
@@ -1068,13 +1072,15 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				BUNDLE_LOADER = "$(TEST_HOST)";
+				CODE_SIGN_ENTITLEMENTS = Circator/Circator.entitlements;
+				CODE_SIGN_IDENTITY = "";
 				EMBEDDED_CONTENT_CONTAINS_SWIFT = "$(inherited)";
 				INFOPLIST_FILE = CircatorTests/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 9.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = edu.jhu.cs.damsl.CircatorTests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				PROVISIONING_PROFILE = "$(APP_UUID)";
+				PROVISIONING_PROFILE = "$(TESTS_UUID)";
 				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/Circator.app/Circator";
 			};
 			name = Debug;
@@ -1082,13 +1088,15 @@
 		786130091C25D7BC00F50DB3 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				CODE_SIGN_ENTITLEMENTS = Circator/Circator.entitlements;
+				CODE_SIGN_IDENTITY = "";
 				EMBEDDED_CONTENT_CONTAINS_SWIFT = "$(inherited)";
 				INFOPLIST_FILE = CircatorUITests/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 9.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = edu.jhu.cs.damsl.CircatorUITests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				PROVISIONING_PROFILE = "$(APP_UUID)";
+				PROVISIONING_PROFILE = "$(UITESTS_UUID)";
 				TEST_TARGET_NAME = Circator;
 				USES_XCTRUNNER = YES;
 			};
@@ -1203,13 +1211,15 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				BUNDLE_LOADER = "$(TEST_HOST)";
+				CODE_SIGN_ENTITLEMENTS = Circator/Circator.entitlements;
+				CODE_SIGN_IDENTITY = "";
 				EMBEDDED_CONTENT_CONTAINS_SWIFT = "$(inherited)";
 				INFOPLIST_FILE = CircatorTests/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 9.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = edu.jhu.cs.damsl.CircatorTests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				PROVISIONING_PROFILE = "$(APP_UUID)";
+				PROVISIONING_PROFILE = "$(TESTS_UUID)";
 				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/Circator.app/Circator";
 			};
 			name = Release;
@@ -1217,13 +1227,15 @@
 		7881A40D1BAF3B3E00ECB3C6 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				CODE_SIGN_ENTITLEMENTS = Circator/Circator.entitlements;
+				CODE_SIGN_IDENTITY = "";
 				EMBEDDED_CONTENT_CONTAINS_SWIFT = "$(inherited)";
 				INFOPLIST_FILE = CircatorUITests/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 9.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = edu.jhu.cs.damsl.CircatorUITests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				PROVISIONING_PROFILE = "$(APP_UUID)";
+				PROVISIONING_PROFILE = "$(UITESTS_UUID)";
 				TEST_TARGET_NAME = Circator;
 				USES_XCTRUNNER = YES;
 			};

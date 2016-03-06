@@ -31,6 +31,7 @@ enum MCRouter : URLRequestConvertible {
     // User and profile management API
     case GetUserAccountData
     case SetUserAccountData([String: AnyObject])
+    case DeleteAccount
 
     case GetConsent
     case SetConsent([String: AnyObject])
@@ -49,6 +50,9 @@ enum MCRouter : URLRequestConvertible {
             return .GET
 
         case .UploadHKTSAcquired:
+            return .POST
+
+        case .DeleteAccount:
             return .POST
 
         case .GetUserAccountData:
@@ -81,6 +85,9 @@ enum MCRouter : URLRequestConvertible {
 
         case .UploadHKTSAcquired:
             return "/timestamps/acquired"
+
+        case .DeleteAccount:
+            return "/user/withdraw"
 
         case .GetUserAccountData, .SetUserAccountData:
             return "/user/profile"
@@ -117,6 +124,9 @@ enum MCRouter : URLRequestConvertible {
 
         case .UploadHKTSAcquired(let parameters):
             return Alamofire.ParameterEncoding.JSON.encode(mutableURLRequest, parameters: parameters).0
+
+        case .DeleteAccount:
+            return mutableURLRequest
 
         case .GetUserAccountData:
             return mutableURLRequest
@@ -172,16 +182,5 @@ extension Alamofire.Request {
             log.debug("\(tag): " + (result.isSuccess ? "SUCCESS" : "FAILED"))
             completion(req, resp, result)
         }
-    }
-}
-
-// A simple struct to store derived quantities computed at the server.
-public class DerivedQuantity : Result {
-    var quantity : Double? = nil
-    var quantityType : HKSampleType? = nil
-
-    public init(quantity: Double?, quantityType: HKSampleType?) {
-        self.quantity = quantity
-        self.quantityType = quantityType
     }
 }

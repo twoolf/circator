@@ -72,32 +72,30 @@ public class SampleFormatter: NSObject {
         super.init()
     }
 
-    public func numberFromResults(results: [Result]) -> Double {
-        if var stat = results as? [HKStatistics] {
+    public func numberFromSamples(samples: [MCSample]) -> Double {
+        if var stat = samples as? [HKStatistics] {
             guard stat.isEmpty == false else {
                 return Double.quietNaN
             }
             return numberFromStatistics(stat.removeLast())
-        } else if let samples = results as? [HKSample] {
-            return numberFromSamples(samples)
-        } else if let derived = results as? [DerivedQuantity] {
-            return numberFromDerivedQuantities(derived)
+        } else if let samples = samples as? [HKSample] {
+            return numberFromHKSamples(samples)
+        } else {
+            return numberFromMCSamples(samples)
         }
-        return Double.quietNaN
     }
 
-    public func stringFromResults(results: [Result]) -> String {
-        if var stat = results as? [HKStatistics] {
+    public func stringFromSamples(samples: [MCSample]) -> String {
+        if var stat = samples as? [HKStatistics] {
             guard stat.isEmpty == false else {
                 return emptyString
             }
             return stringFromStatistics(stat.removeLast())
-        } else if let samples = results as? [HKSample] {
-            return stringFromSamples(samples)
-        } else if let derived = results as? [DerivedQuantity] {
-            return stringFromDerivedQuantities(derived)
+        } else if let samples = samples as? [HKSample] {
+            return stringFromHKSamples(samples)
+        } else  {
+            return stringFromMCSamples(samples)
         }
-        return emptyString
     }
 
     public func numberFromStatistics(statistics: HKStatistics) -> Double {
@@ -118,7 +116,7 @@ public class SampleFormatter: NSObject {
         return stringFromQuantity(quantity, type: statistics.quantityType)
     }
 
-    public func numberFromSamples(samples: [HKSample]) -> Double {
+    public func numberFromHKSamples(samples: [HKSample]) -> Double {
         guard samples.isEmpty == false else {
             return Double.quietNaN
         }
@@ -146,7 +144,7 @@ public class SampleFormatter: NSObject {
         }
     }
 
-    public func stringFromSamples(samples: [HKSample]) -> String {
+    public func stringFromHKSamples(samples: [HKSample]) -> String {
         guard samples.isEmpty == false else {
             return emptyString
         }
@@ -176,16 +174,15 @@ public class SampleFormatter: NSObject {
         }
     }
 
-    private func numberFromDerivedQuantities(derived: [DerivedQuantity]) -> Double {
-        guard derived.isEmpty == false else {
-            return Double.quietNaN
-        }
-        if let fst      = derived.first as DerivedQuantity?,
-               quantity = fst.quantity,
-               type     = fst.quantityType
+    private func numberFromMCSamples(samples: [MCSample]) -> Double {
+        guard !samples.isEmpty else { return Double.quietNaN }
+
+        if let fst      = samples.first,
+               quantity = fst.numeralValue,
+               type     = fst.hkType
         {
             if let qtype = type as? HKQuantityType {
-                return numberFromDerivedQuantity(quantity, type: qtype)
+                return numberFromMCSample(quantity, type: qtype)
             }
 
             switch type.identifier {
@@ -194,6 +191,7 @@ public class SampleFormatter: NSObject {
                 return Double(d.hour) + (Double(d.minute) / 60.0)
 
             case HKCategoryTypeIdentifierSleepAnalysis:
+                log.info("Sleep MC \(quantity)")
                 let d = NSDate(timeIntervalSinceReferenceDate: quantity)
                 return Double(d.hour) + (Double(d.minute) / 60.0)
 
@@ -204,16 +202,15 @@ public class SampleFormatter: NSObject {
         return Double.quietNaN
     }
 
-    private func stringFromDerivedQuantities(derived: [DerivedQuantity]) -> String {
-        guard derived.isEmpty == false else {
-            return emptyString
-        }
-        if let fst      = derived.first as DerivedQuantity?,
-               quantity = fst.quantity,
-               type     = fst.quantityType
+    private func stringFromMCSamples(samples: [MCSample]) -> String {
+        guard !samples.isEmpty else { return emptyString }
+
+        if let fst      = samples.first,
+               quantity = fst.numeralValue,
+               type     = fst.hkType
         {
             if let qtype = type as? HKQuantityType {
-                return stringFromDerivedQuantity(quantity, type: qtype)
+                return stringFromMCSample(quantity, type: qtype)
             }
 
             switch type.identifier {
@@ -383,7 +380,7 @@ public class SampleFormatter: NSObject {
         }
     }
 
-    private func numberFromDerivedQuantity(quantity: Double, type: HKQuantityType) -> Double {
+    private func numberFromMCSample(quantity: Double, type: HKSampleType) -> Double {
         switch type.identifier {
         case HKQuantityTypeIdentifierBodyMass:
             let hkquantity = HKQuantity(unit: HKUnit.poundUnit(), doubleValue: quantity)
@@ -394,7 +391,7 @@ public class SampleFormatter: NSObject {
         }
     }
 
-    private func stringFromDerivedQuantity(quantity: Double, type: HKQuantityType) -> String {
+    private func stringFromMCSample(quantity: Double, type: HKSampleType) -> String {
         switch type.identifier {
         case HKQuantityTypeIdentifierActiveEnergyBurned:
             return SampleFormatter.calorieFormatter.stringFromValue(quantity, unit: .Kilocalorie)

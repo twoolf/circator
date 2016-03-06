@@ -90,33 +90,13 @@ class PlotViewController: UIViewController, ChartViewDelegate {
             navigationItem.title = sampleType.displayText!
             Async.main {
                 Async.background {
-                    switch self.sampleType {
-
-                    case is HKCategoryType:
-                        fallthrough
-
-                    case is HKCorrelationType:
-                        HealthManager.sharedManager.fetchSamplesOfType(self.sampleType) { (samples, error) -> Void in
-                            guard error == nil else {
-                                self.showError()
-                                return
-                            }
-                            self.plotSamples(samples)
-                            BehaviorMonitor.sharedInstance.setValue("Plot", contentType: self.sampleType.identifier)
+                    HealthManager.sharedManager.fetchStatisticsOfType(self.sampleType) { (results, error) -> Void in
+                        guard error == nil else {
+                            self.showError()
+                            return
                         }
-
-                    case is HKQuantityType:
-                        HealthManager.sharedManager.fetchStatisticsOfType(self.sampleType) { (statistics, error) -> Void in
-                            guard error == nil else {
-                                self.showError()
-                                return
-                            }
-                            self.plotStatistics(statistics)
-                            BehaviorMonitor.sharedInstance.setValue("Plot", contentType: self.sampleType.identifier)
-                        }
-
-                    default:
-                        log.error("Cannot plot sample type \(self.sampleType.identifier)")
+                        self.plotResults(results)
+                        BehaviorMonitor.sharedInstance.setValue("Plot", contentType: self.sampleType.identifier)
                     }
                 }
             }
@@ -223,13 +203,8 @@ class PlotViewController: UIViewController, ChartViewDelegate {
         }
     }
 
-    func plotStatistics(statistics: [HKStatistics]) {
-        let analyzer = PlotDataAnalyzer(sampleType: self.sampleType, statistics: statistics)
-        plotChart(analyzer)
-    }
-
-    func plotSamples(samples: [HKSample]) {
-        let analyzer = PlotDataAnalyzer(sampleType: self.sampleType, samples: samples)
+    func plotResults(results: [MCSample]) {
+        let analyzer = PlotDataAnalyzer(sampleType: self.sampleType, samples: results)
         plotChart(analyzer)
     }
 

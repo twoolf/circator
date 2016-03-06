@@ -7,18 +7,40 @@
 //
 
 import XCTest
+import Async
+import SwiftyBeaver
+
+let log = SwiftyBeaver.self
+
+@testable import CircatorKit
 @testable import Circator
 
 class CircatorTests: XCTestCase {
     
     override func setUp() {
         super.setUp()
-        // Put setup code here. This method is called before the invocation of each test method in the class.
+
+        // Assume all tests need access to the calendar and HealthKit
+        HealthManager.sharedManager.authorizeHealthKit { (success, error) -> Void in
+            guard error == nil else {
+                log.error("Unable to access HealthKit")
+                return
+            }
+            EventManager.sharedManager.checkCalendarAuthorizationStatus { _ in log.info("Accessed HKCal") }
+        }
     }
     
     override func tearDown() {
-        // Put teardown code here. This method is called after the invocation of each test method in the class.
         super.tearDown()
     }
-    
+
+    func testFetchPreparationAndRecovery() {
+        var passed = false
+        HealthManager.sharedManager.fetchPreparationAndRecoveryWorkout(false) { (results, error) in
+            log.info("FPRCB \(results) \(error)")
+            passed = error == nil
+        }
+        sleep(5)
+        XCTAssert(passed, "Pass preparation and recovery")
+    }
 }

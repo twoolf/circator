@@ -181,7 +181,7 @@ class RadarViewController : UIViewController, ChartViewDelegate {
     func indEntry(i: Int) -> ChartDataEntry {
         let type = PreviewManager.previewSampleTypes[i]
         let samples = HealthManager.sharedManager.mostRecentSamples[type] ?? [HKSample]()
-        let val = healthFormatter.numberFromResults(samples)
+        let val = healthFormatter.numberFromSamples(samples)
         guard !val.isNaN else {
             return ChartDataEntry(value: 0.8, xIndex: i)
         }
@@ -192,9 +192,8 @@ class RadarViewController : UIViewController, ChartViewDelegate {
 
     func popEntry(i: Int) -> ChartDataEntry {
         let type = PreviewManager.previewSampleTypes[i]
-        let samples = PopulationHealthManager.sharedManager.mostRecentAggregates[type]
-            ?? [DerivedQuantity(quantity: nil, quantityType: nil)]
-        let val = healthFormatter.numberFromResults(samples)
+        let samples = PopulationHealthManager.sharedManager.mostRecentAggregates[type] ?? []
+        let val = healthFormatter.numberFromSamples(samples)
         guard !val.isNaN else {
             return ChartDataEntry(value: 0.8, xIndex: i)
         }

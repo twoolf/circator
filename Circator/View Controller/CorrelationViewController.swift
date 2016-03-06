@@ -80,7 +80,7 @@ class CorrelationViewController: UIViewController, ChartViewDelegate {
                             return
                         }
 
-                        let analyzer = CorrelationDataAnalyzer(sampleTypes: self.sampleTypes, statistics: [stat1, stat2])!
+                        let analyzer = CorrelationDataAnalyzer(sampleTypes: self.sampleTypes, samples: [stat1, stat2])!
                         let configurator: ((LineChartDataSet) -> Void)? = { dataSet in
                             dataSet.drawCircleHoleEnabled = false
                             dataSet.circleRadius = 6

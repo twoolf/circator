@@ -14,52 +14,43 @@ import SwiftDate
 
 class CorrelationDataAnalyzer: SampleDataAnalyzer {
     let sampleTypes: [HKSampleType]
-    let statistics: [[HKStatistics]]
+    let samples: [[MCSample]]
     var dataSetConfigurators: [((LineChartDataSet) -> Void)?] = []
 
-    init?(sampleTypes: [HKSampleType], statistics: [[HKStatistics]]) {
-        guard sampleTypes.count == 2 && statistics.count == 2 else {
+    init?(sampleTypes: [HKSampleType], samples: [[MCSample]]) {
+        guard sampleTypes.count == 2 && samples.count == 2 else {
             self.sampleTypes = []
-            self.statistics = []
+            self.samples = []
             super.init()
             return nil
         }
         self.sampleTypes = sampleTypes
-        self.statistics = statistics
+        self.samples = samples
         super.init()
     }
 
     var correlationChartData: LineChartData {
-        let firstParamEntries = statistics[0].enumerate().map { (i, stats) -> ChartDataEntry in
+        let firstParamEntries = samples[0].enumerate().map { (i, stats) -> ChartDataEntry in
             return ChartDataEntry(value: stats.numeralValue!, xIndex: i + 1)
         }
         let firstParamDataSet = LineChartDataSet(yVals: firstParamEntries, label: sampleTypes[0].displayText)
         dataSetConfigurators[0]?(firstParamDataSet)
-        let secondParamEntries = statistics[1].enumerate().map { (i, stats) -> ChartDataEntry in
+        let secondParamEntries = samples[1].enumerate().map { (i, stats) -> ChartDataEntry in
             return ChartDataEntry(value: stats.numeralValue!, xIndex: i + 1)
         }
         let secondParamDataSet = LineChartDataSet(yVals: secondParamEntries, label: sampleTypes[1].displayText)
         dataSetConfigurators[1]?(secondParamDataSet)
-        return LineChartData(xVals: Array(0...statistics[0].count + 1), dataSets: [firstParamDataSet, secondParamDataSet])
+        return LineChartData(xVals: Array(0...samples[0].count + 1), dataSets: [firstParamDataSet, secondParamDataSet])
     }
 }
 
 class PlotDataAnalyzer: SampleDataAnalyzer {
-    let samples: [HKSample]
-    let statistics: [HKStatistics]
+    let samples: [MCSample]
     let sampleType: HKSampleType
 
-    init(sampleType: HKSampleType, statistics: [HKStatistics]) {
-        self.sampleType = sampleType
-        self.statistics = statistics
-        self.samples = []
-        super.init()
-    }
-
-    init(sampleType: HKSampleType, samples: [HKSample]) {
+    init(sampleType: HKSampleType, samples: [MCSample]) {
         self.sampleType = sampleType
         self.samples = samples
-        self.statistics = []
         super.init()
     }
 
@@ -73,13 +64,13 @@ class PlotDataAnalyzer: SampleDataAnalyzer {
     var dataSetConfiguratorBubbleChart: ((BubbleChartDataSet) -> Void)?
 
     var lineChartData: LineChartData {
-        guard !(statistics.isEmpty && samples.isEmpty) else {
+        guard !samples.isEmpty else {
             return LineChartData(xVals: [""])
         }
         if dataGroupingMode == .ByDate {
             // Offset final date by one and first date by negative one
-            let firstDate = statistics.isEmpty ? samples.first!.startDate : statistics.first!.startDate
-            let lastDate = statistics.isEmpty ? samples.last!.startDate : statistics.last!.startDate
+            let firstDate = samples.first!.startDate
+            let lastDate = samples.last!.startDate
             let zeroDate = firstDate.startOf(.Day, inRegion: Region()) - 1.days
             let finalDate = lastDate.startOf(.Day, inRegion: Region()) + 1.days
             var currentDate = zeroDate
@@ -93,66 +84,23 @@ class PlotDataAnalyzer: SampleDataAnalyzer {
                 SampleFormatter.chartDateFormatter.stringFromDate(date)
             }
 
-            var entries: [ChartDataEntry] = []
-
-            if !statistics.isEmpty {
-                entries = statistics.map { (sample) -> ChartDataEntry in
-                    let dayDiff = zeroDate.difference(sample.startDate.startOf(.Day, inRegion: Region()), unitFlags: .Day)
-                    let val = sample.numeralValue ?? 0.0
-                    return ChartDataEntry(value: val, xIndex: dayDiff!.day)
-                }
-            } else if !samples.isEmpty {
-                switch sampleType.identifier {
-                case HKCategoryTypeIdentifierSleepAnalysis:
-                    var acc : [Int: Double] = [:]
-                    samples.forEach { sample in
-                        let day = zeroDate.difference(sample.startDate.startOf(.Day, inRegion: Region()), unitFlags: .Day)!.day
-                        let val = sample.numeralValue ?? 0.0
-                        acc.updateValue(val + (acc[day] ?? 0.0), forKey: day)
-                    }
-                    entries = acc.sort({ (a,b) in return a.0 < b.0 })
-                                 .map { (day, val) -> ChartDataEntry in return ChartDataEntry(value: val, xIndex: day) }
-
-                case HKCorrelationTypeIdentifierBloodPressure:
-                    var acc : [Int: (Int, Double)] = [:]
-                    samples.forEach { sample in
-                        let day = zeroDate.difference(sample.startDate.startOf(.Day, inRegion: Region()), unitFlags: .Day)!.day
-                        let val = sample.numeralValue ?? 0.0
-                        let eacc = acc[day] ?? (0, 0.0)
-                        acc.updateValue((eacc.0 + 1, val + eacc.1), forKey: day)
-                    }
-                    entries = acc.sort({ (a,b) in return a.0 < b.0 })
-                                 .map { (day, countsum) -> ChartDataEntry in return ChartDataEntry(value: countsum.1 / Double(countsum.0), xIndex: day) }
-
-                default:
-                    log.error("Cannot plot samples for \(sampleType.identifier)")
-                }
-            } else {
-                log.warning("No samples or statistics found for plotting")
+            let entries: [ChartDataEntry] = samples.map { (sample) -> ChartDataEntry in
+                let dayDiff = zeroDate.difference(sample.startDate.startOf(.Day, inRegion: Region()), unitFlags: .Day)
+                let val = sample.numeralValue ?? 0.0
+                return ChartDataEntry(value: val, xIndex: dayDiff!.day)
             }
 
             let dataSet = LineChartDataSet(yVals: entries, label: "")
             dataSetConfigurator?(dataSet)
             return LineChartData(xVals: xVals, dataSet: dataSet)
         } else {
-            var xVals: [String] = []
-            var index = 0
-            var entries: [ChartDataEntry] = []
+            let xVals: [String] = samples.map { (sample) -> String in
+                return SampleFormatter.chartDateFormatter.stringFromDate(sample.startDate)
+            }
 
-            if !statistics.isEmpty {
-                xVals = statistics.map { (sample) -> String in
-                    return SampleFormatter.chartDateFormatter.stringFromDate(sample.startDate)
-                }
-                entries = statistics.map { (sample) -> ChartDataEntry in
-                    return ChartDataEntry(value: sample.numeralValue!, xIndex: index++)
-                }
-            } else if !samples.isEmpty {
-                xVals = samples.map { (sample) -> String in
-                    return SampleFormatter.chartDateFormatter.stringFromDate(sample.startDate)
-                }
-                entries = samples.map { (sample) -> ChartDataEntry in
-                    return ChartDataEntry(value: sample.numeralValue!, xIndex: index++)
-                }
+            var index = 0
+            let entries: [ChartDataEntry] = samples.map { (sample) -> ChartDataEntry in
+                return ChartDataEntry(value: sample.numeralValue!, xIndex: index++)
             }
 
             let dataSet = LineChartDataSet(yVals: entries, label: "")
@@ -162,43 +110,12 @@ class PlotDataAnalyzer: SampleDataAnalyzer {
     }
 
     var bubbleChartData: BubbleChartData {
-        guard !(statistics.isEmpty && samples.isEmpty) else {
+        guard !samples.isEmpty else {
             return BubbleChartData(xVals: [""])
         }
         if dataGroupingMode == .ByDate {
             var dataEntries: [BubbleChartDataEntry] = []
-            var summaryData: [Double] = []
-
-            if !statistics.isEmpty {
-                summaryData = statistics.map { s in return s.numeralValue ?? 0.0 }
-            }
-            else if !samples.isEmpty {
-                let zeroDate = samples.first!.startDate.startOf(.Day, inRegion: Region()) - 1.days
-                switch sampleType.identifier {
-                case HKCategoryTypeIdentifierSleepAnalysis:
-                    var acc : [Int: Double] = [:]
-                    samples.forEach { sample in
-                        let day = zeroDate.difference(sample.startDate.startOf(.Day, inRegion: Region()), unitFlags: .Day)!.day
-                        let val = sample.numeralValue ?? 0.0
-                        acc.updateValue(val + (acc[day] ?? 0.0), forKey: day)
-                    }
-                    summaryData = acc.map { (_, val) -> Double in return val }
-
-                case HKCorrelationTypeIdentifierBloodPressure:
-                    var acc : [Int: (Int, Double)] = [:]
-                    samples.forEach { sample in
-                        let day = zeroDate.difference(sample.startDate.startOf(.Day, inRegion: Region()), unitFlags: .Day)!.day
-                        let val = sample.numeralValue ?? 0.0
-                        let eacc = acc[day] ?? (0, 0.0)
-                        acc.updateValue((eacc.0 + 1, val + eacc.1), forKey: day)
-
-                    }
-                    summaryData = acc.map { (_, countsum) -> Double in return countsum.1 / Double(countsum.0) }
-
-                default:
-                    log.error("Cannot plot quartiles for \(sampleType.identifier)")
-                }
-            }
+            let summaryData: [Double] = samples.map { s in return s.numeralValue ?? 0.0 }
 
             let summaryDataSorted = summaryData.sort()
             guard !summaryData.isEmpty else {
@@ -222,24 +139,13 @@ class PlotDataAnalyzer: SampleDataAnalyzer {
             return BubbleChartData(xVals: xVals, dataSet: dataSet)
         }
         else {
-            var xVals: [String] = []
-            var summaryData: [ChartDataEntry] = []
-            var index = 0
+            let xVals : [String] = samples.map { (sample) -> String in
+                return SampleFormatter.chartDateFormatter.stringFromDate(sample.startDate)
+            }
 
-            if !statistics.isEmpty {
-                xVals = statistics.map { (sample) -> String in
-                    return SampleFormatter.chartDateFormatter.stringFromDate(sample.startDate)
-                }
-                summaryData = statistics.map { (sample) -> ChartDataEntry in
-                    return ChartDataEntry(value: sample.numeralValue!, xIndex: index++)
-                }
-            } else if !samples.isEmpty {
-                xVals = samples.map { (sample) -> String in
-                    return SampleFormatter.chartDateFormatter.stringFromDate(sample.startDate)
-                }
-                summaryData = samples.map { (sample) -> ChartDataEntry in
-                    return ChartDataEntry(value: sample.numeralValue!, xIndex: index++)
-                }
+            var index = 0
+            let summaryData : [ChartDataEntry] = samples.map { (sample) -> ChartDataEntry in
+                return ChartDataEntry(value: sample.numeralValue!, xIndex: index++)
             }
 
             let dataSet = BubbleChartDataSet(yVals: summaryData)
@@ -249,14 +155,11 @@ class PlotDataAnalyzer: SampleDataAnalyzer {
     }
 
     var summaryData: Double  {
-        guard !(statistics.isEmpty && samples.isEmpty) else {
+        guard !samples.isEmpty else {
             return 0.0
         }
 
-        let summaryData : [Double] = statistics.isEmpty ?
-            samples.map { (sample) -> Double in return sample.numeralValue! } :
-            statistics.map { (sample) -> Double in return sample.numeralValue! }
-
+        let summaryData : [Double] = samples.map { (sample) -> Double in return sample.numeralValue! }
         return summaryData.sort().first!
     }
 }

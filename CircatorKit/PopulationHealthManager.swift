@@ -16,7 +16,7 @@ public class PopulationHealthManager {
 
     public var aggregateRefreshDate : NSDate = NSDate()
 
-    public var mostRecentAggregates = [HKSampleType: [Result]]() {
+    public var mostRecentAggregates = [HKSampleType: [MCSample]]() {
         didSet {
             aggregateRefreshDate = NSDate()
         }
@@ -191,16 +191,16 @@ public class PopulationHealthManager {
     }
 
     func refreshAggregatesFromMsg(samplesByName: [String:HKSampleType], payload: AnyObject?) {
-        var populationAggregates : [HKSampleType: [Result]] = [:]
+        var populationAggregates : [HKSampleType: [MCSample]] = [:]
         if let aggregates = payload as? [[String: AnyObject]] {
             var failed = false
             for kvdict in aggregates {
                 if let sampleName = kvdict["key"] as? String, sampleType = samplesByName[sampleName]
                 {
                     if let sampleValue = kvdict["value"] as? Double {
-                        populationAggregates[sampleType] = [DerivedQuantity(quantity: sampleValue, quantityType: sampleType)]
+                        populationAggregates[sampleType] = [MCAggregateSample(value: sampleValue, sampleType: sampleType)]
                     } else {
-                        populationAggregates[sampleType] = [DerivedQuantity(quantity: nil, quantityType: nil)]
+                        populationAggregates[sampleType] = []
                     }
                 } else {
                     failed = true

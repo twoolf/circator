@@ -12,6 +12,17 @@ import SwiftyUserDefaults
 private let PMSampleTypesKey = DefaultsKey<[NSData]?>("previewSampleTypes")
 
 public class PreviewManager: NSObject {
+    public static let previewSampleMeals = [
+        "Breakfast",
+        "Lunch",
+        "Dinner",
+        "Snack"
+    ]
+
+    public static let previewSampleTimes = [
+        NSDate()
+    ]
+    
     public static let previewChoices: [[HKSampleType]] = [
         [
             HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierBodyMass)!,

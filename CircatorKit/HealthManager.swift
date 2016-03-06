@@ -16,14 +16,13 @@ import SwiftyBeaver
 import SwiftyUserDefaults
 import SwiftDate
 
-public typealias HMAuthorizationBlock         = (success: Bool, error: NSError?) -> Void
-public typealias HMFetchSampleBlock           = (samples: [HKSample], error: NSError?) -> Void
-public typealias HMFetchManyResultBlock       = (samples: [HKSampleType: [Result]], error: NSError?) -> Void
-public typealias HMFetchManySampleBlock       = (samples: [HKSampleType: [HKSample]], error: NSError?) -> Void
-public typealias HMStatisticsBlock            = (statistics: [HKStatistics], error: NSError?) -> Void
-public typealias HMCorrelationStatisticsBlock = ([HKStatistics], [HKStatistics], NSError?) -> Void
-public typealias HMAnchorQueryBlock           = (HKAnchoredObjectQuery, [HKSample]?, [HKDeletedObject]?, HKQueryAnchor?, NSError?) -> Void
-public typealias HMAnchorSamplesBlock         = (added: [HKSample], deleted: [HKDeletedObject], newAnchor: HKQueryAnchor?, error: NSError?) -> Void
+public typealias HMAuthorizationBlock  = (success: Bool, error: NSError?) -> Void
+public typealias HMSampleBlock         = (samples: [MCSample], error: NSError?) -> Void
+public typealias HMTypedSampleBlock    = (samples: [HKSampleType: [MCSample]], error: NSError?) -> Void
+public typealias HMCorrelationBlock    = ([MCSample], [MCSample], NSError?) -> Void
+
+public typealias HMAnchorQueryBlock    = (HKAnchoredObjectQuery, [HKSample]?, [HKDeletedObject]?, HKQueryAnchor?, NSError?) -> Void
+public typealias HMAnchorSamplesBlock  = (added: [HKSample], deleted: [HKDeletedObject], newAnchor: HKQueryAnchor?, error: NSError?) -> Void
 
 public let HMErrorDomain                        = "HMErrorDomain"
 public let HMSampleTypeIdentifierSleepDuration  = "HMSampleTypeIdentifierSleepDuration"
@@ -54,18 +53,7 @@ public class HealthManager: NSObject, WCSessionDelegate {
         connectWatch()
     }
 
-    public static let previewSampleMeals = [
-        "Breakfast",
-        "Lunch",
-        "Dinner",
-        "Snack"
-    ]
-
-    public static let previewSampleTimes = [
-        NSDate()
-    ]
-
-    public var mostRecentSamples = [HKSampleType: [Result]]() {
+    public var mostRecentSamples = [HKSampleType: [MCSample]]() {
         didSet {
             self.updateWatchContext()
         }
@@ -74,7 +62,6 @@ public class HealthManager: NSObject, WCSessionDelegate {
     // Not guaranteed to be on main thread
     public func authorizeHealthKit(completion: HMAuthorizationBlock)
     {
-
         guard HKHealthStore.isHealthDataAvailable() else {
             let error = NSError(domain: HMErrorDomain, code: 2, userInfo: [NSLocalizedDescriptionKey: "HealthKit is not available in this Device"])
             completion(success: false, error:error)
@@ -85,7 +72,6 @@ public class HealthManager: NSObject, WCSessionDelegate {
             { (success, error) -> Void in
                 completion(success: success, error: error)
         }
-
     }
 
     // MARK: - Predicate construction
@@ -117,8 +103,24 @@ public class HealthManager: NSObject, WCSessionDelegate {
 
     // MARK: - HealthKit sample retrieval.
 
+    // Completion handler is on background queue
+    public func fetchSamplesOfType(sampleType: HKSampleType, predicate: NSPredicate? = nil,
+                                   limit: Int = noLimit, sortDescriptors: [NSSortDescriptor]? = [dateAsc],
+                                   completion: HMSampleBlock)
+    {
+        let query = HKSampleQuery(sampleType: sampleType, predicate: predicate, limit: limit, sortDescriptors: sortDescriptors) {
+            (query, samples, error) -> Void in
+            guard error == nil else {
+                completion(samples: [], error: error)
+                return
+            }
+            completion(samples: samples?.map { $0 as MCSample } ?? [], error: nil)
+        }
+        healthKitStore.executeQuery(query)
+    }
+
     // Fetches HealthKit samples of the given type for the last day, ordered by their collection date.
-    public func fetchMostRecentSample(sampleType: HKSampleType, completion: HMFetchSampleBlock)
+    public func fetchMostRecentSample(sampleType: HKSampleType, completion: HMSampleBlock)
     {
         let mostRecentPredicate: NSPredicate
         let limit: Int
@@ -131,25 +133,16 @@ public class HealthManager: NSObject, WCSessionDelegate {
             limit = 1
         }
 
-        let sampleQuery = HKSampleQuery(sampleType: sampleType, predicate: mostRecentPredicate, limit: limit, sortDescriptors: [dateDesc])
-            { (sampleQuery, results, error ) -> Void in
-                guard error == nil else {
-                    completion(samples: [], error: error)
-                    return
-                }
-                completion(samples: results!, error: nil)
-        }
-
-        self.healthKitStore.executeQuery(sampleQuery)
+        fetchSamplesOfType(sampleType, predicate: mostRecentPredicate, limit: limit, sortDescriptors: [dateDesc], completion: completion)
     }
 
     // Fetches HealthKit samples for multiple types, using GCD to retrieve each type asynchronously and concurrently.
-    public func fetchMostRecentSamples(ofTypes types: [HKSampleType] = PreviewManager.previewSampleTypes, completion: HMFetchManyResultBlock)
+    public func fetchMostRecentSamples(ofTypes types: [HKSampleType] = PreviewManager.previewSampleTypes, completion: HMTypedSampleBlock)
     {
         let group = dispatch_group_create()
-        var samples = [HKSampleType: [Result]]()
+        var samples = [HKSampleType: [MCSample]]()
 
-        let updateSamples : (HKSampleType, [Result], NSError?) -> Void = { (type, statistics, error) in
+        let updateSamples : (HKSampleType, [MCSample], NSError?) -> Void = { (type, statistics, error) in
             guard error == nil else {
                 log.error("Could not fetch recent samples for \(type.displayText): \(error)")
                 dispatch_group_leave(group)
@@ -186,8 +179,8 @@ public class HealthManager: NSObject, WCSessionDelegate {
         types.forEach { (type) -> () in
             dispatch_group_enter(group)
             if ( (type.description != "HKCategoryTypeIdentifierSleepAnalysis")
-                    && (type.description != "HKCorrelationTypeIdentifierBloodPressure")
-                    && (type.description != "HKWorkoutTypeIdentifier"))
+                && (type.description != "HKCorrelationTypeIdentifierBloodPressure")
+                && (type.description != "HKWorkoutTypeIdentifier"))
             {
                 onStatistic(type)
             } else if (type.description == "HKCategoryTypeIdentifierSleepAnalysis" ) {
@@ -206,25 +199,43 @@ public class HealthManager: NSObject, WCSessionDelegate {
         }
     }
 
-    // Completion handler is on background queue
-    public func fetchSamplesOfType(sampleType: HKSampleType, predicate: NSPredicate? = nil,
-                                   limit: Int = noLimit, sortDescriptors: [NSSortDescriptor]? = [dateAsc],
-                                   completion: HMFetchSampleBlock)
+    // Fetch samples, aggregating per day.
+    public func fetchAggregatedSamplesOfType(sampleType: HKSampleType, aggregateUnit: NSCalendarUnit = .Day, predicate: NSPredicate? = nil,
+                                             limit: Int = noLimit, sortDescriptors: [NSSortDescriptor]? = [dateAsc], completion: HMSampleBlock)
     {
-        let query = HKSampleQuery(sampleType: sampleType, predicate: predicate, limit: limit, sortDescriptors: sortDescriptors) {
-            (query, samples, error) -> Void in
+        fetchSamplesOfType(sampleType, predicate: predicate, limit: limit, sortDescriptors: sortDescriptors) { samples, error in
             guard error == nil else {
                 completion(samples: [], error: error)
                 return
             }
-            completion(samples: samples!, error: nil)
+            var byDay: [NSDate: MCAggregateSample] = [:]
+            samples.forEach { sample in
+                let day = sample.startDate.startOf(aggregateUnit, inRegion: Region())
+                if var agg = byDay[day] {
+                    agg.incr(sample)
+                    byDay[day] = agg
+                } else {
+                    byDay[day] = MCAggregateSample(sample: sample)
+                }
+            }
+
+            let doFinal: ((NSDate, MCAggregateSample) -> MCSample) = { (_,var agg) in agg.final(); return agg as MCSample }
+            completion(samples: byDay.sort({ (a,b) in return a.0 < b.0 }).map(doFinal), error: nil)
         }
-        healthKitStore.executeQuery(query)
     }
 
     // Completion handler is on background queue
-    public func fetchStatisticsOfType(sampleType: HKSampleType, predicate: NSPredicate? = nil, completion: HMStatisticsBlock) {
+    public func fetchStatisticsOfType(sampleType: HKSampleType, predicate: NSPredicate? = nil, completion: HMSampleBlock) {
         switch sampleType {
+        case is HKCategoryType:
+            fallthrough
+
+        case is HKCorrelationType:
+            fallthrough
+
+        case is HKWorkoutType:
+            fetchAggregatedSamplesOfType(sampleType, predicate: predicate, completion: completion)
+
         case is HKQuantityType:
             let interval = NSDateComponents()
             interval.day = 1
@@ -242,77 +253,83 @@ public class HealthManager: NSObject, WCSessionDelegate {
                 intervalComponents: interval)
 
             // Set the results handler
-            query.initialResultsHandler = {
-                query, results, error in
-
+            query.initialResultsHandler = { query, results, error in
                 guard error == nil else {
                     log.error("Failed to fetch \(sampleType.displayText) statistics: \(error!)")
-                    completion(statistics: [], error: error)
+                    completion(samples: [], error: error)
                     return
                 }
-
-                completion(statistics: results!.statistics(), error: nil)
+                completion(samples: results?.statistics().map { $0 as MCSample } ?? [], error: nil)
             }
             healthKitStore.executeQuery(query)
 
         default:
             let err = NSError(domain: HMErrorDomain, code: 1048576, userInfo: [NSLocalizedDescriptionKey: "Not implemented"])
-            completion(statistics: [], error: err)
+            completion(samples: [], error: err)
         }
     }
 
     // Completion handler is on main queue
-    public func correlateStatisticsOfType(type: HKSampleType, withType type2: HKSampleType, completion: HMCorrelationStatisticsBlock) {
-        var stat1: [HKStatistics]?
-        var stat2: [HKStatistics]?
+    public func correlateStatisticsOfType(type: HKSampleType, withType type2: HKSampleType, completion: HMCorrelationBlock) {
+        var results1: [MCSample]?
+        var results2: [MCSample]?
+
+        func hasSamplesAtStartDate(array: [MCSample], startDate: NSDate) -> Bool  {
+            for element in array {
+                if startDate.compare(element.startDate) == .OrderedSame && element.numeralValue != nil {
+                    return true
+                }
+            }
+            return false
+        }
 
         let group = dispatch_group_create()
         dispatch_group_enter(group)
-        fetchStatisticsOfType(type) { (statistics, error) -> Void in
+        fetchStatisticsOfType(type) { (results, error) -> Void in
             guard error == nil else {
                 completion([], [], error)
                 dispatch_group_leave(group)
                 return
             }
-            stat1 = statistics
+            results1 = results
             dispatch_group_leave(group)
         }
         dispatch_group_enter(group)
-        fetchStatisticsOfType(type2) { (statistics, error) -> Void in
+        fetchStatisticsOfType(type2) { (results, error) -> Void in
             guard error == nil else {
                 completion([], [], error)
                 dispatch_group_leave(group)
                 return
             }
-            stat2 = statistics
+            results2 = results
             dispatch_group_leave(group)
         }
 
         dispatch_group_notify(group, dispatch_get_main_queue()) {
-            guard !(stat1 == nil || stat2 == nil) else {
-                let desc = stat1 == nil ? (stat2 == nil ? "LHS and RHS" : "LHS") : "RHS"
+            guard !(results1 == nil || results2 == nil) else {
+                let desc = results1 == nil ? (results2 == nil ? "LHS and RHS" : "LHS") : "RHS"
                 let err = NSError(domain: HMErrorDomain, code: 1048576, userInfo: [NSLocalizedDescriptionKey: "Invalid \(desc) statistics"])
                 completion([], [], err)
                 return
             }
-            stat1 = stat1!.filter { (statistics) -> Bool in return stat2!.hasSamplesAtStartDate(statistics.startDate) }
-            stat2 = stat2!.filter { (statistics) -> Bool in return stat1!.hasSamplesAtStartDate(statistics.startDate) }
-            guard stat1!.isEmpty == false && stat2!.isEmpty == false else {
-                completion(stat1!, stat2!, nil)
+            results1 = results1!.filter { (results) -> Bool in return hasSamplesAtStartDate(results2!, startDate: results.startDate) }
+            results2 = results2!.filter { (results) -> Bool in return hasSamplesAtStartDate(results1!, startDate: results.startDate) }
+            guard results1!.isEmpty == false && results2!.isEmpty == false else {
+                completion(results1!, results2!, nil)
                 return
             }
-            for i in 1..<stat1!.count {
+            for i in 1..<results1!.count {
                 var j = i
-                let target = stat1![i]
+                let target = results1![i]
 
-                while j > 0 && target.quantity!.compare(stat1![j - 1].quantity!) == .OrderedAscending {
-                    swap(&stat1![j], &stat1![j - 1])
-                    swap(&stat2![j], &stat2![j - 1])
+                while j > 0 && target.numeralValue! > results1![j - 1].numeralValue! {
+                    swap(&results1![j], &results1![j - 1])
+                    swap(&results2![j], &results2![j - 1])
                     j--
                 }
-                stat1![j] = target
+                results1![j] = target
             }
-            completion(stat1!, stat2!, nil)
+            completion(results1!, results2!, nil)
         }
     }
 
@@ -320,10 +337,10 @@ public class HealthManager: NSObject, WCSessionDelegate {
     // MARK: - Bulk generic retrieval
 
     // Fetches HealthKit samples for multiple types, using GCD to retrieve each type asynchronously and concurrently.
-    public func fetchSamples(typesAndPredicates: [HKSampleType: NSPredicate?], completion: HMFetchManySampleBlock)
+    public func fetchSamples(typesAndPredicates: [HKSampleType: NSPredicate?], completion: HMTypedSampleBlock)
     {
         let group = dispatch_group_create()
-        var samplesByType = [HKSampleType: [HKSample]]()
+        var samplesByType = [HKSampleType: [MCSample]]()
 
         typesAndPredicates.forEach { (type, predicate) -> () in
             dispatch_group_enter(group)
@@ -353,11 +370,11 @@ public class HealthManager: NSObject, WCSessionDelegate {
     // MARK: - Meal timing event retrieval.
 
     // Query food diary events stored as prep and recovery workouts in HealthKit
-    public func fetchPreparationAndRecoveryWorkout(oldestFirst: Bool, beginDate: NSDate? = nil, completion: HMFetchSampleBlock!)
+    public func fetchPreparationAndRecoveryWorkout(oldestFirst: Bool, beginDate: NSDate? = nil, completion: HMSampleBlock!)
     {
         let predicate = mealsSincePredicate(beginDate)
         let sortDescriptor = NSSortDescriptor(key:HKSampleSortIdentifierStartDate, ascending: oldestFirst)
-        fetchSamplesOfType(HKWorkoutType.workoutType(), predicate: predicate, limit: 0, sortDescriptors: [sortDescriptor], completion: completion)
+        fetchSamplesOfType(HKWorkoutType.workoutType(), predicate: predicate, limit: noLimit, sortDescriptors: [sortDescriptor], completion: completion)
     }
 
     // MARK: - Observers
@@ -454,7 +471,6 @@ public class HealthManager: NSObject, WCSessionDelegate {
                             // to initialize the historical range, to prevent duplicate data from being uploaded to the server.
                             self.pushAcquisition(type)
                         }
-                        log.info("\(tname) \(ts) \(nts) \(anchor == noAnchor)")
                     }
                     completion()
                 }
@@ -663,7 +679,8 @@ public class HealthManager: NSObject, WCSessionDelegate {
                     return
                 }
 
-                self.uploadSamplesForType(type, added: samples)
+                let hksamples = samples as! [HKSample]
+                self.uploadSamplesForType(type, added: hksamples)
                 UserManager.sharedManager.decrHistoricalRangeStartForType(type.identifier)
 
                 log.info("Uploaded \(tname) to \(dwstart)")
@@ -732,7 +749,7 @@ public class HealthManager: NSObject, WCSessionDelegate {
                 return [
                     "sampleTypeIdentifier": sampleType.identifier,
                     "displaySampleType": sampleType.displayText!,
-                    "value": sampleFormatter.stringFromResults(results)
+                    "value": sampleFormatter.stringFromSamples(results)
                 ]
             }
             try WCSession.defaultSession().updateApplicationContext(["context": applicationContext])
@@ -742,677 +759,3 @@ public class HealthManager: NSObject, WCSessionDelegate {
     }
 }
 
-// MARK: - Categories & Extensions
-
-@objc public protocol Result {
-
-}
-
-extension HKStatistics: Result { }
-extension HKSample: Result { }
-
-public extension HKSampleType {
-    public var displayText: String? {
-        switch identifier {
-        case HKCategoryTypeIdentifierSleepAnalysis:
-            return NSLocalizedString("Sleep", comment: "HealthKit data type")
-
-        case HKCorrelationTypeIdentifierBloodPressure:
-            return NSLocalizedString("Blood pressure", comment: "HealthKit data type")
-
-        case HKQuantityTypeIdentifierActiveEnergyBurned:
-            return NSLocalizedString("Active Energy Burned", comment: "HealthKit data type")
-
-        case HKQuantityTypeIdentifierBasalEnergyBurned:
-            return NSLocalizedString("Basal Energy Burned", comment: "HealthKit data type")
-
-        case HKQuantityTypeIdentifierBloodGlucose:
-            return NSLocalizedString("Blood Glucose", comment: "HealthKit data type")
-
-        case HKQuantityTypeIdentifierBloodPressureDiastolic:
-            return NSLocalizedString("Blood Pressure Diastolic", comment: "HealthKit data type")
-
-        case HKQuantityTypeIdentifierBloodPressureSystolic:
-            return NSLocalizedString("Blood Pressure Systolic", comment: "HealthKit data type")
-            
-        case HKQuantityTypeIdentifierBodyMass:
-            return NSLocalizedString("Weight", comment: "HealthKit data type")
-
-        case HKQuantityTypeIdentifierBodyMassIndex:
-            return NSLocalizedString("Body Mass Index", comment: "HealthKit data type")
-
-        case HKQuantityTypeIdentifierDietaryCaffeine:
-            return NSLocalizedString("Caffeine", comment: "HealthKit data type")
-
-        case HKQuantityTypeIdentifierDietaryCarbohydrates:
-            return NSLocalizedString("Carbohydrates", comment: "HealthKit data type")
-
-        case HKQuantityTypeIdentifierDietaryCholesterol:
-            return NSLocalizedString("Cholesterol", comment: "HealthKit data type")
-
-        case HKQuantityTypeIdentifierDietaryEnergyConsumed:
-            return NSLocalizedString("Food calories", comment: "HealthKit data type")
-
-        case HKQuantityTypeIdentifierDietaryFatMonounsaturated:
-            return NSLocalizedString("Monounsaturated Fat", comment: "HealthKit data type")
-
-        case HKQuantityTypeIdentifierDietaryFatPolyunsaturated:
-            return NSLocalizedString("Polyunsaturated Fat", comment: "HealthKit data type")
-            
-        case HKQuantityTypeIdentifierDietaryFatSaturated:
-            return NSLocalizedString("Saturated Fat", comment: "HealthKit data type")
-
-        case HKQuantityTypeIdentifierDietaryFatTotal:
-            return NSLocalizedString("Fat", comment: "HealthKit data type")
-
-        case HKQuantityTypeIdentifierDietaryProtein:
-            return NSLocalizedString("Protein", comment: "HealthKit data type")
-
-        case HKQuantityTypeIdentifierDietarySodium:
-            return NSLocalizedString("Salt", comment: "HealthKit data type")
-
-        case HKQuantityTypeIdentifierDietarySugar:
-            return NSLocalizedString("Sugar", comment: "HealthKit data type")
-
-        case HKQuantityTypeIdentifierDietaryWater:
-            return NSLocalizedString("Water", comment: "HealthKit data type")
-            
-        case HKQuantityTypeIdentifierDistanceWalkingRunning:
-            return NSLocalizedString("Walking and Running Distance", comment: "HealthKit data type")
-
-        case HKQuantityTypeIdentifierFlightsClimbed:
-            return NSLocalizedString("Flights Climbed", comment: "HealthKit data type")
-
-        case HKQuantityTypeIdentifierHeartRate:
-            return NSLocalizedString("Heartrate", comment: "HealthKit data type")
-
-        case HKQuantityTypeIdentifierStepCount:
-            return NSLocalizedString("Step Count", comment: "HealthKit data type")
-
-        case HKQuantityTypeIdentifierUVExposure:
-            return NSLocalizedString("UV Exposure", comment: "HealthKit data type")
-
-        case HKWorkoutTypeIdentifier:
-            return NSLocalizedString("Eating Window", comment: "HealthKit data type")
-
-        default:
-            return nil
-        }
-    }
-}
-
-public extension HKQuantityType {
-    var aggregationOptions: HKStatisticsOptions {
-        switch identifier {
-        case HKCategoryTypeIdentifierSleepAnalysis:
-            return .DiscreteAverage
-
-        case HKCorrelationTypeIdentifierBloodPressure:
-            return .DiscreteAverage
-
-        case HKQuantityTypeIdentifierActiveEnergyBurned:
-            return .CumulativeSum
-
-        case HKQuantityTypeIdentifierBasalEnergyBurned:
-            return .DiscreteAverage
-
-        case HKQuantityTypeIdentifierBloodGlucose:
-            return .DiscreteAverage
-
-        case HKQuantityTypeIdentifierBloodPressureSystolic:
-            return .DiscreteAverage
-
-        case HKQuantityTypeIdentifierBloodPressureDiastolic:
-            return .DiscreteAverage
-            
-        case HKQuantityTypeIdentifierBodyMass:
-            return .DiscreteAverage
-
-        case HKQuantityTypeIdentifierBodyMassIndex:
-            return .DiscreteAverage
-
-        case HKQuantityTypeIdentifierDietaryCaffeine:
-            return .CumulativeSum
-
-        case HKQuantityTypeIdentifierDietaryCarbohydrates:
-            return .CumulativeSum
-
-        case HKQuantityTypeIdentifierDietaryCholesterol:
-            return .CumulativeSum
-            
-        case HKQuantityTypeIdentifierDietaryEnergyConsumed:
-            return .CumulativeSum
-
-        case HKQuantityTypeIdentifierDietaryFatMonounsaturated:
-            return .CumulativeSum
-
-        case HKQuantityTypeIdentifierDietaryFatPolyunsaturated:
-            return .CumulativeSum
-
-        case HKQuantityTypeIdentifierDietaryFatSaturated:
-            return .CumulativeSum
-
-        case HKQuantityTypeIdentifierDietaryFatTotal:
-            return .CumulativeSum
-
-        case HKQuantityTypeIdentifierDietaryProtein:
-            return .CumulativeSum
-
-        case HKQuantityTypeIdentifierDietarySodium:
-            return .CumulativeSum
-
-        case HKQuantityTypeIdentifierDietarySugar:
-            return .CumulativeSum
-
-        case HKQuantityTypeIdentifierDietaryWater:
-            return .CumulativeSum
-
-        case HKQuantityTypeIdentifierDistanceWalkingRunning:
-            return .CumulativeSum
-
-        case HKQuantityTypeIdentifierFlightsClimbed:
-            return .CumulativeSum
-
-        case HKQuantityTypeIdentifierHeartRate:
-            return .DiscreteAverage
-            
-        case HKQuantityTypeIdentifierStepCount:
-            return .CumulativeSum
-            
-        case HKQuantityTypeIdentifierUVExposure:
-            return .DiscreteAverage
-
-        case HKWorkoutTypeIdentifier:
-            return .CumulativeSum
-
-        default:
-            return .None
-        }
-    }
-}
-
-public extension HKStatistics {
-    var quantity: HKQuantity? {
-        switch quantityType.identifier {
-
-        case HKCategoryTypeIdentifierSleepAnalysis:
-            return averageQuantity()
-
-        case HKCorrelationTypeIdentifierBloodPressure:
-            return sumQuantity()
-
-        case HKQuantityTypeIdentifierActiveEnergyBurned:
-            return sumQuantity()
-
-        case HKQuantityTypeIdentifierBasalEnergyBurned:
-            return averageQuantity()
-            
-        case HKQuantityTypeIdentifierBodyMass:
-            return averageQuantity()
-
-        case HKQuantityTypeIdentifierBodyMassIndex:
-            return averageQuantity()
-
-        case HKQuantityTypeIdentifierBloodGlucose:
-            return sumQuantity()
-
-        case HKQuantityTypeIdentifierBloodPressureSystolic:
-            return sumQuantity()
-
-        case HKQuantityTypeIdentifierBloodPressureDiastolic:
-            return sumQuantity()
-            
-        case HKQuantityTypeIdentifierDietaryCaffeine:
-            return sumQuantity()
-
-        case HKQuantityTypeIdentifierDietaryCarbohydrates:
-            return sumQuantity()
-
-        case HKQuantityTypeIdentifierDietaryCholesterol:
-            return sumQuantity()
-            
-        case HKQuantityTypeIdentifierDietaryEnergyConsumed:
-            return sumQuantity()
-
-        case HKQuantityTypeIdentifierDietaryFatMonounsaturated:
-            return sumQuantity()
-
-        case HKQuantityTypeIdentifierDietaryFatPolyunsaturated:
-            return sumQuantity()
-            
-        case HKQuantityTypeIdentifierDietaryFatSaturated:
-            return sumQuantity()
-
-        case HKQuantityTypeIdentifierDietaryFatTotal:
-            return sumQuantity()
-
-        case HKQuantityTypeIdentifierDietaryProtein:
-            return sumQuantity()
-
-        case HKQuantityTypeIdentifierDietarySodium:
-            return sumQuantity()
-
-        case HKQuantityTypeIdentifierDietarySugar:
-            return sumQuantity()
-
-        case HKQuantityTypeIdentifierDietaryWater:
-            return sumQuantity()
-
-        case HKQuantityTypeIdentifierDistanceWalkingRunning:
-            return sumQuantity()
-
-        case HKQuantityTypeIdentifierFlightsClimbed:
-            return sumQuantity()
-            
-        case HKQuantityTypeIdentifierHeartRate:
-            return averageQuantity()
-
-        case HKQuantityTypeIdentifierStepCount:
-            return sumQuantity()
-
-        case HKQuantityTypeIdentifierUVExposure:
-            return sumQuantity()
-
-        case HKWorkoutTypeIdentifier:
-            return sumQuantity()
-
-        default:
-            log.warning("Invalid quantity type \(quantityType.identifier) for HKStatistics")
-            return sumQuantity()
-        }
-    }
-
-    public var numeralValue: Double? {
-        guard defaultUnit != nil && quantity != nil else {
-            return nil
-        }
-        switch quantityType.identifier {
-        case HKCategoryTypeIdentifierSleepAnalysis:
-            fallthrough
-        case HKCorrelationTypeIdentifierBloodPressure:
-            fallthrough
-        case HKQuantityTypeIdentifierActiveEnergyBurned:
-            fallthrough
-        case HKQuantityTypeIdentifierBasalEnergyBurned:
-            fallthrough
-        case HKQuantityTypeIdentifierBloodGlucose:
-            fallthrough
-        case HKQuantityTypeIdentifierBloodPressureDiastolic:
-            fallthrough
-        case HKQuantityTypeIdentifierBloodPressureSystolic:
-            fallthrough
-        case HKQuantityTypeIdentifierBodyMass:
-            fallthrough
-        case HKQuantityTypeIdentifierBodyMassIndex:
-            fallthrough
-        case HKQuantityTypeIdentifierDietaryCaffeine:
-            fallthrough
-        case HKQuantityTypeIdentifierDietaryCarbohydrates:
-            fallthrough
-        case HKQuantityTypeIdentifierDietaryCholesterol:
-            fallthrough
-        case HKQuantityTypeIdentifierDietaryEnergyConsumed:
-            fallthrough
-        case HKQuantityTypeIdentifierDietaryFatMonounsaturated:
-            fallthrough
-        case HKQuantityTypeIdentifierDietaryFatPolyunsaturated:
-            fallthrough
-        case HKQuantityTypeIdentifierDietaryFatSaturated:
-            fallthrough
-        case HKQuantityTypeIdentifierDietaryFatTotal:
-            fallthrough
-        case HKQuantityTypeIdentifierDietaryProtein:
-            fallthrough
-        case HKQuantityTypeIdentifierDietarySodium:
-            fallthrough
-        case HKQuantityTypeIdentifierDietarySugar:
-            fallthrough
-        case HKQuantityTypeIdentifierDietaryWater:
-            fallthrough
-        case HKQuantityTypeIdentifierDistanceWalkingRunning:
-            fallthrough
-        case HKQuantityTypeIdentifierFlightsClimbed:
-            fallthrough
-        case HKQuantityTypeIdentifierHeartRate:
-            fallthrough
-        case HKQuantityTypeIdentifierStepCount:
-            fallthrough
-        case HKQuantityTypeIdentifierUVExposure:
-            fallthrough
-        case HKWorkoutTypeIdentifier:
-            return quantity!.doubleValueForUnit(defaultUnit!)
-        default:
-            return nil
-        }
-    }
-
-    public var defaultUnit: HKUnit? {
-        let isMetric: Bool = NSLocale.currentLocale().objectForKey(NSLocaleUsesMetricSystem)!.boolValue
-        switch quantityType.identifier {
-        case HKCategoryTypeIdentifierSleepAnalysis:
-            return HKUnit.hourUnit()
-
-        case HKCorrelationTypeIdentifierBloodPressure:
-            return HKUnit.millimeterOfMercuryUnit()
-
-        case HKQuantityTypeIdentifierActiveEnergyBurned:
-            return HKUnit.kilocalorieUnit()
-
-        case HKQuantityTypeIdentifierBasalEnergyBurned:
-            return HKUnit.kilocalorieUnit()
-
-        case HKQuantityTypeIdentifierBloodGlucose:
-            return HKUnit.gramUnitWithMetricPrefix(.Milli).unitDividedByUnit(HKUnit.literUnitWithMetricPrefix(.Deci))
-
-        case HKQuantityTypeIdentifierBloodPressureDiastolic:
-            return HKUnit.millimeterOfMercuryUnit()
-
-        case HKQuantityTypeIdentifierBloodPressureSystolic:
-            return HKUnit.millimeterOfMercuryUnit()
-            
-        case HKQuantityTypeIdentifierBodyMass:
-            return isMetric ? HKUnit.gramUnitWithMetricPrefix(.Kilo) : HKUnit.poundUnit()
-
-        case HKQuantityTypeIdentifierBodyMassIndex:
-            return HKUnit.countUnit()
-
-        case HKQuantityTypeIdentifierDietaryCaffeine:
-            return HKUnit.gramUnitWithMetricPrefix(HKMetricPrefix.Milli)
-
-        case HKQuantityTypeIdentifierDietaryCarbohydrates:
-            return HKUnit.gramUnit()
-
-        case HKQuantityTypeIdentifierDietaryCholesterol:
-            return HKUnit.gramUnitWithMetricPrefix(HKMetricPrefix.Milli)
-            
-        case HKQuantityTypeIdentifierDietaryEnergyConsumed:
-            return HKUnit.kilocalorieUnit()
-
-        case HKQuantityTypeIdentifierDietaryFatMonounsaturated:
-            return HKUnit.gramUnit()
-
-        case HKQuantityTypeIdentifierDietaryFatPolyunsaturated:
-            return HKUnit.gramUnit()
-
-        case HKQuantityTypeIdentifierDietaryFatSaturated:
-            return HKUnit.gramUnit()
-
-        case HKQuantityTypeIdentifierDietaryFatTotal:
-            return HKUnit.gramUnit()
-
-        case HKQuantityTypeIdentifierDietaryProtein:
-            return HKUnit.gramUnit()
-
-        case HKQuantityTypeIdentifierDietarySodium:
-            return HKUnit.gramUnitWithMetricPrefix(HKMetricPrefix.Milli)
-
-        case HKQuantityTypeIdentifierDietarySugar:
-            return HKUnit.gramUnit()
-
-        case HKQuantityTypeIdentifierDietaryWater:
-            return HKUnit.literUnitWithMetricPrefix(HKMetricPrefix.Milli)
-
-        case HKQuantityTypeIdentifierDistanceWalkingRunning:
-            return HKUnit.mileUnit()
-
-        case HKQuantityTypeIdentifierFlightsClimbed:
-            return HKUnit.countUnit()
-
-        case HKQuantityTypeIdentifierHeartRate:
-            return HKUnit.countUnit().unitDividedByUnit(HKUnit.minuteUnit())
-
-        case HKQuantityTypeIdentifierStepCount:
-            return HKUnit.countUnit()
-
-        case HKQuantityTypeIdentifierUVExposure:
-            return HKUnit.countUnit()
-
-        case HKWorkoutTypeIdentifier:
-            return HKUnit.hourUnit()
-
-        default:
-            return nil
-        }
-    }
-}
-
-public extension HKSample {
-    public var numeralValue: Double? {
-        guard defaultUnit != nil else {
-            return nil
-        }
-        switch sampleType.identifier {
-        case HKCategoryTypeIdentifierSleepAnalysis:
-            let sample = (self as! HKCategorySample)
-            let secs = HKQuantity(unit: HKUnit.secondUnit(), doubleValue: sample.endDate.timeIntervalSinceDate(sample.startDate))
-            return secs.doubleValueForUnit(defaultUnit!)
-
-        case HKCorrelationTypeIdentifierBloodPressure:
-            return ((self as! HKCorrelation).objects.first as! HKQuantitySample).quantity.doubleValueForUnit(defaultUnit!)
-
-        case HKQuantityTypeIdentifierActiveEnergyBurned:
-            fallthrough
-
-        case HKQuantityTypeIdentifierBasalEnergyBurned:
-            fallthrough
-
-        case HKQuantityTypeIdentifierBloodGlucose:
-            fallthrough
-
-        case HKQuantityTypeIdentifierBloodPressureSystolic:
-            fallthrough
-
-        case HKQuantityTypeIdentifierBloodPressureDiastolic:
-            fallthrough
-            
-        case HKQuantityTypeIdentifierBodyMass:
-            fallthrough
-
-        case HKQuantityTypeIdentifierBodyMassIndex:
-            fallthrough
-
-        case HKQuantityTypeIdentifierDietaryCarbohydrates:
-            fallthrough
-
-        case HKQuantityTypeIdentifierDietaryEnergyConsumed:
-            fallthrough
-
-        case HKQuantityTypeIdentifierDietaryProtein:
-            fallthrough
-
-        case HKQuantityTypeIdentifierDietaryFatMonounsaturated:
-            fallthrough
-
-        case HKQuantityTypeIdentifierDietaryFatPolyunsaturated:
-            fallthrough
-
-        case HKQuantityTypeIdentifierDietaryFatSaturated:
-            fallthrough
-
-        case HKQuantityTypeIdentifierDietaryFatTotal:
-            fallthrough
-
-        case HKQuantityTypeIdentifierDietarySugar:
-            fallthrough
-
-        case HKQuantityTypeIdentifierDietarySodium:
-            fallthrough
-
-        case HKQuantityTypeIdentifierDietaryCaffeine:
-            fallthrough
-
-        case HKQuantityTypeIdentifierDietaryWater:
-            fallthrough
-
-        case HKQuantityTypeIdentifierDistanceWalkingRunning:
-            fallthrough
-
-        case HKQuantityTypeIdentifierFlightsClimbed:
-            fallthrough
-
-        case HKQuantityTypeIdentifierHeartRate:
-            fallthrough
-
-        case HKQuantityTypeIdentifierStepCount:
-            fallthrough
-
-        case HKQuantityTypeIdentifierUVExposure:
-            return (self as! HKQuantitySample).quantity.doubleValueForUnit(defaultUnit!)
-
-        case HKWorkoutTypeIdentifier:
-            let sample = (self as! HKWorkout)
-            let secs = HKQuantity(unit: HKUnit.secondUnit(), doubleValue: sample.duration)
-            return secs.doubleValueForUnit(defaultUnit!)
-
-        default:
-            return nil
-        }
-    }
-
-    public var allNumeralValues: [Double]? {
-        return numeralValue != nil ? [numeralValue!] : nil
-    }
-
-    public var defaultUnit: HKUnit? {
-        let isMetric: Bool = NSLocale.currentLocale().objectForKey(NSLocaleUsesMetricSystem)!.boolValue
-        switch sampleType.identifier {
-        case HKCategoryTypeIdentifierSleepAnalysis:
-            return HKUnit.hourUnit()
-
-        case HKCorrelationTypeIdentifierBloodPressure:
-            return HKUnit.millimeterOfMercuryUnit()
-
-        case HKQuantityTypeIdentifierActiveEnergyBurned:
-            return HKUnit.kilocalorieUnit()
-
-        case HKQuantityTypeIdentifierBasalEnergyBurned:
-            return HKUnit.kilocalorieUnit()
-
-        case HKQuantityTypeIdentifierBloodGlucose:
-            return HKUnit.gramUnitWithMetricPrefix(.Milli).unitDividedByUnit(HKUnit.literUnitWithMetricPrefix(.Deci))
-
-        case HKQuantityTypeIdentifierBloodPressureDiastolic:
-            return HKUnit.millimeterOfMercuryUnit()
-
-        case HKQuantityTypeIdentifierBloodPressureSystolic:
-            return HKUnit.millimeterOfMercuryUnit()
-
-        case HKQuantityTypeIdentifierBodyMass:
-            return isMetric ? HKUnit.gramUnitWithMetricPrefix(.Kilo) : HKUnit.poundUnit()
-
-        case HKQuantityTypeIdentifierBodyMassIndex:
-            return HKUnit.countUnit()
-            
-        case HKQuantityTypeIdentifierDietaryCaffeine:
-            return HKUnit.gramUnitWithMetricPrefix(HKMetricPrefix.Milli)
-
-        case HKQuantityTypeIdentifierDietaryCarbohydrates:
-            return HKUnit.gramUnit()
-
-        case HKQuantityTypeIdentifierDietaryCholesterol:
-            return HKUnit.gramUnitWithMetricPrefix(HKMetricPrefix.Milli)
-
-        case HKQuantityTypeIdentifierDietaryEnergyConsumed:
-            return HKUnit.kilocalorieUnit()
-
-        case HKQuantityTypeIdentifierDietaryFatMonounsaturated:
-            return HKUnit.gramUnit()
-
-        case HKQuantityTypeIdentifierDietaryFatPolyunsaturated:
-            return HKUnit.gramUnit()
-
-        case HKQuantityTypeIdentifierDietaryFatSaturated:
-            return HKUnit.gramUnit()
-
-        case HKQuantityTypeIdentifierDietaryFatTotal:
-            return HKUnit.gramUnit()
-
-        case HKQuantityTypeIdentifierDietaryProtein:
-            return HKUnit.gramUnit()
-
-        case HKQuantityTypeIdentifierDietarySodium:
-            return HKUnit.gramUnitWithMetricPrefix(HKMetricPrefix.Milli)
-
-        case HKQuantityTypeIdentifierDietarySugar:
-            return HKUnit.gramUnit()
-
-        case HKQuantityTypeIdentifierDietaryWater:
-            return HKUnit.literUnitWithMetricPrefix(HKMetricPrefix.Milli)
-
-        case HKQuantityTypeIdentifierDistanceWalkingRunning:
-            return HKUnit.mileUnit()
-
-        case HKQuantityTypeIdentifierFlightsClimbed:
-            return HKUnit.countUnit()
-
-        case HKQuantityTypeIdentifierHeartRate:
-            return HKUnit.countUnit().unitDividedByUnit(HKUnit.minuteUnit())
-
-        case HKQuantityTypeIdentifierStepCount:
-            return HKUnit.countUnit()
-            
-        case HKQuantityTypeIdentifierUVExposure:
-            return HKUnit.countUnit()
-
-        case HKWorkoutTypeIdentifier:
-            return HKUnit.hourUnit()
-
-        default:
-            return nil
-        }
-    }
-}
-
-public extension HKCorrelation {
-    public override var allNumeralValues: [Double]? {
-        guard defaultUnit != nil else {
-            return nil
-        }
-        switch sampleType.identifier {
-        case HKCorrelationTypeIdentifierBloodPressure:
-            return objects.map { (sample) -> Double in
-                (sample as! HKQuantitySample).quantity.doubleValueForUnit(defaultUnit!)
-            }
-        default:
-            return nil
-        }
-    }
-}
-
-public extension Array where Element: HKStatistics {
-    public func hasSamplesAtStartDate(startDate: NSDate) -> Bool  {
-        for statistics in self {
-            if startDate.compare(statistics.startDate) == .OrderedSame && statistics.quantity != nil {
-                return true
-            }
-        }
-        return false
-    }
-}
-
-public extension Array where Element: HKSample {
-    public var sleepDuration: NSTimeInterval? {
-        return filter { (sample) -> Bool in
-            let categorySample = sample as! HKCategorySample
-            return categorySample.sampleType.identifier == HKCategoryTypeIdentifierSleepAnalysis && categorySample.value == HKCategoryValueSleepAnalysis.Asleep.rawValue
-            }.map { (sample) -> NSTimeInterval in
-                return sample.endDate.timeIntervalSinceDate(sample.startDate)
-            }.reduce(0) { $0 + $1 }
-    }
-    public var workoutDuration: NSTimeInterval? {
-        return filter { (sample) -> Bool in
-            let categorySample = sample as! HKWorkout
-            return categorySample.sampleType.identifier == HKWorkoutTypeIdentifier
-            }.map { (sample) -> NSTimeInterval in
-                return sample.endDate.timeIntervalSinceDate(sample.startDate)
-            }.reduce(0) { $0 + $1 }
-    }
-//    public var workoutDuration: NSDate? {
-//        return filter { (sample) -> Bool in
-//            let categorySample = sample as! HKWorkout
-//            let now = NSDate()
-//            return categorySample.sampleType.identifier == HKWorkoutTypeIdentifier && categorySample.startDate < now
-//
-//        }
-//    }
-}

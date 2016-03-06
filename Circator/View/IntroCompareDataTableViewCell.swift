@@ -64,17 +64,17 @@ class IntroCompareDataTableViewCell: UITableViewCell {
 
     static let healthFormatter = SampleFormatter()
 
-    func setUserData(userData: [Result], populationAverageData: [Result], stalePopulation: Bool = false) {
+    func setUserData(userData: [MCSample], populationAverageData: [MCSample], stalePopulation: Bool = false) {
         loadUserSamples(userData, toLabel: userDataLabel)
         loadPopSamples(populationAverageData, toLabel: populationAverageLabel, stale: stalePopulation)
     }
 
-    private func loadUserSamples( results: [Result], toLabel label: UILabel) {
-        label.text = IntroCompareDataTableViewCell.healthFormatter.stringFromResults(results)
+    private func loadUserSamples( results: [MCSample], toLabel label: UILabel) {
+        label.text = IntroCompareDataTableViewCell.healthFormatter.stringFromSamples(results)
     }
 
-    private func loadPopSamples(results: [Result], toLabel label: UILabel, stale: Bool) {
-        label.text = IntroCompareDataTableViewCell.healthFormatter.stringFromResults(results)
+    private func loadPopSamples(results: [MCSample], toLabel label: UILabel, stale: Bool) {
+        label.text = IntroCompareDataTableViewCell.healthFormatter.stringFromSamples(results)
         if stale { label.textColor = UIColor.yellowColor() }
         else { label.textColor = Theme.universityDarkTheme.bodyTextColor }
     }

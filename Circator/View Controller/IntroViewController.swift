@@ -1032,9 +1032,9 @@ class IntroViewController: UIViewController,
         let timeSinceRefresh = NSDate().timeIntervalSinceDate(PopulationHealthManager.sharedManager.aggregateRefreshDate)
         let refreshPeriod = UserManager.sharedManager.getRefreshFrequency() ?? Int.max
         let stale = timeSinceRefresh > Double(refreshPeriod)
+
         cell.setUserData(HealthManager.sharedManager.mostRecentSamples[sampleType] ?? [HKSample](),
-                         populationAverageData: PopulationHealthManager.sharedManager.mostRecentAggregates[sampleType]
-                                                    ?? [DerivedQuantity(quantity: nil, quantityType: nil)],
+                         populationAverageData: PopulationHealthManager.sharedManager.mostRecentAggregates[sampleType] ?? [],
                          stalePopulation: stale)
         return cell
     }

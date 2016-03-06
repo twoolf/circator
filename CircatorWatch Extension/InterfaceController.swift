@@ -37,6 +37,7 @@ class InterfaceController: WKInterfaceController {
     
     func updateBioPreviewTableWithContext(context: [[String: String]]) {
         table.setNumberOfRows(context.count, withRowType: "BioPreviewCell")
+        /*
         for (i, info) in context.enumerate() {
             let row = table.rowControllerAtIndex(i) as! BioPreviewRow
             let imageName: String?
@@ -58,6 +59,7 @@ class InterfaceController: WKInterfaceController {
 //            row.sampleTypeLabel.setText(info["displaySampleType"]!)
 //            row.valueLabel.setText(info["value"]!)
         }
+        */
     }
 
 }

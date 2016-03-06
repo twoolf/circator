@@ -282,6 +282,14 @@ public class UserManager {
         }
     }
 
+    public func withdraw(completion: (Bool -> Void)) {
+        Service.string(MCRouter.DeleteAccount, statusCode: 200..<300, tag: "WITHDRAW") {
+            _, response, result in
+            if result.isSuccess { self.resetFull() }
+            completion(result.isSuccess)
+        }
+    }
+
 
     // MARK: - Stormpath token management.
 
