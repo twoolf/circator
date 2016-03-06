@@ -73,26 +73,26 @@ public class SampleFormatter: NSObject {
     }
 
     public func numberFromSamples(samples: [MCSample]) -> Double {
-        if var stat = samples as? [HKStatistics] {
-            guard stat.isEmpty == false else {
-                return Double.quietNaN
-            }
+        guard !samples.isEmpty else { return Double.quietNaN }
+        if let _ = samples as? [HKStatistics] {
+            var stat = samples.map { $0 as! HKStatistics }
             return numberFromStatistics(stat.removeLast())
-        } else if let samples = samples as? [HKSample] {
-            return numberFromHKSamples(samples)
+        } else if let _ = samples as? [HKSample] {
+            let hksamples = samples.map { $0 as! HKSample }
+            return numberFromHKSamples(hksamples)
         } else {
             return numberFromMCSamples(samples)
         }
     }
 
     public func stringFromSamples(samples: [MCSample]) -> String {
-        if var stat = samples as? [HKStatistics] {
-            guard stat.isEmpty == false else {
-                return emptyString
-            }
+        guard !samples.isEmpty else { return emptyString }
+        if let _ = samples as? [HKStatistics] {
+            var stat = samples.map { $0 as! HKStatistics }
             return stringFromStatistics(stat.removeLast())
-        } else if let samples = samples as? [HKSample] {
-            return stringFromHKSamples(samples)
+        } else if let _ = samples as? [HKSample] {
+            let hksamples = samples.map { $0 as! HKSample }
+            return stringFromHKSamples(hksamples)
         } else  {
             return stringFromMCSamples(samples)
         }
@@ -117,9 +117,7 @@ public class SampleFormatter: NSObject {
     }
 
     public func numberFromHKSamples(samples: [HKSample]) -> Double {
-        guard samples.isEmpty == false else {
-            return Double.quietNaN
-        }
+        guard !samples.isEmpty else { return Double.quietNaN }
         if let type = samples.last!.sampleType as? HKQuantityType {
             return numberFromQuantity((samples.last as! HKQuantitySample).quantity, type: type)
         }
@@ -145,9 +143,7 @@ public class SampleFormatter: NSObject {
     }
 
     public func stringFromHKSamples(samples: [HKSample]) -> String {
-        guard samples.isEmpty == false else {
-            return emptyString
-        }
+        guard !samples.isEmpty else { return emptyString }
         if let type = samples.last!.sampleType as? HKQuantityType {
             return stringFromQuantity((samples.last as! HKQuantitySample).quantity, type: type)
         }
@@ -191,7 +187,6 @@ public class SampleFormatter: NSObject {
                 return Double(d.hour) + (Double(d.minute) / 60.0)
 
             case HKCategoryTypeIdentifierSleepAnalysis:
-                log.info("Sleep MC \(quantity)")
                 let d = NSDate(timeIntervalSinceReferenceDate: quantity)
                 return Double(d.hour) + (Double(d.minute) / 60.0)
 
