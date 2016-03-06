@@ -8,6 +8,11 @@
 
 import UIKit
 
+/**
+ Supporting events that repeat: structued by days/times for meals, exercise, sleep
+ 
+ - note: works with RepeatedEventsController
+ */
 class DaySelectionViewController: UITableViewController {
     
     var selectedIndices: Set<Int> = []

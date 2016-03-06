@@ -9,6 +9,11 @@
 
 import UIKit
 
+/**
+ sets up theme for entire Metabolic Compass
+ 
+ - note: uses University colors
+ */
 public class Theme: NSObject {
 
     public static let universityDarkTheme = Theme(.White, .Blue, .White, .Custom(Color.White.color.colorWithAlphaComponent(0.75)), complementForegroundColors: [.Emerald, .Gray, .MilkyGreen, .Crimson])!
@@ -48,6 +53,10 @@ public class Theme: NSObject {
         }
     }
     
+    /**
+     sets up foreground colors for Metabolic Compass
+
+     */
     public class ForegroundColorGroup: ArrayLiteralConvertible {
         let foregroundColors: [Color]
         

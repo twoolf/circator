@@ -9,6 +9,12 @@
 import UIKit
 import Former
 
+/**
+ Supports events that repeat: structued by days/times for meals, exercise, sleep
+ 
+ - note: data structure assumes events repeat unless overridden
+ - remark: supported as a set of menu picker and check-marked fields
+ */
 class RepeatedEventsController: UITableViewController, UITextFieldDelegate {
     
     class SegmentedCell: UITableViewCell {

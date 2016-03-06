@@ -8,6 +8,10 @@
 
 import UIKit
 
+/**
+ Creates the plot button
+ 
+ */
 class PlotButton : UIButton {
 
     // Plot types:

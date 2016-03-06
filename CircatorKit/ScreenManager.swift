@@ -10,6 +10,10 @@ import Foundation
 import UIKit
 import Charts
 
+/**
+ To support different screen sizes
+
+ */
 public class ScreenManager {
     public static let sharedInstance = ScreenManager()
 

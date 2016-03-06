@@ -30,6 +30,11 @@ private let UserSaltKey      = "UserSaltKey"
 
 private let profileExcludes  = ["consent", "id"]
 
+/**
+ Manages users for Metabolic Compass
+ 
+ - note: Stormpath used for authentication
+ */
 public class UserManager {
 
     public static let sharedManager = UserManager()
