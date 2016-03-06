@@ -13,6 +13,7 @@ import UIKit
 import Async
 import Former
 import HTPressableButton
+import Fabric
 import Crashlytics
 import SwiftDate
 
