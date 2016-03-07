@@ -10,6 +10,7 @@ import UIKit
 import CircatorKit
 import Async
 import Former
+import Crashlytics
 import Dodo
 
 private let btnFontSize = ScreenManager.sharedInstance.loginButtonFontSize()
@@ -131,6 +132,10 @@ class LoginViewController: UIViewController, UITableViewDelegate, UITableViewDat
             }
             UserManager.sharedManager.loginWithPull { (error, _) in
                 guard !error else {
+                    Answers.logContentViewWithName("Answers looking at login View",
+                        contentType: "Testing with Answers",
+                        contentId: "near line 137",
+                        customAttributes: [:])
                     BehaviorMonitor.sharedInstance.login(false)
                     UINotifications.invalidUserPass(self.navigationController!)
                     return

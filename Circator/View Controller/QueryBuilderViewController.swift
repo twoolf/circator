@@ -11,6 +11,7 @@ import UIKit
 import Former
 import HTPressableButton
 import MGSwipeTableCell
+import Crashlytics
 
 enum BuilderMode {
     case Editing(Int)
@@ -93,6 +94,10 @@ class QueryBuilderViewController: UIViewController, UITextFieldDelegate {
 
     override func viewDidAppear(animated: Bool) {
         super.viewDidAppear(animated)
+        Answers.logContentViewWithName("Answers looking at Queries",
+            contentType: "Testing with Answers",
+            contentId: "near line 98",
+            customAttributes: [:])
         BehaviorMonitor.sharedInstance.showView("QueryBuilder", contentType: "")
     }
 

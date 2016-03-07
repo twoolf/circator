@@ -71,6 +71,7 @@ class CorrelationViewController: UIViewController, ChartViewDelegate {
 
                 Async.background {
                     HealthManager.sharedManager.correlateStatisticsOfType(self.sampleTypes[0], withType: self.sampleTypes[1]) { (stat1, stat2, error) -> Void in
+                        log.info("correlate sizes \(stat1.count) \(stat2.count)")
                         guard (error == nil) && !(stat1.isEmpty || stat2.isEmpty) else {
                             Async.main {
                                 if let idx = self.errorIndex, pv = self.parentViewController as? PagesController {
@@ -112,7 +113,10 @@ class CorrelationViewController: UIViewController, ChartViewDelegate {
                                 pv.goTo(idx)
                             }
                         }
-
+                        Answers.logContentViewWithName("Answers looking at Correlate View",
+                            contentType: "Testing with Answers",
+                            contentId: "near line 115",
+                            customAttributes: [:])
                         BehaviorMonitor.sharedInstance.setValue("Correlate", contentType: self.getSampleDescriptor())
                     }
                 }
@@ -132,6 +136,10 @@ class CorrelationViewController: UIViewController, ChartViewDelegate {
 
     override func viewDidAppear(animated: Bool) {
         super.viewDidAppear(animated)
+        Answers.logContentViewWithName("Answers looking at Correlate View",
+            contentType: "Testing with Answers",
+            contentId: "near line 140",
+            customAttributes: [:])
         BehaviorMonitor.sharedInstance.showView("Correlate", contentType: getSampleDescriptor())
     }
 

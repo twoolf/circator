@@ -9,6 +9,7 @@
 import CircatorKit
 import UIKit
 import MGSwipeTableCell
+import Crashlytics
 
 class QueryViewController: UITableViewController {
 
@@ -21,6 +22,10 @@ class QueryViewController: UITableViewController {
 
     override func viewDidAppear(animated: Bool) {
         super.viewDidAppear(animated)
+        Answers.logContentViewWithName("Answers looking at Queries",
+            contentType: "Testing with Answers",
+            contentId: "near line 26",
+            customAttributes: [:])
         BehaviorMonitor.sharedInstance.showView("Query", contentType: "")
     }
     
