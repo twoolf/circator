@@ -8,6 +8,10 @@
 
 import UIKit
 
+/**
+ Probably can be removed : no longer hooked into anything 
+
+ */
 class CollectionViewCell: UICollectionViewCell {
     
     var button : PlotButton!

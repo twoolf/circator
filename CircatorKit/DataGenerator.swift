@@ -18,6 +18,12 @@ public typealias MCSampler = (NSDate, Double, Double?) -> HKSample?
 
 private let filteredTypeIdentifiers = [HKQuantityTypeIdentifierUVExposure, HKQuantityTypeIdentifierDietaryWater, HKCategoryTypeIdentifierSleepAnalysis]
 
+/**
+ Generates sample data for Metabolic Compass.
+ 
+ - note: works with all twenty data types
+ - remark: generates based on distributions using NHANES data (M/F)
+ */
 public class DataGenerator : GeneratorType {
 
     public static let sharedInstance = DataGenerator()
@@ -179,7 +185,6 @@ public class DataGenerator : GeneratorType {
             let standEnd = standStart + Int(abs(x) * 60.0).seconds
             return HKCategorySample(type: ct, value: HKCategoryValueAppleStandHour.Stood.rawValue, startDate: standStart, endDate: standEnd)
 
-            // TODO: ensure diastolic is less than systolic
         case HKCorrelationTypeIdentifierBloodPressure:
             let du = self.generatorUnits[HKQuantityTypeIdentifierBloodPressureDiastolic]!
             let su = self.generatorUnits[HKQuantityTypeIdentifierBloodPressureSystolic]!

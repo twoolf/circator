@@ -9,6 +9,10 @@
 import Foundation
 import UIKit
 
+/**
+ not currently used -
+ 
+ */
 public class TextInputTableViewCell : UITableViewCell {
 
     var cellInput : UITextField!

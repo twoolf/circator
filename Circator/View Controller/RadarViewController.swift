@@ -10,9 +10,14 @@ import Foundation
 import HealthKit
 import CircatorKit
 import Charts
-import Crashlytics
+import Fabric
 import SwiftDate
 
+/**
+ Controls display of Radar screen (2nd view of dashboard).
+ 
+ - note: use of logistic function (normalizeType) to enable shared plot
+ */
 class RadarViewController : UIViewController, ChartViewDelegate {
 
     var logisticParametersByType : [Bool: [String: (Double, Double)]] =
@@ -201,7 +206,6 @@ class RadarViewController : UIViewController, ChartViewDelegate {
         return ChartDataEntry(value: nval, xIndex: i)
     }
 
-    // TODO: color NaN values differently to indicate error.
     func reloadData() {
         let indData = (0..<PreviewManager.previewSampleTypes.count).map(indEntry)
         let popData = (0..<PreviewManager.previewSampleTypes.count).map(popEntry)

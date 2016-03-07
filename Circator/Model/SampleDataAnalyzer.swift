@@ -12,6 +12,11 @@ import HealthKit
 import Charts
 import SwiftDate
 
+/**
+ To prepare data for correlation plots
+ 
+ - note: format set by Charts library
+ */
 class CorrelationDataAnalyzer: SampleDataAnalyzer {
     let sampleTypes: [HKSampleType]
     let samples: [[MCSample]]
@@ -44,6 +49,11 @@ class CorrelationDataAnalyzer: SampleDataAnalyzer {
     }
 }
 
+/**
+ To prepare data for plots (1st button on left)
+ 
+ - note: format set by Charts library; summary statistics are in BubbleChart
+ */
 class PlotDataAnalyzer: SampleDataAnalyzer {
     let samples: [MCSample]
     let sampleType: HKSampleType

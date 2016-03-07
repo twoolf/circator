@@ -10,11 +10,17 @@ import UIKit
 import Charts
 import CircatorKit
 import HealthKit
+import Fabric
 import Crashlytics
 import SwiftDate
 import Pages
 import Async
 
+/**
+ Controls display of correlation plots (2nd button from left on bottom of screen).
+ 
+ - note: 1st metric is organized small to large, 2nd is plotted on that same scale, so correlations are both rising from small to large
+ */
 class CorrelationViewController: UIViewController, ChartViewDelegate {
 
     var pageIndex  : Int! = nil

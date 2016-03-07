@@ -41,6 +41,12 @@ private let noAnchor = HKQueryAnchor(fromValue: Int(HKAnchoredObjectQueryNoAncho
 private let dateAsc  = NSSortDescriptor(key: HKSampleSortIdentifierStartDate, ascending: true)
 private let dateDesc = NSSortDescriptor(key: HKSampleSortIdentifierStartDate, ascending: false)
 
+/**
+ main manager of information reads/writes from HealthKit
+ 
+ - note: uses AnchorQueries to support continued updates
+ - remark: see AppleDocs for permissions syntax in reading/writing
+ */
 public class HealthManager: NSObject, WCSessionDelegate {
 
     public static let sharedManager = HealthManager()
@@ -192,7 +198,6 @@ public class HealthManager: NSObject, WCSessionDelegate {
         }
 
         dispatch_group_notify(group, dispatch_get_main_queue()) {
-            // TODO: partial error handling, i.e., when a subset of the desired types fail in their queries.
             self.mostRecentSamples = samples
             completion(samples: samples, error: nil)
         }
@@ -240,7 +245,6 @@ public class HealthManager: NSObject, WCSessionDelegate {
             interval.day = 1
 
             // Set the anchor date to midnight today.
-            // TODO: Should be able to change according to user settings
             let anchorDate = NSDate().startOf(.Day, inRegion: Region())
             let quantityType = HKObjectType.quantityTypeForIdentifier(sampleType.identifier)!
 
@@ -417,7 +421,6 @@ public class HealthManager: NSObject, WCSessionDelegate {
 
                 let anchor = self.getAnchorForType(type)
                 let tname = type.displayText ?? type.identifier
-                //log.verbose("Anchor for type \(tname): \(anchor) \(anchor == noAnchor)")
 
                 var predicate : NSPredicate? = nil
 
@@ -466,9 +469,6 @@ public class HealthManager: NSObject, WCSessionDelegate {
                             self.setAnchorTSForType(nts, forType: type)
 
                             // Push acquisition times into profile, and subsequently Stormpath.
-                            // This should be used to implement profile-level delta queries with anchors, independently of whether
-                            // the local session on the application has been started. Thus, we should also use the profile anchor
-                            // to initialize the historical range, to prevent duplicate data from being uploaded to the server.
                             self.pushAcquisition(type)
                         }
                     }

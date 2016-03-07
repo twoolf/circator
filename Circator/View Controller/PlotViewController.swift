@@ -10,11 +10,16 @@ import UIKit
 import Charts
 import HealthKit
 import CircatorKit
-import Crashlytics
+import Fabric
 import SwiftDate
 import Async
 import Pages
 
+/**
+ Controls display of temporal plots and summary statistics.
+ 
+ - note: LineChart and BubbleChart types used
+ */
 class PlotViewController: UIViewController, ChartViewDelegate {
 
     var pageIndex  : Int! = nil

@@ -30,6 +30,12 @@ func ==(lhs: DiningEventKey, rhs: DiningEventKey) -> Bool
     return lhs.start == rhs.start && lhs.end == rhs.end
 }
 
+/**
+ lets us pull scheduled/repeated events into the dashboard
+ 
+ - note: can be scheduled by Siri with use of hotwords
+ - remark: used with IntroViewController and RepeatedEventsController
+ */
 public class EventManager : NSObject, WCSessionDelegate {
 
     public static let sharedManager = EventManager()

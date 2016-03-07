@@ -10,6 +10,11 @@ import CircatorKit
 import UIKit
 import Former
 
+/**
+ To store queries (saveQuery) for filtering displayed metrics on 1st and 2nd dashboard screens
+ 
+ - note: used in QueryViewController and QueryBuilderViewController
+ */
 class QueryWriterViewController : FormViewController {
     var query : String = ""
     var queryName : String = ""

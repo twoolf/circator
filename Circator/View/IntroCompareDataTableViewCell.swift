@@ -10,6 +10,11 @@ import UIKit
 import HealthKit
 import CircatorKit
 
+/**
+ enables tables in first page view of dashboard to have properties set
+ 
+ - note: setUserData, loadUserSamples, loadPopSamples to populate rows
+ */
 class IntroCompareDataTableViewCell: UITableViewCell {
 
     lazy var healthParameterImageView: UIImageView = {
@@ -118,7 +123,6 @@ class IntroCompareDataTableViewCell: UITableViewCell {
     override func setSelected(selected: Bool, animated: Bool) {
         super.setSelected(selected, animated: animated)
 
-        // Configure the view for the selected state
     }
 
 }

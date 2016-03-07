@@ -8,6 +8,11 @@
 
 import UIKit
 
+/**
+ To support picker menus
+ 
+ - note: could be easily extended to support other metrics for data entry
+ */
 class EventPickerManager: NSObject, UIPickerViewDataSource, UIPickerViewDelegate {
     
     enum Event {
@@ -95,7 +100,6 @@ class EventPickerManager: NSObject, UIPickerViewDataSource, UIPickerViewDelegate
     func pickerView(pickerView: UIPickerView, numberOfRowsInComponent component: Int) -> Int {
         switch event {
         case .Sleep:
-            // Note: it's not clear why this ever occurs, given #components is set before this call.
             if component >= EventPickerManager.sleepEndpointTypeStrings.count {
                 log.info("Invalid PV NRC \(pickerView.numberOfComponents) \(component)")
                 return 0
@@ -104,7 +108,6 @@ class EventPickerManager: NSObject, UIPickerViewDataSource, UIPickerViewDelegate
         case .Meal:
             return EventPickerManager.previewMealTypeStrings[component].count
         case .Exercise:
-            // Note: it's not clear why this ever occurs, given #components is set before this call.
             if component >= EventPickerManager.durationTypeStrings.count {
                 log.info("Invalid PV NRC \(pickerView.numberOfComponents) \(component)")
                 return 0
@@ -116,14 +119,12 @@ class EventPickerManager: NSObject, UIPickerViewDataSource, UIPickerViewDelegate
     func pickerView(pickerView: UIPickerView, titleForRow row: Int, forComponent component: Int) -> String? {
         switch event {
         case .Sleep:
-            // Note: it's not clear why this ever occurs, given #components is set before this call.
             if component >= EventPickerManager.sleepEndpointTypeStrings.count {
                 log.info("Invalid PVRow \(pickerView.numberOfComponents) \(component)")
                 return nil
             }
             return EventPickerManager.sleepEndpointTypeStrings[component][row]
         case .Exercise:
-            // Note: it's not clear why this ever occurs, given #components is set before this call.
             if component >= EventPickerManager.durationTypeStrings.count {
                 log.info("Invalid PVRow \(pickerView.numberOfComponents) \(component)")
                 return nil

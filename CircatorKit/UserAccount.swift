@@ -9,6 +9,11 @@
 import Foundation
 import Locksmith
 
+/**
+ sets up user accounts
+ 
+ - note: uses Stormpath for authentication
+ */
 struct UserAccount : ReadableSecureStorable,
                      CreateableSecureStorable,
                      DeleteableSecureStorable,

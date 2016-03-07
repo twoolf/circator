@@ -27,6 +27,11 @@ class MCButton : HTPressableButton {
     
 }
 
+/**
+ Enables updates for metrics selected, for recommended and optional choices.
+ 
+ - note: this view controls bulk upload from HealthKit history
+ */
 class SettingsViewController: UITableViewController, UITextFieldDelegate {
 
     private var formCells : [Int:[FormCell?]] = [:]
@@ -585,7 +590,6 @@ class SettingsViewController: UITableViewController, UITextFieldDelegate {
         }
     }
 
-    // TODO: Dodo dialog for wifi-availability warning
     func doUpload(sender: UIButton) {
         log.warning("Upload clicked")
     }

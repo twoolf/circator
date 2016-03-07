@@ -21,6 +21,11 @@ enum BuilderMode {
 private let lblFontSize = ScreenManager.sharedInstance.queryBuilderLabelFontSize()
 private let inputFontSize = ScreenManager.sharedInstance.queryBuilderInputFontSize()
 
+/**
+ To build queries for filtering displayed metrics on 1st and 2nd dashboard screens
+ 
+ - note: used in QueryViewController and QueryWriterViewController
+ */
 class QueryBuilderViewController: UIViewController, UITextFieldDelegate {
 
     let dataTableView: PredicateTableView = PredicateTableView(frame: CGRectMake(0, 0, 1000, 1000), style: .Plain)

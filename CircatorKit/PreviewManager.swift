@@ -11,6 +11,16 @@ import SwiftyUserDefaults
 
 private let PMSampleTypesKey = DefaultsKey<[NSData]?>("previewSampleTypes")
 
+/**
+Controls the HealthKit metrics that will be displayed on picker wheels, tableviews, and radar charts
+ 
+ - Parameters:
+ - previewChoices:        array of seven sub-arrays for metrics that can be displayed
+ - rowIcons:              images for each of the metrics
+ - previewSampleTypes:    current set of seven active metrics for display
+
+ */
+
 public class PreviewManager: NSObject {
     public static let previewSampleMeals = [
         "Breakfast",
@@ -86,6 +96,7 @@ public class PreviewManager: NSObject {
         return Dictionary(pairs: previewIcons.map { (k,v) in return (k, UIImage(named: v)!) })
     }()
 
+    /// note archiver for retaining memory of picked metrics
     public static var previewSampleTypes: [HKSampleType] {
         if let rawTypes = Defaults[PMSampleTypesKey] {
             return rawTypes.map { (data) -> HKSampleType in
@@ -108,11 +119,13 @@ public class PreviewManager: NSObject {
             return defaultTypes
         }
     }
-
+    
+    /// associates icon with sample type
     public static func iconForSampleType(sampleType: HKSampleType) -> UIImage {
         return rowIcons[sampleType] ?? UIImage()
     }
 
+    /// with RowSettingViewController enables new association for selected row
     public static func reselectSampleType(sampleType: HKSampleType, forPreviewRow row: Int) {
         guard row >= 0 && row < previewChoices.count else {
             return

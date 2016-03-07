@@ -17,6 +17,11 @@ private let btnFontSize = ScreenManager.sharedInstance.loginButtonFontSize()
 private let lblFontSize = ScreenManager.sharedInstance.loginLabelFontSize()
 private let inputFontSize = ScreenManager.sharedInstance.loginInputFontSize()
 
+/**
+ Controls the Login screens for the App.
+ 
+- note: for both signup and login; uses Stormpath for authentication
+ */
 class LoginViewController: UIViewController, UITableViewDelegate, UITableViewDataSource, UITextFieldDelegate {
 
     private var userCell: FormTextFieldCell?

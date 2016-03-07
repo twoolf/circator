@@ -50,6 +50,11 @@ private let defaultQueries : Queries = [
         ("Weight >200",    Query.ConjunctiveQuery([Predicate(Aggregate.AggAvg, "body_weight", Comparator.GTE, "200")]))
     ]
 
+/**
+ Manages queries to enable more meaningful comparisons against population data.
+ 
+ - note: works with PopulationHealthManager, QueryBuilderViewController, QueryViewController, QueryWriterViewController
+ */
 public class QueryManager {
     public static let sharedManager = QueryManager()
 
