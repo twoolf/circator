@@ -137,18 +137,20 @@ class LoginViewController: UIViewController, UITableViewDelegate, UITableViewDat
             }
             UserManager.sharedManager.loginWithPull { (error, _) in
                 guard !error else {
-                    Answers.logContentViewWithName("Answers looking at login View",
+/*                    Answers.logContentViewWithName("Answers looking at login View",
                         contentType: "Testing with Answers",
                         contentId: "near line 137",
-                        customAttributes: [:])
-                    BehaviorMonitor.sharedInstance.login(false)
+                        customAttributes: [:]) */
+                    Answers.logLoginWithMethod("SPL", success: false, customAttributes: nil)
+//                    BehaviorMonitor.sharedInstance.login(false)
                     UINotifications.invalidUserPass(self.navigationController!)
                     return
                 }
                 if let comp = self.completion { comp() }
                 UINotifications.doWelcome(self.parentView!, pop: true, user: UserManager.sharedManager.getUserId() ?? "")
                 Async.main {
-                    BehaviorMonitor.sharedInstance.login(true)
+                    Answers.logLoginWithMethod("SPL", success: true, customAttributes: nil)
+//                    BehaviorMonitor.sharedInstance.login(true)
                     self.parentView?.initializeBackgroundWork()
                 }
             }

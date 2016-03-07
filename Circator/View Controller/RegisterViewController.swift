@@ -11,6 +11,8 @@ import UIKit
 import Async
 import Former
 import FileKit
+import Crashlytics
+import SwiftDate
 
 private let lblFontSize = ScreenManager.sharedInstance.profileLabelFontSize()
 private let inputFontSize = ScreenManager.sharedInstance.profileInputFontSize()
@@ -204,7 +206,8 @@ class RegisterViewController : FormViewController {
                     UserManager.sharedManager.setUserId(user)
                 }
                 UINotifications.registrationError(self.navigationController!, msg: errormsg)
-                BehaviorMonitor.sharedInstance.register(false)
+                Answers.logSignUpWithMethod("SPR", success: false, customAttributes: nil)
+//                BehaviorMonitor.sharedInstance.register(false)
                 sender.enabled = true
                 return
             }
@@ -222,7 +225,8 @@ class RegisterViewController : FormViewController {
                     // login/logout functionality on the main dashboard.
 
                     UINotifications.loginFailed(self.navigationController!, pop: true, asNav: true, reason: reason)
-                    BehaviorMonitor.sharedInstance.register(false)
+                    Answers.logSignUpWithMethod("SPR", success: false, customAttributes: nil)
+//                    BehaviorMonitor.sharedInstance.register(false)
                     return
                 }
 
@@ -230,7 +234,8 @@ class RegisterViewController : FormViewController {
                     ConsentManager.sharedManager.removeConsentFile(consentPath)
                     self.doWelcome()
                     if let comp = self.registerCompletion { comp() }
-                    BehaviorMonitor.sharedInstance.register(true)
+                    Answers.logSignUpWithMethod("SPR", success: true, customAttributes: nil)
+//                    BehaviorMonitor.sharedInstance.register(true)
                 }
             }
         }

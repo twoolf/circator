@@ -9,6 +9,8 @@
 import CircatorKit
 import UIKit
 import Former
+import Crashlytics
+import SwiftDate
 
 /**
  To store queries (saveQuery) for filtering displayed metrics on 1st and 2nd dashboard screens
@@ -32,7 +34,11 @@ class QueryWriterViewController : FormViewController {
 
     override func viewDidAppear(animated: Bool) {
         super.viewDidAppear(animated)
-        BehaviorMonitor.sharedInstance.showView("QueryWriter", contentType: "")
+        Answers.logContentViewWithName("QueryWriter",
+            contentType: "",
+            contentId: NSDate().toString(DateFormat.Custom("YYYY-MM-dd:HH:mm:ss")),
+            customAttributes: nil)
+//        BehaviorMonitor.sharedInstance.showView("QueryWriter", contentType: "")
     }
 
     override func viewDidLoad() {

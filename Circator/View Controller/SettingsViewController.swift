@@ -11,6 +11,7 @@ import UIKit
 import Async
 import Former
 import HTPressableButton
+import Crashlytics
 import SwiftDate
 
 private let fieldCount           : Int   = UserProfile.sharedInstance.updateableReqRange.count+4
@@ -89,7 +90,11 @@ class SettingsViewController: UITableViewController, UITextFieldDelegate {
 
     override func viewDidAppear(animated: Bool) {
         super.viewDidAppear(animated)
-        BehaviorMonitor.sharedInstance.showView("Settings", contentType: "")
+        Answers.logContentViewWithName("Settings",
+            contentType: "",
+            contentId: NSDate().toString(DateFormat.Custom("YYYY-MM-dd:HH:mm:ss")),
+            customAttributes: nil)
+//        BehaviorMonitor.sharedInstance.showView("Settings", contentType: "")
     }
 
     override func viewDidLoad() {

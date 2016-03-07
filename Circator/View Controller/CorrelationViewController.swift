@@ -118,11 +118,11 @@ class CorrelationViewController: UIViewController, ChartViewDelegate {
                                 pv.goTo(idx)
                             }
                         }
-//                        Answers.logContentViewWithName("Answers looking at Correlate View",
-//                            contentType: "Testing with Answers",
-//                            contentId: "near line 115",
-//                            customAttributes: [:])
-                        BehaviorMonitor.sharedInstance.setValue("Correlate", contentType: self.getSampleDescriptor())
+                        Answers.logContentViewWithName("Correlate",
+                            contentType: self.getSampleDescriptor(),
+                            contentId: NSDate().toString(DateFormat.Custom("YYYY-MM-dd:HH:mm:ss")),
+                            customAttributes: nil)
+//                        BehaviorMonitor.sharedInstance.setValue("Correlate", contentType: self.getSampleDescriptor())
                     }
                 }
             }
@@ -141,11 +141,11 @@ class CorrelationViewController: UIViewController, ChartViewDelegate {
 
     override func viewDidAppear(animated: Bool) {
         super.viewDidAppear(animated)
-//        Answers.logContentViewWithName("Answers looking at Correlate View",
-//            contentType: "Testing with Answers",
-//            contentId: "near line 140",
-//            customAttributes: [:])
-        BehaviorMonitor.sharedInstance.showView("Correlate", contentType: getSampleDescriptor())
+        Answers.logContentViewWithName("Correlate",
+            contentType: getSampleDescriptor(),
+            contentId: NSDate().toString(DateFormat.Custom("YYYY-MM-dd:HH:mm:ss")),
+            customAttributes: nil)
+//        BehaviorMonitor.sharedInstance.showView("Correlate", contentType: getSampleDescriptor())
     }
 
     override func didReceiveMemoryWarning() {

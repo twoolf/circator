@@ -10,6 +10,7 @@ import Foundation
 import HealthKit
 import CircatorKit
 import Fabric
+import Crashlytics
 import SwiftDate
 import Async
 import SwiftChart
@@ -163,11 +164,11 @@ class EventTimeViewController : UIViewController {
 
     override func viewDidAppear(animated: Bool) {
         super.viewDidAppear(animated)
-//        Answers.logContentViewWithName("Answers looking at Meal Times",
-//            contentType: "Testing with Answers",
-//            contentId: "near line 168",
-//            customAttributes: [:])
-        BehaviorMonitor.sharedInstance.showView("MealTimes", contentType: "")
+        Answers.logContentViewWithName("MealTimes",
+            contentType: "",
+            contentId: NSDate().toString(DateFormat.Custom("YYYY-MM-dd:HH:mm:ss")),
+            customAttributes: nil)
+//        BehaviorMonitor.sharedInstance.showView("MealTimes", contentType: "")
     }
 
     override func viewDidLoad() {
@@ -346,11 +347,11 @@ class EventTimeViewController : UIViewController {
                     }
                 }
                 self.mealChart.setNeedsDisplay()
-//                Answers.logContentViewWithName("Answers looking at Meal Time Chart",
-//                    contentType: "Testing with Answers",
-//                    contentId: "near line 349",
-//                    customAttributes: [:])
-                BehaviorMonitor.sharedInstance.setValue("MealTimes", contentType: HKWorkoutType.workoutType().identifier)
+                Answers.logContentViewWithName("MealTimes",
+                    contentType: HKWorkoutType.workoutType().identifier,
+                    contentId: NSDate().toString(DateFormat.Custom("YYYY-MM-dd:HH:mm:ss")),
+                    customAttributes: nil)
+//                BehaviorMonitor.sharedInstance.setValue("MealTimes", contentType: HKWorkoutType.workoutType().identifier)
             }
         }
     }
