@@ -180,7 +180,7 @@ class RadarViewController : UIViewController, ChartViewDelegate {
 
     func indEntry(i: Int) -> ChartDataEntry {
         let type = PreviewManager.previewSampleTypes[i]
-        let samples = HealthManager.sharedManager.mostRecentSamples[type] ?? [HKSample]()
+        let samples = HealthManager.sharedManager.mostRecentSamples[type] ?? []
         let val = healthFormatter.numberFromSamples(samples)
         guard !val.isNaN else {
             return ChartDataEntry(value: 0.8, xIndex: i)

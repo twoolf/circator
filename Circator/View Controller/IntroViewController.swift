@@ -42,6 +42,24 @@ class IntroViewController: UIViewController,
     private var tevDisplayerCIndex : Int = 0
     private var tevSelectorCIndex : Int = 0
 
+    static let sampleFormatter = SampleFormatter()
+
+    static let previewTypes = Array(PreviewManager.previewChoices.flatten())
+    static let previewTypeStrings = PreviewManager.previewChoices.flatten().map { $0.displayText ?? HMConstants.sharedInstance.healthKitShortNames[$0.identifier]! }
+
+    static let extraPickerTypes = [HKObjectType.workoutType()]
+    static let extraPickerTypeStrings = [HKObjectType.workoutType().displayText ?? HMConstants.sharedInstance.healthKitShortNames[HKObjectType.workoutType().identifier]!]
+
+    private var pickerView: UIPickerView!
+
+    enum GraphMode {
+        case Plot(HKSampleType)
+        case Correlate(HKSampleType, HKSampleType)
+        case Event(EventPickerManager.Event)
+    }
+
+    private var selectedMode: GraphMode!
+
     lazy var logoImageView: UIImageView = {
         let view = UIImageView(image: UIImage(named: "logo_university")!)
         view.tintColor = Theme.universityDarkTheme.foregroundColor
@@ -420,11 +438,6 @@ class IntroViewController: UIViewController,
         return tableView
     }()
 
-    static let sampleFormatter = SampleFormatter()
-
-    static let previewTypes = Array(PreviewManager.previewChoices.flatten())
-    static let previewTypeStrings = PreviewManager.previewChoices.flatten().map { $0.displayText ?? HMConstants.sharedInstance.healthKitShortNames[$0.identifier]! }
-
     lazy var dummyTextField: UITextField = {
         let textField = UITextField()
         textField.inputAccessoryView = {
@@ -437,19 +450,10 @@ class IntroViewController: UIViewController,
             ]
 
             return view
-        }()
+            }()
         return textField
     }()
-
-    private var pickerView: UIPickerView!
-
-    enum GraphMode {
-        case Plot(HKSampleType)
-        case Correlate(HKSampleType, HKSampleType)
-        case Event(EventPickerManager.Event)
-    }
-
-    private var selectedMode: GraphMode!
+    
 
     // MARK: - Background Work
 
@@ -1051,20 +1055,21 @@ class IntroViewController: UIViewController,
     
     func pickerView(pickerView: UIPickerView, numberOfRowsInComponent component: Int) -> Int {
         if case .Correlate(_) = selectedMode! {
-            return IntroViewController.previewTypeStrings.count
+            return IntroViewController.previewTypeStrings.count + IntroViewController.extraPickerTypeStrings.count
         }
         else if case .Plot(_) = selectedMode! {
-            return IntroViewController.previewTypeStrings.count
+            return IntroViewController.previewTypeStrings.count + IntroViewController.extraPickerTypeStrings.count
         }
         return 0
     }
     
     func pickerView(pickerView: UIPickerView, titleForRow row: Int, forComponent component: Int) -> String? {
+        let pcnt = IntroViewController.previewTypeStrings.count
         if case .Correlate(_) = selectedMode! {
-            return IntroViewController.previewTypeStrings[row]
+            return row < pcnt ? IntroViewController.previewTypeStrings[row] : IntroViewController.extraPickerTypeStrings[row-pcnt]
         }
         else if case .Plot(_) = selectedMode! {
-            return IntroViewController.previewTypeStrings[row]
+            return row < pcnt ? IntroViewController.previewTypeStrings[row] : IntroViewController.extraPickerTypeStrings[row-pcnt]
         }
         return nil
     }
@@ -1072,13 +1077,17 @@ class IntroViewController: UIViewController,
     // MARK: - Picker view delegate
 
     func pickerView(pickerView: UIPickerView, didSelectRow row: Int, inComponent component: Int) {
+        let pcnt = IntroViewController.previewTypeStrings.count
         if case .Correlate(_) = selectedMode! {
-            let ltype = IntroViewController.previewTypes[pickerView.selectedRowInComponent(0)]
-            let rtype = IntroViewController.previewTypes[pickerView.selectedRowInComponent(1)]
+            let lrow = pickerView.selectedRowInComponent(0)
+            let rrow = pickerView.selectedRowInComponent(1)
+            let ltype = lrow < pcnt ? IntroViewController.previewTypes[lrow] : IntroViewController.extraPickerTypes[lrow-pcnt]
+            let rtype = rrow < pcnt ? IntroViewController.previewTypes[rrow] : IntroViewController.extraPickerTypes[rrow-pcnt]
             selectedMode = GraphMode.Correlate(ltype, rtype)
         }
         else if case .Plot(_) = selectedMode! {
-            selectedMode = GraphMode.Plot(IntroViewController.previewTypes[row])
+            let type = row < pcnt ? IntroViewController.previewTypes[row] : IntroViewController.extraPickerTypes[row - pcnt]
+            selectedMode = GraphMode.Plot(type)
         }
     }
 

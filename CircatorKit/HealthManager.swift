@@ -355,7 +355,6 @@ public class HealthManager: NSObject, WCSessionDelegate {
                     dispatch_group_leave(group)
                     return
                 }
-                log.info("fetchSamples: \(type.identifier) \(samples.count)")
                 samplesByType[type] = samples
                 dispatch_group_leave(group)
             }
