@@ -77,7 +77,6 @@ class CorrelationViewController: UIViewController, ChartViewDelegate {
 
                 Async.background {
                     HealthManager.sharedManager.correlateStatisticsOfType(self.sampleTypes[0], withType: self.sampleTypes[1]) { (stat1, stat2, error) -> Void in
-                        log.info("correlate sizes \(stat1.count) \(stat2.count)")
                         guard (error == nil) && !(stat1.isEmpty || stat2.isEmpty) else {
                             Async.main {
                                 if let idx = self.errorIndex, pv = self.parentViewController as? PagesController {

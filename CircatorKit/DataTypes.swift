@@ -147,7 +147,6 @@ public struct MCAggregateSample : MCSample {
 
             case HKWorkoutTypeIdentifier:
                 numeralValue = (numeralValue ?? 0.0) + sample.numeralValue!
-                log.info("MCSample incr meal \(sample.numeralValue!)")
 
             default:
                 log.error("Cannot aggregate \(hkType)")
