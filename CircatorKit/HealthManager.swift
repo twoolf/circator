@@ -104,9 +104,8 @@ public class HealthManager: NSObject, WCSessionDelegate {
     // MARK: - HealthKit sample retrieval.
 
     // Completion handler is on background queue
-    public func fetchSamplesOfType(sampleType: HKSampleType, predicate: NSPredicate? = nil,
-                                   limit: Int = noLimit, sortDescriptors: [NSSortDescriptor]? = [dateAsc],
-                                   completion: HMSampleBlock)
+    public func fetchSamplesOfType(sampleType: HKSampleType, predicate: NSPredicate? = nil, limit: Int = noLimit,
+                                   sortDescriptors: [NSSortDescriptor]? = [dateAsc], completion: HMSampleBlock)
     {
         let query = HKSampleQuery(sampleType: sampleType, predicate: predicate, limit: limit, sortDescriptors: sortDescriptors) {
             (query, samples, error) -> Void in
@@ -275,8 +274,10 @@ public class HealthManager: NSObject, WCSessionDelegate {
         var results2: [MCSample]?
 
         func hasSamplesAtStartDate(array: [MCSample], startDate: NSDate) -> Bool  {
+            let day = startDate.startOf(.Day, inRegion: Region())
             for element in array {
-                if startDate.compare(element.startDate) == .OrderedSame && element.numeralValue != nil {
+                let elemday = element.startDate.startOf(.Day, inRegion: Region())
+                if day.compare(elemday) == .OrderedSame && element.numeralValue != nil {
                     return true
                 }
             }
@@ -322,7 +323,7 @@ public class HealthManager: NSObject, WCSessionDelegate {
                 var j = i
                 let target = results1![i]
 
-                while j > 0 && target.numeralValue! > results1![j - 1].numeralValue! {
+                while j > 0 && target.numeralValue! < results1![j - 1].numeralValue! {
                     swap(&results1![j], &results1![j - 1])
                     swap(&results2![j], &results2![j - 1])
                     j--
