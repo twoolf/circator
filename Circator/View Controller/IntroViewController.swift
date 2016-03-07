@@ -1083,7 +1083,6 @@ class IntroViewController: UIViewController,
             let rrow = pickerView.selectedRowInComponent(1)
             let ltype = lrow < pcnt ? IntroViewController.previewTypes[lrow] : IntroViewController.extraPickerTypes[lrow-pcnt]
             let rtype = rrow < pcnt ? IntroViewController.previewTypes[rrow] : IntroViewController.extraPickerTypes[rrow-pcnt]
-            log.info("correlating \(ltype) \(rtype)")
             selectedMode = GraphMode.Correlate(ltype, rtype)
         }
         else if case .Plot(_) = selectedMode! {

@@ -87,7 +87,6 @@ class PlotDataAnalyzer: SampleDataAnalyzer {
             let entries: [ChartDataEntry] = samples.map { (sample) -> ChartDataEntry in
                 let dayDiff = zeroDate.difference(sample.startDate.startOf(.Day, inRegion: Region()), unitFlags: .Day)
                 let val = sample.numeralValue ?? 0.0
-                log.info("Plot val \(val)")
                 return ChartDataEntry(value: val, xIndex: dayDiff!.day)
             }
 
