@@ -9,6 +9,8 @@
 
 import CircatorKit
 import UIKit
+import Crashlytics
+import SwiftDate
 
 /**
  Enables Settings for each Row to be updated.
@@ -29,7 +31,11 @@ class RowSettingsViewController: UITableViewController {
 
     override func viewDidAppear(animated: Bool) {
         super.viewDidAppear(animated)
-        BehaviorMonitor.sharedInstance.showView("RowSettings", contentType: String(selectedRow))
+        Answers.logContentViewWithName("RowSettings",
+            contentType: String(selectedRow),
+            contentId: NSDate().toString(DateFormat.Custom("YYYY-MM-dd:HH:mm:ss")),
+            customAttributes: nil)
+//        BehaviorMonitor.sharedInstance.showView("RowSettings", contentType: String(selectedRow))
     }
 
     override func viewDidLoad() {

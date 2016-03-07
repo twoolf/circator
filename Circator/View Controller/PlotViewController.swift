@@ -11,6 +11,7 @@ import Charts
 import HealthKit
 import CircatorKit
 import Fabric
+import Crashlytics
 import SwiftDate
 import Async
 import Pages
@@ -101,7 +102,11 @@ class PlotViewController: UIViewController, ChartViewDelegate {
                             return
                         }
                         self.plotResults(results)
-                        BehaviorMonitor.sharedInstance.setValue("Plot", contentType: self.sampleType.identifier)
+                        Answers.logContentViewWithName("Plot",
+                            contentType: self.sampleType.identifier,
+                            contentId: NSDate().toString(DateFormat.Custom("YYYY-MM-dd:HH:mm:ss")),
+                            customAttributes: nil)
+//                        BehaviorMonitor.sharedInstance.setValue("Plot", contentType: self.sampleType.identifier)
                     }
                 }
             }
@@ -120,11 +125,15 @@ class PlotViewController: UIViewController, ChartViewDelegate {
 
     override func viewDidAppear(animated: Bool) {
         super.viewDidAppear(animated)
-        Answers.logContentViewWithName("Answers looking at Plot View",
+/*        Answers.logContentViewWithName("Answers looking at Plot View",
             contentType: "Testing with Answers",
             contentId: "near line 120",
-            customAttributes: [:])
-        BehaviorMonitor.sharedInstance.showView("Plot", contentType: sampleType.identifier)
+            customAttributes: [:]) */
+        Answers.logContentViewWithName("Plot",
+            contentType: sampleType.identifier,
+            contentId: NSDate().toString(DateFormat.Custom("YYYY-MM-dd:HH:mm:ss")),
+            customAttributes: nil)
+//        BehaviorMonitor.sharedInstance.showView("Plot", contentType: sampleType.identifier)
     }
 
     override func viewWillDisappear(animated: Bool) {

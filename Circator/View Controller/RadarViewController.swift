@@ -11,6 +11,7 @@ import HealthKit
 import CircatorKit
 import Charts
 import Fabric
+import Crashlytics
 import SwiftDate
 
 /**
@@ -112,7 +113,11 @@ class RadarViewController : UIViewController, ChartViewDelegate {
 
     override func viewDidAppear(animated: Bool) {
         super.viewDidAppear(animated)
-        BehaviorMonitor.sharedInstance.showView("Radar", contentType: "")
+        Answers.logContentViewWithName("Radar",
+            contentType: "",
+            contentId: NSDate().toString(DateFormat.Custom("YYYY-MM-dd:HH:mm:ss")),
+            customAttributes: nil)
+//        BehaviorMonitor.sharedInstance.showView("Radar", contentType: "")
     }
 
     override func viewDidLoad() {

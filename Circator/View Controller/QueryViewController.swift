@@ -10,6 +10,7 @@ import CircatorKit
 import UIKit
 import MGSwipeTableCell
 import Crashlytics
+import SwiftDate
 
 /**
  To support queries for filtering displayed metrics on 1st and 2nd dashboard screens
@@ -27,11 +28,15 @@ class QueryViewController: UITableViewController {
 
     override func viewDidAppear(animated: Bool) {
         super.viewDidAppear(animated)
-        Answers.logContentViewWithName("Answers looking at Queries",
+/*        Answers.logContentViewWithName("Answers looking at Queries",
             contentType: "Testing with Answers",
             contentId: "near line 26",
-            customAttributes: [:])
-        BehaviorMonitor.sharedInstance.showView("Query", contentType: "")
+            customAttributes: [:]) */
+        Answers.logContentViewWithName("Query",
+            contentType: "",
+            contentId: NSDate().toString(DateFormat.Custom("YYYY-MM-dd:HH:mm:ss")),
+            customAttributes: nil)
+//        BehaviorMonitor.sharedInstance.showView("Query", contentType: "")
     }
     
     override func viewDidLoad() {
