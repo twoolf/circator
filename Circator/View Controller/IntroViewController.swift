@@ -550,6 +550,10 @@ class IntroViewController: UIViewController,
             aggregateFetchTask = nil
         }
         PopulationHealthManager.sharedManager.resetAggregates()
+        doDataRefresh()
+    }
+
+    func doDataRefresh() {
         Async.main {
             self.tableView.reloadData()
             self.radarController.reloadData()
@@ -1014,6 +1018,7 @@ class IntroViewController: UIViewController,
 
     func showSettings(sender: UIButton) {
         let settingsViewController = SettingsViewController()
+        settingsViewController.introView = self
         navigationController?.pushViewController(settingsViewController, animated: true)
     }
 

@@ -99,10 +99,10 @@ class QueryBuilderViewController: UIViewController, UITextFieldDelegate {
 
     override func viewDidAppear(animated: Bool) {
         super.viewDidAppear(animated)
-        Answers.logContentViewWithName("Answers looking at Queries",
-            contentType: "Testing with Answers",
-            contentId: "near line 98",
-            customAttributes: [:])
+//        Answers.logContentViewWithName("Answers looking at Queries",
+//            contentType: "Testing with Answers",
+//            contentId: "near line 98",
+//            customAttributes: [:])
         BehaviorMonitor.sharedInstance.showView("QueryBuilder", contentType: "")
     }
 

@@ -120,10 +120,10 @@ class PlotViewController: UIViewController, ChartViewDelegate {
 
     override func viewDidAppear(animated: Bool) {
         super.viewDidAppear(animated)
-        Answers.logContentViewWithName("Answers looking at Plot View",
-            contentType: "Testing with Answers",
-            contentId: "near line 120",
-            customAttributes: [:])
+//        Answers.logContentViewWithName("Answers looking at Plot View",
+//            contentType: "Testing with Answers",
+//            contentId: "near line 120",
+//            customAttributes: [:])
         BehaviorMonitor.sharedInstance.showView("Plot", contentType: sampleType.identifier)
     }
 

@@ -163,10 +163,10 @@ class EventTimeViewController : UIViewController {
 
     override func viewDidAppear(animated: Bool) {
         super.viewDidAppear(animated)
-        Answers.logContentViewWithName("Answers looking at Meal Times",
-            contentType: "Testing with Answers",
-            contentId: "near line 168",
-            customAttributes: [:])
+//        Answers.logContentViewWithName("Answers looking at Meal Times",
+//            contentType: "Testing with Answers",
+//            contentId: "near line 168",
+//            customAttributes: [:])
         BehaviorMonitor.sharedInstance.showView("MealTimes", contentType: "")
     }
 
@@ -346,10 +346,10 @@ class EventTimeViewController : UIViewController {
                     }
                 }
                 self.mealChart.setNeedsDisplay()
-                Answers.logContentViewWithName("Answers looking at Meal Time Chart",
-                    contentType: "Testing with Answers",
-                    contentId: "near line 349",
-                    customAttributes: [:])
+//                Answers.logContentViewWithName("Answers looking at Meal Time Chart",
+//                    contentType: "Testing with Answers",
+//                    contentId: "near line 349",
+//                    customAttributes: [:])
                 BehaviorMonitor.sharedInstance.setValue("MealTimes", contentType: HKWorkoutType.workoutType().identifier)
             }
         }

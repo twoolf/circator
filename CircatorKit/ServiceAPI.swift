@@ -16,6 +16,10 @@ let log = SwiftyBeaver.self
 public typealias SvcStringCompletion = (Bool, String?) -> Void
 public typealias SvcObjectCompletion = (Bool, AnyObject?) -> Void
 
+private let devServiceURL = "https://dev.metaboliccompass.com"
+private let prodServiceURL = "https://app.metaboliccompass.com"
+private let asDevService = false
+
 /**
  sets up API for reads/writes to cloud data store
  
@@ -23,7 +27,7 @@ public typealias SvcObjectCompletion = (Bool, AnyObject?) -> Void
  - remark: authentication using OAuthToken
  */
 enum MCRouter : URLRequestConvertible {
-    static let baseURLString = "https://app.metaboliccompass.com"
+    static let baseURLString = asDevService ? devServiceURL : prodServiceURL
     static var OAuthToken: String?
 
     // Data API

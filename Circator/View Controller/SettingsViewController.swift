@@ -34,6 +34,8 @@ class MCButton : HTPressableButton {
  */
 class SettingsViewController: UITableViewController, UITextFieldDelegate {
 
+    var introView : IntroViewController! = nil
+
     private var formCells : [Int:[FormCell?]] = [:]
 
     private var userCell: FormTextFieldCell?
@@ -114,7 +116,7 @@ class SettingsViewController: UITableViewController, UITextFieldDelegate {
     }
 
     override func tableView(tableView: UITableView, heightForRowAtIndexPath indexPath: NSIndexPath) -> CGFloat {
-        if (indexPath.section == 4 && indexPath.row == 0) || (indexPath.section == 5 && indexPath.row == 0) { return 65.0 }
+        if (indexPath.section == 4 && indexPath.row == 0) { return 65.0 }
         else { return 44.0 }
     }
 
@@ -173,13 +175,13 @@ class SettingsViewController: UITableViewController, UITextFieldDelegate {
                 withdrawButton = {
                     let button = MCButton(frame: cell.contentView.frame, buttonStyle: .Rounded)
                     button.cornerRadius = 4.0
-                    button.buttonColor = UIColor.ht_emeraldColor()
-                    button.shadowColor = UIColor.ht_nephritisColor()
+                    button.buttonColor = UIColor.ht_alizarinColor()
+                    button.shadowColor = UIColor.ht_pomegranateColor()
                     button.shadowHeight = 4
                     button.setTitle("Delete Account", forState: .Normal)
                     button.titleLabel?.font = UIFont.systemFontOfSize(18, weight: UIFontWeightRegular)
                     button.addTarget(self, action: "doDeleteAccount:", forControlEvents: .TouchUpInside)
-                    button.enabled = true
+                    button.enabled = UserManager.sharedManager.hasUserId()
                     return button
                 }()
             }
@@ -597,7 +599,12 @@ class SettingsViewController: UITableViewController, UITextFieldDelegate {
     func doDeleteAccount(sender: UIButton) {
         UserManager.sharedManager.withdraw { success in
             if success {
-                let msg = "Thanks for using Metabolic Compass"
+                PopulationHealthManager.sharedManager.resetAggregates()
+                if let iv = self.introView {
+                    log.info("Resetting IntroView on deletion")
+                    iv.doDataRefresh()
+                }
+                let msg = "Thanks for using Metabolic Compass!"
                 UINotifications.genericMsg(self.navigationController!, msg: msg, pop: true, asNav: true)
             } else {
                 let msg = "Failed to delete account, please try again later"
