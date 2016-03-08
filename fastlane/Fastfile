@@ -191,6 +191,11 @@ platform :ios do
     }
   end
 
+  desc "Set a specific build number"
+  lane :build_version do |options|
+    increment_build_number(build_number: options[:build_number])
+  end
+
   desc "Build a development archive"
   lane :build_dev do
     cocoapods
