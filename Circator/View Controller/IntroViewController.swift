@@ -22,6 +22,10 @@ private let mcControlButtonHeight = ScreenManager.sharedInstance.dashboardButton
 
 private let hkAccessTimeout = 60.seconds
 
+// Helper predicates
+private let mealsPredicate = HKQuery.predicateForWorkoutsWithWorkoutActivityType(HKWorkoutActivityType.PreparationAndRecovery)
+private let notMealsPredicate = NSCompoundPredicate(notPredicateWithSubpredicate: HKQuery.predicateForWorkoutsWithWorkoutActivityType(HKWorkoutActivityType.PreparationAndRecovery))
+
 /**
  Main view controller for Metabolic Compass.
  
@@ -53,14 +57,25 @@ class IntroViewController: UIViewController,
     static let previewTypes = Array(PreviewManager.previewChoices.flatten())
     static let previewTypeStrings = PreviewManager.previewChoices.flatten().map { $0.displayText ?? HMConstants.sharedInstance.healthKitShortNames[$0.identifier]! }
 
-    static let extraPickerTypes = [HKObjectType.workoutType()]
-    static let extraPickerTypeStrings = [HKObjectType.workoutType().displayText ?? HMConstants.sharedInstance.healthKitShortNames[HKObjectType.workoutType().identifier]!]
+    static let extraPickerTypes : [(HKSampleType, PlotSpec!)] = [
+        (HKObjectType.workoutType(), .PlotPredicate(mealsPredicate)),
+        (HKObjectType.workoutType(), .PlotPredicate(notMealsPredicate)),
+        (HKObjectType.workoutType(), .PlotFasting),
+        (HKObjectType.workoutType(), nil),
+    ]
+
+    static let extraPickerTypeStrings = [
+        "Meals",
+        "Workouts",
+        "Fasting times",
+        "Meals and workouts",
+    ]
 
     private var pickerView: UIPickerView!
 
     enum GraphMode {
-        case Plot(HKSampleType)
-        case Correlate(HKSampleType, HKSampleType)
+        case Plot(HKSampleType, PlotSpec!)
+        case Correlate(HKSampleType, PlotSpec!, HKSampleType, PlotSpec!)
         case Event(EventPickerManager.Event)
     }
 
@@ -803,11 +818,11 @@ class IntroViewController: UIViewController,
         }
         if sender == correlateButton {
             initializePickerView()
-            selectedMode = GraphMode.Correlate(IntroViewController.previewTypes[0], IntroViewController.previewTypes[0])
+            selectedMode = GraphMode.Correlate(IntroViewController.previewTypes[0], nil, IntroViewController.previewTypes[0], nil)
         }
         else if sender == plotButton {
             initializePickerView()
-            selectedMode = GraphMode.Plot(IntroViewController.previewTypes[0])
+            selectedMode = GraphMode.Plot(IntroViewController.previewTypes[0], nil)
         } else {
             var event: EventPickerManager.Event!
             if sender == foodButton {
@@ -877,11 +892,11 @@ class IntroViewController: UIViewController,
         dummyTextField.resignFirstResponder()
         switch selectedMode! {
 
-        case let .Correlate(type1, type2):
-            correlateView(type1, type2: type2)
+        case let .Correlate(type1, spec1, type2, spec2):
+            correlateView(type1, type2: type2, spec1: spec1, spec2: spec2)
 
-        case .Plot(let type):
-            plotView(type)
+        case let .Plot(type, spec):
+            plotView(type, spec: spec)
 
         case .Event(let event):
             switch event {
@@ -974,7 +989,7 @@ class IntroViewController: UIViewController,
         }
     }
 
-    private func plotView(type: HKSampleType) {
+    private func plotView(type: HKSampleType, spec: PlotSpec! = nil) {
         let errorVC = ErrorViewController()
         errorVC.image = UIImage(named: "icon_broken_heart")
         errorVC.msg = "We're heartbroken to see you\nhave no \(type.displayText!) data"
@@ -984,6 +999,7 @@ class IntroViewController: UIViewController,
         renderVC.msg = "Rendering data, please wait..."
 
         let plotVC = PlotViewController()
+        plotVC.spec = spec
         plotVC.sampleType = type
         plotVC.pageIndex = 0
         plotVC.errorIndex = 1
@@ -995,7 +1011,7 @@ class IntroViewController: UIViewController,
         navigationController?.pushViewController(variantVC, animated: true)
     }
 
-    private func correlateView(type1: HKSampleType, type2: HKSampleType) {
+    private func correlateView(type1: HKSampleType, type2: HKSampleType, spec1: PlotSpec! = nil, spec2: PlotSpec! = nil) {
         let errorVC = ErrorViewController()
         errorVC.image = UIImage(named: "icon_broken_heart")
         errorVC.msg = "We're heartbroken to see you have no\n\(type1.displayText!) or \(type2.displayText!) data"
@@ -1005,6 +1021,8 @@ class IntroViewController: UIViewController,
         renderVC.msg = "Rendering data, please wait..."
 
         let correlateVC = CorrelationViewController()
+        correlateVC.lspec = spec1
+        correlateVC.rspec = spec2
         correlateVC.sampleTypes = [type1, type2]
         correlateVC.pageIndex = 0
         correlateVC.errorIndex = 1
@@ -1089,13 +1107,16 @@ class IntroViewController: UIViewController,
         if case .Correlate(_) = selectedMode! {
             let lrow = pickerView.selectedRowInComponent(0)
             let rrow = pickerView.selectedRowInComponent(1)
-            let ltype = lrow < pcnt ? IntroViewController.previewTypes[lrow] : IntroViewController.extraPickerTypes[lrow-pcnt]
-            let rtype = rrow < pcnt ? IntroViewController.previewTypes[rrow] : IntroViewController.extraPickerTypes[rrow-pcnt]
-            selectedMode = GraphMode.Correlate(ltype, rtype)
+            let ltype = lrow < pcnt ? IntroViewController.previewTypes[lrow] : IntroViewController.extraPickerTypes[lrow-pcnt].0
+            let rtype = rrow < pcnt ? IntroViewController.previewTypes[rrow] : IntroViewController.extraPickerTypes[rrow-pcnt].0
+            let lspec = lrow < pcnt ? nil : IntroViewController.extraPickerTypes[lrow-pcnt].1
+            let rspec = rrow < pcnt ? nil : IntroViewController.extraPickerTypes[rrow-pcnt].1
+            selectedMode = GraphMode.Correlate(ltype, lspec, rtype, rspec)
         }
         else if case .Plot(_) = selectedMode! {
-            let type = row < pcnt ? IntroViewController.previewTypes[row] : IntroViewController.extraPickerTypes[row - pcnt]
-            selectedMode = GraphMode.Plot(type)
+            let type = row < pcnt ? IntroViewController.previewTypes[row] : IntroViewController.extraPickerTypes[row - pcnt].0
+            let spec = row < pcnt ? nil : IntroViewController.extraPickerTypes[row - pcnt].1
+            selectedMode = GraphMode.Plot(type, spec)
         }
     }
 

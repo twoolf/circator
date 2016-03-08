@@ -67,7 +67,10 @@ class CorrelationViewController: UIViewController, ChartViewDelegate {
         chart.legend.textColor = Theme.universityDarkTheme.backgroundColor
         return chart
     }()
-    
+
+    var lspec: PlotSpec!
+    var rspec: PlotSpec!
+
     var sampleTypes: [HKSampleType]! {
         didSet {
             Async.main {
@@ -76,63 +79,127 @@ class CorrelationViewController: UIViewController, ChartViewDelegate {
                 self.correlationLabel.text = NSLocalizedString("\(attr2) Relative to Increasing \(attr1)", comment: "Plot view section title label")
 
                 Async.background {
-                    HealthManager.sharedManager.correlateStatisticsOfType(self.sampleTypes[0], withType: self.sampleTypes[1]) { (stat1, stat2, error) -> Void in
-                        guard (error == nil) && !(stat1.isEmpty || stat2.isEmpty) else {
-                            Async.main {
-                                if let idx = self.errorIndex, pv = self.parentViewController as? PagesController {
-                                    pv.goTo(idx)
+                    switch (self.lspec!, self.rspec!) {
+                    case (.PlotFasting, .PlotFasting):
+                        HealthManager.sharedManager.fetchMaxFastingTimes { (aggregates, error) in
+                            guard (error == nil) && !aggregates.isEmpty else {
+                                Async.main {
+                                    if let idx = self.errorIndex, pv = self.parentViewController as? PagesController {
+                                        pv.goTo(idx)
+                                    }
                                 }
+                                return
                             }
-                            return
+                            self.correlateFastingSelf(aggregates)
                         }
 
-                        let analyzer = CorrelationDataAnalyzer(sampleTypes: self.sampleTypes, samples: [stat1, stat2])!
-                        let configurator: ((LineChartDataSet) -> Void)? = { dataSet in
-                            dataSet.drawCircleHoleEnabled = false
-                            dataSet.circleRadius = 6
-                            dataSet.valueFormatter = SampleFormatter.numberFormatter
-                            dataSet.circleColors = [Theme.universityDarkTheme.complementForegroundColors!.colorWithVibrancy(0.6)!]
-                            dataSet.colors = [Theme.universityDarkTheme.complementForegroundColors!.colorWithVibrancy(0.6)!]
-                            dataSet.lineWidth = 2
-                            dataSet.fillColor = Theme.universityDarkTheme.complementForegroundColors!.colorWithVibrancy(0.6)!
-                            dataSet.axisDependency = .Left
-                        }
-                        let configurator2: ((LineChartDataSet) -> Void)? = { dataSet in
-                            dataSet.drawCircleHoleEnabled = false
-                            dataSet.circleRadius = 6
-                            dataSet.valueFormatter = SampleFormatter.numberFormatter
-                            dataSet.circleColors = [Theme.universityDarkTheme.complementForegroundColors!.colorWithVibrancy(0.9)!]
-                            dataSet.colors = [Theme.universityDarkTheme.complementForegroundColors!.colorWithVibrancy(0.9)!]
-                            dataSet.lineWidth = 2
-                            dataSet.fillColor = Theme.universityDarkTheme.complementForegroundColors!.colorWithVibrancy(0.9)!
-                            dataSet.axisDependency = .Right
-                        }
-                        analyzer.dataSetConfigurators = [configurator, configurator2]
-                        let cdata = analyzer.correlationChartData
-                        self.correlationChart.data = cdata.yValCount == 0 ? nil : cdata
-                        self.correlationChart.data?.setValueTextColor(Theme.universityDarkTheme.bodyTextColor)
-                        self.correlationChart.data?.setValueFont(UIFont.systemFontOfSize(10, weight: UIFontWeightThin))
-
-                        Async.main {
-                            if let idx = self.pageIndex, pv = self.parentViewController as? PagesController {
-                                pv.goTo(idx)
+                    case let (.PlotFasting, .PlotPredicate(predicate)):
+                        HealthManager.sharedManager.correlateWithFasting(false, type: self.sampleTypes[1], predicate: predicate) {
+                            (zipped, error) -> Void in
+                            guard (error == nil) && !zipped.isEmpty else {
+                                Async.main {
+                                    if let idx = self.errorIndex, pv = self.parentViewController as? PagesController {
+                                        pv.goTo(idx)
+                                    }
+                                }
+                                return
                             }
+                            self.correlateFasting(zipped)
                         }
-                        Answers.logContentViewWithName("Correlate",
-                            contentType: self.getSampleDescriptor(),
-                            contentId: NSDate().toString(DateFormat.Custom("YYYY-MM-dd:HH:mm:ss")),
-                            customAttributes: nil)
+
+                    case let (.PlotPredicate(predicate), .PlotFasting):
+                        HealthManager.sharedManager.correlateWithFasting(false, type: self.sampleTypes[0], predicate: predicate) {
+                            (zipped, error) -> Void in
+                            guard (error == nil) && !zipped.isEmpty else {
+                                Async.main {
+                                    if let idx = self.errorIndex, pv = self.parentViewController as? PagesController {
+                                        pv.goTo(idx)
+                                    }
+                                }
+                                return
+                            }
+                            self.correlateFasting(zipped, flipTypes: true)
+                        }
+
+                    case let (.PlotPredicate(lpred), .PlotPredicate(rpred)):
+                        HealthManager.sharedManager.correlateStatisticsOfType(self.sampleTypes[0], withType: self.sampleTypes[1], pred1: lpred, pred2: rpred) {
+                            (stat1, stat2, error) -> Void in
+                            guard (error == nil) && !(stat1.isEmpty || stat2.isEmpty) else {
+                                Async.main {
+                                    if let idx = self.errorIndex, pv = self.parentViewController as? PagesController {
+                                        pv.goTo(idx)
+                                    }
+                                }
+                                return
+                            }
+                            self.correlateSamplePair(stat1, stat2: stat2)
+                        }
                     }
                 }
             }
         }
     }
 
+    func correlateSamplePair(stat1: [MCSample], stat2: [MCSample]) {
+        let analyzer = CorrelationDataAnalyzer(sampleTypes: self.sampleTypes, samples: [stat1, stat2])!
+        self.plotCorrelate(analyzer)
+    }
+
+    func correlateFastingSelf(aggregates: [(NSDate, Double)]) {
+        let analyzer = CorrelationDataAnalyzer(sampleTypes: self.sampleTypes, values: [aggregates, aggregates])!
+        self.plotCorrelate(analyzer)
+    }
+
+    func correlateFasting(zipped: [(NSDate, Double, MCSample)], flipTypes: Bool = false) {
+        let types = flipTypes ? [sampleTypes[1], sampleTypes[0]] : sampleTypes
+        let analyzer = CorrelationDataAnalyzer(sampleTypes: types, zipped: zipped)!
+        self.plotCorrelate(analyzer)
+    }
+
+    func plotCorrelate(analyzer: CorrelationDataAnalyzer) {
+        let configurator: ((LineChartDataSet) -> Void)? = { dataSet in
+            dataSet.drawCircleHoleEnabled = false
+            dataSet.circleRadius = 6
+            dataSet.valueFormatter = SampleFormatter.numberFormatter
+            dataSet.circleColors = [Theme.universityDarkTheme.complementForegroundColors!.colorWithVibrancy(0.6)!]
+            dataSet.colors = [Theme.universityDarkTheme.complementForegroundColors!.colorWithVibrancy(0.6)!]
+            dataSet.lineWidth = 2
+            dataSet.fillColor = Theme.universityDarkTheme.complementForegroundColors!.colorWithVibrancy(0.6)!
+            dataSet.axisDependency = .Left
+        }
+        let configurator2: ((LineChartDataSet) -> Void)? = { dataSet in
+            dataSet.drawCircleHoleEnabled = false
+            dataSet.circleRadius = 6
+            dataSet.valueFormatter = SampleFormatter.numberFormatter
+            dataSet.circleColors = [Theme.universityDarkTheme.complementForegroundColors!.colorWithVibrancy(0.9)!]
+            dataSet.colors = [Theme.universityDarkTheme.complementForegroundColors!.colorWithVibrancy(0.9)!]
+            dataSet.lineWidth = 2
+            dataSet.fillColor = Theme.universityDarkTheme.complementForegroundColors!.colorWithVibrancy(0.9)!
+            dataSet.axisDependency = .Right
+        }
+        analyzer.dataSetConfigurators = [configurator, configurator2]
+        let cdata = analyzer.correlationChartData
+        self.correlationChart.data = cdata.yValCount == 0 ? nil : cdata
+        self.correlationChart.data?.setValueTextColor(Theme.universityDarkTheme.bodyTextColor)
+        self.correlationChart.data?.setValueFont(UIFont.systemFontOfSize(10, weight: UIFontWeightThin))
+
+        Async.main {
+            if let idx = self.pageIndex, pv = self.parentViewController as? PagesController {
+                pv.goTo(idx)
+            }
+        }
+
+        Answers.logContentViewWithName("Correlate",
+            contentType: self.getSampleDescriptor(),
+            contentId: NSDate().toString(DateFormat.Custom("YYYY-MM-dd:HH:mm:ss")),
+            customAttributes: nil)
+    }
+
     override func viewDidLoad() {
         super.viewDidLoad()
         configureViews()
     }
-    
+
     override func viewWillAppear(animated: Bool) {
         super.viewWillAppear(animated)
         navigationController?.setNavigationBarHidden(false, animated: false)

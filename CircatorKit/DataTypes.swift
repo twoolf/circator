@@ -9,6 +9,13 @@
 import Foundation
 import HealthKit
 
+public enum CircadianEvent {
+    case Meal
+    case Fast
+    case Sleep
+    case Exercise
+}
+
 /*
  * A protocol for unifying common metadata across HKSample and HKStatistic
  */
@@ -282,7 +289,7 @@ public extension HKSampleType {
             return NSLocalizedString("UV Exposure", comment: "HealthKit data type")
 
         case HKWorkoutTypeIdentifier:
-            return NSLocalizedString("Eating Window", comment: "HealthKit data type")
+            return NSLocalizedString("Workouts/Meals", comment: "HealthKit data type")
 
         default:
             return nil

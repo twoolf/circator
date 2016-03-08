@@ -91,21 +91,39 @@ class PlotViewController: UIViewController, ChartViewDelegate {
         return chart
     }()
 
+    var spec: PlotSpec!
+
     var sampleType: HKSampleType! {
         didSet {
             navigationItem.title = sampleType.displayText!
             Async.main {
                 Async.background {
-                    HealthManager.sharedManager.fetchStatisticsOfType(self.sampleType) { (results, error) -> Void in
-                        guard error == nil else {
-                            self.showError()
-                            return
+                    switch self.spec! {
+                    case .PlotFasting:
+                        HealthManager.sharedManager.fetchMaxFastingTimes { (aggregates, error) -> Void in
+                            guard error == nil else {
+                                self.showError()
+                                return
+                            }
+                            self.plotValues(aggregates)
+                            Answers.logContentViewWithName("Plot",
+                                contentType: self.sampleType.identifier,
+                                contentId: NSDate().toString(DateFormat.Custom("YYYY-MM-dd:HH:mm:ss")),
+                                customAttributes: nil)
                         }
-                        self.plotResults(results)
-                        Answers.logContentViewWithName("Plot",
-                            contentType: self.sampleType.identifier,
-                            contentId: NSDate().toString(DateFormat.Custom("YYYY-MM-dd:HH:mm:ss")),
-                            customAttributes: nil)
+
+                    case let .PlotPredicate(predicate):
+                        HealthManager.sharedManager.fetchStatisticsOfType(self.sampleType, predicate: predicate) { (results, error) -> Void in
+                            guard error == nil else {
+                                self.showError()
+                                return
+                            }
+                            self.plotResults(results)
+                            Answers.logContentViewWithName("Plot",
+                                contentType: self.sampleType.identifier,
+                                contentId: NSDate().toString(DateFormat.Custom("YYYY-MM-dd:HH:mm:ss")),
+                                customAttributes: nil)
+                        }
                     }
                 }
             }
@@ -217,6 +235,11 @@ class PlotViewController: UIViewController, ChartViewDelegate {
 
     func plotResults(results: [MCSample]) {
         let analyzer = PlotDataAnalyzer(sampleType: self.sampleType, samples: results)
+        plotChart(analyzer)
+    }
+
+    func plotValues(values: [(NSDate, Double)]) {
+        let analyzer = PlotDataAnalyzer(sampleType: self.sampleType, values: values)
         plotChart(analyzer)
     }
 

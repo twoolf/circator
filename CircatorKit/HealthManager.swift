@@ -21,6 +21,11 @@ public typealias HMSampleBlock         = (samples: [MCSample], error: NSError?) 
 public typealias HMTypedSampleBlock    = (samples: [HKSampleType: [MCSample]], error: NSError?) -> Void
 public typealias HMCorrelationBlock    = ([MCSample], [MCSample], NSError?) -> Void
 
+public typealias HMCircadianBlock          = (intervals: [(NSDate, CircadianEvent)], error: NSError?) -> Void
+public typealias HMCircadianAggregateBlock = (aggregates: [(NSDate, Double)], error: NSError?) -> Void
+
+public typealias HMFastingCorrelationBlock = ([(NSDate, Double, MCSample)], NSError?) -> Void
+
 public typealias HMAnchorQueryBlock    = (HKAnchoredObjectQuery, [HKSample]?, [HKDeletedObject]?, HKQueryAnchor?, NSError?) -> Void
 public typealias HMAnchorSamplesBlock  = (added: [HKSample], deleted: [HKDeletedObject], newAnchor: HKQueryAnchor?, error: NSError?) -> Void
 
@@ -273,24 +278,28 @@ public class HealthManager: NSObject, WCSessionDelegate {
     }
 
     // Completion handler is on main queue
-    public func correlateStatisticsOfType(type: HKSampleType, withType type2: HKSampleType, completion: HMCorrelationBlock) {
+    public func correlateStatisticsOfType(type: HKSampleType, withType type2: HKSampleType, pred1: NSPredicate? = nil, pred2: NSPredicate? = nil, completion: HMCorrelationBlock) {
         var results1: [MCSample]?
         var results2: [MCSample]?
 
-        func hasSamplesAtStartDate(array: [MCSample], startDate: NSDate) -> Bool  {
-            let day = startDate.startOf(.Day, inRegion: Region())
-            for element in array {
-                let elemday = element.startDate.startOf(.Day, inRegion: Region())
-                if day.compare(elemday) == .OrderedSame && element.numeralValue != nil {
-                    return true
-                }
+        func intersect(arr1: [MCSample], arr2: [MCSample]) -> [(NSDate, MCSample, MCSample)] {
+            var output: [(NSDate, MCSample, MCSample)] = []
+            var arr1ByDay : [NSDate: MCSample] = [:]
+            arr1.forEach { s in
+                let start = s.startDate.startOf(.Day, inRegion: Region())
+                arr1ByDay.updateValue(s, forKey: start)
             }
-            return false
+
+            arr2.forEach { s in
+                let start = s.startDate.startOf(.Day, inRegion: Region())
+                if let match = arr1ByDay[start] { output.append((start, match, s)) }
+            }
+            return output
         }
 
         let group = dispatch_group_create()
         dispatch_group_enter(group)
-        fetchStatisticsOfType(type) { (results, error) -> Void in
+        fetchStatisticsOfType(type, predicate: pred1) { (results, error) -> Void in
             guard error == nil else {
                 completion([], [], error)
                 dispatch_group_leave(group)
@@ -300,7 +309,7 @@ public class HealthManager: NSObject, WCSessionDelegate {
             dispatch_group_leave(group)
         }
         dispatch_group_enter(group)
-        fetchStatisticsOfType(type2) { (results, error) -> Void in
+        fetchStatisticsOfType(type2, predicate: pred2) { (results, error) -> Void in
             guard error == nil else {
                 completion([], [], error)
                 dispatch_group_leave(group)
@@ -317,24 +326,9 @@ public class HealthManager: NSObject, WCSessionDelegate {
                 completion([], [], err)
                 return
             }
-            results1 = results1!.filter { (results) -> Bool in return hasSamplesAtStartDate(results2!, startDate: results.startDate) }
-            results2 = results2!.filter { (results) -> Bool in return hasSamplesAtStartDate(results1!, startDate: results.startDate) }
-            guard results1!.isEmpty == false && results2!.isEmpty == false else {
-                completion(results1!, results2!, nil)
-                return
-            }
-            for i in 1..<results1!.count {
-                var j = i
-                let target = results1![i]
-
-                while j > 0 && target.numeralValue! < results1![j - 1].numeralValue! {
-                    swap(&results1![j], &results1![j - 1])
-                    swap(&results2![j], &results2![j - 1])
-                    j--
-                }
-                results1![j] = target
-            }
-            completion(results1!, results2!, nil)
+            var zipped = intersect(results1!, arr2: results2!)
+            zipped.sortInPlace { (a,b) in a.1.numeralValue! < b.1.numeralValue! }
+            completion(zipped.map { $0.1 }, zipped.map { $0.2 }, nil)
         }
     }
 
@@ -371,15 +365,239 @@ public class HealthManager: NSObject, WCSessionDelegate {
         }
     }
 
-    // MARK: - Meal timing event retrieval.
+    // MARK: - Circadian event retrieval.
 
     // Query food diary events stored as prep and recovery workouts in HealthKit
-    public func fetchPreparationAndRecoveryWorkout(oldestFirst: Bool, beginDate: NSDate? = nil, completion: HMSampleBlock!)
+    public func fetchPreparationAndRecoveryWorkout(oldestFirst: Bool, beginDate: NSDate? = nil, completion: HMSampleBlock)
     {
         let predicate = mealsSincePredicate(beginDate)
         let sortDescriptor = NSSortDescriptor(key:HKSampleSortIdentifierStartDate, ascending: oldestFirst)
         fetchSamplesOfType(HKWorkoutType.workoutType(), predicate: predicate, limit: noLimit, sortDescriptors: [sortDescriptor], completion: completion)
     }
+
+    // Returns circadian event intervals, that is, pairs of start and stop times for standard circadian events.
+    public func fetchCircadianEventIntervals(startDate: NSDate = 1.days.ago, endDate: NSDate = NSDate(), completion: HMCircadianBlock) {
+        typealias Event = (NSDate, CircadianEvent)
+        typealias IEvent = (Double, CircadianEvent)
+
+        let epsilon = 1.seconds
+        let sleepTy = HKObjectType.categoryTypeForIdentifier(HKCategoryTypeIdentifierSleepAnalysis)!
+        let workoutTy = HKWorkoutType.workoutType()
+        let datePredicate = HKQuery.predicateForSamplesWithStartDate(startDate, endDate: endDate, options: .None)
+        let typesAndPredicates = [sleepTy: datePredicate, workoutTy: datePredicate]
+
+        // Create intervals for sleep, exercise and meal events.
+        fetchSamples(typesAndPredicates) { (events, error) -> Void in
+            guard error == nil && !events.isEmpty else {
+                completion(intervals: [], error: error)
+                return
+            }
+
+            // Create event intervals from HKSamples, and calculate the latest eating time.
+            // We truncate any event starting earlier than 24 hours ago.
+            let extendedEvents = events.flatMap { (ty,vals) -> [Event]? in
+                switch ty {
+                case is HKWorkoutType:
+                    return vals.flatMap { s -> [Event] in
+                        let st = s.startDate < startDate ? startDate : s.startDate
+                        let en = s.endDate
+                        guard let v = s as? HKWorkout else { return [] }
+                        switch v.workoutActivityType {
+                        case HKWorkoutActivityType.PreparationAndRecovery:
+                            return [(st, .Meal), (en, .Meal)]
+                        default:
+                            return [(st, .Exercise), (en, .Exercise)]
+                        }
+                    }
+
+                case is HKCategoryType:
+                    guard ty.identifier == HKCategoryTypeIdentifierSleepAnalysis else {
+                        return nil
+                    }
+                    return vals.flatMap { s -> [Event] in
+                        let st = s.startDate < startDate ? startDate : s.startDate
+                        let en = s.endDate
+                        return [(st, .Sleep), (en, .Sleep)]
+                    }
+
+                default:
+                    log.error("Unexpected type \(ty.identifier) while fetching circadian event intervals")
+                    return nil
+                }
+            }
+
+            // Sort by starting times across event types (sleep, eat, exercise).
+            let sortedEvents = extendedEvents.flatten().sort { (a,b) in return a.0 < b.0 }
+
+            let lastev = sortedEvents.last ?? sortedEvents.first!
+            let lst = lastev.0 == endDate ? [] : [(lastev.0, CircadianEvent.Fast), (endDate, CircadianEvent.Fast)]
+
+            let zst : ([Event], Bool, Event!) = ([], true, nil)
+            let intervals = sortedEvents.reduce(zst, combine: { (acc, e) in
+                guard acc.2 != nil else {
+                    return ((e.0 == startDate ? [e] : [(startDate, CircadianEvent.Fast), (e.0, CircadianEvent.Fast), e]), !acc.1, e)
+                }
+
+                // Skip a fasting interval for back-to-back events
+                if (acc.1 && acc.2.0 == e.0) {
+                    return (acc.0 + [(e.0+epsilon, e.1)], !acc.1, e)
+                } else if acc.1 {
+                    return (acc.0 + [(acc.2.0+epsilon, .Fast), (e.0-epsilon, .Fast), e], !acc.1, e)
+                } else {
+                    return (acc.0 + [e], !acc.1, e)
+                }
+            }).0 + lst
+
+            completion(intervals: intervals, error: error)
+        }
+    }
+
+    // A filter-aggregate query template.
+    public func fetchAggregatedCircadianEvents<T>(predicate: ((NSDate, CircadianEvent) -> Bool)? = nil,
+                                                  aggregator: ((T, (NSDate, CircadianEvent)) -> T), initial: T, final: (T -> [(NSDate, Double)]),
+                                                  completion: HMCircadianAggregateBlock)
+    {
+        fetchCircadianEventIntervals { (intervals, error) in
+            guard error == nil else {
+                completion(aggregates: [], error: error)
+                return
+            }
+
+            let filtered = predicate == nil ? intervals : intervals.filter(predicate!)
+            let accum = filtered.reduce(initial, combine: aggregator)
+            completion(aggregates: final(accum), error: nil)
+        }
+    }
+
+    // Compute total eating times per day by filtering and aggregating over meal events.
+    public func fetchEatingTimes(completion: HMCircadianAggregateBlock) {
+        typealias Accum = (Bool, NSDate!, [NSDate: Double])
+        let aggregator : (Accum, (NSDate, CircadianEvent)) -> Accum = { (acc, e) in
+            if !acc.0 && acc.1 != nil {
+                switch e.1 {
+                case .Meal:
+                    let day = acc.1.startOf(.Day, inRegion: Region())
+                    var nacc = acc.2
+                    nacc.updateValue((acc.2[day] ?? 0.0) + e.0.timeIntervalSinceDate(acc.1!), forKey: day)
+                    return (!acc.0, e.0, nacc)
+                default:
+                    return (!acc.0, e.0, acc.2)
+                }
+            }
+            return (!acc.0, e.0, acc.2)
+        }
+        let initial : Accum = (true, nil, [:])
+        let final : (Accum -> [(NSDate, Double)]) = { acc in return acc.2.sort { (a,b) in return a.0 < b.0 } }
+
+        fetchAggregatedCircadianEvents(nil, aggregator: aggregator, initial: initial, final: final, completion: completion)
+    }
+
+    // Compute max fasting times per day by filtering and aggregating over everything other than meal events.
+    // This stitches fasting events together if they are sequential (i.e., one ends while the other starts).
+    public func fetchMaxFastingTimes(completion: HMCircadianAggregateBlock)
+    {
+        // Accumulator:
+        // i. boolean indicating event start.
+        // ii. start of this fasting event.
+        // iii. the previous event.
+        // iv. a dictionary of accumulated fasting intervals.
+        typealias Accum = (Bool, NSDate!, NSDate!, [NSDate: [Double]])
+
+        let predicate : (NSDate, CircadianEvent) -> Bool = {
+                switch $0.1 {
+                case .Exercise, .Fast, .Sleep:
+                    return true
+                default:
+                    return false
+                }
+            }
+
+        let aggregator : (Accum, (NSDate, CircadianEvent)) -> Accum = { (acc, e) in
+            var byDay = acc.3
+            let (iStart, prevFast, prevEvt) = (acc.0, acc.1, acc.2)
+            var nextFast = prevFast
+            if iStart && prevFast != nil && prevEvt != nil && e.0 != prevEvt {
+                let fastStartDay = prevFast.startOf(.Day, inRegion: Region())
+                let duration = prevEvt.timeIntervalSinceDate(prevFast)
+                if duration > 0 {
+                    byDay.updateValue((byDay[fastStartDay] ?? []) + [duration], forKey: fastStartDay)
+                }
+                nextFast = e.0
+            }
+            return (!acc.0, nextFast, e.0, byDay)
+        }
+
+        let initial : Accum = (true, nil, nil, [:])
+        let final : Accum -> [(NSDate, Double)] = { acc in
+            var byDay = acc.3
+            let (finalFast, finalEvt) = (acc.1, acc.2)
+            if finalFast != finalEvt {
+                let fastStartDay = finalFast.startOf(.Day, inRegion: Region())
+                let duration = finalEvt.timeIntervalSinceDate(finalFast)
+                if duration > 0 {
+                    byDay.updateValue((byDay[fastStartDay] ?? []) + [duration], forKey: fastStartDay)
+                }
+            }
+            return byDay.map { return ($0.0, $0.1.maxElement() ?? 0.0) }.sort { (a,b) in return a.0 < b.0 }
+        }
+
+        fetchAggregatedCircadianEvents(predicate, aggregator: aggregator, initial: initial, final: final, completion: completion)
+    }
+
+    public func correlateWithFasting(sortFasting: Bool, type: HKSampleType, predicate: NSPredicate? = nil, completion: HMFastingCorrelationBlock) {
+        var results1: [MCSample]?
+        var results2: [(NSDate, Double)]?
+
+        func intersect(samples: [MCSample], fasting: [(NSDate, Double)]) -> [(NSDate, Double, MCSample)] {
+            var output:[(NSDate, Double, MCSample)] = []
+            var byDay: [NSDate: Double] = [:]
+            fasting.forEach { f in
+                let start = f.0.startOf(.Day, inRegion: Region())
+                byDay.updateValue((byDay[start] ?? 0.0) + f.1, forKey: start)
+            }
+
+            samples.forEach { s in
+                let start = s.startDate.startOf(.Day, inRegion: Region())
+                if let match = byDay[start] { output.append((start, match, s)) }
+            }
+            return output
+        }
+
+        let group = dispatch_group_create()
+        dispatch_group_enter(group)
+        fetchStatisticsOfType(type, predicate: predicate) { (results, error) -> Void in
+            guard error == nil else {
+                completion([], error)
+                dispatch_group_leave(group)
+                return
+            }
+            results1 = results
+            dispatch_group_leave(group)
+        }
+        dispatch_group_enter(group)
+        fetchMaxFastingTimes { (results, error) -> Void in
+            guard error == nil else {
+                completion([], error)
+                dispatch_group_leave(group)
+                return
+            }
+            results2 = results
+            dispatch_group_leave(group)
+        }
+
+        dispatch_group_notify(group, dispatch_get_main_queue()) {
+            guard !(results1 == nil || results2 == nil) else {
+                let desc = results1 == nil ? (results2 == nil ? "LHS and RHS" : "LHS") : "RHS"
+                let err = NSError(domain: HMErrorDomain, code: 1048576, userInfo: [NSLocalizedDescriptionKey: "Invalid \(desc) statistics"])
+                completion([], err)
+                return
+            }
+            var zipped = intersect(results1!, fasting: results2!)
+            zipped.sortInPlace { (a,b) in return ( sortFasting ? a.1 < b.1 : a.2.numeralValue! < b.2.numeralValue! ) }
+            completion(zipped, nil)
+        }
+    }
+
 
     // MARK: - Observers
 

@@ -12,6 +12,15 @@ import HealthKit
 import Charts
 import SwiftDate
 
+enum PlotSpec {
+    case PlotPredicate(NSPredicate!)
+    case PlotFasting
+}
+
+class SampleDataAnalyzer: NSObject {
+    static let sampleFormatter = SampleFormatter()
+}
+
 /**
  To prepare data for correlation plots
  
@@ -20,32 +29,96 @@ import SwiftDate
 class CorrelationDataAnalyzer: SampleDataAnalyzer {
     let sampleTypes: [HKSampleType]
     let samples: [[MCSample]]
+    let values: [[(NSDate, Double)]]
+    let zipped: [(NSDate, Double, MCSample)]
     var dataSetConfigurators: [((LineChartDataSet) -> Void)?] = []
 
     init?(sampleTypes: [HKSampleType], samples: [[MCSample]]) {
         guard sampleTypes.count == 2 && samples.count == 2 else {
             self.sampleTypes = []
             self.samples = []
+            self.values = []
+            self.zipped = []
             super.init()
             return nil
         }
         self.sampleTypes = sampleTypes
         self.samples = samples
+        self.values = []
+        self.zipped = []
+        super.init()
+    }
+
+    init?(sampleTypes: [HKSampleType], values: [[(NSDate, Double)]]) {
+        guard sampleTypes.count == 2 && values.count == 2 else {
+            self.sampleTypes = []
+            self.samples = []
+            self.values = []
+            self.zipped = []
+            super.init()
+            return nil
+        }
+        self.sampleTypes = sampleTypes
+        self.samples = []
+        self.values = values
+        self.zipped = []
+        super.init()
+    }
+
+    init?(sampleTypes: [HKSampleType], zipped: [(NSDate, Double, MCSample)]) {
+        guard sampleTypes.count == 2 else {
+            self.sampleTypes = []
+            self.samples = []
+            self.values = []
+            self.zipped = []
+            super.init()
+            return nil
+        }
+        self.sampleTypes = sampleTypes
+        self.samples = []
+        self.values = []
+        self.zipped = zipped
         super.init()
     }
 
     var correlationChartData: LineChartData {
-        let firstParamEntries = samples[0].enumerate().map { (i, stats) -> ChartDataEntry in
-            return ChartDataEntry(value: stats.numeralValue!, xIndex: i + 1)
+        if !samples.isEmpty {
+            let firstParamEntries = samples[0].enumerate().map { (i, stats) -> ChartDataEntry in
+                return ChartDataEntry(value: stats.numeralValue!, xIndex: i + 1)
+            }
+            let firstParamDataSet = LineChartDataSet(yVals: firstParamEntries, label: sampleTypes[0].displayText)
+            dataSetConfigurators[0]?(firstParamDataSet)
+            let secondParamEntries = samples[1].enumerate().map { (i, stats) -> ChartDataEntry in
+                return ChartDataEntry(value: stats.numeralValue!, xIndex: i + 1)
+            }
+            let secondParamDataSet = LineChartDataSet(yVals: secondParamEntries, label: sampleTypes[1].displayText)
+            dataSetConfigurators[1]?(secondParamDataSet)
+            return LineChartData(xVals: Array(0...samples[0].count + 1), dataSets: [firstParamDataSet, secondParamDataSet])
+        } else if !values.isEmpty {
+            let firstParamEntries = values[0].enumerate().map { (i, s) -> ChartDataEntry in
+                return ChartDataEntry(value: s.1, xIndex: i + 1)
+            }
+            let firstParamDataSet = LineChartDataSet(yVals: firstParamEntries, label: sampleTypes[0].displayText)
+            dataSetConfigurators[0]?(firstParamDataSet)
+            let secondParamEntries = values[1].enumerate().map { (i, s) -> ChartDataEntry in
+                return ChartDataEntry(value: s.1, xIndex: i + 1)
+            }
+            let secondParamDataSet = LineChartDataSet(yVals: secondParamEntries, label: sampleTypes[1].displayText)
+            dataSetConfigurators[1]?(secondParamDataSet)
+            return LineChartData(xVals: Array(0...values[0].count + 1), dataSets: [firstParamDataSet, secondParamDataSet])
+        } else {
+            let firstParamEntries = zipped.enumerate().map { (i, s) -> ChartDataEntry in
+                return ChartDataEntry(value: s.1, xIndex: i + 1)
+            }
+            let firstParamDataSet = LineChartDataSet(yVals: firstParamEntries, label: sampleTypes[0].displayText)
+            dataSetConfigurators[0]?(firstParamDataSet)
+            let secondParamEntries = zipped.enumerate().map { (i, s) -> ChartDataEntry in
+                return ChartDataEntry(value: s.2.numeralValue!, xIndex: i + 1)
+            }
+            let secondParamDataSet = LineChartDataSet(yVals: secondParamEntries, label: sampleTypes[1].displayText)
+            dataSetConfigurators[1]?(secondParamDataSet)
+            return LineChartData(xVals: Array(0...zipped.count + 1), dataSets: [firstParamDataSet, secondParamDataSet])
         }
-        let firstParamDataSet = LineChartDataSet(yVals: firstParamEntries, label: sampleTypes[0].displayText)
-        dataSetConfigurators[0]?(firstParamDataSet)
-        let secondParamEntries = samples[1].enumerate().map { (i, stats) -> ChartDataEntry in
-            return ChartDataEntry(value: stats.numeralValue!, xIndex: i + 1)
-        }
-        let secondParamDataSet = LineChartDataSet(yVals: secondParamEntries, label: sampleTypes[1].displayText)
-        dataSetConfigurators[1]?(secondParamDataSet)
-        return LineChartData(xVals: Array(0...samples[0].count + 1), dataSets: [firstParamDataSet, secondParamDataSet])
     }
 }
 
@@ -55,12 +128,21 @@ class CorrelationDataAnalyzer: SampleDataAnalyzer {
  - note: format set by Charts library; summary statistics are in BubbleChart
  */
 class PlotDataAnalyzer: SampleDataAnalyzer {
-    let samples: [MCSample]
     let sampleType: HKSampleType
+    let samples: [MCSample]
+    let values: [(NSDate, Double)]
 
     init(sampleType: HKSampleType, samples: [MCSample]) {
         self.sampleType = sampleType
         self.samples = samples
+        self.values = []
+        super.init()
+    }
+
+    init(sampleType: HKSampleType, values: [(NSDate, Double)]) {
+        self.sampleType = sampleType
+        self.samples = []
+        self.values = values
         super.init()
     }
 
@@ -74,36 +156,23 @@ class PlotDataAnalyzer: SampleDataAnalyzer {
     var dataSetConfiguratorBubbleChart: ((BubbleChartDataSet) -> Void)?
 
     var lineChartData: LineChartData {
-        guard !samples.isEmpty else {
+        guard !(samples.isEmpty && values.isEmpty) else {
             return LineChartData(xVals: [""])
         }
         if dataGroupingMode == .ByDate {
-            /// Offset final date by one and first date by negative one
-            let firstDate = samples.first!.startDate
-            let lastDate = samples.last!.startDate
-            let zeroDate = firstDate.startOf(.Day, inRegion: Region()) - 1.days
-            let finalDate = lastDate.startOf(.Day, inRegion: Region()) + 1.days
-            var currentDate = zeroDate
-            var dates: [NSDate] = []
-            while currentDate <= finalDate {
-                currentDate = currentDate + 1.days
-                dates.append(currentDate)
-            }
+            var xVals: [String] = []
+            var entries: [ChartDataEntry] = []
 
-            let xVals: [String] = dates.map { (date) -> String in
-                SampleFormatter.chartDateFormatter.stringFromDate(date)
-            }
-
-            let entries: [ChartDataEntry] = samples.map { (sample) -> ChartDataEntry in
-                let dayDiff = zeroDate.difference(sample.startDate.startOf(.Day, inRegion: Region()), unitFlags: .Day)
-                let val = sample.numeralValue ?? 0.0
-                return ChartDataEntry(value: val, xIndex: dayDiff!.day)
+            if !samples.isEmpty {
+                (xVals, entries) = lineFromSamples()
+            } else {
+                (xVals, entries) = lineFromValues()
             }
 
             let dataSet = LineChartDataSet(yVals: entries, label: "")
             dataSetConfigurator?(dataSet)
             return LineChartData(xVals: xVals, dataSet: dataSet)
-        } else {
+        } else if !samples.isEmpty {
             let xVals: [String] = samples.map { (sample) -> String in
                 return SampleFormatter.chartDateFormatter.stringFromDate(sample.startDate)
             }
@@ -116,17 +185,30 @@ class PlotDataAnalyzer: SampleDataAnalyzer {
             let dataSet = LineChartDataSet(yVals: entries, label: "")
             dataSetConfigurator?(dataSet)
             return LineChartData(xVals: xVals, dataSet: dataSet)
+        } else {
+            let xVals: [String] = values.map {
+                return SampleFormatter.chartDateFormatter.stringFromDate($0.0)
+            }
+
+            var index = 0
+            let entries: [ChartDataEntry] = values.map {
+                return ChartDataEntry(value: $0.1, xIndex: index++)
+            }
+
+            let dataSet = LineChartDataSet(yVals: entries, label: "")
+            dataSetConfigurator?(dataSet)
+            return LineChartData(xVals: xVals, dataSet: dataSet)
         }
     }
 
     /// for summary data -- in sets of 20% ordered from min to max --
     var bubbleChartData: BubbleChartData {
-        guard !samples.isEmpty else {
+        guard !(samples.isEmpty && values.isEmpty) else {
             return BubbleChartData(xVals: [""])
         }
         if dataGroupingMode == .ByDate {
             var dataEntries: [BubbleChartDataEntry] = []
-            let summaryData: [Double] = samples.map { s in return s.numeralValue ?? 0.0 }
+            let summaryData: [Double] = !samples.isEmpty ? samples.map { return $0.numeralValue ?? 0.0 } : values.map { return $0.1 }
 
             let summaryDataSorted = summaryData.sort()
             guard !summaryData.isEmpty else {
@@ -149,7 +231,7 @@ class PlotDataAnalyzer: SampleDataAnalyzer {
             dataSetConfiguratorBubbleChart?(dataSet)
             return BubbleChartData(xVals: xVals, dataSet: dataSet)
         }
-        else {
+        else if !samples.isEmpty {
             let xVals : [String] = samples.map { (sample) -> String in
                 return SampleFormatter.chartDateFormatter.stringFromDate(sample.startDate)
             }
@@ -163,18 +245,84 @@ class PlotDataAnalyzer: SampleDataAnalyzer {
             dataSetConfiguratorBubbleChart?(dataSet)
             return BubbleChartData(xVals: xVals, dataSet: dataSet)
         }
+        else {
+            let xVals : [String] = values.map { (sample) -> String in
+                return SampleFormatter.chartDateFormatter.stringFromDate(sample.0)
+            }
+
+            var index = 0
+            let summaryData : [ChartDataEntry] = values.map { (sample) -> ChartDataEntry in
+                return ChartDataEntry(value: sample.1, xIndex: index++)
+            }
+
+            let dataSet = BubbleChartDataSet(yVals: summaryData)
+            dataSetConfiguratorBubbleChart?(dataSet)
+            return BubbleChartData(xVals: xVals, dataSet: dataSet)
+        }
     }
 
     var summaryData: Double  {
-        guard !samples.isEmpty else {
+        guard !(samples.isEmpty && values.isEmpty) else {
             return 0.0
         }
 
-        let summaryData : [Double] = samples.map { (sample) -> Double in return sample.numeralValue! }
+        let summaryData : [Double] = !samples.isEmpty ? samples.map { return $0.numeralValue! } : values.map { return $0.1 }
         return summaryData.sort().first!
     }
-}
 
-class SampleDataAnalyzer: NSObject {
-    static let sampleFormatter = SampleFormatter()
+    func enumerateDates(startDate: NSDate, endDate: NSDate) -> [NSDate] {
+        let zeroDate = startDate.startOf(.Day, inRegion: Region()) - 1.days
+        let finalDate = endDate.startOf(.Day, inRegion: Region()) + 1.days
+        var currentDate = zeroDate
+        var dates: [NSDate] = []
+        while currentDate <= finalDate {
+            currentDate = currentDate + 1.days
+            dates.append(currentDate)
+        }
+        return dates
+    }
+
+    func datesFromSamples() -> [NSDate] {
+        let firstDate = samples.first!.startDate
+        let lastDate = samples.last!.startDate
+        return enumerateDates(firstDate, endDate: lastDate)
+    }
+
+    func datesFromValues() -> [NSDate] {
+        let firstDate = values.first!.0
+        let lastDate = values.last!.0
+        return enumerateDates(firstDate, endDate: lastDate)
+    }
+
+    func lineFromSamples() -> ([String], [ChartDataEntry]) {
+        let dates = datesFromSamples()
+        let zeroDate = dates.first!
+
+        let xVals: [String] = dates.map { (date) -> String in
+            SampleFormatter.chartDateFormatter.stringFromDate(date)
+        }
+
+        let entries: [ChartDataEntry] = samples.map { (sample) -> ChartDataEntry in
+            let dayDiff = zeroDate.difference(sample.startDate.startOf(.Day, inRegion: Region()), unitFlags: .Day)
+            let val = sample.numeralValue ?? 0.0
+            return ChartDataEntry(value: val, xIndex: dayDiff!.day)
+        }
+        return (xVals, entries)
+    }
+
+    func lineFromValues() -> ([String], [ChartDataEntry]) {
+        let dates = datesFromValues()
+        let zeroDate = dates.first!
+
+        let xVals: [String] = dates.map { (date) -> String in
+            SampleFormatter.chartDateFormatter.stringFromDate(date)
+        }
+
+        let entries: [ChartDataEntry] = values.map { (sample) -> ChartDataEntry in
+            let dayDiff = zeroDate.difference(sample.0.startOf(.Day, inRegion: Region()), unitFlags: .Day)
+            return ChartDataEntry(value: sample.1, xIndex: dayDiff!.day)
+        }
+        return (xVals, entries)
+    }
+
 }
