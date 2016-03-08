@@ -79,7 +79,9 @@ class CorrelationViewController: UIViewController, ChartViewDelegate {
                 self.correlationLabel.text = NSLocalizedString("\(attr2) Relative to Increasing \(attr1)", comment: "Plot view section title label")
 
                 Async.background {
-                    switch (self.lspec!, self.rspec!) {
+                    let ls = self.lspec ?? .PlotPredicate(nil)
+                    let rs = self.rspec ?? .PlotPredicate(nil)
+                    switch (ls, rs) {
                     case (.PlotFasting, .PlotFasting):
                         HealthManager.sharedManager.fetchMaxFastingTimes { (aggregates, error) in
                             guard (error == nil) && !aggregates.isEmpty else {

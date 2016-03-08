@@ -16,7 +16,6 @@
 		7840A4991C6E53A80005B66F /* VariantViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7840A4981C6E53A80005B66F /* VariantViewController.swift */; };
 		7840A49B1C6E5A680005B66F /* ErrorViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7840A49A1C6E5A680005B66F /* ErrorViewController.swift */; };
 		7843F9121C1FAD9900AB8978 /* ServiceAPI.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7843F9111C1FAD9900AB8978 /* ServiceAPI.swift */; };
-		7848A7E01C699007003241FF /* BehaviorMonitor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7848A7DF1C699007003241FF /* BehaviorMonitor.swift */; };
 		7859783F1C1BC418008377F9 /* HealthKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 7859783E1C1BC418008377F9 /* HealthKit.framework */; };
 		785978411C1BD4F1008377F9 /* EventManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 785978401C1BD4F1008377F9 /* EventManager.swift */; };
 		7860E9131C61C470004C9741 /* DebugViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7860E9121C61C470004C9741 /* DebugViewController.swift */; };
@@ -174,7 +173,6 @@
 		7840A4981C6E53A80005B66F /* VariantViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = VariantViewController.swift; sourceTree = "<group>"; };
 		7840A49A1C6E5A680005B66F /* ErrorViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ErrorViewController.swift; sourceTree = "<group>"; };
 		7843F9111C1FAD9900AB8978 /* ServiceAPI.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ServiceAPI.swift; sourceTree = "<group>"; };
-		7848A7DF1C699007003241FF /* BehaviorMonitor.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BehaviorMonitor.swift; sourceTree = "<group>"; };
 		7859783E1C1BC418008377F9 /* HealthKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = HealthKit.framework; path = System/Library/Frameworks/HealthKit.framework; sourceTree = SDKROOT; };
 		785978401C1BD4F1008377F9 /* EventManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = EventManager.swift; sourceTree = "<group>"; };
 		7860E9121C61C470004C9741 /* DebugViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DebugViewController.swift; sourceTree = "<group>"; };
@@ -377,7 +375,6 @@
 		F42F5B331BE1FD1E00195490 /* CircatorKit */ = {
 			isa = PBXGroup;
 			children = (
-				7848A7DF1C699007003241FF /* BehaviorMonitor.swift */,
 				F42F5B341BE1FD1E00195490 /* CircatorKit.h */,
 				7863EA9B1C27302B0038DE7A /* ConsentManager.swift */,
 				786DF10C1C72AFE0007C2D4C /* Constants.swift */,
@@ -907,7 +904,6 @@
 				F42F5B461BE2048400195490 /* SampleFormatter.swift in Sources */,
 				7861300F1C25F42B00F50DB3 /* QueryManager.swift in Sources */,
 				F42F5B451BE2048400195490 /* HealthManager.swift in Sources */,
-				7848A7E01C699007003241FF /* BehaviorMonitor.swift in Sources */,
 				78398D681C781EF0009653D6 /* ScreenManager.swift in Sources */,
 				783E53D21C75856200BEBF33 /* DataGenerator.swift in Sources */,
 				7843F9121C1FAD9900AB8978 /* ServiceAPI.swift in Sources */,

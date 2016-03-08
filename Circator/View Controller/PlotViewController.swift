@@ -98,7 +98,8 @@ class PlotViewController: UIViewController, ChartViewDelegate {
             navigationItem.title = sampleType.displayText!
             Async.main {
                 Async.background {
-                    switch self.spec! {
+                    let spec = self.spec ?? .PlotPredicate(nil)
+                    switch spec {
                     case .PlotFasting:
                         HealthManager.sharedManager.fetchMaxFastingTimes { (aggregates, error) -> Void in
                             guard error == nil else {
