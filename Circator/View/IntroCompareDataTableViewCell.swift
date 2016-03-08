@@ -69,15 +69,18 @@ class IntroCompareDataTableViewCell: UITableViewCell {
 
     static let healthFormatter = SampleFormatter()
 
+    /// loading both User and Population samples
     func setUserData(userData: [MCSample], populationAverageData: [MCSample], stalePopulation: Bool = false) {
         loadUserSamples(userData, toLabel: userDataLabel)
         loadPopSamples(populationAverageData, toLabel: populationAverageLabel, stale: stalePopulation)
     }
 
+    /// note setUserData above that uses this call
     private func loadUserSamples( results: [MCSample], toLabel label: UILabel) {
         label.text = IntroCompareDataTableViewCell.healthFormatter.stringFromSamples(results)
     }
 
+    /// note setUserData above that uses this call
     private func loadPopSamples(results: [MCSample], toLabel label: UILabel, stale: Bool) {
         label.text = IntroCompareDataTableViewCell.healthFormatter.stringFromSamples(results)
         if stale { label.textColor = UIColor.yellowColor() }
@@ -94,6 +97,7 @@ class IntroCompareDataTableViewCell: UITableViewCell {
         configureView()
     }
 
+    /// constraints and styles
     private func configureView() {
         backgroundColor = UIColor.clearColor()
         contentView.addSubview(healthParameterImageView)

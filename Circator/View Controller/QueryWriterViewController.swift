@@ -38,7 +38,6 @@ class QueryWriterViewController : FormViewController {
             contentType: "",
             contentId: NSDate().toString(DateFormat.Custom("YYYY-MM-dd:HH:mm:ss")),
             customAttributes: nil)
-//        BehaviorMonitor.sharedInstance.showView("QueryWriter", contentType: "")
     }
 
     override func viewDidLoad() {

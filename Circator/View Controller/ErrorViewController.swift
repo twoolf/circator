@@ -10,6 +10,11 @@ import Foundation
 import UIKit
 import CircatorKit
 
+/**
+ Helping with Plot and Correlate views
+ 
+ - note: used with errorVC as alias
+ */
 class ErrorViewController : UIViewController {
     var image : UIImage!
     var msg : String!

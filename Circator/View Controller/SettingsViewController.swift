@@ -94,7 +94,6 @@ class SettingsViewController: UITableViewController, UITextFieldDelegate {
             contentType: "",
             contentId: NSDate().toString(DateFormat.Custom("YYYY-MM-dd:HH:mm:ss")),
             customAttributes: nil)
-//        BehaviorMonitor.sharedInstance.showView("Settings", contentType: "")
     }
 
     override func viewDidLoad() {

@@ -122,7 +122,6 @@ class CorrelationViewController: UIViewController, ChartViewDelegate {
                             contentType: self.getSampleDescriptor(),
                             contentId: NSDate().toString(DateFormat.Custom("YYYY-MM-dd:HH:mm:ss")),
                             customAttributes: nil)
-//                        BehaviorMonitor.sharedInstance.setValue("Correlate", contentType: self.getSampleDescriptor())
                     }
                 }
             }
@@ -145,7 +144,6 @@ class CorrelationViewController: UIViewController, ChartViewDelegate {
             contentType: getSampleDescriptor(),
             contentId: NSDate().toString(DateFormat.Custom("YYYY-MM-dd:HH:mm:ss")),
             customAttributes: nil)
-//        BehaviorMonitor.sharedInstance.showView("Correlate", contentType: getSampleDescriptor())
     }
 
     override func didReceiveMemoryWarning() {

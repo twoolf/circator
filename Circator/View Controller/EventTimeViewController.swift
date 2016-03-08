@@ -15,6 +15,7 @@ import SwiftDate
 import Async
 import SwiftChart
 
+/// initializations of these variables creates offsets so plots of event transitions are square waves
 private let stWorkout = 0.0
 private let stSleep = 0.33
 private let stFast = 0.66
@@ -23,6 +24,12 @@ private let stEat = 1.0
 private let summaryFontSize = ScreenManager.sharedInstance.eventTimeViewSummaryFontSize()
 private let plotFontSize = ScreenManager.sharedInstance.eventTimeViewPlotFontSize()
 
+/**
+ Controls the plotting for the third view of the App -- exercise, sleep and meals in a 24-hour window
+ 
+ - note: this requires pulling history from HealthKit and integrating over time windows
+ - remark: st=start and en=end as abbreviations on events, Ty=Type, epsilon needed to avoid diagonal lines / overlapping events
+ */
 class EventTimeViewController : UIViewController {
     lazy var healthFormatter : SampleFormatter = { return SampleFormatter() }()
 
@@ -128,14 +135,15 @@ class EventTimeViewController : UIViewController {
         chart.lineWidth = 2.0
         chart.labelColor = .whiteColor()
         chart.labelFont = UIFont.systemFontOfSize(plotFontSize)
-
+        
+/// these are the four transitions seen in the x-axis
         chart.xLabels = [0.0, 6.0, 12.0, 18.0, 24.0]
         chart.xLabelsTextAlignment = .Left
         chart.xLabelsFormatter = { (labelIndex: Int, labelValue: Float) -> String in
             let d = 24.hours.ago + (Int(labelValue)).hours
             return d.toString(DateFormat.Custom("HH:mm"))!
         }
-
+/// these are the transition levels, bottom to top, Exercise, Sleep, Fasting, Eating
         chart.yLabels = [0.0, 0.33, 0.66, 1.0]
         chart.yLabelsOnRightSide = true
         chart.yLabelsFormatter = { (labelIndex: Int, labelValue: Float) -> String in
@@ -168,7 +176,6 @@ class EventTimeViewController : UIViewController {
             contentType: "",
             contentId: NSDate().toString(DateFormat.Custom("YYYY-MM-dd:HH:mm:ss")),
             customAttributes: nil)
-//        BehaviorMonitor.sharedInstance.showView("MealTimes", contentType: "")
     }
 
     override func viewDidLoad() {
@@ -204,14 +211,14 @@ class EventTimeViewController : UIViewController {
         typealias Event = (NSDate, Double)
         typealias IEvent = (Double, Double)
 
-        // Fetch all sleep and workout data since yesterday.
+        /// Fetch all sleep and workout data since yesterday.
         let (epsilon, yesterday, now) = (1.seconds, 1.days.ago, NSDate())
         let sleepTy = HKObjectType.categoryTypeForIdentifier(HKCategoryTypeIdentifierSleepAnalysis)!
         let workoutTy = HKWorkoutType.workoutType()
         let datePredicate = HKQuery.predicateForSamplesWithStartDate(yesterday, endDate: now, options: .None)
         let typesAndPredicates = [sleepTy: datePredicate, workoutTy: datePredicate]
 
-        // Aggregate sleep, exercise and meal events.
+        /// Aggregate sleep, exercise and meal events.
         HealthManager.sharedManager.fetchSamples(typesAndPredicates) { (samples, error) -> Void in
             Async.main {
                 guard error == nil else {
@@ -268,7 +275,7 @@ class EventTimeViewController : UIViewController {
                         }
                     }
 
-                    // Sort by starting times across event types (sleep, eat, exercise).
+            /// Sort by starting times across event types (sleep, eat, exercise).
                     var sortedEvents = events.flatten().sort { (a,b) in return a.0 < b.0 }
                     if sortedEvents.isEmpty {
                         let series = ChartSeries(data: [(x: 0.0, y: stFast), (x: 24.0, y: stFast)])
@@ -351,7 +358,6 @@ class EventTimeViewController : UIViewController {
                     contentType: HKWorkoutType.workoutType().identifier,
                     contentId: NSDate().toString(DateFormat.Custom("YYYY-MM-dd:HH:mm:ss")),
                     customAttributes: nil)
-//                BehaviorMonitor.sharedInstance.setValue("MealTimes", contentType: HKWorkoutType.workoutType().identifier)
             }
         }
     }

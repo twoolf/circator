@@ -207,7 +207,6 @@ class RegisterViewController : FormViewController {
                 }
                 UINotifications.registrationError(self.navigationController!, msg: errormsg)
                 Answers.logSignUpWithMethod("SPR", success: false, customAttributes: nil)
-//                BehaviorMonitor.sharedInstance.register(false)
                 sender.enabled = true
                 return
             }
@@ -226,7 +225,6 @@ class RegisterViewController : FormViewController {
 
                     UINotifications.loginFailed(self.navigationController!, pop: true, asNav: true, reason: reason)
                     Answers.logSignUpWithMethod("SPR", success: false, customAttributes: nil)
-//                    BehaviorMonitor.sharedInstance.register(false)
                     return
                 }
 
@@ -235,7 +233,6 @@ class RegisterViewController : FormViewController {
                     self.doWelcome()
                     if let comp = self.registerCompletion { comp() }
                     Answers.logSignUpWithMethod("SPR", success: true, customAttributes: nil)
-//                    BehaviorMonitor.sharedInstance.register(true)
                 }
             }
         }

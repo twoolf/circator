@@ -106,7 +106,6 @@ class PlotViewController: UIViewController, ChartViewDelegate {
                             contentType: self.sampleType.identifier,
                             contentId: NSDate().toString(DateFormat.Custom("YYYY-MM-dd:HH:mm:ss")),
                             customAttributes: nil)
-//                        BehaviorMonitor.sharedInstance.setValue("Plot", contentType: self.sampleType.identifier)
                     }
                 }
             }
@@ -129,7 +128,6 @@ class PlotViewController: UIViewController, ChartViewDelegate {
             contentType: sampleType.identifier,
             contentId: NSDate().toString(DateFormat.Custom("YYYY-MM-dd:HH:mm:ss")),
             customAttributes: nil)
-//        BehaviorMonitor.sharedInstance.showView("Plot", contentType: sampleType.identifier)
     }
 
     override func viewWillDisappear(animated: Bool) {

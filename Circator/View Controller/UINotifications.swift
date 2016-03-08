@@ -11,9 +11,11 @@ import CircatorKit
 import UIKit
 import Async
 
-/*
- * A library of standard user notifications, implemented with Dodo.
- */
+/**
+A library of standard user notifications, implemented with Dodo.
+
+- note: used broadly in code-base to report interactions
+*/
 public class UINotifications {
 
     public static func doWelcome(vc: UIViewController, pop: Bool = false, asNav: Bool = false, user: String = "") {

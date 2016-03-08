@@ -20,6 +20,11 @@ import SwiftDate
 private let refDate  = NSDate(timeIntervalSinceReferenceDate: 0)
 private let noAnchor = HKQueryAnchor(fromValue: Int(HKAnchoredObjectQueryNoAnchor))
 
+/**
+ Supports creating datasets for debugging purposes
+ 
+ - note: use of fields to support different metrics (e.g. start-date, end-date)
+ */
 class DebugViewController : FormViewController {
 
     var genNumUsers : Int! = -1

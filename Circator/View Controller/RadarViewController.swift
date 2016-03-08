@@ -117,7 +117,6 @@ class RadarViewController : UIViewController, ChartViewDelegate {
             contentType: "",
             contentId: NSDate().toString(DateFormat.Custom("YYYY-MM-dd:HH:mm:ss")),
             customAttributes: nil)
-//        BehaviorMonitor.sharedInstance.showView("Radar", contentType: "")
     }
 
     override func viewDidLoad() {

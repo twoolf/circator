@@ -104,7 +104,6 @@ class QueryBuilderViewController: UIViewController, UITextFieldDelegate {
             contentType: "",
             contentId: NSDate().toString(DateFormat.Custom("YYYY-MM-dd:HH:mm:ss")),
             customAttributes: nil)
-//        BehaviorMonitor.sharedInstance.showView("QueryBuilder", contentType: "")
     }
 
     override func viewDidLoad() {

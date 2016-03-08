@@ -78,7 +78,7 @@ class PlotDataAnalyzer: SampleDataAnalyzer {
             return LineChartData(xVals: [""])
         }
         if dataGroupingMode == .ByDate {
-            // Offset final date by one and first date by negative one
+            /// Offset final date by one and first date by negative one
             let firstDate = samples.first!.startDate
             let lastDate = samples.last!.startDate
             let zeroDate = firstDate.startOf(.Day, inRegion: Region()) - 1.days
@@ -119,6 +119,7 @@ class PlotDataAnalyzer: SampleDataAnalyzer {
         }
     }
 
+    /// for summary data -- in sets of 20% ordered from min to max --
     var bubbleChartData: BubbleChartData {
         guard !samples.isEmpty else {
             return BubbleChartData(xVals: [""])

@@ -32,7 +32,6 @@ class QueryViewController: UITableViewController {
             contentType: "",
             contentId: NSDate().toString(DateFormat.Custom("YYYY-MM-dd:HH:mm:ss")),
             customAttributes: nil)
-//        BehaviorMonitor.sharedInstance.showView("Query", contentType: "")
     }
     
     override func viewDidLoad() {

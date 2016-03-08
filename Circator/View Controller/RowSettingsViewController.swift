@@ -35,7 +35,6 @@ class RowSettingsViewController: UITableViewController {
             contentType: String(selectedRow),
             contentId: NSDate().toString(DateFormat.Custom("YYYY-MM-dd:HH:mm:ss")),
             customAttributes: nil)
-//        BehaviorMonitor.sharedInstance.showView("RowSettings", contentType: String(selectedRow))
     }
 
     override func viewDidLoad() {

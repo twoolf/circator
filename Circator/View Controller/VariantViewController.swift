@@ -9,6 +9,11 @@
 import Foundation
 import Pages
 
+/**
+ Helping with Plot and Correlate views
+ 
+ - note: used with VariantVC as alias
+ */
 class VariantViewController: UIViewController {
 
     var pages : [UIViewController]!
