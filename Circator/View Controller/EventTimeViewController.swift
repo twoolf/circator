@@ -237,6 +237,8 @@ class EventTimeViewController : UIViewController {
                     return
                 }
 
+                self.mealChart.removeSeries()
+
                 if intervals.isEmpty {
                     let series = ChartSeries(data: [(x: 0.0, y: stFast), (x: 24.0, y: stFast)])
                     series.area = true
