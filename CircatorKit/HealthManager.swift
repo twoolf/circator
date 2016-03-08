@@ -435,14 +435,17 @@ public class HealthManager: NSObject, WCSessionDelegate {
             let zst : ([Event], Bool, Event!) = ([], true, nil)
             let intervals = sortedEvents.reduce(zst, combine: { (acc, e) in
                 guard acc.2 != nil else {
-                    return ((e.0 == startDate ? [e] : [(startDate, CircadianEvent.Fast), (e.0, CircadianEvent.Fast), e]), !acc.1, e)
+                    let skipPrefix = e.0 == startDate || startDate == NSDate.distantPast()
+                    return ((skipPrefix ? [e] : [(startDate, CircadianEvent.Fast), (e.0, CircadianEvent.Fast), e]), !acc.1, e)
                 }
 
                 // Skip a fasting interval for back-to-back events
                 if (acc.1 && acc.2.0 == e.0) {
                     return (acc.0 + [(e.0+epsilon, e.1)], !acc.1, e)
                 } else if acc.1 {
-                    return (acc.0 + [(acc.2.0+epsilon, .Fast), (e.0-epsilon, .Fast), e], !acc.1, e)
+                    let fastSt = acc.2.0 + epsilon
+                    let fastEn = (e.0-epsilon) - 1.day > fastSt ? fastSt + 1.day : e.0 - epsilon
+                    return (acc.0 + [(fastSt, .Fast), (fastEn, .Fast), e], !acc.1, e)
                 } else {
                     return (acc.0 + [e], !acc.1, e)
                 }
@@ -457,7 +460,7 @@ public class HealthManager: NSObject, WCSessionDelegate {
                                                   aggregator: ((T, (NSDate, CircadianEvent)) -> T), initial: T, final: (T -> [(NSDate, Double)]),
                                                   completion: HMCircadianAggregateBlock)
     {
-        fetchCircadianEventIntervals { (intervals, error) in
+        fetchCircadianEventIntervals(NSDate.distantPast()) { (intervals, error) in
             guard error == nil else {
                 completion(aggregates: [], error: error)
                 return
@@ -522,6 +525,8 @@ public class HealthManager: NSObject, WCSessionDelegate {
                 let currentMax = byDay[fastStartDay] ?? duration
                 byDay.updateValue(currentMax >= duration ? currentMax : duration, forKey: fastStartDay)
                 nextFast = e.0
+            } else if iStart && prevFast == nil {
+                nextFast = e.0
             }
             return (!acc.0, nextFast, e.0, byDay)
         }
@@ -529,12 +534,13 @@ public class HealthManager: NSObject, WCSessionDelegate {
         let initial : Accum = (true, nil, nil, [:])
         let final : Accum -> [(NSDate, Double)] = { acc in
             var byDay = acc.3
-            let (finalFast, finalEvt) = (acc.1, acc.2)
-            if finalFast != finalEvt {
-                let fastStartDay = finalFast.startOf(.Day, inRegion: Region())
-                let duration = finalEvt.timeIntervalSinceDate(finalFast)
-                let currentMax = byDay[fastStartDay] ?? duration
-                byDay.updateValue(currentMax >= duration ? currentMax : duration, forKey: fastStartDay)
+            if let finalFast = acc.1, finalEvt = acc.2 {
+                if finalFast != finalEvt {
+                    let fastStartDay = finalFast.startOf(.Day, inRegion: Region())
+                    let duration = finalEvt.timeIntervalSinceDate(finalFast)
+                    let currentMax = byDay[fastStartDay] ?? duration
+                    byDay.updateValue(currentMax >= duration ? currentMax : duration, forKey: fastStartDay)
+                }
             }
             return byDay.sort { (a,b) in return a.0 < b.0 }
         }
