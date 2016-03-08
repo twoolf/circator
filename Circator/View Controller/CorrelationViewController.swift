@@ -74,14 +74,15 @@ class CorrelationViewController: UIViewController, ChartViewDelegate {
     var sampleTypes: [HKSampleType]! {
         didSet {
             Async.main {
-                let attr1 = HMConstants.sharedInstance.healthKitShortNames[self.sampleTypes[0].identifier]!
-                let attr2 = HMConstants.sharedInstance.healthKitShortNames[self.sampleTypes[1].identifier]!
+                let lsp = self.lspec ?? .PlotPredicate("", nil)
+                let rsp = self.rspec ?? .PlotPredicate("", nil)
+
+                let attr1 = self.attrNameOfSpec(lsp, name: HMConstants.sharedInstance.healthKitShortNames[self.sampleTypes[0].identifier]!)
+                let attr2 = self.attrNameOfSpec(rsp, name: HMConstants.sharedInstance.healthKitShortNames[self.sampleTypes[1].identifier]!)
                 self.correlationLabel.text = NSLocalizedString("\(attr2) Relative to Increasing \(attr1)", comment: "Plot view section title label")
 
                 Async.background {
-                    let ls = self.lspec ?? .PlotPredicate(nil)
-                    let rs = self.rspec ?? .PlotPredicate(nil)
-                    switch (ls, rs) {
+                    switch (lsp, rsp) {
                     case (.PlotFasting, .PlotFasting):
                         HealthManager.sharedManager.fetchMaxFastingTimes { (aggregates, error) in
                             guard (error == nil) && !aggregates.isEmpty else {
@@ -95,7 +96,7 @@ class CorrelationViewController: UIViewController, ChartViewDelegate {
                             self.correlateFastingSelf(aggregates)
                         }
 
-                    case let (.PlotFasting, .PlotPredicate(predicate)):
+                    case let (.PlotFasting, .PlotPredicate(_, predicate)):
                         HealthManager.sharedManager.correlateWithFasting(false, type: self.sampleTypes[1], predicate: predicate) {
                             (zipped, error) -> Void in
                             guard (error == nil) && !zipped.isEmpty else {
@@ -109,7 +110,7 @@ class CorrelationViewController: UIViewController, ChartViewDelegate {
                             self.correlateFasting(zipped)
                         }
 
-                    case let (.PlotPredicate(predicate), .PlotFasting):
+                    case let (.PlotPredicate(_, predicate), .PlotFasting):
                         HealthManager.sharedManager.correlateWithFasting(false, type: self.sampleTypes[0], predicate: predicate) {
                             (zipped, error) -> Void in
                             guard (error == nil) && !zipped.isEmpty else {
@@ -123,7 +124,7 @@ class CorrelationViewController: UIViewController, ChartViewDelegate {
                             self.correlateFasting(zipped, flipTypes: true)
                         }
 
-                    case let (.PlotPredicate(lpred), .PlotPredicate(rpred)):
+                    case let (.PlotPredicate(_, lpred), .PlotPredicate(_, rpred)):
                         HealthManager.sharedManager.correlateStatisticsOfType(self.sampleTypes[0], withType: self.sampleTypes[1], pred1: lpred, pred2: rpred) {
                             (stat1, stat2, error) -> Void in
                             guard (error == nil) && !(stat1.isEmpty || stat2.isEmpty) else {
@@ -139,6 +140,17 @@ class CorrelationViewController: UIViewController, ChartViewDelegate {
                     }
                 }
             }
+        }
+    }
+
+    func attrNameOfSpec(spec: PlotSpec, name: String) -> String {
+        switch spec {
+        case .PlotFasting:
+            return "Fasting"
+        case .PlotPredicate(_, nil):
+            return name
+        case let .PlotPredicate(nm, _):
+            return nm
         }
     }
 

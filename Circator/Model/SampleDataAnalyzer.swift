@@ -13,7 +13,7 @@ import Charts
 import SwiftDate
 
 enum PlotSpec {
-    case PlotPredicate(NSPredicate!)
+    case PlotPredicate(String, NSPredicate!)
     case PlotFasting
 }
 

@@ -444,7 +444,7 @@ public class HealthManager: NSObject, WCSessionDelegate {
                     return (acc.0 + [(e.0+epsilon, e.1)], !acc.1, e)
                 } else if acc.1 {
                     let fastSt = acc.2.0 + epsilon
-                    let fastEn = (e.0-epsilon) - 1.day > fastSt ? fastSt + 1.day : e.0 - epsilon
+                    let fastEn = (e.0-epsilon) - 1.days > fastSt ? fastSt + 1.days : e.0 - epsilon
                     return (acc.0 + [(fastSt, .Fast), (fastEn, .Fast), e], !acc.1, e)
                 } else {
                     return (acc.0 + [e], !acc.1, e)

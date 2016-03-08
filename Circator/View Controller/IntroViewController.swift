@@ -22,12 +22,6 @@ private let mcControlButtonHeight = ScreenManager.sharedInstance.dashboardButton
 
 private let hkAccessTimeout = 60.seconds
 
-// Helper predicates
-private let mealsPredicate = HKQuery.predicateForWorkoutsWithWorkoutActivityType(HKWorkoutActivityType.PreparationAndRecovery)
-
-private let notMealsPredicate = NSCompoundPredicate(notPredicateWithSubpredicate: HKQuery.predicateForWorkoutsWithWorkoutActivityType(HKWorkoutActivityType.PreparationAndRecovery))
-
-private let asleepPredicate = HKQuery.predicateForCategorySamplesWithOperatorType(.EqualToPredicateOperatorType, value: HKCategoryValueSleepAnalysis.Asleep.rawValue)
 
 /**
  Main view controller for Metabolic Compass.
@@ -62,21 +56,21 @@ class IntroViewController: UIViewController,
     static let previewTypeStrings = PreviewManager.previewChoices.flatten().map { $0.displayText ?? HMConstants.sharedInstance.healthKitShortNames[$0.identifier]! }
 
     static let previewSpecs : [String: PlotSpec!] = [
-        HKCategoryTypeIdentifierSleepAnalysis : .PlotPredicate(asleepPredicate)
+        HKCategoryTypeIdentifierSleepAnalysis : .PlotPredicate("Sleep", asleepPredicate)
     ]
 
     static let extraPickerTypes : [(HKSampleType, PlotSpec!)] = [
-        (HKObjectType.workoutType(), .PlotPredicate(mealsPredicate)),
-        (HKObjectType.workoutType(), .PlotPredicate(notMealsPredicate)),
+        (HKObjectType.workoutType(), .PlotPredicate("Meals", mealsPredicate)),
+        (HKObjectType.workoutType(), .PlotPredicate("Exercise", exercisePredicate)),
         (HKObjectType.workoutType(), .PlotFasting),
         (HKObjectType.workoutType(), nil),
     ]
 
     static let extraPickerTypeStrings = [
         "Meals",
-        "Workouts",
+        "Exercise",
         "Fasting times",
-        "Meals and workouts",
+        "Meals and exercise",
     ]
 
     private var pickerView: UIPickerView!
@@ -826,12 +820,17 @@ class IntroViewController: UIViewController,
         }
         if sender == correlateButton {
             initializePickerView()
-            selectedMode = GraphMode.Correlate(IntroViewController.previewTypes[0], nil, IntroViewController.previewTypes[0], nil)
+            let type = IntroViewController.extraPickerTypes[0].0
+            let spec = IntroViewController.extraPickerTypes[0].1
+            selectedMode = GraphMode.Correlate(type, spec, type, spec)
         }
         else if sender == plotButton {
             initializePickerView()
-            selectedMode = GraphMode.Plot(IntroViewController.previewTypes[0], nil)
-        } else {
+            let type = IntroViewController.extraPickerTypes[0].0
+            let spec = IntroViewController.extraPickerTypes[0].1
+            selectedMode = GraphMode.Plot(type, spec)
+        }
+        else {
             var event: EventPickerManager.Event!
             if sender == foodButton {
                 event = .Meal
@@ -1089,21 +1088,21 @@ class IntroViewController: UIViewController,
     
     func pickerView(pickerView: UIPickerView, numberOfRowsInComponent component: Int) -> Int {
         if case .Correlate(_) = selectedMode! {
-            return IntroViewController.previewTypeStrings.count + IntroViewController.extraPickerTypeStrings.count
+            return IntroViewController.extraPickerTypeStrings.count + IntroViewController.previewTypeStrings.count
         }
         else if case .Plot(_) = selectedMode! {
-            return IntroViewController.previewTypeStrings.count + IntroViewController.extraPickerTypeStrings.count
+            return IntroViewController.extraPickerTypeStrings.count + IntroViewController.previewTypeStrings.count
         }
         return 0
     }
     
     func pickerView(pickerView: UIPickerView, titleForRow row: Int, forComponent component: Int) -> String? {
-        let pcnt = IntroViewController.previewTypeStrings.count
+        let pcnt = IntroViewController.extraPickerTypeStrings.count
         if case .Correlate(_) = selectedMode! {
-            return row < pcnt ? IntroViewController.previewTypeStrings[row] : IntroViewController.extraPickerTypeStrings[row-pcnt]
+            return row < pcnt ? IntroViewController.extraPickerTypeStrings[row] : IntroViewController.previewTypeStrings[row-pcnt]
         }
         else if case .Plot(_) = selectedMode! {
-            return row < pcnt ? IntroViewController.previewTypeStrings[row] : IntroViewController.extraPickerTypeStrings[row-pcnt]
+            return row < pcnt ? IntroViewController.extraPickerTypeStrings[row] : IntroViewController.previewTypeStrings[row-pcnt]
         }
         return nil
     }
@@ -1111,19 +1110,19 @@ class IntroViewController: UIViewController,
     // MARK: - Picker view delegate
 
     func pickerView(pickerView: UIPickerView, didSelectRow row: Int, inComponent component: Int) {
-        let pcnt = IntroViewController.previewTypeStrings.count
+        let pcnt = IntroViewController.extraPickerTypeStrings.count
         if case .Correlate(_) = selectedMode! {
             let lrow = pickerView.selectedRowInComponent(0)
             let rrow = pickerView.selectedRowInComponent(1)
-            let ltype = lrow < pcnt ? IntroViewController.previewTypes[lrow] : IntroViewController.extraPickerTypes[lrow-pcnt].0
-            let rtype = rrow < pcnt ? IntroViewController.previewTypes[rrow] : IntroViewController.extraPickerTypes[rrow-pcnt].0
-            let lspec = lrow < pcnt ? (IntroViewController.previewSpecs[ltype.identifier] ?? nil) : IntroViewController.extraPickerTypes[lrow-pcnt].1
-            let rspec = rrow < pcnt ? (IntroViewController.previewSpecs[rtype.identifier] ?? nil) : IntroViewController.extraPickerTypes[rrow-pcnt].1
+            let ltype = lrow < pcnt ? IntroViewController.extraPickerTypes[lrow].0 : IntroViewController.previewTypes[lrow-pcnt]
+            let rtype = rrow < pcnt ? IntroViewController.extraPickerTypes[rrow].0 : IntroViewController.previewTypes[rrow-pcnt]
+            let lspec = lrow < pcnt ? IntroViewController.extraPickerTypes[lrow].1 : (IntroViewController.previewSpecs[ltype.identifier] ?? nil)
+            let rspec = rrow < pcnt ? IntroViewController.extraPickerTypes[rrow].1 : (IntroViewController.previewSpecs[rtype.identifier] ?? nil)
             selectedMode = GraphMode.Correlate(ltype, lspec, rtype, rspec)
         }
         else if case .Plot(_) = selectedMode! {
-            let type = row < pcnt ? IntroViewController.previewTypes[row] : IntroViewController.extraPickerTypes[row - pcnt].0
-            let spec = row < pcnt ? (IntroViewController.previewSpecs[type.identifier] ?? nil) : IntroViewController.extraPickerTypes[row - pcnt].1
+            let type = row < pcnt ? IntroViewController.extraPickerTypes[row].0 : IntroViewController.previewTypes[row-pcnt]
+            let spec = row < pcnt ? IntroViewController.extraPickerTypes[row].1 : (IntroViewController.previewSpecs[type.identifier] ?? nil)
             selectedMode = GraphMode.Plot(type, spec)
         }
     }
