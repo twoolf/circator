@@ -490,7 +490,9 @@ public class HealthManager: NSObject, WCSessionDelegate {
             return (!acc.0, e.0, acc.2)
         }
         let initial : Accum = (true, nil, [:])
-        let final : (Accum -> [(NSDate, Double)]) = { acc in return acc.2.sort { (a,b) in return a.0 < b.0 } }
+        let final : (Accum -> [(NSDate, Double)]) = { acc in
+            return acc.2.map { return ($0.0, $0.1 / 3600.0) }.sort { (a,b) in return a.0 < b.0 }
+        }
 
         fetchAggregatedCircadianEvents(nil, aggregator: aggregator, initial: initial, final: final, completion: completion)
     }
@@ -542,7 +544,7 @@ public class HealthManager: NSObject, WCSessionDelegate {
                     byDay.updateValue(currentMax >= duration ? currentMax : duration, forKey: fastStartDay)
                 }
             }
-            return byDay.sort { (a,b) in return a.0 < b.0 }
+            return byDay.map { return ($0.0, $0.1 / 3600.0) }.sort { (a,b) in return a.0 < b.0 }
         }
 
         fetchAggregatedCircadianEvents(predicate, aggregator: aggregator, initial: initial, final: final, completion: completion)
