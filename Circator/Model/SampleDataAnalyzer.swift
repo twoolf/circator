@@ -27,54 +27,54 @@ class SampleDataAnalyzer: NSObject {
  - note: format set by Charts library
  */
 class CorrelationDataAnalyzer: SampleDataAnalyzer {
-    let sampleTypes: [HKSampleType]
+    let labels: [String]
     let samples: [[MCSample]]
     let values: [[(NSDate, Double)]]
     let zipped: [(NSDate, Double, MCSample)]
     var dataSetConfigurators: [((LineChartDataSet) -> Void)?] = []
 
-    init?(sampleTypes: [HKSampleType], samples: [[MCSample]]) {
-        guard sampleTypes.count == 2 && samples.count == 2 else {
-            self.sampleTypes = []
+    init?(labels: [String], samples: [[MCSample]]) {
+        guard labels.count == 2 && samples.count == 2 else {
+            self.labels = []
             self.samples = []
             self.values = []
             self.zipped = []
             super.init()
             return nil
         }
-        self.sampleTypes = sampleTypes
+        self.labels = labels
         self.samples = samples
         self.values = []
         self.zipped = []
         super.init()
     }
 
-    init?(sampleTypes: [HKSampleType], values: [[(NSDate, Double)]]) {
-        guard sampleTypes.count == 2 && values.count == 2 else {
-            self.sampleTypes = []
+    init?(labels: [String], values: [[(NSDate, Double)]]) {
+        guard labels.count == 2 && values.count == 2 else {
+            self.labels = []
             self.samples = []
             self.values = []
             self.zipped = []
             super.init()
             return nil
         }
-        self.sampleTypes = sampleTypes
+        self.labels = labels
         self.samples = []
         self.values = values
         self.zipped = []
         super.init()
     }
 
-    init?(sampleTypes: [HKSampleType], zipped: [(NSDate, Double, MCSample)]) {
-        guard sampleTypes.count == 2 else {
-            self.sampleTypes = []
+    init?(labels: [String], zipped: [(NSDate, Double, MCSample)]) {
+        guard labels.count == 2 else {
+            self.labels = []
             self.samples = []
             self.values = []
             self.zipped = []
             super.init()
             return nil
         }
-        self.sampleTypes = sampleTypes
+        self.labels = labels
         self.samples = []
         self.values = []
         self.zipped = zipped
@@ -86,36 +86,36 @@ class CorrelationDataAnalyzer: SampleDataAnalyzer {
             let firstParamEntries = samples[0].enumerate().map { (i, stats) -> ChartDataEntry in
                 return ChartDataEntry(value: stats.numeralValue!, xIndex: i + 1)
             }
-            let firstParamDataSet = LineChartDataSet(yVals: firstParamEntries, label: sampleTypes[0].displayText)
+            let firstParamDataSet = LineChartDataSet(yVals: firstParamEntries, label: labels[0])
             dataSetConfigurators[0]?(firstParamDataSet)
             let secondParamEntries = samples[1].enumerate().map { (i, stats) -> ChartDataEntry in
                 return ChartDataEntry(value: stats.numeralValue!, xIndex: i + 1)
             }
-            let secondParamDataSet = LineChartDataSet(yVals: secondParamEntries, label: sampleTypes[1].displayText)
+            let secondParamDataSet = LineChartDataSet(yVals: secondParamEntries, label: labels[1])
             dataSetConfigurators[1]?(secondParamDataSet)
             return LineChartData(xVals: Array(0...samples[0].count + 1), dataSets: [firstParamDataSet, secondParamDataSet])
         } else if !values.isEmpty {
             let firstParamEntries = values[0].enumerate().map { (i, s) -> ChartDataEntry in
                 return ChartDataEntry(value: s.1, xIndex: i + 1)
             }
-            let firstParamDataSet = LineChartDataSet(yVals: firstParamEntries, label: sampleTypes[0].displayText)
+            let firstParamDataSet = LineChartDataSet(yVals: firstParamEntries, label: labels[0])
             dataSetConfigurators[0]?(firstParamDataSet)
             let secondParamEntries = values[1].enumerate().map { (i, s) -> ChartDataEntry in
                 return ChartDataEntry(value: s.1, xIndex: i + 1)
             }
-            let secondParamDataSet = LineChartDataSet(yVals: secondParamEntries, label: sampleTypes[1].displayText)
+            let secondParamDataSet = LineChartDataSet(yVals: secondParamEntries, label: labels[1])
             dataSetConfigurators[1]?(secondParamDataSet)
             return LineChartData(xVals: Array(0...values[0].count + 1), dataSets: [firstParamDataSet, secondParamDataSet])
         } else {
             let firstParamEntries = zipped.enumerate().map { (i, s) -> ChartDataEntry in
                 return ChartDataEntry(value: s.1, xIndex: i + 1)
             }
-            let firstParamDataSet = LineChartDataSet(yVals: firstParamEntries, label: sampleTypes[0].displayText)
+            let firstParamDataSet = LineChartDataSet(yVals: firstParamEntries, label: labels[0])
             dataSetConfigurators[0]?(firstParamDataSet)
             let secondParamEntries = zipped.enumerate().map { (i, s) -> ChartDataEntry in
                 return ChartDataEntry(value: s.2.numeralValue!, xIndex: i + 1)
             }
-            let secondParamDataSet = LineChartDataSet(yVals: secondParamEntries, label: sampleTypes[1].displayText)
+            let secondParamDataSet = LineChartDataSet(yVals: secondParamEntries, label: labels[1])
             dataSetConfigurators[1]?(secondParamDataSet)
             return LineChartData(xVals: Array(0...zipped.count + 1), dataSets: [firstParamDataSet, secondParamDataSet])
         }

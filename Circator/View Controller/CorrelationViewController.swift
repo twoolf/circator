@@ -97,7 +97,7 @@ class CorrelationViewController: UIViewController, ChartViewDelegate {
                         }
 
                     case let (.PlotFasting, .PlotPredicate(_, predicate)):
-                        HealthManager.sharedManager.correlateWithFasting(false, type: self.sampleTypes[1], predicate: predicate) {
+                        HealthManager.sharedManager.correlateWithFasting(true, type: self.sampleTypes[1], predicate: predicate) {
                             (zipped, error) -> Void in
                             guard (error == nil) && !zipped.isEmpty else {
                                 Async.main {
@@ -121,7 +121,7 @@ class CorrelationViewController: UIViewController, ChartViewDelegate {
                                 }
                                 return
                             }
-                            self.correlateFasting(zipped, flipTypes: true)
+                            self.correlateFasting(zipped, flip: true)
                         }
 
                     case let (.PlotPredicate(_, lpred), .PlotPredicate(_, rpred)):
@@ -154,19 +154,26 @@ class CorrelationViewController: UIViewController, ChartViewDelegate {
         }
     }
 
+    func specLabels() -> [String] {
+        let lsp = self.lspec ?? .PlotPredicate("", nil)
+        let rsp = self.rspec ?? .PlotPredicate("", nil)
+        return [attrNameOfSpec(lsp, name: sampleTypes[0].displayText!), attrNameOfSpec(rsp, name: sampleTypes[1].displayText!)]
+
+    }
     func correlateSamplePair(stat1: [MCSample], stat2: [MCSample]) {
-        let analyzer = CorrelationDataAnalyzer(sampleTypes: self.sampleTypes, samples: [stat1, stat2])!
+        let analyzer = CorrelationDataAnalyzer(labels: specLabels(), samples: [stat1, stat2])!
         self.plotCorrelate(analyzer)
     }
 
     func correlateFastingSelf(aggregates: [(NSDate, Double)]) {
-        let analyzer = CorrelationDataAnalyzer(sampleTypes: self.sampleTypes, values: [aggregates, aggregates])!
+        let analyzer = CorrelationDataAnalyzer(labels: specLabels(), values: [aggregates, aggregates])!
         self.plotCorrelate(analyzer)
     }
 
-    func correlateFasting(zipped: [(NSDate, Double, MCSample)], flipTypes: Bool = false) {
-        let types = flipTypes ? [sampleTypes[1], sampleTypes[0]] : sampleTypes
-        let analyzer = CorrelationDataAnalyzer(sampleTypes: types, zipped: zipped)!
+    func correlateFasting(zipped: [(NSDate, Double, MCSample)], flip: Bool = false) {
+        let labels = specLabels()
+        let flippedLabels = [labels[1], labels[0]]
+        let analyzer = CorrelationDataAnalyzer(labels: flip ? flippedLabels : labels, zipped: zipped)!
         self.plotCorrelate(analyzer)
     }
 
