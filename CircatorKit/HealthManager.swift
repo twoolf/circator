@@ -501,7 +501,7 @@ public class HealthManager: NSObject, WCSessionDelegate {
         // ii. start of this fasting event.
         // iii. the previous event.
         // iv. a dictionary of accumulated fasting intervals.
-        typealias Accum = (Bool, NSDate!, NSDate!, [NSDate: [Double]])
+        typealias Accum = (Bool, NSDate!, NSDate!, [NSDate: Double])
 
         let predicate : (NSDate, CircadianEvent) -> Bool = {
                 switch $0.1 {
@@ -519,11 +519,8 @@ public class HealthManager: NSObject, WCSessionDelegate {
             if iStart && prevFast != nil && prevEvt != nil && e.0 != prevEvt {
                 let fastStartDay = prevFast.startOf(.Day, inRegion: Region())
                 let duration = prevEvt.timeIntervalSinceDate(prevFast)
-                if duration > 0 {
-                    var narr = byDay[fastStartDay] ?? []
-                    narr.append(duration)
-                    byDay.updateValue(narr, forKey: fastStartDay)
-                }
+                let currentMax = byDay[fastStartDay] ?? duration
+                byDay.updateValue(currentMax >= duration ? currentMax : duration, forKey: fastStartDay)
                 nextFast = e.0
             }
             return (!acc.0, nextFast, e.0, byDay)
@@ -536,13 +533,10 @@ public class HealthManager: NSObject, WCSessionDelegate {
             if finalFast != finalEvt {
                 let fastStartDay = finalFast.startOf(.Day, inRegion: Region())
                 let duration = finalEvt.timeIntervalSinceDate(finalFast)
-                if duration > 0 {
-                    var narr = byDay[fastStartDay] ?? []
-                    narr.append(duration)
-                    byDay.updateValue(narr, forKey: fastStartDay)
-                }
+                let currentMax = byDay[fastStartDay] ?? duration
+                byDay.updateValue(currentMax >= duration ? currentMax : duration, forKey: fastStartDay)
             }
-            return byDay.map { return ($0.0, $0.1.maxElement() ?? 0.0) }.sort { (a,b) in return a.0 < b.0 }
+            return byDay.sort { (a,b) in return a.0 < b.0 }
         }
 
         fetchAggregatedCircadianEvents(predicate, aggregator: aggregator, initial: initial, final: final, completion: completion)
