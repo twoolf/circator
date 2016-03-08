@@ -7,7 +7,6 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		7816FFB91C1E2DC5002E2ED8 /* TextInputTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7816FFB81C1E2DC5002E2ED8 /* TextInputTableViewCell.swift */; };
 		7816FFBB1C1E45D3002E2ED8 /* UserManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7816FFBA1C1E45D3002E2ED8 /* UserManager.swift */; };
 		781CF2BF1C6A4781001DF3B2 /* SecureConstants.swift in Sources */ = {isa = PBXBuildFile; fileRef = 781CF2BE1C6A4781001DF3B2 /* SecureConstants.swift */; };
 		781CF2C11C6A6A36001DF3B2 /* EventTimeViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 781CF2C01C6A6A36001DF3B2 /* EventTimeViewController.swift */; };
@@ -61,7 +60,6 @@
 		F42F5B951BE2C89200195490 /* CorrelationViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = F42F5B941BE2C89200195490 /* CorrelationViewController.swift */; };
 		F43A7C551BBDF25E00B6FA56 /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = F43A7C541BBDF25E00B6FA56 /* Images.xcassets */; };
 		F43A7C571BBDF29D00B6FA56 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = F43A7C561BBDF29D00B6FA56 /* LaunchScreen.storyboard */; };
-		F43A7C5D1BBDF43600B6FA56 /* CollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = F43A7C5B1BBDF43600B6FA56 /* CollectionViewCell.swift */; };
 		F43A7C5E1BBDF43600B6FA56 /* PlotButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = F43A7C5C1BBDF43600B6FA56 /* PlotButton.swift */; };
 		F43A7C681BBE508D00B6FA56 /* IntroCompareDataTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = F43A7C671BBE508D00B6FA56 /* IntroCompareDataTableViewCell.swift */; };
 		F44B1A2D1BDAC20D002238E6 /* PlotViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = F44B1A2C1BDAC20D002238E6 /* PlotViewController.swift */; };
@@ -162,7 +160,6 @@
 		4768419D940426F855957056 /* Pods-Circator.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Circator.debug.xcconfig"; path = "Pods/Target Support Files/Pods-Circator/Pods-Circator.debug.xcconfig"; sourceTree = "<group>"; };
 		780211561C20E33F000120CE /* Pods_Circator.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Pods_Circator.framework; path = "Pods/../build/Debug-iphoneos/Pods_Circator.framework"; sourceTree = "<group>"; };
 		780211581C20E36B000120CE /* Pods_Circator.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Pods_Circator.framework; path = "Pods/../build/Debug-iphoneos/Pods_Circator.framework"; sourceTree = "<group>"; };
-		7816FFB81C1E2DC5002E2ED8 /* TextInputTableViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TextInputTableViewCell.swift; sourceTree = "<group>"; };
 		7816FFBA1C1E45D3002E2ED8 /* UserManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = UserManager.swift; sourceTree = "<group>"; };
 		781CF2BE1C6A4781001DF3B2 /* SecureConstants.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SecureConstants.swift; sourceTree = "<group>"; };
 		781CF2C01C6A6A36001DF3B2 /* EventTimeViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = EventTimeViewController.swift; sourceTree = "<group>"; };
@@ -233,7 +230,6 @@
 		F42F5B941BE2C89200195490 /* CorrelationViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CorrelationViewController.swift; sourceTree = "<group>"; };
 		F43A7C541BBDF25E00B6FA56 /* Images.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Images.xcassets; sourceTree = "<group>"; };
 		F43A7C561BBDF29D00B6FA56 /* LaunchScreen.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; path = LaunchScreen.storyboard; sourceTree = "<group>"; };
-		F43A7C5B1BBDF43600B6FA56 /* CollectionViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CollectionViewCell.swift; sourceTree = "<group>"; };
 		F43A7C5C1BBDF43600B6FA56 /* PlotButton.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PlotButton.swift; sourceTree = "<group>"; };
 		F43A7C601BBDF49D00B6FA56 /* Circator.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.xml; path = Circator.entitlements; sourceTree = "<group>"; };
 		F43A7C671BBE508D00B6FA56 /* IntroCompareDataTableViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = IntroCompareDataTableViewCell.swift; sourceTree = "<group>"; };
@@ -459,10 +455,8 @@
 		F43A7C5A1BBDF3FD00B6FA56 /* View */ = {
 			isa = PBXGroup;
 			children = (
-				F43A7C5B1BBDF43600B6FA56 /* CollectionViewCell.swift */,
 				F43A7C5C1BBDF43600B6FA56 /* PlotButton.swift */,
 				F43A7C671BBE508D00B6FA56 /* IntroCompareDataTableViewCell.swift */,
-				7816FFB81C1E2DC5002E2ED8 /* TextInputTableViewCell.swift */,
 			);
 			path = View;
 			sourceTree = "<group>";
@@ -849,7 +843,6 @@
 				F49B2B711C7A83BD005F2BFB /* EventPickerManager.swift in Sources */,
 				7840A4991C6E53A80005B66F /* VariantViewController.swift in Sources */,
 				7860E9131C61C470004C9741 /* DebugViewController.swift in Sources */,
-				F43A7C5D1BBDF43600B6FA56 /* CollectionViewCell.swift in Sources */,
 				7863EA9E1C27332C0038DE7A /* QueryWriterViewController.swift in Sources */,
 				7881A3E31BAF3B3E00ECB3C6 /* IntroViewController.swift in Sources */,
 				781CF2C11C6A6A36001DF3B2 /* EventTimeViewController.swift in Sources */,
@@ -858,7 +851,6 @@
 				F49B2B6F1C7A71DC005F2BFB /* DaySelectionViewController.swift in Sources */,
 				F49B2B6D1C7A6206005F2BFB /* RepeatedEventsController.swift in Sources */,
 				F42F5B951BE2C89200195490 /* CorrelationViewController.swift in Sources */,
-				7816FFB91C1E2DC5002E2ED8 /* TextInputTableViewCell.swift in Sources */,
 				F42F5ADD1BDC85AF00195490 /* SampleDataAnalyzer.swift in Sources */,
 				78CE00AD1C65CC5A005E955C /* RadarViewController.swift in Sources */,
 				78F65A4D1C25126E0074449D /* QueryBuilderViewController.swift in Sources */,

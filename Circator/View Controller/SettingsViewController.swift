@@ -13,14 +13,15 @@ import Former
 import HTPressableButton
 import Crashlytics
 import SwiftDate
+import SafariServices
 
 private let fieldCount           : Int   = UserProfile.sharedInstance.updateableReqRange.count+4
 
-private let debugSectionSizes    : [Int] = [2,2,7,fieldCount,2,1,1]
-private let releaseSectionSizes  : [Int] = [2,2,7,fieldCount,2,1]
+private let debugSectionSizes    : [Int] = [2,2,7,fieldCount,2,2,1]
+private let releaseSectionSizes  : [Int] = [2,2,7,fieldCount,2,2]
 
-private let debugSectionTitles    : [String] = ["Login", "Settings", "Preview Rows", "Profile", "Bulk Upload", "", "Debug"]
-private let releaseSectionTitles  : [String] = ["Login", "Settings", "Preview Rows", "Profile", "Bulk Upload", ""]
+private let debugSectionTitles    : [String] = ["Login", "Settings", "Preview Rows", "Profile", "Bulk Upload", "Account Management", "Debug"]
+private let releaseSectionTitles  : [String] = ["Login", "Settings", "Preview Rows", "Profile", "Bulk Upload", "Account Management"]
 
 private let withDebugView = false
 
@@ -33,7 +34,7 @@ class MCButton : HTPressableButton {
  
  - note: this view controls bulk upload from HealthKit history
  */
-class SettingsViewController: UITableViewController, UITextFieldDelegate {
+class SettingsViewController: UITableViewController, UITextFieldDelegate, SFSafariViewControllerDelegate {
 
     var introView : IntroViewController! = nil
 
@@ -52,6 +53,7 @@ class SettingsViewController: UITableViewController, UITextFieldDelegate {
     private var hMax = 0.0
 
     private var uploadButton: UIButton? = nil
+    private var resetPassButton: UIButton? = nil
     private var withdrawButton: UIButton? = nil
 
     private var profile : [(String, String, String, Int)] = []
@@ -175,7 +177,20 @@ class SettingsViewController: UITableViewController, UITextFieldDelegate {
         }
 
         if indexPath.section == 5 {
-            if indexPath.row == 0 && withdrawButton == nil {
+            if indexPath.row == 0 && resetPassButton == nil {
+                resetPassButton = {
+                    let button = MCButton(frame: cell.contentView.frame, buttonStyle: .Rounded)
+                    button.cornerRadius = 4.0
+                    button.buttonColor = UIColor.ht_sunflowerColor()
+                    button.shadowColor = UIColor.ht_citrusColor()
+                    button.shadowHeight = 4
+                    button.setTitle("Reset Password", forState: .Normal)
+                    button.titleLabel?.font = UIFont.systemFontOfSize(18, weight: UIFontWeightRegular)
+                    button.addTarget(self, action: "doResetPassword:", forControlEvents: .TouchUpInside)
+                    button.enabled = UserManager.sharedManager.hasUserId()
+                    return button
+                }()
+            } else if indexPath.row == 1 && withdrawButton == nil {
                 withdrawButton = {
                     let button = MCButton(frame: cell.contentView.frame, buttonStyle: .Rounded)
                     button.cornerRadius = 4.0
@@ -196,13 +211,14 @@ class SettingsViewController: UITableViewController, UITextFieldDelegate {
             cell.accessoryType = .None
             cell.selectionStyle = .None
 
-            withdrawButton!.translatesAutoresizingMaskIntoConstraints = false
-            cell.contentView.addSubview(withdrawButton!)
+            let button = indexPath.row == 0 ? resetPassButton : withdrawButton
+            button!.translatesAutoresizingMaskIntoConstraints = false
+            cell.contentView.addSubview(button!)
             let constraints: [NSLayoutConstraint] = [
-                withdrawButton!.topAnchor.constraintEqualToAnchor(cell.contentView.topAnchor),
-                withdrawButton!.leadingAnchor.constraintEqualToAnchor(cell.contentView.leadingAnchor),
-                withdrawButton!.trailingAnchor.constraintEqualToAnchor(cell.contentView.trailingAnchor),
-                withdrawButton!.heightAnchor.constraintEqualToAnchor(cell.contentView.heightAnchor)
+                button!.topAnchor.constraintEqualToAnchor(cell.contentView.topAnchor),
+                button!.leadingAnchor.constraintEqualToAnchor(cell.contentView.leadingAnchor),
+                button!.trailingAnchor.constraintEqualToAnchor(cell.contentView.trailingAnchor),
+                button!.heightAnchor.constraintEqualToAnchor(cell.contentView.heightAnchor)
             ]
             cell.contentView.addConstraints(constraints)
             return cell
@@ -601,20 +617,41 @@ class SettingsViewController: UITableViewController, UITextFieldDelegate {
     }
 
     func doDeleteAccount(sender: UIButton) {
-        UserManager.sharedManager.withdraw { success in
-            if success {
-                PopulationHealthManager.sharedManager.resetAggregates()
-                if let iv = self.introView {
-                    log.info("Resetting IntroView on deletion")
-                    iv.doDataRefresh()
+        let sheet = UIAlertController(title: "Withdraw from Metabolic Compass", message: "Are you sure you want to delete your account?", preferredStyle: .Alert)
+        let yes = UIAlertAction(title: "Yes", style: .Default) { action -> Void in
+            UserManager.sharedManager.withdraw { success in
+                if success {
+                    PopulationHealthManager.sharedManager.resetAggregates()
+                    if let iv = self.introView {
+                        log.info("Resetting IntroView on deletion")
+                        iv.doDataRefresh()
+                    }
+                    let msg = "Thanks for using Metabolic Compass!"
+                    UINotifications.genericMsg(self.navigationController!, msg: msg, pop: true, asNav: true)
+                } else {
+                    let msg = "Failed to delete account, please try again later"
+                    UINotifications.genericError(self.navigationController!, msg: msg, pop: false, asNav: true)
                 }
-                let msg = "Thanks for using Metabolic Compass!"
-                UINotifications.genericMsg(self.navigationController!, msg: msg, pop: true, asNav: true)
-            } else {
-                let msg = "Failed to delete account, please try again later"
-                UINotifications.genericError(self.navigationController!, msg: msg, pop: false, asNav: true)
             }
         }
+        let no = UIAlertAction(title: "No", style: .Cancel) { action -> Void in () }
+        sheet.addAction(yes)
+        sheet.addAction(no)
+        self.presentViewController(sheet, animated: true, completion: nil)
+    }
+
+    func doResetPassword(sender: UIButton) {
+        if let url = NSURL(string: resetPassURL) {
+            let vc = SFSafariViewController(URL: url, entersReaderIfAvailable: true)
+            vc.delegate = self
+            presentViewController(vc, animated: true, completion: nil)
+        } else {
+            log.error("Failed to reset password (URL creation)")
+        }
+    }
+
+    func safariViewControllerDidFinish(controller: SFSafariViewController) {
+        dismissViewControllerAnimated(true, completion: nil)
     }
 }
 

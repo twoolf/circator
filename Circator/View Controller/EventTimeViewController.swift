@@ -151,16 +151,15 @@ class EventTimeViewController : UIViewController {
         chart.lineWidth = 2.0
         chart.labelColor = .whiteColor()
         chart.labelFont = UIFont.systemFontOfSize(plotFontSize)
-        
-/// these are the four transitions seen in the x-axis
+
         chart.xLabels = [0.0, 6.0, 12.0, 18.0, 24.0]
         chart.xLabelsTextAlignment = .Left
         chart.xLabelsFormatter = { (labelIndex: Int, labelValue: Float) -> String in
             let d = 24.hours.ago + (Int(labelValue)).hours
             return d.toString(DateFormat.Custom("HH:mm"))!
         }
-/// these are the transition levels, bottom to top, Exercise, Sleep, Fasting, Eating
-        chart.yLabels = [0.0, 0.33, 0.66, 1.0]
+
+        chart.yLabels = [Float(stWorkout), Float(stSleep), Float(stFast), Float(stEat)]
         chart.yLabelsOnRightSide = true
         chart.yLabelsFormatter = { (labelIndex: Int, labelValue: Float) -> String in
             switch labelIndex {
@@ -229,8 +228,9 @@ class EventTimeViewController : UIViewController {
 
         /// Fetch all sleep and workout data since yesterday, and then aggregate sleep, exercise and meal events.
         let yesterday = 1.days.ago
+        let startDate = yesterday
 
-        HealthManager.sharedManager.fetchCircadianEventIntervals { (intervals, error) -> Void in
+        HealthManager.sharedManager.fetchCircadianEventIntervals(startDate) { (intervals, error) -> Void in
             Async.main {
                 guard error == nil else {
                     log.error("Failed to fetch circadian events: \(error)")
@@ -247,7 +247,7 @@ class EventTimeViewController : UIViewController {
                     self.eatingLabel.text  = "N/A"
                     self.lastAteLabel.text = "N/A"
                 } else {
-                    let vals = intervals.map { e in (x: e.0.timeIntervalSinceDate(yesterday) / 3600.0, y: valueOfCircadianEvent(e.1)) }
+                    let vals = intervals.map { e in (x: e.0.timeIntervalSinceDate(startDate) / 3600.0, y: valueOfCircadianEvent(e.1)) }
                     let series = ChartSeries(data: vals)
                     series.area = true
                     series.color = .whiteColor()
@@ -262,10 +262,10 @@ class EventTimeViewController : UIViewController {
                     // vi. the accumulated fasting window
                     // vii. a bool indicating if we are in an accumulating fasting interval
                     let szst : (Double, Double, Double, IEvent!, Bool, Double, Bool) = (0.0, 0.0, 0.0, nil, true, 0.0, false)
-                    let stats = vals.reduce(szst, combine: { (acc, e) in
+                    let stats = vals.filter { $0.0 > yesterday.timeIntervalSinceDate(startDate) }.reduce(szst, combine: { (acc, e) in
                         var nacc = acc
                         let (iStart, prevFast) = (acc.4, acc.6)
-                        let fast = e.1 == stSleep || e.1 == stFast
+                        let fast = e.1 == stSleep || e.1 == stFast || e.1 == stWorkout
 
                         if !iStart {
                             let duration = e.0 - acc.3.0
@@ -279,7 +279,7 @@ class EventTimeViewController : UIViewController {
                                 nacc.0 += duration
                             }
                         } else {
-                            nacc.6 = acc.3 == nil ? false : (acc.3.1 == stSleep || acc.3.1 == stFast)
+                            nacc.6 = acc.3 == nil ? false : (acc.3.1 == stSleep || acc.3.1 == stFast || acc.3.1 == stWorkout)
                         }
                         nacc.1 = e.1 == stEat ? e.0 : nacc.1
                         nacc.3 = e
@@ -288,7 +288,7 @@ class EventTimeViewController : UIViewController {
                     })
 
                     let today = NSDate().startOf(.Day, inRegion: Region())
-                    let lastAte : NSDate? = stats.1 == 0 ? nil : ( yesterday + Int(round(stats.1 * 3600.0)).seconds )
+                    let lastAte : NSDate? = stats.1 == 0 ? nil : ( startDate + Int(round(stats.1 * 3600.0)).seconds )
 
                     let fastingHrs = Int(floor(stats.2))
                     let fastingMins = (today + Int(round((stats.2 % 1.0) * 60.0)).minutes).toString(DateFormat.Custom("mm"))!

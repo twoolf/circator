@@ -188,16 +188,16 @@ public class HealthManager: NSObject, WCSessionDelegate {
 
         types.forEach { (type) -> () in
             dispatch_group_enter(group)
-            if ( (type.description != "HKCategoryTypeIdentifierSleepAnalysis")
-                && (type.description != "HKCorrelationTypeIdentifierBloodPressure")
-                && (type.description != "HKWorkoutTypeIdentifier"))
+            if ( (type.identifier != HKCategoryTypeIdentifierSleepAnalysis)
+                && (type.identifier != HKCorrelationTypeIdentifierBloodPressure)
+                && (type.identifier != HKWorkoutTypeIdentifier))
             {
                 onStatistic(type)
-            } else if (type.description == "HKCategoryTypeIdentifierSleepAnalysis" ) {
+            } else if (type.identifier == HKCategoryTypeIdentifierSleepAnalysis) {
                 onCatOrCorr(type)
-            } else if (type.description == "HKCorrelationTypeIdentifierBloodPressure") {
+            } else if (type.identifier == HKCorrelationTypeIdentifierBloodPressure) {
                 onCatOrCorr(type)
-            } else if (type.description == "HKWorkoutTypeIdentifier") {
+            } else if (type.identifier == HKWorkoutTypeIdentifier) {
                 onWorkout(type)
             }
         }
@@ -520,7 +520,9 @@ public class HealthManager: NSObject, WCSessionDelegate {
                 let fastStartDay = prevFast.startOf(.Day, inRegion: Region())
                 let duration = prevEvt.timeIntervalSinceDate(prevFast)
                 if duration > 0 {
-                    byDay.updateValue((byDay[fastStartDay] ?? []) + [duration], forKey: fastStartDay)
+                    var narr = byDay[fastStartDay] ?? []
+                    narr.append(duration)
+                    byDay.updateValue(narr, forKey: fastStartDay)
                 }
                 nextFast = e.0
             }
@@ -535,7 +537,9 @@ public class HealthManager: NSObject, WCSessionDelegate {
                 let fastStartDay = finalFast.startOf(.Day, inRegion: Region())
                 let duration = finalEvt.timeIntervalSinceDate(finalFast)
                 if duration > 0 {
-                    byDay.updateValue((byDay[fastStartDay] ?? []) + [duration], forKey: fastStartDay)
+                    var narr = byDay[fastStartDay] ?? []
+                    narr.append(duration)
+                    byDay.updateValue(narr, forKey: fastStartDay)
                 }
             }
             return byDay.map { return ($0.0, $0.1.maxElement() ?? 0.0) }.sort { (a,b) in return a.0 < b.0 }

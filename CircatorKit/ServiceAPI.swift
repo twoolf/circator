@@ -20,6 +20,10 @@ private let devServiceURL = "https://dev.metaboliccompass.com"
 private let prodServiceURL = "https://app.metaboliccompass.com"
 private let asDevService = false
 
+private let resetPassDevURL = devServiceURL + "/forgot"
+private let resetPassProdURL = prodServiceURL + "/forgot"
+public let resetPassURL = asDevService ? resetPassDevURL : resetPassProdURL
+
 /**
  sets up API for reads/writes to cloud data store
  
