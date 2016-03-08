@@ -264,7 +264,7 @@ class EventTimeViewController : UIViewController {
                     // vi. the accumulated fasting window
                     // vii. a bool indicating if we are in an accumulating fasting interval
                     let szst : (Double, Double, Double, IEvent!, Bool, Double, Bool) = (0.0, 0.0, 0.0, nil, true, 0.0, false)
-                    let stats = vals.filter { $0.0 > yesterday.timeIntervalSinceDate(startDate) }.reduce(szst, combine: { (acc, e) in
+                    let stats = vals.filter { $0.0 >= yesterday.timeIntervalSinceDate(startDate) }.reduce(szst, combine: { (acc, e) in
                         var nacc = acc
                         let (iStart, prevFast) = (acc.4, acc.6)
                         let fast = e.1 == stSleep || e.1 == stFast || e.1 == stWorkout
