@@ -10,7 +10,6 @@ import UIKit
 import Charts
 import HealthKit
 import CircatorKit
-import Fabric
 import Crashlytics
 import SwiftDate
 import Async

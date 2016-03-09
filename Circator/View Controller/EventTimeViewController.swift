@@ -9,7 +9,6 @@
 import Foundation
 import HealthKit
 import CircatorKit
-import Fabric
 import Crashlytics
 import SwiftDate
 import Async
