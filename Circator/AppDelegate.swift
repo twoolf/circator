@@ -15,6 +15,10 @@ import Crashlytics
 let log = SwiftyBeaver.self
 
 @UIApplicationMain
+/**
+An overview of the Circator files and their connections follows. First, a reader should realize that MC="Metabolic Compass" and that the abbreviation is common in the code.  Also, Circator was the working name for Metabolic Compass, so the two names are present frequently and refer to this same application. Lastly, to orient those looking at the code, the CircatorKit provides the core functionality needed for the Circator code.  Highlights of that functionality are that all of the HealthKit calls and all of the formatting/unit conversions are done with CircatorKit code, and that the consent flow through ResearchKit along with the account set-up and API calls are in the CircatorKit code.
+
+*/
 class AppDelegate: UIResponder, UIApplicationDelegate {
 
     var window: UIWindow?

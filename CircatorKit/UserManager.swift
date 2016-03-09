@@ -32,9 +32,9 @@ private let UserSaltKey      = "UserSaltKey"
 private let profileExcludes  = ["consent", "id"]
 
 /**
- Manages users for Metabolic Compass
+ This manages the users for Metabolic Compass. We need to enable users to maintain access to their data and to delete themselves from the study if they so desire. In addition we maintain, in this class, the ability to do this securely, using OAuth and our third party authenticator (Stormpath)
  
- - note: Stormpath used for authentication
+ - note: We use Stormpath and tokens for authentication
  */
 public class UserManager {
 

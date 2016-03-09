@@ -6,26 +6,26 @@
 //  Copyright © 2015 Yanif Ahmad, Tom Woolf. All rights reserved.
 //
 
-import UIKit
+//import UIKit
 
 /**
  Creates the plot button
  
  */
-class PlotButton : UIButton {
+//class PlotButton : UIButton {
 
     // Plot types:
     // 0-4: single dimensional plot of attribute i
     // 5: correlation plot
     // 6: time series plot
-    dynamic var plotType = 0
-
-    init(plot : Int, frame : CGRect) {
-        super.init(frame : frame)
-        self.plotType = plot
-    }
-
-    required init?(coder aDecoder: NSCoder) {
-        super.init(coder: aDecoder)
-    }
-}
+//    dynamic var plotType = 0
+//
+//    init(plot : Int, frame : CGRect) {
+//        super.init(frame : frame)
+//        self.plotType = plot
+//    }
+//
+//    required init?(coder aDecoder: NSCoder) {
+//        super.init(coder: aDecoder)
+//    }
+//}

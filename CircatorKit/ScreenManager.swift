@@ -11,7 +11,7 @@ import UIKit
 import Charts
 
 /**
- To support different screen sizes
+ We aim to support all Apple iPhone screen sizes. Towards that goal this class switches variables to reflect the user's particular phone. We use Apple's screen size from UIScreen to determine the appropriate values to set.
 
  */
 public class ScreenManager {

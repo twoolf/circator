@@ -13,7 +13,7 @@ import Crashlytics
 import SwiftDate
 
 /**
- Enables Settings for each Row to be updated.
+ This class enables the settings for each row to be updated.  By creating a menu of options, we provide the user a richer experience than would happen with an overwhelming number of variables all displayed at once in the main dashboard.  The groupings are meant to enable the users to focus on a different type of metric in each row.
  
  - note: this is used in SettingsViewController
  */

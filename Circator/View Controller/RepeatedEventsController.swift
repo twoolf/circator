@@ -10,7 +10,7 @@ import UIKit
 import Former
 
 /**
- Supports events that repeat: structued by days/times for meals, exercise, sleep
+ This class supports events that repeat: structured by days/times for meals, exercise, sleep.  The general idea is that a user can define default behaviors that repeat themselves until changed by the user. This should make it even easier for our participants to continue to log events to the database.
  
  - note: data structure assumes events repeat unless overridden
  - remark: supported as a set of menu picker and check-marked fields

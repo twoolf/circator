@@ -15,7 +15,7 @@ private let lblFontSize = ScreenManager.sharedInstance.profileLabelFontSize()
 private let inputFontSize = ScreenManager.sharedInstance.profileInputFontSize()
 
 /**
- To set-up and allow defaults/recommendations for metrics
+ This class deals with our default (starting) values for each user on their set of measurements.  We generally expect that real user data will quickly supersede these values. But, enabling the user to think about their best estimates of these numbers and their goals for where they should end up is already an initial 'good' from the onboarding process.
  
  - note: used in RegisterViewController and in SettingsViewController
  */

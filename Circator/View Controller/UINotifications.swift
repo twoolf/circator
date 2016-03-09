@@ -12,7 +12,7 @@ import UIKit
 import Async
 
 /**
-A library of standard user notifications, implemented with Dodo.
+ This class contains a library of our standard user notifications, implemented with Dodo.  By putting these UI notifications in one place, it makes it easier to maintain the usage and to keep a consistent style.
 
 - note: used broadly in code-base to report interactions
 */

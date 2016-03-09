@@ -11,7 +11,7 @@ import UIKit
 import CircatorKit
 
 /**
- Helping with Plot and Correlate views
+ This class further helps us with controlling the plot and correlate views. By understanding and capturing the errors associated with the data coming into the views we support a better experience for the participants.
  
  - note: used with errorVC as alias
  */

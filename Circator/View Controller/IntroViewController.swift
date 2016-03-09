@@ -24,10 +24,8 @@ private let hkAccessTimeout = 60.seconds
 
 
 /**
- Main view controller for Metabolic Compass.
+ This view controller sets-up and controls updates to all three parts of the dashboard.  Note the in-code constraints along with the updates for information to flow into the table (dashboard-view-1), the radar-screen (dashboard-view-2) and the 24-hour timeline view (dashboard-view-3).
  
- - note: enables branching to all three screens and to plots/settings
- - remark: uses in-code constraint settings 
  */
 class IntroViewController: UIViewController,
                            UITableViewDataSource,

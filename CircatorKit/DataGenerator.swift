@@ -19,10 +19,8 @@ public typealias MCSampler = (NSDate, Double, Double?) -> HKSample?
 private let filteredTypeIdentifiers = [HKQuantityTypeIdentifierUVExposure, HKQuantityTypeIdentifierDietaryWater, HKCategoryTypeIdentifierSleepAnalysis]
 
 /**
- Generates sample data for Metabolic Compass.
+ This class generates sample data for Metabolic Compass.  Note that while it is defined for the twenty data types that we start with, it can be enlarged to more data types. The distributions that we use are determined from the NHANES data (and divided into Male/Female)
  
- - note: works with all twenty data types
- - remark: generates based on distributions using NHANES data (M/F)
  */
 public class DataGenerator : GeneratorType {
 

@@ -51,7 +51,7 @@ private let defaultQueries : Queries = [
     ]
 
 /**
- Manages queries to enable more meaningful comparisons against population data.
+ This class manages queries to enable more meaningful comparisons against population data.  For example, to limit the population column on the first page or the densities shown on the radar plot to individuals within a particular weight range or to a particular gender, this query filter would be used.
  
  - note: works with PopulationHealthManager, QueryBuilderViewController, QueryViewController, QueryWriterViewController
  */
