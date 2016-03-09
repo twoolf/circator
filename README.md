@@ -1,10 +1,10 @@
-# circator
+# MetabolicCompass
 
 iOS HealthKit/ResearchKit/WatchKit app for circadian monitoring.
 
 ---
 ## Getting started
-We use [fastlane](https://fastlane.tools/) and [match](https://github.com/fastlane/match) to manage and build Circator.
+We use [fastlane](https://fastlane.tools/) and [match](https://github.com/fastlane/match) to manage and build Metabolic Compass.
 
 ### XCode setup
 First, set up Xcode's command line tools with:
@@ -47,7 +47,7 @@ fastlane newdevices
 ```
 
 ### Build from XCode or command line
-We can build Circator either manually from XCode (XCode > Product > Build or Run), or from the command line.
+We can build Metabolic Compass either manually from XCode (XCode > Product > Build or Run), or from the command line.
 
 If you are building from XCode, do
 
@@ -63,8 +63,8 @@ fastlane build
 
 That's it... Enjoy!
 
-The Circator Team
+The Metabolic Compass Team
 
 Contributors: Yanif Ahmad, Tom Woolf, Sihao Lu, Anuj Mendhiratta, Mariano Pennini
 
-Circator is available under the Apache 2.0 License (see the LICENSE file)
+Metabolic Compass is available under the Apache 2.0 License (see the LICENSE file)

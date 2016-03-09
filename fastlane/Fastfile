@@ -20,33 +20,33 @@ fastlane_version "1.56.0"
 
 default_platform :ios
 
-project_dir = "Circator.xcodeproj"
-ipa_archive = "Circator.ipa"
+project_dir = "MetabolicCompass.xcodeproj"
+ipa_archive = "MetabolicCompass.ipa"
 
-app_ids = { 'edu.jhu.cs.damsl.Circator.app' =>
-              ['Metabolic Compass', 'APP_UUID', '^Circator$', 'Circator/Info.plist'],
+app_ids = { 'edu.jhu.cs.damsl.MetabolicCompass.app' =>
+              ['Metabolic Compass', 'APP_UUID', '^MetabolicCompass$', 'MetabolicCompass/Info.plist'],
 
-            'edu.jhu.cs.damsl.Circator.kit' =>
-              ['MC Core', 'KIT_UUID', 'CircatorKit', 'CircatorKit/Info.plist'],
+            'edu.jhu.cs.damsl.MetabolicCompass.kit' =>
+              ['MC Core', 'KIT_UUID', 'MetabolicCompassKit', 'MetabolicCompassKit/Info.plist'],
 
-            'edu.jhu.cs.damsl.Circator.app.watch' =>
-              ['MC Watch', 'WATCH_UUID', '^CircatorWatch$', 'CircatorWatch/Info.plist'],
+            'edu.jhu.cs.damsl.MetabolicCompass.app.watch' =>
+              ['MC Watch', 'WATCH_UUID', '^MetabolicCompassWatch$', 'MetabolicCompassWatch/Info.plist'],
 
-            'edu.jhu.cs.damsl.Circator.app.watch.extension' =>
-              ['MC Watch Extension', 'WATCHEXT_UUID', 'CircatorWatch Extension', 'CircatorWatch Extension/Info.plist'],
+            'edu.jhu.cs.damsl.MetabolicCompass.app.watch.extension' =>
+              ['MC Watch Extension', 'WATCHEXT_UUID', 'MetabolicCompassWatch Extension', 'MetabolicCompassWatch Extension/Info.plist'],
 
-            'edu.jhu.cs.damsl.CircatorTests' =>
-              ['MC Tests', 'TESTS_UUID', '^CircatorTests$', 'CircatorTests/Info.plist'],
+            'edu.jhu.cs.damsl.MetabolicCompassTests' =>
+              ['MC Tests', 'TESTS_UUID', '^MetabolicCompassTests$', 'MetabolicCompassTests/Info.plist'],
 
-            'edu.jhu.cs.damsl.CircatorUITests' =>
-              ['MC UI Tests', 'UITESTS_UUID', '^CircatorUITests$', 'CircatorUITests/Info.plist'] }
+            'edu.jhu.cs.damsl.MetabolicCompassUITests' =>
+              ['MC UI Tests', 'UITESTS_UUID', '^MetabolicCompassUITests$', 'MetabolicCompassUITests/Info.plist'] }
 
 app_dist_identity = "iPhone Distribution: Yanif Ahmad (E4SL9A9Z96)"
 
-app_dist_profiles = { 'edu.jhu.cs.damsl.Circator.app' => "",
-                      'edu.jhu.cs.damsl.Circator.kit' => "",
-                      'edu.jhu.cs.damsl.Circator.app.watch' => "",
-                      'edu.jhu.cs.damsl.Circator.app.watch.extension' => ""
+app_dist_profiles = { 'edu.jhu.cs.damsl.MetabolicCompass.app' => "",
+                      'edu.jhu.cs.damsl.MetabolicCompass.kit' => "",
+                      'edu.jhu.cs.damsl.MetabolicCompass.app.watch' => "",
+                      'edu.jhu.cs.damsl.MetabolicCompass.app.watch.extension' => ""
                     }
 
 platform :ios do
@@ -84,12 +84,12 @@ platform :ios do
   ## Development sessions
   ##
 
-  desc "Start a Circator development session"
+  desc "Start a Metabolic Compass development session"
   lane :start_coding do
     sh "cd .. && ./scripts/blackbox_edit_start_all.sh"
   end
 
-  desc "Stop a Circator development session"
+  desc "Stop a Metabolic Compass development session"
   lane :stop_coding do
     sh "cd .. && ./scripts/blackbox_edit_stop_all.sh"
   end
@@ -102,7 +102,7 @@ platform :ios do
   lane :rename_app do
     app_ids.each {|appid, metadata|
       update_app_identifier(
-        xcodeproj: 'Circator.xcodeproj',
+        xcodeproj: 'MetabolicCompass.xcodeproj',
         app_identifier: appid,
         plist_path: metadata[3]
       )
@@ -130,7 +130,7 @@ platform :ios do
     produce(
       skip_devcenter: true,
       username: 'yanif.ahmad@gmail.com',
-      app_identifier: 'edu.jhu.cs.damsl.Circator.app',
+      app_identifier: 'edu.jhu.cs.damsl.MetabolicCompass.app',
       app_name: 'Metabolic Compass',
       language: 'English',
       app_version: '1.0'
@@ -209,7 +209,7 @@ platform :ios do
       ENV[metadata[1]] = uuid
     }
 
-    gym(scheme: "Circator")
+    gym(scheme: "MetabolicCompass")
   end
 
   desc "Build a release archive"
@@ -225,7 +225,7 @@ platform :ios do
       ENV[metadata[1]] = uuid
     }
 
-    gym(scheme: "Circator")
+    gym(scheme: "MetabolicCompass")
   end
 
   desc "Resign a development archive"
@@ -264,13 +264,13 @@ platform :ios do
     ENV["DELIVER_ITMSTRANSPORTER_ADDITIONAL_UPLOAD_PARAMETERS"] = "-t DAV"
 
     pilot(skip_submission: true)
-    post_to_slack(scheme: "Circator", destination: "TestFlight")
+    post_to_slack(scheme: "MetabolicCompass", destination: "TestFlight")
   end
 
   desc "Upload a Beta Build to Fabric/Crashlytics"
   lane :beta_upload_fabric do
-    crashlytics(ipa_path: "./Circator.ipa")
-    post_to_slack(scheme: "Circator", destination: "Fabric")
+    crashlytics(ipa_path: "./MetabolicCompass.ipa")
+    post_to_slack(scheme: "MetabolicCompass", destination: "Fabric")
   end
 
   desc "Build and submit a beta build to Apple TestFlight"
@@ -301,7 +301,7 @@ platform :ios do
   #lane :appstore do
   #  prepbuild(type: "appstore", readonly: true)
   #  snapshot
-  #  gym(scheme: "Circator")
+  #  gym(scheme: "MetabolicCompass")
   #  deliver(force: true)
   #  frameit
   #end

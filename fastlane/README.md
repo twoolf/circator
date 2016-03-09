@@ -35,12 +35,12 @@ Runs all the tests
 ```
 fastlane ios start_coding
 ```
-Start a Circator development session
+Start a Metabolic Compass development session
 ### ios stop_coding
 ```
 fastlane ios stop_coding
 ```
-Stop a Circator development session
+Stop a Metabolic Compass development session
 ### ios rename_app
 ```
 fastlane ios rename_app

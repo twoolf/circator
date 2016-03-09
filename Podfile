@@ -2,7 +2,7 @@ platform :ios, '9.0'
 
 use_frameworks!
 
-link_with 'Circator', 'CircatorKit'
+link_with 'MetabolicCompass', 'MetabolicCompassKit'
 
 pod 'ResearchKit', :git => 'https://github.com/twoolf/ResearchKit.git'
 pod 'Realm', :git => 'https://github.com/realm/realm-cocoa.git', :branch => 'swift-2.0'
