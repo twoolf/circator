@@ -81,6 +81,11 @@ Prepare for command line deployment to the App Store
 fastlane ios set_codesigning
 ```
 Set XCode project code signing and provisioning
+### ios build_version
+```
+fastlane ios build_version
+```
+Set a specific build number
 ### ios build_dev
 ```
 fastlane ios build_dev

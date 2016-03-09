@@ -41,6 +41,11 @@ class RegisterViewController : FormViewController {
         navigationItem.title = "User Registration"
     }
 
+    override func viewWillDisappear(animated: Bool) {
+        super.viewWillDisappear(animated)
+        UIDevice.currentDevice().setValue(UIInterfaceOrientation.Portrait.rawValue, forKey: "orientation")
+    }
+
     override func viewDidLoad() {
         super.viewDidLoad()
 

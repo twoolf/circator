@@ -90,6 +90,11 @@ class SettingsViewController: UITableViewController, UITextFieldDelegate, SFSafa
         tableView.reloadData()
     }
 
+    override func viewWillDisappear(animated: Bool) {
+        super.viewWillDisappear(animated)
+        UIDevice.currentDevice().setValue(UIInterfaceOrientation.Portrait.rawValue, forKey: "orientation")
+    }
+
     override func viewDidAppear(animated: Bool) {
         super.viewDidAppear(animated)
         Answers.logContentViewWithName("Settings",

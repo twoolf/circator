@@ -27,6 +27,10 @@ class PlotViewController: UIViewController, ChartViewDelegate {
     var loadIndex  : Int! = nil
     var errorIndex : Int! = nil
 
+    var hcConstraints: [NSLayoutConstraint] = []
+    var scConstraints: [NSLayoutConstraint] = []
+    var svConstraints: [NSLayoutConstraint] = []
+
     lazy var scrollView: UIScrollView = {
         let view = UIScrollView(frame: self.view.bounds)
         return view
@@ -55,19 +59,23 @@ class PlotViewController: UIViewController, ChartViewDelegate {
         let chart = LineChartView()
         chart.animate(xAxisDuration: 2.0, yAxisDuration: 2.0)
         chart.delegate = self
-        chart.rightAxis.enabled = false
-        chart.doubleTapToZoomEnabled = false
-        chart.leftAxis.startAtZeroEnabled = false
+        chart.drawBordersEnabled = true
         chart.drawGridBackgroundEnabled = false
-        chart.xAxis.labelPosition = .Bottom
+        chart.descriptionText = ""
+        chart.doubleTapToZoomEnabled = false
+
+        chart.leftAxis.labelTextColor = Theme.universityDarkTheme.backgroundColor
+        chart.leftAxis.valueFormatter = SampleFormatter.numberFormatter
+        chart.leftAxis.startAtZeroEnabled = false
+        chart.rightAxis.enabled = false
+
         chart.xAxis.avoidFirstLastClippingEnabled = true
         chart.xAxis.drawAxisLineEnabled = true
         chart.xAxis.drawGridLinesEnabled = true
-        chart.legend.enabled = false
-        chart.descriptionText = ""
+        chart.xAxis.labelPosition = .Bottom
         chart.xAxis.labelTextColor = Theme.universityDarkTheme.backgroundColor
-        chart.leftAxis.labelTextColor = Theme.universityDarkTheme.backgroundColor
-        chart.leftAxis.valueFormatter = SampleFormatter.numberFormatter
+
+        chart.legend.enabled = false
         return chart
     }()
 
@@ -75,19 +83,23 @@ class PlotViewController: UIViewController, ChartViewDelegate {
         let chart = BubbleChartView()
         chart.delegate = self
         chart.animate(xAxisDuration: 2.0, yAxisDuration: 2.0)
-        chart.rightAxis.enabled = false
-        chart.doubleTapToZoomEnabled = false
-        chart.leftAxis.startAtZeroEnabled = false
+        chart.descriptionText = ""
+        chart.drawBordersEnabled = true
         chart.drawGridBackgroundEnabled = false
+        chart.doubleTapToZoomEnabled = false
+
+        chart.leftAxis.startAtZeroEnabled = false
+        chart.leftAxis.labelTextColor = Theme.universityDarkTheme.backgroundColor
+        chart.leftAxis.valueFormatter = SampleFormatter.numberFormatter
+        chart.rightAxis.enabled = false
+
         chart.xAxis.labelPosition = .Bottom
         chart.xAxis.avoidFirstLastClippingEnabled = true
         chart.xAxis.drawAxisLineEnabled = true
         chart.xAxis.drawGridLinesEnabled = true
-        chart.legend.enabled = false
-        chart.descriptionText = ""
         chart.xAxis.labelTextColor = Theme.universityDarkTheme.backgroundColor
-        chart.leftAxis.labelTextColor = Theme.universityDarkTheme.backgroundColor
-        chart.leftAxis.valueFormatter = SampleFormatter.numberFormatter
+
+        chart.legend.enabled = false
         return chart
     }()
 
@@ -95,10 +107,10 @@ class PlotViewController: UIViewController, ChartViewDelegate {
 
     var sampleType: HKSampleType! {
         didSet {
-            navigationItem.title = sampleType.displayText!
             Async.main {
+                let spec = self.spec ?? .PlotPredicate("", nil)
+                self.navigationItem.title = self.attrNameOfSpec(spec, name: self.sampleType.displayText!)
                 Async.background {
-                    let spec = self.spec ?? .PlotPredicate("", nil)
                     switch spec {
                     case .PlotFasting:
                         HealthManager.sharedManager.fetchMaxFastingTimes { (aggregates, error) -> Void in
@@ -131,6 +143,17 @@ class PlotViewController: UIViewController, ChartViewDelegate {
         }
     }
 
+    func attrNameOfSpec(spec: PlotSpec, name: String) -> String {
+        switch spec {
+        case .PlotFasting:
+            return "Fasting"
+        case .PlotPredicate(_, nil):
+            return name
+        case let .PlotPredicate(nm, _):
+            return nm
+        }
+    }
+
     override func viewDidLoad() {
         super.viewDidLoad()
         configureViews()
@@ -139,6 +162,9 @@ class PlotViewController: UIViewController, ChartViewDelegate {
     override func viewWillAppear(animated: Bool) {
         super.viewWillAppear(animated)
         navigationController?.setNavigationBarHidden(false, animated: false)
+
+        UIDevice.currentDevice().beginGeneratingDeviceOrientationNotifications()
+        NSNotificationCenter.defaultCenter().addObserver(self, selector: "deviceDidRotate:", name: UIDeviceOrientationDidChangeNotification, object: nil)
     }
 
     override func viewDidAppear(animated: Bool) {
@@ -151,6 +177,13 @@ class PlotViewController: UIViewController, ChartViewDelegate {
 
     override func viewWillDisappear(animated: Bool) {
         super.viewWillDisappear(animated)
+
+        NSNotificationCenter.defaultCenter().removeObserver(self)
+        if UIDevice.currentDevice().generatesDeviceOrientationNotifications {
+            UIDevice.currentDevice().endGeneratingDeviceOrientationNotifications()
+        }
+
+        UIDevice.currentDevice().setValue(UIInterfaceOrientation.Portrait.rawValue, forKey: "orientation")
     }
 
     override func didReceiveMemoryWarning() {
@@ -173,47 +206,86 @@ class PlotViewController: UIViewController, ChartViewDelegate {
         summaryChart.translatesAutoresizingMaskIntoConstraints = false
         scrollView.addSubview(summaryLabel)
         scrollView.addSubview(summaryChart)
+        refreshConstraints(false, asPortrait: true)
+    }
 
-        let constraints: [NSLayoutConstraint] = [
+    func refreshConstraints(withRemove: Bool, asPortrait: Bool) {
+        if withRemove {
+            scrollView.removeConstraints(hcConstraints)
+            scrollView.removeConstraints(scConstraints)
+            view.removeConstraints(svConstraints)
+        }
+
+        hcConstraints = [
             historyLabel.leadingAnchor.constraintEqualToAnchor(scrollView.layoutMarginsGuide.leadingAnchor),
             historyLabel.trailingAnchor.constraintEqualToAnchor(scrollView.layoutMarginsGuide.trailingAnchor),
             historyLabel.topAnchor.constraintEqualToAnchor(scrollView.topAnchor, constant: 12),
             historyChart.topAnchor.constraintEqualToAnchor(historyLabel.bottomAnchor, constant: 8),
             historyChart.leadingAnchor.constraintEqualToAnchor(historyLabel.leadingAnchor),
             historyChart.trailingAnchor.constraintEqualToAnchor(historyLabel.trailingAnchor),
-            summaryLabel.leadingAnchor.constraintEqualToAnchor(historyChart.layoutMarginsGuide.leadingAnchor),
-            summaryLabel.trailingAnchor.constraintEqualToAnchor(historyChart.layoutMarginsGuide.trailingAnchor),
-            summaryLabel.topAnchor.constraintEqualToAnchor(historyChart.bottomAnchor, constant: 24),
-            summaryChart.topAnchor.constraintEqualToAnchor(summaryLabel.bottomAnchor, constant: 8),
-            summaryChart.leadingAnchor.constraintEqualToAnchor(summaryLabel.leadingAnchor),
-            summaryChart.trailingAnchor.constraintEqualToAnchor(summaryLabel.trailingAnchor),
         ]
 
-        scrollView.addConstraints(constraints)
-        historyChart.translatesAutoresizingMaskIntoConstraints = false
-        historyChart.heightAnchor.constraintEqualToConstant(200).active = true
+        scrollView.addConstraints(hcConstraints)
 
-        summaryChart.translatesAutoresizingMaskIntoConstraints = false
-        summaryChart.heightAnchor.constraintEqualToConstant(200).active = true
+        if asPortrait {
+            summaryLabel.hidden = false
+            summaryChart.hidden = false
 
-        let svconstraints : [NSLayoutConstraint] = [
+            scConstraints = [
+                summaryLabel.leadingAnchor.constraintEqualToAnchor(historyChart.layoutMarginsGuide.leadingAnchor),
+                summaryLabel.trailingAnchor.constraintEqualToAnchor(historyChart.layoutMarginsGuide.trailingAnchor),
+                summaryLabel.topAnchor.constraintEqualToAnchor(historyChart.bottomAnchor, constant: 24),
+                summaryChart.topAnchor.constraintEqualToAnchor(summaryLabel.bottomAnchor, constant: 8),
+                summaryChart.leadingAnchor.constraintEqualToAnchor(summaryLabel.leadingAnchor),
+                summaryChart.trailingAnchor.constraintEqualToAnchor(summaryLabel.trailingAnchor),
+            ]
+
+            scrollView.addConstraints(scConstraints)
+
+            historyChart.translatesAutoresizingMaskIntoConstraints = false
+            historyChart.heightAnchor.constraintEqualToConstant(200).active = true
+
+            summaryChart.translatesAutoresizingMaskIntoConstraints = false
+            summaryChart.heightAnchor.constraintEqualToConstant(200).active = true
+        } else {
+            summaryLabel.hidden = true
+            summaryChart.hidden = true
+        }
+
+        svConstraints = [
             scrollView.topAnchor.constraintEqualToAnchor(topLayoutGuide.bottomAnchor),
             scrollView.bottomAnchor.constraintEqualToAnchor(view.bottomAnchor),
             scrollView.leadingAnchor.constraintEqualToAnchor(view.leadingAnchor),
             scrollView.trailingAnchor.constraintEqualToAnchor(view.trailingAnchor)
         ]
-        view.addConstraints(svconstraints)
+        view.addConstraints(svConstraints)
+    }
+
+    func deviceDidRotate(notification: NSNotification) {
+        let currentOrientation = UIDevice.currentDevice().orientation
+        if !UIDeviceOrientationIsValidInterfaceOrientation(currentOrientation) {
+            return
+        }
+
+        let isLandscape = UIDeviceOrientationIsLandscape(currentOrientation)
+        let isPortrait = UIDeviceOrientationIsPortrait(currentOrientation)
+
+        if isLandscape {
+            refreshConstraints(true, asPortrait: false)
+        } else if isPortrait {
+            refreshConstraints(false, asPortrait: true)
+        }
     }
 
     func plotChart(analyzer: PlotDataAnalyzer) {
         analyzer.dataSetConfigurator = { dataSet in
-            dataSet.drawCircleHoleEnabled = true
             dataSet.circleRadius = 7
+            dataSet.lineWidth = 2
             dataSet.valueFormatter = SampleFormatter.numberFormatter
             dataSet.circleHoleColor = Theme.universityDarkTheme.complementForegroundColors!.colorWithVibrancy(0.1)!
-            dataSet.circleColors = [Theme.universityDarkTheme.complementForegroundColors!.colorWithVibrancy(0.6)!]
+            //dataSet.circleColors = [Theme.universityDarkTheme.complementForegroundColors!.colorWithVibrancy(0.6)!]
+            dataSet.circleColors = [Theme.universityDarkTheme.backgroundColor]
             dataSet.colors = [Theme.universityDarkTheme.complementForegroundColors!.colorWithVibrancy(0.1)!]
-            dataSet.lineWidth = 2
             dataSet.fillColor = Theme.universityDarkTheme.complementForegroundColors!.colorWithVibrancy(0.1)!
         }
         let ldata = analyzer.lineChartData

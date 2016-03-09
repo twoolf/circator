@@ -46,21 +46,22 @@ class CorrelationViewController: UIViewController, ChartViewDelegate {
     lazy var correlationChart: LineChartView = {
         let chart = LineChartView()
         chart.delegate = self
-        chart.rightAxis.enabled = true
+        chart.descriptionText = ""
+        chart.drawBordersEnabled = true
         chart.doubleTapToZoomEnabled = false
-        chart.leftAxis.startAtZeroEnabled = false
-        chart.rightAxis.startAtZeroEnabled = false
         chart.drawGridBackgroundEnabled = false
+        chart.leftAxis.labelTextColor = Theme.universityDarkTheme.backgroundColor
+        chart.leftAxis.valueFormatter = SampleFormatter.numberFormatter
+        chart.leftAxis.startAtZeroEnabled = false
+        chart.rightAxis.enabled = true
+        chart.rightAxis.startAtZeroEnabled = false
+        chart.rightAxis.labelTextColor = Theme.universityDarkTheme.backgroundColor
+        chart.rightAxis.valueFormatter = SampleFormatter.numberFormatter
         chart.xAxis.labelPosition = .Bottom
         chart.xAxis.avoidFirstLastClippingEnabled = true
         chart.xAxis.drawAxisLineEnabled = true
         chart.xAxis.drawGridLinesEnabled = true
-        chart.descriptionText = ""
         chart.xAxis.labelTextColor = Theme.universityDarkTheme.backgroundColor
-        chart.leftAxis.labelTextColor = Theme.universityDarkTheme.backgroundColor
-        chart.leftAxis.valueFormatter = SampleFormatter.numberFormatter
-        chart.rightAxis.labelTextColor = Theme.universityDarkTheme.backgroundColor
-        chart.rightAxis.valueFormatter = SampleFormatter.numberFormatter
         chart.legend.position = .BelowChartCenter
         chart.legend.form = .Circle
         chart.legend.font = UIFont.systemFontOfSize(UIFont.smallSystemFontSize())
@@ -224,6 +225,11 @@ class CorrelationViewController: UIViewController, ChartViewDelegate {
     override func viewWillAppear(animated: Bool) {
         super.viewWillAppear(animated)
         navigationController?.setNavigationBarHidden(false, animated: false)
+    }
+
+    override func viewWillDisappear(animated: Bool) {
+        super.viewWillDisappear(animated)
+        UIDevice.currentDevice().setValue(UIInterfaceOrientation.Portrait.rawValue, forKey: "orientation")
     }
 
     override func viewDidAppear(animated: Bool) {

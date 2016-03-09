@@ -33,6 +33,10 @@ class IntroViewController: UIViewController,
                            UITableViewDataSource,
                            UITableViewDelegate, UIPickerViewDelegate, UIPickerViewDataSource
 {
+    lazy var dashboardRows : Int = {
+        return ScreenManager.sharedInstance.dashboardRows()
+    }()
+
     private var hkAccessTime : NSDate? = nil         // Time of initial access attempt.
     private var hkAccessAsync : Async? = nil         // Background task to notify if HealthKit is slow to access.
     private var aggregateFetchTask : Async? = nil    // Background task to fetch population aggregates.
@@ -1059,7 +1063,7 @@ class IntroViewController: UIViewController,
     }
 
     func tableView(tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return ScreenManager.sharedInstance.dashboardRows()
+        return dashboardRows
     }
 
     func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell {

@@ -87,6 +87,11 @@ class LoginViewController: UIViewController, UITableViewDelegate, UITableViewDat
         tableView.reloadData()
     }
 
+    override func viewWillDisappear(animated: Bool) {
+        super.viewWillDisappear(animated)
+        UIDevice.currentDevice().setValue(UIInterfaceOrientation.Portrait.rawValue, forKey: "orientation")
+    }
+
     override func viewDidLoad() {
         super.viewDidLoad()
         configureViews()
