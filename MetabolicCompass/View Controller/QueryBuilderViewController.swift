@@ -23,7 +23,7 @@ private let lblFontSize = ScreenManager.sharedInstance.queryBuilderLabelFontSize
 private let inputFontSize = ScreenManager.sharedInstance.queryBuilderInputFontSize()
 
 /**
- To build queries for filtering displayed metrics on 1st and 2nd dashboard screens
+ This class is used to build queries for filtering the displayed metrics on the 1st and 2nd dashboard screens. The advantage to our users is the ability to create a set of filters that provide an optimal, and ongoing, comparison to their own situation.
  
  - note: used in QueryViewController and QueryWriterViewController
  */

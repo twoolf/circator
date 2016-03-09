@@ -11,9 +11,8 @@ import HealthKit
 import Async
 
 /**
- manager of information for comparison population
+ This is the manager of information for the comparison population.  By providing this comparison we provide our study participants with a greater ability to view themselves in context.  Initially this is defined by the NHANES data. With sufficient enrolled subjects, this will be determined by aggregates over the ongoing study population.
  
- - note: initially this is NHANES data and with time will be study population defined
  - remark: pulls from PostgreSQL store (AWS RDS) -- see MCRouter --
  */
 public class PopulationHealthManager {

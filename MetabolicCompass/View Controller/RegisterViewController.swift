@@ -18,9 +18,9 @@ private let lblFontSize = ScreenManager.sharedInstance.profileLabelFontSize()
 private let inputFontSize = ScreenManager.sharedInstance.profileInputFontSize()
 
 /**
- Used at end of consent flow to set-up Stormpath account and set initial metrics
+ This class controls the collection and memory of the registration process.  It occurrs right at the end of the consent flow to set-up the user's Stormpath account and to set initial metrics.  Those metrics can be further modified by the user at a later date. Thus it makes sense that the logic should be separate from the login controller.
  
- - note: should only be needed once as part of the electronic consent process
+ - note: generally will only be used once as part of the electronic consent process
  */
 class RegisterViewController : FormViewController {
 

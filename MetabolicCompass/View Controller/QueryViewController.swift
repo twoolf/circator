@@ -13,7 +13,7 @@ import Crashlytics
 import SwiftDate
 
 /**
- To support queries for filtering displayed metrics on 1st and 2nd dashboard screens
+ This class, along with the Builder and the Writer all together, support queries for filtering displayed metrics on 1st and 2nd dashboard screens.  By the use of these queries we enable users to view their comparisons with individuals sharing similar weights or the same genders.
  
  - note: used in IntroViewController
  */

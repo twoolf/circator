@@ -10,7 +10,7 @@
 import UIKit
 
 /**
- sets up theme for entire Metabolic Compass
+ This class sets up the color/theme for the entire Metabolic Compass App.  The choice of colors reflects the Universities color choices as well as typical complementary colors to the primary University colors.
  
  - note: uses University colors
  */

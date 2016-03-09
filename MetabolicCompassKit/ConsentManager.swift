@@ -16,10 +16,8 @@ private let ConsentFilePathKey = "CMConsentFileKey"
 private let unnamedAccount = "default"
 
 /**
- Interacts with ResearchKit to control the electronic consent process
+ Interacts with ResearchKit to control the electronic consent process.  Note that this flows from work with our Johns Hopkin IRB panel for consent of the process.  The ResearchKit framework supports a range of questions and their responses as well as the creation of the final pdf document.
  
- - remark:
- The text reflects work with IRB panel needed for approval 
  */
 public class ConsentManager: NSObject, ORKTaskViewControllerDelegate {
     private enum Identifier {

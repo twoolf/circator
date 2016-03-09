@@ -13,7 +13,6 @@ import UIKit
 import Async
 import Former
 import HTPressableButton
-import Fabric
 import Crashlytics
 import SwiftDate
 
@@ -21,7 +20,7 @@ private let refDate  = NSDate(timeIntervalSinceReferenceDate: 0)
 private let noAnchor = HKQueryAnchor(fromValue: Int(HKAnchoredObjectQueryNoAnchor))
 
 /**
- Supports creating datasets for debugging purposes
+ This class is used to support the creation of datasets for debugging purposes.  We expect that the models used in the creation can be further refined as real data is collected.  For now the data models are based on the NHANES data.
  
  - note: use of fields to support different metrics (e.g. start-date, end-date)
  */

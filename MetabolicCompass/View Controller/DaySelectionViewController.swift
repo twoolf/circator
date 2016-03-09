@@ -9,7 +9,7 @@
 import UIKit
 
 /**
- Supporting events that repeat: structued by days/times for meals, exercise, sleep
+ This class is to support events that repeat on a daily basis.  We structue the data by days/times for meals, exercise, sleep.  The data that is entered by this approach is tracked as having originated in the repeating events pipeline, to let us later evaluate the trustworthiness of the event.
  
  - note: works with RepeatedEventsController
  */

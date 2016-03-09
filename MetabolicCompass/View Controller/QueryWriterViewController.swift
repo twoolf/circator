@@ -13,7 +13,7 @@ import Crashlytics
 import SwiftDate
 
 /**
- To store queries (saveQuery) for filtering displayed metrics on 1st and 2nd dashboard screens
+ This class supports the store of queries (saveQuery) for filtering displayed metrics on 1st and 2nd dashboard screens. This lets users tune the display to their desired comparison metric.
  
  - note: used in QueryViewController and QueryBuilderViewController
  */

@@ -10,16 +10,15 @@ import UIKit
 import Charts
 import MetabolicCompassKit
 import HealthKit
-import Fabric
 import Crashlytics
 import SwiftDate
 import Pages
 import Async
 
 /**
- Controls display of correlation plots (2nd button from left on bottom of screen).
+ This class controls thedisplay of correlation plots (2nd button from left on bottom of the screen).  The type of correlation that is used will show two curves (with different y-values) moving along in a similar way if they are correlated (e.g. both increasing linearly).  If only one variable is increasing, while the other is seen to fluctuate throughout that time, then the two variables are most likely not correlated.
  
- - note: 1st metric is organized small to large, 2nd is plotted on that same scale, so correlations are both rising from small to large
+ - note: The 1st metric is organized from small to large, while the 2nd is plotted on the same temporal (x-axis) scale, so correlations are both rising from small to large
  */
 class CorrelationViewController: UIViewController, ChartViewDelegate {
 

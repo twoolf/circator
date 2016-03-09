@@ -47,10 +47,8 @@ private let dateAsc  = NSSortDescriptor(key: HKSampleSortIdentifierStartDate, as
 private let dateDesc = NSSortDescriptor(key: HKSampleSortIdentifierStartDate, ascending: false)
 
 /**
- main manager of information reads/writes from HealthKit
+ This is the main manager of information reads/writes from HealthKit.  We use AnchorQueries to support continued updates.  Please see Apple Docs for syntax on reading/writing
  
- - note: uses AnchorQueries to support continued updates
- - remark: see AppleDocs for permissions syntax in reading/writing
  */
 public class HealthManager: NSObject, WCSessionDelegate {
 

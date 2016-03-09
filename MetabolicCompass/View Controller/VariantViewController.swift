@@ -10,7 +10,7 @@ import Foundation
 import Pages
 
 /**
- Helping with Plot and Correlate views
+ This class let us handle the edge cases correctly for the Plot and the Correlate view controllers.  Without capturing the edge cases, the views supports for the plots and correlations are not seen correctly by the user.
  
  - note: used with VariantVC as alias
  */

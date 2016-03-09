@@ -9,7 +9,7 @@
 import UIKit
 
 /**
- To support picker menus
+ With this class we support the different picker menus that are present at various points in the App. Changes here can be used to support different formats for the picker wheels or different increments in time. The current choices seem to be validated by our initial beta users.
  
  - note: could be easily extended to support other metrics for data entry
  */

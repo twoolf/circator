@@ -25,7 +25,7 @@ private let resetPassProdURL = prodServiceURL + "/forgot"
 public let resetPassURL = asDevService ? resetPassDevURL : resetPassProdURL
 
 /**
- sets up API for reads/writes to cloud data store
+ This class sets up the needed API for all of the reads/writes to our cloud data store.  This is needed to support our ability to add new aggregate information into the data store and to update the display on our participants screens as new information is deposited into the store.
  
  - note: uses Alamofire/JSON
  - remark: authentication using OAuthToken

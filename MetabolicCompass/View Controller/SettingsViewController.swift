@@ -30,7 +30,7 @@ class MCButton : HTPressableButton {
 }
 
 /**
- Enables updates for metrics selected, for recommended and optional choices.
+ This class enables the settings view (top right corner of the App) by letting the user choose between different metrics, different default options, different ways to interact with Siri, and even whether to remain within the study.
  
  - note: this view controls bulk upload from HealthKit history
  */

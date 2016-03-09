@@ -10,9 +10,8 @@ import Foundation
 import HealthKit
 
 /**
- maintains constants and strings needed for Metabolic Compass
+ This maintains the constants and strings needed for Metabolic Compass. We tie this into the options and recommendations settings in the control panel.
  
- - note: includes ties into options/recommendations settings in control panel
  */
 public struct UserProfile {
 

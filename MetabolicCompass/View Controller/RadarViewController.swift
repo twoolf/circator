@@ -10,12 +10,11 @@ import Foundation
 import HealthKit
 import MetabolicCompassKit
 import Charts
-import Fabric
 import Crashlytics
 import SwiftDate
 
 /**
- Controls display of Radar screen (2nd view of dashboard).
+ This class controls the display of the Radar screen (2nd view of dashboard). The radar screen gives a spider like view of how the users data compares to the population data. Our user input, to this date, suggests that many users prefer this to the numbers on the first view of the dashboard.
  
  - note: use of logistic function (normalizeType) to enable shared plot
  */

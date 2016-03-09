@@ -9,7 +9,6 @@
 import Foundation
 import HealthKit
 import MetabolicCompassKit
-import Fabric
 import Crashlytics
 import SwiftDate
 import Async
@@ -41,7 +40,7 @@ private let summaryFontSize = ScreenManager.sharedInstance.eventTimeViewSummaryF
 private let plotFontSize = ScreenManager.sharedInstance.eventTimeViewPlotFontSize()
 
 /**
- Controls the plotting for the third view of the App -- exercise, sleep and meals in a 24-hour window
+ This class is the controller for the third view from the dashboard.  The ability to see the circadian aspect (think circator) of daily behavior is a key survey item that we want to capture. The user should be able to readily enter their exercise sleep and meal-times into the data store via this view.  In addition the square-wave plot gives a visual representation of the last 24-hours.  Reinforing that representation is the three numbers reflecting the maximum fasting time, the time since last meal, and the total time spent eating.
  
  - note: this requires pulling history from HealthKit and integrating over time windows
  - remark: st=start and en=end as abbreviations on events, Ty=Type, epsilon needed to avoid diagonal lines / overlapping events

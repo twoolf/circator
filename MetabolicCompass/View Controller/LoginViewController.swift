@@ -18,7 +18,7 @@ private let lblFontSize = ScreenManager.sharedInstance.loginLabelFontSize()
 private let inputFontSize = ScreenManager.sharedInstance.loginInputFontSize()
 
 /**
- Controls the Login screens for the App.
+ This class is used to control the Login screens for the App.  By separating the logic into this view controller we enable changes to the login process to be clearly defined in this block of code.
  
 - note: for both signup and login; uses Stormpath for authentication
  */

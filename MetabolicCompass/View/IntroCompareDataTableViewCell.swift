@@ -11,7 +11,7 @@ import HealthKit
 import MetabolicCompassKit
 
 /**
- enables tables in first page view of dashboard to have properties set
+ This class supports our tables in the first view of dashboard.  The goals is to have properties set by the user and to keep a consistent theme.  The in-code constraints let us view immediately what has been defined.
  
  - note: setUserData, loadUserSamples, loadPopSamples to populate rows
  */

@@ -22,9 +22,9 @@ class SampleDataAnalyzer: NSObject {
 }
 
 /**
- To prepare data for correlation plots
+ We use this class to put data into the right format for all of the plots.  The exact approach to how the data is input for the charts will depend on the charting library. But, the general need for this type of transformation (reading from the data stores and putting things into the right format) will be needed for any data that is analyzed by the user.
  
- - note: format set by Charts library
+ - note: current format is set by our use of the Charts library
  */
 class CorrelationDataAnalyzer: SampleDataAnalyzer {
     let labels: [String]

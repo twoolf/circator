@@ -10,14 +10,13 @@ import UIKit
 import Charts
 import HealthKit
 import MetabolicCompassKit
-import Fabric
 import Crashlytics
 import SwiftDate
 import Async
 import Pages
 
 /**
- Controls display of temporal plots and summary statistics.
+ This class controls the display of our temporal plots and of our summary statistics.  The ability of the user to see the comparison of their data over time nicely complements what is present in HealthKit and is meant to help keep the participants motiviated into making positive metabolic changes.
  
  - note: LineChart and BubbleChart types used
  */
