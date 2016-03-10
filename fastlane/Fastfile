@@ -33,7 +33,7 @@ app_ids = { 'edu.jhu.cs.damsl.MetabolicCompass.app' =>
               ['MC Watch', 'WATCH_UUID', '^MetabolicCompassWatch$', 'MetabolicCompassWatch/Info.plist'],
 
             'edu.jhu.cs.damsl.MetabolicCompass.app.watch.extension' =>
-              ['MC Watch Extension', 'WATCHEXT_UUID', 'MetabolicCompassWatch Extension', 'MetabolicCompassWatch Extension/Info.plist'],
+              ['MC Watch Extension', 'WATCHEXT_UUID', 'MetabolicCompassWatchExtension', 'MetabolicCompassWatchExtension/Info.plist'],
 
             'edu.jhu.cs.damsl.MetabolicCompassTests' =>
               ['MC Tests', 'TESTS_UUID', '^MetabolicCompassTests$', 'MetabolicCompassTests/Info.plist'],
