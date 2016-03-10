@@ -39,6 +39,24 @@
 		78E521A01C25687900FAE56A /* Pods.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 78E5219F1C25687900FAE56A /* Pods.framework */; };
 		78F65A4D1C25126E0074449D /* QueryBuilderViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 78F65A4C1C25126E0074449D /* QueryBuilderViewController.swift */; };
 		A88F31F3DDADAD50F4190F8E /* Pods.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = CB09F654AB4B00C79306C728 /* Pods.framework */; };
+		D51AF7721C8797A800817E26 /* Interface.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = D51AF7701C8797A800817E26 /* Interface.storyboard */; };
+		D51AF7741C8797A800817E26 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = D51AF7731C8797A800817E26 /* Assets.xcassets */; };
+		D51AF77B1C8797A800817E26 /* CircatorWatchExtension.appex in Embed App Extensions */ = {isa = PBXBuildFile; fileRef = D51AF77A1C8797A800817E26 /* CircatorWatchExtension.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
+		D51AF7821C8797A800817E26 /* IntroInterfaceController.swift in Sources */ = {isa = PBXBuildFile; fileRef = D51AF7811C8797A800817E26 /* IntroInterfaceController.swift */; };
+		D51AF7841C8797A800817E26 /* ExtensionDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = D51AF7831C8797A800817E26 /* ExtensionDelegate.swift */; };
+		D51AF7861C8797A800817E26 /* NotificationController.swift in Sources */ = {isa = PBXBuildFile; fileRef = D51AF7851C8797A800817E26 /* NotificationController.swift */; };
+		D51AF7881C8797A800817E26 /* GlanceController.swift in Sources */ = {isa = PBXBuildFile; fileRef = D51AF7871C8797A800817E26 /* GlanceController.swift */; };
+		D51AF78A1C8797A800817E26 /* ComplicationController.swift in Sources */ = {isa = PBXBuildFile; fileRef = D51AF7891C8797A800817E26 /* ComplicationController.swift */; };
+		D51AF78C1C8797A800817E26 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = D51AF78B1C8797A800817E26 /* Assets.xcassets */; };
+		D51AF7901C8797A800817E26 /* CircatorWatch.app in Embed Watch Content */ = {isa = PBXBuildFile; fileRef = D51AF76E1C8797A800817E26 /* CircatorWatch.app */; };
+		D51AF7991C87992900817E26 /* MealInterfaceController.swift in Sources */ = {isa = PBXBuildFile; fileRef = D51AF7981C87992900817E26 /* MealInterfaceController.swift */; };
+		D56537C01C90CB5800617B1F /* ExerciseInterfaceController.swift in Sources */ = {isa = PBXBuildFile; fileRef = D56537BF1C90CB5800617B1F /* ExerciseInterfaceController.swift */; };
+		D56537C21C90CB6C00617B1F /* MiscInterfaceController.swift in Sources */ = {isa = PBXBuildFile; fileRef = D56537C11C90CB6C00617B1F /* MiscInterfaceController.swift */; };
+		D56537C41C91129100617B1F /* ExerciseInterfaceController.swift in Sources */ = {isa = PBXBuildFile; fileRef = D56537BF1C90CB5800617B1F /* ExerciseInterfaceController.swift */; };
+		D56537C51C91129500617B1F /* MiscInterfaceController.swift in Sources */ = {isa = PBXBuildFile; fileRef = D56537C11C90CB6C00617B1F /* MiscInterfaceController.swift */; };
+		D56537C61C9112B100617B1F /* Interface.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = D51AF7701C8797A800817E26 /* Interface.storyboard */; };
+		D56537C81C9112E300617B1F /* SleepInterfaceController.swift in Sources */ = {isa = PBXBuildFile; fileRef = D56537C71C9112E300617B1F /* SleepInterfaceController.swift */; };
+		D56537C91C9112E300617B1F /* SleepInterfaceController.swift in Sources */ = {isa = PBXBuildFile; fileRef = D56537C71C9112E300617B1F /* SleepInterfaceController.swift */; };
 		F42F5ADD1BDC85AF00195490 /* SampleDataAnalyzer.swift in Sources */ = {isa = PBXBuildFile; fileRef = F42F5ADC1BDC85AF00195490 /* SampleDataAnalyzer.swift */; };
 		F42F5B351BE1FD1E00195490 /* CircatorKit.h in Headers */ = {isa = PBXBuildFile; fileRef = F42F5B341BE1FD1E00195490 /* CircatorKit.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		F42F5B391BE1FD1E00195490 /* CircatorKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F42F5B321BE1FD1E00195490 /* CircatorKit.framework */; };
@@ -46,18 +64,6 @@
 		F42F5B451BE2048400195490 /* HealthManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = F42F5B421BE2048400195490 /* HealthManager.swift */; };
 		F42F5B461BE2048400195490 /* SampleFormatter.swift in Sources */ = {isa = PBXBuildFile; fileRef = F42F5B431BE2048400195490 /* SampleFormatter.swift */; };
 		F42F5B471BE2048400195490 /* Theme.swift in Sources */ = {isa = PBXBuildFile; fileRef = F42F5B441BE2048400195490 /* Theme.swift */; };
-		F42F5B501BE20CDD00195490 /* Interface.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = F42F5B4E1BE20CDD00195490 /* Interface.storyboard */; };
-		F42F5B521BE20CDD00195490 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = F42F5B511BE20CDD00195490 /* Assets.xcassets */; };
-		F42F5B591BE20CDD00195490 /* CircatorWatch Extension.appex in Embed App Extensions */ = {isa = PBXBuildFile; fileRef = F42F5B581BE20CDD00195490 /* CircatorWatch Extension.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
-		F42F5B601BE20CDD00195490 /* InterfaceController.swift in Sources */ = {isa = PBXBuildFile; fileRef = F42F5B5F1BE20CDD00195490 /* InterfaceController.swift */; };
-		F42F5B621BE20CDD00195490 /* ExtensionDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = F42F5B611BE20CDD00195490 /* ExtensionDelegate.swift */; };
-		F42F5B641BE20CDD00195490 /* NotificationController.swift in Sources */ = {isa = PBXBuildFile; fileRef = F42F5B631BE20CDD00195490 /* NotificationController.swift */; };
-		F42F5B661BE20CDD00195490 /* GlanceController.swift in Sources */ = {isa = PBXBuildFile; fileRef = F42F5B651BE20CDD00195490 /* GlanceController.swift */; };
-		F42F5B681BE20CDD00195490 /* ComplicationController.swift in Sources */ = {isa = PBXBuildFile; fileRef = F42F5B671BE20CDD00195490 /* ComplicationController.swift */; };
-		F42F5B6A1BE20CDD00195490 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = F42F5B691BE20CDD00195490 /* Assets.xcassets */; };
-		F42F5B6E1BE20CDD00195490 /* CircatorWatch.app in Embed Watch Content */ = {isa = PBXBuildFile; fileRef = F42F5B4C1BE20CDD00195490 /* CircatorWatch.app */; };
-		F42F5B791BE2292D00195490 /* BioPreviewRow.swift in Sources */ = {isa = PBXBuildFile; fileRef = F42F5B781BE2292D00195490 /* BioPreviewRow.swift */; };
-		F42F5B7B1BE22AC700195490 /* ConnectivityManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = F42F5B7A1BE22AC700195490 /* ConnectivityManager.swift */; };
 		F42F5B951BE2C89200195490 /* CorrelationViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = F42F5B941BE2C89200195490 /* CorrelationViewController.swift */; };
 		F43A7C551BBDF25E00B6FA56 /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = F43A7C541BBDF25E00B6FA56 /* Images.xcassets */; };
 		F43A7C571BBDF29D00B6FA56 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = F43A7C561BBDF29D00B6FA56 /* LaunchScreen.storyboard */; };
@@ -88,6 +94,20 @@
 			remoteGlobalIDString = 7881A3DC1BAF3B3E00ECB3C6;
 			remoteInfo = Circator;
 		};
+		D51AF77C1C8797A800817E26 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 7881A3D51BAF3B3E00ECB3C6 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = D51AF7791C8797A800817E26;
+			remoteInfo = "CircatorWatch Extension";
+		};
+		D51AF78E1C8797A800817E26 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 7881A3D51BAF3B3E00ECB3C6 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = D51AF76D1C8797A800817E26;
+			remoteInfo = CircatorWatch;
+		};
 		F42F5B371BE1FD1E00195490 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 7881A3D51BAF3B3E00ECB3C6 /* Project object */;
@@ -95,30 +115,27 @@
 			remoteGlobalIDString = F42F5B311BE1FD1E00195490;
 			remoteInfo = CircatorKit;
 		};
-		F42F5B5A1BE20CDD00195490 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 7881A3D51BAF3B3E00ECB3C6 /* Project object */;
-			proxyType = 1;
-			remoteGlobalIDString = F42F5B571BE20CDD00195490;
-			remoteInfo = "CircatorWatch Extension";
-		};
-		F42F5B6C1BE20CDD00195490 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 7881A3D51BAF3B3E00ECB3C6 /* Project object */;
-			proxyType = 1;
-			remoteGlobalIDString = F42F5B4B1BE20CDD00195490;
-			remoteInfo = CircatorWatch;
-		};
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXCopyFilesBuildPhase section */
+		D51AF7941C8797A900817E26 /* Embed App Extensions */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "";
+			dstSubfolderSpec = 13;
+			files = (
+				D51AF77B1C8797A800817E26 /* CircatorWatchExtension.appex in Embed App Extensions */,
+			);
+			name = "Embed App Extensions";
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		F42F5B2C1BE1FCAF00195490 /* Embed Watch Content */ = {
 			isa = PBXCopyFilesBuildPhase;
 			buildActionMask = 2147483647;
 			dstPath = "$(CONTENTS_FOLDER_PATH)/Watch";
 			dstSubfolderSpec = 16;
 			files = (
-				F42F5B6E1BE20CDD00195490 /* CircatorWatch.app in Embed Watch Content */,
+				D51AF7901C8797A800817E26 /* CircatorWatch.app in Embed Watch Content */,
 			);
 			name = "Embed Watch Content";
 			runOnlyForDeploymentPostprocessing = 0;
@@ -130,27 +147,6 @@
 			dstSubfolderSpec = 10;
 			files = (
 				F42F5B3A1BE1FD1E00195490 /* CircatorKit.framework in Embed Frameworks */,
-			);
-			name = "Embed Frameworks";
-			runOnlyForDeploymentPostprocessing = 0;
-		};
-		F42F5B721BE20CDD00195490 /* Embed App Extensions */ = {
-			isa = PBXCopyFilesBuildPhase;
-			buildActionMask = 2147483647;
-			dstPath = "";
-			dstSubfolderSpec = 13;
-			files = (
-				F42F5B591BE20CDD00195490 /* CircatorWatch Extension.appex in Embed App Extensions */,
-			);
-			name = "Embed App Extensions";
-			runOnlyForDeploymentPostprocessing = 0;
-		};
-		F42F5B931BE22EA900195490 /* Embed Frameworks */ = {
-			isa = PBXCopyFilesBuildPhase;
-			buildActionMask = 2147483647;
-			dstPath = "";
-			dstSubfolderSpec = 10;
-			files = (
 			);
 			name = "Embed Frameworks";
 			runOnlyForDeploymentPostprocessing = 0;
@@ -196,8 +192,6 @@
 		7884E8E71C5F0804000261EE /* UINotifications.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = UINotifications.swift; sourceTree = "<group>"; };
 		7886EADE1C22AC2A00D7E3D4 /* LoginViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LoginViewController.swift; sourceTree = "<group>"; };
 		78AC90CB1C1E859F008C931B /* UserAccount.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = UserAccount.swift; sourceTree = "<group>"; };
-		78B279C21C80FFE5005A6249 /* CircatorWatch Extension.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.xml; path = "CircatorWatch Extension.entitlements"; sourceTree = "<group>"; };
-		78B279C31C80FFEA005A6249 /* CircatorWatch.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.xml; path = CircatorWatch.entitlements; sourceTree = "<group>"; };
 		78BEAC9D1C5E7EE800F0B541 /* PopulationHealthManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PopulationHealthManager.swift; sourceTree = "<group>"; };
 		78CE00AC1C65CC5A005E955C /* RadarViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RadarViewController.swift; sourceTree = "<group>"; };
 		78DA2D731C28ED2A005CC2DB /* RegisterViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RegisterViewController.swift; sourceTree = "<group>"; };
@@ -207,6 +201,23 @@
 		8B4A08D995498CDA94BBB258 /* Pods-Circator.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Circator.release.xcconfig"; path = "Pods/Target Support Files/Pods-Circator/Pods-Circator.release.xcconfig"; sourceTree = "<group>"; };
 		984776BC6A59A33B4580C535 /* Pods.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = Pods.release.xcconfig; path = "Pods/Target Support Files/Pods/Pods.release.xcconfig"; sourceTree = "<group>"; };
 		CB09F654AB4B00C79306C728 /* Pods.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		D51AF76E1C8797A800817E26 /* CircatorWatch.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = CircatorWatch.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		D51AF7711C8797A800817E26 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Interface.storyboard; sourceTree = "<group>"; };
+		D51AF7731C8797A800817E26 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
+		D51AF7751C8797A800817E26 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		D51AF77A1C8797A800817E26 /* CircatorWatchExtension.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = CircatorWatchExtension.appex; sourceTree = BUILT_PRODUCTS_DIR; };
+		D51AF7801C8797A800817E26 /* PushNotificationPayload.apns */ = {isa = PBXFileReference; lastKnownFileType = text; path = PushNotificationPayload.apns; sourceTree = "<group>"; };
+		D51AF7811C8797A800817E26 /* IntroInterfaceController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IntroInterfaceController.swift; sourceTree = "<group>"; };
+		D51AF7831C8797A800817E26 /* ExtensionDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExtensionDelegate.swift; sourceTree = "<group>"; };
+		D51AF7851C8797A800817E26 /* NotificationController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NotificationController.swift; sourceTree = "<group>"; };
+		D51AF7871C8797A800817E26 /* GlanceController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GlanceController.swift; sourceTree = "<group>"; };
+		D51AF7891C8797A800817E26 /* ComplicationController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ComplicationController.swift; sourceTree = "<group>"; };
+		D51AF78B1C8797A800817E26 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
+		D51AF78D1C8797A800817E26 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		D51AF7981C87992900817E26 /* MealInterfaceController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MealInterfaceController.swift; sourceTree = "<group>"; };
+		D56537BF1C90CB5800617B1F /* ExerciseInterfaceController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ExerciseInterfaceController.swift; sourceTree = "<group>"; };
+		D56537C11C90CB6C00617B1F /* MiscInterfaceController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MiscInterfaceController.swift; sourceTree = "<group>"; };
+		D56537C71C9112E300617B1F /* SleepInterfaceController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SleepInterfaceController.swift; sourceTree = "<group>"; };
 		F28DDB83BE2DA2B65B631537 /* Pods.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = Pods.debug.xcconfig; path = "Pods/Target Support Files/Pods/Pods.debug.xcconfig"; sourceTree = "<group>"; };
 		F42F5ADC1BDC85AF00195490 /* SampleDataAnalyzer.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SampleDataAnalyzer.swift; sourceTree = "<group>"; };
 		F42F5B321BE1FD1E00195490 /* CircatorKit.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = CircatorKit.framework; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -215,21 +226,6 @@
 		F42F5B421BE2048400195490 /* HealthManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = HealthManager.swift; sourceTree = "<group>"; };
 		F42F5B431BE2048400195490 /* SampleFormatter.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SampleFormatter.swift; sourceTree = "<group>"; };
 		F42F5B441BE2048400195490 /* Theme.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Theme.swift; sourceTree = "<group>"; };
-		F42F5B4C1BE20CDD00195490 /* CircatorWatch.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = CircatorWatch.app; sourceTree = BUILT_PRODUCTS_DIR; };
-		F42F5B4F1BE20CDD00195490 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Interface.storyboard; sourceTree = "<group>"; };
-		F42F5B511BE20CDD00195490 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
-		F42F5B531BE20CDD00195490 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
-		F42F5B581BE20CDD00195490 /* CircatorWatch Extension.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = "CircatorWatch Extension.appex"; sourceTree = BUILT_PRODUCTS_DIR; };
-		F42F5B5E1BE20CDD00195490 /* PushNotificationPayload.apns */ = {isa = PBXFileReference; lastKnownFileType = text; path = PushNotificationPayload.apns; sourceTree = "<group>"; };
-		F42F5B5F1BE20CDD00195490 /* InterfaceController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InterfaceController.swift; sourceTree = "<group>"; };
-		F42F5B611BE20CDD00195490 /* ExtensionDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExtensionDelegate.swift; sourceTree = "<group>"; };
-		F42F5B631BE20CDD00195490 /* NotificationController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NotificationController.swift; sourceTree = "<group>"; };
-		F42F5B651BE20CDD00195490 /* GlanceController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GlanceController.swift; sourceTree = "<group>"; };
-		F42F5B671BE20CDD00195490 /* ComplicationController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ComplicationController.swift; sourceTree = "<group>"; };
-		F42F5B691BE20CDD00195490 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
-		F42F5B6B1BE20CDD00195490 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
-		F42F5B781BE2292D00195490 /* BioPreviewRow.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BioPreviewRow.swift; sourceTree = "<group>"; };
-		F42F5B7A1BE22AC700195490 /* ConnectivityManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ConnectivityManager.swift; sourceTree = "<group>"; };
 		F42F5B941BE2C89200195490 /* CorrelationViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CorrelationViewController.swift; sourceTree = "<group>"; };
 		F43A7C541BBDF25E00B6FA56 /* Images.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Images.xcassets; sourceTree = "<group>"; };
 		F43A7C561BBDF29D00B6FA56 /* LaunchScreen.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; path = LaunchScreen.storyboard; sourceTree = "<group>"; };
@@ -271,18 +267,18 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		D51AF7771C8797A800817E26 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		F42F5B2E1BE1FD1E00195490 /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
 				78E521A01C25687900FAE56A /* Pods.framework in Frameworks */,
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
-		F42F5B551BE20CDD00195490 /* Frameworks */ = {
-			isa = PBXFrameworksBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -307,8 +303,8 @@
 				7881A3DF1BAF3B3E00ECB3C6 /* Circator */,
 				7881A3F41BAF3B3E00ECB3C6 /* CircatorTests */,
 				7881A3FF1BAF3B3E00ECB3C6 /* CircatorUITests */,
-				F42F5B4D1BE20CDD00195490 /* CircatorWatch */,
-				F42F5B5C1BE20CDD00195490 /* CircatorWatch Extension */,
+				D51AF76F1C8797A800817E26 /* CircatorWatch */,
+				D51AF77E1C8797A800817E26 /* CircatorWatchExtension */,
 				7881A3DE1BAF3B3E00ECB3C6 /* Products */,
 				73414D62BFA06625BCA65E9B /* Pods */,
 				EA5EDF2A50FCED6ADBAA03DD /* Frameworks */,
@@ -322,8 +318,8 @@
 				7881A3F11BAF3B3E00ECB3C6 /* CircatorTests.xctest */,
 				7881A3FC1BAF3B3E00ECB3C6 /* CircatorUITests.xctest */,
 				F42F5B321BE1FD1E00195490 /* CircatorKit.framework */,
-				F42F5B4C1BE20CDD00195490 /* CircatorWatch.app */,
-				F42F5B581BE20CDD00195490 /* CircatorWatch Extension.appex */,
+				D51AF76E1C8797A800817E26 /* CircatorWatch.app */,
+				D51AF77A1C8797A800817E26 /* CircatorWatchExtension.appex */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -356,6 +352,44 @@
 				7881A4021BAF3B3E00ECB3C6 /* Info.plist */,
 			);
 			path = CircatorUITests;
+			sourceTree = "<group>";
+		};
+		D51AF76F1C8797A800817E26 /* CircatorWatch */ = {
+			isa = PBXGroup;
+			children = (
+				D51AF7701C8797A800817E26 /* Interface.storyboard */,
+				D51AF7731C8797A800817E26 /* Assets.xcassets */,
+				D51AF7751C8797A800817E26 /* Info.plist */,
+			);
+			path = CircatorWatch;
+			sourceTree = "<group>";
+		};
+		D51AF77E1C8797A800817E26 /* CircatorWatchExtension */ = {
+			isa = PBXGroup;
+			children = (
+				D51AF7811C8797A800817E26 /* IntroInterfaceController.swift */,
+				D51AF7831C8797A800817E26 /* ExtensionDelegate.swift */,
+				D51AF7851C8797A800817E26 /* NotificationController.swift */,
+				D51AF7871C8797A800817E26 /* GlanceController.swift */,
+				D51AF7891C8797A800817E26 /* ComplicationController.swift */,
+				D51AF7981C87992900817E26 /* MealInterfaceController.swift */,
+				D56537BF1C90CB5800617B1F /* ExerciseInterfaceController.swift */,
+				D56537C71C9112E300617B1F /* SleepInterfaceController.swift */,
+				D56537C11C90CB6C00617B1F /* MiscInterfaceController.swift */,
+				D51AF78B1C8797A800817E26 /* Assets.xcassets */,
+				D51AF78D1C8797A800817E26 /* Info.plist */,
+				D51AF77F1C8797A800817E26 /* Supporting Files */,
+			);
+			name = CircatorWatchExtension;
+			path = "CircatorWatch Extension";
+			sourceTree = "<group>";
+		};
+		D51AF77F1C8797A800817E26 /* Supporting Files */ = {
+			isa = PBXGroup;
+			children = (
+				D51AF7801C8797A800817E26 /* PushNotificationPayload.apns */,
+			);
+			name = "Supporting Files";
 			sourceTree = "<group>";
 		};
 		EA5EDF2A50FCED6ADBAA03DD /* Frameworks */ = {
@@ -395,43 +429,6 @@
 				F42F5B361BE1FD1E00195490 /* Info.plist */,
 			);
 			path = CircatorKit;
-			sourceTree = "<group>";
-		};
-		F42F5B4D1BE20CDD00195490 /* CircatorWatch */ = {
-			isa = PBXGroup;
-			children = (
-				78B279C31C80FFEA005A6249 /* CircatorWatch.entitlements */,
-				F42F5B4E1BE20CDD00195490 /* Interface.storyboard */,
-				F42F5B511BE20CDD00195490 /* Assets.xcassets */,
-				F42F5B531BE20CDD00195490 /* Info.plist */,
-			);
-			path = CircatorWatch;
-			sourceTree = "<group>";
-		};
-		F42F5B5C1BE20CDD00195490 /* CircatorWatch Extension */ = {
-			isa = PBXGroup;
-			children = (
-				78B279C21C80FFE5005A6249 /* CircatorWatch Extension.entitlements */,
-				F42F5B7A1BE22AC700195490 /* ConnectivityManager.swift */,
-				F42F5B5F1BE20CDD00195490 /* InterfaceController.swift */,
-				F42F5B781BE2292D00195490 /* BioPreviewRow.swift */,
-				F42F5B611BE20CDD00195490 /* ExtensionDelegate.swift */,
-				F42F5B631BE20CDD00195490 /* NotificationController.swift */,
-				F42F5B651BE20CDD00195490 /* GlanceController.swift */,
-				F42F5B671BE20CDD00195490 /* ComplicationController.swift */,
-				F42F5B691BE20CDD00195490 /* Assets.xcassets */,
-				F42F5B6B1BE20CDD00195490 /* Info.plist */,
-				F42F5B5D1BE20CDD00195490 /* Supporting Files */,
-			);
-			path = "CircatorWatch Extension";
-			sourceTree = "<group>";
-		};
-		F42F5B5D1BE20CDD00195490 /* Supporting Files */ = {
-			isa = PBXGroup;
-			children = (
-				F42F5B5E1BE20CDD00195490 /* PushNotificationPayload.apns */,
-			);
-			name = "Supporting Files";
 			sourceTree = "<group>";
 		};
 		F43A7C581BBDF3BE00B6FA56 /* Supporting Files */ = {
@@ -525,7 +522,7 @@
 			);
 			dependencies = (
 				F42F5B381BE1FD1E00195490 /* PBXTargetDependency */,
-				F42F5B6D1BE20CDD00195490 /* PBXTargetDependency */,
+				D51AF78F1C8797A800817E26 /* PBXTargetDependency */,
 			);
 			name = Circator;
 			productName = Circator;
@@ -568,6 +565,40 @@
 			productReference = 7881A3FC1BAF3B3E00ECB3C6 /* CircatorUITests.xctest */;
 			productType = "com.apple.product-type.bundle.ui-testing";
 		};
+		D51AF76D1C8797A800817E26 /* CircatorWatch */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = D51AF7951C8797A900817E26 /* Build configuration list for PBXNativeTarget "CircatorWatch" */;
+			buildPhases = (
+				D51AF76C1C8797A800817E26 /* Resources */,
+				D51AF7941C8797A900817E26 /* Embed App Extensions */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				D51AF77D1C8797A800817E26 /* PBXTargetDependency */,
+			);
+			name = CircatorWatch;
+			productName = CircatorWatch;
+			productReference = D51AF76E1C8797A800817E26 /* CircatorWatch.app */;
+			productType = "com.apple.product-type.application.watchapp2";
+		};
+		D51AF7791C8797A800817E26 /* CircatorWatchExtension */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = D51AF7911C8797A900817E26 /* Build configuration list for PBXNativeTarget "CircatorWatchExtension" */;
+			buildPhases = (
+				D51AF7761C8797A800817E26 /* Sources */,
+				D51AF7771C8797A800817E26 /* Frameworks */,
+				D51AF7781C8797A800817E26 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = CircatorWatchExtension;
+			productName = "CircatorWatch Extension";
+			productReference = D51AF77A1C8797A800817E26 /* CircatorWatchExtension.appex */;
+			productType = "com.apple.product-type.watchkit2-extension";
+		};
 		F42F5B311BE1FD1E00195490 /* CircatorKit */ = {
 			isa = PBXNativeTarget;
 			buildConfigurationList = F42F5B3B1BE1FD1F00195490 /* Build configuration list for PBXNativeTarget "CircatorKit" */;
@@ -588,48 +619,13 @@
 			productReference = F42F5B321BE1FD1E00195490 /* CircatorKit.framework */;
 			productType = "com.apple.product-type.framework";
 		};
-		F42F5B4B1BE20CDD00195490 /* CircatorWatch */ = {
-			isa = PBXNativeTarget;
-			buildConfigurationList = F42F5B731BE20CDD00195490 /* Build configuration list for PBXNativeTarget "CircatorWatch" */;
-			buildPhases = (
-				F42F5B4A1BE20CDD00195490 /* Resources */,
-				F42F5B721BE20CDD00195490 /* Embed App Extensions */,
-			);
-			buildRules = (
-			);
-			dependencies = (
-				F42F5B5B1BE20CDD00195490 /* PBXTargetDependency */,
-			);
-			name = CircatorWatch;
-			productName = CircatorWatch;
-			productReference = F42F5B4C1BE20CDD00195490 /* CircatorWatch.app */;
-			productType = "com.apple.product-type.application.watchapp2";
-		};
-		F42F5B571BE20CDD00195490 /* CircatorWatch Extension */ = {
-			isa = PBXNativeTarget;
-			buildConfigurationList = F42F5B6F1BE20CDD00195490 /* Build configuration list for PBXNativeTarget "CircatorWatch Extension" */;
-			buildPhases = (
-				F42F5B541BE20CDD00195490 /* Sources */,
-				F42F5B551BE20CDD00195490 /* Frameworks */,
-				F42F5B561BE20CDD00195490 /* Resources */,
-				F42F5B931BE22EA900195490 /* Embed Frameworks */,
-			);
-			buildRules = (
-			);
-			dependencies = (
-			);
-			name = "CircatorWatch Extension";
-			productName = "CircatorWatch Extension";
-			productReference = F42F5B581BE20CDD00195490 /* CircatorWatch Extension.appex */;
-			productType = "com.apple.product-type.watchkit2-extension";
-		};
 /* End PBXNativeTarget section */
 
 /* Begin PBXProject section */
 		7881A3D51BAF3B3E00ECB3C6 /* Project object */ = {
 			isa = PBXProject;
 			attributes = {
-				LastSwiftUpdateCheck = 0710;
+				LastSwiftUpdateCheck = 0720;
 				LastUpgradeCheck = 0720;
 				ORGANIZATIONNAME = "Yanif Ahmad, Tom Woolf";
 				TargetAttributes = {
@@ -653,27 +649,16 @@
 						CreatedOnToolsVersion = 7.0;
 						TestTargetID = 7881A3DC1BAF3B3E00ECB3C6;
 					};
+					D51AF76D1C8797A800817E26 = {
+						CreatedOnToolsVersion = 7.2.1;
+						DevelopmentTeam = E4SL9A9Z96;
+					};
+					D51AF7791C8797A800817E26 = {
+						CreatedOnToolsVersion = 7.2.1;
+					};
 					F42F5B311BE1FD1E00195490 = {
 						CreatedOnToolsVersion = 7.1;
 						DevelopmentTeam = E4SL9A9Z96;
-					};
-					F42F5B4B1BE20CDD00195490 = {
-						CreatedOnToolsVersion = 7.1;
-						DevelopmentTeam = E4SL9A9Z96;
-						SystemCapabilities = {
-							com.apple.ApplicationGroups.iOS = {
-								enabled = 1;
-							};
-						};
-					};
-					F42F5B571BE20CDD00195490 = {
-						CreatedOnToolsVersion = 7.1;
-						DevelopmentTeam = E4SL9A9Z96;
-						SystemCapabilities = {
-							com.apple.ApplicationGroups.iOS = {
-								enabled = 1;
-							};
-						};
 					};
 				};
 			};
@@ -694,8 +679,8 @@
 				7881A3DC1BAF3B3E00ECB3C6 /* Circator */,
 				7881A3F01BAF3B3E00ECB3C6 /* CircatorTests */,
 				7881A3FB1BAF3B3E00ECB3C6 /* CircatorUITests */,
-				F42F5B4B1BE20CDD00195490 /* CircatorWatch */,
-				F42F5B571BE20CDD00195490 /* CircatorWatch Extension */,
+				D51AF76D1C8797A800817E26 /* CircatorWatch */,
+				D51AF7791C8797A800817E26 /* CircatorWatchExtension */,
 			);
 		};
 /* End PBXProject section */
@@ -724,27 +709,28 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		D51AF76C1C8797A800817E26 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				D51AF7741C8797A800817E26 /* Assets.xcassets in Resources */,
+				D51AF7721C8797A800817E26 /* Interface.storyboard in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		D51AF7781C8797A800817E26 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				D56537C61C9112B100617B1F /* Interface.storyboard in Resources */,
+				D51AF78C1C8797A800817E26 /* Assets.xcassets in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		F42F5B301BE1FD1E00195490 /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
-		F42F5B4A1BE20CDD00195490 /* Resources */ = {
-			isa = PBXResourcesBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-				F42F5B521BE20CDD00195490 /* Assets.xcassets in Resources */,
-				F42F5B501BE20CDD00195490 /* Interface.storyboard in Resources */,
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
-		F42F5B561BE20CDD00195490 /* Resources */ = {
-			isa = PBXResourcesBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-				F42F5B6A1BE20CDD00195490 /* Assets.xcassets in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -891,6 +877,22 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		D51AF7761C8797A800817E26 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				D51AF7861C8797A800817E26 /* NotificationController.swift in Sources */,
+				D51AF7841C8797A800817E26 /* ExtensionDelegate.swift in Sources */,
+				D56537C41C91129100617B1F /* ExerciseInterfaceController.swift in Sources */,
+				D51AF7991C87992900817E26 /* MealInterfaceController.swift in Sources */,
+				D51AF78A1C8797A800817E26 /* ComplicationController.swift in Sources */,
+				D51AF7821C8797A800817E26 /* IntroInterfaceController.swift in Sources */,
+				D56537C51C91129500617B1F /* MiscInterfaceController.swift in Sources */,
+				D51AF7881C8797A800817E26 /* GlanceController.swift in Sources */,
+				D56537C91C9112E300617B1F /* SleepInterfaceController.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		F42F5B2D1BE1FD1E00195490 /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
@@ -902,29 +904,18 @@
 				F42F5B471BE2048400195490 /* Theme.swift in Sources */,
 				F42F5B461BE2048400195490 /* SampleFormatter.swift in Sources */,
 				7861300F1C25F42B00F50DB3 /* QueryManager.swift in Sources */,
+				D56537C21C90CB6C00617B1F /* MiscInterfaceController.swift in Sources */,
 				F42F5B451BE2048400195490 /* HealthManager.swift in Sources */,
 				7848A7E01C699007003241FF /* BehaviorMonitor.swift in Sources */,
 				78398D681C781EF0009653D6 /* ScreenManager.swift in Sources */,
 				783E53D21C75856200BEBF33 /* DataGenerator.swift in Sources */,
 				7843F9121C1FAD9900AB8978 /* ServiceAPI.swift in Sources */,
+				D56537C81C9112E300617B1F /* SleepInterfaceController.swift in Sources */,
 				781CF2BF1C6A4781001DF3B2 /* SecureConstants.swift in Sources */,
+				D56537C01C90CB5800617B1F /* ExerciseInterfaceController.swift in Sources */,
 				786DF10D1C72AFE0007C2D4C /* Constants.swift in Sources */,
 				7863EA9C1C27302B0038DE7A /* ConsentManager.swift in Sources */,
 				78AC90CC1C1E859F008C931B /* UserAccount.swift in Sources */,
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
-		F42F5B541BE20CDD00195490 /* Sources */ = {
-			isa = PBXSourcesBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-				F42F5B641BE20CDD00195490 /* NotificationController.swift in Sources */,
-				F42F5B621BE20CDD00195490 /* ExtensionDelegate.swift in Sources */,
-				F42F5B681BE20CDD00195490 /* ComplicationController.swift in Sources */,
-				F42F5B601BE20CDD00195490 /* InterfaceController.swift in Sources */,
-				F42F5B791BE2292D00195490 /* BioPreviewRow.swift in Sources */,
-				F42F5B661BE20CDD00195490 /* GlanceController.swift in Sources */,
-				F42F5B7B1BE22AC700195490 /* ConnectivityManager.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -941,28 +932,28 @@
 			target = 7881A3DC1BAF3B3E00ECB3C6 /* Circator */;
 			targetProxy = 7881A3FD1BAF3B3E00ECB3C6 /* PBXContainerItemProxy */;
 		};
+		D51AF77D1C8797A800817E26 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = D51AF7791C8797A800817E26 /* CircatorWatchExtension */;
+			targetProxy = D51AF77C1C8797A800817E26 /* PBXContainerItemProxy */;
+		};
+		D51AF78F1C8797A800817E26 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = D51AF76D1C8797A800817E26 /* CircatorWatch */;
+			targetProxy = D51AF78E1C8797A800817E26 /* PBXContainerItemProxy */;
+		};
 		F42F5B381BE1FD1E00195490 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			target = F42F5B311BE1FD1E00195490 /* CircatorKit */;
 			targetProxy = F42F5B371BE1FD1E00195490 /* PBXContainerItemProxy */;
 		};
-		F42F5B5B1BE20CDD00195490 /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			target = F42F5B571BE20CDD00195490 /* CircatorWatch Extension */;
-			targetProxy = F42F5B5A1BE20CDD00195490 /* PBXContainerItemProxy */;
-		};
-		F42F5B6D1BE20CDD00195490 /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			target = F42F5B4B1BE20CDD00195490 /* CircatorWatch */;
-			targetProxy = F42F5B6C1BE20CDD00195490 /* PBXContainerItemProxy */;
-		};
 /* End PBXTargetDependency section */
 
 /* Begin PBXVariantGroup section */
-		F42F5B4E1BE20CDD00195490 /* Interface.storyboard */ = {
+		D51AF7701C8797A800817E26 /* Interface.storyboard */ = {
 			isa = PBXVariantGroup;
 			children = (
-				F42F5B4F1BE20CDD00195490 /* Base */,
+				D51AF7711C8797A800817E26 /* Base */,
 			);
 			name = Interface.storyboard;
 			sourceTree = "<group>";
@@ -1094,48 +1085,6 @@
 			};
 			name = Debug;
 		};
-		7861300A1C25D7BC00F50DB3 /* Debug */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				ASSETCATALOG_COMPILER_APPICON_NAME = WatchAppIcon;
-				CODE_SIGN_ENTITLEMENTS = CircatorWatch/CircatorWatch.entitlements;
-				CODE_SIGN_IDENTITY = "iPhone Developer";
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
-				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "iPhone Developer";
-				EMBEDDED_CONTENT_CONTAINS_SWIFT = "$(inherited)";
-				IBSC_MODULE = CircatorWatch_Extension;
-				INFOPLIST_FILE = CircatorWatch/Info.plist;
-				PRODUCT_BUNDLE_IDENTIFIER = edu.jhu.cs.damsl.Circator.app.watch;
-				PRODUCT_NAME = "$(TARGET_NAME)";
-				PROVISIONING_PROFILE = "$(WATCH_UUID)";
-				SDKROOT = watchos;
-				SKIP_INSTALL = YES;
-				TARGETED_DEVICE_FAMILY = 4;
-				WATCHOS_DEPLOYMENT_TARGET = 2.0;
-			};
-			name = Debug;
-		};
-		7861300B1C25D7BC00F50DB3 /* Debug */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				ASSETCATALOG_COMPILER_COMPLICATION_NAME = Complication;
-				CODE_SIGN_ENTITLEMENTS = "CircatorWatch Extension/CircatorWatch Extension.entitlements";
-				CODE_SIGN_IDENTITY = "iPhone Developer";
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
-				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "iPhone Developer";
-				EMBEDDED_CONTENT_CONTAINS_SWIFT = "$(inherited)";
-				INFOPLIST_FILE = "CircatorWatch Extension/Info.plist";
-				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @executable_path/../../Frameworks";
-				PRODUCT_BUNDLE_IDENTIFIER = edu.jhu.cs.damsl.Circator.app.watch.extension;
-				PRODUCT_NAME = "${TARGET_NAME}";
-				PROVISIONING_PROFILE = "$(WATCHEXT_UUID)";
-				SDKROOT = watchos;
-				SKIP_INSTALL = YES;
-				TARGETED_DEVICE_FAMILY = 4;
-				WATCHOS_DEPLOYMENT_TARGET = 2.0;
-			};
-			name = Debug;
-		};
 		7881A4041BAF3B3E00ECB3C6 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
@@ -1229,6 +1178,94 @@
 			};
 			name = Release;
 		};
+		D51AF7921C8797A900817E26 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_COMPLICATION_NAME = Complication;
+				INFOPLIST_FILE = "CircatorWatch Extension/Info.plist";
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @executable_path/../../Frameworks";
+				PRODUCT_BUNDLE_IDENTIFIER = edu.jhu.cs.damsl.Circator.app.watchkitapp.watchkitextension;
+				PRODUCT_NAME = "${TARGET_NAME}";
+				SDKROOT = watchos;
+				SKIP_INSTALL = YES;
+				TARGETED_DEVICE_FAMILY = 4;
+				WATCHOS_DEPLOYMENT_TARGET = 2.1;
+			};
+			name = Release;
+		};
+		D51AF7931C8797A900817E26 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_COMPLICATION_NAME = Complication;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				INFOPLIST_FILE = "CircatorWatch Extension/Info.plist";
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @executable_path/../../Frameworks";
+				MTL_ENABLE_DEBUG_INFO = YES;
+				PRODUCT_BUNDLE_IDENTIFIER = edu.jhu.cs.damsl.Circator.app.watchkitapp.watchkitextension;
+				PRODUCT_NAME = "${TARGET_NAME}";
+				SDKROOT = watchos;
+				SKIP_INSTALL = YES;
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+				TARGETED_DEVICE_FAMILY = 4;
+				WATCHOS_DEPLOYMENT_TARGET = 2.1;
+			};
+			name = Debug;
+		};
+		D51AF7961C8797A900817E26 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CLANG_ENABLE_MODULES = YES;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
+				EMBEDDED_CONTENT_CONTAINS_SWIFT = YES;
+				IBSC_MODULE = CircatorWatch_Extension;
+				INFOPLIST_FILE = CircatorWatch/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks @loader_path/../Frameworks";
+				PRODUCT_BUNDLE_IDENTIFIER = edu.jhu.cs.damsl.Circator.app.watchkitapp;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = watchos;
+				SKIP_INSTALL = YES;
+				TARGETED_DEVICE_FAMILY = 4;
+				WATCHOS_DEPLOYMENT_TARGET = 2.1;
+			};
+			name = Release;
+		};
+		D51AF7971C8797A900817E26 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CLANG_ENABLE_MODULES = YES;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				EMBEDDED_CONTENT_CONTAINS_SWIFT = YES;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				IBSC_MODULE = CircatorWatch_Extension;
+				INFOPLIST_FILE = CircatorWatch/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks @loader_path/../Frameworks";
+				MTL_ENABLE_DEBUG_INFO = YES;
+				PRODUCT_BUNDLE_IDENTIFIER = edu.jhu.cs.damsl.Circator.app.watchkitapp;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = watchos;
+				SKIP_INSTALL = YES;
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+				TARGETED_DEVICE_FAMILY = 4;
+				WATCHOS_DEPLOYMENT_TARGET = 2.1;
+			};
+			name = Debug;
+		};
 		F42F5B3D1BE1FD1F00195490 /* Release */ = {
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = 984776BC6A59A33B4580C535 /* Pods.release.xcconfig */;
@@ -1255,48 +1292,6 @@
 				TARGETED_DEVICE_FAMILY = 1;
 				VERSIONING_SYSTEM = "apple-generic";
 				VERSION_INFO_PREFIX = "";
-			};
-			name = Release;
-		};
-		F42F5B711BE20CDD00195490 /* Release */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				ASSETCATALOG_COMPILER_COMPLICATION_NAME = Complication;
-				CODE_SIGN_ENTITLEMENTS = "CircatorWatch Extension/CircatorWatch Extension.entitlements";
-				CODE_SIGN_IDENTITY = "iPhone Developer";
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
-				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "iPhone Developer";
-				EMBEDDED_CONTENT_CONTAINS_SWIFT = "$(inherited)";
-				INFOPLIST_FILE = "CircatorWatch Extension/Info.plist";
-				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @executable_path/../../Frameworks";
-				PRODUCT_BUNDLE_IDENTIFIER = edu.jhu.cs.damsl.Circator.app.watch.extension;
-				PRODUCT_NAME = "${TARGET_NAME}";
-				PROVISIONING_PROFILE = "$(WATCHEXT_UUID)";
-				SDKROOT = watchos;
-				SKIP_INSTALL = YES;
-				TARGETED_DEVICE_FAMILY = 4;
-				WATCHOS_DEPLOYMENT_TARGET = 2.0;
-			};
-			name = Release;
-		};
-		F42F5B751BE20CDD00195490 /* Release */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				ASSETCATALOG_COMPILER_APPICON_NAME = WatchAppIcon;
-				CODE_SIGN_ENTITLEMENTS = CircatorWatch/CircatorWatch.entitlements;
-				CODE_SIGN_IDENTITY = "iPhone Developer";
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
-				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "iPhone Developer";
-				EMBEDDED_CONTENT_CONTAINS_SWIFT = "$(inherited)";
-				IBSC_MODULE = CircatorWatch_Extension;
-				INFOPLIST_FILE = CircatorWatch/Info.plist;
-				PRODUCT_BUNDLE_IDENTIFIER = edu.jhu.cs.damsl.Circator.app.watch;
-				PRODUCT_NAME = "$(TARGET_NAME)";
-				PROVISIONING_PROFILE = "$(WATCH_UUID)";
-				SDKROOT = watchos;
-				SKIP_INSTALL = YES;
-				TARGETED_DEVICE_FAMILY = 4;
-				WATCHOS_DEPLOYMENT_TARGET = 2.0;
 			};
 			name = Release;
 		};
@@ -1339,29 +1334,29 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
+		D51AF7911C8797A900817E26 /* Build configuration list for PBXNativeTarget "CircatorWatchExtension" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				D51AF7921C8797A900817E26 /* Release */,
+				D51AF7931C8797A900817E26 /* Debug */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		D51AF7951C8797A900817E26 /* Build configuration list for PBXNativeTarget "CircatorWatch" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				D51AF7961C8797A900817E26 /* Release */,
+				D51AF7971C8797A900817E26 /* Debug */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
 		F42F5B3B1BE1FD1F00195490 /* Build configuration list for PBXNativeTarget "CircatorKit" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				F42F5B3D1BE1FD1F00195490 /* Release */,
 				786130061C25D7BC00F50DB3 /* Debug */,
-			);
-			defaultConfigurationIsVisible = 0;
-			defaultConfigurationName = Release;
-		};
-		F42F5B6F1BE20CDD00195490 /* Build configuration list for PBXNativeTarget "CircatorWatch Extension" */ = {
-			isa = XCConfigurationList;
-			buildConfigurations = (
-				F42F5B711BE20CDD00195490 /* Release */,
-				7861300B1C25D7BC00F50DB3 /* Debug */,
-			);
-			defaultConfigurationIsVisible = 0;
-			defaultConfigurationName = Release;
-		};
-		F42F5B731BE20CDD00195490 /* Build configuration list for PBXNativeTarget "CircatorWatch" */ = {
-			isa = XCConfigurationList;
-			buildConfigurations = (
-				F42F5B751BE20CDD00195490 /* Release */,
-				7861300A1C25D7BC00F50DB3 /* Debug */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;

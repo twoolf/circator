@@ -111,7 +111,7 @@ class IntroViewController: UIViewController,
         button.shadowHeight = 6
         button.addTarget(self, action: "showAttributes:", forControlEvents: .TouchUpInside)
         return button
-    }()
+}()
 
     lazy var sleepButton: UIButton = {
         let sleepType = HKObjectType.categoryTypeForIdentifier(HKCategoryTypeIdentifierSleepAnalysis)!

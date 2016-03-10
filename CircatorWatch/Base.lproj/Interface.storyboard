@@ -5,38 +5,72 @@
         <plugIn identifier="com.apple.InterfaceBuilder.IBWatchKitPlugin" version="9515"/>
     </dependencies>
     <scenes>
-        <!--Interface Controller-->
+        <!--IntroInterfaecController-->
         <scene sceneID="aou-V4-d1y">
             <objects>
-                <controller id="AgC-eL-Hgc" customClass="InterfaceController" customModule="CircatorWatch" customModuleProvider="target">
+                <controller identifier="IntroInterfaecController" id="AgC-eL-Hgc" customClass="IntroInterfaceController" customModule="CircatorWatchExtension">
                     <items>
                         <group width="1" height="0.40000000000000002" alignment="left" id="tjv-Ck-gEV">
                             <items>
-                                <button width="0.5" height="1" alignment="left" title="Button" id="efV-eP-frF">
+                                <button width="0.5" height="1" alignment="left" title="Meal" id="efV-eP-frF">
                                     <connections>
                                         <segue destination="dV6-cO-szC" kind="push" id="rkI-16-Hqa"/>
                                     </connections>
                                 </button>
-                                <button width="0.5" height="1" alignment="right" title="Button" id="edE-qc-9uN"/>
+                                <button width="0.5" height="1" alignment="right" title="Sleep" id="edE-qc-9uN">
+                                    <connections>
+                                        <segue destination="7hK-Ov-ieJ" kind="push" id="uAw-xm-ltF"/>
+                                    </connections>
+                                </button>
                             </items>
                         </group>
                         <group width="1" height="0.40000000000000002" alignment="left" id="biC-ez-bx2">
                             <items>
-                                <button width="0.5" height="1" alignment="left" title="Button" id="hCU-mZ-gCF"/>
-                                <button width="0.5" height="1" alignment="right" title="Button" id="30E-7d-sfh"/>
+                                <button width="0.5" height="1" alignment="left" title="Misc" id="hCU-mZ-gCF">
+                                    <connections>
+                                        <segue destination="YiA-fx-NQl" kind="push" id="SaB-BM-bvn"/>
+                                    </connections>
+                                </button>
+                                <button width="0.5" height="1" alignment="right" title="Exercise" id="30E-7d-sfh">
+                                    <fontDescription key="font" type="system" pointSize="13"/>
+                                    <connections>
+                                        <segue destination="uYH-JB-1gX" kind="push" id="rPe-6a-tgs"/>
+                                    </connections>
+                                </button>
                             </items>
                         </group>
                     </items>
                 </controller>
             </objects>
-            <point key="canvasLocation" x="235" y="347"/>
+            <point key="canvasLocation" x="-288" y="313"/>
         </scene>
-        <!--Interface Controller-->
+        <!--MealInterfaceController-->
         <scene sceneID="mnF-XV-dEC">
             <objects>
-                <controller id="dV6-cO-szC"/>
+                <controller title="MealInterfaceController" id="dV6-cO-szC" customClass="MealInterfaceController" customModule="CircatorWatchExtension"/>
             </objects>
-            <point key="canvasLocation" x="485" y="228"/>
+            <point key="canvasLocation" x="-33" y="-177"/>
+        </scene>
+        <!--SleepInterfaceController-->
+        <scene sceneID="IYy-Nw-kha">
+            <objects>
+                <controller title="SleepInterfaceController" id="7hK-Ov-ieJ" customClass="ExerciseInterfaceController" customModule="CircatorWatchExtension"/>
+            </objects>
+            <point key="canvasLocation" x="-44" y="127"/>
+        </scene>
+        <!--MiscInterfaceController-->
+        <scene sceneID="jir-tl-faX">
+            <objects>
+                <controller title="MiscInterfaceController" id="YiA-fx-NQl" customClass="MiscInterfaceController" customModule="CircatorWatchExtension"/>
+            </objects>
+            <point key="canvasLocation" x="-44" y="637"/>
+        </scene>
+        <!--Sleep Interface Controller-->
+        <scene sceneID="rav-D0-NpW">
+            <objects>
+                <controller id="uYH-JB-1gX" customClass="SleepInterfaceController" customModule="CircatorWatchExtension"/>
+            </objects>
+            <point key="canvasLocation" x="-44" y="355"/>
         </scene>
         <!--Glance Interface Controller-->
         <scene sceneID="BOz-TT-tkC">
@@ -49,7 +83,7 @@
                     <edgeInsets key="margins" left="0.0" right="0.0" top="0.0" bottom="14"/>
                 </glanceController>
             </objects>
-            <point key="canvasLocation" x="235" y="672"/>
+            <point key="canvasLocation" x="-203" y="1008"/>
         </scene>
         <!--Static Notification Interface Controller-->
         <scene sceneID="AEw-b0-oYE">
