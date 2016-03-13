@@ -38,6 +38,8 @@
 		78DA2D741C28ED2A005CC2DB /* RegisterViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 78DA2D731C28ED2A005CC2DB /* RegisterViewController.swift */; };
 		78E521A01C25687900FAE56A /* Pods.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 78E5219F1C25687900FAE56A /* Pods.framework */; };
 		78F65A4D1C25126E0074449D /* QueryBuilderViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 78F65A4C1C25126E0074449D /* QueryBuilderViewController.swift */; };
+		814299441C963189005303D2 /* EventItemTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 814299431C963189005303D2 /* EventItemTableViewCell.swift */; };
+		8142AC861C95D64200B36C14 /* RepeatedEventsListViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8142AC851C95D64200B36C14 /* RepeatedEventsListViewController.swift */; };
 		81CCD8151C8142AE005299AA /* DefaultEventPeriodSelectorViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 81CCD8141C8142AE005299AA /* DefaultEventPeriodSelectorViewController.swift */; };
 		A88F31F3DDADAD50F4190F8E /* Pods.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = CB09F654AB4B00C79306C728 /* Pods.framework */; };
 		F42F5ADD1BDC85AF00195490 /* SampleDataAnalyzer.swift in Sources */ = {isa = PBXBuildFile; fileRef = F42F5ADC1BDC85AF00195490 /* SampleDataAnalyzer.swift */; };
@@ -205,6 +207,8 @@
 		78E5219F1C25687900FAE56A /* Pods.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Pods.framework; path = "Pods/../build/Debug-iphoneos/Pods.framework"; sourceTree = "<group>"; };
 		78F65A4C1C25126E0074449D /* QueryBuilderViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = QueryBuilderViewController.swift; sourceTree = "<group>"; };
 		78F9FE3D1C20E48D0026D790 /* Pods_Circator.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Pods_Circator.framework; path = "Pods/../build/Debug-iphoneos/Pods_Circator.framework"; sourceTree = "<group>"; };
+		814299431C963189005303D2 /* EventItemTableViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = EventItemTableViewCell.swift; sourceTree = "<group>"; };
+		8142AC851C95D64200B36C14 /* RepeatedEventsListViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RepeatedEventsListViewController.swift; sourceTree = "<group>"; };
 		81CCD8141C8142AE005299AA /* DefaultEventPeriodSelectorViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DefaultEventPeriodSelectorViewController.swift; sourceTree = "<group>"; };
 		8B4A08D995498CDA94BBB258 /* Pods-Circator.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Circator.release.xcconfig"; path = "Pods/Target Support Files/Pods-Circator/Pods-Circator.release.xcconfig"; sourceTree = "<group>"; };
 		984776BC6A59A33B4580C535 /* Pods.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = Pods.release.xcconfig; path = "Pods/Target Support Files/Pods/Pods.release.xcconfig"; sourceTree = "<group>"; };
@@ -465,6 +469,7 @@
 				F43A7C5C1BBDF43600B6FA56 /* PlotButton.swift */,
 				F43A7C671BBE508D00B6FA56 /* IntroCompareDataTableViewCell.swift */,
 				7816FFB81C1E2DC5002E2ED8 /* TextInputTableViewCell.swift */,
+				814299431C963189005303D2 /* EventItemTableViewCell.swift */,
 			);
 			path = View;
 			sourceTree = "<group>";
@@ -492,6 +497,7 @@
 				7840A4981C6E53A80005B66F /* VariantViewController.swift */,
 				7840A49A1C6E5A680005B66F /* ErrorViewController.swift */,
 				81CCD8141C8142AE005299AA /* DefaultEventPeriodSelectorViewController.swift */,
+				8142AC851C95D64200B36C14 /* RepeatedEventsListViewController.swift */,
 			);
 			path = "View Controller";
 			sourceTree = "<group>";
@@ -868,8 +874,10 @@
 				78DA2D741C28ED2A005CC2DB /* RegisterViewController.swift in Sources */,
 				7881A3E11BAF3B3E00ECB3C6 /* AppDelegate.swift in Sources */,
 				7840A49B1C6E5A680005B66F /* ErrorViewController.swift in Sources */,
+				8142AC861C95D64200B36C14 /* RepeatedEventsListViewController.swift in Sources */,
 				81CCD8151C8142AE005299AA /* DefaultEventPeriodSelectorViewController.swift in Sources */,
 				7861300D1C25E05600F50DB3 /* QueryViewController.swift in Sources */,
+				814299441C963189005303D2 /* EventItemTableViewCell.swift in Sources */,
 				F4F4DA5C1C0271660073E9EE /* RowSettingsViewController.swift in Sources */,
 				7886EADF1C22AC2A00D7E3D4 /* LoginViewController.swift in Sources */,
 				F44B1A2D1BDAC20D002238E6 /* PlotViewController.swift in Sources */,

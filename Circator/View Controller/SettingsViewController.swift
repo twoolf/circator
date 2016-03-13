@@ -148,14 +148,14 @@ class SettingsViewController: UITableViewController, UITextFieldDelegate {
         
         if indexPath.section == 6 {
             
-            let goToDefaultSelector = FormLabelCell()
-            goToDefaultSelector.formTextLabel()?.text = "Defaults"
+            let goToRepeatedEventsList = FormLabelCell()
+            goToRepeatedEventsList.formTextLabel()?.text = "Repeated Events"
             
             cell.imageView?.image = nil
             cell.accessoryType = .DisclosureIndicator
             
             for sv in cell.contentView.subviews { sv.removeFromSuperview() }
-            cell.contentView.addSubview(goToDefaultSelector)
+            cell.contentView.addSubview(goToRepeatedEventsList)
             return cell
         }
         
@@ -472,11 +472,11 @@ class SettingsViewController: UITableViewController, UITextFieldDelegate {
             let debugVC = DebugViewController()
             navigationController?.pushViewController(debugVC, animated: true)
         }
-        else if (withDebugView && indexPath.section == 6) {
-            let defaultsVC = DefaultEventPeriodSelectorViewController()
-            navigationController?.pushViewController(defaultsVC, animated: true)
+        else if (indexPath.section == 6) {
+            let relVC = RepeatedEventsListViewController()
+            navigationController?.pushViewController(relVC, animated: true)
         }
-        
+            
     }
     
     func textFieldShouldReturn(textField: UITextField) -> Bool {

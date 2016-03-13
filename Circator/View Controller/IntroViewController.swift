@@ -312,7 +312,7 @@ class IntroViewController: UIViewController,
         stackView.axis = .Horizontal
         stackView.distribution = UIStackViewDistribution.FillEqually
         stackView.alignment = UIStackViewAlignment.Fill
-        stackView.spacing = 25
+        stackView.spacing = 50
         return stackView
     }()
 
@@ -1121,6 +1121,7 @@ class IntroViewController: UIViewController,
                 self.refreshMealController()
             })
     }
+    
     class MCButton : HTPressableButton {
 
     }

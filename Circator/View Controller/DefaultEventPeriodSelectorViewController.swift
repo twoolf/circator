@@ -21,6 +21,12 @@ enum TimeOfDayInterval {
     case end
 }
 
+enum TimeDuration {
+    case hours
+    case minutes
+    case seconds
+}
+
 /*
 //minutes of hour when user awakens and goes to sleep
 var wakeMinute = 0
