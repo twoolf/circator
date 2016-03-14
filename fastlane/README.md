@@ -35,12 +35,12 @@ Runs all the tests
 ```
 fastlane ios start_coding
 ```
-Start a Circator development session
+Start a Metabolic Compass development session
 ### ios stop_coding
 ```
 fastlane ios stop_coding
 ```
-Stop a Circator development session
+Stop a Metabolic Compass development session
 ### ios rename_app
 ```
 fastlane ios rename_app
@@ -76,6 +76,16 @@ Prepare for command line build
 fastlane ios preparedeploy
 ```
 Prepare for command line deployment to the App Store
+### ios set_codesigning
+```
+fastlane ios set_codesigning
+```
+Set XCode project code signing and provisioning
+### ios build_version
+```
+fastlane ios build_version
+```
+Set a specific build number
 ### ios build_dev
 ```
 fastlane ios build_dev
@@ -85,7 +95,17 @@ Build a development archive
 ```
 fastlane ios build_app
 ```
-Build a beta/release archive
+Build a release archive
+### ios resign_dev
+```
+fastlane ios resign_dev
+```
+Resign a development archive
+### ios resign_dev_as_dist
+```
+fastlane ios resign_dev_as_dist
+```
+Resign a development archive
 ### ios beta_upload_testflight
 ```
 fastlane ios beta_upload_testflight
@@ -100,17 +120,17 @@ Upload a Beta Build to Fabric/Crashlytics
 ```
 fastlane ios beta_testflight
 ```
-Build and submit a new Beta Build to Apple TestFlight
+Build and submit a beta build to Apple TestFlight
 ### ios beta_fabric
 ```
 fastlane ios beta_fabric
 ```
-Build and submit a new Beta Build to Fabric/Crashlytics
+Build and submit a beta build to Fabric/Crashlytics
 ### ios beta
 ```
 fastlane ios beta
 ```
-Build and submit a new Beta Build to Apple TestFlight and Fabric/Crashlytics
+Build and submit a beta build to Apple TestFlight and Fabric/Crashlytics
 
 ----
 

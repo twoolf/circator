@@ -1,2 +1,2 @@
-CircatorKit/SecureConstants.swift
+MetabolicCompassKit/SecureConstants.swift
 fastlane/.env

@@ -20,10 +20,34 @@ fastlane_version "1.56.0"
 
 default_platform :ios
 
-app_ids = { 'edu.jhu.cs.damsl.Circator.app'                 => ['Metabolic Compass',  'Circator/Info.plist'],
-            'edu.jhu.cs.damsl.Circator.kit'                 => ['MC Core',            'CircatorKit/Info.plist'],
-            'edu.jhu.cs.damsl.Circator.app.watch'           => ['MC Watch',           'CircatorWatch/Info.plist'],
-            'edu.jhu.cs.damsl.Circator.app.watch.extension' => ['MC Watch Extension', 'CircatorWatch Extension/Info.plist'] }
+project_dir = "MetabolicCompass.xcodeproj"
+ipa_archive = "MetabolicCompass.ipa"
+
+app_ids = { 'edu.jhu.cs.damsl.MetabolicCompass.app' =>
+              ['Metabolic Compass', 'APP_UUID', '^MetabolicCompass$', 'MetabolicCompass/Info.plist'],
+
+            'edu.jhu.cs.damsl.MetabolicCompass.kit' =>
+              ['MC Core', 'KIT_UUID', 'MetabolicCompassKit', 'MetabolicCompassKit/Info.plist'],
+
+            'edu.jhu.cs.damsl.MetabolicCompass.app.watch' =>
+              ['MC Watch', 'WATCH_UUID', '^MetabolicCompassWatch$', 'MetabolicCompassWatch/Info.plist'],
+
+            'edu.jhu.cs.damsl.MetabolicCompass.app.watch.extension' =>
+              ['MC Watch Extension', 'WATCHEXT_UUID', 'MetabolicCompassWatchExtension', 'MetabolicCompassWatchExtension/Info.plist'],
+
+            'edu.jhu.cs.damsl.MetabolicCompassTests' =>
+              ['MC Tests', 'TESTS_UUID', '^MetabolicCompassTests$', 'MetabolicCompassTests/Info.plist'],
+
+            'edu.jhu.cs.damsl.MetabolicCompassUITests' =>
+              ['MC UI Tests', 'UITESTS_UUID', '^MetabolicCompassUITests$', 'MetabolicCompassUITests/Info.plist'] }
+
+app_dist_identity = "iPhone Distribution: Yanif Ahmad (E4SL9A9Z96)"
+
+app_dist_profiles = { 'edu.jhu.cs.damsl.MetabolicCompass.app' => "",
+                      'edu.jhu.cs.damsl.MetabolicCompass.kit' => "",
+                      'edu.jhu.cs.damsl.MetabolicCompass.app.watch' => "",
+                      'edu.jhu.cs.damsl.MetabolicCompass.app.watch.extension' => ""
+                    }
 
 platform :ios do
   before_all do
@@ -60,12 +84,12 @@ platform :ios do
   ## Development sessions
   ##
 
-  desc "Start a Circator development session"
+  desc "Start a Metabolic Compass development session"
   lane :start_coding do
     sh "cd .. && ./scripts/blackbox_edit_start_all.sh"
   end
 
-  desc "Stop a Circator development session"
+  desc "Stop a Metabolic Compass development session"
   lane :stop_coding do
     sh "cd .. && ./scripts/blackbox_edit_stop_all.sh"
   end
@@ -78,9 +102,9 @@ platform :ios do
   lane :rename_app do
     app_ids.each {|appid, metadata|
       update_app_identifier(
-        xcodeproj: 'Circator.xcodeproj',
+        xcodeproj: 'MetabolicCompass.xcodeproj',
         app_identifier: appid,
-        plist_path: metadata[1]
+        plist_path: metadata[3]
       )
     }
   end
@@ -106,7 +130,7 @@ platform :ios do
     produce(
       skip_devcenter: true,
       username: 'yanif.ahmad@gmail.com',
-      app_identifier: 'edu.jhu.cs.damsl.Circator.app',
+      app_identifier: 'edu.jhu.cs.damsl.MetabolicCompass.app',
       app_name: 'Metabolic Compass',
       language: 'English',
       app_version: '1.0'
@@ -152,7 +176,7 @@ platform :ios do
 
   desc "Prepare for command line deployment to the App Store"
   lane :preparedeploy do
-    prepcerts(type: 'appstore')
+    prepcerts(type: 'appstore', readonly: true)
   end
 
 
@@ -160,17 +184,74 @@ platform :ios do
   ## Build
   ##
 
-  desc "Build a development archive"
-  lane :build_dev do
-    prepbuild(type: 'development', readonly: true)
-    gym(scheme: "Circator")
+  desc "Set XCode project code signing and provisioning"
+  lane :set_codesigning do
+    app_ids.each {|appid, metadata|
+      set_project_provisioning_env_var(xcodeproj: project_dir, env_var: metadata[1], target_filter: metadata[2])
+    }
   end
 
-  desc "Build a beta/release archive"
-  lane :build_app do
-    prepbuild(type: "appstore", readonly: true)
+  desc "Set a specific build number"
+  lane :build_version do |options|
+    increment_build_number(build_number: options[:build_number])
+  end
+
+  desc "Build a development archive"
+  lane :build_dev do
+    cocoapods
+    new_dev_certs
     increment_build_number
-    gym(scheme: "Circator")
+
+    # Set UDID environment variables
+    app_ids.each {|appid, metadata|
+      set_project_provisioning_env_var(xcodeproj: project_dir, env_var: metadata[1], target_filter: metadata[2])
+      uuid = ENV["sigh_#{appid}_development"]
+      ENV[metadata[1]] = uuid
+    }
+
+    gym(scheme: "MetabolicCompass")
+  end
+
+  desc "Build a release archive"
+  lane :build_app do
+    cocoapods
+    new_app_certs
+    increment_build_number
+
+    # Set UUID environment variables
+    app_ids.each {|appid, metadata|
+      set_project_provisioning_env_var(xcodeproj: project_dir, env_var: metadata[1], target_filter: metadata[2])
+      uuid = ENV["sigh_#{appid}_appstore"]
+      ENV[metadata[1]] = uuid
+    }
+
+    gym(scheme: "MetabolicCompass")
+  end
+
+  desc "Resign a development archive"
+  lane :resign_dev do
+    prepcerts(type: 'development', readonly: false, force: true)
+
+    app_ids.each {|appid, metadata|
+      uuid = ENV["sigh_#{appid}_development"]
+      homedir = ENV["HOME"]
+      app_dist_profiles[appid] = "#{homedir}/Library/MobileDevice/Provisioning Profiles/#{uuid}.mobileprovision"
+    }
+
+    resign(ipa: ipa_archive, signing_identity: app_dist_identity, provisioning_profile: app_dist_profiles)
+  end
+
+  desc "Resign a development archive"
+  lane :resign_dev_as_dist do
+    prepcerts(type: 'appstore', readonly: false, force: true)
+
+    app_ids.each {|appid, metadata|
+      uuid = ENV["sigh_#{appid}_appstore"]
+      homedir = ENV["HOME"]
+      app_dist_profiles[appid] = "#{homedir}/Library/MobileDevice/Provisioning Profiles/#{uuid}.mobileprovision"
+    }
+
+    resign(ipa: ipa_archive, signing_identity: app_dist_identity, provisioning_profile: app_dist_profiles)
   end
 
 
@@ -183,32 +264,33 @@ platform :ios do
     ENV["DELIVER_ITMSTRANSPORTER_ADDITIONAL_UPLOAD_PARAMETERS"] = "-t DAV"
 
     pilot(skip_submission: true)
-    post_to_slack(scheme: "Circator", destination: "TestFlight")
+    post_to_slack(scheme: "MetabolicCompass", destination: "TestFlight")
   end
 
   desc "Upload a Beta Build to Fabric/Crashlytics"
   lane :beta_upload_fabric do
-    crashlytics(ipa_path: "./Circator.ipa")
-    post_to_slack(scheme: "Circator", destination: "Fabric")
+    crashlytics(ipa_path: "./MetabolicCompass.ipa")
+    post_to_slack(scheme: "MetabolicCompass", destination: "Fabric")
   end
 
-  desc "Build and submit a new Beta Build to Apple TestFlight"
+  desc "Build and submit a beta build to Apple TestFlight"
   lane :beta_testflight do
     build_app
     beta_upload_testflight
   end
 
-  desc "Build and submit a new Beta Build to Fabric/Crashlytics"
+  desc "Build and submit a beta build to Fabric/Crashlytics"
   lane :beta_fabric do
-    build_app
+    build_dev
     beta_upload_fabric
   end
 
-  desc "Build and submit a new Beta Build to Apple TestFlight and Fabric/Crashlytics"
+  desc "Build and submit a beta build to Apple TestFlight and Fabric/Crashlytics"
   lane :beta do
-    build_app
-    beta_upload_testflight
+    build_dev
     beta_upload_fabric
+    resign_dev_as_dist
+    beta_upload_testflight
   end
 
   ############################################
@@ -219,7 +301,7 @@ platform :ios do
   #lane :appstore do
   #  prepbuild(type: "appstore", readonly: true)
   #  snapshot
-  #  gym(scheme: "Circator")
+  #  gym(scheme: "MetabolicCompass")
   #  deliver(force: true)
   #  frameit
   #end
@@ -232,8 +314,8 @@ platform :ios do
   desc "Post a message to #circator-alerts on Slack"
   private_lane :post_to_slack do |options|
     scheme      = options[:scheme]
-    version     = get_version_number(xcodeproj: "Circator.xcodeproj")
-    build       = get_build_number(xcodeproj: "Circator.xcodeproj")
+    version     = get_version_number(xcodeproj: project_dir)
+    build       = get_build_number(xcodeproj: project_dir)
     environment = scheme.upcase
     destination = options[:destination]
 
