@@ -34,13 +34,13 @@ class EventItemTableViewCell: UITableViewCell {
 
     override init(style: UITableViewCellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
-        self.layoutMargins = UIEdgeInsetsZero
     }
 
     required init?(coder aDecoder: NSCoder) {
         super.init(coder: aDecoder)
     }
     
+    //NOTE CHANGE BACK TO EVENT ITEM VIEW
     func configureCell(timeToDisplay time : String, eventToDisplay event : UIView) {
         
         self.timeLabel.text = time
@@ -56,13 +56,13 @@ class EventItemTableViewCell: UITableViewCell {
 
         let constraints : [NSLayoutConstraint] = [
             self.timeView.topAnchor.constraintEqualToAnchor(self.contentView.topAnchor),
-            self.timeView.leftAnchor.constraintEqualToAnchor(self.contentView.leftAnchor),
+            self.timeView.leftAnchor.constraintEqualToAnchor(self.contentView.leftAnchor, constant: 15),
             self.timeView.bottomAnchor.constraintEqualToAnchor(self.contentView.bottomAnchor),
             NSLayoutConstraint(item: self.timeView, attribute: .Right, relatedBy: .Equal, toItem: self.contentView, attribute: .Right, multiplier: 0.1428571429, constant: 0),
             event.topAnchor.constraintEqualToAnchor(self.contentView.topAnchor),
             event.rightAnchor.constraintEqualToAnchor(self.contentView.rightAnchor),
             event.bottomAnchor.constraintEqualToAnchor(self.contentView.bottomAnchor),
-            event.leftAnchor.constraintEqualToAnchor(self.timeView.rightAnchor)
+            event.leftAnchor.constraintEqualToAnchor(self.timeView.rightAnchor, constant: -15)
         ]
         
         self.contentView.addConstraints(constraints)

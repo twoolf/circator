@@ -41,6 +41,7 @@
 		814299441C963189005303D2 /* EventItemTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 814299431C963189005303D2 /* EventItemTableViewCell.swift */; };
 		814299461C963B15005303D2 /* EventItemView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 814299451C963B15005303D2 /* EventItemView.swift */; };
 		8142AC861C95D64200B36C14 /* RepeatedEventsListViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8142AC851C95D64200B36C14 /* RepeatedEventsListViewController.swift */; };
+		8149E6F91C972CE7006E61F0 /* EventListTimeSeperatorTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8149E6F81C972CE7006E61F0 /* EventListTimeSeperatorTableViewCell.swift */; };
 		81CCD8151C8142AE005299AA /* DefaultEventPeriodSelectorViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 81CCD8141C8142AE005299AA /* DefaultEventPeriodSelectorViewController.swift */; };
 		A88F31F3DDADAD50F4190F8E /* Pods.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = CB09F654AB4B00C79306C728 /* Pods.framework */; };
 		F42F5ADD1BDC85AF00195490 /* SampleDataAnalyzer.swift in Sources */ = {isa = PBXBuildFile; fileRef = F42F5ADC1BDC85AF00195490 /* SampleDataAnalyzer.swift */; };
@@ -211,6 +212,7 @@
 		814299431C963189005303D2 /* EventItemTableViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = EventItemTableViewCell.swift; sourceTree = "<group>"; };
 		814299451C963B15005303D2 /* EventItemView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = EventItemView.swift; sourceTree = "<group>"; };
 		8142AC851C95D64200B36C14 /* RepeatedEventsListViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RepeatedEventsListViewController.swift; sourceTree = "<group>"; };
+		8149E6F81C972CE7006E61F0 /* EventListTimeSeperatorTableViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = EventListTimeSeperatorTableViewCell.swift; sourceTree = "<group>"; };
 		81CCD8141C8142AE005299AA /* DefaultEventPeriodSelectorViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DefaultEventPeriodSelectorViewController.swift; sourceTree = "<group>"; };
 		8B4A08D995498CDA94BBB258 /* Pods-Circator.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Circator.release.xcconfig"; path = "Pods/Target Support Files/Pods-Circator/Pods-Circator.release.xcconfig"; sourceTree = "<group>"; };
 		984776BC6A59A33B4580C535 /* Pods.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = Pods.release.xcconfig; path = "Pods/Target Support Files/Pods/Pods.release.xcconfig"; sourceTree = "<group>"; };
@@ -371,6 +373,7 @@
 			children = (
 				814299431C963189005303D2 /* EventItemTableViewCell.swift */,
 				814299451C963B15005303D2 /* EventItemView.swift */,
+				8149E6F81C972CE7006E61F0 /* EventListTimeSeperatorTableViewCell.swift */,
 			);
 			name = Events;
 			sourceTree = "<group>";
@@ -875,6 +878,7 @@
 				781CF2C11C6A6A36001DF3B2 /* EventTimeViewController.swift in Sources */,
 				F4F4DA581C0257130073E9EE /* SettingsViewController.swift in Sources */,
 				F43A7C5E1BBDF43600B6FA56 /* PlotButton.swift in Sources */,
+				8149E6F91C972CE7006E61F0 /* EventListTimeSeperatorTableViewCell.swift in Sources */,
 				F49B2B6F1C7A71DC005F2BFB /* DaySelectionViewController.swift in Sources */,
 				F49B2B6D1C7A6206005F2BFB /* RepeatedEventsController.swift in Sources */,
 				F42F5B951BE2C89200195490 /* CorrelationViewController.swift in Sources */,

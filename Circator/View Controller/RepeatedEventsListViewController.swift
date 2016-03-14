@@ -92,13 +92,18 @@ class RepeatedEventsListViewController: UIViewController {
         return stackView
     }()
     
+    var eventsList : EventsListTableViewController?
+    
     // MARK: - Event Item, Cell and Table View
     
     class EventsListTableViewController : UITableViewController {
         
+        let hours : [String] = ["12 AM", "1 AM", "2 AM", "3 AM", "4 AM", "5 AM", "6 AM", "7 AM", "8 AM", "9 AM", "10 AM", "11 AM", "Noon", "1 PM", "2 PM", "3 PM", "4 PM", "5 PM", "6 PM", "7 PM", "8 PM", "9 PM", "10 PM", "11 PM", "12 AM"]
+        
         override func viewDidLoad() {
             super.viewDidLoad()
-            
+            tableView.estimatedRowHeight = 44.0
+            tableView.rowHeight = UITableViewAutomaticDimension
             /*
             // Set table view header as row of weekdays
             let tableViewHeader = weekdayRowSelector // as! UITableViewCell
@@ -107,13 +112,16 @@ class RepeatedEventsListViewController: UIViewController {
             self.tableView.tableHeaderView = tableViewHeader
             */
             
-            self.tableView.registerClass(EventItemTableViewCell.self, forCellReuseIdentifier: "EventItemTableViewCell")
+            //EventItemTableViewCell.self
+            tableView.registerClass(EventItemTableViewCell.self, forCellReuseIdentifier: "EventItemTableViewCell")
+            tableView.registerClass(EventListTimeSeperatorTableViewCell.self, forCellReuseIdentifier: "EventListTimeSeperatorTableViewCell")
             //self.tableView.contentInset = UIEdgeInsets(top: 0, left: -15, bottom: 0, right: 0)
+            
         }
         
         override func viewWillAppear(animated: Bool) {
             super.viewWillAppear(animated)
-            self.tableView.reloadData()
+            tableView.reloadData()
         }
         
         //Set section of table
@@ -123,29 +131,75 @@ class RepeatedEventsListViewController: UIViewController {
         
         //Set table to have one cell for every 30 mins within day
         override func tableView(tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-            return 48
+            
+            return 24 * 2 + 24 + 1
+        }
+        
+        override func tableView(tableView: UITableView, heightForRowAtIndexPath indexPath: NSIndexPath) -> CGFloat {
+            if indexPath.row % 3 == 0 || indexPath.row == 73 {
+                return 11.0
+            } else {
+                return 44.0
+            }
+        }
+        
+        override func tableView(tableView: UITableView, estimatedHeightForRowAtIndexPath indexPath: NSIndexPath) -> CGFloat {
+            return UITableViewAutomaticDimension
         }
         
         override func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell {
-            let cell = tableView.dequeueReusableCellWithIdentifier("EventItemTableViewCell") as! EventItemTableViewCell
-            
-            //let subview = FormLabelCell()
-            //subview.formTextLabel()?.text = "time"
-            //cell.contentView.addSubview(subview)
-            
-            if (indexPath == 0) {
-                let event = UIView()
-                event.backgroundColor = UIColor.redColor()
-                
-                cell.configureCell(timeToDisplay: "time", eventToDisplay: event)
-                
-                let subview = FormLabelCell()
-                subview.formTextLabel()?.text = "time"
-                cell.contentView.addSubview(subview)
+            var cell : UITableViewCell
+            //Initialize and clear cell for input
+            if indexPath.row % 3 != 0 && indexPath.row != 73 {
+                cell = tableView.dequeueReusableCellWithIdentifier("EventItemTableViewCell", forIndexPath: indexPath) as! EventItemTableViewCell
+            } else {
+                cell = tableView.dequeueReusableCellWithIdentifier("EventListTimeSeperatorTableViewCell", forIndexPath: indexPath) as! EventListTimeSeperatorTableViewCell
             }
+            
+            //clears subviews previously rendered to cell
+            for view in cell.contentView.subviews {
+                view.removeFromSuperview()
+            }
+            
+            //sets cell to be filled with event item cell
+            if indexPath.row % 3 != 0 && indexPath.row != 73 {
+                let subview = FormLabelCell()
+                subview.formTextLabel()?.text = "\(indexPath.row)"
+                cell.contentView.addSubview(subview)
+            //sets cell to filled with time seperator
+            } else {
+                let timeLabel = UILabel()
+                //timeLabel.translatesAutoresizingMaskIntoConstraints = false
+                timeLabel.text = hours[indexPath.row/3]
+                timeLabel.font = UIFont.systemFontOfSize(11, weight: UIFontWeightSemibold)
+                timeLabel.backgroundColor = UIColor.grayColor()
+                timeLabel.addSubview(timeLabel)
+                cell.contentView.addSubview(timeLabel)
+                
+                let constraints : [NSLayoutConstraint] = [
+                    timeLabel.topAnchor.constraintEqualToAnchor(cell.contentView.topAnchor, constant: 100),
+                    timeLabel.heightAnchor.constraintEqualToAnchor(cell.contentView.heightAnchor),
+                ]
+                
+                cell.contentView.addConstraints(constraints)
+
+                print("\n" + "\(cell.contentView.bounds.height)" + "\n")
+                
+            }
+
             
             return cell
         }
+        
+        
+        override func tableView(tableView: UITableView, shouldHighlightRowAtIndexPath indexPath: NSIndexPath) -> Bool {
+            return false
+        }
+        
+        override func tableView(tableView: UITableView, indentationLevelForRowAtIndexPath indexPath: NSIndexPath) -> Int {
+            return 0
+        }
+        
         
         /*
         override func tableView(tableView: UITableView, titleForHeaderInSection section: Int) -> String? {
@@ -165,12 +219,26 @@ class RepeatedEventsListViewController: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        self.configureViews()
+        self.configureView()
         
     }
     
-    private func configureViews() {
+    override func viewWillAppear(animated: Bool) {
+        super.viewWillAppear(animated)
+        navigationController?.setNavigationBarHidden(false, animated: false)
+        navigationItem.title = "Repeated Events"
+        self.eventsList!.tableView.reloadData()
+    }
+    
+    private func format() {
         
+    }
+    
+    //Sets configuration of view controller
+    private func configureView() {
+        
+        //Sets format options
+        self.format()
         
         //adding weekday selector view
         weekdayRowSelector.translatesAutoresizingMaskIntoConstraints = false
@@ -180,7 +248,7 @@ class RepeatedEventsListViewController: UIViewController {
             weekdayRowSelector.topAnchor.constraintEqualToAnchor(topLayoutGuide.bottomAnchor, constant: 15),
             weekdayRowSelector.rightAnchor.constraintEqualToAnchor(view.layoutMarginsGuide.rightAnchor),
             weekdayRowSelector.leftAnchor.constraintEqualToAnchor(view.layoutMarginsGuide.leftAnchor),
-            weekdayRowSelector.centerXAnchor.constraintEqualToAnchor(view.layoutMarginsGuide.centerXAnchor),
+            //weekdayRowSelector.centerXAnchor.constraintEqualToAnchor(view.layoutMarginsGuide.centerXAnchor),
             NSLayoutConstraint(item: weekdayRowSelector, attribute: .Height, relatedBy: .Equal, toItem: view.layoutMarginsGuide, attribute: .Width, multiplier: 0.1428571429, constant: 0),
         ]
         
@@ -188,44 +256,26 @@ class RepeatedEventsListViewController: UIViewController {
         
         view.addConstraints(weekdayRowSelectorConstraints)
         
-        let eventsList = EventsListTableViewController()
-        eventsList.automaticallyAdjustsScrollViewInsets = false
-        let eventsListView = eventsList.view
+        eventsList = EventsListTableViewController()
+        //eventsList!.automaticallyAdjustsScrollViewInsets = false
+        let eventsListView = self.eventsList!.view
         eventsListView.translatesAutoresizingMaskIntoConstraints = false
-        self.addChildViewController(eventsList)
+        self.addChildViewController(self.eventsList!)
         view.addSubview(eventsListView)
         let eventsListViewConstraints: [NSLayoutConstraint] = [
-            eventsListView.topAnchor.constraintEqualToAnchor(weekdayRowSelector.bottomAnchor),
+            eventsListView.topAnchor.constraintEqualToAnchor(weekdayRowSelector.bottomAnchor, constant: 15),
             eventsListView.bottomAnchor.constraintEqualToAnchor(bottomLayoutGuide.topAnchor),
             //eventsListView.leadingAnchor.constraintEqualToAnchor(view.layoutMarginsGuide.leadingAnchor),
-            eventsListView.leadingAnchor.constraintEqualToAnchor(view.layoutMarginsGuide.leadingAnchor, constant: -15),
+            eventsListView.leadingAnchor.constraintEqualToAnchor(view.layoutMarginsGuide.leadingAnchor, constant: -30),
             eventsListView.trailingAnchor.constraintEqualToAnchor(view.layoutMarginsGuide.trailingAnchor, constant: 15),
-            eventsListView.centerXAnchor.constraintEqualToAnchor(view.centerXAnchor)
+            //eventsListView.centerXAnchor.constraintEqualToAnchor(view.layoutMarginsGuide.centerXAnchor)
         ]
+        
         view.addConstraints(eventsListViewConstraints)
-        
-        //view.addSubview(weekdayRowSelector)
-        // Set frame coordinates for weekday header selector
-        //var yHeaderPosition : CGFloat = 0.0
-        /*
-        if let nav = self.navigationController {
-            yHeaderPosition = nav.navigationBar.frame.origin.y + nav.navigationBar.frame.size.height
-        }
-        */
-        
-        /*
-        weekdayHeader.frame = CGRectMake(0, yHeaderPosition, self.view.frame.size.width, 100)
-        weekdayHeader.backgroundColor = UIColor.orangeColor()
-        */
         
     }
     
-    override func viewWillAppear(animated: Bool) {
-        super.viewWillAppear(animated)
-        navigationController?.setNavigationBarHidden(false, animated: false)
-        navigationItem.title = "Repeated Events"
-        
-    }
+
     
 
 }
