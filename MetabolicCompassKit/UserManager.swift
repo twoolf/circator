@@ -204,7 +204,7 @@ public class UserManager {
 
     public func loginWithCompletion(completion: SvcStringCompletion) {
         withUserPass (getPassword()) { (user, pass) in
-            Stormpath.sharedSession.login(username: user, password: pass, completionHandler: {
+            Stormpath.sharedSession.login(user, password: pass, completionHandler: {
                 (success, err) -> Void in
                 guard err == nil else {
                     log.error("Stormpath login failed: \(err!.localizedDescription)")
@@ -264,17 +264,17 @@ public class UserManager {
         logoutWithCompletion(nil)
     }
 
-    public func register(firstName: String, lastName: String, completion: (Stormpath.Account, Bool) -> Void))
+    public func register(firstName: String, lastName: String, completion: (Account?, Bool, String?) -> Void)
     {
         withUserPass(getPassword()) { (user,pass) in
-            var account = RegistrationModel(email: user, password: pass)
+            let account = RegistrationModel(email: user, password: pass)
             account.givenName = firstName
             account.surname = lastName
 
             Stormpath.sharedSession.register(account) {
                 (registeredAccount, error) -> Void in
                 if error != nil { log.error("Register failed: \(error)") }
-                completion(registeredAccount, error != nil)
+                completion(registeredAccount, error != nil, error?.localizedDescription)
             }
         }
     }
@@ -301,7 +301,7 @@ public class UserManager {
             // TODO: this is a temporary workaround for issue #30, to support auto-login:
             // https://github.com/yanif/circator/issues/30
             var doReset = true
-            if let token = Stormpath.accessToken {
+            if let token = Stormpath.sharedSession.accessToken {
                 do {
                     let jwt = try decode(token)
                     if let expiry = jwt.expiresAt?.timeIntervalSince1970 {
