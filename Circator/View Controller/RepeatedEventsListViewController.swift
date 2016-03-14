@@ -23,7 +23,8 @@ class RepeatedEventsListViewController: UIViewController {
     // MARK: - Weekday Selector
     
     lazy var sundayButton: UIButton = {
-        let button = HTPressableButton(frame: CGRectMake(0, 0, 100, 100))
+        let button = HTPressableButton(frame: CGRectMake(0, 0, 100, 100), buttonStyle: .Circular)
+        button.shadowHeight = 0.0
         //button.titleLabel?.text = NSLocalizedString("Su", comment: "Sunday")
         button.setTitle("Su", forState: .Normal)
         button.setTitleColor(UIColor.blackColor(), forState: .Normal)
@@ -32,42 +33,48 @@ class RepeatedEventsListViewController: UIViewController {
     }()
     
     lazy var mondayButton: UIButton = {
-        let button = HTPressableButton(frame: CGRectMake(0, 0, 100, 100))
+        let button = HTPressableButton(frame: CGRectMake(0, 0, 100, 100), buttonStyle: .Circular)
+        button.shadowHeight = 0.0
         button.titleLabel?.text = NSLocalizedString("M", comment: "Monday")
         button.titleLabel?.textAlignment = .Center
         return button
     }()
     
     lazy var tuesdayButton: UIButton = {
-        let button = HTPressableButton(frame: CGRectMake(0, 0, 100, 100))
+        let button = HTPressableButton(frame: CGRectMake(0, 0, 100, 100), buttonStyle: .Circular)
+        button.shadowHeight = 0.0
         button.titleLabel?.text = NSLocalizedString("Tu", comment: "Tuesday")
         button.titleLabel?.textAlignment = .Center
         return button
     }()
     
     lazy var wednesdayButton: UIButton = {
-        let button = HTPressableButton(frame: CGRectMake(110, 300, 100, 100))
+        let button = HTPressableButton(frame: CGRectMake(0, 0, 100, 100), buttonStyle: .Circular)
+        button.shadowHeight = 0.0
         button.titleLabel?.text = NSLocalizedString("W", comment: "Wednesday")
         button.titleLabel?.textAlignment = .Center
         return button
     }()
     
     lazy var thursdayButton: UIButton = {
-        let button = HTPressableButton(frame: CGRectMake(110, 300, 100, 100))
+        let button = HTPressableButton(frame: CGRectMake(0, 0, 100, 100), buttonStyle: .Circular)
+        button.shadowHeight = 0.0
         button.titleLabel?.text = NSLocalizedString("Th", comment: "Thursday")
         button.titleLabel?.textAlignment = .Center
         return button
     }()
     
     lazy var fridayButton: UIButton = {
-        let button = HTPressableButton(frame: CGRectMake(110, 300, 100, 100))
+        let button = HTPressableButton(frame: CGRectMake(0, 0, 100, 100), buttonStyle: .Circular)
+        button.shadowHeight = 0.0
         button.titleLabel?.text = NSLocalizedString("F", comment: "Friday")
         button.titleLabel?.textAlignment = .Center
         return button
     }()
     
     lazy var saturdayButton: UIButton = {
-        let button = HTPressableButton(frame: CGRectMake(110, 300, 100, 100))
+        let button = HTPressableButton(frame: CGRectMake(0, 0, 100, 100), buttonStyle: .Circular)
+        button.shadowHeight = 0.0
         button.titleLabel?.text = NSLocalizedString("Sa", comment: "Saturday")
         button.titleLabel?.textAlignment = .Center
         button.titleLabel?.textColor = UIColor.blackColor()
@@ -77,8 +84,8 @@ class RepeatedEventsListViewController: UIViewController {
     lazy var weekdayRowSelector : UIStackView = {
         let stackView = UIStackView(arrangedSubviews: [self.sundayButton, self.mondayButton, self.tuesdayButton, self.wednesdayButton, self.thursdayButton, self.fridayButton, self.saturdayButton])
         stackView.axis = .Horizontal
-        stackView.distribution = UIStackViewDistribution.FillEqually
-        stackView.alignment = UIStackViewAlignment.Fill
+        stackView.distribution = UIStackViewDistribution.FillProportionally
+        stackView.alignment = UIStackViewAlignment.Center
         stackView.spacing = 0
         return stackView
     }()
@@ -98,12 +105,13 @@ class RepeatedEventsListViewController: UIViewController {
             self.tableView.tableHeaderView = tableViewHeader
             */
             
-            tableView.registerClass(EventItemTableViewCell.self, forCellReuseIdentifier: "EventItemTableViewCell")
+            self.tableView.registerClass(EventItemTableViewCell.self, forCellReuseIdentifier: "EventItemTableViewCell")
+            //self.tableView.contentInset = UIEdgeInsets(top: 0, left: -15, bottom: 0, right: 0)
         }
         
         override func viewWillAppear(animated: Bool) {
             super.viewWillAppear(animated)
-            tableView.reloadData()
+            self.tableView.reloadData()
         }
         
         //Set section of table
@@ -156,13 +164,18 @@ class RepeatedEventsListViewController: UIViewController {
         
         let weekdayRowSelectorConstraints: [NSLayoutConstraint] = [
             weekdayRowSelector.topAnchor.constraintEqualToAnchor(topLayoutGuide.bottomAnchor),
-            weekdayRowSelector.leadingAnchor.constraintEqualToAnchor(view.layoutMarginsGuide.leadingAnchor),
-            weekdayRowSelector.centerXAnchor.constraintEqualToAnchor(view.centerXAnchor)
+            weekdayRowSelector.rightAnchor.constraintEqualToAnchor(view.layoutMarginsGuide.rightAnchor),
+            weekdayRowSelector.leftAnchor.constraintEqualToAnchor(view.layoutMarginsGuide.leftAnchor),
+            weekdayRowSelector.centerXAnchor.constraintEqualToAnchor(view.layoutMarginsGuide.centerXAnchor),
+            NSLayoutConstraint(item: weekdayRowSelector, attribute: .Height, relatedBy: .Equal, toItem: view.layoutMarginsGuide, attribute: .Width, multiplier: 0.1428571429, constant: 0),
         ]
+        
+        //weekdayRowSelector.frame.size.height = (weekdayRowSelector.frame.size.width * 0.1428571429)
         
         view.addConstraints(weekdayRowSelectorConstraints)
         
         let eventsList = EventsListTableViewController()
+        eventsList.automaticallyAdjustsScrollViewInsets = false
         let eventsListView = eventsList.view
         eventsListView.translatesAutoresizingMaskIntoConstraints = false
         self.addChildViewController(eventsList)
@@ -171,9 +184,10 @@ class RepeatedEventsListViewController: UIViewController {
             eventsListView.topAnchor.constraintEqualToAnchor(weekdayRowSelector.bottomAnchor),
             eventsListView.bottomAnchor.constraintEqualToAnchor(bottomLayoutGuide.topAnchor),
             //eventsListView.leadingAnchor.constraintEqualToAnchor(view.layoutMarginsGuide.leadingAnchor),
-            eventsListView.leftAnchor.constraintEqualToAnchor(view.layoutMarginsGuide.leftAnchor),
+            eventsListView.leftAnchor.constraintEqualToAnchor(view.layoutMarginsGuide.leftAnchor, constant: -15),
             eventsListView.rightAnchor.constraintEqualToAnchor(view.layoutMarginsGuide.rightAnchor),
             eventsListView.centerXAnchor.constraintEqualToAnchor(view.centerXAnchor),
+            eventsListView.widthAnchor.constraintEqualToAnchor(eventsListView.widthAnchor)
         ]
         view.addConstraints(eventsListViewConstraints)
         
