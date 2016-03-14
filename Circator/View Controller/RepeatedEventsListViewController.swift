@@ -169,20 +169,21 @@ class RepeatedEventsListViewController: UIViewController {
             //sets cell to filled with time seperator
             } else {
                 let timeLabel = UILabel()
-                //timeLabel.translatesAutoresizingMaskIntoConstraints = false
+                timeLabel.translatesAutoresizingMaskIntoConstraints = false
                 timeLabel.text = hours[indexPath.row/3]
                 timeLabel.font = UIFont.systemFontOfSize(11, weight: UIFontWeightSemibold)
                 timeLabel.backgroundColor = UIColor.grayColor()
-                timeLabel.addSubview(timeLabel)
+
                 cell.contentView.addSubview(timeLabel)
                 
                 let constraints : [NSLayoutConstraint] = [
-                    timeLabel.topAnchor.constraintEqualToAnchor(cell.contentView.topAnchor, constant: 100),
+                    timeLabel.topAnchor.constraintEqualToAnchor(cell.contentView.topAnchor),
                     timeLabel.heightAnchor.constraintEqualToAnchor(cell.contentView.heightAnchor),
+                    timeLabel.leftAnchor.constraintEqualToAnchor(cell.contentView.leftAnchor)
                 ]
                 
                 cell.contentView.addConstraints(constraints)
-
+            
                 print("\n" + "\(cell.contentView.bounds.height)" + "\n")
                 
             }
@@ -248,7 +249,7 @@ class RepeatedEventsListViewController: UIViewController {
             weekdayRowSelector.topAnchor.constraintEqualToAnchor(topLayoutGuide.bottomAnchor, constant: 15),
             weekdayRowSelector.rightAnchor.constraintEqualToAnchor(view.layoutMarginsGuide.rightAnchor),
             weekdayRowSelector.leftAnchor.constraintEqualToAnchor(view.layoutMarginsGuide.leftAnchor),
-            //weekdayRowSelector.centerXAnchor.constraintEqualToAnchor(view.layoutMarginsGuide.centerXAnchor),
+            weekdayRowSelector.centerXAnchor.constraintEqualToAnchor(view.layoutMarginsGuide.centerXAnchor),
             NSLayoutConstraint(item: weekdayRowSelector, attribute: .Height, relatedBy: .Equal, toItem: view.layoutMarginsGuide, attribute: .Width, multiplier: 0.1428571429, constant: 0),
         ]
         
@@ -257,7 +258,7 @@ class RepeatedEventsListViewController: UIViewController {
         view.addConstraints(weekdayRowSelectorConstraints)
         
         eventsList = EventsListTableViewController()
-        //eventsList!.automaticallyAdjustsScrollViewInsets = false
+        eventsList!.automaticallyAdjustsScrollViewInsets = false
         let eventsListView = self.eventsList!.view
         eventsListView.translatesAutoresizingMaskIntoConstraints = false
         self.addChildViewController(self.eventsList!)
@@ -268,7 +269,7 @@ class RepeatedEventsListViewController: UIViewController {
             //eventsListView.leadingAnchor.constraintEqualToAnchor(view.layoutMarginsGuide.leadingAnchor),
             eventsListView.leadingAnchor.constraintEqualToAnchor(view.layoutMarginsGuide.leadingAnchor, constant: -30),
             eventsListView.trailingAnchor.constraintEqualToAnchor(view.layoutMarginsGuide.trailingAnchor, constant: 15),
-            //eventsListView.centerXAnchor.constraintEqualToAnchor(view.layoutMarginsGuide.centerXAnchor)
+            eventsListView.centerXAnchor.constraintEqualToAnchor(view.layoutMarginsGuide.centerXAnchor)
         ]
         
         view.addConstraints(eventsListViewConstraints)
