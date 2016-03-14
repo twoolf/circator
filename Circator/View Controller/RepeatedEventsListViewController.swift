@@ -176,16 +176,29 @@ class RepeatedEventsListViewController: UIViewController {
 
                 cell.contentView.addSubview(timeLabel)
                 
-                let constraints : [NSLayoutConstraint] = [
+                let timeLabelConstraints : [NSLayoutConstraint] = [
                     timeLabel.topAnchor.constraintEqualToAnchor(cell.contentView.topAnchor),
                     timeLabel.heightAnchor.constraintEqualToAnchor(cell.contentView.heightAnchor),
-                    timeLabel.leftAnchor.constraintEqualToAnchor(cell.contentView.leftAnchor)
+                    timeLabel.leftAnchor.constraintEqualToAnchor(cell.contentView.leftAnchor, constant: 30)
                 ]
                 
-                cell.contentView.addConstraints(constraints)
-            
-                print("\n" + "\(cell.contentView.bounds.height)" + "\n")
+                cell.contentView.addConstraints(timeLabelConstraints)
                 
+                let seperatorLine = UIView(frame: CGRectMake(0,0,1,1))
+                seperatorLine.translatesAutoresizingMaskIntoConstraints = false
+                seperatorLine.backgroundColor = UIColor.redColor()
+                                
+                cell.contentView.addSubview(seperatorLine)
+                
+                let seperatorLineConstraints : [NSLayoutConstraint] = [
+                    seperatorLine.topAnchor.constraintEqualToAnchor(cell.contentView.topAnchor),
+                    seperatorLine.heightAnchor.constraintEqualToAnchor(cell.contentView.heightAnchor),
+                    //seperatorLine.widthAnchor.constraintEqualToAnchor(cell.widthAnchor),
+                    seperatorLine.leftAnchor.constraintEqualToAnchor(timeLabel.rightAnchor, constant: 15),
+                    seperatorLine.rightAnchor.constraintEqualToAnchor(cell.contentView.rightAnchor)
+                ]
+                
+                cell.contentView.addConstraints(seperatorLineConstraints)
             }
 
             
@@ -269,7 +282,7 @@ class RepeatedEventsListViewController: UIViewController {
             //eventsListView.leadingAnchor.constraintEqualToAnchor(view.layoutMarginsGuide.leadingAnchor),
             eventsListView.leadingAnchor.constraintEqualToAnchor(view.layoutMarginsGuide.leadingAnchor, constant: -30),
             eventsListView.trailingAnchor.constraintEqualToAnchor(view.layoutMarginsGuide.trailingAnchor, constant: 15),
-            eventsListView.centerXAnchor.constraintEqualToAnchor(view.layoutMarginsGuide.centerXAnchor)
+            //eventsListView.centerXAnchor.constraintEqualToAnchor(view.layoutMarginsGuide.centerXAnchor)
         ]
         
         view.addConstraints(eventsListViewConstraints)
