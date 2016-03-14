@@ -22,6 +22,8 @@ class RepeatedEventsListViewController: UIViewController {
     
     // MARK: - Weekday Selector
     
+    //TODO: fix bug: left edge of button cuts off right edge of adjacent button
+    
     lazy var sundayButton: UIButton = {
         let button = HTPressableButton(frame: CGRectMake(0, 0, 100, 100), buttonStyle: .Circular)
         button.shadowHeight = 0.0
@@ -127,9 +129,21 @@ class RepeatedEventsListViewController: UIViewController {
         override func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell {
             let cell = tableView.dequeueReusableCellWithIdentifier("EventItemTableViewCell") as! EventItemTableViewCell
             
-            let subview = FormLabelCell()
-            subview.formTextLabel()?.text = "time"
-            cell.contentView.addSubview(subview)
+            //let subview = FormLabelCell()
+            //subview.formTextLabel()?.text = "time"
+            //cell.contentView.addSubview(subview)
+            
+            if (indexPath == 0) {
+                let event = UIView()
+                event.backgroundColor = UIColor.redColor()
+                
+                cell.configureCell(timeToDisplay: "time", eventToDisplay: event)
+                
+                let subview = FormLabelCell()
+                subview.formTextLabel()?.text = "time"
+                cell.contentView.addSubview(subview)
+            }
+            
             return cell
         }
         
@@ -163,7 +177,7 @@ class RepeatedEventsListViewController: UIViewController {
         view.addSubview(weekdayRowSelector)
         
         let weekdayRowSelectorConstraints: [NSLayoutConstraint] = [
-            weekdayRowSelector.topAnchor.constraintEqualToAnchor(topLayoutGuide.bottomAnchor),
+            weekdayRowSelector.topAnchor.constraintEqualToAnchor(topLayoutGuide.bottomAnchor, constant: 15),
             weekdayRowSelector.rightAnchor.constraintEqualToAnchor(view.layoutMarginsGuide.rightAnchor),
             weekdayRowSelector.leftAnchor.constraintEqualToAnchor(view.layoutMarginsGuide.leftAnchor),
             weekdayRowSelector.centerXAnchor.constraintEqualToAnchor(view.layoutMarginsGuide.centerXAnchor),
@@ -184,10 +198,9 @@ class RepeatedEventsListViewController: UIViewController {
             eventsListView.topAnchor.constraintEqualToAnchor(weekdayRowSelector.bottomAnchor),
             eventsListView.bottomAnchor.constraintEqualToAnchor(bottomLayoutGuide.topAnchor),
             //eventsListView.leadingAnchor.constraintEqualToAnchor(view.layoutMarginsGuide.leadingAnchor),
-            eventsListView.leftAnchor.constraintEqualToAnchor(view.layoutMarginsGuide.leftAnchor, constant: -15),
-            eventsListView.rightAnchor.constraintEqualToAnchor(view.layoutMarginsGuide.rightAnchor),
-            eventsListView.centerXAnchor.constraintEqualToAnchor(view.centerXAnchor),
-            eventsListView.widthAnchor.constraintEqualToAnchor(eventsListView.widthAnchor)
+            eventsListView.leadingAnchor.constraintEqualToAnchor(view.layoutMarginsGuide.leadingAnchor, constant: -15),
+            eventsListView.trailingAnchor.constraintEqualToAnchor(view.layoutMarginsGuide.trailingAnchor, constant: 15),
+            eventsListView.centerXAnchor.constraintEqualToAnchor(view.centerXAnchor)
         ]
         view.addConstraints(eventsListViewConstraints)
         

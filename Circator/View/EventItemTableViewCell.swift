@@ -41,7 +41,7 @@ class EventItemTableViewCell: UITableViewCell {
         super.init(coder: aDecoder)
     }
     
-    func configureCell(timeToDisplay time : String, eventToDisplay event : EventItemView) {
+    func configureCell(timeToDisplay time : String, eventToDisplay event : UIView) {
         
         self.timeLabel.text = time
         
