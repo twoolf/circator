@@ -104,6 +104,10 @@ class RepeatedEventsListViewController: UIViewController {
             super.viewDidLoad()
             tableView.estimatedRowHeight = 44.0
             tableView.rowHeight = UITableViewAutomaticDimension
+            
+            //removes default seperator lines
+            tableView.separatorColor = UIColor.clearColor()
+            
             /*
             // Set table view header as row of weekdays
             let tableViewHeader = weekdayRowSelector // as! UITableViewCell
@@ -126,18 +130,28 @@ class RepeatedEventsListViewController: UIViewController {
         
         //Set section of table
         override func numberOfSectionsInTableView(tableView: UITableView) -> Int {
-            return 1
+            //two of these sections are to format the seperator lines properly
+            return 3
         }
         
         //Set table to have one cell for every 30 mins within day
         override func tableView(tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
             
-            return 24 * 2 + 24 + 1
+            //main content
+            if section == 1 {
+               return 24 * 2 + 24 + 1
+            }
+            //top and bottom buffer sections
+            return 1
         }
         
         override func tableView(tableView: UITableView, heightForRowAtIndexPath indexPath: NSIndexPath) -> CGFloat {
             if indexPath.row % 3 == 0 || indexPath.row == 73 {
-                return 11.0
+                //make padding cell for top and bottom buffer sections
+                if indexPath.section != 1 {
+                    return 5.0
+                }
+                return 1.0
             } else {
                 return 44.0
             }
@@ -155,6 +169,9 @@ class RepeatedEventsListViewController: UIViewController {
             } else {
                 cell = tableView.dequeueReusableCellWithIdentifier("EventListTimeSeperatorTableViewCell", forIndexPath: indexPath) as! EventListTimeSeperatorTableViewCell
             }
+            
+            //removes white layer of each cell's default background for proper line seperator rendering
+            cell.backgroundColor = UIColor.clearColor()
             
             //clears subviews previously rendered to cell
             for view in cell.contentView.subviews {
@@ -177,8 +194,9 @@ class RepeatedEventsListViewController: UIViewController {
                 cell.contentView.addSubview(timeLabel)
                 
                 let timeLabelConstraints : [NSLayoutConstraint] = [
-                    timeLabel.topAnchor.constraintEqualToAnchor(cell.contentView.topAnchor),
-                    timeLabel.heightAnchor.constraintEqualToAnchor(cell.contentView.heightAnchor),
+                    //timeLabel.topAnchor.constraintEqualToAnchor(cell.contentView.topAnchor, constant: 0),
+                    timeLabel.centerYAnchor.constraintEqualToAnchor(cell.contentView.centerYAnchor),
+                    timeLabel.heightAnchor.constraintEqualToAnchor(cell.contentView.heightAnchor, constant: 10),
                     timeLabel.leftAnchor.constraintEqualToAnchor(cell.contentView.leftAnchor, constant: 30)
                 ]
                 
@@ -187,7 +205,7 @@ class RepeatedEventsListViewController: UIViewController {
                 let seperatorLine = UIView(frame: CGRectMake(0,0,1,1))
                 seperatorLine.translatesAutoresizingMaskIntoConstraints = false
                 seperatorLine.backgroundColor = UIColor.redColor()
-                                
+                
                 cell.contentView.addSubview(seperatorLine)
                 
                 let seperatorLineConstraints : [NSLayoutConstraint] = [
@@ -199,6 +217,14 @@ class RepeatedEventsListViewController: UIViewController {
                 ]
                 
                 cell.contentView.addConstraints(seperatorLineConstraints)
+                
+                // for buffer sections, remove all renderings
+                if indexPath.section != 1 {
+                    for view in cell.contentView.subviews {
+                        view.removeFromSuperview()
+                    }
+                }
+
             }
 
             
