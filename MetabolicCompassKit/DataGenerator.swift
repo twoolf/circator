@@ -20,7 +20,7 @@ private let filteredTypeIdentifiers = [HKQuantityTypeIdentifierUVExposure, HKQua
 
 /**
  This class generates sample data for Metabolic Compass.  Note that while it is defined for the twenty data types that we start with, it can be enlarged to more data types. The distributions that we use are determined from the NHANES data (and divided into Male/Female)
- 
+
  */
 public class DataGenerator : GeneratorType {
 
@@ -225,10 +225,11 @@ public class DataGenerator : GeneratorType {
 
     public typealias Element = [HKSample]
 
-    var currentDay : NSDate! = NSDate()
-
-    var samplesPerDay = 10
-    var sampleBuffer : [Bool: [String: [HKSample]]] = [true: [:], false: [:]]
+    var coveringDataset : Bool                         = false
+    var currentDay      : NSDate!                      = NSDate()
+    var samplesPerDay   : Int                          = 10
+    var samplesPerType  : Int                          = 5
+    var sampleBuffer    : [Bool: [String: [HKSample]]] = [true: [:], false: [:]]
 
     // Generate samples for the next day.
     public func next() -> Element?
@@ -236,8 +237,13 @@ public class DataGenerator : GeneratorType {
         let sleepWeight = 0.99999
         let sleepOrOther = randBinomial(sleepWeight) > 0 ? [HKObjectType.categoryTypeForIdentifier(HKCategoryTypeIdentifierSleepAnalysis)!] : []
 
-        let maleOrFemale : [Int] = coinTosses(samplesPerDay)
-        let typesToSample : [HKSampleType] = sampleWithReplacement(generatorTypes, sleepOrOther.isEmpty ? samplesPerDay : samplesPerDay-1) + sleepOrOther
+        let maleOrFemale : [Int] =
+            coveringDataset ? coinTosses(samplesPerType * generatorTypes.count) : coinTosses(samplesPerDay)
+
+        let typesToSample : [HKSampleType] =
+            coveringDataset ?
+                generatorTypes.map { t in [HKSampleType](count: samplesPerType, repeatedValue: t) }.flatten()
+                : sampleWithReplacement(generatorTypes, sleepOrOther.isEmpty ? samplesPerDay : samplesPerDay-1) + sleepOrOther
 
         let z : [HKSample] = []
         return zip(maleOrFemale, typesToSample).reduce(z, combine: { (var acc, mt) in
@@ -266,7 +272,7 @@ public class DataGenerator : GeneratorType {
                 return acc
 
             } else {
-                var newSamples = generateManyForType(mt.1, count: samplesPerDay, asMale: mt.0 > 0, date: currentDay)
+                var newSamples = generateManyForType(mt.1, count: coveringDataset ? samplesPerType : samplesPerDay, asMale: mt.0 > 0, date: currentDay)
                 if let r = newSamples.popLast() { acc.append(r) }
                 sampleBuffer[mt.0 > 0]![mt.1.identifier] = newSamples
                 return acc
@@ -293,14 +299,7 @@ public class DataGenerator : GeneratorType {
         }
     }
 
-    private func generateDataset(path: String, users: [String], size: Int, startDate: NSDate, endDate: NSDate) {
-        let startDateDay = startDate.startOf(.Day, inRegion: Region())
-        let days = Int(ceil(endDate.timeIntervalSinceDate(startDate)) / 86400.0)
-
-        samplesPerDay = size / days
-        samplesSkipped = 0
-        daysSkipped = 0
-
+    private func generateWithCompletion(path: String, users: [String], completion: NSFileHandle -> ()) {
         let output = TextFile(path: Path.UserHome + "Documents/" + path)
 
         do {
@@ -322,21 +321,7 @@ public class DataGenerator : GeneratorType {
                     firstUser = false
 
                     outhndl.writeData(upreamble)
-                    (0..<days).forEach { i in
-                        autoreleasepool { _ in
-                            currentDay = startDateDay + i.days
-                            if let samples : [HKSample] = self.next() {
-                                if (i % 10) == 0 { log.info("Writing batch \(i) / \(days),  \(samples.count) samples") }
-                                var firstSample = true
-                                samples.forEach { s in
-                                    writeSample(outhndl, sample: s, asFirst: firstSample)
-                                    firstSample = false
-                                }
-                            } else {
-                                ++daysSkipped
-                            }
-                        }
-                    }
+                    completion(outhndl)
                     outhndl.writeData(upostamble)
                 }
                 outhndl.writeData(gpostamble)
@@ -349,7 +334,49 @@ public class DataGenerator : GeneratorType {
         } catch {
             log.error(error)
         }
+    }
 
+    private func generateDataset(path: String, users: [String], startDateDay: NSDate, days: Int) {
+        generateWithCompletion(path, users: users) { outhndl in
+            (0..<days).forEach { i in
+                autoreleasepool { _ in
+                    currentDay = startDateDay + i.days
+                    if let samples : [HKSample] = self.next() {
+                        if (i % 10) == 0 { log.info("Writing batch \(i) / \(days),  \(samples.count) samples") }
+                        var firstSample = true
+                        samples.forEach { s in
+                            writeSample(outhndl, sample: s, asFirst: firstSample)
+                            firstSample = false
+                        }
+                    } else {
+                        ++daysSkipped
+                    }
+                }
+            }
+        }
+    }
+
+    private func generateSampledDataset(path: String, users: [String], size: Int, startDate: NSDate, endDate: NSDate) {
+        let startDateDay = startDate.startOf(.Day, inRegion: Region())
+        let days = Int(ceil(endDate.timeIntervalSinceDate(startDate)) / 86400.0)
+
+        samplesPerDay = size / days
+        samplesSkipped = 0
+        daysSkipped = 0
+
+        generateDataset(path, users, startDateDay, days)
+    }
+
+    private func generateCoveringDataset(path: String, users: [String], samplesPerType: Int, startDate: NSDate, endDate: NSDate) {
+        let startDateDay = startDate.startOf(.Day, inRegion: Region())
+        let days = Int(ceil(endDate.timeIntervalSinceDate(startDate)) / 86400.0)
+
+        coveringDataset = true
+        self.samplesPerType = samplesPerType
+        samplesSkipped = 0
+        daysSkipped = 0
+
+        generateDataset(path, users, startDateDay, days)
     }
 
     public func generateDatasetForUser(path: String, userId: String, size: Int, startDate: NSDate, endDate: NSDate) {
@@ -364,7 +391,7 @@ public class DataGenerator : GeneratorType {
         for _ in 0..<length {
             string.append(charactersArray[Int(arc4random()) % charactersArray.count])
         }
-        
+
         return string
     }
 
@@ -375,4 +402,10 @@ public class DataGenerator : GeneratorType {
         generateDataset(path, users: users, size: sizePerUser, startDate: startDate, endDate: endDate)
     }
 
+    // Generates a dataset that includes at least one sample of every HealthKit type and workout activity.
+    public func generateCoveringDatasetForService(path: String, numUsers: Int, samplesPerType: Int, startDate: NSDate, endDate: NSDate) {
+        let userIdLen = 20
+        let users = (0..<numUsers).map { _ in return randomUser(userIdLen) }
+        generateCoveringDataset(path, users: users, samplesPerType: samplesPerType, startDate: startDate, endDate: endDate)
+    }
 }
