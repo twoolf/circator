@@ -34,7 +34,6 @@ class DebugViewController : FormViewController {
         "rSize"            : ("Dataset size",     "1000000"),
         "rStart"           : ("Start date",       "1/1/2015"),
         "rEnd"             : ("End date",         "1/1/2016"),
-        "cUserId"          : ("User id",          "<hash>"),
         "cSamplesPerType"  : ("Samples per type", "20"),
         "cStart"           : ("Start date",       "1/1/2015"),
         "cEnd"             : ("End date",         "1/2/2015"),
@@ -157,7 +156,7 @@ class DebugViewController : FormViewController {
         // Data generation inputs and button
         var generateCoverRows : [RowFormer] = []
 
-        ["cUserId", "cSamplesPerType", "cStart", "cEnd"].forEach { paramKey in
+        ["cSamplesPerType", "cStart", "cEnd"].forEach { paramKey in
             if let (lbl, defaultVal) = generatorParams[paramKey] {
                 generateCoverRows.append(TextFieldRowFormer<FormTextFieldCell>() {
                     $0.titleLabel.text = lbl
@@ -237,14 +236,12 @@ class DebugViewController : FormViewController {
     func doGenCover() {
         if let sptParam            = generatorParamValues["cSamplesPerType"] as? String,
                genSamplesPerType   = Int(sptParam),
-               genUserId           = generatorParamValues["cUserId"]   as? String,
                genStart            = generatorParamValues["cStart"]    as? String,
                genEnd              = generatorParamValues["cEnd"]      as? String
         {
             if let st = genStart.toDate(genDateFormat), en = genEnd.toDate(genDateFormat) {
-                log.info("Generating data for user \(genUserId) between \(st) and \(en)")
-                DataGenerator.sharedInstance.generateInMemoryCoveringDatasetForUser(
-                    genUserId, samplesPerType: genSamplesPerType, startDate: st, endDate: en)
+                log.info("Generating covering dataset between \(st) and \(en)")
+                DataGenerator.sharedInstance.generateInMemoryCoveringDataset(genSamplesPerType, startDate: st, endDate: en)
                 {
                     $0.forEach { (_,block) in
                         if !block.isEmpty {
@@ -258,7 +255,7 @@ class DebugViewController : FormViewController {
                                 }
                             }
                         } else {
-                            log.info("No data generated for user \(genUserId)")
+                            log.info("Empty block for covering data generator")
                         }
                     }
                 }

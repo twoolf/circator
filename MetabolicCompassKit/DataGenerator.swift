@@ -31,6 +31,10 @@ public class DataGenerator : GeneratorType {
         return !filteredTypeIdentifiers.contains(t.identifier)
     }
 
+    let excludes : [String] = [
+        HKCategoryTypeIdentifierAppleStandHour
+    ]
+
     let generatorUnits : [String: HKUnit] = [
         HKCategoryTypeIdentifierAppleStandHour            : HKUnit.hourUnit(),
         HKCategoryTypeIdentifierSleepAnalysis             : HKUnit.hourUnit(),
@@ -387,7 +391,9 @@ public class DataGenerator : GeneratorType {
 
         if coveringDataset {
             maleOrFemale = coinTosses(samplesPerType * generatorTypes.count)
-            typesToSample = Array(generatorTypes.map { t in [HKSampleType](count: samplesPerType, repeatedValue: t) }.flatten())
+            typesToSample = Array(HMConstants.sharedInstance.healthKitTypesToObserve
+                                .filter { t in return !excludes.contains(t.identifier) }
+                                .map { t in return [HKSampleType](count: samplesPerType, repeatedValue: t) }.flatten())
         } else {
             maleOrFemale = coinTosses(samplesPerDay)
             typesToSample = sampleWithReplacement(generatorTypes, sleepOrOther.isEmpty ? samplesPerDay : samplesPerDay-1) + sleepOrOther
@@ -594,12 +600,12 @@ public class DataGenerator : GeneratorType {
         generateInMemory(users, startDateDay: startDateDay, days: days, completion: completion)
     }
 
-    public func generateInMemoryCoveringDatasetForUser(userId: String, samplesPerType: Int, startDate: NSDate, endDate: NSDate, completion: DatasetCompletion) {
+    public func generateInMemoryCoveringDataset(samplesPerType: Int, startDate: NSDate, endDate: NSDate, completion: DatasetCompletion) {
         let startDateDay = startDate.startOf(.Day, inRegion: Region())
         let days = Int(ceil(endDate.timeIntervalSinceDate(startDate)) / 86400.0)
 
         coveringDataset = true
         self.samplesPerType = samplesPerType
-        generateInMemory([userId], startDateDay: startDateDay, days: days, completion: completion)
+        generateInMemory(["<yourself>"], startDateDay: startDateDay, days: days, completion: completion)
     }
 }
