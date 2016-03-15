@@ -843,7 +843,7 @@ public class HealthManager: NSObject, WCSessionDelegate {
     }
 
     // MARK: - Upload helpers.
-    func jsonifySample(sample : HKSample) throws -> [String : AnyObject] {
+    public func jsonifySample(sample : HKSample) throws -> [String : AnyObject] {
         return try HealthManager.serializer.dictForSample(sample)
     }
 
@@ -854,7 +854,7 @@ public class HealthManager: NSObject, WCSessionDelegate {
         }
     }
 
-    func uploadSampleBlock(jsonObjBlock: [[String:AnyObject]]) -> () {
+    public func uploadSampleBlock(jsonObjBlock: [[String:AnyObject]]) -> () {
         Service.string(MCRouter.UploadHKMeasures(["block":jsonObjBlock]), statusCode: 200..<300, tag: "UPLOAD") {
             _, response, result in
             log.info("Upload: \(result.value)")

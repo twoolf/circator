@@ -21,18 +21,28 @@ private let noAnchor = HKQueryAnchor(fromValue: Int(HKAnchoredObjectQueryNoAncho
 
 /**
  This class is used to support the creation of datasets for debugging purposes.  We expect that the models used in the creation can be further refined as real data is collected.  For now the data models are based on the NHANES data.
- 
+
  - note: use of fields to support different metrics (e.g. start-date, end-date)
  */
 class DebugViewController : FormViewController {
 
-    var genNumUsers : Int! = -1
-    var genUserId : String! = "<hash>"
-    var genSize   : Int! = 100
-    var genStart  : String! = "1/1/2015"
-    var genEnd    : String! = "1/1/2016"
+    var useDebugServer : Bool = false
 
-    let genDateFormat = DateFormat.Custom("dd/MM/yyyy")
+    var generatorParams : [String: (String, String)] = [
+        "rNumUsers"        : ("# Users",          "100"),
+        "rUserId"          : ("User id",          "<hash>"),
+        "rSize"            : ("Dataset size",     "1000000"),
+        "rStart"           : ("Start date",       "1/1/2015"),
+        "rEnd"             : ("End date",         "1/1/2016"),
+        "cUserId"          : ("User id",          "<hash>"),
+        "cSamplesPerType"  : ("Samples per type", "20"),
+        "cStart"           : ("Start date",       "1/1/2015"),
+        "cEnd"             : ("End date",         "1/2/2015"),
+    ]
+
+    var generatorParamValues : [String: AnyObject] = [:]
+
+    let genDateFormat = DateFormat.Custom("MM/dd/yyyy")
 
     override func viewWillAppear(animated: Bool) {
         super.viewWillAppear(animated)
@@ -106,75 +116,84 @@ class DebugViewController : FormViewController {
         let debugAnchorsSection = SectionFormer(rowFormers: Array(labelRows)).set(headerViewFormer: debugAnchorsHeader)
 
         // Data generation inputs and button
-        var generateRows : [RowFormer] = []
+        var generateRandRows : [RowFormer] = []
 
-        generateRows.append(TextFieldRowFormer<FormTextFieldCell>() {
-            $0.titleLabel.text = "# Users"
-            }.configure {
-                let attrs = [NSForegroundColorAttributeName: UIColor.lightGrayColor()]
-                $0.attributedPlaceholder = NSAttributedString(string: "100", attributes: attrs)
-            }.onTextChanged { [weak self] txt in
-                self?.genNumUsers = Int(txt)
-            })
+        ["rNumUsers", "rUserId", "rSize", "rStart", "rEnd"].forEach { paramKey in
+            if let (lbl, defaultVal) = generatorParams[paramKey] {
+                generateRandRows.append(TextFieldRowFormer<FormTextFieldCell>() {
+                    $0.titleLabel.text = lbl
+                    }.configure {
+                        let attrs = [NSForegroundColorAttributeName: UIColor.lightGrayColor()]
+                        $0.attributedPlaceholder = NSAttributedString(string: defaultVal, attributes: attrs)
+                    }.onTextChanged { [weak self] txt in
+                        self?.generatorParamValues[paramKey] = txt
+                    })
+            }
+        }
 
-        generateRows.append(TextFieldRowFormer<FormTextFieldCell>() {
-            $0.titleLabel.text = "User ID"
-            }.configure {
-                let attrs = [NSForegroundColorAttributeName: UIColor.lightGrayColor()]
-                $0.attributedPlaceholder = NSAttributedString(string: self.genUserId, attributes: attrs)
-            }.onTextChanged { [weak self] txt in
-                self?.genUserId = txt
-            })
-
-        generateRows.append(TextFieldRowFormer<FormTextFieldCell>() {
-                $0.titleLabel.text = "Dataset size"
-            }.configure {
-                let attrs = [NSForegroundColorAttributeName: UIColor.lightGrayColor()]
-                $0.attributedPlaceholder = NSAttributedString(string: String(self.genSize), attributes: attrs)
-            }.onTextChanged { [weak self] txt in
-                self?.genSize = Int(txt)
-        })
-
-        generateRows.append(TextFieldRowFormer<FormTextFieldCell>() {
-            $0.titleLabel.text = "Start date"
-            }.configure {
-                let attrs = [NSForegroundColorAttributeName: UIColor.lightGrayColor()]
-                $0.attributedPlaceholder = NSAttributedString(string: self.genStart, attributes: attrs)
-            }.onTextChanged { [weak self] txt in self?.genStart = txt
-        })
-
-        generateRows.append(TextFieldRowFormer<FormTextFieldCell>() {
-            $0.titleLabel.text = "End date"
-            }.configure {
-                let attrs = [NSForegroundColorAttributeName: UIColor.lightGrayColor()]
-                $0.attributedPlaceholder = NSAttributedString(string: self.genEnd, attributes: attrs)
-            }.onTextChanged { [weak self] txt in self?.genEnd = txt
-            })
-
-        generateRows.append(LabelRowFormer<FormLabelCell>() {
+        generateRandRows.append(LabelRowFormer<FormLabelCell>() {
                 let button = MCButton(frame: $0.contentView.frame, buttonStyle: .Rounded)
                 button.cornerRadius = 4.0
                 button.buttonColor = UIColor.ht_emeraldColor()
                 button.shadowColor = UIColor.ht_nephritisColor()
                 button.shadowHeight = 4
-                button.setTitle("Generate Data", forState: .Normal)
+                button.setTitle("Generate Samples", forState: .Normal)
                 button.titleLabel?.font = UIFont.systemFontOfSize(18, weight: UIFontWeightRegular)
-                button.addTarget(self, action: "doGenerate", forControlEvents: .TouchUpInside)
+                button.addTarget(self, action: "doGenRandom", forControlEvents: .TouchUpInside)
                 button.enabled = true
                 $0.contentView.addSubview(button)
             }.configure {
                 $0.enabled = true
             })
 
-        let generateHeader = LabelViewFormer<FormLabelHeaderView> {
+        let generateRandHeader = LabelViewFormer<FormLabelHeaderView> {
             $0.titleLabel.textColor = .grayColor()
             }.configure { view in
                 view.viewHeight = 44
-                view.text = "Data generation"
+                view.text = "Randomized Data Generation"
         }
-        let generateSection = SectionFormer(rowFormers: Array(generateRows)).set(headerViewFormer: generateHeader)
+        let generateRandSection = SectionFormer(rowFormers: Array(generateRandRows)).set(headerViewFormer: generateRandHeader)
 
-        former.append(sectionFormer: generateSection, debugAnchorsSection)
+        // Data generation inputs and button
+        var generateCoverRows : [RowFormer] = []
+
+        ["cUserId", "cSamplesPerType", "cStart", "cEnd"].forEach { paramKey in
+            if let (lbl, defaultVal) = generatorParams[paramKey] {
+                generateCoverRows.append(TextFieldRowFormer<FormTextFieldCell>() {
+                    $0.titleLabel.text = lbl
+                    }.configure {
+                        let attrs = [NSForegroundColorAttributeName: UIColor.lightGrayColor()]
+                        $0.attributedPlaceholder = NSAttributedString(string: defaultVal, attributes: attrs)
+                    }.onTextChanged { [weak self] txt in
+                        self?.generatorParamValues[paramKey] = txt
+                    })
+            }
+        }
+
+        generateCoverRows.append(LabelRowFormer<FormLabelCell>() {
+                let button = MCButton(frame: $0.contentView.frame, buttonStyle: .Rounded)
+                button.cornerRadius = 4.0
+                button.buttonColor = UIColor.ht_emeraldColor()
+                button.shadowColor = UIColor.ht_nephritisColor()
+                button.shadowHeight = 4
+                button.setTitle("Generate Covering Data", forState: .Normal)
+                button.titleLabel?.font = UIFont.systemFontOfSize(18, weight: UIFontWeightRegular)
+                button.addTarget(self, action: "doGenCover", forControlEvents: .TouchUpInside)
+                button.enabled = true
+                $0.contentView.addSubview(button)
+            }.configure {
+                $0.enabled = true
+            })
+
+        let generateCoverHeader = LabelViewFormer<FormLabelHeaderView> {
+            $0.titleLabel.textColor = .grayColor()
+            }.configure { view in
+                view.viewHeight = 44
+                view.text = "Covering Data Generation"
+        }
+        let generateCoverSection = SectionFormer(rowFormers: Array(generateCoverRows)).set(headerViewFormer: generateCoverHeader)
+
+        former.append(sectionFormer: generateRandSection, generateCoverSection, debugAnchorsSection)
     }
 
     // TODO: use the cached profile rather than directly accessing the HealthManager.
@@ -185,29 +204,70 @@ class DebugViewController : FormViewController {
         return ts
     }
 
-    func doGenerate() {
-        if genNumUsers > 0 || genUserId != nil {
-            let asPopulation = genNumUsers > 0
-            let desc = asPopulation ? "\(genNumUsers) users" : "user \(self.genUserId!)"
-            if let st = genStart.toDate(genDateFormat), en = genEnd.toDate(genDateFormat) {
-                log.info("Generating data for \(desc) between \(st) and \(en)")
-                if asPopulation {
-                    DataGenerator.sharedInstance.generateDatasetForService(
+    func doGenRandom() {
+        let genUserId : String! = generatorParamValues["rUserId"] as? String
+        if let nuParam     = generatorParamValues["rNumUsers"] as? String,
+               szParam     = generatorParamValues["rSize"]     as? String,
+               genNumUsers = Int(nuParam),
+               genSize     = Int(szParam),
+               genStart    = generatorParamValues["rStart"]    as? String,
+               genEnd      = generatorParamValues["rEnd"]      as? String
+        {
+            if genNumUsers > 0 || genUserId != nil {
+                let asPopulation = genNumUsers > 0
+                let desc = asPopulation ? "\(genNumUsers) users" : "user \(genUserId!)"
+                if let st = genStart.toDate(genDateFormat), en = genEnd.toDate(genDateFormat) {
+                    log.info("Generating data for \(desc) between \(st) and \(en)")
+                    if asPopulation {
+                        DataGenerator.sharedInstance.generateDatasetForService(
                         "output.json", numUsers: genNumUsers, size: genSize, startDate: st, endDate: en)
-                } else {
-                    DataGenerator.sharedInstance.generateDatasetForUser(
+                    } else {
+                        DataGenerator.sharedInstance.generateDatasetForUser(
                         "output.json", userId: genUserId, size: genSize, startDate: st, endDate: en)
+                    }
+                } else {
+                    UINotifications.genericError(self.navigationController!, msg: "Invalid start/end date for randomized data generation")
                 }
             } else {
-                UINotifications.genericError(self, msg: "Invalid start/end date for data generation")
+                UINotifications.genericError(self.navigationController!, msg: "Please enter a valid # users or a user id for randomized data generation")
             }
-        } else {
-            UINotifications.genericError(self, msg: "Please enter a valid # users or a user id for data generation")
         }
     }
-    
-    class MCButton : HTPressableButton {
-        
+
+    func doGenCover() {
+        if let sptParam            = generatorParamValues["cSamplesPerType"] as? String,
+               genSamplesPerType   = Int(sptParam),
+               genUserId           = generatorParamValues["cUserId"]   as? String,
+               genStart            = generatorParamValues["cStart"]    as? String,
+               genEnd              = generatorParamValues["cEnd"]      as? String
+        {
+            if let st = genStart.toDate(genDateFormat), en = genEnd.toDate(genDateFormat) {
+                log.info("Generating data for user \(genUserId) between \(st) and \(en)")
+                DataGenerator.sharedInstance.generateInMemoryCoveringDatasetForUser(
+                    genUserId, samplesPerType: genSamplesPerType, startDate: st, endDate: en)
+                {
+                    $0.forEach { (_,block) in
+                        if !block.isEmpty {
+                            autoreleasepool { _ in
+                                do {
+                                    log.info("Uploading block of size \(block.count)")
+                                    let jsonObjs = try block.map(HealthManager.sharedManager.jsonifySample)
+                                    HealthManager.sharedManager.uploadSampleBlock(jsonObjs)
+                                } catch {
+                                    log.error(error)
+                                }
+                            }
+                        } else {
+                            log.info("No data generated for user \(genUserId)")
+                        }
+                    }
+                }
+            } else {
+                UINotifications.genericError(self.navigationController!, msg: "Invalid start/end date for covering data generation")
+            }
+        }
     }
+
+    class MCButton : HTPressableButton {}
 
 }
