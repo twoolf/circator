@@ -18,6 +18,37 @@ import Charts
 import SwiftDate
 import Former
 
+public enum Weekday : Int {
+    case Monday = 1
+    case Tuesday
+    case Wednesday
+    case Thursday
+    case Friday
+    case Saturday
+    case Sunday
+}
+
+/* why option set type again?
+public struct WeekdayFrequency :OptionSetType {
+public let rawValue : Int
+public init(weekdays : [Weekday]) {
+
+}
+}
+*/
+
+public struct RepeatedEvent {
+    var timeOfDayOffset : NSTimeInterval
+    var duration : NSTimeInterval
+    var frequency : [Weekday]
+    
+    public init(timeOfDayOffsetInSeconds offset : NSTimeInterval, durationInSeconds duration : NSTimeInterval, daysOfWeekOccurs frequency : [Weekday]) {
+        self.timeOfDayOffset = offset
+        self.duration = duration
+        self.frequency = frequency
+    }
+}
+
 class RepeatedEventsListViewController: UIViewController {
     
     // MARK: - Weekday Selector
@@ -92,9 +123,15 @@ class RepeatedEventsListViewController: UIViewController {
         return stackView
     }()
     
-    var eventsList : EventsListTableViewController?
+
+    
+
+    
+    
     
     // MARK: - Event Item, Cell and Table View
+    
+    var eventsList : EventsListTableViewController?
     
     class EventsListTableViewController : UITableViewController {
         
