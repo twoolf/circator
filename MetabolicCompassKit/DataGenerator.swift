@@ -37,7 +37,7 @@ public class DataGenerator : GeneratorType {
         HKQuantityTypeIdentifierActiveEnergyBurned        : HKUnit.kilocalorieUnit(),
         HKQuantityTypeIdentifierBasalBodyTemperature      : HKUnit.degreeFahrenheitUnit(),
         HKQuantityTypeIdentifierBasalEnergyBurned         : HKUnit.kilocalorieUnit(),
-        HKQuantityTypeIdentifierBloodAlcoholContent       : HKUnit.gramUnit().unitDividedByUnit(HKUnit.literUnit()),
+        HKQuantityTypeIdentifierBloodAlcoholContent       : HKUnit.percentUnit(),
         HKQuantityTypeIdentifierBloodGlucose              : HKUnit.gramUnit().unitDividedByUnit(HKUnit.literUnit()),
         HKQuantityTypeIdentifierBloodPressureDiastolic    : HKUnit.millimeterOfMercuryUnit(),
         HKQuantityTypeIdentifierBloodPressureSystolic     : HKUnit.millimeterOfMercuryUnit(),
