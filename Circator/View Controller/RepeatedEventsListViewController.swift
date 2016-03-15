@@ -18,6 +18,8 @@ import Charts
 import SwiftDate
 import Former
 
+// MARK: - Data Structures
+
 public enum Weekday : Int {
     case Monday = 1
     case Tuesday
@@ -26,112 +28,221 @@ public enum Weekday : Int {
     case Friday
     case Saturday
     case Sunday
+    
+    var description : String {
+        switch self {
+        case Monday:
+            return "Monday"
+        case Tuesday:
+            return "Tuesday"
+        case Wednesday:
+            return "Wednesday"
+        case Thursday:
+            return "Thursday"
+        case Friday:
+            return "Friday"
+        case Saturday:
+            return "Saturday"
+        case Sunday:
+            return "Sunday"
+        }
+    }
 }
 
-/* why option set type again?
-public struct WeekdayFrequency :OptionSetType {
-public let rawValue : Int
-public init(weekdays : [Weekday]) {
-
+public enum EventType {
+    case Meal
+    case Exercise
+    case Sleep
 }
-}
-*/
 
-public struct RepeatedEvent {
+public struct Event {
+    var name : String
+    var eventType : EventType
     var timeOfDayOffset : NSTimeInterval
     var duration : NSTimeInterval
-    var frequency : [Weekday]
     
-    public init(timeOfDayOffsetInSeconds offset : NSTimeInterval, durationInSeconds duration : NSTimeInterval, daysOfWeekOccurs frequency : [Weekday]) {
+    public init(nameOfEvent name : String, typeOfEvent type : EventType, timeOfDayOffsetInSeconds offset : NSTimeInterval, durationInSeconds duration : NSTimeInterval) {
+        self.name = name
+        self.eventType = type
         self.timeOfDayOffset = offset
         self.duration = duration
+    }
+}
+
+public struct RepeatedEvent {
+    var event : Event
+    var frequency : [Weekday]
+    
+    public init(metabolicEvent event : Event, daysOfWeekOccurs frequency : [Weekday]) {
+        self.event = event
         self.frequency = frequency
     }
+}
+
+//this would be saved in some plist eventually
+var repeatedEvents : [RepeatedEvent]?
+
+public func drawCirlce(FillColor color : UIColor) -> UIImage {
+    
+    let circleImage : UIImage = {
+        
+        //creates square in pixels as bounds of canvas
+        let canvas = CGRectMake(0, 0, 100, 100)
+        
+        //creates vector path of circle bounded in canvas square
+        let path = UIBezierPath(ovalInRect: canvas)
+        
+        //creates core graphics contexts and assigns reference
+        UIGraphicsBeginImageContextWithOptions(canvas.size, false, 0)
+        let context = UIGraphicsGetCurrentContext()
+        
+        //sets context's fill register with color
+        CGContextSetFillColorWithColor(context, color.CGColor)
+
+        //draws path in context
+        CGContextBeginPath(context)
+        CGContextAddPath(context, path.CGPath)
+        
+        //draws path defined in canvas within graphics context
+        CGContextDrawPath(context, .Fill)
+        
+        //creates UIImage from current graphics contexts and returns
+        let image = UIGraphicsGetImageFromCurrentImageContext()
+        UIGraphicsEndImageContext()
+        return image
+    }()
+    
+    return circleImage
 }
 
 class RepeatedEventsListViewController: UIViewController {
     
     // MARK: - Weekday Selector
     
-    //TODO: fix bug: left edge of button cuts off right edge of adjacent button
+    //UIButton subclass to associate selected weekday
+    class WeekdayButton : UIButton {
+        
+        var dayOfWeek : Weekday? = nil
+        
+        init(dayOfWeek day : Weekday, frame: CGRect = CGRectZero) {
+            super.init(frame : frame)
+            self.dayOfWeek = day
+        }
+        
+        required init?(coder aDecoder: NSCoder) {
+            super.init(coder: aDecoder)
+        }
+        
+    }
     
+    //weekday buttons
     lazy var sundayButton: UIButton = {
-        let button = HTPressableButton(frame: CGRectMake(0, 0, 100, 100), buttonStyle: .Circular)
-        button.shadowHeight = 0.0
-        //button.titleLabel?.text = NSLocalizedString("Su", comment: "Sunday")
-        button.setTitle("Su", forState: .Normal)
-        button.setTitleColor(UIColor.blackColor(), forState: .Normal)
+        
+        var button = WeekdayButton(dayOfWeek: Weekday.Sunday)
+        button.adjustsImageWhenHighlighted = true
         button.titleLabel?.textAlignment = .Center
+        button.setTitle("Su", forState: .Normal)
+        button.setTitle("Su", forState: .Selected)
+        button.setBackgroundImage(drawCirlce(FillColor: UIColor.orangeColor()), forState: .Normal)
+        button.setBackgroundImage(drawCirlce(FillColor: UIColor.magentaColor()), forState: .Selected)
+        button.addTarget(self, action: "setWeekdayButtonAndWeekdayLabel:", forControlEvents: .TouchUpInside)
         return button
     }()
     
     lazy var mondayButton: UIButton = {
-        let button = HTPressableButton(frame: CGRectMake(0, 0, 100, 100), buttonStyle: .Circular)
-        button.shadowHeight = 0.0
-        button.titleLabel?.text = NSLocalizedString("M", comment: "Monday")
+        var button = WeekdayButton(dayOfWeek: Weekday.Monday)
+        button.adjustsImageWhenHighlighted = true
         button.titleLabel?.textAlignment = .Center
+        button.setTitle("M", forState: .Normal)
+        button.setTitle("M", forState: .Selected)
+        button.setBackgroundImage(drawCirlce(FillColor: UIColor.orangeColor()), forState: .Normal)
+        button.setBackgroundImage(drawCirlce(FillColor: UIColor.magentaColor()), forState: .Selected)
+        button.addTarget(self, action: "setWeekdayButtonAndWeekdayLabel:", forControlEvents: .TouchUpInside)
         return button
     }()
     
     lazy var tuesdayButton: UIButton = {
-        let button = HTPressableButton(frame: CGRectMake(0, 0, 100, 100), buttonStyle: .Circular)
-        button.shadowHeight = 0.0
-        button.titleLabel?.text = NSLocalizedString("Tu", comment: "Tuesday")
+        var button = WeekdayButton(dayOfWeek: Weekday.Tuesday)
+        button.adjustsImageWhenHighlighted = true
         button.titleLabel?.textAlignment = .Center
+        button.setTitle("Tu", forState: .Normal)
+        button.setTitle("Tu", forState: .Selected)
+        button.setBackgroundImage(drawCirlce(FillColor: UIColor.orangeColor()), forState: .Normal)
+        button.setBackgroundImage(drawCirlce(FillColor: UIColor.magentaColor()), forState: .Selected)
+        button.addTarget(self, action: "setWeekdayButtonAndWeekdayLabel:", forControlEvents: .TouchUpInside)
         return button
     }()
     
     lazy var wednesdayButton: UIButton = {
-        let button = HTPressableButton(frame: CGRectMake(0, 0, 100, 100), buttonStyle: .Circular)
-        button.shadowHeight = 0.0
-        button.titleLabel?.text = NSLocalizedString("W", comment: "Wednesday")
+        var button = WeekdayButton(dayOfWeek: Weekday.Wednesday)
+        button.adjustsImageWhenHighlighted = true
         button.titleLabel?.textAlignment = .Center
+        button.setTitle("W", forState: .Normal)
+        button.setTitle("W", forState: .Selected)
+        button.setBackgroundImage(drawCirlce(FillColor: UIColor.orangeColor()), forState: .Normal)
+        button.setBackgroundImage(drawCirlce(FillColor: UIColor.magentaColor()), forState: .Selected)
+        button.addTarget(self, action: "setWeekdayButtonAndWeekdayLabel:", forControlEvents: .TouchUpInside)
         return button
     }()
     
     lazy var thursdayButton: UIButton = {
-        let button = HTPressableButton(frame: CGRectMake(0, 0, 100, 100), buttonStyle: .Circular)
-        button.shadowHeight = 0.0
-        button.titleLabel?.text = NSLocalizedString("Th", comment: "Thursday")
+        var button = WeekdayButton(dayOfWeek: Weekday.Thursday)
+        button.adjustsImageWhenHighlighted = true
         button.titleLabel?.textAlignment = .Center
+        button.setTitle("Th", forState: .Normal)
+        button.setTitle("Th", forState: .Selected)
+        button.setBackgroundImage(drawCirlce(FillColor: UIColor.orangeColor()), forState: .Normal)
+        button.setBackgroundImage(drawCirlce(FillColor: UIColor.magentaColor()), forState: .Selected)
+        button.addTarget(self, action: "setWeekdayButtonAndWeekdayLabel:", forControlEvents: .TouchUpInside)
         return button
     }()
     
     lazy var fridayButton: UIButton = {
-        let button = HTPressableButton(frame: CGRectMake(0, 0, 100, 100), buttonStyle: .Circular)
-        button.shadowHeight = 0.0
-        button.titleLabel?.text = NSLocalizedString("F", comment: "Friday")
+        var button = WeekdayButton(dayOfWeek: Weekday.Friday)
+        button.adjustsImageWhenHighlighted = true
         button.titleLabel?.textAlignment = .Center
+        button.setTitle("F", forState: .Normal)
+        button.setTitle("F", forState: .Selected)
+        button.setBackgroundImage(drawCirlce(FillColor: UIColor.orangeColor()), forState: .Normal)
+        button.setBackgroundImage(drawCirlce(FillColor: UIColor.magentaColor()), forState: .Selected)
+        button.addTarget(self, action: "setWeekdayButtonAndWeekdayLabel:", forControlEvents: .TouchUpInside)
         return button
     }()
     
     lazy var saturdayButton: UIButton = {
-        let button = HTPressableButton(frame: CGRectMake(0, 0, 100, 100), buttonStyle: .Circular)
-        button.shadowHeight = 0.0
-        button.titleLabel?.text = NSLocalizedString("Sa", comment: "Saturday")
+        var button = WeekdayButton(dayOfWeek: Weekday.Saturday)
+        button.adjustsImageWhenHighlighted = true
         button.titleLabel?.textAlignment = .Center
-        button.titleLabel?.textColor = UIColor.blackColor()
+        button.setTitle("Sa", forState: .Normal)
+        button.setTitle("Sa", forState: .Selected)
+        button.setBackgroundImage(drawCirlce(FillColor: UIColor.orangeColor()), forState: .Normal)
+        button.setBackgroundImage(drawCirlce(FillColor: UIColor.magentaColor()), forState: .Selected)
+        button.addTarget(self, action: "setWeekdayButtonAndWeekdayLabel:", forControlEvents: .TouchUpInside)
         return button
     }()
     
+    //UIStack that display weekday buttons as single row
     lazy var weekdayRowSelector : UIStackView = {
         let stackView = UIStackView(arrangedSubviews: [self.sundayButton, self.mondayButton, self.tuesdayButton, self.wednesdayButton, self.thursdayButton, self.fridayButton, self.saturdayButton])
         stackView.axis = .Horizontal
-        stackView.distribution = UIStackViewDistribution.FillProportionally
-        stackView.alignment = UIStackViewAlignment.Center
+        stackView.distribution = UIStackViewDistribution.FillEqually
+        stackView.alignment = UIStackViewAlignment.Fill
         stackView.spacing = 0
+        stackView.backgroundColor = UIColor.clearColor()
         return stackView
     }()
     
-
+    //variables used within table view
     
-
+    var weekdayLabel : UILabel = UILabel()
     
+    var eventsList : EventsListTableViewController = EventsListTableViewController()
     
+    var currentDay : UIButton?
+    
+    var eventsForCurrentDay : [Event?] = [Event?](count: 48, repeatedValue: nil)
     
     // MARK: - Event Item, Cell and Table View
-    
-    var eventsList : EventsListTableViewController?
     
     class EventsListTableViewController : UITableViewController {
         
@@ -190,7 +301,7 @@ class RepeatedEventsListViewController: UIViewController {
                 }
                 return 1.0
             } else {
-                return 44.0
+                return 33.0
             }
         }
         
@@ -217,12 +328,15 @@ class RepeatedEventsListViewController: UIViewController {
             
             //sets cell to be filled with event item cell
             if indexPath.row % 3 != 0 && indexPath.row != 73 {
+                //debug
                 let subview = FormLabelCell()
                 subview.formTextLabel()?.text = "\(indexPath.row)"
                 cell.contentView.addSubview(subview)
                 
                 //set up event item view
                 // TODO: refractor into seperate subclass
+                
+                //let eventData = eventsListEventsByWeekday
                 
                 let eventView = EventItemView()
                 eventView.translatesAutoresizingMaskIntoConstraints = false
@@ -231,8 +345,8 @@ class RepeatedEventsListViewController: UIViewController {
                 cell.contentView.addSubview(eventView)
                 
                 let eventViewConstraints : [NSLayoutConstraint] = [
-                    eventView.rightAnchor.constraintEqualToAnchor(cell.contentView.rightAnchor, constant: -60),
-                    eventView.leftAnchor.constraintEqualToAnchor(cell.contentView.leftAnchor, constant: 15 + 120),
+                    eventView.rightAnchor.constraintEqualToAnchor(cell.contentView.rightAnchor, constant: -30),
+                    eventView.leftAnchor.constraintEqualToAnchor(cell.contentView.leftAnchor, constant: 15 + 90),
                     //TODO: need to build out if statement around top and bottom anchors
                     eventView.topAnchor.constraintEqualToAnchor(cell.contentView.topAnchor),
                     eventView.bottomAnchor.constraintEqualToAnchor(cell.contentView.bottomAnchor)
@@ -249,7 +363,8 @@ class RepeatedEventsListViewController: UIViewController {
                 timeLabel.translatesAutoresizingMaskIntoConstraints = false
                 timeLabel.text = hours[indexPath.row/3]
                 timeLabel.font = UIFont.systemFontOfSize(11, weight: UIFontWeightSemibold)
-                timeLabel.backgroundColor = UIColor.grayColor()
+                timeLabel.textColor = UIColor.magentaColor()
+                //timeLabel.backgroundColor = UIColor.grayColor()
 
                 cell.contentView.addSubview(timeLabel)
                 
@@ -327,11 +442,11 @@ class RepeatedEventsListViewController: UIViewController {
         super.viewWillAppear(animated)
         navigationController?.setNavigationBarHidden(false, animated: false)
         navigationItem.title = "Repeated Events"
-        self.eventsList!.tableView.reloadData()
     }
     
     private func format() {
         
+        view.backgroundColor = UIColor.lightGrayColor()
     }
     
     //Sets configuration of view controller
@@ -355,19 +470,18 @@ class RepeatedEventsListViewController: UIViewController {
         view.addConstraints(weekdayRowSelectorConstraints)
         
         //set up weekday view
-        let weekdayLabel = UILabel()
-        weekdayLabel.translatesAutoresizingMaskIntoConstraints = false
-        weekdayLabel.text = "Sunday"
-        weekdayLabel.textAlignment = .Center
-        weekdayLabel.font = UIFont.systemFontOfSize(18, weight: UIFontWeightSemibold)
-        weekdayLabel.textColor = UIColor.whiteColor()
-        weekdayLabel.backgroundColor = UIColor.purpleColor()
+        self.weekdayLabel.translatesAutoresizingMaskIntoConstraints = false
+        self.weekdayLabel.text = "Sunday"
+        self.weekdayLabel.textAlignment = .Center
+        self.weekdayLabel.font = UIFont.systemFontOfSize(18, weight: UIFontWeightSemibold)
+        self.weekdayLabel.textColor = UIColor.whiteColor()
+        self.weekdayLabel.backgroundColor = UIColor.purpleColor()
         
         view.addSubview(weekdayLabel)
         
         let weekdayLabelConstraints: [NSLayoutConstraint] = [
-            weekdayLabel.topAnchor.constraintEqualToAnchor(weekdayRowSelector.bottomAnchor, constant: 15),
-            weekdayLabel.bottomAnchor.constraintEqualToAnchor(weekdayRowSelector.bottomAnchor, constant: 45),
+            weekdayLabel.topAnchor.constraintEqualToAnchor(weekdayRowSelector.bottomAnchor),
+            weekdayLabel.bottomAnchor.constraintEqualToAnchor(weekdayRowSelector.bottomAnchor, constant: 30),
             weekdayLabel.rightAnchor.constraintEqualToAnchor(view.layoutMarginsGuide.rightAnchor),
             weekdayLabel.leftAnchor.constraintEqualToAnchor(view.layoutMarginsGuide.leftAnchor),
             weekdayLabel.centerXAnchor.constraintEqualToAnchor(view.layoutMarginsGuide.centerXAnchor),
@@ -376,11 +490,10 @@ class RepeatedEventsListViewController: UIViewController {
         view.addConstraints(weekdayLabelConstraints)
         
         //set up table view
-        eventsList = EventsListTableViewController()
-        eventsList!.automaticallyAdjustsScrollViewInsets = false
-        let eventsListView = self.eventsList!.view
+        self.eventsList.automaticallyAdjustsScrollViewInsets = false
+        let eventsListView = self.eventsList.view
         eventsListView.translatesAutoresizingMaskIntoConstraints = false
-        self.addChildViewController(self.eventsList!)
+        self.addChildViewController(self.eventsList)
         view.addSubview(eventsListView)
         let eventsListViewConstraints: [NSLayoutConstraint] = [
             eventsListView.topAnchor.constraintEqualToAnchor(weekdayLabel.bottomAnchor),
@@ -395,7 +508,18 @@ class RepeatedEventsListViewController: UIViewController {
         
     }
     
-
-    
-
+    internal func setWeekdayButtonAndWeekdayLabel(sender: WeekdayButton!) {
+        
+        //sets weekday label to selected day
+        self.weekdayLabel.text = sender.dayOfWeek?.description
+        
+        //swaps current and selected day buttons setting states respectively
+        currentDay?.selected = false
+        sender.selected = true
+        currentDay = sender
+        
+        //eventsList.tableView.reloadData()
+        
+        
+    }
 }

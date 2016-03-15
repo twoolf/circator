@@ -312,7 +312,7 @@ class IntroViewController: UIViewController,
         stackView.axis = .Horizontal
         stackView.distribution = UIStackViewDistribution.FillEqually
         stackView.alignment = UIStackViewAlignment.Fill
-        stackView.spacing = 50
+        stackView.spacing = 25
         return stackView
     }()
 
