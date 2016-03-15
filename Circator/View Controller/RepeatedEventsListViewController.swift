@@ -234,6 +234,8 @@ class RepeatedEventsListViewController: UIViewController {
     
     //variables used within table view
     
+    //TODO: some of these variables should be initialized in or need to be moved to data source delegate...??
+    
     var weekdayLabel : UILabel = UILabel()
     
     var eventsList : EventsListTableViewController = EventsListTableViewController()
@@ -242,200 +244,9 @@ class RepeatedEventsListViewController: UIViewController {
     
     var eventsForCurrentDay : [Event?] = [Event?](count: 48, repeatedValue: nil)
     
-    // MARK: - Event Item, Cell and Table View
-    
-    class EventsListTableViewController : UITableViewController {
-        
-        let hours : [String] = ["12 AM", "1 AM", "2 AM", "3 AM", "4 AM", "5 AM", "6 AM", "7 AM", "8 AM", "9 AM", "10 AM", "11 AM", "Noon", "1 PM", "2 PM", "3 PM", "4 PM", "5 PM", "6 PM", "7 PM", "8 PM", "9 PM", "10 PM", "11 PM", "12 AM"]
-        
-        override func viewDidLoad() {
-            super.viewDidLoad()
-            tableView.estimatedRowHeight = 44.0
-            tableView.rowHeight = UITableViewAutomaticDimension
-            
-            //removes default seperator lines
-            tableView.separatorColor = UIColor.clearColor()
-            
-            /*
-            // Set table view header as row of weekdays
-            let tableViewHeader = weekdayRowSelector // as! UITableViewCell
-            tableViewHeader.frame = CGRectMake(0, 0, self.tableView.bounds.width, 100)
-            tableViewHeader.backgroundColor = UIColor.blueColor()
-            self.tableView.tableHeaderView = tableViewHeader
-            */
-            
-            //EventItemTableViewCell.self
-            tableView.registerClass(EventItemTableViewCell.self, forCellReuseIdentifier: "EventItemTableViewCell")
-            tableView.registerClass(EventListTimeSeperatorTableViewCell.self, forCellReuseIdentifier: "EventListTimeSeperatorTableViewCell")
-            //self.tableView.contentInset = UIEdgeInsets(top: 0, left: -15, bottom: 0, right: 0)
-            
-        }
-        
-        override func viewWillAppear(animated: Bool) {
-            super.viewWillAppear(animated)
-            tableView.reloadData()
-        }
-        
-        //Set section of table
-        override func numberOfSectionsInTableView(tableView: UITableView) -> Int {
-            //two of these sections are to format the seperator lines properly
-            return 3
-        }
-        
-        //Set table to have one cell for every 30 mins within day
-        override func tableView(tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-            
-            //main content
-            if section == 1 {
-               return 24 * 2 + 24 + 1
-            }
-            //top and bottom buffer sections
-            return 1
-        }
-        
-        override func tableView(tableView: UITableView, heightForRowAtIndexPath indexPath: NSIndexPath) -> CGFloat {
-            if indexPath.row % 3 == 0 || indexPath.row == 73 {
-                //make padding cell for top and bottom buffer sections
-                if indexPath.section != 1 {
-                    return 5.0
-                }
-                return 1.0
-            } else {
-                return 33.0
-            }
-        }
-        
-        override func tableView(tableView: UITableView, estimatedHeightForRowAtIndexPath indexPath: NSIndexPath) -> CGFloat {
-            return UITableViewAutomaticDimension
-        }
-        
-        override func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell {
-            var cell : UITableViewCell
-            //Initialize and clear cell for input
-            if indexPath.row % 3 != 0 && indexPath.row != 73 {
-                cell = tableView.dequeueReusableCellWithIdentifier("EventItemTableViewCell", forIndexPath: indexPath) as! EventItemTableViewCell
-            } else {
-                cell = tableView.dequeueReusableCellWithIdentifier("EventListTimeSeperatorTableViewCell", forIndexPath: indexPath) as! EventListTimeSeperatorTableViewCell
-            }
-            
-            //removes white layer of each cell's default background for proper line seperator rendering
-            cell.backgroundColor = UIColor.clearColor()
-            
-            //clears subviews previously rendered to cell
-            for view in cell.contentView.subviews {
-                view.removeFromSuperview()
-            }
-            
-            //sets cell to be filled with event item cell
-            if indexPath.row % 3 != 0 && indexPath.row != 73 {
-                //debug
-                let subview = FormLabelCell()
-                subview.formTextLabel()?.text = "\(indexPath.row)"
-                cell.contentView.addSubview(subview)
-                
-                //set up event item view
-                // TODO: refractor into seperate subclass
-                
-                //let eventData = eventsListEventsByWeekday
-                
-                let eventView = EventItemView()
-                eventView.translatesAutoresizingMaskIntoConstraints = false
-                eventView.backgroundColor = UIColor.greenColor()
-                
-                cell.contentView.addSubview(eventView)
-                
-                let eventViewConstraints : [NSLayoutConstraint] = [
-                    eventView.rightAnchor.constraintEqualToAnchor(cell.contentView.rightAnchor, constant: -30),
-                    eventView.leftAnchor.constraintEqualToAnchor(cell.contentView.leftAnchor, constant: 15 + 90),
-                    //TODO: need to build out if statement around top and bottom anchors
-                    eventView.topAnchor.constraintEqualToAnchor(cell.contentView.topAnchor),
-                    eventView.bottomAnchor.constraintEqualToAnchor(cell.contentView.bottomAnchor)
-                    
-                ]
-                
-                cell.contentView.addConstraints(eventViewConstraints)
-                
-            //sets cell to filled with time seperator
-            } else {
-                
-                // TODO: refractor time seperator into separate subclass
-                let timeLabel = UILabel()
-                timeLabel.translatesAutoresizingMaskIntoConstraints = false
-                timeLabel.text = hours[indexPath.row/3]
-                timeLabel.font = UIFont.systemFontOfSize(11, weight: UIFontWeightSemibold)
-                timeLabel.textColor = UIColor.magentaColor()
-                //timeLabel.backgroundColor = UIColor.grayColor()
-
-                cell.contentView.addSubview(timeLabel)
-                
-                let timeLabelConstraints : [NSLayoutConstraint] = [
-                    //timeLabel.topAnchor.constraintEqualToAnchor(cell.contentView.topAnchor, constant: 0),
-                    timeLabel.centerYAnchor.constraintEqualToAnchor(cell.contentView.centerYAnchor),
-                    timeLabel.heightAnchor.constraintEqualToAnchor(cell.contentView.heightAnchor, constant: 10),
-                    timeLabel.leftAnchor.constraintEqualToAnchor(cell.contentView.leftAnchor, constant: 30)
-                ]
-                
-                cell.contentView.addConstraints(timeLabelConstraints)
-                
-                let seperatorLine = UIView(frame: CGRectMake(0,0,1,1))
-                seperatorLine.translatesAutoresizingMaskIntoConstraints = false
-                seperatorLine.backgroundColor = UIColor.redColor()
-                
-                cell.contentView.addSubview(seperatorLine)
-                
-                let seperatorLineConstraints : [NSLayoutConstraint] = [
-                    seperatorLine.topAnchor.constraintEqualToAnchor(cell.contentView.topAnchor),
-                    seperatorLine.heightAnchor.constraintEqualToAnchor(cell.contentView.heightAnchor),
-                    //seperatorLine.widthAnchor.constraintEqualToAnchor(cell.widthAnchor),
-                    seperatorLine.leftAnchor.constraintEqualToAnchor(timeLabel.rightAnchor, constant: 15),
-                    seperatorLine.rightAnchor.constraintEqualToAnchor(cell.contentView.rightAnchor)
-                ]
-                
-                cell.contentView.addConstraints(seperatorLineConstraints)
-                
-                // for buffer sections, remove all renderings
-                if indexPath.section != 1 {
-                    for view in cell.contentView.subviews {
-                        view.removeFromSuperview()
-                    }
-                }
-
-            }
-
-            
-            return cell
-        }
-        
-        
-        override func tableView(tableView: UITableView, shouldHighlightRowAtIndexPath indexPath: NSIndexPath) -> Bool {
-            return false
-        }
-        
-        override func tableView(tableView: UITableView, indentationLevelForRowAtIndexPath indexPath: NSIndexPath) -> Int {
-            return 0
-        }
-        
-        
-        /*
-        override func tableView(tableView: UITableView, titleForHeaderInSection section: Int) -> String? {
-            return "Today"
-        }
-        
-        override func tableView(tableView: UITableView, willDisplayHeaderView view: UIView, forSection section: Int) {
-            view.tintColor = UIColor(red: 170/255.0, green: 131/255.0, blue: 224/255.0, alpha: 1.0)
-            if let header = view as? UITableViewHeaderFooterView {
-                header.textLabel!.font = UIFont(name: "HelveticaNeue-Thin", size: 14.0)
-                header.textLabel!.textColor = UIColor.whiteColor()
-            }
-        }
-        */
-        
-    }
-    
     override func viewDidLoad() {
         super.viewDidLoad()
         self.configureView()
-        
     }
     
     override func viewWillAppear(animated: Bool) {
@@ -444,6 +255,7 @@ class RepeatedEventsListViewController: UIViewController {
         navigationItem.title = "Repeated Events"
     }
     
+    //formats and styles view
     private func format() {
         
         view.backgroundColor = UIColor.lightGrayColor()
@@ -521,5 +333,175 @@ class RepeatedEventsListViewController: UIViewController {
         //eventsList.tableView.reloadData()
         
         
+    }
+    
+    // MARK: - Event Item, Cell and Table View
+    
+    class EventsListTableViewController : UITableViewController {
+        
+        let hours : [String] = ["12 AM", "1 AM", "2 AM", "3 AM", "4 AM", "5 AM", "6 AM", "7 AM", "8 AM", "9 AM", "10 AM", "11 AM", "Noon", "1 PM", "2 PM", "3 PM", "4 PM", "5 PM", "6 PM", "7 PM", "8 PM", "9 PM", "10 PM", "11 PM", "12 AM"]
+        
+        override func viewDidLoad() {
+            super.viewDidLoad()
+            
+            //TODO: are these necessary? what are these values used for??
+            //tableView.estimatedRowHeight = 44.0
+            //tableView.rowHeight = UITableViewAutomaticDimension
+            
+            //removes default seperator lines
+            tableView.separatorColor = UIColor.clearColor()
+            
+            //TODO: move current custom views into designated table view cell subclasses
+            //custom table view cell classes
+            tableView.registerClass(EventItemTableViewCell.self, forCellReuseIdentifier: "EventItemTableViewCell")
+            tableView.registerClass(EventListTimeSeperatorTableViewCell.self, forCellReuseIdentifier: "EventListTimeSeperatorTableViewCell")
+            
+        }
+        
+        override func viewWillAppear(animated: Bool) {
+            super.viewWillAppear(animated)
+            tableView.reloadData()
+        }
+        
+        //Set section of table
+        override func numberOfSectionsInTableView(tableView: UITableView) -> Int {
+            //two of these sections are to format the seperator lines properly
+            return 3
+        }
+        
+        //Set table to have one cell for every 30 mins within day
+        override func tableView(tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+            
+            //main content
+            if section == 1 {
+               return 24 * 2 + 24 + 1
+            }
+            //top and bottom buffer sections
+            return 1
+        }
+        
+        //sets height of cells in table
+        override func tableView(tableView: UITableView, heightForRowAtIndexPath indexPath: NSIndexPath) -> CGFloat {
+            if indexPath.row % 3 == 0 || indexPath.row == 73 {
+                //edge case: height of buffer cell in top and bottom sections
+                if indexPath.section != 1 {
+                    return 5.0
+                }
+                //height of time seperator cells
+                return 1.0
+            } else {
+                //height of cell containing event item view
+                return 33.0
+            }
+        }
+        
+        override func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell {
+            var cell : UITableViewCell
+            //TODO: implement these subclasses, currently being unused
+            //Initialize and clear cell for input
+            if indexPath.row % 3 != 0 && indexPath.row != 73 {
+                cell = tableView.dequeueReusableCellWithIdentifier("EventItemTableViewCell", forIndexPath: indexPath) as! EventItemTableViewCell
+            } else {
+                cell = tableView.dequeueReusableCellWithIdentifier("EventListTimeSeperatorTableViewCell", forIndexPath: indexPath) as! EventListTimeSeperatorTableViewCell
+            }
+            
+            //removes white layer of each cell's default background for proper line seperator rendering
+            cell.backgroundColor = UIColor.clearColor()
+            
+            //clears subviews previously rendered to cell
+            for view in cell.contentView.subviews {
+                view.removeFromSuperview()
+            }
+            
+            //sets cell to be filled with event item cell
+            if indexPath.row % 3 != 0 && indexPath.row != 73 {
+                //debug prints to keep track of indexPath count
+                let subview = FormLabelCell() 
+                subview.formTextLabel()?.text = "\(indexPath.row)"
+                cell.contentView.addSubview(subview)
+                
+                //set up event item view
+                // TODO: refractor into seperate subclass
+                
+                //LOAD EVENT DATA FOR SPECIFIC CELL
+                
+                let eventView = EventItemView()
+                eventView.translatesAutoresizingMaskIntoConstraints = false
+                eventView.backgroundColor = UIColor.greenColor()
+                
+                cell.contentView.addSubview(eventView)
+                
+                let eventViewConstraints : [NSLayoutConstraint] = [
+                    eventView.rightAnchor.constraintEqualToAnchor(cell.contentView.rightAnchor, constant: -30),
+                    eventView.leftAnchor.constraintEqualToAnchor(cell.contentView.leftAnchor, constant: 15 + 90),
+                    //TODO: need to build out if statement around top and bottom anchors for continuous and discrete event views
+                    eventView.topAnchor.constraintEqualToAnchor(cell.contentView.topAnchor),
+                    eventView.bottomAnchor.constraintEqualToAnchor(cell.contentView.bottomAnchor)
+                ]
+                
+                cell.contentView.addConstraints(eventViewConstraints)
+                
+            //sets cell to filled with time seperator
+            } else {
+                
+                // TODO: refractor time seperator into separate subclass
+                //time label for seperator
+                let timeLabel = UILabel()
+                timeLabel.translatesAutoresizingMaskIntoConstraints = false
+                timeLabel.text = hours[indexPath.row/3]
+                timeLabel.font = UIFont.systemFontOfSize(11, weight: UIFontWeightSemibold)
+                timeLabel.textColor = UIColor.magentaColor()
+
+                cell.contentView.addSubview(timeLabel)
+                
+                let timeLabelConstraints : [NSLayoutConstraint] = [
+                    timeLabel.centerYAnchor.constraintEqualToAnchor(cell.contentView.centerYAnchor),
+                    timeLabel.heightAnchor.constraintEqualToAnchor(cell.contentView.heightAnchor, constant: 10),
+                    timeLabel.leftAnchor.constraintEqualToAnchor(cell.contentView.leftAnchor, constant: 30)
+                ]
+                
+                cell.contentView.addConstraints(timeLabelConstraints)
+                
+                //seperator line adjacent to time label, 1 pixel high
+                let seperatorLine = UIView(frame: CGRectMake(0,0,1,1))
+                seperatorLine.translatesAutoresizingMaskIntoConstraints = false
+                seperatorLine.backgroundColor = UIColor.redColor()
+                
+                cell.contentView.addSubview(seperatorLine)
+                
+                let seperatorLineConstraints : [NSLayoutConstraint] = [
+                    seperatorLine.topAnchor.constraintEqualToAnchor(cell.contentView.topAnchor),
+                    seperatorLine.heightAnchor.constraintEqualToAnchor(cell.contentView.heightAnchor),
+                    //seperatorLine.widthAnchor.constraintEqualToAnchor(cell.widthAnchor),
+                    seperatorLine.leftAnchor.constraintEqualToAnchor(timeLabel.rightAnchor, constant: 15),
+                    seperatorLine.rightAnchor.constraintEqualToAnchor(cell.contentView.rightAnchor)
+                ]
+                
+                cell.contentView.addConstraints(seperatorLineConstraints)
+                
+                // edge case: for buffer sections, remove all renderings
+                if indexPath.section != 1 {
+                    for view in cell.contentView.subviews {
+                        view.removeFromSuperview()
+                    }
+                }
+
+            }
+
+            return cell
+        }
+        
+        //proprietry table view formatting
+        override func tableView(tableView: UITableView, estimatedHeightForRowAtIndexPath indexPath: NSIndexPath) -> CGFloat {
+            return UITableViewAutomaticDimension
+        }
+        
+        override func tableView(tableView: UITableView, shouldHighlightRowAtIndexPath indexPath: NSIndexPath) -> Bool {
+            return false
+        }
+        
+        override func tableView(tableView: UITableView, indentationLevelForRowAtIndexPath indexPath: NSIndexPath) -> Int {
+            return 0
+        }
     }
 }
