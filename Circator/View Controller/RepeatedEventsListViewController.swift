@@ -183,8 +183,31 @@ class RepeatedEventsListViewController: UIViewController {
                 let subview = FormLabelCell()
                 subview.formTextLabel()?.text = "\(indexPath.row)"
                 cell.contentView.addSubview(subview)
+                
+                //set up event item view
+                // TODO: refractor into seperate subclass
+                
+                let eventView = EventItemView()
+                eventView.translatesAutoresizingMaskIntoConstraints = false
+                eventView.backgroundColor = UIColor.greenColor()
+                
+                cell.contentView.addSubview(eventView)
+                
+                let eventViewConstraints : [NSLayoutConstraint] = [
+                    eventView.rightAnchor.constraintEqualToAnchor(cell.contentView.rightAnchor, constant: -60),
+                    eventView.leftAnchor.constraintEqualToAnchor(cell.contentView.leftAnchor, constant: 15 + 120),
+                    //TODO: need to build out if statement around top and bottom anchors
+                    eventView.topAnchor.constraintEqualToAnchor(cell.contentView.topAnchor),
+                    eventView.bottomAnchor.constraintEqualToAnchor(cell.contentView.bottomAnchor)
+                    
+                ]
+                
+                cell.contentView.addConstraints(eventViewConstraints)
+                
             //sets cell to filled with time seperator
             } else {
+                
+                // TODO: refractor time seperator into separate subclass
                 let timeLabel = UILabel()
                 timeLabel.translatesAutoresizingMaskIntoConstraints = false
                 timeLabel.text = hours[indexPath.row/3]
@@ -292,10 +315,30 @@ class RepeatedEventsListViewController: UIViewController {
             NSLayoutConstraint(item: weekdayRowSelector, attribute: .Height, relatedBy: .Equal, toItem: view.layoutMarginsGuide, attribute: .Width, multiplier: 0.1428571429, constant: 0),
         ]
         
-        //weekdayRowSelector.frame.size.height = (weekdayRowSelector.frame.size.width * 0.1428571429)
-        
         view.addConstraints(weekdayRowSelectorConstraints)
         
+        //set up weekday view
+        let weekdayLabel = UILabel()
+        weekdayLabel.translatesAutoresizingMaskIntoConstraints = false
+        weekdayLabel.text = "Sunday"
+        weekdayLabel.textAlignment = .Center
+        weekdayLabel.font = UIFont.systemFontOfSize(18, weight: UIFontWeightSemibold)
+        weekdayLabel.textColor = UIColor.whiteColor()
+        weekdayLabel.backgroundColor = UIColor.purpleColor()
+        
+        view.addSubview(weekdayLabel)
+        
+        let weekdayLabelConstraints: [NSLayoutConstraint] = [
+            weekdayLabel.topAnchor.constraintEqualToAnchor(weekdayRowSelector.bottomAnchor, constant: 15),
+            weekdayLabel.bottomAnchor.constraintEqualToAnchor(weekdayRowSelector.bottomAnchor, constant: 45),
+            weekdayLabel.rightAnchor.constraintEqualToAnchor(view.layoutMarginsGuide.rightAnchor),
+            weekdayLabel.leftAnchor.constraintEqualToAnchor(view.layoutMarginsGuide.leftAnchor),
+            weekdayLabel.centerXAnchor.constraintEqualToAnchor(view.layoutMarginsGuide.centerXAnchor),
+        ]
+        
+        view.addConstraints(weekdayLabelConstraints)
+        
+        //set up table view
         eventsList = EventsListTableViewController()
         eventsList!.automaticallyAdjustsScrollViewInsets = false
         let eventsListView = self.eventsList!.view
@@ -303,7 +346,7 @@ class RepeatedEventsListViewController: UIViewController {
         self.addChildViewController(self.eventsList!)
         view.addSubview(eventsListView)
         let eventsListViewConstraints: [NSLayoutConstraint] = [
-            eventsListView.topAnchor.constraintEqualToAnchor(weekdayRowSelector.bottomAnchor, constant: 15),
+            eventsListView.topAnchor.constraintEqualToAnchor(weekdayLabel.bottomAnchor),
             eventsListView.bottomAnchor.constraintEqualToAnchor(bottomLayoutGuide.topAnchor),
             //eventsListView.leadingAnchor.constraintEqualToAnchor(view.layoutMarginsGuide.leadingAnchor),
             eventsListView.leadingAnchor.constraintEqualToAnchor(view.layoutMarginsGuide.leadingAnchor, constant: -30),

@@ -10,6 +10,6 @@
 import UIKit
 import Former
 
-class EventItemView: UIView {
+class EventItemView: UIButton {
 
 }
