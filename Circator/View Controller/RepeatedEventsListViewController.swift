@@ -7,14 +7,7 @@
 //
 
 import UIKit
-import HealthKit
-import CircatorKit
-import Async
-import Dodo
-import HTPressableButton
-import ResearchKit
-import Pages
-import Charts
+
 import SwiftDate
 import Former
 
@@ -60,12 +53,15 @@ public struct Event {
     var eventType : EventType
     var timeOfDayOffset : NSTimeInterval
     var duration : NSTimeInterval
+    //optional exact time for exact event logging
+    var currentDay : NSDate?
     
-    public init(nameOfEvent name : String, typeOfEvent type : EventType, timeOfDayOffsetInSeconds offset : NSTimeInterval, durationInSeconds duration : NSTimeInterval) {
+    public init(nameOfEvent name : String, typeOfEvent type : EventType, timeOfDayOffsetInSeconds offset : NSTimeInterval, durationInSeconds duration : NSTimeInterval, CurrentTimeAsCurrentDay time : NSDate? = nil) {
         self.name = name
         self.eventType = type
         self.timeOfDayOffset = offset
         self.duration = duration
+        self.currentDay = time
     }
 }
 
@@ -115,6 +111,8 @@ public func drawCirlce(FillColor color : UIColor) -> UIImage {
     return circleImage
 }
 
+// MARK: - Main View Controller
+
 class RepeatedEventsListViewController: UIViewController {
     
     // MARK: - Weekday Selector
@@ -122,11 +120,11 @@ class RepeatedEventsListViewController: UIViewController {
     //UIButton subclass to associate selected weekday
     class WeekdayButton : UIButton {
         
-        var dayOfWeek : Weekday? = nil
+        var day : Weekday? = nil
         
         init(dayOfWeek day : Weekday, frame: CGRect = CGRectZero) {
             super.init(frame : frame)
-            self.dayOfWeek = day
+            self.day = day
         }
         
         required init?(coder aDecoder: NSCoder) {
@@ -242,7 +240,7 @@ class RepeatedEventsListViewController: UIViewController {
     
     var currentDay : UIButton?
     
-    var eventsForCurrentDay : [Event?] = [Event?](count: 48, repeatedValue: nil)
+    var events : RepeatedEventsOrganizer = RepeatedEventsOrganizer()
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -256,16 +254,17 @@ class RepeatedEventsListViewController: UIViewController {
     }
     
     //formats and styles view
-    private func format() {
+    private func formatView() {
         
         view.backgroundColor = UIColor.lightGrayColor()
+        
     }
     
     //Sets configuration of view controller
     private func configureView() {
         
         //Sets format options
-        self.format()
+        self.formatView()
         
         //adding weekday selector view
         weekdayRowSelector.translatesAutoresizingMaskIntoConstraints = false
@@ -323,7 +322,7 @@ class RepeatedEventsListViewController: UIViewController {
     internal func setWeekdayButtonAndWeekdayLabel(sender: WeekdayButton!) {
         
         //sets weekday label to selected day
-        self.weekdayLabel.text = sender.dayOfWeek?.description
+        self.weekdayLabel.text = sender.day?.description
         
         //swaps current and selected day buttons setting states respectively
         currentDay?.selected = false
@@ -337,9 +336,79 @@ class RepeatedEventsListViewController: UIViewController {
     
     // MARK: - Event Item, Cell and Table View
     
+    class RepeatedEventsOrganizer : NSObject {
+     
+        private var repeatedEvents : [RepeatedEvent] = []
+        private var eventsForWeek : [Int : [Event?]] = [Weekday.Monday.rawValue : [], Weekday.Tuesday.rawValue : [], Weekday.Wednesday.rawValue : [], Weekday.Thursday.rawValue : [], Weekday.Friday.rawValue : [], Weekday.Saturday.rawValue : [], Weekday.Sunday.rawValue : []]
+        
+        override init() {
+            super.init()
+        }
+        
+        convenience init(RepeatedEvents events : [RepeatedEvent]) {
+            self.init()
+            for event in events {
+                self.repeatedEvents.append(event)
+            }
+            for item in self.repeatedEvents {
+                self.addRepeatedEvent(RepeatedEvent: item)
+            }
+        }
+        
+        func addRepeatedEvent(RepeatedEvent event : RepeatedEvent) {
+            // TODO: Error handling and contains
+            //if repeatedEvents.contains(event) { }
+            repeatedEvents.append(event)
+            print("loading...")
+            for day in event.frequency {
+                print("\(day)")
+                eventsForWeek[day.rawValue]!.append(Event(nameOfEvent: event.event.name, typeOfEvent: event.event.eventType, timeOfDayOffsetInSeconds: event.event.timeOfDayOffset, durationInSeconds: event.event.duration))
+            }
+        }
+        
+        func removeRepeatedEvent(RepeatedEvent event : RepeatedEvent) {
+            
+            // TODO
+            
+            // TODO: Error handling and contains
+            //if repeatedEvents.contains(event) { }
+        }
+        
+        func getEventsForDay(DayOfWeek day : Weekday) -> [Event?] {
+            return self.eventsForWeek[day.rawValue]!
+        }
+        
+        func getEventDataByIntervalForDay(DayOfWeek day : Weekday) -> [Event?] {
+            var eventsForDay : [Event?] = [Event?](count: 72, repeatedValue: nil)
+            for event in self.getEventsForDay(DayOfWeek: day) {
+                //puts event in designated index for eventual index path reference
+                // TODO: better way to design this with optional binding?
+                eventsForDay.insert(event, atIndex: Int((event?.timeOfDayOffset)!/1800 + 1))
+            }
+            return eventsForDay
+        }
+    }
+    
     class EventsListTableViewController : UITableViewController {
         
         let hours : [String] = ["12 AM", "1 AM", "2 AM", "3 AM", "4 AM", "5 AM", "6 AM", "7 AM", "8 AM", "9 AM", "10 AM", "11 AM", "Noon", "1 PM", "2 PM", "3 PM", "4 PM", "5 PM", "6 PM", "7 PM", "8 PM", "9 PM", "10 PM", "11 PM", "12 AM"]
+        
+        //where day would be set to current day in time
+        var currentDay : WeekdayButton = WeekdayButton(dayOfWeek: Weekday.Sunday)
+        
+        //where initial data would be loaded from plist
+        var events : RepeatedEventsOrganizer = RepeatedEventsOrganizer()
+        
+        func loadData() {
+            let days : [Weekday] = [Weekday.Sunday, Weekday.Monday, Weekday.Tuesday, Weekday.Wednesday]
+            let test : RepeatedEvent = RepeatedEvent(metabolicEvent: Event(nameOfEvent: "breakfast", typeOfEvent: .Meal, timeOfDayOffsetInSeconds: 18000, durationInSeconds: 3600), daysOfWeekOccurs: days)
+            
+            self.events.addRepeatedEvent(RepeatedEvent: test)
+        }
+        
+        func setData(DayOfWeek day : Weekday) {
+            
+        }
         
         override func viewDidLoad() {
             super.viewDidLoad()
@@ -360,6 +429,7 @@ class RepeatedEventsListViewController: UIViewController {
         
         override func viewWillAppear(animated: Bool) {
             super.viewWillAppear(animated)
+            self.loadData()
             tableView.reloadData()
         }
         
@@ -423,24 +493,30 @@ class RepeatedEventsListViewController: UIViewController {
                 //set up event item view
                 // TODO: refractor into seperate subclass
                 
-                //LOAD EVENT DATA FOR SPECIFIC CELL
-                
-                let eventView = EventItemView()
-                eventView.translatesAutoresizingMaskIntoConstraints = false
-                eventView.backgroundColor = UIColor.greenColor()
-                
-                cell.contentView.addSubview(eventView)
-                
-                let eventViewConstraints : [NSLayoutConstraint] = [
-                    eventView.rightAnchor.constraintEqualToAnchor(cell.contentView.rightAnchor, constant: -30),
-                    eventView.leftAnchor.constraintEqualToAnchor(cell.contentView.leftAnchor, constant: 15 + 90),
-                    //TODO: need to build out if statement around top and bottom anchors for continuous and discrete event views
-                    eventView.topAnchor.constraintEqualToAnchor(cell.contentView.topAnchor),
-                    eventView.bottomAnchor.constraintEqualToAnchor(cell.contentView.bottomAnchor)
-                ]
-                
-                cell.contentView.addConstraints(eventViewConstraints)
-                
+                if let data = self.events.getEventDataByIntervalForDay(DayOfWeek: self.currentDay.day!)[indexPath.row] {
+                    
+                    print("hello")
+                    print("\(data)" + " " + "\(indexPath.row)")
+                    let eventView = EventItemView()
+                    eventView.translatesAutoresizingMaskIntoConstraints = false
+                    eventView.backgroundColor = UIColor.greenColor()
+                    
+                    cell.contentView.addSubview(eventView)
+                    
+                    //sets how high the event view will be in relation to its bottom anchor
+                    let topOffset = ((data.duration - 1800)/1800) * (Double(cell.contentView.bounds.height) + 1.0) + 1800
+                    
+                    let eventViewConstraints : [NSLayoutConstraint] = [
+                        eventView.rightAnchor.constraintEqualToAnchor(cell.contentView.rightAnchor, constant: -30),
+                        eventView.leftAnchor.constraintEqualToAnchor(cell.contentView.leftAnchor, constant: 15 + 90),
+                        //TODO: need to build out if statement around top and bottom anchors for continuous and discrete event views
+                        eventView.topAnchor.constraintEqualToAnchor(cell.contentView.topAnchor),
+                        eventView.bottomAnchor.constraintEqualToAnchor(cell.contentView.bottomAnchor)
+                    ]
+                    
+                    cell.contentView.addConstraints(eventViewConstraints)
+                }
+
             //sets cell to filled with time seperator
             } else {
                 
