@@ -244,14 +244,16 @@ class DebugViewController : FormViewController {
                 DataGenerator.sharedInstance.generateInMemoryCoveringDataset(genSamplesPerType, startDate: st, endDate: en)
                 {
                     $0.forEach { (_,block) in
+//                        log.info("entering: )")
                         if !block.isEmpty {
                             autoreleasepool { _ in
+                                log.info("Uploading block of size \(block.count)")
                                 do {
-                                    log.info("Uploading block of size \(block.count)")
                                     let jsonObjs = try block.map(HealthManager.sharedManager.jsonifySample)
+//                                    log.info("For the following: \(block.first)")
                                     HealthManager.sharedManager.uploadSampleBlock(jsonObjs)
-                                } catch {
-                                    log.error(error)
+                                } catch  {
+                                    log.info("problems with: (\(HealthManager.description())")
                                 }
                             }
                         } else {

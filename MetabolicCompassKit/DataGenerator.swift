@@ -32,7 +32,25 @@ public class DataGenerator : GeneratorType {
     }
 
     let excludes : [String] = [
-        HKCategoryTypeIdentifierAppleStandHour
+        HKCategoryTypeIdentifierAppleStandHour,
+        HKQuantityTypeIdentifierBasalBodyTemperature,
+        HKQuantityTypeIdentifierBodyTemperature,
+//        HKQuantityTypeIdentifierBasalEnergyBurned,
+//        HKQuantityTypeIdentifierBloodAlcoholContent,
+//        HKQuantityTypeIdentifierElectrodermalActivity,
+//        HKQuantityTypeIdentifierForcedExpiratoryVolume1,
+//        HKQuantityTypeIdentifierForcedVitalCapacity,
+//        HKQuantityTypeIdentifierInhalerUsage,
+//        HKQuantityTypeIdentifierLeanBodyMass,
+//        HKQuantityTypeIdentifierNikeFuel,
+//        HKQuantityTypeIdentifierNumberOfTimesFallen,
+//        HKQuantityTypeIdentifierOxygenSaturation,
+//        HKQuantityTypeIdentifierPeakExpiratoryFlowRate,
+//        HKQuantityTypeIdentifierPeripheralPerfusionIndex,
+//        HKQuantityTypeIdentifierRespiratoryRate
+//        HKCategoryTypeIdentifierSleepAnalysis,
+//        HKQuantityTypeIdentifierActiveEnergyBurned,
+//        HKQuantityTypeIdentifierBloodGlucose,
     ]
 
     let generatorUnits : [String: HKUnit] = [
@@ -504,6 +522,7 @@ public class DataGenerator : GeneratorType {
                     if let samples : [HKSample] = self.next() {
                         if (i % 10) == 0 { log.info("Created batch \(i) / \(days),  \(samples.count) samples") }
                         dataset[userId]!.appendContentsOf(samples)
+//                        log.info("added: \(samples)")
                     } else {
                         ++self.daysSkipped
                     }
