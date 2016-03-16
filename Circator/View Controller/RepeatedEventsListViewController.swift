@@ -120,11 +120,13 @@ class RepeatedEventsListViewController: UIViewController {
     //UIButton subclass to associate selected weekday
     class WeekdayButton : UIButton {
         
-        var day : Weekday? = nil
+        var day : Weekday = Weekday.Sunday
         
         init(dayOfWeek day : Weekday, frame: CGRect = CGRectZero) {
+            
             super.init(frame : frame)
             self.day = day
+            
         }
         
         required init?(coder aDecoder: NSCoder) {
@@ -137,85 +139,85 @@ class RepeatedEventsListViewController: UIViewController {
     lazy var sundayButton: UIButton = {
         
         var button = WeekdayButton(dayOfWeek: Weekday.Sunday)
-        button.adjustsImageWhenHighlighted = true
+        button.adjustsImageWhenHighlighted = false
         button.titleLabel?.textAlignment = .Center
         button.setTitle("Su", forState: .Normal)
         button.setTitle("Su", forState: .Selected)
-        button.setBackgroundImage(drawCirlce(FillColor: UIColor.orangeColor()), forState: .Normal)
-        button.setBackgroundImage(drawCirlce(FillColor: UIColor.magentaColor()), forState: .Selected)
-        button.addTarget(self, action: "setWeekdayButtonAndWeekdayLabel:", forControlEvents: .TouchUpInside)
+        button.setBackgroundImage(drawCirlce(FillColor: UIColor.clearColor()), forState: .Normal)
+        button.setBackgroundImage(drawCirlce(FillColor: UIColor.darkGrayColor()), forState: .Selected)
+        button.addTarget(self, action: "setWeekdayView:", forControlEvents: .TouchUpInside)
         return button
     }()
     
     lazy var mondayButton: UIButton = {
         var button = WeekdayButton(dayOfWeek: Weekday.Monday)
-        button.adjustsImageWhenHighlighted = true
+        button.adjustsImageWhenHighlighted = false
         button.titleLabel?.textAlignment = .Center
         button.setTitle("M", forState: .Normal)
         button.setTitle("M", forState: .Selected)
-        button.setBackgroundImage(drawCirlce(FillColor: UIColor.orangeColor()), forState: .Normal)
-        button.setBackgroundImage(drawCirlce(FillColor: UIColor.magentaColor()), forState: .Selected)
-        button.addTarget(self, action: "setWeekdayButtonAndWeekdayLabel:", forControlEvents: .TouchUpInside)
+        button.setBackgroundImage(drawCirlce(FillColor: UIColor.clearColor()), forState: .Normal)
+        button.setBackgroundImage(drawCirlce(FillColor: UIColor.darkGrayColor()), forState: .Selected)
+        button.addTarget(self, action: "setWeekdayView:", forControlEvents: .TouchUpInside)
         return button
     }()
     
     lazy var tuesdayButton: UIButton = {
         var button = WeekdayButton(dayOfWeek: Weekday.Tuesday)
-        button.adjustsImageWhenHighlighted = true
+        button.adjustsImageWhenHighlighted = false
         button.titleLabel?.textAlignment = .Center
         button.setTitle("Tu", forState: .Normal)
         button.setTitle("Tu", forState: .Selected)
-        button.setBackgroundImage(drawCirlce(FillColor: UIColor.orangeColor()), forState: .Normal)
-        button.setBackgroundImage(drawCirlce(FillColor: UIColor.magentaColor()), forState: .Selected)
-        button.addTarget(self, action: "setWeekdayButtonAndWeekdayLabel:", forControlEvents: .TouchUpInside)
+        button.setBackgroundImage(drawCirlce(FillColor: UIColor.clearColor()), forState: .Normal)
+        button.setBackgroundImage(drawCirlce(FillColor: UIColor.darkGrayColor()), forState: .Selected)
+        button.addTarget(self, action: "setWeekdayView:", forControlEvents: .TouchUpInside)
         return button
     }()
     
     lazy var wednesdayButton: UIButton = {
         var button = WeekdayButton(dayOfWeek: Weekday.Wednesday)
-        button.adjustsImageWhenHighlighted = true
+        button.adjustsImageWhenHighlighted = false
         button.titleLabel?.textAlignment = .Center
         button.setTitle("W", forState: .Normal)
         button.setTitle("W", forState: .Selected)
-        button.setBackgroundImage(drawCirlce(FillColor: UIColor.orangeColor()), forState: .Normal)
-        button.setBackgroundImage(drawCirlce(FillColor: UIColor.magentaColor()), forState: .Selected)
-        button.addTarget(self, action: "setWeekdayButtonAndWeekdayLabel:", forControlEvents: .TouchUpInside)
+        button.setBackgroundImage(drawCirlce(FillColor: UIColor.clearColor()), forState: .Normal)
+        button.setBackgroundImage(drawCirlce(FillColor: UIColor.darkGrayColor()), forState: .Selected)
+        button.addTarget(self, action: "setWeekdayView:", forControlEvents: .TouchUpInside)
         return button
     }()
     
     lazy var thursdayButton: UIButton = {
         var button = WeekdayButton(dayOfWeek: Weekday.Thursday)
-        button.adjustsImageWhenHighlighted = true
+        button.adjustsImageWhenHighlighted = false
         button.titleLabel?.textAlignment = .Center
         button.setTitle("Th", forState: .Normal)
         button.setTitle("Th", forState: .Selected)
-        button.setBackgroundImage(drawCirlce(FillColor: UIColor.orangeColor()), forState: .Normal)
-        button.setBackgroundImage(drawCirlce(FillColor: UIColor.magentaColor()), forState: .Selected)
-        button.addTarget(self, action: "setWeekdayButtonAndWeekdayLabel:", forControlEvents: .TouchUpInside)
+        button.setBackgroundImage(drawCirlce(FillColor: UIColor.clearColor()), forState: .Normal)
+        button.setBackgroundImage(drawCirlce(FillColor: UIColor.darkGrayColor()), forState: .Selected)
+        button.addTarget(self, action: "setWeekdayView:", forControlEvents: .TouchUpInside)
         return button
     }()
     
     lazy var fridayButton: UIButton = {
         var button = WeekdayButton(dayOfWeek: Weekday.Friday)
-        button.adjustsImageWhenHighlighted = true
+        button.adjustsImageWhenHighlighted = false
         button.titleLabel?.textAlignment = .Center
         button.setTitle("F", forState: .Normal)
         button.setTitle("F", forState: .Selected)
-        button.setBackgroundImage(drawCirlce(FillColor: UIColor.orangeColor()), forState: .Normal)
-        button.setBackgroundImage(drawCirlce(FillColor: UIColor.magentaColor()), forState: .Selected)
-        button.addTarget(self, action: "setWeekdayButtonAndWeekdayLabel:", forControlEvents: .TouchUpInside)
+        button.setBackgroundImage(drawCirlce(FillColor: UIColor.clearColor()), forState: .Normal)
+        button.setBackgroundImage(drawCirlce(FillColor: UIColor.darkGrayColor()), forState: .Selected)
+        button.addTarget(self, action: "setWeekdayView:", forControlEvents: .TouchUpInside)
         return button
     }()
     
     lazy var saturdayButton: UIButton = {
         var button = WeekdayButton(dayOfWeek: Weekday.Saturday)
-        button.adjustsImageWhenHighlighted = true
+        button.adjustsImageWhenHighlighted = false
         button.titleLabel?.textAlignment = .Center
         button.setTitle("Sa", forState: .Normal)
         button.setTitle("Sa", forState: .Selected)
-        button.setBackgroundImage(drawCirlce(FillColor: UIColor.orangeColor()), forState: .Normal)
-        button.setBackgroundImage(drawCirlce(FillColor: UIColor.magentaColor()), forState: .Selected)
-        button.addTarget(self, action: "setWeekdayButtonAndWeekdayLabel:", forControlEvents: .TouchUpInside)
+        button.setBackgroundImage(drawCirlce(FillColor: UIColor.clearColor()), forState: .Normal)
+        button.setBackgroundImage(drawCirlce(FillColor: UIColor.darkGrayColor()), forState: .Selected)
+        button.addTarget(self, action: "setWeekdayView:", forControlEvents: .TouchUpInside)
         return button
     }()
     
@@ -242,8 +244,29 @@ class RepeatedEventsListViewController: UIViewController {
     
     var events : RepeatedEventsOrganizer = RepeatedEventsOrganizer()
     
+    func loadData() {
+        self.eventsList.loadData(RepeatedEvents: self.events)
+    }
+    
     override func viewDidLoad() {
         super.viewDidLoad()
+        
+        //add test data
+        let sunday : [Weekday] = [Weekday.Sunday]
+        let somedays : [Weekday] = [Weekday.Sunday, Weekday.Monday, Weekday.Wednesday, Weekday.Friday]
+        
+        
+        let sleep : RepeatedEvent = RepeatedEvent(metabolicEvent: Event(nameOfEvent: "sleep", typeOfEvent: .Sleep, timeOfDayOffsetInSeconds: 0, durationInSeconds: 10800), daysOfWeekOccurs: somedays)
+        self.events.addRepeatedEvent(RepeatedEvent: sleep)
+        
+        let breakfast : RepeatedEvent = RepeatedEvent(metabolicEvent: Event(nameOfEvent: "breakfast", typeOfEvent: .Meal, timeOfDayOffsetInSeconds: 18000, durationInSeconds: 1800), daysOfWeekOccurs: somedays)
+        self.events.addRepeatedEvent(RepeatedEvent: breakfast)
+        
+        let workout : RepeatedEvent = RepeatedEvent(metabolicEvent: Event(nameOfEvent: "workout", typeOfEvent: .Exercise, timeOfDayOffsetInSeconds: 21600, durationInSeconds: 5400), daysOfWeekOccurs: sunday)
+        self.events.addRepeatedEvent(RepeatedEvent: workout)
+        
+        //load and configure data
+        self.eventsList.loadData(RepeatedEvents: self.events)
         self.configureView()
     }
     
@@ -286,7 +309,7 @@ class RepeatedEventsListViewController: UIViewController {
         self.weekdayLabel.textAlignment = .Center
         self.weekdayLabel.font = UIFont.systemFontOfSize(18, weight: UIFontWeightSemibold)
         self.weekdayLabel.textColor = UIColor.whiteColor()
-        self.weekdayLabel.backgroundColor = UIColor.purpleColor()
+        self.weekdayLabel.backgroundColor = UIColor.clearColor()
         
         view.addSubview(weekdayLabel)
         
@@ -309,27 +332,29 @@ class RepeatedEventsListViewController: UIViewController {
         let eventsListViewConstraints: [NSLayoutConstraint] = [
             eventsListView.topAnchor.constraintEqualToAnchor(weekdayLabel.bottomAnchor),
             eventsListView.bottomAnchor.constraintEqualToAnchor(bottomLayoutGuide.topAnchor),
-            //eventsListView.leadingAnchor.constraintEqualToAnchor(view.layoutMarginsGuide.leadingAnchor),
             eventsListView.leadingAnchor.constraintEqualToAnchor(view.layoutMarginsGuide.leadingAnchor, constant: -30),
             eventsListView.trailingAnchor.constraintEqualToAnchor(view.layoutMarginsGuide.trailingAnchor, constant: 15),
-            //eventsListView.centerXAnchor.constraintEqualToAnchor(view.layoutMarginsGuide.centerXAnchor)
         ]
         
         view.addConstraints(eventsListViewConstraints)
         
     }
     
-    internal func setWeekdayButtonAndWeekdayLabel(sender: WeekdayButton!) {
+    func setWeekdayView(sender: WeekdayButton!) {
         
         //sets weekday label to selected day
-        self.weekdayLabel.text = sender.day?.description
+        self.weekdayLabel.text = sender.day.description
         
         //swaps current and selected day buttons setting states respectively
         currentDay?.selected = false
         sender.selected = true
-        currentDay = sender
         
-        //eventsList.tableView.reloadData()
+        //sets day state of table view and reloads data
+        eventsList.setData(DayOfWeek: sender.day)
+        eventsList.tableView.reloadData()
+        
+        //set current day as sender
+        currentDay = sender
         
         
     }
@@ -382,8 +407,8 @@ class RepeatedEventsListViewController: UIViewController {
             var eventsForDay : [Event?] = [Event?](count: 72, repeatedValue: nil)
             for event in self.getEventsForDay(DayOfWeek: day) {
                 //puts event in designated index for eventual index path reference
-                // TODO: better way to design this with optional binding?
-                eventsForDay.insert(event, atIndex: Int((event?.timeOfDayOffset)!/1800 + 1))
+                // TODO: better way to design this with optional binding? -- index calculation feels hacky?
+                eventsForDay.insert(event, atIndex: Int((event!.timeOfDayOffset + event!.duration + 1800.0)/1800.0) + 1)
             }
             return eventsForDay
         }
@@ -394,20 +419,17 @@ class RepeatedEventsListViewController: UIViewController {
         let hours : [String] = ["12 AM", "1 AM", "2 AM", "3 AM", "4 AM", "5 AM", "6 AM", "7 AM", "8 AM", "9 AM", "10 AM", "11 AM", "Noon", "1 PM", "2 PM", "3 PM", "4 PM", "5 PM", "6 PM", "7 PM", "8 PM", "9 PM", "10 PM", "11 PM", "12 AM"]
         
         //where day would be set to current day in time
-        var currentDay : WeekdayButton = WeekdayButton(dayOfWeek: Weekday.Sunday)
+        var currentDay : Weekday = Weekday.Sunday
         
         //where initial data would be loaded from plist
         var events : RepeatedEventsOrganizer = RepeatedEventsOrganizer()
         
-        func loadData() {
-            let days : [Weekday] = [Weekday.Sunday, Weekday.Monday, Weekday.Tuesday, Weekday.Wednesday]
-            let test : RepeatedEvent = RepeatedEvent(metabolicEvent: Event(nameOfEvent: "breakfast", typeOfEvent: .Meal, timeOfDayOffsetInSeconds: 18000, durationInSeconds: 3600), daysOfWeekOccurs: days)
-            
-            self.events.addRepeatedEvent(RepeatedEvent: test)
+        func loadData(RepeatedEvents eventData : RepeatedEventsOrganizer) {
+            self.events = eventData
         }
         
         func setData(DayOfWeek day : Weekday) {
-            
+            self.currentDay = day
         }
         
         override func viewDidLoad() {
@@ -429,7 +451,6 @@ class RepeatedEventsListViewController: UIViewController {
         
         override func viewWillAppear(animated: Bool) {
             super.viewWillAppear(animated)
-            self.loadData()
             tableView.reloadData()
         }
         
@@ -461,7 +482,7 @@ class RepeatedEventsListViewController: UIViewController {
                 return 1.0
             } else {
                 //height of cell containing event item view
-                return 33.0
+                return 32.0
             }
         }
         
@@ -485,36 +506,102 @@ class RepeatedEventsListViewController: UIViewController {
             
             //sets cell to be filled with event item cell
             if indexPath.row % 3 != 0 && indexPath.row != 73 {
-                //debug prints to keep track of indexPath count
-                let subview = FormLabelCell() 
-                subview.formTextLabel()?.text = "\(indexPath.row)"
-                cell.contentView.addSubview(subview)
                 
                 //set up event item view
-                // TODO: refractor into seperate subclass
-                
-                if let data = self.events.getEventDataByIntervalForDay(DayOfWeek: self.currentDay.day!)[indexPath.row] {
+                if let data = self.events.getEventDataByIntervalForDay(DayOfWeek: self.currentDay)[indexPath.row] {
                     
-                    print("hello")
-                    print("\(data)" + " " + "\(indexPath.row)")
+                    //sets event view
                     let eventView = EventItemView()
                     eventView.translatesAutoresizingMaskIntoConstraints = false
-                    eventView.backgroundColor = UIColor.greenColor()
-                    
+                    eventView.backgroundColor = UIColor(white: 0.667, alpha: 0.5)
+
+
                     cell.contentView.addSubview(eventView)
                     
                     //sets how high the event view will be in relation to its bottom anchor
-                    let topOffset = ((data.duration - 1800)/1800) * (Double(cell.contentView.bounds.height) + 1.0) + 1800
+                    let cellHeight = Double(cell.contentView.bounds.height)
+                    let seperatorLinePadding = Double(Int(data.duration/3600))
+                    let offsetValue : Double = ((data.duration - 1800)/1800) * (cellHeight + seperatorLinePadding) + cellHeight
+                    let topOffset : CGFloat = CGFloat(offsetValue)
                     
                     let eventViewConstraints : [NSLayoutConstraint] = [
                         eventView.rightAnchor.constraintEqualToAnchor(cell.contentView.rightAnchor, constant: -30),
                         eventView.leftAnchor.constraintEqualToAnchor(cell.contentView.leftAnchor, constant: 15 + 90),
                         //TODO: need to build out if statement around top and bottom anchors for continuous and discrete event views
-                        eventView.topAnchor.constraintEqualToAnchor(cell.contentView.topAnchor),
+                        eventView.topAnchor.constraintEqualToAnchor(cell.contentView.bottomAnchor, constant: -topOffset),
                         eventView.bottomAnchor.constraintEqualToAnchor(cell.contentView.bottomAnchor)
                     ]
                     
                     cell.contentView.addConstraints(eventViewConstraints)
+                    
+                    // TODO: refractor into seperate subclass
+                    // set event view's contents
+                    
+                    let eventTitle = UILabel()
+                    eventTitle.translatesAutoresizingMaskIntoConstraints = false
+                    eventTitle.text = data.name
+                    eventTitle.font = UIFont.systemFontOfSize(14, weight: UIFontWeightSemibold)
+                    eventTitle.textColor = UIColor.whiteColor()
+                    
+                    
+                    let eventIcon = UIButton()
+                    eventIcon.translatesAutoresizingMaskIntoConstraints = false
+                    eventIcon.setBackgroundImage(drawCirlce(FillColor: UIColor.grayColor()), forState: .Normal)
+                    eventIcon.adjustsImageWhenHighlighted = false
+                    eventIcon.titleLabel?.adjustsFontSizeToFitWidth = true
+                    eventIcon.titleLabel?.textAlignment = .Center
+                    eventIcon.titleLabel?.minimumScaleFactor = 0.5;
+
+                    
+                    let eventIconInner = UIImageView()
+                    eventIconInner.translatesAutoresizingMaskIntoConstraints = false
+                    
+                    eventIcon.addSubview(eventIconInner)
+                    let eventIconInnerConstraints : [NSLayoutConstraint] = [
+                        eventIconInner.centerXAnchor.constraintEqualToAnchor(eventIcon.centerXAnchor),
+                        eventIconInner.centerYAnchor.constraintEqualToAnchor(eventIcon.centerYAnchor),
+                        NSLayoutConstraint(item: eventIconInner, attribute: .Height, relatedBy: .Equal, toItem: eventIcon, attribute: .Height, multiplier: 0.75, constant: 0),
+                        NSLayoutConstraint(item: eventIconInner, attribute: .Width, relatedBy: .Equal, toItem: eventIcon, attribute: .Width, multiplier: 0.75, constant: 0)
+                    ]
+                    eventIcon.addConstraints(eventIconInnerConstraints)
+                    
+                    
+                    switch data.eventType {
+                        case .Meal:
+                            eventIcon.setTitle("M", forState: .Normal)
+                            eventIconInner.image = drawCirlce(FillColor: UIColor.greenColor())
+                        case .Sleep:
+                            eventIcon.setTitle("S", forState: .Normal)
+                            eventIconInner.image = drawCirlce(FillColor: UIColor.blueColor())
+                        case .Exercise:
+                            eventIcon.setTitle("E", forState: .Normal)
+                            eventIconInner.image = drawCirlce(FillColor: UIColor.redColor())
+                    }
+                    
+                    eventIcon.titleLabel!.layer.zPosition = eventIconInner.layer.zPosition + 1
+                    
+                    eventView.addSubview(eventTitle)
+                    eventView.addSubview(eventIcon)
+                    
+                    var eventViewContentConstraints : [NSLayoutConstraint] = [
+                        eventTitle.leftAnchor.constraintEqualToAnchor(eventView.leftAnchor, constant: 7.5),
+                        eventTitle.bottomAnchor.constraintEqualToAnchor(eventView.bottomAnchor, constant: -7.5),
+                        eventIcon.rightAnchor.constraintEqualToAnchor(eventView.rightAnchor, constant: -7.5),
+                        eventIcon.bottomAnchor.constraintEqualToAnchor(eventView.bottomAnchor, constant: -7.5)
+                        
+                    ]
+                    
+                    //resizes event icon edge case that it is 30 mins or default size
+                    if data.duration > 1800 {
+                        eventViewContentConstraints.append(NSLayoutConstraint(item: eventIcon, attribute: .Width, relatedBy: .Equal, toItem: eventView, attribute: .Width, multiplier: 0.25, constant: 0))
+                    } else {
+                        eventViewContentConstraints.append(NSLayoutConstraint(item: eventIcon, attribute: .Width, relatedBy: .Equal, toItem: eventView, attribute: .Width, multiplier: 0.125, constant: 0))
+                    }
+                    eventViewContentConstraints.append(eventIcon.heightAnchor.constraintEqualToAnchor(eventIcon.widthAnchor))
+                    
+                    eventView.addConstraints(eventViewContentConstraints)
+                    
+                    eventView.layer.zPosition = self.view.layer.zPosition + 9999
                 }
 
             //sets cell to filled with time seperator
@@ -526,7 +613,7 @@ class RepeatedEventsListViewController: UIViewController {
                 timeLabel.translatesAutoresizingMaskIntoConstraints = false
                 timeLabel.text = hours[indexPath.row/3]
                 timeLabel.font = UIFont.systemFontOfSize(11, weight: UIFontWeightSemibold)
-                timeLabel.textColor = UIColor.magentaColor()
+                timeLabel.textColor = UIColor.lightGrayColor()
 
                 cell.contentView.addSubview(timeLabel)
                 
@@ -541,7 +628,7 @@ class RepeatedEventsListViewController: UIViewController {
                 //seperator line adjacent to time label, 1 pixel high
                 let seperatorLine = UIView(frame: CGRectMake(0,0,1,1))
                 seperatorLine.translatesAutoresizingMaskIntoConstraints = false
-                seperatorLine.backgroundColor = UIColor.redColor()
+                seperatorLine.backgroundColor = UIColor.lightGrayColor()
                 
                 cell.contentView.addSubview(seperatorLine)
                 
