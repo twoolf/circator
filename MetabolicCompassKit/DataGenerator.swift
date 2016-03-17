@@ -34,23 +34,68 @@ public class DataGenerator : GeneratorType {
     let excludes : [String] = [
         HKCategoryTypeIdentifierAppleStandHour,
         HKQuantityTypeIdentifierBasalBodyTemperature,
-        HKQuantityTypeIdentifierBodyTemperature,
-//        HKQuantityTypeIdentifierBasalEnergyBurned,
-//        HKQuantityTypeIdentifierBloodAlcoholContent,
-//        HKQuantityTypeIdentifierElectrodermalActivity,
-//        HKQuantityTypeIdentifierForcedExpiratoryVolume1,
-//        HKQuantityTypeIdentifierForcedVitalCapacity,
-//        HKQuantityTypeIdentifierInhalerUsage,
-//        HKQuantityTypeIdentifierLeanBodyMass,
-//        HKQuantityTypeIdentifierNikeFuel,
-//        HKQuantityTypeIdentifierNumberOfTimesFallen,
-//        HKQuantityTypeIdentifierOxygenSaturation,
-//        HKQuantityTypeIdentifierPeakExpiratoryFlowRate,
-//        HKQuantityTypeIdentifierPeripheralPerfusionIndex,
-//        HKQuantityTypeIdentifierRespiratoryRate
-//        HKCategoryTypeIdentifierSleepAnalysis,
-//        HKQuantityTypeIdentifierActiveEnergyBurned,
-//        HKQuantityTypeIdentifierBloodGlucose,
+        HKQuantityTypeIdentifierBodyTemperature
+    ]
+    
+    let workoutTypesToGenerate : [HKWorkoutActivityType] = [
+        HKWorkoutActivityType.AmericanFootball,
+        HKWorkoutActivityType.Archery,
+        HKWorkoutActivityType.AustralianFootball,
+        HKWorkoutActivityType.Badminton,
+        HKWorkoutActivityType.Baseball,
+        HKWorkoutActivityType.Basketball,
+        HKWorkoutActivityType.Bowling,
+        HKWorkoutActivityType.Boxing,
+        HKWorkoutActivityType.Climbing,
+        HKWorkoutActivityType.Cricket,
+        HKWorkoutActivityType.CrossTraining,
+        HKWorkoutActivityType.Curling,
+        HKWorkoutActivityType.Cycling,
+        HKWorkoutActivityType.Dance,
+        HKWorkoutActivityType.DanceInspiredTraining,
+        HKWorkoutActivityType.Elliptical,
+        HKWorkoutActivityType.EquestrianSports,
+        HKWorkoutActivityType.Fencing,
+        HKWorkoutActivityType.Fishing,
+        HKWorkoutActivityType.FunctionalStrengthTraining,
+        HKWorkoutActivityType.Golf,
+        HKWorkoutActivityType.Gymnastics,
+        HKWorkoutActivityType.Handball,
+        HKWorkoutActivityType.Hiking,
+        HKWorkoutActivityType.Hockey,
+        HKWorkoutActivityType.Hunting,
+        HKWorkoutActivityType.Lacrosse,
+        HKWorkoutActivityType.MartialArts,
+        HKWorkoutActivityType.MindAndBody,
+        HKWorkoutActivityType.MixedMetabolicCardioTraining,
+        HKWorkoutActivityType.PaddleSports,
+        HKWorkoutActivityType.Play,
+//        HKWorkoutActivityType.PreparationAndRecovery,
+        HKWorkoutActivityType.Racquetball,
+        HKWorkoutActivityType.Rowing,
+        HKWorkoutActivityType.Rugby,
+        HKWorkoutActivityType.Running,
+        HKWorkoutActivityType.Sailing,
+        HKWorkoutActivityType.SkatingSports,
+        HKWorkoutActivityType.SnowSports,
+        HKWorkoutActivityType.Soccer,
+        HKWorkoutActivityType.Softball,
+        HKWorkoutActivityType.Squash,
+        HKWorkoutActivityType.StairClimbing,
+        HKWorkoutActivityType.SurfingSports,
+        HKWorkoutActivityType.Swimming,
+        HKWorkoutActivityType.TableTennis,
+        HKWorkoutActivityType.Tennis,
+        HKWorkoutActivityType.TrackAndField,
+        HKWorkoutActivityType.TraditionalStrengthTraining,
+        HKWorkoutActivityType.Volleyball,
+        HKWorkoutActivityType.Walking,
+        HKWorkoutActivityType.WaterFitness,
+        HKWorkoutActivityType.WaterPolo,
+        HKWorkoutActivityType.WaterSports,
+        HKWorkoutActivityType.Wrestling,
+        HKWorkoutActivityType.Yoga,
+        HKWorkoutActivityType.Other
     ]
 
     let generatorUnits : [String: HKUnit] = [
@@ -197,7 +242,10 @@ public class DataGenerator : GeneratorType {
             HKQuantityTypeIdentifierPeripheralPerfusionIndex  : (80.0,   13.33),
             HKQuantityTypeIdentifierRespiratoryRate           : (6000.0, 1996.67),
             HKQuantityTypeIdentifierStepCount                 : (6000.0, 1996.67),
-            HKQuantityTypeIdentifierUVExposure                : (6.0,    1.0)
+            HKQuantityTypeIdentifierUVExposure                : (6.0,    1.0),
+//            HKWorkoutSortIdentifierDuration                   : (10,0,   1.0),
+            HKWorkoutSortIdentifierTotalDistance              : (100.0,  10.0),
+            HKWorkoutSortIdentifierTotalEnergyBurned          : (5.0,     0.5)
         ],
 
         false: [
@@ -324,6 +372,15 @@ public class DataGenerator : GeneratorType {
             let dv : [Double] = randNormals(dp.0, dp.1, count)
             let sv : [Double] = randNormals(sp.0, sp.1, count)
             return zip(ts, zip(dv, sv)).flatMap { (t,ds) in return completion(t, ds.0, ds.1) }
+            
+        case HKWorkoutTypeIdentifier:
+            let tparams = eventTimeDistributions[asMale]![type.identifier]!
+            let ts = sampleDailyTimestampsWithWeights(date, weights: tparams, count: count)
+            let energy = parameters[asMale]![HKQuantityTypeIdentifierActiveEnergyBurned]!
+            let distance = parameters[asMale]![HKQuantityTypeIdentifierDistanceWalkingRunning]!
+            let ev : [Double] = randNormals(energy.0, energy.1, count)
+            let dv : [Double] = randNormals(distance.0, distance.1, count)
+            return zip(ts, zip(ev, dv)).flatMap { (t,ds) in return completion(t, ds.0, ds.1) }
 
         default:
             let tparams = eventTimeDistributions[asMale]![type.identifier] ?? defaultEventTimeDistribution
@@ -336,6 +393,13 @@ public class DataGenerator : GeneratorType {
         }
     }
 
+    public func minutesBetweenDate(startDate: NSDate, endDate: NSDate) -> Int
+    {
+        let calendar = NSCalendar.currentCalendar()
+        let components = calendar.components([.Minute], fromDate: startDate, toDate: endDate, options: [])
+        return components.minute
+    }
+    
     func nextSample(type: HKSampleType, asMale: Bool = true, date: NSDate, x: Double, y: Double?) -> HKSample? {
         switch type.identifier {
         case HKCategoryTypeIdentifierSleepAnalysis:
@@ -349,6 +413,19 @@ public class DataGenerator : GeneratorType {
             let standStart = date
             let standEnd = standStart + Int(abs(x) * 60.0).seconds
             return HKCategorySample(type: ct, value: HKCategoryValueAppleStandHour.Stood.rawValue, startDate: standStart, endDate: standEnd)
+            
+        case HKWorkoutTypeIdentifier:
+            let workoutStart = date
+            let workoutEnd = workoutStart + Int(randNormal(100, 1)).minutes
+            let energyBurned = HKQuantity(unit: HKUnit.kilocalorieUnit(),
+                doubleValue: x)
+            let distance = HKQuantity(unit: HKUnit.mileUnit(),
+                doubleValue: y!)
+            let workoutDuration : NSTimeInterval = Double(randNormal(100, 1)*60)
+            let workoutTypeInt = randDiscUniform(0,56)
+            return HKWorkout(activityType: workoutTypesToGenerate[workoutTypeInt],
+                startDate: workoutStart, endDate: workoutEnd, duration: workoutDuration,
+                totalEnergyBurned: energyBurned, totalDistance: distance, metadata: nil)
 
         case HKCorrelationTypeIdentifierBloodPressure:
             let du = self.generatorUnits[HKQuantityTypeIdentifierBloodPressureDiastolic]!
