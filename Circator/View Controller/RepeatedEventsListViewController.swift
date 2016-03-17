@@ -48,7 +48,7 @@ public enum EventType {
     case Sleep
 }
 
-public struct Event {
+public struct Event : Equatable {
     var name : String
     var eventType : EventType
     var timeOfDayOffset : NSTimeInterval
@@ -56,13 +56,17 @@ public struct Event {
     //optional exact time for exact event logging
     var currentDay : NSDate?
     
-    public init(nameOfEvent name : String, typeOfEvent type : EventType, timeOfDayOffsetInSeconds offset : NSTimeInterval, durationInSeconds duration : NSTimeInterval, CurrentTimeAsCurrentDay time : NSDate? = nil) {
+    init(nameOfEvent name : String, typeOfEvent type : EventType, timeOfDayOffsetInSeconds offset : NSTimeInterval, durationInSeconds duration : NSTimeInterval, CurrentTimeAsCurrentDay time : NSDate? = nil) {
         self.name = name
         self.eventType = type
         self.timeOfDayOffset = offset
         self.duration = duration
         self.currentDay = time
     }
+}
+
+public func ==(lhs: Event, rhs: Event) -> Bool {
+    return lhs.name == rhs.name && lhs.eventType == rhs.eventType && lhs.timeOfDayOffset == rhs.timeOfDayOffset && lhs.duration == rhs.duration && lhs.currentDay == rhs.currentDay
 }
 
 public struct RepeatedEvent {
@@ -259,8 +263,9 @@ class RepeatedEventsListViewController: UIViewController {
         let breakfast : RepeatedEvent = RepeatedEvent(metabolicEvent: Event(nameOfEvent: "breakfast", typeOfEvent: .Meal, timeOfDayOffsetInSeconds: 18000, durationInSeconds: 1800), daysOfWeekOccurs: somedays)
         self.events.addRepeatedEvent(RepeatedEvent: breakfast)
         
-        let workout : RepeatedEvent = RepeatedEvent(metabolicEvent: Event(nameOfEvent: "workout", typeOfEvent: .Exercise, timeOfDayOffsetInSeconds: 21600, durationInSeconds: 5400), daysOfWeekOccurs: sunday)
+        let workout : RepeatedEvent = RepeatedEvent(metabolicEvent: Event(nameOfEvent: "workout", typeOfEvent: .Exercise, timeOfDayOffsetInSeconds: 32400, durationInSeconds: 25200), daysOfWeekOccurs: sunday)
         self.events.addRepeatedEvent(RepeatedEvent: workout)
+    
         
         //load and configure data
         self.eventsList.loadData(RepeatedEvents: self.events)
@@ -405,10 +410,19 @@ class RepeatedEventsListViewController: UIViewController {
             for event in self.getEventsForDay(DayOfWeek: day) {
                 //puts event in designated index for eventual index path reference
                 // TODO: better way to design this with optional binding? -- index calculation feels hacky?
-                let jumps : Int = Int(((event!.timeOfDayOffset + event!.duration) - 1.0)/3600.0)
-                let index : Int = Int((event!.timeOfDayOffset + event!.duration)/1800.0) + jumps
-                //eventsForDay.insert(event, atIndex: Int((event!.timeOfDayOffset + event!.duration + 1800.0)/1800.0) + 1)
+
+                let jumps : Int = Int(event!.timeOfDayOffset/3600.0)
+                let index : Int = Int(event!.timeOfDayOffset/1800.0) + jumps + 1
+                // edge case - view disappears if loading cell with top anchor disappears and vice-versa, solution: redudancy
+                //let jumpsRedundancy : Int = Int(((event!.timeOfDayOffset + event!.duration) - 1.0)/3600.0)
+                //let indexRedundancy : Int = Int((event!.timeOfDayOffset + event!.duration)/1800.0) + jumpsRedundancy
+                
                 eventsForDay.insert(event, atIndex: index)
+                //edge case - do not add redudancy if event only occupies space of one cell
+                //if event!.duration > 1800 {
+                  //  eventsForDay.insert(event, atIndex: indexRedundancy)
+                //}
+                
                 
             }
             return eventsForDay
@@ -447,7 +461,7 @@ class RepeatedEventsListViewController: UIViewController {
             //custom table view cell classes
             tableView.registerClass(EventItemTableViewCell.self, forCellReuseIdentifier: "EventItemTableViewCell")
             tableView.registerClass(EventListTimeSeperatorTableViewCell.self, forCellReuseIdentifier: "EventListTimeSeperatorTableViewCell")
-            
+
         }
         
         override func viewWillAppear(animated: Bool) {
@@ -487,6 +501,44 @@ class RepeatedEventsListViewController: UIViewController {
             }
         }
         
+        override func tableView(tableView: UITableView, didEndDisplayingCell cell: UITableViewCell, forRowAtIndexPath indexPath: NSIndexPath) {
+            
+            if indexPath.row % 3 != 0 && indexPath.row != 73 && cell.contentView.subviews.count > 0  && (cell.contentView.subviews.first as! EventItemView).event!.duration > 1800 {
+
+                
+                if tableView.subviews.count > 3 {
+                    tableView.subviews[3].removeFromSuperview()
+                }
+                
+                let view : EventItemView = cell.contentView.subviews.first as! EventItemView
+                view.translatesAutoresizingMaskIntoConstraints = false
+                self.view.addSubview(view)
+                
+                let data : Event = view.event!
+                
+                let cellHeight = Double(cell.contentView.bounds.height)
+                let seperatorLinePaddingHeight = Double(Int((data.duration)/3600.0)) * 2 - 1.5
+                let seperatorLinePaddingOffset = Double(Int((data.timeOfDayOffset)/3600.0)) * 2 - 1.5
+                
+                let height : CGFloat = CGFloat((data.duration/1800.0) * cellHeight + seperatorLinePaddingHeight)
+                let offset : CGFloat = CGFloat((data.timeOfDayOffset/1800.0) * cellHeight + seperatorLinePaddingOffset)
+                
+                let viewConstraints : [NSLayoutConstraint] = [
+                    view.leftAnchor.constraintEqualToAnchor(self.view.leftAnchor, constant: 15 + 90),
+                    view.widthAnchor.constraintEqualToAnchor(self.view.widthAnchor, constant: -135),
+                    //view.rightAnchor.constraintEqualToAnchor(self.view.rightAnchor, constant: -30),
+                    view.topAnchor.constraintEqualToAnchor(self.view.topAnchor, constant: offset + 7.5),
+                    view.bottomAnchor.constraintEqualToAnchor(view.topAnchor, constant: height),
+                    
+                ]
+                
+                self.view.addConstraints(viewConstraints)
+                print(cell.contentView.subviews.count)
+                //tableView.addSubview(cell.contentView)
+            }
+            
+        }
+        
         override func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell {
             var cell : UITableViewCell
             //TODO: implement these subclasses, currently being unused
@@ -504,37 +556,67 @@ class RepeatedEventsListViewController: UIViewController {
             for view in cell.contentView.subviews {
                 view.removeFromSuperview()
             }
+
             
             //sets cell to be filled with event item cell
             if indexPath.row % 3 != 0 && indexPath.row != 73 {
                 
+                /*
                 //debug prints to keep track of indexPath count
                 let subview = FormLabelCell()
                 subview.formTextLabel()?.text = "\(indexPath.row)"
                 cell.contentView.addSubview(subview)
+                */
+
+                let eventsForDay = self.events.getEventDataByIntervalForDay(DayOfWeek: self.currentDay)
+                
+                
+                
+                
                 
                 //set up event item view
-                if let data = self.events.getEventDataByIntervalForDay(DayOfWeek: self.currentDay)[indexPath.row] {
+                if let data = eventsForDay[indexPath.row] {
                     
                     //sets event view
-                    let eventView = EventItemView()
-                    eventView.translatesAutoresizingMaskIntoConstraints = false
-                    eventView.backgroundColor = UIColor(white: 0.667, alpha: 0.5)
+                    //let view = EventItemView(Event: data)
+                    
+                    /*
+                    //ensures that no conflicting views are added
 
+                    }
+                    */
+                    
+                    for view in tableView.subviews {
+                        if view is EventItemView {
+                            if (view as! EventItemView).event! == data {
+                                view.removeFromSuperview()
+                            }
+                        }
+                    }
+                    
+                    let eventView = EventItemView(Event: data)
+                    
+                    eventView.translatesAutoresizingMaskIntoConstraints = false
+                    
                     cell.contentView.addSubview(eventView)
+                    
+                    eventView.backgroundColor = UIColor(white: 0.667, alpha: 0.5)
                     
                     //sets how high the event view will be in relation to its bottom anchor
                     let cellHeight = Double(cell.contentView.bounds.height)
-                    let seperatorLinePadding = Double(Int(((data.timeOfDayOffset + data.duration) - 1.0)/3600.0))
-                    let offsetValue : Double = ((data.duration - 1800)/1800) * (cellHeight + seperatorLinePadding) + cellHeight
-                    let topOffset : CGFloat = CGFloat(offsetValue)
+                    //caclulates the number of additional pixels need to padd event
+                    var seperatorLinePadding : Double = 0
+                    if data.duration > 1800 {
+                        seperatorLinePadding = Double(Int((data.duration)/3600.0)) * 2 - 1.5
+                    }
+                    let offsetValue : Double = ((data.duration - 1800.0)/1800.0) * cellHeight + cellHeight + seperatorLinePadding
+                    let offset : CGFloat = CGFloat(offsetValue)
                     
                     let eventViewConstraints : [NSLayoutConstraint] = [
                         eventView.rightAnchor.constraintEqualToAnchor(cell.contentView.rightAnchor, constant: -30),
                         eventView.leftAnchor.constraintEqualToAnchor(cell.contentView.leftAnchor, constant: 15 + 90),
-                        //TODO: need to build out if statement around top and bottom anchors for continuous and discrete event views
-                        eventView.topAnchor.constraintEqualToAnchor(cell.contentView.bottomAnchor, constant: -topOffset),
-                        eventView.bottomAnchor.constraintEqualToAnchor(cell.contentView.bottomAnchor)
+                        eventView.topAnchor.constraintEqualToAnchor(cell.contentView.topAnchor),
+                        eventView.bottomAnchor.constraintEqualToAnchor(cell.contentView.topAnchor, constant: offset)
                     ]
                     
                     cell.contentView.addConstraints(eventViewConstraints)
@@ -590,9 +672,9 @@ class RepeatedEventsListViewController: UIViewController {
                     let eventViewContentConstraints : [NSLayoutConstraint] = [
                         eventTitle.leftAnchor.constraintEqualToAnchor(eventView.leftAnchor, constant: 7.5),
                         eventTitle.bottomAnchor.constraintEqualToAnchor(eventView.bottomAnchor, constant: -7.5),
-                        eventIcon.rightAnchor.constraintEqualToAnchor(eventView.rightAnchor, constant: -7.5),
+                        eventIcon.rightAnchor.constraintEqualToAnchor(eventView.rightAnchor, constant: -3.5),
                         NSLayoutConstraint(item: eventIcon, attribute: .Width, relatedBy: .Equal, toItem: nil, attribute: .NotAnAttribute, multiplier: 0, constant: 25),
-                        eventIcon.bottomAnchor.constraintEqualToAnchor(eventView.bottomAnchor, constant: -2),
+                        eventIcon.bottomAnchor.constraintEqualToAnchor(eventView.bottomAnchor, constant: -3.5),
                         eventIcon.heightAnchor.constraintEqualToAnchor(eventIcon.widthAnchor)
                         
                     ]

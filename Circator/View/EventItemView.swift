@@ -11,5 +11,17 @@ import UIKit
 import Former
 
 class EventItemView: UIButton {
+    
+    var event : Event?
 
+    init(Event event : Event, frame: CGRect = CGRectZero) {
+        
+        super.init(frame : frame)
+        self.event = event
+        
+    }
+    
+    required init?(coder aDecoder: NSCoder) {
+        super.init(coder: aDecoder)
+    }
 }
