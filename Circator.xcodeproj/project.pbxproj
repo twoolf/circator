@@ -496,8 +496,6 @@
 				78DA2D731C28ED2A005CC2DB /* RegisterViewController.swift */,
 				786817601C6CF37D0018ABB5 /* ProfileSubviewController.swift */,
 				F4F4DA571C0257130073E9EE /* SettingsViewController.swift */,
-				F49B2B6C1C7A6206005F2BFB /* RepeatedEventsController.swift */,
-				F49B2B6E1C7A71DC005F2BFB /* DaySelectionViewController.swift */,
 				F4F4DA5B1C0271660073E9EE /* RowSettingsViewController.swift */,
 				7861300C1C25E05600F50DB3 /* QueryViewController.swift */,
 				78F65A4C1C25126E0074449D /* QueryBuilderViewController.swift */,
@@ -511,6 +509,8 @@
 				7840A4981C6E53A80005B66F /* VariantViewController.swift */,
 				7840A49A1C6E5A680005B66F /* ErrorViewController.swift */,
 				81CCD8141C8142AE005299AA /* DefaultEventPeriodSelectorViewController.swift */,
+				F49B2B6C1C7A6206005F2BFB /* RepeatedEventsController.swift */,
+				F49B2B6E1C7A71DC005F2BFB /* DaySelectionViewController.swift */,
 				8142AC851C95D64200B36C14 /* RepeatedEventsListViewController.swift */,
 			);
 			path = "View Controller";

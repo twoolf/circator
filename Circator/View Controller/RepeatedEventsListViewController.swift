@@ -785,7 +785,7 @@ class RepeatedEventsListViewController: UIViewController {
         }
         
         func eventDetailDoubleTap(sender: UIButton!) {
-            navigationController?.pushViewController(relVC, animated: true)
+            navigationController?.pushViewController(RepeatedEventsController(), animated: true)
         }
         
         override func prepareForSegue(segue: UIStoryboardSegue, sender: AnyObject?) {

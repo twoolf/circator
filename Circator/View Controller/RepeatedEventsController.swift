@@ -46,7 +46,7 @@ class RepeatedEventsController: UITableViewController, UITextFieldDelegate {
     }
     
     private let titles = ["Event Type", "Name", "Days", "Time"]
-    private static let dayNames = ["Mo", "Tu", "We", "Th", "Fr", "Sa", "Su"]
+    private static let dayNames = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"]
     
     private var selectedEvent: EventPickerManager.Event = .Meal
     private var selectedDays: Set<Int> = []
@@ -55,7 +55,7 @@ class RepeatedEventsController: UITableViewController, UITextFieldDelegate {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        navigationItem.title = "Repeated Events"
+        navigationItem.title = "Detail"
         tableView.registerClass(SegmentedCell.self, forCellReuseIdentifier: "segmentedCell")
 
         // Uncomment the following line to preserve selection between presentations
@@ -89,7 +89,7 @@ class RepeatedEventsController: UITableViewController, UITextFieldDelegate {
             case 0:
                 // Event type
                 let cell = tableView.dequeueReusableCellWithIdentifier("segmentedCell", forIndexPath: indexPath) as! SegmentedCell
-                cell.textLabel?.text = titles[indexPath.row]
+                //cell.textLabel?.text = titles[indexPath.row]
                 cell.configureSegmentControlWithItems(["Meal", "Sleep", "Exercise"]) {
                     $0.selectedSegmentIndex = 0
                 }
