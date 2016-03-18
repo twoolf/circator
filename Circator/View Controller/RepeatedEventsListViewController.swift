@@ -506,9 +506,9 @@ class RepeatedEventsListViewController: UIViewController {
             if indexPath.row % 3 != 0 && indexPath.row != 73 && cell.contentView.subviews.count > 0  && (cell.contentView.subviews.first as! EventItemView).event!.duration > 1800 {
 
                 
-                if tableView.subviews.count > 3 {
-                    tableView.subviews[3].removeFromSuperview()
-                }
+                //if tableView.subviews.count > 3 {
+                //    tableView.subviews[3].removeFromSuperview()
+                //}
                 
                 let view : EventItemView = cell.contentView.subviews.first as! EventItemView
                 view.translatesAutoresizingMaskIntoConstraints = false
@@ -533,7 +533,25 @@ class RepeatedEventsListViewController: UIViewController {
                 ]
                 
                 self.view.addConstraints(viewConstraints)
-                print(cell.contentView.subviews.count)
+                
+                // TODO: Deprecate old event view that is loaded for cell and make it view in self.view
+                // CLEAN UP BUNCH OF CODE USING CONVENTION BELOW FOR MUCH EASIER SOLUTION
+                let eventDetailClick = UIButton()
+                eventDetailClick.translatesAutoresizingMaskIntoConstraints = false
+                eventDetailClick.addTarget(self, action: "eventDetailDoubleTap:", forControlEvents: .TouchDownRepeat)
+                
+                view.addSubview(eventDetailClick)
+                
+                let eventDetailClickConstraints : [NSLayoutConstraint] = [
+                    eventDetailClick.leftAnchor.constraintEqualToAnchor(view.leftAnchor),
+                    eventDetailClick.rightAnchor.constraintEqualToAnchor(view.rightAnchor),
+                    eventDetailClick.topAnchor.constraintEqualToAnchor(view.topAnchor),
+                    eventDetailClick.bottomAnchor.constraintEqualToAnchor(view.bottomAnchor)
+                ]
+                
+                view.addConstraints(eventDetailClickConstraints)
+                
+                //print(cell.contentView.subviews.count)
                 //tableView.addSubview(cell.contentView)
             }
             
@@ -582,8 +600,6 @@ class RepeatedEventsListViewController: UIViewController {
                     
                     /*
                     //ensures that no conflicting views are added
-
-                    }
                     */
                     
                     for view in tableView.subviews {
@@ -601,6 +617,7 @@ class RepeatedEventsListViewController: UIViewController {
                     cell.contentView.addSubview(eventView)
                     
                     eventView.backgroundColor = UIColor(white: 0.667, alpha: 0.5)
+                    
                     
                     //sets how high the event view will be in relation to its bottom anchor
                     let cellHeight = Double(cell.contentView.bounds.height)
@@ -664,7 +681,7 @@ class RepeatedEventsListViewController: UIViewController {
                             eventIconInner.image = drawCircle(FillColor: UIColor.redColor())
                     }
                     
-                    eventIcon.titleLabel!.layer.zPosition = eventIconInner.layer.zPosition + 1
+                    //eventIcon.titleLabel!.layer.zPosition = eventIconInner.layer.zPosition + 1
                     
                     eventView.addSubview(eventTitle)
                     eventView.addSubview(eventIcon)
@@ -681,7 +698,40 @@ class RepeatedEventsListViewController: UIViewController {
                     
                     eventView.addConstraints(eventViewContentConstraints)
                     
-                    eventView.layer.zPosition = self.view.layer.zPosition + 99999
+                    
+                    
+                    let eventDetailClick = UIButton()
+                    eventDetailClick.translatesAutoresizingMaskIntoConstraints = false
+                    eventDetailClick.addTarget(self, action: "eventDetailDoubleTap:", forControlEvents: .TouchDownRepeat)
+                    
+
+                    
+                    // TODO: Deprecate old event view that is loaded for cell and make it view in self.view
+                    // CLEAN UP BUNCH OF CODE USING CONVENTION BELOW FOR MUCH EASIER SOLUTION
+                    //to account for row ovewriting
+                    self.view.addSubview(eventDetailClick)
+                    
+                    let seperatorLinePaddingHeight = Double(Int((data.duration)/3600.0)) * 2 - 1.5
+                    let seperatorLinePaddingOffset = Double(Int((data.timeOfDayOffset)/3600.0)) * 2 - 1.5
+                    
+                    let height : CGFloat = CGFloat((data.duration/1800.0) * cellHeight + seperatorLinePaddingHeight)
+                    let offset2 : CGFloat = CGFloat((data.timeOfDayOffset/1800.0) * cellHeight + seperatorLinePaddingOffset)
+                    
+                    let viewConstraints : [NSLayoutConstraint] = [
+                        eventDetailClick.leftAnchor.constraintEqualToAnchor(self.view.leftAnchor, constant: 105),
+                        eventDetailClick.widthAnchor.constraintEqualToAnchor(self.view.widthAnchor, constant: -135),
+                        eventDetailClick.topAnchor.constraintEqualToAnchor(self.view.topAnchor, constant: offset2 + 7.5),
+                        eventDetailClick.bottomAnchor.constraintEqualToAnchor(eventDetailClick.topAnchor, constant: height),
+                    ]
+                    
+                    self.view.addConstraints(viewConstraints)
+                    
+                    
+                } else {
+                    
+                    //make such that blank view controller area does not affect clickable event area
+                    cell.contentView.layer.zPosition = -999
+                    //print("moving cell back")
                 }
 
             //sets cell to filled with time seperator
@@ -732,6 +782,16 @@ class RepeatedEventsListViewController: UIViewController {
             }
 
             return cell
+        }
+        
+        func eventDetailDoubleTap(sender: UIButton!) {
+            navigationController?.pushViewController(relVC, animated: true)
+        }
+        
+        override func prepareForSegue(segue: UIStoryboardSegue, sender: AnyObject?) {
+            if segue.identifier == "showDetail" {
+                
+            }
         }
         
         //proprietry table view formatting
