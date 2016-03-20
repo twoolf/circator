@@ -143,11 +143,15 @@ class RepeatedEventsListViewController: UIViewController {
         button.titleLabel?.textAlignment = .Center
         button.setTitle("Su", forState: .Normal)
         button.setTitle("Su", forState: .Selected)
+        button.setTitleColor(UIColor.whiteColor(), forState: .Normal)
+        button.setTitleColor(UIColor.blackColor(), forState: .Selected)
         button.setBackgroundImage(drawCircle(FillColor: UIColor.clearColor()), forState: .Normal)
-        button.setBackgroundImage(drawCircle(FillColor: UIColor.darkGrayColor()), forState: .Selected)
+        button.setBackgroundImage(drawCircle(FillColor: UIColor.whiteColor()), forState: .Selected)
+        button.setBackgroundImage(drawCircle(FillColor: UIColor(white: 0.667, alpha: 0.5)), forState: .Highlighted)
         button.addTarget(self, action: "setWeekdayView:", forControlEvents: .TouchUpInside)
         return button
     }()
+    
     
     lazy var mondayButton: UIButton = {
         var button = WeekdayButton(dayOfWeek: Weekday.Monday)
@@ -155,8 +159,12 @@ class RepeatedEventsListViewController: UIViewController {
         button.titleLabel?.textAlignment = .Center
         button.setTitle("M", forState: .Normal)
         button.setTitle("M", forState: .Selected)
+        button.setTitleColor(UIColor.whiteColor(), forState: .Normal)
+        button.setTitleColor(UIColor.blackColor(), forState: .Selected)
         button.setBackgroundImage(drawCircle(FillColor: UIColor.clearColor()), forState: .Normal)
-        button.setBackgroundImage(drawCircle(FillColor: UIColor.darkGrayColor()), forState: .Selected)
+        button.setBackgroundImage(drawCircle(FillColor: UIColor.whiteColor()), forState: .Selected)
+        button.setBackgroundImage(drawCircle(FillColor: UIColor(red: 83, green: 83, blue: 83, alpha: 0.5)), forState: .Highlighted)
+
         button.addTarget(self, action: "setWeekdayView:", forControlEvents: .TouchUpInside)
         return button
     }()
@@ -167,8 +175,11 @@ class RepeatedEventsListViewController: UIViewController {
         button.titleLabel?.textAlignment = .Center
         button.setTitle("Tu", forState: .Normal)
         button.setTitle("Tu", forState: .Selected)
+        button.setTitleColor(UIColor.whiteColor(), forState: .Normal)
+        button.setTitleColor(UIColor.blackColor(), forState: .Selected)
         button.setBackgroundImage(drawCircle(FillColor: UIColor.clearColor()), forState: .Normal)
-        button.setBackgroundImage(drawCircle(FillColor: UIColor.darkGrayColor()), forState: .Selected)
+        button.setBackgroundImage(drawCircle(FillColor: UIColor.whiteColor()), forState: .Selected)
+        button.setBackgroundImage(drawCircle(FillColor: UIColor(red: 83, green: 83, blue: 83, alpha: 0.5)), forState: .Highlighted)
         button.addTarget(self, action: "setWeekdayView:", forControlEvents: .TouchUpInside)
         return button
     }()
@@ -179,8 +190,11 @@ class RepeatedEventsListViewController: UIViewController {
         button.titleLabel?.textAlignment = .Center
         button.setTitle("W", forState: .Normal)
         button.setTitle("W", forState: .Selected)
+        button.setTitleColor(UIColor.whiteColor(), forState: .Normal)
+        button.setTitleColor(UIColor.blackColor(), forState: .Selected)
         button.setBackgroundImage(drawCircle(FillColor: UIColor.clearColor()), forState: .Normal)
-        button.setBackgroundImage(drawCircle(FillColor: UIColor.darkGrayColor()), forState: .Selected)
+        button.setBackgroundImage(drawCircle(FillColor: UIColor.whiteColor()), forState: .Selected)
+        button.setBackgroundImage(drawCircle(FillColor: UIColor(red: 83, green: 83, blue: 83, alpha: 0.5)), forState: .Highlighted)
         button.addTarget(self, action: "setWeekdayView:", forControlEvents: .TouchUpInside)
         return button
     }()
@@ -191,8 +205,11 @@ class RepeatedEventsListViewController: UIViewController {
         button.titleLabel?.textAlignment = .Center
         button.setTitle("Th", forState: .Normal)
         button.setTitle("Th", forState: .Selected)
+        button.setTitleColor(UIColor.whiteColor(), forState: .Normal)
+        button.setTitleColor(UIColor.blackColor(), forState: .Selected)
         button.setBackgroundImage(drawCircle(FillColor: UIColor.clearColor()), forState: .Normal)
-        button.setBackgroundImage(drawCircle(FillColor: UIColor.darkGrayColor()), forState: .Selected)
+        button.setBackgroundImage(drawCircle(FillColor: UIColor.whiteColor()), forState: .Selected)
+        button.setBackgroundImage(drawCircle(FillColor: UIColor(red: 83, green: 83, blue: 83, alpha: 0.5)), forState: .Highlighted)
         button.addTarget(self, action: "setWeekdayView:", forControlEvents: .TouchUpInside)
         return button
     }()
@@ -203,8 +220,11 @@ class RepeatedEventsListViewController: UIViewController {
         button.titleLabel?.textAlignment = .Center
         button.setTitle("F", forState: .Normal)
         button.setTitle("F", forState: .Selected)
+        button.setTitleColor(UIColor.whiteColor(), forState: .Normal)
+        button.setTitleColor(UIColor.blackColor(), forState: .Selected)
         button.setBackgroundImage(drawCircle(FillColor: UIColor.clearColor()), forState: .Normal)
-        button.setBackgroundImage(drawCircle(FillColor: UIColor.darkGrayColor()), forState: .Selected)
+        button.setBackgroundImage(drawCircle(FillColor: UIColor.whiteColor()), forState: .Selected)
+        button.setBackgroundImage(drawCircle(FillColor: UIColor(red: 83, green: 83, blue: 83, alpha: 0.5)), forState: .Highlighted)
         button.addTarget(self, action: "setWeekdayView:", forControlEvents: .TouchUpInside)
         return button
     }()
@@ -215,8 +235,11 @@ class RepeatedEventsListViewController: UIViewController {
         button.titleLabel?.textAlignment = .Center
         button.setTitle("Sa", forState: .Normal)
         button.setTitle("Sa", forState: .Selected)
+        button.setTitleColor(UIColor.whiteColor(), forState: .Normal)
+        button.setTitleColor(UIColor.blackColor(), forState: .Selected)
         button.setBackgroundImage(drawCircle(FillColor: UIColor.clearColor()), forState: .Normal)
-        button.setBackgroundImage(drawCircle(FillColor: UIColor.darkGrayColor()), forState: .Selected)
+        button.setBackgroundImage(drawCircle(FillColor: UIColor.whiteColor()), forState: .Selected)
+        button.setBackgroundImage(drawCircle(FillColor: UIColor(red: 83, green: 83, blue: 83, alpha: 0.5)), forState: .Highlighted)
         button.addTarget(self, action: "setWeekdayView:", forControlEvents: .TouchUpInside)
         return button
     }()
@@ -276,6 +299,9 @@ class RepeatedEventsListViewController: UIViewController {
         super.viewWillAppear(animated)
         navigationController?.setNavigationBarHidden(false, animated: false)
         navigationItem.title = "Repeated Events"
+        
+        let addButton = UIBarButtonItem.init(barButtonSystemItem: .Add, target: self, action: "addRepeatedEvent:")
+        self.navigationItem.rightBarButtonItem = addButton
     }
     
     //formats and styles view
@@ -310,7 +336,7 @@ class RepeatedEventsListViewController: UIViewController {
         self.weekdayLabel.text = "Sunday"
         self.weekdayLabel.textAlignment = .Center
         self.weekdayLabel.font = UIFont.systemFontOfSize(18, weight: UIFontWeightSemibold)
-        self.weekdayLabel.textColor = UIColor.whiteColor()
+        self.weekdayLabel.textColor = UIColor(red: 83, green: 83, blue: 83, alpha: 0.75)
         self.weekdayLabel.backgroundColor = UIColor.clearColor()
         
         view.addSubview(weekdayLabel)
@@ -342,6 +368,17 @@ class RepeatedEventsListViewController: UIViewController {
         
     }
     
+    
+    
+    func addRepeatedEvent(sender: UIBarItem) {
+        
+        let vc = NewRepeatedEventViewController()
+        //let nav = UINavigationController(rootViewController: vc)
+        self.presentViewController(vc, animated: true, completion: nil)
+        //navigationController?.pushViewController(vc, animated: true)
+
+    }
+    
     func setWeekdayView(sender: WeekdayButton!) {
         
         //sets weekday label to selected day
@@ -357,8 +394,7 @@ class RepeatedEventsListViewController: UIViewController {
         
         //set current day as sender
         currentWeekday = sender
-        
-        
+    
     }
     
     // MARK: - Event Item, Cell and Table View
@@ -536,8 +572,9 @@ class RepeatedEventsListViewController: UIViewController {
                 
                 // TODO: Deprecate old event view that is loaded for cell and make it view in self.view
                 // CLEAN UP BUNCH OF CODE USING CONVENTION BELOW FOR MUCH EASIER SOLUTION
-                let eventDetailClick = UIButton()
+                let eventDetailClick : EventItemView = EventItemView(Event: data)
                 eventDetailClick.translatesAutoresizingMaskIntoConstraints = false
+                //print("\(eventDetailClick)")
                 eventDetailClick.addTarget(self, action: "eventDetailDoubleTap:", forControlEvents: .TouchDownRepeat)
                 
                 view.addSubview(eventDetailClick)
@@ -700,8 +737,9 @@ class RepeatedEventsListViewController: UIViewController {
                     
                     
                     
-                    let eventDetailClick = UIButton()
+                    let eventDetailClick : EventItemView = EventItemView(Event: data)
                     eventDetailClick.translatesAutoresizingMaskIntoConstraints = false
+                    //print("\(eventDetailClick)")
                     eventDetailClick.addTarget(self, action: "eventDetailDoubleTap:", forControlEvents: .TouchDownRepeat)
                     
 
@@ -784,14 +822,27 @@ class RepeatedEventsListViewController: UIViewController {
             return cell
         }
         
-        func eventDetailDoubleTap(sender: UIButton!) {
-            navigationController?.pushViewController(RepeatedEventsController(), animated: true)
-        }
-        
+        /*
         override func prepareForSegue(segue: UIStoryboardSegue, sender: AnyObject?) {
             if segue.identifier == "showDetail" {
                 
             }
+        }
+        */
+        
+        func eventDetailDoubleTap(sender: EventItemView) {
+            //print("\(sender)")
+            //let event : Event = (sender as! EventItemView).event!
+            var repeatedEvent : RepeatedEvent?
+            for item in events.repeatedEvents {
+                let check = item.event
+                if check == sender.event! {
+                    repeatedEvent = item
+                }
+            }
+            let vc : RepeatedEventDetailViewController = RepeatedEventDetailViewController()
+            vc.configureView(RepeatedEvent: repeatedEvent!)
+            navigationController?.pushViewController(vc, animated: true)
         }
         
         //proprietry table view formatting
@@ -807,4 +858,6 @@ class RepeatedEventsListViewController: UIViewController {
             return 0
         }
     }
+    
+
 }

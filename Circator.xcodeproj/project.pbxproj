@@ -509,8 +509,8 @@
 				7840A4981C6E53A80005B66F /* VariantViewController.swift */,
 				7840A49A1C6E5A680005B66F /* ErrorViewController.swift */,
 				81CCD8141C8142AE005299AA /* DefaultEventPeriodSelectorViewController.swift */,
-				F49B2B6C1C7A6206005F2BFB /* RepeatedEventsController.swift */,
 				F49B2B6E1C7A71DC005F2BFB /* DaySelectionViewController.swift */,
+				F49B2B6C1C7A6206005F2BFB /* RepeatedEventsController.swift */,
 				8142AC851C95D64200B36C14 /* RepeatedEventsListViewController.swift */,
 			);
 			path = "View Controller";
