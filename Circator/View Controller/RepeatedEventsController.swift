@@ -130,7 +130,8 @@ class NewRepeatedEventViewController: UIViewController {
         
         view.addConstraints(navigationBarConstraints)
         
-        let table = RepeatedEventViewController()
+        let table = DateCellTableViewController()
+        //let table = RepeatedEventViewController()
         let tableView = table.view
         tableView.translatesAutoresizingMaskIntoConstraints = false
         self.addChildViewController(table)
@@ -275,29 +276,14 @@ class RepeatedEventViewController: UITableViewController, UITextFieldDelegate {
             switch indexPath.row {
             case 0:
                 
-                let field = FormInlineDatePickerCell()
-                field.translatesAutoresizingMaskIntoConstraints = false
-                //field.FormTextFieldCell()?.placeholder = "Title"
-                //field.formTitleLabel()?.text = "Start"
-                cell.contentView.addSubview(field)
-                
-                let fieldConstraints : [NSLayoutConstraint] = [
-                    field.topAnchor.constraintEqualToAnchor(cell.contentView.topAnchor),
-                    field.bottomAnchor.constraintEqualToAnchor(cell.contentView.bottomAnchor),
-                    field.leadingAnchor.constraintEqualToAnchor(cell.contentView.leadingAnchor, constant: -7.5),
-                    field.trailingAnchor.constraintEqualToAnchor(cell.contentView.trailingAnchor)
-                ]
-                
-                cell.contentView.addConstraints(fieldConstraints)
-                
-                return cell
+                //cell = tableView.dequeueReusableCellWithIdentifier(cellID)! as UITableViewCell
                 
                 //cell.textLabel?.text = "Start"
                 //cell.accessoryType = .DisclosureIndicator
                 return cell
             case 1:
                 cell.textLabel?.text = "End"
-                cell.accessoryType = .DisclosureIndicator
+                //cell.accessoryType = .DisclosureIndicator
                 return cell
             case 2:
                 cell = UITableViewCell(style: .Value1, reuseIdentifier: "cell")
@@ -391,7 +377,10 @@ class RepeatedEventViewController: UITableViewController, UITextFieldDelegate {
         return cell
     }
     
+
     override func tableView(tableView: UITableView, didSelectRowAtIndexPath indexPath: NSIndexPath) {
+        
+        let cell = tableView.cellForRowAtIndexPath(indexPath)
         
         switch indexPath.section {
         case 0:
@@ -402,8 +391,10 @@ class RepeatedEventViewController: UITableViewController, UITextFieldDelegate {
             switch indexPath.row {
             case 0:
                 break
+                //self.displayInlineDatePickerForRowAtIndexPath(indexPath)
             case 1:
                 break
+                //self.displayInlineDatePickerForRowAtIndexPath(indexPath)
             case 2:
                 print("select")
                 let selectDays = DaySelectionViewController()
@@ -426,7 +417,7 @@ class RepeatedEventViewController: UITableViewController, UITextFieldDelegate {
         ////
         ////
         
-        let cell = tableView.cellForRowAtIndexPath(indexPath)!
+        //let cell = tableView.cellForRowAtIndexPath(indexPath)!
         if indexPath.section == 0 {
             switch indexPath.row {
             case 2:
@@ -438,7 +429,7 @@ class RepeatedEventViewController: UITableViewController, UITextFieldDelegate {
                 }
                 navigationController?.pushViewController(daySelectionVC, animated: true)
             case 3:
-                let textField = cell.accessoryView as! UITextField
+                let textField = cell!.accessoryView as! UITextField
                 //eventManager = EventPickerManager(event: selectedEvent)
                 //textField.inputView = eventManager.pickerView
                 textField.becomeFirstResponder()
