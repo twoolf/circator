@@ -26,12 +26,12 @@
                         </group>
                         <group width="1" height="0.40000000000000002" alignment="left" id="biC-ez-bx2">
                             <items>
-                                <button width="0.5" height="1" alignment="left" title="Misc" id="hCU-mZ-gCF">
+                                <button width="0.5" height="1" alignment="left" title="Water" id="hCU-mZ-gCF">
                                     <connections>
                                         <segue destination="YiA-fx-NQl" kind="push" id="SaB-BM-bvn"/>
                                     </connections>
                                 </button>
-                                <button width="0.5" height="1" alignment="right" title="Exercise" id="30E-7d-sfh">
+                                <button width="0.5" height="1" alignment="right" title="Run" id="30E-7d-sfh">
                                     <fontDescription key="font" type="system" pointSize="13"/>
                                     <connections>
                                         <segue destination="uYH-JB-1gX" kind="push" id="rPe-6a-tgs"/>
@@ -121,16 +121,16 @@
             </objects>
             <point key="canvasLocation" x="-44" y="127"/>
         </scene>
-        <!--MiscInterfaceController-->
+        <!--WaterInterfaceController-->
         <scene sceneID="jir-tl-faX">
             <objects>
-                <controller title="MiscInterfaceController" id="YiA-fx-NQl" customClass="MiscInterfaceController" customModule="CircatorWatchExtension">
+                <controller title="WaterInterfaceController" id="YiA-fx-NQl" customClass="WaterInterfaceController" customModule="CircatorWatchExtension">
                     <items>
                         <group width="1" height="80" alignment="center" id="T4c-Pd-2gj">
                             <items>
                                 <button width="0.20000000000000001" height="0.40000000000000002" alignment="left" verticalAlignment="center" title="-" id="vpy-iL-pne">
                                     <connections>
-                                        <action selector="onMinusButton" destination="YiA-fx-NQl" id="qsB-jH-2iZ"/>
+                                        <action selector="onMinusButton" destination="YiA-fx-NQl" id="PHE-9J-xCX"/>
                                     </connections>
                                 </button>
                                 <label alignment="center" verticalAlignment="center" text="0.00" id="p10-ap-W8A">
@@ -138,21 +138,21 @@
                                 </label>
                                 <button width="0.20000000000000001" height="0.40000000000000002" alignment="right" verticalAlignment="center" title="+" id="UzW-bP-NoN">
                                     <connections>
-                                        <action selector="onPlusButton" destination="YiA-fx-NQl" id="dv9-UW-FpA"/>
+                                        <action selector="onPlusButton" destination="YiA-fx-NQl" id="2Aa-AE-XDQ"/>
                                     </connections>
                                 </button>
                             </items>
                         </group>
-                        <label alignment="center" text="Misc" id="D9G-jG-xrv"/>
+                        <label alignment="center" text="Cups" id="D9G-jG-xrv"/>
                         <button width="0.90000000000000002" height="0.29999999999999999" alignment="center" verticalAlignment="bottom" title="Enter" id="dRe-71-thF">
                             <fontDescription key="font" type="system" pointSize="20"/>
                         </button>
                     </items>
                     <connections>
-                        <outlet property="EnterMiscTimeButton" destination="dRe-71-thF" id="aXu-Y2-9qv"/>
-                        <outlet property="MinusMiscTimeButton" destination="vpy-iL-pne" id="u7w-Rm-ut9"/>
-                        <outlet property="PlusMiscTimeButton" destination="UzW-bP-NoN" id="CBP-iE-qdU"/>
-                        <outlet property="timeLabel" destination="p10-ap-W8A" id="ht5-2r-h1k"/>
+                        <outlet property="enterButton" destination="dRe-71-thF" id="xkU-lI-C5J"/>
+                        <outlet property="minusButton" destination="vpy-iL-pne" id="Ay8-NW-vu2"/>
+                        <outlet property="plusButton" destination="UzW-bP-NoN" id="rDv-yY-gnZ"/>
+                        <outlet property="waterLabel" destination="p10-ap-W8A" id="ekQ-n0-NcQ"/>
                     </connections>
                 </controller>
             </objects>
