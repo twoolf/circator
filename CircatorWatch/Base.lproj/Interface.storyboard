@@ -47,28 +47,144 @@
         <!--MealInterfaceController-->
         <scene sceneID="mnF-XV-dEC">
             <objects>
-                <controller title="MealInterfaceController" id="dV6-cO-szC" customClass="MealInterfaceController" customModule="CircatorWatchExtension"/>
+                <controller title="MealInterfaceController" id="dV6-cO-szC" customClass="MealInterfaceController" customModule="CircatorWatchExtension">
+                    <items>
+                        <group width="1" height="80" alignment="center" id="aEh-1I-la8">
+                            <items>
+                                <button width="0.20000000000000001" height="0.40000000000000002" alignment="left" verticalAlignment="center" title="-" id="5QA-mM-D1q">
+                                    <connections>
+                                        <action selector="onMinusButton" destination="dV6-cO-szC" id="Kfg-SD-DTk"/>
+                                    </connections>
+                                </button>
+                                <label alignment="center" verticalAlignment="center" text="0.00" id="S2c-id-gw5">
+                                    <fontDescription key="font" type="system" pointSize="40"/>
+                                </label>
+                                <button width="0.20000000000000001" height="0.40000000000000002" alignment="right" verticalAlignment="center" title="+" id="84r-Mv-m5M">
+                                    <connections>
+                                        <action selector="onPlusButton" destination="dV6-cO-szC" id="IN7-ix-Yph"/>
+                                    </connections>
+                                </button>
+                            </items>
+                        </group>
+                        <label alignment="center" text="Minutes" id="3lg-ZV-fSy"/>
+                        <button width="0.90000000000000002" height="0.29999999999999999" alignment="center" verticalAlignment="bottom" title="Enter" id="JKU-yy-4Dz">
+                            <fontDescription key="font" type="system" pointSize="20"/>
+                            <connections>
+                                <action selector="onEnterButton" destination="dV6-cO-szC" id="ZOc-f6-Wht"/>
+                            </connections>
+                        </button>
+                    </items>
+                    <connections>
+                        <outlet property="EnterMealTimeButton" destination="JKU-yy-4Dz" id="tP7-bD-a4k"/>
+                        <outlet property="MinusMealTimeButton" destination="5QA-mM-D1q" id="wle-IQ-9Z1"/>
+                        <outlet property="PlusMealTimeButton" destination="84r-Mv-m5M" id="jVh-Vc-PkW"/>
+                        <outlet property="timeLabel" destination="S2c-id-gw5" id="TUR-OV-F95"/>
+                    </connections>
+                </controller>
             </objects>
             <point key="canvasLocation" x="-33" y="-177"/>
         </scene>
         <!--SleepInterfaceController-->
         <scene sceneID="IYy-Nw-kha">
             <objects>
-                <controller title="SleepInterfaceController" id="7hK-Ov-ieJ" customClass="ExerciseInterfaceController" customModule="CircatorWatchExtension"/>
+                <controller title="SleepInterfaceController" id="7hK-Ov-ieJ" customClass="SleepInterfaceController" customModule="CircatorWatchExtension">
+                    <items>
+                        <group width="1" height="80" alignment="center" id="HFB-RS-p6E">
+                            <items>
+                                <button width="0.20000000000000001" height="0.40000000000000002" alignment="left" verticalAlignment="center" title="-" id="bTv-cd-BdS">
+                                    <connections>
+                                        <action selector="onMinusButton" destination="7hK-Ov-ieJ" id="jTP-X4-nBB"/>
+                                    </connections>
+                                </button>
+                                <label alignment="center" verticalAlignment="center" text="0.00" id="yZD-fH-Z6g">
+                                    <fontDescription key="font" type="system" pointSize="40"/>
+                                </label>
+                                <button width="0.20000000000000001" height="0.40000000000000002" alignment="right" verticalAlignment="center" title="+" id="Hda-2t-KRJ">
+                                    <connections>
+                                        <action selector="onPlusButton" destination="7hK-Ov-ieJ" id="fDM-kK-Mf2"/>
+                                    </connections>
+                                </button>
+                            </items>
+                        </group>
+                        <label alignment="center" text="Hours" id="m7E-Dn-gOa"/>
+                        <button width="0.90000000000000002" height="0.29999999999999999" alignment="center" verticalAlignment="bottom" title="Enter" id="PFS-Pg-Yga">
+                            <fontDescription key="font" type="system" pointSize="20"/>
+                        </button>
+                    </items>
+                    <connections>
+                        <outlet property="EnterSleepTimeButton" destination="PFS-Pg-Yga" id="7zd-HG-7CT"/>
+                        <outlet property="minusSleepTime" destination="Hda-2t-KRJ" id="Nh4-1L-V9W"/>
+                        <outlet property="plusSleepTime" destination="bTv-cd-BdS" id="7TL-AI-PIc"/>
+                        <outlet property="timeLabel" destination="yZD-fH-Z6g" id="Jhz-mA-ITB"/>
+                    </connections>
+                </controller>
             </objects>
             <point key="canvasLocation" x="-44" y="127"/>
         </scene>
         <!--MiscInterfaceController-->
         <scene sceneID="jir-tl-faX">
             <objects>
-                <controller title="MiscInterfaceController" id="YiA-fx-NQl" customClass="MiscInterfaceController" customModule="CircatorWatchExtension"/>
+                <controller title="MiscInterfaceController" id="YiA-fx-NQl" customClass="MiscInterfaceController" customModule="CircatorWatchExtension">
+                    <items>
+                        <group width="1" height="80" alignment="center" id="T4c-Pd-2gj">
+                            <items>
+                                <button width="0.20000000000000001" height="0.40000000000000002" alignment="left" verticalAlignment="center" title="-" id="vpy-iL-pne">
+                                    <connections>
+                                        <action selector="onMinusButton" destination="YiA-fx-NQl" id="qsB-jH-2iZ"/>
+                                    </connections>
+                                </button>
+                                <label alignment="center" verticalAlignment="center" text="0.00" id="p10-ap-W8A">
+                                    <fontDescription key="font" type="system" pointSize="40"/>
+                                </label>
+                                <button width="0.20000000000000001" height="0.40000000000000002" alignment="right" verticalAlignment="center" title="+" id="UzW-bP-NoN">
+                                    <connections>
+                                        <action selector="onPlusButton" destination="YiA-fx-NQl" id="dv9-UW-FpA"/>
+                                    </connections>
+                                </button>
+                            </items>
+                        </group>
+                        <label alignment="center" text="Misc" id="D9G-jG-xrv"/>
+                        <button width="0.90000000000000002" height="0.29999999999999999" alignment="center" verticalAlignment="bottom" title="Enter" id="dRe-71-thF">
+                            <fontDescription key="font" type="system" pointSize="20"/>
+                        </button>
+                    </items>
+                    <connections>
+                        <outlet property="EnterMiscTimeButton" destination="dRe-71-thF" id="aXu-Y2-9qv"/>
+                        <outlet property="MinusMiscTimeButton" destination="vpy-iL-pne" id="u7w-Rm-ut9"/>
+                        <outlet property="PlusMiscTimeButton" destination="UzW-bP-NoN" id="CBP-iE-qdU"/>
+                        <outlet property="timeLabel" destination="p10-ap-W8A" id="ht5-2r-h1k"/>
+                    </connections>
+                </controller>
             </objects>
             <point key="canvasLocation" x="-44" y="637"/>
         </scene>
-        <!--Sleep Interface Controller-->
+        <!--Exercise Interface Controller-->
         <scene sceneID="rav-D0-NpW">
             <objects>
-                <controller id="uYH-JB-1gX" customClass="SleepInterfaceController" customModule="CircatorWatchExtension"/>
+                <controller id="uYH-JB-1gX" customClass="ExerciseInterfaceController" customModule="CircatorWatchExtension">
+                    <items>
+                        <group width="1" height="80" alignment="center" id="u88-sb-20M">
+                            <items>
+                                <picker height="1" alignment="left" id="b6O-Mb-FCm">
+                                    <connections>
+                                        <action selector="onTimeChanged:" destination="uYH-JB-1gX" id="PCg-Q9-Zdu"/>
+                                    </connections>
+                                </picker>
+                            </items>
+                        </group>
+                        <label alignment="center" text="Minutes" id="BLm-zN-Tbb"/>
+                        <button width="0.90000000000000002" height="0.29999999999999999" alignment="center" verticalAlignment="bottom" title="Enter" id="ldW-De-NYP">
+                            <fontDescription key="font" type="system" pointSize="20"/>
+                            <connections>
+                                <action selector="onEnterButton" destination="uYH-JB-1gX" id="hpY-Pd-WPy"/>
+                            </connections>
+                        </button>
+                    </items>
+                    <connections>
+                        <outlet property="EnterExerciseTimeButton" destination="ldW-De-NYP" id="FWF-ew-KVY"/>
+                        <outlet property="hourPicker" destination="b6O-Mb-FCm" id="TTy-eS-3ug"/>
+                    </connections>
+                </controller>
             </objects>
             <point key="canvasLocation" x="-44" y="355"/>
         </scene>

@@ -2,7 +2,7 @@
 //  MealController.swift
 //  Circator
 //
-//  Created by Mariano on 3/2/16.
+//  Created by Mariano Pennini on 3/2/16.
 //  Copyright © 2016 Yanif Ahmad, Tom Woolf. All rights reserved.
 //
 
@@ -31,7 +31,7 @@ class MealInterfaceController: WKInterfaceController {
     
    
     @IBAction func onPlusButton() {
-        time++
+        time = time + 5
         updateConfiguration()
         
     }
@@ -40,7 +40,7 @@ class MealInterfaceController: WKInterfaceController {
         if(time == 0) {
             updateConfiguration()
         } else{
-            time--
+            time = time - 5
             updateConfiguration()
         }
     }
@@ -50,7 +50,7 @@ class MealInterfaceController: WKInterfaceController {
     }
 
     @IBAction func onEnterButton() {
-        
+        //send time to healthKit and reset time to 0.00
     }
     
     

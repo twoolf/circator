@@ -39,7 +39,6 @@
 		78E521A01C25687900FAE56A /* Pods.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 78E5219F1C25687900FAE56A /* Pods.framework */; };
 		78F65A4D1C25126E0074449D /* QueryBuilderViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 78F65A4C1C25126E0074449D /* QueryBuilderViewController.swift */; };
 		A88F31F3DDADAD50F4190F8E /* Pods.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = CB09F654AB4B00C79306C728 /* Pods.framework */; };
-		D51AF7721C8797A800817E26 /* Interface.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = D51AF7701C8797A800817E26 /* Interface.storyboard */; };
 		D51AF7741C8797A800817E26 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = D51AF7731C8797A800817E26 /* Assets.xcassets */; };
 		D51AF77B1C8797A800817E26 /* CircatorWatchExtension.appex in Embed App Extensions */ = {isa = PBXBuildFile; fileRef = D51AF77A1C8797A800817E26 /* CircatorWatchExtension.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
 		D51AF7821C8797A800817E26 /* IntroInterfaceController.swift in Sources */ = {isa = PBXBuildFile; fileRef = D51AF7811C8797A800817E26 /* IntroInterfaceController.swift */; };
@@ -50,13 +49,11 @@
 		D51AF78C1C8797A800817E26 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = D51AF78B1C8797A800817E26 /* Assets.xcassets */; };
 		D51AF7901C8797A800817E26 /* CircatorWatch.app in Embed Watch Content */ = {isa = PBXBuildFile; fileRef = D51AF76E1C8797A800817E26 /* CircatorWatch.app */; };
 		D51AF7991C87992900817E26 /* MealInterfaceController.swift in Sources */ = {isa = PBXBuildFile; fileRef = D51AF7981C87992900817E26 /* MealInterfaceController.swift */; };
-		D56537C01C90CB5800617B1F /* ExerciseInterfaceController.swift in Sources */ = {isa = PBXBuildFile; fileRef = D56537BF1C90CB5800617B1F /* ExerciseInterfaceController.swift */; };
-		D56537C21C90CB6C00617B1F /* MiscInterfaceController.swift in Sources */ = {isa = PBXBuildFile; fileRef = D56537C11C90CB6C00617B1F /* MiscInterfaceController.swift */; };
 		D56537C41C91129100617B1F /* ExerciseInterfaceController.swift in Sources */ = {isa = PBXBuildFile; fileRef = D56537BF1C90CB5800617B1F /* ExerciseInterfaceController.swift */; };
 		D56537C51C91129500617B1F /* MiscInterfaceController.swift in Sources */ = {isa = PBXBuildFile; fileRef = D56537C11C90CB6C00617B1F /* MiscInterfaceController.swift */; };
 		D56537C61C9112B100617B1F /* Interface.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = D51AF7701C8797A800817E26 /* Interface.storyboard */; };
-		D56537C81C9112E300617B1F /* SleepInterfaceController.swift in Sources */ = {isa = PBXBuildFile; fileRef = D56537C71C9112E300617B1F /* SleepInterfaceController.swift */; };
 		D56537C91C9112E300617B1F /* SleepInterfaceController.swift in Sources */ = {isa = PBXBuildFile; fileRef = D56537C71C9112E300617B1F /* SleepInterfaceController.swift */; };
+		D5DAF6AC1CAB82BF000018E1 /* Interface.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = D51AF7701C8797A800817E26 /* Interface.storyboard */; };
 		F42F5ADD1BDC85AF00195490 /* SampleDataAnalyzer.swift in Sources */ = {isa = PBXBuildFile; fileRef = F42F5ADC1BDC85AF00195490 /* SampleDataAnalyzer.swift */; };
 		F42F5B351BE1FD1E00195490 /* CircatorKit.h in Headers */ = {isa = PBXBuildFile; fileRef = F42F5B341BE1FD1E00195490 /* CircatorKit.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		F42F5B391BE1FD1E00195490 /* CircatorKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F42F5B321BE1FD1E00195490 /* CircatorKit.framework */; };
@@ -713,8 +710,8 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				D5DAF6AC1CAB82BF000018E1 /* Interface.storyboard in Resources */,
 				D51AF7741C8797A800817E26 /* Assets.xcassets in Resources */,
-				D51AF7721C8797A800817E26 /* Interface.storyboard in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -904,15 +901,12 @@
 				F42F5B471BE2048400195490 /* Theme.swift in Sources */,
 				F42F5B461BE2048400195490 /* SampleFormatter.swift in Sources */,
 				7861300F1C25F42B00F50DB3 /* QueryManager.swift in Sources */,
-				D56537C21C90CB6C00617B1F /* MiscInterfaceController.swift in Sources */,
 				F42F5B451BE2048400195490 /* HealthManager.swift in Sources */,
 				7848A7E01C699007003241FF /* BehaviorMonitor.swift in Sources */,
 				78398D681C781EF0009653D6 /* ScreenManager.swift in Sources */,
 				783E53D21C75856200BEBF33 /* DataGenerator.swift in Sources */,
 				7843F9121C1FAD9900AB8978 /* ServiceAPI.swift in Sources */,
-				D56537C81C9112E300617B1F /* SleepInterfaceController.swift in Sources */,
 				781CF2BF1C6A4781001DF3B2 /* SecureConstants.swift in Sources */,
-				D56537C01C90CB5800617B1F /* ExerciseInterfaceController.swift in Sources */,
 				786DF10D1C72AFE0007C2D4C /* Constants.swift in Sources */,
 				7863EA9C1C27302B0038DE7A /* ConsentManager.swift in Sources */,
 				78AC90CC1C1E859F008C931B /* UserAccount.swift in Sources */,
