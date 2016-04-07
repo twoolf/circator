@@ -371,8 +371,8 @@ class RepeatedEventsListViewController: UIViewController {
     
     
     func addRepeatedEvent(sender: UIBarItem) {
-        
         let vc = NewRepeatedEventViewController()
+        //let vc = NewRepeatedEventViewController()
         //let nav = UINavigationController(rootViewController: vc)
         self.presentViewController(vc, animated: true, completion: nil)
         //navigationController?.pushViewController(vc, animated: true)

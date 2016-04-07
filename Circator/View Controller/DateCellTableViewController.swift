@@ -148,7 +148,8 @@ class DateCellTableViewController: UITableViewController {
         if hasInlineDatePicker() {
             // we have a date picker, so allow for it in the number of rows in this section
             var numRows = dataArray.count
-            return ++numRows;
+            numRows += 1
+            return numRows
         }
         
         return dataArray.count;
@@ -167,7 +168,9 @@ class DateCellTableViewController: UITableViewController {
             cellID = kDateCellID       // the start/end date cells
         }
         
-        cell = tableView.dequeueReusableCellWithIdentifier(cellID)! as UITableViewCell
+        cell = UITableViewCell(style: .Value2, reuseIdentifier: cellID)
+        //cell?.textLabel?.textColor = UIColor.blackColor()
+        //cell = tableView.dequeueReusableCellWithIdentifier(cellID)! as UITableViewCell
         
         if indexPath.row == 0 {
             // we decide here that first cell in the table is not selectable (it's just an indicator)

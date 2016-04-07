@@ -8,6 +8,7 @@
 
 import UIKit
 import Former
+import SwiftDate
 
 class RepeatedEventDetailViewController : UIViewController {
     
@@ -110,7 +111,7 @@ class NewRepeatedEventViewController: UIViewController {
         let navigationItems = UINavigationItem()
         
         let left = UIBarButtonItem(title: "cancel", style: .Plain, target: self, action: "cancel:")
-        let right = UIBarButtonItem(title: "add", style: .Plain, target: self, action: nil)
+        let right = UIBarButtonItem(title: "add", style: .Plain, target: self, action: "add:")
         
         navigationItems.title = "New Repeated Event"
         navigationItems.leftBarButtonItem = left
@@ -130,21 +131,26 @@ class NewRepeatedEventViewController: UIViewController {
         
         view.addConstraints(navigationBarConstraints)
         
-        let table = DateCellTableViewController()
         //let table = RepeatedEventViewController()
-        let tableView = table.view
-        tableView.translatesAutoresizingMaskIntoConstraints = false
-        self.addChildViewController(table)
-        view.addSubview(tableView)
+        //let table = RepeatedEventViewController()
+        //let tableView = table.view
+        //tableView.translatesAutoresizingMaskIntoConstraints = false
+        //self.addChildViewController(table)
+        //view.addSubview(tableView)
         
-        let tableViewConstraints : [NSLayoutConstraint] = [
-            tableView.topAnchor.constraintEqualToAnchor(navigationBar.bottomAnchor),
-            tableView.bottomAnchor.constraintEqualToAnchor(view.bottomAnchor),
-            tableView.leftAnchor.constraintEqualToAnchor(view.leftAnchor),
-            tableView.rightAnchor.constraintEqualToAnchor(view.rightAnchor)
+        let form = AddEventViewController()
+        form.view.translatesAutoresizingMaskIntoConstraints = false
+        self.addChildViewController(form)
+        view.addSubview(form.view)
+        
+        let formConstraints : [NSLayoutConstraint] = [
+            form.view.topAnchor.constraintEqualToAnchor(navigationBar.bottomAnchor),
+            form.view.bottomAnchor.constraintEqualToAnchor(view.bottomAnchor),
+            form.view.leftAnchor.constraintEqualToAnchor(view.leftAnchor),
+            form.view.rightAnchor.constraintEqualToAnchor(view.rightAnchor)
         ]
         
-        view.addConstraints(tableViewConstraints)
+        view.addConstraints(formConstraints)
         
         //tableView.topAnchor.constraintEqualToAnchor(topLayoutGuide.bottomAnchor)
     }
@@ -159,6 +165,252 @@ class NewRepeatedEventViewController: UIViewController {
     }
     
 }
+
+//
+//  AddEventViewController.swift
+//  Former-Demo
+//
+//  Created by Ryo Aoyama on 11/6/15.
+//  Copyright © 2015 Ryo Aoyama. All rights reserved.
+//
+
+final class AddEventViewController: FormViewController {
+    
+    // MARK: Public
+    
+    override func viewDidLoad() {
+        super.viewDidLoad()
+        configure()
+    }
+    
+    // MARK: Private
+    
+    private var selectedDays: Set<Int> = []
+    private static let dayNames = ["M", "Tu", "W", "Th", "F", "Sa", "Su"]
+    
+    /*
+    private enum Repeat {
+        case Never, Daily, Weekly, Monthly, Yearly
+        func title() -> String {
+            switch self {
+            case Never: return "Never"
+            case Daily: return "Daily"
+            case Weekly: return "Weekly"
+            case Monthly: return "Monthly"
+            case Yearly: return "Yearly"
+            }
+        }
+        static func values() -> [Repeat] {
+            return [Daily, Weekly, Monthly, Yearly]
+        }
+    }
+    
+    private enum Alert {
+        case None, AtTime, Five, Thirty, Hour, Day, Week
+        func title() -> String {
+            switch self {
+            case None: return "None"
+            case AtTime: return "At time of event"
+            case Five: return "5 minutes before"
+            case Thirty: return "30 minutes before"
+            case Hour: return "1 hour before"
+            case Day: return "1 day before"
+            case Week: return "1 week before"
+            }
+        }
+        static func values() -> [Alert] {
+            return [AtTime, Five, Thirty, Hour, Day, Week]
+        }
+    }
+    */
+    
+    private func configure() {
+        //title = "Add Event"
+        tableView.contentInset.top = 22
+        tableView.contentInset.bottom = 30
+        tableView.contentOffset.y = -10
+        
+        // Create RowFomers
+        
+        let eventTypeRow = SegmentedRowFormer<FormSegmentedCell>() {
+            $0.titleLabel.text = "Type"
+            $0.titleLabel.textColor = UIColor.blackColor()
+            $0.titleLabel.font = .boldSystemFontOfSize(15)
+            }.configure {
+                $0.segmentTitles = ["Meal", "Sleep", "Exercise"]
+                $0.selectedIndex = UISegmentedControlNoSegment
+        }
+        
+        let titleRow = TextFieldRowFormer<FormTextFieldCell>() {
+            $0.textField.textColor = UIColor.blackColor()
+            $0.textField.font = .systemFontOfSize(15)
+            }.configure {
+                $0.placeholder = "Title"
+        }
+        
+
+        
+        let formatTime: (NSDate -> String) = { time in
+            let timeFormatter = NSDateFormatter()
+            timeFormatter.dateFormat = "h:mm a"
+            return timeFormatter.stringFromDate(time)
+        }
+
+        let startRow = InlineDatePickerRowFormer<FormInlineDatePickerCell>() {
+            $0.titleLabel.text = "Start"
+            $0.titleLabel.textColor = UIColor.blackColor()
+            $0.titleLabel.font = .boldSystemFontOfSize(15)
+            $0.displayLabel.textColor = UIColor.blackColor()
+            $0.displayLabel.font = .systemFontOfSize(15)
+            }.inlineCellSetup {
+                $0.datePicker.datePickerMode = .Time
+                $0.datePicker.minuteInterval = 30
+                //$0.datePicker.setDate(NSDate().startOf(.Minute, inRegion: NSDate().components.dateInRegion), animated: false)
+            }.displayTextFromDate(formatTime)
+        
+        let endRow = InlineDatePickerRowFormer<FormInlineDatePickerCell>() {
+            $0.titleLabel.text = "End"
+            $0.titleLabel.textColor = UIColor.blackColor()
+            $0.titleLabel.font = .boldSystemFontOfSize(15)
+            $0.displayLabel.textColor = UIColor.blackColor()
+            $0.displayLabel.font = .systemFontOfSize(15)
+            
+            }.inlineCellSetup {
+                $0.datePicker.datePickerMode = .Time
+                $0.datePicker.minuteInterval = 30
+                let time = $0.datePicker.date.startOf(.Minute, inRegion: NSDate().inRegion().region)
+
+                $0.datePicker.date = time
+            }.displayTextFromDate(formatTime)
+        
+        /*let allDayRow = SwitchRowFormer<FormSwitchCell>() {
+            $0.titleLabel.text = "All-day"
+            $0.titleLabel.textColor = UIColor.blackColor()
+            $0.titleLabel.font = .boldSystemFontOfSize(15)
+            $0.switchButton.onTintColor = UIColor.blackColor()
+            }.onSwitchChanged { on in
+                startRow.update {
+                    $0.displayTextFromDate(
+                        on ? String.mediumDateNoTime : String.mediumDateShortTime
+                    )
+                }
+                startRow.inlineCellUpdate {
+                    $0.datePicker.datePickerMode = on ? .Date : .DateAndTime
+                }
+                endRow.update {
+                    $0.displayTextFromDate(
+                        on ? String.mediumDateNoTime : String.mediumDateShortTime
+                    )
+                }
+                endRow.inlineCellUpdate {
+                    $0.datePicker.datePickerMode = on ? .Date : .DateAndTime
+                }
+        }*/
+        
+        let selectedDaysLabel = UILabel()
+        selectedDaysLabel.translatesAutoresizingMaskIntoConstraints = false
+        selectedDaysLabel.font = .systemFontOfSize(15)
+        
+        let repeatRow = LabelRowFormer<FormLabelCell>() {
+            $0.textLabel?.text = "Frequency"
+            $0.textLabel?.font = .boldSystemFontOfSize(15)
+            $0.accessoryType = .DisclosureIndicator
+            
+            let contentConstraints : [NSLayoutConstraint] = [
+                selectedDaysLabel.topAnchor.constraintEqualToAnchor($0.topAnchor),
+                selectedDaysLabel.bottomAnchor.constraintEqualToAnchor($0.bottomAnchor),
+                selectedDaysLabel.rightAnchor.constraintEqualToAnchor($0.rightAnchor, constant: -37.5)
+            ]
+            $0.addSubview(selectedDaysLabel)
+            $0.addConstraints(contentConstraints)
+            
+            }.onSelected { row in
+                let selectDays = DaySelectionViewController()
+                selectDays.selectedIndices = self.selectedDays
+                selectDays.selectionUpdateHandler = { [unowned self] days in
+                    self.selectedDays = days
+                    selectedDaysLabel.text = self.selectedDays.sort().map { self.dynamicType.dayNames[$0] }.joinWithSeparator(", ")
+                }
+                self.presentViewController(selectDays, animated: true, completion: nil)
+                row.former!.deselect(true)
+                
+        }
+        
+        /*let repeatRow = InlinePickerRowFormer<FormInlinePickerCell, Repeat>() {
+            $0.titleLabel.text = "Repeat"
+            $0.titleLabel.textColor = UIColor.blackColor()
+            $0.titleLabel.font = .boldSystemFontOfSize(15)
+            $0.displayLabel.textColor = UIColor.blackColor()
+            $0.displayLabel.font = .systemFontOfSize(15)
+            }.configure {
+                let never = Repeat.Never
+                $0.pickerItems.append(
+                    InlinePickerItem(title: never.title(),
+                        displayTitle: NSAttributedString(string: never.title(),
+                            attributes: [NSForegroundColorAttributeName: UIColor.lightGrayColor()]),
+                        value: never)
+                )
+                $0.pickerItems += Repeat.values().map {
+                    InlinePickerItem(title: $0.title(), value: $0)
+                }
+        }
+        
+        let alertRow = InlinePickerRowFormer<FormInlinePickerCell, Alert>() {
+            $0.titleLabel.text = "Alert"
+            $0.titleLabel.textColor = UIColor.blackColor()
+            $0.titleLabel.font = .boldSystemFontOfSize(15)
+            $0.displayLabel.textColor = UIColor.blackColor()
+            $0.displayLabel.font = .systemFontOfSize(15)
+            }.configure {
+                let none = Alert.None
+                $0.pickerItems.append(
+                    InlinePickerItem(title: none.title(),
+                        displayTitle: NSAttributedString(string: none.title(),
+                            attributes: [NSForegroundColorAttributeName: UIColor.lightGrayColor()]),
+                        value: none)
+                )
+                $0.pickerItems += Alert.values().map {
+                    InlinePickerItem(title: $0.title(), value: $0)
+                }
+        }*/
+        
+        let noteRow = TextViewRowFormer<FormTextViewCell>() {
+            $0.textView.textColor = UIColor.blackColor()
+            $0.textView.font = .systemFontOfSize(15)
+            }.configure {
+                $0.placeholder = "Notes"
+                $0.rowHeight = 150
+        }
+        
+        // Create Headers
+        
+        let createHeader: (() -> ViewFormer) = {
+            return CustomViewFormer<FormHeaderFooterView>()
+                .configure {
+                    $0.viewHeight = 20
+            }
+        }
+        
+        // Create SectionFormers
+        let eventTypeSection = SectionFormer(rowFormer: eventTypeRow)
+            .set(headerViewFormer: createHeader())
+        let titleSection = SectionFormer(rowFormer: titleRow)
+            .set(headerViewFormer: createHeader())
+        let dateSection = SectionFormer(rowFormer: startRow, endRow)
+            .set(headerViewFormer: createHeader())
+        let repeatSection = SectionFormer(rowFormer: repeatRow)
+            .set(headerViewFormer: createHeader())
+        let noteSection = SectionFormer(rowFormer: noteRow)
+            .set(headerViewFormer: createHeader())
+        
+        former.append(sectionFormer: eventTypeSection, titleSection, dateSection, repeatSection, noteSection)
+    }
+}
+
+
+
+
+
 
 class RepeatedEventViewController: UITableViewController, UITextFieldDelegate {
     
