@@ -543,7 +543,7 @@ class RepeatedEventsListViewController: UIViewController {
             }
         }
         
-        override func tableView(tableView: UITableView, didEndDisplayingCell cell: UITableViewCell, forRowAtIndexPath indexPath: NSIndexPath) {
+        /*override func tableView(tableView: UITableView, didEndDisplayingCell cell: UITableViewCell, forRowAtIndexPath indexPath: NSIndexPath) {
             
             if indexPath.row % 3 != 0 && indexPath.row != 73 && cell.contentView.subviews.count > 0  && (cell.contentView.subviews.first as! EventItemView).event!.duration > 1800 {
 
@@ -598,7 +598,7 @@ class RepeatedEventsListViewController: UIViewController {
                 //tableView.addSubview(cell.contentView)
             }
             
-        }
+        }*/
         
         override func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell {
             var cell : UITableViewCell
@@ -744,9 +744,10 @@ class RepeatedEventsListViewController: UIViewController {
                     
                     
                     let eventDetailClick : EventItemView = EventItemView(Event: data)
+                    eventDetailClick.backgroundColor = UIColor.blueColor()
                     eventDetailClick.translatesAutoresizingMaskIntoConstraints = false
                     //print("\(eventDetailClick)")
-                    //eventDetailClick.addTarget(self, action: "eventDetailDoubleTap:", forControlEvents: .TouchDownRepeat)
+                    eventDetailClick.addTarget(self, action: "eventDetailDoubleTap:", forControlEvents: .TouchDownRepeat)
                     
 
                     

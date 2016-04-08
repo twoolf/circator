@@ -184,7 +184,7 @@ class NewRepeatedEventViewController: UIViewController {
         if form?.eventTitle != nil {
             eventTitle = form?.eventTitle
         } else {
-            self.dismissViewControllerAnimated(true, completion: nil)
+            UINotifications.genericError(self, msg: "Event title required.")
             return
         }
         
@@ -192,21 +192,25 @@ class NewRepeatedEventViewController: UIViewController {
             print(form?.eventType)
             eventType = form?.eventType
         } else {
-            self.dismissViewControllerAnimated(true, completion: nil)
+            UINotifications.genericError(self, msg: "Event type required.")
             return
         }
         
         if form?.timeOfDayOffsetInSeconds != nil {
             timeOfDayOffsetInSeconds = form?.timeOfDayOffsetInSeconds
         } else {
-            self.dismissViewControllerAnimated(true, completion: nil)
+            UINotifications.genericError(self, msg: "Event start time required.")
             return
         }
         
         if form?.durationInSeconds != nil {
             durationInSeconds = form?.durationInSeconds
+            if durationInSeconds < timeOfDayOffsetInSeconds {
+                UINotifications.genericError(self, msg: "Event must end after it starts")
+                return
+            }
         } else {
-            self.dismissViewControllerAnimated(true, completion: nil)
+            UINotifications.genericError(self, msg: "Event end time required.")
             return
         }
         
@@ -222,7 +226,7 @@ class NewRepeatedEventViewController: UIViewController {
 
 
         } else {
-            self.dismissViewControllerAnimated(true, completion: nil)
+            UINotifications.genericError(self, msg: "Event must occur on at least one day.")
             return
         }
     
@@ -233,6 +237,7 @@ class NewRepeatedEventViewController: UIViewController {
         
         presenting.events.addRepeatedEvent(RepeatedEvent: RepeatedEvent(metabolicEvent: event, daysOfWeekOccurs: OccursOnDays))
         
+        presenting.loadData()
         self.dismissViewControllerAnimated(true, completion: nil)
         print("added")
         
