@@ -53,15 +53,18 @@ public struct Event : Equatable {
     var eventType : EventType
     var timeOfDayOffset : NSTimeInterval
     var duration : NSTimeInterval
+    //optional text info
+    var note : String?
     //optional exact time for exact event logging
     var currentDay : NSDate?
     
-    init(nameOfEvent name : String, typeOfEvent type : EventType, timeOfDayOffsetInSeconds offset : NSTimeInterval, durationInSeconds duration : NSTimeInterval, CurrentTimeAsCurrentDay time : NSDate? = nil) {
+    init(nameOfEvent name : String, typeOfEvent type : EventType, timeOfDayOffsetInSeconds offset : NSTimeInterval, durationInSeconds duration : NSTimeInterval, CurrentTimeAsCurrentDay time : NSDate? = nil, additionalInfo note : String? = nil) {
         self.name = name
         self.eventType = type
         self.timeOfDayOffset = offset
         self.duration = duration
         self.currentDay = time
+        self.note = note
     }
 }
 
@@ -269,6 +272,7 @@ class RepeatedEventsListViewController: UIViewController {
     
     
     func loadData() {
+        
         self.eventsList.loadData(RepeatedEvents: self.events)
     }
     
@@ -289,6 +293,8 @@ class RepeatedEventsListViewController: UIViewController {
         let workout : RepeatedEvent = RepeatedEvent(metabolicEvent: Event(nameOfEvent: "workout", typeOfEvent: .Exercise, timeOfDayOffsetInSeconds: 32400, durationInSeconds: 25200), daysOfWeekOccurs: sunday)
         self.events.addRepeatedEvent(RepeatedEvent: workout)
     
+        
+        
         
         //load and configure data
         self.eventsList.loadData(RepeatedEvents: self.events)
@@ -740,7 +746,7 @@ class RepeatedEventsListViewController: UIViewController {
                     let eventDetailClick : EventItemView = EventItemView(Event: data)
                     eventDetailClick.translatesAutoresizingMaskIntoConstraints = false
                     //print("\(eventDetailClick)")
-                    eventDetailClick.addTarget(self, action: "eventDetailDoubleTap:", forControlEvents: .TouchDownRepeat)
+                    //eventDetailClick.addTarget(self, action: "eventDetailDoubleTap:", forControlEvents: .TouchDownRepeat)
                     
 
                     
