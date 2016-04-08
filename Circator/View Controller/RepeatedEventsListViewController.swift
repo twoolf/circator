@@ -139,7 +139,7 @@ class RepeatedEventsListViewController: UIViewController {
     }
     
     //weekday buttons by day
-    lazy var sundayButton: UIButton = {
+    lazy var sundayButton: WeekdayButton = {
         
         var button = WeekdayButton(dayOfWeek: Weekday.Sunday)
         button.adjustsImageWhenHighlighted = false
@@ -156,7 +156,7 @@ class RepeatedEventsListViewController: UIViewController {
     }()
     
     
-    lazy var mondayButton: UIButton = {
+    lazy var mondayButton: WeekdayButton = {
         var button = WeekdayButton(dayOfWeek: Weekday.Monday)
         button.adjustsImageWhenHighlighted = false
         button.titleLabel?.textAlignment = .Center
@@ -172,7 +172,7 @@ class RepeatedEventsListViewController: UIViewController {
         return button
     }()
     
-    lazy var tuesdayButton: UIButton = {
+    lazy var tuesdayButton: WeekdayButton = {
         var button = WeekdayButton(dayOfWeek: Weekday.Tuesday)
         button.adjustsImageWhenHighlighted = false
         button.titleLabel?.textAlignment = .Center
@@ -187,7 +187,7 @@ class RepeatedEventsListViewController: UIViewController {
         return button
     }()
     
-    lazy var wednesdayButton: UIButton = {
+    lazy var wednesdayButton: WeekdayButton = {
         var button = WeekdayButton(dayOfWeek: Weekday.Wednesday)
         button.adjustsImageWhenHighlighted = false
         button.titleLabel?.textAlignment = .Center
@@ -202,7 +202,7 @@ class RepeatedEventsListViewController: UIViewController {
         return button
     }()
     
-    lazy var thursdayButton: UIButton = {
+    lazy var thursdayButton: WeekdayButton = {
         var button = WeekdayButton(dayOfWeek: Weekday.Thursday)
         button.adjustsImageWhenHighlighted = false
         button.titleLabel?.textAlignment = .Center
@@ -217,7 +217,7 @@ class RepeatedEventsListViewController: UIViewController {
         return button
     }()
     
-    lazy var fridayButton: UIButton = {
+    lazy var fridayButton: WeekdayButton = {
         var button = WeekdayButton(dayOfWeek: Weekday.Friday)
         button.adjustsImageWhenHighlighted = false
         button.titleLabel?.textAlignment = .Center
@@ -232,7 +232,7 @@ class RepeatedEventsListViewController: UIViewController {
         return button
     }()
     
-    lazy var saturdayButton: UIButton = {
+    lazy var saturdayButton: WeekdayButton = {
         var button = WeekdayButton(dayOfWeek: Weekday.Saturday)
         button.adjustsImageWhenHighlighted = false
         button.titleLabel?.textAlignment = .Center
@@ -247,9 +247,13 @@ class RepeatedEventsListViewController: UIViewController {
         return button
     }()
     
+    lazy var weekdayButtons : [WeekdayButton] = {
+        return [self.sundayButton, self.mondayButton, self.tuesdayButton, self.wednesdayButton, self.thursdayButton, self.fridayButton, self.saturdayButton]
+    }()
+    
     //UIStack that display weekday buttons as single row
     lazy var weekdayRowSelector : UIStackView = {
-        let stackView = UIStackView(arrangedSubviews: [self.sundayButton, self.mondayButton, self.tuesdayButton, self.wednesdayButton, self.thursdayButton, self.fridayButton, self.saturdayButton])
+        let stackView = UIStackView(arrangedSubviews: self.weekdayButtons)
         stackView.axis = .Horizontal
         stackView.distribution = UIStackViewDistribution.FillEqually
         stackView.alignment = UIStackViewAlignment.Fill
@@ -262,7 +266,7 @@ class RepeatedEventsListViewController: UIViewController {
     
     //TODO: some of these variables should be initialized in or need to be moved to data source delegate...??
     
-    var currentWeekday : UIButton?
+    var currentWeekday : WeekdayButton?
     
     var weekdayLabel : UILabel = UILabel()
     
@@ -293,9 +297,18 @@ class RepeatedEventsListViewController: UIViewController {
         let workout : RepeatedEvent = RepeatedEvent(metabolicEvent: Event(nameOfEvent: "workout", typeOfEvent: .Exercise, timeOfDayOffsetInSeconds: 32400, durationInSeconds: 25200), daysOfWeekOccurs: sunday)
         self.events.addRepeatedEvent(RepeatedEvent: workout)
     
+        print(NSDate().weekday)
         
+        self.currentWeekday = self.weekdayButtons[NSDate().weekday - 1]
+        self.currentWeekday?.selected = true
+        //sets weekday label to selected day
+        self.weekdayLabel.text = self.currentWeekday!.day.description
         
+        //sets day state of table view and reloads data
+        eventsList.setData(DayOfWeek: (self.currentWeekday?.day)!)
+        eventsList.tableView.reloadData()
         
+
         //load and configure data
         self.eventsList.loadData(RepeatedEvents: self.events)
         self.configureView()
@@ -339,7 +352,6 @@ class RepeatedEventsListViewController: UIViewController {
         
         //set up weekday view
         self.weekdayLabel.translatesAutoresizingMaskIntoConstraints = false
-        self.weekdayLabel.text = "Sunday"
         self.weekdayLabel.textAlignment = .Center
         self.weekdayLabel.font = UIFont.systemFontOfSize(18, weight: UIFontWeightSemibold)
         self.weekdayLabel.textColor = UIColor(red: 83, green: 83, blue: 83, alpha: 0.75)
@@ -424,15 +436,36 @@ class RepeatedEventsListViewController: UIViewController {
             }
         }
         
-        func addRepeatedEvent(RepeatedEvent event : RepeatedEvent) {
-            // TODO: Error handling and contains
-            //if repeatedEvents.contains(event) { }
+        func addRepeatedEvent(RepeatedEvent event : RepeatedEvent) -> Bool {
+
+            //checks if added event conflicts with any existing event
+            for eventsForDay in eventsForWeek {
+                for optional in eventsForDay.1 {
+                    if let eventOfDay = optional {
+                        if event.event.timeOfDayOffset < eventOfDay.timeOfDayOffset {
+                            if event.event.timeOfDayOffset + event.event.duration > eventOfDay.timeOfDayOffset {
+                                return false
+                            }
+                        } else if event.event.timeOfDayOffset > eventOfDay.timeOfDayOffset {
+                            if eventOfDay.timeOfDayOffset + eventOfDay.duration > event.event.timeOfDayOffset {
+                                return false
+                            }
+                        } else {
+                            return false
+                        }
+                    }
+                }
+            }
+                
+            //adding repeated event
             repeatedEvents.append(event)
             //print("loading...")
             for day in event.frequency {
                 //print("\(day)")
                 eventsForWeek[day.rawValue]!.append(Event(nameOfEvent: event.event.name, typeOfEvent: event.event.eventType, timeOfDayOffsetInSeconds: event.event.timeOfDayOffset, durationInSeconds: event.event.duration))
             }
+            
+            return true
         }
         
         func removeRepeatedEvent(RepeatedEvent event : RepeatedEvent) {
@@ -741,8 +774,6 @@ class RepeatedEventsListViewController: UIViewController {
                     
                     eventView.addConstraints(eventViewContentConstraints)
                     
-                    
-                    
                     let eventDetailClick : EventItemView = EventItemView(Event: data)
                     eventDetailClick.backgroundColor = UIColor.blueColor()
                     eventDetailClick.translatesAutoresizingMaskIntoConstraints = false
@@ -775,7 +806,7 @@ class RepeatedEventsListViewController: UIViewController {
                 } else {
                     
                     //make such that blank view controller area does not affect clickable event area
-                    cell.contentView.layer.zPosition = -999
+                    //cell.contentView.layer.zPosition = -999
                     //print("moving cell back")
                 }
 

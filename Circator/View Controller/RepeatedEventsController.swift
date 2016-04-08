@@ -74,9 +74,6 @@ class RepeatedEventDetailViewController : UIViewController {
             eventTitle.rightAnchor.constraintEqualToAnchor(eventIcon.leftAnchor)
         ]
         view.addConstraints(eventTitleConstraints)
-        
-        
-        
     }
 }
 
@@ -205,8 +202,8 @@ class NewRepeatedEventViewController: UIViewController {
         
         if form?.durationInSeconds != nil {
             durationInSeconds = form?.durationInSeconds
-            if durationInSeconds < timeOfDayOffsetInSeconds {
-                UINotifications.genericError(self, msg: "Event must end after it starts")
+            if durationInSeconds <= 0 {
+                UINotifications.genericError(self, msg: "Event must end after it starts.")
                 return
             }
         } else {
@@ -224,7 +221,6 @@ class NewRepeatedEventViewController: UIViewController {
                 }
             }
 
-
         } else {
             UINotifications.genericError(self, msg: "Event must occur on at least one day.")
             return
@@ -235,7 +231,14 @@ class NewRepeatedEventViewController: UIViewController {
         
         let event = Event(nameOfEvent: eventTitle!, typeOfEvent: eventType!, timeOfDayOffsetInSeconds: timeOfDayOffsetInSeconds!, durationInSeconds: durationInSeconds!, additionalInfo: note)
         
-        presenting.events.addRepeatedEvent(RepeatedEvent: RepeatedEvent(metabolicEvent: event, daysOfWeekOccurs: OccursOnDays))
+        //must check if event conflicts with any other existing events
+        
+        let check = presenting.events.addRepeatedEvent(RepeatedEvent: RepeatedEvent(metabolicEvent: event, daysOfWeekOccurs: OccursOnDays))
+        
+        if !check {
+            UINotifications.genericError(self, msg: "Event conflicts with existing event.")
+            return
+        }
         
         presenting.loadData()
         self.dismissViewControllerAnimated(true, completion: nil)
