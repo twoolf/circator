@@ -12,10 +12,13 @@ import SwiftDate
 
 class RepeatedEventDetailViewController : UIViewController {
     
+    var event : RepeatedEvent?
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         self.formatView()
         navigationItem.title = "Detail"
+        
     }
     
     /*
@@ -26,22 +29,27 @@ class RepeatedEventDetailViewController : UIViewController {
     
     func formatView() {
         
+        self.view.backgroundColor = UIColor(white: 0.9, alpha: 1)
     }
     
     func configureView(RepeatedEvent repeatedEvent : RepeatedEvent) {
         
+        self.event = repeatedEvent
+        
         let event : Event = repeatedEvent.event
         let frequency : [Weekday] = repeatedEvent.frequency
         
-        let eventIcon = UIImageView(image: drawCircle(FillColor: UIColor.grayColor()))
+        let eventIcon = UIImageView()
         eventIcon.translatesAutoresizingMaskIntoConstraints = false
+    
+        
         //view.insertSubview(eventIcon, atIndex: 0)
         view.addSubview(eventIcon)
         
         let eventIconConstraints : [NSLayoutConstraint] = [
             eventIcon.topAnchor.constraintEqualToAnchor(topLayoutGuide.bottomAnchor, constant: 15),
             eventIcon.rightAnchor.constraintEqualToAnchor(view.layoutMarginsGuide.rightAnchor),
-            NSLayoutConstraint(item: eventIcon, attribute: .Width, relatedBy: .Equal, toItem: view.layoutMarginsGuide, attribute: .Width, multiplier: 0.333, constant: 0),
+            NSLayoutConstraint(item: eventIcon, attribute: .Width, relatedBy: .Equal, toItem: view.layoutMarginsGuide, attribute: .Width, multiplier: 0.25, constant: 0),
             eventIcon.heightAnchor.constraintEqualToAnchor(eventIcon.widthAnchor)
             //NSLayoutConstraint(item: eventIcon, attribute: .Width, relatedBy: .Equal, toItem: view, attribute: .Width, multiplier: 0.333, constant: 0)
         ]
@@ -74,8 +82,91 @@ class RepeatedEventDetailViewController : UIViewController {
             eventTitle.rightAnchor.constraintEqualToAnchor(eventIcon.leftAnchor)
         ]
         view.addConstraints(eventTitleConstraints)
+        
+        // TODO
+        // from TIME to TIME
+        
+        // TODO
+        // days of the week
+        
+        // TODO
+        // slice event list view
+        
+        let deleteButton = UIButton()
+        deleteButton.translatesAutoresizingMaskIntoConstraints = false
+        print(deleteButton.titleLabel)
+        deleteButton.titleLabel?.textAlignment = .Center
+        deleteButton.setTitle("Delete", forState: .Normal)
+        deleteButton.setTitleColor(UIColor.redColor(), forState: .Normal)
+        deleteButton.titleLabel?.font = UIFont.systemFontOfSize(18, weight: UIFontWeightRegular)
+        
+        deleteButton.addTarget(self, action: "deleteEvent:", forControlEvents: .TouchUpInside)
+        
+        //deleteButton.backgroundColor = UIColor(white: 1, alpha: 0.75)
+        //deleteButton.layer.cornerRadius = 10
+        //deleteButton.clipsToBounds = true
+        
+        let lineSeperator = UIView()
+        lineSeperator.translatesAutoresizingMaskIntoConstraints = false
+        lineSeperator.backgroundColor = UIColor.grayColor()
+        
+        deleteButton.addSubview(lineSeperator)
+        let lineSeperatorConstraints : [NSLayoutConstraint] = [
+            lineSeperator.rightAnchor.constraintEqualToAnchor(deleteButton.rightAnchor),
+            lineSeperator.leftAnchor.constraintEqualToAnchor(deleteButton.leftAnchor),
+            lineSeperator.topAnchor.constraintEqualToAnchor(deleteButton.topAnchor),
+            lineSeperator.heightAnchor.constraintEqualToConstant(1)
+        ]
+        
+        deleteButton.addConstraints(lineSeperatorConstraints)
+        
+        view.addSubview(deleteButton)
+        
+        let deleteButtonConstraints : [NSLayoutConstraint] = [
+            deleteButton.heightAnchor.constraintEqualToConstant(45),
+            deleteButton.bottomAnchor.constraintEqualToAnchor(view.bottomAnchor),
+            deleteButton.leftAnchor.constraintEqualToAnchor(view.layoutMarginsGuide.leftAnchor),
+            deleteButton.rightAnchor.constraintEqualToAnchor(view.layoutMarginsGuide.rightAnchor)
+        ]
+        
+        view.addConstraints(deleteButtonConstraints)
     }
+    
+    func deleteEvent (sender: UIButton!) {
+        
+        let alertController = UIAlertController(title: nil, message: nil, preferredStyle: .ActionSheet)
+        let cancelAction = UIAlertAction(title: "Cancel", style: .Cancel) { action in
+            // ...
+        }
+        alertController.addAction(cancelAction)
+        
+        let deleteEventAction = UIAlertAction(title: "Delete", style: .Destructive) { action in
+            print(self.navigationController?.viewControllers)
+            
+            for vc in (self.navigationController?.viewControllers)! {
+                if vc is RepeatedEventsListViewController {
+                    (vc as! RepeatedEventsListViewController).events.removeRepeatedEvent(RepeatedEvent: self.event!)
+                    (vc as! RepeatedEventsListViewController).eventsList.tableView.reloadData()
+                    //print((vc as! RepeatedEventsListViewController).eventsList.view.subviews)
+                    for view in (vc as! RepeatedEventsListViewController).eventsList.view.subviews {
+                        if view is EventItemView && (view as! EventItemView).event! == self.event?.event {
+                            view.removeFromSuperview()
+                        }
+                    }
+                }
+            }
+            //let eventOrganizer = (self.navigationController?.parentViewController as! RepeatedEventsListViewController).events
+            //eventOrganizer.removeRepeatedEvent(RepeatedEvent: self.event!)
+            self.navigationController?.popViewControllerAnimated(true)
+        }
+        alertController.addAction(deleteEventAction)
+        self.presentViewController(alertController, animated: true, completion: nil)
+    }
+
 }
+
+
+
 
 class NewRepeatedEventViewController: UIViewController {
     
@@ -362,6 +453,22 @@ final class AddEventViewController: FormViewController {
             $0.displayLabel.textColor = UIColor.blackColor()
             $0.displayLabel.font = .systemFontOfSize(15)
             }.inlineCellSetup {
+                let components = NSDateComponents()
+                components.hour = NSDate().hour
+                components.minute = 0
+            
+                var displayTimeComponents = NSDate().components
+                displayTimeComponents.setValue(0, forComponent: .Minute)
+                displayTimeComponents.setValue(0, forComponent: .Hour)
+                print(NSDate(components: displayTimeComponents))
+                
+                
+                
+                $0.datePicker.minimumDate = NSDate(components: displayTimeComponents)
+                $0.datePicker.date = NSDate(components: displayTimeComponents)
+                
+                $0.datePicker.setDate(NSDate(components: displayTimeComponents), animated: false)
+                
                 $0.datePicker.datePickerMode = .Time
                 $0.datePicker.minuteInterval = 30
                 //$0.datePicker.setDate(NSDate().startOf(.Minute, inRegion: NSDate().components.dateInRegion), animated: false)
