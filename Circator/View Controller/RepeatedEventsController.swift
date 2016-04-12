@@ -101,7 +101,7 @@ class RepeatedEventDetailViewController : UIViewController {
         let eventTimeLabelConstraints : [NSLayoutConstraint] = [
             eventTimeLabel.centerYAnchor.constraintEqualToAnchor(eventIcon.centerYAnchor),
             eventTimeLabel.leftAnchor.constraintEqualToAnchor(view.layoutMarginsGuide.leftAnchor),
-            eventTimeLabel.rightAnchor.constraintEqualToAnchor(eventIcon.leftAnchor, constant: -15),
+            eventTimeLabel.rightAnchor.constraintEqualToAnchor(eventIcon.leftAnchor),
             
         ]
         view.addConstraints(eventTimeLabelConstraints)
@@ -119,7 +119,7 @@ class RepeatedEventDetailViewController : UIViewController {
         let eventDaysLabelConstraints : [NSLayoutConstraint] = [
             eventDaysLabel.topAnchor.constraintEqualToAnchor(eventTimeLabel.bottomAnchor, constant: 2.5),
             eventDaysLabel.leftAnchor.constraintEqualToAnchor(view.layoutMarginsGuide.leftAnchor),
-            eventDaysLabel.rightAnchor.constraintEqualToAnchor(eventIcon.leftAnchor, constant: -15)
+            eventDaysLabel.rightAnchor.constraintEqualToAnchor(eventIcon.leftAnchor)
         ]
         view.addConstraints(eventDaysLabelConstraints)
         
@@ -175,11 +175,33 @@ class RepeatedEventDetailViewController : UIViewController {
         
         view.addConstraints(eventInfoViewConstraints)
         
-        let eventNotes = UITextView()
+        
+        let eventNotes = UILabel()
         eventNotes.translatesAutoresizingMaskIntoConstraints = false
-        eventNotes.editable = false
-        eventNotes.selectable = true
-        eventNotes.allowsEditingTextAttributes = false
+        eventNotes.font = UIFont.systemFontOfSize(16, weight: UIFontWeightLight)
+        eventNotes.textColor = UIColor.blackColor()
+        eventNotes.numberOfLines = 0
+        eventNotes.lineBreakMode = .ByWordWrapping
+        
+        
+        if let note = self.event?.event.note {
+            eventNotes.text = note
+        } else {
+            eventNotes.text = "No notes"
+            eventNotes.textColor = UIColor.lightGrayColor()
+        }
+        
+        eventInfoView.addSubview(eventNotes)
+        
+        let eventNotesConstraints : [NSLayoutConstraint] =  [
+            eventNotes.topAnchor.constraintEqualToAnchor(eventInfoView.topAnchor, constant: 15),
+            eventNotes.leftAnchor.constraintEqualToAnchor(eventInfoView.leftAnchor, constant: 15),
+            eventNotes.rightAnchor.constraintEqualToAnchor(eventInfoView.rightAnchor, constant: -15),
+            eventInfoView.bottomAnchor.constraintEqualToAnchor(eventInfoView.bottomAnchor, constant: -15)
+        ]
+        
+        view.addConstraints(eventNotesConstraints)
+        
         
         
     }

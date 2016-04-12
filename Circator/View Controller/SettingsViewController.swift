@@ -461,7 +461,7 @@ class SettingsViewController: UITableViewController, UITextFieldDelegate {
                     fields: Array(UserProfile.sharedInstance.profileFields[UserProfile.sharedInstance.optionalRange]),
                     placeholders: Array(UserProfile.sharedInstance.profilePlaceholders[UserProfile.sharedInstance.optionalRange]))
             case "Repeated Events":
-                let repeatedEventsVC = RepeatedEventViewController()
+                let repeatedEventsVC = RepeatedEventsListViewController()
                 navigationController?.pushViewController(repeatedEventsVC, animated: true)
             default:
                 fatalError()
