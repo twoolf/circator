@@ -43,6 +43,7 @@
 		8142AC861C95D64200B36C14 /* RepeatedEventsListViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8142AC851C95D64200B36C14 /* RepeatedEventsListViewController.swift */; };
 		8149E6F91C972CE7006E61F0 /* EventListTimeSeperatorTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8149E6F81C972CE7006E61F0 /* EventListTimeSeperatorTableViewCell.swift */; };
 		816A9E961CA0571500B4B45A /* DateCellTableViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 816A9E951CA0571500B4B45A /* DateCellTableViewController.swift */; };
+		81810CC91CBD41AD00F5395C /* Sunpath.swift in Sources */ = {isa = PBXBuildFile; fileRef = 81810CC81CBD41AD00F5395C /* Sunpath.swift */; };
 		81CCD8151C8142AE005299AA /* DefaultEventPeriodSelectorViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 81CCD8141C8142AE005299AA /* DefaultEventPeriodSelectorViewController.swift */; };
 		A88F31F3DDADAD50F4190F8E /* Pods.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = CB09F654AB4B00C79306C728 /* Pods.framework */; };
 		F42F5ADD1BDC85AF00195490 /* SampleDataAnalyzer.swift in Sources */ = {isa = PBXBuildFile; fileRef = F42F5ADC1BDC85AF00195490 /* SampleDataAnalyzer.swift */; };
@@ -215,6 +216,7 @@
 		8142AC851C95D64200B36C14 /* RepeatedEventsListViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RepeatedEventsListViewController.swift; sourceTree = "<group>"; };
 		8149E6F81C972CE7006E61F0 /* EventListTimeSeperatorTableViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = EventListTimeSeperatorTableViewCell.swift; sourceTree = "<group>"; };
 		816A9E951CA0571500B4B45A /* DateCellTableViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DateCellTableViewController.swift; sourceTree = "<group>"; };
+		81810CC81CBD41AD00F5395C /* Sunpath.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Sunpath.swift; sourceTree = "<group>"; };
 		81CCD8141C8142AE005299AA /* DefaultEventPeriodSelectorViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DefaultEventPeriodSelectorViewController.swift; sourceTree = "<group>"; };
 		8B4A08D995498CDA94BBB258 /* Pods-Circator.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Circator.release.xcconfig"; path = "Pods/Target Support Files/Pods-Circator/Pods-Circator.release.xcconfig"; sourceTree = "<group>"; };
 		984776BC6A59A33B4580C535 /* Pods.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = Pods.release.xcconfig; path = "Pods/Target Support Files/Pods/Pods.release.xcconfig"; sourceTree = "<group>"; };
@@ -486,6 +488,7 @@
 				F43A7C671BBE508D00B6FA56 /* IntroCompareDataTableViewCell.swift */,
 				7816FFB81C1E2DC5002E2ED8 /* TextInputTableViewCell.swift */,
 				814299471C963B2C005303D2 /* Events */,
+				81810CC81CBD41AD00F5395C /* Sunpath.swift */,
 			);
 			path = View;
 			sourceTree = "<group>";
@@ -877,6 +880,7 @@
 				7860E9131C61C470004C9741 /* DebugViewController.swift in Sources */,
 				816A9E961CA0571500B4B45A /* DateCellTableViewController.swift in Sources */,
 				F43A7C5D1BBDF43600B6FA56 /* CollectionViewCell.swift in Sources */,
+				81810CC91CBD41AD00F5395C /* Sunpath.swift in Sources */,
 				7863EA9E1C27332C0038DE7A /* QueryWriterViewController.swift in Sources */,
 				7881A3E31BAF3B3E00ECB3C6 /* IntroViewController.swift in Sources */,
 				781CF2C11C6A6A36001DF3B2 /* EventTimeViewController.swift in Sources */,

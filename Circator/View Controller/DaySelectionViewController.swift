@@ -24,6 +24,7 @@ class DaySelectionViewController: UIViewController {
     
     private func configureView() {
         
+
         
         
         //navigationController?.setNavigationBarHidden(false, animated: false)
@@ -93,6 +94,7 @@ class DaySelectionViewController: UIViewController {
             navigationItem.title = "Days"
             tableView.registerClass(UITableViewCell.self, forCellReuseIdentifier: "dayCell")
             selectionUpdateHandler?(selectedIndices)
+            self.tableView.scrollEnabled = false
         }
         
         // MARK: - Table View Formatting
@@ -107,25 +109,13 @@ class DaySelectionViewController: UIViewController {
         }
         
         override func tableView(tableView: UITableView, heightForHeaderInSection section: Int) -> CGFloat {
-            return 44.0
+            return 22.0
         }
         
         override func tableView(tableView: UITableView, heightForFooterInSection section: Int) -> CGFloat {
-            return view.bounds.height - UIApplication.sharedApplication().statusBarFrame.size.height - 44.0*8
+            return view.bounds.height - UIApplication.sharedApplication().statusBarFrame.size.height - 44.0*7
+            
         }
-        
-        override func tableView(tableView: UITableView, viewForHeaderInSection section: Int) -> UIView? {
-            let view = UIView()
-            view.backgroundColor = UIColor.lightGrayColor()
-            return view
-        }
-        
-        override func tableView(tableView: UITableView, viewForFooterInSection section: Int) -> UIView? {
-            let view = UIView()
-            view.backgroundColor = UIColor.lightGrayColor()
-            return view
-        }
-        
         
         
         // MARK: - Table view data source
