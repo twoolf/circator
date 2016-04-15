@@ -113,7 +113,7 @@ class RepeatedEventDetailViewController : UIViewController {
         eventDaysLabel.textColor = UIColor.blackColor()
         eventDaysLabel.numberOfLines = 0
         eventDaysLabel.lineBreakMode = .ByWordWrapping
-        eventDaysLabel.text = self.event?.frequency.map{ (day) -> String in return day.description }.joinWithSeparator(", ")
+        eventDaysLabel.text = self.event?.frequency.sort({$0.rawValue < $1.rawValue}).map{ (day) -> String in return day.description }.joinWithSeparator(", ")
         view.addSubview(eventDaysLabel)
         
         let eventDaysLabelConstraints : [NSLayoutConstraint] = [
@@ -193,7 +193,7 @@ class RepeatedEventDetailViewController : UIViewController {
         
         eventInfoView.addSubview(eventNotes)
         
-        let eventNotesConstraints : [NSLayoutConstraint] =  [
+        let eventNotesConstraints : [NSLayoutConstraint] = [
             eventNotes.topAnchor.constraintEqualToAnchor(eventInfoView.topAnchor, constant: 15),
             eventNotes.leftAnchor.constraintEqualToAnchor(eventInfoView.leftAnchor, constant: 15),
             eventNotes.rightAnchor.constraintEqualToAnchor(eventInfoView.rightAnchor, constant: -15),
@@ -326,6 +326,10 @@ class NewRepeatedEventViewController: UIViewController {
         if form?.eventTitle != nil {
             if form?.eventTitle?.characters.count > 16 {
                 UINotifications.genericError(self, msg: "Event title is too long.")
+                return
+            }
+            if form?.eventTitle?.characters.count < 1 {
+                UINotifications.genericError(self, msg: "Event title required.")
                 return
             }
             eventTitle = form?.eventTitle

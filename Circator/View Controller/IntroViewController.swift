@@ -609,6 +609,20 @@ class IntroViewController: UIViewController,
     }
 
     private func configureViews() {
+        
+        let gradient = SunpathDuoView()
+        gradient.translatesAutoresizingMaskIntoConstraints = false
+        view.addSubview(gradient)
+        
+        let gradientConstraints : [NSLayoutConstraint] = [
+            gradient.topAnchor.constraintEqualToAnchor(view.topAnchor),
+            gradient.leftAnchor.constraintEqualToAnchor(view.leftAnchor),
+            gradient.rightAnchor.constraintEqualToAnchor(view.rightAnchor),
+            gradient.bottomAnchor.constraintEqualToAnchor(view.bottomAnchor)
+        ]
+        
+        view.addConstraints(gradientConstraints)
+        
         view.backgroundColor = Theme.universityDarkTheme.backgroundColor
         logoImageView.translatesAutoresizingMaskIntoConstraints = false
         logoImageView.contentScaleFactor = 0.2

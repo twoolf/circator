@@ -331,6 +331,8 @@ class RepeatedEventsListViewController: UIViewController {
     //formats and styles view
     private func formatView() {
         
+
+        
         view.backgroundColor = UIColor.lightGrayColor()
         
     }
@@ -556,6 +558,12 @@ class RepeatedEventsListViewController: UIViewController {
         
         override func viewDidLoad() {
             super.viewDidLoad()
+            
+            
+            
+
+            
+            
             //removes default seperator lines
             tableView.separatorColor = UIColor.clearColor()
             
