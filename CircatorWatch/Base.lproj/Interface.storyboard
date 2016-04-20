@@ -31,7 +31,7 @@
                                         <segue destination="YiA-fx-NQl" kind="push" id="SaB-BM-bvn"/>
                                     </connections>
                                 </button>
-                                <button width="0.5" height="1" alignment="right" title="Run" id="30E-7d-sfh">
+                                <button width="0.5" height="1" alignment="right" title="Exercise" id="30E-7d-sfh">
                                     <fontDescription key="font" type="system" pointSize="13"/>
                                     <connections>
                                         <segue destination="uYH-JB-1gX" kind="push" id="rPe-6a-tgs"/>
