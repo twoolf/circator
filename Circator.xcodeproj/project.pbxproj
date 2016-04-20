@@ -53,6 +53,7 @@
 		D56537C41C91129100617B1F /* ExerciseInterfaceController.swift in Sources */ = {isa = PBXBuildFile; fileRef = D56537BF1C90CB5800617B1F /* ExerciseInterfaceController.swift */; };
 		D56537C61C9112B100617B1F /* Interface.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = D51AF7701C8797A800817E26 /* Interface.storyboard */; };
 		D56537C91C9112E300617B1F /* SleepInterfaceController.swift in Sources */ = {isa = PBXBuildFile; fileRef = D56537C71C9112E300617B1F /* SleepInterfaceController.swift */; };
+		D5CF06F11CC70C4500BAEB39 /* MealTimesInterfaceController.swift in Sources */ = {isa = PBXBuildFile; fileRef = D5CF06F01CC70C4500BAEB39 /* MealTimesInterfaceController.swift */; };
 		D5DAF6AC1CAB82BF000018E1 /* Interface.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = D51AF7701C8797A800817E26 /* Interface.storyboard */; };
 		F42F5ADD1BDC85AF00195490 /* SampleDataAnalyzer.swift in Sources */ = {isa = PBXBuildFile; fileRef = F42F5ADC1BDC85AF00195490 /* SampleDataAnalyzer.swift */; };
 		F42F5B351BE1FD1E00195490 /* CircatorKit.h in Headers */ = {isa = PBXBuildFile; fileRef = F42F5B341BE1FD1E00195490 /* CircatorKit.h */; settings = {ATTRIBUTES = (Public, ); }; };
@@ -215,6 +216,7 @@
 		D51FC65D1CAC5CEE005984CF /* WaterInterfaceController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = WaterInterfaceController.swift; sourceTree = "<group>"; };
 		D56537BF1C90CB5800617B1F /* ExerciseInterfaceController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ExerciseInterfaceController.swift; sourceTree = "<group>"; };
 		D56537C71C9112E300617B1F /* SleepInterfaceController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SleepInterfaceController.swift; sourceTree = "<group>"; };
+		D5CF06F01CC70C4500BAEB39 /* MealTimesInterfaceController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MealTimesInterfaceController.swift; sourceTree = "<group>"; };
 		F28DDB83BE2DA2B65B631537 /* Pods.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = Pods.debug.xcconfig; path = "Pods/Target Support Files/Pods/Pods.debug.xcconfig"; sourceTree = "<group>"; };
 		F42F5ADC1BDC85AF00195490 /* SampleDataAnalyzer.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SampleDataAnalyzer.swift; sourceTree = "<group>"; };
 		F42F5B321BE1FD1E00195490 /* CircatorKit.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = CircatorKit.framework; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -373,6 +375,7 @@
 				D51FC65D1CAC5CEE005984CF /* WaterInterfaceController.swift */,
 				D56537BF1C90CB5800617B1F /* ExerciseInterfaceController.swift */,
 				D56537C71C9112E300617B1F /* SleepInterfaceController.swift */,
+				D5CF06F01CC70C4500BAEB39 /* MealTimesInterfaceController.swift */,
 				D51AF78B1C8797A800817E26 /* Assets.xcassets */,
 				D51AF78D1C8797A800817E26 /* Info.plist */,
 				D51AF77F1C8797A800817E26 /* Supporting Files */,
@@ -887,6 +890,7 @@
 				D51AF7821C8797A800817E26 /* IntroInterfaceController.swift in Sources */,
 				D51AF7881C8797A800817E26 /* GlanceController.swift in Sources */,
 				D56537C91C9112E300617B1F /* SleepInterfaceController.swift in Sources */,
+				D5CF06F11CC70C4500BAEB39 /* MealTimesInterfaceController.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

@@ -12,17 +12,22 @@ import Foundation
 
 class SleepInterfaceController: WKInterfaceController {
 
-    
-    @IBOutlet var minusSleepTime: WKInterfaceButton!
-    @IBOutlet var plusSleepTime: WKInterfaceButton!
-    @IBOutlet var EnterSleepTimeButton: WKInterfaceButton!
-    @IBOutlet var timeLabel: WKInterfaceLabel!
-    var sleepTime = 0.00
-    let SLEEP_HOUR_INCREMENT = 00.25
+    @IBOutlet var sleepPicker: WKInterfacePicker!
+    @IBOutlet var enterButton: WKInterfaceButton!
     
     override func awakeWithContext(context: AnyObject?) {
         super.awakeWithContext(context)
-        updateConfiguration()
+        var tempItems: [WKPickerItem] = []
+        for i in 0...4 {
+            // 2
+            let item = WKPickerItem()
+            item.contentImage = WKImage(imageName: "sleep_radial\(i)")
+            tempItems.append(item)
+        }
+        sleepPicker.setItems(tempItems)
+        
+        //group.setBackgroundImageNamed("meal")
+        //group.startAnimatingWithImagesInRange(NSMakeRange(0, 181), duration: duration, repeatCount: 1)
         // Configure interface objects here.
     }
     
@@ -30,32 +35,6 @@ class SleepInterfaceController: WKInterfaceController {
         // This method is called when watch view controller is about to be visible to user
         super.willActivate()
     }
-    
-    
-    @IBAction func onPlusButton() {
-        sleepTime = sleepTime + SLEEP_HOUR_INCREMENT
-        updateConfiguration()
-        
-    }
-    
-    @IBAction func onMinusButton() {
-        if(sleepTime == 0) {
-            updateConfiguration()
-        } else{
-            sleepTime = sleepTime - SLEEP_HOUR_INCREMENT
-            updateConfiguration()
-        }
-    }
-    
-    func updateConfiguration() {
-        let timeString = NSString(format: "%.2f", sleepTime)
-       
-        timeLabel.setText(timeString as String)
-    }
-    @IBAction func onEnterButton() {
-        //send time to healthKit and reset time to 0.00
-    }
-    
     
     override func didDeactivate() {
         // This method is called when watch view controller is no longer visible

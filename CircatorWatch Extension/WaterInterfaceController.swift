@@ -12,53 +12,35 @@ import Foundation
 
 class WaterInterfaceController: WKInterfaceController {
 
-    @IBOutlet var minusButton: WKInterfaceButton!
-    @IBOutlet var plusButton: WKInterfaceButton!
-    @IBOutlet var waterLabel: WKInterfaceLabel!
-    @IBOutlet var enterButton: WKInterfaceButton!
-    var cups = 0.00
-        
+    @IBOutlet var waterPicker: WKInterfacePicker!
+    
     override func awakeWithContext(context: AnyObject?) {
         super.awakeWithContext(context)
-        updateConfiguration()
+        var tempItems: [WKPickerItem] = []
+        for i in 0...4 {
+            // 2
+            let item = WKPickerItem()
+            item.contentImage = WKImage(imageName: "water\(i)")
+            tempItems.append(item)
+        }
+        waterPicker.setItems(tempItems)
+        
+        //group.setBackgroundImageNamed("meal")
+        //group.startAnimatingWithImagesInRange(NSMakeRange(0, 181), duration: duration, repeatCount: 1)
         // Configure interface objects here.
     }
-        
+    
     override func willActivate() {
         // This method is called when watch view controller is about to be visible to user
         super.willActivate()
     }
-        
-        
-    @IBAction func onPlusButton() {
-        cups++
-        updateConfiguration()
-            
-    }
-        
-    @IBAction func onMinusButton() {
-        if(cups == 0) {
-            updateConfiguration()
-        } else{
-            cups--
-            updateConfiguration()
-        }
-    }
-        
-    func updateConfiguration() {
-        waterLabel.setText("\(cups)")
-    }
-        
-    @IBAction func onEnterButton() {
-        //send time to healthKit and reset time to 0.00
-    }
-        
-        
+    
     override func didDeactivate() {
         // This method is called when watch view controller is no longer visible
         super.didDeactivate()
     }
-        
+    
+    
 
 
 }
