@@ -331,6 +331,7 @@
 				F43A7C591BBDF3D800B6FA56 /* Model */,
 				F43A7C5A1BBDF3FD00B6FA56 /* View */,
 				F43A7C5F1BBDF43C00B6FA56 /* View Controller */,
+				84207D201CCA20CF00776848 /* Resourses */,
 				84207D1D1CCA1FA900776848 /* Storyboards */,
 				F43A7C581BBDF3BE00B6FA56 /* Supporting Files */,
 			);
@@ -361,6 +362,13 @@
 				84207D1E1CCA1FEC00776848 /* RegiterLoginProcess.storyboard */,
 			);
 			path = Storyboards;
+			sourceTree = "<group>";
+		};
+		84207D201CCA20CF00776848 /* Resourses */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			path = Resourses;
 			sourceTree = "<group>";
 		};
 		EA5EDF2A50FCED6ADBAA03DD /* Frameworks */ = {
