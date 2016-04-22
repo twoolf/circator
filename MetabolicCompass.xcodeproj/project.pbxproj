@@ -8,7 +8,6 @@
 
 /* Begin PBXBuildFile section */
 		7816FFBB1C1E45D3002E2ED8 /* UserManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7816FFBA1C1E45D3002E2ED8 /* UserManager.swift */; };
-		781CF2BF1C6A4781001DF3B2 /* SecureConstants.swift in Sources */ = {isa = PBXBuildFile; fileRef = 781CF2BE1C6A4781001DF3B2 /* SecureConstants.swift */; };
 		78398D681C781EF0009653D6 /* ScreenManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 78398D671C781EF0009653D6 /* ScreenManager.swift */; };
 		783E53D21C75856200BEBF33 /* DataGenerator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 783E53D11C75856200BEBF33 /* DataGenerator.swift */; };
 		7843F9121C1FAD9900AB8978 /* ServiceAPI.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7843F9111C1FAD9900AB8978 /* ServiceAPI.swift */; };
@@ -161,7 +160,6 @@
 		780211561C20E33F000120CE /* Pods_MetabolicCompass.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Pods_MetabolicCompass.framework; path = "Pods/../build/Debug-iphoneos/Pods_MetabolicCompass.framework"; sourceTree = "<group>"; };
 		780211581C20E36B000120CE /* Pods_MetabolicCompass.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Pods_MetabolicCompass.framework; path = "Pods/../build/Debug-iphoneos/Pods_MetabolicCompass.framework"; sourceTree = "<group>"; };
 		7816FFBA1C1E45D3002E2ED8 /* UserManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = UserManager.swift; sourceTree = "<group>"; };
-		781CF2BE1C6A4781001DF3B2 /* SecureConstants.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SecureConstants.swift; sourceTree = "<group>"; };
 		781CF2C01C6A6A36001DF3B2 /* EventTimeViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = EventTimeViewController.swift; sourceTree = "<group>"; };
 		781EE1231BAF3F6B00E6DDA1 /* Podfile */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = Podfile; path = ../Podfile; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.ruby; };
 		781EE1241BAF3F6B00E6DDA1 /* README.md */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = net.daringfireball.markdown; name = README.md; path = ../README.md; sourceTree = "<group>"; };
@@ -383,7 +381,6 @@
 				7861300E1C25F42B00F50DB3 /* QueryManager.swift */,
 				F42F5B431BE2048400195490 /* SampleFormatter.swift */,
 				78398D671C781EF0009653D6 /* ScreenManager.swift */,
-				781CF2BE1C6A4781001DF3B2 /* SecureConstants.swift */,
 				7843F9111C1FAD9900AB8978 /* ServiceAPI.swift */,
 				F42F5B441BE2048400195490 /* Theme.swift */,
 				78AC90CB1C1E859F008C931B /* UserAccount.swift */,
@@ -899,7 +896,6 @@
 				78398D681C781EF0009653D6 /* ScreenManager.swift in Sources */,
 				783E53D21C75856200BEBF33 /* DataGenerator.swift in Sources */,
 				7843F9121C1FAD9900AB8978 /* ServiceAPI.swift in Sources */,
-				781CF2BF1C6A4781001DF3B2 /* SecureConstants.swift in Sources */,
 				786DF10D1C72AFE0007C2D4C /* Constants.swift in Sources */,
 				7863EA9C1C27302B0038DE7A /* ConsentManager.swift in Sources */,
 				78AC90CC1C1E859F008C931B /* UserAccount.swift in Sources */,
