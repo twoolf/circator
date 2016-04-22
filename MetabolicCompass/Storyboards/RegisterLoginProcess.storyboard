@@ -4,10 +4,10 @@
         <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="10085"/>
     </dependencies>
     <scenes>
-        <!--View Controller-->
+        <!--Register Login Landing View Controller-->
         <scene sceneID="R3d-b3-j73">
             <objects>
-                <viewController storyboardIdentifier="landingLoginRegister" id="YLC-eZ-y2e" sceneMemberID="viewController">
+                <viewController storyboardIdentifier="landingLoginRegister" id="YLC-eZ-y2e" customClass="RegisterLoginLandingViewController" customModule="MetabolicCompass" customModuleProvider="target" sceneMemberID="viewController">
                     <layoutGuides>
                         <viewControllerLayoutGuide type="top" id="Vov-hw-vBg"/>
                         <viewControllerLayoutGuide type="bottom" id="uwe-Bv-2eF"/>
@@ -91,10 +91,14 @@
                         </constraints>
                     </view>
                     <simulatedScreenMetrics key="simulatedDestinationMetrics" type="retina4"/>
+                    <connections>
+                        <outlet property="logoTopMargin" destination="BLK-OV-IYO" id="YSh-NW-0OI"/>
+                        <outlet property="registerButtonBottomMargin" destination="XvU-yR-6sb" id="udB-ap-1sG"/>
+                    </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="UFG-Go-QgB" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="515" y="445"/>
+            <point key="canvasLocation" x="543" y="445"/>
         </scene>
     </scenes>
     <resources>
