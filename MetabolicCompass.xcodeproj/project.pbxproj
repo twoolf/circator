@@ -329,6 +329,7 @@
 				F43A7C591BBDF3D800B6FA56 /* Model */,
 				F43A7C5A1BBDF3FD00B6FA56 /* View */,
 				F43A7C5F1BBDF43C00B6FA56 /* View Controller */,
+				84207D1D1CCA1FA900776848 /* Storyboards */,
 				F43A7C581BBDF3BE00B6FA56 /* Supporting Files */,
 			);
 			path = MetabolicCompass;
@@ -350,6 +351,13 @@
 				7881A4021BAF3B3E00ECB3C6 /* Info.plist */,
 			);
 			path = MetabolicCompassUITests;
+			sourceTree = "<group>";
+		};
+		84207D1D1CCA1FA900776848 /* Storyboards */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			path = Storyboards;
 			sourceTree = "<group>";
 		};
 		EA5EDF2A50FCED6ADBAA03DD /* Frameworks */ = {
