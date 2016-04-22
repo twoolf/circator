@@ -17,7 +17,7 @@ class RegisterLoginLandingViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        if(UIScreen.mainScreen().nativeBounds.height == 960) {
+        if(UIScreen.mainScreen().nativeBounds.height == 960) {//iPhone4 screen
             self.logoTopMargin.constant = 5;
             self.registerButtonBottomMargin.constant = 30;
         }
