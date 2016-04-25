@@ -553,10 +553,14 @@ class IntroViewController: UIViewController,
     }
 
     func doLogin(completion: (Void -> Void)?) {
-        let loginVC = LoginViewController()
-        loginVC.parentView = self
-        loginVC.completion = completion
-        navigationController?.pushViewController(loginVC, animated: true)
+        let registerLandingStroyboard = UIStoryboard(name: "RegisterLoginProcess", bundle: nil)
+        let registerLogingLandingController = registerLandingStroyboard.instantiateViewControllerWithIdentifier("landingLoginRegister")
+        
+//        let loginVC = LoginViewController()
+//        loginVC.parentView = self
+//        loginVC.completion = completion
+        
+        navigationController?.pushViewController(registerLogingLandingController, animated: true)
     }
 
     func doLogout(completion: (Void -> Void)?) {
