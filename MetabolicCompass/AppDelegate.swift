@@ -30,11 +30,23 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         Fabric.with([Crashlytics.self,Answers.self])
 
         // Override point for customization after application launch.
-        let themeColor = UIColor(red: 0.01, green: 0.41, blue: 0.22, alpha: 1.0)
-
+//        let themeColor = UIColor(red: 0.01, green: 0.41, blue: 0.22, alpha: 1.0)
+//
         window = UIWindow(frame: UIScreen.mainScreen().bounds)
         window?.backgroundColor = UIColor.whiteColor()
-        window?.tintColor = themeColor
+        window?.tintColor = UIColor.whiteColor()
+        
+        
+        // Override point for customization after application launch.
+        // Sets background to a blank/empty image
+        UINavigationBar.appearance().setBackgroundImage(UIImage(), forBarMetrics: .Default)
+        // Sets shadow (line below the bar) to a blank image
+        UINavigationBar.appearance().shadowImage = UIImage()
+        // Sets the translucent background color
+        UINavigationBar.appearance().backgroundColor = UIColor(red: 0.0, green: 0.0, blue: 0.0, alpha: 0.0)
+        // Set translucent. (Default value is already true, so this can be removed if desired.)
+        UINavigationBar.appearance().translucent = true
+
         mainViewController = IntroViewController(nibName: nil, bundle: nil)
         let navController = UINavigationController(rootViewController: mainViewController)
 
