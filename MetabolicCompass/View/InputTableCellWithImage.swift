@@ -7,3 +7,14 @@
 //
 
 import Foundation
+import UIKit
+
+class InputTableCellWithImage: UITableViewCell {
+    
+    @IBOutlet weak var cellImage: UIImageView!
+    @IBOutlet weak var cellInput: UITextField!
+    
+    override func awakeFromNib() {
+        
+    }
+}
