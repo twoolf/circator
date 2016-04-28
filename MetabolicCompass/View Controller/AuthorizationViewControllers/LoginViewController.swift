@@ -63,7 +63,8 @@ class LoginViewController: UIViewController {
             UserManager.sharedManager.loginWithPull { (error, _) in
                 guard !error else {
                     Answers.logLoginWithMethod("SPL", success: false, customAttributes: nil)
-                    UINotifications.invalidUserPass(self.navigationController!)
+                    //UINotifications.invalidUserPass(self.navigationController!)
+                    UINotifications.invalidUserPass(self)
                     return
                 }
                 if let comp = self.completion { comp() }

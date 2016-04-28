@@ -179,6 +179,11 @@ platform :ios do
     prepcerts(type: 'appstore', readonly: true)
   end
 
+  desc "Prepare for command line deployment to the App Store"
+  lane :preparedevcerts do
+    prepcerts(type: 'development', readonly: true)
+  end
+
 
   ################################
   ## Build

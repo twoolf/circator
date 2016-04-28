@@ -3,17 +3,52 @@
   <testsuite name="fastlane.lanes">
     
       
-      <testcase classname="fastlane.lanes" name="0: opt_out_usage" time="0.001328">
+      <testcase classname="fastlane.lanes" name="0: opt_out_usage" time="0.00064">
         
       </testcase>
     
       
-      <testcase classname="fastlane.lanes" name="1: Verifying required fastlane version" time="0.001228">
+      <testcase classname="fastlane.lanes" name="1: Verifying required fastlane version" time="0.000695">
         
       </testcase>
     
       
-      <testcase classname="fastlane.lanes" name="2: default_platform" time="0.000717">
+      <testcase classname="fastlane.lanes" name="2: default_platform" time="0.00027">
+        
+      </testcase>
+    
+      
+      <testcase classname="fastlane.lanes" name="3: Switch to ios prepcerts lane" time="0.000262">
+        
+      </testcase>
+    
+      
+      <testcase classname="fastlane.lanes" name="4: match" time="67.231728">
+        
+      </testcase>
+    
+      
+      <testcase classname="fastlane.lanes" name="5: match" time="62.165659">
+        
+      </testcase>
+    
+      
+      <testcase classname="fastlane.lanes" name="6: match" time="49.289491">
+        
+      </testcase>
+    
+      
+      <testcase classname="fastlane.lanes" name="7: match" time="60.06717">
+        
+      </testcase>
+    
+      
+      <testcase classname="fastlane.lanes" name="8: match" time="61.225565">
+        
+      </testcase>
+    
+      
+      <testcase classname="fastlane.lanes" name="9: match" time="90.042626">
         
       </testcase>
     

@@ -76,6 +76,11 @@ Prepare for command line build
 fastlane ios preparedeploy
 ```
 Prepare for command line deployment to the App Store
+### ios preparedevcerts
+```
+fastlane ios preparedevcerts
+```
+Prepare for command line deployment to the App Store
 ### ios set_codesigning
 ```
 fastlane ios set_codesigning

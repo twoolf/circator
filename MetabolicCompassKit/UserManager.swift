@@ -278,6 +278,8 @@ public class UserManager {
                 "givenName": firstName,
                 "surname": lastName
             ]
+            
+            print("account dict: \(stormpathAccountDict)")
 
             Stormpath.register(userDictionary: stormpathAccountDict, completionHandler: {
                 (registerDict, error) -> Void in
