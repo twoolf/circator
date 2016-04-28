@@ -127,6 +127,9 @@ private let inputFontSize = ScreenManager.sharedInstance.profileInputFontSize()
                     self.doWelcome()
                     if let comp = self.registerCompletion { comp() }
                     Answers.logSignUpWithMethod("SPR", success: true, customAttributes: nil)
+                    
+                    // save user profile image
+                    UserManager.sharedManager.setUserProfilePhoto(userRegistrationModel.photo)
                 }
             }
         }

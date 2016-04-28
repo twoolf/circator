@@ -662,4 +662,68 @@ public class UserManager {
         resetProfileCache()
         resetUserId()
     }
+    
+    
+    // MARK: - User Profile photo
+    
+    // set profile photo - return is success result
+    public func setUserProfilePhoto(photo: UIImage?) -> Bool {
+        var result = false
+        
+        if let url = userProfilePhotoUrl() {
+            
+            
+            if let ph = photo {
+                // save photo
+                let imageData = UIImagePNGRepresentation(ph)
+                result = imageData!.writeToURL(url, atomically: false)
+            }
+            
+            else {
+                // remove if exists
+                
+                let fileManager = NSFileManager.defaultManager()
+                
+                let urlPathStr = url.absoluteString
+                
+                if fileManager.fileExistsAtPath(urlPathStr) {
+                    do {
+                        try fileManager.removeItemAtPath(urlPathStr)
+                        result = true
+                    } catch {
+                        print("File does not exists \(error)")
+                        result = false
+                    }
+                }
+                else {
+                    result = true
+                }
+                
+                
+            }
+        }
+        
+        print("Set user profile. Resulr \(result)")
+        
+        return result
+    }
+    
+    func userProfilePhoto() -> UIImage? {
+        return nil
+    }
+    
+    private func userProfilePhotoUrl() -> NSURL? {
+        
+        if let user = self.userId {
+            let photoFileName =  user + ".png"
+        
+            let documentsURL = NSFileManager.defaultManager().URLsForDirectory(.DocumentDirectory, inDomains: .UserDomainMask)[0]
+        
+            let imageURL = documentsURL.URLByAppendingPathComponent(photoFileName)
+            
+            return imageURL
+        }
+        
+        return nil
+    }
 }
