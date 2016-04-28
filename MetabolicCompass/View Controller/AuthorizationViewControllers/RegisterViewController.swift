@@ -19,6 +19,7 @@ private let inputFontSize = ScreenManager.sharedInstance.profileInputFontSize()
 
  class RegisterViewController : BaseViewController {
 
+
     override class var storyboardName : String {
         return "RegisterLoginProcess"
     }
@@ -62,7 +63,13 @@ private let inputFontSize = ScreenManager.sharedInstance.profileInputFontSize()
     }
     
     @IBAction func registerAction(sender: UIButton) {
-        print(profileValues)
+        
+        let a = true
+        
+        if a {
+            performSegueWithIdentifier(segueRegistrationCompletionIndentifier, sender: nil)
+            return
+        }
         
         self.profileValues = self.dataSource.model.profileItems()
         //print("profile items: \(self.profileValues)")
@@ -101,8 +108,7 @@ private let inputFontSize = ScreenManager.sharedInstance.profileInputFontSize()
                 return
             }
             
-  
-            
+        
             let initialProfile = Dictionary(pairs:
                 self.profileValues.filter { (k,v) in UserProfile.sharedInstance.updateableMapping[k] != nil }.map { (k,v) in
                     (UserProfile.sharedInstance.updateableMapping[k]!, v)
@@ -122,14 +128,17 @@ private let inputFontSize = ScreenManager.sharedInstance.profileInputFontSize()
                     return
                 }
                 
+                // save user profile image
+                UserManager.sharedManager.setUserProfilePhoto(userRegistrationModel.photo)
+                
                 UserManager.sharedManager.pushConsent(consentPath) { _ in
                     ConsentManager.sharedManager.removeConsentFile(consentPath)
-                    self.doWelcome()
-                    if let comp = self.registerCompletion { comp() }
-                    Answers.logSignUpWithMethod("SPR", success: true, customAttributes: nil)
                     
-                    // save user profile image
-                    UserManager.sharedManager.setUserProfilePhoto(userRegistrationModel.photo)
+                    self.doWelcome()
+                    
+                    self.performSegueWithIdentifier(self.segueRegistrationCompletionIndentifier, sender: nil)
+                
+                    Answers.logSignUpWithMethod("SPR", success: true, customAttributes: nil)
                 }
             }
         }
@@ -169,6 +178,27 @@ private let inputFontSize = ScreenManager.sharedInstance.profileInputFontSize()
             self.parentView?.view.dodo.success("Welcome " + (UserManager.sharedManager.getUserId() ?? ""))
             self.parentView?.initializeBackgroundWork()
         }
+    }
+    
+    func registartionComplete() {
+        doWelcome()
+        if let comp = self.registerCompletion { comp() }
+    }
+    
+    // MARK: - Navigation
+
+    private let segueRegistrationCompletionIndentifier = "completionRegistrationSeque"
+    
+    override func prepareForSegue(segue: UIStoryboardSegue, sender: AnyObject?) {
+        
+        if segue.identifier == segueRegistrationCompletionIndentifier {
+            if let vc = segue.destinationViewController as? RegistrationComplitionViewController {
+                vc.modalPresentationStyle = .OverCurrentContext
+                vc.registerViewController = self
+            }
+            
+        }
+        
     }
 
 }

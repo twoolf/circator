@@ -12,7 +12,7 @@
             <view key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center">
                 <rect key="frame" x="0.0" y="0.0" width="320" height="50"/>
                 <subviews>
-                    <imageView userInteractionEnabled="NO" contentMode="center" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="email" translatesAutoresizingMaskIntoConstraints="NO" id="0GL-yr-1ZF">
+                    <imageView userInteractionEnabled="NO" contentMode="center" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="0GL-yr-1ZF">
                         <rect key="frame" x="16" y="5" width="21" height="40"/>
                         <constraints>
                             <constraint firstAttribute="height" constant="40" id="dBb-ug-s0D"/>
@@ -62,7 +62,4 @@
             </connections>
         </collectionViewCell>
     </objects>
-    <resources>
-        <image name="email" width="17" height="12"/>
-    </resources>
 </document>

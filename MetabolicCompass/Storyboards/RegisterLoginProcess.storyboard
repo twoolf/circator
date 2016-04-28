@@ -292,7 +292,7 @@
                                 <collectionViewFlowLayout key="collectionViewLayout" minimumLineSpacing="0.0" minimumInteritemSpacing="0.0" id="oZu-EI-EYb">
                                     <size key="itemSize" width="200" height="50"/>
                                     <size key="headerReferenceSize" width="0.0" height="0.0"/>
-                                    <size key="footerReferenceSize" width="200" height="100"/>
+                                    <size key="footerReferenceSize" width="200" height="120"/>
                                     <inset key="sectionInset" minX="0.0" minY="0.0" maxX="0.0" maxY="0.0"/>
                                 </collectionViewFlowLayout>
                                 <cells>
@@ -307,11 +307,11 @@
                                     </collectionViewCell>
                                 </cells>
                                 <collectionReusableView key="sectionFooterView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" reuseIdentifier="footerView" id="mHh-Zw-QFJ">
-                                    <rect key="frame" x="0.0" y="50" width="320" height="100"/>
+                                    <rect key="frame" x="0.0" y="50" width="320" height="120"/>
                                     <autoresizingMask key="autoresizingMask"/>
                                     <subviews>
                                         <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="XTA-yO-iNX">
-                                            <rect key="frame" x="47" y="31" width="226" height="39"/>
+                                            <rect key="frame" x="47" y="41" width="226" height="39"/>
                                             <color key="backgroundColor" red="0.20000000000000001" green="0.54117647059999996" blue="1" alpha="1" colorSpace="calibratedRGB"/>
                                             <constraints>
                                                 <constraint firstAttribute="height" constant="39" id="fCG-bv-Ij5"/>
@@ -347,11 +347,145 @@
                     <simulatedScreenMetrics key="simulatedDestinationMetrics" type="retina4"/>
                     <connections>
                         <outlet property="collectionView" destination="QLH-Tq-w8F" id="6Ny-wA-2uz"/>
+                        <segue destination="U3H-df-Nd1" kind="presentation" identifier="completionRegistrationSeque" id="Z4N-HG-OPe"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="V1Q-u2-gqb" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="236" y="1181"/>
+            <point key="canvasLocation" x="236" y="1180"/>
+        </scene>
+        <!--Registration Complition View Controller-->
+        <scene sceneID="OhR-m3-yA2">
+            <objects>
+                <viewController id="U3H-df-Nd1" customClass="RegistrationComplitionViewController" customModule="MetabolicCompass" customModuleProvider="target" sceneMemberID="viewController">
+                    <layoutGuides>
+                        <viewControllerLayoutGuide type="top" id="2Kd-gZ-2s7"/>
+                        <viewControllerLayoutGuide type="bottom" id="rXk-ZC-h1u"/>
+                    </layoutGuides>
+                    <view key="view" contentMode="scaleToFill" id="hk6-wu-5b8">
+                        <rect key="frame" x="0.0" y="0.0" width="320" height="568"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <subviews>
+                            <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="Nkc-ed-rNq">
+                                <rect key="frame" x="16" y="201" width="288" height="166"/>
+                                <subviews>
+                                    <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="GJd-xL-dQA">
+                                        <rect key="frame" x="0.0" y="127" width="288" height="39"/>
+                                        <color key="backgroundColor" red="0.20000000000000001" green="0.54117647059999996" blue="1" alpha="1" colorSpace="calibratedRGB"/>
+                                        <constraints>
+                                            <constraint firstAttribute="height" constant="39" id="Hl7-97-n8e"/>
+                                        </constraints>
+                                        <state key="normal" title="Yes"/>
+                                        <userDefinedRuntimeAttributes>
+                                            <userDefinedRuntimeAttribute type="number" keyPath="layer.cornerRadius">
+                                                <integer key="value" value="3"/>
+                                            </userDefinedRuntimeAttribute>
+                                        </userDefinedRuntimeAttributes>
+                                        <connections>
+                                            <action selector="registerAction:" destination="Wq1-CV-Iw6" eventType="touchUpInside" id="sr9-Fu-zNf"/>
+                                            <action selector="yesAction:" destination="U3H-df-Nd1" eventType="touchUpInside" id="MfS-aR-VI9"/>
+                                        </connections>
+                                    </button>
+                                    <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="jvl-2B-OaP">
+                                        <rect key="frame" x="0.0" y="72" width="288" height="39"/>
+                                        <color key="backgroundColor" red="0.32549019607843138" green="0.40392156862745099" blue="0.52156862745098043" alpha="1" colorSpace="calibratedRGB"/>
+                                        <constraints>
+                                            <constraint firstAttribute="height" constant="39" id="7j3-Yj-oV3"/>
+                                        </constraints>
+                                        <state key="normal" title="No, Thanks"/>
+                                        <userDefinedRuntimeAttributes>
+                                            <userDefinedRuntimeAttribute type="number" keyPath="layer.cornerRadius">
+                                                <integer key="value" value="3"/>
+                                            </userDefinedRuntimeAttribute>
+                                        </userDefinedRuntimeAttributes>
+                                        <connections>
+                                            <action selector="noThacksAction:" destination="U3H-df-Nd1" eventType="touchUpInside" id="DW5-pz-IUd"/>
+                                            <action selector="registerAction:" destination="Wq1-CV-Iw6" eventType="touchUpInside" id="ueZ-26-mTW"/>
+                                        </connections>
+                                    </button>
+                                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" usesAttributedText="YES" lineBreakMode="tailTruncation" numberOfLines="2" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="7QN-lz-ecO">
+                                        <rect key="frame" x="0.0" y="0.0" width="288" height="40"/>
+                                        <attributedString key="attributedText">
+                                            <fragment>
+                                                <string key="content">Do you want to provide
+additional information</string>
+                                                <attributes>
+                                                    <color key="NSColor" red="0.9779030430936716" green="1" blue="0.96725687694780971" alpha="1" colorSpace="calibratedRGB"/>
+                                                    <font key="NSFont" size="17" name="HelveticaNeue"/>
+                                                    <paragraphStyle key="NSParagraphStyle" alignment="center" lineBreakMode="wordWrapping" baseWritingDirection="natural" tighteningFactorForTruncation="0.0" allowsDefaultTighteningForTruncation="NO">
+                                                        <tabStops>
+                                                            <textTab alignment="left" location="28">
+                                                                <options/>
+                                                            </textTab>
+                                                            <textTab alignment="left" location="56">
+                                                                <options/>
+                                                            </textTab>
+                                                            <textTab alignment="left" location="84">
+                                                                <options/>
+                                                            </textTab>
+                                                            <textTab alignment="left" location="112">
+                                                                <options/>
+                                                            </textTab>
+                                                            <textTab alignment="left" location="140">
+                                                                <options/>
+                                                            </textTab>
+                                                            <textTab alignment="left" location="168">
+                                                                <options/>
+                                                            </textTab>
+                                                            <textTab alignment="left" location="196">
+                                                                <options/>
+                                                            </textTab>
+                                                            <textTab alignment="left" location="224">
+                                                                <options/>
+                                                            </textTab>
+                                                            <textTab alignment="left" location="252">
+                                                                <options/>
+                                                            </textTab>
+                                                            <textTab alignment="left" location="280">
+                                                                <options/>
+                                                            </textTab>
+                                                            <textTab alignment="left" location="308">
+                                                                <options/>
+                                                            </textTab>
+                                                            <textTab alignment="left" location="336">
+                                                                <options/>
+                                                            </textTab>
+                                                        </tabStops>
+                                                    </paragraphStyle>
+                                                </attributes>
+                                            </fragment>
+                                        </attributedString>
+                                        <nil key="highlightedColor"/>
+                                    </label>
+                                </subviews>
+                                <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
+                                <constraints>
+                                    <constraint firstAttribute="trailing" secondItem="GJd-xL-dQA" secondAttribute="trailing" id="1Ak-pE-AKC"/>
+                                    <constraint firstAttribute="trailing" secondItem="jvl-2B-OaP" secondAttribute="trailing" id="IaN-6O-u2G"/>
+                                    <constraint firstItem="7QN-lz-ecO" firstAttribute="leading" secondItem="Nkc-ed-rNq" secondAttribute="leading" id="K7F-3B-tEf"/>
+                                    <constraint firstAttribute="trailing" secondItem="7QN-lz-ecO" secondAttribute="trailing" id="SBe-Bk-Ced"/>
+                                    <constraint firstItem="jvl-2B-OaP" firstAttribute="top" secondItem="7QN-lz-ecO" secondAttribute="bottom" constant="32" id="i26-Bh-bR4"/>
+                                    <constraint firstItem="GJd-xL-dQA" firstAttribute="leading" secondItem="Nkc-ed-rNq" secondAttribute="leading" id="k2H-Do-43j"/>
+                                    <constraint firstAttribute="bottom" secondItem="GJd-xL-dQA" secondAttribute="bottom" id="phJ-Wr-6ae"/>
+                                    <constraint firstItem="7QN-lz-ecO" firstAttribute="top" secondItem="Nkc-ed-rNq" secondAttribute="top" id="uxt-vx-nE6"/>
+                                    <constraint firstItem="jvl-2B-OaP" firstAttribute="leading" secondItem="Nkc-ed-rNq" secondAttribute="leading" id="x5p-Zf-gLY"/>
+                                    <constraint firstItem="GJd-xL-dQA" firstAttribute="top" secondItem="jvl-2B-OaP" secondAttribute="bottom" constant="16" id="yw4-KY-Rvu"/>
+                                </constraints>
+                            </view>
+                        </subviews>
+                        <color key="backgroundColor" red="0.0" green="0.1764705882" blue="0.44705882349999998" alpha="1" colorSpace="calibratedRGB"/>
+                        <constraints>
+                            <constraint firstItem="Nkc-ed-rNq" firstAttribute="leading" secondItem="hk6-wu-5b8" secondAttribute="leadingMargin" id="4yT-G1-PDE"/>
+                            <constraint firstAttribute="trailingMargin" secondItem="Nkc-ed-rNq" secondAttribute="trailing" id="Apb-Aq-qU6"/>
+                            <constraint firstItem="Nkc-ed-rNq" firstAttribute="centerY" secondItem="hk6-wu-5b8" secondAttribute="centerY" id="dhL-Ga-XUv"/>
+                            <constraint firstItem="Nkc-ed-rNq" firstAttribute="centerX" secondItem="hk6-wu-5b8" secondAttribute="centerX" id="jAD-Y8-SEJ"/>
+                        </constraints>
+                    </view>
+                    <simulatedScreenMetrics key="simulatedDestinationMetrics" type="retina4"/>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="crt-SO-lbt" userLabel="First Responder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="658" y="1180"/>
         </scene>
     </scenes>
     <resources>

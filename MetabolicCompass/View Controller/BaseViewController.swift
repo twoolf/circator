@@ -7,6 +7,7 @@
 //
 
 import UIKit
+import MetabolicCompassKit
 
 class BaseViewController: UIViewController {
     
@@ -34,6 +35,8 @@ class BaseViewController: UIViewController {
         super.viewDidLoad()
         
         self.automaticallyAdjustsScrollViewInsets = false
+        
+        self.view.backgroundColor = ScreenManager.sharedInstance.appBgColor()
     }
 
     override func didReceiveMemoryWarning() {

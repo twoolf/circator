@@ -22,8 +22,6 @@
 		788CF4E71C8B7B2D004E1706 /* DataTypes.swift in Sources */ = {isa = PBXBuildFile; fileRef = 788CF4E61C8B7B2D004E1706 /* DataTypes.swift */; };
 		78AC90CC1C1E859F008C931B /* UserAccount.swift in Sources */ = {isa = PBXBuildFile; fileRef = 78AC90CB1C1E859F008C931B /* UserAccount.swift */; };
 		78B7341B1C90B83A00693229 /* IntroViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7881A3E21BAF3B3E00ECB3C6 /* IntroViewController.swift */; };
-		78B7341C1C90B83E00693229 /* LoginViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7886EADE1C22AC2A00D7E3D4 /* LoginViewController.swift */; };
-		78B7341D1C90B84100693229 /* RegisterViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 78DA2D731C28ED2A005CC2DB /* RegisterViewController.swift */; };
 		78B7341E1C90B84600693229 /* ProfileSubviewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 786817601C6CF37D0018ABB5 /* ProfileSubviewController.swift */; };
 		78B7341F1C90B84900693229 /* SettingsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = F4F4DA571C0257130073E9EE /* SettingsViewController.swift */; };
 		78B734201C90B84D00693229 /* RepeatedEventsController.swift in Sources */ = {isa = PBXBuildFile; fileRef = F49B2B6C1C7A6206005F2BFB /* RepeatedEventsController.swift */; };
@@ -60,6 +58,9 @@
 		9585680F1CD1020600EDD385 /* LoadImageCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9585680D1CD1020600EDD385 /* LoadImageCollectionViewCell.swift */; };
 		958568101CD1020600EDD385 /* LoadImageCollectionViewCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 9585680E1CD1020600EDD385 /* LoadImageCollectionViewCell.xib */; };
 		958568121CD12B5200EDD385 /* RegisterModelDataSource.swift in Sources */ = {isa = PBXBuildFile; fileRef = 958568111CD12B5200EDD385 /* RegisterModelDataSource.swift */; };
+		95C0B99A1CD23E90006E523F /* LoginViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 95C0B9981CD23E90006E523F /* LoginViewController.swift */; };
+		95C0B99B1CD23E90006E523F /* RegisterViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 95C0B9991CD23E90006E523F /* RegisterViewController.swift */; };
+		95C0B99D1CD23EBA006E523F /* RegistrationComplitionViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 95C0B99C1CD23EBA006E523F /* RegistrationComplitionViewController.swift */; };
 		A88F31F3DDADAD50F4190F8E /* Pods.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = CB09F654AB4B00C79306C728 /* Pods.framework */; };
 		F42F5ADD1BDC85AF00195490 /* SampleDataAnalyzer.swift in Sources */ = {isa = PBXBuildFile; fileRef = F42F5ADC1BDC85AF00195490 /* SampleDataAnalyzer.swift */; };
 		F42F5B351BE1FD1E00195490 /* MetabolicCompassKit.h in Headers */ = {isa = PBXBuildFile; fileRef = F42F5B341BE1FD1E00195490 /* MetabolicCompassKit.h */; settings = {ATTRIBUTES = (Public, ); }; };
@@ -206,14 +207,12 @@
 		7881A4001BAF3B3E00ECB3C6 /* MetabolicCompassUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MetabolicCompassUITests.swift; sourceTree = "<group>"; };
 		7881A4021BAF3B3E00ECB3C6 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		7884E8E71C5F0804000261EE /* UINotifications.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = UINotifications.swift; sourceTree = "<group>"; };
-		7886EADE1C22AC2A00D7E3D4 /* LoginViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LoginViewController.swift; sourceTree = "<group>"; };
 		788CF4E61C8B7B2D004E1706 /* DataTypes.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DataTypes.swift; sourceTree = "<group>"; };
 		78AC90CB1C1E859F008C931B /* UserAccount.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = UserAccount.swift; sourceTree = "<group>"; };
 		78B279C21C80FFE5005A6249 /* MetabolicCompassWatchExtension.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.xml; path = MetabolicCompassWatchExtension.entitlements; sourceTree = "<group>"; };
 		78B279C31C80FFEA005A6249 /* MetabolicCompassWatch.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.xml; path = MetabolicCompassWatch.entitlements; sourceTree = "<group>"; };
 		78BEAC9D1C5E7EE800F0B541 /* PopulationHealthManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PopulationHealthManager.swift; sourceTree = "<group>"; };
 		78CE00AC1C65CC5A005E955C /* RadarViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RadarViewController.swift; sourceTree = "<group>"; };
-		78DA2D731C28ED2A005CC2DB /* RegisterViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RegisterViewController.swift; sourceTree = "<group>"; };
 		78E5219F1C25687900FAE56A /* Pods.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Pods.framework; path = "Pods/../build/Debug-iphoneos/Pods.framework"; sourceTree = "<group>"; };
 		78F65A4C1C25126E0074449D /* QueryBuilderViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = QueryBuilderViewController.swift; sourceTree = "<group>"; };
 		78F9FE3D1C20E48D0026D790 /* Pods_MetabolicCompass.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Pods_MetabolicCompass.framework; path = "Pods/../build/Debug-iphoneos/Pods_MetabolicCompass.framework"; sourceTree = "<group>"; };
@@ -236,6 +235,9 @@
 		9585680D1CD1020600EDD385 /* LoadImageCollectionViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LoadImageCollectionViewCell.swift; sourceTree = "<group>"; };
 		9585680E1CD1020600EDD385 /* LoadImageCollectionViewCell.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = LoadImageCollectionViewCell.xib; sourceTree = "<group>"; };
 		958568111CD12B5200EDD385 /* RegisterModelDataSource.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RegisterModelDataSource.swift; sourceTree = "<group>"; };
+		95C0B9981CD23E90006E523F /* LoginViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LoginViewController.swift; sourceTree = "<group>"; };
+		95C0B9991CD23E90006E523F /* RegisterViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RegisterViewController.swift; sourceTree = "<group>"; };
+		95C0B99C1CD23EBA006E523F /* RegistrationComplitionViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RegistrationComplitionViewController.swift; sourceTree = "<group>"; };
 		984776BC6A59A33B4580C535 /* Pods.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = Pods.release.xcconfig; path = "Pods/Target Support Files/Pods/Pods.release.xcconfig"; sourceTree = "<group>"; };
 		CB09F654AB4B00C79306C728 /* Pods.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		F28DDB83BE2DA2B65B631537 /* Pods.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = Pods.debug.xcconfig; path = "Pods/Target Support Files/Pods/Pods.debug.xcconfig"; sourceTree = "<group>"; };
@@ -447,6 +449,16 @@
 			path = Utils;
 			sourceTree = "<group>";
 		};
+		95C0B9971CD23E90006E523F /* AuthorizationViewControllers */ = {
+			isa = PBXGroup;
+			children = (
+				95C0B9981CD23E90006E523F /* LoginViewController.swift */,
+				95C0B9991CD23E90006E523F /* RegisterViewController.swift */,
+				95C0B99C1CD23EBA006E523F /* RegistrationComplitionViewController.swift */,
+			);
+			path = AuthorizationViewControllers;
+			sourceTree = "<group>";
+		};
 		EA5EDF2A50FCED6ADBAA03DD /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
@@ -561,9 +573,8 @@
 		F43A7C5F1BBDF43C00B6FA56 /* View Controller */ = {
 			isa = PBXGroup;
 			children = (
+				95C0B9971CD23E90006E523F /* AuthorizationViewControllers */,
 				7881A3E21BAF3B3E00ECB3C6 /* IntroViewController.swift */,
-				7886EADE1C22AC2A00D7E3D4 /* LoginViewController.swift */,
-				78DA2D731C28ED2A005CC2DB /* RegisterViewController.swift */,
 				786817601C6CF37D0018ABB5 /* ProfileSubviewController.swift */,
 				F4F4DA571C0257130073E9EE /* SettingsViewController.swift */,
 				F49B2B6C1C7A6206005F2BFB /* RepeatedEventsController.swift */,
@@ -944,6 +955,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				95C0B99A1CD23E90006E523F /* LoginViewController.swift in Sources */,
 				F49B2B711C7A83BD005F2BFB /* EventPickerManager.swift in Sources */,
 				78B734281C90B86A00693229 /* PlotViewController.swift in Sources */,
 				958568031CD0B18900EDD385 /* RegistrationModel.swift in Sources */,
@@ -953,20 +965,20 @@
 				958568051CD0BF6300EDD385 /* BaseViewController.swift in Sources */,
 				958568121CD12B5200EDD385 /* RegisterModelDataSource.swift in Sources */,
 				958568011CD0AFA400EDD385 /* CheckBox.swift in Sources */,
-				78B7341D1C90B84100693229 /* RegisterViewController.swift in Sources */,
 				78B734261C90B86200693229 /* RadarViewController.swift in Sources */,
+				95C0B99D1CD23EBA006E523F /* RegistrationComplitionViewController.swift in Sources */,
 				9585680C1CD0EDBD00EDD385 /* UnitsUtils.swift in Sources */,
 				95748C501CCFC7D90002F6A3 /* DoubleCheckListCollectionViewCell.swift in Sources */,
 				78B7342A1C90B87300693229 /* UINotifications.swift in Sources */,
 				78B734241C90B85B00693229 /* QueryBuilderViewController.swift in Sources */,
 				F43A7C5E1BBDF43600B6FA56 /* PlotButton.swift in Sources */,
+				95C0B99B1CD23E90006E523F /* RegisterViewController.swift in Sources */,
 				78B7342B1C90B87600693229 /* VariantViewController.swift in Sources */,
 				78B734271C90B86700693229 /* EventTimeViewController.swift in Sources */,
 				F42F5ADD1BDC85AF00195490 /* SampleDataAnalyzer.swift in Sources */,
 				958568091CD0D3A000EDD385 /* String+Extended.swift in Sources */,
 				78B7342C1C90B87A00693229 /* ErrorViewController.swift in Sources */,
 				78B734211C90B85100693229 /* DaySelectionViewController.swift in Sources */,
-				78B7341C1C90B83E00693229 /* LoginViewController.swift in Sources */,
 				7881A3E11BAF3B3E00ECB3C6 /* AppDelegate.swift in Sources */,
 				9585680F1CD1020600EDD385 /* LoadImageCollectionViewCell.swift in Sources */,
 				78B7341B1C90B83A00693229 /* IntroViewController.swift in Sources */,

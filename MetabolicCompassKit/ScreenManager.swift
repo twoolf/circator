@@ -156,4 +156,10 @@ public class ScreenManager {
     public func queryBuilderInputFontSize() -> CGFloat {
         return inputFontSize()
     }
+    
+    // MARK: - colors
+    
+    public func appBgColor() -> UIColor {
+        return UIColor(red: 0.047, green: 0.1412, blue: 0.318, alpha: 1.0)
+    }
 }
