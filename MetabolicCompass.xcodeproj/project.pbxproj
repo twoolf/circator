@@ -47,6 +47,19 @@
 		84207D241CCA3C3600776848 /* RegisterLoginLandingViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84207D231CCA3C3600776848 /* RegisterLoginLandingViewController.swift */; };
 		84207D261CCA6A7E00776848 /* InputTableCellWithImage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84207D251CCA6A7E00776848 /* InputTableCellWithImage.swift */; };
 		84207D281CCE02A400776848 /* LoginModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84207D271CCE02A400776848 /* LoginModel.swift */; };
+		95748C461CCFC7AA0002F6A3 /* InputCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 95748C441CCFC7AA0002F6A3 /* InputCollectionViewCell.swift */; };
+		95748C471CCFC7AA0002F6A3 /* InputCollectionViewCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 95748C451CCFC7AA0002F6A3 /* InputCollectionViewCell.xib */; };
+		95748C501CCFC7D90002F6A3 /* DoubleCheckListCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 95748C4E1CCFC7D90002F6A3 /* DoubleCheckListCollectionViewCell.swift */; };
+		95748C511CCFC7D90002F6A3 /* DoubleCheckListCollectionViewCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 95748C4F1CCFC7D90002F6A3 /* DoubleCheckListCollectionViewCell.xib */; };
+		95748C531CCFC8020002F6A3 /* BaseCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 95748C521CCFC8020002F6A3 /* BaseCollectionViewCell.swift */; };
+		958568011CD0AFA400EDD385 /* CheckBox.swift in Sources */ = {isa = PBXBuildFile; fileRef = 958568001CD0AFA400EDD385 /* CheckBox.swift */; };
+		958568031CD0B18900EDD385 /* RegistrationModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 958568021CD0B18900EDD385 /* RegistrationModel.swift */; };
+		958568051CD0BF6300EDD385 /* BaseViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 958568041CD0BF6300EDD385 /* BaseViewController.swift */; };
+		958568091CD0D3A000EDD385 /* String+Extended.swift in Sources */ = {isa = PBXBuildFile; fileRef = 958568081CD0D3A000EDD385 /* String+Extended.swift */; };
+		9585680C1CD0EDBD00EDD385 /* UnitsUtils.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9585680B1CD0EDBD00EDD385 /* UnitsUtils.swift */; };
+		9585680F1CD1020600EDD385 /* LoadImageCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9585680D1CD1020600EDD385 /* LoadImageCollectionViewCell.swift */; };
+		958568101CD1020600EDD385 /* LoadImageCollectionViewCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 9585680E1CD1020600EDD385 /* LoadImageCollectionViewCell.xib */; };
+		958568121CD12B5200EDD385 /* RegisterModelDataSource.swift in Sources */ = {isa = PBXBuildFile; fileRef = 958568111CD12B5200EDD385 /* RegisterModelDataSource.swift */; };
 		A88F31F3DDADAD50F4190F8E /* Pods.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = CB09F654AB4B00C79306C728 /* Pods.framework */; };
 		F42F5ADD1BDC85AF00195490 /* SampleDataAnalyzer.swift in Sources */ = {isa = PBXBuildFile; fileRef = F42F5ADC1BDC85AF00195490 /* SampleDataAnalyzer.swift */; };
 		F42F5B351BE1FD1E00195490 /* MetabolicCompassKit.h in Headers */ = {isa = PBXBuildFile; fileRef = F42F5B341BE1FD1E00195490 /* MetabolicCompassKit.h */; settings = {ATTRIBUTES = (Public, ); }; };
@@ -210,6 +223,19 @@
 		84207D251CCA6A7E00776848 /* InputTableCellWithImage.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = InputTableCellWithImage.swift; sourceTree = "<group>"; };
 		84207D271CCE02A400776848 /* LoginModel.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LoginModel.swift; sourceTree = "<group>"; };
 		8B4A08D995498CDA94BBB258 /* Pods-MetabolicCompass.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-MetabolicCompass.release.xcconfig"; path = "Pods/Target Support Files/Pods-MetabolicCompass/Pods-MetabolicCompass.release.xcconfig"; sourceTree = "<group>"; };
+		95748C441CCFC7AA0002F6A3 /* InputCollectionViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = InputCollectionViewCell.swift; sourceTree = "<group>"; };
+		95748C451CCFC7AA0002F6A3 /* InputCollectionViewCell.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = InputCollectionViewCell.xib; sourceTree = "<group>"; };
+		95748C4E1CCFC7D90002F6A3 /* DoubleCheckListCollectionViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DoubleCheckListCollectionViewCell.swift; sourceTree = "<group>"; };
+		95748C4F1CCFC7D90002F6A3 /* DoubleCheckListCollectionViewCell.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = DoubleCheckListCollectionViewCell.xib; sourceTree = "<group>"; };
+		95748C521CCFC8020002F6A3 /* BaseCollectionViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BaseCollectionViewCell.swift; sourceTree = "<group>"; };
+		958568001CD0AFA400EDD385 /* CheckBox.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CheckBox.swift; sourceTree = "<group>"; };
+		958568021CD0B18900EDD385 /* RegistrationModel.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RegistrationModel.swift; sourceTree = "<group>"; };
+		958568041CD0BF6300EDD385 /* BaseViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BaseViewController.swift; sourceTree = "<group>"; };
+		958568081CD0D3A000EDD385 /* String+Extended.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "String+Extended.swift"; sourceTree = "<group>"; };
+		9585680B1CD0EDBD00EDD385 /* UnitsUtils.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = UnitsUtils.swift; sourceTree = "<group>"; };
+		9585680D1CD1020600EDD385 /* LoadImageCollectionViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LoadImageCollectionViewCell.swift; sourceTree = "<group>"; };
+		9585680E1CD1020600EDD385 /* LoadImageCollectionViewCell.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = LoadImageCollectionViewCell.xib; sourceTree = "<group>"; };
+		958568111CD12B5200EDD385 /* RegisterModelDataSource.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RegisterModelDataSource.swift; sourceTree = "<group>"; };
 		984776BC6A59A33B4580C535 /* Pods.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = Pods.release.xcconfig; path = "Pods/Target Support Files/Pods/Pods.release.xcconfig"; sourceTree = "<group>"; };
 		CB09F654AB4B00C79306C728 /* Pods.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		F28DDB83BE2DA2B65B631537 /* Pods.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = Pods.debug.xcconfig; path = "Pods/Target Support Files/Pods/Pods.debug.xcconfig"; sourceTree = "<group>"; };
@@ -335,6 +361,9 @@
 		7881A3DF1BAF3B3E00ECB3C6 /* MetabolicCompass */ = {
 			isa = PBXGroup;
 			children = (
+				9585680A1CD0EDAC00EDD385 /* Utils */,
+				958568061CD0D39000EDD385 /* DataSources */,
+				958568071CD0D39000EDD385 /* Extensions */,
 				7881A3E01BAF3B3E00ECB3C6 /* AppDelegate.swift */,
 				F43A7C591BBDF3D800B6FA56 /* Model */,
 				F43A7C5A1BBDF3FD00B6FA56 /* View */,
@@ -378,6 +407,44 @@
 				84207D211CCA210000776848 /* Images.xcassets */,
 			);
 			path = Resourses;
+			sourceTree = "<group>";
+		};
+		95748C3E1CCFC7350002F6A3 /* Cells */ = {
+			isa = PBXGroup;
+			children = (
+				95748C441CCFC7AA0002F6A3 /* InputCollectionViewCell.swift */,
+				95748C451CCFC7AA0002F6A3 /* InputCollectionViewCell.xib */,
+				95748C4E1CCFC7D90002F6A3 /* DoubleCheckListCollectionViewCell.swift */,
+				95748C4F1CCFC7D90002F6A3 /* DoubleCheckListCollectionViewCell.xib */,
+				95748C521CCFC8020002F6A3 /* BaseCollectionViewCell.swift */,
+				9585680D1CD1020600EDD385 /* LoadImageCollectionViewCell.swift */,
+				9585680E1CD1020600EDD385 /* LoadImageCollectionViewCell.xib */,
+			);
+			path = Cells;
+			sourceTree = "<group>";
+		};
+		958568061CD0D39000EDD385 /* DataSources */ = {
+			isa = PBXGroup;
+			children = (
+				958568111CD12B5200EDD385 /* RegisterModelDataSource.swift */,
+			);
+			path = DataSources;
+			sourceTree = "<group>";
+		};
+		958568071CD0D39000EDD385 /* Extensions */ = {
+			isa = PBXGroup;
+			children = (
+				958568081CD0D3A000EDD385 /* String+Extended.swift */,
+			);
+			path = Extensions;
+			sourceTree = "<group>";
+		};
+		9585680A1CD0EDAC00EDD385 /* Utils */ = {
+			isa = PBXGroup;
+			children = (
+				9585680B1CD0EDBD00EDD385 /* UnitsUtils.swift */,
+			);
+			path = Utils;
 			sourceTree = "<group>";
 		};
 		EA5EDF2A50FCED6ADBAA03DD /* Frameworks */ = {
@@ -474,6 +541,7 @@
 				F42F5ADC1BDC85AF00195490 /* SampleDataAnalyzer.swift */,
 				F49B2B701C7A83BD005F2BFB /* EventPickerManager.swift */,
 				84207D271CCE02A400776848 /* LoginModel.swift */,
+				958568021CD0B18900EDD385 /* RegistrationModel.swift */,
 			);
 			path = Model;
 			sourceTree = "<group>";
@@ -481,9 +549,11 @@
 		F43A7C5A1BBDF3FD00B6FA56 /* View */ = {
 			isa = PBXGroup;
 			children = (
+				95748C3E1CCFC7350002F6A3 /* Cells */,
 				F43A7C5C1BBDF43600B6FA56 /* PlotButton.swift */,
 				F43A7C671BBE508D00B6FA56 /* IntroCompareDataTableViewCell.swift */,
 				84207D251CCA6A7E00776848 /* InputTableCellWithImage.swift */,
+				958568001CD0AFA400EDD385 /* CheckBox.swift */,
 			);
 			path = View;
 			sourceTree = "<group>";
@@ -511,6 +581,7 @@
 				7840A4981C6E53A80005B66F /* VariantViewController.swift */,
 				7840A49A1C6E5A680005B66F /* ErrorViewController.swift */,
 				84207D231CCA3C3600776848 /* RegisterLoginLandingViewController.swift */,
+				958568041CD0BF6300EDD385 /* BaseViewController.swift */,
 			);
 			path = "View Controller";
 			sourceTree = "<group>";
@@ -728,8 +799,11 @@
 			buildActionMask = 2147483647;
 			files = (
 				F43A7C571BBDF29D00B6FA56 /* LaunchScreen.storyboard in Resources */,
+				95748C511CCFC7D90002F6A3 /* DoubleCheckListCollectionViewCell.xib in Resources */,
+				958568101CD1020600EDD385 /* LoadImageCollectionViewCell.xib in Resources */,
 				84207D221CCA210000776848 /* Images.xcassets in Resources */,
 				84207D1F1CCA1FEC00776848 /* RegisterLoginProcess.storyboard in Resources */,
+				95748C471CCFC7AA0002F6A3 /* InputCollectionViewCell.xib in Resources */,
 				F43A7C551BBDF25E00B6FA56 /* Images.xcassets in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -872,31 +946,41 @@
 			files = (
 				F49B2B711C7A83BD005F2BFB /* EventPickerManager.swift in Sources */,
 				78B734281C90B86A00693229 /* PlotViewController.swift in Sources */,
+				958568031CD0B18900EDD385 /* RegistrationModel.swift in Sources */,
 				78B734291C90B86D00693229 /* CorrelationViewController.swift in Sources */,
 				78B7341E1C90B84600693229 /* ProfileSubviewController.swift in Sources */,
 				78B734201C90B84D00693229 /* RepeatedEventsController.swift in Sources */,
+				958568051CD0BF6300EDD385 /* BaseViewController.swift in Sources */,
+				958568121CD12B5200EDD385 /* RegisterModelDataSource.swift in Sources */,
+				958568011CD0AFA400EDD385 /* CheckBox.swift in Sources */,
 				78B7341D1C90B84100693229 /* RegisterViewController.swift in Sources */,
 				78B734261C90B86200693229 /* RadarViewController.swift in Sources */,
+				9585680C1CD0EDBD00EDD385 /* UnitsUtils.swift in Sources */,
+				95748C501CCFC7D90002F6A3 /* DoubleCheckListCollectionViewCell.swift in Sources */,
 				78B7342A1C90B87300693229 /* UINotifications.swift in Sources */,
 				78B734241C90B85B00693229 /* QueryBuilderViewController.swift in Sources */,
 				F43A7C5E1BBDF43600B6FA56 /* PlotButton.swift in Sources */,
 				78B7342B1C90B87600693229 /* VariantViewController.swift in Sources */,
 				78B734271C90B86700693229 /* EventTimeViewController.swift in Sources */,
 				F42F5ADD1BDC85AF00195490 /* SampleDataAnalyzer.swift in Sources */,
+				958568091CD0D3A000EDD385 /* String+Extended.swift in Sources */,
 				78B7342C1C90B87A00693229 /* ErrorViewController.swift in Sources */,
 				78B734211C90B85100693229 /* DaySelectionViewController.swift in Sources */,
 				78B7341C1C90B83E00693229 /* LoginViewController.swift in Sources */,
 				7881A3E11BAF3B3E00ECB3C6 /* AppDelegate.swift in Sources */,
+				9585680F1CD1020600EDD385 /* LoadImageCollectionViewCell.swift in Sources */,
 				78B7341B1C90B83A00693229 /* IntroViewController.swift in Sources */,
 				84207D241CCA3C3600776848 /* RegisterLoginLandingViewController.swift in Sources */,
 				84207D261CCA6A7E00776848 /* InputTableCellWithImage.swift in Sources */,
 				78B7342E1C90BC6900693229 /* DebugViewController.swift in Sources */,
 				78B734231C90B85700693229 /* QueryViewController.swift in Sources */,
+				95748C531CCFC8020002F6A3 /* BaseCollectionViewCell.swift in Sources */,
 				84207D281CCE02A400776848 /* LoginModel.swift in Sources */,
 				78B734221C90B85400693229 /* RowSettingsViewController.swift in Sources */,
 				78B734251C90B85E00693229 /* QueryWriterViewController.swift in Sources */,
 				F43A7C681BBE508D00B6FA56 /* IntroCompareDataTableViewCell.swift in Sources */,
 				78B7341F1C90B84900693229 /* SettingsViewController.swift in Sources */,
+				95748C461CCFC7AA0002F6A3 /* InputCollectionViewCell.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

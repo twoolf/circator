@@ -30,11 +30,11 @@ class LoginModel : NSObject, UITableViewDataSource, UITextFieldDelegate {
         cell.cellInput.delegate = self
         cell.cellInput.tag = indexPath.row
         if indexPath.row == 1 {
-            cell.cellImage.image = UIImage(named: "password")
+            cell.cellImage.image = UIImage(named: "icon-password")
             cell.cellInput.attributedPlaceholder = NSAttributedString(string: "Password", attributes: [NSForegroundColorAttributeName : UIColor.whiteColor()])
             cell.cellInput.secureTextEntry = true
         } else {
-            cell.cellImage.image = UIImage(named: "email")
+            cell.cellImage.image = UIImage(named: "icon-email")
             cell.cellInput.attributedPlaceholder = NSAttributedString(string: "E-mail", attributes: [NSForegroundColorAttributeName : UIColor.whiteColor()])
             cell.cellInput.keyboardType = UIKeyboardType.EmailAddress
         }

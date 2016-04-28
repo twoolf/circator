@@ -584,7 +584,8 @@ class IntroViewController: UIViewController,
     }
 
     func registerParticipant() {
-        let registerVC = RegisterViewController()
+        
+        let registerVC = RegisterViewController.viewControllerFromStoryboard() as! RegisterViewController
         registerVC.parentView = self
         registerVC.consentOnLoad = true
         registerVC.registerCompletion = { self.initializeBackgroundWork() }

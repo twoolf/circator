@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="10116" systemVersion="15E65" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES">
+    <dependencies>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="10085"/>
+    </dependencies>
+    <objects>
+        <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner"/>
+        <placeholder placeholderIdentifier="IBFirstResponder" id="-2" customClass="UIResponder"/>
+        <collectionViewCell opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" id="gTV-IL-0wX" customClass="InputCollectionViewCell" customModule="MetabolicCompass" customModuleProvider="target">
+            <rect key="frame" x="0.0" y="0.0" width="320" height="50"/>
+            <autoresizingMask key="autoresizingMask"/>
+            <view key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center">
+                <rect key="frame" x="0.0" y="0.0" width="320" height="50"/>
+                <subviews>
+                    <imageView userInteractionEnabled="NO" contentMode="center" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="email" translatesAutoresizingMaskIntoConstraints="NO" id="0GL-yr-1ZF">
+                        <rect key="frame" x="16" y="5" width="21" height="40"/>
+                        <constraints>
+                            <constraint firstAttribute="height" constant="40" id="dBb-ug-s0D"/>
+                            <constraint firstAttribute="width" constant="21" id="gTL-eu-Klk"/>
+                        </constraints>
+                    </imageView>
+                    <textField opaque="NO" clipsSubviews="YES" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="9VI-MN-qxB">
+                        <rect key="frame" x="53" y="16" width="250" height="17"/>
+                        <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
+                        <fontDescription key="fontDescription" type="system" pointSize="14"/>
+                        <textInputTraits key="textInputTraits"/>
+                    </textField>
+                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="" textAlignment="right" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="qU5-Lh-793">
+                        <rect key="frame" x="304" y="25" width="0.0" height="0.0"/>
+                        <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                        <color key="textColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                        <nil key="highlightedColor"/>
+                    </label>
+                    <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="Qbn-7l-O7e">
+                        <rect key="frame" x="53" y="49" width="251" height="1"/>
+                        <color key="backgroundColor" red="1" green="0.0" blue="1" alpha="1" colorSpace="calibratedRGB"/>
+                        <constraints>
+                            <constraint firstAttribute="height" constant="1" id="z6U-Rb-nsf"/>
+                        </constraints>
+                    </view>
+                </subviews>
+                <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
+            </view>
+            <constraints>
+                <constraint firstItem="0GL-yr-1ZF" firstAttribute="leading" secondItem="gTV-IL-0wX" secondAttribute="leading" constant="16" id="3ne-Gy-nbi"/>
+                <constraint firstItem="qU5-Lh-793" firstAttribute="leading" secondItem="9VI-MN-qxB" secondAttribute="trailing" constant="1" id="9TK-Kn-Uls"/>
+                <constraint firstItem="9VI-MN-qxB" firstAttribute="centerY" secondItem="gTV-IL-0wX" secondAttribute="centerY" id="Enu-Lq-46Q"/>
+                <constraint firstAttribute="trailing" secondItem="qU5-Lh-793" secondAttribute="trailing" constant="16" id="OYF-Ay-9Cz"/>
+                <constraint firstItem="0GL-yr-1ZF" firstAttribute="centerY" secondItem="gTV-IL-0wX" secondAttribute="centerY" id="ayU-Wb-3kh"/>
+                <constraint firstAttribute="bottom" secondItem="Qbn-7l-O7e" secondAttribute="bottom" id="bD2-Ip-9Q4"/>
+                <constraint firstItem="9VI-MN-qxB" firstAttribute="leading" secondItem="0GL-yr-1ZF" secondAttribute="trailing" constant="16" id="dPq-Jr-bTp"/>
+                <constraint firstItem="Qbn-7l-O7e" firstAttribute="leading" secondItem="9VI-MN-qxB" secondAttribute="leading" id="frz-4w-dLO"/>
+                <constraint firstItem="qU5-Lh-793" firstAttribute="trailing" secondItem="Qbn-7l-O7e" secondAttribute="trailing" id="oAj-aw-BGX"/>
+                <constraint firstItem="qU5-Lh-793" firstAttribute="centerY" secondItem="9VI-MN-qxB" secondAttribute="centerY" id="vUw-S9-h8b"/>
+            </constraints>
+            <connections>
+                <outlet property="cellImage" destination="0GL-yr-1ZF" id="sg0-76-qOD"/>
+                <outlet property="inputTxtField" destination="9VI-MN-qxB" id="QVs-TH-1zy"/>
+                <outlet property="nameLbl" destination="qU5-Lh-793" id="Fjp-Gq-Rff"/>
+                <outlet property="separatorLineHeightConstraint" destination="z6U-Rb-nsf" id="kuB-9b-zcC"/>
+                <outlet property="separatorView" destination="Qbn-7l-O7e" id="4M1-QX-KkP"/>
+            </connections>
+        </collectionViewCell>
+    </objects>
+    <resources>
+        <image name="email" width="17" height="12"/>
+    </resources>
+</document>
