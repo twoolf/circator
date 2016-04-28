@@ -64,13 +64,6 @@ private let inputFontSize = ScreenManager.sharedInstance.profileInputFontSize()
     
     @IBAction func registerAction(sender: UIButton) {
         
-        let a = true
-        
-        if a {
-            performSegueWithIdentifier(segueRegistrationCompletionIndentifier, sender: nil)
-            return
-        }
-        
         self.profileValues = self.dataSource.model.profileItems()
         //print("profile items: \(self.profileValues)")
 
