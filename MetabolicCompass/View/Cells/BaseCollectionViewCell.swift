@@ -12,7 +12,7 @@ class BaseCollectionViewCell: UICollectionViewCell, UITextFieldDelegate {
     
     var changesHandler:((cell: UICollectionViewCell, newValue: AnyObject?)->Void)?
     
-    @IBOutlet weak var cellImage: UIImageView!
+    @IBOutlet weak var cellImage: UIImageView?
     @IBOutlet weak var separatorView: UIView?
     @IBOutlet weak var separatorLineHeightConstraint: NSLayoutConstraint?
     
@@ -27,6 +27,11 @@ class BaseCollectionViewCell: UICollectionViewCell, UITextFieldDelegate {
         
         separatorView?.backgroundColor = UIColor.lightGrayColor()
         separatorLineHeightConstraint?.constant = 0.5
+    }
+    
+    
+    func textFieldDidChange(textField: UITextField) {
+        valueChanged(textField.text)
     }
     
     // MARK: - TextField Delegate

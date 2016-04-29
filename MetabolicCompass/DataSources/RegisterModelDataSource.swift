@@ -9,12 +9,9 @@
 import UIKit
 
 
-class RegisterModelDataSource: NSObject, UICollectionViewDataSource, UICollectionViewDelegateFlowLayout {
+class RegisterModelDataSource: BaseDataSource {
     
     weak var viewController: UIViewController?
-    
-    private let selectedTextColor = UIColor.whiteColor()
-    private let unselectedTextColor = UIColor.lightGrayColor()
     
     let model = RegistrationModel()
     
@@ -22,30 +19,27 @@ class RegisterModelDataSource: NSObject, UICollectionViewDataSource, UICollectio
     private let inputTextCellIdentifier = "inputTextCell"
     private let doubleCheckBoxCellIdentifier = "doubleCheckBoxCell"
     
-    weak var collectionView: UICollectionView? {
-        didSet {
-            
-            collectionView?.delegate = self
-            collectionView?.dataSource = self
-            
-            let loadImageCellNib = UINib(nibName: "LoadImageCollectionViewCell", bundle: nil)
-            collectionView?.registerNib(loadImageCellNib, forCellWithReuseIdentifier: loadImageCellIdentifier)
-            
-            let inputTextCellNib = UINib(nibName: "InputCollectionViewCell", bundle: nil)
-            collectionView?.registerNib(inputTextCellNib, forCellWithReuseIdentifier: inputTextCellIdentifier)
-            
-            let doubleCheckBoxCellNib = UINib(nibName: "DoubleCheckListCollectionViewCell", bundle: nil)
-            collectionView?.registerNib(doubleCheckBoxCellNib, forCellWithReuseIdentifier: doubleCheckBoxCellIdentifier)
-            
-        }
+    
+    override func registerCells() {
+        let loadImageCellNib = UINib(nibName: "LoadImageCollectionViewCell", bundle: nil)
+        collectionView?.registerNib(loadImageCellNib, forCellWithReuseIdentifier: loadImageCellIdentifier)
+        
+        let inputTextCellNib = UINib(nibName: "InputCollectionViewCell", bundle: nil)
+        collectionView?.registerNib(inputTextCellNib, forCellWithReuseIdentifier: inputTextCellIdentifier)
+        
+        let doubleCheckBoxCellNib = UINib(nibName: "DoubleCheckListCollectionViewCell", bundle: nil)
+        collectionView?.registerNib(doubleCheckBoxCellNib, forCellWithReuseIdentifier: doubleCheckBoxCellIdentifier)
     }
     
-    func collectionView(collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
+    
+    // MARK: - CollectionView Delegate & DataSource
+    
+    override func collectionView(collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
         let count = model.items.count
         return count
     }
     
-    func collectionView(collectionView: UICollectionView, cellForItemAtIndexPath indexPath: NSIndexPath) -> UICollectionViewCell {
+    override func collectionView(collectionView: UICollectionView, cellForItemAtIndexPath indexPath: NSIndexPath) -> UICollectionViewCell {
         
         let field = model.itemAtIndexPath(indexPath)
         var cell: BaseCollectionViewCell?
@@ -53,7 +47,7 @@ class RegisterModelDataSource: NSObject, UICollectionViewDataSource, UICollectio
         let cellType = field.type
         
         switch (cellType) {
-        case .Email, .Password, .FirstName, .LastName, .Weight, .Height, .Age:
+        case .Email, .Password, .FirstName, .LastName, .Weight, .Height, .Age, .Other:
             cell = inputCellForIndex(indexPath, forField: field)
         case  .Gender, .Units:
             cell = checkSelectionCellForIndex(indexPath, forField: field)
@@ -110,6 +104,8 @@ class RegisterModelDataSource: NSObject, UICollectionViewDataSource, UICollectio
         return UICollectionReusableView()
     }
     
+    // MARK: - Cells configuration
+    
     private func inputCellForIndex(indexPath: NSIndexPath, forField field: ModelItem) -> BaseCollectionViewCell {
         let cell = collectionView!.dequeueReusableCellWithReuseIdentifier(inputTextCellIdentifier, forIndexPath: indexPath) as! InputCollectionViewCell
         
@@ -128,7 +124,7 @@ class RegisterModelDataSource: NSObject, UICollectionViewDataSource, UICollectio
             cell.inputTxtField.keyboardType = UIKeyboardType.NumberPad
         }
         
-        cell.cellImage.image = UIImage(named: field.iconImageName)
+        cell.cellImage?.image = UIImage(named: field.iconImageName!)
         
         if field.type == .Weight {
             cell.nameLbl.text = model.units.weightTitle
@@ -139,7 +135,6 @@ class RegisterModelDataSource: NSObject, UICollectionViewDataSource, UICollectio
         
         return cell
     }
-    
     
     private func checkSelectionCellForIndex(indexPath: NSIndexPath, forField field: ModelItem) -> BaseCollectionViewCell {
         let cell = collectionView!.dequeueReusableCellWithReuseIdentifier(doubleCheckBoxCellIdentifier, forIndexPath: indexPath) as! DoubleCheckListCollectionViewCell
@@ -158,7 +153,7 @@ class RegisterModelDataSource: NSObject, UICollectionViewDataSource, UICollectio
         cell.selectedTextColor = selectedTextColor
         cell.unselectedTextColor = unselectedTextColor
         
-        cell.cellImage.image = UIImage(named: field.iconImageName)
+        cell.cellImage?.image = UIImage(named: field.iconImageName!)
         
         return cell
     }

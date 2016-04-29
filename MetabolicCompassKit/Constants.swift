@@ -13,6 +13,24 @@ import HealthKit
  This maintains the constants and strings needed for Metabolic Compass. We tie this into the options and recommendations settings in the control panel.
  
  */
+
+public enum FieldDataType: Int {
+    case String = 0, Int, Decimal
+}
+
+public struct ProfileFieldData {
+    public let fieldName: String!
+    public let profileFieldName: String!
+    public let type: FieldDataType!
+    public let unitsTitle: String?
+}
+
+private let unitsTitleHours = "hours"
+private let unitsTitleCalories = "calories"
+private let unitsTitleSteps = "steps"
+private let unitsTitleHeartrate = "bpm"
+private let unitsTitleIntake = "m"
+
 public struct UserProfile {
 
     public static let sharedInstance = UserProfile()
@@ -130,6 +148,47 @@ public struct UserProfile {
     public var updateableMapping : [String: String]! {
         return Dictionary(pairs: profileFields[4..<29].map { k in return (k, profileMapping[k]!) })
     }
+    
+
+    public var fields: [ProfileFieldData] = {
+        var fields = [ProfileFieldData]()
+        
+        fields.append(ProfileFieldData(fieldName: "Email", profileFieldName: "email", type: .String, unitsTitle: nil))
+        fields.append(ProfileFieldData(fieldName: "Password", profileFieldName: "password", type: .String, unitsTitle: nil))
+        fields.append(ProfileFieldData(fieldName: "First name", profileFieldName: "firstname", type: .String, unitsTitle: nil))
+        fields.append(ProfileFieldData(fieldName: "Last name", profileFieldName: "lastname", type: .String, unitsTitle: nil))
+        fields.append(ProfileFieldData(fieldName: "Sex", profileFieldName: "sex", type: .Int, unitsTitle: nil))
+        fields.append(ProfileFieldData(fieldName: "Age", profileFieldName: "age", type: .Int, unitsTitle: nil))
+        fields.append(ProfileFieldData(fieldName: "Weight", profileFieldName: "Weight", type: .Int, unitsTitle: nil))
+        fields.append(ProfileFieldData(fieldName: "Height", profileFieldName: "Height", type: .Int, unitsTitle: nil))
+        
+        fields.append(ProfileFieldData(fieldName: "Usual sleep", profileFieldName: "sleep", type: .Int, unitsTitle: unitsTitleHours))
+        fields.append(ProfileFieldData(fieldName: "Estimated bmi", profileFieldName: "bmi", type: .Int, unitsTitle: nil))
+        fields.append(ProfileFieldData(fieldName: "Resting heartrate", profileFieldName: "heartrate", type: .Int, unitsTitle: unitsTitleHeartrate))
+        fields.append(ProfileFieldData(fieldName: "Systolic blood pressure", profileFieldName: "systolic", type: .Int, unitsTitle: nil))
+        fields.append(ProfileFieldData(fieldName: "Step count", profileFieldName: "steps", type: .Int, unitsTitle: unitsTitleSteps))
+        fields.append(ProfileFieldData(fieldName: "Active energy", profileFieldName: "energy", type: .Int, unitsTitle: unitsTitleCalories))
+        fields.append(ProfileFieldData(fieldName: "Awake time w/light", profileFieldName: "awake", type: .Int, unitsTitle: unitsTitleHours))
+        fields.append(ProfileFieldData(fieldName: "Fasting", profileFieldName: "fasting", type: .Int, unitsTitle: unitsTitleHours))
+        fields.append(ProfileFieldData(fieldName: "Eating", profileFieldName: "eating", type: .Int, unitsTitle: unitsTitleHours))
+        
+        fields.append(ProfileFieldData(fieldName: "Calorie intake", profileFieldName: "calories", type: .Decimal, unitsTitle: unitsTitleIntake))
+        fields.append(ProfileFieldData(fieldName: "Protein intake", profileFieldName: "protein", type: .Decimal, unitsTitle: unitsTitleIntake))
+        fields.append(ProfileFieldData(fieldName: "Carbohydrate intake", profileFieldName: "carbs", type: .Decimal, unitsTitle: unitsTitleIntake))
+        fields.append(ProfileFieldData(fieldName: "Sugar intake", profileFieldName: "sugar", type: .Decimal, unitsTitle: unitsTitleIntake))
+        fields.append(ProfileFieldData(fieldName: "Fiber intake", profileFieldName: "fiber", type: .Decimal, unitsTitle: unitsTitleIntake))
+        fields.append(ProfileFieldData(fieldName: "Fat intake", profileFieldName: "fat", type: .Decimal, unitsTitle: unitsTitleIntake))
+ 
+        fields.append(ProfileFieldData(fieldName: "Saturated fat", profileFieldName: "satfat", type: .Decimal, unitsTitle: unitsTitleIntake))
+        fields.append(ProfileFieldData(fieldName: "Monounsaturated fat", profileFieldName: "monfat", type: .Decimal, unitsTitle: unitsTitleIntake))
+        fields.append(ProfileFieldData(fieldName: "Polyunsaturated fat", profileFieldName: "polyfat", type: .Decimal, unitsTitle: unitsTitleIntake))
+        fields.append(ProfileFieldData(fieldName: "Cholesterol", profileFieldName: "cholesterol", type: .Decimal, unitsTitle: unitsTitleIntake))
+        fields.append(ProfileFieldData(fieldName: "Salt", profileFieldName: "salt", type: .Decimal, unitsTitle: unitsTitleIntake))
+        fields.append(ProfileFieldData(fieldName: "Caffeine", profileFieldName: "caffeine", type: .Decimal, unitsTitle: unitsTitleIntake))
+        fields.append(ProfileFieldData(fieldName: "Water", profileFieldName: "water", type: .Decimal, unitsTitle: unitsTitleIntake))
+        
+        return fields
+    }()
 
 }
 

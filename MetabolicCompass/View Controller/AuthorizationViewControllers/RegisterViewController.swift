@@ -81,7 +81,6 @@ private let inputFontSize = ScreenManager.sharedInstance.profileInputFontSize()
             return
         }
         
-        
         sender.enabled = false
         
         
@@ -185,9 +184,14 @@ private let inputFontSize = ScreenManager.sharedInstance.profileInputFontSize()
     override func prepareForSegue(segue: UIStoryboardSegue, sender: AnyObject?) {
         
         if segue.identifier == segueRegistrationCompletionIndentifier {
+            segue.destinationViewController.modalPresentationStyle = .OverCurrentContext
             if let vc = segue.destinationViewController as? RegistrationComplitionViewController {
-                vc.modalPresentationStyle = .OverCurrentContext
                 vc.registerViewController = self
+            }
+            else if let navVC = segue.destinationViewController as? UINavigationController {
+                if let vc = navVC.viewControllers.first as? RegistrationComplitionViewController {
+                    vc.registerViewController = self
+                }
             }
             
         }

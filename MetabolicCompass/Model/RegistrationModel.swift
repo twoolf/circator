@@ -10,7 +10,7 @@ import UIKit
 import MetabolicCompassKit
 
 enum RegistrationFiledType: Int {
-    case Photo = 0, Email, Password, FirstName, LastName, Gender, Age, Units, Weight, Height
+    case Photo = 0, Email, Password, FirstName, LastName, Gender, Age, Units, Weight, Height, Other
 }
 
 enum Gender: Int {
@@ -31,11 +31,14 @@ class ModelItem: NSObject {
     private(set) var name: String
     private(set) var placeholder: String
     private(set) var type: RegistrationFiledType
-    private(set) var iconImageName: String
+    private(set) var iconImageName: String?
     
     private(set) var value: AnyObject?
+    private(set) var unitsTitle: String?
     
-    init(name itemName: String, placeholder itemPlaceholder: String, type itemType: RegistrationFiledType, iconImageName itemIconImageName: String, value itemValue: AnyObject?) {
+    var dataType: FieldDataType = .String
+    
+    init(name itemName: String, placeholder itemPlaceholder: String, type itemType: RegistrationFiledType, iconImageName itemIconImageName: String?, value itemValue: AnyObject?, unitsTitle itemUnitsTitle: String? = nil) {
         
         type = itemType
         name = itemName
@@ -45,6 +48,8 @@ class ModelItem: NSObject {
         super.init()
         
         value = itemValue
+        
+        unitsTitle = itemUnitsTitle
     }
     
     
@@ -216,14 +221,14 @@ class RegistrationModel: NSObject {
     
     // MARK: - Validate properties
     
-    private let emptyFieldMessage = "Please, fill all fields"
-    private let emailInvalidFormat = "Please, provide valid email"
-    private let passwordInvalidFormat = "Please, provide valid password. Password must have ..."
-    private let firstNameInvalidFormat = "Please, provide valid password. First name must be ..."
-    private let lastNameInvalidFormat = "Please, provide valid password. Last name must be ..."
-    private let ageInvalidFormat = "Please, provide valid age. Age must be ..."
-    private let weightInvalidFormat = "Please, provide valid weight. Weight must be ..."
-    private let heightInvalidFormat = "Please, provide valid height. Heigth must be ..."
+    private let emptyFieldMessage = "Please, fill all fields".localized
+    private let emailInvalidFormat = "Please, provide valid email".localized
+    private let passwordInvalidFormat = "Please, provide valid password. Password must have ...".localized
+    private let firstNameInvalidFormat = "Please, provide valid password. First name must be ...".localized
+    private let lastNameInvalidFormat = "Please, provide valid password. Last name must be ...".localized
+    private let ageInvalidFormat = "Please, provide valid age. Age must be ...".localized
+    private let weightInvalidFormat = "Please, provide valid weight. Weight must be ...".localized
+    private let heightInvalidFormat = "Please, provide valid height. Heigth must be ...".localized
     
     private(set) var validationMessage: String?
     

@@ -347,7 +347,7 @@
                     <simulatedScreenMetrics key="simulatedDestinationMetrics" type="retina4"/>
                     <connections>
                         <outlet property="collectionView" destination="QLH-Tq-w8F" id="6Ny-wA-2uz"/>
-                        <segue destination="U3H-df-Nd1" kind="presentation" identifier="completionRegistrationSeque" id="Z4N-HG-OPe"/>
+                        <segue destination="deY-Hz-HIC" kind="presentation" identifier="completionRegistrationSeque" id="Z4N-HG-OPe"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="V1Q-u2-gqb" userLabel="First Responder" sceneMemberID="firstResponder"/>
@@ -383,7 +383,7 @@
                                         </userDefinedRuntimeAttributes>
                                         <connections>
                                             <action selector="registerAction:" destination="Wq1-CV-Iw6" eventType="touchUpInside" id="sr9-Fu-zNf"/>
-                                            <action selector="yesAction:" destination="U3H-df-Nd1" eventType="touchUpInside" id="MfS-aR-VI9"/>
+                                            <segue destination="cr1-Aw-H8B" kind="show" id="StD-tJ-vTl"/>
                                         </connections>
                                     </button>
                                     <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="jvl-2B-OaP">
@@ -412,46 +412,7 @@ additional information</string>
                                                 <attributes>
                                                     <color key="NSColor" red="0.9779030430936716" green="1" blue="0.96725687694780971" alpha="1" colorSpace="calibratedRGB"/>
                                                     <font key="NSFont" size="17" name="HelveticaNeue"/>
-                                                    <paragraphStyle key="NSParagraphStyle" alignment="center" lineBreakMode="wordWrapping" baseWritingDirection="natural" tighteningFactorForTruncation="0.0" allowsDefaultTighteningForTruncation="NO">
-                                                        <tabStops>
-                                                            <textTab alignment="left" location="28">
-                                                                <options/>
-                                                            </textTab>
-                                                            <textTab alignment="left" location="56">
-                                                                <options/>
-                                                            </textTab>
-                                                            <textTab alignment="left" location="84">
-                                                                <options/>
-                                                            </textTab>
-                                                            <textTab alignment="left" location="112">
-                                                                <options/>
-                                                            </textTab>
-                                                            <textTab alignment="left" location="140">
-                                                                <options/>
-                                                            </textTab>
-                                                            <textTab alignment="left" location="168">
-                                                                <options/>
-                                                            </textTab>
-                                                            <textTab alignment="left" location="196">
-                                                                <options/>
-                                                            </textTab>
-                                                            <textTab alignment="left" location="224">
-                                                                <options/>
-                                                            </textTab>
-                                                            <textTab alignment="left" location="252">
-                                                                <options/>
-                                                            </textTab>
-                                                            <textTab alignment="left" location="280">
-                                                                <options/>
-                                                            </textTab>
-                                                            <textTab alignment="left" location="308">
-                                                                <options/>
-                                                            </textTab>
-                                                            <textTab alignment="left" location="336">
-                                                                <options/>
-                                                            </textTab>
-                                                        </tabStops>
-                                                    </paragraphStyle>
+                                                    <paragraphStyle key="NSParagraphStyle" alignment="center" lineBreakMode="wordWrapping" baseWritingDirection="natural" tighteningFactorForTruncation="0.0" allowsDefaultTighteningForTruncation="NO"/>
                                                 </attributes>
                                             </fragment>
                                         </attributedString>
@@ -481,9 +442,112 @@ additional information</string>
                             <constraint firstItem="Nkc-ed-rNq" firstAttribute="centerX" secondItem="hk6-wu-5b8" secondAttribute="centerX" id="jAD-Y8-SEJ"/>
                         </constraints>
                     </view>
+                    <navigationItem key="navigationItem" id="tPt-F2-Fok"/>
                     <simulatedScreenMetrics key="simulatedDestinationMetrics" type="retina4"/>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="crt-SO-lbt" userLabel="First Responder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="1224" y="1180"/>
+        </scene>
+        <!--REGISTER-->
+        <scene sceneID="8Im-BR-ouu">
+            <objects>
+                <viewController id="cr1-Aw-H8B" customClass="AdditionalInfoViewController" customModule="MetabolicCompass" customModuleProvider="target" sceneMemberID="viewController">
+                    <layoutGuides>
+                        <viewControllerLayoutGuide type="top" id="Oh2-0L-t6k"/>
+                        <viewControllerLayoutGuide type="bottom" id="ZYT-3e-VjM"/>
+                    </layoutGuides>
+                    <view key="view" contentMode="scaleToFill" id="yHE-as-Lys">
+                        <rect key="frame" x="0.0" y="0.0" width="320" height="568"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <subviews>
+                            <collectionView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" dataMode="prototypes" translatesAutoresizingMaskIntoConstraints="NO" id="ez5-DM-uTj">
+                                <rect key="frame" x="0.0" y="64" width="320" height="504"/>
+                                <color key="backgroundColor" red="0.039215686270000001" green="0.1137254902" blue="0.26274509800000001" alpha="1" colorSpace="calibratedRGB"/>
+                                <collectionViewFlowLayout key="collectionViewLayout" minimumLineSpacing="0.0" minimumInteritemSpacing="0.0" id="qI7-gf-xZ3">
+                                    <size key="itemSize" width="280" height="50"/>
+                                    <size key="headerReferenceSize" width="280" height="40"/>
+                                    <size key="footerReferenceSize" width="0.0" height="0.0"/>
+                                    <inset key="sectionInset" minX="0.0" minY="0.0" maxX="0.0" maxY="0.0"/>
+                                </collectionViewFlowLayout>
+                                <cells>
+                                    <collectionViewCell opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" id="da8-zu-62o">
+                                        <rect key="frame" x="20" y="104" width="280" height="50"/>
+                                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                        <view key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center">
+                                            <rect key="frame" x="0.0" y="0.0" width="280" height="50"/>
+                                            <autoresizingMask key="autoresizingMask"/>
+                                            <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
+                                        </view>
+                                    </collectionViewCell>
+                                    <collectionViewCell opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" id="hsf-sg-exU">
+                                        <rect key="frame" x="20" y="154" width="280" height="50"/>
+                                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                        <view key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center">
+                                            <rect key="frame" x="0.0" y="0.0" width="280" height="50"/>
+                                            <autoresizingMask key="autoresizingMask"/>
+                                            <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
+                                        </view>
+                                    </collectionViewCell>
+                                </cells>
+                                <collectionReusableView key="sectionHeaderView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" reuseIdentifier="headerView" id="PnE-fB-u1L" customClass="HeaderView" customModule="MetabolicCompass" customModuleProvider="target">
+                                    <rect key="frame" x="0.0" y="64" width="320" height="40"/>
+                                    <autoresizingMask key="autoresizingMask"/>
+                                    <subviews>
+                                        <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" misplaced="YES" text="Label" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="mEN-Xg-3gs">
+                                            <rect key="frame" x="24" y="12" width="252" height="17"/>
+                                            <fontDescription key="fontDescription" type="system" pointSize="14"/>
+                                            <color key="textColor" red="0.2627450980392157" green="0.47843137254901957" blue="0.87058823529411766" alpha="1" colorSpace="calibratedRGB"/>
+                                            <nil key="highlightedColor"/>
+                                        </label>
+                                    </subviews>
+                                    <color key="backgroundColor" red="0.039215686274509803" green="0.11372549019607843" blue="0.2627450980392157" alpha="1" colorSpace="calibratedRGB"/>
+                                    <constraints>
+                                        <constraint firstAttribute="trailingMargin" secondItem="mEN-Xg-3gs" secondAttribute="trailing" constant="16" id="A9a-vF-FW5"/>
+                                        <constraint firstItem="mEN-Xg-3gs" firstAttribute="leading" secondItem="PnE-fB-u1L" secondAttribute="leadingMargin" constant="16" id="cg4-CL-9Bb"/>
+                                        <constraint firstItem="mEN-Xg-3gs" firstAttribute="centerY" secondItem="PnE-fB-u1L" secondAttribute="centerY" id="iho-uP-OW3"/>
+                                    </constraints>
+                                    <connections>
+                                        <outlet property="titleLbl" destination="mEN-Xg-3gs" id="Iti-ZW-Djm"/>
+                                    </connections>
+                                </collectionReusableView>
+                            </collectionView>
+                        </subviews>
+                        <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                        <constraints>
+                            <constraint firstItem="ez5-DM-uTj" firstAttribute="top" secondItem="Oh2-0L-t6k" secondAttribute="bottom" id="Qqs-OP-vNi"/>
+                            <constraint firstItem="ez5-DM-uTj" firstAttribute="leading" secondItem="yHE-as-Lys" secondAttribute="leading" id="Sx6-ka-ghe"/>
+                            <constraint firstAttribute="trailing" secondItem="ez5-DM-uTj" secondAttribute="trailing" id="UEV-3e-ixA"/>
+                            <constraint firstItem="ZYT-3e-VjM" firstAttribute="top" secondItem="ez5-DM-uTj" secondAttribute="bottom" id="jHw-64-cQv"/>
+                        </constraints>
+                    </view>
+                    <navigationItem key="navigationItem" title="REGISTER" id="n4S-JS-aQl">
+                        <barButtonItem key="backBarButtonItem" title="Back" id="Ekz-tG-MWp"/>
+                    </navigationItem>
+                    <simulatedScreenMetrics key="simulatedDestinationMetrics" type="retina4"/>
+                    <connections>
+                        <outlet property="collectionView" destination="ez5-DM-uTj" id="JuG-Yk-5zE"/>
+                    </connections>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="ujV-7q-VW1" userLabel="First Responder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="1647" y="1180"/>
+        </scene>
+        <!--Navigation Controller-->
+        <scene sceneID="aFt-Kk-Hv1">
+            <objects>
+                <navigationController automaticallyAdjustsScrollViewInsets="NO" id="deY-Hz-HIC" sceneMemberID="viewController">
+                    <toolbarItems/>
+                    <navigationBar key="navigationBar" contentMode="scaleToFill" id="mTC-sy-IvG">
+                        <rect key="frame" x="0.0" y="0.0" width="320" height="44"/>
+                        <autoresizingMask key="autoresizingMask"/>
+                    </navigationBar>
+                    <nil name="viewControllers"/>
+                    <connections>
+                        <segue destination="U3H-df-Nd1" kind="relationship" relationship="rootViewController" id="cSR-Mq-pFm"/>
+                    </connections>
+                </navigationController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="LXG-MM-gz0" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
             <point key="canvasLocation" x="658" y="1180"/>
         </scene>

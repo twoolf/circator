@@ -34,8 +34,4 @@ class RegistrationComplitionViewController: BaseViewController {
         
     }
     
-    @IBAction func yesAction(sender: UIButton) {
-        // TODO: go to user information vc
-    }
-
 }

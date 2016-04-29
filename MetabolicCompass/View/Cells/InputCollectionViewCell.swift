@@ -26,7 +26,7 @@ class InputCollectionViewCell: BaseCollectionViewCell {
     override func prepareForReuse() {
         super.prepareForReuse()
         
-        cellImage.image = nil
+        cellImage?.image = nil
         inputTxtField.text = nil
         nameLbl.text = nil
 
@@ -34,9 +34,4 @@ class InputCollectionViewCell: BaseCollectionViewCell {
         inputTxtField.keyboardType = UIKeyboardType.Default
     }
     
-    
-    func textFieldDidChange(textField: UITextField) {
-        valueChanged(textField.text)
-    }
-
-}
+ }
