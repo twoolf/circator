@@ -11,6 +11,7 @@ import MetabolicCompassKit
 
 class AdditionalInfoViewController: BaseViewController {
 
+    weak var registerViewController: RegisterViewController?
     var dataSource = AdditionalInfoDataSource()
     
     @IBOutlet weak var collectionView: UICollectionView!
@@ -45,7 +46,9 @@ class AdditionalInfoViewController: BaseViewController {
         
         UserManager.sharedManager.pushProfile(additionalInfo, completion: { _ in
             
-            // Do next step
+            self.dismissViewControllerAnimated(true, completion: { [weak controller = self.registerViewController] in
+                controller?.registartionComplete()
+            });
             
         })
     }

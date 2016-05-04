@@ -97,6 +97,7 @@
                             <constraint firstItem="VmA-Rd-bRG" firstAttribute="top" secondItem="N76-Si-E6h" secondAttribute="bottom" constant="24" id="ldF-bj-lEH"/>
                         </constraints>
                     </view>
+                    <simulatedStatusBarMetrics key="simulatedStatusBarMetrics" statusBarStyle="lightContent"/>
                     <simulatedScreenMetrics key="simulatedDestinationMetrics" type="retina4"/>
                     <connections>
                         <outlet property="logoTopMargin" destination="BLK-OV-IYO" id="YSh-NW-0OI"/>
@@ -545,7 +546,7 @@
                                         </userDefinedRuntimeAttributes>
                                         <connections>
                                             <action selector="registerAction:" destination="Wq1-CV-Iw6" eventType="touchUpInside" id="sr9-Fu-zNf"/>
-                                            <segue destination="cr1-Aw-H8B" kind="show" id="StD-tJ-vTl"/>
+                                            <segue destination="cr1-Aw-H8B" kind="show" identifier="AdditionInfoController" id="StD-tJ-vTl"/>
                                         </connections>
                                     </button>
                                     <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="jvl-2B-OaP">
@@ -605,6 +606,7 @@ additional information</string>
                         </constraints>
                     </view>
                     <navigationItem key="navigationItem" id="tPt-F2-Fok"/>
+                    <simulatedStatusBarMetrics key="simulatedStatusBarMetrics" statusBarStyle="lightContent"/>
                     <simulatedScreenMetrics key="simulatedDestinationMetrics" type="retina4"/>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="crt-SO-lbt" userLabel="First Responder" sceneMemberID="firstResponder"/>

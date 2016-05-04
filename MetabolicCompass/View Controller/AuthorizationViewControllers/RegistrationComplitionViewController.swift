@@ -17,6 +17,12 @@ class RegistrationComplitionViewController: BaseViewController {
 
         view.backgroundColor = view.backgroundColor?.colorWithAlphaComponent(0.93)
         view.opaque = false
+        
+//        [[UIApplication sharedApplication] setStatusBarStyle:UIStatusBarStyleLightContent];
+    }
+    
+    override func preferredStatusBarStyle() -> UIStatusBarStyle {
+        return .LightContent;
     }
 
     override func didReceiveMemoryWarning() {
@@ -34,4 +40,17 @@ class RegistrationComplitionViewController: BaseViewController {
         
     }
     
+    private let segueRegistrationCompletionIndentifier = "AdditionInfoController"
+    
+    override func prepareForSegue(segue: UIStoryboardSegue, sender: AnyObject?) {
+        
+        if segue.identifier == segueRegistrationCompletionIndentifier {
+            
+            if let vc = segue.destinationViewController as? AdditionalInfoViewController {
+                vc.registerViewController = self.registerViewController
+            }
+            
+        }
+        
+    }
 }

@@ -44,6 +44,7 @@ private let inputFontSize = ScreenManager.sharedInstance.profileInputFontSize()
         super.viewWillAppear(animated)
         navigationController?.setNavigationBarHidden(false, animated: false)
         navigationItem.title = "REGISTER"
+        self.navigationController?.navigationBar.titleTextAttributes = [NSForegroundColorAttributeName: UIColor.whiteColor()];
     }
 
     override func viewWillDisappear(animated: Bool) {
@@ -59,7 +60,12 @@ private let inputFontSize = ScreenManager.sharedInstance.profileInputFontSize()
         dataSource.viewController = self
         dataSource.collectionView = self.collectionView
     
+        self.setNeedsStatusBarAppearanceUpdate()
         if ( consentOnLoad ) { doConsent() }
+    }
+    
+    override func preferredStatusBarStyle() -> UIStatusBarStyle {
+        return .LightContent;
     }
     
     @IBAction func registerAction(sender: UIButton) {
@@ -126,10 +132,10 @@ private let inputFontSize = ScreenManager.sharedInstance.profileInputFontSize()
                 UserManager.sharedManager.pushConsent(consentPath) { _ in
                     ConsentManager.sharedManager.removeConsentFile(consentPath)
                     
-                    self.doWelcome()
                     
                     self.performSegueWithIdentifier(self.segueRegistrationCompletionIndentifier, sender: nil)
-                
+                    self.doWelcome()
+                    
                     Answers.logSignUpWithMethod("SPR", success: true, customAttributes: nil)
                 }
             }
@@ -163,7 +169,6 @@ private let inputFontSize = ScreenManager.sharedInstance.profileInputFontSize()
     }
 
     func doWelcome() {
-        navigationController?.popViewControllerAnimated(true)
         Async.main {
             self.parentView?.view.dodo.style.bar.hideAfterDelaySeconds = 3
             self.parentView?.view.dodo.style.bar.hideOnTap = true
@@ -173,6 +178,7 @@ private let inputFontSize = ScreenManager.sharedInstance.profileInputFontSize()
     }
     
     func registartionComplete() {
+        navigationController?.popToRootViewControllerAnimated(true)
         doWelcome()
         if let comp = self.registerCompletion { comp() }
     }
