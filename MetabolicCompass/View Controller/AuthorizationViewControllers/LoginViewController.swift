@@ -73,7 +73,16 @@ class LoginViewController: UIViewController {
                 }
                 if let comp = self.completion { comp() }
                 //UINotifications.doWelcome(self.parentView!, pop: true, user: UserManager.sharedManager.getUserId() ?? "")
-                UINotifications.doWelcome(self, pop: true, user: UserManager.sharedManager.getUserId() ?? "")
+                
+                let topViewController = self.navigationController?.topViewController;
+                
+                self.navigationController?.popToRootViewControllerAnimated(true)
+
+//                if let topController = topViewController
+//                {
+//                    UINotifications.doWelcome(topController, pop: false, user: UserManager.sharedManager.getUserId() ?? "")
+//                }
+                
                 Async.main {
                     Answers.logLoginWithMethod("SPL", success: true, customAttributes: nil)
                     self.parentView?.initializeBackgroundWork()
