@@ -38,6 +38,10 @@ class LoginViewController: UIViewController {
         super.viewWillDisappear(animated)
         UIDevice.currentDevice().setValue(UIInterfaceOrientation.Portrait.rawValue, forKey: "orientation")
     }
+    
+    override func preferredStatusBarStyle() -> UIStatusBarStyle {
+        return .LightContent;
+    }
 
     override func viewDidLoad() {
         super.viewDidLoad()

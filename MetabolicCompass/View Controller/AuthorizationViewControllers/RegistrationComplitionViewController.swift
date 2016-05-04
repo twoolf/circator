@@ -18,7 +18,8 @@ class RegistrationComplitionViewController: BaseViewController {
         view.backgroundColor = view.backgroundColor?.colorWithAlphaComponent(0.93)
         view.opaque = false
         
-//        [[UIApplication sharedApplication] setStatusBarStyle:UIStatusBarStyleLightContent];
+        self.navigationController?.navigationBar.barStyle = UIBarStyle.Black;
+
     }
     
     override func preferredStatusBarStyle() -> UIStatusBarStyle {

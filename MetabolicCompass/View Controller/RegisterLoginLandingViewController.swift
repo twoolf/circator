@@ -22,5 +22,16 @@ class RegisterLoginLandingViewController: UIViewController {
             self.logoTopMargin.constant = 5;
             self.registerButtonBottomMargin.constant = 30;
         }
+        
+        self.navigationController?.navigationBar.barStyle = UIBarStyle.Black;
+    }
+    
+    override func viewWillAppear(animated: Bool) {
+        super.viewWillAppear(animated)
+        navigationController?.setNavigationBarHidden(true, animated: false)
+    }
+    
+    override func preferredStatusBarStyle() -> UIStatusBarStyle {
+        return .LightContent;
     }
 }
