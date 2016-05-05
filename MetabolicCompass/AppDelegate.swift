@@ -22,7 +22,7 @@ An overview of the Circator files and their connections follows. First, a reader
 class AppDelegate: UIResponder, UIApplicationDelegate {
 
     var window: UIWindow?
-    var mainViewController: IntroViewController!
+    var mainViewController: UIViewController!
 
     func application(application: UIApplication, didFinishLaunchingWithOptions launchOptions: [NSObject: AnyObject]?) -> Bool
     {
@@ -47,11 +47,11 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         // Set translucent. (Default value is already true, so this can be removed if desired.)
         UINavigationBar.appearance().translucent = true
 
-//        let tabBarStoryboard = UIStoryboard(name: "TabScreens", bundle: nil)
-//        let tabBarScreen = tabBarStoryboard.instantiateViewControllerWithIdentifier("TabBarController")
-//        mainViewController = tabBarScreen
+        let tabBarStoryboard = UIStoryboard(name: "TabScreens", bundle: nil)
+        let tabBarScreen = tabBarStoryboard.instantiateViewControllerWithIdentifier("TabBarController")
+        mainViewController = tabBarScreen
         
-        mainViewController = IntroViewController(nibName: nil, bundle: nil)
+//        mainViewController = IntroViewController(nibName: nil, bundle: nil)
         let navController  = UINavigationController(rootViewController: mainViewController)
 
         window?.rootViewController = navController
@@ -93,7 +93,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     }
 
     func applicationWillEnterForeground(application: UIApplication) {
-        mainViewController.fetchRecentSamples()
+//        mainViewController.fetchRecentSamples()
     }
 
     func applicationDidBecomeActive(application: UIApplication) {
