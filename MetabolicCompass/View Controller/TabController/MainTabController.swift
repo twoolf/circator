@@ -15,6 +15,27 @@ class MainTabController: UITabBarController {
 
         self.navigationController?.navigationBar.barStyle = UIBarStyle.Black;
         self.configureTabBar()
+        
+        self.navigationItem.leftBarButtonItem = UIBarButtonItem(title: NSLocalizedString("Manage", comment: "dashboard manage button"),
+                                                                style: .Done,
+                                                                target: self,
+                                                                action: #selector(didSelectManageButton))
+        
+        self.navigationItem.rightBarButtonItem = UIBarButtonItem(title: NSLocalizedString("Filters", comment: "dashboard filter button"),
+                                                                 style: .Done,
+                                                                 target: self,
+                                                                 action: #selector(didSelectFiltersButton))
+        
+        self.navigationItem.title = NSLocalizedString("DASHBOARD", comment: "dashboard screen title")
+        
+    }
+    
+    func didSelectFiltersButton(sender: AnyObject) {
+        
+    }
+    
+    func didSelectManageButton(sender: AnyObject) {
+        
     }
 
     override func preferredStatusBarStyle() -> UIStatusBarStyle {
