@@ -73,6 +73,7 @@
 		A88F31F3DDADAD50F4190F8E /* Pods.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = CB09F654AB4B00C79306C728 /* Pods.framework */; };
 		E7592DB51CDB3A2400E313BB /* TabScreens.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = E7592DB41CDB3A2400E313BB /* TabScreens.storyboard */; };
 		E7592DB81CDB490600E313BB /* MainTabController.swift in Sources */ = {isa = PBXBuildFile; fileRef = E7592DB71CDB490600E313BB /* MainTabController.swift */; };
+		E7592DBA1CDB704600E313BB /* DashboardTabControllerViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = E7592DB91CDB704600E313BB /* DashboardTabControllerViewController.swift */; };
 		F42F5ADD1BDC85AF00195490 /* SampleDataAnalyzer.swift in Sources */ = {isa = PBXBuildFile; fileRef = F42F5ADC1BDC85AF00195490 /* SampleDataAnalyzer.swift */; };
 		F42F5B351BE1FD1E00195490 /* MetabolicCompassKit.h in Headers */ = {isa = PBXBuildFile; fileRef = F42F5B341BE1FD1E00195490 /* MetabolicCompassKit.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		F42F5B391BE1FD1E00195490 /* MetabolicCompassKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F42F5B321BE1FD1E00195490 /* MetabolicCompassKit.framework */; };
@@ -262,6 +263,7 @@
 		CB09F654AB4B00C79306C728 /* Pods.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		E7592DB41CDB3A2400E313BB /* TabScreens.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; path = TabScreens.storyboard; sourceTree = "<group>"; };
 		E7592DB71CDB490600E313BB /* MainTabController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MainTabController.swift; sourceTree = "<group>"; };
+		E7592DB91CDB704600E313BB /* DashboardTabControllerViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DashboardTabControllerViewController.swift; sourceTree = "<group>"; };
 		F28DDB83BE2DA2B65B631537 /* Pods.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = Pods.debug.xcconfig; path = "Pods/Target Support Files/Pods/Pods.debug.xcconfig"; sourceTree = "<group>"; };
 		F42F5ADC1BDC85AF00195490 /* SampleDataAnalyzer.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SampleDataAnalyzer.swift; sourceTree = "<group>"; };
 		F42F5B321BE1FD1E00195490 /* MetabolicCompassKit.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = MetabolicCompassKit.framework; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -494,6 +496,7 @@
 			isa = PBXGroup;
 			children = (
 				E7592DB71CDB490600E313BB /* MainTabController.swift */,
+				E7592DB91CDB704600E313BB /* DashboardTabControllerViewController.swift */,
 			);
 			path = TabController;
 			sourceTree = "<group>";
@@ -1020,6 +1023,7 @@
 				78B734241C90B85B00693229 /* QueryBuilderViewController.swift in Sources */,
 				F43A7C5E1BBDF43600B6FA56 /* PlotButton.swift in Sources */,
 				E7592DB81CDB490600E313BB /* MainTabController.swift in Sources */,
+				E7592DBA1CDB704600E313BB /* DashboardTabControllerViewController.swift in Sources */,
 				95C0B9A81CD25860006E523F /* BaseDataSource.swift in Sources */,
 				95C0B99B1CD23E90006E523F /* RegisterViewController.swift in Sources */,
 				78B7342B1C90B87600693229 /* VariantViewController.swift in Sources */,

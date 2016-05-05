@@ -2,6 +2,7 @@
 <document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="10116" systemVersion="15E65" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES">
     <dependencies>
         <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="10085"/>
+        <capability name="Constraints to layout margins" minToolsVersion="6.0"/>
     </dependencies>
     <scenes>
         <!--Chart-->
@@ -26,7 +27,7 @@
         <!--Dashboard-->
         <scene sceneID="Tae-zp-Zoh">
             <objects>
-                <viewController id="QPb-nh-tqW" sceneMemberID="viewController">
+                <viewController id="QPb-nh-tqW" customClass="DashboardTabControllerViewController" customModule="MetabolicCompass" customModuleProvider="target" sceneMemberID="viewController">
                     <layoutGuides>
                         <viewControllerLayoutGuide type="top" id="csn-c4-PbE"/>
                         <viewControllerLayoutGuide type="bottom" id="OTk-xw-V8x"/>
@@ -34,13 +35,118 @@
                     <view key="view" contentMode="scaleToFill" id="c2S-u7-VKc">
                         <rect key="frame" x="0.0" y="0.0" width="600" height="600"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
-                        <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                        <subviews>
+                            <segmentedControl opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="top" segmentControlStyle="plain" selectedSegmentIndex="0" translatesAutoresizingMaskIntoConstraints="NO" id="iFC-7K-4FG">
+                                <rect key="frame" x="20" y="20" width="560" height="29"/>
+                                <segments>
+                                    <segment title="Comparison"/>
+                                    <segment title="Balance"/>
+                                    <segment title="Daily Progress"/>
+                                </segments>
+                                <color key="tintColor" red="0.16078431372549021" green="0.44313725490196076" blue="1" alpha="1" colorSpace="calibratedRGB"/>
+                                <connections>
+                                    <action selector="didSelectDashboardType:" destination="QPb-nh-tqW" eventType="valueChanged" id="8Kb-6o-a7v"/>
+                                </connections>
+                            </segmentedControl>
+                            <containerView opaque="NO" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="JPt-X8-IN5">
+                                <rect key="frame" x="20" y="56" width="560" height="495"/>
+                                <connections>
+                                    <segue destination="fs1-Kq-Bya" kind="embed" identifier="DashboardSegue" id="IKt-2q-m9m"/>
+                                </connections>
+                            </containerView>
+                        </subviews>
+                        <color key="backgroundColor" red="0.011764705882352941" green="0.10588235294117647" blue="0.2627450980392157" alpha="1" colorSpace="calibratedRGB"/>
+                        <constraints>
+                            <constraint firstItem="JPt-X8-IN5" firstAttribute="leading" secondItem="c2S-u7-VKc" secondAttribute="leadingMargin" id="0h4-p8-FsR"/>
+                            <constraint firstItem="iFC-7K-4FG" firstAttribute="leading" secondItem="c2S-u7-VKc" secondAttribute="leadingMargin" id="3WQ-mN-BJd"/>
+                            <constraint firstItem="OTk-xw-V8x" firstAttribute="top" secondItem="JPt-X8-IN5" secondAttribute="bottom" id="GYt-KM-QLD"/>
+                            <constraint firstAttribute="trailingMargin" secondItem="JPt-X8-IN5" secondAttribute="trailing" id="Ypq-EQ-tiI"/>
+                            <constraint firstItem="iFC-7K-4FG" firstAttribute="top" secondItem="csn-c4-PbE" secondAttribute="bottom" id="fsV-5C-Xgz"/>
+                            <constraint firstItem="JPt-X8-IN5" firstAttribute="top" secondItem="iFC-7K-4FG" secondAttribute="bottom" constant="8" id="pEU-jE-ps5"/>
+                            <constraint firstItem="iFC-7K-4FG" firstAttribute="trailing" secondItem="c2S-u7-VKc" secondAttribute="trailingMargin" id="q8X-ib-qXl"/>
+                        </constraints>
                     </view>
                     <tabBarItem key="tabBarItem" title="Dashboard" image="icon-dashboard-unactive" selectedImage="icon-dashboard-active" id="1OK-uz-fMi"/>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="zWS-lp-Oxb" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="1769" y="284"/>
+            <point key="canvasLocation" x="1769" y="285"/>
+        </scene>
+        <!--Item 2-->
+        <scene sceneID="FC6-HX-OW9">
+            <objects>
+                <viewController id="PnT-Aa-ZfP" sceneMemberID="viewController">
+                    <layoutGuides>
+                        <viewControllerLayoutGuide type="top" id="zLF-aA-RRd"/>
+                        <viewControllerLayoutGuide type="bottom" id="0KS-Xt-W5U"/>
+                    </layoutGuides>
+                    <view key="view" contentMode="scaleToFill" id="gDq-99-4Kn">
+                        <rect key="frame" x="0.0" y="0.0" width="560" height="495"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <color key="backgroundColor" red="0.56470588239999997" green="0.56470588239999997" blue="0.56470588239999997" alpha="1" colorSpace="calibratedRGB"/>
+                    </view>
+                    <tabBarItem key="tabBarItem" title="Item 2" id="Bnv-1a-gWy"/>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="sYY-4E-PWP" userLabel="First Responder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="3242" y="652"/>
+        </scene>
+        <!--Item-->
+        <scene sceneID="9d8-Cp-5DV">
+            <objects>
+                <viewController id="lHL-aR-coa" sceneMemberID="viewController">
+                    <layoutGuides>
+                        <viewControllerLayoutGuide type="top" id="NRt-84-WnK"/>
+                        <viewControllerLayoutGuide type="bottom" id="CEP-uG-2gY"/>
+                    </layoutGuides>
+                    <view key="view" contentMode="scaleToFill" id="cBf-qW-M5H">
+                        <rect key="frame" x="0.0" y="0.0" width="560" height="495"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <color key="backgroundColor" red="0.84807095460000004" green="0.1058823529" blue="0.26274509800000001" alpha="1" colorSpace="calibratedRGB"/>
+                    </view>
+                    <tabBarItem key="tabBarItem" title="Item" id="C4G-VN-eXg"/>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="4fJ-Ba-2vo" userLabel="First Responder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="2477" y="1008.5"/>
+        </scene>
+        <!--Item 1-->
+        <scene sceneID="5jw-sW-n5k">
+            <objects>
+                <viewController id="WK5-jq-Go8" sceneMemberID="viewController">
+                    <layoutGuides>
+                        <viewControllerLayoutGuide type="top" id="Fit-ec-q2w"/>
+                        <viewControllerLayoutGuide type="bottom" id="jiK-sN-pGu"/>
+                    </layoutGuides>
+                    <view key="view" contentMode="scaleToFill" id="Mp3-Tf-d0X">
+                        <rect key="frame" x="0.0" y="0.0" width="560" height="495"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <color key="backgroundColor" red="0.40000000600000002" green="0.80000001190000003" blue="1" alpha="1" colorSpace="calibratedRGB"/>
+                    </view>
+                    <tabBarItem key="tabBarItem" title="Item 1" id="xYM-QA-R6Z"/>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="yeF-Ix-N0Y" userLabel="First Responder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="3242" y="-8"/>
+        </scene>
+        <!--Tab Bar Controller-->
+        <scene sceneID="uVz-UY-BE2">
+            <objects>
+                <tabBarController id="fs1-Kq-Bya" sceneMemberID="viewController">
+                    <tabBar key="tabBar" hidden="YES" contentMode="scaleToFill" id="vq2-EW-A2t">
+                        <rect key="frame" x="0.0" y="0.0" width="320" height="49"/>
+                        <autoresizingMask key="autoresizingMask"/>
+                        <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
+                    </tabBar>
+                    <connections>
+                        <segue destination="WK5-jq-Go8" kind="relationship" relationship="viewControllers" id="vQA-m9-vqB"/>
+                        <segue destination="PnT-Aa-ZfP" kind="relationship" relationship="viewControllers" id="6si-UE-h4w"/>
+                        <segue destination="lHL-aR-coa" kind="relationship" relationship="viewControllers" id="QHz-eC-4PQ"/>
+                    </connections>
+                </tabBarController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="wK6-Cn-zHm" userLabel="First Responder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="2477" y="284.5"/>
         </scene>
         <!--Settings-->
         <scene sceneID="qNM-jg-l6E">

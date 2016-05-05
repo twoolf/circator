@@ -13,7 +13,12 @@ class MainTabController: UITabBarController {
     override func viewDidLoad() {
         super.viewDidLoad()
 
+        self.navigationController?.navigationBar.barStyle = UIBarStyle.Black;
         self.configureTabBar()
+    }
+
+    override func preferredStatusBarStyle() -> UIStatusBarStyle {
+        return .LightContent;
     }
 
     override func didReceiveMemoryWarning() {
@@ -35,7 +40,7 @@ class MainTabController: UITabBarController {
             tabItem.selectedImage = tabItem.selectedImage?.imageWithRenderingMode(UIImageRenderingMode.AlwaysOriginal)
         }
     }
-
+    
     /*
     // MARK: - Navigation
 
