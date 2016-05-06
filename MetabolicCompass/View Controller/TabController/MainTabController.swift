@@ -8,7 +8,7 @@
 
 import UIKit
 
-class MainTabController: UITabBarController {
+class MainTabController: UITabBarController, UITabBarControllerDelegate {
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -16,27 +16,23 @@ class MainTabController: UITabBarController {
         self.navigationController?.navigationBar.barStyle = UIBarStyle.Black;
         self.configureTabBar()
         
-        self.navigationItem.leftBarButtonItem = UIBarButtonItem(title: NSLocalizedString("Manage", comment: "dashboard manage button"),
-                                                                style: .Done,
-                                                                target: self,
-                                                                action: #selector(didSelectManageButton))
-        
-        self.navigationItem.rightBarButtonItem = UIBarButtonItem(title: NSLocalizedString("Filters", comment: "dashboard filter button"),
-                                                                 style: .Done,
-                                                                 target: self,
-                                                                 action: #selector(didSelectFiltersButton))
-        
         self.navigationItem.title = NSLocalizedString("DASHBOARD", comment: "dashboard screen title")
+        self.delegate = self
+        
+        self.selectedIndex = 0;
+        
+        if let viewController = self.selectedViewController
+        {
+            if let controller = viewController as? DashboardTabControllerViewController
+            {
+                controller.rootNavigationItem = self.navigationItem
+            }
+        }
+        
         
     }
     
-    func didSelectFiltersButton(sender: AnyObject) {
-        
-    }
-    
-    func didSelectManageButton(sender: AnyObject) {
-        
-    }
+ 
 
     override func preferredStatusBarStyle() -> UIStatusBarStyle {
         return .LightContent;
@@ -72,4 +68,11 @@ class MainTabController: UITabBarController {
     }
     */
 
+    func tabBarController(tabBarController: UITabBarController, didSelectViewController viewController: UIViewController) {
+        
+        if let controller = viewController as? DashboardTabControllerViewController
+        {
+            controller.rootNavigationItem = self.navigationItem
+        }
+    }
 }

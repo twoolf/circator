@@ -24,8 +24,9 @@ class DashboardComparisonController:
         self.tableView.dataSource      = self
         self.tableView.delegate        = self
         self.tableView.allowsSelection = false
+        
     }
-
+    
     override func didReceiveMemoryWarning() {
         super.didReceiveMemoryWarning()
         // Dispose of any resources that can be recreated.

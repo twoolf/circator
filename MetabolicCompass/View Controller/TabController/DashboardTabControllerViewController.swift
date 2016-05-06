@@ -11,10 +11,40 @@ import UIKit
 class DashboardTabControllerViewController: UIViewController {
     
     var containerController: UITabBarController?;
+    weak var rootNavigationItem: UINavigationItem? {
+        didSet {
+            self.updateNavigationItem()
+        }
+    }
 
     override func viewDidLoad() {
         super.viewDidLoad()
-
+        self.updateNavigationItem()
+    }
+   
+    func updateNavigationItem() {
+        
+        if let navigationItem = self.rootNavigationItem
+        {
+            navigationItem.leftBarButtonItem = UIBarButtonItem(title: NSLocalizedString("Manage", comment: "dashboard manage button"),
+                                                               style: .Done,
+                                                               target: self,
+                                                               action: #selector(didSelectManageButton))
+            
+            navigationItem.rightBarButtonItem = UIBarButtonItem(title: NSLocalizedString("Filters", comment: "dashboard filter button"),
+                                                                style: .Done,
+                                                                target: self,
+                                                                action: #selector(didSelectFiltersButton))
+        }
+    }
+   
+    private let filterControllerSegue = "FilterSegue"
+    
+    func didSelectFiltersButton(sender: AnyObject) {
+        self.performSegueWithIdentifier(filterControllerSegue, sender: self)
+    }
+    
+    func didSelectManageButton(sender: AnyObject) {
         
     }
 
