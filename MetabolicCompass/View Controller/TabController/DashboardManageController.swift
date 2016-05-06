@@ -8,10 +8,13 @@
 
 import UIKit
 
-class DashboardManageController: UIViewController {
+class DashboardManageController: UIViewController, UITableViewDelegate, UITableViewDataSource {
 
     @IBOutlet weak var tableView: UITableView!
     @IBOutlet weak var navigationBar: UINavigationBar!
+    var data: [DashboardMetricsConfigItem] = []
+    
+    private let appearanceProvider = DashboardMetricsAppearanceProvider()
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -19,7 +22,8 @@ class DashboardManageController: UIViewController {
         self.navigationBar
         .titleTextAttributes = [NSForegroundColorAttributeName : UIColor.whiteColor()]
         
-        // Do any additional setup after loading the view.
+        self.tableView.dataSource = self;
+        self.tableView.delegate   = self;
     }
     
     override func preferredStatusBarStyle() -> UIStatusBarStyle {
@@ -34,15 +38,24 @@ class DashboardManageController: UIViewController {
     @IBAction func onClose(sender: AnyObject) {
         self.dismissViewControllerAnimated(true, completion: nil)
     }
-
-    /*
-    // MARK: - Navigation
-
-    // In a storyboard-based application, you will often want to do a little preparation before navigation
-    override func prepareForSegue(segue: UIStoryboardSegue, sender: AnyObject?) {
-        // Get the new view controller using segue.destinationViewController.
-        // Pass the selected object to the new view controller.
+    
+    func numberOfSectionsInTableView(tableView: UITableView) -> Int {
+        return 1
     }
-    */
 
+    func tableView(tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+        return self.data.count
+    }
+    
+    private let cellIdentifier = "DashboardManageCell"
+    
+    func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell {
+        
+         let cell = tableView.dequeueReusableCellWithIdentifier(cellIdentifier, forIndexPath: indexPath) as! ManageDashboardCell
+        
+        let item = self.data[indexPath.row]
+        cell.leftImageView.image         = appearanceProvider.imageForSampleType(item.type)
+        cell.captionLabel.attributedText = appearanceProvider.titleForSampleType(item.type)
+        return cell;
+    }
 }

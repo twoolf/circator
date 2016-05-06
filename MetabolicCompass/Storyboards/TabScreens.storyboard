@@ -136,7 +136,7 @@
                                         <rect key="frame" x="0.0" y="28" width="560" height="80"/>
                                         <autoresizingMask key="autoresizingMask"/>
                                         <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="8DW-L0-mhM" id="glR-82-f3W">
-                                            <rect key="frame" x="0.0" y="0.0" width="560" height="79.5"/>
+                                            <rect key="frame" x="0.0" y="0.0" width="560" height="80"/>
                                             <autoresizingMask key="autoresizingMask"/>
                                             <subviews>
                                                 <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="icon-weight-normal" translatesAutoresizingMaskIntoConstraints="NO" id="6K9-5a-91t">
@@ -331,7 +331,7 @@
                 </navigationController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="iFt-dH-Kfa" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="1135" y="-894"/>
+            <point key="canvasLocation" x="1803" y="-554"/>
         </scene>
         <!--Dashboard Filters-->
         <scene sceneID="IoG-QU-Fbe">
@@ -444,12 +444,12 @@
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="ixW-Ue-C93" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="1854" y="-894"/>
+            <point key="canvasLocation" x="1803" y="-1226"/>
         </scene>
         <!--Dashboard Filters-->
         <scene sceneID="Y3e-Oy-9Oa">
             <objects>
-                <viewController title="REFINE" automaticallyAdjustsScrollViewInsets="NO" id="hSV-Rn-M7n" userLabel="Dashboard Filters" customClass="DashboardManageController" customModule="MetabolicCompass" customModuleProvider="target" sceneMemberID="viewController">
+                <viewController title="Manage Dashboard" automaticallyAdjustsScrollViewInsets="NO" id="hSV-Rn-M7n" userLabel="Dashboard Filters" customClass="DashboardManageController" customModule="MetabolicCompass" customModuleProvider="target" sceneMemberID="viewController">
                     <layoutGuides>
                         <viewControllerLayoutGuide type="top" id="0Gr-IN-xOk"/>
                         <viewControllerLayoutGuide type="bottom" id="1D2-0z-j3T"/>
@@ -475,7 +475,7 @@
                                 <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
                                 <color key="separatorColor" red="0.027450980390000001" green="0.062745098040000002" blue="0.1058823529" alpha="1" colorSpace="calibratedRGB"/>
                                 <prototypes>
-                                    <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" selectionStyle="none" indentationWidth="10" reuseIdentifier="DashboardFilterCell" id="yTN-Vp-ZXz">
+                                    <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" selectionStyle="none" indentationWidth="10" reuseIdentifier="DashboardManageCell" id="yTN-Vp-ZXz" customClass="ManageDashboardCell" customModule="MetabolicCompass" customModuleProvider="target">
                                         <rect key="frame" x="0.0" y="60" width="600" height="60"/>
                                         <autoresizingMask key="autoresizingMask"/>
                                         <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="yTN-Vp-ZXz" id="OFJ-8I-un9">
@@ -524,6 +524,10 @@
                                             </variation>
                                         </tableViewCellContentView>
                                         <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
+                                        <connections>
+                                            <outlet property="captionLabel" destination="ndf-CU-aMe" id="NTm-n6-Po6"/>
+                                            <outlet property="leftImageView" destination="ZzY-nF-ZNZ" id="hex-Gg-nPd"/>
+                                        </connections>
                                     </tableViewCell>
                                 </prototypes>
                             </tableView>
@@ -561,7 +565,7 @@
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="gag-Cd-c6p" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="710" y="-142"/>
+            <point key="canvasLocation" x="1126" y="-554"/>
         </scene>
     </scenes>
     <resources>
