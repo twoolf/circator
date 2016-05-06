@@ -7,23 +7,50 @@
 //
 
 import UIKit
+import HealthKit
+import MetabolicCompassKit
 
 class DashboardManageController: UIViewController, UITableViewDelegate, UITableViewDataSource {
 
     @IBOutlet weak var tableView: UITableView!
     @IBOutlet weak var navigationBar: UINavigationBar!
-    var data: [DashboardMetricsConfigItem] = []
+    var data: [DashboardMetricsConfigItem] = [] {
+        didSet {
+            self.tableView.reloadData()
+        }
+    }
     
     private let appearanceProvider = DashboardMetricsAppearanceProvider()
     
     override func viewDidLoad() {
         super.viewDidLoad()
 
-        self.navigationBar
-        .titleTextAttributes = [NSForegroundColorAttributeName : UIColor.whiteColor()]
+        self.navigationBar.titleTextAttributes = [NSForegroundColorAttributeName : UIColor.whiteColor()]
         
         self.tableView.dataSource = self;
         self.tableView.delegate   = self;
+        
+        // TODO: read/save data from storage
+        self.data = [
+            DashboardMetricsConfigItem(type: HKQuantityTypeIdentifierBodyMass, active: true),
+            DashboardMetricsConfigItem(type: HKQuantityTypeIdentifierHeartRate, active: false),
+            DashboardMetricsConfigItem(type: HKCategoryTypeIdentifierSleepAnalysis, active: false),
+            DashboardMetricsConfigItem(type: HKQuantityTypeIdentifierBodyMassIndex, active: false),
+            DashboardMetricsConfigItem(type: HKQuantityTypeIdentifierDietaryCaffeine, active: false),
+            DashboardMetricsConfigItem(type: HKQuantityTypeIdentifierDietarySugar, active: false),
+            DashboardMetricsConfigItem(type: HKQuantityTypeIdentifierDietaryCholesterol, active: false),
+            DashboardMetricsConfigItem(type: HKQuantityTypeIdentifierDietaryProtein, active: false),
+            DashboardMetricsConfigItem(type: HKQuantityTypeIdentifierDietaryFatTotal, active: false),
+            DashboardMetricsConfigItem(type: HKQuantityTypeIdentifierDietaryCarbohydrates, active: false),
+            DashboardMetricsConfigItem(type: HKQuantityTypeIdentifierDietaryFatPolyunsaturated, active: false),
+            DashboardMetricsConfigItem(type: HKQuantityTypeIdentifierDietaryFatSaturated, active: false),
+            DashboardMetricsConfigItem(type: HKQuantityTypeIdentifierDietaryFatMonounsaturated, active: false),
+            DashboardMetricsConfigItem(type: HKQuantityTypeIdentifierDietaryWater, active: false),
+            DashboardMetricsConfigItem(type: HKQuantityTypeIdentifierDietaryEnergyConsumed, active: false),
+            DashboardMetricsConfigItem(type: HKCorrelationTypeIdentifierBloodPressure, active: false),
+            DashboardMetricsConfigItem(type: HKQuantityTypeIdentifierStepCount, active: false),]
+        
+        self.tableView.editing = true
     }
     
     override func preferredStatusBarStyle() -> UIStatusBarStyle {
@@ -56,6 +83,55 @@ class DashboardManageController: UIViewController, UITableViewDelegate, UITableV
         let item = self.data[indexPath.row]
         cell.leftImageView.image         = appearanceProvider.imageForSampleType(item.type)
         cell.captionLabel.attributedText = appearanceProvider.titleForSampleType(item.type)
+        cell.button.selected             = item.active
+        
         return cell;
+    }
+    
+    func  selectedItemsCount() -> Int {
+        var selected = 0
+        
+        for item in self.data {
+            if (item.active) {
+                selected += 1
+            }
+        }
+        
+        return selected
+    }
+    
+    func tableView(tableView: UITableView, didSelectRowAtIndexPath indexPath: NSIndexPath) {
+        
+        let obj = tableView.cellForRowAtIndexPath(indexPath) as? ManageDashboardCell
+        guard let cell = obj else {
+            return
+        }
+
+        let item = self.data[indexPath.row]
+        
+        if (item.active && self.selectedItemsCount() == 1) {
+            return
+        }
+        
+        item.active = !item.active
+        cell.button.selected = item.active
+    }
+
+    func tableView(tableView: UITableView, canMoveRowAtIndexPath indexPath: NSIndexPath) -> Bool {
+        return true
+    }
+    
+    func tableView(tableView: UITableView, editingStyleForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCellEditingStyle {
+        return .None
+    }
+    
+    func tableView(tableView: UITableView, shouldIndentWhileEditingRowAtIndexPath indexPath: NSIndexPath) -> Bool {
+        return false
+    }
+    
+    func tableView(tableView: UITableView, moveRowAtIndexPath fromIndexPath: NSIndexPath, toIndexPath: NSIndexPath) {
+        let itemToMove = self.data[fromIndexPath.row]
+        self.data.removeAtIndex(fromIndexPath.row)
+        self.data.insert(itemToMove, atIndex: toIndexPath.row)
     }
 }

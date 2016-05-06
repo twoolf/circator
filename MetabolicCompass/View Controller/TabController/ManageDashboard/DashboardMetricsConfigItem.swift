@@ -11,4 +11,10 @@ import UIKit
 class DashboardMetricsConfigItem: NSObject {
     var type   = ""
     var active = true
+    
+    init(type: String, active: Bool) {
+        super.init()
+        self.type   = type
+        self.active = active
+    }
 }

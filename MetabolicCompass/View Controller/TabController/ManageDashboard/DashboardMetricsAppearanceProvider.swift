@@ -63,6 +63,8 @@ class DashboardMetricsAppearanceProvider: NSObject {
         }
     }
     
+    // TODO: move everything into plist
+    
     func titleForSampleType(sampleType: String) -> NSAttributedString
     {
         switch sampleType {

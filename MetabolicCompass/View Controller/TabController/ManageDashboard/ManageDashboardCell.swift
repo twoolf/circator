@@ -12,6 +12,7 @@ class ManageDashboardCell: UITableViewCell {
 
     @IBOutlet weak var leftImageView: UIImageView!
     @IBOutlet weak var captionLabel: UILabel!
+    @IBOutlet weak var button: UIButton!
     
     override func awakeFromNib() {
         super.awakeFromNib()
