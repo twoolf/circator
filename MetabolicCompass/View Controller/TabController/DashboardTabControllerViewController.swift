@@ -39,13 +39,14 @@ class DashboardTabControllerViewController: UIViewController {
     }
    
     private let filterControllerSegue = "FilterSegue"
+    private let manageDashboardControllerSegue = "ManageDashboardSegue"
     
     func didSelectFiltersButton(sender: AnyObject) {
         self.performSegueWithIdentifier(filterControllerSegue, sender: self)
     }
     
     func didSelectManageButton(sender: AnyObject) {
-        
+        self.performSegueWithIdentifier(manageDashboardControllerSegue, sender: self)
     }
 
     override func didReceiveMemoryWarning() {
