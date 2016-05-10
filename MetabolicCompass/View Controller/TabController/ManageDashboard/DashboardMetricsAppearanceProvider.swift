@@ -12,13 +12,17 @@ import MetabolicCompassKit
 
 class DashboardMetricsAppearanceProvider: NSObject {
     
-    func attributedText(text: String, forSampleType sampleType: String) -> NSAttributedString
+    func attributedText(text: String, forSampleType sampleType: String, active: Bool) -> NSAttributedString
     {
-        return NSAttributedString(string: text, attributes: [NSForegroundColorAttributeName: self.colorForSampleType(sampleType)])
+        return NSAttributedString(string: text, attributes: [NSForegroundColorAttributeName: self.colorForSampleType(sampleType, active: active)])
     }
     
-    func colorForSampleType(sampleType: String) -> UIColor
+    func colorForSampleType(sampleType: String, active: Bool) -> UIColor
     {
+        if (!active) {
+            return UIColor.lightGrayColor()
+        }
+        
         switch sampleType {
 //        case HKQuantityTypeIdentifierBodyMass:
 //            return
@@ -65,46 +69,46 @@ class DashboardMetricsAppearanceProvider: NSObject {
     
     // TODO: move everything into plist
     
-    func titleForSampleType(sampleType: String) -> NSAttributedString
+    func titleForSampleType(sampleType: String, active: Bool) -> NSAttributedString
     {
         switch sampleType {
         case HKQuantityTypeIdentifierBodyMass:
-            return self.attributedText(NSLocalizedString("Weight", comment: "user weight"), forSampleType: sampleType)
+            return self.attributedText(NSLocalizedString("Weight", comment: "user weight"), forSampleType: sampleType, active: active)
         case HKQuantityTypeIdentifierHeartRate:
-            return self.attributedText(NSLocalizedString("Heart rate", comment: "Heartrate"), forSampleType: sampleType)
+            return self.attributedText(NSLocalizedString("Heart rate", comment: "Heartrate"), forSampleType: sampleType, active: active)
         case HKCategoryTypeIdentifierSleepAnalysis:
-            return self.attributedText(NSLocalizedString("Sleep", comment: "Sleep"), forSampleType: sampleType)
+            return self.attributedText(NSLocalizedString("Sleep", comment: "Sleep"), forSampleType: sampleType, active: active)
         case HKQuantityTypeIdentifierBodyMassIndex:
-            return self.attributedText(NSLocalizedString("BMI", comment: "Body Mass Index"), forSampleType: sampleType)
+            return self.attributedText(NSLocalizedString("BMI", comment: "Body Mass Index"), forSampleType: sampleType, active: active)
             
         case HKQuantityTypeIdentifierDietaryCaffeine:
-            return self.attributedText(NSLocalizedString("Caffeine", comment: "Caffeine"), forSampleType: sampleType)
+            return self.attributedText(NSLocalizedString("Caffeine", comment: "Caffeine"), forSampleType: sampleType, active: active)
         case HKQuantityTypeIdentifierDietarySugar:
-            return self.attributedText(NSLocalizedString("Sugar", comment: "Sugar"), forSampleType: sampleType)
+            return self.attributedText(NSLocalizedString("Sugar", comment: "Sugar"), forSampleType: sampleType, active: active)
         case HKQuantityTypeIdentifierDietaryCholesterol:
-            return self.attributedText(NSLocalizedString("Cholesterol", comment: "Cholesterol"), forSampleType: sampleType)
+            return self.attributedText(NSLocalizedString("Cholesterol", comment: "Cholesterol"), forSampleType: sampleType, active: active)
         case HKQuantityTypeIdentifierDietaryProtein:
-            return self.attributedText(NSLocalizedString("Protein", comment: "Protein"), forSampleType: sampleType)
+            return self.attributedText(NSLocalizedString("Protein", comment: "Protein"), forSampleType: sampleType, active: active)
         case HKQuantityTypeIdentifierDietaryFatTotal:
-            return self.attributedText(NSLocalizedString("Fat", comment: "Fat"), forSampleType: sampleType)
+            return self.attributedText(NSLocalizedString("Fat", comment: "Fat"), forSampleType: sampleType, active: active)
         case HKQuantityTypeIdentifierDietaryCarbohydrates:
-            return self.attributedText(NSLocalizedString("Carbohydrates", comment: "Carbohydrates"), forSampleType: sampleType)
+            return self.attributedText(NSLocalizedString("Carbohydrates", comment: "Carbohydrates"), forSampleType: sampleType, active: active)
         case HKQuantityTypeIdentifierDietaryFatPolyunsaturated:
-            return self.attributedText(NSLocalizedString("Polyunsaturated fat", comment: "Polyunsaturated Fat"), forSampleType: sampleType)
+            return self.attributedText(NSLocalizedString("Polyunsaturated fat", comment: "Polyunsaturated Fat"), forSampleType: sampleType, active: active)
         case HKQuantityTypeIdentifierDietaryFatSaturated:
-            return self.attributedText(NSLocalizedString("Saturated fat", comment: "Saturated Fat"), forSampleType: sampleType)
+            return self.attributedText(NSLocalizedString("Saturated fat", comment: "Saturated Fat"), forSampleType: sampleType, active: active)
         case HKQuantityTypeIdentifierDietaryFatMonounsaturated:
-            return self.attributedText(NSLocalizedString("Monosaturated fat", comment: "Monosaturated Fat"), forSampleType: sampleType)
+            return self.attributedText(NSLocalizedString("Monosaturated fat", comment: "Monosaturated Fat"), forSampleType: sampleType, active: active)
         case HKQuantityTypeIdentifierDietaryWater:
-            return self.attributedText(NSLocalizedString("Water", comment: "Water"), forSampleType: sampleType)
+            return self.attributedText(NSLocalizedString("Water", comment: "Water"), forSampleType: sampleType, active: active)
         case HKQuantityTypeIdentifierDietaryEnergyConsumed:
-            return self.attributedText(NSLocalizedString("Dietary energy", comment: "Dietary Energy"), forSampleType: sampleType)
+            return self.attributedText(NSLocalizedString("Dietary energy", comment: "Dietary Energy"), forSampleType: sampleType, active: active)
             
         case HKCorrelationTypeIdentifierBloodPressure:
-            return self.attributedText(NSLocalizedString("Blood pressure", comment: "Blood pressure"), forSampleType: sampleType)
+            return self.attributedText(NSLocalizedString("Blood pressure", comment: "Blood pressure"), forSampleType: sampleType, active: active)
             
         case HKQuantityTypeIdentifierStepCount:
-            return self.attributedText(NSLocalizedString("Step count", comment: "Step count"), forSampleType: sampleType)
+            return self.attributedText(NSLocalizedString("Step count", comment: "Step count"), forSampleType: sampleType, active: active)
             
         default:
             return NSAttributedString(string: "\(sampleType)")

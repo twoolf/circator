@@ -82,11 +82,8 @@ class DashboardManageController: UIViewController, UITableViewDelegate, UITableV
          let cell = tableView.dequeueReusableCellWithIdentifier(cellIdentifier, forIndexPath: indexPath) as! ManageDashboardCell
         
         let item = self.data[indexPath.row]
-        cell.leftImageView.image         = appearanceProvider.imageForSampleType(item.type, active: item.active)
-        cell.captionLabel.attributedText = appearanceProvider.titleForSampleType(item.type)
-        
         cell.showsReorderControl         = false
-        cell.updateSelectionStatus(item.active)
+        cell.updateSelectionStatus(item.active, appearanceProvider: appearanceProvider, itemType: item.type)
         return cell;
     }
     
@@ -116,8 +113,7 @@ class DashboardManageController: UIViewController, UITableViewDelegate, UITableV
         }
         
         item.active = !item.active
-        cell.updateSelectionStatus(item.active)
-        cell.leftImageView.image = appearanceProvider.imageForSampleType(item.type, active: item.active)
+        cell.updateSelectionStatus(item.active, appearanceProvider: appearanceProvider, itemType: item.type)
     }
 
     func tableView(tableView: UITableView, canMoveRowAtIndexPath indexPath: NSIndexPath) -> Bool {
