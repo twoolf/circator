@@ -27,6 +27,33 @@ class DashboardComparisonController:
         
     }
     
+    override func viewWillAppear(animated: Bool) {
+        super.viewWillAppear(animated)
+        self.fetchRecentSamples()
+    }
+    
+    func withHKCalAuth(completion: Void -> Void) {
+        
+        HealthManager.sharedManager.authorizeHealthKit { (success, error) -> Void in
+            guard error == nil else {
+                UINotifications.noHealthKit(self)
+                return
+            }
+        
+            EventManager.sharedManager.checkCalendarAuthorizationStatus(completion)
+        }
+    }
+    
+    func fetchRecentSamples() {
+        withHKCalAuth {
+            HealthManager.sharedManager.fetchMostRecentSamples() { (samples, error) -> Void in
+                guard error == nil else { return }
+                NSNotificationCenter.defaultCenter().postNotificationName(HMDidUpdateRecentSamplesNotification, object: self)
+                self.tableView.reloadData()
+            }
+        }
+    }
+    
     override func didReceiveMemoryWarning() {
         super.didReceiveMemoryWarning()
         // Dispose of any resources that can be recreated.
@@ -37,7 +64,7 @@ class DashboardComparisonController:
     }
     
     func tableView(tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return HealthManager.sharedManager.mostRecentSamples.count
+        return PreviewManager.previewSampleTypes.count
     }
     
     private let dashboardComparisonCellIdentifier = "ComparisonCell"

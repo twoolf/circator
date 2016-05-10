@@ -33,6 +33,25 @@ public class PreviewManager: NSObject {
         NSDate()
     ]
     
+    public static let supportedTypes = [
+        HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierBodyMass)!,
+        HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierBodyMassIndex)!,
+        HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierHeartRate)!,
+        HKObjectType.categoryTypeForIdentifier(HKCategoryTypeIdentifierSleepAnalysis)!,
+        HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierDietaryProtein)!,
+        HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierDietarySugar)!,
+        HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierDietaryFatPolyunsaturated)!,
+        HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierDietaryWater)!,
+        HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierDietaryCaffeine)!,
+        HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierDietaryCholesterol)!,
+        HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierDietaryFatTotal)!,
+        HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierDietaryCarbohydrates)!,
+        HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierDietaryFatSaturated)!,
+        HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierDietaryFatMonounsaturated)!,
+        HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierDietaryEnergyConsumed)!,
+        HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierStepCount)!,
+        ]
+    
     public static let previewChoices: [[HKSampleType]] = [
         [
             HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierBodyMass)!,
@@ -103,21 +122,19 @@ public class PreviewManager: NSObject {
                 return NSKeyedUnarchiver.unarchiveObjectWithData(data) as! HKSampleType
             }
         } else {
-            let defaultTypes = [
-                HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierBodyMass)!,
-                HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierHeartRate)!,
-                HKObjectType.categoryTypeForIdentifier(HKCategoryTypeIdentifierSleepAnalysis)!,
-                HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierDietaryProtein)!,
-                HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierDietarySugar)!,
-                HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierDietaryFatPolyunsaturated)!,
-                HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierDietaryWater)!
-            ]
-            let rawTypes = defaultTypes.map { (sampleType) -> NSData in
-                return NSKeyedArchiver.archivedDataWithRootObject(sampleType)
-            }
-            Defaults[PMSampleTypesKey] = rawTypes
+            let defaultTypes = self.supportedTypes
+            self.updatePreviewSampleTypes(defaultTypes)
             return defaultTypes
         }
+    }
+    
+    public static func updatePreviewSampleTypes (types: [HKSampleType]) {
+    
+        let rawTypes = types.map { (sampleType) -> NSData in
+            return NSKeyedArchiver.archivedDataWithRootObject(sampleType)
+        }
+        
+        Defaults[PMSampleTypesKey] = rawTypes
     }
     
     /// associates icon with sample type

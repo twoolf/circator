@@ -31,27 +31,27 @@ class DashboardManageController: UIViewController, UITableViewDelegate, UITableV
         self.tableView.delegate   = self;
         self.tableView.allowsSelectionDuringEditing = true
         
-        // TODO: read/save data from storage
-        self.data = [
-            DashboardMetricsConfigItem(type: HKQuantityTypeIdentifierBodyMass, active: true),
-            DashboardMetricsConfigItem(type: HKQuantityTypeIdentifierHeartRate, active: false),
-            DashboardMetricsConfigItem(type: HKCategoryTypeIdentifierSleepAnalysis, active: false),
-            DashboardMetricsConfigItem(type: HKQuantityTypeIdentifierBodyMassIndex, active: false),
-            DashboardMetricsConfigItem(type: HKQuantityTypeIdentifierDietaryCaffeine, active: false),
-            DashboardMetricsConfigItem(type: HKQuantityTypeIdentifierDietarySugar, active: false),
-            DashboardMetricsConfigItem(type: HKQuantityTypeIdentifierDietaryCholesterol, active: false),
-            DashboardMetricsConfigItem(type: HKQuantityTypeIdentifierDietaryProtein, active: false),
-            DashboardMetricsConfigItem(type: HKQuantityTypeIdentifierDietaryFatTotal, active: false),
-            DashboardMetricsConfigItem(type: HKQuantityTypeIdentifierDietaryCarbohydrates, active: false),
-            DashboardMetricsConfigItem(type: HKQuantityTypeIdentifierDietaryFatPolyunsaturated, active: false),
-            DashboardMetricsConfigItem(type: HKQuantityTypeIdentifierDietaryFatSaturated, active: false),
-            DashboardMetricsConfigItem(type: HKQuantityTypeIdentifierDietaryFatMonounsaturated, active: false),
-            DashboardMetricsConfigItem(type: HKQuantityTypeIdentifierDietaryWater, active: false),
-            DashboardMetricsConfigItem(type: HKQuantityTypeIdentifierDietaryEnergyConsumed, active: false),
-            DashboardMetricsConfigItem(type: HKCorrelationTypeIdentifierBloodPressure, active: false),
-            DashboardMetricsConfigItem(type: HKQuantityTypeIdentifierStepCount, active: false),]
+        self.data = []
+        
+        for type in PreviewManager.supportedTypes {
+            let active = PreviewManager.previewSampleTypes.contains(type)
+            self.data.append(DashboardMetricsConfigItem(type: type.identifier, active: active, object: type))
+        }
         
         self.tableView.editing = true
+    }
+    
+    func save() {
+        
+        var samples = [HKSampleType]()
+        
+        for item in self.data {
+            if (item.active) {
+                samples.append(item.object)
+            }
+        }
+        
+        PreviewManager.updatePreviewSampleTypes(samples)
     }
     
     override func preferredStatusBarStyle() -> UIStatusBarStyle {
@@ -65,6 +65,7 @@ class DashboardManageController: UIViewController, UITableViewDelegate, UITableV
     
     @IBAction func onClose(sender: AnyObject) {
         self.dismissViewControllerAnimated(true, completion: nil)
+        save()
     }
     
     func numberOfSectionsInTableView(tableView: UITableView) -> Int {

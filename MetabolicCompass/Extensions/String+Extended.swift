@@ -28,5 +28,25 @@ extension String {
     var localized: String {
             return NSLocalizedString(self, tableName: nil, bundle: NSBundle.mainBundle(), value: "", comment: "")
     }
+    
+    func formatTextWithRegex(regex: String, format: [String: AnyObject], defaultFormat: [String: AnyObject]) -> NSAttributedString {
+        
+        let text = self
+        
+        guard let regex = try? NSRegularExpression(pattern: regex, options: NSRegularExpressionOptions.CaseInsensitive) else {
+            return NSAttributedString(string: text)
+        }
+        
+        let nsString = text as NSString
+        let results = regex.matchesInString(text, options: NSMatchingOptions.ReportCompletion, range: NSMakeRange(0, nsString.length))
+        
+        let attrString = NSMutableAttributedString(string: text, attributes: defaultFormat)
+        
+        for result in results {
+            attrString.addAttributes(format, range: result.range)
+        }
+        
+        return attrString
+    }
 
 }

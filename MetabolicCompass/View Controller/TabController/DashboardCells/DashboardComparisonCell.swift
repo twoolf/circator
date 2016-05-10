@@ -27,38 +27,12 @@ class DashboardComparisonCell: UITableViewCell {
                 return
             }
             
-            sampleIcon.image = PreviewManager.iconForSampleType(sampleType!)
-            sampleName.attributedText = self.sampleNameForSampleType(self.sampleType!)
+            sampleIcon.image = appearanceProvider.imageForSampleType(sampleType!.identifier, active: true)
+            sampleName.attributedText = appearanceProvider.titleForSampleType(sampleType!.identifier, active: true)
         }
     }
     
-    func sampleNameForSampleType(sampleType: HKSampleType) -> NSAttributedString {
-        
-        switch sampleType.identifier {
-        case HKQuantityTypeIdentifierBodyMass:
-            return NSAttributedString(string: NSLocalizedString("Weight", comment: "body mass"),
-                                      attributes: [NSForegroundColorAttributeName: UIColor(red: 41/255.0, green: 113.0/255.0, blue: 1.0, alpha: 1.0)])
-            
-        case HKQuantityTypeIdentifierHeartRate:
-            return NSAttributedString(string: NSLocalizedString("Heart rate", comment: "user heart rate"),
-                                      attributes: [NSForegroundColorAttributeName: UIColor(red: 225/255.0, green: 53.0/255.0, blue: 34.0/255.0, alpha: 1.0)])
-            
-        case HKCategoryTypeIdentifierSleepAnalysis:
-            return NSAttributedString(string: NSLocalizedString("Sleep", comment: "user sleep time"),
-                                      attributes: [NSForegroundColorAttributeName: UIColor(red: 184.0/255.0, green: 144.0/255.0, blue: 21.0/255.0, alpha: 1.0)])
-            
-        case HKQuantityTypeIdentifierDietaryCaffeine:
-            return NSAttributedString(string: NSLocalizedString("Caffeine", comment: "Caffeine level"),
-                                      attributes: [NSForegroundColorAttributeName: UIColor(red: 115.0/255.0, green: 0.0/255.0, blue: 170.0/255.0, alpha: 1.0)])
-            
-        case HKQuantityTypeIdentifierBodyMassIndex:
-            return NSAttributedString(string: NSLocalizedString("BMI", comment: "Body mass index"),
-                                      attributes: [NSForegroundColorAttributeName: UIColor(red: 148.0/255.0, green: 106.0/255.0, blue: 66.0/255.0, alpha: 1.0)])
-            
-        default:
-            return NSAttributedString(string: "\(sampleType.identifier)")
-        }
-    }
+    private let appearanceProvider = DashboardMetricsAppearanceProvider()
     
     override func awakeFromNib() {
         super.awakeFromNib()
@@ -77,12 +51,23 @@ class DashboardComparisonCell: UITableViewCell {
         loadPopSamples(populationAverageData, stale: stalePopulation)
     }
     
+    private let defaultTextColor  = UIColor(red: 62.0/255.0, green: 84.0/255.0, blue: 117.0/255.0, alpha: 1.0)
+    private let defaultDigitColor = UIColor.whiteColor()
+    
     private func loadUserSamples( results: [MCSample]) {
-        localSampleValueTextField.text = IntroCompareDataTableViewCell.healthFormatter.stringFromSamples(results)
+        let text = IntroCompareDataTableViewCell.healthFormatter.stringFromSamples(results)
+        localSampleValueTextField.attributedText = text.formatTextWithRegex("\\d+",
+                                                                            format: [NSForegroundColorAttributeName: defaultDigitColor],
+                                                                            defaultFormat: [NSForegroundColorAttributeName: defaultTextColor])
     }
     
     /// note setUserData above that uses this call
     private func loadPopSamples(results: [MCSample], stale: Bool) {
-        populationSampleValueTextField.text = IntroCompareDataTableViewCell.healthFormatter.stringFromSamples(results)
+        let text = IntroCompareDataTableViewCell.healthFormatter.stringFromSamples(results)
+        populationSampleValueTextField.attributedText = text.formatTextWithRegex("\\d+",
+                                                                                 format: [NSForegroundColorAttributeName: defaultDigitColor],
+                                                                                 defaultFormat: [NSForegroundColorAttributeName: defaultTextColor])
     }
+    
+    
 }

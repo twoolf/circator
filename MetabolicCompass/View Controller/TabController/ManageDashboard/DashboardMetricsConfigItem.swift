@@ -7,14 +7,17 @@
 //
 
 import UIKit
+import HealthKit
 
 class DashboardMetricsConfigItem: NSObject {
     var type   = ""
     var active = true
+    var object: HKSampleType!
     
-    init(type: String, active: Bool) {
+    init(type: String, active: Bool, object: HKSampleType) {
         super.init()
         self.type   = type
         self.active = active
+        self.object = object
     }
 }
