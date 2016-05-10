@@ -7,6 +7,7 @@
 //
 
 import UIKit
+import MetabolicCompassKit
 
 class ForgotPasswordViewController: BaseViewController, UITextFieldDelegate {
 
@@ -29,19 +30,51 @@ class ForgotPasswordViewController: BaseViewController, UITextFieldDelegate {
         // Dispose of any resources that can be recreated.
     }
     
+    private let resetPasswordEmailEmptyMessage = "Please, enter your email".localized
+    private let resetPasswordEmailInvalidMessage = "Please, provide valid email".localized
+    private let resetPasswordTitle = "Reset Password".localized
+    private let resetPasswordErrorGeneralMessage = "Reset Password error occurs. Please, try later.".localized
+    private let resetPasswordSuccessMessage = "Reset Password request was done succesfully. Please, check your email to reset password.".localized
     
     @IBAction func resetAction(sender: UIButton) {
         
-        if let email = emailTxtField.text {
+        self.alertControllerOkButtonHandler = nil
+        
+        if let email = emailTxtField.text?.trimmed() {
+            
+            if email.isEmpty {
+                showAlert(withMessage: resetPasswordEmailEmptyMessage)
+                return
+            }
+            
             if email.isValidAsEmail() {
-                // TODO: reset password
+                
+                sender.enabled = false
+                
+                UserManager.sharedManager.resetPassword(email, completion: { (success, errorMessage) in
+                    if success {
+                        
+                        self.alertControllerOkButtonHandler = {
+                            self.navigationController?.popViewControllerAnimated(true)
+                        }
+                        
+                        self.showAlert(withMessage: self.resetPasswordSuccessMessage, title: self.resetPasswordTitle)
+                    }
+                    else {
+                        let message = errorMessage == nil ? self.resetPasswordErrorGeneralMessage : errorMessage!
+                        self.showAlert(withMessage: message, title: self.resetPasswordTitle)
+                    }
+                    
+                    sender.enabled = true
+                })
+                
             }
             else {
-                showAlert(withMessage: "Please, provide valid email".localized)
+                showAlert(withMessage: resetPasswordEmailInvalidMessage)
             }
         }
         else {
-            showAlert(withMessage: "Please, enter your email".localized)
+            showAlert(withMessage: resetPasswordEmailEmptyMessage)
         }
         
     }
