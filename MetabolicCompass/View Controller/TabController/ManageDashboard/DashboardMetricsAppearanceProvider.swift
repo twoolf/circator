@@ -67,103 +67,111 @@ class DashboardMetricsAppearanceProvider: NSObject {
         }
     }
     
-    // TODO: move everything into plist
-    
-    func titleForSampleType(sampleType: String, active: Bool) -> NSAttributedString
+    private func stringForSampleType(sampleType: String) -> String
     {
         switch sampleType {
         case HKQuantityTypeIdentifierBodyMass:
-            return self.attributedText(NSLocalizedString("Weight", comment: "user weight"), forSampleType: sampleType, active: active)
+            return NSLocalizedString("Weight", comment: "user weight")
         case HKQuantityTypeIdentifierHeartRate:
-            return self.attributedText(NSLocalizedString("Heart rate", comment: "Heartrate"), forSampleType: sampleType, active: active)
+            return NSLocalizedString("Heart rate", comment: "Heartrate")
         case HKCategoryTypeIdentifierSleepAnalysis:
-            return self.attributedText(NSLocalizedString("Sleep", comment: "Sleep"), forSampleType: sampleType, active: active)
+            return NSLocalizedString("Sleep", comment: "Sleep")
         case HKQuantityTypeIdentifierBodyMassIndex:
-            return self.attributedText(NSLocalizedString("BMI", comment: "Body Mass Index"), forSampleType: sampleType, active: active)
+            return NSLocalizedString("BMI", comment: "Body Mass Index")
             
         case HKQuantityTypeIdentifierDietaryCaffeine:
-            return self.attributedText(NSLocalizedString("Caffeine", comment: "Caffeine"), forSampleType: sampleType, active: active)
+            return NSLocalizedString("Caffeine", comment: "Caffeine")
         case HKQuantityTypeIdentifierDietarySugar:
-            return self.attributedText(NSLocalizedString("Sugar", comment: "Sugar"), forSampleType: sampleType, active: active)
+            return NSLocalizedString("Sugar", comment: "Sugar")
         case HKQuantityTypeIdentifierDietaryCholesterol:
-            return self.attributedText(NSLocalizedString("Cholesterol", comment: "Cholesterol"), forSampleType: sampleType, active: active)
+            return NSLocalizedString("Cholesterol", comment: "Cholesterol")
         case HKQuantityTypeIdentifierDietaryProtein:
-            return self.attributedText(NSLocalizedString("Protein", comment: "Protein"), forSampleType: sampleType, active: active)
+            return NSLocalizedString("Protein", comment: "Protein")
         case HKQuantityTypeIdentifierDietaryFatTotal:
-            return self.attributedText(NSLocalizedString("Fat", comment: "Fat"), forSampleType: sampleType, active: active)
+            return NSLocalizedString("Fat", comment: "Fat")
         case HKQuantityTypeIdentifierDietaryCarbohydrates:
-            return self.attributedText(NSLocalizedString("Carbohydrates", comment: "Carbohydrates"), forSampleType: sampleType, active: active)
+            return NSLocalizedString("Carbohydrates", comment: "Carbohydrates")
         case HKQuantityTypeIdentifierDietaryFatPolyunsaturated:
-            return self.attributedText(NSLocalizedString("Polyunsaturated fat", comment: "Polyunsaturated Fat"), forSampleType: sampleType, active: active)
+            return NSLocalizedString("Polyunsaturated fat", comment: "Polyunsaturated Fat")
         case HKQuantityTypeIdentifierDietaryFatSaturated:
-            return self.attributedText(NSLocalizedString("Saturated fat", comment: "Saturated Fat"), forSampleType: sampleType, active: active)
+            return NSLocalizedString("Saturated fat", comment: "Saturated Fat")
         case HKQuantityTypeIdentifierDietaryFatMonounsaturated:
-            return self.attributedText(NSLocalizedString("Monosaturated fat", comment: "Monosaturated Fat"), forSampleType: sampleType, active: active)
+            return NSLocalizedString("Monosaturated fat", comment: "Monosaturated Fat")
         case HKQuantityTypeIdentifierDietaryWater:
-            return self.attributedText(NSLocalizedString("Water", comment: "Water"), forSampleType: sampleType, active: active)
+            return NSLocalizedString("Water", comment: "Water")
         case HKQuantityTypeIdentifierDietaryEnergyConsumed:
-            return self.attributedText(NSLocalizedString("Dietary energy", comment: "Dietary Energy"), forSampleType: sampleType, active: active)
+            return NSLocalizedString("Dietary energy", comment: "Dietary Energy")
             
         case HKCorrelationTypeIdentifierBloodPressure:
-            return self.attributedText(NSLocalizedString("Blood pressure", comment: "Blood pressure"), forSampleType: sampleType, active: active)
+            return NSLocalizedString("Blood pressure", comment: "Blood pressure")
             
         case HKQuantityTypeIdentifierStepCount:
-            return self.attributedText(NSLocalizedString("Step count", comment: "Step count"), forSampleType: sampleType, active: active)
+            return NSLocalizedString("Step count", comment: "Step count")
             
         default:
-            return NSAttributedString(string: "\(sampleType)")
+            return ""
         }
+    }
+    
+    func titleForSampleType(sampleType: String, active: Bool) -> NSAttributedString
+    {
+        return self.attributedText(self.stringForSampleType(sampleType), forSampleType: sampleType, active: active)
     }
     
     private func imageNameWithState(baseName: String, active: Bool) -> String
     {
         return baseName + (active ? "-normal": "-unactive");
     }
-
-    func imageForSampleType(sampleType: String, active: Bool) -> UIImage?
+    
+    private func imageNameForSampleType(sampleType: String) -> String
     {
         switch sampleType {
         case HKQuantityTypeIdentifierBodyMass:
-            return UIImage(named: self.imageNameWithState("icon-weight", active: active))
+            return "icon-weight"
         case HKQuantityTypeIdentifierHeartRate:
-            return UIImage(named: self.imageNameWithState("icon-heart-rate", active: active))
+            return "icon-heart-rate"
         case HKCategoryTypeIdentifierSleepAnalysis:
-            return UIImage(named: self.imageNameWithState("icon-sleep", active:  active))
+            return "icon-sleep"
         case HKQuantityTypeIdentifierBodyMassIndex:
-            return UIImage(named: self.imageNameWithState("icon-bmi", active:  active))
+            return "icon-bmi"
             
         case HKQuantityTypeIdentifierDietaryCaffeine:
-            return UIImage(named: self.imageNameWithState("icon-caffeine", active: active))
+            return "icon-caffeine"
         case HKQuantityTypeIdentifierDietarySugar:
-            return UIImage(named: self.imageNameWithState("icon-sugar", active: active))
+            return "icon-sugar"
         case HKQuantityTypeIdentifierDietaryCholesterol:
-            return UIImage(named: self.imageNameWithState("icon-cholesterol", active: active))
+            return "icon-cholesterol"
         case HKQuantityTypeIdentifierDietaryProtein:
-            return UIImage(named: self.imageNameWithState("icon-protein", active: active))
+            return "icon-protein"
         case HKQuantityTypeIdentifierDietaryFatTotal:
-            return UIImage(named: self.imageNameWithState("icon-fat", active: active))
+            return "icon-fat"
         case HKQuantityTypeIdentifierDietaryCarbohydrates:
-            return UIImage(named: self.imageNameWithState("icon-carbohydrates", active: active))
+            return "icon-carbohydrates"
         case HKQuantityTypeIdentifierDietaryFatPolyunsaturated:
-            return UIImage(named: self.imageNameWithState("icon-polyunsaturated-fat", active: active))
+            return "icon-polyunsaturated-fat"
         case HKQuantityTypeIdentifierDietaryFatSaturated:
-            return UIImage(named: self.imageNameWithState("icon-saturated-fat", active: active))
+            return "icon-saturated-fat"
         case HKQuantityTypeIdentifierDietaryFatMonounsaturated:
-            return UIImage(named: self.imageNameWithState("icon-monosaturated-fat", active: active))
+            return "icon-monosaturated-fat"
         case HKQuantityTypeIdentifierDietaryWater:
-            return UIImage(named: self.imageNameWithState("icon-water", active: active))
+            return "icon-water"
         case HKQuantityTypeIdentifierDietaryEnergyConsumed:
-            return UIImage(named: self.imageNameWithState("icon-calories", active: active))
-
+            return "icon-calories"
+            
         case HKCorrelationTypeIdentifierBloodPressure:
-            return UIImage(named: self.imageNameWithState("icon-blood", active: active))
+            return "icon-blood"
             
         case HKQuantityTypeIdentifierStepCount:
-            return UIImage(named: self.imageNameWithState("icon-steps", active: active))
+            return "icon-steps"
             
         default:
-            return nil
+            return ""
         }
+    }
+
+    func imageForSampleType(sampleType: String, active: Bool) -> UIImage?
+    {
+        return UIImage(named: self.imageNameWithState(self.imageNameForSampleType(sampleType), active: active))
     }
     
 }
