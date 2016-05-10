@@ -110,47 +110,52 @@ class DashboardMetricsAppearanceProvider: NSObject {
             return NSAttributedString(string: "\(sampleType)")
         }
     }
+    
+    private func imageNameWithState(baseName: String, active: Bool) -> String
+    {
+        return baseName + (active ? "-normal": "-unactive");
+    }
 
-    func imageForSampleType(sampleType: String) -> UIImage?
+    func imageForSampleType(sampleType: String, active: Bool) -> UIImage?
     {
         switch sampleType {
         case HKQuantityTypeIdentifierBodyMass:
-            return UIImage(named: "icon-weight-normal")
+            return UIImage(named: self.imageNameWithState("icon-weight", active: active))
         case HKQuantityTypeIdentifierHeartRate:
-            return UIImage(named: "icon-heart-rate-normal")
+            return UIImage(named: self.imageNameWithState("icon-heart-rate", active: active))
         case HKCategoryTypeIdentifierSleepAnalysis:
-            return UIImage(named: "icon-sleep-normal")
+            return UIImage(named: self.imageNameWithState("icon-sleep", active:  active))
         case HKQuantityTypeIdentifierBodyMassIndex:
-            return UIImage(named: "icon-bmi-normal")
+            return UIImage(named: self.imageNameWithState("icon-bmi", active:  active))
             
         case HKQuantityTypeIdentifierDietaryCaffeine:
-            return UIImage(named: "icon-caffeine-normal")
+            return UIImage(named: self.imageNameWithState("icon-caffeine", active: active))
         case HKQuantityTypeIdentifierDietarySugar:
-            return UIImage(named: "icon-sugar-normal")
+            return UIImage(named: self.imageNameWithState("icon-sugar", active: active))
         case HKQuantityTypeIdentifierDietaryCholesterol:
-            return UIImage(named: "icon-cholesterol-normal")
+            return UIImage(named: self.imageNameWithState("icon-cholesterol", active: active))
         case HKQuantityTypeIdentifierDietaryProtein:
-            return UIImage(named: "icon-protein-normal")
+            return UIImage(named: self.imageNameWithState("icon-protein", active: active))
         case HKQuantityTypeIdentifierDietaryFatTotal:
-            return UIImage(named: "icon-fat-normal")
+            return UIImage(named: self.imageNameWithState("icon-fat", active: active))
         case HKQuantityTypeIdentifierDietaryCarbohydrates:
-            return UIImage(named: "icon-carbohydrates-normal")
+            return UIImage(named: self.imageNameWithState("icon-carbohydrates", active: active))
         case HKQuantityTypeIdentifierDietaryFatPolyunsaturated:
-            return UIImage(named: "icon-polyunsaturated-fat-normal")
+            return UIImage(named: self.imageNameWithState("icon-polyunsaturated-fat", active: active))
         case HKQuantityTypeIdentifierDietaryFatSaturated:
-            return UIImage(named: "icon-saturated-fat-normal")
+            return UIImage(named: self.imageNameWithState("icon-saturated-fat", active: active))
         case HKQuantityTypeIdentifierDietaryFatMonounsaturated:
-            return UIImage(named: "icon-monosaturated-fat-normal")
+            return UIImage(named: self.imageNameWithState("icon-monosaturated-fat", active: active))
         case HKQuantityTypeIdentifierDietaryWater:
-            return UIImage(named: "icon-water-normal")
+            return UIImage(named: self.imageNameWithState("icon-water", active: active))
         case HKQuantityTypeIdentifierDietaryEnergyConsumed:
-            return UIImage(named: "icon-calories-normal")
+            return UIImage(named: self.imageNameWithState("icon-calories", active: active))
 
         case HKCorrelationTypeIdentifierBloodPressure:
-            return UIImage(named: "icon-blood-normal")
+            return UIImage(named: self.imageNameWithState("icon-blood", active: active))
             
         case HKQuantityTypeIdentifierStepCount:
-            return UIImage(named: "icon-steps-normal")
+            return UIImage(named: self.imageNameWithState("icon-steps", active: active))
             
         default:
             return nil

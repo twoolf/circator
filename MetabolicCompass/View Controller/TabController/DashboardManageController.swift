@@ -29,6 +29,7 @@ class DashboardManageController: UIViewController, UITableViewDelegate, UITableV
         
         self.tableView.dataSource = self;
         self.tableView.delegate   = self;
+        self.tableView.allowsSelectionDuringEditing = true
         
         // TODO: read/save data from storage
         self.data = [
@@ -81,10 +82,11 @@ class DashboardManageController: UIViewController, UITableViewDelegate, UITableV
          let cell = tableView.dequeueReusableCellWithIdentifier(cellIdentifier, forIndexPath: indexPath) as! ManageDashboardCell
         
         let item = self.data[indexPath.row]
-        cell.leftImageView.image         = appearanceProvider.imageForSampleType(item.type)
+        cell.leftImageView.image         = appearanceProvider.imageForSampleType(item.type, active: item.active)
         cell.captionLabel.attributedText = appearanceProvider.titleForSampleType(item.type)
-        cell.button.selected             = item.active
         
+        cell.showsReorderControl         = false
+        cell.updateSelectionStatus(item.active)
         return cell;
     }
     
@@ -114,7 +116,8 @@ class DashboardManageController: UIViewController, UITableViewDelegate, UITableV
         }
         
         item.active = !item.active
-        cell.button.selected = item.active
+        cell.updateSelectionStatus(item.active)
+        cell.leftImageView.image = appearanceProvider.imageForSampleType(item.type, active: item.active)
     }
 
     func tableView(tableView: UITableView, canMoveRowAtIndexPath indexPath: NSIndexPath) -> Bool {
@@ -133,5 +136,9 @@ class DashboardManageController: UIViewController, UITableViewDelegate, UITableV
         let itemToMove = self.data[fromIndexPath.row]
         self.data.removeAtIndex(fromIndexPath.row)
         self.data.insert(itemToMove, atIndex: toIndexPath.row)
+    }
+    
+    func tableView(tableView: UITableView, willDisplayCell cell: UITableViewCell, forRowAtIndexPath indexPath: NSIndexPath) {
+        cell.showsReorderControl = false
     }
 }

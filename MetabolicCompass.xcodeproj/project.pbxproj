@@ -71,6 +71,7 @@
 		95C0B9A81CD25860006E523F /* BaseDataSource.swift in Sources */ = {isa = PBXBuildFile; fileRef = 95C0B9A71CD25860006E523F /* BaseDataSource.swift */; };
 		95C0B9AA1CD25AAC006E523F /* AdditionalInfoViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 95C0B9A91CD25AAC006E523F /* AdditionalInfoViewController.swift */; };
 		A88F31F3DDADAD50F4190F8E /* Pods.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = CB09F654AB4B00C79306C728 /* Pods.framework */; };
+		E7591D0E1CE1C7DE00DCBA39 /* LPRTableView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E7591D0D1CE1C7DE00DCBA39 /* LPRTableView.swift */; };
 		E7592DB51CDB3A2400E313BB /* TabScreens.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = E7592DB41CDB3A2400E313BB /* TabScreens.storyboard */; };
 		E7592DB81CDB490600E313BB /* MainTabController.swift in Sources */ = {isa = PBXBuildFile; fileRef = E7592DB71CDB490600E313BB /* MainTabController.swift */; };
 		E7592DBA1CDB704600E313BB /* DashboardTabControllerViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = E7592DB91CDB704600E313BB /* DashboardTabControllerViewController.swift */; };
@@ -272,6 +273,7 @@
 		95C0B9A91CD25AAC006E523F /* AdditionalInfoViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AdditionalInfoViewController.swift; sourceTree = "<group>"; };
 		984776BC6A59A33B4580C535 /* Pods.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = Pods.release.xcconfig; path = "Pods/Target Support Files/Pods/Pods.release.xcconfig"; sourceTree = "<group>"; };
 		CB09F654AB4B00C79306C728 /* Pods.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		E7591D0D1CE1C7DE00DCBA39 /* LPRTableView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LPRTableView.swift; sourceTree = "<group>"; };
 		E7592DB41CDB3A2400E313BB /* TabScreens.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; path = TabScreens.storyboard; sourceTree = "<group>"; };
 		E7592DB71CDB490600E313BB /* MainTabController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MainTabController.swift; sourceTree = "<group>"; };
 		E7592DB91CDB704600E313BB /* DashboardTabControllerViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DashboardTabControllerViewController.swift; sourceTree = "<group>"; };
@@ -409,6 +411,7 @@
 		7881A3DF1BAF3B3E00ECB3C6 /* MetabolicCompass */ = {
 			isa = PBXGroup;
 			children = (
+				E7591D0C1CE1C7AE00DCBA39 /* LPRTabelView */,
 				9585680A1CD0EDAC00EDD385 /* Utils */,
 				958568061CD0D39000EDD385 /* DataSources */,
 				958568071CD0D39000EDD385 /* Extensions */,
@@ -512,6 +515,14 @@
 				95635AA51CD3C11600BCC467 /* ForgotPasswordViewController.swift */,
 			);
 			path = AuthorizationViewControllers;
+			sourceTree = "<group>";
+		};
+		E7591D0C1CE1C7AE00DCBA39 /* LPRTabelView */ = {
+			isa = PBXGroup;
+			children = (
+				E7591D0D1CE1C7DE00DCBA39 /* LPRTableView.swift */,
+			);
+			path = LPRTabelView;
 			sourceTree = "<group>";
 		};
 		E7592DB61CDB471000E313BB /* TabController */ = {
@@ -1114,6 +1125,7 @@
 				E75E95A31CDCA8DD00A18756 /* DashboardFilterCell.swift in Sources */,
 				95C0B9A81CD25860006E523F /* BaseDataSource.swift in Sources */,
 				95C0B99B1CD23E90006E523F /* RegisterViewController.swift in Sources */,
+				E7591D0E1CE1C7DE00DCBA39 /* LPRTableView.swift in Sources */,
 				78B7342B1C90B87600693229 /* VariantViewController.swift in Sources */,
 				78B734271C90B86700693229 /* EventTimeViewController.swift in Sources */,
 				F42F5ADD1BDC85AF00195490 /* SampleDataAnalyzer.swift in Sources */,
