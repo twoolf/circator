@@ -275,7 +275,7 @@ class EventTimeViewController : UIViewController {
                     //
                     let vals = intervals.map { event in
                       let startTimeInFractionalHours = event.0.timeIntervalSinceDate(startDate) / 3600.0
-                      let metabolicStateAsDouble = valueOfCircadianEvent(e.1)
+                      let metabolicStateAsDouble = valueOfCircadianEvent(event.1)
                       return (x: startTimeInFractionalHours, y: metabolicStateAsDouble)
                     }
                     let series = ChartSeries(data: vals)

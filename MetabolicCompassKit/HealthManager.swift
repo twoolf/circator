@@ -474,8 +474,8 @@ public class HealthManager: NSObject, WCSessionDelegate {
             let initialAccumulator : ([Event], Bool, Event!) = ([], true, nil)
             let endpointArray = sortedEvents.reduce(initialAccumulator, combine:
             { (acc, event) in
-                let eventEndpointDate = e.0
-                let eventMetabolicState = e.1
+                let eventEndpointDate = event.0
+                let eventMetabolicState = event.1
 
                 let resultArray = acc.0
                 let eventIsIntervalStart = acc.1
@@ -486,7 +486,7 @@ public class HealthManager: NSObject, WCSessionDelegate {
                 guard prevEvent != nil else {
                     // Skip prefix indicates whether we should add a fasting interval before the first event.
                     let skipPrefix = eventEndpointDate == startDate || startDate == NSDate.distantPast()
-                    let newResultArray = (skipPrefix ? [event] : [(startDate, CircadianEvent.Fast), (eventEndpointDate, CircadianEvent.Fast), eventEndpointDate])
+                    let newResultArray = (skipPrefix ? [event] : [(startDate, CircadianEvent.Fast), (eventEndpointDate, CircadianEvent.Fast), event])
                     return (newResultArray, nextEventAsIntervalStart, event)
                 }
 
