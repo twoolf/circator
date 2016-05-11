@@ -83,7 +83,7 @@ private let inputFontSize = ScreenManager.sharedInstance.profileInputFontSize()
         
         let userRegistrationModel = dataSource.model
         if !userRegistrationModel.isModelValid() {
-            self.showAlert(withMessage: userRegistrationModel.validationMessage!, title: "Registration Error")
+            self.showAlert(withMessage: userRegistrationModel.validationMessage!, title: "Registration Error".localized)
             return
         }
         

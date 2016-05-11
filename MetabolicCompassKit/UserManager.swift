@@ -306,6 +306,20 @@ public class UserManager {
     }
 
 
+    public func resetPassword(email: String, completion: ((Bool, String?) -> Void)) {
+        
+        Stormpath.resetPassword(email: email, completionHandler: { (error) -> Void in
+            
+            if error == nil {
+                completion(true, nil)
+            }
+            else {
+                log.error("Reset Password failed: \(error)")
+                completion(false, error!.localizedDescription)
+            }
+        })
+    }
+    
     // MARK: - Stormpath token management.
 
     public func getAccessToken() -> String? {
