@@ -174,7 +174,7 @@ class ProfileDataSource: BaseDataSource {
         return size
     }
 
-    private func smallCellSize(type: RegistrationFiledType) -> CGSize {
+    private func smallCellSize(type: UserInfoFiledType) -> CGSize {
         var size = CGSizeMake((self.collectionView!.bounds.width - spaceBetweenCellsInOneRow) / 2.0, cellHeight)
         
         if type == .FirstName {

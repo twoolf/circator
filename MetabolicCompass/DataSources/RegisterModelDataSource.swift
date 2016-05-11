@@ -63,8 +63,8 @@ class RegisterModelDataSource: BaseDataSource {
                 let field = self.model.itemAtIndexPath(indexPath)
                 
                 if field.type == .Units {
-                    let needsUpdateIndexPathes = [NSIndexPath(forRow: RegistrationFiledType.Weight.rawValue, inSection: 0),
-                                                  NSIndexPath(forRow: RegistrationFiledType.Height.rawValue, inSection: 0)]
+                    let needsUpdateIndexPathes = [NSIndexPath(forRow: UserInfoFiledType.Weight.rawValue, inSection: 0),
+                                                  NSIndexPath(forRow: UserInfoFiledType.Height.rawValue, inSection: 0)]
                     
                     collectionView.reloadItemsAtIndexPaths(needsUpdateIndexPathes)
                 }

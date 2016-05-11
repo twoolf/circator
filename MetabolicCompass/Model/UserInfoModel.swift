@@ -61,7 +61,7 @@ class UserInfoModel: NSObject {
     }()
     
     
-    func modelItem(withIndex index: Int, iconImageName: String?, value: AnyObject?, type: RegistrationFiledType = .Other) -> ModelItem {
+    func modelItem(withIndex index: Int, iconImageName: String?, value: AnyObject?, type: UserInfoFiledType = .Other) -> ModelItem {
         let fieldItem = UserProfile.sharedInstance.fields[index]
         
         return ModelItem(name: fieldItem.profileFieldName, title: fieldItem.fieldName, type: type, iconImageName: iconImageName, value: value)
