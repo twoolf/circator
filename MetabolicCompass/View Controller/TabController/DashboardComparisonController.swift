@@ -34,13 +34,24 @@ class DashboardComparisonController:
     
     override func viewWillAppear(animated: Bool) {
         super.viewWillAppear(animated)
+        
+        AccountManager.shared.contentManager.initializeBackgroundWork()
+        self.tableView.reloadData()
+        
+        AccountManager.shared.contentManager.fetchAggregatesPeriodically()
         NSNotificationCenter.defaultCenter().addObserver(self, selector: #selector(contenteDidUpdate),
-                                                         name: ContentManager.ContentDidUpdateNotification,
+                                                         name: HMDidUpdateRecentSamplesNotification,
                                                          object: nil)
+        NSNotificationCenter.defaultCenter().addObserver(self, selector: #selector(updateContent), name: UIApplicationDidBecomeActiveNotification, object: nil)
+    }
+    
+    func updateContent() {
+        AccountManager.shared.contentManager.resetBackgroundWork()
     }
     
     override func viewWillDisappear(animated: Bool) {
         super.viewWillDisappear(animated)
+        AccountManager.shared.contentManager.stopBackgroundWork()
         NSNotificationCenter.defaultCenter().removeObserver(self)
     }
     

@@ -43,7 +43,7 @@ class AccountManager: NSObject {
             
             registerLogingLandingController.completion = completion
             
-            self.rootViewController?.pushViewController(registerLogingLandingController, animated: true)
+            self.rootViewController?.pushViewController(registerLogingLandingController, animated: UserManager.sharedManager.hasUserId())
         }
         
     }
@@ -69,15 +69,15 @@ class AccountManager: NSObject {
         
         assert(self.rootViewController != nil, "Please, specify root navigation controller")
         
+        guard UserManager.sharedManager.hasAccount() else {
+            self.doLogin { self.loginComplete() }
+            return
+        }
+        
         withHKCalAuth {
             UserManager.sharedManager.ensureAccessToken { error in
                 guard !error else {
                     self.loginComplete()
-                    return
-                }
-                
-                guard UserManager.sharedManager.hasAccount() else {
-                    self.doLogin { self.loginComplete() }
                     return
                 }
                 

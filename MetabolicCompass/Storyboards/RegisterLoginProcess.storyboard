@@ -54,7 +54,7 @@
                                     </userDefinedRuntimeAttribute>
                                 </userDefinedRuntimeAttributes>
                                 <connections>
-                                    <segue destination="8yI-Fi-ICu" kind="show" identifier="LoginSegue" id="awt-sY-yiI"/>
+                                    <action selector="onLogin:" destination="YLC-eZ-y2e" eventType="touchUpInside" id="Q3j-ru-Iak"/>
                                 </connections>
                             </button>
                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="0Qt-Cl-J8O">
@@ -70,7 +70,7 @@
                                     </userDefinedRuntimeAttribute>
                                 </userDefinedRuntimeAttributes>
                                 <connections>
-                                    <segue destination="Wq1-CV-Iw6" kind="show" identifier="RegisterSegue" id="4jA-pv-FR1"/>
+                                    <action selector="onRegister:" destination="YLC-eZ-y2e" eventType="touchUpInside" id="y4x-hp-dRY"/>
                                 </connections>
                             </button>
                         </subviews>
@@ -102,6 +102,8 @@
                     <connections>
                         <outlet property="logoTopMargin" destination="BLK-OV-IYO" id="YSh-NW-0OI"/>
                         <outlet property="registerButtonBottomMargin" destination="XvU-yR-6sb" id="udB-ap-1sG"/>
+                        <segue destination="8yI-Fi-ICu" kind="show" identifier="LoginSegue" id="1en-sU-s0h"/>
+                        <segue destination="Wq1-CV-Iw6" kind="show" identifier="RegisterSegue" id="9SI-zh-3tO"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="UFG-Go-QgB" userLabel="First Responder" sceneMemberID="firstResponder"/>

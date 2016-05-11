@@ -16,22 +16,37 @@ class ContentManager: NSObject {
     static let ContentDidUpdateNotification = "ContentDidUpdateNotification"
     
     private var aggregateFetchTask : Async? = nil    // Background task to fetch population aggregates.
-    
+    var isBackgroundWorkActive = false
     
     internal func initializeBackgroundWork() {
         Async.main() {
+            
+            if (self.isBackgroundWorkActive) {
+                return
+            }
+            
             self.fetchInitialAggregates()
             self.fetchRecentSamples()
+            self.isBackgroundWorkActive = true
             HealthManager.sharedManager.registerObservers()
         }
     }
     
     func stopBackgroundWork() {
-        // Clean up aggregate data fetched via the prior account.
-        if let task = aggregateFetchTask {
-            task.cancel()
-            aggregateFetchTask = nil
+        
+        Async.main() {
+            // Clean up aggregate data fetched via the prior account.
+            if let task = self.aggregateFetchTask {
+                task.cancel()
+                self.aggregateFetchTask = nil
+                self.isBackgroundWorkActive = false
+            }
         }
+    }
+    
+    func resetBackgroundWork() {
+        self.stopBackgroundWork()
+        self.initializeBackgroundWork()
     }
     
     func fetchInitialAggregates() {
@@ -45,10 +60,6 @@ class ContentManager: NSObject {
         let freq = UserManager.sharedManager.getRefreshFrequency()
         aggregateFetchTask = Async.background(after: Double(freq)) {
             self.fetchAggregatesPeriodically()
-            
-            Async.main() {
-                NSNotificationCenter.defaultCenter().postNotificationName(ContentManager.ContentDidUpdateNotification, object: self)
-            }
         }
     }
     
@@ -57,7 +68,7 @@ class ContentManager: NSObject {
         AccountManager.shared.withHKCalAuth {
             HealthManager.sharedManager.fetchMostRecentSamples() { (samples, error) -> Void in
                 guard error == nil else { return }
-                NSNotificationCenter.defaultCenter().postNotificationName(ContentManager.ContentDidUpdateNotification, object: self)
+                NSNotificationCenter.defaultCenter().postNotificationName(HMDidUpdateRecentSamplesNotification, object: self)
             }
         }
     }
