@@ -65,6 +65,10 @@ class AccountManager: NSObject {
         }
     }
     
+    func isLogged() -> Bool {
+        return UserManager.sharedManager.hasAccount()
+    }
+    
     func loginAndInitialize() {
         
         assert(self.rootViewController != nil, "Please, specify root navigation controller")

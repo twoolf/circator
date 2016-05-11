@@ -19,6 +19,11 @@ class ContentManager: NSObject {
     var isBackgroundWorkActive = false
     
     internal func initializeBackgroundWork() {
+        
+        if (!AccountManager.shared.isLogged()) {
+            return
+        }
+        
         Async.main() {
             
             if (self.isBackgroundWorkActive) {
