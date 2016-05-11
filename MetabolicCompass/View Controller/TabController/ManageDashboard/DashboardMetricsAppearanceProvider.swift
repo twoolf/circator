@@ -19,48 +19,53 @@ class DashboardMetricsAppearanceProvider: NSObject {
     
     func colorForSampleType(sampleType: String, active: Bool) -> UIColor
     {
+        return self.getColorForSampleType(sampleType, active: active) ?? UIColor.whiteColor()
+    }
+    
+    private func getColorForSampleType(sampleType: String, active: Bool) -> UIColor?
+    {
         if (!active) {
             return UIColor.lightGrayColor()
         }
         
         switch sampleType {
-//        case HKQuantityTypeIdentifierBodyMass:
-//            return
-//        case HKQuantityTypeIdentifierHeartRate:
-//            return ""
-//        case HKCategoryTypeIdentifierSleepAnalysis:
-//            return ""
-//        case HKQuantityTypeIdentifierBodyMassIndex:
-//            return ""
-//            
-//        case HKQuantityTypeIdentifierDietaryCaffeine:
-//            return ""
-//        case HKQuantityTypeIdentifierDietarySugar:
-//            return ""
-//        case HKQuantityTypeIdentifierDietaryCholesterol:
-//            return ""
-//        case HKQuantityTypeIdentifierDietaryProtein:
-//            return ""
-//        case HKQuantityTypeIdentifierDietaryFatTotal:
-//            return ""
-//        case HKQuantityTypeIdentifierDietaryCarbohydrates:
-//            return ""
-//        case HKQuantityTypeIdentifierDietaryFatPolyunsaturated:
-//            return ""
-//        case HKQuantityTypeIdentifierDietaryFatSaturated:
-//            return ""
-//        case HKQuantityTypeIdentifierDietaryFatMonounsaturated:
-//            return ""
-//        case HKQuantityTypeIdentifierDietaryWater:
-//            return ""
-//        case HKQuantityTypeIdentifierDietaryEnergyConsumed:
-//            return ""
-//            
-//        case HKCorrelationTypeIdentifierBloodPressure:
-//            return ""
-//            
-//        case HKQuantityTypeIdentifierStepCount:
-//            return ""
+        case HKQuantityTypeIdentifierBodyMass:
+            return UIColor.colorWithHexString("#388CFB")
+        case HKQuantityTypeIdentifierHeartRate:
+            return UIColor.colorWithHexString("#E2472C")
+        case HKCategoryTypeIdentifierSleepAnalysis:
+            return UIColor.colorWithHexString("#B68F14")
+        case HKQuantityTypeIdentifierBodyMassIndex:
+            return UIColor.colorWithHexString("#A57B55")
+            
+        case HKQuantityTypeIdentifierDietaryCaffeine:
+            return UIColor.colorWithHexString("#8627B5")
+        case HKQuantityTypeIdentifierDietarySugar:
+            return UIColor.colorWithHexString("#8627B5")
+        case HKQuantityTypeIdentifierDietaryCholesterol:
+            return UIColor.colorWithHexString("#8627B5")
+        case HKQuantityTypeIdentifierDietaryProtein:
+            return UIColor.colorWithHexString("#E64C35")
+        case HKQuantityTypeIdentifierDietaryFatTotal:
+            return UIColor.colorWithHexString("#E64C35")
+        case HKQuantityTypeIdentifierDietaryCarbohydrates:
+            return UIColor.colorWithHexString("#E24739")
+        case HKQuantityTypeIdentifierDietaryFatPolyunsaturated:
+            return UIColor.colorWithHexString("#A57B55")
+        case HKQuantityTypeIdentifierDietaryFatSaturated:
+            return UIColor.colorWithHexString("#A57B55")
+        case HKQuantityTypeIdentifierDietaryFatMonounsaturated:
+            return UIColor.colorWithHexString("#A57B55")
+        case HKQuantityTypeIdentifierDietaryWater:
+            return UIColor.colorWithHexString("#BA1075")
+        case HKQuantityTypeIdentifierDietaryEnergyConsumed:
+            return UIColor.colorWithHexString("#388CFB")
+            
+        case HKCorrelationTypeIdentifierBloodPressure:
+            return UIColor.colorWithHexString("#AA0066")
+            
+        case HKQuantityTypeIdentifierStepCount:
+            return UIColor.colorWithHexString("#138F16")
             
         default:
             return UIColor.whiteColor()

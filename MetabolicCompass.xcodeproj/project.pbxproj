@@ -71,6 +71,7 @@
 		95C0B9A81CD25860006E523F /* BaseDataSource.swift in Sources */ = {isa = PBXBuildFile; fileRef = 95C0B9A71CD25860006E523F /* BaseDataSource.swift */; };
 		95C0B9AA1CD25AAC006E523F /* AdditionalInfoViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 95C0B9A91CD25AAC006E523F /* AdditionalInfoViewController.swift */; };
 		A88F31F3DDADAD50F4190F8E /* Pods.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = CB09F654AB4B00C79306C728 /* Pods.framework */; };
+		E74A89761CE308800056A2D2 /* UIColor+Extended.swift in Sources */ = {isa = PBXBuildFile; fileRef = E74A89751CE308800056A2D2 /* UIColor+Extended.swift */; };
 		E7591D0E1CE1C7DE00DCBA39 /* LPRTableView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E7591D0D1CE1C7DE00DCBA39 /* LPRTableView.swift */; };
 		E7592DB51CDB3A2400E313BB /* TabScreens.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = E7592DB41CDB3A2400E313BB /* TabScreens.storyboard */; };
 		E7592DB81CDB490600E313BB /* MainTabController.swift in Sources */ = {isa = PBXBuildFile; fileRef = E7592DB71CDB490600E313BB /* MainTabController.swift */; };
@@ -273,6 +274,7 @@
 		95C0B9A91CD25AAC006E523F /* AdditionalInfoViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AdditionalInfoViewController.swift; sourceTree = "<group>"; };
 		984776BC6A59A33B4580C535 /* Pods.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = Pods.release.xcconfig; path = "Pods/Target Support Files/Pods/Pods.release.xcconfig"; sourceTree = "<group>"; };
 		CB09F654AB4B00C79306C728 /* Pods.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		E74A89751CE308800056A2D2 /* UIColor+Extended.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "UIColor+Extended.swift"; sourceTree = "<group>"; };
 		E7591D0D1CE1C7DE00DCBA39 /* LPRTableView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LPRTableView.swift; sourceTree = "<group>"; };
 		E7592DB41CDB3A2400E313BB /* TabScreens.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; path = TabScreens.storyboard; sourceTree = "<group>"; };
 		E7592DB71CDB490600E313BB /* MainTabController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MainTabController.swift; sourceTree = "<group>"; };
@@ -493,6 +495,7 @@
 			isa = PBXGroup;
 			children = (
 				958568081CD0D3A000EDD385 /* String+Extended.swift */,
+				E74A89751CE308800056A2D2 /* UIColor+Extended.swift */,
 			);
 			path = Extensions;
 			sourceTree = "<group>";
@@ -1112,6 +1115,7 @@
 				E7592DBC1CDC7BBE00E313BB /* DashboardComparisonController.swift in Sources */,
 				78B734261C90B86200693229 /* RadarViewController.swift in Sources */,
 				95C0B99D1CD23EBA006E523F /* RegistrationComplitionViewController.swift in Sources */,
+				E74A89761CE308800056A2D2 /* UIColor+Extended.swift in Sources */,
 				9585680C1CD0EDBD00EDD385 /* UnitsUtils.swift in Sources */,
 				95748C501CCFC7D90002F6A3 /* DoubleCheckListCollectionViewCell.swift in Sources */,
 				78B7342A1C90B87300693229 /* UINotifications.swift in Sources */,
