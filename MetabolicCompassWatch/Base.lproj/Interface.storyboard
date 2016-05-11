@@ -8,7 +8,7 @@
         <!--IntroInterfaceController-->
         <scene sceneID="aou-V4-d1y">
             <objects>
-                <controller identifier="IntroInterfaecController" id="AgC-eL-Hgc" userLabel="IntroInterfaceController" customClass="IntroInterfaceController" customModule="CircatorWatchExtension">
+                <controller identifier="IntroInterfaecController" id="AgC-eL-Hgc" userLabel="IntroInterfaceController" customClass="IntroInterfaceController" customModule="MetabolicCompassWatchExtension">
                     <items>
                         <group width="1" height="1" alignment="left" layout="vertical" spacing="0.0" id="7YB-7w-psE">
                             <items>
@@ -58,7 +58,7 @@
         <!--Meal Times Interface Controller-->
         <scene sceneID="eCA-eR-aXu">
             <objects>
-                <controller id="bN8-zq-f9S" customClass="MealTimesInterfaceController" customModule="CircatorWatchExtension">
+                <controller id="bN8-zq-f9S" customClass="MealTimesInterfaceController" customModule="MetabolicCompassWatchExtension">
                     <items>
                         <group width="1" height="1" alignment="left" layout="vertical" spacing="9" id="wIp-Ym-8he">
                             <items>
@@ -91,7 +91,7 @@
         <!--Meal Interface Controller-->
         <scene sceneID="pMY-eT-Nzc">
             <objects>
-                <controller id="dUL-SX-553" customClass="MealInterfaceController" customModule="CircatorWatchExtension">
+                <controller id="dUL-SX-553" customClass="MealInterfaceController" customModule="MetabolicCompassWatchExtension">
                     <items>
                         <group width="1" height="1" alignment="left" layout="vertical" id="kvR-Vw-Rsu">
                             <items>
@@ -114,7 +114,7 @@
         <!--Sleep Interface Controller-->
         <scene sceneID="0rq-CP-qZy">
             <objects>
-                <controller id="Sk5-u4-eDK" customClass="SleepInterfaceController" customModule="CircatorWatchExtension">
+                <controller id="Sk5-u4-eDK" customClass="SleepInterfaceController" customModule="MetabolicCompassWatchExtension">
                     <items>
                         <group width="1" height="1" alignment="left" layout="vertical" id="vgm-K0-MJq">
                             <items>
@@ -138,7 +138,7 @@
         <!--WaterInterfaceController-->
         <scene sceneID="jir-tl-faX">
             <objects>
-                <controller title="WaterInterfaceController" id="YiA-fx-NQl" customClass="WaterInterfaceController" customModule="CircatorWatchExtension">
+                <controller title="WaterInterfaceController" id="YiA-fx-NQl" customClass="WaterInterfaceController" customModule="MetabolicCompassWatchExtension">
                     <items>
                         <group width="1" height="1" alignment="left" layout="vertical" id="3Te-R5-a3J">
                             <items>
@@ -161,7 +161,7 @@
         <!--Exercise Interface Controller-->
         <scene sceneID="rav-D0-NpW">
             <objects>
-                <controller id="uYH-JB-1gX" customClass="ExerciseInterfaceController" customModule="CircatorWatchExtension">
+                <controller id="uYH-JB-1gX" customClass="ExerciseInterfaceController" customModule="MetabolicCompassWatchExtension">
                     <items>
                         <group width="1" height="1" alignment="left" layout="vertical" id="k5N-Me-jim">
                             <items>
@@ -183,7 +183,7 @@
         <!--Glance Interface Controller-->
         <scene sceneID="BOz-TT-tkC">
             <objects>
-                <glanceController spacing="0.0" id="0uZ-2p-rRc" customClass="GlanceController" customModule="CircatorWatch" customModuleProvider="target">
+                <glanceController spacing="0.0" id="0uZ-2p-rRc" customClass="GlanceController" customModule="MetabolicCompassWatch" customModuleProvider="target">
                     <items>
                         <group alignment="left" id="t8f-Gd-c4y"/>
                         <group alignment="left" id="uCw-4Q-Ouw"/>
@@ -212,7 +212,7 @@
         <!--Notification Controller-->
         <scene sceneID="KIl-fV-djm">
             <objects>
-                <controller id="gdX-wl-uQE" customClass="NotificationController" customModule="CircatorWatch" customModuleProvider="target"/>
+                <controller id="gdX-wl-uQE" customClass="NotificationController" customModule="MetabolicCompassWatch" customModuleProvider="target"/>
             </objects>
             <point key="canvasLocation" x="553" y="1001"/>
         </scene>
