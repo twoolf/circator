@@ -14,6 +14,8 @@ class RegisterLoginLandingViewController: UIViewController {
     @IBOutlet weak var logoTopMargin: NSLayoutConstraint!
     @IBOutlet weak var registerButtonBottomMargin: NSLayoutConstraint!
     
+    var completion: (Void -> Void)?
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         
@@ -33,5 +35,20 @@ class RegisterLoginLandingViewController: UIViewController {
     
     override func preferredStatusBarStyle() -> UIStatusBarStyle {
         return .LightContent;
+    }
+    
+    override func prepareForSegue(segue: UIStoryboardSegue, sender: AnyObject?) {
+        
+        if (segue.identifier == "LoginSegue") {
+            
+            let loginViewController = segue.destinationViewController as! LoginViewController
+            loginViewController.completion = self.completion
+            
+        } else if (segue.identifier == "RegisterSegue") {
+            
+            let regViewController = segue.destinationViewController as! RegisterViewController
+            regViewController.registerCompletion = completion
+        }
+        
     }
 }

@@ -54,7 +54,7 @@
                                     </userDefinedRuntimeAttribute>
                                 </userDefinedRuntimeAttributes>
                                 <connections>
-                                    <segue destination="8yI-Fi-ICu" kind="show" id="awt-sY-yiI"/>
+                                    <segue destination="8yI-Fi-ICu" kind="show" identifier="LoginSegue" id="awt-sY-yiI"/>
                                 </connections>
                             </button>
                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="0Qt-Cl-J8O">
@@ -70,7 +70,7 @@
                                     </userDefinedRuntimeAttribute>
                                 </userDefinedRuntimeAttributes>
                                 <connections>
-                                    <segue destination="Wq1-CV-Iw6" kind="show" id="4jA-pv-FR1"/>
+                                    <segue destination="Wq1-CV-Iw6" kind="show" identifier="RegisterSegue" id="4jA-pv-FR1"/>
                                 </connections>
                             </button>
                         </subviews>

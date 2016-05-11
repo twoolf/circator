@@ -72,6 +72,8 @@
 		95C0B9AA1CD25AAC006E523F /* AdditionalInfoViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 95C0B9A91CD25AAC006E523F /* AdditionalInfoViewController.swift */; };
 		A88F31F3DDADAD50F4190F8E /* Pods.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = CB09F654AB4B00C79306C728 /* Pods.framework */; };
 		E74A89761CE308800056A2D2 /* UIColor+Extended.swift in Sources */ = {isa = PBXBuildFile; fileRef = E74A89751CE308800056A2D2 /* UIColor+Extended.swift */; };
+		E74A89791CE3265C0056A2D2 /* AccountManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = E74A89781CE3265C0056A2D2 /* AccountManager.swift */; };
+		E74A897C1CE338D30056A2D2 /* ContentManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = E74A897B1CE338D30056A2D2 /* ContentManager.swift */; };
 		E7591D0E1CE1C7DE00DCBA39 /* LPRTableView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E7591D0D1CE1C7DE00DCBA39 /* LPRTableView.swift */; };
 		E7592DB51CDB3A2400E313BB /* TabScreens.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = E7592DB41CDB3A2400E313BB /* TabScreens.storyboard */; };
 		E7592DB81CDB490600E313BB /* MainTabController.swift in Sources */ = {isa = PBXBuildFile; fileRef = E7592DB71CDB490600E313BB /* MainTabController.swift */; };
@@ -275,6 +277,8 @@
 		984776BC6A59A33B4580C535 /* Pods.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = Pods.release.xcconfig; path = "Pods/Target Support Files/Pods/Pods.release.xcconfig"; sourceTree = "<group>"; };
 		CB09F654AB4B00C79306C728 /* Pods.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		E74A89751CE308800056A2D2 /* UIColor+Extended.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "UIColor+Extended.swift"; sourceTree = "<group>"; };
+		E74A89781CE3265C0056A2D2 /* AccountManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AccountManager.swift; sourceTree = "<group>"; };
+		E74A897B1CE338D30056A2D2 /* ContentManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ContentManager.swift; sourceTree = "<group>"; };
 		E7591D0D1CE1C7DE00DCBA39 /* LPRTableView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LPRTableView.swift; sourceTree = "<group>"; };
 		E7592DB41CDB3A2400E313BB /* TabScreens.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; path = TabScreens.storyboard; sourceTree = "<group>"; };
 		E7592DB71CDB490600E313BB /* MainTabController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MainTabController.swift; sourceTree = "<group>"; };
@@ -413,6 +417,8 @@
 		7881A3DF1BAF3B3E00ECB3C6 /* MetabolicCompass */ = {
 			isa = PBXGroup;
 			children = (
+				E74A897A1CE338BA0056A2D2 /* ContentManager */,
+				E74A89771CE3260F0056A2D2 /* AccountManager */,
 				E7591D0C1CE1C7AE00DCBA39 /* LPRTabelView */,
 				9585680A1CD0EDAC00EDD385 /* Utils */,
 				958568061CD0D39000EDD385 /* DataSources */,
@@ -518,6 +524,22 @@
 				95635AA51CD3C11600BCC467 /* ForgotPasswordViewController.swift */,
 			);
 			path = AuthorizationViewControllers;
+			sourceTree = "<group>";
+		};
+		E74A89771CE3260F0056A2D2 /* AccountManager */ = {
+			isa = PBXGroup;
+			children = (
+				E74A89781CE3265C0056A2D2 /* AccountManager.swift */,
+			);
+			path = AccountManager;
+			sourceTree = "<group>";
+		};
+		E74A897A1CE338BA0056A2D2 /* ContentManager */ = {
+			isa = PBXGroup;
+			children = (
+				E74A897B1CE338D30056A2D2 /* ContentManager.swift */,
+			);
+			path = ContentManager;
 			sourceTree = "<group>";
 		};
 		E7591D0C1CE1C7AE00DCBA39 /* LPRTabelView */ = {
@@ -1143,6 +1165,8 @@
 				E75E95A51CDCAD3300A18756 /* DashboardFilterCellData.swift in Sources */,
 				84207D241CCA3C3600776848 /* RegisterLoginLandingViewController.swift in Sources */,
 				95635AA31CD3ACF300BCC467 /* ScrollSelectionViewCell.swift in Sources */,
+				E74A89791CE3265C0056A2D2 /* AccountManager.swift in Sources */,
+				E74A897C1CE338D30056A2D2 /* ContentManager.swift in Sources */,
 				E7592DBF1CDC7E2E00E313BB /* DashboardComparisonCell.swift in Sources */,
 				E7AB666C1CDCDDBD00967316 /* ManageDashboardCell.swift in Sources */,
 				84207D261CCA6A7E00776848 /* InputTableCellWithImage.swift in Sources */,

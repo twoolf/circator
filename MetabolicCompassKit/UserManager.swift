@@ -353,12 +353,17 @@ public class UserManager {
     }
 
     public func ensureAccessToken(completion: (Bool -> Void)) {
-        if let _ = Stormpath.accessToken {
-            MCRouter.OAuthToken = Stormpath.accessToken
+        if let token = Stormpath.accessToken {
+            MCRouter.OAuthToken = token
+            completion(token.characters.count > 0 ? true: false)
+        }
+        else {
+            completion(false)
         }
         
         // temporary disabled, waiting for server api clarification
         // ensureAccessToken(0, completion: completion)
+        
     }
 
     public func refreshAccessToken(tried: Int, completion: (Bool -> Void)) {

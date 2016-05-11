@@ -25,33 +25,23 @@ class DashboardComparisonController:
         self.tableView.delegate        = self
         self.tableView.allowsSelection = false
         
+        AccountManager.shared.loginAndInitialize()
+    }
+    
+    func contenteDidUpdate (notification: NSNotification) {
+        self.tableView.reloadData()
     }
     
     override func viewWillAppear(animated: Bool) {
         super.viewWillAppear(animated)
-        self.fetchRecentSamples()
+        NSNotificationCenter.defaultCenter().addObserver(self, selector: #selector(contenteDidUpdate),
+                                                         name: ContentManager.ContentDidUpdateNotification,
+                                                         object: nil)
     }
     
-    func withHKCalAuth(completion: Void -> Void) {
-        
-        HealthManager.sharedManager.authorizeHealthKit { (success, error) -> Void in
-            guard error == nil else {
-                UINotifications.noHealthKit(self)
-                return
-            }
-        
-            EventManager.sharedManager.checkCalendarAuthorizationStatus(completion)
-        }
-    }
-    
-    func fetchRecentSamples() {
-        withHKCalAuth {
-            HealthManager.sharedManager.fetchMostRecentSamples() { (samples, error) -> Void in
-                guard error == nil else { return }
-                NSNotificationCenter.defaultCenter().postNotificationName(HMDidUpdateRecentSamplesNotification, object: self)
-                self.tableView.reloadData()
-            }
-        }
+    override func viewWillDisappear(animated: Bool) {
+        super.viewWillDisappear(animated)
+        NSNotificationCenter.defaultCenter().removeObserver(self)
     }
     
     override func didReceiveMemoryWarning() {

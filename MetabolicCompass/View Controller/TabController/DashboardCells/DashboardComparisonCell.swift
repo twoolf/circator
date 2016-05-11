@@ -56,7 +56,7 @@ class DashboardComparisonCell: UITableViewCell {
     
     private func loadUserSamples( results: [MCSample]) {
         let text = IntroCompareDataTableViewCell.healthFormatter.stringFromSamples(results)
-        localSampleValueTextField.attributedText = text.formatTextWithRegex("\\d+",
+        localSampleValueTextField.attributedText = text.formatTextWithRegex("[-+]?(\\d*[.,])?\\d+",
                                                                             format: [NSForegroundColorAttributeName: defaultDigitColor],
                                                                             defaultFormat: [NSForegroundColorAttributeName: defaultTextColor])
     }
@@ -64,7 +64,7 @@ class DashboardComparisonCell: UITableViewCell {
     /// note setUserData above that uses this call
     private func loadPopSamples(results: [MCSample], stale: Bool) {
         let text = IntroCompareDataTableViewCell.healthFormatter.stringFromSamples(results)
-        populationSampleValueTextField.attributedText = text.formatTextWithRegex("\\d+",
+        populationSampleValueTextField.attributedText = text.formatTextWithRegex("[-+]?(\\d*[.,])?\\d+",
                                                                                  format: [NSForegroundColorAttributeName: defaultDigitColor],
                                                                                  defaultFormat: [NSForegroundColorAttributeName: defaultTextColor])
     }

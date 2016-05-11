@@ -51,9 +51,11 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         let tabBarScreen = tabBarStoryboard.instantiateViewControllerWithIdentifier("TabBarController")
         mainViewController = tabBarScreen
         
+        
 //        mainViewController = IntroViewController(nibName: nil, bundle: nil)
         let navController  = UINavigationController(rootViewController: mainViewController)
-
+        AccountManager.shared.rootViewController = navController
+        
         window?.rootViewController = navController
         window?.makeKeyAndVisible()
 
