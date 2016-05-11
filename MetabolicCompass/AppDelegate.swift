@@ -34,8 +34,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 //
         window = UIWindow(frame: UIScreen.mainScreen().bounds)
         window?.backgroundColor = UIColor.whiteColor()
-        window?.tintColor = UIColor.whiteColor()
-        
+//        window?.tintColor = UIColor.whiteColor()
         
         // Override point for customization after application launch.
         // Sets background to a blank/empty image
