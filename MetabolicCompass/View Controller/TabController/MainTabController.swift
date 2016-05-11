@@ -14,6 +14,8 @@ class MainTabController: UITabBarController, UITabBarControllerDelegate {
         super.viewDidLoad()
 
         self.navigationController?.navigationBar.barStyle = UIBarStyle.Black;
+        self.navigationController?.navigationBar.tintColor = UIColor.whiteColor()
+        
         self.configureTabBar()
         
         self.navigationItem.title = NSLocalizedString("DASHBOARD", comment: "dashboard screen title")

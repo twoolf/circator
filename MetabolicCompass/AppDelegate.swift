@@ -45,8 +45,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         UINavigationBar.appearance().backgroundColor = UIColor(red: 0.0, green: 0.0, blue: 0.0, alpha: 0.0)
         // Set translucent. (Default value is already true, so this can be removed if desired.)
         UINavigationBar.appearance().translucent = true
-        UINavigationBar.appearance().tintColor = UIColor.whiteColor()
-
+        
         let tabBarStoryboard = UIStoryboard(name: "TabScreens", bundle: nil)
         let tabBarScreen = tabBarStoryboard.instantiateViewControllerWithIdentifier("TabBarController")
         mainViewController = tabBarScreen

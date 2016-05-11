@@ -27,6 +27,7 @@ class RegisterLoginLandingViewController: UIViewController {
         }
         
         self.navigationController?.navigationBar.barStyle = UIBarStyle.Black;
+        self.navigationController?.navigationBar.tintColor = UIColor.whiteColor()
         
         if ConsentManager.sharedManager.getConsentFilePath() == nil {
             self.doConsent {}

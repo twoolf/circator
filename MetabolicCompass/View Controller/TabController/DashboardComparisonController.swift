@@ -43,6 +43,8 @@ class DashboardComparisonController:
                                                          name: HMDidUpdateRecentSamplesNotification,
                                                          object: nil)
         NSNotificationCenter.defaultCenter().addObserver(self, selector: #selector(updateContent), name: UIApplicationDidBecomeActiveNotification, object: nil)
+        
+        
     }
     
     func updateContent() {
