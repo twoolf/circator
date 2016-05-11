@@ -29,7 +29,7 @@ enum Gender: Int {
 class ModelItem: NSObject {
     
     private(set) var name: String
-    private(set) var placeholder: String
+    private(set) var title: String;
     private(set) var type: RegistrationFiledType
     private(set) var iconImageName: String?
     
@@ -38,11 +38,11 @@ class ModelItem: NSObject {
     
     var dataType: FieldDataType = .String
     
-    init(name itemName: String, placeholder itemPlaceholder: String, type itemType: RegistrationFiledType, iconImageName itemIconImageName: String?, value itemValue: AnyObject?, unitsTitle itemUnitsTitle: String? = nil) {
+    init(name itemName: String, title itemTitle: String, type itemType: RegistrationFiledType, iconImageName itemIconImageName: String?, value itemValue: AnyObject?, unitsTitle itemUnitsTitle: String? = nil) {
         
         type = itemType
         name = itemName
-        placeholder = itemPlaceholder
+        title = itemTitle
         iconImageName = itemIconImageName
 
         super.init()
@@ -112,16 +112,16 @@ class RegistrationModel: NSObject {
             indexes.append(UserProfile.sharedInstance.profileFields[i])
         }
         
-        loadPhotoField = ModelItem(name: "Load photo", placeholder: "Load photo", type: .Photo, iconImageName: "icon-email", value: nil)
-        emailField = ModelItem(name: indexes[0], placeholder: "E-mail", type: .Email, iconImageName: "icon-email", value: nil)
-        passwordField = ModelItem(name: indexes[1], placeholder: "Password", type: .Password, iconImageName: "icon-password", value: nil)
-        firstNameField = ModelItem(name: indexes[2], placeholder: "First Name", type: .FirstName, iconImageName: "icon-profile", value: nil)
-        lastNameField = ModelItem(name: indexes[3], placeholder: "Last Name", type: .LastName, iconImageName: "", value: nil)
-        genderField = ModelItem(name: indexes[4], placeholder: "Gender", type: .Gender, iconImageName: "icon-sex", value: Gender.Male.rawValue)
-        ageField = ModelItem(name: indexes[5], placeholder: "Age", type: .Age, iconImageName: "icon-birthday", value: nil)
-        weightField = ModelItem(name: indexes[6], placeholder: "Weight", type: .Weight, iconImageName: "icon-weight", value: nil)
-        heightField = ModelItem(name: indexes[7], placeholder: "Height", type: .Height, iconImageName: "icon-height", value: nil)
-        unitsSystemField = ModelItem(name: "units", placeholder: "Units", type: .Units, iconImageName: "icon-measure", value: UnitsSystem.Metric.rawValue)
+        loadPhotoField = ModelItem(name: "Load photo", title: "Load photo", type: .Photo, iconImageName: "icon-email", value: nil)
+        emailField = ModelItem(name: indexes[0], title: "E-mail", type: .Email, iconImageName: "icon-email", value: nil)
+        passwordField = ModelItem(name: indexes[1], title: "Password", type: .Password, iconImageName: "icon-password", value: nil)
+        firstNameField = ModelItem(name: indexes[2], title: "First Name", type: .FirstName, iconImageName: "icon-profile", value: nil)
+        lastNameField = ModelItem(name: indexes[3], title: "Last Name", type: .LastName, iconImageName: "", value: nil)
+        genderField = ModelItem(name: indexes[4], title: "Gender", type: .Gender, iconImageName: "icon-sex", value: Gender.Male.rawValue)
+        ageField = ModelItem(name: indexes[5], title: "Age", type: .Age, iconImageName: "icon-birthday", value: nil)
+        weightField = ModelItem(name: indexes[6], title: "Weight", type: .Weight, iconImageName: "icon-weight", value: nil)
+        heightField = ModelItem(name: indexes[7], title: "Height", type: .Height, iconImageName: "icon-height", value: nil)
+        unitsSystemField = ModelItem(name: "units", title: "Units", type: .Units, iconImageName: "icon-measure", value: UnitsSystem.Metric.rawValue)
         
     }
     

@@ -110,7 +110,7 @@ class RegisterModelDataSource: BaseDataSource {
         let cell = collectionView!.dequeueReusableCellWithReuseIdentifier(inputTextCellIdentifier, forIndexPath: indexPath) as! InputCollectionViewCell
         
         cell.inputTxtField.textColor = selectedTextColor
-        cell.inputTxtField.attributedPlaceholder = NSAttributedString(string: field.placeholder, attributes: [NSForegroundColorAttributeName : unselectedTextColor])
+        cell.inputTxtField.attributedPlaceholder = NSAttributedString(string: field.title, attributes: [NSForegroundColorAttributeName : unselectedTextColor])
         
         cell.inputTxtField.text = field.value as? String
         

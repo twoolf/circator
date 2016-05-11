@@ -18,7 +18,7 @@ class MainTabController: UITabBarController, UITabBarControllerDelegate {
         
         self.configureTabBar()
         
-        self.navigationItem.title = NSLocalizedString("DASHBOARD", comment: "dashboard screen title")
+//        self.navigationItem.title = NSLocalizedString("DASHBOARD", comment: "dashboard screen title")
         self.delegate = self
         
         self.selectedIndex = 0;
@@ -30,8 +30,8 @@ class MainTabController: UITabBarController, UITabBarControllerDelegate {
                 controller.rootNavigationItem = self.navigationItem
             }
         }
-        
-        
+
+        self.navigationController?.navigationBar.hidden = true
     }
     
  

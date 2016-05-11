@@ -31,9 +31,6 @@ private let inputFontSize = ScreenManager.sharedInstance.profileInputFontSize()
     
     var profileValues : [String: String] = [:]
 
-    var recommendedSubview : ProfileSubviewController! = nil
-    var optionalSubview : ProfileSubviewController! = nil
-
     internal var consentOnLoad : Bool = false
     internal var registerCompletion : (Void -> Void)?
     internal var parentView: IntroViewController?

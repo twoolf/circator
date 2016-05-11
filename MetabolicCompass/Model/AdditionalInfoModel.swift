@@ -55,7 +55,7 @@ class AdditionalInfoModel: NSObject {
         
         for i in range {
             let fieldItem = UserProfile.sharedInstance.fields[i]
-            let item = ModelItem(name: fieldItem.fieldName, placeholder: defaultPlaceholder, type: .Other, iconImageName: nil, value: nil, unitsTitle: fieldItem.unitsTitle)
+            let item = ModelItem(name: fieldItem.fieldName, title: defaultPlaceholder, type: .Other, iconImageName: nil, value: nil, unitsTitle: fieldItem.unitsTitle)
             
             item.dataType = fieldItem.type
             

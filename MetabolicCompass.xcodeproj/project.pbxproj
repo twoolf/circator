@@ -71,6 +71,17 @@
 		95C0B9A61CD25814006E523F /* AdditionalInfoDataSource.swift in Sources */ = {isa = PBXBuildFile; fileRef = 95C0B9A51CD25814006E523F /* AdditionalInfoDataSource.swift */; };
 		95C0B9A81CD25860006E523F /* BaseDataSource.swift in Sources */ = {isa = PBXBuildFile; fileRef = 95C0B9A71CD25860006E523F /* BaseDataSource.swift */; };
 		95C0B9AA1CD25AAC006E523F /* AdditionalInfoViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 95C0B9A91CD25AAC006E523F /* AdditionalInfoViewController.swift */; };
+		95F4008E1CE385B70060F28C /* UIView+Extended.swift in Sources */ = {isa = PBXBuildFile; fileRef = 95F4008D1CE385B70060F28C /* UIView+Extended.swift */; };
+		95F400971CE385C60060F28C /* CircleImageCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 95F4008F1CE385C60060F28C /* CircleImageCollectionViewCell.swift */; };
+		95F400981CE385C60060F28C /* CircleImageCollectionViewCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 95F400901CE385C60060F28C /* CircleImageCollectionViewCell.xib */; };
+		95F400991CE385C60060F28C /* InfoCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 95F400911CE385C60060F28C /* InfoCollectionViewCell.swift */; };
+		95F4009A1CE385C60060F28C /* InfoCollectionViewCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 95F400921CE385C60060F28C /* InfoCollectionViewCell.xib */; };
+		95F400A01CE385CC0060F28C /* ProfileDataSource.swift in Sources */ = {isa = PBXBuildFile; fileRef = 95F4009F1CE385CC0060F28C /* ProfileDataSource.swift */; };
+		95F400A31CE385D50060F28C /* ProfileModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 95F400A11CE385D50060F28C /* ProfileModel.swift */; };
+		95F400A41CE385D50060F28C /* UserInfoModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 95F400A21CE385D50060F28C /* UserInfoModel.swift */; };
+		95F400A61CE385E10060F28C /* Settings.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 95F400A51CE385E10060F28C /* Settings.storyboard */; };
+		95F400AA1CE385E80060F28C /* MainSettingsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 95F400A81CE385E80060F28C /* MainSettingsViewController.swift */; };
+		95F400AB1CE385E80060F28C /* ProfileViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 95F400A91CE385E80060F28C /* ProfileViewController.swift */; };
 		A88F31F3DDADAD50F4190F8E /* Pods.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = CB09F654AB4B00C79306C728 /* Pods.framework */; };
 		E74A89761CE308800056A2D2 /* UIColor+Extended.swift in Sources */ = {isa = PBXBuildFile; fileRef = E74A89751CE308800056A2D2 /* UIColor+Extended.swift */; };
 		E74A89791CE3265C0056A2D2 /* AccountManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = E74A89781CE3265C0056A2D2 /* AccountManager.swift */; };
@@ -276,6 +287,17 @@
 		95C0B9A51CD25814006E523F /* AdditionalInfoDataSource.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AdditionalInfoDataSource.swift; sourceTree = "<group>"; };
 		95C0B9A71CD25860006E523F /* BaseDataSource.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BaseDataSource.swift; sourceTree = "<group>"; };
 		95C0B9A91CD25AAC006E523F /* AdditionalInfoViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AdditionalInfoViewController.swift; sourceTree = "<group>"; };
+		95F4008D1CE385B70060F28C /* UIView+Extended.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "UIView+Extended.swift"; sourceTree = "<group>"; };
+		95F4008F1CE385C60060F28C /* CircleImageCollectionViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CircleImageCollectionViewCell.swift; sourceTree = "<group>"; };
+		95F400901CE385C60060F28C /* CircleImageCollectionViewCell.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = CircleImageCollectionViewCell.xib; sourceTree = "<group>"; };
+		95F400911CE385C60060F28C /* InfoCollectionViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = InfoCollectionViewCell.swift; sourceTree = "<group>"; };
+		95F400921CE385C60060F28C /* InfoCollectionViewCell.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = InfoCollectionViewCell.xib; sourceTree = "<group>"; };
+		95F4009F1CE385CC0060F28C /* ProfileDataSource.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ProfileDataSource.swift; sourceTree = "<group>"; };
+		95F400A11CE385D50060F28C /* ProfileModel.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ProfileModel.swift; sourceTree = "<group>"; };
+		95F400A21CE385D50060F28C /* UserInfoModel.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = UserInfoModel.swift; sourceTree = "<group>"; };
+		95F400A51CE385E10060F28C /* Settings.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; path = Settings.storyboard; sourceTree = "<group>"; };
+		95F400A81CE385E80060F28C /* MainSettingsViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MainSettingsViewController.swift; sourceTree = "<group>"; };
+		95F400A91CE385E80060F28C /* ProfileViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ProfileViewController.swift; sourceTree = "<group>"; };
 		984776BC6A59A33B4580C535 /* Pods.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = Pods.release.xcconfig; path = "Pods/Target Support Files/Pods/Pods.release.xcconfig"; sourceTree = "<group>"; };
 		CB09F654AB4B00C79306C728 /* Pods.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		E74A89751CE308800056A2D2 /* UIColor+Extended.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "UIColor+Extended.swift"; sourceTree = "<group>"; };
@@ -457,6 +479,7 @@
 		84207D1D1CCA1FA900776848 /* Storyboards */ = {
 			isa = PBXGroup;
 			children = (
+				95F400A51CE385E10060F28C /* Settings.storyboard */,
 				84207D1E1CCA1FEC00776848 /* RegisterLoginProcess.storyboard */,
 				E7592DB41CDB3A2400E313BB /* TabScreens.storyboard */,
 			);
@@ -474,6 +497,10 @@
 		95748C3E1CCFC7350002F6A3 /* Cells */ = {
 			isa = PBXGroup;
 			children = (
+				95F4008F1CE385C60060F28C /* CircleImageCollectionViewCell.swift */,
+				95F400901CE385C60060F28C /* CircleImageCollectionViewCell.xib */,
+				95F400911CE385C60060F28C /* InfoCollectionViewCell.swift */,
+				95F400921CE385C60060F28C /* InfoCollectionViewCell.xib */,
 				95748C441CCFC7AA0002F6A3 /* InputCollectionViewCell.swift */,
 				95748C451CCFC7AA0002F6A3 /* InputCollectionViewCell.xib */,
 				95748C4E1CCFC7D90002F6A3 /* DoubleCheckListCollectionViewCell.swift */,
@@ -492,6 +519,7 @@
 		958568061CD0D39000EDD385 /* DataSources */ = {
 			isa = PBXGroup;
 			children = (
+				95F4009F1CE385CC0060F28C /* ProfileDataSource.swift */,
 				958568111CD12B5200EDD385 /* RegisterModelDataSource.swift */,
 				95C0B9A51CD25814006E523F /* AdditionalInfoDataSource.swift */,
 				95C0B9A71CD25860006E523F /* BaseDataSource.swift */,
@@ -502,6 +530,7 @@
 		958568071CD0D39000EDD385 /* Extensions */ = {
 			isa = PBXGroup;
 			children = (
+				95F4008D1CE385B70060F28C /* UIView+Extended.swift */,
 				958568081CD0D3A000EDD385 /* String+Extended.swift */,
 				E74A89751CE308800056A2D2 /* UIColor+Extended.swift */,
 				84A16A5F1CE3630400D61935 /* UIImage+Extended.swift */,
@@ -527,6 +556,15 @@
 				95635AA51CD3C11600BCC467 /* ForgotPasswordViewController.swift */,
 			);
 			path = AuthorizationViewControllers;
+			sourceTree = "<group>";
+		};
+		95F400A71CE385E80060F28C /* SettingsViewControllers */ = {
+			isa = PBXGroup;
+			children = (
+				95F400A81CE385E80060F28C /* MainSettingsViewController.swift */,
+				95F400A91CE385E80060F28C /* ProfileViewController.swift */,
+			);
+			path = SettingsViewControllers;
 			sourceTree = "<group>";
 		};
 		E74A89771CE3260F0056A2D2 /* AccountManager */ = {
@@ -712,6 +750,8 @@
 		F43A7C591BBDF3D800B6FA56 /* Model */ = {
 			isa = PBXGroup;
 			children = (
+				95F400A11CE385D50060F28C /* ProfileModel.swift */,
+				95F400A21CE385D50060F28C /* UserInfoModel.swift */,
 				F42F5ADC1BDC85AF00195490 /* SampleDataAnalyzer.swift */,
 				F49B2B701C7A83BD005F2BFB /* EventPickerManager.swift */,
 				84207D271CCE02A400776848 /* LoginModel.swift */,
@@ -736,6 +776,7 @@
 		F43A7C5F1BBDF43C00B6FA56 /* View Controller */ = {
 			isa = PBXGroup;
 			children = (
+				95F400A71CE385E80060F28C /* SettingsViewControllers */,
 				E7592DB61CDB471000E313BB /* TabController */,
 				95C0B9971CD23E90006E523F /* AuthorizationViewControllers */,
 				7881A3E21BAF3B3E00ECB3C6 /* IntroViewController.swift */,
@@ -979,9 +1020,12 @@
 				958568101CD1020600EDD385 /* LoadImageCollectionViewCell.xib in Resources */,
 				84207D221CCA210000776848 /* Images.xcassets in Resources */,
 				84207D1F1CCA1FEC00776848 /* RegisterLoginProcess.storyboard in Resources */,
+				95F4009A1CE385C60060F28C /* InfoCollectionViewCell.xib in Resources */,
 				95C0B9A41CD2563B006E523F /* TitledInputCollectionViewCell.xib in Resources */,
 				95748C471CCFC7AA0002F6A3 /* InputCollectionViewCell.xib in Resources */,
+				95F400981CE385C60060F28C /* CircleImageCollectionViewCell.xib in Resources */,
 				E7592DB51CDB3A2400E313BB /* TabScreens.storyboard in Resources */,
+				95F400A61CE385E10060F28C /* Settings.storyboard in Resources */,
 				F43A7C551BBDF25E00B6FA56 /* Images.xcassets in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -1127,6 +1171,7 @@
 				F49B2B711C7A83BD005F2BFB /* EventPickerManager.swift in Sources */,
 				E75E95AB1CDCD10700A18756 /* DashboardManageController.swift in Sources */,
 				78B734281C90B86A00693229 /* PlotViewController.swift in Sources */,
+				95F4008E1CE385B70060F28C /* UIView+Extended.swift in Sources */,
 				958568031CD0B18900EDD385 /* RegistrationModel.swift in Sources */,
 				E75E95B21CDCD6CB00A18756 /* DashboardMetricsAppearanceProvider.swift in Sources */,
 				78B734291C90B86D00693229 /* CorrelationViewController.swift in Sources */,
@@ -1155,13 +1200,16 @@
 				95C0B9A81CD25860006E523F /* BaseDataSource.swift in Sources */,
 				95C0B99B1CD23E90006E523F /* RegisterViewController.swift in Sources */,
 				E7591D0E1CE1C7DE00DCBA39 /* LPRTableView.swift in Sources */,
+				95F400971CE385C60060F28C /* CircleImageCollectionViewCell.swift in Sources */,
 				78B7342B1C90B87600693229 /* VariantViewController.swift in Sources */,
 				78B734271C90B86700693229 /* EventTimeViewController.swift in Sources */,
 				F42F5ADD1BDC85AF00195490 /* SampleDataAnalyzer.swift in Sources */,
 				958568091CD0D3A000EDD385 /* String+Extended.swift in Sources */,
 				78B7342C1C90B87A00693229 /* ErrorViewController.swift in Sources */,
+				95F400A01CE385CC0060F28C /* ProfileDataSource.swift in Sources */,
 				78B734211C90B85100693229 /* DaySelectionViewController.swift in Sources */,
 				84A16A601CE3630400D61935 /* UIImage+Extended.swift in Sources */,
+				95F400991CE385C60060F28C /* InfoCollectionViewCell.swift in Sources */,
 				7881A3E11BAF3B3E00ECB3C6 /* AppDelegate.swift in Sources */,
 				9585680F1CD1020600EDD385 /* LoadImageCollectionViewCell.swift in Sources */,
 				E75E95AE1CDCD5A700A18756 /* DashboardMetricsConfigItem.swift in Sources */,
@@ -1180,10 +1228,14 @@
 				84207D281CCE02A400776848 /* LoginModel.swift in Sources */,
 				78B734221C90B85400693229 /* RowSettingsViewController.swift in Sources */,
 				78B734251C90B85E00693229 /* QueryWriterViewController.swift in Sources */,
+				95F400A31CE385D50060F28C /* ProfileModel.swift in Sources */,
 				95635AA01CD3782200BCC467 /* AdditionalInfoModel.swift in Sources */,
 				95635AA61CD3C11600BCC467 /* ForgotPasswordViewController.swift in Sources */,
+				95F400A41CE385D50060F28C /* UserInfoModel.swift in Sources */,
 				F43A7C681BBE508D00B6FA56 /* IntroCompareDataTableViewCell.swift in Sources */,
 				78B7341F1C90B84900693229 /* SettingsViewController.swift in Sources */,
+				95F400AB1CE385E80060F28C /* ProfileViewController.swift in Sources */,
+				95F400AA1CE385E80060F28C /* MainSettingsViewController.swift in Sources */,
 				95748C461CCFC7AA0002F6A3 /* InputCollectionViewCell.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
