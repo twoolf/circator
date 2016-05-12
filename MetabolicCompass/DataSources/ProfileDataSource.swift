@@ -7,6 +7,7 @@
 //
 
 import UIKit
+import MetabolicCompassKit
 
 class ProfileDataSource: BaseDataSource {
 
@@ -113,18 +114,8 @@ class ProfileDataSource: BaseDataSource {
         
         var valueStr: String?
         
-        valueStr = field.value as? String
-        
-        if field.type == .Gender {
-            valueStr = Gender.Female.title
-        }
-        else if field.type == .Units {
-            valueStr = UnitsSystem.Metric.title
-        }
-        else {
-            valueStr = "value" // user account field value must be here
-        }
-        
+        valueStr = stringValueForField(field, atIndexPath: indexPath)
+       
         cell.inputTxtField.text = valueStr
         
         if field.type == .Password {
@@ -137,7 +128,6 @@ class ProfileDataSource: BaseDataSource {
             cell.inputTxtField.keyboardType = UIKeyboardType.NumberPad
         }
         
-        
         if field.type == .Weight || field.type == .Height {
             cell.separatorVisible = false
         }
@@ -149,7 +139,36 @@ class ProfileDataSource: BaseDataSource {
         return cell
     }
     
-
+    private func stringValueForField(field: ModelItem, atIndexPath indexPath: NSIndexPath) -> String {
+        var value = ""
+        
+        let profileInfo = UserManager.sharedManager.getProfileCache()
+        
+        let unitsSystem = UnitsSystem.Metric // TODO: should be saved and read from user profile
+        
+        if field.type == .Units {
+            value = unitsSystem.title
+        }
+        else if field.type == .Email {
+            value = UserManager.sharedManager.getUserId()!
+        }
+            
+        else {
+            if let profileValue = profileInfo[field.name] as? String {
+                value = profileValue
+                
+                if field.type == .Weight {
+                    value = value + " " + unitsSystem.weightTitle
+                }
+                if field.type == .Height {
+                    value = value + " " + unitsSystem.heightTitle
+                }
+            }
+        }
+        
+        return value
+    }
+    
     private func loadPhotoCellForIndex(indexPath: NSIndexPath, forField field: ModelItem) -> BaseCollectionViewCell {
         let cell = collectionView!.dequeueReusableCellWithReuseIdentifier(profileImageCellIdentifier, forIndexPath: indexPath) as! CircleImageCollectionViewCell
         

@@ -55,7 +55,7 @@
                                 </connections>
                             </containerView>
                         </subviews>
-                        <color key="backgroundColor" red="0.054901960780000002" green="0.13725490200000001" blue="0.29411764709999999" alpha="1" colorSpace="calibratedRGB"/>
+                        <color key="backgroundColor" red="0.015686274510000001" green="0.1529411765" blue="0.32549019610000002" alpha="1" colorSpace="calibratedRGB"/>
                         <constraints>
                             <constraint firstItem="JPt-X8-IN5" firstAttribute="leading" secondItem="c2S-u7-VKc" secondAttribute="leadingMargin" id="0h4-p8-FsR"/>
                             <constraint firstItem="iFC-7K-4FG" firstAttribute="leading" secondItem="c2S-u7-VKc" secondAttribute="leadingMargin" id="3WQ-mN-BJd"/>
@@ -68,7 +68,6 @@
                     </view>
                     <navigationItem key="navigationItem" id="PIp-VM-gH7"/>
                     <connections>
-                        <segue destination="PnT-Aa-ZfP" kind="show" id="c2J-7M-mOW"/>
                         <segue destination="dXa-3i-yTO" kind="presentation" identifier="FilterSegue" id="mf9-zf-xaH"/>
                         <segue destination="hSV-Rn-M7n" kind="presentation" identifier="ManageDashboardSegue" id="Q92-bK-CE7"/>
                     </connections>
@@ -80,21 +79,21 @@
         <!--Balance-->
         <scene sceneID="FC6-HX-OW9">
             <objects>
-                <viewController title="Balance" id="PnT-Aa-ZfP" userLabel="Balance" sceneMemberID="viewController">
+                <viewController title="Balance" id="PnT-Aa-ZfP" userLabel="Balance" customClass="RadarViewController" customModule="MetabolicCompass" customModuleProvider="target" sceneMemberID="viewController">
                     <layoutGuides>
                         <viewControllerLayoutGuide type="top" id="zLF-aA-RRd"/>
                         <viewControllerLayoutGuide type="bottom" id="0KS-Xt-W5U"/>
                     </layoutGuides>
                     <view key="view" contentMode="scaleToFill" id="gDq-99-4Kn">
-                        <rect key="frame" x="0.0" y="0.0" width="600" height="600"/>
+                        <rect key="frame" x="0.0" y="0.0" width="560" height="485"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
-                        <color key="backgroundColor" red="0.0" green="0.1764705882" blue="0.44705882349999998" alpha="1" colorSpace="calibratedRGB"/>
+                        <color key="backgroundColor" red="0.015686274509803921" green="0.15294117647058825" blue="0.32549019607843138" alpha="1" colorSpace="calibratedRGB"/>
                     </view>
                     <tabBarItem key="tabBarItem" title="Balance" id="Bnv-1a-gWy"/>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="sYY-4E-PWP" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="4016" y="188"/>
+            <point key="canvasLocation" x="4174" y="119"/>
         </scene>
         <!--Daily Progress-->
         <scene sceneID="9d8-Cp-5DV">
@@ -113,7 +112,7 @@
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="4fJ-Ba-2vo" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="4016" y="740.5"/>
+            <point key="canvasLocation" x="4174" y="744.5"/>
         </scene>
         <!--Comparison-->
         <scene sceneID="5jw-sW-n5k">
@@ -216,7 +215,7 @@
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="yeF-Ix-N0Y" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="3184" y="-394.5"/>
+            <point key="canvasLocation" x="4174" y="-490.5"/>
         </scene>
         <!--Tab Bar Controller-->
         <scene sceneID="uVz-UY-BE2">
@@ -255,7 +254,7 @@
                         <rect key="frame" x="0.0" y="0.0" width="320" height="49"/>
                         <autoresizingMask key="autoresizingMask"/>
                         <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
-                        <color key="barTintColor" red="0.015686274509803921" green="0.082352941176470587" blue="0.20784313725490197" alpha="1" colorSpace="calibratedRGB"/>
+                        <color key="barTintColor" red="0.015686274509803921" green="0.12156862745098039" blue="0.26666666666666666" alpha="1" colorSpace="calibratedRGB"/>
                     </tabBar>
                     <connections>
                         <segue destination="oWN-dV-l5k" kind="relationship" relationship="viewControllers" id="Ebz-RA-b5D"/>
@@ -537,7 +536,7 @@
                                 </prototypes>
                             </tableView>
                         </subviews>
-                        <color key="backgroundColor" red="0.054901960780000002" green="0.13725490200000001" blue="0.29411764709999999" alpha="1" colorSpace="calibratedRGB"/>
+                        <color key="backgroundColor" red="0.015686274510000001" green="0.1529411765" blue="0.32549019610000002" alpha="1" colorSpace="calibratedRGB"/>
                         <constraints>
                             <constraint firstItem="1D2-0z-j3T" firstAttribute="top" secondItem="TzS-AD-yO2" secondAttribute="bottom" id="GF3-pJ-776"/>
                             <constraint firstItem="TzS-AD-yO2" firstAttribute="top" secondItem="5gv-2k-IJP" secondAttribute="bottom" id="MtY-Uj-D2Y"/>
@@ -608,7 +607,4 @@
         <image name="icon-personal-results" width="14" height="19"/>
         <image name="icon-weight-normal" width="26" height="26"/>
     </resources>
-    <inferredMetricsTieBreakers>
-        <segue reference="c2J-7M-mOW"/>
-    </inferredMetricsTieBreakers>
 </document>

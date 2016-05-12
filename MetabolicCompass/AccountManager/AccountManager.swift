@@ -19,7 +19,7 @@ class AccountManager: NSObject {
     var rootViewController: UINavigationController?
     var contentManager = ContentManager()
     var uploadInProgress = false
-    
+    var isAuthorized = false
     
     func loginOrRegister() {
         loginAndInitialize()
@@ -51,6 +51,7 @@ class AccountManager: NSObject {
     
     func doLogout(completion: (Void -> Void)?) {
         
+        self.isAuthorized = false
         UserManager.sharedManager.logoutWithCompletion(completion)
         self.contentManager.stopBackgroundWork()
         PopulationHealthManager.sharedManager.resetAggregates()
@@ -60,9 +61,9 @@ class AccountManager: NSObject {
     private func loginComplete () {
         
         Async.main() {
+            self.isAuthorized = true
             self.contentManager.initializeBackgroundWork();
             NSNotificationCenter.defaultCenter().postNotificationName(self.didCompleteLoginNotification, object: nil)
-            
         }
     }
     

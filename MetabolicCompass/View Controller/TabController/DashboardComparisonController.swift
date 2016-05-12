@@ -38,7 +38,7 @@ class DashboardComparisonController:
         AccountManager.shared.contentManager.initializeBackgroundWork()
         self.tableView.reloadData()
         
-        AccountManager.shared.contentManager.fetchAggregatesPeriodically()
+
         NSNotificationCenter.defaultCenter().addObserver(self, selector: #selector(contenteDidUpdate),
                                                          name: HMDidUpdateRecentSamplesNotification,
                                                          object: nil)
