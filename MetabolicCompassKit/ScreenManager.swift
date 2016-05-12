@@ -96,8 +96,8 @@ public class ScreenManager {
         }
     }
 
-    public func radarLegendPosition() -> ChartLegend.ChartLegendPosition {
-        return ChartLegend.ChartLegendPosition.BelowChartCenter
+    public func radarLegendPosition() -> ChartLegend.Position {
+        return ChartLegend.Position.BelowChartCenter
     }
 
     public func eventTimeViewSummaryFontSize() -> CGFloat {

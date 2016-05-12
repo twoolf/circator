@@ -78,11 +78,11 @@ class RadarViewController : UIViewController, ChartViewDelegate {
         chart.delegate = self
         chart.descriptionText = ""
         chart.rotationEnabled = false
-        chart.yAxis.axisMinimum = 0.0
-        chart.yAxis.axisMaximum = 1.0
+        chart.yAxis.axisMinValue = 0.2
+        chart.yAxis.axisMaxValue = 1.0
         chart.yAxis.axisRange = 1.0
-        chart.yAxis.customAxisMax = 1.0
-        chart.yAxis.customAxisMin = 0.2
+        //chart.yAxis.customAxisMax = 1.0
+        //chart.yAxis.customAxisMin = 0.2
 
         let legend = chart.legend
         legend.enabled = true
