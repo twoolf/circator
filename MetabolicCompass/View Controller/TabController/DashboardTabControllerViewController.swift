@@ -24,6 +24,9 @@ class DashboardTabControllerViewController: UIViewController {
    
     func updateNavigationItem() {
         
+        self.navigationController?.navigationBar.tintColor = UIColor.whiteColor()
+        self.navigationController?.navigationBar.barStyle = UIBarStyle.Black;
+        
         self.navigationItem.title = NSLocalizedString("DASHBOARD", comment: "dashboard screen title")
         
         navigationItem.leftBarButtonItem = UIBarButtonItem(title: NSLocalizedString("Manage", comment: "dashboard manage button"),

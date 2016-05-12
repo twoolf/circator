@@ -26,6 +26,8 @@ class DashboardManageController: UIViewController, UITableViewDelegate, UITableV
         super.viewDidLoad()
 
         self.navigationBar.titleTextAttributes = [NSForegroundColorAttributeName : UIColor.whiteColor()]
+        self.navigationBar.tintColor = UIColor.whiteColor()
+        self.navigationBar.barStyle = UIBarStyle.Black;
         
         self.tableView.dataSource = self;
         self.tableView.delegate   = self;

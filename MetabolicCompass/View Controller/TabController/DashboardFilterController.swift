@@ -28,6 +28,7 @@ class DashboardFilterController: UIViewController, UITableViewDelegate, UITableV
         self.tableView.delegate = self;
         self.tableView.dataSource = self;
         self.navigationController?.navigationBar.barStyle = .Black;
+        self.navigationController?.navigationBar.tintColor = UIColor.whiteColor()
         
         // fake data
         
