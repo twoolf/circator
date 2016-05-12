@@ -704,8 +704,7 @@ public class UserManager {
         var result = false
         
         if let url = userProfilePhotoUrl() {
-            
-            
+        
             if let ph = photo {
                 // save photo
                 let imageData = UIImagePNGRepresentation(ph)
@@ -731,17 +730,19 @@ public class UserManager {
                 else {
                     result = true
                 }
-                
-                
             }
         }
         
-        print("Set user profile. Resulr \(result)")
+        print("Set user profile. Result \(result)")
         
         return result
     }
     
-    func userProfilePhoto() -> UIImage? {
+    public func userProfilePhoto() -> UIImage? {
+        if let url = userProfilePhotoUrl() {
+            let image = UIImage(contentsOfFile: url.path!)
+            return image
+        }
         return nil
     }
     
