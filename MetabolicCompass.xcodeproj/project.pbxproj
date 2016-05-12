@@ -55,6 +55,8 @@
 		95748C501CCFC7D90002F6A3 /* DoubleCheckListCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 95748C4E1CCFC7D90002F6A3 /* DoubleCheckListCollectionViewCell.swift */; };
 		95748C511CCFC7D90002F6A3 /* DoubleCheckListCollectionViewCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 95748C4F1CCFC7D90002F6A3 /* DoubleCheckListCollectionViewCell.xib */; };
 		95748C531CCFC8020002F6A3 /* BaseCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 95748C521CCFC8020002F6A3 /* BaseCollectionViewCell.swift */; };
+		95769B841CE4869C00F26668 /* TitleCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 95769B821CE4869C00F26668 /* TitleCollectionViewCell.swift */; };
+		95769B851CE4869C00F26668 /* TitleCollectionViewCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 95769B831CE4869C00F26668 /* TitleCollectionViewCell.xib */; };
 		958568011CD0AFA400EDD385 /* CheckBox.swift in Sources */ = {isa = PBXBuildFile; fileRef = 958568001CD0AFA400EDD385 /* CheckBox.swift */; };
 		958568031CD0B18900EDD385 /* RegistrationModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 958568021CD0B18900EDD385 /* RegistrationModel.swift */; };
 		958568051CD0BF6300EDD385 /* BaseViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 958568041CD0BF6300EDD385 /* BaseViewController.swift */; };
@@ -272,6 +274,8 @@
 		95748C4E1CCFC7D90002F6A3 /* DoubleCheckListCollectionViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DoubleCheckListCollectionViewCell.swift; sourceTree = "<group>"; };
 		95748C4F1CCFC7D90002F6A3 /* DoubleCheckListCollectionViewCell.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = DoubleCheckListCollectionViewCell.xib; sourceTree = "<group>"; };
 		95748C521CCFC8020002F6A3 /* BaseCollectionViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BaseCollectionViewCell.swift; sourceTree = "<group>"; };
+		95769B821CE4869C00F26668 /* TitleCollectionViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TitleCollectionViewCell.swift; sourceTree = "<group>"; };
+		95769B831CE4869C00F26668 /* TitleCollectionViewCell.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = TitleCollectionViewCell.xib; sourceTree = "<group>"; };
 		958568001CD0AFA400EDD385 /* CheckBox.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CheckBox.swift; sourceTree = "<group>"; };
 		958568021CD0B18900EDD385 /* RegistrationModel.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RegistrationModel.swift; sourceTree = "<group>"; };
 		958568041CD0BF6300EDD385 /* BaseViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BaseViewController.swift; sourceTree = "<group>"; };
@@ -514,6 +518,8 @@
 				95C0B9A21CD2563B006E523F /* TitledInputCollectionViewCell.xib */,
 				95635AA11CD3ACF200BCC467 /* ScrollSelectionViewCell.swift */,
 				95635AA21CD3ACF300BCC467 /* ScrollSelectionViewCell.xib */,
+				95769B821CE4869C00F26668 /* TitleCollectionViewCell.swift */,
+				95769B831CE4869C00F26668 /* TitleCollectionViewCell.xib */,
 			);
 			path = Cells;
 			sourceTree = "<group>";
@@ -1022,6 +1028,7 @@
 				95635AA41CD3ACF300BCC467 /* ScrollSelectionViewCell.xib in Resources */,
 				958568101CD1020600EDD385 /* LoadImageCollectionViewCell.xib in Resources */,
 				84207D221CCA210000776848 /* Images.xcassets in Resources */,
+				95769B851CE4869C00F26668 /* TitleCollectionViewCell.xib in Resources */,
 				84207D1F1CCA1FEC00776848 /* RegisterLoginProcess.storyboard in Resources */,
 				95F4009A1CE385C60060F28C /* InfoCollectionViewCell.xib in Resources */,
 				95C0B9A41CD2563B006E523F /* TitledInputCollectionViewCell.xib in Resources */,
@@ -1193,6 +1200,7 @@
 				95748C501CCFC7D90002F6A3 /* DoubleCheckListCollectionViewCell.swift in Sources */,
 				78B7342A1C90B87300693229 /* UINotifications.swift in Sources */,
 				78B734241C90B85B00693229 /* QueryBuilderViewController.swift in Sources */,
+				95769B841CE4869C00F26668 /* TitleCollectionViewCell.swift in Sources */,
 				F43A7C5E1BBDF43600B6FA56 /* PlotButton.swift in Sources */,
 				E7592DB81CDB490600E313BB /* MainTabController.swift in Sources */,
 				95F400AD1CE38F2F0060F28C /* ModelItem.swift in Sources */,

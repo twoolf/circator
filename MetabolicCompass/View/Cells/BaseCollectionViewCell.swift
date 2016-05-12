@@ -38,6 +38,7 @@ class BaseCollectionViewCell: UICollectionViewCell, UITextFieldDelegate {
     override func prepareForReuse() {
         super.prepareForReuse()
         
+        cellImage?.image = nil
         separatorVisible = true
     }
         

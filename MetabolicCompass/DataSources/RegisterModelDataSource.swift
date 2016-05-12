@@ -124,7 +124,9 @@ class RegisterModelDataSource: BaseDataSource {
             cell.inputTxtField.keyboardType = UIKeyboardType.NumberPad
         }
         
-        cell.cellImage?.image = UIImage(named: field.iconImageName!)
+        if let iconImageName = field.iconImageName {
+            cell.cellImage?.image = UIImage(named: iconImageName)
+        }
         
         if field.type == .Weight {
             cell.nameLbl.text = model.units.weightTitle

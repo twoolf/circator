@@ -31,10 +31,13 @@ class MainTabController: UITabBarController, UITabBarControllerDelegate {
             }
         }
 
-        self.navigationController?.navigationBar.hidden = true
     }
     
- 
+    override func viewWillAppear(animated: Bool) {
+        super.viewWillAppear(animated)
+        
+        self.navigationController?.navigationBar.hidden = true
+    }
 
     override func preferredStatusBarStyle() -> UIStatusBarStyle {
         return .LightContent;
