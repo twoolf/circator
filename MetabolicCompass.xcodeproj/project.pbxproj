@@ -108,6 +108,8 @@
 		E75E95B21CDCD6CB00A18756 /* DashboardMetricsAppearanceProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = E75E95B11CDCD6CB00A18756 /* DashboardMetricsAppearanceProvider.swift */; };
 		E7AB666C1CDCDDBD00967316 /* ManageDashboardCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = E7AB666B1CDCDDBD00967316 /* ManageDashboardCell.swift */; };
 		E7E48DE51CE4A12900DB020F /* MetabolicChartRender.swift in Sources */ = {isa = PBXBuildFile; fileRef = E7E48DE41CE4A12900DB020F /* MetabolicChartRender.swift */; };
+		E7E48DE71CE4BCAB00DB020F /* MetabolicChartDataSet.swift in Sources */ = {isa = PBXBuildFile; fileRef = E7E48DE61CE4BCAB00DB020F /* MetabolicChartDataSet.swift */; };
+		E7E48DE91CE4C2DC00DB020F /* MetabolicDataEntry.swift in Sources */ = {isa = PBXBuildFile; fileRef = E7E48DE81CE4C2DC00DB020F /* MetabolicDataEntry.swift */; };
 		F42F5ADD1BDC85AF00195490 /* SampleDataAnalyzer.swift in Sources */ = {isa = PBXBuildFile; fileRef = F42F5ADC1BDC85AF00195490 /* SampleDataAnalyzer.swift */; };
 		F42F5B351BE1FD1E00195490 /* MetabolicCompassKit.h in Headers */ = {isa = PBXBuildFile; fileRef = F42F5B341BE1FD1E00195490 /* MetabolicCompassKit.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		F42F5B391BE1FD1E00195490 /* MetabolicCompassKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F42F5B321BE1FD1E00195490 /* MetabolicCompassKit.framework */; };
@@ -332,6 +334,8 @@
 		E75E95B11CDCD6CB00A18756 /* DashboardMetricsAppearanceProvider.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DashboardMetricsAppearanceProvider.swift; sourceTree = "<group>"; };
 		E7AB666B1CDCDDBD00967316 /* ManageDashboardCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ManageDashboardCell.swift; sourceTree = "<group>"; };
 		E7E48DE41CE4A12900DB020F /* MetabolicChartRender.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MetabolicChartRender.swift; sourceTree = "<group>"; };
+		E7E48DE61CE4BCAB00DB020F /* MetabolicChartDataSet.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MetabolicChartDataSet.swift; sourceTree = "<group>"; };
+		E7E48DE81CE4C2DC00DB020F /* MetabolicDataEntry.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MetabolicDataEntry.swift; sourceTree = "<group>"; };
 		F28DDB83BE2DA2B65B631537 /* Pods.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = Pods.debug.xcconfig; path = "Pods/Target Support Files/Pods/Pods.debug.xcconfig"; sourceTree = "<group>"; };
 		F42F5ADC1BDC85AF00195490 /* SampleDataAnalyzer.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SampleDataAnalyzer.swift; sourceTree = "<group>"; };
 		F42F5B321BE1FD1E00195490 /* MetabolicCompassKit.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = MetabolicCompassKit.framework; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -455,7 +459,7 @@
 		7881A3DF1BAF3B3E00ECB3C6 /* MetabolicCompass */ = {
 			isa = PBXGroup;
 			children = (
-				E7E48DE31CE4A0F100DB020F /* Charts+Extended */,
+				E7E48DE31CE4A0F100DB020F /* MetabolicCharts */,
 				E74A897A1CE338BA0056A2D2 /* ContentManager */,
 				E74A89771CE3260F0056A2D2 /* AccountManager */,
 				E7591D0C1CE1C7AE00DCBA39 /* LPRTabelView */,
@@ -679,11 +683,14 @@
 			name = Cells;
 			sourceTree = "<group>";
 		};
-		E7E48DE31CE4A0F100DB020F /* Charts+Extended */ = {
+		E7E48DE31CE4A0F100DB020F /* MetabolicCharts */ = {
 			isa = PBXGroup;
 			children = (
 				E7E48DE41CE4A12900DB020F /* MetabolicChartRender.swift */,
+				E7E48DE61CE4BCAB00DB020F /* MetabolicChartDataSet.swift */,
+				E7E48DE81CE4C2DC00DB020F /* MetabolicDataEntry.swift */,
 			);
+			name = MetabolicCharts;
 			path = "Charts+Extended";
 			sourceTree = "<group>";
 		};
@@ -1211,6 +1218,7 @@
 				958568051CD0BF6300EDD385 /* BaseViewController.swift in Sources */,
 				95C0B9A31CD2563B006E523F /* TitledInputCollectionViewCell.swift in Sources */,
 				958568121CD12B5200EDD385 /* RegisterModelDataSource.swift in Sources */,
+				E7E48DE91CE4C2DC00DB020F /* MetabolicDataEntry.swift in Sources */,
 				95C0B9AA1CD25AAC006E523F /* AdditionalInfoViewController.swift in Sources */,
 				958568011CD0AFA400EDD385 /* CheckBox.swift in Sources */,
 				E7592DBC1CDC7BBE00E313BB /* DashboardComparisonController.swift in Sources */,
@@ -1270,6 +1278,7 @@
 				95F400A41CE385D50060F28C /* UserInfoModel.swift in Sources */,
 				F43A7C681BBE508D00B6FA56 /* IntroCompareDataTableViewCell.swift in Sources */,
 				78B7341F1C90B84900693229 /* SettingsViewController.swift in Sources */,
+				E7E48DE71CE4BCAB00DB020F /* MetabolicChartDataSet.swift in Sources */,
 				95F400AB1CE385E80060F28C /* ProfileViewController.swift in Sources */,
 				95F400AA1CE385E80060F28C /* MainSettingsViewController.swift in Sources */,
 				95748C461CCFC7AA0002F6A3 /* InputCollectionViewCell.swift in Sources */,

@@ -12,6 +12,7 @@ import Charts
 
 class MetabolicChartRender: RadarChartRenderer {
     
+    var centerCircleColor = UIColor.colorWithHexString("#041F44")!
    
     internal struct Math
     {
@@ -26,12 +27,33 @@ class MetabolicChartRender: RadarChartRenderer {
         self.drawPoints(context: context)
     }
     
+    
     func getPosition(center center: CGPoint, dist: CGFloat, angle: CGFloat) -> CGPoint
     {
         return CGPoint(
             x: center.x + dist * cos(angle * Math.FDEG2RAD),
             y: center.y + dist * sin(angle * Math.FDEG2RAD)
         )
+    }
+    
+    override func drawExtras(context context: CGContext) {
+        
+        guard let
+            chart = chart
+            else { return }
+        
+
+        CGContextSaveGState(context)
+        
+        let center = chart.centerOffsets
+        let radius = chart.radius * CGFloat(chart.chartYMax - chart.chartYMin)
+        
+        CGContextBeginPath(context)
+        CGContextAddEllipseInRect(context, CGRectMake(center.x - radius, center.y - radius, radius * 2.0, radius * 2.0))
+        CGContextSetFillColorWithColor(context, self.centerCircleColor.CGColor)
+        CGContextEOFillPath(context)
+        
+        CGContextRestoreGState(context)
     }
     
     func drawPoints(context context: CGContext)
@@ -42,8 +64,26 @@ class MetabolicChartRender: RadarChartRenderer {
             animator = self.animator
             else { return }
         
+        guard let count = chart.data?.dataSetCount else {
+            return
+        }
+        
         CGContextSaveGState(context)
         CGContextSetLineWidth(context, data.highlightLineWidth)
+        
+        for i in 0...count {
+            guard let set = chart.data?.getDataSetByIndex(i) as? MetabolicChartDataSet else { continue }
+            
+            if (set.showPoints) {
+                self.drawPoints(set, context: context, animator: animator, chart: chart)
+            }
+        }
+        
+        CGContextRestoreGState(context)
+        
+    }
+    
+    internal func drawPoints(set: MetabolicChartDataSet, context: CGContext, animator: ChartAnimator, chart: RadarChartView) {
         
         let phaseX = animator.phaseX
         let phaseY = animator.phaseY
@@ -53,9 +93,7 @@ class MetabolicChartRender: RadarChartRenderer {
         
         let center = chart.centerOffsets
         
-        guard let set = chart.data?.getDataSetByIndex(1) as? IRadarChartDataSet else { return }
         
-        CGContextSetStrokeColorWithColor(context, set.highlightColor.CGColor)
         
         for i in 0...set.entryCount {
             
@@ -73,6 +111,12 @@ class MetabolicChartRender: RadarChartRenderer {
                 continue
             }
             
+            var fillColor = set.highlightCircleFillColor
+            
+            if let entry = e as? MetabolicDataEntry {
+                fillColor = entry.pointColor
+            }
+            
             let _highlightPointBuffer = self.getPosition(
                 center: center,
                 dist: CGFloat(y) * factor * phaseY,
@@ -85,7 +129,7 @@ class MetabolicChartRender: RadarChartRenderer {
                     context: context,
                     atPoint: _highlightPointBuffer,
                     outerRadius: set.highlightCircleOuterRadius,
-                    fillColor: set.highlightCircleFillColor,
+                    fillColor: fillColor,
                     strokeColor: set.highlightCircleStrokeColor,
                     strokeWidth: set.highlightCircleStrokeWidth)
             }
@@ -93,7 +137,7 @@ class MetabolicChartRender: RadarChartRenderer {
         }
         
         
-        CGContextRestoreGState(context)
+        
     }
    
     internal func drawHighlightCircle2(

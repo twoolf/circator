@@ -80,10 +80,13 @@ class RadarViewController : UIViewController, ChartViewDelegate {
         chart.delegate = self
         chart.descriptionText = ""
         chart.rotationEnabled = false
-        chart.yAxis.axisMinValue = 0.2
-        chart.yAxis.axisMaxValue = 1.0
+        chart.yAxis.axisMinValue = 0.05
+//        chart.yAxis.axisMaxValue = 1.2
         chart.yAxis.axisRange = 1.0
-        chart.drawWeb = false
+//        chart.drawWeb = false
+        chart.yAxis.drawLabelsEnabled = false
+        chart.xAxis.drawLabelsEnabled = false
+        
         
 //        chart.yAxis.customAxisMax = 1.0
 //        chart.yAxis.customAxisMin = 0.2
@@ -195,35 +198,37 @@ class RadarViewController : UIViewController, ChartViewDelegate {
         }
         return 1 / (1 + exp(-quantity))
     }
+    
+    private let appearanceProvider = DashboardMetricsAppearanceProvider()
 
-    func indEntry(i: Int) -> ChartDataEntry {
+    func indEntry(i: Int) -> MetabolicDataEntry {
         let type = PreviewManager.previewSampleTypes[i]
         let samples = HealthManager.sharedManager.mostRecentSamples[type] ?? []
         let val = healthFormatter.numberFromSamples(samples)
         guard !val.isNaN else {
-            return ChartDataEntry(value: 0.8, xIndex: i)
+            return MetabolicDataEntry(value: 0.8, xIndex: i, pointColor: appearanceProvider.colorForSampleType(type.identifier, active: true))
         }
         let nval = normalizeType(type, quantity: val)
         print("type \(type), i \(i)")
-        return ChartDataEntry(value: nval, xIndex: i)
+        return MetabolicDataEntry(value: nval, xIndex: i, pointColor: appearanceProvider.colorForSampleType(type.identifier, active: true))
     }
 
-    func popEntry(i: Int) -> ChartDataEntry {
+    func popEntry(i: Int) -> MetabolicDataEntry {
         let type = PreviewManager.previewSampleTypes[i]
         let samples = PopulationHealthManager.sharedManager.mostRecentAggregates[type] ?? []
         let val = healthFormatter.numberFromSamples(samples)
         guard !val.isNaN else {
-            return ChartDataEntry(value: 0.8, xIndex: i)
+            return MetabolicDataEntry(value: 0.8, xIndex: i, pointColor: appearanceProvider.colorForSampleType(type.identifier, active: true))
         }
         let nval = normalizeType(type, quantity: val)
-        return ChartDataEntry(value: nval, xIndex: i)
+        return MetabolicDataEntry(value: nval, xIndex: i, pointColor: appearanceProvider.colorForSampleType(type.identifier, active: true))
     }
 
     func reloadData() {
         let indData = (0..<PreviewManager.previewSampleTypes.count).map(indEntry)
         let popData = (0..<PreviewManager.previewSampleTypes.count).map(popEntry)
 
-        let indDataSet = RadarChartDataSet(yVals: indData, label: "Individual")
+        let indDataSet = MetabolicChartDataSet(yVals: indData, label: "Individual")
         indDataSet.fillColor = UIColor.lightGrayColor()
         indDataSet.setColor(UIColor.lightGrayColor())
         indDataSet.drawFilledEnabled = true
@@ -231,7 +236,7 @@ class RadarViewController : UIViewController, ChartViewDelegate {
         indDataSet.drawHighlightCircleEnabled = false
         
 
-        let popDataSet = RadarChartDataSet(yVals: popData, label: "Population")
+        let popDataSet = MetabolicChartDataSet(yVals: popData, label: "Population")
         popDataSet.fillColor = UIColor.colorWithHexString("#427DC9", alpha: 1.0)!
         popDataSet.setColor(popDataSet.fillColor)
         popDataSet.drawFilledEnabled = true
@@ -244,6 +249,7 @@ class RadarViewController : UIViewController, ChartViewDelegate {
         popDataSet.highlightCircleStrokeWidth = 1
         popDataSet.highlightCircleInnerRadius = 0
         popDataSet.highlightCircleOuterRadius = 6
+        popDataSet.showPoints = true
         
         
         let xVals = PreviewManager.previewSampleTypes.map { type in
