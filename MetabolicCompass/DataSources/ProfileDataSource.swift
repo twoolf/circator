@@ -11,7 +11,7 @@ import MetabolicCompassKit
 
 class ProfileDataSource: BaseDataSource {
 
-    private var editMode = false
+    private(set) var editMode = false
     
     let model = ProfileModel()
     
@@ -172,7 +172,7 @@ class ProfileDataSource: BaseDataSource {
     private func loadPhotoCellForIndex(indexPath: NSIndexPath, forField field: ModelItem) -> BaseCollectionViewCell {
         let cell = collectionView!.dequeueReusableCellWithReuseIdentifier(profileImageCellIdentifier, forIndexPath: indexPath) as! CircleImageCollectionViewCell
         
-//        cell.photoImg.image = user image must be here
+        cell.imageView.image = UserManager.sharedManager.userProfilePhoto()
         
         return cell
     }
@@ -210,5 +210,13 @@ class ProfileDataSource: BaseDataSource {
     private func smallCellSize() -> CGSize {
         let size = CGSizeMake((self.collectionView!.bounds.width - spaceBetweenCellsInOneRow) / 2.0, cellHeight)
         return size
+    }
+    
+    // MARK: - Mode chnages
+    
+    func swithMode() {
+        editMode = !editMode
+        
+        collectionView?.reloadData()
     }
 }
