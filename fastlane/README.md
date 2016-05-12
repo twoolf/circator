@@ -136,6 +136,11 @@ Build and submit a beta build to Fabric/Crashlytics
 fastlane ios beta
 ```
 Build and submit a beta build to Apple TestFlight and Fabric/Crashlytics
+### ios beta_srost_fabric
+```
+fastlane ios beta_srost_fabric
+```
+Build and submit a beta build to Fabric/Crashlytics
 
 ----
 
