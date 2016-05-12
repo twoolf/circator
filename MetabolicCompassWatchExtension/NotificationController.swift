@@ -1,9 +1,9 @@
 //
 //  NotificationController.swift
-//  MetabolicCompassWatchExtension
+//  CircatorWatch Extension
 //
-//  Created by Sihao Lu on 10/29/15.
-//  Copyright © 2015 Yanif Ahmad, Tom Woolf. All rights reserved.
+//  Created by Mariano on 3/2/16.
+//  Copyright © 2016 Yanif Ahmad, Tom Woolf. All rights reserved.
 //
 
 import WatchKit
@@ -15,7 +15,7 @@ class NotificationController: WKUserNotificationInterfaceController {
     override init() {
         // Initialize variables here.
         super.init()
-        
+
         // Configure interface objects here.
     }
 
@@ -39,7 +39,7 @@ class NotificationController: WKUserNotificationInterfaceController {
         completionHandler(.Custom)
     }
     */
-    
+
     /*
     override func didReceiveRemoteNotification(remoteNotification: [NSObject : AnyObject], withCompletion completionHandler: ((WKUserNotificationInterfaceType) -> Void)) {
         // This method is called when a remote notification needs to be presented.

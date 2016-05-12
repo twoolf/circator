@@ -22,6 +22,12 @@
 		7881A4011BAF3B3E00ECB3C6 /* MetabolicCompassUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7881A4001BAF3B3E00ECB3C6 /* MetabolicCompassUITests.swift */; };
 		788CF4E71C8B7B2D004E1706 /* DataTypes.swift in Sources */ = {isa = PBXBuildFile; fileRef = 788CF4E61C8B7B2D004E1706 /* DataTypes.swift */; };
 		78AC90CC1C1E859F008C931B /* UserAccount.swift in Sources */ = {isa = PBXBuildFile; fileRef = 78AC90CB1C1E859F008C931B /* UserAccount.swift */; };
+		78B45B261CE3B6210010AC4C /* ExerciseInterfaceController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 78B45B201CE3B6200010AC4C /* ExerciseInterfaceController.swift */; };
+		78B45B271CE3B6210010AC4C /* IntroInterfaceController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 78B45B211CE3B6200010AC4C /* IntroInterfaceController.swift */; };
+		78B45B281CE3B6210010AC4C /* MealInterfaceController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 78B45B221CE3B6200010AC4C /* MealInterfaceController.swift */; };
+		78B45B291CE3B6210010AC4C /* MealTimesInterfaceController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 78B45B231CE3B6200010AC4C /* MealTimesInterfaceController.swift */; };
+		78B45B2A1CE3B6210010AC4C /* SleepInterfaceController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 78B45B241CE3B6200010AC4C /* SleepInterfaceController.swift */; };
+		78B45B2B1CE3B6210010AC4C /* WaterInterfaceController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 78B45B251CE3B6210010AC4C /* WaterInterfaceController.swift */; };
 		78B7341B1C90B83A00693229 /* IntroViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7881A3E21BAF3B3E00ECB3C6 /* IntroViewController.swift */; };
 		78B7341C1C90B83E00693229 /* LoginViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7886EADE1C22AC2A00D7E3D4 /* LoginViewController.swift */; };
 		78B7341D1C90B84100693229 /* RegisterViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 78DA2D731C28ED2A005CC2DB /* RegisterViewController.swift */; };
@@ -54,7 +60,6 @@
 		F42F5B501BE20CDD00195490 /* Interface.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = F42F5B4E1BE20CDD00195490 /* Interface.storyboard */; };
 		F42F5B521BE20CDD00195490 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = F42F5B511BE20CDD00195490 /* Assets.xcassets */; };
 		F42F5B591BE20CDD00195490 /* MetabolicCompassWatchExtension.appex in Embed App Extensions */ = {isa = PBXBuildFile; fileRef = F42F5B581BE20CDD00195490 /* MetabolicCompassWatchExtension.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
-		F42F5B601BE20CDD00195490 /* InterfaceController.swift in Sources */ = {isa = PBXBuildFile; fileRef = F42F5B5F1BE20CDD00195490 /* InterfaceController.swift */; };
 		F42F5B621BE20CDD00195490 /* ExtensionDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = F42F5B611BE20CDD00195490 /* ExtensionDelegate.swift */; };
 		F42F5B641BE20CDD00195490 /* NotificationController.swift in Sources */ = {isa = PBXBuildFile; fileRef = F42F5B631BE20CDD00195490 /* NotificationController.swift */; };
 		F42F5B661BE20CDD00195490 /* GlanceController.swift in Sources */ = {isa = PBXBuildFile; fileRef = F42F5B651BE20CDD00195490 /* GlanceController.swift */; };
@@ -62,7 +67,6 @@
 		F42F5B6A1BE20CDD00195490 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = F42F5B691BE20CDD00195490 /* Assets.xcassets */; };
 		F42F5B6E1BE20CDD00195490 /* MetabolicCompassWatch.app in Embed Watch Content */ = {isa = PBXBuildFile; fileRef = F42F5B4C1BE20CDD00195490 /* MetabolicCompassWatch.app */; };
 		F42F5B791BE2292D00195490 /* BioPreviewRow.swift in Sources */ = {isa = PBXBuildFile; fileRef = F42F5B781BE2292D00195490 /* BioPreviewRow.swift */; };
-		F42F5B7B1BE22AC700195490 /* ConnectivityManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = F42F5B7A1BE22AC700195490 /* ConnectivityManager.swift */; };
 		F43A7C551BBDF25E00B6FA56 /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = F43A7C541BBDF25E00B6FA56 /* Images.xcassets */; };
 		F43A7C571BBDF29D00B6FA56 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = F43A7C561BBDF29D00B6FA56 /* LaunchScreen.storyboard */; };
 		F43A7C5E1BBDF43600B6FA56 /* PlotButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = F43A7C5C1BBDF43600B6FA56 /* PlotButton.swift */; };
@@ -195,6 +199,12 @@
 		78AC90CB1C1E859F008C931B /* UserAccount.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = UserAccount.swift; sourceTree = "<group>"; };
 		78B279C21C80FFE5005A6249 /* MetabolicCompassWatchExtension.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.xml; path = MetabolicCompassWatchExtension.entitlements; sourceTree = "<group>"; };
 		78B279C31C80FFEA005A6249 /* MetabolicCompassWatch.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.xml; path = MetabolicCompassWatch.entitlements; sourceTree = "<group>"; };
+		78B45B201CE3B6200010AC4C /* ExerciseInterfaceController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ExerciseInterfaceController.swift; sourceTree = "<group>"; };
+		78B45B211CE3B6200010AC4C /* IntroInterfaceController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = IntroInterfaceController.swift; sourceTree = "<group>"; };
+		78B45B221CE3B6200010AC4C /* MealInterfaceController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MealInterfaceController.swift; sourceTree = "<group>"; };
+		78B45B231CE3B6200010AC4C /* MealTimesInterfaceController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MealTimesInterfaceController.swift; sourceTree = "<group>"; };
+		78B45B241CE3B6200010AC4C /* SleepInterfaceController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SleepInterfaceController.swift; sourceTree = "<group>"; };
+		78B45B251CE3B6210010AC4C /* WaterInterfaceController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = WaterInterfaceController.swift; sourceTree = "<group>"; };
 		78BEAC9D1C5E7EE800F0B541 /* PopulationHealthManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PopulationHealthManager.swift; sourceTree = "<group>"; };
 		78CE00AC1C65CC5A005E955C /* RadarViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RadarViewController.swift; sourceTree = "<group>"; };
 		78DA2D731C28ED2A005CC2DB /* RegisterViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RegisterViewController.swift; sourceTree = "<group>"; };
@@ -218,7 +228,6 @@
 		F42F5B531BE20CDD00195490 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		F42F5B581BE20CDD00195490 /* MetabolicCompassWatchExtension.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = MetabolicCompassWatchExtension.appex; sourceTree = BUILT_PRODUCTS_DIR; };
 		F42F5B5E1BE20CDD00195490 /* PushNotificationPayload.apns */ = {isa = PBXFileReference; lastKnownFileType = text; path = PushNotificationPayload.apns; sourceTree = "<group>"; };
-		F42F5B5F1BE20CDD00195490 /* InterfaceController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InterfaceController.swift; sourceTree = "<group>"; };
 		F42F5B611BE20CDD00195490 /* ExtensionDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExtensionDelegate.swift; sourceTree = "<group>"; };
 		F42F5B631BE20CDD00195490 /* NotificationController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NotificationController.swift; sourceTree = "<group>"; };
 		F42F5B651BE20CDD00195490 /* GlanceController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GlanceController.swift; sourceTree = "<group>"; };
@@ -226,7 +235,6 @@
 		F42F5B691BE20CDD00195490 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		F42F5B6B1BE20CDD00195490 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		F42F5B781BE2292D00195490 /* BioPreviewRow.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BioPreviewRow.swift; sourceTree = "<group>"; };
-		F42F5B7A1BE22AC700195490 /* ConnectivityManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ConnectivityManager.swift; sourceTree = "<group>"; };
 		F42F5B941BE2C89200195490 /* CorrelationViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CorrelationViewController.swift; sourceTree = "<group>"; };
 		F43A7C541BBDF25E00B6FA56 /* Images.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Images.xcassets; sourceTree = "<group>"; };
 		F43A7C561BBDF29D00B6FA56 /* LaunchScreen.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; path = LaunchScreen.storyboard; sourceTree = "<group>"; };
@@ -407,9 +415,13 @@
 		F42F5B5C1BE20CDD00195490 /* MetabolicCompassWatchExtension */ = {
 			isa = PBXGroup;
 			children = (
+				78B45B201CE3B6200010AC4C /* ExerciseInterfaceController.swift */,
+				78B45B211CE3B6200010AC4C /* IntroInterfaceController.swift */,
+				78B45B221CE3B6200010AC4C /* MealInterfaceController.swift */,
+				78B45B231CE3B6200010AC4C /* MealTimesInterfaceController.swift */,
+				78B45B241CE3B6200010AC4C /* SleepInterfaceController.swift */,
+				78B45B251CE3B6210010AC4C /* WaterInterfaceController.swift */,
 				78B279C21C80FFE5005A6249 /* MetabolicCompassWatchExtension.entitlements */,
-				F42F5B7A1BE22AC700195490 /* ConnectivityManager.swift */,
-				F42F5B5F1BE20CDD00195490 /* InterfaceController.swift */,
 				F42F5B781BE2292D00195490 /* BioPreviewRow.swift */,
 				F42F5B611BE20CDD00195490 /* ExtensionDelegate.swift */,
 				F42F5B631BE20CDD00195490 /* NotificationController.swift */,
@@ -910,13 +922,17 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				78B45B291CE3B6210010AC4C /* MealTimesInterfaceController.swift in Sources */,
 				F42F5B641BE20CDD00195490 /* NotificationController.swift in Sources */,
 				F42F5B621BE20CDD00195490 /* ExtensionDelegate.swift in Sources */,
 				F42F5B681BE20CDD00195490 /* ComplicationController.swift in Sources */,
-				F42F5B601BE20CDD00195490 /* InterfaceController.swift in Sources */,
 				F42F5B791BE2292D00195490 /* BioPreviewRow.swift in Sources */,
+				78B45B281CE3B6210010AC4C /* MealInterfaceController.swift in Sources */,
 				F42F5B661BE20CDD00195490 /* GlanceController.swift in Sources */,
-				F42F5B7B1BE22AC700195490 /* ConnectivityManager.swift in Sources */,
+				78B45B2A1CE3B6210010AC4C /* SleepInterfaceController.swift in Sources */,
+				78B45B261CE3B6210010AC4C /* ExerciseInterfaceController.swift in Sources */,
+				78B45B2B1CE3B6210010AC4C /* WaterInterfaceController.swift in Sources */,
+				78B45B271CE3B6210010AC4C /* IntroInterfaceController.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
