@@ -107,6 +107,7 @@
 		E75E95AE1CDCD5A700A18756 /* DashboardMetricsConfigItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = E75E95AD1CDCD5A700A18756 /* DashboardMetricsConfigItem.swift */; };
 		E75E95B21CDCD6CB00A18756 /* DashboardMetricsAppearanceProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = E75E95B11CDCD6CB00A18756 /* DashboardMetricsAppearanceProvider.swift */; };
 		E7AB666C1CDCDDBD00967316 /* ManageDashboardCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = E7AB666B1CDCDDBD00967316 /* ManageDashboardCell.swift */; };
+		E7E48DE51CE4A12900DB020F /* MetabolicChartRender.swift in Sources */ = {isa = PBXBuildFile; fileRef = E7E48DE41CE4A12900DB020F /* MetabolicChartRender.swift */; };
 		F42F5ADD1BDC85AF00195490 /* SampleDataAnalyzer.swift in Sources */ = {isa = PBXBuildFile; fileRef = F42F5ADC1BDC85AF00195490 /* SampleDataAnalyzer.swift */; };
 		F42F5B351BE1FD1E00195490 /* MetabolicCompassKit.h in Headers */ = {isa = PBXBuildFile; fileRef = F42F5B341BE1FD1E00195490 /* MetabolicCompassKit.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		F42F5B391BE1FD1E00195490 /* MetabolicCompassKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F42F5B321BE1FD1E00195490 /* MetabolicCompassKit.framework */; };
@@ -330,6 +331,7 @@
 		E75E95AD1CDCD5A700A18756 /* DashboardMetricsConfigItem.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DashboardMetricsConfigItem.swift; sourceTree = "<group>"; };
 		E75E95B11CDCD6CB00A18756 /* DashboardMetricsAppearanceProvider.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DashboardMetricsAppearanceProvider.swift; sourceTree = "<group>"; };
 		E7AB666B1CDCDDBD00967316 /* ManageDashboardCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ManageDashboardCell.swift; sourceTree = "<group>"; };
+		E7E48DE41CE4A12900DB020F /* MetabolicChartRender.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MetabolicChartRender.swift; sourceTree = "<group>"; };
 		F28DDB83BE2DA2B65B631537 /* Pods.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = Pods.debug.xcconfig; path = "Pods/Target Support Files/Pods/Pods.debug.xcconfig"; sourceTree = "<group>"; };
 		F42F5ADC1BDC85AF00195490 /* SampleDataAnalyzer.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SampleDataAnalyzer.swift; sourceTree = "<group>"; };
 		F42F5B321BE1FD1E00195490 /* MetabolicCompassKit.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = MetabolicCompassKit.framework; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -453,6 +455,7 @@
 		7881A3DF1BAF3B3E00ECB3C6 /* MetabolicCompass */ = {
 			isa = PBXGroup;
 			children = (
+				E7E48DE31CE4A0F100DB020F /* Charts+Extended */,
 				E74A897A1CE338BA0056A2D2 /* ContentManager */,
 				E74A89771CE3260F0056A2D2 /* AccountManager */,
 				E7591D0C1CE1C7AE00DCBA39 /* LPRTabelView */,
@@ -674,6 +677,14 @@
 				E7AB666B1CDCDDBD00967316 /* ManageDashboardCell.swift */,
 			);
 			name = Cells;
+			sourceTree = "<group>";
+		};
+		E7E48DE31CE4A0F100DB020F /* Charts+Extended */ = {
+			isa = PBXGroup;
+			children = (
+				E7E48DE41CE4A12900DB020F /* MetabolicChartRender.swift */,
+			);
+			path = "Charts+Extended";
 			sourceTree = "<group>";
 		};
 		EA5EDF2A50FCED6ADBAA03DD /* Frameworks */ = {
@@ -1218,6 +1229,7 @@
 				95769B891CE49E5C00F26668 /* NotificationsViewController.swift in Sources */,
 				E75E95A91CDCB69A00A18756 /* DashboardFilterItem.swift in Sources */,
 				E75E95A71CDCB18D00A18756 /* DashboardFilterHeaderCell.swift in Sources */,
+				E7E48DE51CE4A12900DB020F /* MetabolicChartRender.swift in Sources */,
 				E7592DBA1CDB704600E313BB /* DashboardTabControllerViewController.swift in Sources */,
 				E75E95A31CDCA8DD00A18756 /* DashboardFilterCell.swift in Sources */,
 				95C0B9A81CD25860006E523F /* BaseDataSource.swift in Sources */,

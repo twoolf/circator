@@ -74,6 +74,8 @@ class RadarViewController : UIViewController, ChartViewDelegate {
 
     lazy var radarChart: RadarChartView = {
         let chart = RadarChartView()
+        
+        chart.renderer = MetabolicChartRender(chart: chart, animator: chart.chartAnimator, viewPortHandler: chart.viewPortHandler)
         chart.animate(xAxisDuration: 1.0, yAxisDuration: 1.0)
         chart.delegate = self
         chart.descriptionText = ""
@@ -81,6 +83,8 @@ class RadarViewController : UIViewController, ChartViewDelegate {
         chart.yAxis.axisMinValue = 0.2
         chart.yAxis.axisMaxValue = 1.0
         chart.yAxis.axisRange = 1.0
+        chart.drawWeb = false
+        
 //        chart.yAxis.customAxisMax = 1.0
 //        chart.yAxis.customAxisMin = 0.2
 
@@ -107,11 +111,14 @@ class RadarViewController : UIViewController, ChartViewDelegate {
 
     override func viewWillAppear(animated: Bool) {
         super.viewWillAppear(animated)
-        navigationController?.setNavigationBarHidden(true, animated: false)
+//        navigationController?.setNavigationBarHidden(true, animated: false)
     }
 
     override func viewDidAppear(animated: Bool) {
         super.viewDidAppear(animated)
+        
+        self.authorized = AccountManager.shared.isAuthorized
+        
         Answers.logContentViewWithName("Radar",
             contentType: "",
             contentId: NSDate().toString(DateFormat.Custom("YYYY-MM-dd:HH:mm:ss")),
@@ -120,6 +127,9 @@ class RadarViewController : UIViewController, ChartViewDelegate {
 
     override func viewDidLoad() {
         super.viewDidLoad()
+        
+        
+        
         configureViews()
         radarChart.layoutIfNeeded()
         reloadData()
@@ -214,17 +224,28 @@ class RadarViewController : UIViewController, ChartViewDelegate {
         let popData = (0..<PreviewManager.previewSampleTypes.count).map(popEntry)
 
         let indDataSet = RadarChartDataSet(yVals: indData, label: "Individual")
-        indDataSet.fillColor = .redColor()
-        indDataSet.setColor(.redColor())
+        indDataSet.fillColor = UIColor.lightGrayColor()
+        indDataSet.setColor(UIColor.lightGrayColor())
         indDataSet.drawFilledEnabled = true
         indDataSet.lineWidth = 2.0
+        indDataSet.drawHighlightCircleEnabled = false
+        
 
         let popDataSet = RadarChartDataSet(yVals: popData, label: "Population")
-        popDataSet.fillColor = .greenColor()
-        popDataSet.setColor(.greenColor())
+        popDataSet.fillColor = UIColor.colorWithHexString("#427DC9", alpha: 1.0)!
+        popDataSet.setColor(popDataSet.fillColor)
         popDataSet.drawFilledEnabled = true
         popDataSet.lineWidth = 2.0
-
+        popDataSet.fillAlpha = 0.75
+        popDataSet.drawHighlightCircleEnabled = false
+        popDataSet.highlightColor = UIColor.clearColor()
+        popDataSet.highlightCircleFillColor = UIColor.redColor()
+        popDataSet.highlightCircleStrokeColor = UIColor.whiteColor()
+        popDataSet.highlightCircleStrokeWidth = 1
+        popDataSet.highlightCircleInnerRadius = 0
+        popDataSet.highlightCircleOuterRadius = 6
+        
+        
         let xVals = PreviewManager.previewSampleTypes.map { type in
                         return HMConstants.sharedInstance.healthKitShortNames[type.identifier]! }
 
@@ -232,10 +253,12 @@ class RadarViewController : UIViewController, ChartViewDelegate {
         data.setDrawValues(false)
         radarChart.data = data
 
+        radarChart.highlightValue(xIndex: 0, dataSetIndex: 1, callDelegate: false)
         radarChart.xAxis.labelTextColor = .whiteColor()
         radarChart.xAxis.labelFont = UIFont.systemFontOfSize(12, weight: UIFontWeightRegular)
         radarChart.yAxis.drawLabelsEnabled = false
         radarChart.notifyDataSetChanged()
+        radarChart.valuesToHighlight()
     }
 
 }
