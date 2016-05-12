@@ -1,4 +1,3 @@
-//
 //  MealTimeViewController.swift
 //  MetabolicCompass
 //
@@ -273,7 +272,7 @@ class EventTimeViewController : UIViewController {
                     // to a eat/sleep/fast/exercise value where:
                     // workout = 0.0, sleep = 0.33, fast = 0.66, eat = 1.0
                     //
-                    let vals = intervals.map { event in
+                    let vals : [(x: Double, y: Double)] = intervals.map { event in
                       let startTimeInFractionalHours = event.0.timeIntervalSinceDate(startDate) / 3600.0
                       let metabolicStateAsDouble = valueOfCircadianEvent(event.1)
                       return (x: startTimeInFractionalHours, y: metabolicStateAsDouble)
@@ -359,7 +358,7 @@ class EventTimeViewController : UIViewController {
                             prevStateWasFasting = prevEvent == nil ? false : prevEvent.1 != stEat
                         }
 
-                        let newLastEatingTime eventMetabolicState == stEat ? eventEndpointDate : lastEatingTime
+                        let newLastEatingTime = eventMetabolicState == stEat ? eventEndpointDate : lastEatingTime
 
                         // Return a new accumulator.
                         return (
