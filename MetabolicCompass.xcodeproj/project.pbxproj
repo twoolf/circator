@@ -57,6 +57,9 @@
 		95748C531CCFC8020002F6A3 /* BaseCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 95748C521CCFC8020002F6A3 /* BaseCollectionViewCell.swift */; };
 		95769B841CE4869C00F26668 /* TitleCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 95769B821CE4869C00F26668 /* TitleCollectionViewCell.swift */; };
 		95769B851CE4869C00F26668 /* TitleCollectionViewCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 95769B831CE4869C00F26668 /* TitleCollectionViewCell.xib */; };
+		95769B871CE49E4000F26668 /* PhysiologicalDataViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 95769B861CE49E4000F26668 /* PhysiologicalDataViewController.swift */; };
+		95769B891CE49E5C00F26668 /* NotificationsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 95769B881CE49E5C00F26668 /* NotificationsViewController.swift */; };
+		95769B8B1CE49E7300F26668 /* HealthAccessViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 95769B8A1CE49E7300F26668 /* HealthAccessViewController.swift */; };
 		958568011CD0AFA400EDD385 /* CheckBox.swift in Sources */ = {isa = PBXBuildFile; fileRef = 958568001CD0AFA400EDD385 /* CheckBox.swift */; };
 		958568031CD0B18900EDD385 /* RegistrationModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 958568021CD0B18900EDD385 /* RegistrationModel.swift */; };
 		958568051CD0BF6300EDD385 /* BaseViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 958568041CD0BF6300EDD385 /* BaseViewController.swift */; };
@@ -276,6 +279,9 @@
 		95748C521CCFC8020002F6A3 /* BaseCollectionViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BaseCollectionViewCell.swift; sourceTree = "<group>"; };
 		95769B821CE4869C00F26668 /* TitleCollectionViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TitleCollectionViewCell.swift; sourceTree = "<group>"; };
 		95769B831CE4869C00F26668 /* TitleCollectionViewCell.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = TitleCollectionViewCell.xib; sourceTree = "<group>"; };
+		95769B861CE49E4000F26668 /* PhysiologicalDataViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PhysiologicalDataViewController.swift; sourceTree = "<group>"; };
+		95769B881CE49E5C00F26668 /* NotificationsViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NotificationsViewController.swift; sourceTree = "<group>"; };
+		95769B8A1CE49E7300F26668 /* HealthAccessViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = HealthAccessViewController.swift; sourceTree = "<group>"; };
 		958568001CD0AFA400EDD385 /* CheckBox.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CheckBox.swift; sourceTree = "<group>"; };
 		958568021CD0B18900EDD385 /* RegistrationModel.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RegistrationModel.swift; sourceTree = "<group>"; };
 		958568041CD0BF6300EDD385 /* BaseViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BaseViewController.swift; sourceTree = "<group>"; };
@@ -571,6 +577,9 @@
 			children = (
 				95F400A81CE385E80060F28C /* MainSettingsViewController.swift */,
 				95F400A91CE385E80060F28C /* ProfileViewController.swift */,
+				95769B861CE49E4000F26668 /* PhysiologicalDataViewController.swift */,
+				95769B881CE49E5C00F26668 /* NotificationsViewController.swift */,
+				95769B8A1CE49E7300F26668 /* HealthAccessViewController.swift */,
 			);
 			path = SettingsViewControllers;
 			sourceTree = "<group>";
@@ -1184,6 +1193,7 @@
 				95F4008E1CE385B70060F28C /* UIView+Extended.swift in Sources */,
 				958568031CD0B18900EDD385 /* RegistrationModel.swift in Sources */,
 				E75E95B21CDCD6CB00A18756 /* DashboardMetricsAppearanceProvider.swift in Sources */,
+				95769B871CE49E4000F26668 /* PhysiologicalDataViewController.swift in Sources */,
 				78B734291C90B86D00693229 /* CorrelationViewController.swift in Sources */,
 				78B7341E1C90B84600693229 /* ProfileSubviewController.swift in Sources */,
 				78B734201C90B84D00693229 /* RepeatedEventsController.swift in Sources */,
@@ -1205,6 +1215,7 @@
 				E7592DB81CDB490600E313BB /* MainTabController.swift in Sources */,
 				95F400AD1CE38F2F0060F28C /* ModelItem.swift in Sources */,
 				E75E95A11CDCA89700A18756 /* DashboardFilterController.swift in Sources */,
+				95769B891CE49E5C00F26668 /* NotificationsViewController.swift in Sources */,
 				E75E95A91CDCB69A00A18756 /* DashboardFilterItem.swift in Sources */,
 				E75E95A71CDCB18D00A18756 /* DashboardFilterHeaderCell.swift in Sources */,
 				E7592DBA1CDB704600E313BB /* DashboardTabControllerViewController.swift in Sources */,
@@ -1222,6 +1233,7 @@
 				78B734211C90B85100693229 /* DaySelectionViewController.swift in Sources */,
 				84A16A601CE3630400D61935 /* UIImage+Extended.swift in Sources */,
 				95F400991CE385C60060F28C /* InfoCollectionViewCell.swift in Sources */,
+				95769B8B1CE49E7300F26668 /* HealthAccessViewController.swift in Sources */,
 				7881A3E11BAF3B3E00ECB3C6 /* AppDelegate.swift in Sources */,
 				9585680F1CD1020600EDD385 /* LoadImageCollectionViewCell.swift in Sources */,
 				E75E95AE1CDCD5A700A18756 /* DashboardMetricsConfigItem.swift in Sources */,

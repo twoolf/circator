@@ -50,11 +50,51 @@
                     <simulatedTabBarMetrics key="simulatedBottomBarMetrics"/>
                     <connections>
                         <outlet property="collectionView" destination="dlh-ry-47Q" id="S3o-vT-Nrh"/>
+                        <segue destination="BJF-k9-5Id" kind="show" identifier="profileSegue" id="r63-xo-WVL"/>
+                        <segue destination="JBd-Oq-cRO" kind="show" identifier="physiologicalSegue" id="2he-8M-9XD"/>
+                        <segue destination="IvS-kn-nZB" kind="show" identifier="notificationsSegue" id="Qip-2y-lGS"/>
+                        <segue destination="3gb-fF-nvS" kind="show" identifier="healthAccessSegue" id="OPk-ew-52O"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="ypl-bg-BDg" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
             <point key="canvasLocation" x="2088" y="271"/>
+        </scene>
+        <!--Health Access View Controller-->
+        <scene sceneID="5ap-2C-g1E">
+            <objects>
+                <viewController id="3gb-fF-nvS" customClass="HealthAccessViewController" customModule="MetabolicCompass" customModuleProvider="target" sceneMemberID="viewController">
+                    <layoutGuides>
+                        <viewControllerLayoutGuide type="top" id="9Ii-HT-5bX"/>
+                        <viewControllerLayoutGuide type="bottom" id="gmD-lV-b90"/>
+                    </layoutGuides>
+                    <view key="view" contentMode="scaleToFill" id="phP-EE-yrS">
+                        <rect key="frame" x="0.0" y="0.0" width="600" height="600"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                    </view>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="9em-0O-2ay" userLabel="First Responder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="2080" y="1050"/>
+        </scene>
+        <!--Notifications View Controller-->
+        <scene sceneID="53m-9w-5SF">
+            <objects>
+                <viewController id="IvS-kn-nZB" customClass="NotificationsViewController" customModule="MetabolicCompass" customModuleProvider="target" sceneMemberID="viewController">
+                    <layoutGuides>
+                        <viewControllerLayoutGuide type="top" id="7Cf-Fe-G2I"/>
+                        <viewControllerLayoutGuide type="bottom" id="ku9-jP-Aj9"/>
+                    </layoutGuides>
+                    <view key="view" contentMode="scaleToFill" id="bcb-Oy-gbI">
+                        <rect key="frame" x="0.0" y="0.0" width="600" height="600"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                    </view>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="PBM-BI-Y9P" userLabel="First Responder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="2801" y="1044"/>
         </scene>
         <!--PROFILE-->
         <scene sceneID="EIJ-ks-ea5">
@@ -68,7 +108,7 @@
                         <rect key="frame" x="0.0" y="0.0" width="600" height="600"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
-                            <collectionView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" misplaced="YES" dataMode="prototypes" translatesAutoresizingMaskIntoConstraints="NO" id="cWd-Wq-34X">
+                            <collectionView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" dataMode="prototypes" translatesAutoresizingMaskIntoConstraints="NO" id="cWd-Wq-34X">
                                 <rect key="frame" x="0.0" y="64" width="600" height="487"/>
                                 <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
                                 <collectionViewFlowLayout key="collectionViewLayout" minimumLineSpacing="0.0" minimumInteritemSpacing="0.0" id="H5q-am-5sV">
@@ -79,7 +119,7 @@
                                 </collectionViewFlowLayout>
                                 <cells>
                                     <collectionViewCell opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" id="HYq-W9-Okq">
-                                        <rect key="frame" x="0.0" y="0.0" width="200" height="50"/>
+                                        <rect key="frame" x="0.0" y="64" width="200" height="50"/>
                                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                         <view key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center">
                                             <rect key="frame" x="0.0" y="0.0" width="200" height="50"/>
@@ -104,7 +144,25 @@
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="fh1-ly-nPA" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="2933" y="271"/>
+            <point key="canvasLocation" x="2827" y="-417"/>
+        </scene>
+        <!--Physiological Data View Controller-->
+        <scene sceneID="AtO-kT-G7t">
+            <objects>
+                <viewController id="JBd-Oq-cRO" customClass="PhysiologicalDataViewController" customModule="MetabolicCompass" customModuleProvider="target" sceneMemberID="viewController">
+                    <layoutGuides>
+                        <viewControllerLayoutGuide type="top" id="5RB-a8-bcg"/>
+                        <viewControllerLayoutGuide type="bottom" id="DgP-Gx-bwR"/>
+                    </layoutGuides>
+                    <view key="view" contentMode="scaleToFill" id="MWk-Xx-8p5">
+                        <rect key="frame" x="0.0" y="0.0" width="600" height="600"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                    </view>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="GrY-Zu-saj" userLabel="First Responder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="2827" y="271"/>
         </scene>
         <!--Settings-->
         <scene sceneID="eSs-WU-LQb">
