@@ -59,4 +59,4 @@ blackbox
 /keyrings/live/pubring.kbx~
 /keyrings/live/secring.gpg
 /fastlane/.env
-/CircatorKit/SecureConstants.swift
+SecureConstants.swift
