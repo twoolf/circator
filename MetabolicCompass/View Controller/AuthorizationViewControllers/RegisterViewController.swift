@@ -28,8 +28,6 @@ private let inputFontSize = ScreenManager.sharedInstance.profileInputFontSize()
     
     @IBOutlet weak var collectionView: UICollectionView!
 
-    
-    var profileValues : [String: String] = [:]
 
     internal var consentOnLoad : Bool = false
     internal var registerCompletion : (Void -> Void)?
@@ -66,10 +64,7 @@ private let inputFontSize = ScreenManager.sharedInstance.profileInputFontSize()
     }
     
     @IBAction func registerAction(sender: UIButton) {
-        
-        self.profileValues = self.dataSource.model.profileItems()
-        //print("profile items: \(self.profileValues)")
-
+    
         UINotifications.genericMsg(self.navigationController!, msg: "Registering account...")
         
         
@@ -104,11 +99,7 @@ private let inputFontSize = ScreenManager.sharedInstance.profileInputFontSize()
             }
             
         
-            let initialProfile = Dictionary(pairs:
-                self.profileValues.filter { (k,v) in UserProfile.sharedInstance.updateableMapping[k] != nil }.map { (k,v) in
-                    (UserProfile.sharedInstance.updateableMapping[k]!, v)
-                })
-            
+            let initialProfile = self.dataSource.model.profileItems()
             //print("initialProfile \(initialProfile)")
             
             // Log in and update consent after successful registration.
