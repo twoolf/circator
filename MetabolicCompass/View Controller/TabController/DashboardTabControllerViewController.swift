@@ -13,7 +13,7 @@ class DashboardTabControllerViewController: UIViewController {
     var containerController: UITabBarController?;
     weak var rootNavigationItem: UINavigationItem? {
         didSet {
-            self.updateNavigationItem()
+//            self.updateNavigationItem()
         }
     }
 
@@ -24,18 +24,17 @@ class DashboardTabControllerViewController: UIViewController {
    
     func updateNavigationItem() {
         
-        if let navigationItem = self.rootNavigationItem
-        {
-            navigationItem.leftBarButtonItem = UIBarButtonItem(title: NSLocalizedString("Manage", comment: "dashboard manage button"),
+        self.navigationItem.title = NSLocalizedString("DASHBOARD", comment: "dashboard screen title")
+        
+        navigationItem.leftBarButtonItem = UIBarButtonItem(title: NSLocalizedString("Manage", comment: "dashboard manage button"),
                                                                style: .Done,
                                                                target: self,
                                                                action: #selector(didSelectManageButton))
             
-            navigationItem.rightBarButtonItem = UIBarButtonItem(title: NSLocalizedString("Filters", comment: "dashboard filter button"),
+        navigationItem.rightBarButtonItem = UIBarButtonItem(title: NSLocalizedString("Filters", comment: "dashboard filter button"),
                                                                 style: .Done,
                                                                 target: self,
                                                                 action: #selector(didSelectFiltersButton))
-        }
     }
    
     private let filterControllerSegue = "FilterSegue"

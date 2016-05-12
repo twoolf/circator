@@ -92,7 +92,7 @@ class AdditionalInfoDataSource: BaseDataSource {
         
         cell.smallDescriptionLbl.text = item.unitsTitle
     
-        cell.inputTxtField.attributedPlaceholder = NSAttributedString(string: item.placeholder,
+        cell.inputTxtField.attributedPlaceholder = NSAttributedString(string: item.title,
                                                                       attributes: [NSForegroundColorAttributeName : unselectedTextColor])
         
         var keypadType = UIKeyboardType.Default

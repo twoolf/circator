@@ -9,98 +9,7 @@
 import UIKit
 import MetabolicCompassKit
 
-enum RegistrationFiledType: Int {
-    case Photo = 0, Email, Password, FirstName, LastName, Gender, Age, Units, Weight, Height, Other
-}
-
-enum Gender: Int {
-    case Male = 0, Female
-    
-    var title: String {
-        switch self {
-        case .Male:
-            return "Male"
-        case .Female:
-            return "Female"
-        }
-    }
-}
-
-class ModelItem: NSObject {
-    
-    private(set) var name: String
-    private(set) var placeholder: String
-    private(set) var type: RegistrationFiledType
-    private(set) var iconImageName: String?
-    
-    private(set) var value: AnyObject?
-    private(set) var unitsTitle: String?
-    
-    var dataType: FieldDataType = .String
-    
-    init(name itemName: String, placeholder itemPlaceholder: String, type itemType: RegistrationFiledType, iconImageName itemIconImageName: String?, value itemValue: AnyObject?, unitsTitle itemUnitsTitle: String? = nil) {
-        
-        type = itemType
-        name = itemName
-        placeholder = itemPlaceholder
-        iconImageName = itemIconImageName
-
-        super.init()
-        
-        value = itemValue
-        
-        unitsTitle = itemUnitsTitle
-    }
-    
-    
-    func setNewValue(newValue: AnyObject?) {
-        value = newValue
-    }
-    
-    
-    func stringValue() -> String? {
-        if let _value = value as? String {
-            return _value.trimmed()
-        }
-        return nil
-    }
-    
-    func intValue() -> Int? {
-        if let _value = value as? Int {
-            return _value
-        }
-        else if let _value = value as? String {
-            return Int(_value)
-        }
-        
-        return nil
-    }
-   
-    func floatValue() -> Float? {
-        if let _value = value as? Float {
-            return _value
-        }
-        else if let _value = value as? String {
-            return Float(_value)
-        }
-        return nil
-    }
-    
-}
-
-
-class RegistrationModel: NSObject {
-    
-    private var loadPhotoField: ModelItem!
-    private var emailField: ModelItem!
-    private var passwordField: ModelItem!
-    private var firstNameField: ModelItem!
-    private var lastNameField: ModelItem!
-    private var genderField: ModelItem!
-    private var ageField: ModelItem!
-    private var unitsSystemField: ModelItem!
-    private var weightField: ModelItem!
-    private var heightField: ModelItem!
+class RegistrationModel: UserInfoModel {
     
     override init() {
         
@@ -111,21 +20,10 @@ class RegistrationModel: NSObject {
         for i in UserProfile.sharedInstance.requiredRange {
             indexes.append(UserProfile.sharedInstance.profileFields[i])
         }
-        
-        loadPhotoField = ModelItem(name: "Load photo", placeholder: "Load photo", type: .Photo, iconImageName: "icon-email", value: nil)
-        emailField = ModelItem(name: indexes[0], placeholder: "E-mail", type: .Email, iconImageName: "icon-email", value: nil)
-        passwordField = ModelItem(name: indexes[1], placeholder: "Password", type: .Password, iconImageName: "icon-password", value: nil)
-        firstNameField = ModelItem(name: indexes[2], placeholder: "First Name", type: .FirstName, iconImageName: "icon-profile", value: nil)
-        lastNameField = ModelItem(name: indexes[3], placeholder: "Last Name", type: .LastName, iconImageName: "", value: nil)
-        genderField = ModelItem(name: indexes[4], placeholder: "Gender", type: .Gender, iconImageName: "icon-sex", value: Gender.Male.rawValue)
-        ageField = ModelItem(name: indexes[5], placeholder: "Age", type: .Age, iconImageName: "icon-birthday", value: nil)
-        weightField = ModelItem(name: indexes[6], placeholder: "Weight", type: .Weight, iconImageName: "icon-weight", value: nil)
-        heightField = ModelItem(name: indexes[7], placeholder: "Height", type: .Height, iconImageName: "icon-height", value: nil)
-        unitsSystemField = ModelItem(name: "units", placeholder: "Units", type: .Units, iconImageName: "icon-measure", value: UnitsSystem.Metric.rawValue)
-        
+
     }
     
-    private(set) lazy var items: [ModelItem] = {
+    override func modelItems() -> [ModelItem] {
         var fields = [ModelItem]()
         
         fields.append(self.loadPhotoField)
@@ -138,10 +36,9 @@ class RegistrationModel: NSObject {
         fields.append(self.unitsSystemField)
         fields.append(self.weightField)
         fields.append(self.heightField)
-       
+        
         return fields
-    }()
-    
+    }
     
     func profileItems() -> [String : String]  {
         var profile = [String : String]()
@@ -164,16 +61,6 @@ class RegistrationModel: NSObject {
         }
         
         return profile
-    }
-    
-    func itemAtIndexPath(indexPath: NSIndexPath) -> ModelItem {
-        return items[indexPath.row]
-    }
-    
-    func setAtItem(itemIndex itemIndex: Int, newValue: AnyObject?) {
-        let fieldItem = items[itemIndex]
-        
-        fieldItem.setNewValue(newValue)
     }
     
     

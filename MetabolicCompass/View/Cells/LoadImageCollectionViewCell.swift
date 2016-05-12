@@ -18,9 +18,7 @@ class LoadImageCollectionViewCell: BaseCollectionViewCell, UIImagePickerControll
     override func awakeFromNib() {
         super.awakeFromNib()
         
-        photoImg.layer.cornerRadius = photoImg.frame.size.height / 2.0
-        photoImg.layer.masksToBounds = true
-        photoImg.layer.borderWidth = 0
+        photoImg.makeCircled()        
     }
 
     @IBAction func loadPhotoAction(sender: UIButton) {

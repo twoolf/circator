@@ -29,7 +29,18 @@ class BaseCollectionViewCell: UICollectionViewCell, UITextFieldDelegate {
         separatorLineHeightConstraint?.constant = 0.5
     }
     
+    var separatorVisible : Bool = false {
+        didSet {
+            separatorView?.hidden = !separatorVisible
+        }
+    }
     
+    override func prepareForReuse() {
+        super.prepareForReuse()
+        
+        separatorVisible = true
+    }
+        
     func textFieldDidChange(textField: UITextField) {
         valueChanged(textField.text)
     }

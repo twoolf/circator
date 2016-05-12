@@ -159,8 +159,8 @@ public struct UserProfile {
         fields.append(ProfileFieldData(fieldName: "Last name", profileFieldName: "lastname", type: .String, unitsTitle: nil))
         fields.append(ProfileFieldData(fieldName: "Sex", profileFieldName: "sex", type: .Int, unitsTitle: nil))
         fields.append(ProfileFieldData(fieldName: "Age", profileFieldName: "age", type: .Int, unitsTitle: nil))
-        fields.append(ProfileFieldData(fieldName: "Weight", profileFieldName: "Weight", type: .Int, unitsTitle: nil))
-        fields.append(ProfileFieldData(fieldName: "Height", profileFieldName: "Height", type: .Int, unitsTitle: nil))
+        fields.append(ProfileFieldData(fieldName: "Weight", profileFieldName: "weight", type: .Int, unitsTitle: nil))
+        fields.append(ProfileFieldData(fieldName: "Height", profileFieldName: "height", type: .Int, unitsTitle: nil))
         
         fields.append(ProfileFieldData(fieldName: "Usual sleep", profileFieldName: "sleep", type: .Int, unitsTitle: unitsTitleHours))
         fields.append(ProfileFieldData(fieldName: "Estimated bmi", profileFieldName: "bmi", type: .Int, unitsTitle: nil))

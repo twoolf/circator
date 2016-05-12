@@ -63,8 +63,8 @@ class RegisterModelDataSource: BaseDataSource {
                 let field = self.model.itemAtIndexPath(indexPath)
                 
                 if field.type == .Units {
-                    let needsUpdateIndexPathes = [NSIndexPath(forRow: RegistrationFiledType.Weight.rawValue, inSection: 0),
-                                                  NSIndexPath(forRow: RegistrationFiledType.Height.rawValue, inSection: 0)]
+                    let needsUpdateIndexPathes = [NSIndexPath(forRow: UserInfoFiledType.Weight.rawValue, inSection: 0),
+                                                  NSIndexPath(forRow: UserInfoFiledType.Height.rawValue, inSection: 0)]
                     
                     collectionView.reloadItemsAtIndexPaths(needsUpdateIndexPathes)
                 }
@@ -110,7 +110,7 @@ class RegisterModelDataSource: BaseDataSource {
         let cell = collectionView!.dequeueReusableCellWithReuseIdentifier(inputTextCellIdentifier, forIndexPath: indexPath) as! InputCollectionViewCell
         
         cell.inputTxtField.textColor = selectedTextColor
-        cell.inputTxtField.attributedPlaceholder = NSAttributedString(string: field.placeholder, attributes: [NSForegroundColorAttributeName : unselectedTextColor])
+        cell.inputTxtField.attributedPlaceholder = NSAttributedString(string: field.title, attributes: [NSForegroundColorAttributeName : unselectedTextColor])
         
         cell.inputTxtField.text = field.value as? String
         
