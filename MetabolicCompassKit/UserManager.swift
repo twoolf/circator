@@ -31,6 +31,8 @@ private let UserSaltKey      = "UserSaltKey"
 
 private let profileExcludes  = ["consent", "id"]
 
+public let UMConsentInfoString = "Retrieved consent"
+
 /**
  This manages the users for Metabolic Compass. We need to enable users to maintain access to their data and to delete themselves from the study if they so desire. In addition we maintain, in this class, the ability to do this securely, using OAuth and our third party authenticator (Stormpath)
  
@@ -369,7 +371,7 @@ public class UserManager {
     public func ensureAccessToken(completion: (Bool -> Void)) {
         if let token = Stormpath.accessToken {
             MCRouter.OAuthToken = token
-            completion(token.characters.count > 0 ? true: false)
+            completion(token.characters.count > 0 ? false: true)
         }
         else {
             completion(false)
@@ -439,7 +441,7 @@ public class UserManager {
         Service.string(MCRouter.GetConsent, statusCode: 200..<300, tag: "GCONSENT") {
             _, response, result in
             if result.isSuccess { self.profileCache["consent"] = result.value }
-            completion(!result.isSuccess, "Retrieved consent")
+            completion(!result.isSuccess, UMConsentInfoString)
         }
     }
 

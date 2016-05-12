@@ -129,8 +129,11 @@ private let inputFontSize = ScreenManager.sharedInstance.profileInputFontSize()
                 // save user profile image
                 UserManager.sharedManager.setUserProfilePhoto(userRegistrationModel.photo)
                 
-                UserManager.sharedManager.pushConsent(consentPath) { _ in
-                    ConsentManager.sharedManager.removeConsentFile(consentPath)
+                UserManager.sharedManager.pushConsent(consentPath) { (error, text) in
+                    
+                    if (!error) {
+                        ConsentManager.sharedManager.removeConsentFile(consentPath)
+                    }
                     
                     
                     self.performSegueWithIdentifier(self.segueRegistrationCompletionIndentifier, sender: nil)

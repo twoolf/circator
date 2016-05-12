@@ -18,6 +18,7 @@ class AccountManager: NSObject {
     static let shared = AccountManager()
     var rootViewController: UINavigationController?
     var contentManager = ContentManager()
+    var uploadInProgress = false
     
     
     func loginOrRegister() {
@@ -81,14 +82,19 @@ class AccountManager: NSObject {
         withHKCalAuth {
             UserManager.sharedManager.ensureAccessToken { error in
                 guard !error else {
-                    self.loginComplete()
+                    self.doLogin { self.loginComplete() }
                     return
                 }
                 
                 UserManager.sharedManager.pullProfileWithConsent { (error, msg) in
                     if !error {
                         self.loginComplete()
-                    } else {
+                        
+                    } else if (msg == UMConsentInfoString) {
+                        self.uploadLostConsentFile()
+                        self.loginComplete()
+                    }
+                    else {
                         log.error("Failed to retrieve initial profile and consent: \(msg)")
                     }
                 }
@@ -108,5 +114,24 @@ class AccountManager: NSObject {
         }
     }
 
-    
+    func uploadLostConsentFile() {
+        
+        guard let consentPath = ConsentManager.sharedManager.getConsentFilePath() else {
+            return
+        }
+        
+        if (self.uploadInProgress) {
+            return
+        }
+        
+        self.uploadInProgress = true
+        UserManager.sharedManager.pushConsent(consentPath) { [weak self](error, text) in
+            
+            if (!error) {
+                ConsentManager.sharedManager.removeConsentFile(consentPath)
+            }
+         
+            self?.uploadInProgress = false
+        }
+    }
 }

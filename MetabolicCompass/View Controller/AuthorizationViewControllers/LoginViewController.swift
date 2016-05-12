@@ -55,6 +55,34 @@ class LoginViewController: UIViewController {
     }
     
     
+    func uploadLostConsentFile() {
+        
+        guard let consentPath = ConsentManager.sharedManager.getConsentFilePath() else {
+            UINotifications.noConsent(self.navigationController!, pop: true, asNav: true)
+            return
+        }
+        
+        UserManager.sharedManager.pushConsent(consentPath) { (error, text) in
+            
+            if (!error) {
+                ConsentManager.sharedManager.removeConsentFile(consentPath)
+            }
+            
+            self.loginComplete()
+        }
+    }
+    
+    func loginComplete() {
+        if let comp = self.completion { comp() }
+        //UINotifications.doWelcome(self.parentView!, pop: true, user: UserManager.sharedManager.getUserId() ?? "")
+        
+        self.navigationController?.popToRootViewControllerAnimated(true)
+        
+        Async.main {
+            Answers.logLoginWithMethod("SPL", success: true, customAttributes: nil)
+            self.parentView?.initializeBackgroundWork()
+        }
+    }
 
     // MARK: - Actions
     
@@ -66,22 +94,22 @@ class LoginViewController: UIViewController {
                 UINotifications.invalidUserPass(self.navigationController!)
                 return
             }
-            UserManager.sharedManager.loginWithPull { (error, _) in
+            UserManager.sharedManager.loginWithPull { (error, text) in
                 guard !error else {
-                    Answers.logLoginWithMethod("SPL", success: false, customAttributes: nil)
-                    //UINotifications.invalidUserPass(self.navigationController!)
-                    UINotifications.invalidUserPass(self)
+                    
+                    if (text == UMConsentInfoString) {
+                        self.uploadLostConsentFile()
+                    }
+                    else {
+                        Answers.logLoginWithMethod("SPL", success: false, customAttributes: nil)
+                        //UINotifications.invalidUserPass(self.navigationController!)
+                        UINotifications.invalidUserPass(self)
+                    }
+                    
                     return
                 }
-                if let comp = self.completion { comp() }
-                //UINotifications.doWelcome(self.parentView!, pop: true, user: UserManager.sharedManager.getUserId() ?? "")
                 
-                self.navigationController?.popToRootViewControllerAnimated(true)
-                
-                Async.main {
-                    Answers.logLoginWithMethod("SPL", success: true, customAttributes: nil)
-                    self.parentView?.initializeBackgroundWork()
-                }
+                self.loginComplete()
             }
         }
     }
