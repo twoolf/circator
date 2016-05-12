@@ -7,39 +7,64 @@
         <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner"/>
         <placeholder placeholderIdentifier="IBFirstResponder" id="-2" customClass="UIResponder"/>
         <collectionViewCell opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" id="gTV-IL-0wX" customClass="TitleCollectionViewCell" customModule="MetabolicCompass" customModuleProvider="target">
-            <rect key="frame" x="0.0" y="0.0" width="320" height="50"/>
+            <rect key="frame" x="0.0" y="0.0" width="320" height="65"/>
             <autoresizingMask key="autoresizingMask"/>
             <view key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center">
-                <rect key="frame" x="0.0" y="0.0" width="320" height="50"/>
+                <rect key="frame" x="0.0" y="0.0" width="320" height="65"/>
                 <subviews>
                     <imageView userInteractionEnabled="NO" contentMode="center" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="1cb-a5-eNQ">
-                        <rect key="frame" x="10" y="4" width="21" height="42"/>
+                        <rect key="frame" x="10" y="12" width="21" height="42"/>
                         <constraints>
                             <constraint firstAttribute="width" constant="21" id="8Nh-L4-A2a"/>
                             <constraint firstAttribute="height" constant="42" id="A58-sM-Egc"/>
                         </constraints>
                     </imageView>
-                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" misplaced="YES" text="Label" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="Pmw-cE-15f">
-                        <rect key="frame" x="47" y="15" width="257" height="21"/>
+                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Label" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="Pmw-cE-15f">
+                        <rect key="frame" x="47" y="25" width="236" height="17"/>
                         <fontDescription key="fontDescription" type="system" pointSize="14"/>
                         <color key="textColor" white="0.66666666666666663" alpha="1" colorSpace="calibratedWhite"/>
                         <nil key="highlightedColor"/>
                     </label>
+                    <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="arrow-forward-setting" translatesAutoresizingMaskIntoConstraints="NO" id="fzM-8a-Gky">
+                        <rect key="frame" x="291" y="25" width="9" height="17"/>
+                        <constraints>
+                            <constraint firstAttribute="width" constant="9" id="dIm-wJ-5RO"/>
+                            <constraint firstAttribute="height" constant="17" id="dZN-U2-Cl7"/>
+                        </constraints>
+                    </imageView>
+                    <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="601-JV-tGb">
+                        <rect key="frame" x="47" y="64" width="273" height="1"/>
+                        <color key="backgroundColor" red="1" green="0.0" blue="1" alpha="1" colorSpace="calibratedRGB"/>
+                        <constraints>
+                            <constraint firstAttribute="height" constant="1" id="Bms-Uj-63x"/>
+                        </constraints>
+                    </view>
                 </subviews>
                 <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
             </view>
             <constraints>
+                <constraint firstAttribute="trailing" secondItem="601-JV-tGb" secondAttribute="trailing" id="69J-tX-1j0"/>
                 <constraint firstItem="Pmw-cE-15f" firstAttribute="centerY" secondItem="1cb-a5-eNQ" secondAttribute="centerY" id="EGw-we-cgl"/>
+                <constraint firstAttribute="trailing" secondItem="fzM-8a-Gky" secondAttribute="trailing" constant="20" id="QA7-5H-0Q8"/>
                 <constraint firstItem="Pmw-cE-15f" firstAttribute="leading" secondItem="1cb-a5-eNQ" secondAttribute="trailing" constant="16" id="VCH-pQ-2pp"/>
+                <constraint firstItem="fzM-8a-Gky" firstAttribute="leading" secondItem="Pmw-cE-15f" secondAttribute="trailing" constant="8" id="a4J-yU-IYd"/>
                 <constraint firstItem="1cb-a5-eNQ" firstAttribute="leading" secondItem="gTV-IL-0wX" secondAttribute="leading" constant="10" id="c9o-3X-DP0"/>
+                <constraint firstItem="fzM-8a-Gky" firstAttribute="centerY" secondItem="Pmw-cE-15f" secondAttribute="centerY" id="ea1-ex-6hQ"/>
+                <constraint firstItem="601-JV-tGb" firstAttribute="leading" secondItem="Pmw-cE-15f" secondAttribute="leading" id="ikx-5M-H8p"/>
+                <constraint firstAttribute="bottom" secondItem="601-JV-tGb" secondAttribute="bottom" id="pqz-jX-uCm"/>
                 <constraint firstItem="1cb-a5-eNQ" firstAttribute="centerY" secondItem="gTV-IL-0wX" secondAttribute="centerY" id="zL0-Uy-os8"/>
-                <constraint firstAttribute="trailing" secondItem="Pmw-cE-15f" secondAttribute="trailing" constant="16" id="zN6-mE-Cgj"/>
             </constraints>
             <connections>
+                <outlet property="accessoryView" destination="fzM-8a-Gky" id="Ngn-OS-OO3"/>
                 <outlet property="cellImage" destination="1cb-a5-eNQ" id="pnl-pf-wub"/>
+                <outlet property="separatorLineHeightConstraint" destination="Bms-Uj-63x" id="4VW-QV-Abw"/>
+                <outlet property="separatorView" destination="601-JV-tGb" id="abv-DC-anP"/>
                 <outlet property="titleLbl" destination="Pmw-cE-15f" id="ekV-5o-3rb"/>
             </connections>
             <point key="canvasLocation" x="560" y="398"/>
         </collectionViewCell>
     </objects>
+    <resources>
+        <image name="arrow-forward-setting" width="8" height="16"/>
+    </resources>
 </document>

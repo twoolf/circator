@@ -69,12 +69,12 @@ class MainSettingsViewController: BaseViewController, UICollectionViewDataSource
     private lazy var items : [SettingsItem] = {
        var settingsItems = [SettingsItem]()
         
-        settingsItems.append(SettingsItem(title: "Profile".localized, iconImageName: "icon-email", segueIdentifier: self.segueProfileIdentifier))
-        settingsItems.append(SettingsItem(title: "Physiological Profile".localized, iconImageName: "icon-email", segueIdentifier: self.segueProfileIdentifier))
-        settingsItems.append(SettingsItem(title: "Notifications".localized, iconImageName: "icon-email", segueIdentifier: self.segueProfileIdentifier))
-        settingsItems.append(SettingsItem(title: "Health Access".localized, iconImageName: "icon-email", segueIdentifier: self.segueProfileIdentifier))
+        settingsItems.append(SettingsItem(title: "Profile".localized, iconImageName: "icon-settings-profile", segueIdentifier: self.segueProfileIdentifier))
+        settingsItems.append(SettingsItem(title: "Physiological Profile".localized, iconImageName: "icon-settings-physiological", segueIdentifier: self.segueProfileIdentifier))
+        settingsItems.append(SettingsItem(title: "Notifications".localized, iconImageName: "icon-settings-notifications", segueIdentifier: self.segueProfileIdentifier))
+        settingsItems.append(SettingsItem(title: "Health Access".localized, iconImageName: "icon-settings-health", segueIdentifier: self.segueProfileIdentifier))
     
-        settingsItems.append(SettingsItem(title: "Log out".localized, iconImageName: "icon-email"))
+        settingsItems.append(SettingsItem(title: "Log out".localized, iconImageName: "icon-settings-logout"))
         self.logoutItemIndex = settingsItems.count - 1
         
         return settingsItems
@@ -107,18 +107,20 @@ class MainSettingsViewController: BaseViewController, UICollectionViewDataSource
             cell.cellImage?.image = UIImage(named: imageName)
         }
         
+        if isCellLogoutAtIndexPath(indexPath) {
+            cell.hasAccessoryView = false
+        }
+        
         return cell
     }
 
     func collectionView(collectionView: UICollectionView, didSelectItemAtIndexPath indexPath: NSIndexPath) {
         
-        let item = itemAtIndexPath(indexPath)
-        
         if isCellLogoutAtIndexPath(indexPath) {
             logoutAction()
         }
         else {
-            
+            let item = itemAtIndexPath(indexPath)
         }
     }
     
