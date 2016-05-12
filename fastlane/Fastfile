@@ -310,6 +310,12 @@ platform :ios do
   #  deliver(force: true)
   #  frameit
   #end
+  
+  desc "Build and submit a beta build to Fabric/Crashlytics"
+  lane :beta_srost_fabric do
+    build_dev
+    crashlytics(ipa_path: "./MetabolicCompass.ipa", notifications: true)
+  end
 
 
   ###############################
