@@ -80,14 +80,14 @@ class RadarViewController : UIViewController, ChartViewDelegate {
         chart.delegate = self
         chart.descriptionText = ""
         chart.rotationEnabled = false
-        chart.yAxis.axisMinValue = 0.05
+        chart.yAxis.axisMinValue = 0.1
 //        chart.yAxis.axisMaxValue = 1.2
         chart.yAxis.axisRange = 1.0
 //        chart.drawWeb = false
         chart.yAxis.drawLabelsEnabled = false
         chart.xAxis.drawLabelsEnabled = false
-        
-        
+        chart.webColor = UIColor.colorWithHexString("#042652")!
+        chart.webAlpha = 1.0
         
         
 //        chart.yAxis.customAxisMax = 1.0
@@ -243,7 +243,7 @@ class RadarViewController : UIViewController, ChartViewDelegate {
         indDataSet.setColor(indDataSet.fillColor)
         indDataSet.drawFilledEnabled = true
         indDataSet.lineWidth = 1.0
-        indDataSet.fillAlpha = 0.75
+        indDataSet.fillAlpha = 0.5
         indDataSet.showPoints = true
         indDataSet.highlightColor = UIColor.clearColor()
         indDataSet.highlightCircleFillColor = UIColor.redColor()

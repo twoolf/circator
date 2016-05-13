@@ -14,7 +14,8 @@ class MetabolicChartRender: RadarChartRenderer {
     
     var centerCircleColor = UIColor.colorWithHexString("#041F44")!
     var imageIndent = CGFloat(0.0)
-   
+    var radiusMod   = CGFloat(0.9)
+    
     internal struct Math
     {
         internal static let FDEG2RAD = CGFloat(M_PI / 180.0)
@@ -47,7 +48,7 @@ class MetabolicChartRender: RadarChartRenderer {
         CGContextSaveGState(context)
         
         let center = chart.centerOffsets
-        let radius = chart.radius * CGFloat(0.9)
+        let radius = chart.radius * radiusMod
         
         CGContextBeginPath(context)
         CGContextAddEllipseInRect(context, CGRectMake(center.x - radius, center.y - radius, radius * 2.0, radius * 2.0))
@@ -57,6 +58,69 @@ class MetabolicChartRender: RadarChartRenderer {
         CGContextRestoreGState(context)
         
         self.drawIcons(context: context)
+        self.drawWeb(context: context)
+    }
+    
+    override func drawWeb(context context: CGContext)
+    {
+        guard let
+            chart = chart as? MetabolicRadarChartView,
+            data = chart.data
+            else { return }
+        
+        let sliceangle = chart.sliceAngle
+        
+        CGContextSaveGState(context)
+        
+        // calculate the factor that is needed for transforming the value to
+        // pixels
+        let factor = chart.factor
+        let radius = chart.radius * radiusMod
+        let rotationangle = chart.rotationAngle
+        
+        let center = chart.centerOffsets
+        
+        // draw the web lines that come from the center
+        CGContextSetLineWidth(context, chart.webLineWidth)
+        CGContextSetStrokeColorWithColor(context, chart.webColor.CGColor)
+        CGContextSetAlpha(context, chart.webAlpha)
+        
+        let xIncrements = 1 + chart.skipWebLineCount
+        
+        var _webLineSegmentsBuffer = [CGPoint](count: 2, repeatedValue: CGPoint())
+        
+        for i in 0.stride(to: data.xValCount, by: xIncrements)
+        {
+            let p = self.getPosition(
+                center: center,
+                dist: radius,
+                angle: sliceangle * CGFloat(i) + rotationangle)
+            
+            _webLineSegmentsBuffer[0].x = center.x
+            _webLineSegmentsBuffer[0].y = center.y
+            _webLineSegmentsBuffer[1].x = p.x
+            _webLineSegmentsBuffer[1].y = p.y
+            
+            CGContextStrokeLineSegments(context, _webLineSegmentsBuffer, 2)
+        }
+        
+        // draw the inner-web
+        CGContextSetLineWidth(context, chart.innerWebLineWidth)
+        CGContextSetStrokeColorWithColor(context, chart.webColor.CGColor)
+        CGContextSetAlpha(context, chart.webAlpha)
+        
+        let labelCount = chart.yAxis.entryCount
+        
+        for j in 0 ..< labelCount - chart.skipWebCircleCount
+        {
+            let r = CGFloat(chart.yAxis.entries[j] - chart.chartYMin) * factor
+            
+            CGContextBeginPath(context)
+            CGContextAddEllipseInRect(context, CGRectMake(center.x - r, center.y - r, r * 2.0, r * 2.0))
+            CGContextStrokePath(context)
+        }
+        
+        CGContextRestoreGState(context)
     }
     
     func drawIcons(context context: CGContext)

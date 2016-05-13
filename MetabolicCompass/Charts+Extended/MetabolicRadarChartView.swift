@@ -12,7 +12,8 @@ import Charts
 class MetabolicRadarChartView: RadarChartView {
     
     var iconsIndent = CGFloat(10)
-
+    var skipWebCircleCount = 2
+    
     override var factor: CGFloat {
         let content = self.viewPortHandler.contentRect
         
