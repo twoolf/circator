@@ -142,7 +142,7 @@ platform :ios do
   ##
 
   desc "Fastlane/match execution"
-  private_lane :prepcerts do |options|
+  lane :prepcerts do |options|
     type  = options[:type]
     ro    = options[:readonly]
     frc   = options[:force]
@@ -222,7 +222,7 @@ platform :ios do
       ENV[metadata[1]] = uuid
     }
 
-    gym(scheme: "MetabolicCompass")
+    gym(scheme: "MetabolicCompass", use_legacy_build_api: true)
   end
 
   desc "Build an adhoc archive"
