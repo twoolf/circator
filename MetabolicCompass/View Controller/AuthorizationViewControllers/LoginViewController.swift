@@ -18,7 +18,7 @@ import Dodo
  
 - note: for both signup and login; uses Stormpath for authentication
  */
-class LoginViewController: UIViewController {
+class LoginViewController: BaseViewController {
 
     private var userCell: FormTextFieldCell?
     private var passCell: FormTextFieldCell?

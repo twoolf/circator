@@ -10,7 +10,7 @@ import Foundation
 import UIKit
 import MetabolicCompassKit
 
-class RegisterLoginLandingViewController: UIViewController {
+class RegisterLoginLandingViewController: BaseViewController {
     
     @IBOutlet weak var logoTopMargin: NSLayoutConstraint!
     @IBOutlet weak var registerButtonBottomMargin: NSLayoutConstraint!
