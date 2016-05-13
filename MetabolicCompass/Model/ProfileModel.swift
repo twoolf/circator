@@ -27,4 +27,55 @@ class ProfileModel: UserInfoModel {
         
         return fields
     }
+    
+    func setupValues() {
+        let profileInfo = UserManager.sharedManager.getProfileCache()
+        
+        for item in items {
+            
+            if item.type == .Photo {
+                item.setNewValue(UserManager.sharedManager.userProfilePhoto())
+            }
+            else if item.type == .Units {
+                // TODO: get REAL user units value
+                item.setNewValue(UnitsSystem.Metric.rawValue)
+            }
+            else if item.type == .Email {
+                item.setNewValue(UserManager.sharedManager.getUserId())
+
+            }
+            else {
+                let profileItemInfo = profileInfo[item.name]
+                
+                if item.type == .Gender {
+                    let gender = Gender.valueByTitle(profileItemInfo as! String)
+                    item.setNewValue(gender.rawValue)
+                }
+                else {
+                    item.setNewValue(profileItemInfo)
+                }
+            }
+            
+        }
+    }
+    
+    private let uneditableFields:[UserInfoFiledType] = [.Email, .FirstName, .LastName]
+    
+    func isItemEditable(item: ModelItem) -> Bool {
+        
+        return !uneditableFields.contains(item.type)
+    }
+    
+    override func profileItems() -> [String : String] {
+        var newItems : [ModelItem] = [ModelItem]()
+        
+        for item in items {
+            if isItemEditable(item) {
+                newItems.append(item)
+            }
+        }
+        
+        return profileItems(newItems)
+    }
+    
 }

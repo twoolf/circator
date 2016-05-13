@@ -10,12 +10,12 @@ import UIKit
 
 class CircleImageCollectionViewCell: BaseCollectionViewCell {
 
-    @IBOutlet weak var imageView: UIImageView!
+    @IBOutlet weak var photoImg: UIImageView!
     
     override func awakeFromNib() {
         super.awakeFromNib()
         
-        imageView.makeCircled()
+        photoImg.makeCircled()
     }
 
 }

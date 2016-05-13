@@ -11,8 +11,6 @@ import UIKit
 
 class RegisterModelDataSource: BaseDataSource {
     
-    weak var viewController: UIViewController?
-    
     let model = RegistrationModel()
     
     private let loadImageCellIdentifier = "loadImageCell"
@@ -63,8 +61,7 @@ class RegisterModelDataSource: BaseDataSource {
                 let field = self.model.itemAtIndexPath(indexPath)
                 
                 if field.type == .Units {
-                    let needsUpdateIndexPathes = [NSIndexPath(forRow: UserInfoFiledType.Weight.rawValue, inSection: 0),
-                                                  NSIndexPath(forRow: UserInfoFiledType.Height.rawValue, inSection: 0)]
+                    let needsUpdateIndexPathes = self.model.unitsDependedItemsIndexes()
                     
                     collectionView.reloadItemsAtIndexPaths(needsUpdateIndexPathes)
                 }

@@ -10,6 +10,8 @@ import UIKit
 
 class BaseDataSource: NSObject, UICollectionViewDataSource, UICollectionViewDelegateFlowLayout {
 
+    weak var viewController: UIViewController?
+    
     let selectedTextColor = UIColor.whiteColor()
     let unselectedTextColor = UIColor.lightGrayColor()
     

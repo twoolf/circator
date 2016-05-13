@@ -9,16 +9,14 @@
 import UIKit
 import AVFoundation
 
-class LoadImageCollectionViewCell: BaseCollectionViewCell, UIImagePickerControllerDelegate, UINavigationControllerDelegate {
+class LoadImageCollectionViewCell: CircleImageCollectionViewCell, UIImagePickerControllerDelegate, UINavigationControllerDelegate {
 
-    @IBOutlet weak var photoImg: UIImageView!
     
     weak var presentingViewController: UINavigationController?
     
     override func awakeFromNib() {
         super.awakeFromNib()
         
-        photoImg.makeCircled()        
     }
 
     @IBAction func loadPhotoAction(sender: UIButton) {
