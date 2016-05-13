@@ -48,6 +48,11 @@ class ProfileViewController: BaseViewController {
         }
         // Validate
         
+        if !dataSource.model.isModelValid() {
+            self.showAlert(withMessage: dataSource.model.validationMessage!, title: "Profile saving Error".localized)
+            return
+        }
+        
         // Saving
         
         sender.enabled = false

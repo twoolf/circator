@@ -61,6 +61,13 @@ class DoubleCheckListCollectionViewCell: BaseCollectionViewCell, CheckBoxProtoco
         secondLbl.textColor = secondCheckBox.isChecked ? selectedTextColor : unselectedTextColor
     }
     
+    override func prepareForReuse() {
+        super.prepareForReuse()
+        
+        firstLbl.text = nil
+        secondLbl.text = nil
+    }
+ 
     // MARK: - CheckBox Protocol
     
     func checkBoxValueChanged(sender: CheckBox, newValue: Bool) {

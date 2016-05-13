@@ -12,8 +12,8 @@
             <view key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center">
                 <rect key="frame" x="0.0" y="0.0" width="320" height="65"/>
                 <subviews>
-                    <textField opaque="NO" clipsSubviews="YES" contentMode="scaleToFill" misplaced="YES" contentHorizontalAlignment="left" contentVerticalAlignment="center" text="Text" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="p5G-3l-vdL">
-                        <rect key="frame" x="62" y="33" width="258" height="17"/>
+                    <textField opaque="NO" clipsSubviews="YES" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" text="Text" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="p5G-3l-vdL">
+                        <rect key="frame" x="62" y="34" width="258" height="16"/>
                         <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
                         <fontDescription key="fontDescription" type="system" pointSize="13"/>
                         <textInputTraits key="textInputTraits"/>
@@ -25,13 +25,19 @@
                             <constraint firstAttribute="width" constant="21" id="b5f-9S-wrR"/>
                         </constraints>
                     </imageView>
-                    <view contentMode="scaleToFill" misplaced="YES" translatesAutoresizingMaskIntoConstraints="NO" id="NGj-zL-9wl">
-                        <rect key="frame" x="70" y="64" width="250" height="1"/>
+                    <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="NGj-zL-9wl">
+                        <rect key="frame" x="62" y="64" width="258" height="1"/>
                         <color key="backgroundColor" red="0.0" green="1" blue="1" alpha="1" colorSpace="calibratedRGB"/>
                         <constraints>
                             <constraint firstAttribute="height" constant="1" id="bPb-pg-Mpq"/>
                         </constraints>
                     </view>
+                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" misplaced="YES" text="" textAlignment="right" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="Trs-0U-Zhv">
+                        <rect key="frame" x="287" y="34" width="33" height="16"/>
+                        <fontDescription key="fontDescription" type="system" pointSize="13"/>
+                        <color key="textColor" cocoaTouchSystemColor="darkTextColor"/>
+                        <nil key="highlightedColor"/>
+                    </label>
                     <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Title" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="x52-wn-VZm">
                         <rect key="frame" x="62" y="15" width="258" height="16"/>
                         <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
@@ -44,16 +50,18 @@
             </view>
             <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
             <constraints>
-                <constraint firstItem="p5G-3l-vdL" firstAttribute="trailing" secondItem="x52-wn-VZm" secondAttribute="trailing" id="288-6Y-lbh"/>
                 <constraint firstAttribute="bottom" secondItem="NGj-zL-9wl" secondAttribute="bottom" id="70s-VJ-gDg"/>
                 <constraint firstItem="x52-wn-VZm" firstAttribute="leading" secondItem="gTV-IL-0wX" secondAttribute="leading" constant="62" id="8Dt-Wm-W1P"/>
                 <constraint firstItem="p5G-3l-vdL" firstAttribute="leading" secondItem="NGj-zL-9wl" secondAttribute="leading" id="Bb3-h5-o7U"/>
                 <constraint firstItem="a16-i2-TzB" firstAttribute="leading" secondItem="gTV-IL-0wX" secondAttribute="leading" constant="16" id="LGw-o6-km4"/>
                 <constraint firstItem="x52-wn-VZm" firstAttribute="top" secondItem="gTV-IL-0wX" secondAttribute="top" constant="15" id="P13-1I-PL4"/>
+                <constraint firstItem="Trs-0U-Zhv" firstAttribute="centerY" secondItem="p5G-3l-vdL" secondAttribute="centerY" id="PUC-uS-ean"/>
+                <constraint firstItem="NGj-zL-9wl" firstAttribute="trailing" secondItem="p5G-3l-vdL" secondAttribute="trailing" id="QAn-qP-Pap"/>
+                <constraint firstItem="Trs-0U-Zhv" firstAttribute="leading" secondItem="p5G-3l-vdL" secondAttribute="trailing" constant="2" id="Rmf-5C-pjA"/>
                 <constraint firstAttribute="trailing" secondItem="x52-wn-VZm" secondAttribute="trailing" id="Ruq-En-YAh"/>
+                <constraint firstItem="Trs-0U-Zhv" firstAttribute="trailing" secondItem="x52-wn-VZm" secondAttribute="trailing" constant="2" id="UwZ-MY-EBo"/>
                 <constraint firstItem="p5G-3l-vdL" firstAttribute="leading" secondItem="x52-wn-VZm" secondAttribute="leading" id="VSX-rq-NJU"/>
                 <constraint firstItem="x52-wn-VZm" firstAttribute="top" secondItem="a16-i2-TzB" secondAttribute="top" id="WmP-Tf-DbC"/>
-                <constraint firstItem="p5G-3l-vdL" firstAttribute="trailing" secondItem="NGj-zL-9wl" secondAttribute="trailing" id="eat-y1-zdQ"/>
                 <constraint firstAttribute="bottom" secondItem="p5G-3l-vdL" secondAttribute="bottom" constant="15" id="lgm-kB-Pbb"/>
             </constraints>
             <connections>
@@ -61,10 +69,11 @@
                 <outlet property="inputTxtField" destination="p5G-3l-vdL" id="qA4-cr-ZiG"/>
                 <outlet property="separatorLineHeightConstraint" destination="bPb-pg-Mpq" id="dl1-ze-rsR"/>
                 <outlet property="separatorView" destination="NGj-zL-9wl" id="PH0-vp-Wkh"/>
+                <outlet property="textValueCommentLbl" destination="Trs-0U-Zhv" id="a0a-8C-Jyy"/>
                 <outlet property="titleLbl" destination="x52-wn-VZm" id="KtY-hs-rUX"/>
                 <outlet property="titleLeftOffsetConstraint" destination="8Dt-Wm-W1P" id="lAe-bE-YBW"/>
             </connections>
-            <point key="canvasLocation" x="255" y="382.5"/>
+            <point key="canvasLocation" x="469" y="392.5"/>
         </collectionViewCell>
     </objects>
     <resources>
