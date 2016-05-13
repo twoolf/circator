@@ -44,10 +44,12 @@
                                     <constraint firstAttribute="height" constant="1" id="fZ3-So-d3Y"/>
                                 </constraints>
                             </view>
-                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="sd1-bZ-oIV">
+                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="sd1-bZ-oIV" customClass="BrightButton" customModule="MetabolicCompass" customModuleProvider="target">
                                 <rect key="frame" x="39" y="415" width="242" height="39"/>
                                 <color key="backgroundColor" red="0.20000000000000001" green="0.54117647058823526" blue="1" alpha="1" colorSpace="calibratedRGB"/>
-                                <state key="normal" title="Login"/>
+                                <state key="normal" title="Login">
+                                    <color key="titleColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                                </state>
                                 <userDefinedRuntimeAttributes>
                                     <userDefinedRuntimeAttribute type="number" keyPath="layer.cornerRadius">
                                         <integer key="value" value="3"/>
@@ -57,13 +59,15 @@
                                     <action selector="onLogin:" destination="YLC-eZ-y2e" eventType="touchUpInside" id="Q3j-ru-Iak"/>
                                 </connections>
                             </button>
-                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="0Qt-Cl-J8O">
+                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="0Qt-Cl-J8O" customClass="BrightButton" customModule="MetabolicCompass" customModuleProvider="target">
                                 <rect key="frame" x="39" y="469" width="242" height="39"/>
                                 <color key="backgroundColor" red="0.20000000000000001" green="0.54117647058823526" blue="1" alpha="1" colorSpace="calibratedRGB"/>
                                 <constraints>
                                     <constraint firstAttribute="height" constant="39" id="toY-GJ-1gN"/>
                                 </constraints>
-                                <state key="normal" title="Register"/>
+                                <state key="normal" title="Register">
+                                    <color key="titleColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                                </state>
                                 <userDefinedRuntimeAttributes>
                                     <userDefinedRuntimeAttribute type="number" keyPath="layer.cornerRadius">
                                         <integer key="value" value="3"/>
@@ -177,7 +181,7 @@
                                     <rect key="frame" x="0.0" y="412" width="320" height="128"/>
                                     <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                     <subviews>
-                                        <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="zYU-TE-NmB">
+                                        <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="zYU-TE-NmB" customClass="BrightButton" customModule="MetabolicCompass" customModuleProvider="target">
                                             <rect key="frame" x="40" y="27" width="240" height="39"/>
                                             <color key="backgroundColor" red="0.20000000000000001" green="0.54117647059999996" blue="1" alpha="1" colorSpace="calibratedRGB"/>
                                             <constraints>
@@ -193,9 +197,12 @@
                                                 <action selector="loginAction" destination="8yI-Fi-ICu" eventType="touchUpInside" id="60j-Hz-tQg"/>
                                             </connections>
                                         </button>
-                                        <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="jTi-s5-wtV">
+                                        <button opaque="NO" contentMode="scaleToFill" misplaced="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="jTi-s5-wtV">
                                             <rect key="frame" x="0.0" y="89" width="320" height="34"/>
-                                            <state key="normal" title="Forgot Password?"/>
+                                            <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                            <state key="normal" title="Forgot Password?">
+                                                <color key="titleColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                                            </state>
                                             <connections>
                                                 <segue destination="Y3c-gq-NyR" kind="show" id="Rn1-Jb-tIh"/>
                                             </connections>
@@ -352,13 +359,13 @@
                                                     <constraint firstAttribute="trailing" secondItem="F92-M2-0CT" secondAttribute="trailing" id="iiQ-hV-cCs"/>
                                                 </constraints>
                                             </view>
-                                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="aIe-zQ-QaK">
+                                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="aIe-zQ-QaK" customClass="BrightButton" customModule="MetabolicCompass" customModuleProvider="target">
                                                 <rect key="frame" x="40" y="385" width="240" height="39"/>
                                                 <color key="backgroundColor" red="0.20000000000000001" green="0.54117647059999996" blue="1" alpha="1" colorSpace="calibratedRGB"/>
                                                 <constraints>
                                                     <constraint firstAttribute="height" constant="39" id="4bP-Lm-jPX"/>
                                                 </constraints>
-                                                <state key="normal" title="Reset Password"/>
+                                                <state key="normal" title="Reset password"/>
                                                 <userDefinedRuntimeAttributes>
                                                     <userDefinedRuntimeAttribute type="number" keyPath="layer.cornerRadius">
                                                         <integer key="value" value="3"/>
@@ -475,7 +482,7 @@
                                     <rect key="frame" x="0.0" y="50" width="320" height="120"/>
                                     <autoresizingMask key="autoresizingMask"/>
                                     <subviews>
-                                        <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="XTA-yO-iNX">
+                                        <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="XTA-yO-iNX" customClass="BrightButton" customModule="MetabolicCompass" customModuleProvider="target">
                                             <rect key="frame" x="47" y="41" width="226" height="39"/>
                                             <color key="backgroundColor" red="0.20000000000000001" green="0.54117647059999996" blue="1" alpha="1" colorSpace="calibratedRGB"/>
                                             <constraints>
@@ -534,7 +541,7 @@
                             <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="Nkc-ed-rNq">
                                 <rect key="frame" x="16" y="201" width="288" height="166"/>
                                 <subviews>
-                                    <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="GJd-xL-dQA">
+                                    <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="GJd-xL-dQA" customClass="BrightButton" customModule="MetabolicCompass" customModuleProvider="target">
                                         <rect key="frame" x="0.0" y="127" width="288" height="39"/>
                                         <color key="backgroundColor" red="0.20000000000000001" green="0.54117647059999996" blue="1" alpha="1" colorSpace="calibratedRGB"/>
                                         <constraints>
@@ -551,7 +558,7 @@
                                             <segue destination="cr1-Aw-H8B" kind="show" identifier="AdditionInfoController" id="StD-tJ-vTl"/>
                                         </connections>
                                     </button>
-                                    <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="jvl-2B-OaP">
+                                    <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="jvl-2B-OaP" customClass="UnBrightButton" customModule="MetabolicCompass" customModuleProvider="target">
                                         <rect key="frame" x="0.0" y="72" width="288" height="39"/>
                                         <color key="backgroundColor" red="0.32549019607843138" green="0.40392156862745099" blue="0.52156862745098043" alpha="1" colorSpace="calibratedRGB"/>
                                         <constraints>

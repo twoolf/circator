@@ -46,6 +46,8 @@
 		84207D261CCA6A7E00776848 /* InputTableCellWithImage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84207D251CCA6A7E00776848 /* InputTableCellWithImage.swift */; };
 		84207D281CCE02A400776848 /* LoginModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84207D271CCE02A400776848 /* LoginModel.swift */; };
 		84A16A601CE3630400D61935 /* UIImage+Extended.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84A16A5F1CE3630400D61935 /* UIImage+Extended.swift */; };
+		951BA49D1CE6295F0036600A /* BrightButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 951BA49C1CE6295F0036600A /* BrightButton.swift */; };
+		951BA49F1CE630A70036600A /* UnBrightButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 951BA49E1CE630A70036600A /* UnBrightButton.swift */; };
 		95635AA01CD3782200BCC467 /* AdditionalInfoModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 95635A9F1CD3782200BCC467 /* AdditionalInfoModel.swift */; };
 		95635AA31CD3ACF300BCC467 /* ScrollSelectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 95635AA11CD3ACF200BCC467 /* ScrollSelectionViewCell.swift */; };
 		95635AA41CD3ACF300BCC467 /* ScrollSelectionViewCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 95635AA21CD3ACF300BCC467 /* ScrollSelectionViewCell.xib */; };
@@ -277,6 +279,8 @@
 		84207D271CCE02A400776848 /* LoginModel.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LoginModel.swift; sourceTree = "<group>"; };
 		84A16A5F1CE3630400D61935 /* UIImage+Extended.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "UIImage+Extended.swift"; sourceTree = "<group>"; };
 		8B4A08D995498CDA94BBB258 /* Pods-MetabolicCompass.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-MetabolicCompass.release.xcconfig"; path = "Pods/Target Support Files/Pods-MetabolicCompass/Pods-MetabolicCompass.release.xcconfig"; sourceTree = "<group>"; };
+		951BA49C1CE6295F0036600A /* BrightButton.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BrightButton.swift; sourceTree = "<group>"; };
+		951BA49E1CE630A70036600A /* UnBrightButton.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = UnBrightButton.swift; sourceTree = "<group>"; };
 		95635A9F1CD3782200BCC467 /* AdditionalInfoModel.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AdditionalInfoModel.swift; sourceTree = "<group>"; };
 		95635AA11CD3ACF200BCC467 /* ScrollSelectionViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ScrollSelectionViewCell.swift; sourceTree = "<group>"; };
 		95635AA21CD3ACF300BCC467 /* ScrollSelectionViewCell.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = ScrollSelectionViewCell.xib; sourceTree = "<group>"; };
@@ -839,6 +843,8 @@
 				F43A7C671BBE508D00B6FA56 /* IntroCompareDataTableViewCell.swift */,
 				84207D251CCA6A7E00776848 /* InputTableCellWithImage.swift */,
 				958568001CD0AFA400EDD385 /* CheckBox.swift */,
+				951BA49C1CE6295F0036600A /* BrightButton.swift */,
+				951BA49E1CE630A70036600A /* UnBrightButton.swift */,
 			);
 			path = View;
 			sourceTree = "<group>";
@@ -1244,6 +1250,7 @@
 				E75E95AB1CDCD10700A18756 /* DashboardManageController.swift in Sources */,
 				78B734281C90B86A00693229 /* PlotViewController.swift in Sources */,
 				95F4008E1CE385B70060F28C /* UIView+Extended.swift in Sources */,
+				951BA49D1CE6295F0036600A /* BrightButton.swift in Sources */,
 				958568031CD0B18900EDD385 /* RegistrationModel.swift in Sources */,
 				E75E95B21CDCD6CB00A18756 /* DashboardMetricsAppearanceProvider.swift in Sources */,
 				95769B871CE49E4000F26668 /* PhysiologicalDataViewController.swift in Sources */,
@@ -1301,6 +1308,7 @@
 				E7E48DF51CE614E400DB020F /* BalanceSampleListController.swift in Sources */,
 				84207D241CCA3C3600776848 /* RegisterLoginLandingViewController.swift in Sources */,
 				95635AA31CD3ACF300BCC467 /* ScrollSelectionViewCell.swift in Sources */,
+				951BA49F1CE630A70036600A /* UnBrightButton.swift in Sources */,
 				E74A89791CE3265C0056A2D2 /* AccountManager.swift in Sources */,
 				E74A897C1CE338D30056A2D2 /* ContentManager.swift in Sources */,
 				E7592DBF1CDC7E2E00E313BB /* DashboardComparisonCell.swift in Sources */,

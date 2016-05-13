@@ -173,4 +173,19 @@ public class ScreenManager {
     public func appBgColor() -> UIColor {
         return UIColor(red: 0.047, green: 0.1412, blue: 0.318, alpha: 1.0)
     }
+    
+    public func appBrightBlueColor() -> UIColor {
+        return UIColor(red: 0.298, green: 0.533, blue: 0.968, alpha: 1.0)
+    }
+    
+    public func appGrayColor() -> UIColor {
+        return UIColor(red: 0.325, green: 0.4, blue: 0.521, alpha: 1.0)
+    }
+    
+    // MARK: - Fonts
+    
+    public func appFontOfSize(size: CGFloat) -> UIFont {
+        return UIFont.systemFontOfSize(size)
+    }
+    
 }
