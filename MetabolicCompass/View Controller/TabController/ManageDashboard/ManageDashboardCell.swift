@@ -1,4 +1,4 @@
-//
+ //
 //  ManageDashboardCell.swift
 //  MetabolicCompass
 //
@@ -13,7 +13,7 @@ class ManageDashboardCell: UITableViewCell {
     @IBOutlet weak var leftImageView: UIImageView!
     @IBOutlet weak var captionLabel: UILabel!
     @IBOutlet weak var button: UIButton!
-    @IBOutlet weak var reorderImage: UIImageView!
+    @IBOutlet weak var reorderImage: UIImageView?
     
     override func awakeFromNib() {
         super.awakeFromNib()
@@ -32,10 +32,10 @@ class ManageDashboardCell: UITableViewCell {
         self.button.selected = selected
         
         if (selected) {
-            self.reorderImage.image  = UIImage(named: "icon-manage-filters-active")
+            self.reorderImage?.image  = UIImage(named: "icon-manage-filters-active")
         }
         else {
-            self.reorderImage.image  = UIImage(named: "icon-manage-filters-unactive")
+            self.reorderImage?.image  = UIImage(named: "icon-manage-filters-unactive")
         }
         
         self.leftImageView.image         = appearanceProvider.imageForSampleType(itemType, active: selected)

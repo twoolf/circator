@@ -15,4 +15,34 @@ class ManageBalanceCell: UITableViewCell {
     @IBOutlet weak var leftImage: UIImageView!
     
     
+    override var inputView: UIView? {
+        
+        let storyboard = UIStoryboard(name: "TabScreens", bundle: nil)
+        let controller = storyboard.instantiateViewControllerWithIdentifier("BalanceSampleListController")
+        
+        return controller.view
+    }
+    
+    override func setSelected(selected: Bool, animated: Bool) {
+        super.setSelected(selected, animated: animated)
+        
+        if (selected) {
+            self.becomeFirstResponder()
+        }
+        
+    }
+
+    override func canBecomeFirstResponder() -> Bool {
+        return true
+    }
+    
+    override func becomeFirstResponder() -> Bool {
+        return super.becomeFirstResponder()
+    }
+    
+    override func resignFirstResponder() -> Bool {
+        let tableView = self.superview!.superview as! UITableView
+        tableView.deselectRowAtIndexPath(tableView.indexPathForCell(self)!, animated: true)
+        return super.resignFirstResponder()
+    }
 }
