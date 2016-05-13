@@ -26,7 +26,7 @@
                         </constraints>
                     </imageView>
                     <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="NGj-zL-9wl">
-                        <rect key="frame" x="62" y="64" width="254" height="1"/>
+                        <rect key="frame" x="62" y="64" width="258" height="1"/>
                         <color key="backgroundColor" red="0.0" green="1" blue="1" alpha="1" colorSpace="calibratedRGB"/>
                         <constraints>
                             <constraint firstAttribute="height" constant="1" id="bPb-pg-Mpq"/>
@@ -56,13 +56,13 @@
                 <constraint firstItem="a16-i2-TzB" firstAttribute="leading" secondItem="gTV-IL-0wX" secondAttribute="leading" constant="16" id="LGw-o6-km4"/>
                 <constraint firstItem="x52-wn-VZm" firstAttribute="top" secondItem="gTV-IL-0wX" secondAttribute="top" constant="15" id="P13-1I-PL4"/>
                 <constraint firstItem="Trs-0U-Zhv" firstAttribute="centerY" secondItem="p5G-3l-vdL" secondAttribute="centerY" id="PUC-uS-ean"/>
-                <constraint firstItem="NGj-zL-9wl" firstAttribute="trailing" secondItem="p5G-3l-vdL" secondAttribute="trailing" id="QAn-qP-Pap"/>
                 <constraint firstItem="Trs-0U-Zhv" firstAttribute="leading" secondItem="p5G-3l-vdL" secondAttribute="trailing" constant="2" id="Rmf-5C-pjA"/>
                 <constraint firstAttribute="trailing" secondItem="x52-wn-VZm" secondAttribute="trailing" id="Ruq-En-YAh"/>
                 <constraint firstItem="Trs-0U-Zhv" firstAttribute="trailing" secondItem="x52-wn-VZm" secondAttribute="trailing" constant="-2" id="UwZ-MY-EBo"/>
                 <constraint firstItem="p5G-3l-vdL" firstAttribute="leading" secondItem="x52-wn-VZm" secondAttribute="leading" id="VSX-rq-NJU"/>
                 <constraint firstItem="x52-wn-VZm" firstAttribute="top" secondItem="a16-i2-TzB" secondAttribute="top" id="WmP-Tf-DbC"/>
                 <constraint firstAttribute="bottom" secondItem="p5G-3l-vdL" secondAttribute="bottom" constant="15" id="lgm-kB-Pbb"/>
+                <constraint firstItem="NGj-zL-9wl" firstAttribute="trailing" secondItem="x52-wn-VZm" secondAttribute="trailing" id="yQ9-WL-qvr"/>
             </constraints>
             <connections>
                 <outlet property="cellImage" destination="a16-i2-TzB" id="kJu-Sk-VLW"/>

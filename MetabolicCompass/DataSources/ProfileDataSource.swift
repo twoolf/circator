@@ -246,5 +246,9 @@ class ProfileDataSource: BaseDataSource {
         
         collectionView?.reloadData()
     }
+    
+    func reset() {
+        self.model.setupValues()
+    }
  
 }

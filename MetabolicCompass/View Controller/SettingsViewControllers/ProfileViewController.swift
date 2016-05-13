@@ -11,8 +11,9 @@ import MetabolicCompassKit
 
 class ProfileViewController: BaseViewController {
 
-    var dataSource = ProfileDataSource()
-    var rightBarBtn: UIBarButtonItem?
+    private var dataSource = ProfileDataSource()
+    private var rightBarBtn: UIBarButtonItem?
+    private var cancelBarBtn: UIBarButtonItem?
     
     @IBOutlet weak var collectionView: UICollectionView!
     
@@ -34,18 +35,42 @@ class ProfileViewController: BaseViewController {
                                          target: self,
                                          action: #selector(rightAction))
         
+        cancelBarBtn = UIBarButtonItem(title: "Cancel".localized,
+                                         style: .Done,
+                                         target: self,
+                                         action: #selector(cancelAction))
+        
         self.navigationItem.rightBarButtonItem = rightBarBtn
         
         configureNavBar()
     }
 
-    func rightAction(sender: UIBarButtonItem) {
-        print("edit action")
+    func cancelAction(sender: UIBarButtonItem) {
+
+        let confirmTitle = "Confirm cancel".localized
+        let confirmMessage = "Your changes have not been saved yet. Exit without saving?".localized
         
+        let confirmAlert = UIAlertController(title: confirmTitle, message: confirmMessage, preferredStyle: UIAlertControllerStyle.Alert)
+        
+        confirmAlert.addAction(UIAlertAction(title: "Yes".localized, style: .Default, handler: { (action: UIAlertAction!) in
+            //reset data & change mode
+            
+            self.dataSource.reset()
+            self.changeMode()
+        }))
+        
+        confirmAlert.addAction(UIAlertAction(title: "No".localized, style: .Cancel, handler: nil))
+        
+        presentViewController(confirmAlert, animated: true, completion: nil)
+    }
+    
+    func rightAction(sender: UIBarButtonItem) {
+
         if !dataSource.editMode {
             changeMode()
             return
         }
+        
         // Validate
         
         if !dataSource.model.isModelValid() {
@@ -83,8 +108,14 @@ class ProfileViewController: BaseViewController {
     }
     
     private func configureNavBar() {
-        let barBtnTitle = dataSource.editMode ? "Save".localized : "Edit".localized
+        
+        let editMode = dataSource.editMode
+        
+        let barBtnTitle = editMode ? "Save".localized : "Edit".localized
         rightBarBtn?.title = barBtnTitle
+        
+        self.navigationItem.leftBarButtonItem = editMode ? cancelBarBtn : nil
+        
     }
     
     override func didReceiveMemoryWarning() {
