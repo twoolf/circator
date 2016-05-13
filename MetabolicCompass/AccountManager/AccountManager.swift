@@ -11,6 +11,11 @@ import HealthKit
 import MetabolicCompassKit
 import Async
 
+class UserInfo : NSObject {
+    var firstName: String?
+    var lastName: String?
+}
+
 class AccountManager: NSObject {
     
     private let didCompleteLoginNotification = "registrationCompleteNotification"
@@ -21,6 +26,8 @@ class AccountManager: NSObject {
     var uploadInProgress      = false
     var isAuthorized          = false
     var isHealthKitAuthorized = false
+    
+    private(set) var userInfo: UserInfo?
     
     func loginOrRegister() {
         loginAndInitialize()
@@ -60,11 +67,28 @@ class AccountManager: NSObject {
     
     private func loginComplete () {
         
-        Async.main() {
-            self.isAuthorized = true
-            self.contentManager.initializeBackgroundWork();
-            NSNotificationCenter.defaultCenter().postNotificationName(self.didCompleteLoginNotification, object: nil)
-        }
+        UserManager.sharedManager.getUserInfo({ dict, error in
+            
+            // try parse user info
+            
+            self.userInfo = nil
+            
+            if error == nil {
+                if  let info = dict {
+                    self.userInfo = UserInfo()
+                    self.userInfo?.firstName = info["givenName"] as? String
+                    self.userInfo?.lastName = info["surname"] as? String
+                }
+            }
+        
+            Async.main() {
+                self.isAuthorized = true
+                self.contentManager.initializeBackgroundWork();
+                NSNotificationCenter.defaultCenter().postNotificationName(self.didCompleteLoginNotification, object: nil)
+            }
+            
+        })
+        
     }
     
     func isLogged() -> Bool {

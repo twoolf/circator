@@ -760,4 +760,13 @@ public class UserManager {
         
         return nil
     }
+    
+    // MARK: - User Info : first & last names
+    
+    public func getUserInfo(completion: ((NSDictionary?, NSError?) -> Void)) {
+        Stormpath.me(completionHandler: { dict, error in
+            completion(dict, error)
+        })
+    }
+    
 }

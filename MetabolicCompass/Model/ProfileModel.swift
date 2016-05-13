@@ -33,7 +33,13 @@ class ProfileModel: UserInfoModel {
         
         for item in items {
             
-            if item.type == .Photo {
+            if item.type == .FirstName {
+                item.setNewValue(AccountManager.shared.userInfo?.firstName)
+            }
+            else if item.type == .LastName {
+                item.setNewValue(AccountManager.shared.userInfo?.lastName)
+            }
+            else if item.type == .Photo {
                 item.setNewValue(UserManager.sharedManager.userProfilePhoto())
             }
             else if item.type == .Units {

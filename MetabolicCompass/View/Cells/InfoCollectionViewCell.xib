@@ -13,7 +13,7 @@
                 <rect key="frame" x="0.0" y="0.0" width="320" height="65"/>
                 <subviews>
                     <textField opaque="NO" clipsSubviews="YES" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" text="Text" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="p5G-3l-vdL">
-                        <rect key="frame" x="62" y="34" width="258" height="16"/>
+                        <rect key="frame" x="62" y="34" width="254" height="16"/>
                         <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
                         <fontDescription key="fontDescription" type="system" pointSize="13"/>
                         <textInputTraits key="textInputTraits"/>
@@ -26,16 +26,16 @@
                         </constraints>
                     </imageView>
                     <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="NGj-zL-9wl">
-                        <rect key="frame" x="62" y="64" width="258" height="1"/>
+                        <rect key="frame" x="62" y="64" width="254" height="1"/>
                         <color key="backgroundColor" red="0.0" green="1" blue="1" alpha="1" colorSpace="calibratedRGB"/>
                         <constraints>
                             <constraint firstAttribute="height" constant="1" id="bPb-pg-Mpq"/>
                         </constraints>
                     </view>
-                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" misplaced="YES" text="" textAlignment="right" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="Trs-0U-Zhv">
-                        <rect key="frame" x="287" y="34" width="33" height="16"/>
+                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="" textAlignment="right" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="Trs-0U-Zhv">
+                        <rect key="frame" x="318" y="42" width="0.0" height="0.0"/>
                         <fontDescription key="fontDescription" type="system" pointSize="13"/>
-                        <color key="textColor" cocoaTouchSystemColor="darkTextColor"/>
+                        <color key="textColor" red="0.0" green="0.0" blue="0.0" alpha="1" colorSpace="calibratedRGB"/>
                         <nil key="highlightedColor"/>
                     </label>
                     <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Title" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="x52-wn-VZm">
@@ -59,7 +59,7 @@
                 <constraint firstItem="NGj-zL-9wl" firstAttribute="trailing" secondItem="p5G-3l-vdL" secondAttribute="trailing" id="QAn-qP-Pap"/>
                 <constraint firstItem="Trs-0U-Zhv" firstAttribute="leading" secondItem="p5G-3l-vdL" secondAttribute="trailing" constant="2" id="Rmf-5C-pjA"/>
                 <constraint firstAttribute="trailing" secondItem="x52-wn-VZm" secondAttribute="trailing" id="Ruq-En-YAh"/>
-                <constraint firstItem="Trs-0U-Zhv" firstAttribute="trailing" secondItem="x52-wn-VZm" secondAttribute="trailing" constant="2" id="UwZ-MY-EBo"/>
+                <constraint firstItem="Trs-0U-Zhv" firstAttribute="trailing" secondItem="x52-wn-VZm" secondAttribute="trailing" constant="-2" id="UwZ-MY-EBo"/>
                 <constraint firstItem="p5G-3l-vdL" firstAttribute="leading" secondItem="x52-wn-VZm" secondAttribute="leading" id="VSX-rq-NJU"/>
                 <constraint firstItem="x52-wn-VZm" firstAttribute="top" secondItem="a16-i2-TzB" secondAttribute="top" id="WmP-Tf-DbC"/>
                 <constraint firstAttribute="bottom" secondItem="p5G-3l-vdL" secondAttribute="bottom" constant="15" id="lgm-kB-Pbb"/>
