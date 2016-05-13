@@ -10,6 +10,7 @@ import HealthKit
 import SwiftyUserDefaults
 
 private let PMSampleTypesKey = DefaultsKey<[NSData]?>("previewSampleTypes")
+private let PMBalanceSampleTypesKey = DefaultsKey<[NSData]?>("balanceSampleTypes")
 
 /**
 Controls the HealthKit metrics that will be displayed on picker wheels, tableviews, and radar charts
@@ -135,6 +136,28 @@ public class PreviewManager: NSObject {
         }
         
         Defaults[PMSampleTypesKey] = rawTypes
+    }
+    
+    /// note archiver for retaining memory of picked metrics
+    public static var balanceSampleTypes: [HKSampleType] {
+        if let rawTypes = Defaults[PMBalanceSampleTypesKey] {
+            return rawTypes.map { (data) -> HKSampleType in
+                return NSKeyedUnarchiver.unarchiveObjectWithData(data) as! HKSampleType
+            }
+        } else {
+            let defaultTypes = Array(self.supportedTypes[0..<7])
+            self.updateBalanceSampleTypes(defaultTypes)
+            return defaultTypes
+        }
+    }
+    
+    public static func updateBalanceSampleTypes (types: [HKSampleType]) {
+        
+        let rawTypes = types.map { (sampleType) -> NSData in
+            return NSKeyedArchiver.archivedDataWithRootObject(sampleType)
+        }
+        
+        Defaults[PMBalanceSampleTypesKey] = rawTypes
     }
     
     /// associates icon with sample type

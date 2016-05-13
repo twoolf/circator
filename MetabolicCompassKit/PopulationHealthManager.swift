@@ -138,7 +138,7 @@ public class PopulationHealthManager {
             var predicates    : [String] = []
             var samplesByName : [String:HKSampleType] = [:]
 
-            for hksType in PreviewManager.previewSampleTypes {
+            for hksType in PreviewManager.supportedTypes {
                 if let (attr, name, predicate) = PopulationHealthManager.attributeNamesBySampleType[hksType] {
                     attributes.append(attr)
                     names.append(name)

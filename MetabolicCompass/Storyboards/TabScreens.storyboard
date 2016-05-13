@@ -76,8 +76,10 @@
                     </view>
                     <navigationItem key="navigationItem" id="PIp-VM-gH7"/>
                     <connections>
+                        <outlet property="segmentedControll" destination="iFC-7K-4FG" id="bkf-wd-ZeR"/>
                         <segue destination="dXa-3i-yTO" kind="presentation" identifier="FilterSegue" id="mf9-zf-xaH"/>
                         <segue destination="hSV-Rn-M7n" kind="presentation" identifier="ManageDashboardSegue" id="Q92-bK-CE7"/>
+                        <segue destination="mpy-qO-9w2" kind="presentation" identifier="ManageBalanceSegue" id="gpR-9a-TiL"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="zWS-lp-Oxb" userLabel="First Responder" sceneMemberID="firstResponder"/>
@@ -143,7 +145,7 @@
                                         <rect key="frame" x="0.0" y="28" width="560" height="80"/>
                                         <autoresizingMask key="autoresizingMask"/>
                                         <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="8DW-L0-mhM" id="glR-82-f3W">
-                                            <rect key="frame" x="0.0" y="0.0" width="560" height="79.5"/>
+                                            <rect key="frame" x="0.0" y="0.0" width="560" height="80"/>
                                             <autoresizingMask key="autoresizingMask"/>
                                             <subviews>
                                                 <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="icon-weight-normal" translatesAutoresizingMaskIntoConstraints="NO" id="6K9-5a-91t">
@@ -605,6 +607,113 @@
                 <placeholder placeholderIdentifier="IBFirstResponder" id="7aw-ef-7XR" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
             <point key="canvasLocation" x="1769" y="285"/>
+        </scene>
+        <!--Dashboard Filters-->
+        <scene sceneID="oG3-wF-BWv">
+            <objects>
+                <viewController title="Manage Dashboard" automaticallyAdjustsScrollViewInsets="NO" id="mpy-qO-9w2" userLabel="Dashboard Filters" customClass="DashboardManageBalanceController" customModule="MetabolicCompass" customModuleProvider="target" sceneMemberID="viewController">
+                    <layoutGuides>
+                        <viewControllerLayoutGuide type="top" id="Bqx-Tp-fNl"/>
+                        <viewControllerLayoutGuide type="bottom" id="2pP-dV-aJ8"/>
+                    </layoutGuides>
+                    <view key="view" contentMode="scaleToFill" id="h4s-BE-EAs">
+                        <rect key="frame" x="0.0" y="0.0" width="600" height="600"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <subviews>
+                            <navigationBar contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="0hj-XL-Eyv">
+                                <rect key="frame" x="0.0" y="20" width="600" height="44"/>
+                                <items>
+                                    <navigationItem title="MANAGE BALANCE" id="M1B-Jb-ze5">
+                                        <barButtonItem key="leftBarButtonItem" image="close-button" id="pxG-fk-wJw"/>
+                                    </navigationItem>
+                                </items>
+                            </navigationBar>
+                            <tableView clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="default" rowHeight="80" sectionHeaderHeight="60" sectionFooterHeight="28" translatesAutoresizingMaskIntoConstraints="NO" id="kru-zP-xIC">
+                                <rect key="frame" x="0.0" y="64" width="600" height="536"/>
+                                <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
+                                <color key="separatorColor" red="0.027450980390000001" green="0.062745098040000002" blue="0.1058823529" alpha="1" colorSpace="calibratedRGB"/>
+                                <inset key="separatorInset" minX="58" minY="0.0" maxX="0.0" maxY="0.0"/>
+                                <prototypes>
+                                    <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" selectionStyle="none" indentationWidth="10" reuseIdentifier="DashboardManageCell" id="Qho-B0-prX" customClass="ManageBalanceCell" customModule="MetabolicCompass" customModuleProvider="target">
+                                        <rect key="frame" x="0.0" y="60" width="600" height="80"/>
+                                        <autoresizingMask key="autoresizingMask"/>
+                                        <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="Qho-B0-prX" id="acW-h1-ohs">
+                                            <rect key="frame" x="0.0" y="0.0" width="600" height="80"/>
+                                            <autoresizingMask key="autoresizingMask"/>
+                                            <subviews>
+                                                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" misplaced="YES" text="Wight" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="Wfq-7g-pUb">
+                                                    <rect key="frame" x="58" y="0.0" width="534" height="60"/>
+                                                    <fontDescription key="fontDescription" type="system" pointSize="14"/>
+                                                    <color key="textColor" red="0.36862745098039218" green="0.4823529411764706" blue="0.61960784313725492" alpha="1" colorSpace="calibratedRGB"/>
+                                                    <nil key="highlightedColor"/>
+                                                </label>
+                                                <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" misplaced="YES" image="icon-weight-normal" translatesAutoresizingMaskIntoConstraints="NO" id="XnX-1p-VXx">
+                                                    <rect key="frame" x="20" y="17" width="26" height="26"/>
+                                                    <constraints>
+                                                        <constraint firstAttribute="width" constant="26" id="r2Z-QF-CcE"/>
+                                                        <constraint firstAttribute="height" constant="26" id="yjF-f7-Skv"/>
+                                                    </constraints>
+                                                </imageView>
+                                            </subviews>
+                                            <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
+                                            <constraints>
+                                                <constraint firstItem="Wfq-7g-pUb" firstAttribute="leading" secondItem="acW-h1-ohs" secondAttribute="leading" constant="15" id="6vJ-D9-GY1"/>
+                                                <constraint firstAttribute="trailingMargin" secondItem="Wfq-7g-pUb" secondAttribute="trailing" id="9bx-7e-xI9"/>
+                                                <constraint firstItem="XnX-1p-VXx" firstAttribute="leading" secondItem="acW-h1-ohs" secondAttribute="leadingMargin" constant="12" id="Chw-yD-C0e"/>
+                                                <constraint firstItem="Wfq-7g-pUb" firstAttribute="leading" secondItem="XnX-1p-VXx" secondAttribute="trailing" constant="12" id="boP-OF-H89"/>
+                                                <constraint firstItem="XnX-1p-VXx" firstAttribute="centerY" secondItem="acW-h1-ohs" secondAttribute="centerY" id="c1x-te-GQT"/>
+                                                <constraint firstAttribute="bottom" secondItem="Wfq-7g-pUb" secondAttribute="bottom" id="ndA-hP-OEn"/>
+                                                <constraint firstItem="Wfq-7g-pUb" firstAttribute="top" secondItem="acW-h1-ohs" secondAttribute="top" id="qE6-ZF-aQD"/>
+                                            </constraints>
+                                            <variation key="default">
+                                                <mask key="constraints">
+                                                    <exclude reference="6vJ-D9-GY1"/>
+                                                </mask>
+                                            </variation>
+                                        </tableViewCellContentView>
+                                        <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
+                                        <connections>
+                                            <outlet property="leftImage" destination="XnX-1p-VXx" id="mbz-uH-HDH"/>
+                                            <outlet property="titleLabel" destination="Wfq-7g-pUb" id="SA2-xx-fsd"/>
+                                        </connections>
+                                    </tableViewCell>
+                                </prototypes>
+                            </tableView>
+                        </subviews>
+                        <color key="backgroundColor" red="0.015686274510000001" green="0.1529411765" blue="0.32549019610000002" alpha="1" colorSpace="calibratedRGB"/>
+                        <constraints>
+                            <constraint firstItem="kru-zP-xIC" firstAttribute="top" secondItem="0hj-XL-Eyv" secondAttribute="bottom" id="0ft-qr-KOC"/>
+                            <constraint firstItem="0hj-XL-Eyv" firstAttribute="top" secondItem="Bqx-Tp-fNl" secondAttribute="bottom" id="EBi-QN-4SV"/>
+                            <constraint firstItem="0hj-XL-Eyv" firstAttribute="leading" secondItem="h4s-BE-EAs" secondAttribute="leading" id="Kur-zM-aVV"/>
+                            <constraint firstItem="kru-zP-xIC" firstAttribute="leading" secondItem="h4s-BE-EAs" secondAttribute="leading" id="TFF-6v-3wK"/>
+                            <constraint firstItem="kru-zP-xIC" firstAttribute="top" secondItem="Bqx-Tp-fNl" secondAttribute="bottom" id="TID-VW-ptI"/>
+                            <constraint firstAttribute="trailing" secondItem="kru-zP-xIC" secondAttribute="trailing" id="TL5-jg-CvK"/>
+                            <constraint firstAttribute="trailing" secondItem="0hj-XL-Eyv" secondAttribute="trailing" id="VSo-c5-z91"/>
+                            <constraint firstItem="2pP-dV-aJ8" firstAttribute="top" secondItem="kru-zP-xIC" secondAttribute="bottom" id="jd0-7l-YZL"/>
+                        </constraints>
+                        <variation key="default">
+                            <mask key="constraints">
+                                <exclude reference="TID-VW-ptI"/>
+                            </mask>
+                        </variation>
+                    </view>
+                    <tabBarItem key="tabBarItem" title="Balance" id="nbT-Vy-edh"/>
+                    <navigationItem key="navigationItem" title="FILTER" id="ODJ-wa-Mgo">
+                        <barButtonItem key="rightBarButtonItem" title="Close" id="Yr3-ea-Ygn">
+                            <connections>
+                                <action selector="onClose:" destination="mpy-qO-9w2" id="IgN-uN-Ehm"/>
+                            </connections>
+                        </barButtonItem>
+                    </navigationItem>
+                    <simulatedStatusBarMetrics key="simulatedStatusBarMetrics" statusBarStyle="lightContent"/>
+                    <connections>
+                        <outlet property="navigationBar" destination="0hj-XL-Eyv" id="DtN-PR-a00"/>
+                        <outlet property="tableView" destination="kru-zP-xIC" id="PB3-dr-Bx0"/>
+                    </connections>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="hRC-hr-ina" userLabel="First Responder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="2844" y="-545"/>
         </scene>
     </scenes>
     <resources>

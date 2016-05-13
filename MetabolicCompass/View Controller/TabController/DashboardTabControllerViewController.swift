@@ -10,6 +10,7 @@ import UIKit
 
 class DashboardTabControllerViewController: UIViewController {
     
+    @IBOutlet weak var segmentedControll: UISegmentedControl!
     var containerController: UITabBarController?;
     weak var rootNavigationItem: UINavigationItem? {
         didSet {
@@ -40,15 +41,28 @@ class DashboardTabControllerViewController: UIViewController {
                                                                 action: #selector(didSelectFiltersButton))
     }
    
-    private let filterControllerSegue = "FilterSegue"
+    private let filterControllerSegue          = "FilterSegue"
     private let manageDashboardControllerSegue = "ManageDashboardSegue"
+    private let manageBalanceControllerSegue   = "ManageBalanceSegue"
     
     func didSelectFiltersButton(sender: AnyObject) {
         self.performSegueWithIdentifier(filterControllerSegue, sender: self)
     }
     
+    func manageSegueForIndex (index: NSInteger) -> String {
+        switch index {
+        case 0:
+            return manageDashboardControllerSegue
+        case 1:
+            return manageBalanceControllerSegue
+        default:
+            return ""
+        }
+        
+    }
+    
     func didSelectManageButton(sender: AnyObject) {
-        self.performSegueWithIdentifier(manageDashboardControllerSegue, sender: self)
+        self.performSegueWithIdentifier(self.manageSegueForIndex(self.segmentedControll.selectedSegmentIndex), sender: self)
     }
 
     override func didReceiveMemoryWarning() {

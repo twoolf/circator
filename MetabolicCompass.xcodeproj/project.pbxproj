@@ -111,6 +111,8 @@
 		E7E48DE71CE4BCAB00DB020F /* MetabolicChartDataSet.swift in Sources */ = {isa = PBXBuildFile; fileRef = E7E48DE61CE4BCAB00DB020F /* MetabolicChartDataSet.swift */; };
 		E7E48DE91CE4C2DC00DB020F /* MetabolicDataEntry.swift in Sources */ = {isa = PBXBuildFile; fileRef = E7E48DE81CE4C2DC00DB020F /* MetabolicDataEntry.swift */; };
 		E7E48DEB1CE5CB2700DB020F /* MetabolicRadarChartView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E7E48DEA1CE5CB2700DB020F /* MetabolicRadarChartView.swift */; };
+		E7E48DEF1CE6028600DB020F /* DashboardManageBalanceController.swift in Sources */ = {isa = PBXBuildFile; fileRef = E7E48DEE1CE6028600DB020F /* DashboardManageBalanceController.swift */; };
+		E7E48DF11CE6033100DB020F /* ManageBalanceCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = E7E48DF01CE6033100DB020F /* ManageBalanceCell.swift */; };
 		F42F5ADD1BDC85AF00195490 /* SampleDataAnalyzer.swift in Sources */ = {isa = PBXBuildFile; fileRef = F42F5ADC1BDC85AF00195490 /* SampleDataAnalyzer.swift */; };
 		F42F5B351BE1FD1E00195490 /* MetabolicCompassKit.h in Headers */ = {isa = PBXBuildFile; fileRef = F42F5B341BE1FD1E00195490 /* MetabolicCompassKit.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		F42F5B391BE1FD1E00195490 /* MetabolicCompassKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F42F5B321BE1FD1E00195490 /* MetabolicCompassKit.framework */; };
@@ -338,6 +340,8 @@
 		E7E48DE61CE4BCAB00DB020F /* MetabolicChartDataSet.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MetabolicChartDataSet.swift; sourceTree = "<group>"; };
 		E7E48DE81CE4C2DC00DB020F /* MetabolicDataEntry.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MetabolicDataEntry.swift; sourceTree = "<group>"; };
 		E7E48DEA1CE5CB2700DB020F /* MetabolicRadarChartView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MetabolicRadarChartView.swift; sourceTree = "<group>"; };
+		E7E48DEE1CE6028600DB020F /* DashboardManageBalanceController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DashboardManageBalanceController.swift; sourceTree = "<group>"; };
+		E7E48DF01CE6033100DB020F /* ManageBalanceCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ManageBalanceCell.swift; sourceTree = "<group>"; };
 		F28DDB83BE2DA2B65B631537 /* Pods.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = Pods.debug.xcconfig; path = "Pods/Target Support Files/Pods/Pods.debug.xcconfig"; sourceTree = "<group>"; };
 		F42F5ADC1BDC85AF00195490 /* SampleDataAnalyzer.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SampleDataAnalyzer.swift; sourceTree = "<group>"; };
 		F42F5B321BE1FD1E00195490 /* MetabolicCompassKit.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = MetabolicCompassKit.framework; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -620,6 +624,7 @@
 		E7592DB61CDB471000E313BB /* TabController */ = {
 			isa = PBXGroup;
 			children = (
+				E7E48DEC1CE5FEC200DB020F /* ManageBalance */,
 				E75E95AC1CDCD57700A18756 /* ManageDashboard */,
 				E75E959F1CDCA85300A18756 /* FilterCells */,
 				E7592DBD1CDC7DF900E313BB /* DashboardCells */,
@@ -695,6 +700,23 @@
 			);
 			name = MetabolicCharts;
 			path = "Charts+Extended";
+			sourceTree = "<group>";
+		};
+		E7E48DEC1CE5FEC200DB020F /* ManageBalance */ = {
+			isa = PBXGroup;
+			children = (
+				E7E48DED1CE6026200DB020F /* Cells */,
+				E7E48DEE1CE6028600DB020F /* DashboardManageBalanceController.swift */,
+			);
+			name = ManageBalance;
+			sourceTree = "<group>";
+		};
+		E7E48DED1CE6026200DB020F /* Cells */ = {
+			isa = PBXGroup;
+			children = (
+				E7E48DF01CE6033100DB020F /* ManageBalanceCell.swift */,
+			);
+			path = Cells;
 			sourceTree = "<group>";
 		};
 		EA5EDF2A50FCED6ADBAA03DD /* Frameworks */ = {
@@ -1215,6 +1237,7 @@
 				958568031CD0B18900EDD385 /* RegistrationModel.swift in Sources */,
 				E75E95B21CDCD6CB00A18756 /* DashboardMetricsAppearanceProvider.swift in Sources */,
 				95769B871CE49E4000F26668 /* PhysiologicalDataViewController.swift in Sources */,
+				E7E48DF11CE6033100DB020F /* ManageBalanceCell.swift in Sources */,
 				78B734291C90B86D00693229 /* CorrelationViewController.swift in Sources */,
 				78B7341E1C90B84600693229 /* ProfileSubviewController.swift in Sources */,
 				78B734201C90B84D00693229 /* RepeatedEventsController.swift in Sources */,
@@ -1235,6 +1258,7 @@
 				78B734241C90B85B00693229 /* QueryBuilderViewController.swift in Sources */,
 				95769B841CE4869C00F26668 /* TitleCollectionViewCell.swift in Sources */,
 				F43A7C5E1BBDF43600B6FA56 /* PlotButton.swift in Sources */,
+				E7E48DEF1CE6028600DB020F /* DashboardManageBalanceController.swift in Sources */,
 				E7592DB81CDB490600E313BB /* MainTabController.swift in Sources */,
 				95F400AD1CE38F2F0060F28C /* ModelItem.swift in Sources */,
 				E75E95A11CDCA89700A18756 /* DashboardFilterController.swift in Sources */,
