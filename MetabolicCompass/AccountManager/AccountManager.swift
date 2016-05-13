@@ -20,6 +20,7 @@ class AccountManager: NSObject {
     var contentManager = ContentManager()
     var uploadInProgress = false
     var isAuthorized = false
+    var isHealthKitAuthorized = false
     
     func loginOrRegister() {
         loginAndInitialize()
@@ -107,10 +108,12 @@ class AccountManager: NSObject {
         
         HealthManager.sharedManager.authorizeHealthKit { (success, error) -> Void in
             guard error == nil else {
+                self.isHealthKitAuthorized = false
                 log.error("no healthkit \(error)")
                 return
             }
             
+            self.isHealthKitAuthorized = true
             EventManager.sharedManager.checkCalendarAuthorizationStatus(completion)
         }
     }

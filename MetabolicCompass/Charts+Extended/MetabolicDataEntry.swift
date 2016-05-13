@@ -12,10 +12,12 @@ import Charts
 class MetabolicDataEntry: ChartDataEntry {
     
     var pointColor = UIColor.whiteColor()
+    var image: UIImage?
     
-    init(value: Double, xIndex: Int, pointColor: UIColor) {
+    init(value: Double, xIndex: Int, pointColor: UIColor, image: UIImage?) {
         super.init(value: value, xIndex: xIndex)
         self.pointColor = pointColor
+        self.image = image
     }
     
     required init()

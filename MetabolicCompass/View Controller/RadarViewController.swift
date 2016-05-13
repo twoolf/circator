@@ -120,7 +120,7 @@ class RadarViewController : UIViewController, ChartViewDelegate {
     override func viewDidAppear(animated: Bool) {
         super.viewDidAppear(animated)
         
-        self.authorized = AccountManager.shared.isAuthorized
+        self.authorized = AccountManager.shared.isHealthKitAuthorized
         
         Answers.logContentViewWithName("Radar",
             contentType: "",
@@ -206,11 +206,15 @@ class RadarViewController : UIViewController, ChartViewDelegate {
         let samples = HealthManager.sharedManager.mostRecentSamples[type] ?? []
         let val = healthFormatter.numberFromSamples(samples)
         guard !val.isNaN else {
-            return MetabolicDataEntry(value: 0.8, xIndex: i, pointColor: appearanceProvider.colorForSampleType(type.identifier, active: true))
+            return MetabolicDataEntry(value: 0.8, xIndex: i,
+                                      pointColor: appearanceProvider.colorForSampleType(type.identifier, active: true),
+                                      image: appearanceProvider.imageForSampleType(type.identifier, active: true))
         }
         let nval = normalizeType(type, quantity: val)
         print("type \(type), i \(i)")
-        return MetabolicDataEntry(value: nval, xIndex: i, pointColor: appearanceProvider.colorForSampleType(type.identifier, active: true))
+        return MetabolicDataEntry(value: nval, xIndex: i,
+                                  pointColor: appearanceProvider.colorForSampleType(type.identifier, active: true),
+                                  image: appearanceProvider.imageForSampleType(type.identifier, active: true))
     }
 
     func popEntry(i: Int) -> MetabolicDataEntry {
@@ -218,44 +222,48 @@ class RadarViewController : UIViewController, ChartViewDelegate {
         let samples = PopulationHealthManager.sharedManager.mostRecentAggregates[type] ?? []
         let val = healthFormatter.numberFromSamples(samples)
         guard !val.isNaN else {
-            return MetabolicDataEntry(value: 0.8, xIndex: i, pointColor: appearanceProvider.colorForSampleType(type.identifier, active: true))
+            return MetabolicDataEntry(value: 0.8, xIndex: i,
+                                      pointColor: appearanceProvider.colorForSampleType(type.identifier, active: true),
+                                      image: appearanceProvider.imageForSampleType(type.identifier, active: true))
         }
         let nval = normalizeType(type, quantity: val)
-        return MetabolicDataEntry(value: nval, xIndex: i, pointColor: appearanceProvider.colorForSampleType(type.identifier, active: true))
+        return MetabolicDataEntry(value: nval, xIndex: i,
+                                  pointColor: appearanceProvider.colorForSampleType(type.identifier, active: true),
+                                  image: appearanceProvider.imageForSampleType(type.identifier, active: true))
     }
 
     func reloadData() {
         let indData = (0..<PreviewManager.previewSampleTypes.count).map(indEntry)
         let popData = (0..<PreviewManager.previewSampleTypes.count).map(popEntry)
 
-        let indDataSet = MetabolicChartDataSet(yVals: indData, label: "Individual")
-        indDataSet.fillColor = UIColor.lightGrayColor()
-        indDataSet.setColor(UIColor.lightGrayColor())
+        let indDataSet = MetabolicChartDataSet(yVals: indData, label: NSLocalizedString("Individual", comment: "Individual"))
+        indDataSet.fillColor = UIColor.colorWithHexString("#427DC9", alpha: 1.0)!
+        indDataSet.setColor(indDataSet.fillColor)
         indDataSet.drawFilledEnabled = true
-        indDataSet.lineWidth = 2.0
+        indDataSet.lineWidth = 1.0
+        indDataSet.fillAlpha = 0.75
+        indDataSet.showPoints = true
+        indDataSet.highlightColor = UIColor.clearColor()
+        indDataSet.highlightCircleFillColor = UIColor.redColor()
+        indDataSet.highlightCircleStrokeColor = UIColor.whiteColor()
+        indDataSet.highlightCircleStrokeWidth = 1
+        indDataSet.highlightCircleInnerRadius = 0
+        indDataSet.highlightCircleOuterRadius = 5
         indDataSet.drawHighlightCircleEnabled = false
         
-
-        let popDataSet = MetabolicChartDataSet(yVals: popData, label: "Population")
-        popDataSet.fillColor = UIColor.colorWithHexString("#427DC9", alpha: 1.0)!
-        popDataSet.setColor(popDataSet.fillColor)
+        let popDataSet = MetabolicChartDataSet(yVals: popData, label: NSLocalizedString("Population", comment: "Population"))
+        popDataSet.fillColor = UIColor.lightGrayColor()
+        popDataSet.setColor(popDataSet.fillColor.colorWithAlphaComponent(0.75))
         popDataSet.drawFilledEnabled = true
-        popDataSet.lineWidth = 2.0
-        popDataSet.fillAlpha = 0.75
+        popDataSet.lineWidth = 1.0
+        popDataSet.fillAlpha = 0.5
         popDataSet.drawHighlightCircleEnabled = false
-        popDataSet.highlightColor = UIColor.clearColor()
-        popDataSet.highlightCircleFillColor = UIColor.redColor()
-        popDataSet.highlightCircleStrokeColor = UIColor.whiteColor()
-        popDataSet.highlightCircleStrokeWidth = 1
-        popDataSet.highlightCircleInnerRadius = 0
-        popDataSet.highlightCircleOuterRadius = 6
-        popDataSet.showPoints = true
         
         
         let xVals = PreviewManager.previewSampleTypes.map { type in
                         return HMConstants.sharedInstance.healthKitShortNames[type.identifier]! }
 
-        let data = RadarChartData(xVals: xVals, dataSets: [indDataSet, popDataSet])
+        let data = RadarChartData(xVals: xVals, dataSets: [popDataSet, indDataSet])
         data.setDrawValues(false)
         radarChart.data = data
 

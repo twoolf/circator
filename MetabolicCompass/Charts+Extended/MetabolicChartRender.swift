@@ -13,6 +13,7 @@ import Charts
 class MetabolicChartRender: RadarChartRenderer {
     
     var centerCircleColor = UIColor.colorWithHexString("#041F44")!
+    var imageIndent = CGFloat(0.0)
    
     internal struct Math
     {
@@ -46,12 +47,84 @@ class MetabolicChartRender: RadarChartRenderer {
         CGContextSaveGState(context)
         
         let center = chart.centerOffsets
-        let radius = chart.radius * CGFloat(chart.chartYMax - chart.chartYMin)
+        let radius = chart.radius * CGFloat(0.9)
         
         CGContextBeginPath(context)
         CGContextAddEllipseInRect(context, CGRectMake(center.x - radius, center.y - radius, radius * 2.0, radius * 2.0))
         CGContextSetFillColorWithColor(context, self.centerCircleColor.CGColor)
         CGContextEOFillPath(context)
+        
+        CGContextRestoreGState(context)
+        
+        self.drawIcons(context: context)
+    }
+    
+    func drawIcons(context context: CGContext)
+    {
+        guard let
+            chart = chart,
+            data = chart.data
+            else { return }
+        
+        let sliceangle = chart.sliceAngle
+        
+        CGContextSaveGState(context)
+        
+        // calculate the factor that is needed for transforming the value to
+        // pixels
+        let factor = chart.factor
+        let rotationangle = chart.rotationAngle
+        
+        let center = chart.centerOffsets
+        
+        let xIncrements = 1 + chart.skipWebLineCount
+        var dataSet: MetabolicChartDataSet? = nil
+        
+        guard let count = chart.data?.dataSetCount else {
+            return
+        }
+        
+        for i in 0...count {
+            guard let set = chart.data?.getDataSetByIndex(i) as? MetabolicChartDataSet else { continue }
+            
+            if (set.showPoints) {
+                dataSet = set
+                break
+            }
+        }
+        
+        if let set = dataSet
+        {
+            var index = -1
+            for i in 0.stride(to: data.xValCount, by: xIncrements)
+            {
+                index += 1
+                let entry = set.entryForXIndex(index)
+                if entry?.xIndex != index
+                {
+                    continue
+                }
+                
+                guard let dataEntry = entry as? MetabolicDataEntry else {
+                    continue
+                }
+                
+                guard let image = dataEntry.image else {
+                    continue
+                }
+                
+                let p = self.getPosition(
+                    center: center,
+                    dist: CGFloat(chart.yRange) * factor + self.imageIndent,
+                    angle: sliceangle * CGFloat(i) + rotationangle)
+                
+                image.drawInRect(CGRectMake(p.x - image.size.width/2, p.y - image.size.height/2, image.size.width, image.size.height))
+            }
+        }
+        
+        
+        
+        
         
         CGContextRestoreGState(context)
     }
