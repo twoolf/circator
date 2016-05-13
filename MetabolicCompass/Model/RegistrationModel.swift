@@ -40,29 +40,6 @@ class RegistrationModel: UserInfoModel {
         return fields
     }
     
-    func profileItems() -> [String : String]  {
-        var profile = [String : String]()
-        
-        for item in items {
-            if item.type != .Photo {
-                
-                if item.type == .Gender {
-                    if let value = item.intValue() {
-                        let gender = Gender(rawValue: value)!.title
-                        print("Selected gender: \(gender)")
-                        profile[item.name] = gender
-                    }
-                }
-                
-                if let value = item.value as? String {
-                    profile[item.name] = value
-                }
-            }
-        }
-        
-        return profile
-    }
-    
     
     // MARK: - Getting properties
     
@@ -132,7 +109,6 @@ class RegistrationModel: UserInfoModel {
     }
     
     func isEmailValid() -> Bool {
-        print("email: \(email)")
 
         var isValid = isRequiredStringValid(email)
         

@@ -7,6 +7,7 @@
 //
 
 import UIKit
+import MetabolicCompassKit
 
 class ProfileViewController: BaseViewController {
 
@@ -18,6 +19,8 @@ class ProfileViewController: BaseViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
 
+        dataSource.viewController = self
+        
         setupNavBar()
         
         setupScroolViewForKeyboardsActions(collectionView)
@@ -39,9 +42,39 @@ class ProfileViewController: BaseViewController {
     func rightAction(sender: UIBarButtonItem) {
         print("edit action")
         
-        dataSource.swithMode()
+        if !dataSource.editMode {
+            changeMode()
+            return
+        }
+        // Validate
         
-        configureNavBar()
+        // Saving
+        
+        sender.enabled = false
+        let newProfileInfo = dataSource.model.profileItems()
+        
+        UserManager.sharedManager.pushProfile(newProfileInfo, completion: { error, reason in
+            
+            if !error {
+                // save new photo
+                UserManager.sharedManager.setUserProfilePhoto(self.dataSource.model.loadPhotoField.value as? UIImage)
+
+                self.changeMode()
+            }
+            else {
+                let message = reason != nil ? reason! : "Your profile is not saving. Please, try later".localized
+                self.showAlert(withMessage: message)
+            }
+            
+            sender.enabled = true
+        })
+       
+    }
+
+    private func changeMode() {
+        self.dataSource.swithMode()
+        
+        self.configureNavBar()
     }
     
     private func configureNavBar() {

@@ -85,4 +85,44 @@ class UserInfoModel: NSObject {
         
         fieldItem.setNewValue(newValue)
     }
+    
+    func profileItems() -> [String : String] {
+        return profileItems(items)
+    }
+    
+    func profileItems(newItems: [ModelItem]) -> [String : String]  {
+        var profile = [String : String]()
+        
+        for item in newItems {
+            if item.type != .Photo {
+                
+                if item.type == .Gender {
+                    if let value = item.intValue() {
+                        let gender = Gender(rawValue: value)!.title
+                        //                        print("Selected gender: \(gender)")
+                        profile[item.name] = gender
+                    }
+                }
+                
+                if let value = item.value as? String {
+                    profile[item.name] = value
+                }
+            }
+        }
+        
+        return profile
+    }
+    
+    func unitsDependedItemsIndexes() -> [NSIndexPath] {
+        var indexes = [NSIndexPath]()
+        
+        let weightIndex = items.indexOf(weightField)
+        indexes.append(NSIndexPath(forRow: weightIndex!, inSection: 0))
+        
+        let heightIndex = items.indexOf(heightField)
+        indexes.append(NSIndexPath(forRow: heightIndex!, inSection: 0))
+        
+        return indexes
+    }
+
 }

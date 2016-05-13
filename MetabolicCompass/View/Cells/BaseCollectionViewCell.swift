@@ -46,6 +46,19 @@ class BaseCollectionViewCell: UICollectionViewCell, UITextFieldDelegate {
         valueChanged(textField.text)
     }
     
+    func addDoneToolbar(toTextField textField: UITextField) {
+        let toolbar = UIToolbar()
+        toolbar.sizeToFit()
+        let doneBtn = UIBarButtonItem(title: "Done".localized, style: UIBarButtonItemStyle.Plain, target: self, action:  #selector(TitledInputCollectionViewCell.doneAction(_:)))
+        
+        toolbar.setItems([doneBtn], animated: false)
+        textField.inputAccessoryView = toolbar
+    }
+    
+    func doneAction(Sender: UIBarButtonItem) {
+        self.endEditing(true)
+    }
+    
     // MARK: - TextField Delegate
     
     func textFieldShouldReturn(textField: UITextField) -> Bool {

@@ -15,16 +15,29 @@ enum UserInfoFiledType: Int {
 }
 
 
+private let maleGenderKey = "Male"
+private let femaleGenderKey = "Female"
+
 enum Gender: Int {
     case Male = 0, Female
     
     var title: String {
         switch self {
         case .Male:
-            return "Male"
+            return maleGenderKey.localized
         case .Female:
-            return "Female"
+            return femaleGenderKey.localized
         }
+    }
+    
+    static func valueByTitle(title: String) -> Gender {
+        let titleStr = title.trimmed().lowercaseString
+        
+        if femaleGenderKey.lowercaseString == titleStr {
+            return Gender.Female
+        }
+        
+        return Gender.Male
     }
 }
 
@@ -63,6 +76,17 @@ class ModelItem: NSObject {
     
     
     func stringValue() -> String? {
+        
+        if type == .Gender {
+            let gender = self.intValue()!
+            return Gender(rawValue: gender)?.title
+        }
+        
+        if type == .Units {
+            let units = self.intValue()!
+            return UnitsSystem(rawValue: units)?.title
+        }
+        
         if let _value = value as? String {
             return _value.trimmed()
         }

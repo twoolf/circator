@@ -7,25 +7,37 @@
 //
 
 import UIKit
-import MetabolicCompassKit
 
 class ProfileDataSource: BaseDataSource {
 
     private(set) var editMode = false
     
-    let model = ProfileModel()
+    private(set) lazy var model: ProfileModel = {
+        let profileModel = ProfileModel()
+        profileModel.setupValues()
+        return profileModel
+    }()
     
     private let profileImageCellIdentifier = "profileImageCell"
+    private let loadProfileImageCellIdentifier = "loadProfileImageCell"
     private let infoCellIdentifier = "infoTextCell"
+    private let doubleCheckBoxCellIdentifier = "doubleCheckBoxCell"
     
     override func registerCells() {
+        let loadImageCellNib = UINib(nibName: "LoadImageCollectionViewCell", bundle: nil)
+        collectionView?.registerNib(loadImageCellNib, forCellWithReuseIdentifier: loadProfileImageCellIdentifier)
+
         let imageCellNib = UINib(nibName: "CircleImageCollectionViewCell", bundle: nil)
         collectionView?.registerNib(imageCellNib, forCellWithReuseIdentifier: profileImageCellIdentifier)
         
         let inputTextCellNib = UINib(nibName: "InfoCollectionViewCell", bundle: nil)
         collectionView?.registerNib(inputTextCellNib, forCellWithReuseIdentifier: infoCellIdentifier)
+        
+        let doubleCheckBoxCellNib = UINib(nibName: "DoubleCheckListCollectionViewCell", bundle: nil)
+        collectionView?.registerNib(doubleCheckBoxCellNib, forCellWithReuseIdentifier: doubleCheckBoxCellIdentifier)
     }
     
+
     // MARK: - CollectionView Delegate & DataSource
     
     override func collectionView(collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
@@ -44,25 +56,32 @@ class ProfileDataSource: BaseDataSource {
              cell = loadPhotoCellForIndex(indexPath, forField: field)
         }
         else {
-            cell = infoCellForIndex(indexPath, forField: field)
+            
+            let cellEditMode = editMode && model.isItemEditable(field)
+            
+            if cellEditMode {
+                cell = infoEditableCellForIndex(indexPath, forField: field)
+            }
+            else {
+                cell = infoCellForIndex(indexPath, forField: field)
+            }
         }
         
-//        cell!.changesHandler = { (cell: UICollectionViewCell, newValue: AnyObject?) -> () in
-//            
-//            if let indexPath = self.collectionView!.indexPathForCell(cell) {
-//                self.model.setAtItem(itemIndex: indexPath.row, newValue: newValue)
-//                
-//                let field = self.model.itemAtIndexPath(indexPath)
-//                
-//                if field.type == .Units {
-//                    let needsUpdateIndexPathes = [NSIndexPath(forRow: RegistrationFiledType.Weight.rawValue, inSection: 0),
-//                                                  NSIndexPath(forRow: RegistrationFiledType.Height.rawValue, inSection: 0)]
-//                    
-//                    collectionView.reloadItemsAtIndexPaths(needsUpdateIndexPathes)
-//                }
-//            }
-//            
-//        }
+        cell!.changesHandler = { (cell: UICollectionViewCell, newValue: AnyObject?) -> () in
+            
+            if let indexPath = self.collectionView!.indexPathForCell(cell) {
+                self.model.setAtItem(itemIndex: indexPath.row, newValue: newValue)
+                
+                let field = self.model.itemAtIndexPath(indexPath)
+                
+                if field.type == .Units {
+                    let needsUpdateIndexPathes = self.model.unitsDependedItemsIndexes()
+                    
+                    collectionView.reloadItemsAtIndexPaths(needsUpdateIndexPathes)
+                }
+            }
+            
+        }
         
         return cell!
     }
@@ -92,41 +111,17 @@ class ProfileDataSource: BaseDataSource {
         return spaceBetweenCellsInOneRow
     }
     
-    func collectionView(collectionView: UICollectionView, viewForSupplementaryElementOfKind kind: String, atIndexPath indexPath: NSIndexPath) -> UICollectionReusableView {
-        
-        if kind == UICollectionElementKindSectionFooter {
-            let footerView = collectionView.dequeueReusableSupplementaryViewOfKind(kind, withReuseIdentifier: "footerView", forIndexPath: indexPath)
-            return footerView
-        }
-        
-        return UICollectionReusableView()
-    }
-    
     // MARK: - Cells configuration
    
-    private func infoCellForIndex(indexPath: NSIndexPath, forField field: ModelItem) -> BaseCollectionViewCell {
+    private func infoCellForIndex(indexPath: NSIndexPath, forField field: ModelItem, isEdiatble: Bool = false, keyboardType: UIKeyboardType = UIKeyboardType.Default) -> BaseCollectionViewCell {
         let cell = collectionView!.dequeueReusableCellWithReuseIdentifier(infoCellIdentifier, forIndexPath: indexPath) as! InfoCollectionViewCell
         
         cell.inputTxtField.textColor = selectedTextColor
         
         cell.titleLbl.textColor = unselectedTextColor
         cell.titleLbl.text = field.title
-        
-        var valueStr: String?
-        
-        valueStr = stringValueForField(field, atIndexPath: indexPath)
        
-        cell.inputTxtField.text = valueStr
-        
-        if field.type == .Password {
-            cell.inputTxtField.secureTextEntry = true
-        }
-        else if field.type == .Email {
-            cell.inputTxtField.keyboardType = UIKeyboardType.EmailAddress
-        }
-        else if field.type == .Age {
-            cell.inputTxtField.keyboardType = UIKeyboardType.NumberPad
-        }
+        cell.inputTxtField.text = field.stringValue()
         
         if field.type == .Weight || field.type == .Height {
             cell.separatorVisible = false
@@ -134,47 +129,68 @@ class ProfileDataSource: BaseDataSource {
         
         cell.setImageWithName(field.iconImageName, smallTextOffset: field.type == .Height)
         
-        cell.inputTxtField.enabled = editMode
+        cell.inputTxtField.enabled = isEdiatble
+        cell.inputTxtField.keyboardType = keyboardType
         
         return cell
     }
     
-    private func stringValueForField(field: ModelItem, atIndexPath indexPath: NSIndexPath) -> String {
-        var value = ""
+    private func infoEditableCellForIndex(indexPath: NSIndexPath, forField field: ModelItem) -> BaseCollectionViewCell {
         
-        let profileInfo = UserManager.sharedManager.getProfileCache()
+        let field = model.itemAtIndexPath(indexPath)
         
-        let unitsSystem = UnitsSystem.Metric // TODO: should be saved and read from user profile
+        let cellType = field.type
         
-        if field.type == .Units {
-            value = unitsSystem.title
-        }
-        else if field.type == .Email {
-            value = UserManager.sharedManager.getUserId()!
-        }
+        if cellType == .Age || cellType == .Weight || cellType == .Height {
             
-        else {
-            if let profileValue = profileInfo[field.name] as? String {
-                value = profileValue
-                
-                if field.type == .Weight {
-                    value = value + " " + unitsSystem.weightTitle
-                }
-                if field.type == .Height {
-                    value = value + " " + unitsSystem.heightTitle
-                }
-            }
+            return infoCellForIndex(indexPath, forField: field, isEdiatble: true, keyboardType: .NumberPad)
         }
         
-        return value
+        if cellType == .Gender || cellType == .Units {
+            return checkSelectionCellForIndex(indexPath, forField: field)
+        }
+        
+        // It is shouldn't be called
+        return BaseCollectionViewCell()
+    }
+    
+    private func checkSelectionCellForIndex(indexPath: NSIndexPath, forField field: ModelItem) -> BaseCollectionViewCell {
+        let cell = collectionView!.dequeueReusableCellWithReuseIdentifier(doubleCheckBoxCellIdentifier, forIndexPath: indexPath) as! DoubleCheckListCollectionViewCell
+        
+        if field.type == .Gender {
+            cell.setFirstTitle(Gender.Male.title)
+            cell.setSecondTitle(Gender.Female.title)
+            cell.setSelectedItem(selectedItemIndex: field.intValue()!)
+        }
+        else if field.type == .Units {
+            cell.setFirstTitle(UnitsSystem.Imperial.title)
+            cell.setSecondTitle(UnitsSystem.Metric.title)
+            cell.setSelectedItem(selectedItemIndex: field.intValue()!)
+        }
+        
+        cell.selectedTextColor = selectedTextColor
+        cell.unselectedTextColor = unselectedTextColor
+        
+        cell.cellImage?.image = UIImage(named: field.iconImageName!)
+        
+        return cell
     }
     
     private func loadPhotoCellForIndex(indexPath: NSIndexPath, forField field: ModelItem) -> BaseCollectionViewCell {
-        let cell = collectionView!.dequeueReusableCellWithReuseIdentifier(profileImageCellIdentifier, forIndexPath: indexPath) as! CircleImageCollectionViewCell
         
-        cell.imageView.image = UserManager.sharedManager.userProfilePhoto()
+        var cell : CircleImageCollectionViewCell?
         
-        return cell
+        if editMode {
+            cell = collectionView!.dequeueReusableCellWithReuseIdentifier(loadProfileImageCellIdentifier, forIndexPath: indexPath) as! LoadImageCollectionViewCell
+            (cell as! LoadImageCollectionViewCell).presentingViewController = viewController?.navigationController
+        }
+        else {
+            cell = collectionView!.dequeueReusableCellWithReuseIdentifier(profileImageCellIdentifier, forIndexPath: indexPath) as? CircleImageCollectionViewCell
+        }
+        
+        cell!.photoImg.image = field.value as? UIImage
+
+        return cell!
     }
     
     // MARK: - Cells sizes
@@ -219,4 +235,5 @@ class ProfileDataSource: BaseDataSource {
         
         collectionView?.reloadData()
     }
+ 
 }

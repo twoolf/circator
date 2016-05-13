@@ -35,6 +35,8 @@ class InfoCollectionViewCell: BaseCollectionViewCell {
         inputTxtField.delegate = self
         
         inputTxtField.textColor = UIColor.whiteColor()
+        
+        addDoneToolbar(toTextField: inputTxtField)
     }
     
     override func prepareForReuse() {

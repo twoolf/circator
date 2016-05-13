@@ -21,14 +21,8 @@ class TitledInputCollectionViewCell: BaseCollectionViewCell {
 
         inputTxtField.addTarget(self, action: #selector(InputCollectionViewCell.textFieldDidChange(_:)), forControlEvents: UIControlEvents.EditingChanged)
         inputTxtField.delegate = self
-        
-        let toolbar = UIToolbar()
-        toolbar.sizeToFit()
-        let doneBtn = UIBarButtonItem(title: "Done", style: UIBarButtonItemStyle.Plain, target: self, action:  #selector(TitledInputCollectionViewCell.doneAction(_:)))
-        
-        toolbar.setItems([doneBtn], animated: false)
-        inputTxtField.inputAccessoryView = toolbar        
 
+        addDoneToolbar(toTextField: inputTxtField)
     }
     
     override func prepareForReuse() {
@@ -39,9 +33,4 @@ class TitledInputCollectionViewCell: BaseCollectionViewCell {
         smallDescriptionLbl.text = nil
     }
     
-    func doneAction(Sender: UIBarButtonItem) {
-        self.endEditing(true)
-    }
-    
-
 }
