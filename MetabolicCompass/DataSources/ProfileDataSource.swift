@@ -33,7 +33,7 @@ class ProfileDataSource: BaseDataSource {
         let inputTextCellNib = UINib(nibName: "InfoCollectionViewCell", bundle: nil)
         collectionView?.registerNib(inputTextCellNib, forCellWithReuseIdentifier: infoCellIdentifier)
         
-        let doubleCheckBoxCellNib = UINib(nibName: "DoubleCheckListCollectionViewCell", bundle: nil)
+        let doubleCheckBoxCellNib = UINib(nibName: "DoubleCheckListTitledCollectionViewCell", bundle: nil)
         collectionView?.registerNib(doubleCheckBoxCellNib, forCellWithReuseIdentifier: doubleCheckBoxCellIdentifier)
     }
     
@@ -117,6 +117,7 @@ class ProfileDataSource: BaseDataSource {
         let cell = collectionView!.dequeueReusableCellWithReuseIdentifier(infoCellIdentifier, forIndexPath: indexPath) as! InfoCollectionViewCell
         
         cell.inputTxtField.textColor = selectedTextColor
+        cell.textValueCommentLbl.textColor = selectedTextColor
         
         cell.titleLbl.textColor = unselectedTextColor
         cell.titleLbl.text = field.title
@@ -126,6 +127,14 @@ class ProfileDataSource: BaseDataSource {
         if field.type == .Weight || field.type == .Height {
             cell.separatorVisible = false
         }
+        
+        if field.type == .Weight {
+            cell.textValueCommentLbl.text = model.units.weightTitle
+        }
+        else if field.type == .Height {
+            cell.textValueCommentLbl.text =  model.units.heightTitle
+        }
+        
         
         cell.setImageWithName(field.iconImageName, smallTextOffset: field.type == .Height)
         
@@ -155,7 +164,7 @@ class ProfileDataSource: BaseDataSource {
     }
     
     private func checkSelectionCellForIndex(indexPath: NSIndexPath, forField field: ModelItem) -> BaseCollectionViewCell {
-        let cell = collectionView!.dequeueReusableCellWithReuseIdentifier(doubleCheckBoxCellIdentifier, forIndexPath: indexPath) as! DoubleCheckListCollectionViewCell
+        let cell = collectionView!.dequeueReusableCellWithReuseIdentifier(doubleCheckBoxCellIdentifier, forIndexPath: indexPath) as! DoubleCheckListTitledCollectionViewCell
         
         if field.type == .Gender {
             cell.setFirstTitle(Gender.Male.title)
@@ -167,6 +176,8 @@ class ProfileDataSource: BaseDataSource {
             cell.setSecondTitle(UnitsSystem.Metric.title)
             cell.setSelectedItem(selectedItemIndex: field.intValue()!)
         }
+        
+        cell.setTitle(field.title)
         
         cell.selectedTextColor = selectedTextColor
         cell.unselectedTextColor = unselectedTextColor

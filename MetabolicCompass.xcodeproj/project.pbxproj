@@ -76,6 +76,8 @@
 		95C0B9A61CD25814006E523F /* AdditionalInfoDataSource.swift in Sources */ = {isa = PBXBuildFile; fileRef = 95C0B9A51CD25814006E523F /* AdditionalInfoDataSource.swift */; };
 		95C0B9A81CD25860006E523F /* BaseDataSource.swift in Sources */ = {isa = PBXBuildFile; fileRef = 95C0B9A71CD25860006E523F /* BaseDataSource.swift */; };
 		95C0B9AA1CD25AAC006E523F /* AdditionalInfoViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 95C0B9A91CD25AAC006E523F /* AdditionalInfoViewController.swift */; };
+		95D142BC1CE60312006A9118 /* DoubleCheckListTitledCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 95D142BA1CE60312006A9118 /* DoubleCheckListTitledCollectionViewCell.swift */; };
+		95D142BD1CE60312006A9118 /* DoubleCheckListTitledCollectionViewCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 95D142BB1CE60312006A9118 /* DoubleCheckListTitledCollectionViewCell.xib */; };
 		95F4008E1CE385B70060F28C /* UIView+Extended.swift in Sources */ = {isa = PBXBuildFile; fileRef = 95F4008D1CE385B70060F28C /* UIView+Extended.swift */; };
 		95F400971CE385C60060F28C /* CircleImageCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 95F4008F1CE385C60060F28C /* CircleImageCollectionViewCell.swift */; };
 		95F400981CE385C60060F28C /* CircleImageCollectionViewCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 95F400901CE385C60060F28C /* CircleImageCollectionViewCell.xib */; };
@@ -304,6 +306,8 @@
 		95C0B9A51CD25814006E523F /* AdditionalInfoDataSource.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AdditionalInfoDataSource.swift; sourceTree = "<group>"; };
 		95C0B9A71CD25860006E523F /* BaseDataSource.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BaseDataSource.swift; sourceTree = "<group>"; };
 		95C0B9A91CD25AAC006E523F /* AdditionalInfoViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AdditionalInfoViewController.swift; sourceTree = "<group>"; };
+		95D142BA1CE60312006A9118 /* DoubleCheckListTitledCollectionViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DoubleCheckListTitledCollectionViewCell.swift; sourceTree = "<group>"; };
+		95D142BB1CE60312006A9118 /* DoubleCheckListTitledCollectionViewCell.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = DoubleCheckListTitledCollectionViewCell.xib; sourceTree = "<group>"; };
 		95F4008D1CE385B70060F28C /* UIView+Extended.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "UIView+Extended.swift"; sourceTree = "<group>"; };
 		95F4008F1CE385C60060F28C /* CircleImageCollectionViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CircleImageCollectionViewCell.swift; sourceTree = "<group>"; };
 		95F400901CE385C60060F28C /* CircleImageCollectionViewCell.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = CircleImageCollectionViewCell.xib; sourceTree = "<group>"; };
@@ -539,6 +543,8 @@
 				95635AA21CD3ACF300BCC467 /* ScrollSelectionViewCell.xib */,
 				95769B821CE4869C00F26668 /* TitleCollectionViewCell.swift */,
 				95769B831CE4869C00F26668 /* TitleCollectionViewCell.xib */,
+				95D142BA1CE60312006A9118 /* DoubleCheckListTitledCollectionViewCell.swift */,
+				95D142BB1CE60312006A9118 /* DoubleCheckListTitledCollectionViewCell.xib */,
 			);
 			path = Cells;
 			sourceTree = "<group>";
@@ -1075,6 +1081,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				95D142BD1CE60312006A9118 /* DoubleCheckListTitledCollectionViewCell.xib in Resources */,
 				F43A7C571BBDF29D00B6FA56 /* LaunchScreen.storyboard in Resources */,
 				95748C511CCFC7D90002F6A3 /* DoubleCheckListCollectionViewCell.xib in Resources */,
 				95635AA41CD3ACF300BCC467 /* ScrollSelectionViewCell.xib in Resources */,
@@ -1263,6 +1270,7 @@
 				95F400AD1CE38F2F0060F28C /* ModelItem.swift in Sources */,
 				E75E95A11CDCA89700A18756 /* DashboardFilterController.swift in Sources */,
 				95769B891CE49E5C00F26668 /* NotificationsViewController.swift in Sources */,
+				95D142BC1CE60312006A9118 /* DoubleCheckListTitledCollectionViewCell.swift in Sources */,
 				E75E95A91CDCB69A00A18756 /* DashboardFilterItem.swift in Sources */,
 				E75E95A71CDCB18D00A18756 /* DashboardFilterHeaderCell.swift in Sources */,
 				E7E48DE51CE4A12900DB020F /* MetabolicChartRender.swift in Sources */,

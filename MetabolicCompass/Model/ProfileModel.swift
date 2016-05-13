@@ -78,4 +78,11 @@ class ProfileModel: UserInfoModel {
         return profileItems(newItems)
     }
     
+    
+    override func isModelValid() -> Bool {
+        
+        resetValidationResults()
+        
+        return isPhotoValid() && /* isEmailValid() && isPasswordValid() && isFirstNameValid() && isLastNameValid() && */ isAgeValid()  && isWeightValid() && isHeightValid()
+    }
 }

@@ -12,6 +12,7 @@ class InfoCollectionViewCell: BaseCollectionViewCell {
 
     @IBOutlet weak var inputTxtField: UITextField!
     @IBOutlet weak var titleLbl: UILabel!
+    @IBOutlet weak var textValueCommentLbl: UILabel!
     
     @IBOutlet weak var titleLeftOffsetConstraint: NSLayoutConstraint!
     
@@ -45,9 +46,12 @@ class InfoCollectionViewCell: BaseCollectionViewCell {
         cellImage?.image = nil
         inputTxtField.text = nil
         titleLbl.text = nil
+        textValueCommentLbl.text = nil
         
         inputTxtField.secureTextEntry = false
         inputTxtField.keyboardType = UIKeyboardType.Default
+        
+        
     }
     
     func setImageWithName(imageName: String?, smallTextOffset: Bool = false) {
