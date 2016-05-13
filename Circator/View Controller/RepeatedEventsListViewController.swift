@@ -263,6 +263,7 @@ class RepeatedEventsListViewController: UIViewController {
         stackView.alignment = UIStackViewAlignment.Fill
         stackView.spacing = 0
         stackView.backgroundColor = UIColor.clearColor()
+        
         return stackView
     }()
     
@@ -335,6 +336,8 @@ class RepeatedEventsListViewController: UIViewController {
         
         view.backgroundColor = UIColor.lightGrayColor()
         
+        //self.extendedLayoutIncludesOpaqueBars = true
+        
     }
     
     //Sets configuration of view controller
@@ -342,6 +345,21 @@ class RepeatedEventsListViewController: UIViewController {
         
         //Sets format options
         self.formatView()
+        
+        //set up table view
+        self.eventsList.automaticallyAdjustsScrollViewInsets = false
+        let eventsListView = self.eventsList.view
+        eventsListView.translatesAutoresizingMaskIntoConstraints = false
+        self.addChildViewController(self.eventsList)
+        view.addSubview(eventsListView)
+        let eventsListViewConstraints: [NSLayoutConstraint] = [
+            eventsListView.topAnchor.constraintEqualToAnchor(topLayoutGuide.bottomAnchor),
+            eventsListView.bottomAnchor.constraintEqualToAnchor(bottomLayoutGuide.topAnchor),
+            eventsListView.leadingAnchor.constraintEqualToAnchor(view.layoutMarginsGuide.leadingAnchor, constant: -30),
+            eventsListView.trailingAnchor.constraintEqualToAnchor(view.layoutMarginsGuide.trailingAnchor, constant: 15),
+            ]
+        
+        view.addConstraints(eventsListViewConstraints)
         
         //adding weekday selector view
         weekdayRowSelector.translatesAutoresizingMaskIntoConstraints = false
@@ -376,20 +394,30 @@ class RepeatedEventsListViewController: UIViewController {
         
         view.addConstraints(weekdayLabelConstraints)
         
-        //set up table view
-        self.eventsList.automaticallyAdjustsScrollViewInsets = false
-        let eventsListView = self.eventsList.view
-        eventsListView.translatesAutoresizingMaskIntoConstraints = false
-        self.addChildViewController(self.eventsList)
-        view.addSubview(eventsListView)
-        let eventsListViewConstraints: [NSLayoutConstraint] = [
-            eventsListView.topAnchor.constraintEqualToAnchor(weekdayLabel.bottomAnchor),
-            eventsListView.bottomAnchor.constraintEqualToAnchor(bottomLayoutGuide.topAnchor),
-            eventsListView.leadingAnchor.constraintEqualToAnchor(view.layoutMarginsGuide.leadingAnchor, constant: -30),
-            eventsListView.trailingAnchor.constraintEqualToAnchor(view.layoutMarginsGuide.trailingAnchor, constant: 15),
+        
+        let blurEffect = UIBlurEffect(style: UIBlurEffectStyle.Light)
+        let blurEffectView = UIVisualEffectView(effect: blurEffect)
+        blurEffectView.translatesAutoresizingMaskIntoConstraints = false
+        
+        blurEffectView.backgroundColor = UIColor.lightGrayColor().colorWithAlphaComponent(0.5)
+        
+        view.addSubview(blurEffectView)
+        
+        let blurEffectViewConstraints : [NSLayoutConstraint] = [
+            blurEffectView.topAnchor.constraintEqualToAnchor(topLayoutGuide.bottomAnchor),
+            blurEffectView.bottomAnchor.constraintEqualToAnchor(weekdayLabel.bottomAnchor),
+            blurEffectView.rightAnchor.constraintEqualToAnchor(view.rightAnchor),
+            blurEffectView.leftAnchor.constraintEqualToAnchor(view.leftAnchor)
         ]
         
-        view.addConstraints(eventsListViewConstraints)
+        view.addConstraints(blurEffectViewConstraints)
+        
+        view.bringSubviewToFront(weekdayLabel)
+        view.bringSubviewToFront(weekdayRowSelector)
+        
+        
+        self.eventsList.tableView.contentInset = UIEdgeInsetsMake(30 + weekdayRowSelector.bounds.height, 0, 0, 0)
+
         
     }
     

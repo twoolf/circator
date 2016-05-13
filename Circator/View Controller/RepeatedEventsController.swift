@@ -398,7 +398,6 @@ class NewRepeatedEventViewController: UIViewController {
         print("added")
         
     }
-    
 }
 
 final class RepeatedEventFormViewController: FormViewController {
