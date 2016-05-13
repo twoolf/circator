@@ -88,8 +88,7 @@ class RadarViewController : UIViewController, ChartViewDelegate {
         chart.xAxis.drawLabelsEnabled = false
         chart.webColor = UIColor.colorWithHexString("#042652")!
         chart.webAlpha = 1.0
-        
-        
+
 //        chart.yAxis.customAxisMax = 1.0
 //        chart.yAxis.customAxisMin = 0.2
 
@@ -149,7 +148,8 @@ class RadarViewController : UIViewController, ChartViewDelegate {
                 radarChart.topAnchor.constraintEqualToAnchor(view.topAnchor),
                 radarChart.leftAnchor.constraintEqualToAnchor(view.leftAnchor),
                 radarChart.rightAnchor.constraintEqualToAnchor(view.rightAnchor),
-                radarChart.bottomAnchor.constraintEqualToAnchor(view.bottomAnchor)
+//                radarChart.bottomAnchor.constraintEqualToAnchor(view.bottomAnchor),
+                radarChart.bottomAnchor.constraintGreaterThanOrEqualToAnchor(view.bottomAnchor, constant: -50)
             ]
             view.addConstraints(rcConstraints)
         } else {
