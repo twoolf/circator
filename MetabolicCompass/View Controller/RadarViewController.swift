@@ -81,23 +81,18 @@ class RadarViewController : UIViewController, ChartViewDelegate {
         chart.descriptionText = ""
         chart.rotationEnabled = false
         chart.yAxis.axisMinValue = 0.1
-//        chart.yAxis.axisMaxValue = 1.2
         chart.yAxis.axisRange = 1.0
-//        chart.drawWeb = false
         chart.yAxis.drawLabelsEnabled = false
         chart.xAxis.drawLabelsEnabled = false
         chart.webColor = UIColor.colorWithHexString("#042652")!
         chart.webAlpha = 1.0
-
-//        chart.yAxis.customAxisMax = 1.0
-//        chart.yAxis.customAxisMin = 0.2
 
         let legend = chart.legend
         legend.enabled = true
         legend.position = ScreenManager.sharedInstance.radarLegendPosition()
         legend.font = UIFont.systemFontOfSize(12, weight: UIFontWeightRegular)
         legend.textColor = .whiteColor()
-        legend.xEntrySpace = 7.0
+        legend.xEntrySpace = 50.0
         legend.yEntrySpace = 5.0
         return chart
     }()

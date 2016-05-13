@@ -18,8 +18,8 @@ class AccountManager: NSObject {
     static let shared = AccountManager()
     var rootViewController: UINavigationController?
     var contentManager = ContentManager()
-    var uploadInProgress = false
-    var isAuthorized = false
+    var uploadInProgress      = false
+    var isAuthorized          = false
     var isHealthKitAuthorized = false
     
     func loginOrRegister() {
@@ -37,17 +37,16 @@ class AccountManager: NSObject {
         self.rootViewController?.pushViewController(registerVC, animated: true)
     }
     
-    func doLogin(completion: (Void -> Void)?) {
+    func doLogin(animated: Bool = true, completion: (Void -> Void)?) {
         
-        Async.main() {
-            let registerLandingStroyboard = UIStoryboard(name: "RegisterLoginProcess", bundle: nil)
-            let registerLogingLandingController = registerLandingStroyboard.instantiateViewControllerWithIdentifier("landingLoginRegister") as! RegisterLoginLandingViewController
-            
-            registerLogingLandingController.completion = completion
-            
-            self.rootViewController?.pushViewController(registerLogingLandingController, animated: UserManager.sharedManager.hasUserId())
-        }
+        assert(NSThread.isMainThread(), "can be called from main thread only")
         
+        let registerLandingStroyboard = UIStoryboard(name: "RegisterLoginProcess", bundle: nil)
+        let registerLogingLandingController = registerLandingStroyboard.instantiateViewControllerWithIdentifier("landingLoginRegister") as! RegisterLoginLandingViewController
+        
+        registerLogingLandingController.completion = completion
+        
+        self.rootViewController?.pushViewController(registerLogingLandingController, animated: animated)
     }
     
     func doLogout(completion: (Void -> Void)?) {
@@ -72,19 +71,21 @@ class AccountManager: NSObject {
         return UserManager.sharedManager.hasAccount()
     }
     
-    func loginAndInitialize() {
+    func loginAndInitialize(animated: Bool = true) {
         
         assert(self.rootViewController != nil, "Please, specify root navigation controller")
         
         guard UserManager.sharedManager.hasAccount() else {
-            self.doLogin { self.loginComplete() }
+            self.doLogin (animated) { self.loginComplete() }
             return
         }
         
         withHKCalAuth {
             UserManager.sharedManager.ensureAccessToken { error in
                 guard !error else {
-                    self.doLogin { self.loginComplete() }
+                    Async.main() {
+                        self.doLogin (animated) { self.loginComplete() }
+                    }
                     return
                 }
                 

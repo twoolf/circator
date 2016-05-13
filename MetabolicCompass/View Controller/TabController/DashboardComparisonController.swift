@@ -25,7 +25,7 @@ class DashboardComparisonController:
         self.tableView.delegate        = self
         self.tableView.allowsSelection = false
         
-        AccountManager.shared.loginAndInitialize()
+        AccountManager.shared.loginAndInitialize(false)
     }
     
     func contenteDidUpdate (notification: NSNotification) {
