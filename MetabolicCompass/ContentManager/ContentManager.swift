@@ -20,7 +20,8 @@ class ContentManager: NSObject {
     
     internal func initializeBackgroundWork() {
         
-        if (!AccountManager.shared.isLogged()) {
+        if (!AccountManager.shared.isLogged() ||
+            !AccountManager.shared.isAuthorized) {
             return
         }
         
