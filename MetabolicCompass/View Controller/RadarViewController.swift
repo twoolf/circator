@@ -72,8 +72,8 @@ class RadarViewController : UIViewController, ChartViewDelegate {
 
     lazy var healthFormatter : SampleFormatter = { return SampleFormatter() }()
 
-    lazy var radarChart: RadarChartView = {
-        let chart = RadarChartView()
+    lazy var radarChart: MetabolicRadarChartView = {
+        let chart = MetabolicRadarChartView()
         
         chart.renderer = MetabolicChartRender(chart: chart, animator: chart.chartAnimator, viewPortHandler: chart.viewPortHandler)
         chart.animate(xAxisDuration: 1.0, yAxisDuration: 1.0)
@@ -86,6 +86,8 @@ class RadarViewController : UIViewController, ChartViewDelegate {
 //        chart.drawWeb = false
         chart.yAxis.drawLabelsEnabled = false
         chart.xAxis.drawLabelsEnabled = false
+        
+        
         
         
 //        chart.yAxis.customAxisMax = 1.0
@@ -145,8 +147,8 @@ class RadarViewController : UIViewController, ChartViewDelegate {
             view.addSubview(radarChart)
             let rcConstraints: [NSLayoutConstraint] = [
                 radarChart.topAnchor.constraintEqualToAnchor(view.topAnchor),
-                radarChart.leadingAnchor.constraintEqualToAnchor(view.layoutMarginsGuide.leadingAnchor),
-                radarChart.trailingAnchor.constraintEqualToAnchor(view.layoutMarginsGuide.trailingAnchor),
+                radarChart.leftAnchor.constraintEqualToAnchor(view.leftAnchor),
+                radarChart.rightAnchor.constraintEqualToAnchor(view.rightAnchor),
                 radarChart.bottomAnchor.constraintEqualToAnchor(view.bottomAnchor)
             ]
             view.addConstraints(rcConstraints)

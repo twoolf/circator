@@ -110,6 +110,7 @@
 		E7E48DE51CE4A12900DB020F /* MetabolicChartRender.swift in Sources */ = {isa = PBXBuildFile; fileRef = E7E48DE41CE4A12900DB020F /* MetabolicChartRender.swift */; };
 		E7E48DE71CE4BCAB00DB020F /* MetabolicChartDataSet.swift in Sources */ = {isa = PBXBuildFile; fileRef = E7E48DE61CE4BCAB00DB020F /* MetabolicChartDataSet.swift */; };
 		E7E48DE91CE4C2DC00DB020F /* MetabolicDataEntry.swift in Sources */ = {isa = PBXBuildFile; fileRef = E7E48DE81CE4C2DC00DB020F /* MetabolicDataEntry.swift */; };
+		E7E48DEB1CE5CB2700DB020F /* MetabolicRadarChartView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E7E48DEA1CE5CB2700DB020F /* MetabolicRadarChartView.swift */; };
 		F42F5ADD1BDC85AF00195490 /* SampleDataAnalyzer.swift in Sources */ = {isa = PBXBuildFile; fileRef = F42F5ADC1BDC85AF00195490 /* SampleDataAnalyzer.swift */; };
 		F42F5B351BE1FD1E00195490 /* MetabolicCompassKit.h in Headers */ = {isa = PBXBuildFile; fileRef = F42F5B341BE1FD1E00195490 /* MetabolicCompassKit.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		F42F5B391BE1FD1E00195490 /* MetabolicCompassKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F42F5B321BE1FD1E00195490 /* MetabolicCompassKit.framework */; };
@@ -336,6 +337,7 @@
 		E7E48DE41CE4A12900DB020F /* MetabolicChartRender.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MetabolicChartRender.swift; sourceTree = "<group>"; };
 		E7E48DE61CE4BCAB00DB020F /* MetabolicChartDataSet.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MetabolicChartDataSet.swift; sourceTree = "<group>"; };
 		E7E48DE81CE4C2DC00DB020F /* MetabolicDataEntry.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MetabolicDataEntry.swift; sourceTree = "<group>"; };
+		E7E48DEA1CE5CB2700DB020F /* MetabolicRadarChartView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MetabolicRadarChartView.swift; sourceTree = "<group>"; };
 		F28DDB83BE2DA2B65B631537 /* Pods.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = Pods.debug.xcconfig; path = "Pods/Target Support Files/Pods/Pods.debug.xcconfig"; sourceTree = "<group>"; };
 		F42F5ADC1BDC85AF00195490 /* SampleDataAnalyzer.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SampleDataAnalyzer.swift; sourceTree = "<group>"; };
 		F42F5B321BE1FD1E00195490 /* MetabolicCompassKit.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = MetabolicCompassKit.framework; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -689,6 +691,7 @@
 				E7E48DE41CE4A12900DB020F /* MetabolicChartRender.swift */,
 				E7E48DE61CE4BCAB00DB020F /* MetabolicChartDataSet.swift */,
 				E7E48DE81CE4C2DC00DB020F /* MetabolicDataEntry.swift */,
+				E7E48DEA1CE5CB2700DB020F /* MetabolicRadarChartView.swift */,
 			);
 			name = MetabolicCharts;
 			path = "Charts+Extended";
@@ -1218,6 +1221,7 @@
 				958568051CD0BF6300EDD385 /* BaseViewController.swift in Sources */,
 				95C0B9A31CD2563B006E523F /* TitledInputCollectionViewCell.swift in Sources */,
 				958568121CD12B5200EDD385 /* RegisterModelDataSource.swift in Sources */,
+				E7E48DEB1CE5CB2700DB020F /* MetabolicRadarChartView.swift in Sources */,
 				E7E48DE91CE4C2DC00DB020F /* MetabolicDataEntry.swift in Sources */,
 				95C0B9AA1CD25AAC006E523F /* AdditionalInfoViewController.swift in Sources */,
 				958568011CD0AFA400EDD385 /* CheckBox.swift in Sources */,
