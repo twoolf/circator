@@ -11,7 +11,7 @@ import SwiftyUserDefaults
 
 private let PMSampleTypesKey = DefaultsKey<[NSData]?>("previewSampleTypes")
 private let PMBalanceSampleTypesKey = DefaultsKey<[NSData]?>("balanceSampleTypes")
-
+public  let PMDidUpdateBalanceSampleTypesNotification = "PMDidUpdateBalanceSampleTypesNotification"
 /**
 Controls the HealthKit metrics that will be displayed on picker wheels, tableviews, and radar charts
  
@@ -158,6 +158,7 @@ public class PreviewManager: NSObject {
         }
         
         Defaults[PMBalanceSampleTypesKey] = rawTypes
+        NSNotificationCenter.defaultCenter().postNotificationName(PMDidUpdateBalanceSampleTypesNotification, object: nil)
     }
     
     /// associates icon with sample type

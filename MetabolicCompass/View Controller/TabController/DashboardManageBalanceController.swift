@@ -9,6 +9,7 @@
 import UIKit
 import HealthKit
 import MetabolicCompassKit
+import Async
 
 class DashboardManageBalanceController: UIViewController, UITableViewDelegate, UITableViewDataSource {
     
@@ -35,10 +36,37 @@ class DashboardManageBalanceController: UIViewController, UITableViewDelegate, U
         self.tableView.dataSource = self;
         self.tableView.delegate   = self;
         
+        self.refreshContent()
+        
+    }
+    
+    override func viewWillAppear(animated: Bool) {
+        super.viewWillAppear(animated)
+        
+        NSNotificationCenter.defaultCenter().addObserver(self, selector: #selector(contentDidChange), name: PMDidUpdateBalanceSampleTypesNotification, object: nil)
+    }
+    
+    override func viewWillDisappear(animated: Bool) {
+        super.viewWillDisappear(animated)
+        
+        NSNotificationCenter.defaultCenter().removeObserver(self)
+    }
+    
+    func refreshContent () {
+        
         self.data = []
         
         for type in PreviewManager.balanceSampleTypes {
             self.data.append(DashboardMetricsConfigItem(type: type.identifier, active: true, object: type))
+        }
+        
+        self.tableView.reloadData()
+    }
+    
+    func contentDidChange() {
+        
+        Async.main {
+            self.refreshContent()
         }
         
     }
@@ -86,6 +114,7 @@ class DashboardManageBalanceController: UIViewController, UITableViewDelegate, U
         let item = self.data[indexPath.row]
         cell.leftImage.image = appearanceProvider.imageForSampleType(item.type, active: true)
         cell.titleLabel.text = appearanceProvider.titleForSampleType(item.type, active: true).string
+        cell.data = item
         return cell;
     }
 }

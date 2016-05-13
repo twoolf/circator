@@ -9,10 +9,14 @@
 import UIKit
 import HealthKit
 import MetabolicCompassKit
+import Async
 
 class BalanceSampleListController: UIViewController, UITableViewDelegate, UITableViewDataSource {
     
     @IBOutlet weak var tableView: UITableView!
+    var selectdType: HKSampleType!
+    weak var parentCell: UITableViewCell!
+    var completionBlock: (Void -> Void)?
     
     var data: [DashboardMetricsConfigItem] = [] {
         didSet {
@@ -28,14 +32,24 @@ class BalanceSampleListController: UIViewController, UITableViewDelegate, UITabl
         self.tableView.dataSource = self;
         self.tableView.delegate   = self;
         
+        self.refreshContent()
+        
+       
+        
+    }
+    
+    func refreshContent () {
         self.data = []
         
         for type in PreviewManager.supportedTypes {
-            let active = PreviewManager.previewSampleTypes.contains(type)
-            self.data.append(DashboardMetricsConfigItem(type: type.identifier, active: active, object: type))
+            let contains = PreviewManager.balanceSampleTypes.contains(type)
+            
+            if (contains && type != self.selectdType) {
+                continue
+            }
+            
+            self.data.append(DashboardMetricsConfigItem(type: type.identifier, active: type == self.selectdType, object: type))
         }
-        
-        
     }
     
     func save() {
@@ -84,21 +98,10 @@ class BalanceSampleListController: UIViewController, UITableViewDelegate, UITabl
         
         cell.leftImageView.image = appearanceProvider.imageForSampleType(item.type, active: false)
         cell.captionLabel.text   = appearanceProvider.titleForSampleType(item.type, active: false).string
-        
+        cell.button.selected     = item.active
         return cell;
     }
     
-    func  selectedItemsCount() -> Int {
-        var selected = 0
-        
-        for item in self.data {
-            if (item.active) {
-                selected += 1
-            }
-        }
-        
-        return selected
-    }
     
     func tableView(tableView: UITableView, didSelectRowAtIndexPath indexPath: NSIndexPath) {
         
@@ -107,13 +110,31 @@ class BalanceSampleListController: UIViewController, UITableViewDelegate, UITabl
             return
         }
         
-        let item = self.data[indexPath.row]
-        
-        if (item.active && self.selectedItemsCount() == 1) {
-            return
+        var index = 0
+        for item in data {
+            
+            item.active = false
+            if let otherCell = tableView.cellForRowAtIndexPath(NSIndexPath(forRow: index, inSection: 0)) as? ManageDashboardCell {
+                otherCell.button.selected = false
+            }
+            
+            index += 1
         }
         
-        item.active = !item.active
+        let item = self.data[indexPath.row]
+        item.active = true
+        cell.button.selected = true
+        
+        Async.main(after: 0.1) {
+            self.parentCell.resignFirstResponder()
+            var samples = PreviewManager.balanceSampleTypes
+            let index   = PreviewManager.balanceSampleTypes.indexOf(self.selectdType)!
+            samples[index] = item.object
+            PreviewManager.updateBalanceSampleTypes(samples)
+        }
+        
+        guard let block = self.completionBlock else {return}
+        block()
     }
 
 }

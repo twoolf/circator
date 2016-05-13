@@ -12,6 +12,7 @@ import MetabolicCompassKit
 import Charts
 import Crashlytics
 import SwiftDate
+import Async
 
 /**
  This class controls the display of the Radar screen (2nd view of dashboard). The radar screen gives a spider like view of how the users data compares to the population data. Our user input, to this date, suggests that many users prefer this to the numbers on the first view of the dashboard.
@@ -110,7 +111,22 @@ class RadarViewController : UIViewController, ChartViewDelegate {
 
     override func viewWillAppear(animated: Bool) {
         super.viewWillAppear(animated)
-//        navigationController?.setNavigationBarHidden(true, animated: false)
+        
+        NSNotificationCenter.defaultCenter().addObserver(self, selector: #selector(contentDidChange), name: PMDidUpdateBalanceSampleTypesNotification, object: nil)
+    }
+    
+    func contentDidChange() {
+        
+        Async.main {
+            self.reloadData()
+        }
+        
+    }
+    
+    override func viewWillDisappear(animated: Bool) {
+        super.viewWillDisappear(animated)
+        
+        NSNotificationCenter.defaultCenter().removeObserver(self)
     }
 
     override func viewDidAppear(animated: Bool) {
@@ -199,7 +215,7 @@ class RadarViewController : UIViewController, ChartViewDelegate {
     private let appearanceProvider = DashboardMetricsAppearanceProvider()
 
     func indEntry(i: Int) -> MetabolicDataEntry {
-        let type = PreviewManager.previewSampleTypes[i]
+        let type = PreviewManager.balanceSampleTypes[i]
         let samples = HealthManager.sharedManager.mostRecentSamples[type] ?? []
         let val = healthFormatter.numberFromSamples(samples)
         guard !val.isNaN else {
@@ -215,7 +231,7 @@ class RadarViewController : UIViewController, ChartViewDelegate {
     }
 
     func popEntry(i: Int) -> MetabolicDataEntry {
-        let type = PreviewManager.previewSampleTypes[i]
+        let type = PreviewManager.balanceSampleTypes[i]
         let samples = PopulationHealthManager.sharedManager.mostRecentAggregates[type] ?? []
         let val = healthFormatter.numberFromSamples(samples)
         guard !val.isNaN else {
@@ -230,8 +246,8 @@ class RadarViewController : UIViewController, ChartViewDelegate {
     }
 
     func reloadData() {
-        let indData = (0..<PreviewManager.previewSampleTypes.count).map(indEntry)
-        let popData = (0..<PreviewManager.previewSampleTypes.count).map(popEntry)
+        let indData = (0..<PreviewManager.balanceSampleTypes.count).map(indEntry)
+        let popData = (0..<PreviewManager.balanceSampleTypes.count).map(popEntry)
 
         let indDataSet = MetabolicChartDataSet(yVals: indData, label: NSLocalizedString("Individual", comment: "Individual"))
         indDataSet.fillColor = UIColor.colorWithHexString("#427DC9", alpha: 1.0)!
@@ -257,7 +273,7 @@ class RadarViewController : UIViewController, ChartViewDelegate {
         popDataSet.drawHighlightCircleEnabled = false
         
         
-        let xVals = PreviewManager.previewSampleTypes.map { type in
+        let xVals = PreviewManager.balanceSampleTypes.map { type in
                         return HMConstants.sharedInstance.healthKitShortNames[type.identifier]! }
 
         let data = RadarChartData(xVals: xVals, dataSets: [popDataSet, indDataSet])

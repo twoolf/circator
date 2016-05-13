@@ -13,12 +13,15 @@ class ManageBalanceCell: UITableViewCell {
         
     @IBOutlet weak var titleLabel: UILabel!
     @IBOutlet weak var leftImage: UIImageView!
-    
+    weak var data: DashboardMetricsConfigItem!
     
     override var inputView: UIView? {
         
         let storyboard = UIStoryboard(name: "TabScreens", bundle: nil)
-        let controller = storyboard.instantiateViewControllerWithIdentifier("BalanceSampleListController")
+        let controller = storyboard.instantiateViewControllerWithIdentifier("BalanceSampleListController") as! BalanceSampleListController
+        
+        controller.selectdType = data.object
+        controller.parentCell  = self
         
         return controller.view
     }
