@@ -61,11 +61,16 @@ class ContentManager: NSObject {
     }
     
     func fetchAggregatesPeriodically() {
-        PopulationHealthManager.sharedManager.fetchAggregates()
-        let freq = UserManager.sharedManager.getRefreshFrequency()
-        aggregateFetchTask = Async.background(after: Double(freq)) {
-            self.fetchAggregatesPeriodically()
+        
+        UserManager.sharedManager.ensureAccessToken { _ in
+            
+            PopulationHealthManager.sharedManager.fetchAggregates()
+            let freq = UserManager.sharedManager.getRefreshFrequency()
+            self.aggregateFetchTask = Async.background(after: Double(freq)) {
+                self.fetchAggregatesPeriodically()
+            }
         }
+        
     }
     
     func fetchRecentSamples() {

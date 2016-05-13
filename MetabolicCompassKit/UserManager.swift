@@ -224,7 +224,7 @@ public class UserManager {
                 }
 
                 log.verbose("Access token: \(Stormpath.accessToken)")
-                MCRouter.OAuthToken = Stormpath.accessToken
+                MCRouter.updateAuthToken(Stormpath.accessToken)
                 completion(false, nil)
             })
         }
@@ -270,7 +270,7 @@ public class UserManager {
                 return
             }
         })
-        MCRouter.OAuthToken = nil
+        MCRouter.updateAuthToken(nil)
         resetUser()
         if let comp = completion { comp() }
     }
@@ -369,17 +369,16 @@ public class UserManager {
     }
 
     public func ensureAccessToken(completion: (Bool -> Void)) {
-        if let token = Stormpath.accessToken {
-            MCRouter.OAuthToken = token
-            completion(token.characters.count > 0 ? false: true)
+        
+        if (MCRouter.tokenExpireTime - NSDate().timeIntervalSince1970 > 0) {
+            completion(false)
         }
         else {
-            completion(false)
+            self.refreshAccessToken(completion)
         }
         
         // temporary disabled, waiting for server api clarification
         // ensureAccessToken(0, completion: completion)
-        
     }
 
     public func refreshAccessToken(tried: Int, completion: (Bool -> Void)) {
@@ -398,7 +397,8 @@ public class UserManager {
 
             if let token = Stormpath.accessToken {
                 log.verbose("Refreshed token: \(token)")
-                MCRouter.OAuthToken = Stormpath.accessToken
+                MCRouter.updateAuthToken(Stormpath.accessToken)
+                
                 self.ensureAccessToken(tried+1, completion: completion)
             } else {
                 log.error("RefreshAccessToken failed, please login manually.")

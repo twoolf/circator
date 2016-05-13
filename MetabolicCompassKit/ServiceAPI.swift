@@ -33,6 +33,12 @@ public  let resetPassURL = asDevService ? resetPassDevURL : resetPassProdURL
 enum MCRouter : URLRequestConvertible {
     static let baseURLString = asDevService ? devServiceURL : prodServiceURL
     static var OAuthToken: String?
+    static var tokenExpireTime: NSTimeInterval = 0
+    
+    static func updateAuthToken (token: String?) {
+        OAuthToken = token
+        tokenExpireTime = token != nil ? NSDate().timeIntervalSince1970 + 3600: 0
+    }
 
     // Data API
     case UploadHKMeasures([String: AnyObject])
