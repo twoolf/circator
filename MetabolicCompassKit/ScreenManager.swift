@@ -132,6 +132,17 @@ public class ScreenManager {
             return 100
         }
     }
+    
+    public func radarChartBottomIndent() -> CGFloat {
+        let screenSize = UIScreen.mainScreen().bounds.size
+        let screenHeight = screenSize.height
+        
+        if (screenHeight < 569) {
+            return 20
+        } else {
+            return 50
+        }
+    }
 
     public func loginLabelFontSize() -> CGFloat {
         return labelFontSize()

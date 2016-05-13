@@ -13,8 +13,8 @@ import Charts
 class MetabolicChartRender: RadarChartRenderer {
     
     var centerCircleColor = UIColor.colorWithHexString("#041F44")!
-    var imageIndent = CGFloat(0.0)
-    var radiusMod   = CGFloat(0.9)
+    var imageIndent = CGFloat(5.0)
+    var radiusMod   = CGFloat(1.0)
     
     internal struct Math
     {
@@ -48,7 +48,7 @@ class MetabolicChartRender: RadarChartRenderer {
         CGContextSaveGState(context)
         
         let center = chart.centerOffsets
-        let radius = chart.radius * radiusMod
+        let radius = chart.radius * radiusMod - CGFloat(chart.chartYMin) * CGFloat(chart.factor)
         
         CGContextBeginPath(context)
         CGContextAddEllipseInRect(context, CGRectMake(center.x - radius, center.y - radius, radius * 2.0, radius * 2.0))
@@ -75,7 +75,7 @@ class MetabolicChartRender: RadarChartRenderer {
         // calculate the factor that is needed for transforming the value to
         // pixels
         let factor = chart.factor
-        let radius = chart.radius * radiusMod
+        let radius = chart.radius * radiusMod - CGFloat(chart.chartYMin) * CGFloat(chart.factor)
         let rotationangle = chart.rotationAngle
         
         let center = chart.centerOffsets

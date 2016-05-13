@@ -11,7 +11,7 @@ import Charts
 
 class MetabolicRadarChartView: RadarChartView {
     
-    var iconsIndent = CGFloat(15)
+    var iconsIndent = CGFloat(20)
     var skipWebCircleCount = 2
     
     override var factor: CGFloat {

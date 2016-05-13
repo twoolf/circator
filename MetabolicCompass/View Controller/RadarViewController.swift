@@ -144,7 +144,7 @@ class RadarViewController : UIViewController, ChartViewDelegate {
                 radarChart.leftAnchor.constraintEqualToAnchor(view.leftAnchor),
                 radarChart.rightAnchor.constraintEqualToAnchor(view.rightAnchor),
 //                radarChart.bottomAnchor.constraintEqualToAnchor(view.bottomAnchor),
-                radarChart.bottomAnchor.constraintGreaterThanOrEqualToAnchor(view.bottomAnchor, constant: -50)
+                radarChart.bottomAnchor.constraintGreaterThanOrEqualToAnchor(view.bottomAnchor, constant: -ScreenManager.sharedInstance.radarChartBottomIndent())
             ]
             view.addConstraints(rcConstraints)
         } else {
