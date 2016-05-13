@@ -181,4 +181,19 @@ public class UINotifications {
         }
         msg()
     }
+    
+    public static func showError(vc: UIViewController, pop: Bool = false, asNav: Bool = false, msg: String? = nil, title: String? = nil) {
+        withPop(vc, pop: pop, asNav: asNav) {
+            Async.main {
+                vc.view.dodo.style.bar.hideAfterDelaySeconds = 3
+                vc.view.dodo.style.bar.hideOnTap = true
+                var vmsg = msg ?? "Please try again"
+                if let alertTitle = title {
+                    vmsg = alertTitle + ": " + vmsg
+                }
+                
+                vc.view.dodo.error(vmsg)
+            }
+        }
+    }
 }

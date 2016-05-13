@@ -47,15 +47,20 @@ class BaseViewController: UIViewController {
     
     var alertControllerOkButtonHandler: ((Void) -> Void)? = nil
     
-    func showAlert(withMessage message: String, title : String = "Alert") {
-        let alert = UIAlertController(title: title, message: message, preferredStyle: UIAlertControllerStyle.Alert)
-        alert.addAction(UIAlertAction(title: "Ok", style: UIAlertActionStyle.Cancel, handler: {(alert: UIAlertAction!) in
-            if let completionHadler = self.alertControllerOkButtonHandler {
-                completionHadler()
-            }
-        }))
+    func showAlert(withMessage message: String, title : String? = nil) {
         
-        self.presentViewController(alert, animated: true, completion: nil)
+        let vc = self.navigationController ?? self
+        
+        UINotifications.showError(vc, msg: message, title: title)
+//        
+//        let alert = UIAlertController(title: title, message: message, preferredStyle: UIAlertControllerStyle.Alert)
+//        alert.addAction(UIAlertAction(title: "Ok", style: UIAlertActionStyle.Cancel, handler: {(alert: UIAlertAction!) in
+//            if let completionHadler = self.alertControllerOkButtonHandler {
+//                completionHadler()
+//            }
+//        }))
+//        
+//        self.presentViewController(alert, animated: true, completion: nil)
     }
     
     // MARK: - Keyboard actions

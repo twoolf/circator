@@ -65,9 +65,6 @@ private let inputFontSize = ScreenManager.sharedInstance.profileInputFontSize()
     
     @IBAction func registerAction(sender: UIButton) {
     
-        UINotifications.genericMsg(self.navigationController!, msg: "Registering account...")
-        
-        
         guard let consentPath = ConsentManager.sharedManager.getConsentFilePath() else {
             UINotifications.noConsent(self.navigationController!, pop: true, asNav: true)
             return
@@ -81,6 +78,7 @@ private let inputFontSize = ScreenManager.sharedInstance.profileInputFontSize()
         
         sender.enabled = false
         
+        UINotifications.genericMsg(self.navigationController!, msg: "Registering account...")
         
         UserManager.sharedManager.overrideUserPass(userRegistrationModel.email, pass: userRegistrationModel.password)
         UserManager.sharedManager.register(userRegistrationModel.firstName!, lastName: userRegistrationModel.lastName!) { (_, error, errormsg) in
