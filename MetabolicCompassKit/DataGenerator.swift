@@ -754,7 +754,7 @@ public class DataGenerator : GeneratorType {
         for type in generatorTypes {
             typesAndPredicates[type] = HKQuery.predicateForObjectsWithMetadataKey("MC.Generated")
         }
-        HealthManager.sharedManager.deleteSamples(typesAndPredicates, completion)
+        HealthManager.sharedManager.deleteSamples(typesAndPredicates, completion: completion)
     }
 
 }

@@ -924,15 +924,14 @@ public class HealthManager: NSObject, WCSessionDelegate {
         typesAndPredicates.forEach { (type, predicate) -> () in
             dispatch_group_enter(group)
             healthKitStore.deleteObjectsOfType(type, predicate: predicate) {
-                (success, count, error) {
-                    guard error == nil else {
-                        log.error("Could not delete samples for \(type.displayText): \(error)")
-                        dispatch_group_leave(group)
-                        return
-                    }
-                    numDeleted += count
+                (success, count, error) in
+                guard error == nil else {
+                    log.error("Could not delete samples for \(type.displayText): \(error)")
                     dispatch_group_leave(group)
+                    return
                 }
+                numDeleted += count
+                dispatch_group_leave(group)
             }
         }
 
