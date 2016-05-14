@@ -858,6 +858,15 @@ public class HealthManager: NSObject, WCSessionDelegate {
 
 
     // MARK: - Writing into HealthKit
+    public func saveSample(sample: HKSample, completion: (Bool, NSError?) -> Void)
+    {
+        healthKitStore.saveObject(sample, withCompletion: completion)
+    }
+
+    public func saveSamples(samples: [HKSample], completion: (Bool, NSError?) -> Void)
+    {
+        healthKitStore.saveObjects(samples, withCompletion: completion)
+    }
 
     public func saveSleep(startDate: NSDate, endDate: NSDate, metadata: NSDictionary, completion: ( (Bool, NSError!) -> Void)!)
     {
@@ -905,6 +914,32 @@ public class HealthManager: NSObject, WCSessionDelegate {
     public func savePreparationAndRecoveryWorkout(startDate: NSDate, endDate: NSDate, distance:Double, distanceUnit: HKUnit, kiloCalories: Double, metadata: NSDictionary, completion: ( (Bool, NSError!) -> Void)!)
     {
         saveWorkout(startDate, endDate: endDate, activityType: HKWorkoutActivityType.PreparationAndRecovery, distance: distance, distanceUnit: distanceUnit, kiloCalories: kiloCalories, metadata: metadata, completion: completion)
+    }
+
+    // MARK: - Removing samples from HealthKit
+    public func deleteSamples(typesAndPredicates: [HKSampleType: NSPredicate], completion: (deleted: Int, error: NSError!) -> Void) {
+        let group = dispatch_group_create()
+        var numDeleted = 0
+
+        typesAndPredicates.forEach { (type, predicate) -> () in
+            dispatch_group_enter(group)
+            healthKitStore.deleteObjectsOfType(type, predicate: predicate) {
+                (success, count, error) {
+                    guard error == nil else {
+                        log.error("Could not delete samples for \(type.displayText): \(error)")
+                        dispatch_group_leave(group)
+                        return
+                    }
+                    numDeleted += count
+                    dispatch_group_leave(group)
+                }
+            }
+        }
+
+        dispatch_group_notify(group, dispatch_get_main_queue()) {
+            // TODO: partial error handling, i.e., when a subset of the desired types fail in their queries.
+            completion(deleted: numDeleted, error: nil)
+        }
     }
 
     // MARK: - Upload helpers.

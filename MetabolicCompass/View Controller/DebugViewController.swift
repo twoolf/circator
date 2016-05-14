@@ -37,6 +37,9 @@ class DebugViewController : FormViewController {
         "cSamplesPerType"  : ("Samples per type", "20"),
         "cStart"           : ("Start date",       "1/1/2015"),
         "cEnd"             : ("End date",         "1/2/2015"),
+        "lSamplesPerType"  : ("Samples per type", "20"),
+        "lStart"           : ("Start date",       "1/1/2015"),
+        "lEnd"             : ("End date",         "1/2/2015"),
     ]
 
     var generatorParamValues : [String: AnyObject] = [:]
@@ -114,7 +117,7 @@ class DebugViewController : FormViewController {
 
         let debugAnchorsSection = SectionFormer(rowFormers: Array(labelRows)).set(headerViewFormer: debugAnchorsHeader)
 
-        // Data generation inputs and button
+        // Randomized data generation inputs and button
         var generateRandRows : [RowFormer] = []
 
         ["rNumUsers", "rUserId", "rSize", "rStart", "rEnd"].forEach { paramKey in
@@ -153,7 +156,7 @@ class DebugViewController : FormViewController {
         }
         let generateRandSection = SectionFormer(rowFormers: Array(generateRandRows)).set(headerViewFormer: generateRandHeader)
 
-        // Data generation inputs and button
+        // Covering data generation inputs and button
         var generateCoverRows : [RowFormer] = []
 
         ["cSamplesPerType", "cStart", "cEnd"].forEach { paramKey in
@@ -192,7 +195,63 @@ class DebugViewController : FormViewController {
         }
         let generateCoverSection = SectionFormer(rowFormers: Array(generateCoverRows)).set(headerViewFormer: generateCoverHeader)
 
-        former.append(sectionFormer: generateRandSection, generateCoverSection, debugAnchorsSection)
+        // Local data generation inputs and button
+        var generateLocalRows : [RowFormer] = []
+
+        ["lSamplesPerType", "lStart", "lEnd"].forEach { paramKey in
+            if let (lbl, defaultVal) = generatorParams[paramKey] {
+                generateLocalRows.append(TextFieldRowFormer<FormTextFieldCell>() {
+                    $0.titleLabel.text = lbl
+                    }.configure {
+                        let attrs = [NSForegroundColorAttributeName: UIColor.lightGrayColor()]
+                        $0.attributedPlaceholder = NSAttributedString(string: defaultVal, attributes: attrs)
+                    }.onTextChanged { [weak self] txt in
+                        self?.generatorParamValues[paramKey] = txt
+                    })
+            }
+        }
+
+        // Generate local button.
+        generateLocalRows.append(LabelRowFormer<FormLabelCell>() {
+                let button = MCButton(frame: $0.contentView.frame, buttonStyle: .Rounded)
+                button.cornerRadius = 4.0
+                button.buttonColor = UIColor.ht_emeraldColor()
+                button.shadowColor = UIColor.ht_nephritisColor()
+                button.shadowHeight = 4
+                button.setTitle("Generate Local Data", forState: .Normal)
+                button.titleLabel?.font = UIFont.systemFontOfSize(18, weight: UIFontWeightRegular)
+                button.addTarget(self, action: "doGenLocal", forControlEvents: .TouchUpInside)
+                button.enabled = true
+                $0.contentView.addSubview(button)
+            }.configure {
+                $0.enabled = true
+            })
+
+        // Cleanup local button.
+        generateLocalRows.append(LabelRowFormer<FormLabelCell>() {
+                let button = MCButton(frame: $0.contentView.frame, buttonStyle: .Rounded)
+                button.cornerRadius = 4.0
+                button.buttonColor = UIColor.ht_emeraldColor()
+                button.shadowColor = UIColor.ht_nephritisColor()
+                button.shadowHeight = 4
+                button.setTitle("Cleanup Local Data", forState: .Normal)
+                button.titleLabel?.font = UIFont.systemFontOfSize(18, weight: UIFontWeightRegular)
+                button.addTarget(self, action: "doCleanupLocal", forControlEvents: .TouchUpInside)
+                button.enabled = true
+                $0.contentView.addSubview(button)
+            }.configure {
+                $0.enabled = true
+            })
+
+        let generateLocalHeader = LabelViewFormer<FormLabelHeaderView> {
+            $0.titleLabel.textColor = .grayColor()
+            }.configure { view in
+                view.viewHeight = 44
+                view.text = "Local Data Generation"
+        }
+        let generateLocalSection = SectionFormer(rowFormers: Array(generateLocalRows)).set(headerViewFormer: generateLocalHeader)
+
+        former.append(sectionFormer: generateRandSection, generateCoverSection, generateLocalSection, debugAnchorsSection)
     }
 
     // TODO: use the cached profile rather than directly accessing the HealthManager.
@@ -244,13 +303,11 @@ class DebugViewController : FormViewController {
                 DataGenerator.sharedInstance.generateInMemoryCoveringDataset(genSamplesPerType, startDate: st, endDate: en)
                 {
                     $0.forEach { (_,block) in
-//                        log.info("entering: )")
                         if !block.isEmpty {
                             autoreleasepool { _ in
                                 log.info("Uploading block of size \(block.count)")
                                 do {
                                     let jsonObjs = try block.map(HealthManager.sharedManager.jsonifySample)
-//                                    log.info("For the following: \(block.first)")
                                     HealthManager.sharedManager.uploadSampleBlock(jsonObjs)
                                 } catch  {
                                     log.info("problems with: (\(HealthManager.description())")
@@ -264,6 +321,28 @@ class DebugViewController : FormViewController {
             } else {
                 UINotifications.genericError(self.navigationController!, msg: "Invalid start/end date for covering data generation")
             }
+        }
+    }
+
+    func doGenLocal() {
+        if let sptParam            = generatorParamValues["lSamplesPerType"] as? String,
+               genSamplesPerType   = Int(sptParam),
+               genStart            = generatorParamValues["lStart"]    as? String,
+               genEnd              = generatorParamValues["lEnd"]      as? String
+        {
+            if let st = genStart.toDate(genDateFormat), en = genEnd.toDate(genDateFormat) {
+                log.info("Generating local dataset between \(st) and \(en)")
+                DataGenerator.sharedInstance.generateLocalInMemoryDataset(genSamplesPerType, startDate: st, endDate: en)
+            } else {
+                UINotifications.genericError(self.navigationController!, msg: "Invalid start/end date for local dataset generation")
+            }
+        }
+    }
+
+    func doCleanupLocal() {
+        DataGenerator.sharedInstance.removeLocalInMemoryDataset { (deleted, error) in
+            guard error == nil else { log.error(error); return }
+            log.info("Deleted \(deleted) generated samples")
         }
     }
 
