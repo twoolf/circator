@@ -211,7 +211,7 @@ class DebugViewController : FormViewController {
             }
         }
 
-        // Generate local button.
+        // Local data generator invocation buttons, with and without uploading.
         generateLocalRows.append(LabelRowFormer<FormLabelCell>() {
                 let button = MCButton(frame: $0.contentView.frame, buttonStyle: .Rounded)
                 button.cornerRadius = 4.0
@@ -223,6 +223,21 @@ class DebugViewController : FormViewController {
                 button.addTarget(self, action: "doGenLocal", forControlEvents: .TouchUpInside)
                 button.enabled = true
                 $0.contentView.addSubview(button)
+            }.configure {
+                $0.enabled = true
+            })
+
+        generateLocalRows.append(LabelRowFormer<FormLabelCell>() {
+            let button = MCButton(frame: $0.contentView.frame, buttonStyle: .Rounded)
+            button.cornerRadius = 4.0
+            button.buttonColor = UIColor.ht_emeraldColor()
+            button.shadowColor = UIColor.ht_nephritisColor()
+            button.shadowHeight = 4
+            button.setTitle("Generate Local Data w/ Upload", forState: .Normal)
+            button.titleLabel?.font = UIFont.systemFontOfSize(18, weight: UIFontWeightRegular)
+            button.addTarget(self, action: "doGenLocalWithUpload", forControlEvents: .TouchUpInside)
+            button.enabled = true
+            $0.contentView.addSubview(button)
             }.configure {
                 $0.enabled = true
             })
@@ -332,7 +347,22 @@ class DebugViewController : FormViewController {
         {
             if let st = genStart.toDate(genDateFormat), en = genEnd.toDate(genDateFormat) {
                 log.info("Generating local dataset between \(st) and \(en)")
-                DataGenerator.sharedInstance.generateLocalInMemoryDataset(genSamplesPerType, startDate: st, endDate: en)
+                DataGenerator.sharedInstance.generateLocalInMemoryCoveringDatasetWithoutUpload(genSamplesPerType, startDate: st, endDate: en)
+            } else {
+                UINotifications.genericError(self.navigationController!, msg: "Invalid start/end date for local dataset generation")
+            }
+        }
+    }
+
+    func doGenLocalWithUpload() {
+        if let sptParam            = generatorParamValues["lSamplesPerType"] as? String,
+            genSamplesPerType   = Int(sptParam),
+            genStart            = generatorParamValues["lStart"]    as? String,
+            genEnd              = generatorParamValues["lEnd"]      as? String
+        {
+            if let st = genStart.toDate(genDateFormat), en = genEnd.toDate(genDateFormat) {
+                log.info("Generating local dataset between \(st) and \(en)")
+                DataGenerator.sharedInstance.generateLocalInMemoryCoveringDatasetWithUpload(genSamplesPerType, startDate: st, endDate: en)
             } else {
                 UINotifications.genericError(self.navigationController!, msg: "Invalid start/end date for local dataset generation")
             }
