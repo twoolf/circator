@@ -17,7 +17,18 @@ import SwiftyJSON
 public typealias MCSampler = (NSDate, Double, Double?) -> HKSample?
 public typealias DatasetCompletion = [String: [HKSample]] -> ()
 
-private let filteredTypeIdentifiers = [HKQuantityTypeIdentifierUVExposure, HKQuantityTypeIdentifierDietaryWater, HKCategoryTypeIdentifierSleepAnalysis]
+private let unwriteableTypeIdentifiers = [
+    HKCategoryTypeIdentifierAppleStandHour,
+    HKQuantityTypeIdentifierNikeFuel
+]
+
+private let filteredTypeIdentifiers = [
+    HKQuantityTypeIdentifierBasalBodyTemperature,
+    HKQuantityTypeIdentifierBodyTemperature,
+    HKQuantityTypeIdentifierUVExposure,
+    HKQuantityTypeIdentifierDietaryWater,
+    HKCategoryTypeIdentifierSleepAnalysis
+]
 
 /**
  This class generates sample data for Metabolic Compass.  Note that while it is defined for the twenty data types that we start with, it can be enlarged to more data types. The distributions that we use are determined from the NHANES data (and divided into Male/Female)
@@ -28,14 +39,12 @@ public class DataGenerator : GeneratorType {
     public static let sharedInstance = DataGenerator()
 
     let generatorTypes : [HKSampleType] = Array(PreviewManager.previewChoices.flatten()).filter { t in
-        return !filteredTypeIdentifiers.contains(t.identifier)
+        return !(unwriteableTypeIdentifiers.contains(t.identifier) || filteredTypeIdentifiers.contains(t.identifier))
     }
 
-    let excludes : [String] = [
-        HKCategoryTypeIdentifierAppleStandHour,
-        HKQuantityTypeIdentifierBasalBodyTemperature,
-        HKQuantityTypeIdentifierBodyTemperature
-    ]
+    let coveringTypes : [HKSampleType] = Array(HMConstants.sharedInstance.healthKitTypesToObserve).filter { t in
+        return !(unwriteableTypeIdentifiers.contains(t.identifier) || filteredTypeIdentifiers.contains(t.identifier))
+    }
 
     let workoutTypesToGenerate : [HKWorkoutActivityType] = [
         HKWorkoutActivityType.AmericanFootball,
@@ -70,7 +79,7 @@ public class DataGenerator : GeneratorType {
         HKWorkoutActivityType.MixedMetabolicCardioTraining,
         HKWorkoutActivityType.PaddleSports,
         HKWorkoutActivityType.Play,
-//        HKWorkoutActivityType.PreparationAndRecovery,
+        //HKWorkoutActivityType.PreparationAndRecovery,
         HKWorkoutActivityType.Racquetball,
         HKWorkoutActivityType.Rowing,
         HKWorkoutActivityType.Rugby,
@@ -243,7 +252,7 @@ public class DataGenerator : GeneratorType {
             HKQuantityTypeIdentifierRespiratoryRate           : (6000.0, 1996.67),
             HKQuantityTypeIdentifierStepCount                 : (6000.0, 1996.67),
             HKQuantityTypeIdentifierUVExposure                : (6.0,    1.0),
-//            HKWorkoutSortIdentifierDuration                   : (10,0,   1.0),
+            //HKWorkoutSortIdentifierDuration                   : (10,0,   1.0),
             HKWorkoutSortIdentifierTotalDistance              : (100.0,  10.0),
             HKWorkoutSortIdentifierTotalEnergyBurned          : (5.0,     0.5)
         ],
@@ -318,7 +327,10 @@ public class DataGenerator : GeneratorType {
             HKQuantityTypeIdentifierPeripheralPerfusionIndex  : (80.0,   13.33),
             HKQuantityTypeIdentifierRespiratoryRate           : (6000.0, 1996.67),
             HKQuantityTypeIdentifierStepCount                 : (6000.0, 1996.67),
-            HKQuantityTypeIdentifierUVExposure                : (6.0,    1.0)
+            HKQuantityTypeIdentifierUVExposure                : (6.0,    1.0),
+            //HKWorkoutSortIdentifierDuration                   : (10,0,   1.0),
+            HKWorkoutSortIdentifierTotalDistance              : (100.0,  10.0),
+            HKWorkoutSortIdentifierTotalEnergyBurned          : (5.0,     0.5)
         ]
     ]
 
@@ -374,8 +386,12 @@ public class DataGenerator : GeneratorType {
             return zip(ts, zip(dv, sv)).flatMap { (t,ds) in return completion(t, ds.0, ds.1) }
 
         case HKWorkoutTypeIdentifier:
-            let tparams = eventTimeDistributions[asMale]![type.identifier]!
-            let ts = sampleDailyTimestampsWithWeights(date, weights: tparams, count: count)
+            // TODO: tbw should add in the custom distributions for each workout type.
+            // Currently this lookup on eventTimeDistributions fails, since sleep is the only custom distribution.
+            //let tparams = eventTimeDistributions[asMale]![type.identifier]!
+            //let ts = sampleDailyTimestampsWithWeights(date, weights: tparams, count: count)
+            
+            let ts = sampleDailyTimestamps(date, count: count)
             let energy = parameters[asMale]![HKQuantityTypeIdentifierActiveEnergyBurned]!
             let distance = parameters[asMale]![HKQuantityTypeIdentifierDistanceWalkingRunning]!
             let ev : [Double] = randNormals(energy.0, energy.1, count)
@@ -401,7 +417,7 @@ public class DataGenerator : GeneratorType {
     }
 
     func nextSample(type: HKSampleType, asMale: Bool = true, date: NSDate, x: Double, y: Double?) -> HKSample? {
-        let meta : [String: AnyObject] = ["MC.Generated": true]
+        let meta : [String: AnyObject] = [sampleTag: true]
         let sleepVal = HKCategoryValueSleepAnalysis.Asleep.rawValue
         let stoodVal = HKCategoryValueAppleStandHour.Stood.rawValue
         switch type.identifier {
@@ -475,6 +491,8 @@ public class DataGenerator : GeneratorType {
     var samplesPerDay   : Int                          = 10
     var samplesPerType  : Int                          = 5
     var sampleBuffer    : [Bool: [String: [HKSample]]] = [true: [:], false: [:]]
+    var sampleTag       : String                       = HMConstants.sharedInstance.generatedSampleKey
+
 
     // Generate samples for the next day.
     public func next() -> Element?
@@ -486,16 +504,14 @@ public class DataGenerator : GeneratorType {
         var typesToSample : [HKSampleType] = []
 
         if coveringDataset {
-            maleOrFemale = coinTosses(samplesPerType * generatorTypes.count)
-            typesToSample = Array(HMConstants.sharedInstance.healthKitTypesToObserve
-                                .filter { t in return !excludes.contains(t.identifier) }
-                                .map { t in return [HKSampleType](count: samplesPerType, repeatedValue: t) }.flatten())
+            maleOrFemale = coinTosses(samplesPerType * coveringTypes.count)
+            typesToSample = Array(coveringTypes.map { t in return [HKSampleType](count: samplesPerType, repeatedValue: t) }.flatten())
         } else {
             maleOrFemale = coinTosses(samplesPerDay)
             typesToSample = sampleWithReplacement(generatorTypes, sleepOrOther.isEmpty ? samplesPerDay : samplesPerDay-1) + sleepOrOther
         }
 
-        let meta : [String: AnyObject] = ["MC.Generated": true]
+        let meta : [String: AnyObject] = [sampleTag: true]
         let z : [HKSample] = []
 
         return zip(maleOrFemale, typesToSample).reduce(z, combine: { (var acc, mt) in
@@ -731,10 +747,18 @@ public class DataGenerator : GeneratorType {
     ////////////////////////////////////////////
     // Local dataset generation
 
-    public func generateLocalInMemoryDataset(samplesPerType: Int, startDate: NSDate, endDate: NSDate) {
+    private func generateLocalInMemoryCoveringDataset(samplesPerType: Int, startDate: NSDate, endDate: NSDate) {
         let startDateDay = startDate.startOf(.Day, inRegion: Region())
         let days = Int(ceil(endDate.timeIntervalSinceDate(startDate)) / 86400.0)
+
+        self.coveringDataset = true
         self.samplesPerType = samplesPerType
+
+        log.info("Generating covering dataset for types:")
+        coveringTypes.forEach {
+            log.info("    " + $0.identifier)
+        }
+
         generateInMemory(["<yourself>"], startDateDay: startDateDay, days: days) {
             $0.forEach { (_,block) in
                 if !block.isEmpty {
@@ -749,12 +773,27 @@ public class DataGenerator : GeneratorType {
         }
     }
 
-    public func removeLocalInMemoryDataset(completion: (Int, NSError!) -> Void) {
+    public func generateLocalInMemoryCoveringDatasetWithoutUpload(samplesPerType: Int, startDate: NSDate, endDate: NSDate) {
+        self.sampleTag = HMConstants.sharedInstance.generatedSampleKey
+        generateLocalInMemoryCoveringDataset(samplesPerType, startDate: startDate, endDate: endDate)
+    }
+
+    public func generateLocalInMemoryCoveringDatasetWithUpload(samplesPerType: Int, startDate: NSDate, endDate: NSDate) {
+        self.sampleTag = HMConstants.sharedInstance.generatedUploadSampleKey
+        generateLocalInMemoryCoveringDataset(samplesPerType, startDate: startDate, endDate: endDate)
+    }
+
+    private func removeLocalInMemoryDatasetWithTag(tag: String, completion: (Int, NSError!) -> Void) {
         var typesAndPredicates = [HKSampleType: NSPredicate]()
-        for type in generatorTypes {
-            typesAndPredicates[type] = HKQuery.predicateForObjectsWithMetadataKey("MC.Generated")
+        for type in coveringTypes {
+            typesAndPredicates[type] = HKQuery.predicateForObjectsWithMetadataKey(tag)
         }
         HealthManager.sharedManager.deleteSamples(typesAndPredicates, completion: completion)
+    }
+
+    public func removeLocalInMemoryDataset(completion: (Int, NSError!) -> Void) {
+        removeLocalInMemoryDatasetWithTag(HMConstants.sharedInstance.generatedSampleKey, completion: completion)
+        removeLocalInMemoryDatasetWithTag(HMConstants.sharedInstance.generatedUploadSampleKey, completion: completion)
     }
 
 }

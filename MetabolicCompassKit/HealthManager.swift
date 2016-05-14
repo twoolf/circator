@@ -682,15 +682,16 @@ public class HealthManager: NSObject, WCSessionDelegate {
                         log.error("Failed to register observers: \(error)")
                         return
                     }
-                    self.uploadSamplesForType(type, added: added)
+                    self.uploadSamplesForType(type, added: added.filter { sample in
+                        sample.metadata![HMConstants.sharedInstance.generatedSampleKey] == nil
+                    })
                 }
             }
         }
 
     }
 
-    public func startBackgroundObserverForType(type: HKSampleType, maxResultsPerQuery: Int = noLimit, anchorQueryCallback: HMAnchorSamplesBlock)
-                -> Void
+    public func startBackgroundObserverForType(type: HKSampleType, maxResultsPerQuery: Int = noLimit, anchorQueryCallback: HMAnchorSamplesBlock) -> Void
     {
         let onBackgroundStarted = {(success: Bool, nsError: NSError?) -> Void in
             guard success else {
