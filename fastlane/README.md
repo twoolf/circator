@@ -56,11 +56,21 @@ Create bundle identifiers on the Developer Portal
 fastlane ios create_itc_appids
 ```
 Create bundle identifiers on iTunes Connect
+### ios prepcerts
+```
+fastlane ios prepcerts
+```
+Fastlane/match execution
 ### ios new_dev_certs
 ```
 fastlane ios new_dev_certs
 ```
 Force new development certificates
+### ios new_adhoc_certs
+```
+fastlane ios new_adhoc_certs
+```
+Force new adhoc certificates
 ### ios new_app_certs
 ```
 fastlane ios new_app_certs
@@ -91,6 +101,11 @@ Set a specific build number
 fastlane ios build_dev
 ```
 Build a development archive
+### ios build_adhoc
+```
+fastlane ios build_adhoc
+```
+Build an adhoc archive
 ### ios build_app
 ```
 fastlane ios build_app
