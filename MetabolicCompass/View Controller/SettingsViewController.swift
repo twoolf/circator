@@ -23,8 +23,6 @@ private let releaseSectionSizes  : [Int] = [2,2,7,fieldCount,2,2]
 private let debugSectionTitles    : [String] = ["Login", "Settings", "Preview Rows", "Profile", "Bulk Upload", "Account Management", "Debug"]
 private let releaseSectionTitles  : [String] = ["Login", "Settings", "Preview Rows", "Profile", "Bulk Upload", "Account Management"]
 
-private let withDebugView = true
-
 class MCButton : HTPressableButton {
     
 }
@@ -46,8 +44,8 @@ class SettingsViewController: UITableViewController, UITextFieldDelegate, SFSafa
     private var debugCell: FormLabelCell?
     private var historySlider : FormSliderCell? = nil
 
-    private var sectionSizes  : [Int]    = withDebugView ? debugSectionSizes  : releaseSectionSizes
-    private var sectionTitles : [String] = withDebugView ? debugSectionTitles : releaseSectionTitles
+    private var sectionSizes  : [Int]    = Deployment.sharedInstance.withDebugView ? debugSectionSizes  : releaseSectionSizes
+    private var sectionTitles : [String] = Deployment.sharedInstance.withDebugView ? debugSectionTitles : releaseSectionTitles
 
     private var hMin = 0.0
     private var hMax = 0.0
@@ -166,7 +164,7 @@ class SettingsViewController: UITableViewController, UITextFieldDelegate, SFSafa
         cell.separatorInset = UIEdgeInsetsZero
         cell.layoutMargins = UIEdgeInsetsZero
 
-        if withDebugView && indexPath.section == 6 {
+        if Deployment.sharedInstance.withDebugView && indexPath.section == 6 {
             if debugCell == nil {
                 debugCell = FormLabelCell()
                 debugCell?.tintColor = Theme.universityDarkTheme.backgroundColor
@@ -523,7 +521,7 @@ class SettingsViewController: UITableViewController, UITextFieldDelegate, SFSafa
             }
 
         }
-        else if ( withDebugView && indexPath.section == 6 ) {
+        else if ( Deployment.sharedInstance.withDebugView && indexPath.section == 6 ) {
             let debugVC = DebugViewController()
             navigationController?.pushViewController(debugVC, animated: true)
         }
