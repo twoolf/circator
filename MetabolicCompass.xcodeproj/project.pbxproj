@@ -48,6 +48,7 @@
 		84A16A601CE3630400D61935 /* UIImage+Extended.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84A16A5F1CE3630400D61935 /* UIImage+Extended.swift */; };
 		951BA49D1CE6295F0036600A /* BrightButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 951BA49C1CE6295F0036600A /* BrightButton.swift */; };
 		951BA49F1CE630A70036600A /* UnBrightButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 951BA49E1CE630A70036600A /* UnBrightButton.swift */; };
+		952470421CE9BC6C003E7EDF /* AppLogoLabel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 952470411CE9BC6C003E7EDF /* AppLogoLabel.swift */; };
 		95635AA01CD3782200BCC467 /* AdditionalInfoModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 95635A9F1CD3782200BCC467 /* AdditionalInfoModel.swift */; };
 		95635AA31CD3ACF300BCC467 /* ScrollSelectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 95635AA11CD3ACF200BCC467 /* ScrollSelectionViewCell.swift */; };
 		95635AA41CD3ACF300BCC467 /* ScrollSelectionViewCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 95635AA21CD3ACF300BCC467 /* ScrollSelectionViewCell.xib */; };
@@ -281,6 +282,7 @@
 		8B4A08D995498CDA94BBB258 /* Pods-MetabolicCompass.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-MetabolicCompass.release.xcconfig"; path = "Pods/Target Support Files/Pods-MetabolicCompass/Pods-MetabolicCompass.release.xcconfig"; sourceTree = "<group>"; };
 		951BA49C1CE6295F0036600A /* BrightButton.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BrightButton.swift; sourceTree = "<group>"; };
 		951BA49E1CE630A70036600A /* UnBrightButton.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = UnBrightButton.swift; sourceTree = "<group>"; };
+		952470411CE9BC6C003E7EDF /* AppLogoLabel.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AppLogoLabel.swift; sourceTree = "<group>"; };
 		95635A9F1CD3782200BCC467 /* AdditionalInfoModel.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AdditionalInfoModel.swift; sourceTree = "<group>"; };
 		95635AA11CD3ACF200BCC467 /* ScrollSelectionViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ScrollSelectionViewCell.swift; sourceTree = "<group>"; };
 		95635AA21CD3ACF300BCC467 /* ScrollSelectionViewCell.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = ScrollSelectionViewCell.xib; sourceTree = "<group>"; };
@@ -845,6 +847,7 @@
 				958568001CD0AFA400EDD385 /* CheckBox.swift */,
 				951BA49C1CE6295F0036600A /* BrightButton.swift */,
 				951BA49E1CE630A70036600A /* UnBrightButton.swift */,
+				952470411CE9BC6C003E7EDF /* AppLogoLabel.swift */,
 			);
 			path = View;
 			sourceTree = "<group>";
@@ -1290,6 +1293,7 @@
 				95C0B99B1CD23E90006E523F /* RegisterViewController.swift in Sources */,
 				E7591D0E1CE1C7DE00DCBA39 /* LPRTableView.swift in Sources */,
 				95F400971CE385C60060F28C /* CircleImageCollectionViewCell.swift in Sources */,
+				952470421CE9BC6C003E7EDF /* AppLogoLabel.swift in Sources */,
 				78B7342B1C90B87600693229 /* VariantViewController.swift in Sources */,
 				78B734271C90B86700693229 /* EventTimeViewController.swift in Sources */,
 				F42F5ADD1BDC85AF00195490 /* SampleDataAnalyzer.swift in Sources */,

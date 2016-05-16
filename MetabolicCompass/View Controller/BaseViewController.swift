@@ -36,6 +36,8 @@ class BaseViewController: UIViewController {
         
         self.navigationItem.backBarButtonItem = UIBarButtonItem(title:"", style:.Plain, target:nil, action:nil)
         
+        self.navigationItem.title = self.title?.uppercaseString
+        
         self.automaticallyAdjustsScrollViewInsets = false
         
         self.view.backgroundColor = ScreenManager.sharedInstance.appBgColor()

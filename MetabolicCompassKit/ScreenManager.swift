@@ -171,11 +171,11 @@ public class ScreenManager {
     // MARK: - colors
     
     public func appBgColor() -> UIColor {
-        return UIColor(red: 0.047, green: 0.1412, blue: 0.318, alpha: 1.0)
+        return UIColor(red: 0.007, green: 0.145, blue: 0.329, alpha: 1.0)
     }
     
     public func appBrightBlueColor() -> UIColor {
-        return UIColor(red: 0.298, green: 0.533, blue: 0.968, alpha: 1.0)
+        return UIColor(red: 0.2, green: 0.541, blue: 1.0, alpha: 1.0)
     }
     
     public func appGrayColor() -> UIColor {
