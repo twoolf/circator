@@ -225,12 +225,21 @@ class UserInfoModel: NSObject {
     }
     
     func isFirstNameValid() -> Bool {
-        return isValidString(firstName, minLength: 2, incorrectMessage: firstNameInvalidFormat)
+        return isValidString(firstName, minLength: 2, incorrectMessage: firstNameInvalidFormat) && containsOnlyLetters(firstName!, incorrectMessage: firstNameInvalidFormat)
     }
     
     func isLastNameValid() -> Bool {
         
-        return isValidString(lastName, minLength: 2, incorrectMessage: lastNameInvalidFormat)
+        return isValidString(lastName, minLength: 2, incorrectMessage: lastNameInvalidFormat) && containsOnlyLetters(lastName!, incorrectMessage: lastNameInvalidFormat)
+    }
+    
+    private func containsOnlyLetters(string: String, incorrectMessage: String) -> Bool {
+        let result = string.containsOnlyLetters()
+        if !result {
+            validationMessage = incorrectMessage
+        }
+        
+        return result
     }
     
     private func isValidString(string: String?, minLength: Int, incorrectMessage: String) -> Bool {
