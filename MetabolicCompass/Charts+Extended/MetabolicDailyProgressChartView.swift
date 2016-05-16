@@ -1,0 +1,78 @@
+//
+//  MetabolicDailyProgressChartView.swift
+//  MetabolicCompass
+//
+//  Created by Artem Usachov on 5/16/16.
+//  Copyright © 2016 Yanif Ahmad, Tom Woolf. All rights reserved.
+//
+
+import Foundation
+import Charts
+
+class MetabolicDailyPorgressChartView : HorizontalBarChartView {
+    func prepareChart () {
+        self.drawValueAboveBarEnabled = true
+        self.drawBarShadowEnabled = false
+        self.maxVisibleValueCount = 24
+        
+        let xAxis = self.xAxis;
+        xAxis.labelPosition = .Bottom;
+        xAxis.labelFont = UIFont.systemFontOfSize(10)
+        xAxis.drawAxisLineEnabled = true
+        xAxis.drawGridLinesEnabled = true
+        xAxis.gridLineWidth = 0;
+        
+        let leftAxis = self.leftAxis;
+        leftAxis.enabled = false
+        leftAxis.axisMinValue = 1.0
+        leftAxis.axisMaxValue = 23.0
+        
+        self.legend.formSize = 0;
+        self.legend.font = UIFont.systemFontOfSize(0)
+//        self.contentView.legend.xEntrySpace = 1.0;
+        self.updateChartData()
+    }
+    
+    private func updateChartData () {
+        let exerciseColor = UIColor.greenColor()
+        let eatColor = UIColor.redColor()
+        let sleepColor = UIColor.blueColor()
+        let fastingColor = UIColor.clearColor()
+        //days
+        let days = ["", "", "", "", "", "", ""]
+//        var colors:[UIColor] = []
+        var entriesArray: [BarChartDataEntry] = []
+        let valuesArr = [[2.0, 3.0, 4.0, 3.0, 2.0, 0.2, 0.7],
+                         [3.0, 5.0, 3.6, 2.0, 1.0, 0.2, 0.7],
+                         [1.0, 2.0, 6.0, 4.0, 1.5, 0.2, 0.7],
+                         [4.0, 3.2, 4.4, 3.0, 2.0, 0.2, 0.7],
+                         [1.0, 3.0, 4.0, 3.1, 2.2, 0.2, 0.7],
+                         [1.2, 2.1, 4.3, 3.4, 2.0, 0.2, 0.7],
+                         [2.9, 3.3, 4.6, 3.7, 2.8, 0.9, 0.7]]
+        
+        for (index, values) in valuesArr.enumerate() {
+            let entry = BarChartDataEntry.init(values: values, xIndex: index)
+            entriesArray.append(entry)
+        }
+        
+        let set = BarChartDataSet.init(yVals: entriesArray, label: nil)
+        set.barSpace = 0.3
+        set.drawValuesEnabled = false
+        set.colors = [fastingColor, exerciseColor, sleepColor, eatColor]
+        
+        let data = BarChartData.init(xVals: days, dataSets: [set])
+        self.data = data
+        
+        let rightAxis = self.rightAxis
+        rightAxis.enabled = true
+        rightAxis.labelFont = UIFont.systemFontOfSize(10)
+        rightAxis.drawAxisLineEnabled = true
+        rightAxis.drawGridLinesEnabled = true
+        rightAxis.axisMinValue = max(0.0, self.data!.yMin - 1.0)
+        rightAxis.axisMaxValue = min(23.0, self.data!.yMax + 1.0)
+        rightAxis.labelCount = Int(rightAxis.axisMaxValue - rightAxis.axisMinValue)
+        rightAxis.axisMinValue = 1.0
+        rightAxis.axisMaxValue = 23.0
+        
+    }
+}

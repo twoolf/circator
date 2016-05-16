@@ -52,6 +52,8 @@
 		84207D261CCA6A7E00776848 /* InputTableCellWithImage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84207D251CCA6A7E00776848 /* InputTableCellWithImage.swift */; };
 		84207D281CCE02A400776848 /* LoginModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84207D271CCE02A400776848 /* LoginModel.swift */; };
 		84A16A601CE3630400D61935 /* UIImage+Extended.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84A16A5F1CE3630400D61935 /* UIImage+Extended.swift */; };
+		84C9CB471CE9B3A4005ED875 /* DailyProgressViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84C9CB461CE9B3A4005ED875 /* DailyProgressViewController.swift */; };
+		84C9CB491CE9BB76005ED875 /* MetabolicDailyProgressChartView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84C9CB481CE9BB76005ED875 /* MetabolicDailyProgressChartView.swift */; };
 		951BA49D1CE6295F0036600A /* BrightButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 951BA49C1CE6295F0036600A /* BrightButton.swift */; };
 		951BA49F1CE630A70036600A /* UnBrightButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 951BA49E1CE630A70036600A /* UnBrightButton.swift */; };
 		95635AA01CD3782200BCC467 /* AdditionalInfoModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 95635A9F1CD3782200BCC467 /* AdditionalInfoModel.swift */; };
@@ -288,6 +290,8 @@
 		84207D251CCA6A7E00776848 /* InputTableCellWithImage.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = InputTableCellWithImage.swift; sourceTree = "<group>"; };
 		84207D271CCE02A400776848 /* LoginModel.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LoginModel.swift; sourceTree = "<group>"; };
 		84A16A5F1CE3630400D61935 /* UIImage+Extended.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "UIImage+Extended.swift"; sourceTree = "<group>"; };
+		84C9CB461CE9B3A4005ED875 /* DailyProgressViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DailyProgressViewController.swift; sourceTree = "<group>"; };
+		84C9CB481CE9BB76005ED875 /* MetabolicDailyProgressChartView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MetabolicDailyProgressChartView.swift; sourceTree = "<group>"; };
 		8B4A08D995498CDA94BBB258 /* Pods-MetabolicCompass.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-MetabolicCompass.release.xcconfig"; path = "Pods/Target Support Files/Pods-MetabolicCompass/Pods-MetabolicCompass.release.xcconfig"; sourceTree = "<group>"; };
 		951BA49C1CE6295F0036600A /* BrightButton.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BrightButton.swift; sourceTree = "<group>"; };
 		951BA49E1CE630A70036600A /* UnBrightButton.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = UnBrightButton.swift; sourceTree = "<group>"; };
@@ -717,6 +721,7 @@
 				E7E48DE61CE4BCAB00DB020F /* MetabolicChartDataSet.swift */,
 				E7E48DE81CE4C2DC00DB020F /* MetabolicDataEntry.swift */,
 				E7E48DEA1CE5CB2700DB020F /* MetabolicRadarChartView.swift */,
+				84C9CB481CE9BB76005ED875 /* MetabolicDailyProgressChartView.swift */,
 			);
 			name = MetabolicCharts;
 			path = "Charts+Extended";
@@ -886,6 +891,7 @@
 				7840A49A1C6E5A680005B66F /* ErrorViewController.swift */,
 				84207D231CCA3C3600776848 /* RegisterLoginLandingViewController.swift */,
 				958568041CD0BF6300EDD385 /* BaseViewController.swift */,
+				84C9CB461CE9B3A4005ED875 /* DailyProgressViewController.swift */,
 			);
 			path = "View Controller";
 			sourceTree = "<group>";
@@ -1264,10 +1270,12 @@
 				95F4008E1CE385B70060F28C /* UIView+Extended.swift in Sources */,
 				951BA49D1CE6295F0036600A /* BrightButton.swift in Sources */,
 				958568031CD0B18900EDD385 /* RegistrationModel.swift in Sources */,
+				84C9CB471CE9B3A4005ED875 /* DailyProgressViewController.swift in Sources */,
 				E75E95B21CDCD6CB00A18756 /* DashboardMetricsAppearanceProvider.swift in Sources */,
 				95769B871CE49E4000F26668 /* PhysiologicalDataViewController.swift in Sources */,
 				E7E48DF11CE6033100DB020F /* ManageBalanceCell.swift in Sources */,
 				78B734291C90B86D00693229 /* CorrelationViewController.swift in Sources */,
+				84C9CB491CE9BB76005ED875 /* MetabolicDailyProgressChartView.swift in Sources */,
 				78B7341E1C90B84600693229 /* ProfileSubviewController.swift in Sources */,
 				78B734201C90B84D00693229 /* RepeatedEventsController.swift in Sources */,
 				958568051CD0BF6300EDD385 /* BaseViewController.swift in Sources */,
@@ -1526,6 +1534,7 @@
 				CODE_SIGN_ENTITLEMENTS = MetabolicCompass/MetabolicCompass.entitlements;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
+				CURRENT_PROJECT_VERSION = "";
 				EMBEDDED_CONTENT_CONTAINS_SWIFT = "$(inherited)";
 				FRAMEWORK_SEARCH_PATHS = "$(inherited)";
 				GCC_OPTIMIZATION_LEVEL = 0;
@@ -1669,6 +1678,7 @@
 				CODE_SIGN_ENTITLEMENTS = MetabolicCompass/MetabolicCompass.entitlements;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
+				CURRENT_PROJECT_VERSION = "";
 				EMBEDDED_CONTENT_CONTAINS_SWIFT = "$(inherited)";
 				FRAMEWORK_SEARCH_PATHS = "$(inherited)";
 				GCC_OPTIMIZATION_LEVEL = s;

@@ -683,7 +683,10 @@ public class HealthManager: NSObject, WCSessionDelegate {
                         return
                     }
                     self.uploadSamplesForType(type, added: added.filter { sample in
-                        sample.metadata![HMConstants.sharedInstance.generatedSampleKey] == nil
+                        if let unwrappedMetadata = sample.metadata {
+                            return unwrappedMetadata[HMConstants.sharedInstance.generatedSampleKey] == nil
+                        }
+                        return false
                     })
                 }
             }

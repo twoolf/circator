@@ -1,8 +1,9 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="10116" systemVersion="15E65" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="10117" systemVersion="15E65" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES">
     <dependencies>
         <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="10085"/>
         <capability name="Constraints to layout margins" minToolsVersion="6.0"/>
+        <capability name="Constraints with non-1.0 multipliers" minToolsVersion="5.1"/>
     </dependencies>
     <scenes>
         <!--Chart-->
@@ -108,7 +109,7 @@
         <!--Daily Progress-->
         <scene sceneID="9d8-Cp-5DV">
             <objects>
-                <viewController title="Daily Progress" id="lHL-aR-coa" userLabel="Daily Progress" sceneMemberID="viewController">
+                <viewController title="Daily Progress" id="lHL-aR-coa" userLabel="Daily Progress" customClass="DailyProgressViewController" customModule="MetabolicCompass" customModuleProvider="target" sceneMemberID="viewController">
                     <layoutGuides>
                         <viewControllerLayoutGuide type="top" id="NRt-84-WnK"/>
                         <viewControllerLayoutGuide type="bottom" id="CEP-uG-2gY"/>
@@ -116,9 +117,51 @@
                     <view key="view" contentMode="scaleToFill" id="cBf-qW-M5H">
                         <rect key="frame" x="0.0" y="0.0" width="600" height="441"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <subviews>
+                            <scrollView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="il7-pl-WF1" userLabel="mainScrollView">
+                                <rect key="frame" x="0.0" y="0.0" width="600" height="392"/>
+                                <subviews>
+                                    <scrollView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="cxc-IL-wSe" userLabel="chartScrollView">
+                                        <rect key="frame" x="0.0" y="30" width="600" height="230"/>
+                                        <subviews>
+                                            <view userInteractionEnabled="NO" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="dWY-5Q-nX4" userLabel="chartView" customClass="MetabolicDailyPorgressChartView" customModule="MetabolicCompass" customModuleProvider="target">
+                                                <rect key="frame" x="0.0" y="0.0" width="2400" height="230"/>
+                                                <color key="backgroundColor" red="0.91372549020000005" green="0.29411764709999999" blue="0.20784313730000001" alpha="1" colorSpace="calibratedRGB"/>
+                                            </view>
+                                        </subviews>
+                                        <color key="backgroundColor" red="0.20000000000000001" green="0.54117647059999996" blue="1" alpha="1" colorSpace="calibratedRGB"/>
+                                        <constraints>
+                                            <constraint firstItem="dWY-5Q-nX4" firstAttribute="height" secondItem="cxc-IL-wSe" secondAttribute="height" id="N2p-f6-wyr"/>
+                                            <constraint firstAttribute="bottom" secondItem="dWY-5Q-nX4" secondAttribute="bottom" id="arF-HH-Uc2"/>
+                                            <constraint firstItem="dWY-5Q-nX4" firstAttribute="leading" secondItem="cxc-IL-wSe" secondAttribute="leading" id="evM-IX-1Nd"/>
+                                            <constraint firstAttribute="trailing" secondItem="dWY-5Q-nX4" secondAttribute="trailing" id="fOz-xS-ATg"/>
+                                            <constraint firstItem="dWY-5Q-nX4" firstAttribute="top" secondItem="cxc-IL-wSe" secondAttribute="top" id="hxQ-Zq-3Sn"/>
+                                            <constraint firstItem="dWY-5Q-nX4" firstAttribute="width" secondItem="cxc-IL-wSe" secondAttribute="width" multiplier="4" id="mlR-5g-8OB"/>
+                                            <constraint firstAttribute="height" constant="230" id="s12-Pn-xwA"/>
+                                        </constraints>
+                                    </scrollView>
+                                </subviews>
+                                <constraints>
+                                    <constraint firstAttribute="trailing" secondItem="cxc-IL-wSe" secondAttribute="trailing" id="IxM-C8-t90"/>
+                                    <constraint firstAttribute="bottom" secondItem="cxc-IL-wSe" secondAttribute="bottom" constant="132" id="Orb-1Z-cFa"/>
+                                    <constraint firstItem="cxc-IL-wSe" firstAttribute="centerX" secondItem="il7-pl-WF1" secondAttribute="centerX" id="azp-Jv-5CY"/>
+                                    <constraint firstItem="cxc-IL-wSe" firstAttribute="top" secondItem="il7-pl-WF1" secondAttribute="top" constant="30" id="bF6-rl-YZP"/>
+                                    <constraint firstItem="cxc-IL-wSe" firstAttribute="leading" secondItem="il7-pl-WF1" secondAttribute="leading" id="gzx-Z0-KX5"/>
+                                </constraints>
+                            </scrollView>
+                        </subviews>
                         <color key="backgroundColor" red="0.84807095460000004" green="0.1058823529" blue="0.26274509800000001" alpha="1" colorSpace="calibratedRGB"/>
+                        <constraints>
+                            <constraint firstItem="il7-pl-WF1" firstAttribute="leading" secondItem="cBf-qW-M5H" secondAttribute="leading" id="GKn-gG-naM"/>
+                            <constraint firstItem="il7-pl-WF1" firstAttribute="width" secondItem="cBf-qW-M5H" secondAttribute="width" id="fW5-mz-qJY"/>
+                            <constraint firstItem="CEP-uG-2gY" firstAttribute="top" secondItem="il7-pl-WF1" secondAttribute="bottom" id="i0g-uM-cuu"/>
+                            <constraint firstItem="il7-pl-WF1" firstAttribute="top" secondItem="NRt-84-WnK" secondAttribute="bottom" id="qtM-YO-mgW"/>
+                        </constraints>
                     </view>
                     <tabBarItem key="tabBarItem" title="Daily Progress" id="C4G-VN-eXg"/>
+                    <connections>
+                        <outlet property="dailyProgressChartView" destination="dWY-5Q-nX4" id="HOU-xp-vSn"/>
+                    </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="4fJ-Ba-2vo" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
@@ -145,7 +188,7 @@
                                         <rect key="frame" x="0.0" y="28" width="560" height="80"/>
                                         <autoresizingMask key="autoresizingMask"/>
                                         <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="8DW-L0-mhM" id="glR-82-f3W">
-                                            <rect key="frame" x="0.0" y="0.0" width="560" height="80"/>
+                                            <rect key="frame" x="0.0" y="0.0" width="560" height="79.5"/>
                                             <autoresizingMask key="autoresizingMask"/>
                                             <subviews>
                                                 <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="icon-weight-normal" translatesAutoresizingMaskIntoConstraints="NO" id="6K9-5a-91t">
@@ -252,7 +295,7 @@
                 </tabBarController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="wK6-Cn-zHm" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="3289" y="284.5"/>
+            <point key="canvasLocation" x="3323" y="314.5"/>
         </scene>
         <!--Settings-->
         <scene sceneID="q4t-42-Yn5">
@@ -363,7 +406,7 @@
                                         <rect key="frame" x="0.0" y="60" width="600" height="60"/>
                                         <autoresizingMask key="autoresizingMask"/>
                                         <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="86s-30-Kjs" id="QM4-2T-syX">
-                                            <rect key="frame" x="0.0" y="0.0" width="600" height="60"/>
+                                            <rect key="frame" x="0.0" y="0.0" width="600" height="59.5"/>
                                             <autoresizingMask key="autoresizingMask"/>
                                             <subviews>
                                                 <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" misplaced="YES" text="Label" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="dqk-hD-BeU">
@@ -405,7 +448,7 @@
                                         <rect key="frame" x="0.0" y="120" width="600" height="60"/>
                                         <autoresizingMask key="autoresizingMask"/>
                                         <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="tDH-UH-wO1" id="8UN-ua-Hf8">
-                                            <rect key="frame" x="0.0" y="0.0" width="600" height="60"/>
+                                            <rect key="frame" x="0.0" y="0.0" width="600" height="59.5"/>
                                             <autoresizingMask key="autoresizingMask"/>
                                             <subviews>
                                                 <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" misplaced="YES" text="Label" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="9Iy-iE-kud">
@@ -488,7 +531,7 @@
                                         <rect key="frame" x="0.0" y="60" width="600" height="60"/>
                                         <autoresizingMask key="autoresizingMask"/>
                                         <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="yTN-Vp-ZXz" id="OFJ-8I-un9">
-                                            <rect key="frame" x="0.0" y="0.0" width="600" height="60"/>
+                                            <rect key="frame" x="0.0" y="0.0" width="600" height="59.5"/>
                                             <autoresizingMask key="autoresizingMask"/>
                                             <subviews>
                                                 <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Wight" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="ndf-CU-aMe">
@@ -642,7 +685,7 @@
                                         <rect key="frame" x="0.0" y="60" width="600" height="80"/>
                                         <autoresizingMask key="autoresizingMask"/>
                                         <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="Qho-B0-prX" id="acW-h1-ohs">
-                                            <rect key="frame" x="0.0" y="0.0" width="600" height="80"/>
+                                            <rect key="frame" x="0.0" y="0.0" width="600" height="79.5"/>
                                             <autoresizingMask key="autoresizingMask"/>
                                             <subviews>
                                                 <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" misplaced="YES" text="Wight" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="Wfq-7g-pUb">
