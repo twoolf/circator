@@ -7,13 +7,14 @@
 //
 
 import UIKit
+import MetabolicCompassKit
 
 class BaseDataSource: NSObject, UICollectionViewDataSource, UICollectionViewDelegateFlowLayout {
 
     weak var viewController: UIViewController?
     
-    let selectedTextColor = UIColor.whiteColor()
-    let unselectedTextColor = UIColor.lightGrayColor()
+    let selectedTextColor = ScreenManager.sharedInstance.appBrightTextColor()
+    let unselectedTextColor = ScreenManager.sharedInstance.appUnBrightTextColor()
     
     weak var collectionView: UICollectionView? {
         didSet {

@@ -181,11 +181,33 @@ public class ScreenManager {
     public func appGrayColor() -> UIColor {
         return UIColor(red: 0.325, green: 0.4, blue: 0.521, alpha: 1.0)
     }
+
+    public func appBrightTextColor() -> UIColor {
+        return UIColor.whiteColor()
+    }
+
+    public func appUnBrightTextColor() -> UIColor {
+        return UIColor.whiteColor().colorWithAlphaComponent(0.4)
+    }
+   
+    public func appSeparatorColor() -> UIColor {
+        return UIColor.lightGrayColor()
+    }
     
+    public func appNavBarTextColor() -> UIColor {
+        return UIColor.whiteColor().colorWithAlphaComponent(0.6)
+    }
+
     // MARK: - Fonts
     
+    private let defaulytFontName = "GothamBook"
+    
     public func appFontOfSize(size: CGFloat) -> UIFont {
-        return UIFont.systemFontOfSize(size)
+        return UIFont(name: defaulytFontName, size: size)!
+    }
+    
+    public func appNavBarFont() -> UIFont {
+        return UIFont(name: defaulytFontName, size: 16.0)!
     }
     
 }

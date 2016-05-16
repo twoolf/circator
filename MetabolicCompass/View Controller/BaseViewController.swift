@@ -34,15 +34,23 @@ class BaseViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        self.navigationItem.backBarButtonItem = UIBarButtonItem(title:"", style:.Plain, target:nil, action:nil)
-        
-        self.navigationItem.title = self.title?.uppercaseString
+        configureNavBar()
         
         self.automaticallyAdjustsScrollViewInsets = false
         
         self.view.backgroundColor = ScreenManager.sharedInstance.appBgColor()
     }
 
+    private func configureNavBar() {
+        self.navigationItem.backBarButtonItem = UIBarButtonItem(title:"", style:.Plain, target:nil, action:nil)
+        self.navigationItem.title = self.title?.localized.uppercaseString
+        
+        let navBarTextColor = ScreenManager.sharedInstance.appNavBarTextColor()
+        
+        self.navigationController?.navigationBar.tintColor = navBarTextColor
+        self.navigationController?.navigationBar.titleTextAttributes = [ NSForegroundColorAttributeName : navBarTextColor, NSFontAttributeName : ScreenManager.sharedInstance.appNavBarFont() ]
+    }
+    
     override func didReceiveMemoryWarning() {
         super.didReceiveMemoryWarning()
         // Dispose of any resources that can be recreated.

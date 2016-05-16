@@ -49,6 +49,7 @@
 		951BA49D1CE6295F0036600A /* BrightButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 951BA49C1CE6295F0036600A /* BrightButton.swift */; };
 		951BA49F1CE630A70036600A /* UnBrightButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 951BA49E1CE630A70036600A /* UnBrightButton.swift */; };
 		952470421CE9BC6C003E7EDF /* AppLogoLabel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 952470411CE9BC6C003E7EDF /* AppLogoLabel.swift */; };
+		952470481CE9DAEE003E7EDF /* gotham-book.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 952470471CE9DAEE003E7EDF /* gotham-book.ttf */; };
 		95635AA01CD3782200BCC467 /* AdditionalInfoModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 95635A9F1CD3782200BCC467 /* AdditionalInfoModel.swift */; };
 		95635AA31CD3ACF300BCC467 /* ScrollSelectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 95635AA11CD3ACF200BCC467 /* ScrollSelectionViewCell.swift */; };
 		95635AA41CD3ACF300BCC467 /* ScrollSelectionViewCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 95635AA21CD3ACF300BCC467 /* ScrollSelectionViewCell.xib */; };
@@ -283,6 +284,7 @@
 		951BA49C1CE6295F0036600A /* BrightButton.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BrightButton.swift; sourceTree = "<group>"; };
 		951BA49E1CE630A70036600A /* UnBrightButton.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = UnBrightButton.swift; sourceTree = "<group>"; };
 		952470411CE9BC6C003E7EDF /* AppLogoLabel.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AppLogoLabel.swift; sourceTree = "<group>"; };
+		952470471CE9DAEE003E7EDF /* gotham-book.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "gotham-book.ttf"; sourceTree = "<group>"; };
 		95635A9F1CD3782200BCC467 /* AdditionalInfoModel.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AdditionalInfoModel.swift; sourceTree = "<group>"; };
 		95635AA11CD3ACF200BCC467 /* ScrollSelectionViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ScrollSelectionViewCell.swift; sourceTree = "<group>"; };
 		95635AA21CD3ACF300BCC467 /* ScrollSelectionViewCell.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = ScrollSelectionViewCell.xib; sourceTree = "<group>"; };
@@ -526,9 +528,18 @@
 		84207D201CCA20CF00776848 /* Resourses */ = {
 			isa = PBXGroup;
 			children = (
+				952470461CE9DAED003E7EDF /* fonts */,
 				84207D211CCA210000776848 /* Images.xcassets */,
 			);
 			path = Resourses;
+			sourceTree = "<group>";
+		};
+		952470461CE9DAED003E7EDF /* fonts */ = {
+			isa = PBXGroup;
+			children = (
+				952470471CE9DAEE003E7EDF /* gotham-book.ttf */,
+			);
+			path = fonts;
 			sourceTree = "<group>";
 		};
 		95748C3E1CCFC7350002F6A3 /* Cells */ = {
@@ -1096,6 +1107,7 @@
 				95D142BD1CE60312006A9118 /* DoubleCheckListTitledCollectionViewCell.xib in Resources */,
 				F43A7C571BBDF29D00B6FA56 /* LaunchScreen.storyboard in Resources */,
 				95748C511CCFC7D90002F6A3 /* DoubleCheckListCollectionViewCell.xib in Resources */,
+				952470481CE9DAEE003E7EDF /* gotham-book.ttf in Resources */,
 				95635AA41CD3ACF300BCC467 /* ScrollSelectionViewCell.xib in Resources */,
 				958568101CD1020600EDD385 /* LoadImageCollectionViewCell.xib in Resources */,
 				84207D221CCA210000776848 /* Images.xcassets in Resources */,
