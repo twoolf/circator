@@ -49,7 +49,7 @@
                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="sd1-bZ-oIV" customClass="BrightButton" customModule="MetabolicCompass" customModuleProvider="target">
                                 <rect key="frame" x="39" y="415" width="242" height="39"/>
                                 <color key="backgroundColor" red="0.20000000000000001" green="0.54117647058823526" blue="1" alpha="1" colorSpace="calibratedRGB"/>
-                                <state key="normal" title="Login">
+                                <state key="normal" title="Log in">
                                     <color key="titleColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                                 </state>
                                 <userDefinedRuntimeAttributes>
@@ -166,7 +166,7 @@
                                             <constraints>
                                                 <constraint firstAttribute="height" constant="39" id="3gS-bC-MU4"/>
                                             </constraints>
-                                            <state key="normal" title="Login"/>
+                                            <state key="normal" title="Log in"/>
                                             <userDefinedRuntimeAttributes>
                                                 <userDefinedRuntimeAttribute type="number" keyPath="layer.cornerRadius">
                                                     <integer key="value" value="3"/>
