@@ -12,19 +12,19 @@ import MetabolicCompassKit
 
 class RegisterLoginLandingViewController: BaseViewController {
     
-    @IBOutlet weak var logoTopMargin: NSLayoutConstraint!
-    @IBOutlet weak var registerButtonBottomMargin: NSLayoutConstraint!
+//    @IBOutlet weak var logoTopMargin: NSLayoutConstraint!
+//    @IBOutlet weak var registerButtonBottomMargin: NSLayoutConstraint!
     
     var completion: (Void -> Void)?
     
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        if(UIScreen.mainScreen().nativeBounds.height == 960 ||
-           UIScreen.mainScreen().nativeBounds.height == 1136 ) {//iPhone4 and iPhone5 screen
-            self.logoTopMargin.constant = 5;
-            self.registerButtonBottomMargin.constant = 30;
-        }
+//        if(UIScreen.mainScreen().nativeBounds.height == 960 ||
+//           UIScreen.mainScreen().nativeBounds.height == 1136 ) {//iPhone4 and iPhone5 screen
+//            self.logoTopMargin.constant = 5;
+//            self.registerButtonBottomMargin.constant = 30;
+//        }
         
         self.navigationController?.navigationBar.barStyle = UIBarStyle.Black;
         self.navigationController?.navigationBar.tintColor = UIColor.whiteColor()

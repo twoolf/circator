@@ -26,28 +26,22 @@
                         <rect key="frame" x="0.0" y="0.0" width="320" height="568"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
-                            <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="VmA-Rd-bRG" userLabel="topSeaprator">
-                                <rect key="frame" x="66" y="339" width="188" height="1"/>
-                                <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                            <imageView userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="logo-landing" translatesAutoresizingMaskIntoConstraints="NO" id="N76-Si-E6h">
+                                <rect key="frame" x="10" y="104" width="300" height="199"/>
+                                <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
                                 <constraints>
-                                    <constraint firstAttribute="height" constant="1" id="BuK-9B-HCI"/>
+                                    <constraint firstAttribute="width" constant="300" id="djU-Ip-7Nc"/>
                                 </constraints>
-                            </view>
-                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="METABOLIC COMPASS" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="RbU-xP-jv3">
-                                <rect key="frame" x="66" y="350" width="188" height="21"/>
-                                <fontDescription key="fontDescription" type="system" pointSize="17"/>
-                                <color key="textColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
-                                <nil key="highlightedColor"/>
-                            </label>
-                            <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="HQq-5T-HlQ" userLabel="bottomSeaprator">
-                                <rect key="frame" x="66" y="381" width="188" height="1"/>
-                                <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                            </imageView>
+                            <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="K66-Ik-foC">
+                                <rect key="frame" x="40" y="303" width="240" height="108"/>
+                                <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
                                 <constraints>
-                                    <constraint firstAttribute="height" constant="1" id="fZ3-So-d3Y"/>
+                                    <constraint firstAttribute="width" constant="240" id="64f-Vn-2Hb"/>
                                 </constraints>
                             </view>
                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="sd1-bZ-oIV" customClass="BrightButton" customModule="MetabolicCompass" customModuleProvider="target">
-                                <rect key="frame" x="39" y="415" width="242" height="39"/>
+                                <rect key="frame" x="39" y="411" width="242" height="39"/>
                                 <color key="backgroundColor" red="0.20000000000000001" green="0.54117647058823526" blue="1" alpha="1" colorSpace="calibratedRGB"/>
                                 <state key="normal" title="Log in">
                                     <color key="titleColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
@@ -62,7 +56,7 @@
                                 </connections>
                             </button>
                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="0Qt-Cl-J8O" customClass="BrightButton" customModule="MetabolicCompass" customModuleProvider="target">
-                                <rect key="frame" x="39" y="469" width="242" height="39"/>
+                                <rect key="frame" x="39" y="465" width="242" height="39"/>
                                 <color key="backgroundColor" red="0.20000000000000001" green="0.54117647058823526" blue="1" alpha="1" colorSpace="calibratedRGB"/>
                                 <constraints>
                                     <constraint firstAttribute="height" constant="39" id="toY-GJ-1gN"/>
@@ -79,42 +73,27 @@
                                     <action selector="onRegister:" destination="YLC-eZ-y2e" eventType="touchUpInside" id="y4x-hp-dRY"/>
                                 </connections>
                             </button>
-                            <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="university_logo" translatesAutoresizingMaskIntoConstraints="NO" id="N76-Si-E6h">
-                                <rect key="frame" x="53" y="86" width="215" height="229"/>
-                                <constraints>
-                                    <constraint firstAttribute="width" constant="215" id="djU-Ip-7Nc"/>
-                                    <constraint firstAttribute="height" constant="229" id="yHK-5F-MQA"/>
-                                </constraints>
-                            </imageView>
                         </subviews>
                         <color key="backgroundColor" red="0.0" green="0.1764705882352941" blue="0.44705882352941173" alpha="1" colorSpace="calibratedRGB"/>
                         <constraints>
-                            <constraint firstItem="HQq-5T-HlQ" firstAttribute="leading" secondItem="VmA-Rd-bRG" secondAttribute="leading" id="2Pb-rh-mkD"/>
-                            <constraint firstItem="N76-Si-E6h" firstAttribute="top" secondItem="Vov-hw-vBg" secondAttribute="bottom" constant="66" id="BLK-OV-IYO"/>
+                            <constraint firstItem="sd1-bZ-oIV" firstAttribute="top" secondItem="K66-Ik-foC" secondAttribute="bottom" id="3cw-yE-lsi"/>
+                            <constraint firstItem="K66-Ik-foC" firstAttribute="height" secondItem="jz9-mN-bKE" secondAttribute="height" multiplier="0.19" id="5NI-T2-XdR"/>
+                            <constraint firstItem="K66-Ik-foC" firstAttribute="top" secondItem="N76-Si-E6h" secondAttribute="bottom" id="AJq-E9-nSg"/>
+                            <constraint firstItem="N76-Si-E6h" firstAttribute="top" secondItem="Vov-hw-vBg" secondAttribute="bottom" constant="84" id="BLK-OV-IYO"/>
                             <constraint firstItem="sd1-bZ-oIV" firstAttribute="leading" secondItem="0Qt-Cl-J8O" secondAttribute="leading" id="C8p-9K-2KG"/>
                             <constraint firstItem="sd1-bZ-oIV" firstAttribute="height" secondItem="0Qt-Cl-J8O" secondAttribute="height" id="CSm-hk-VJZ"/>
-                            <constraint firstItem="HQq-5T-HlQ" firstAttribute="trailing" secondItem="VmA-Rd-bRG" secondAttribute="trailing" id="CmU-nP-K6o"/>
-                            <constraint firstAttribute="trailing" secondItem="VmA-Rd-bRG" secondAttribute="trailing" constant="66" id="Fqw-y7-V8t"/>
                             <constraint firstItem="0Qt-Cl-J8O" firstAttribute="leading" secondItem="jz9-mN-bKE" secondAttribute="leading" constant="39" id="NHX-Zw-dNe"/>
                             <constraint firstItem="0Qt-Cl-J8O" firstAttribute="top" secondItem="sd1-bZ-oIV" secondAttribute="bottom" constant="15" id="Qq6-Eq-Ork"/>
-                            <constraint firstItem="HQq-5T-HlQ" firstAttribute="top" secondItem="RbU-xP-jv3" secondAttribute="bottom" constant="10" id="R1P-EN-Cxe"/>
-                            <constraint firstItem="VmA-Rd-bRG" firstAttribute="leading" secondItem="jz9-mN-bKE" secondAttribute="leading" constant="66" id="Rz9-uV-ems"/>
-                            <constraint firstItem="RbU-xP-jv3" firstAttribute="trailing" secondItem="VmA-Rd-bRG" secondAttribute="trailing" id="WLv-n7-tbp"/>
-                            <constraint firstItem="uwe-Bv-2eF" firstAttribute="top" secondItem="0Qt-Cl-J8O" secondAttribute="bottom" constant="60" id="XvU-yR-6sb"/>
                             <constraint firstAttribute="trailing" secondItem="0Qt-Cl-J8O" secondAttribute="trailing" constant="39" id="akh-Ww-oWE"/>
-                            <constraint firstItem="RbU-xP-jv3" firstAttribute="centerX" secondItem="VmA-Rd-bRG" secondAttribute="centerX" id="cwI-Rh-H20"/>
-                            <constraint firstItem="RbU-xP-jv3" firstAttribute="top" secondItem="VmA-Rd-bRG" secondAttribute="bottom" constant="10" id="fOl-9z-Sfm"/>
-                            <constraint firstItem="RbU-xP-jv3" firstAttribute="leading" secondItem="VmA-Rd-bRG" secondAttribute="leading" id="for-ra-5f9"/>
                             <constraint firstItem="N76-Si-E6h" firstAttribute="centerX" secondItem="jz9-mN-bKE" secondAttribute="centerX" id="gDU-eG-u9x"/>
+                            <constraint firstItem="K66-Ik-foC" firstAttribute="centerX" secondItem="jz9-mN-bKE" secondAttribute="centerX" id="k9v-9T-Ufj"/>
                             <constraint firstItem="sd1-bZ-oIV" firstAttribute="trailing" secondItem="0Qt-Cl-J8O" secondAttribute="trailing" id="kMd-cU-l4y"/>
-                            <constraint firstItem="VmA-Rd-bRG" firstAttribute="top" secondItem="N76-Si-E6h" secondAttribute="bottom" constant="24" id="ldF-bj-lEH"/>
+                            <constraint firstItem="N76-Si-E6h" firstAttribute="height" secondItem="jz9-mN-bKE" secondAttribute="height" multiplier="0.35" id="qa8-2M-BjO"/>
                         </constraints>
                     </view>
                     <simulatedStatusBarMetrics key="simulatedStatusBarMetrics" statusBarStyle="lightContent"/>
                     <simulatedScreenMetrics key="simulatedDestinationMetrics" type="retina4"/>
                     <connections>
-                        <outlet property="logoTopMargin" destination="BLK-OV-IYO" id="YSh-NW-0OI"/>
-                        <outlet property="registerButtonBottomMargin" destination="XvU-yR-6sb" id="udB-ap-1sG"/>
                         <segue destination="8yI-Fi-ICu" kind="show" identifier="LoginSegue" id="1en-sU-s0h"/>
                         <segue destination="Wq1-CV-Iw6" kind="show" identifier="RegisterSegue" id="9SI-zh-3tO"/>
                     </connections>
@@ -697,7 +676,7 @@ additional information</string>
     </scenes>
     <resources>
         <image name="icon-email" width="18" height="12"/>
+        <image name="logo-landing" width="238" height="244"/>
         <image name="logo-login" width="211" height="208"/>
-        <image name="university_logo" width="215" height="229"/>
     </resources>
 </document>
