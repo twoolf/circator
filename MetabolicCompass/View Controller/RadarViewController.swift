@@ -81,6 +81,7 @@ class RadarViewController : UIViewController, ChartViewDelegate {
         chart.delegate = self
         chart.descriptionText = ""
         chart.rotationEnabled = false
+
         chart.yAxis.axisMinValue = 0.1
         chart.yAxis.axisRange = 1.0
         chart.yAxis.drawLabelsEnabled = false

@@ -142,7 +142,7 @@ platform :ios do
   ##
 
   desc "Fastlane/match execution"
-  private_lane :prepcerts do |options|
+  lane :prepcerts do |options|
     type  = options[:type]
     ro    = options[:readonly]
     frc   = options[:force]
@@ -153,6 +153,11 @@ platform :ios do
   desc "Force new development certificates"
   lane :new_dev_certs do
     prepcerts(type: 'development', readonly: false, force: true)
+  end
+
+  desc "Force new adhoc certificates"
+  lane :new_adhoc_certs do
+    prepcerts(type: 'adhoc', readonly: false, force: true)
   end
 
   desc "Force new app certificates"
@@ -202,10 +207,18 @@ platform :ios do
   end
 
   desc "Build a development archive"
-  lane :build_dev do
+  lane :build_dev do |options|
     cocoapods
-    new_dev_certs
-    increment_build_number
+
+    if options[:force_certs]
+      new_dev_certs
+    end
+
+    if options[:build_number]
+      increment_build_number(build_number: options[:build_number])
+    else
+      increment_build_number
+    end
 
     # Set UDID environment variables
     app_ids.each {|appid, metadata|
@@ -214,14 +227,46 @@ platform :ios do
       ENV[metadata[1]] = uuid
     }
 
-    gym(scheme: "MetabolicCompass")
+    gym(scheme: "MetabolicCompass", use_legacy_build_api: true)
+  end
+
+  desc "Build an adhoc archive"
+  lane :build_adhoc do |options|
+    cocoapods
+
+    if options[:force_certs]
+      new_adhoc_certs
+    end
+
+    if options[:build_number]
+      increment_build_number(build_number: options[:build_number])
+    else
+      increment_build_number
+    end
+
+    # Set UUID environment variables
+    app_ids.each {|appid, metadata|
+      set_project_provisioning_env_var(xcodeproj: project_dir, env_var: metadata[1], target_filter: metadata[2])
+      uuid = ENV["sigh_#{appid}_adhoc"]
+      ENV[metadata[1]] = uuid
+    }
+
+    gym(scheme: "MetabolicCompass", use_legacy_build_api: true)
   end
 
   desc "Build a release archive"
-  lane :build_app do
+  lane :build_app do |options|
     cocoapods
-    new_app_certs
-    increment_build_number
+
+    if options[:force_certs]
+      new_app_certs
+    end
+
+    if options[:build_number]
+      increment_build_number(build_number: options[:build_number])
+    else
+      increment_build_number
+    end
 
     # Set UUID environment variables
     app_ids.each {|appid, metadata|
@@ -230,7 +275,7 @@ platform :ios do
       ENV[metadata[1]] = uuid
     }
 
-    gym(scheme: "MetabolicCompass")
+    gym(scheme: "MetabolicCompass", use_legacy_build_api: true)
   end
 
   desc "Resign a development archive"

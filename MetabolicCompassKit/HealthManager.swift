@@ -373,29 +373,52 @@ public class HealthManager: NSObject, WCSessionDelegate {
         fetchSamplesOfType(HKWorkoutType.workoutType(), predicate: predicate, limit: noLimit, sortDescriptors: [sortDescriptor], completion: completion)
     }
 
-    // Returns circadian event intervals, that is, pairs of start and stop times for standard circadian events.
-    public func fetchCircadianEventIntervals(startDate: NSDate = 1.days.ago, endDate: NSDate = NSDate(), completion: HMCircadianBlock) {
+    // Invokes a callback on circadian event intervals.
+    // This is an array of event endpoints where an endpoint
+    // is a pair of NSDate and metabolic state (i.e.,
+    // whether you are eating/fasting/sleeping/exercising).
+    //
+    // Conceptually, circadian events are intervals with a starting date
+    // and ending date. We represent these endpoints (i.e., starting vs ending)
+    // as consecutive array elements. For example the following array represents
+    // an eating event (as two array elements) following by a sleeping event
+    // (also as two array elements):
+    //
+    // [('2016-01-01 20:00', .Meal), ('2016-01-01 20:45', .Meal), ('2016-01-01 23:00', .Sleep), ('2016-01-02 07:00', .Sleep)]
+    //
+    public func fetchCircadianEventIntervals(startDate: NSDate = 1.days.ago,
+                                             endDate: NSDate = NSDate(),
+                                             completion: HMCircadianBlock)
+    {
         typealias Event = (NSDate, CircadianEvent)
         typealias IEvent = (Double, CircadianEvent)
 
-        let epsilon = 1.seconds
         let sleepTy = HKObjectType.categoryTypeForIdentifier(HKCategoryTypeIdentifierSleepAnalysis)!
         let workoutTy = HKWorkoutType.workoutType()
         let datePredicate = HKQuery.predicateForSamplesWithStartDate(startDate, endDate: endDate, options: .None)
         let typesAndPredicates = [sleepTy: datePredicate, workoutTy: datePredicate]
 
-        // Create intervals for sleep, exercise and meal events.
+        // Fetch HealthKit sleep and workout samples matching the requested data range.
+        // Note the workout samples include meal events since we encode these as preparation
+        // and recovery workouts.
+        // We create event endpoints from the resulting samples.
         fetchSamples(typesAndPredicates) { (events, error) -> Void in
             guard error == nil && !events.isEmpty else {
                 completion(intervals: [], error: error)
                 return
             }
 
-            // Create event intervals from HKSamples, and calculate the latest eating time.
-            // We truncate any event starting earlier than 24 hours ago.
+            // Fetch samples returns a dictionary that map a HKSampleType to an array of HKSamples.
+            // We use a flatmap operation to concatenate all samples across different HKSampleTypes.
+            //
+            // We truncate the start of event intervals to the startDate parameter.
+            //
             let extendedEvents = events.flatMap { (ty,vals) -> [Event]? in
                 switch ty {
                 case is HKWorkoutType:
+                    // Workout samples may be meal or exercise events.
+                    // We turn each event into an array of two elements, indicating
+                    // the start and end of the event.
                     return vals.flatMap { s -> [Event] in
                         let st = s.startDate < startDate ? startDate : s.startDate
                         let en = s.endDate
@@ -409,6 +432,7 @@ public class HealthManager: NSObject, WCSessionDelegate {
                     }
 
                 case is HKCategoryType:
+                    // Convert sleep samples into event endpoints.
                     guard ty.identifier == HKCategoryTypeIdentifierSleepAnalysis else {
                         return nil
                     }
@@ -424,32 +448,73 @@ public class HealthManager: NSObject, WCSessionDelegate {
                 }
             }
 
-            // Sort by starting times across event types (sleep, eat, exercise).
+            // Sort event endpoints by their occurrence time.
+            // This sorts across all event types (sleep, eat, exercise).
             let sortedEvents = extendedEvents.flatten().sort { (a,b) in return a.0 < b.0 }
 
+            // Up to this point the endpoint array does not contain any fasting events
+            // since these are implicitly any interval where no other meal/sleep/exercise events occurs.
+            // The following code creates explicit fasting events, so that the endpoint array
+            // fully covers the [startDate, endDate) interval provided as parameters.
+            let epsilon = 1.seconds
+
+            // Create a "final" fasting event to cover the time period up to the endDate parameter.
+            // This handles if the last sample occurs at exactly the endDate.
             let lastev = sortedEvents.last ?? sortedEvents.first!
             let lst = lastev.0 == endDate ? [] : [(lastev.0, CircadianEvent.Fast), (endDate, CircadianEvent.Fast)]
 
-            let zst : ([Event], Bool, Event!) = ([], true, nil)
-            let intervals = sortedEvents.reduce(zst, combine: { (acc, e) in
-                guard acc.2 != nil else {
-                    let skipPrefix = e.0 == startDate || startDate == NSDate.distantPast()
-                    return ((skipPrefix ? [e] : [(startDate, CircadianEvent.Fast), (e.0, CircadianEvent.Fast), e]), !acc.1, e)
+            // We create explicit fasting endpoints by folding over all meal/sleep/exercise endpoints.
+            // The accumulated state is:
+            // i. an endpoint array, which is returned as the result of the loop.
+            // ii. a boolean indicating whether the current event is the start of an event interval.
+            //     Thus (assuming 0-based arrays) even-numbered elements are interval starts, and
+            //     odd-numbered elements are interval ends.
+            // iii. the previous element in the loop.
+            //
+            let initialAccumulator : ([Event], Bool, Event!) = ([], true, nil)
+            let endpointArray = sortedEvents.reduce(initialAccumulator, combine:
+            { (acc, event) in
+                let eventEndpointDate = event.0
+                let eventMetabolicState = event.1
+
+                let resultArray = acc.0
+                let eventIsIntervalStart = acc.1
+                let prevEvent = acc.2
+
+                let nextEventAsIntervalStart = !acc.1
+
+                guard prevEvent != nil else {
+                    // Skip prefix indicates whether we should add a fasting interval before the first event.
+                    let skipPrefix = eventEndpointDate == startDate || startDate == NSDate.distantPast()
+                    let newResultArray = (skipPrefix ? [event] : [(startDate, CircadianEvent.Fast), (eventEndpointDate, CircadianEvent.Fast), event])
+                    return (newResultArray, nextEventAsIntervalStart, event)
                 }
 
-                // Skip a fasting interval for back-to-back events
-                if (acc.1 && acc.2.0 == e.0) {
-                    return (acc.0 + [(e.0+epsilon, e.1)], !acc.1, e)
-                } else if acc.1 {
-                    let fastSt = acc.2.0 + epsilon
-                    let fastEn = (e.0-epsilon) - 1.days > fastSt ? fastSt + 1.days : e.0 - epsilon
-                    return (acc.0 + [(fastSt, .Fast), (fastEn, .Fast), e], !acc.1, e)
+                let prevEventEndpointDate = prevEvent.0
+
+                if (eventIsIntervalStart && prevEventEndpointDate == eventEndpointDate) {
+                    // We skip adding any fasting event between back-to-back events.
+                    // To do this, we check if the current event starts an interval, and whether
+                    // the start date for this interval is the same as the end date of the previous interval.
+                    let newResult = resultArray + [(eventEndpointDate + epsilon, eventMetabolicState)]
+                    return (newResult, nextEventAsIntervalStart, event)
+                } else if eventIsIntervalStart {
+                    // This event endpoint is a starting event that has a gap to the previous event.
+                    // Thus we fill in a fasting event in between.
+                    // We truncate any events that last more than 24 hours to last 24 hours.
+                    let fastEventStart = prevEventEndpointDate + epsilon
+                    let modifiedEventEndpoint = eventEndpointDate - epsilon
+                    let fastEventEnd = modifiedEventEndpoint - 1.days > fastEventStart ? fastEventStart + 1.days : modifiedEventEndpoint
+                    let newResult = resultArray + [(fastEventStart, .Fast), (fastEventEnd, .Fast), event]
+                    return (newResult, nextEventAsIntervalStart, event)
                 } else {
-                    return (acc.0 + [e], !acc.1, e)
+                    // This endpoint is an interval ending event.
+                    // Thus we add the endpoint to the result array.
+                    return (resultArray + [event], nextEventAsIntervalStart, event)
                 }
-            }).0 + lst
+            }).0 + lst  // Add the final fasting event to the event endpoint array.
 
-            completion(intervals: intervals, error: error)
+            completion(intervals: endpointArray, error: error)
         }
     }
 
@@ -617,15 +682,16 @@ public class HealthManager: NSObject, WCSessionDelegate {
                         log.error("Failed to register observers: \(error)")
                         return
                     }
-                    self.uploadSamplesForType(type, added: added)
+                    self.uploadSamplesForType(type, added: added.filter { sample in
+                        sample.metadata![HMConstants.sharedInstance.generatedSampleKey] == nil
+                    })
                 }
             }
         }
 
     }
 
-    public func startBackgroundObserverForType(type: HKSampleType, maxResultsPerQuery: Int = noLimit, anchorQueryCallback: HMAnchorSamplesBlock)
-                -> Void
+    public func startBackgroundObserverForType(type: HKSampleType, maxResultsPerQuery: Int = noLimit, anchorQueryCallback: HMAnchorSamplesBlock) -> Void
     {
         let onBackgroundStarted = {(success: Bool, nsError: NSError?) -> Void in
             guard success else {
@@ -793,6 +859,15 @@ public class HealthManager: NSObject, WCSessionDelegate {
 
 
     // MARK: - Writing into HealthKit
+    public func saveSample(sample: HKSample, completion: (Bool, NSError?) -> Void)
+    {
+        healthKitStore.saveObject(sample, withCompletion: completion)
+    }
+
+    public func saveSamples(samples: [HKSample], completion: (Bool, NSError?) -> Void)
+    {
+        healthKitStore.saveObjects(samples, withCompletion: completion)
+    }
 
     public func saveSleep(startDate: NSDate, endDate: NSDate, metadata: NSDictionary, completion: ( (Bool, NSError!) -> Void)!)
     {
@@ -840,6 +915,31 @@ public class HealthManager: NSObject, WCSessionDelegate {
     public func savePreparationAndRecoveryWorkout(startDate: NSDate, endDate: NSDate, distance:Double, distanceUnit: HKUnit, kiloCalories: Double, metadata: NSDictionary, completion: ( (Bool, NSError!) -> Void)!)
     {
         saveWorkout(startDate, endDate: endDate, activityType: HKWorkoutActivityType.PreparationAndRecovery, distance: distance, distanceUnit: distanceUnit, kiloCalories: kiloCalories, metadata: metadata, completion: completion)
+    }
+
+    // MARK: - Removing samples from HealthKit
+    public func deleteSamples(typesAndPredicates: [HKSampleType: NSPredicate], completion: (deleted: Int, error: NSError!) -> Void) {
+        let group = dispatch_group_create()
+        var numDeleted = 0
+
+        typesAndPredicates.forEach { (type, predicate) -> () in
+            dispatch_group_enter(group)
+            healthKitStore.deleteObjectsOfType(type, predicate: predicate) {
+                (success, count, error) in
+                guard error == nil else {
+                    log.error("Could not delete samples for \(type.displayText): \(error)")
+                    dispatch_group_leave(group)
+                    return
+                }
+                numDeleted += count
+                dispatch_group_leave(group)
+            }
+        }
+
+        dispatch_group_notify(group, dispatch_get_main_queue()) {
+            // TODO: partial error handling, i.e., when a subset of the desired types fail in their queries.
+            completion(deleted: numDeleted, error: nil)
+        }
     }
 
     // MARK: - Upload helpers.

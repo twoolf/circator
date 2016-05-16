@@ -2,7 +2,13 @@ platform :ios, '9.0'
 
 use_frameworks!
 
-link_with 'MetabolicCompass', 'MetabolicCompassKit'
+post_install do |installer|
+  installer.pods_project.targets.each do |target|
+    target.build_configurations.each do |config|
+      config.build_settings['GCC_NO_COMMON_BLOCKS'] = 'NO'
+    end
+  end
+end
 
 pod 'ResearchKit', :git => 'https://github.com/twoolf/ResearchKit.git'
 pod 'Realm', :git => 'https://github.com/realm/realm-cocoa.git', :branch => 'swift-2.0'
