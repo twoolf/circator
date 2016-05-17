@@ -17,7 +17,7 @@ class MealInterfaceController: WKInterfaceController {
     override func awakeWithContext(context: AnyObject?) {
         super.awakeWithContext(context)
         var tempItems: [WKPickerItem] = []
-        for i in 0...4 {
+        for i in 0...90 {
             // 2
             let item = WKPickerItem()
             item.contentImage = WKImage(imageName: "meal\(i)")

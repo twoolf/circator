@@ -11,14 +11,23 @@ import Foundation
 
 
 class ExerciseInterfaceController: WKInterfaceController {
-
+    @IBOutlet var exerPicker: WKInterfacePicker!
     @IBOutlet var group: WKInterfaceGroup!
     let duration = 1.2
 
     override func awakeWithContext(context: AnyObject?) {
         super.awakeWithContext(context)
-        group.setBackgroundImageNamed("exercise")
-        group.startAnimatingWithImagesInRange(NSMakeRange(0, 181), duration: duration, repeatCount: 1)
+        var tempItems: [WKPickerItem] = []
+        for i in 0...180 {
+            // 2
+            let item = WKPickerItem()
+            item.contentImage = WKImage(imageName: "exercise\(i)")
+            tempItems.append(item)
+        }
+        exerPicker.setItems(tempItems)
+        
+        //group.setBackgroundImageNamed("exercise0")
+        //group.startAnimatingWithImagesInRange(NSMakeRange(0, 181), duration: duration, repeatCount: 1)
         // Configure interface objects here.
     }
 
