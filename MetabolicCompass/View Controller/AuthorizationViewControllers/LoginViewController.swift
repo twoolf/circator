@@ -87,6 +87,9 @@ class LoginViewController: BaseViewController {
     // MARK: - Actions
     
     @IBAction func loginAction() {
+        
+        startAction()
+        
         let loginCredentials = loginModel.getCredentials()
         
         UserManager.sharedManager.ensureUserPass(loginCredentials.email, pass: loginCredentials.password) { error in

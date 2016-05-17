@@ -9,7 +9,7 @@
 import UIKit
 import MetabolicCompassKit
 
-class BaseViewController: UIViewController {
+class BaseViewController: UIViewController, UIGestureRecognizerDelegate {
     
     
     class var storyboardName : String {
@@ -39,8 +39,25 @@ class BaseViewController: UIViewController {
         self.automaticallyAdjustsScrollViewInsets = false
         
         self.view.backgroundColor = ScreenManager.sharedInstance.appBgColor()
+        
+        // add recogizer for closing keyboard by clicking on empty space
+        let gr = UITapGestureRecognizer(target: self, action: #selector(BaseViewController.cancelKeyboard))
+        gr.cancelsTouchesInView = false
+        gr.delegate = self
+        self.view.addGestureRecognizer(gr)
+    }
+    
+    override func viewWillDisappear(animated: Bool) {
+        super.viewWillDisappear(animated)
+        
+        hideKeyboard()
+    }
+    
+    func cancelKeyboard() {
+        hideKeyboard()
     }
 
+    
     private func configureNavBar() {
         self.navigationItem.backBarButtonItem = UIBarButtonItem(title:"", style:.Plain, target:nil, action:nil)
         self.navigationItem.title = self.title?.localized.uppercaseString
@@ -73,6 +90,25 @@ class BaseViewController: UIViewController {
 //        }))
 //        
 //        self.presentViewController(alert, animated: true, completion: nil)
+    }
+    
+    func startAction() {
+        hideKeyboard()
+    }
+    
+    func hideKeyboard() {
+        self.view.endEditing(true)
+    }
+    
+    // MARK: - UIGestureRecognizer Delegate
+    
+    func gestureRecognizer(gestureRecognizer: UIGestureRecognizer, shouldReceiveTouch touch: UITouch) -> Bool {
+        
+        if let _ = touch.view as? UIButton {
+            return false
+        }
+        
+        return true
     }
     
     // MARK: - Keyboard actions
