@@ -10,13 +10,20 @@ import Foundation
 import Charts
 
 class MetabolicDailyPorgressChartView : HorizontalBarChartView {
+    
+    private let dailyChartModel = DailyChartModel()
+    
     func prepareChart () {
+        
+//        dailyChartModel.getLastSevenDays()
+        
         self.drawValueAboveBarEnabled = true
         self.drawBarShadowEnabled = false
         self.maxVisibleValueCount = 24
         
         let xAxis = self.xAxis;
         xAxis.labelPosition = .Bottom;
+        xAxis.labelTextColor = UIColor.colorWithHexString("#ffffff", alpha: 0.3)!
         xAxis.labelFont = UIFont.systemFontOfSize(10)
         xAxis.drawAxisLineEnabled = true
         xAxis.drawGridLinesEnabled = true
@@ -63,16 +70,23 @@ class MetabolicDailyPorgressChartView : HorizontalBarChartView {
         let data = BarChartData.init(xVals: days, dataSets: [set])
         self.data = data
         
+        let formatter = NSNumberFormatter()
+        formatter.positiveFormat = "#"
+        formatter.locale = NSLocale.currentLocale()
+        
         let rightAxis = self.rightAxis
-        rightAxis.enabled = true
-        rightAxis.labelFont = UIFont.systemFontOfSize(10)
-        rightAxis.drawAxisLineEnabled = true
-        rightAxis.drawGridLinesEnabled = true
         rightAxis.axisMinValue = max(0.0, self.data!.yMin - 1.0)
         rightAxis.axisMaxValue = min(23.0, self.data!.yMax + 1.0)
         rightAxis.labelCount = Int(rightAxis.axisMaxValue - rightAxis.axisMinValue)
+        rightAxis.labelTextColor = UIColor.colorWithHexString("#ffffff", alpha: 0.3)!
+        rightAxis.labelFont = UIFont.systemFontOfSize(12)
+        rightAxis.drawAxisLineEnabled = true
+        rightAxis.drawGridLinesEnabled = true
+        rightAxis.valueFormatter = formatter
         rightAxis.axisMinValue = 1.0
         rightAxis.axisMaxValue = 23.0
-        
+        rightAxis.gridLineWidth = 1
+        rightAxis.gridLineDashPhase = 1
+        rightAxis.gridLineDashLengths = [3.0]
     }
 }

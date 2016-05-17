@@ -52,8 +52,11 @@
 		84207D261CCA6A7E00776848 /* InputTableCellWithImage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84207D251CCA6A7E00776848 /* InputTableCellWithImage.swift */; };
 		84207D281CCE02A400776848 /* LoginModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84207D271CCE02A400776848 /* LoginModel.swift */; };
 		84A16A601CE3630400D61935 /* UIImage+Extended.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84A16A5F1CE3630400D61935 /* UIImage+Extended.swift */; };
+		84AB38D01CEA0EFA00B7DB4E /* DailyProgressDayTableViewCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 84AB38CF1CEA0EFA00B7DB4E /* DailyProgressDayTableViewCell.xib */; };
+		84AB38D21CEA0F9900B7DB4E /* DailyProgressDayTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84AB38D11CEA0F9900B7DB4E /* DailyProgressDayTableViewCell.swift */; };
 		84C9CB471CE9B3A4005ED875 /* DailyProgressViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84C9CB461CE9B3A4005ED875 /* DailyProgressViewController.swift */; };
 		84C9CB491CE9BB76005ED875 /* MetabolicDailyProgressChartView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84C9CB481CE9BB76005ED875 /* MetabolicDailyProgressChartView.swift */; };
+		84C9CB4E1CEA0018005ED875 /* DailyChartModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84C9CB4D1CEA0018005ED875 /* DailyChartModel.swift */; };
 		951BA49D1CE6295F0036600A /* BrightButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 951BA49C1CE6295F0036600A /* BrightButton.swift */; };
 		951BA49F1CE630A70036600A /* UnBrightButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 951BA49E1CE630A70036600A /* UnBrightButton.swift */; };
 		95635AA01CD3782200BCC467 /* AdditionalInfoModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 95635A9F1CD3782200BCC467 /* AdditionalInfoModel.swift */; };
@@ -290,8 +293,11 @@
 		84207D251CCA6A7E00776848 /* InputTableCellWithImage.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = InputTableCellWithImage.swift; sourceTree = "<group>"; };
 		84207D271CCE02A400776848 /* LoginModel.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LoginModel.swift; sourceTree = "<group>"; };
 		84A16A5F1CE3630400D61935 /* UIImage+Extended.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "UIImage+Extended.swift"; sourceTree = "<group>"; };
+		84AB38CF1CEA0EFA00B7DB4E /* DailyProgressDayTableViewCell.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = DailyProgressDayTableViewCell.xib; sourceTree = "<group>"; };
+		84AB38D11CEA0F9900B7DB4E /* DailyProgressDayTableViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DailyProgressDayTableViewCell.swift; sourceTree = "<group>"; };
 		84C9CB461CE9B3A4005ED875 /* DailyProgressViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DailyProgressViewController.swift; sourceTree = "<group>"; };
 		84C9CB481CE9BB76005ED875 /* MetabolicDailyProgressChartView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MetabolicDailyProgressChartView.swift; sourceTree = "<group>"; };
+		84C9CB4D1CEA0018005ED875 /* DailyChartModel.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DailyChartModel.swift; sourceTree = "<group>"; };
 		8B4A08D995498CDA94BBB258 /* Pods-MetabolicCompass.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-MetabolicCompass.release.xcconfig"; path = "Pods/Target Support Files/Pods-MetabolicCompass/Pods-MetabolicCompass.release.xcconfig"; sourceTree = "<group>"; };
 		951BA49C1CE6295F0036600A /* BrightButton.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BrightButton.swift; sourceTree = "<group>"; };
 		951BA49E1CE630A70036600A /* UnBrightButton.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = UnBrightButton.swift; sourceTree = "<group>"; };
@@ -563,6 +569,8 @@
 				95769B831CE4869C00F26668 /* TitleCollectionViewCell.xib */,
 				95D142BA1CE60312006A9118 /* DoubleCheckListTitledCollectionViewCell.swift */,
 				95D142BB1CE60312006A9118 /* DoubleCheckListTitledCollectionViewCell.xib */,
+				84AB38CF1CEA0EFA00B7DB4E /* DailyProgressDayTableViewCell.xib */,
+				84AB38D11CEA0F9900B7DB4E /* DailyProgressDayTableViewCell.swift */,
 			);
 			path = Cells;
 			sourceTree = "<group>";
@@ -848,6 +856,7 @@
 				958568021CD0B18900EDD385 /* RegistrationModel.swift */,
 				95635A9F1CD3782200BCC467 /* AdditionalInfoModel.swift */,
 				95F400AC1CE38F2F0060F28C /* ModelItem.swift */,
+				84C9CB4D1CEA0018005ED875 /* DailyChartModel.swift */,
 			);
 			path = Model;
 			sourceTree = "<group>";
@@ -1109,6 +1118,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				95D142BD1CE60312006A9118 /* DoubleCheckListTitledCollectionViewCell.xib in Resources */,
+				84AB38D01CEA0EFA00B7DB4E /* DailyProgressDayTableViewCell.xib in Resources */,
 				F43A7C571BBDF29D00B6FA56 /* LaunchScreen.storyboard in Resources */,
 				95748C511CCFC7D90002F6A3 /* DoubleCheckListCollectionViewCell.xib in Resources */,
 				95635AA41CD3ACF300BCC467 /* ScrollSelectionViewCell.xib in Resources */,
@@ -1263,6 +1273,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				95C0B99A1CD23E90006E523F /* LoginViewController.swift in Sources */,
+				84C9CB4E1CEA0018005ED875 /* DailyChartModel.swift in Sources */,
 				95C0B9A61CD25814006E523F /* AdditionalInfoDataSource.swift in Sources */,
 				F49B2B711C7A83BD005F2BFB /* EventPickerManager.swift in Sources */,
 				E75E95AB1CDCD10700A18756 /* DashboardManageController.swift in Sources */,
@@ -1320,6 +1331,7 @@
 				84A16A601CE3630400D61935 /* UIImage+Extended.swift in Sources */,
 				95F400991CE385C60060F28C /* InfoCollectionViewCell.swift in Sources */,
 				95769B8B1CE49E7300F26668 /* HealthAccessViewController.swift in Sources */,
+				84AB38D21CEA0F9900B7DB4E /* DailyProgressDayTableViewCell.swift in Sources */,
 				7881A3E11BAF3B3E00ECB3C6 /* AppDelegate.swift in Sources */,
 				9585680F1CD1020600EDD385 /* LoadImageCollectionViewCell.swift in Sources */,
 				E75E95AE1CDCD5A700A18756 /* DashboardMetricsConfigItem.swift in Sources */,
