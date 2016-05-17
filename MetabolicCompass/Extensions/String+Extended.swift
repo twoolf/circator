@@ -20,6 +20,16 @@ extension String {
     }
     
     
+    func containsOnlyLetters() -> Bool {
+        let emailRegEx = "[A-Za-z]{1,}"
+        
+        let emailTest = NSPredicate(format:"SELF MATCHES %@", emailRegEx)
+        let isValid = emailTest.evaluateWithObject(self)
+        
+        return isValid
+    }
+
+    
     func trimmed() -> String {
        return self.stringByTrimmingCharactersInSet(NSCharacterSet.whitespaceCharacterSet())
     }

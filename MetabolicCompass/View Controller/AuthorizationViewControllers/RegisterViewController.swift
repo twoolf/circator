@@ -38,8 +38,6 @@ private let inputFontSize = ScreenManager.sharedInstance.profileInputFontSize()
     override func viewWillAppear(animated: Bool) {
         super.viewWillAppear(animated)
         navigationController?.setNavigationBarHidden(false, animated: false)
-        navigationItem.title = "REGISTER"
-        self.navigationController?.navigationBar.titleTextAttributes = [NSForegroundColorAttributeName: UIColor.whiteColor()];
     }
 
     override func viewWillDisappear(animated: Bool) {

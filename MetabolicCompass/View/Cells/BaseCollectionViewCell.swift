@@ -7,6 +7,7 @@
 //
 
 import UIKit
+import MetabolicCompassKit
 
 class BaseCollectionViewCell: UICollectionViewCell, UITextFieldDelegate {
     
@@ -25,7 +26,7 @@ class BaseCollectionViewCell: UICollectionViewCell, UITextFieldDelegate {
     override func layoutSubviews() {
         super.layoutSubviews()
         
-        separatorView?.backgroundColor = UIColor.lightGrayColor()
+        separatorView?.backgroundColor = ScreenManager.sharedInstance.appSeparatorColor()
         separatorLineHeightConstraint?.constant = 0.5
     }
     
