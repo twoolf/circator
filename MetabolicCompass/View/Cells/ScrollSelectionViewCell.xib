@@ -45,7 +45,6 @@
                                 <nil key="highlightedColor"/>
                             </label>
                         </subviews>
-                        <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
                         <constraints>
                             <constraint firstAttribute="trailing" secondItem="0od-kb-uSJ" secondAttribute="trailing" constant="16" id="5S8-vh-omS"/>
                             <constraint firstItem="AKc-nd-vRg" firstAttribute="centerY" secondItem="qWh-W1-ICm" secondAttribute="centerY" id="7Iv-wa-ZEh"/>
@@ -79,6 +78,7 @@
                 <constraint firstAttribute="trailing" secondItem="OYa-O9-zDa" secondAttribute="trailing" id="zg1-TT-vta"/>
             </constraints>
             <connections>
+                <outlet property="scrollContainerHeight" destination="clj-TI-bAd" id="fNm-aF-bbG"/>
                 <outlet property="scrollContainerView" destination="hGb-fY-Fz7" id="DNQ-j0-OOV"/>
                 <outlet property="smallDescriptionLbl" destination="0od-kb-uSJ" id="2EW-bm-uCC"/>
                 <outlet property="titleLbl" destination="AKc-nd-vRg" id="EDu-vb-awj"/>

@@ -72,7 +72,7 @@
                 <outlet property="smallDescriptionLbl" destination="I4a-Iw-AWD" id="Edv-pd-vUp"/>
                 <outlet property="titleLbl" destination="li8-sT-6Pn" id="rtD-sH-lDF"/>
             </connections>
-            <point key="canvasLocation" x="486.5" y="397"/>
+            <point key="canvasLocation" x="316.5" y="98"/>
         </collectionViewCell>
     </objects>
     <resources>

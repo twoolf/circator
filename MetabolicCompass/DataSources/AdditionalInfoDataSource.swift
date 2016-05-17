@@ -14,14 +14,14 @@ class HeaderView: UICollectionReusableView {
     @IBOutlet weak var titleLbl: UILabel!
 }
 
-class AdditionalInfoDataSource: BaseDataSource {
+public class AdditionalInfoDataSource: BaseDataSource {
 
     let model = AdditionalInfoModel()
 
+    var editMode = true
     
     private let titledInputCellIdentifier = "titledInputCell"
     private let scrollSelectionCellIdentifier = "scrollSelectionCell"
-    
     
     override func registerCells() {
         let loadImageCellNib = UINib(nibName: "TitledInputCollectionViewCell", bundle: nil)
@@ -31,7 +31,7 @@ class AdditionalInfoDataSource: BaseDataSource {
         collectionView?.registerNib(scrollSelectionCellNib, forCellWithReuseIdentifier: scrollSelectionCellIdentifier)
     }
 
-    private func isSleepCellAtIndexPath(indexPath: NSIndexPath) -> Bool {
+    internal func isSleepCellAtIndexPath(indexPath: NSIndexPath) -> Bool {
         return indexPath.section == 0 && indexPath.row == 0
     }
     
@@ -41,11 +41,11 @@ class AdditionalInfoDataSource: BaseDataSource {
         return model.sections.count
     }
     
-    override func collectionView(collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
+    override public func collectionView(collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
         return model.numberOfItemsInSection(section)
     }
     
-    override func collectionView(collectionView: UICollectionView, cellForItemAtIndexPath indexPath: NSIndexPath) -> UICollectionViewCell {
+    override public func collectionView(collectionView: UICollectionView, cellForItemAtIndexPath indexPath: NSIndexPath) -> UICollectionViewCell {
         
         let item = model.itemAtIndexPath(indexPath)
         
@@ -59,6 +59,7 @@ class AdditionalInfoDataSource: BaseDataSource {
             
             cell.titleLbl.text = item.name
             cell.smallDescriptionLbl.text = item.unitsTitle
+            cell.pickerShown = editMode
             
             if let value = item.intValue() {
                 cell.setSelectedValue(value)
@@ -146,14 +147,14 @@ class AdditionalInfoDataSource: BaseDataSource {
         return size
     }
     
-    private func highCellSize() -> CGSize {
-        let size = CGSizeMake(self.collectionView!.bounds.width, cellHeightHight)
+    private func intPickerCellSize() -> CGSize {
+        let size = CGSizeMake(self.collectionView!.bounds.width, editMode ? cellHeightHight : cellHeight)
         return size
     }
     
     func collectionView(collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAtIndexPath indexPath: NSIndexPath) -> CGSize {
         
-        return isSleepCellAtIndexPath(indexPath) ? highCellSize() : defaultCellSize()
+        return isSleepCellAtIndexPath(indexPath) ? intPickerCellSize() : defaultCellSize()
     }
     
 }

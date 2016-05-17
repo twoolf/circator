@@ -170,6 +170,14 @@ public class ScreenManager {
     
     // MARK: - colors
     
+    public class func appTitleColor() -> UIColor {
+        return UIColor(red: 0.58, green: 0.63, blue: 0.71, alpha: 1.0)
+    }
+    
+    public class func appNavigationBackColor() -> UIColor {
+        return UIColor(red: 1.0, green: 1.0, blue: 1.0, alpha: 1.0)
+    }
+    
     public func appBgColor() -> UIColor {
         return UIColor(red: 0.047, green: 0.1412, blue: 0.318, alpha: 1.0)
     }

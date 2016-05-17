@@ -41,6 +41,9 @@ class MainSettingsViewController: BaseViewController, UICollectionViewDataSource
         
         let titleCellNib = UINib(nibName: "TitleCollectionViewCell", bundle: nil)
         collectionView?.registerNib(titleCellNib, forCellWithReuseIdentifier: titleCellIdentifier)
+        navigationController!.navigationBar.titleTextAttributes = [NSForegroundColorAttributeName: ScreenManager.appTitleColor()]
+        self.navigationController?.navigationBar.tintColor = ScreenManager.appNavigationBackColor()
+        
     }
 
     override func didReceiveMemoryWarning() {
