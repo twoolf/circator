@@ -52,23 +52,6 @@ class LoginModel : NSObject, UITableViewDataSource, UITextFieldDelegate {
         return true
     }
     
-    func keyboardWillShow(notification:NSNotification){
-        
-        var userInfo = notification.userInfo!
-        var keyboardFrame:CGRect = (userInfo[UIKeyboardFrameBeginUserInfoKey] as! NSValue).CGRectValue()
-        keyboardFrame = self.controllerView!.convertRect(keyboardFrame, fromView: nil)
-        
-        var contentInset:UIEdgeInsets = self.loginTable!.contentInset
-        contentInset.bottom = keyboardFrame.size.height
-        self.loginTable!.contentInset = contentInset
-    }
-    
-    func keyboardWillHide(notification:NSNotification) {
-        
-        let contentInset:UIEdgeInsets = UIEdgeInsetsZero
-        self.loginTable!.contentInset = contentInset
-    }
-    
     
     // MARK: - Credentials
     
