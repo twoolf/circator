@@ -19,8 +19,6 @@ class InputCollectionViewCell: BaseCollectionViewCell {
         
         inputTxtField.addTarget(self, action: #selector(InputCollectionViewCell.textFieldDidChange(_:)), forControlEvents: UIControlEvents.EditingChanged)
         inputTxtField.delegate = self
-        
-        inputTxtField.textColor = UIColor.whiteColor()
     }
     
     override func prepareForReuse() {

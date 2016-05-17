@@ -22,7 +22,9 @@ class ForgotPasswordViewController: BaseViewController, UITextFieldDelegate {
         emailTxtField.delegate = self
         
         emailTxtField.attributedPlaceholder = NSAttributedString(string: "E-mail".localized,
-                                                                      attributes: [NSForegroundColorAttributeName : ScreenManager.sharedInstance.appUnBrightTextColor()])
+                                                                      attributes: [NSForegroundColorAttributeName : unselectedTextColor])
+        
+        emailTxtField.textColor = selectedTextColor
     }
 
     override func didReceiveMemoryWarning() {

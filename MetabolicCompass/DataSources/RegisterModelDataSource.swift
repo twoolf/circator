@@ -129,8 +129,10 @@ class RegisterModelDataSource: BaseDataSource {
             cell.nameLbl.text = model.units.weightTitle
         }
         else if field.type == .Height {
-            cell.nameLbl.text =  model.units.heightTitle
+            cell.nameLbl.text = model.units.heightTitle
         }
+        
+        cell.nameLbl.textColor = selectedTextColor
         
         return cell
     }

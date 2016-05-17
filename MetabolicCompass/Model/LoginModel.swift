@@ -30,6 +30,8 @@ class LoginModel : NSObject, UITableViewDataSource, UITextFieldDelegate {
         let cell = tableView.dequeueReusableCellWithIdentifier(String(InputTableCellWithImage), forIndexPath: indexPath) as! InputTableCellWithImage
         cell.cellInput.delegate = self
         cell.cellInput.tag = indexPath.row
+        cell.cellInput.textColor = ScreenManager.sharedInstance.appBrightTextColor()
+        
         if indexPath.row == 1 {
             cell.cellImage.image = UIImage(named: "icon-password")
             cell.cellInput.attributedPlaceholder = NSAttributedString(string: "Password", attributes: [NSForegroundColorAttributeName : ScreenManager.sharedInstance.appUnBrightTextColor()])

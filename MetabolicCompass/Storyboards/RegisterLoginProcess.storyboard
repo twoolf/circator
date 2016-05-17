@@ -155,7 +155,7 @@
                                                 <action selector="loginAction" destination="8yI-Fi-ICu" eventType="touchUpInside" id="60j-Hz-tQg"/>
                                             </connections>
                                         </button>
-                                        <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="jTi-s5-wtV">
+                                        <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="jTi-s5-wtV" customClass="AppButton" customModule="MetabolicCompass" customModuleProvider="target">
                                             <rect key="frame" x="0.0" y="97" width="320" height="26"/>
                                             <fontDescription key="fontDescription" name="GothamBook" family="Gotham Book" pointSize="15"/>
                                             <state key="normal" title="Forgot Password?">
@@ -328,8 +328,8 @@
                                                 <rect key="frame" x="40" y="283" width="240" height="51"/>
                                                 <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
                                             </view>
-                                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="VQg-bf-aGX">
-                                                <rect key="frame" x="40" y="444" width="240" height="30"/>
+                                            <button opaque="NO" contentMode="scaleToFill" misplaced="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="VQg-bf-aGX" customClass="AppButton" customModule="MetabolicCompass" customModuleProvider="target">
+                                                <rect key="frame" x="40" y="441" width="240" height="30"/>
                                                 <constraints>
                                                     <constraint firstAttribute="height" constant="30" id="obP-Cu-Fhv"/>
                                                 </constraints>
