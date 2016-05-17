@@ -40,6 +40,8 @@ class AdditionalInfoViewController: BaseViewController {
     func nextAction(sender: UIBarButtonItem) {
         print("Next !")
         
+        startAction()
+        
         let additionalInfo = dataSource.model.additionalInfoDict()
         
         print("add info: \(additionalInfo)")

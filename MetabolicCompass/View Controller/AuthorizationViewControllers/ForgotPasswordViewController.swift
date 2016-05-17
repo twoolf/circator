@@ -38,6 +38,8 @@ class ForgotPasswordViewController: BaseViewController, UITextFieldDelegate {
     
     @IBAction func resetAction(sender: UIButton) {
         
+        startAction()
+        
         self.alertControllerOkButtonHandler = nil
         
         if let email = emailTxtField.text?.trimmed() {
