@@ -9,7 +9,7 @@
 import UIKit
 import MetabolicCompassKit
 
-class BrightButton: UIButton {
+class BrightButton: AppButton {
 
     var cornerRadius: CGFloat = 3 {
         didSet {
@@ -17,8 +17,7 @@ class BrightButton: UIButton {
         }
     }
 
-    var textFont = ScreenManager.appFontOfSize(18.0)
-    var textColor = UIColor.whiteColor()
+    var textColor = ScreenManager.sharedInstance.appBrightTextColor()
     var bgColor = ScreenManager.sharedInstance.appBrightBlueColor()
     
     override func awakeFromNib() {
@@ -27,7 +26,6 @@ class BrightButton: UIButton {
         self.backgroundColor = bgColor
         
         self.setTitleColor(textColor, forState: .Normal)
-        self.titleLabel?.font = textFont
         
         roundCornersWithRadius(cornerRadius)
     }

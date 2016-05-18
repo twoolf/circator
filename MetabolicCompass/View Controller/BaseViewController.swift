@@ -11,6 +11,8 @@ import MetabolicCompassKit
 
 class BaseViewController: UIViewController, UIGestureRecognizerDelegate {
     
+    let selectedTextColor = ScreenManager.sharedInstance.appBrightTextColor()
+    let unselectedTextColor = ScreenManager.sharedInstance.appUnBrightTextColor()
     
     class var storyboardName : String {
         

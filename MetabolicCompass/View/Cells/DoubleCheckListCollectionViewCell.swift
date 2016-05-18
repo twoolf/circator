@@ -10,8 +10,19 @@ import UIKit
 
 class DoubleCheckListCollectionViewCell: BaseCollectionViewCell, CheckBoxProtocol {
 
-    var selectedTextColor = UIColor.whiteColor()
-    var unselectedTextColor = UIColor.lightGrayColor()
+    var selectedTextColor = UIColor.whiteColor() {
+        didSet{
+            layoutTitles()
+            colorsChanged()
+        }
+    }
+    
+    var unselectedTextColor = UIColor.lightGrayColor() {
+        didSet{
+            layoutTitles()
+            colorsChanged()
+        }
+    }
     
     @IBOutlet private weak var firstCheckBox: CheckBox!
     @IBOutlet private weak var secondCheckBox: CheckBox!
@@ -27,6 +38,9 @@ class DoubleCheckListCollectionViewCell: BaseCollectionViewCell, CheckBoxProtoco
         secondCheckBox.delegate = self
     }
     
+    func colorsChanged() {
+        // override it if you needs update some colors
+    }
     
     func setFirstTitle(firstTitle: String) {
         self.firstLbl.text = firstTitle
