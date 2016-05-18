@@ -74,7 +74,7 @@
 	</array>
 	<key>UIAppFonts</key>
 	<array>
-		<string>Gotham Book.otf</string>
+		<string>gotham-book.ttf</string>
 	</array>
 </dict>
 </plist>

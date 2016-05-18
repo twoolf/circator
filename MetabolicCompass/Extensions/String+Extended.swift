@@ -13,12 +13,24 @@ extension String {
     func isValidAsEmail() -> Bool {
         let emailRegEx = "[A-Z0-9a-z._%+-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,}"
         
-        let emailTest = NSPredicate(format:"SELF MATCHES %@", emailRegEx)
-        let isValid = emailTest.evaluateWithObject(self)
+        return self.mathesToRegEx(emailRegEx)
+    }
+    
+    
+    func containsOnlyLetters(allowSpaces: Bool = false) -> Bool {
+        
+        let strRegEx = allowSpaces ? "[A-Za-z ]{1,}" : "[A-Za-z]{1,}"
+        
+        return self.mathesToRegEx(strRegEx)
+    }
+    
+    private func mathesToRegEx(regEx: String) -> Bool {
+        
+        let predicate = NSPredicate(format:"SELF MATCHES %@", regEx)
+        let isValid = predicate.evaluateWithObject(self)
         
         return isValid
     }
-    
     
     func trimmed() -> String {
        return self.stringByTrimmingCharactersInSet(NSCharacterSet.whitespaceCharacterSet())

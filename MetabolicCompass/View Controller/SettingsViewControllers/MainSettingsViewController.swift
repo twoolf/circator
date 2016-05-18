@@ -34,8 +34,6 @@ class MainSettingsViewController: BaseViewController, UICollectionViewDataSource
     override func viewDidLoad() {
         super.viewDidLoad()
  
-        self.navigationItem.title = "Settings".localized
-        
         collectionView?.delegate = self
         collectionView?.dataSource = self
         

@@ -11,7 +11,13 @@ import MetabolicCompassKit
 
 class BrightButton: UIButton {
 
-    var textFont = ScreenManager.sharedInstance.appFontOfSize(17.0)
+    var cornerRadius: CGFloat = 3 {
+        didSet {
+            self.roundCornersWithRadius(cornerRadius)
+        }
+    }
+
+    var textFont = ScreenManager.sharedInstance.appFontOfSize(18.0)
     var textColor = UIColor.whiteColor()
     var bgColor = ScreenManager.sharedInstance.appBrightBlueColor()
     
@@ -22,5 +28,7 @@ class BrightButton: UIButton {
         
         self.setTitleColor(textColor, forState: .Normal)
         self.titleLabel?.font = textFont
+        
+        roundCornersWithRadius(cornerRadius)
     }
 }

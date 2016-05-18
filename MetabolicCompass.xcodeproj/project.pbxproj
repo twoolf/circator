@@ -44,16 +44,22 @@
 		78B7342C1C90B87A00693229 /* ErrorViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7840A49A1C6E5A680005B66F /* ErrorViewController.swift */; };
 		78B7342E1C90BC6900693229 /* DebugViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7860E9121C61C470004C9741 /* DebugViewController.swift */; };
 		78BEAC9E1C5E7EE800F0B541 /* PopulationHealthManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 78BEAC9D1C5E7EE800F0B541 /* PopulationHealthManager.swift */; };
+		78E521A01C25687900FAE56A /* Pods.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 78E5219F1C25687900FAE56A /* Pods.framework */; };
 		84207D1F1CCA1FEC00776848 /* RegisterLoginProcess.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 84207D1E1CCA1FEC00776848 /* RegisterLoginProcess.storyboard */; };
 		84207D221CCA210000776848 /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 84207D211CCA210000776848 /* Images.xcassets */; };
 		84207D241CCA3C3600776848 /* RegisterLoginLandingViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84207D231CCA3C3600776848 /* RegisterLoginLandingViewController.swift */; };
 		84207D261CCA6A7E00776848 /* InputTableCellWithImage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84207D251CCA6A7E00776848 /* InputTableCellWithImage.swift */; };
 		84207D281CCE02A400776848 /* LoginModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84207D271CCE02A400776848 /* LoginModel.swift */; };
 		84A16A601CE3630400D61935 /* UIImage+Extended.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84A16A5F1CE3630400D61935 /* UIImage+Extended.swift */; };
+		84AB38D01CEA0EFA00B7DB4E /* DailyProgressDayTableViewCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 84AB38CF1CEA0EFA00B7DB4E /* DailyProgressDayTableViewCell.xib */; };
+		84AB38D21CEA0F9900B7DB4E /* DailyProgressDayTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84AB38D11CEA0F9900B7DB4E /* DailyProgressDayTableViewCell.swift */; };
 		84C9CB471CE9B3A4005ED875 /* DailyProgressViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84C9CB461CE9B3A4005ED875 /* DailyProgressViewController.swift */; };
 		84C9CB491CE9BB76005ED875 /* MetabolicDailyProgressChartView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84C9CB481CE9BB76005ED875 /* MetabolicDailyProgressChartView.swift */; };
+		84C9CB4E1CEA0018005ED875 /* DailyChartModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84C9CB4D1CEA0018005ED875 /* DailyChartModel.swift */; };
 		951BA49D1CE6295F0036600A /* BrightButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 951BA49C1CE6295F0036600A /* BrightButton.swift */; };
 		951BA49F1CE630A70036600A /* UnBrightButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 951BA49E1CE630A70036600A /* UnBrightButton.swift */; };
+		952470421CE9BC6C003E7EDF /* AppLogoLabel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 952470411CE9BC6C003E7EDF /* AppLogoLabel.swift */; };
+		952470481CE9DAEE003E7EDF /* gotham-book.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 952470471CE9DAEE003E7EDF /* gotham-book.ttf */; };
 		95635AA01CD3782200BCC467 /* AdditionalInfoModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 95635A9F1CD3782200BCC467 /* AdditionalInfoModel.swift */; };
 		95635AA31CD3ACF300BCC467 /* ScrollSelectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 95635AA11CD3ACF200BCC467 /* ScrollSelectionViewCell.swift */; };
 		95635AA41CD3ACF300BCC467 /* ScrollSelectionViewCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 95635AA21CD3ACF300BCC467 /* ScrollSelectionViewCell.xib */; };
@@ -98,7 +104,7 @@
 		95F400AA1CE385E80060F28C /* MainSettingsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 95F400A81CE385E80060F28C /* MainSettingsViewController.swift */; };
 		95F400AB1CE385E80060F28C /* ProfileViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 95F400A91CE385E80060F28C /* ProfileViewController.swift */; };
 		95F400AD1CE38F2F0060F28C /* ModelItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = 95F400AC1CE38F2F0060F28C /* ModelItem.swift */; };
-		CE3C78430B78695E41BF90F0 /* Pods.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = CB09F654AB4B00C79306C728 /* Pods.framework */; };
+		A88F31F3DDADAD50F4190F8E /* Pods.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = CB09F654AB4B00C79306C728 /* Pods.framework */; };
 		E74A89761CE308800056A2D2 /* UIColor+Extended.swift in Sources */ = {isa = PBXBuildFile; fileRef = E74A89751CE308800056A2D2 /* UIColor+Extended.swift */; };
 		E74A89791CE3265C0056A2D2 /* AccountManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = E74A89781CE3265C0056A2D2 /* AccountManager.swift */; };
 		E74A897C1CE338D30056A2D2 /* ContentManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = E74A897B1CE338D30056A2D2 /* ContentManager.swift */; };
@@ -147,15 +153,7 @@
 		F43A7C681BBE508D00B6FA56 /* IntroCompareDataTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = F43A7C671BBE508D00B6FA56 /* IntroCompareDataTableViewCell.swift */; };
 		F49B2B711C7A83BD005F2BFB /* EventPickerManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = F49B2B701C7A83BD005F2BFB /* EventPickerManager.swift */; };
 		F4F4DA5A1C025BE30073E9EE /* PreviewManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = F4F4DA591C025BE30073E9EE /* PreviewManager.swift */; };
-		F5C9527C1CEB370900B8310E /* PhysioParameterCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = F5C9527B1CEB370900B8310E /* PhysioParameterCollectionViewCell.swift */; };
-		F5C9527E1CEB380100B8310E /* PhysioParameterCollectionViewCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = F5C9527D1CEB380100B8310E /* PhysioParameterCollectionViewCell.xib */; };
-		F5C952861CEC70FC00B8310E /* Gotham Book.otf in Resources */ = {isa = PBXBuildFile; fileRef = F5C952821CEC70FC00B8310E /* Gotham Book.otf */; };
-		F5C952871CEC70FC00B8310E /* Gotham Medium.otf in Resources */ = {isa = PBXBuildFile; fileRef = F5C952831CEC70FC00B8310E /* Gotham Medium.otf */; };
-		F5C952881CEC70FC00B8310E /* Gotham XLight Italic.otf in Resources */ = {isa = PBXBuildFile; fileRef = F5C952841CEC70FC00B8310E /* Gotham XLight Italic.otf */; };
-		F5C952891CEC70FC00B8310E /* GothamExLight Italic.otf in Resources */ = {isa = PBXBuildFile; fileRef = F5C952851CEC70FC00B8310E /* GothamExLight Italic.otf */; };
-		F5C9528B1CEC723900B8310E /* UIFont+Common.swift in Sources */ = {isa = PBXBuildFile; fileRef = F5C9528A1CEC723900B8310E /* UIFont+Common.swift */; };
-		F5C9528D1CEC7C5D00B8310E /* ScreenManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = F5C9528C1CEC7C5D00B8310E /* ScreenManager.swift */; };
-		FF55CB6D3ED882B6ECAEF36D /* Pods.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = CB09F654AB4B00C79306C728 /* Pods.framework */; };
+		F55702FE1CEC90AD00EB2CEB /* ScreenManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = F55702FD1CEC90AD00EB2CEB /* ScreenManager.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -243,7 +241,10 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
-		0D0776945489ECA4BA85D15B /* Pods.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = Pods.debug.xcconfig; path = "Pods/Target Support Files/Pods/Pods.debug.xcconfig"; sourceTree = "<group>"; };
+		06103AD5E3EB4C84C4980CB1 /* Pods_MetabolicCompass.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_MetabolicCompass.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		4768419D940426F855957056 /* Pods-MetabolicCompass.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-MetabolicCompass.debug.xcconfig"; path = "Pods/Target Support Files/Pods-MetabolicCompass/Pods-MetabolicCompass.debug.xcconfig"; sourceTree = "<group>"; };
+		780211561C20E33F000120CE /* Pods_MetabolicCompass.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Pods_MetabolicCompass.framework; path = "Pods/../build/Debug-iphoneos/Pods_MetabolicCompass.framework"; sourceTree = "<group>"; };
+		780211581C20E36B000120CE /* Pods_MetabolicCompass.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Pods_MetabolicCompass.framework; path = "Pods/../build/Debug-iphoneos/Pods_MetabolicCompass.framework"; sourceTree = "<group>"; };
 		7816FFBA1C1E45D3002E2ED8 /* UserManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = UserManager.swift; sourceTree = "<group>"; };
 		781CF2C01C6A6A36001DF3B2 /* EventTimeViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = EventTimeViewController.swift; sourceTree = "<group>"; };
 		781EE1231BAF3F6B00E6DDA1 /* Podfile */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = Podfile; path = ../Podfile; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.ruby; };
@@ -286,17 +287,23 @@
 		78CE00AC1C65CC5A005E955C /* RadarViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RadarViewController.swift; sourceTree = "<group>"; };
 		78E5219F1C25687900FAE56A /* Pods.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Pods.framework; path = "Pods/../build/Debug-iphoneos/Pods.framework"; sourceTree = "<group>"; };
 		78F65A4C1C25126E0074449D /* QueryBuilderViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = QueryBuilderViewController.swift; sourceTree = "<group>"; };
+		78F9FE3D1C20E48D0026D790 /* Pods_MetabolicCompass.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Pods_MetabolicCompass.framework; path = "Pods/../build/Debug-iphoneos/Pods_MetabolicCompass.framework"; sourceTree = "<group>"; };
 		84207D1E1CCA1FEC00776848 /* RegisterLoginProcess.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; path = RegisterLoginProcess.storyboard; sourceTree = "<group>"; };
 		84207D211CCA210000776848 /* Images.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Images.xcassets; sourceTree = "<group>"; };
 		84207D231CCA3C3600776848 /* RegisterLoginLandingViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RegisterLoginLandingViewController.swift; sourceTree = "<group>"; };
 		84207D251CCA6A7E00776848 /* InputTableCellWithImage.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = InputTableCellWithImage.swift; sourceTree = "<group>"; };
 		84207D271CCE02A400776848 /* LoginModel.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LoginModel.swift; sourceTree = "<group>"; };
 		84A16A5F1CE3630400D61935 /* UIImage+Extended.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "UIImage+Extended.swift"; sourceTree = "<group>"; };
+		84AB38CF1CEA0EFA00B7DB4E /* DailyProgressDayTableViewCell.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = DailyProgressDayTableViewCell.xib; sourceTree = "<group>"; };
+		84AB38D11CEA0F9900B7DB4E /* DailyProgressDayTableViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DailyProgressDayTableViewCell.swift; sourceTree = "<group>"; };
 		84C9CB461CE9B3A4005ED875 /* DailyProgressViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DailyProgressViewController.swift; sourceTree = "<group>"; };
 		84C9CB481CE9BB76005ED875 /* MetabolicDailyProgressChartView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MetabolicDailyProgressChartView.swift; sourceTree = "<group>"; };
-		88E8FF132457DABBAB901533 /* Pods.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = Pods.release.xcconfig; path = "Pods/Target Support Files/Pods/Pods.release.xcconfig"; sourceTree = "<group>"; };
+		84C9CB4D1CEA0018005ED875 /* DailyChartModel.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DailyChartModel.swift; sourceTree = "<group>"; };
+		8B4A08D995498CDA94BBB258 /* Pods-MetabolicCompass.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-MetabolicCompass.release.xcconfig"; path = "Pods/Target Support Files/Pods-MetabolicCompass/Pods-MetabolicCompass.release.xcconfig"; sourceTree = "<group>"; };
 		951BA49C1CE6295F0036600A /* BrightButton.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BrightButton.swift; sourceTree = "<group>"; };
 		951BA49E1CE630A70036600A /* UnBrightButton.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = UnBrightButton.swift; sourceTree = "<group>"; };
+		952470411CE9BC6C003E7EDF /* AppLogoLabel.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AppLogoLabel.swift; sourceTree = "<group>"; };
+		952470471CE9DAEE003E7EDF /* gotham-book.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "gotham-book.ttf"; sourceTree = "<group>"; };
 		95635A9F1CD3782200BCC467 /* AdditionalInfoModel.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AdditionalInfoModel.swift; sourceTree = "<group>"; };
 		95635AA11CD3ACF200BCC467 /* ScrollSelectionViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ScrollSelectionViewCell.swift; sourceTree = "<group>"; };
 		95635AA21CD3ACF300BCC467 /* ScrollSelectionViewCell.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = ScrollSelectionViewCell.xib; sourceTree = "<group>"; };
@@ -341,6 +348,7 @@
 		95F400A81CE385E80060F28C /* MainSettingsViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MainSettingsViewController.swift; sourceTree = "<group>"; };
 		95F400A91CE385E80060F28C /* ProfileViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ProfileViewController.swift; sourceTree = "<group>"; };
 		95F400AC1CE38F2F0060F28C /* ModelItem.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ModelItem.swift; sourceTree = "<group>"; };
+		984776BC6A59A33B4580C535 /* Pods.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = Pods.release.xcconfig; path = "Pods/Target Support Files/Pods/Pods.release.xcconfig"; sourceTree = "<group>"; };
 		CB09F654AB4B00C79306C728 /* Pods.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		E74A89751CE308800056A2D2 /* UIColor+Extended.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "UIColor+Extended.swift"; sourceTree = "<group>"; };
 		E74A89781CE3265C0056A2D2 /* AccountManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AccountManager.swift; sourceTree = "<group>"; };
@@ -367,6 +375,7 @@
 		E7E48DEE1CE6028600DB020F /* DashboardManageBalanceController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DashboardManageBalanceController.swift; sourceTree = "<group>"; };
 		E7E48DF01CE6033100DB020F /* ManageBalanceCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ManageBalanceCell.swift; sourceTree = "<group>"; };
 		E7E48DF41CE614E400DB020F /* BalanceSampleListController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BalanceSampleListController.swift; sourceTree = "<group>"; };
+		F28DDB83BE2DA2B65B631537 /* Pods.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = Pods.debug.xcconfig; path = "Pods/Target Support Files/Pods/Pods.debug.xcconfig"; sourceTree = "<group>"; };
 		F42F5ADC1BDC85AF00195490 /* SampleDataAnalyzer.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SampleDataAnalyzer.swift; sourceTree = "<group>"; };
 		F42F5B321BE1FD1E00195490 /* MetabolicCompassKit.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = MetabolicCompassKit.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		F42F5B341BE1FD1E00195490 /* MetabolicCompassKit.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = MetabolicCompassKit.h; sourceTree = "<group>"; };
@@ -400,14 +409,7 @@
 		F4F4DA571C0257130073E9EE /* SettingsViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SettingsViewController.swift; sourceTree = "<group>"; };
 		F4F4DA591C025BE30073E9EE /* PreviewManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PreviewManager.swift; sourceTree = "<group>"; };
 		F4F4DA5B1C0271660073E9EE /* RowSettingsViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RowSettingsViewController.swift; sourceTree = "<group>"; };
-		F5C9527B1CEB370900B8310E /* PhysioParameterCollectionViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PhysioParameterCollectionViewCell.swift; sourceTree = "<group>"; };
-		F5C9527D1CEB380100B8310E /* PhysioParameterCollectionViewCell.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = PhysioParameterCollectionViewCell.xib; sourceTree = "<group>"; };
-		F5C952821CEC70FC00B8310E /* Gotham Book.otf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Gotham Book.otf"; sourceTree = "<group>"; };
-		F5C952831CEC70FC00B8310E /* Gotham Medium.otf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Gotham Medium.otf"; sourceTree = "<group>"; };
-		F5C952841CEC70FC00B8310E /* Gotham XLight Italic.otf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Gotham XLight Italic.otf"; sourceTree = "<group>"; };
-		F5C952851CEC70FC00B8310E /* GothamExLight Italic.otf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "GothamExLight Italic.otf"; sourceTree = "<group>"; };
-		F5C9528A1CEC723900B8310E /* UIFont+Common.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "UIFont+Common.swift"; sourceTree = "<group>"; };
-		F5C9528C1CEC7C5D00B8310E /* ScreenManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ScreenManager.swift; sourceTree = "<group>"; };
+		F55702FD1CEC90AD00EB2CEB /* ScreenManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ScreenManager.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -417,7 +419,7 @@
 			files = (
 				F42F5B391BE1FD1E00195490 /* MetabolicCompassKit.framework in Frameworks */,
 				7859783F1C1BC418008377F9 /* HealthKit.framework in Frameworks */,
-				FF55CB6D3ED882B6ECAEF36D /* Pods.framework in Frameworks */,
+				A88F31F3DDADAD50F4190F8E /* Pods.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -435,18 +437,11 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
-		8C1863BF582DE457E670E659 /* Frameworks */ = {
-			isa = PBXFrameworksBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
 		F42F5B2E1BE1FD1E00195490 /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				CE3C78430B78695E41BF90F0 /* Pods.framework in Frameworks */,
+				78E521A01C25687900FAE56A /* Pods.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -460,6 +455,17 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		73414D62BFA06625BCA65E9B /* Pods */ = {
+			isa = PBXGroup;
+			children = (
+				4768419D940426F855957056 /* Pods-MetabolicCompass.debug.xcconfig */,
+				8B4A08D995498CDA94BBB258 /* Pods-MetabolicCompass.release.xcconfig */,
+				F28DDB83BE2DA2B65B631537 /* Pods.debug.xcconfig */,
+				984776BC6A59A33B4580C535 /* Pods.release.xcconfig */,
+			);
+			name = Pods;
+			sourceTree = "<group>";
+		};
 		7881A3D41BAF3B3E00ECB3C6 = {
 			isa = PBXGroup;
 			children = (
@@ -470,8 +476,8 @@
 				F42F5B4D1BE20CDD00195490 /* MetabolicCompassWatch */,
 				F42F5B5C1BE20CDD00195490 /* MetabolicCompassWatchExtension */,
 				7881A3DE1BAF3B3E00ECB3C6 /* Products */,
+				73414D62BFA06625BCA65E9B /* Pods */,
 				EA5EDF2A50FCED6ADBAA03DD /* Frameworks */,
-				ADA00B2D9326F22BB4D8177D /* Pods */,
 			);
 			sourceTree = "<group>";
 		};
@@ -491,6 +497,7 @@
 		7881A3DF1BAF3B3E00ECB3C6 /* MetabolicCompass */ = {
 			isa = PBXGroup;
 			children = (
+				F55702FC1CEC90AD00EB2CEB /* CommonUI */,
 				E7E48DE31CE4A0F100DB020F /* MetabolicCharts */,
 				E74A897A1CE338BA0056A2D2 /* ContentManager */,
 				E74A89771CE3260F0056A2D2 /* AccountManager */,
@@ -540,10 +547,18 @@
 		84207D201CCA20CF00776848 /* Resourses */ = {
 			isa = PBXGroup;
 			children = (
-				F5C952811CEC70FC00B8310E /* Fonts */,
+				952470461CE9DAED003E7EDF /* fonts */,
 				84207D211CCA210000776848 /* Images.xcassets */,
 			);
 			path = Resourses;
+			sourceTree = "<group>";
+		};
+		952470461CE9DAED003E7EDF /* fonts */ = {
+			isa = PBXGroup;
+			children = (
+				952470471CE9DAEE003E7EDF /* gotham-book.ttf */,
+			);
+			path = fonts;
 			sourceTree = "<group>";
 		};
 		95748C3E1CCFC7350002F6A3 /* Cells */ = {
@@ -562,14 +577,14 @@
 				9585680E1CD1020600EDD385 /* LoadImageCollectionViewCell.xib */,
 				95C0B9A11CD2563B006E523F /* TitledInputCollectionViewCell.swift */,
 				95C0B9A21CD2563B006E523F /* TitledInputCollectionViewCell.xib */,
-				F5C9527B1CEB370900B8310E /* PhysioParameterCollectionViewCell.swift */,
-				F5C9527D1CEB380100B8310E /* PhysioParameterCollectionViewCell.xib */,
 				95635AA11CD3ACF200BCC467 /* ScrollSelectionViewCell.swift */,
 				95635AA21CD3ACF300BCC467 /* ScrollSelectionViewCell.xib */,
 				95769B821CE4869C00F26668 /* TitleCollectionViewCell.swift */,
 				95769B831CE4869C00F26668 /* TitleCollectionViewCell.xib */,
 				95D142BA1CE60312006A9118 /* DoubleCheckListTitledCollectionViewCell.swift */,
 				95D142BB1CE60312006A9118 /* DoubleCheckListTitledCollectionViewCell.xib */,
+				84AB38CF1CEA0EFA00B7DB4E /* DailyProgressDayTableViewCell.xib */,
+				84AB38D11CEA0F9900B7DB4E /* DailyProgressDayTableViewCell.swift */,
 			);
 			path = Cells;
 			sourceTree = "<group>";
@@ -592,7 +607,6 @@
 				958568081CD0D3A000EDD385 /* String+Extended.swift */,
 				E74A89751CE308800056A2D2 /* UIColor+Extended.swift */,
 				84A16A5F1CE3630400D61935 /* UIImage+Extended.swift */,
-				F5C9528A1CEC723900B8310E /* UIFont+Common.swift */,
 			);
 			path = Extensions;
 			sourceTree = "<group>";
@@ -601,7 +615,6 @@
 			isa = PBXGroup;
 			children = (
 				9585680B1CD0EDBD00EDD385 /* UnitsUtils.swift */,
-				F5C9528C1CEC7C5D00B8310E /* ScreenManager.swift */,
 			);
 			path = Utils;
 			sourceTree = "<group>";
@@ -628,15 +641,6 @@
 				95769B8A1CE49E7300F26668 /* HealthAccessViewController.swift */,
 			);
 			path = SettingsViewControllers;
-			sourceTree = "<group>";
-		};
-		ADA00B2D9326F22BB4D8177D /* Pods */ = {
-			isa = PBXGroup;
-			children = (
-				88E8FF132457DABBAB901533 /* Pods.release.xcconfig */,
-				0D0776945489ECA4BA85D15B /* Pods.debug.xcconfig */,
-			);
-			name = Pods;
 			sourceTree = "<group>";
 		};
 		E74A89771CE3260F0056A2D2 /* AccountManager */ = {
@@ -767,7 +771,11 @@
 			isa = PBXGroup;
 			children = (
 				78E5219F1C25687900FAE56A /* Pods.framework */,
+				78F9FE3D1C20E48D0026D790 /* Pods_MetabolicCompass.framework */,
+				780211581C20E36B000120CE /* Pods_MetabolicCompass.framework */,
+				780211561C20E33F000120CE /* Pods_MetabolicCompass.framework */,
 				7859783E1C1BC418008377F9 /* HealthKit.framework */,
+				06103AD5E3EB4C84C4980CB1 /* Pods_MetabolicCompass.framework */,
 				CB09F654AB4B00C79306C728 /* Pods.framework */,
 			);
 			name = Frameworks;
@@ -861,6 +869,7 @@
 				958568021CD0B18900EDD385 /* RegistrationModel.swift */,
 				95635A9F1CD3782200BCC467 /* AdditionalInfoModel.swift */,
 				95F400AC1CE38F2F0060F28C /* ModelItem.swift */,
+				84C9CB4D1CEA0018005ED875 /* DailyChartModel.swift */,
 			);
 			path = Model;
 			sourceTree = "<group>";
@@ -875,6 +884,7 @@
 				958568001CD0AFA400EDD385 /* CheckBox.swift */,
 				951BA49C1CE6295F0036600A /* BrightButton.swift */,
 				951BA49E1CE630A70036600A /* UnBrightButton.swift */,
+				952470411CE9BC6C003E7EDF /* AppLogoLabel.swift */,
 			);
 			path = View;
 			sourceTree = "<group>";
@@ -909,15 +919,12 @@
 			path = "View Controller";
 			sourceTree = "<group>";
 		};
-		F5C952811CEC70FC00B8310E /* Fonts */ = {
+		F55702FC1CEC90AD00EB2CEB /* CommonUI */ = {
 			isa = PBXGroup;
 			children = (
-				F5C952821CEC70FC00B8310E /* Gotham Book.otf */,
-				F5C952831CEC70FC00B8310E /* Gotham Medium.otf */,
-				F5C952841CEC70FC00B8310E /* Gotham XLight Italic.otf */,
-				F5C952851CEC70FC00B8310E /* GothamExLight Italic.otf */,
+				F55702FD1CEC90AD00EB2CEB /* ScreenManager.swift */,
 			);
-			path = Fonts;
+			path = CommonUI;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -938,15 +945,15 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = 7881A4051BAF3B3E00ECB3C6 /* Build configuration list for PBXNativeTarget "MetabolicCompass" */;
 			buildPhases = (
-				4FD9DD3D800DE0E64F727697 /* Check Pods Manifest.lock */,
+				FB9F9E2C08236B1B27F2789E /* Check Pods Manifest.lock */,
 				7881A3D91BAF3B3E00ECB3C6 /* Sources */,
 				7881A3DA1BAF3B3E00ECB3C6 /* Frameworks */,
 				7881A3DB1BAF3B3E00ECB3C6 /* Resources */,
+				A01C396C44B6977D7FFF92D5 /* Embed Pods Frameworks */,
+				8D97F58FF847A9E09D7ACDED /* Copy Pods Resources */,
 				F42F5B2C1BE1FCAF00195490 /* Embed Watch Content */,
 				F42F5B3E1BE1FD1F00195490 /* Embed Frameworks */,
 				784F60361C66C8CA0040F11B /* ShellScript */,
-				0CC763CEFB824ABB57E4F8AF /* Embed Pods Frameworks */,
-				7972B2C9F7AF8AE8BD81D712 /* Copy Pods Resources */,
 			);
 			buildRules = (
 			);
@@ -999,12 +1006,12 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = F42F5B3B1BE1FD1F00195490 /* Build configuration list for PBXNativeTarget "MetabolicCompassKit" */;
 			buildPhases = (
-				F6CC5C551C219EE0F5087061 /* Check Pods Manifest.lock */,
+				DCD71BE966EB36944274F9EA /* Check Pods Manifest.lock */,
 				F42F5B2D1BE1FD1E00195490 /* Sources */,
 				F42F5B2E1BE1FD1E00195490 /* Frameworks */,
 				F42F5B2F1BE1FD1E00195490 /* Headers */,
 				F42F5B301BE1FD1E00195490 /* Resources */,
-				7C2B5AF25EA898EC9C95AF2C /* Copy Pods Resources */,
+				155EF693A3CB475595C074A3 /* Copy Pods Resources */,
 			);
 			buildRules = (
 			);
@@ -1021,7 +1028,6 @@
 			buildPhases = (
 				F42F5B4A1BE20CDD00195490 /* Resources */,
 				F42F5B721BE20CDD00195490 /* Embed App Extensions */,
-				8C1863BF582DE457E670E659 /* Frameworks */,
 			);
 			buildRules = (
 			);
@@ -1133,25 +1139,22 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				F5C952861CEC70FC00B8310E /* Gotham Book.otf in Resources */,
 				95D142BD1CE60312006A9118 /* DoubleCheckListTitledCollectionViewCell.xib in Resources */,
+				84AB38D01CEA0EFA00B7DB4E /* DailyProgressDayTableViewCell.xib in Resources */,
 				F43A7C571BBDF29D00B6FA56 /* LaunchScreen.storyboard in Resources */,
 				95748C511CCFC7D90002F6A3 /* DoubleCheckListCollectionViewCell.xib in Resources */,
+				952470481CE9DAEE003E7EDF /* gotham-book.ttf in Resources */,
 				95635AA41CD3ACF300BCC467 /* ScrollSelectionViewCell.xib in Resources */,
-				F5C952871CEC70FC00B8310E /* Gotham Medium.otf in Resources */,
 				958568101CD1020600EDD385 /* LoadImageCollectionViewCell.xib in Resources */,
 				84207D221CCA210000776848 /* Images.xcassets in Resources */,
 				95769B851CE4869C00F26668 /* TitleCollectionViewCell.xib in Resources */,
 				84207D1F1CCA1FEC00776848 /* RegisterLoginProcess.storyboard in Resources */,
 				95F4009A1CE385C60060F28C /* InfoCollectionViewCell.xib in Resources */,
 				95C0B9A41CD2563B006E523F /* TitledInputCollectionViewCell.xib in Resources */,
-				F5C9527E1CEB380100B8310E /* PhysioParameterCollectionViewCell.xib in Resources */,
 				95748C471CCFC7AA0002F6A3 /* InputCollectionViewCell.xib in Resources */,
-				F5C952891CEC70FC00B8310E /* GothamExLight Italic.otf in Resources */,
 				95F400981CE385C60060F28C /* CircleImageCollectionViewCell.xib in Resources */,
 				E7592DB51CDB3A2400E313BB /* TabScreens.storyboard in Resources */,
 				95F400A61CE385E10060F28C /* Settings.storyboard in Resources */,
-				F5C952881CEC70FC00B8310E /* Gotham XLight Italic.otf in Resources */,
 				F43A7C551BBDF25E00B6FA56 /* Images.xcassets in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -1197,34 +1200,19 @@
 /* End PBXResourcesBuildPhase section */
 
 /* Begin PBXShellScriptBuildPhase section */
-		0CC763CEFB824ABB57E4F8AF /* Embed Pods Frameworks */ = {
+		155EF693A3CB475595C074A3 /* Copy Pods Resources */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
 			);
 			inputPaths = (
 			);
-			name = "Embed Pods Frameworks";
+			name = "Copy Pods Resources";
 			outputPaths = (
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "\"${SRCROOT}/Pods/Target Support Files/Pods/Pods-frameworks.sh\"\n";
-			showEnvVarsInLog = 0;
-		};
-		4FD9DD3D800DE0E64F727697 /* Check Pods Manifest.lock */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputPaths = (
-			);
-			name = "Check Pods Manifest.lock";
-			outputPaths = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "diff \"${PODS_ROOT}/../Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [[ $? != 0 ]] ; then\n    cat << EOM\nerror: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\nEOM\n    exit 1\nfi\n";
+			shellScript = "\"${SRCROOT}/Pods/Target Support Files/Pods/Pods-resources.sh\"\n";
 			showEnvVarsInLog = 0;
 		};
 		784F60361C66C8CA0040F11B /* ShellScript */ = {
@@ -1240,7 +1228,7 @@
 			shellPath = /bin/sh;
 			shellScript = "\"${PODS_ROOT}/Fabric/run\" 9c8fe07d2ebf5808e873bbb23fe7a6c8ef76a22e 0608fae6f747cbbb131bca692ade699829f49ad28507a7c04fd0a3fa82ceaa49";
 		};
-		7972B2C9F7AF8AE8BD81D712 /* Copy Pods Resources */ = {
+		8D97F58FF847A9E09D7ACDED /* Copy Pods Resources */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -1255,22 +1243,37 @@
 			shellScript = "\"${SRCROOT}/Pods/Target Support Files/Pods/Pods-resources.sh\"\n";
 			showEnvVarsInLog = 0;
 		};
-		7C2B5AF25EA898EC9C95AF2C /* Copy Pods Resources */ = {
+		A01C396C44B6977D7FFF92D5 /* Embed Pods Frameworks */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
 			);
 			inputPaths = (
 			);
-			name = "Copy Pods Resources";
+			name = "Embed Pods Frameworks";
 			outputPaths = (
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "\"${SRCROOT}/Pods/Target Support Files/Pods/Pods-resources.sh\"\n";
+			shellScript = "\"${SRCROOT}/Pods/Target Support Files/Pods/Pods-frameworks.sh\"\n";
 			showEnvVarsInLog = 0;
 		};
-		F6CC5C551C219EE0F5087061 /* Check Pods Manifest.lock */ = {
+		DCD71BE966EB36944274F9EA /* Check Pods Manifest.lock */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			name = "Check Pods Manifest.lock";
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "diff \"${PODS_ROOT}/../Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [[ $? != 0 ]] ; then\n    cat << EOM\nerror: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\nEOM\n    exit 1\nfi\n";
+			showEnvVarsInLog = 0;
+		};
+		FB9F9E2C08236B1B27F2789E /* Check Pods Manifest.lock */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -1293,6 +1296,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				95C0B99A1CD23E90006E523F /* LoginViewController.swift in Sources */,
+				84C9CB4E1CEA0018005ED875 /* DailyChartModel.swift in Sources */,
 				95C0B9A61CD25814006E523F /* AdditionalInfoDataSource.swift in Sources */,
 				F49B2B711C7A83BD005F2BFB /* EventPickerManager.swift in Sources */,
 				E75E95AB1CDCD10700A18756 /* DashboardManageController.swift in Sources */,
@@ -1304,7 +1308,6 @@
 				E75E95B21CDCD6CB00A18756 /* DashboardMetricsAppearanceProvider.swift in Sources */,
 				95769B871CE49E4000F26668 /* PhysiologicalDataViewController.swift in Sources */,
 				E7E48DF11CE6033100DB020F /* ManageBalanceCell.swift in Sources */,
-				F5C9528D1CEC7C5D00B8310E /* ScreenManager.swift in Sources */,
 				78B734291C90B86D00693229 /* CorrelationViewController.swift in Sources */,
 				84C9CB491CE9BB76005ED875 /* MetabolicDailyProgressChartView.swift in Sources */,
 				78B7341E1C90B84600693229 /* ProfileSubviewController.swift in Sources */,
@@ -1326,7 +1329,6 @@
 				78B734241C90B85B00693229 /* QueryBuilderViewController.swift in Sources */,
 				95769B841CE4869C00F26668 /* TitleCollectionViewCell.swift in Sources */,
 				F43A7C5E1BBDF43600B6FA56 /* PlotButton.swift in Sources */,
-				F5C9528B1CEC723900B8310E /* UIFont+Common.swift in Sources */,
 				E7E48DEF1CE6028600DB020F /* DashboardManageBalanceController.swift in Sources */,
 				E7592DB81CDB490600E313BB /* MainTabController.swift in Sources */,
 				95F400AD1CE38F2F0060F28C /* ModelItem.swift in Sources */,
@@ -1342,6 +1344,7 @@
 				95C0B99B1CD23E90006E523F /* RegisterViewController.swift in Sources */,
 				E7591D0E1CE1C7DE00DCBA39 /* LPRTableView.swift in Sources */,
 				95F400971CE385C60060F28C /* CircleImageCollectionViewCell.swift in Sources */,
+				952470421CE9BC6C003E7EDF /* AppLogoLabel.swift in Sources */,
 				78B7342B1C90B87600693229 /* VariantViewController.swift in Sources */,
 				78B734271C90B86700693229 /* EventTimeViewController.swift in Sources */,
 				F42F5ADD1BDC85AF00195490 /* SampleDataAnalyzer.swift in Sources */,
@@ -1349,9 +1352,11 @@
 				78B7342C1C90B87A00693229 /* ErrorViewController.swift in Sources */,
 				95F400A01CE385CC0060F28C /* ProfileDataSource.swift in Sources */,
 				78B734211C90B85100693229 /* DaySelectionViewController.swift in Sources */,
+				F55702FE1CEC90AD00EB2CEB /* ScreenManager.swift in Sources */,
 				84A16A601CE3630400D61935 /* UIImage+Extended.swift in Sources */,
 				95F400991CE385C60060F28C /* InfoCollectionViewCell.swift in Sources */,
 				95769B8B1CE49E7300F26668 /* HealthAccessViewController.swift in Sources */,
+				84AB38D21CEA0F9900B7DB4E /* DailyProgressDayTableViewCell.swift in Sources */,
 				7881A3E11BAF3B3E00ECB3C6 /* AppDelegate.swift in Sources */,
 				9585680F1CD1020600EDD385 /* LoadImageCollectionViewCell.swift in Sources */,
 				E75E95AE1CDCD5A700A18756 /* DashboardMetricsConfigItem.swift in Sources */,
@@ -1373,7 +1378,6 @@
 				78B734221C90B85400693229 /* RowSettingsViewController.swift in Sources */,
 				78B734251C90B85E00693229 /* QueryWriterViewController.swift in Sources */,
 				95F400A31CE385D50060F28C /* ProfileModel.swift in Sources */,
-				F5C9527C1CEB370900B8310E /* PhysioParameterCollectionViewCell.swift in Sources */,
 				95635AA01CD3782200BCC467 /* AdditionalInfoModel.swift in Sources */,
 				95635AA61CD3C11600BCC467 /* ForgotPasswordViewController.swift in Sources */,
 				95F400A41CE385D50060F28C /* UserInfoModel.swift in Sources */,
@@ -1528,7 +1532,7 @@
 		};
 		786130061C25D7BC00F50DB3 /* Debug */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 0D0776945489ECA4BA85D15B /* Pods.debug.xcconfig */;
+			baseConfigurationReference = F28DDB83BE2DA2B65B631537 /* Pods.debug.xcconfig */;
 			buildSettings = {
 				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
@@ -1560,7 +1564,7 @@
 		};
 		786130071C25D7BC00F50DB3 /* Debug */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 0D0776945489ECA4BA85D15B /* Pods.debug.xcconfig */;
+			baseConfigurationReference = F28DDB83BE2DA2B65B631537 /* Pods.debug.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_ENTITLEMENTS = MetabolicCompass/MetabolicCompass.entitlements;
@@ -1704,7 +1708,7 @@
 		};
 		7881A4071BAF3B3E00ECB3C6 /* Release */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 88E8FF132457DABBAB901533 /* Pods.release.xcconfig */;
+			baseConfigurationReference = 984776BC6A59A33B4580C535 /* Pods.release.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_ENTITLEMENTS = MetabolicCompass/MetabolicCompass.entitlements;
@@ -1761,7 +1765,7 @@
 		};
 		F42F5B3D1BE1FD1F00195490 /* Release */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 88E8FF132457DABBAB901533 /* Pods.release.xcconfig */;
+			baseConfigurationReference = 984776BC6A59A33B4580C535 /* Pods.release.xcconfig */;
 			buildSettings = {
 				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_IDENTITY = "iPhone Developer";

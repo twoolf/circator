@@ -49,6 +49,13 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         // Set translucent. (Default value is already true, so this can be removed if desired.)
         UINavigationBar.appearance().translucent = true
         
+        //set custom back button image
+        let backBtnImg = UIImage(named: "back-button")
+        
+        UINavigationBar.appearance().backIndicatorImage = backBtnImg
+        UINavigationBar.appearance().backIndicatorTransitionMaskImage = backBtnImg
+        
+        
         let tabBarStoryboard = UIStoryboard(name: "TabScreens", bundle: nil)
         let tabBarScreen = tabBarStoryboard.instantiateViewControllerWithIdentifier("TabBarController")
         mainViewController = tabBarScreen

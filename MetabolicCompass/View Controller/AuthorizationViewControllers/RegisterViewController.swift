@@ -38,8 +38,6 @@ private let inputFontSize = ScreenManager.sharedInstance.profileInputFontSize()
     override func viewWillAppear(animated: Bool) {
         super.viewWillAppear(animated)
         navigationController?.setNavigationBarHidden(false, animated: false)
-        navigationItem.title = "REGISTER"
-        self.navigationController?.navigationBar.titleTextAttributes = [NSForegroundColorAttributeName: UIColor.whiteColor()];
     }
 
     override func viewWillDisappear(animated: Bool) {
@@ -64,6 +62,8 @@ private let inputFontSize = ScreenManager.sharedInstance.profileInputFontSize()
     }
     
     @IBAction func registerAction(sender: UIButton) {
+        
+        startAction()
     
         guard let consentPath = ConsentManager.sharedManager.getConsentFilePath() else {
             UINotifications.noConsent(self.navigationController!, pop: true, asNav: true)
