@@ -12,7 +12,7 @@ import MetabolicCompassKit
 class PhysiologicalDataViewController: BaseViewController {
     
     weak var registerViewController: RegisterViewController?
-    var dataSource = PhysioParametersDataSource()
+    var dataSource = AdditionalInfoDataSource()
     @IBOutlet weak var collectionView: UICollectionView!
     
     let lsSaveTitle = "Save".localized
@@ -42,25 +42,16 @@ class PhysiologicalDataViewController: BaseViewController {
         self.setupNavBar()
     }
     
-    override func didReceiveMemoryWarning() {
-        super.didReceiveMemoryWarning()
-        // Dispose of any resources that can be recreated.
-    }
-    
     private func createBarButtonItem(title: String?, action: Selector) -> UIBarButtonItem{
         let bbItem = UIBarButtonItem(title: title, style: UIBarButtonItemStyle.Plain, target: self, action: action)
-        bbItem.setTitleTextAttributes([NSForegroundColorAttributeName: ScreenManager.appTitleColor()], forState: UIControlState.Normal)
+        bbItem.setTitleTextAttributes([NSForegroundColorAttributeName: ScreenManager.appTitleTextColor()], forState: UIControlState.Normal)
         return bbItem
     }
     
     private func setupNavBar() {
-//        rightButton = UIBarButtonItem(title: lsEditTitle, style: UIBarButtonItemStyle.Plain, target: self, action: #selector(PhysiologicalDataViewController.rightAction(_:)))
-//        rightButton!.setTitleTextAttributes([NSForegroundColorAttributeName: ScreenManager.appTitleColor()], forState: UIControlState.Normal);
         rightButton = createBarButtonItem(lsEditTitle, action: #selector(rightAction))
         self.navigationItem.rightBarButtonItem = rightButton
-        
         leftButton = createBarButtonItem(lsCancelTitle, action: #selector(leftAction))
-        
     }
     
     func rightAction(sender: UIBarButtonItem) {
@@ -70,10 +61,6 @@ class PhysiologicalDataViewController: BaseViewController {
             print("add info: \(additionalInfo)")
             
             UserManager.sharedManager.pushProfile(additionalInfo, completion: { _ in
-//                self.dismissViewControllerAnimated(true, completion: {
-//                    [weak controller = self.registerViewController] in
-//                    controller?.registartionComplete()
-//                });
                 self.editMode = false
             })
         }

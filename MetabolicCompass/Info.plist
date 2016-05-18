@@ -72,5 +72,9 @@
 		<string>UIInterfaceOrientationLandscapeLeft</string>
 		<string>UIInterfaceOrientationLandscapeRight</string>
 	</array>
+	<key>UIAppFonts</key>
+	<array>
+		<string>Gotham Book.otf</string>
+	</array>
 </dict>
 </plist>

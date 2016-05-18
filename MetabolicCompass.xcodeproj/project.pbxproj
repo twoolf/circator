@@ -8,7 +8,6 @@
 
 /* Begin PBXBuildFile section */
 		7816FFBB1C1E45D3002E2ED8 /* UserManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7816FFBA1C1E45D3002E2ED8 /* UserManager.swift */; };
-		78398D681C781EF0009653D6 /* ScreenManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 78398D671C781EF0009653D6 /* ScreenManager.swift */; };
 		783E53D21C75856200BEBF33 /* DataGenerator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 783E53D11C75856200BEBF33 /* DataGenerator.swift */; };
 		7843F9121C1FAD9900AB8978 /* ServiceAPI.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7843F9111C1FAD9900AB8978 /* ServiceAPI.swift */; };
 		7859783F1C1BC418008377F9 /* HealthKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 7859783E1C1BC418008377F9 /* HealthKit.framework */; };
@@ -150,7 +149,12 @@
 		F4F4DA5A1C025BE30073E9EE /* PreviewManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = F4F4DA591C025BE30073E9EE /* PreviewManager.swift */; };
 		F5C9527C1CEB370900B8310E /* PhysioParameterCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = F5C9527B1CEB370900B8310E /* PhysioParameterCollectionViewCell.swift */; };
 		F5C9527E1CEB380100B8310E /* PhysioParameterCollectionViewCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = F5C9527D1CEB380100B8310E /* PhysioParameterCollectionViewCell.xib */; };
-		F5C952801CEB3F3B00B8310E /* PhysioParametersDataSource.swift in Sources */ = {isa = PBXBuildFile; fileRef = F5C9527F1CEB3F3B00B8310E /* PhysioParametersDataSource.swift */; };
+		F5C952861CEC70FC00B8310E /* Gotham Book.otf in Resources */ = {isa = PBXBuildFile; fileRef = F5C952821CEC70FC00B8310E /* Gotham Book.otf */; };
+		F5C952871CEC70FC00B8310E /* Gotham Medium.otf in Resources */ = {isa = PBXBuildFile; fileRef = F5C952831CEC70FC00B8310E /* Gotham Medium.otf */; };
+		F5C952881CEC70FC00B8310E /* Gotham XLight Italic.otf in Resources */ = {isa = PBXBuildFile; fileRef = F5C952841CEC70FC00B8310E /* Gotham XLight Italic.otf */; };
+		F5C952891CEC70FC00B8310E /* GothamExLight Italic.otf in Resources */ = {isa = PBXBuildFile; fileRef = F5C952851CEC70FC00B8310E /* GothamExLight Italic.otf */; };
+		F5C9528B1CEC723900B8310E /* UIFont+Common.swift in Sources */ = {isa = PBXBuildFile; fileRef = F5C9528A1CEC723900B8310E /* UIFont+Common.swift */; };
+		F5C9528D1CEC7C5D00B8310E /* ScreenManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = F5C9528C1CEC7C5D00B8310E /* ScreenManager.swift */; };
 		FF55CB6D3ED882B6ECAEF36D /* Pods.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = CB09F654AB4B00C79306C728 /* Pods.framework */; };
 /* End PBXBuildFile section */
 
@@ -244,7 +248,6 @@
 		781CF2C01C6A6A36001DF3B2 /* EventTimeViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = EventTimeViewController.swift; sourceTree = "<group>"; };
 		781EE1231BAF3F6B00E6DDA1 /* Podfile */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = Podfile; path = ../Podfile; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.ruby; };
 		781EE1241BAF3F6B00E6DDA1 /* README.md */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = net.daringfireball.markdown; name = README.md; path = ../README.md; sourceTree = "<group>"; };
-		78398D671C781EF0009653D6 /* ScreenManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ScreenManager.swift; sourceTree = "<group>"; };
 		783E53D11C75856200BEBF33 /* DataGenerator.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DataGenerator.swift; sourceTree = "<group>"; };
 		7840A4981C6E53A80005B66F /* VariantViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = VariantViewController.swift; sourceTree = "<group>"; };
 		7840A49A1C6E5A680005B66F /* ErrorViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ErrorViewController.swift; sourceTree = "<group>"; };
@@ -399,7 +402,12 @@
 		F4F4DA5B1C0271660073E9EE /* RowSettingsViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RowSettingsViewController.swift; sourceTree = "<group>"; };
 		F5C9527B1CEB370900B8310E /* PhysioParameterCollectionViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PhysioParameterCollectionViewCell.swift; sourceTree = "<group>"; };
 		F5C9527D1CEB380100B8310E /* PhysioParameterCollectionViewCell.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = PhysioParameterCollectionViewCell.xib; sourceTree = "<group>"; };
-		F5C9527F1CEB3F3B00B8310E /* PhysioParametersDataSource.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PhysioParametersDataSource.swift; sourceTree = "<group>"; };
+		F5C952821CEC70FC00B8310E /* Gotham Book.otf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Gotham Book.otf"; sourceTree = "<group>"; };
+		F5C952831CEC70FC00B8310E /* Gotham Medium.otf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Gotham Medium.otf"; sourceTree = "<group>"; };
+		F5C952841CEC70FC00B8310E /* Gotham XLight Italic.otf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Gotham XLight Italic.otf"; sourceTree = "<group>"; };
+		F5C952851CEC70FC00B8310E /* GothamExLight Italic.otf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "GothamExLight Italic.otf"; sourceTree = "<group>"; };
+		F5C9528A1CEC723900B8310E /* UIFont+Common.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "UIFont+Common.swift"; sourceTree = "<group>"; };
+		F5C9528C1CEC7C5D00B8310E /* ScreenManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ScreenManager.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -532,6 +540,7 @@
 		84207D201CCA20CF00776848 /* Resourses */ = {
 			isa = PBXGroup;
 			children = (
+				F5C952811CEC70FC00B8310E /* Fonts */,
 				84207D211CCA210000776848 /* Images.xcassets */,
 			);
 			path = Resourses;
@@ -571,7 +580,6 @@
 				95F4009F1CE385CC0060F28C /* ProfileDataSource.swift */,
 				958568111CD12B5200EDD385 /* RegisterModelDataSource.swift */,
 				95C0B9A51CD25814006E523F /* AdditionalInfoDataSource.swift */,
-				F5C9527F1CEB3F3B00B8310E /* PhysioParametersDataSource.swift */,
 				95C0B9A71CD25860006E523F /* BaseDataSource.swift */,
 			);
 			path = DataSources;
@@ -584,6 +592,7 @@
 				958568081CD0D3A000EDD385 /* String+Extended.swift */,
 				E74A89751CE308800056A2D2 /* UIColor+Extended.swift */,
 				84A16A5F1CE3630400D61935 /* UIImage+Extended.swift */,
+				F5C9528A1CEC723900B8310E /* UIFont+Common.swift */,
 			);
 			path = Extensions;
 			sourceTree = "<group>";
@@ -592,6 +601,7 @@
 			isa = PBXGroup;
 			children = (
 				9585680B1CD0EDBD00EDD385 /* UnitsUtils.swift */,
+				F5C9528C1CEC7C5D00B8310E /* ScreenManager.swift */,
 			);
 			path = Utils;
 			sourceTree = "<group>";
@@ -777,7 +787,6 @@
 				F4F4DA591C025BE30073E9EE /* PreviewManager.swift */,
 				7861300E1C25F42B00F50DB3 /* QueryManager.swift */,
 				F42F5B431BE2048400195490 /* SampleFormatter.swift */,
-				78398D671C781EF0009653D6 /* ScreenManager.swift */,
 				7843F9111C1FAD9900AB8978 /* ServiceAPI.swift */,
 				F42F5B441BE2048400195490 /* Theme.swift */,
 				78AC90CB1C1E859F008C931B /* UserAccount.swift */,
@@ -898,6 +907,17 @@
 				84C9CB461CE9B3A4005ED875 /* DailyProgressViewController.swift */,
 			);
 			path = "View Controller";
+			sourceTree = "<group>";
+		};
+		F5C952811CEC70FC00B8310E /* Fonts */ = {
+			isa = PBXGroup;
+			children = (
+				F5C952821CEC70FC00B8310E /* Gotham Book.otf */,
+				F5C952831CEC70FC00B8310E /* Gotham Medium.otf */,
+				F5C952841CEC70FC00B8310E /* Gotham XLight Italic.otf */,
+				F5C952851CEC70FC00B8310E /* GothamExLight Italic.otf */,
+			);
+			path = Fonts;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -1113,10 +1133,12 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				F5C952861CEC70FC00B8310E /* Gotham Book.otf in Resources */,
 				95D142BD1CE60312006A9118 /* DoubleCheckListTitledCollectionViewCell.xib in Resources */,
 				F43A7C571BBDF29D00B6FA56 /* LaunchScreen.storyboard in Resources */,
 				95748C511CCFC7D90002F6A3 /* DoubleCheckListCollectionViewCell.xib in Resources */,
 				95635AA41CD3ACF300BCC467 /* ScrollSelectionViewCell.xib in Resources */,
+				F5C952871CEC70FC00B8310E /* Gotham Medium.otf in Resources */,
 				958568101CD1020600EDD385 /* LoadImageCollectionViewCell.xib in Resources */,
 				84207D221CCA210000776848 /* Images.xcassets in Resources */,
 				95769B851CE4869C00F26668 /* TitleCollectionViewCell.xib in Resources */,
@@ -1125,9 +1147,11 @@
 				95C0B9A41CD2563B006E523F /* TitledInputCollectionViewCell.xib in Resources */,
 				F5C9527E1CEB380100B8310E /* PhysioParameterCollectionViewCell.xib in Resources */,
 				95748C471CCFC7AA0002F6A3 /* InputCollectionViewCell.xib in Resources */,
+				F5C952891CEC70FC00B8310E /* GothamExLight Italic.otf in Resources */,
 				95F400981CE385C60060F28C /* CircleImageCollectionViewCell.xib in Resources */,
 				E7592DB51CDB3A2400E313BB /* TabScreens.storyboard in Resources */,
 				95F400A61CE385E10060F28C /* Settings.storyboard in Resources */,
+				F5C952881CEC70FC00B8310E /* Gotham XLight Italic.otf in Resources */,
 				F43A7C551BBDF25E00B6FA56 /* Images.xcassets in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -1280,6 +1304,7 @@
 				E75E95B21CDCD6CB00A18756 /* DashboardMetricsAppearanceProvider.swift in Sources */,
 				95769B871CE49E4000F26668 /* PhysiologicalDataViewController.swift in Sources */,
 				E7E48DF11CE6033100DB020F /* ManageBalanceCell.swift in Sources */,
+				F5C9528D1CEC7C5D00B8310E /* ScreenManager.swift in Sources */,
 				78B734291C90B86D00693229 /* CorrelationViewController.swift in Sources */,
 				84C9CB491CE9BB76005ED875 /* MetabolicDailyProgressChartView.swift in Sources */,
 				78B7341E1C90B84600693229 /* ProfileSubviewController.swift in Sources */,
@@ -1301,6 +1326,7 @@
 				78B734241C90B85B00693229 /* QueryBuilderViewController.swift in Sources */,
 				95769B841CE4869C00F26668 /* TitleCollectionViewCell.swift in Sources */,
 				F43A7C5E1BBDF43600B6FA56 /* PlotButton.swift in Sources */,
+				F5C9528B1CEC723900B8310E /* UIFont+Common.swift in Sources */,
 				E7E48DEF1CE6028600DB020F /* DashboardManageBalanceController.swift in Sources */,
 				E7592DB81CDB490600E313BB /* MainTabController.swift in Sources */,
 				95F400AD1CE38F2F0060F28C /* ModelItem.swift in Sources */,
@@ -1356,7 +1382,6 @@
 				E7E48DE71CE4BCAB00DB020F /* MetabolicChartDataSet.swift in Sources */,
 				95F400AB1CE385E80060F28C /* ProfileViewController.swift in Sources */,
 				95F400AA1CE385E80060F28C /* MainSettingsViewController.swift in Sources */,
-				F5C952801CEB3F3B00B8310E /* PhysioParametersDataSource.swift in Sources */,
 				95748C461CCFC7AA0002F6A3 /* InputCollectionViewCell.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -1390,7 +1415,6 @@
 				F42F5B461BE2048400195490 /* SampleFormatter.swift in Sources */,
 				7861300F1C25F42B00F50DB3 /* QueryManager.swift in Sources */,
 				F42F5B451BE2048400195490 /* HealthManager.swift in Sources */,
-				78398D681C781EF0009653D6 /* ScreenManager.swift in Sources */,
 				783E53D21C75856200BEBF33 /* DataGenerator.swift in Sources */,
 				7843F9121C1FAD9900AB8978 /* ServiceAPI.swift in Sources */,
 				786DF10D1C72AFE0007C2D4C /* Constants.swift in Sources */,

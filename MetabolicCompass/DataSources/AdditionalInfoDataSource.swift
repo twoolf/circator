@@ -119,7 +119,7 @@ public class AdditionalInfoDataSource: BaseDataSource {
             
         }
 
-        
+        cell.userInteractionEnabled = editMode
         return cell
     }
     
