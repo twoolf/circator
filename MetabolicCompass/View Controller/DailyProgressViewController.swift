@@ -32,6 +32,7 @@ class DailyProgressViewController : UIViewController {
     
     override func viewWillAppear(animated: Bool) {
         super.viewWillAppear(animated)
+        self.dailyChartModel.prepareChartData()
         let width = self.dailyProgressChartScrollView.contentSize.width
         let height = CGRectGetHeight(self.dailyProgressChartView.frame)
         self.dailyProgressChartScrollView.contentSize = CGSizeMake(width, height)

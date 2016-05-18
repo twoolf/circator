@@ -11,6 +11,22 @@ import Charts
 
 class MetabolicDailyPorgressChartView : HorizontalBarChartView {
     
+    class var exerciseColor: UIColor {
+        return UIColor.colorWithHexString("#009A00", alpha: 0.7)!
+    }
+    
+    class var eatingColor: UIColor {
+        return UIColor.colorWithHexString("#E4442D", alpha: 0.7)!
+    }
+    
+    class var sleepColor: UIColor {
+        return UIColor.colorWithHexString("#008BFF", alpha: 0.7)!
+    }
+    
+    class var fastingColor: UIColor {
+        return UIColor.colorWithHexString("#001844", alpha: 0.7)!
+    }
+    
     private let dailyChartModel = DailyChartModel()
     
     func prepareChart () {
@@ -31,8 +47,8 @@ class MetabolicDailyPorgressChartView : HorizontalBarChartView {
         
         let leftAxis = self.leftAxis;
         leftAxis.enabled = false
-        leftAxis.axisMinValue = 1.0
-        leftAxis.axisMaxValue = 23.0
+        leftAxis.axisMinValue = 0.0
+        leftAxis.axisMaxValue = 24.0
         
         self.legend.formSize = 0;
         self.legend.font = UIFont.systemFontOfSize(0)
@@ -53,7 +69,7 @@ class MetabolicDailyPorgressChartView : HorizontalBarChartView {
                          [3.0, 5.0, 3.6, 2.0, 1.0, 0.2, 0.7],
                          [1.0, 2.0, 6.0, 4.0, 1.5, 0.2, 0.7],
                          [4.0, 3.2, 4.4, 3.0, 2.0, 0.2, 0.7],
-                         [1.0, 3.0, 4.0, 3.1, 2.2, 0.2, 0.7],
+                         [0.0, 3.0, 4.0, 3.1, 2.2, 0.2, 0.7],
                          [1.2, 2.1, 4.3, 3.4, 2.0, 0.2, 0.7],
                          [2.9, 3.3, 4.6, 3.7, 2.8, 0.9, 0.7]]
         
@@ -83,8 +99,8 @@ class MetabolicDailyPorgressChartView : HorizontalBarChartView {
         rightAxis.drawAxisLineEnabled = true
         rightAxis.drawGridLinesEnabled = true
         rightAxis.valueFormatter = formatter
-        rightAxis.axisMinValue = 1.0
-        rightAxis.axisMaxValue = 23.0
+        rightAxis.axisMinValue = 0.0
+        rightAxis.axisMaxValue = 24.0
         rightAxis.gridLineWidth = 1
         rightAxis.gridLineDashPhase = 1
         rightAxis.gridLineDashLengths = [3.0]
