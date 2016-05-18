@@ -13,7 +13,7 @@ import UIKit
     func checkBoxValueChanged(sender: CheckBox, newValue: Bool)
 }
 
-class CheckBox : UIButton {
+class CheckBox : AppButton {
     
     let checkedImage = UIImage(named: "checkbox-checked-register")
     let uncheckedImage = UIImage(named: "checkbox-unchecked-register")
@@ -31,6 +31,8 @@ class CheckBox : UIButton {
     }
     
     override func awakeFromNib() {
+        super.awakeFromNib()
+        
         self.addTarget(self, action: #selector(CheckBox.buttonClicked(_:)), forControlEvents: UIControlEvents.TouchUpInside)
         self.isChecked = false
     }

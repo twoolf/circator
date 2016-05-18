@@ -109,6 +109,8 @@ class MainSettingsViewController: BaseViewController, UICollectionViewDataSource
             cell.hasAccessoryView = false
         }
         
+        cell.titleLbl.textColor = ScreenManager.sharedInstance.appUnBrightTextColor()
+        
         return cell
     }
 
@@ -129,7 +131,7 @@ class MainSettingsViewController: BaseViewController, UICollectionViewDataSource
     
     func collectionView(collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAtIndexPath indexPath: NSIndexPath) -> CGSize {
         
-        return  defaultCellSize()
+        return defaultCellSize()
     }
     
     private let cellHeight: CGFloat = 65
