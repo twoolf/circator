@@ -153,6 +153,7 @@
 		F43A7C681BBE508D00B6FA56 /* IntroCompareDataTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = F43A7C671BBE508D00B6FA56 /* IntroCompareDataTableViewCell.swift */; };
 		F49B2B711C7A83BD005F2BFB /* EventPickerManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = F49B2B701C7A83BD005F2BFB /* EventPickerManager.swift */; };
 		F4F4DA5A1C025BE30073E9EE /* PreviewManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = F4F4DA591C025BE30073E9EE /* PreviewManager.swift */; };
+		F515CFC81CEC95EA00318CB6 /* UIFont+Common.swift in Sources */ = {isa = PBXBuildFile; fileRef = F515CFC71CEC95EA00318CB6 /* UIFont+Common.swift */; };
 		F55702FE1CEC90AD00EB2CEB /* ScreenManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = F55702FD1CEC90AD00EB2CEB /* ScreenManager.swift */; };
 /* End PBXBuildFile section */
 
@@ -409,6 +410,7 @@
 		F4F4DA571C0257130073E9EE /* SettingsViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SettingsViewController.swift; sourceTree = "<group>"; };
 		F4F4DA591C025BE30073E9EE /* PreviewManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PreviewManager.swift; sourceTree = "<group>"; };
 		F4F4DA5B1C0271660073E9EE /* RowSettingsViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RowSettingsViewController.swift; sourceTree = "<group>"; };
+		F515CFC71CEC95EA00318CB6 /* UIFont+Common.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "UIFont+Common.swift"; sourceTree = "<group>"; };
 		F55702FD1CEC90AD00EB2CEB /* ScreenManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ScreenManager.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -497,6 +499,7 @@
 		7881A3DF1BAF3B3E00ECB3C6 /* MetabolicCompass */ = {
 			isa = PBXGroup;
 			children = (
+				7881A3E01BAF3B3E00ECB3C6 /* AppDelegate.swift */,
 				F55702FC1CEC90AD00EB2CEB /* CommonUI */,
 				E7E48DE31CE4A0F100DB020F /* MetabolicCharts */,
 				E74A897A1CE338BA0056A2D2 /* ContentManager */,
@@ -505,7 +508,6 @@
 				9585680A1CD0EDAC00EDD385 /* Utils */,
 				958568061CD0D39000EDD385 /* DataSources */,
 				958568071CD0D39000EDD385 /* Extensions */,
-				7881A3E01BAF3B3E00ECB3C6 /* AppDelegate.swift */,
 				F43A7C591BBDF3D800B6FA56 /* Model */,
 				F43A7C5A1BBDF3FD00B6FA56 /* View */,
 				F43A7C5F1BBDF43C00B6FA56 /* View Controller */,
@@ -607,6 +609,7 @@
 				958568081CD0D3A000EDD385 /* String+Extended.swift */,
 				E74A89751CE308800056A2D2 /* UIColor+Extended.swift */,
 				84A16A5F1CE3630400D61935 /* UIImage+Extended.swift */,
+				F515CFC71CEC95EA00318CB6 /* UIFont+Common.swift */,
 			);
 			path = Extensions;
 			sourceTree = "<group>";
@@ -1379,6 +1382,7 @@
 				78B734251C90B85E00693229 /* QueryWriterViewController.swift in Sources */,
 				95F400A31CE385D50060F28C /* ProfileModel.swift in Sources */,
 				95635AA01CD3782200BCC467 /* AdditionalInfoModel.swift in Sources */,
+				F515CFC81CEC95EA00318CB6 /* UIFont+Common.swift in Sources */,
 				95635AA61CD3C11600BCC467 /* ForgotPasswordViewController.swift in Sources */,
 				95F400A41CE385D50060F28C /* UserInfoModel.swift in Sources */,
 				F43A7C681BBE508D00B6FA56 /* IntroCompareDataTableViewCell.swift in Sources */,

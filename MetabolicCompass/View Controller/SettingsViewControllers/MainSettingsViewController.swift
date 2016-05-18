@@ -39,7 +39,7 @@ class MainSettingsViewController: BaseViewController, UICollectionViewDataSource
         
         let titleCellNib = UINib(nibName: "TitleCollectionViewCell", bundle: nil)
         collectionView?.registerNib(titleCellNib, forCellWithReuseIdentifier: titleCellIdentifier)
-        navigationController!.navigationBar.titleTextAttributes = [NSForegroundColorAttributeName: ScreenManager.appTitleTextColor(), NSFontAttributeName: ScreenManager.appTitleFont()]
+        navigationController!.navigationBar.titleTextAttributes = [NSForegroundColorAttributeName: ScreenManager.appTitleTextColor(), NSFontAttributeName: ScreenManager.appNavBarFont()]
         self.navigationController?.navigationBar.tintColor = ScreenManager.appNavigationBackColor()
         
     }

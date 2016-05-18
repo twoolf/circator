@@ -201,14 +201,9 @@ public class ScreenManager {
     }
 
 // MARK: - fonts
+
     
-    public class func gothamBookFontWithSize(size:CGFloat) -> UIFont {
-        return UIFont(name: "Gotham-Book", size: size)!
-    }
-    
-    public class func appTitleFont() -> UIFont {
-        return gothamBookFontWithSize(16.0)
-    }
+
     public func appBrightTextColor() -> UIColor {
         return UIColor.whiteColor()
     }
@@ -225,13 +220,13 @@ public class ScreenManager {
         return UIColor.whiteColor().colorWithAlphaComponent(0.6)
     }
     
-    private let defaulytFontName = "GothamBook"
+    static private let defaulytFontName = "GothamBook"
     
-    public func appFontOfSize(size: CGFloat) -> UIFont {
+    public class func appFontOfSize(size: CGFloat) -> UIFont {
         return UIFont(name: defaulytFontName, size: size)!
     }
     
-    public func appNavBarFont() -> UIFont {
+    public class func appNavBarFont() -> UIFont {
         return UIFont(name: defaulytFontName, size: 16.0)!
     }
     

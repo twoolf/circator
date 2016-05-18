@@ -65,7 +65,7 @@ class BaseViewController: UIViewController, UIGestureRecognizerDelegate {
         let navBarTextColor = ScreenManager.sharedInstance.appNavBarTextColor()
         
         self.navigationController?.navigationBar.tintColor = navBarTextColor
-        self.navigationController?.navigationBar.titleTextAttributes = [ NSForegroundColorAttributeName : navBarTextColor, NSFontAttributeName : ScreenManager.sharedInstance.appNavBarFont() ]
+        self.navigationController?.navigationBar.titleTextAttributes = [ NSForegroundColorAttributeName : navBarTextColor, NSFontAttributeName : ScreenManager.appNavBarFont() ]
     }
     
     override func didReceiveMemoryWarning() {

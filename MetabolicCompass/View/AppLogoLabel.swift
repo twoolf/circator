@@ -12,7 +12,7 @@ import MetabolicCompassKit
 
 class AppLogoLabel: UIView {
     
-    var logoFont = ScreenManager.sharedInstance.appFontOfSize(16.0) {
+    var logoFont = ScreenManager.appFontOfSize(16.0) {
         didSet {
             label.font = logoFont
         }
