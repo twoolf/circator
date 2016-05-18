@@ -962,7 +962,8 @@ class IntroViewController: UIViewController,
     }
 
     func showSettings(sender: UIButton) {
-        let settingsViewController = SettingsViewController()
+        //let settingsViewController = SettingsViewController()
+        let settingsViewController = EventManagerViewController()
         navigationController?.pushViewController(settingsViewController, animated: true)
     }
 

@@ -639,67 +639,6 @@ class RepeatedEventsListViewController: UIViewController {
             }
         }
         
-        /*
-        override func tableView(tableView: UITableView, didEndDisplayingCell cell: UITableViewCell, forRowAtIndexPath indexPath: NSIndexPath) {
-            
-            if indexPath.row % 3 != 0 && indexPath.row != 73 && cell.contentView.subviews.count > 0  && (cell.contentView.subviews.first as! EventItemView).event!.duration > 1800 {
-
-                
-                //if tableView.subviews.count > 3 {
-                //    tableView.subviews[3].removeFromSuperview()
-                //}
-                
-
-                
-                let view : EventItemView = cell.contentView.subviews.first as! EventItemView
-                view.translatesAutoresizingMaskIntoConstraints = false
-                self.view.addSubview(view)
-                
-                let data : Event = view.event!
-                
-                let cellHeight = Double(cell.contentView.bounds.height)
-                let seperatorLinePaddingHeight = Double(Int((data.duration)/3600.0)) * 2 - 1.5
-                let seperatorLinePaddingOffset = Double(Int((data.timeOfDayOffset)/3600.0)) * 2 - 1.5
-                
-                let height : CGFloat = CGFloat((data.duration/1800.0) * cellHeight + seperatorLinePaddingHeight)
-                let offset : CGFloat = CGFloat((data.timeOfDayOffset/1800.0) * cellHeight + seperatorLinePaddingOffset)
-                
-                let viewConstraints : [NSLayoutConstraint] = [
-                    view.leftAnchor.constraintEqualToAnchor(self.view.leftAnchor, constant: 15 + 90),
-                    view.widthAnchor.constraintEqualToAnchor(self.view.widthAnchor, constant: -135),
-                    //view.rightAnchor.constraintEqualToAnchor(self.view.rightAnchor, constant: -30),
-                    view.topAnchor.constraintEqualToAnchor(self.view.topAnchor, constant: offset + 7.5),
-                    view.bottomAnchor.constraintEqualToAnchor(view.topAnchor, constant: height),
-                    
-                ]
-                
-                self.view.addConstraints(viewConstraints)
-                
-                // TODO: Deprecate old event view that is loaded for cell and make it view in self.view
-                // CLEAN UP BUNCH OF CODE USING CONVENTION BELOW FOR MUCH EASIER SOLUTION
-                let eventDetailClick : EventItemView = EventItemView(Event: data)
-                eventDetailClick.translatesAutoresizingMaskIntoConstraints = false
-                //print("\(eventDetailClick)")
-                eventDetailClick.addTarget(self, action: "eventDetailDoubleTap:", forControlEvents: .TouchDownRepeat)
-                
-                view.addSubview(eventDetailClick)
-                
-                let eventDetailClickConstraints : [NSLayoutConstraint] = [
-                    eventDetailClick.leftAnchor.constraintEqualToAnchor(view.leftAnchor),
-                    eventDetailClick.rightAnchor.constraintEqualToAnchor(view.rightAnchor),
-                    eventDetailClick.topAnchor.constraintEqualToAnchor(view.topAnchor),
-                    eventDetailClick.bottomAnchor.constraintEqualToAnchor(view.bottomAnchor)
-                ]
-                
-                view.addConstraints(eventDetailClickConstraints)
-                
-                //print(cell.contentView.subviews.count)
-                //tableView.addSubview(cell.contentView)
-            }
-            
-        }
-        */
-        
         override func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell {
             var cell : UITableViewCell
             //TODO: implement these subclasses, currently being unused
