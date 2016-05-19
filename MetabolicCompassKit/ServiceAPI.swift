@@ -26,7 +26,7 @@ public  let resetPassURL = asDevService ? resetPassDevURL : resetPassProdURL
 
 /**
  This class sets up the needed API for all of the reads/writes to our cloud data store.  This is needed to support our ability to add new aggregate information into the data store and to update the display on our participants screens as new information is deposited into the store.
- 
+
  - note: uses Alamofire/JSON
  - remark: authentication using OAuthToken
  */
@@ -34,7 +34,7 @@ enum MCRouter : URLRequestConvertible {
     static let baseURLString = asDevService ? devServiceURL : prodServiceURL
     static var OAuthToken: String?
     static var tokenExpireTime: NSTimeInterval = 0
-    
+
     static func updateAuthToken (token: String?) {
         OAuthToken = token
         tokenExpireTime = token != nil ? NSDate().timeIntervalSince1970 + 3600: 0
@@ -43,7 +43,6 @@ enum MCRouter : URLRequestConvertible {
     // Data API
     case UploadHKMeasures([String: AnyObject])
     case AggMeasures([String: AnyObject])
-    case MealMeasures([String: AnyObject])
 
     // Timestamps API
     case UploadHKTSAcquired([String: AnyObject])
@@ -64,9 +63,6 @@ enum MCRouter : URLRequestConvertible {
             return .POST
 
         case .AggMeasures:
-            return .POST
-
-        case .MealMeasures:
             return .GET
 
         case .UploadHKTSAcquired:
@@ -98,10 +94,7 @@ enum MCRouter : URLRequestConvertible {
             return "/measures"
 
         case .AggMeasures:
-            return "/measures/aggregates"
-
-        case .MealMeasures:
-            return "/measures/meals"
+            return "/measures/mc/avg"
 
         case .UploadHKTSAcquired:
             return "/timestamps/acquired"
@@ -137,10 +130,7 @@ enum MCRouter : URLRequestConvertible {
             return Alamofire.ParameterEncoding.JSON.encode(mutableURLRequest, parameters: parameters).0
 
         case .AggMeasures(let parameters):
-            return Alamofire.ParameterEncoding.JSON.encode(mutableURLRequest, parameters: parameters).0
-
-        case .MealMeasures(let parameters):
-            return Alamofire.ParameterEncoding.JSON.encode(mutableURLRequest, parameters: parameters).0
+            return Alamofire.ParameterEncoding.URL.encode(mutableURLRequest, parameters: parameters).0
 
         case .UploadHKTSAcquired(let parameters):
             return Alamofire.ParameterEncoding.JSON.encode(mutableURLRequest, parameters: parameters).0
@@ -189,16 +179,14 @@ extension Alamofire.Request {
     public func logResponseString(tag: String, completion: (NSURLRequest?, NSHTTPURLResponse?, Alamofire.Result<String>) -> Void)
         -> Self
     {
-        
-        
         return self.responseString() { req, resp, result in
-            
+
             log.debug("\(tag): " + (result.isSuccess ? "SUCCESS" : "FAILED"))
             log.debug("\n***Req:\(req)")
             if let data = req?.HTTPBody{
                 log.debug("\n***Request body:\( String(data:data, encoding:NSUTF8StringEncoding))")
             }
-            
+
             log.debug("\n***result:\(result)")
             completion(req, resp, result)
         }

@@ -14,7 +14,7 @@ private let PMBalanceSampleTypesKey = DefaultsKey<[NSData]?>("balanceSampleTypes
 public  let PMDidUpdateBalanceSampleTypesNotification = "PMDidUpdateBalanceSampleTypesNotification"
 /**
 Controls the HealthKit metrics that will be displayed on picker wheels, tableviews, and radar charts
- 
+
  - Parameters:
  - previewChoices:        array of seven sub-arrays for metrics that can be displayed
  - rowIcons:              images for each of the metrics
@@ -33,26 +33,29 @@ public class PreviewManager: NSObject {
     public static let previewSampleTimes = [
         NSDate()
     ]
-    
+
     public static let supportedTypes = [
+        HKObjectType.categoryTypeForIdentifier(HKCategoryTypeIdentifierSleepAnalysis)!,
+        HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierActiveEnergyBurned)!,
         HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierBodyMass)!,
         HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierBodyMassIndex)!,
-        HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierHeartRate)!,
-        HKObjectType.categoryTypeForIdentifier(HKCategoryTypeIdentifierSleepAnalysis)!,
-        HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierDietaryProtein)!,
-        HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierDietarySugar)!,
-        HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierDietaryFatPolyunsaturated)!,
-        HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierDietaryWater)!,
         HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierDietaryCaffeine)!,
         HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierDietaryCholesterol)!,
-        HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierDietaryFatTotal)!,
         HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierDietaryCarbohydrates)!,
-        HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierDietaryFatSaturated)!,
-        HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierDietaryFatMonounsaturated)!,
         HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierDietaryEnergyConsumed)!,
+        HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierDietaryFatMonounsaturated)!,
+        HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierDietaryFatPolyunsaturated)!,
+        HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierDietaryFatSaturated)!,
+        HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierDietaryFatTotal)!,
+        HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierDietaryProtein)!,
+        HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierDietarySodium)!,
+        HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierDietarySugar)!,
+        HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierDietaryWater)!,
+        HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierHeartRate)!,
         HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierStepCount)!,
-        ]
-    
+        HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierUVExposure)!
+    ]
+
     public static let previewChoices: [[HKSampleType]] = [
         [
             HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierBodyMass)!,
@@ -128,16 +131,16 @@ public class PreviewManager: NSObject {
             return defaultTypes
         }
     }
-    
+
     public static func updatePreviewSampleTypes (types: [HKSampleType]) {
-    
+
         let rawTypes = types.map { (sampleType) -> NSData in
             return NSKeyedArchiver.archivedDataWithRootObject(sampleType)
         }
-        
+
         Defaults[PMSampleTypesKey] = rawTypes
     }
-    
+
     /// note archiver for retaining memory of picked metrics
     public static var balanceSampleTypes: [HKSampleType] {
         if let rawTypes = Defaults[PMBalanceSampleTypesKey] {
@@ -150,17 +153,17 @@ public class PreviewManager: NSObject {
             return defaultTypes
         }
     }
-    
+
     public static func updateBalanceSampleTypes (types: [HKSampleType]) {
-        
+
         let rawTypes = types.map { (sampleType) -> NSData in
             return NSKeyedArchiver.archivedDataWithRootObject(sampleType)
         }
-        
+
         Defaults[PMBalanceSampleTypesKey] = rawTypes
         NSNotificationCenter.defaultCenter().postNotificationName(PMDidUpdateBalanceSampleTypesNotification, object: nil)
     }
-    
+
     /// associates icon with sample type
     public static func iconForSampleType(sampleType: HKSampleType) -> UIImage {
         return rowIcons[sampleType] ?? UIImage()

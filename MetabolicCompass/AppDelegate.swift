@@ -33,11 +33,11 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 //        let themeColor = UIColor(red: 0.01, green: 0.41, blue: 0.22, alpha: 1.0)
 //
 
-        
+
         window = UIWindow(frame: UIScreen.mainScreen().bounds)
         window?.backgroundColor = UIColor.whiteColor()
 //        window?.tintColor = UIColor.whiteColor()
-        
+
         // Override point for customization after application launch.
         // Sets background to a blank/empty image
         UINavigationBar.appearance().setBackgroundImage(UIImage(), forBarMetrics: .Default)
@@ -47,23 +47,23 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         UINavigationBar.appearance().backgroundColor = UIColor(red: 0.0, green: 0.0, blue: 0.0, alpha: 0.0)
         // Set translucent. (Default value is already true, so this can be removed if desired.)
         UINavigationBar.appearance().translucent = true
-        
+
         //set custom back button image
         let backBtnImg = UIImage(named: "back-button")
-        
+
         UINavigationBar.appearance().backIndicatorImage = backBtnImg
         UINavigationBar.appearance().backIndicatorTransitionMaskImage = backBtnImg
-        
-        
+
+
         let tabBarStoryboard = UIStoryboard(name: "TabScreens", bundle: nil)
         let tabBarScreen = tabBarStoryboard.instantiateViewControllerWithIdentifier("TabBarController")
         mainViewController = tabBarScreen
-        
-        
+
+
 //        mainViewController = IntroViewController(nibName: nil, bundle: nil)
         let navController  = UINavigationController(rootViewController: mainViewController)
         AccountManager.shared.rootViewController = navController
-        
+
         window?.rootViewController = navController
         window?.makeKeyAndVisible()
 
@@ -82,8 +82,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         } else if viewController is QueryViewController {
             return .Portrait
         } else if viewController is QueryBuilderViewController {
-            return .Portrait
-        } else if viewController is QueryWriterViewController {
             return .Portrait
         } else if viewController is UINavigationController {
             return checkOrientation((viewController as? UINavigationController)!.visibleViewController)

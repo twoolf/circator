@@ -8,9 +8,6 @@
 
 import SwiftyUserDefaults
 
-public typealias Predicate = (Aggregate, String, Comparator, String)
-public typealias Queries = [(String, Query)]
-
 public enum Comparator : Int {
     case LT
     case LTE
@@ -26,34 +23,30 @@ public enum Aggregate : Int {
     case AggMax
 }
 
+public typealias Predicate = (Aggregate, String, String?, String?)
+
 public enum Query {
     case ConjunctiveQuery([Predicate])
-    case UserDefinedQuery(String)
 }
+
+public typealias Queries = [(String, Query)]
 
 private let QMQueriesKey  = DefaultsKey<[AnyObject]?>("QMQueriesKey")
 private let QMSelectedKey = DefaultsKey<Int>("QMSelectedKey")
 
 // TODO: Male/Female, age ranges (as profile queries).
 private let defaultQueries : Queries = [
-        ("Weight <50",     Query.ConjunctiveQuery([Predicate(Aggregate.AggAvg, "body_weight", Comparator.LT, "50")])),
-
-        ("Weight 50-100",  Query.ConjunctiveQuery([Predicate(Aggregate.AggAvg, "body_weight", Comparator.GTE, "50"),
-                                                   Predicate(Aggregate.AggAvg, "body_weight", Comparator.LT, "100")])),
-
-        ("Weight 100-150", Query.ConjunctiveQuery([Predicate(Aggregate.AggAvg, "body_weight", Comparator.GTE, "100"),
-                                                   Predicate(Aggregate.AggAvg, "body_weight", Comparator.LT, "150")])),
-
-        ("Weight 150-200", Query.ConjunctiveQuery([Predicate(Aggregate.AggAvg, "body_weight", Comparator.GTE, "150"),
-                                                   Predicate(Aggregate.AggAvg, "body_weight", Comparator.LT, "200")])),
-
-        ("Weight >200",    Query.ConjunctiveQuery([Predicate(Aggregate.AggAvg, "body_weight", Comparator.GTE, "200")]))
+        ("Weight <50",     Query.ConjunctiveQuery([Predicate(AggAvg, "body_weight", nil, "50")])),
+        ("Weight 50-100",  Query.ConjunctiveQuery([Predicate(AggAvg, "body_weight", "50", "100")])),
+        ("Weight 100-150", Query.ConjunctiveQuery([Predicate(AggAvg, "body_weight", "100", "150")])),
+        ("Weight 150-200", Query.ConjunctiveQuery([Predicate(AggAvg, "body_weight", "150", "200")])),
+        ("Weight >200",    Query.ConjunctiveQuery([Predicate(AggAvg, "body_weight", "200", nil)]))
     ]
 
 /**
  This class manages queries to enable more meaningful comparisons against population data.  For example, to limit the population column on the first page or the densities shown on the radar plot to individuals within a particular weight range or to a particular gender, this query filter would be used.
- 
- - note: works with PopulationHealthManager, QueryBuilderViewController, QueryViewController, QueryWriterViewController
+
+ - note: works with PopulationHealthManager, QueryBuilderViewController, QueryViewController
  */
 public class QueryManager {
     public static let sharedManager = QueryManager()
@@ -123,88 +116,46 @@ public class QueryManager {
 
 private let GKey = "aggr"
 private let AKey = "attr"
-private let CKey = "comp"
-private let VKey = "pval"
+private let LKey = "min"
+private let UKey = "max"
 
 private let NKey = "qname"
-private let UKey = "qudef"
 private let QKey = "query"
 
 func serializePredicate(p: Predicate) -> [String: AnyObject] {
-    return [
-        GKey : p.0.rawValue,
-        AKey : p.1,
-        CKey : p.2.rawValue,
-        VKey : p.3
-    ]
+    var result = [GKey: p.0.rawValue, AKey: p.1]
+    if let lb = p.2 { result[LKey] = p.2 }
+    if let ub = p.3 { result[UKey] = p.3 }
+    return result
 }
 
 func serializeQueries(qs: Queries) -> [[String: AnyObject]] {
     return qs.map { (n,q) in
         switch q {
         case .ConjunctiveQuery(let ps):
-            return [NKey: n,
-                    UKey: false,
-                    QKey: ps.map(serializePredicate)]
-
-        case .UserDefinedQuery(let s):
-            return [NKey: n,
-                    UKey: true,
-                    QKey: s]
+            return [NKey: n, QKey: ps.map(serializePredicate)]
         }
     }
 }
 
 func deserializePredicate(p: [String: AnyObject]) -> Predicate {
-    return Predicate(
-        Aggregate(rawValue: p[GKey] as! Int)!,
-        p[AKey] as! String,
-        Comparator(rawValue: p[CKey] as! Int)!,
-        p[VKey] as! String)
+    return Predicate(Aggregate(rawValue: p[GKey] as! Int)!,
+                     p[AKey] as! String,
+                     p[LKey] as! String,
+                     p[UKey] as! String)
 }
 
 func deserializeQueries(qs: [[String: AnyObject]]) -> Queries {
     return qs.map { dict in
         let name = dict[NKey] as! String
-        let udef = dict[UKey] as! Bool
-        if udef {
-            let query = dict[QKey] as! String
-            return (name, .UserDefinedQuery(query))
-        } else {
-            let preds = (dict[QKey] as! [[String: AnyObject]]).map(deserializePredicate)
-            return (name, .ConjunctiveQuery(preds))
-        }
+        let preds = (dict[QKey] as! [[String: AnyObject]]).map(deserializePredicate)
+        return (name, .ConjunctiveQuery(preds))
     }
 }
 
-// Conversions for REST API.
-func serializeREST(p: Predicate) -> [String: AnyObject] {
-    let aggregateOperators = ["avg", "min", "max"]
-    let comparisonOperators = ["<", "<=", "==", "!=", "=>", ">"]
-    return [
-        GKey : aggregateOperators[p.0.rawValue],
-        AKey : p.1,
-        CKey : comparisonOperators[p.2.rawValue],
-        VKey : p.3
-    ]
-}
-
-// Conversions for SQL.
-func sqlizePredicate(p: Predicate) -> String {
-    let aggregateOperators = ["avg", "min", "max"]
-    let comparisonOperators = ["<", "<=", "==", "!=", "=>", ">"]
-    return "\(aggregateOperators[p.0.rawValue])(\(p.1)) \(comparisonOperators[p.2.rawValue]) \(p.3)"
-}
-
-func sqlizeQuery(q: Query) -> String {
-    switch q {
-    case .ConjunctiveQuery(let p):
-        return p.map(sqlizePredicate).joinWithSeparator(" and ")
-    case .UserDefinedQuery(let s):
-        return s
-    }
-}
-
-func sqlize(q: (String, Query)) -> String {
-    return sqlizeQuery(q.1)
+func serializePredicateREST(p: Predicate) -> [String: AnyObject] {
+    var spec : [String:AnyObject] = ["agg": p.0.rawValue]
+    if let lb = p.2 { spec["min"] = lb }
+    if let ub = p.3 { spec["max"] = ub }
+    return [p.1: spec]
 }
