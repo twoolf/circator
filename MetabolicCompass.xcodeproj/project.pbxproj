@@ -157,6 +157,7 @@
 		F49B2B711C7A83BD005F2BFB /* EventPickerManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = F49B2B701C7A83BD005F2BFB /* EventPickerManager.swift */; };
 		F4F4DA5A1C025BE30073E9EE /* PreviewManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = F4F4DA591C025BE30073E9EE /* PreviewManager.swift */; };
 		F515CFCB1CECC88000318CB6 /* ScreenManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = F515CFCA1CECC88000318CB6 /* ScreenManager.swift */; };
+		F515CFCD1CEDE8EF00318CB6 /* NSDate+Common.swift in Sources */ = {isa = PBXBuildFile; fileRef = F515CFCC1CEDE8EF00318CB6 /* NSDate+Common.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -416,6 +417,7 @@
 		F4F4DA591C025BE30073E9EE /* PreviewManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PreviewManager.swift; sourceTree = "<group>"; };
 		F4F4DA5B1C0271660073E9EE /* RowSettingsViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RowSettingsViewController.swift; sourceTree = "<group>"; };
 		F515CFCA1CECC88000318CB6 /* ScreenManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ScreenManager.swift; sourceTree = "<group>"; };
+		F515CFCC1CEDE8EF00318CB6 /* NSDate+Common.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "NSDate+Common.swift"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -623,6 +625,7 @@
 				958568081CD0D3A000EDD385 /* String+Extended.swift */,
 				E74A89751CE308800056A2D2 /* UIColor+Extended.swift */,
 				84A16A5F1CE3630400D61935 /* UIImage+Extended.swift */,
+				F515CFCC1CEDE8EF00318CB6 /* NSDate+Common.swift */,
 			);
 			path = Extensions;
 			sourceTree = "<group>";
@@ -1345,6 +1348,7 @@
 				78B7342A1C90B87300693229 /* UINotifications.swift in Sources */,
 				78B734241C90B85B00693229 /* QueryBuilderViewController.swift in Sources */,
 				95769B841CE4869C00F26668 /* TitleCollectionViewCell.swift in Sources */,
+				F515CFCD1CEDE8EF00318CB6 /* NSDate+Common.swift in Sources */,
 				F43A7C5E1BBDF43600B6FA56 /* PlotButton.swift in Sources */,
 				E7E48DEF1CE6028600DB020F /* DashboardManageBalanceController.swift in Sources */,
 				E7592DB81CDB490600E313BB /* MainTabController.swift in Sources */,

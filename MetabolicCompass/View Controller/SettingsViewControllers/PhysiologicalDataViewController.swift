@@ -42,6 +42,13 @@ class PhysiologicalDataViewController: BaseViewController {
         self.setupNavBar()
     }
     
+    override func viewWillAppear(animated: Bool) {
+        super.viewWillAppear(animated)
+        dataSource.model.loadValues{ _ in
+            self.collectionView.reloadData()
+        }
+    }
+    
     private func createBarButtonItem(title: String?, action: Selector) -> UIBarButtonItem{
         let bbItem = UIBarButtonItem(title: title, style: UIBarButtonItemStyle.Plain, target: self, action: action)
         bbItem.setTitleTextAttributes([NSForegroundColorAttributeName: ScreenManager.appTitleTextColor()], forState: UIControlState.Normal)
@@ -78,7 +85,7 @@ class PhysiologicalDataViewController: BaseViewController {
         
         confirmAlert.addAction(UIAlertAction(title: "Yes".localized, style: .Default, handler: { (action: UIAlertAction!) in
             //reset data & change mode
-            //self.dataSource.reset()
+            self.dataSource.reset()
             self.editMode = false
         }))
         

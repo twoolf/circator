@@ -48,6 +48,35 @@ class AdditionalInfoModel: NSObject {
         sections.append(optionalSection)
         
     }
+    
+    func setupValues() {
+        self.setupSections()
+    }
+    
+    func loadValues(completion:() -> ()){
+        print("*** go pullProfile")
+        UserManager.sharedManager.pullProfileIfNeed { error, _ in
+            print("*** pullProfile finished")
+            self.updateValues()
+            print("*** values updated")
+            completion()
+        }
+        
+    }
+    
+    func updateValues() {
+        //print("profileCache:\(UserManager.sharedManager.profileCache)")
+        let profileCache = UserManager.sharedManager.profileCache
+        for section in sections {
+            for item in section.items {
+//                print("item key:\(item.key) name:\(item.name), title:\(item.title), value:\(item.value)")
+                if let key = item.key{
+                    print("item profile value:\(UserManager.sharedManager.profileCache[key])")
+                    item.value = profileCache[key]
+                }
+            }
+        }
+    }
 
     private func section(withTitle title: String, inRange range: Range<Int>) -> AdditionalSectionInfo {
         
@@ -60,6 +89,7 @@ class AdditionalInfoModel: NSObject {
             item.dataType = fieldItem.type
             
             section.addItem(item)
+            //print("\(i) item name:\(item.name), title:\(item.title), value:\(item.value)")
         }
         
         return section
@@ -70,7 +100,9 @@ class AdditionalInfoModel: NSObject {
     }
     
     func itemAtIndexPath(indexPath: NSIndexPath) -> ModelItem {
-        return sections[indexPath.section].items[indexPath.row]
+        let item = sections[indexPath.section].items[indexPath.row]
+        print("item name:\(item.name), title:\(item.title), value:\(item.value)")
+        return item
     }
     
     func sectionTitleAtIndexPath(indexPath: NSIndexPath) -> String {
@@ -103,4 +135,7 @@ class AdditionalInfoModel: NSObject {
     
         return infoDict
     }
+    
+
+
 }

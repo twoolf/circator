@@ -189,8 +189,17 @@ extension Alamofire.Request {
     public func logResponseString(tag: String, completion: (NSURLRequest?, NSHTTPURLResponse?, Alamofire.Result<String>) -> Void)
         -> Self
     {
+        
+        
         return self.responseString() { req, resp, result in
+            
             log.debug("\(tag): " + (result.isSuccess ? "SUCCESS" : "FAILED"))
+            log.debug("\n***Req:\(req)")
+            if let data = req?.HTTPBody{
+                log.debug("\n***Request body:\( String(data:data, encoding:NSUTF8StringEncoding))")
+            }
+            
+            log.debug("\n***result:\(result)")
             completion(req, resp, result)
         }
     }

@@ -109,7 +109,7 @@ public class AdditionalInfoDataSource: BaseDataSource {
         cell.titleLbl.textColor = selectedTextColor
         cell.inputTxtField.textColor = selectedTextColor
         
-        cell.smallDescriptionLbl.textColor = selectedTextColor
+        //cell.smallDescriptionLbl.textColor = selectedTextColor
         
         cell.changesHandler = { (cell: UICollectionViewCell, newValue: AnyObject?) -> () in
             
@@ -155,6 +155,10 @@ public class AdditionalInfoDataSource: BaseDataSource {
     func collectionView(collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAtIndexPath indexPath: NSIndexPath) -> CGSize {
         
         return isSleepCellAtIndexPath(indexPath) ? intPickerCellSize() : defaultCellSize()
+    }
+    
+    func reset() {
+        self.model.updateValues()
     }
     
 }

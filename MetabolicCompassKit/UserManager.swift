@@ -46,7 +46,9 @@ public class UserManager {
     public static let maxTokenRetries  = 2
     public static let defaultRefreshFrequency = 30
     public static let defaultHotwords = "food log"
-
+    
+    var lastProfileLoadDate : NSDate?
+    
     // Primary user
     public var userId: String? {
         get {
@@ -80,7 +82,7 @@ public class UserManager {
     }
 
     var tokenExpiry : NSTimeInterval = NSDate().timeIntervalSince1970   // Expiry in time interval since 1970.
-    var profileCache : [String: AnyObject] = [:]                        // Stormpath account dictionary cache.
+    private(set) public var profileCache : [String: AnyObject] = [:]                        // Stormpath account dictionary cache.
 
     // Batched profile synchronization.
     var profileAsync : Async?
@@ -460,6 +462,25 @@ public class UserManager {
         refreshProfileCache(metadata)
         syncProfile(completion)
     }
+    
+    public func isProfileOutdated() -> Bool{
+        if lastProfileLoadDate != nil{
+            return lastProfileLoadDate!.timeIntervalSinceNow < -300.0 // sec
+        }
+        else{
+            return true
+        }
+    }
+    
+
+    public func pullProfileIfNeed(completion: SvcObjectCompletion){
+        if isProfileOutdated() {
+            pullProfile(completion)
+        }
+        else{
+            completion(false, nil)
+        }
+    }
 
     public func pullProfile(completion: SvcObjectCompletion) {
         Service.json(MCRouter.GetUserAccountData, statusCode: 200..<300, tag: "ACCDATA") {
@@ -470,7 +491,11 @@ public class UserManager {
                     var profile = dict["profile"] as? [String: AnyObject]
                 {
                     profile[UMUserHashKey] = id
+                    for (k, v) in profile {
+                        print("key:\(k), val:\(v)")
+                    }
                     self.refreshProfileCache(profile)
+                    self.lastProfileLoadDate = NSDate()
                 }
             }
 
