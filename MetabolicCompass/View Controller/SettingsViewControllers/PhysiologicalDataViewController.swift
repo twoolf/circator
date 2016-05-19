@@ -64,9 +64,7 @@ class PhysiologicalDataViewController: BaseViewController {
     func rightAction(sender: UIBarButtonItem) {
         if dataSource.editMode {
             let additionalInfo = dataSource.model.additionalInfoDict()
-            
-            print("add info: \(additionalInfo)")
-            
+                        
             UserManager.sharedManager.pushProfile(additionalInfo, completion: { _ in
                 self.editMode = false
             })

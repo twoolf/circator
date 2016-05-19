@@ -54,11 +54,8 @@ class AdditionalInfoModel: NSObject {
     }
     
     func loadValues(completion:() -> ()){
-        print("*** go pullProfile")
         UserManager.sharedManager.pullProfileIfNeed { error, _ in
-            print("*** pullProfile finished")
             self.updateValues()
-            print("*** values updated")
             completion()
         }
         
@@ -71,7 +68,7 @@ class AdditionalInfoModel: NSObject {
             for item in section.items {
 //                print("item key:\(item.key) name:\(item.name), title:\(item.title), value:\(item.value)")
                 if let key = item.key{
-                    print("item profile value:\(UserManager.sharedManager.profileCache[key])")
+//                    print("item profile value:\(UserManager.sharedManager.profileCache[key])")
                     item.value = profileCache[key]
                 }
             }
@@ -101,7 +98,6 @@ class AdditionalInfoModel: NSObject {
     
     func itemAtIndexPath(indexPath: NSIndexPath) -> ModelItem {
         let item = sections[indexPath.section].items[indexPath.row]
-        print("item name:\(item.name), title:\(item.title), value:\(item.value)")
         return item
     }
     

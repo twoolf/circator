@@ -471,18 +471,19 @@ public class UserManager {
             return true
         }
     }
-    
 
     public func pullProfileIfNeed(completion: SvcObjectCompletion){
         if isProfileOutdated() {
             pullProfile(completion)
         }
         else{
+            print("pull skipped")
             completion(false, nil)
         }
     }
 
     public func pullProfile(completion: SvcObjectCompletion) {
+        print("!!! pullProfile")
         Service.json(MCRouter.GetUserAccountData, statusCode: 200..<300, tag: "ACCDATA") {
             _, _, result in
             if result.isSuccess {
@@ -491,9 +492,6 @@ public class UserManager {
                     var profile = dict["profile"] as? [String: AnyObject]
                 {
                     profile[UMUserHashKey] = id
-                    for (k, v) in profile {
-                        print("key:\(k), val:\(v)")
-                    }
                     self.refreshProfileCache(profile)
                     self.lastProfileLoadDate = NSDate()
                 }
