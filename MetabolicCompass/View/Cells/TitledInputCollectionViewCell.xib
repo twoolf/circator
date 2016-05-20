@@ -3,6 +3,13 @@
     <dependencies>
         <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="10085"/>
     </dependencies>
+    <customFonts key="customFonts">
+        <mutableArray key="gotham-book.ttf">
+            <string>GothamBook</string>
+            <string>GothamBook</string>
+            <string>GothamBook</string>
+        </mutableArray>
+    </customFonts>
     <objects>
         <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner"/>
         <placeholder placeholderIdentifier="IBFirstResponder" id="-2" customClass="UIResponder"/>
@@ -12,7 +19,7 @@
             <view key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center">
                 <rect key="frame" x="0.0" y="0.0" width="319" height="50"/>
                 <subviews>
-                    <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="Y7Q-Pu-EbM">
+                    <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="Y7Q-Pu-EbM" customClass="AppButton" customModule="MetabolicCompass" customModuleProvider="target">
                         <rect key="frame" x="10" y="13" width="24" height="24"/>
                         <constraints>
                             <constraint firstAttribute="width" constant="24" id="oH0-9Q-v4c"/>
@@ -22,27 +29,27 @@
                             <color key="titleColor" red="0.97790304309999998" green="1" blue="0.96725687689999995" alpha="1" colorSpace="calibratedRGB"/>
                         </state>
                     </button>
-                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" misplaced="YES" text="title" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="li8-sT-6Pn">
-                        <rect key="frame" x="41" y="17" width="25" height="17"/>
-                        <fontDescription key="fontDescription" type="system" pointSize="13"/>
+                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" misplaced="YES" text="title" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="li8-sT-6Pn" customClass="AppLabel" customModule="MetabolicCompass" customModuleProvider="target">
+                        <rect key="frame" x="42" y="19" width="29" height="14"/>
+                        <fontDescription key="fontDescription" name="GothamBook" family="Gotham Book" pointSize="15"/>
                         <color key="textColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                         <nil key="highlightedColor"/>
                     </label>
-                    <textField opaque="NO" clipsSubviews="YES" contentMode="scaleToFill" misplaced="YES" contentHorizontalAlignment="left" contentVerticalAlignment="center" textAlignment="right" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="SJy-ZB-Y0F">
-                        <rect key="frame" x="69" y="17" width="173" height="17"/>
+                    <textField opaque="NO" clipsSubviews="YES" contentMode="scaleToFill" misplaced="YES" contentHorizontalAlignment="left" contentVerticalAlignment="center" textAlignment="right" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="SJy-ZB-Y0F" customClass="AppTextField" customModule="MetabolicCompass" customModuleProvider="target">
+                        <rect key="frame" x="73" y="19" width="190" height="14"/>
                         <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
                         <color key="textColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
-                        <fontDescription key="fontDescription" type="system" pointSize="13"/>
+                        <fontDescription key="fontDescription" name="GothamBook" family="Gotham Book" pointSize="15"/>
                         <textInputTraits key="textInputTraits"/>
                     </textField>
-                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" misplaced="YES" text="йцйцйцй" textAlignment="right" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="I4a-Iw-AWD">
-                        <rect key="frame" x="244" y="16" width="59" height="17"/>
-                        <fontDescription key="fontDescription" type="system" pointSize="12"/>
-                        <color key="textColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="units" textAlignment="right" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="I4a-Iw-AWD" customClass="AppLabel" customModule="MetabolicCompass" customModuleProvider="target">
+                        <rect key="frame" x="267" y="18" width="36" height="14"/>
+                        <fontDescription key="fontDescription" name="GothamBook" family="Gotham Book" pointSize="15"/>
+                        <color key="textColor" white="1" alpha="0.40363703547297297" colorSpace="calibratedWhite"/>
                         <nil key="highlightedColor"/>
                     </label>
-                    <view contentMode="scaleToFill" misplaced="YES" translatesAutoresizingMaskIntoConstraints="NO" id="KkB-Nm-KGR">
-                        <rect key="frame" x="41" y="49" width="262" height="1"/>
+                    <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="KkB-Nm-KGR">
+                        <rect key="frame" x="42" y="48" width="277" height="2"/>
                         <color key="backgroundColor" red="0.039215686270000001" green="0.1137254902" blue="0.26274509800000001" alpha="1" colorSpace="calibratedRGB"/>
                         <constraints>
                             <constraint firstAttribute="height" constant="2" id="4Au-qf-ES9"/>
@@ -53,13 +60,13 @@
             </view>
             <color key="backgroundColor" red="0.047058823529411764" green="0.14117647058823529" blue="0.31764705882352939" alpha="1" colorSpace="calibratedRGB"/>
             <constraints>
-                <constraint firstItem="SJy-ZB-Y0F" firstAttribute="leading" secondItem="li8-sT-6Pn" secondAttribute="trailing" constant="2" id="6az-zd-9gU"/>
+                <constraint firstItem="SJy-ZB-Y0F" firstAttribute="leading" secondItem="li8-sT-6Pn" secondAttribute="trailing" constant="4" id="6az-zd-9gU"/>
                 <constraint firstAttribute="trailing" secondItem="I4a-Iw-AWD" secondAttribute="trailing" constant="16" id="8yI-4c-4Cn"/>
                 <constraint firstItem="I4a-Iw-AWD" firstAttribute="centerY" secondItem="Y7Q-Pu-EbM" secondAttribute="centerY" id="L5C-9u-pXO"/>
                 <constraint firstItem="li8-sT-6Pn" firstAttribute="leading" secondItem="Y7Q-Pu-EbM" secondAttribute="trailing" constant="8" id="TCo-UF-hCX"/>
                 <constraint firstItem="Y7Q-Pu-EbM" firstAttribute="leading" secondItem="gTV-IL-0wX" secondAttribute="leading" constant="10" id="bqp-9l-XKz"/>
                 <constraint firstAttribute="trailing" secondItem="KkB-Nm-KGR" secondAttribute="trailing" id="jiO-3e-VHf"/>
-                <constraint firstItem="I4a-Iw-AWD" firstAttribute="leading" secondItem="SJy-ZB-Y0F" secondAttribute="trailing" constant="2" id="k0N-g9-bK7"/>
+                <constraint firstItem="I4a-Iw-AWD" firstAttribute="leading" secondItem="SJy-ZB-Y0F" secondAttribute="trailing" constant="4" id="k0N-g9-bK7"/>
                 <constraint firstItem="Y7Q-Pu-EbM" firstAttribute="centerY" secondItem="gTV-IL-0wX" secondAttribute="centerY" id="o3s-gr-CbB"/>
                 <constraint firstItem="SJy-ZB-Y0F" firstAttribute="centerY" secondItem="Y7Q-Pu-EbM" secondAttribute="centerY" id="pZq-XU-iC8"/>
                 <constraint firstItem="KkB-Nm-KGR" firstAttribute="leading" secondItem="li8-sT-6Pn" secondAttribute="leading" id="uf5-1I-oiA"/>
@@ -72,7 +79,7 @@
                 <outlet property="smallDescriptionLbl" destination="I4a-Iw-AWD" id="Edv-pd-vUp"/>
                 <outlet property="titleLbl" destination="li8-sT-6Pn" id="rtD-sH-lDF"/>
             </connections>
-            <point key="canvasLocation" x="486.5" y="397"/>
+            <point key="canvasLocation" x="316.5" y="98"/>
         </collectionViewCell>
     </objects>
     <resources>

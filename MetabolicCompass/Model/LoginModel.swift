@@ -30,6 +30,8 @@ class LoginModel : NSObject, UITableViewDataSource, UITextFieldDelegate {
         let cell = tableView.dequeueReusableCellWithIdentifier(String(InputTableCellWithImage), forIndexPath: indexPath) as! InputTableCellWithImage
         cell.cellInput.delegate = self
         cell.cellInput.tag = indexPath.row
+        cell.cellInput.textColor = ScreenManager.sharedInstance.appBrightTextColor()
+        
         if indexPath.row == 1 {
             cell.cellImage.image = UIImage(named: "icon-password")
             cell.cellInput.attributedPlaceholder = NSAttributedString(string: "Password", attributes: [NSForegroundColorAttributeName : ScreenManager.sharedInstance.appUnBrightTextColor()])
@@ -48,23 +50,6 @@ class LoginModel : NSObject, UITableViewDataSource, UITextFieldDelegate {
     func textFieldShouldReturn(textField: UITextField) -> Bool {
         textField.resignFirstResponder()
         return true
-    }
-    
-    func keyboardWillShow(notification:NSNotification){
-        
-        var userInfo = notification.userInfo!
-        var keyboardFrame:CGRect = (userInfo[UIKeyboardFrameBeginUserInfoKey] as! NSValue).CGRectValue()
-        keyboardFrame = self.controllerView!.convertRect(keyboardFrame, fromView: nil)
-        
-        var contentInset:UIEdgeInsets = self.loginTable!.contentInset
-        contentInset.bottom = keyboardFrame.size.height
-        self.loginTable!.contentInset = contentInset
-    }
-    
-    func keyboardWillHide(notification:NSNotification) {
-        
-        let contentInset:UIEdgeInsets = UIEdgeInsetsZero
-        self.loginTable!.contentInset = contentInset
     }
     
     

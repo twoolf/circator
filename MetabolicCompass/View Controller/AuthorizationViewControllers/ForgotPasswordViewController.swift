@@ -22,7 +22,9 @@ class ForgotPasswordViewController: BaseViewController, UITextFieldDelegate {
         emailTxtField.delegate = self
         
         emailTxtField.attributedPlaceholder = NSAttributedString(string: "E-mail".localized,
-                                                                      attributes: [NSForegroundColorAttributeName : ScreenManager.sharedInstance.appUnBrightTextColor()])
+                                                                      attributes: [NSForegroundColorAttributeName : unselectedTextColor])
+        
+        emailTxtField.textColor = selectedTextColor
     }
 
     override func didReceiveMemoryWarning() {
@@ -37,6 +39,8 @@ class ForgotPasswordViewController: BaseViewController, UITextFieldDelegate {
     private let resetPasswordSuccessMessage = "Reset Password request was done succesfully. Please, check your email to reset password.".localized
     
     @IBAction func resetAction(sender: UIButton) {
+        
+        startAction()
         
         self.alertControllerOkButtonHandler = nil
         

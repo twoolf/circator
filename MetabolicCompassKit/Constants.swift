@@ -156,6 +156,10 @@ public struct UserProfile {
         return Dictionary(pairs: profileFields[4..<29].map { k in return (k, profileMapping[k]!) })
     }
     
+    public static func keyForItemName(itemName: String) -> String?{
+        return sharedInstance.profileMapping[itemName]
+    }
+    
 
     public var fields: [ProfileFieldData] = {
         var fields = [ProfileFieldData]()

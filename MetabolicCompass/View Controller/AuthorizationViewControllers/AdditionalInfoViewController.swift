@@ -38,11 +38,12 @@ class AdditionalInfoViewController: BaseViewController {
     }
  
     func nextAction(sender: UIBarButtonItem) {
-        print("Next !")
+        
+        startAction()
         
         let additionalInfo = dataSource.model.additionalInfoDict()
         
-        print("add info: \(additionalInfo)")
+        //print("add info: \(additionalInfo)")
         
         UserManager.sharedManager.pushProfile(additionalInfo, completion: { _ in
             

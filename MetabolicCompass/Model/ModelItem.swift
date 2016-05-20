@@ -50,10 +50,16 @@ class ModelItem: NSObject {
     private(set) var type: UserInfoFiledType
     private(set) var iconImageName: String?
     
-    private(set) var value: AnyObject?
+    var value: AnyObject?
     private(set) var unitsTitle: String?
     
     var dataType: FieldDataType = .String
+    
+    var key: String?{
+        get {
+            return UserProfile.keyForItemName(name)
+        }
+    }
     
     init(name itemName: String, title itemTitle: String, type itemType: UserInfoFiledType, iconImageName itemIconImageName: String?, value itemValue: AnyObject?, unitsTitle itemUnitsTitle: String? = nil) {
         

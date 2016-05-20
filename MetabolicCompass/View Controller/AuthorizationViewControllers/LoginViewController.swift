@@ -19,6 +19,8 @@ import Dodo
 - note: for both signup and login; uses Stormpath for authentication
  */
 class LoginViewController: BaseViewController {
+    
+    @IBOutlet weak var containerScrollView: UIScrollView!
 
     private var userCell: FormTextFieldCell?
     private var passCell: FormTextFieldCell?
@@ -46,12 +48,11 @@ class LoginViewController: BaseViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        NSNotificationCenter.defaultCenter().addObserver(loginModel, selector: Selector("keyboardWillShow:"), name:UIKeyboardWillShowNotification, object: nil)
-        NSNotificationCenter.defaultCenter().addObserver(loginModel, selector: Selector("keyboardWillHide:"), name:UIKeyboardWillHideNotification, object: nil)
-        
         loginModel.loginTable = loginTable
         loginModel.controllerView = self.view
         loginTable.dataSource = loginModel
+        
+        self.setupScroolViewForKeyboardsActions(containerScrollView)
     }
     
     
@@ -87,6 +88,9 @@ class LoginViewController: BaseViewController {
     // MARK: - Actions
     
     @IBAction func loginAction() {
+        
+        startAction()
+        
         let loginCredentials = loginModel.getCredentials()
         
         UserManager.sharedManager.ensureUserPass(loginCredentials.email, pass: loginCredentials.password) { error in

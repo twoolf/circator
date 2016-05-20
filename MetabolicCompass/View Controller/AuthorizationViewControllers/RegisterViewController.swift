@@ -62,6 +62,8 @@ private let inputFontSize = ScreenManager.sharedInstance.profileInputFontSize()
     }
     
     @IBAction func registerAction(sender: UIButton) {
+        
+        startAction()
     
         guard let consentPath = ConsentManager.sharedManager.getConsentFilePath() else {
             UINotifications.noConsent(self.navigationController!, pop: true, asNav: true)

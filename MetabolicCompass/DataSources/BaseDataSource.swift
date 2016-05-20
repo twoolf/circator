@@ -9,7 +9,7 @@
 import UIKit
 import MetabolicCompassKit
 
-class BaseDataSource: NSObject, UICollectionViewDataSource, UICollectionViewDelegateFlowLayout {
+public class BaseDataSource: NSObject, UICollectionViewDataSource, UICollectionViewDelegateFlowLayout {
 
     weak var viewController: UIViewController?
     
@@ -33,11 +33,11 @@ class BaseDataSource: NSObject, UICollectionViewDataSource, UICollectionViewDele
     // MARK: - UICollectionView DataSource & Delegate
     
     
-    func collectionView(collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
+    public func collectionView(collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
         return 0
     }
     
-    func collectionView(collectionView: UICollectionView, cellForItemAtIndexPath indexPath: NSIndexPath) -> UICollectionViewCell {
+    public func collectionView(collectionView: UICollectionView, cellForItemAtIndexPath indexPath: NSIndexPath) -> UICollectionViewCell {
         
         return UICollectionViewCell()
     }

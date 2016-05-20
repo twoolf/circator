@@ -29,5 +29,11 @@ class DoubleCheckListTitledCollectionViewCell: DoubleCheckListCollectionViewCell
     func setTitle(title: String?) {
         titleLbl.text = title
     }
+    
+    override func colorsChanged() {
+        super.colorsChanged()
+        
+        self.titleLbl.textColor = unselectedTextColor
+    }
 
 }

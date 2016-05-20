@@ -2,7 +2,13 @@
 <document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="10116" systemVersion="15E65" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" initialViewController="Qy7-Sp-vSZ">
     <dependencies>
         <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="10085"/>
+        <capability name="Constraints to layout margins" minToolsVersion="6.0"/>
     </dependencies>
+    <customFonts key="customFonts">
+        <mutableArray key="Gotham Book.otf">
+            <string>Gotham-Book</string>
+        </mutableArray>
+    </customFonts>
     <scenes>
         <!--Settings-->
         <scene sceneID="tw4-jp-zk0">
@@ -146,19 +152,75 @@
             </objects>
             <point key="canvasLocation" x="2827" y="-417"/>
         </scene>
-        <!--Physiological Data View Controller-->
+        <!--PHYSIOLOGICAL DATA-->
         <scene sceneID="AtO-kT-G7t">
             <objects>
-                <viewController id="JBd-Oq-cRO" customClass="PhysiologicalDataViewController" customModule="MetabolicCompass" customModuleProvider="target" sceneMemberID="viewController">
+                <viewController title="PHYSIOLOGICAL DATA" id="JBd-Oq-cRO" customClass="PhysiologicalDataViewController" customModule="MetabolicCompass" customModuleProvider="target" sceneMemberID="viewController">
                     <layoutGuides>
                         <viewControllerLayoutGuide type="top" id="5RB-a8-bcg"/>
                         <viewControllerLayoutGuide type="bottom" id="DgP-Gx-bwR"/>
                     </layoutGuides>
                     <view key="view" contentMode="scaleToFill" id="MWk-Xx-8p5">
-                        <rect key="frame" x="0.0" y="0.0" width="600" height="600"/>
+                        <rect key="frame" x="0.0" y="0.0" width="375" height="657"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
-                        <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                        <subviews>
+                            <collectionView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" dataMode="prototypes" translatesAutoresizingMaskIntoConstraints="NO" id="fKR-ep-vg3">
+                                <rect key="frame" x="0.0" y="64" width="375" height="544"/>
+                                <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
+                                <collectionViewFlowLayout key="collectionViewLayout" minimumLineSpacing="10" minimumInteritemSpacing="10" id="waL-MW-sOc">
+                                    <size key="itemSize" width="50" height="50"/>
+                                    <size key="headerReferenceSize" width="50" height="50"/>
+                                    <size key="footerReferenceSize" width="0.0" height="0.0"/>
+                                    <inset key="sectionInset" minX="0.0" minY="0.0" maxX="0.0" maxY="0.0"/>
+                                </collectionViewFlowLayout>
+                                <cells>
+                                    <collectionViewCell opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" id="aWG-4K-PLf">
+                                        <rect key="frame" x="0.0" y="114" width="50" height="50"/>
+                                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                        <view key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center">
+                                            <rect key="frame" x="0.0" y="0.0" width="50" height="50"/>
+                                            <autoresizingMask key="autoresizingMask"/>
+                                            <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
+                                        </view>
+                                    </collectionViewCell>
+                                </cells>
+                                <collectionReusableView key="sectionHeaderView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" reuseIdentifier="headerView" id="eCf-yX-ag8" customClass="HeaderView" customModule="MetabolicCompass" customModuleProvider="target">
+                                    <rect key="frame" x="0.0" y="64" width="375" height="50"/>
+                                    <autoresizingMask key="autoresizingMask"/>
+                                    <subviews>
+                                        <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" misplaced="YES" text="Label" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="Zr7-bW-S88">
+                                            <rect key="frame" x="24" y="17" width="552" height="17"/>
+                                            <fontDescription key="fontDescription" name="Gotham-Book" family="Gotham" pointSize="15"/>
+                                            <color key="textColor" red="0.20000000000000001" green="0.54117647058823526" blue="1" alpha="1" colorSpace="calibratedRGB"/>
+                                            <nil key="highlightedColor"/>
+                                        </label>
+                                    </subviews>
+                                    <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
+                                    <constraints>
+                                        <constraint firstAttribute="trailingMargin" secondItem="Zr7-bW-S88" secondAttribute="trailing" constant="16" id="F7b-b9-CRq"/>
+                                        <constraint firstItem="Zr7-bW-S88" firstAttribute="leading" secondItem="eCf-yX-ag8" secondAttribute="leadingMargin" constant="16" id="as6-uf-rY8"/>
+                                        <constraint firstItem="Zr7-bW-S88" firstAttribute="centerY" secondItem="eCf-yX-ag8" secondAttribute="centerY" id="e20-VZ-yq0"/>
+                                    </constraints>
+                                    <connections>
+                                        <outlet property="titleLbl" destination="Zr7-bW-S88" id="G7g-b3-Grc"/>
+                                    </connections>
+                                </collectionReusableView>
+                            </collectionView>
+                        </subviews>
+                        <color key="backgroundColor" red="0.094117647058823528" green="0.17647058823529413" blue="0.40784313725490196" alpha="1" colorSpace="calibratedRGB"/>
+                        <constraints>
+                            <constraint firstAttribute="trailing" secondItem="fKR-ep-vg3" secondAttribute="trailing" id="1w0-xY-ozH"/>
+                            <constraint firstItem="DgP-Gx-bwR" firstAttribute="top" secondItem="fKR-ep-vg3" secondAttribute="bottom" id="YWI-Ms-3yS"/>
+                            <constraint firstItem="fKR-ep-vg3" firstAttribute="top" secondItem="5RB-a8-bcg" secondAttribute="bottom" id="aV2-ht-FKD"/>
+                            <constraint firstItem="fKR-ep-vg3" firstAttribute="leading" secondItem="MWk-Xx-8p5" secondAttribute="leading" id="mow-wO-VZY"/>
+                        </constraints>
                     </view>
+                    <navigationItem key="navigationItem" title="PHYSIOLOGICAL DATA" id="zGs-li-VsU"/>
+                    <freeformSimulatedSizeMetrics key="simulatedDestinationMetrics"/>
+                    <size key="freeformSize" width="375" height="657"/>
+                    <connections>
+                        <outlet property="collectionView" destination="fKR-ep-vg3" id="qrY-CE-T8d"/>
+                    </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="GrY-Zu-saj" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>

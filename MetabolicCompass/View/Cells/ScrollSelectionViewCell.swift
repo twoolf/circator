@@ -16,11 +16,23 @@ class ScrollSelectionViewCell: BaseCollectionViewCell, AKPickerViewDataSource, A
     @IBOutlet weak var valueLbl: UITextField!
     @IBOutlet weak var smallDescriptionLbl: UILabel!
     @IBOutlet weak var scrollContainerView: UIView!
+    @IBOutlet weak var scrollContainerHeight: NSLayoutConstraint!
     
     private var pickerView: AKPickerView?
     
     var minValue: Int = 1
     var maxValue: Int = 10
+    
+    private var _pickerShown : Bool = true
+    var pickerShown : Bool {
+        set {
+            _pickerShown = newValue;
+            scrollContainerView?.hidden = !_pickerShown
+            scrollContainerHeight.constant = _pickerShown ? 50.0 : 0.0
+        }
+        get { return _pickerShown }
+    }
+    
     
     override func awakeFromNib() {
         super.awakeFromNib()
@@ -39,6 +51,7 @@ class ScrollSelectionViewCell: BaseCollectionViewCell, AKPickerViewDataSource, A
         
         pickerView!.highlightedTextColor = UIColor.whiteColor()
         pickerView!.textColor = UIColor.whiteColor().colorWithAlphaComponent(0.7)
+        scrollContainerView?.hidden = !_pickerShown
     }
     
     

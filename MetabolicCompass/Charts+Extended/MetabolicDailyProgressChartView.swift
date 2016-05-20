@@ -8,7 +8,6 @@
 
 import Foundation
 import Charts
-import MetabolicCompassKit
 
 class MetabolicDailyPorgressChartView : HorizontalBarChartView, DailyChartModelProtocol {
     
@@ -36,7 +35,7 @@ class MetabolicDailyPorgressChartView : HorizontalBarChartView, DailyChartModelP
         let xAxis = self.xAxis;
         xAxis.labelPosition = .Bottom;
         xAxis.labelTextColor = UIColor.colorWithHexString("#ffffff", alpha: 0.3)!
-        xAxis.labelFont = ScreenManager.sharedInstance.appFontOfSize(12.0)
+        xAxis.labelFont = ScreenManager.appFontOfSize(12.0)
         xAxis.drawAxisLineEnabled = true
         xAxis.drawGridLinesEnabled = true
         xAxis.gridLineWidth = 0;
@@ -52,7 +51,7 @@ class MetabolicDailyPorgressChartView : HorizontalBarChartView, DailyChartModelP
         
         let rightAxis = self.rightAxis
         rightAxis.labelTextColor = UIColor.colorWithHexString("#ffffff", alpha: 0.3)!
-        rightAxis.labelFont = ScreenManager.sharedInstance.appFontOfSize(12.0)
+        rightAxis.labelFont = ScreenManager.appFontOfSize(12.0)
         rightAxis.drawAxisLineEnabled = true
         rightAxis.drawGridLinesEnabled = true
         rightAxis.valueFormatter = formatter
