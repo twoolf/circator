@@ -25,6 +25,7 @@ class SleepInterfaceController: WKInterfaceController {
             tempItems.append(item)
         }
         sleepPicker.setItems(tempItems)
+       
 
         //group.setBackgroundImageNamed("meal")
         //group.startAnimatingWithImagesInRange(NSMakeRange(0, 181), duration: duration, repeatCount: 1)
