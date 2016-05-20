@@ -67,6 +67,8 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         window?.rootViewController = navController
         window?.makeKeyAndVisible()
 
+        //AppLogViewController.addAppLogRecognizers()
+
         return true
     }
 

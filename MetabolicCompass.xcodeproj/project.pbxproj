@@ -159,18 +159,6 @@
 		F5057FE91CEE1BC200F66EB0 /* UITextField+Common.swift in Sources */ = {isa = PBXBuildFile; fileRef = F5057FE81CEE1BC200F66EB0 /* UITextField+Common.swift */; };
 		F5057FEB1CEF058900F66EB0 /* TextInputFilter.swift in Sources */ = {isa = PBXBuildFile; fileRef = F5057FEA1CEF058900F66EB0 /* TextInputFilter.swift */; };
 		F515CFCB1CECC88000318CB6 /* ScreenManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = F515CFCA1CECC88000318CB6 /* ScreenManager.swift */; };
-		F515CFE61CEE17D800318CB6 /* AppLog.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = F515CFCF1CEE17D800318CB6 /* AppLog.storyboard */; };
-		F515CFE71CEE17D800318CB6 /* AppLogDetailViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = F515CFD11CEE17D800318CB6 /* AppLogDetailViewController.m */; };
-		F515CFE81CEE17D800318CB6 /* AppLogFieldView.m in Sources */ = {isa = PBXBuildFile; fileRef = F515CFD31CEE17D800318CB6 /* AppLogFieldView.m */; };
-		F515CFE91CEE17D800318CB6 /* AppLogItem+Appearance.m in Sources */ = {isa = PBXBuildFile; fileRef = F515CFD51CEE17D800318CB6 /* AppLogItem+Appearance.m */; };
-		F515CFEA1CEE17D800318CB6 /* AppLogItem.m in Sources */ = {isa = PBXBuildFile; fileRef = F515CFD71CEE17D800318CB6 /* AppLogItem.m */; };
-		F515CFEB1CEE17D800318CB6 /* AppLogManager.m in Sources */ = {isa = PBXBuildFile; fileRef = F515CFD91CEE17D800318CB6 /* AppLogManager.m */; };
-		F515CFEC1CEE17D800318CB6 /* AppLogNetworkRequestItem.m in Sources */ = {isa = PBXBuildFile; fileRef = F515CFDB1CEE17D800318CB6 /* AppLogNetworkRequestItem.m */; };
-		F515CFED1CEE17D800318CB6 /* AppLogShakeView.m in Sources */ = {isa = PBXBuildFile; fileRef = F515CFDD1CEE17D800318CB6 /* AppLogShakeView.m */; };
-		F515CFEE1CEE17D800318CB6 /* AppLogTableViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = F515CFDF1CEE17D800318CB6 /* AppLogTableViewCell.m */; };
-		F515CFEF1CEE17D800318CB6 /* AppLogUrlProtocol.m in Sources */ = {isa = PBXBuildFile; fileRef = F515CFE11CEE17D800318CB6 /* AppLogUrlProtocol.m */; };
-		F515CFF01CEE17D800318CB6 /* AppLogViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = F515CFE31CEE17D800318CB6 /* AppLogViewController.m */; };
-		F515CFF11CEE17D800318CB6 /* UIView+LayerProperties.m in Sources */ = {isa = PBXBuildFile; fileRef = F515CFE51CEE17D800318CB6 /* UIView+LayerProperties.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -432,29 +420,7 @@
 		F5057FE81CEE1BC200F66EB0 /* UITextField+Common.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "UITextField+Common.swift"; sourceTree = "<group>"; };
 		F5057FEA1CEF058900F66EB0 /* TextInputFilter.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TextInputFilter.swift; sourceTree = "<group>"; };
 		F515CFCA1CECC88000318CB6 /* ScreenManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ScreenManager.swift; sourceTree = "<group>"; };
-		F515CFCF1CEE17D800318CB6 /* AppLog.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; path = AppLog.storyboard; sourceTree = "<group>"; };
-		F515CFD01CEE17D800318CB6 /* AppLogDetailViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AppLogDetailViewController.h; sourceTree = "<group>"; };
-		F515CFD11CEE17D800318CB6 /* AppLogDetailViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AppLogDetailViewController.m; sourceTree = "<group>"; };
-		F515CFD21CEE17D800318CB6 /* AppLogFieldView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AppLogFieldView.h; sourceTree = "<group>"; };
-		F515CFD31CEE17D800318CB6 /* AppLogFieldView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AppLogFieldView.m; sourceTree = "<group>"; };
-		F515CFD41CEE17D800318CB6 /* AppLogItem+Appearance.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "AppLogItem+Appearance.h"; sourceTree = "<group>"; };
-		F515CFD51CEE17D800318CB6 /* AppLogItem+Appearance.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "AppLogItem+Appearance.m"; sourceTree = "<group>"; };
-		F515CFD61CEE17D800318CB6 /* AppLogItem.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AppLogItem.h; sourceTree = "<group>"; };
-		F515CFD71CEE17D800318CB6 /* AppLogItem.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AppLogItem.m; sourceTree = "<group>"; };
-		F515CFD81CEE17D800318CB6 /* AppLogManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AppLogManager.h; sourceTree = "<group>"; };
-		F515CFD91CEE17D800318CB6 /* AppLogManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AppLogManager.m; sourceTree = "<group>"; };
-		F515CFDA1CEE17D800318CB6 /* AppLogNetworkRequestItem.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AppLogNetworkRequestItem.h; sourceTree = "<group>"; };
-		F515CFDB1CEE17D800318CB6 /* AppLogNetworkRequestItem.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AppLogNetworkRequestItem.m; sourceTree = "<group>"; };
-		F515CFDC1CEE17D800318CB6 /* AppLogShakeView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AppLogShakeView.h; sourceTree = "<group>"; };
-		F515CFDD1CEE17D800318CB6 /* AppLogShakeView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AppLogShakeView.m; sourceTree = "<group>"; };
-		F515CFDE1CEE17D800318CB6 /* AppLogTableViewCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AppLogTableViewCell.h; sourceTree = "<group>"; };
-		F515CFDF1CEE17D800318CB6 /* AppLogTableViewCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AppLogTableViewCell.m; sourceTree = "<group>"; };
-		F515CFE01CEE17D800318CB6 /* AppLogUrlProtocol.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AppLogUrlProtocol.h; sourceTree = "<group>"; };
-		F515CFE11CEE17D800318CB6 /* AppLogUrlProtocol.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AppLogUrlProtocol.m; sourceTree = "<group>"; };
-		F515CFE21CEE17D800318CB6 /* AppLogViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AppLogViewController.h; sourceTree = "<group>"; };
-		F515CFE31CEE17D800318CB6 /* AppLogViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AppLogViewController.m; sourceTree = "<group>"; };
-		F515CFE41CEE17D800318CB6 /* UIView+LayerProperties.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "UIView+LayerProperties.h"; sourceTree = "<group>"; };
-		F515CFE51CEE17D800318CB6 /* UIView+LayerProperties.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "UIView+LayerProperties.m"; sourceTree = "<group>"; };
+		F518F9DE1CEF452400E829AE /* MetabolicCompass-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "MetabolicCompass-Bridging-Header.h"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -542,7 +508,7 @@
 		7881A3DF1BAF3B3E00ECB3C6 /* MetabolicCompass */ = {
 			isa = PBXGroup;
 			children = (
-				F515CFCE1CEE17D800318CB6 /* AppLogs */,
+				7881A3E01BAF3B3E00ECB3C6 /* AppDelegate.swift */,
 				F515CFC91CECC88000318CB6 /* CommonUI */,
 				E7E48DE31CE4A0F100DB020F /* MetabolicCharts */,
 				E74A897A1CE338BA0056A2D2 /* ContentManager */,
@@ -551,7 +517,6 @@
 				9585680A1CD0EDAC00EDD385 /* Utils */,
 				958568061CD0D39000EDD385 /* DataSources */,
 				958568071CD0D39000EDD385 /* Extensions */,
-				7881A3E01BAF3B3E00ECB3C6 /* AppDelegate.swift */,
 				F43A7C591BBDF3D800B6FA56 /* Model */,
 				F43A7C5A1BBDF3FD00B6FA56 /* View */,
 				F43A7C5F1BBDF43C00B6FA56 /* View Controller */,
@@ -912,6 +877,7 @@
 				781EE1231BAF3F6B00E6DDA1 /* Podfile */,
 				781EE1241BAF3F6B00E6DDA1 /* README.md */,
 				7881A3EC1BAF3B3E00ECB3C6 /* Info.plist */,
+				F518F9DE1CEF452400E829AE /* MetabolicCompass-Bridging-Header.h */,
 			);
 			name = "Supporting Files";
 			sourceTree = "<group>";
@@ -984,36 +950,6 @@
 				F515CFCA1CECC88000318CB6 /* ScreenManager.swift */,
 			);
 			path = CommonUI;
-			sourceTree = "<group>";
-		};
-		F515CFCE1CEE17D800318CB6 /* AppLogs */ = {
-			isa = PBXGroup;
-			children = (
-				F515CFCF1CEE17D800318CB6 /* AppLog.storyboard */,
-				F515CFD01CEE17D800318CB6 /* AppLogDetailViewController.h */,
-				F515CFD11CEE17D800318CB6 /* AppLogDetailViewController.m */,
-				F515CFD21CEE17D800318CB6 /* AppLogFieldView.h */,
-				F515CFD31CEE17D800318CB6 /* AppLogFieldView.m */,
-				F515CFD41CEE17D800318CB6 /* AppLogItem+Appearance.h */,
-				F515CFD51CEE17D800318CB6 /* AppLogItem+Appearance.m */,
-				F515CFD61CEE17D800318CB6 /* AppLogItem.h */,
-				F515CFD71CEE17D800318CB6 /* AppLogItem.m */,
-				F515CFD81CEE17D800318CB6 /* AppLogManager.h */,
-				F515CFD91CEE17D800318CB6 /* AppLogManager.m */,
-				F515CFDA1CEE17D800318CB6 /* AppLogNetworkRequestItem.h */,
-				F515CFDB1CEE17D800318CB6 /* AppLogNetworkRequestItem.m */,
-				F515CFDC1CEE17D800318CB6 /* AppLogShakeView.h */,
-				F515CFDD1CEE17D800318CB6 /* AppLogShakeView.m */,
-				F515CFDE1CEE17D800318CB6 /* AppLogTableViewCell.h */,
-				F515CFDF1CEE17D800318CB6 /* AppLogTableViewCell.m */,
-				F515CFE01CEE17D800318CB6 /* AppLogUrlProtocol.h */,
-				F515CFE11CEE17D800318CB6 /* AppLogUrlProtocol.m */,
-				F515CFE21CEE17D800318CB6 /* AppLogViewController.h */,
-				F515CFE31CEE17D800318CB6 /* AppLogViewController.m */,
-				F515CFE41CEE17D800318CB6 /* UIView+LayerProperties.h */,
-				F515CFE51CEE17D800318CB6 /* UIView+LayerProperties.m */,
-			);
-			path = AppLogs;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -1229,7 +1165,6 @@
 			buildActionMask = 2147483647;
 			files = (
 				95D142BD1CE60312006A9118 /* DoubleCheckListTitledCollectionViewCell.xib in Resources */,
-				F515CFE61CEE17D800318CB6 /* AppLog.storyboard in Resources */,
 				84AB38D01CEA0EFA00B7DB4E /* DailyProgressDayTableViewCell.xib in Resources */,
 				F43A7C571BBDF29D00B6FA56 /* LaunchScreen.storyboard in Resources */,
 				95748C511CCFC7D90002F6A3 /* DoubleCheckListCollectionViewCell.xib in Resources */,
@@ -1397,11 +1332,8 @@
 				84C9CB471CE9B3A4005ED875 /* DailyProgressViewController.swift in Sources */,
 				E75E95B21CDCD6CB00A18756 /* DashboardMetricsAppearanceProvider.swift in Sources */,
 				95769B871CE49E4000F26668 /* PhysiologicalDataViewController.swift in Sources */,
-				F515CFE71CEE17D800318CB6 /* AppLogDetailViewController.m in Sources */,
-				F515CFE91CEE17D800318CB6 /* AppLogItem+Appearance.m in Sources */,
 				E7E48DF11CE6033100DB020F /* ManageBalanceCell.swift in Sources */,
 				78B734291C90B86D00693229 /* CorrelationViewController.swift in Sources */,
-				F515CFEB1CEE17D800318CB6 /* AppLogManager.m in Sources */,
 				84C9CB491CE9BB76005ED875 /* MetabolicDailyProgressChartView.swift in Sources */,
 				78B7341E1C90B84600693229 /* ProfileSubviewController.swift in Sources */,
 				78B734201C90B84D00693229 /* RepeatedEventsController.swift in Sources */,
@@ -1426,7 +1358,6 @@
 				E7592DB81CDB490600E313BB /* MainTabController.swift in Sources */,
 				95F400AD1CE38F2F0060F28C /* ModelItem.swift in Sources */,
 				E75E95A11CDCA89700A18756 /* DashboardFilterController.swift in Sources */,
-				F515CFEC1CEE17D800318CB6 /* AppLogNetworkRequestItem.m in Sources */,
 				95769B891CE49E5C00F26668 /* NotificationsViewController.swift in Sources */,
 				9580D3A91CEB29DC0074178D /* AppTextField.swift in Sources */,
 				95D142BC1CE60312006A9118 /* DoubleCheckListTitledCollectionViewCell.swift in Sources */,
@@ -1447,17 +1378,13 @@
 				78B734271C90B86700693229 /* EventTimeViewController.swift in Sources */,
 				F42F5ADD1BDC85AF00195490 /* SampleDataAnalyzer.swift in Sources */,
 				958568091CD0D3A000EDD385 /* String+Extended.swift in Sources */,
-				F515CFEA1CEE17D800318CB6 /* AppLogItem.m in Sources */,
 				78B7342C1C90B87A00693229 /* ErrorViewController.swift in Sources */,
-				F515CFF11CEE17D800318CB6 /* UIView+LayerProperties.m in Sources */,
 				95F400A01CE385CC0060F28C /* ProfileDataSource.swift in Sources */,
-				F515CFF01CEE17D800318CB6 /* AppLogViewController.m in Sources */,
 				78B734211C90B85100693229 /* DaySelectionViewController.swift in Sources */,
 				84A16A601CE3630400D61935 /* UIImage+Extended.swift in Sources */,
 				95F400991CE385C60060F28C /* InfoCollectionViewCell.swift in Sources */,
 				95769B8B1CE49E7300F26668 /* HealthAccessViewController.swift in Sources */,
 				84AB38D21CEA0F9900B7DB4E /* DailyProgressDayTableViewCell.swift in Sources */,
-				F515CFE81CEE17D800318CB6 /* AppLogFieldView.m in Sources */,
 				7881A3E11BAF3B3E00ECB3C6 /* AppDelegate.swift in Sources */,
 				9585680F1CD1020600EDD385 /* LoadImageCollectionViewCell.swift in Sources */,
 				E75E95AE1CDCD5A700A18756 /* DashboardMetricsConfigItem.swift in Sources */,
@@ -1470,7 +1397,6 @@
 				E74A89791CE3265C0056A2D2 /* AccountManager.swift in Sources */,
 				E74A897C1CE338D30056A2D2 /* ContentManager.swift in Sources */,
 				E7592DBF1CDC7E2E00E313BB /* DashboardComparisonCell.swift in Sources */,
-				F515CFED1CEE17D800318CB6 /* AppLogShakeView.m in Sources */,
 				E7AB666C1CDCDDBD00967316 /* ManageDashboardCell.swift in Sources */,
 				84207D261CCA6A7E00776848 /* InputTableCellWithImage.swift in Sources */,
 				78B7342E1C90BC6900693229 /* DebugViewController.swift in Sources */,
@@ -1481,7 +1407,6 @@
 				78B734251C90B85E00693229 /* QueryWriterViewController.swift in Sources */,
 				F5057FE91CEE1BC200F66EB0 /* UITextField+Common.swift in Sources */,
 				F515CFCB1CECC88000318CB6 /* ScreenManager.swift in Sources */,
-				F515CFEE1CEE17D800318CB6 /* AppLogTableViewCell.m in Sources */,
 				95F400A31CE385D50060F28C /* ProfileModel.swift in Sources */,
 				95635AA01CD3782200BCC467 /* AdditionalInfoModel.swift in Sources */,
 				95635AA61CD3C11600BCC467 /* ForgotPasswordViewController.swift in Sources */,
@@ -1491,7 +1416,6 @@
 				E7E48DE71CE4BCAB00DB020F /* MetabolicChartDataSet.swift in Sources */,
 				95F400AB1CE385E80060F28C /* ProfileViewController.swift in Sources */,
 				95F400AA1CE385E80060F28C /* MainSettingsViewController.swift in Sources */,
-				F515CFEF1CEE17D800318CB6 /* AppLogUrlProtocol.m in Sources */,
 				95748C461CCFC7AA0002F6A3 /* InputCollectionViewCell.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -1681,6 +1605,11 @@
 				EMBEDDED_CONTENT_CONTAINS_SWIFT = "$(inherited)";
 				FRAMEWORK_SEARCH_PATHS = "$(inherited)";
 				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"$(inherited)",
+					"COCOAPODS=1",
+					"BUILD_FOR_TESTING=1",
+				);
 				GCC_WARN_ABOUT_DEPRECATED_FUNCTIONS = NO;
 				INFOPLIST_FILE = MetabolicCompass/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 9.0;
@@ -1688,6 +1617,7 @@
 				PRODUCT_BUNDLE_IDENTIFIER = edu.jhu.cs.damsl.MetabolicCompass.app;
 				PRODUCT_NAME = MetabolicCompass;
 				PROVISIONING_PROFILE = "$(APP_UUID)";
+				SWIFT_OBJC_BRIDGING_HEADER = "MetabolicCompass/MetabolicCompass-Bridging-Header.h";
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 				TARGETED_DEVICE_FAMILY = 1;
 			};
@@ -1833,6 +1763,7 @@
 				PRODUCT_BUNDLE_IDENTIFIER = edu.jhu.cs.damsl.MetabolicCompass.app;
 				PRODUCT_NAME = MetabolicCompass;
 				PROVISIONING_PROFILE = "$(APP_UUID)";
+				SWIFT_OBJC_BRIDGING_HEADER = "MetabolicCompass/MetabolicCompass-Bridging-Header.h";
 				SWIFT_OPTIMIZATION_LEVEL = "-O";
 				TARGETED_DEVICE_FAMILY = 1;
 			};
