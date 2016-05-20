@@ -8,8 +8,9 @@
 
 import Foundation
 import UIKit
+import MetabolicCompassKit
 
-class DailyProgressViewController : UIViewController {
+class DailyProgressViewController : UIViewController, DailyChartModelProtocol {
     
     var dailyChartModel = DailyChartModel()
     
@@ -19,19 +20,26 @@ class DailyProgressViewController : UIViewController {
     @IBOutlet weak var dailyProgressChartDaysTable: UITableView!
     @IBOutlet weak var mainScrollView: UIScrollView!
     @IBOutlet weak var fastingSquare: UIView!
+    @IBOutlet weak var activityIndicator: UIActivityIndicatorView!
+    
+    @IBOutlet weak var dailyEatingLabel: UILabel!
+    @IBOutlet weak var maxDailyFasting: UILabel!
+    @IBOutlet weak var lastAteLabel: UILabel!
+
+    //MARK: View life circle
     
     override func viewDidLoad() {
         super.viewDidLoad()
         self.fastingSquare.layer.borderColor = UIColor.colorWithHexString("#ffffff", alpha: 0.3)?.CGColor
         self.dailyChartModel.daysTableView = self.daysTableView
+        self.dailyChartModel.delegate = self
         self.dailyChartModel.registerCells()
         self.dailyProgressChartDaysTable.dataSource = self.dailyChartModel
         self.dailyProgressChartView.prepareChart()
-        self.dailyProgressChartView.animate(yAxisDuration: 1.0)
     }
     
-    override func viewWillAppear(animated: Bool) {
-        super.viewWillAppear(animated)
+    override func viewDidAppear(animated: Bool) {
+        super.viewDidAppear(animated)
         let width = self.dailyProgressChartScrollView.contentSize.width
         let height = CGRectGetHeight(self.dailyProgressChartView.frame)
         self.dailyProgressChartScrollView.contentSize = CGSizeMake(width, height)
@@ -39,5 +47,30 @@ class DailyProgressViewController : UIViewController {
         let mainScrollViewContentWidth = CGRectGetWidth(self.mainScrollView.frame)
         let mainScrollViewContentHeight = self.mainScrollView.contentSize.height
         self.mainScrollView.contentSize = CGSizeMake(mainScrollViewContentWidth, mainScrollViewContentHeight)
+        //updating chart data
+        self.activityIndicator.startAnimating()
+        self.dailyChartModel.prepareChartData()
+        self.dailyChartModel.getDailyProgress()
+    }
+    
+    //MARK: DailyChartModelProtocol
+    
+    func dataCollectingFinished() {
+        self.activityIndicator.stopAnimating()
+        self.dailyProgressChartView.updateChartData(self.dailyChartModel.chartDataArray, chartColorsArray: self.dailyChartModel.chartColorsArray)
+    }
+    
+    func dailyProgressStatCollected() {
+        self.dailyEatingLabel.attributedText = self.dailyChartModel.eatingText.formatTextWithRegex("[-+]?(\\d*[.,])?\\d+",
+                                                                                                    format: [NSForegroundColorAttributeName: UIColor.whiteColor()],
+                                                                                                    defaultFormat: [NSForegroundColorAttributeName: UIColor.colorWithHexString("#ffffff", alpha: 0.3)!])
+        
+        self.maxDailyFasting.attributedText = self.dailyChartModel.fastingText.formatTextWithRegex("[-+]?(\\d*[.,])?\\d+",
+                                                                                                  format: [NSForegroundColorAttributeName: UIColor.whiteColor()],
+                                                                                                  defaultFormat: [NSForegroundColorAttributeName: UIColor.colorWithHexString("#ffffff", alpha: 0.3)!])
+        
+        self.lastAteLabel.attributedText = self.dailyChartModel.lastAteText.formatTextWithRegex("[-+]?(\\d*[.,])?\\d+",
+                                                                                                format: [NSForegroundColorAttributeName: UIColor.whiteColor()],
+                                                                                                defaultFormat: [NSForegroundColorAttributeName: UIColor.colorWithHexString("#ffffff", alpha: 0.3)!])
     }
 }
