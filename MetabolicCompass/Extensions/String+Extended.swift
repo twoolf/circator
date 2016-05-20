@@ -60,5 +60,12 @@ extension String {
         
         return attrString
     }
+    
+    func strRange(range: NSRange) -> Range<String.Index> {
+        let startIndex = self.startIndex.advancedBy(range.location)
+        let endIndex = self.startIndex.advancedBy(range.length)
+        return startIndex..<endIndex
+    }
+    
 
 }

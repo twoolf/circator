@@ -127,9 +127,11 @@ class RegisterModelDataSource: BaseDataSource {
         
         if field.type == .Weight {
             cell.nameLbl.text = model.units.weightTitle
+            cell.inputTxtField.keyboardType = UIKeyboardType.NumberPad
         }
         else if field.type == .Height {
             cell.nameLbl.text = model.units.heightTitle
+            cell.inputTxtField.keyboardType = UIKeyboardType.NumberPad
         }
         
         cell.nameLbl.textColor = selectedTextColor

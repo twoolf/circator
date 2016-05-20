@@ -13,6 +13,8 @@ class InputCollectionViewCell: BaseCollectionViewCell {
     @IBOutlet weak var inputTxtField: UITextField!
     @IBOutlet weak var nameLbl: UILabel!
     
+    var inputFilter:TextInputFilter?
+    
     override func awakeFromNib() {
         super.awakeFromNib()
         // Initialization code

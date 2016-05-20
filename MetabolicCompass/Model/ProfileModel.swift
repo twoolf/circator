@@ -51,14 +51,14 @@ class ProfileModel: UserInfoModel {
 
             }
             else {
-                let profileItemInfo = profileInfo[item.name]
-                
-                if item.type == .Gender {
-                    let gender = Gender.valueByTitle(profileItemInfo as! String)
-                    item.setNewValue(gender.rawValue)
-                }
-                else {
-                    item.setNewValue(profileItemInfo)
+                if let profileItemInfo = profileInfo[item.name]{
+                    if item.type == .Gender {
+                        let gender = Gender.valueByTitle(profileItemInfo as! String)
+                        item.setNewValue(gender.rawValue)
+                    }
+                    else {
+                        item.setNewValue(profileItemInfo)
+                    }
                 }
             }
             
