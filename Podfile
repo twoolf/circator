@@ -38,4 +38,4 @@ pod 'SORandom'
 pod 'FileKit', '~> 2.0.0'
 pod 'JWTDecode', '~> 1.0'
 pod "AKPickerView-Swift"
-pod 'AppLogManager', :git => "https://bitbucket.org/rostsrost/applogmanager"
+#pod 'AppLogManager', :git => "https://bitbucket.org/rostsrost/applogmanager"
