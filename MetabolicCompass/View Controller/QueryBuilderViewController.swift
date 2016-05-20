@@ -39,7 +39,6 @@ class QueryBuilderViewController: UIViewController, UITextFieldDelegate {
         }
         // PopulationHealthManager.attributeNamesBySampleType.map { (key, value) in value.1 }
 
-    static let comparisonOperators = ["<", "<=", "==", "!=", "=>", ">"]
     static let aggregateOperators = ["avg", "min", "max"]
 
     var buildMode : BuilderMode! = nil

@@ -24,6 +24,15 @@ private let resetPassDevURL = devServiceURL + "/forgot"
 private let resetPassProdURL = prodServiceURL + "/forgot"
 public  let resetPassURL = asDevService ? resetPassDevURL : resetPassProdURL
 
+enum AccountComponent {
+    case Consent
+    case Photo
+    case Profile
+    case Settings
+    case ArchiveSpan
+    case LastAcquired
+}
+
 /**
  This class sets up the needed API for all of the reads/writes to our cloud data store.  This is needed to support our ability to add new aggregate information into the data store and to update the display on our participants screens as new information is deposited into the store.
 
@@ -44,16 +53,10 @@ enum MCRouter : URLRequestConvertible {
     case UploadHKMeasures([String: AnyObject])
     case AggMeasures([String: AnyObject])
 
-    // Timestamps API
-    case UploadHKTSAcquired([String: AnyObject])
-
     // User and profile management API
-    case GetUserAccountData
-    case SetUserAccountData([String: AnyObject])
+    case GetUserAccountData(AccountComponent)
+    case SetUserAccountData(AccountComponent, [String: AnyObject])
     case DeleteAccount
-
-    case GetConsent
-    case SetConsent([String: AnyObject])
 
     case TokenExpiry([String: AnyObject])
 
@@ -65,9 +68,6 @@ enum MCRouter : URLRequestConvertible {
         case .AggMeasures:
             return .GET
 
-        case .UploadHKTSAcquired:
-            return .POST
-
         case .DeleteAccount:
             return .POST
 
@@ -75,12 +75,6 @@ enum MCRouter : URLRequestConvertible {
             return .GET
 
         case .SetUserAccountData:
-            return .POST
-
-        case GetConsent:
-            return .GET
-
-        case SetConsent:
             return .POST
 
         case .TokenExpiry:
@@ -96,17 +90,29 @@ enum MCRouter : URLRequestConvertible {
         case .AggMeasures:
             return "/measures/mc/avg"
 
-        case .UploadHKTSAcquired:
-            return "/timestamps/acquired"
-
         case .DeleteAccount:
             return "/user/withdraw"
 
-        case .GetUserAccountData, .SetUserAccountData:
-            return "/user/profile"
+        case .GetUserAccountData(let component), .SetUserAccountData(let component, _):
+            switch component {
+            case Consent:
+                return "/user/consent"
 
-        case .GetConsent, .SetConsent:
-            return "/user/consent"
+            case Photo:
+                return "/user/photo"
+
+            case Profile:
+                return "/user/profile/v2"
+
+            case Settings:
+                return "/user/settings"
+
+            case ArchiveSpan:
+                return "/user/archive_span"
+
+            case LastAcquired:
+                return "/user/last_acquired"
+            }
 
         case .TokenExpiry:
             return "/user/expiry"
@@ -132,22 +138,15 @@ enum MCRouter : URLRequestConvertible {
         case .AggMeasures(let parameters):
             return Alamofire.ParameterEncoding.URL.encode(mutableURLRequest, parameters: parameters).0
 
-        case .UploadHKTSAcquired(let parameters):
-            return Alamofire.ParameterEncoding.JSON.encode(mutableURLRequest, parameters: parameters).0
-
         case .DeleteAccount:
             return mutableURLRequest
 
-        case .GetUserAccountData:
+        case .GetUserAccountData(_):
+            // Account components do not use any kind of json or query parameters.
             return mutableURLRequest
 
-        case .SetUserAccountData(let parameters):
-            return Alamofire.ParameterEncoding.JSON.encode(mutableURLRequest, parameters: parameters).0
-
-        case .GetConsent:
-            return mutableURLRequest
-
-        case .SetConsent(let parameters):
+        case .SetUserAccountData(_, let parameters):
+            // All account components use the same json parameter encoding.
             return Alamofire.ParameterEncoding.JSON.encode(mutableURLRequest, parameters: parameters).0
 
         case .TokenExpiry(let parameters):

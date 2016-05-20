@@ -48,7 +48,7 @@ private let dateDesc = NSSortDescriptor(key: HKSampleSortIdentifierStartDate, as
 
 /**
  This is the main manager of information reads/writes from HealthKit.  We use AnchorQueries to support continued updates.  Please see Apple Docs for syntax on reading/writing
- 
+
  */
 public class HealthManager: NSObject, WCSessionDelegate {
 
@@ -723,7 +723,7 @@ public class HealthManager: NSObject, WCSessionDelegate {
                         // We use acquisition times stored in the profile if available rather than the current time,
                         // to grab all data since the last remote upload to the server.
                         if let  lastAcqTS = UserManager.sharedManager.getAcquisitionTimes(),
-                                acqK = UserManager.sharedManager.shortId(type.identifier),
+                                acqK = UserManager.sharedManager.hkToMCDB(type.identifier),
                                 typeTS = lastAcqTS[acqK] as? NSTimeInterval
                         {
                             let importStart = NSDate(timeIntervalSinceReferenceDate: typeTS)
@@ -759,7 +759,7 @@ public class HealthManager: NSObject, WCSessionDelegate {
                         if nts > ts {
                             self.setAnchorTSForType(nts, forType: type)
 
-                            // Push acquisition times into profile, and subsequently Stormpath.
+                            // Push acquisition times to the backend.
                             self.pushAcquisition(type)
                         }
                     }
@@ -830,11 +830,9 @@ public class HealthManager: NSObject, WCSessionDelegate {
     // Pushes the anchor timestamps (i.e., last acquisition times) to the user's profile.
     public func syncAnchorTS(sync: Bool = false) {
         if let ts = Defaults[HMAnchorTSKey] {
-            let mappedTS = Dictionary(pairs: ts.flatMap { (kv) -> (String, AnyObject)? in
-                if let sk = UserManager.sharedManager.shortId(kv.0) { return (sk, kv.1) }
-                return nil
-            })
-            UserManager.sharedManager.setAcquisitionTimes(mappedTS, sync: sync)
+            UserManager.sharedManager.setAcquisitionTimes(ts, sync: sync)
+        } else {
+            log.warning("Skipping acquisition timestamp sync (timestamps not found)")
         }
     }
 

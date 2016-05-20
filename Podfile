@@ -37,4 +37,5 @@ pod 'Crashlytics'
 pod 'SORandom'
 pod 'FileKit', '~> 2.0.0'
 pod 'JWTDecode', '~> 1.0'
-pod "AKPickerView-Swift"
+pod 'AKPickerView-Swift'
+pod 'AsyncKit'
