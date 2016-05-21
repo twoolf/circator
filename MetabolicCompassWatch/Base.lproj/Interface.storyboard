@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<document type="com.apple.InterfaceBuilder.WatchKit.Storyboard" version="3.0" toolsVersion="10117" systemVersion="15C50" targetRuntime="watchKit" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" initialViewController="AgC-eL-Hgc">
+<document type="com.apple.InterfaceBuilder.WatchKit.Storyboard" version="3.0" toolsVersion="10117" systemVersion="15E65" targetRuntime="watchKit" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" initialViewController="AgC-eL-Hgc">
     <dependencies>
         <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="10085"/>
         <plugIn identifier="com.apple.InterfaceBuilder.IBWatchKitPlugin" version="10032"/>
@@ -65,18 +65,20 @@
                                 <button width="1" height="0.29999999999999999" heightAdjustment="2" alignment="left" title="Breakfast" id="hrl-jx-kIl">
                                     <color key="backgroundColor" red="0.0" green="0.82511861909999995" blue="0.04371081919" alpha="1" colorSpace="calibratedRGB"/>
                                     <connections>
-                                        <segue destination="dUL-SX-553" kind="push" id="KH9-I3-ZPR"/>
+                                        <action selector="onBreakfast" destination="bN8-zq-f9S" id="F5G-JR-zIS"/>
                                     </connections>
                                 </button>
                                 <button width="1" height="0.29999999999999999" heightAdjustment="2" alignment="left" title="Lunch" id="TQ8-Uo-ecZ">
                                     <color key="backgroundColor" red="0.0" green="0.82511861909999995" blue="0.04371081919" alpha="1" colorSpace="calibratedRGB"/>
                                     <connections>
+                                        <action selector="onLunch" destination="bN8-zq-f9S" id="h4L-8E-8Gh"/>
                                         <segue destination="dUL-SX-553" kind="push" id="1GW-6V-lG7"/>
                                     </connections>
                                 </button>
                                 <button width="1" height="0.29999999999999999" heightAdjustment="2" alignment="left" title="Dinner" id="d5x-dy-9u2">
                                     <color key="backgroundColor" red="0.0" green="0.82511861909999995" blue="0.04371081919" alpha="1" colorSpace="calibratedRGB"/>
                                     <connections>
+                                        <action selector="onDinner" destination="bN8-zq-f9S" id="wAI-EZ-OIO"/>
                                         <segue destination="dUL-SX-553" kind="push" id="BJh-Wl-OoF"/>
                                     </connections>
                                 </button>
@@ -84,6 +86,11 @@
                             <edgeInsets key="margins" left="4" right="4" top="0.0" bottom="0.0"/>
                         </group>
                     </items>
+                    <connections>
+                        <outlet property="breakfastButton" destination="hrl-jx-kIl" id="xni-ip-TWE"/>
+                        <outlet property="dinnerButton" destination="d5x-dy-9u2" id="qoM-HP-Sdl"/>
+                        <outlet property="lunchButton" destination="TQ8-Uo-ecZ" id="HIi-Gd-7vL"/>
+                    </connections>
                 </controller>
             </objects>
             <point key="canvasLocation" x="-33" y="-215"/>
@@ -98,13 +105,21 @@
                                 <button width="0.80000000000000004" height="0.20000000000000001" alignment="center" verticalAlignment="bottom" title="Enter" id="ykV-3c-2BM">
                                     <color key="titleColor" red="0.93725490199999995" green="0.93725490199999995" blue="0.95686274510000002" alpha="1" colorSpace="calibratedRGB"/>
                                     <color key="backgroundColor" red="0.0" green="0.82511861910994766" blue="0.043710819187050338" alpha="1" colorSpace="calibratedRGB"/>
+                                    <connections>
+                                        <action selector="mealSaveButton" destination="dUL-SX-553" id="AQq-j0-qCS"/>
+                                    </connections>
                                 </button>
-                                <picker height="0.80000000000000004" alignment="left" style="sequence" id="1sl-PH-VyX"/>
+                                <picker height="0.80000000000000004" alignment="left" style="sequence" id="1sl-PH-VyX">
+                                    <connections>
+                                        <action selector="onMealEntry:" destination="dUL-SX-553" id="g3O-CA-Kt5"/>
+                                    </connections>
+                                </picker>
                             </items>
                             <edgeInsets key="margins" left="10" right="10" top="0.0" bottom="5"/>
                         </group>
                     </items>
                     <connections>
+                        <outlet property="enterButton" destination="ykV-3c-2BM" id="Nrk-1W-Kgs"/>
                         <outlet property="mealPicker" destination="1sl-PH-VyX" id="FYe-o9-uci"/>
                     </connections>
                 </controller>
@@ -118,10 +133,17 @@
                     <items>
                         <group width="1" height="1" alignment="left" layout="vertical" id="vgm-K0-MJq">
                             <items>
-                                <picker height="0.80000000000000004" alignment="left" style="sequence" id="jNS-ju-jML"/>
+                                <picker height="0.80000000000000004" alignment="left" style="sequence" id="jNS-ju-jML">
+                                    <connections>
+                                        <action selector="onSleepEntry:" destination="Sk5-u4-eDK" id="fVJ-4u-bON"/>
+                                    </connections>
+                                </picker>
                                 <button width="0.80000000000000004" height="0.20000000000000001" alignment="center" title="Enter" id="Xg7-hg-unT">
                                     <color key="titleColor" red="0.93725490199999995" green="0.93725490199999995" blue="0.95686274510000002" alpha="1" colorSpace="calibratedRGB"/>
                                     <color key="backgroundColor" red="0.15379575529923706" green="0.0" blue="1" alpha="1" colorSpace="calibratedRGB"/>
+                                    <connections>
+                                        <action selector="sleepSaveButton" destination="Sk5-u4-eDK" id="WBm-JX-VwH"/>
+                                    </connections>
                                 </button>
                             </items>
                             <edgeInsets key="margins" left="10" right="10" top="0.0" bottom="5"/>
@@ -142,9 +164,16 @@
                     <items>
                         <group width="1" height="1" alignment="left" layout="vertical" id="3Te-R5-a3J">
                             <items>
-                                <picker height="0.80000000000000004" alignment="left" style="sequence" id="oZJ-jU-Zf2"/>
+                                <picker height="0.80000000000000004" alignment="left" style="sequence" id="oZJ-jU-Zf2">
+                                    <connections>
+                                        <action selector="onWaterEntry:" destination="YiA-fx-NQl" id="90T-0y-i3P"/>
+                                    </connections>
+                                </picker>
                                 <button width="0.80000000000000004" height="0.20000000000000001" alignment="center" title="Enter" id="TGU-lM-ujj">
                                     <color key="backgroundColor" red="0.0" green="0.66749548197629005" blue="0.75204515706806285" alpha="1" colorSpace="calibratedRGB"/>
+                                    <connections>
+                                        <action selector="waterSaveButton" destination="YiA-fx-NQl" id="R8c-L2-Jc6"/>
+                                    </connections>
                                 </button>
                             </items>
                             <edgeInsets key="margins" left="10" right="10" top="0.0" bottom="5"/>
@@ -152,6 +181,7 @@
                     </items>
                     <edgeInsets key="margins" left="1" right="1" top="0.0" bottom="0.0"/>
                     <connections>
+                        <outlet property="EnterButton" destination="TGU-lM-ujj" id="dc1-nA-ypg"/>
                         <outlet property="waterPicker" destination="oZJ-jU-Zf2" id="6Np-1p-ydI"/>
                     </connections>
                 </controller>
@@ -165,15 +195,23 @@
                     <items>
                         <group width="1" height="1" alignment="left" layout="vertical" id="k5N-Me-jim">
                             <items>
-                                <picker height="0.80000000000000004" alignment="left" style="sequence" id="AKC-gG-UVM"/>
+                                <picker height="0.80000000000000004" alignment="left" style="sequence" id="AKC-gG-UVM">
+                                    <connections>
+                                        <action selector="onExercise:" destination="uYH-JB-1gX" id="8C5-fI-NWa"/>
+                                    </connections>
+                                </picker>
                                 <button width="0.80000000000000004" height="0.20000000000000001" alignment="center" title="Enter" id="7vb-oW-NcY">
                                     <color key="backgroundColor" red="1" green="0.0" blue="0.2685569706" alpha="1" colorSpace="calibratedRGB"/>
+                                    <connections>
+                                        <action selector="onSave" destination="uYH-JB-1gX" id="mPA-qz-JdY"/>
+                                    </connections>
                                 </button>
                             </items>
                             <edgeInsets key="margins" left="10" right="10" top="0.0" bottom="5"/>
                         </group>
                     </items>
                     <connections>
+                        <outlet property="enterButton" destination="7vb-oW-NcY" id="NUP-hg-i8j"/>
                         <outlet property="exerPicker" destination="AKC-gG-UVM" id="4LL-HW-aJ2"/>
                     </connections>
                 </controller>
@@ -218,6 +256,6 @@
         </scene>
     </scenes>
     <inferredMetricsTieBreakers>
-        <segue reference="KH9-I3-ZPR"/>
+        <segue reference="1GW-6V-lG7"/>
     </inferredMetricsTieBreakers>
 </document>
