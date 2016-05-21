@@ -24,13 +24,35 @@ private let resetPassDevURL = devServiceURL + "/forgot"
 private let resetPassProdURL = prodServiceURL + "/forgot"
 public  let resetPassURL = asDevService ? resetPassDevURL : resetPassProdURL
 
-enum AccountComponent {
+public enum AccountComponent {
     case Consent
     case Photo
     case Profile
     case Settings
     case ArchiveSpan
     case LastAcquired
+}
+
+private func routeOfComponent(component: AccountComponent) -> String {
+    switch component {
+    case .Consent:
+        return "/user/consent"
+
+    case .Photo:
+        return "/user/photo"
+
+    case .Profile:
+        return "/user/profile/v2"
+
+    case .Settings:
+        return "/user/settings"
+
+    case .ArchiveSpan:
+        return "/user/archive_span"
+
+    case .LastAcquired:
+        return "/user/last_acquired"
+    }
 }
 
 /**
@@ -93,26 +115,11 @@ enum MCRouter : URLRequestConvertible {
         case .DeleteAccount:
             return "/user/withdraw"
 
-        case .GetUserAccountData(let component), .SetUserAccountData(let component, _):
-            switch component {
-            case Consent:
-                return "/user/consent"
+        case .GetUserAccountData(let component):
+            return routeOfComponent(component)
 
-            case Photo:
-                return "/user/photo"
-
-            case Profile:
-                return "/user/profile/v2"
-
-            case Settings:
-                return "/user/settings"
-
-            case ArchiveSpan:
-                return "/user/archive_span"
-
-            case LastAcquired:
-                return "/user/last_acquired"
-            }
+        case .SetUserAccountData(let component, _):
+            return routeOfComponent(component)
 
         case .TokenExpiry:
             return "/user/expiry"

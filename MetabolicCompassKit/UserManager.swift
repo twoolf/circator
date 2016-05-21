@@ -84,30 +84,30 @@ public class UserManager {
 
     // Account component dictionary cache.
     private(set) public var componentCache : [AccountComponent: [String: AnyObject]] = [
-        Consent      : [:],
-        Photo        : [:],
-        LastAcquired : [:],
-        Profile      : [:],
-        Settings     : [:]
+        .Consent      : [:],
+        .Photo        : [:],
+        .LastAcquired : [:],
+        .Profile      : [:],
+        .Settings     : [:]
     ]
 
     // Track when the remote account component was last retrieved
     var lastComponentLoadDate : [AccountComponent: NSDate?] = [
-        Consent      : nil,
-        Photo        : nil,
-        LastAcquired : nil,
-        Profile      : nil,
-        Settings     : nil
+        .Consent      : nil,
+        .Photo        : nil,
+        .LastAcquired : nil,
+        .Profile      : nil,
+        .Settings     : nil
     ]
 
     // Batched synchronization for account components.
     // These are async optional and double pairs, with the double representing the batch delay.
     var requestAsyncs : [AccountComponent: (Async?, Double)] = [
-        Consent      : (nil, 1.0),
-        Photo        : (nil, 1.0),
-        LastAcquired : (nil, 1.0),
-        Profile      : (nil, 1.0),
-        Settings     : (nil, 1.0)
+        .Consent      : (nil, 1.0),
+        .Photo        : (nil, 1.0),
+        .LastAcquired : (nil, 1.0),
+        .Profile      : (nil, 1.0),
+        .Settings     : (nil, 1.0)
     ]
 
     init() {
@@ -266,7 +266,9 @@ public class UserManager {
                 return
             }
             self.pullProfile { error, _ in
-                if !error { self.pullConsent(completion) }
+                if !error { self.pullConsent { (consentError, _) in
+                    completion(consentError, consentError ? nil : UMConsentInfoString)
+                } }
                 else { completion(error, nil) }
             }
         }
@@ -436,8 +438,10 @@ public class UserManager {
                                       extractor: ([String:AnyObject] -> [String:AnyObject])?,
                                       completion: SvcStringCompletion)
     {
-        let params = extractor == nil ? componentCache[component] : extractor(componentCache[component])
-        Service.string(MCRouter.SetUserAccountData(component, params), statusCode: 200..<300, tag: "SACC" + component.rawValue) {
+        var params : [String:AnyObject] = [:]
+        if let fn = extractor { params = fn(componentCache[component]!) }
+        else { params = componentCache[component]! }
+        Service.string(MCRouter.SetUserAccountData(component, params), statusCode: 200..<300, tag: "SACC\(component)") {
             _, response, result in completion(!result.isSuccess, result.value)
         }
     }
@@ -447,8 +451,8 @@ public class UserManager {
                                                 sync: Bool)
     {
         if sync {
-            requestAsyncs[component].0?.cancel()
-            let componentDelay = requestAsyncs[component].1
+            requestAsyncs[component]!.0?.cancel()
+            let componentDelay = requestAsyncs[component]!.1
             let newAsync = Async.background(after: componentDelay) {
                 self.syncAccountComponent(component, extractor: extractor) { _ in () }
             }
@@ -465,8 +469,8 @@ public class UserManager {
     {
         // Refresh cache, and post to the backend.
         // TOD: refresh arg value or extracted value?
-        if refresh { refreshComponentCache(component, parameters) }
-        syncAccountComponent(component, extractor, completion)
+        if refresh { refreshComponentCache(component, parameters: parameters) }
+        syncAccountComponent(component, extractor: extractor, completion: completion)
     }
 
     // Sets the component data in the cache as requested, and batches synchronization requests.
@@ -476,7 +480,7 @@ public class UserManager {
                                                 parameters: [String:AnyObject],
                                                 extractor: ([String:AnyObject] -> [String:AnyObject])?)
     {
-        if refresh { refreshComponentCache(component, parameters) }
+        if refresh { refreshComponentCache(component, parameters: parameters) }
         deferredSyncOnAccountComponent(component, extractor: extractor, sync: sync)
     }
 
@@ -490,7 +494,7 @@ public class UserManager {
                     extractor: ([String:AnyObject] -> [String:AnyObject])?,
                     completion: SvcStringCompletion)
     {
-        if let path = filePath, {
+        if let path = filePath {
             if let data = NSData(contentsOfFile: path) {
                 let cache = [fieldWrapper: data.base64EncodedStringWithOptions(NSDataBase64EncodingOptions())]
                 pushAccountComponent(component, refresh: true, parameters: cache, extractor: nil, completion: completion)
@@ -507,17 +511,17 @@ public class UserManager {
     // Retrieves an account component from the backend service.
     private func pullAccountComponent(component: AccountComponent,
                                       extractor: ([String:AnyObject] -> [String:AnyObject])?,
-                                      completion: SvcStringCompletion)
+                                      completion: SvcObjectCompletion)
     {
-        print("!!! pullAccountComponent " + component.rawValue)
-        Service.json(MCRouter.GetUserAccountData(component), statusCode: 200..<300, tag: "GACC" + component.rawValue) {
+        print("!!! pullAccountComponent \(component)")
+        Service.json(MCRouter.GetUserAccountData(component), statusCode: 200..<300, tag: "GACC\(component)") {
             _, _, result in
             if result.isSuccess {
                 // All account component routes return a JSON object.
                 // Use this to refresh the component cache.
                 if let dict = result.value as? [String: AnyObject] {
-                    let refreshVal = extractor == nil ? dict : extractor(dict)
-                    self.refreshComponentCache(component, refreshVal)
+                    let refreshVal = extractor == nil ? dict : extractor!(dict)
+                    self.refreshComponentCache(component, parameters: refreshVal)
                     self.lastComponentLoadDate[component] = NSDate()
                 }
             }
@@ -528,26 +532,26 @@ public class UserManager {
     // Retrieves an account component if it is stale.
     private func pullAccountComponentIfNeeded(component: AccountComponent,
                                               extractor: ([String:AnyObject] -> [String:AnyObject])?,
-                                              completion: SvcStringCompletion)
+                                              completion: SvcObjectCompletion)
     {
         if isAccountComponentOutdated(component) {
             pullAccountComponent(component, extractor: extractor, completion: completion)
         } else {
-            print("pull component \(component.rawValue) skipped")
+            print("pull component \(component) skipped")
             completion(false, nil)
         }
     }
 
     private func isAccountComponentOutdated(component: AccountComponent) -> Bool {
-        if lastComponentLoadDate[component]! != nil{
-            return lastComponentLoadDate[component]!.timeIntervalSinceNow < -300.0 // sec
+        if let lastDateOpt = lastComponentLoadDate[component], lastDate = lastDateOpt {
+            return lastDate.timeIntervalSinceNow < -300.0 // sec
         } else {
             return true
         }
     }
 
     private func refreshComponentCache(component: AccountComponent, parameters: [String:AnyObject]) {
-        if let cache = componentCache[component] {
+        if var cache = componentCache[component] {
             for (k,v) in parameters {
                 cache.updateValue(v, forKey: k)
             }
@@ -565,17 +569,17 @@ public class UserManager {
 
     // Batch reset of all components.
     private func resetAccountComponents(components: [AccountComponent]) {
-        for comoonent in components { resetCachedComponent(component) }
+        for component in components { resetCachedComponent(component) }
     }
 
     // Batch accessor, as an async parallel set of requests to each component's web endpoint.
-    private func pullAccountComponents(components: [(AccountComponent, ([String:AnyObject] -> [String:AnyObject])?],
+    private func pullAccountComponents(components: [(AccountComponent, ([String:AnyObject] -> [String:AnyObject])?)],
                                        completion: SvcStringCompletion)
     {
         let async = AsyncKit<AccountComponent, AccountComponent>()
         async.parallel(components.map { (component, extractor) in
             return { done in
-                pullAccountComponent(component, extractor) {
+                self.pullAccountComponent(component, extractor: extractor) {
                     (error, _) in
                     if error { done(.Failure(component)) }
                     else { done(.Success(component)) }
@@ -583,7 +587,7 @@ public class UserManager {
             }
         }) { result in
             switch result {
-            case .Success(let components):
+            case .Success(_):
                 completion(false, nil)
             case .Failure(let component):
                 completion(true, "Failed to pull account component \(component)")
@@ -602,7 +606,7 @@ public class UserManager {
             component: .Consent, refresh: true, extractor: nil, completion: completion)
     }
 
-    public func pullConsent(completion: SvcStringCompletion) {
+    public func pullConsent(completion: SvcObjectCompletion) {
         pullAccountComponent(.Consent, extractor: nil, completion: completion)
     }
 
@@ -616,7 +620,7 @@ public class UserManager {
             component: .Photo, refresh: true, extractor: nil, completion: completion)
     }
 
-    public func pullPhoto(completion: SvcStringCompletion) {
+    public func pullPhoto(completion: SvcObjectCompletion) {
         pullAccountComponent(.Photo, extractor: nil, completion: completion)
     }
 
@@ -629,7 +633,7 @@ public class UserManager {
 
     private func downloadProfileExtractor(data: [String:AnyObject]) -> [String:AnyObject] {
         if let id = data["userid"] {
-            let profile = data
+            var profile = data
             profile.removeValueForKey("userid")
             profile[UMUserHashKey] = id
             return profile
@@ -660,7 +664,7 @@ public class UserManager {
     }
 
     public func pullProfileWithConsent(completion: SvcStringCompletion) {
-        pullAccountComponents(components: [
+        pullAccountComponents([
             (.Profile, self.downloadProfileExtractor),
             (.Consent, nil)
         ], completion: completion)
@@ -703,7 +707,7 @@ public class UserManager {
     }
 
     public func setHotWords(hotWords: String) {
-        pushSettings([UMPHotwordKey: hotWords], completion: completion)
+        pushSettings([UMPHotwordKey: hotWords]) { _ in () }
     }
 
     public func getRefreshFrequency() -> Int {
@@ -711,7 +715,7 @@ public class UserManager {
     }
 
     public func setRefreshFrequency(frequency: Int) {
-        pushSettings([UMPFrequencyKey: frequency], completion: completion)
+        pushSettings([UMPFrequencyKey: frequency]) { _ in () }
     }
 
 
@@ -755,7 +759,7 @@ public class UserManager {
     }
 
     public func initializeHistoricalRangeForType(key: String, sync: Bool = false) -> (NSTimeInterval, NSTimeInterval) {
-        let cache = getArchiveSpanCache()
+        var cache = getArchiveSpanCache()
         let (start, end) = (decrAnchorDate(NSDate()).timeIntervalSinceReferenceDate, NSDate().timeIntervalSinceReferenceDate)
         if cache[HMHRangeStartKey] == nil { cache[HMHRangeStartKey] = [:] }
         if cache[HMHRangeEndKey]   == nil { cache[HMHRangeEndKey]   = [:] }
@@ -787,7 +791,7 @@ public class UserManager {
            let start = sdict[k] as? NSTimeInterval
         {
             let newDate = decrAnchorDate(NSDate(timeIntervalSinceReferenceDate: start)).timeIntervalSinceReferenceDate
-            sdict.updateValue(newData, forKey: k)
+            sdict.updateValue(newDate, forKey: k)
             let newSpan = [HMHRangeStartKey: sdict]
             deferredPushOnAccountComponent(.ArchiveSpan, refresh: true, sync: sync,
                 parameters: newSpan, extractor: self.uploadArchiveSpanExtractor)
@@ -803,7 +807,7 @@ public class UserManager {
     }
 
     public func setHistoricalRangeMinForType(key: String, min: NSDate, sync: Bool = false) {
-        let cache = getArchiveSpanCache()
+        var cache = getArchiveSpanCache()
         if cache[HMHRangeMinKey] == nil { cache[HMHRangeMinKey] = [:] }
         if let k = hkToMCDB(key),
            var mdict = cache[HMHRangeMinKey] as? [String: AnyObject]
@@ -824,7 +828,7 @@ public class UserManager {
     // MARK : - Last acquisition times.
 
     public func uploadLastAcquiredExtractor(data: [String:AnyObject]) -> [String:AnyObject] {
-        return Dictionary(pairs: data.map { kv in return (lastAcquiredServerId(kv.0), kv.1) })
+        return Dictionary(pairs: data.map { kv in return (lastAcquiredServerId(kv.0)!, kv.1) })
     }
 
     public func getAcquisitionTimes() -> [String: AnyObject] { return getCachedComponent(.LastAcquired) }
@@ -842,8 +846,8 @@ public class UserManager {
 
 
     // MARK : - Naming functions
-    func hkToMCDB(key: String) -> String { return HMConstants.sharedInstance.hkToMCDB[key]! }
-    func mcdbToHK(key: String) -> String { return HMConstants.sharedInstance.mcdbToHK[key]! }
+    func hkToMCDB(key: String) -> String? { return HMConstants.sharedInstance.hkToMCDB[key] }
+    func mcdbToHK(key: String) -> String? { return HMConstants.sharedInstance.mcdbToHK[key] }
 
     private static let settingsClient = [
         "hotword"           : UMPHotwordKey,
@@ -873,8 +877,8 @@ public class UserManager {
     func archiveSpanClientId(key: String) -> String { return UserManager.archiveSpanClient[key]! }
     func archiveSpanServerId(key: String) -> String { return UserManager.archiveSpanServer[key]! }
 
-    func lastAcquiredClientId(key: String) -> String { return hkToMCDB(key) }
-    func lastAcquiredServerId(key: String) -> String { return mcdbToHK(key) }
+    func lastAcquiredClientId(key: String) -> String? { return hkToMCDB(key) }
+    func lastAcquiredServerId(key: String) -> String? { return mcdbToHK(key) }
 
 
     // MARK : - Utility functions
@@ -897,13 +901,13 @@ public class UserManager {
     // Resets all user-specific data, but preserves the last user id.
     public func resetUser() {
         resetAccount()
-        resetAccountComponents()
+        resetAccountComponents([.Consent, .Photo, .Profile, .Settings, .ArchiveSpan, .LastAcquired])
     }
 
     // Resets all user-related data, including the user id.
     public func resetFull() {
         resetAccount()
-        resetAccountComponents()
+        resetAccountComponents([.Consent, .Photo, .Profile, .Settings, .ArchiveSpan, .LastAcquired])
         resetUserId()
     }
 

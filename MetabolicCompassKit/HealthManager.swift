@@ -722,9 +722,9 @@ public class HealthManager: NSObject, WCSessionDelegate {
                     if let (_, hend) = UserManager.sharedManager.getHistoricalRangeForType(type.identifier) {
                         // We use acquisition times stored in the profile if available rather than the current time,
                         // to grab all data since the last remote upload to the server.
-                        if let  lastAcqTS = UserManager.sharedManager.getAcquisitionTimes(),
-                                acqK = UserManager.sharedManager.hkToMCDB(type.identifier),
-                                typeTS = lastAcqTS[acqK] as? NSTimeInterval
+                        let lastAcqTS = UserManager.sharedManager.getAcquisitionTimes()
+                        if let acqK = UserManager.sharedManager.hkToMCDB(type.identifier),
+                               typeTS = lastAcqTS[acqK] as? NSTimeInterval
                         {
                             let importStart = NSDate(timeIntervalSinceReferenceDate: typeTS)
                             predicate = HKQuery.predicateForSamplesWithStartDate(importStart, endDate: NSDate(), options: .None)

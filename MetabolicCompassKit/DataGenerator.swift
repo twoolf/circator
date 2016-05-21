@@ -560,7 +560,7 @@ public class DataGenerator : GeneratorType {
             {
                 handle.writeData(jsdata)
             } else {
-                ++samplesSkipped
+                samplesSkipped += 1
             }
         } catch {
             log.error(error)
@@ -624,7 +624,7 @@ public class DataGenerator : GeneratorType {
                         if (i % 10) == 0 { log.info("Created batch \(i) / \(days),  \(samples.count) samples") }
                         dataset[userId]!.appendContentsOf(samples)
                     } else {
-                        ++self.daysSkipped
+                        self.daysSkipped += 1
                     }
                 }
             }
@@ -648,7 +648,7 @@ public class DataGenerator : GeneratorType {
                             firstSample = false
                         }
                     } else {
-                        ++self.daysSkipped
+                        self.daysSkipped += 1
                     }
                 }
             }

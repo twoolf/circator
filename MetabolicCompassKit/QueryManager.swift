@@ -36,11 +36,11 @@ private let QMSelectedKey = DefaultsKey<Int>("QMSelectedKey")
 
 // TODO: Male/Female, age ranges (as profile queries).
 private let defaultQueries : Queries = [
-        ("Weight <50",     Query.ConjunctiveQuery([Predicate(AggAvg, "body_weight", nil, "50")])),
-        ("Weight 50-100",  Query.ConjunctiveQuery([Predicate(AggAvg, "body_weight", "50", "100")])),
-        ("Weight 100-150", Query.ConjunctiveQuery([Predicate(AggAvg, "body_weight", "100", "150")])),
-        ("Weight 150-200", Query.ConjunctiveQuery([Predicate(AggAvg, "body_weight", "150", "200")])),
-        ("Weight >200",    Query.ConjunctiveQuery([Predicate(AggAvg, "body_weight", "200", nil)]))
+        ("Weight <50",     Query.ConjunctiveQuery([Predicate(.AggAvg, "body_weight", nil, "50")])),
+        ("Weight 50-100",  Query.ConjunctiveQuery([Predicate(.AggAvg, "body_weight", "50", "100")])),
+        ("Weight 100-150", Query.ConjunctiveQuery([Predicate(.AggAvg, "body_weight", "100", "150")])),
+        ("Weight 150-200", Query.ConjunctiveQuery([Predicate(.AggAvg, "body_weight", "150", "200")])),
+        ("Weight >200",    Query.ConjunctiveQuery([Predicate(.AggAvg, "body_weight", "200", nil)]))
     ]
 
 /**
@@ -123,9 +123,9 @@ private let NKey = "qname"
 private let QKey = "query"
 
 func serializePredicate(p: Predicate) -> [String: AnyObject] {
-    var result = [GKey: p.0.rawValue, AKey: p.1]
-    if let lb = p.2 { result[LKey] = p.2 }
-    if let ub = p.3 { result[UKey] = p.3 }
+    var result :[String:AnyObject] = [GKey: p.0.rawValue, AKey: p.1]
+    if let lb = p.2 { result[LKey] = lb }
+    if let ub = p.3 { result[UKey] = ub }
     return result
 }
 
@@ -141,8 +141,8 @@ func serializeQueries(qs: Queries) -> [[String: AnyObject]] {
 func deserializePredicate(p: [String: AnyObject]) -> Predicate {
     return Predicate(Aggregate(rawValue: p[GKey] as! Int)!,
                      p[AKey] as! String,
-                     p[LKey] as! String,
-                     p[UKey] as! String)
+                     p[LKey] as? String,
+                     p[UKey] as? String)
 }
 
 func deserializeQueries(qs: [[String: AnyObject]]) -> Queries {
