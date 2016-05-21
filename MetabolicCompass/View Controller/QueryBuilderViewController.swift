@@ -35,7 +35,7 @@ class QueryBuilderViewController: UIViewController, UITextFieldDelegate {
 
     static let attributeOptions =
         PreviewManager.supportedTypes.flatMap { type in
-            HMConstants.sharedInstance.healthKitMCDBIds[type.identifier]
+            HMConstants.sharedInstance.hkToMCDB[type.identifier]
         }
         // PopulationHealthManager.attributeNamesBySampleType.map { (key, value) in value.1 }
 

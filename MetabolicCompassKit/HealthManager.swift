@@ -226,7 +226,11 @@ public class HealthManager: NSObject, WCSessionDelegate {
                 }
             }
 
-            let doFinal: ((NSDate, MCAggregateSample) -> MCSample) = { (_,var agg) in agg.final(); return agg as MCSample }
+            let doFinal: ((NSDate, MCAggregateSample) -> MCSample) = { (_, in_agg) in
+                var agg = in_agg
+                agg.final()
+                return agg as MCSample
+            }
             completion(samples: byDay.sort({ (a,b) in return a.0 < b.0 }).map(doFinal), error: nil)
         }
     }
