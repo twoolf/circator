@@ -44,7 +44,6 @@
 		78B7342C1C90B87A00693229 /* ErrorViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7840A49A1C6E5A680005B66F /* ErrorViewController.swift */; };
 		78B7342E1C90BC6900693229 /* DebugViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7860E9121C61C470004C9741 /* DebugViewController.swift */; };
 		78BEAC9E1C5E7EE800F0B541 /* PopulationHealthManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 78BEAC9D1C5E7EE800F0B541 /* PopulationHealthManager.swift */; };
-		78E521A01C25687900FAE56A /* Pods.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 78E5219F1C25687900FAE56A /* Pods.framework */; };
 		84207D1F1CCA1FEC00776848 /* RegisterLoginProcess.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 84207D1E1CCA1FEC00776848 /* RegisterLoginProcess.storyboard */; };
 		84207D221CCA210000776848 /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 84207D211CCA210000776848 /* Images.xcassets */; };
 		84207D241CCA3C3600776848 /* RegisterLoginLandingViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84207D231CCA3C3600776848 /* RegisterLoginLandingViewController.swift */; };
@@ -107,7 +106,6 @@
 		95F400AA1CE385E80060F28C /* MainSettingsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 95F400A81CE385E80060F28C /* MainSettingsViewController.swift */; };
 		95F400AB1CE385E80060F28C /* ProfileViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 95F400A91CE385E80060F28C /* ProfileViewController.swift */; };
 		95F400AD1CE38F2F0060F28C /* ModelItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = 95F400AC1CE38F2F0060F28C /* ModelItem.swift */; };
-		A88F31F3DDADAD50F4190F8E /* Pods.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = CB09F654AB4B00C79306C728 /* Pods.framework */; };
 		E74A89761CE308800056A2D2 /* UIColor+Extended.swift in Sources */ = {isa = PBXBuildFile; fileRef = E74A89751CE308800056A2D2 /* UIColor+Extended.swift */; };
 		E74A89791CE3265C0056A2D2 /* AccountManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = E74A89781CE3265C0056A2D2 /* AccountManager.swift */; };
 		E74A897C1CE338D30056A2D2 /* ContentManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = E74A897B1CE338D30056A2D2 /* ContentManager.swift */; };
@@ -438,7 +436,6 @@
 			files = (
 				F42F5B391BE1FD1E00195490 /* MetabolicCompassKit.framework in Frameworks */,
 				7859783F1C1BC418008377F9 /* HealthKit.framework in Frameworks */,
-				A88F31F3DDADAD50F4190F8E /* Pods.framework in Frameworks */,
 				E7780296E89D519C5763E59A /* Pods_MetabolicCompassCommon_MetabolicCompass.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -461,7 +458,6 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				78E521A01C25687900FAE56A /* Pods.framework in Frameworks */,
 				25CD90CB3A9FF0B5319F9D4C /* Pods_MetabolicCompassCommon_MetabolicCompassKit.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
