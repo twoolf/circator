@@ -29,9 +29,24 @@ private let HMHRangeMinKey   = "HKHRMin"
 
 private let profileExcludes  = ["userid"]
 
-public let UMConsentInfoString = "Retrieved consent"
-public let UMPhotoInfoString   = "Retrieved photo"
+public let UMConsentInfoString         = "Retrieved consent"
+public let UMPhotoInfoString           = "Retrieved photo"
+public let UMPullComponentsInfoString  = "Retrieved account components"
+public let UMPullFullAccountInfoString = "Retrieved full account"
 
+// Error generators.
+// These are public to allow other components to recreate and check error messages.
+public let UMPushInvalidBinaryFileError : (AccountComponent, String?) -> String = { (component, path) in
+    return "Invalid \(component) file at: \(path)"
+}
+
+public let UMPushReadBinaryFileError : (AccountComponent, String) -> String = { (component, path) in
+    return "Failed to read \(component) file at: \(path)"
+}
+
+public let UMPullComponentError : AccountComponent -> String = { component in
+    return "Failed to pull account component \(component)"
+}
 
 /**
  This manages the users for Metabolic Compass. We need to enable users to maintain access to their data and to delete themselves from the study if they so desire. In addition we maintain, in this class, the ability to do this securely, using OAuth and our third party authenticator (Stormpath)
@@ -80,8 +95,6 @@ public class UserManager {
 
     var tokenExpiry : NSTimeInterval = NSDate().timeIntervalSince1970   // Expiry in time interval since 1970.
 
-    private(set) public var profileCache : [String: AnyObject] = [:]                        // Stormpath account dictionary cache.
-
     // Account component dictionary cache.
     private(set) public var componentCache : [AccountComponent: [String: AnyObject]] = [
         .Consent      : [:],
@@ -112,7 +125,6 @@ public class UserManager {
 
     init() {
         Stormpath.setUpWithURL(MCRouter.baseURLString)
-        self.profileCache = [:]
     }
 
     // MARK: - Account status, and authentication
@@ -265,12 +277,7 @@ public class UserManager {
                 completion(true, why)
                 return
             }
-            self.pullProfile { error, _ in
-                if !error { self.pullConsent { (consentError, _) in
-                    completion(consentError, consentError ? nil : UMConsentInfoString)
-                } }
-                else { completion(error, nil) }
-            }
+            self.pullFullAccount(completion)
         }
     }
 
@@ -499,12 +506,14 @@ public class UserManager {
                 let cache = [fieldWrapper: data.base64EncodedStringWithOptions(NSDataBase64EncodingOptions())]
                 pushAccountComponent(component, refresh: true, parameters: cache, extractor: nil, completion: completion)
             } else {
-                log.error("Failed to read \(component) file at: \(path)")
-                completion(true, nil)
+                let msg = UMPushReadBinaryFileError(component, path)
+                log.error(msg)
+                completion(true, msg)
             }
         } else {
-            log.error("Invalid \(component) file path: \(filePath)")
-            completion(true, nil)
+            let msg = UMPushInvalidBinaryFileError(component, filePath)
+            log.error(msg)
+            completion(true, msg)
         }
     }
 
@@ -588,13 +597,19 @@ public class UserManager {
         }) { result in
             switch result {
             case .Success(_):
-                completion(false, nil)
+                completion(false, UMPullComponentsInfoString)
             case .Failure(let component):
-                completion(true, "Failed to pull account component \(component)")
+                completion(true, UMPullComponentError(component))
             }
         }
     }
 
+    public func pullFullAccount(completion: SvcStringCompletion) {
+        pullAccountComponents([.Consent, .Photo, .Profile, .Settings, .ArchiveSpan, .LastAcquired]) {
+            (error, msg) in
+            completion(error, (!error && msg == UMPullComponentsInfoString) ? UMPullComponentsInfoString : msg)
+        }
+    }
 
     // MARK: - Consent accessors
     public func syncConsent(completion: SvcStringCompletion) {
