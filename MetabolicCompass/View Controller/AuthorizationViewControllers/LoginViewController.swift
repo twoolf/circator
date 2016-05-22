@@ -15,19 +15,19 @@ import Dodo
 
 /**
  This class is used to control the Login screens for the App.  By separating the logic into this view controller we enable changes to the login process to be clearly defined in this block of code.
- 
+
 - note: for both signup and login; uses Stormpath for authentication
  */
 class LoginViewController: BaseViewController {
-    
+
     @IBOutlet weak var containerScrollView: UIScrollView!
 
     private var userCell: FormTextFieldCell?
     private var passCell: FormTextFieldCell?
     let loginModel: LoginModel = LoginModel()
-    
+
     @IBOutlet weak var loginTable: UITableView!
-    
+
     var parentView: IntroViewController?
     var completion: (Void -> Void)?
 
@@ -40,45 +40,42 @@ class LoginViewController: BaseViewController {
         super.viewWillDisappear(animated)
         UIDevice.currentDevice().setValue(UIInterfaceOrientation.Portrait.rawValue, forKey: "orientation")
     }
-    
+
     override func preferredStatusBarStyle() -> UIStatusBarStyle {
         return .LightContent;
     }
 
     override func viewDidLoad() {
         super.viewDidLoad()
-        
+
         loginModel.loginTable = loginTable
         loginModel.controllerView = self.view
         loginTable.dataSource = loginModel
-        
-        self.setupScroolViewForKeyboardsActions(containerScrollView)
+
+        self.setupScrollViewForKeyboardsActions(containerScrollView)
     }
-    
-    
+
+
     func uploadLostConsentFile() {
-        
         guard let consentPath = ConsentManager.sharedManager.getConsentFilePath() else {
             UINotifications.noConsent(self.navigationController!, pop: true, asNav: true)
             return
         }
-        
+
         UserManager.sharedManager.pushConsent(consentPath) { (error, text) in
-            
             if (!error) {
                 ConsentManager.sharedManager.removeConsentFile(consentPath)
             }
-            
             self.loginComplete()
         }
     }
-    
+
     func loginComplete() {
         if let comp = self.completion { comp() }
         //UINotifications.doWelcome(self.parentView!, pop: true, user: UserManager.sharedManager.getUserId() ?? "")
-        
+
         self.navigationController?.popToRootViewControllerAnimated(true)
-        
+
         Async.main {
             Answers.logLoginWithMethod("SPL", success: true, customAttributes: nil)
             self.parentView?.initializeBackgroundWork()
@@ -86,13 +83,13 @@ class LoginViewController: BaseViewController {
     }
 
     // MARK: - Actions
-    
+
     @IBAction func loginAction() {
-        
+
         startAction()
-        
+
         let loginCredentials = loginModel.getCredentials()
-        
+
         UserManager.sharedManager.ensureUserPass(loginCredentials.email, pass: loginCredentials.password) { error in
             guard !error else {
                 UINotifications.invalidUserPass(self.navigationController!)
@@ -100,8 +97,7 @@ class LoginViewController: BaseViewController {
             }
             UserManager.sharedManager.loginWithPull { (error, text) in
                 guard !error else {
-                    
-                    if (text == UMConsentInfoString) {
+                    if (text == UMPullComponentError(.Consent)) {
                         self.uploadLostConsentFile()
                     }
                     else {
@@ -109,15 +105,14 @@ class LoginViewController: BaseViewController {
                         //UINotifications.invalidUserPass(self.navigationController!)
                         UINotifications.invalidUserPass(self)
                     }
-                    
                     return
                 }
-                
+
                 self.loginComplete()
             }
         }
     }
-    
+
     func doSignup(sender: UIButton) {
         let registerVC = RegisterViewController()
         registerVC.parentView = parentView
