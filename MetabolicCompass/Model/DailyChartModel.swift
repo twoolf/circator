@@ -10,7 +10,7 @@ import Foundation
 import UIKit
 
 class DailyChartModel : NSObject, UITableViewDataSource {
-    
+
     private let dayCellIdentifier = "dayCellIdentifier"
     var daysTableView: UITableView?
     var daysArray: [String] = {
@@ -29,28 +29,28 @@ class DailyChartModel : NSObject, UITableViewDataSource {
         }
         return lastSevenDays
     }()
-    
+
     func updateRowHeight (){
         self.daysTableView?.rowHeight = CGRectGetHeight(self.daysTableView!.frame)/7.0
         self.daysTableView?.reloadData()
     }
-    
+
     func registerCells() {
         let dayCellNib = UINib(nibName: "DailyProgressDayTableViewCell", bundle: nil)
         self.daysTableView?.registerNib(dayCellNib, forCellReuseIdentifier: dayCellIdentifier)
     }
-    
-    //MARK: UITableViewDataSource
-    
+
+    // MARK: -  UITableViewDataSource
+
     func tableView(tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         return self.daysArray.count
     }
-    
+
     func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCellWithIdentifier(dayCellIdentifier) as! DailyProgressDayTableViewCell
         cell.dayLabel.text = self.daysArray[indexPath.row]
         cell.dayLabel.textColor = indexPath.row == 0 ? UIColor.colorWithHexString("#ffffff", alpha: 1) : UIColor.colorWithHexString("#ffffff", alpha: 0.3)
         return cell
     }
-    
+
 }

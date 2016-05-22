@@ -132,11 +132,11 @@ public class ScreenManager {
             return 100
         }
     }
-    
+
     public func radarChartBottomIndent() -> CGFloat {
         let screenSize = UIScreen.mainScreen().bounds.size
         let screenHeight = screenSize.height
-        
+
         if (screenHeight < 569) {
             return 20
         } else {
@@ -167,42 +167,41 @@ public class ScreenManager {
     public func queryBuilderInputFontSize() -> CGFloat {
         return inputFontSize()
     }
-    
-    
-// MARK: - colors
-    
+
+
+    // MARK: - colors
+
     public class func appTitleTextColor() -> UIColor {
         //return UIColor(red: 0.58, green: 0.63, blue: 0.71, alpha: 1.0)
         return UIColor(white: 1.0, alpha: 0.6)
     }
-    
+
     public class func appNavButtonsTextColor() -> UIColor {
         return UIColor(white: 1.0, alpha: 0.6)
     }
-    
+
     public class func appSectionTitleTextColor() -> UIColor {
         return UIColor.colorWithHex(0x338AFF, alpha:1.0)
     }
-    
+
     public class func appNavigationBackColor() -> UIColor {
         return UIColor(red: 1.0, green: 1.0, blue: 1.0, alpha: 1.0)
     }
-    
+
     public func appBgColor() -> UIColor {
         return UIColor(red: 0.007, green: 0.145, blue: 0.329, alpha: 1.0)
     }
-    
+
     public func appBrightBlueColor() -> UIColor {
         return UIColor(red: 0.2, green: 0.541, blue: 1.0, alpha: 1.0)
     }
-    
+
     public func appGrayColor() -> UIColor {
         return UIColor(red: 0.325, green: 0.4, blue: 0.521, alpha: 1.0)
     }
 
-// MARK: - fonts
 
-    
+    // MARK: - fonts
 
     public func appBrightTextColor() -> UIColor {
         return UIColor.whiteColor()
@@ -211,25 +210,25 @@ public class ScreenManager {
     public func appUnBrightTextColor() -> UIColor {
         return UIColor.whiteColor().colorWithAlphaComponent(0.4)
     }
-   
+
     public func appSeparatorColor() -> UIColor {
         return UIColor.lightGrayColor()
     }
-    
+
     public func appNavBarTextColor() -> UIColor {
         return UIColor.whiteColor().colorWithAlphaComponent(0.6)
     }
-    
+
     static private let defaulytFontName = "GothamBook"
-    
+
     public class func appFontOfSize(size: CGFloat) -> UIFont {
         return UIFont(name: defaulytFontName, size: size)!
     }
-    
+
     public class func appNavBarFont() -> UIFont {
         return UIFont(name: defaulytFontName, size: 16.0)!
     }
-    
+
 }
 
 

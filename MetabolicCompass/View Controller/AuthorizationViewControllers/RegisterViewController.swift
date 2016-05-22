@@ -19,15 +19,13 @@ private let inputFontSize = ScreenManager.sharedInstance.profileInputFontSize()
 
  class RegisterViewController : BaseViewController {
 
-
     override class var storyboardName : String {
         return "RegisterLoginProcess"
     }
-    
-    var dataSource = RegisterModelDataSource()
-    
-    @IBOutlet weak var collectionView: UICollectionView!
 
+    var dataSource = RegisterModelDataSource()
+
+    @IBOutlet weak var collectionView: UICollectionView!
 
     internal var consentOnLoad : Bool = false
     internal var registerCompletion : (Void -> Void)?
@@ -47,39 +45,38 @@ private let inputFontSize = ScreenManager.sharedInstance.profileInputFontSize()
 
     override func viewDidLoad() {
         super.viewDidLoad()
-        
-        setupScroolViewForKeyboardsActions(collectionView)
-        
+
+        setupScrollViewForKeyboardsActions(collectionView)
+
         dataSource.viewController = self
         dataSource.collectionView = self.collectionView
-    
+
         self.setNeedsStatusBarAppearanceUpdate()
         if ( consentOnLoad ) { doConsent() }
     }
-    
+
     override func preferredStatusBarStyle() -> UIStatusBarStyle {
         return .LightContent;
     }
-    
+
     @IBAction func registerAction(sender: UIButton) {
-        
         startAction()
-    
+
         guard let consentPath = ConsentManager.sharedManager.getConsentFilePath() else {
             UINotifications.noConsent(self.navigationController!, pop: true, asNav: true)
             return
         }
-        
+
         let userRegistrationModel = dataSource.model
         if !userRegistrationModel.isModelValid() {
             self.showAlert(withMessage: userRegistrationModel.validationMessage!, title: "Registration Error".localized)
             return
         }
-        
+
         sender.enabled = false
-        
+
         UINotifications.genericMsg(self.navigationController!, msg: "Registering account...")
-        
+
         UserManager.sharedManager.overrideUserPass(userRegistrationModel.email, pass: userRegistrationModel.password)
         UserManager.sharedManager.register(userRegistrationModel.firstName!, lastName: userRegistrationModel.lastName!) { (_, error, errormsg) in
             guard !error else {
@@ -95,36 +92,34 @@ private let inputFontSize = ScreenManager.sharedInstance.profileInputFontSize()
                 sender.enabled = true
                 return
             }
-            
-        
+
+
             let initialProfile = self.dataSource.model.profileItems()
             //print("initialProfile \(initialProfile)")
-            
+
             // Log in and update consent after successful registration.
             UserManager.sharedManager.loginWithPush(initialProfile) { (error, reason) in
                 guard !error else {
                     // Registration completed, but logging in failed.
                     // Pop this view to allow the user to try logging in again through the
                     // login/logout functionality on the main dashboard.
-                    
+
                     UINotifications.loginFailed(self.navigationController!, pop: true, asNav: true, reason: reason)
                     Answers.logSignUpWithMethod("SPR", success: false, customAttributes: nil)
                     return
                 }
-                
+
                 // save user profile image
                 UserManager.sharedManager.setUserProfilePhoto(userRegistrationModel.photo)
-                
+
                 UserManager.sharedManager.pushConsent(consentPath) { (error, text) in
-                    
                     if (!error) {
                         ConsentManager.sharedManager.removeConsentFile(consentPath)
                     }
-                    
-                    
+
                     self.performSegueWithIdentifier(self.segueRegistrationCompletionIndentifier, sender: nil)
                     self.doWelcome()
-                    
+
                     Answers.logSignUpWithMethod("SPR", success: true, customAttributes: nil)
                 }
             }
@@ -165,19 +160,18 @@ private let inputFontSize = ScreenManager.sharedInstance.profileInputFontSize()
             self.parentView?.initializeBackgroundWork()
         }
     }
-    
+
     func registartionComplete() {
         navigationController?.popToRootViewControllerAnimated(true)
         doWelcome()
         if let comp = self.registerCompletion { comp() }
     }
-    
+
     // MARK: - Navigation
 
     private let segueRegistrationCompletionIndentifier = "completionRegistrationSeque"
-    
+
     override func prepareForSegue(segue: UIStoryboardSegue, sender: AnyObject?) {
-        
         if segue.identifier == segueRegistrationCompletionIndentifier {
             segue.destinationViewController.modalPresentationStyle = .OverCurrentContext
             if let vc = segue.destinationViewController as? RegistrationComplitionViewController {
@@ -188,9 +182,7 @@ private let inputFontSize = ScreenManager.sharedInstance.profileInputFontSize()
                     vc.registerViewController = self
                 }
             }
-            
         }
-        
     }
 
 }

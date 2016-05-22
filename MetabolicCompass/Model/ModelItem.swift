@@ -20,7 +20,7 @@ private let femaleGenderKey = "Female"
 
 enum Gender: Int {
     case Male = 0, Female
-    
+
     var title: String {
         switch self {
         case .Male:
@@ -29,14 +29,14 @@ enum Gender: Int {
             return femaleGenderKey.localized
         }
     }
-    
+
     static func valueByTitle(title: String) -> Gender {
         let titleStr = title.trimmed().lowercaseString
-        
+
         if femaleGenderKey.lowercaseString == titleStr {
             return Gender.Female
         }
-        
+
         return Gender.Male
     }
 }
@@ -49,56 +49,56 @@ class ModelItem: NSObject {
     private(set) var title: String;
     private(set) var type: UserInfoFiledType
     private(set) var iconImageName: String?
-    
+
     var value: AnyObject?
     private(set) var unitsTitle: String?
-    
+
     var dataType: FieldDataType = .String
-    
+
     var key: String?{
         get {
             return UserProfile.keyForItemName(name)
         }
     }
-    
+
     init(name itemName: String, title itemTitle: String, type itemType: UserInfoFiledType, iconImageName itemIconImageName: String?, value itemValue: AnyObject?, unitsTitle itemUnitsTitle: String? = nil) {
-        
+
         type = itemType
         name = itemName
         title = itemTitle
         iconImageName = itemIconImageName
-        
+
         super.init()
-        
+
         value = itemValue
-        
+
         unitsTitle = itemUnitsTitle
     }
-    
-    
+
+
     func setNewValue(newValue: AnyObject?) {
         value = newValue
     }
-    
-    
+
+
     func stringValue() -> String? {
-        
+
         if type == .Gender {
             let gender = self.intValue()!
             return Gender(rawValue: gender)?.title
         }
-        
+
         if type == .Units {
             let units = self.intValue()!
             return UnitsSystem(rawValue: units)?.title
         }
-        
+
         if let _value = value as? String {
             return _value.trimmed()
         }
         return nil
     }
-    
+
     func intValue() -> Int? {
         if let _value = value as? Int {
             return _value
@@ -106,10 +106,10 @@ class ModelItem: NSObject {
         else if let _value = value as? String {
             return Int(_value)
         }
-        
+
         return nil
     }
-    
+
     func floatValue() -> Float? {
         if let _value = value as? Float {
             return _value
