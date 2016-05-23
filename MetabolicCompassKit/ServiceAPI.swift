@@ -167,7 +167,14 @@ enum MCRouter : URLRequestConvertible {
 
 }
 
+public protocol ServiceRequestResultDelegate {
+    func didFinishJSONRequest(request:NSURLRequest?, response:NSHTTPURLResponse?, result:Alamofire.Result<AnyObject>)
+    func didFinishStringRequest(request:NSURLRequest?, response:NSHTTPURLResponse?, result:Alamofire.Result<String>)
+//      func myFunc()
+}
+
 public class Service {
+    public static var delegate:ServiceRequestResultDelegate?
     internal static func string<S: SequenceType where S.Generator.Element == Int>
         (route: MCRouter, statusCode: S, tag: String,
         completion: (NSURLRequest?, NSHTTPURLResponse?, Alamofire.Result<String>) -> Void)
@@ -190,16 +197,17 @@ extension Alamofire.Request {
         -> Self
     {
         
-        
         return self.responseString() { req, resp, result in
             
             log.debug("\(tag): " + (result.isSuccess ? "SUCCESS" : "FAILED"))
-            log.debug("\n***Req:\(req)")
-            if let data = req?.HTTPBody{
-                log.debug("\n***Request body:\( String(data:data, encoding:NSUTF8StringEncoding))")
+//            if let data = req?.HTTPBody{
+//                log.debug("\n***Request body:\( String(data:data, encoding:NSUTF8StringEncoding))")
+//            }
+            
+            if Service.delegate != nil{
+                Service.delegate!.didFinishStringRequest(req, response:resp, result:result)
             }
             
-            log.debug("\n***result:\(result)")
             completion(req, resp, result)
         }
     }
@@ -208,6 +216,14 @@ extension Alamofire.Request {
         -> Self
     {
         return self.responseJSON() { req, resp, result in
+        
+//            print("request:\(req), response:\(resp)")
+//            if req?.URL?.absoluteString == "https://app.metaboliccompass.com/user/expiry"{
+//                print("expiry request:\(req), response:\(resp)")
+//            }
+            if Service.delegate != nil{
+                Service.delegate!.didFinishJSONRequest(req, response:resp, result:result)
+            }
             log.debug("\(tag): " + (result.isSuccess ? "SUCCESS" : "FAILED"))
             completion(req, resp, result)
         }
