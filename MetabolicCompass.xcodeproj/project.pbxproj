@@ -542,9 +542,9 @@
 		7881A3DF1BAF3B3E00ECB3C6 /* MetabolicCompass */ = {
 			isa = PBXGroup;
 			children = (
-				F58E8B371CF342B8000B874E /* AppLogs */,
 				7881A3E01BAF3B3E00ECB3C6 /* AppDelegate.swift */,
 				F515CFC91CECC88000318CB6 /* CommonUI */,
+				F58E8B371CF342B8000B874E /* AppLogs */,
 				E7E48DE31CE4A0F100DB020F /* MetabolicCharts */,
 				E74A897A1CE338BA0056A2D2 /* ContentManager */,
 				E74A89771CE3260F0056A2D2 /* AccountManager */,
