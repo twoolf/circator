@@ -23,17 +23,20 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 
     var window: UIWindow?
     var mainViewController: UIViewController!
-
+    private let firstRunKey = "FirstRun"
     func application(application: UIApplication, didFinishLaunchingWithOptions launchOptions: [NSObject: AnyObject]?) -> Bool
     {
         configureLogging()
         Fabric.with([Crashlytics.self,Answers.self])
-
+        
+        if ((NSUserDefaults.standardUserDefaults().objectForKey(firstRunKey) == nil)) {
+            UserManager.sharedManager.resetFull()
+            NSUserDefaults.standardUserDefaults().setObject("firstrun", forKey: firstRunKey)
+            NSUserDefaults.standardUserDefaults().synchronize()
+        }
+        
         // Override point for customization after application launch.
 //        let themeColor = UIColor(red: 0.01, green: 0.41, blue: 0.22, alpha: 1.0)
-//
-
-        
         window = UIWindow(frame: UIScreen.mainScreen().bounds)
         window?.backgroundColor = UIColor.whiteColor()
 //        window?.tintColor = UIColor.whiteColor()
