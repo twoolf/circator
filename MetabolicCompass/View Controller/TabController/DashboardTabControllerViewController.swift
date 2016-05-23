@@ -10,6 +10,12 @@ import UIKit
 
 class DashboardTabControllerViewController: UIViewController {
     
+    enum DashboardType: Int {
+        case Comparison = 0
+        case Balance
+        case DailyProgress
+    }
+    
     @IBOutlet weak var segmentedControll: UISegmentedControl!
     var containerController: UITabBarController?;
     weak var rootNavigationItem: UINavigationItem? {
@@ -17,6 +23,9 @@ class DashboardTabControllerViewController: UIViewController {
 //            self.updateNavigationItem()
         }
     }
+    
+    private var leftNavButton: UIBarButtonItem? = nil
+    private var rightNavButton: UIBarButtonItem? = nil
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -30,15 +39,18 @@ class DashboardTabControllerViewController: UIViewController {
         
         self.navigationItem.title = NSLocalizedString("DASHBOARD", comment: "dashboard screen title")
         
-        navigationItem.leftBarButtonItem = UIBarButtonItem(title: NSLocalizedString("Manage", comment: "dashboard manage button"),
-                                                               style: .Done,
-                                                               target: self,
-                                                               action: #selector(didSelectManageButton))
-            
-        navigationItem.rightBarButtonItem = UIBarButtonItem(title: NSLocalizedString("Filters", comment: "dashboard filter button"),
-                                                                style: .Done,
-                                                                target: self,
-                                                                action: #selector(didSelectFiltersButton))
+        self.leftNavButton = UIBarButtonItem(title: NSLocalizedString("Manage", comment: "dashboard manage button"),
+                                             style: .Done,
+                                             target: self,
+                                             action: #selector(didSelectManageButton))
+        
+        self.rightNavButton = UIBarButtonItem(title: NSLocalizedString("Filters", comment: "dashboard filter button"),
+                                              style: .Done,
+                                              target: self,
+                                              action: #selector(didSelectFiltersButton))
+        
+        navigationItem.leftBarButtonItem = self.leftNavButton
+        navigationItem.rightBarButtonItem = self.rightNavButton
     }
    
     private let filterControllerSegue          = "FilterSegue"
@@ -64,13 +76,7 @@ class DashboardTabControllerViewController: UIViewController {
     func didSelectManageButton(sender: AnyObject) {
         self.performSegueWithIdentifier(self.manageSegueForIndex(self.segmentedControll.selectedSegmentIndex), sender: self)
     }
-
-    override func didReceiveMemoryWarning() {
-        super.didReceiveMemoryWarning()
-        // Dispose of any resources that can be recreated.
-    }
     
-
     private let dashboardSegueIdentifier = "DashboardSegue"
     
     override func prepareForSegue(segue: UIStoryboardSegue, sender: AnyObject?)
@@ -82,11 +88,11 @@ class DashboardTabControllerViewController: UIViewController {
     }
 
     @IBAction func didSelectDashboardType(sender: AnyObject) {
-        guard let segmentedControl: UISegmentedControl = sender as? UISegmentedControl else
-        {
+        guard let segmentedControl: UISegmentedControl = sender as? UISegmentedControl else {
             return
         }
-        
+        navigationItem.leftBarButtonItem = segmentedControl.selectedSegmentIndex == DashboardType.DailyProgress.rawValue ? nil : self.leftNavButton
+        navigationItem.rightBarButtonItem = segmentedControl.selectedSegmentIndex == DashboardType.DailyProgress.rawValue ? nil : self.rightNavButton
         containerController?.selectedIndex = segmentedControl.selectedSegmentIndex
     }
 }
