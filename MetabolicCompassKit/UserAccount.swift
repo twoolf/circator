@@ -30,3 +30,46 @@ struct UserAccount : ReadableSecureStorable,
         return ["password" : password]
     }
 }
+
+public enum AccountComponent {
+    case Consent
+    case Photo
+    case Profile
+    case Settings
+    case ArchiveSpan
+    case LastAcquired
+}
+
+public func getComponentName(component: AccountComponent) -> String {
+    switch component {
+    case .Consent:
+        return "consent"
+    case .Photo:
+        return "photo"
+    case .Profile:
+        return "profile"
+    case .Settings:
+        return "settings"
+    case .ArchiveSpan:
+        return "archive_span"
+    case .LastAcquired:
+        return "last_acquired"
+    }
+}
+
+public func getComponentByName(name: String) -> AccountComponent? {
+    switch name {
+    case "consent":
+        return .Consent
+    case "photo":
+        return .Photo
+    case "settings":
+        return .Settings
+    case "archive_span":
+        return .ArchiveSpan
+    case "last_acquired":
+        return .LastAcquired
+    default:
+        return nil
+    }
+}

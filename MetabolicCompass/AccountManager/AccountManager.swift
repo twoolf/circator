@@ -106,18 +106,33 @@ class AccountManager: NSObject {
                     return
                 }
 
-                // TODO: handle partial failures when a subset of account components
+                // TODO: Yanif: handle partial failures when a subset of account components
                 // failures beyond the consent component.
                 UserManager.sharedManager.pullFullAccount { (error, msg) in
                     if !error {
                         self.loginComplete()
-                    }
-                    else if (msg == UMPullComponentError(.Consent)) {
-                        self.uploadLostConsentFile()
-                        self.loginComplete()
-                    }
-                    else {
-                        log.error("Failed to retrieve initial profile and consent: \(msg)")
+                        return
+                    } else {
+                        if let msgStr = msg {
+                            var components = UMPullComponentErrorAsArray(msgStr)
+
+                            // Try to upload the consent file if we encounter a consent pull error.
+                            if components.contains(.Consent) {
+                                self.uploadLostConsentFile()
+
+                                if components.count == 1 {
+                                    // Complete the login if pulling consent was the only error.
+                                    self.loginComplete()
+                                } else {
+                                    components = components.filter { $0 != .Consent }
+                                    log.error(UMPullMultipleComponentsError(components.map(getComponentName)))
+                                }
+                            } else {
+                                log.error(msgStr)
+                            }
+                        } else {
+                            log.error("Failed to get initial user account")
+                        }
                     }
                 }
             }

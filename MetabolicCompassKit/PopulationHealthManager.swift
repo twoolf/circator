@@ -39,11 +39,11 @@ public class PopulationHealthManager {
     // Retrieve aggregates for all previewed rows.
     public func fetchAggregates() {
         var columnIndex = 0
-        var columns : [Int:String] = [:]
+        var columns : [String:AnyObject] = [:]
 
         for hksType in PreviewManager.supportedTypes {
             if let column = HMConstants.sharedInstance.hkToMCDB[hksType.identifier] {
-                columns[columnIndex] = column
+                columns[String(columnIndex)] = column
                 columnIndex += 1
             }
         }

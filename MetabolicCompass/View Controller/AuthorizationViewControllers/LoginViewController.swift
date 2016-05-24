@@ -97,8 +97,22 @@ class LoginViewController: BaseViewController {
             }
             UserManager.sharedManager.loginWithPull { (error, text) in
                 guard !error else {
-                    if (text == UMPullComponentError(.Consent)) {
-                        self.uploadLostConsentFile()
+                    if let msgStr = text {
+                        let components = UMPullComponentErrorAsArray(msgStr)
+
+                        // Try to upload the consent file if we encounter a consent pull error.
+                        if components.contains(.Consent) {
+                            self.uploadLostConsentFile()
+
+                            // Raise a notification if there are other errors.
+                            if components.count > 1 {
+                                Answers.logLoginWithMethod("SPL", success: false, customAttributes: nil)
+                                UINotifications.loginFailed(self, reason: "Failed to get user account")
+                            }
+                        } else {
+                            Answers.logLoginWithMethod("SPL", success: false, customAttributes: nil)
+                            UINotifications.loginFailed(self, reason: "Failed to get user account")
+                        }
                     }
                     else {
                         Answers.logLoginWithMethod("SPL", success: false, customAttributes: nil)

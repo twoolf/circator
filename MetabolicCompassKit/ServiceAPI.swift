@@ -18,37 +18,11 @@ public typealias SvcObjectCompletion = (Bool, AnyObject?) -> Void
 
 private let devServiceURL = "https://dev.metaboliccompass.com"
 private let prodServiceURL = "https://app.metaboliccompass.com"
-private let asDevService = false
+private let asDevService = true
 
 private let resetPassDevURL = devServiceURL + "/forgot"
 private let resetPassProdURL = prodServiceURL + "/forgot"
 public  let resetPassURL = asDevService ? resetPassDevURL : resetPassProdURL
-
-public enum AccountComponent {
-    case Consent
-    case Photo
-    case Profile
-    case Settings
-    case ArchiveSpan
-    case LastAcquired
-}
-
-public func getComponentName(component: AccountComponent) -> String {
-    switch component {
-    case .Consent:
-        return "consent"
-    case .Photo:
-        return "photo"
-    case .Profile:
-        return "profile"
-    case .Settings:
-        return "settings"
-    case .ArchiveSpan:
-        return "archive_span"
-    case .LastAcquired:
-        return "last_acquired"
-    }
-}
 
 /**
  This class sets up the needed API for all of the reads/writes to our cloud data store.  This is needed to support our ability to add new aggregate information into the data store and to update the display on our participants screens as new information is deposited into the store.

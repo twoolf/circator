@@ -44,9 +44,21 @@ public let UMPushReadBinaryFileError : (AccountComponent, String) -> String = { 
     return "Failed to read \(component) file at: \(path)"
 }
 
-public let UMPullComponentError : AccountComponent -> String = { component in
-    return "Failed to pull account component \(component)"
+public let UMPullMultipleComponentsError : [String] -> String = { components in
+    return "Failed to pull account components \(components.joinWithSeparator(","))"
 }
+
+// Inverts the text error for a failed multi-component access as an array of account components.
+public let UMPullComponentErrorAsArray : String -> [AccountComponent] = { errorMsg in
+    let prefix = "Failed to pull account components "
+    var result : [AccountComponent] = []
+    if errorMsg.hasPrefix(prefix) {
+        let componentsStr = errorMsg.substringFromIndex(errorMsg.startIndex.advancedBy(prefix.characters.count - 1))
+        result = componentsStr.componentsSeparatedByString(",").flatMap(getComponentByName)
+    }
+    return result
+}
+
 
 /**
  This manages the users for Metabolic Compass. We need to enable users to maintain access to their data and to delete themselves from the study if they so desire. In addition we maintain, in this class, the ability to do this securely, using OAuth and our third party authenticator (Stormpath)
@@ -508,23 +520,39 @@ public class UserManager {
     private func unwrapResponse(component: AccountComponent, response: [String:AnyObject]) -> [String:AnyObject]?
     {
         let componentName = getComponentName(component)
-        if let componentData = response[componentName] {
-            switch component {
-            case .Consent:
+        switch component {
+        case .Consent:
+            fallthrough
+        case .Photo:
+            if let componentData = response[componentName] as? String {
                 return [componentName: componentData]
-            case .Photo:
-                return [componentName: componentData]
-            case .Profile:
-                return self.downloadProfileExtractor(componentData as! [String : AnyObject])
-            case .Settings:
-                return self.downloadSettingsExtractor(componentData as! [String : AnyObject])
-            case .ArchiveSpan:
-                return self.downloadArchiveSpanExtractor(componentData as! [String : AnyObject])
-            case .LastAcquired:
-                return componentData as? [String : AnyObject]
             }
+            return nil
+
+        case .Profile:
+            if let componentData = response[componentName] as? [String:AnyObject] {
+                return self.downloadProfileExtractor(componentData)
+            }
+            return nil
+
+        case .Settings:
+            if let componentData = response[componentName] as? [String:AnyObject] {
+                return self.downloadSettingsExtractor(componentData)
+            }
+            return nil
+
+        case .ArchiveSpan:
+            if let componentData = response[componentName] as? [String:AnyObject] {
+                return self.downloadArchiveSpanExtractor(componentData)
+            }
+            return nil
+
+        case .LastAcquired:
+            if let componentData = response[componentName] as? [String:AnyObject] {
+                return componentData
+            }
+            return nil
         }
-        return nil
     }
 
     // Retrieves the currently cached account component, wraps it, and pushes it to the backend.
@@ -656,11 +684,11 @@ public class UserManager {
     }
 
     // Retrieves multiple account components in a single request.
-    // TODO: track which components succeeded or failed.
-    private func pullMultipleAccountComponents(components: [AccountComponent], completion: SvcStringCompletion) {
+    private func pullMultipleAccountComponents(components: [AccountComponent], completion: SvcObjectCompletion) {
         Service.json(MCRouter.GetUserAccountData(components), statusCode: 200..<300, tag: "GALLACC") {
             _, _, result in
             var pullSuccess = result.isSuccess
+            var failedComponents : [String] = []
             if pullSuccess {
                 // All account component routes return a JSON object.
                 // Use this to refresh the component cache.
@@ -671,20 +699,22 @@ public class UserManager {
                             self.lastComponentLoadDate[component] = NSDate()
                         } else {
                             // Indicate a failure if we cannot unwrap any component from the response.
+                            failedComponents.append(getComponentName(component))
                             pullSuccess = false
                             break
                         }
                     }
                 }
             }
-            completion(!pullSuccess, UMPullComponentsInfoString)
+            completion(!pullSuccess, failedComponents.isEmpty ? nil : failedComponents)
         }
     }
 
     public func pullFullAccount(completion: SvcStringCompletion) {
         pullMultipleAccountComponents([ .Consent, .Photo, .Profile, .Settings, .ArchiveSpan, .LastAcquired]) {
-            (error, msg) in
-            completion(error, (!error && msg == UMPullComponentsInfoString) ? UMPullComponentsInfoString : msg)
+            (error, failedComponents) in
+            let msg = failedComponents == nil ? UMPullFullAccountInfoString : UMPullMultipleComponentsError(failedComponents as! [String])
+            completion(error, msg)
         }
     }
 
@@ -742,10 +772,6 @@ public class UserManager {
 
     public func pullProfileIfNeeded(completion: SvcObjectCompletion) {
         pullAccountComponentIfNeeded(.Profile, completion: completion)
-    }
-
-    public func pullProfileWithConsent(completion: SvcStringCompletion) {
-        pullMultipleAccountComponents([.Profile, .Consent], completion: completion)
     }
 
     public func getUserIdHash() -> String? {
