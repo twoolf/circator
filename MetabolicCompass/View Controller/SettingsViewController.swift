@@ -24,12 +24,12 @@ private let debugSectionTitles    : [String] = ["Login", "Settings", "Preview Ro
 private let releaseSectionTitles  : [String] = ["Login", "Settings", "Preview Rows", "Profile", "Bulk Upload", "Account Management"]
 
 class MCButton : HTPressableButton {
-    
+
 }
 
 /**
  This class enables the settings view (top right corner of the App) by letting the user choose between different metrics, different default options, different ways to interact with Siri, and even whether to remain within the study.
- 
+
  - note: this view controls bulk upload from HealthKit history
  */
 class SettingsViewController: UITableViewController, UITextFieldDelegate, SFSafariViewControllerDelegate {
@@ -132,14 +132,14 @@ class SettingsViewController: UITableViewController, UITextFieldDelegate, SFSafa
     func formInput() -> FormTextFieldCell {
         let formCell = FormTextFieldCell()
         let cellInput = formCell.formTextField()
-        
+
         cellInput.textColor = UIColor.blackColor()
         cellInput.backgroundColor = UIColor.whiteColor()
-        
+
         cellInput.textAlignment = NSTextAlignment.Right
         cellInput.autocorrectionType = UITextAutocorrectionType.No // no auto correction support
         cellInput.autocapitalizationType = UITextAutocapitalizationType.None // no auto capitalization support
-        
+
         return formCell
     }
 
@@ -563,7 +563,7 @@ class SettingsViewController: UITableViewController, UITextFieldDelegate, SFSafa
                     UserManager.sharedManager.setRefreshFrequency(freq)
                     UINotifications.profileUpdated(self.navigationController!)
                 }
-                
+
             case 4...7:
                 let key = profile[textField.tag - 4].1
                 UserManager.sharedManager.pushProfile([key:txt], completion: {_ in return})
@@ -670,7 +670,7 @@ class ConsentViewController : UIViewController {
         let doneButton = UIBarButtonItem(barButtonSystemItem: .Done, target: self, action: "consentViewDone")
         navigationItem.rightBarButtonItem = doneButton
 
-        let accountCache = UserManager.sharedManager.getProfileCache()
+        let accountCache = UserManager.sharedManager.getConsent()
         if let pdfstr = accountCache["consent"] as? String,
                pdfdata = NSData(base64EncodedString: pdfstr, options: NSDataBase64DecodingOptions())
         {
@@ -684,7 +684,7 @@ class ConsentViewController : UIViewController {
             label.textColor = .blackColor()
             label.textAlignment = .Center
             label.text = "Unable to show consent PDF"
-            
+
             label.translatesAutoresizingMaskIntoConstraints = false
             self.view.addSubview(label)
             self.view.addConstraints([
@@ -694,7 +694,7 @@ class ConsentViewController : UIViewController {
             ])
         }
     }
-    
+
     func consentViewDone() {
         navigationController?.popViewControllerAnimated(true)
     }

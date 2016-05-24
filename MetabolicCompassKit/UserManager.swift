@@ -111,7 +111,7 @@ public class UserManager {
         .Photo        : nil,
         .Profile      : nil,
         .Settings     : nil,
-        .ArchiveSpan  ; nil,
+        .ArchiveSpan  : nil,
         .LastAcquired : nil
     ]
 
@@ -489,13 +489,13 @@ public class UserManager {
                 return componentData
             case .Photo:
                 return componentData
-            case Profile:
+            case .Profile:
                 return [componentName: self.uploadProfileExtractor(componentData)]
-            case Settings:
+            case .Settings:
                 return [componentName: self.uploadSettingsExtractor(componentData)]
-            case ArchiveSpan:
+            case .ArchiveSpan:
                 return [componentName: self.uploadArchiveSpanExtractor(componentData)]
-            case LastAcquired:
+            case .LastAcquired:
                 return [componentName: self.uploadLastAcquiredExtractor(componentData)]
             }
         }
@@ -517,13 +517,13 @@ public class UserManager {
                 return [componentName: componentData]
             case .Photo:
                 return [componentName: componentData]
-            case Profile:
+            case .Profile:
                 return self.downloadProfileExtractor(componentData)
-            case Settings:
+            case .Settings:
                 return self.downloadSettingsExtractor(componentData)
-            case ArchiveSpan:
+            case .ArchiveSpan:
                 return self.downloadArchiveSpanExtractor(componentData)
-            case LastAcquired:
+            case .LastAcquired:
                 return componentData
             }
         }
@@ -693,6 +693,8 @@ public class UserManager {
 
 
     // MARK: - Consent accessors
+    public func getConsent() -> [String: AnyObject] { return getCachedComponent(.Consent) }
+
     public func syncConsent(completion: SvcStringCompletion) {
         syncAccountComponent(.Consent, completion: completion)
     }
@@ -706,6 +708,8 @@ public class UserManager {
     }
 
     // MARK: - Photo accessors
+    public func getPhoto() -> [String: AnyObject] { return getCachedComponent(.Photo) }
+
     public func syncPhoto(completion: SvcStringCompletion) {
         syncAccountComponent(.Photo, completion: completion)
     }

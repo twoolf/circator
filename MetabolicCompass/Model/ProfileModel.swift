@@ -27,7 +27,6 @@ class ProfileModel: UserInfoModel {
         return fields
     }
 
-    // TODO: Yanif: these should all be pulled from the UserManager.
     func setupValues() {
         let profileInfo = UserManager.sharedManager.getProfileCache()
 
