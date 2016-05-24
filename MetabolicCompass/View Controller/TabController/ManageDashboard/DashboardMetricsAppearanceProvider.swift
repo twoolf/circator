@@ -22,8 +22,7 @@ class DashboardMetricsAppearanceProvider: NSObject {
         return self.getColorForSampleType(sampleType, active: active) ?? UIColor.whiteColor()
     }
     
-    private func getColorForSampleType(sampleType: String, active: Bool) -> UIColor?
-    {
+    private func getColorForSampleType(sampleType: String, active: Bool) -> UIColor? {
         if (!active) {
             return UIColor.lightGrayColor()
         }
@@ -106,13 +105,16 @@ class DashboardMetricsAppearanceProvider: NSObject {
             return NSLocalizedString("Water", comment: "Water")
         case HKQuantityTypeIdentifierDietaryEnergyConsumed:
             return NSLocalizedString("Dietary energy", comment: "Dietary Energy")
-            
         case HKCorrelationTypeIdentifierBloodPressure:
             return NSLocalizedString("Blood pressure", comment: "Blood pressure")
-            
         case HKQuantityTypeIdentifierStepCount:
             return NSLocalizedString("Step count", comment: "Step count")
-            
+        case HKQuantityTypeIdentifierUVExposure:
+            return NSLocalizedString("UV Exposure", comment: "UV Exposure")
+        case HKQuantityTypeIdentifierDietarySodium:
+            return NSLocalizedString("Salt", comment: "Salt")
+        case HKQuantityTypeIdentifierActiveEnergyBurned:
+            return NSLocalizedString("Active Energy Burned", comment: " Active Energy Burned")
         default:
             return ""
         }
@@ -139,7 +141,6 @@ class DashboardMetricsAppearanceProvider: NSObject {
             return "icon-sleep"
         case HKQuantityTypeIdentifierBodyMassIndex:
             return "icon-bmi"
-            
         case HKQuantityTypeIdentifierDietaryCaffeine:
             return "icon-caffeine"
         case HKQuantityTypeIdentifierDietarySugar:
@@ -162,13 +163,16 @@ class DashboardMetricsAppearanceProvider: NSObject {
             return "icon-water"
         case HKQuantityTypeIdentifierDietaryEnergyConsumed:
             return "icon-calories"
-            
         case HKCorrelationTypeIdentifierBloodPressure:
             return "icon-blood"
-            
         case HKQuantityTypeIdentifierStepCount:
             return "icon-steps"
-            
+        case HKQuantityTypeIdentifierUVExposure:
+            return "icon-uv"
+        case HKQuantityTypeIdentifierDietarySodium:
+            return "icon-salt"
+        case HKQuantityTypeIdentifierActiveEnergyBurned:
+            return "icon-exercices"
         default:
             return ""
         }
