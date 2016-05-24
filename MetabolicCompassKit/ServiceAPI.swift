@@ -33,25 +33,20 @@ public enum AccountComponent {
     case LastAcquired
 }
 
-private func routeOfComponent(component: AccountComponent) -> String {
+public func getComponentName(component: AccountComponent) -> String {
     switch component {
     case .Consent:
-        return "/user/consent"
-
+        return "consent"
     case .Photo:
-        return "/user/photo"
-
-    case .Profile:
-        return "/user/profile/v2"
-
-    case .Settings:
-        return "/user/settings"
-
-    case .ArchiveSpan:
-        return "/user/archive_span"
-
-    case .LastAcquired:
-        return "/user/last_acquired"
+        return "photo"
+    case Profile:
+        return "profile"
+    case Settings:
+        return "settings"
+    case ArchiveSpan:
+        return "archive_span"
+    case LastAcquired:
+        return "last_acquired"
     }
 }
 
@@ -76,10 +71,15 @@ enum MCRouter : URLRequestConvertible {
     case AggMeasures([String: AnyObject])
 
     // User and profile management API
-    case GetUserAccountData(AccountComponent)
-    case SetUserAccountData(AccountComponent, [String: AnyObject])
+    case GetUserAccountData([AccountComponent])
+
+    case SetUserAccountData([String: AnyObject])
+        // For SetUserAccountData, the caller is responsible for constructing
+        // the component-specific nesting (e.g, ["consent": "<base64 string>"])
+
     case DeleteAccount
 
+    // Token management API
     case TokenExpiry([String: AnyObject])
 
     var method: Alamofire.Method {
@@ -115,11 +115,8 @@ enum MCRouter : URLRequestConvertible {
         case .DeleteAccount:
             return "/user/withdraw"
 
-        case .GetUserAccountData(let component):
-            return routeOfComponent(component)
-
-        case .SetUserAccountData(let component, _):
-            return routeOfComponent(component)
+        case .GetUserAccountData(_), .SetUserAccountData(_):
+            return "/user/account"
 
         case .TokenExpiry:
             return "/user/expiry"
@@ -148,12 +145,11 @@ enum MCRouter : URLRequestConvertible {
         case .DeleteAccount:
             return mutableURLRequest
 
-        case .GetUserAccountData(_):
-            // Account components do not use any kind of json or query parameters.
-            return mutableURLRequest
+        case .GetUserAccountData(let components):
+            let parameters = ["components": components]
+            return Alamofire.ParameterEncoding.URL.encode(mutableURLRequest, parameters: parameters).0
 
-        case .SetUserAccountData(_, let parameters):
-            // All account components use the same json parameter encoding.
+        case .SetUserAccountData(let parameters):
             return Alamofire.ParameterEncoding.JSON.encode(mutableURLRequest, parameters: parameters).0
 
         case .TokenExpiry(let parameters):

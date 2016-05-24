@@ -99,18 +99,20 @@ public class UserManager {
     private(set) public var componentCache : [AccountComponent: [String: AnyObject]] = [
         .Consent      : [:],
         .Photo        : [:],
-        .LastAcquired : [:],
         .Profile      : [:],
-        .Settings     : [:]
+        .Settings     : [:],
+        .ArchiveSpan  : [:],
+        .LastAcquired : [:]
     ]
 
     // Track when the remote account component was last retrieved
     var lastComponentLoadDate : [AccountComponent: NSDate?] = [
         .Consent      : nil,
         .Photo        : nil,
-        .LastAcquired : nil,
         .Profile      : nil,
-        .Settings     : nil
+        .Settings     : nil,
+        .ArchiveSpan  ; nil,
+        .LastAcquired : nil
     ]
 
     // Batched synchronization for account components.
@@ -118,9 +120,10 @@ public class UserManager {
     var requestAsyncs : [AccountComponent: (Async?, Double)] = [
         .Consent      : (nil, 1.0),
         .Photo        : (nil, 1.0),
-        .LastAcquired : (nil, 1.0),
         .Profile      : (nil, 1.0),
-        .Settings     : (nil, 1.0)
+        .Settings     : (nil, 1.0),
+        .ArchiveSpan  : (nil, 1.0),
+        .LastAcquired : (nil, 1.0)
     ]
 
     init() {
@@ -436,26 +439,107 @@ public class UserManager {
         refreshAccessToken(0, completion: completion)
     }
 
+    // MARK: - Account component extractors
+    private func uploadProfileExtractor(data: [String:AnyObject]) -> [String:AnyObject] {
+        return Dictionary(pairs: data.filter { kv in return !profileExcludes.contains(kv.0) })
+    }
+
+    private func downloadProfileExtractor(data: [String:AnyObject]) -> [String:AnyObject] {
+        if let id = data["userid"] {
+            var profile = data
+            profile.removeValueForKey("userid")
+            profile[UMUserHashKey] = id
+            return profile
+        }
+        return data
+    }
+
+    private func uploadSettingsExtractor(data: [String:AnyObject]) -> [String:AnyObject] {
+        return Dictionary(pairs: data.map { kv in return (settingsServerId(kv.0), kv.1) })
+    }
+
+    private func downloadSettingsExtractor(data: [String:AnyObject]) -> [String:AnyObject] {
+        return Dictionary(pairs: data.map { kv in return (settingsClientId(kv.0), kv.1)} )
+    }
+
+    private func uploadArchiveSpanExtractor(data: [String:AnyObject]) -> [String:AnyObject] {
+        return Dictionary(pairs: data.map { kv in return (archiveSpanServerId(kv.0), kv.1) })
+    }
+
+    private func downloadArchiveSpanExtractor(data: [String:AnyObject]) -> [String:AnyObject] {
+        return Dictionary(pairs: data.map { kv in return (archiveSpanClientId(kv.0), kv.1)} )
+    }
+
+    public func uploadLastAcquiredExtractor(data: [String:AnyObject]) -> [String:AnyObject] {
+        return Dictionary(pairs: data.map { kv in return (lastAcquiredServerId(kv.0)!, kv.1) })
+    }
+
 
     // MARK: - Account component accessors
 
-    // Retrieves the currently cached account component and pushes it to the backend.
-    // The component may be modified by an extractor to transform the component data.
-    private func syncAccountComponent(component: AccountComponent,
-                                      extractor: ([String:AnyObject] -> [String:AnyObject])?,
-                                      completion: SvcStringCompletion)
+    // Returns a component as a dictionary, where the dictionary key corresponds to the component name.
+    // This is used for uploading data to the backend.
+    // Consent and photo data are stored in wrapped form, and thus need no additional wrapping.
+    private func wrapCache(component: AccountComponent) -> [String:AnyObject]?
     {
-        var params : [String:AnyObject] = [:]
-        if let fn = extractor { params = fn(componentCache[component]!) }
-        else { params = componentCache[component]! }
-        Service.string(MCRouter.SetUserAccountData(component, params), statusCode: 200..<300, tag: "SACC\(component)") {
+        let componentName = getComponentName(component)
+        if let componentData = componentCache[component] {
+            switch component {
+            case .Consent:
+                return componentData
+            case .Photo:
+                return componentData
+            case Profile:
+                return [componentName: self.uploadProfileExtractor(componentData)]
+            case Settings:
+                return [componentName: self.uploadSettingsExtractor(componentData)]
+            case ArchiveSpan:
+                return [componentName: self.uploadArchiveSpanExtractor(componentData)]
+            case LastAcquired:
+                return [componentName: self.uploadLastAcquiredExtractor(componentData)]
+            }
+        }
+        return nil
+    }
+
+    // Returns an unwrapped component as dictionary, stripping any component name from the argument.
+    // This is used when downloading data from the backend service.
+    // Consent and photo data are returned in wrapped form.
+    private func unwrapResponse(component: AccountComponent,
+                                response: [String:AnyObject],
+                                extractor: ([String:AnyObject] -> [String:AnyObject])?)
+                    -> [String:AnyObject]?
+    {
+        let componentName = getComponentName(component)
+        if let componentData = response[componentName] {
+            switch component {
+            case .Consent:
+                return [componentName: componentData]
+            case .Photo:
+                return [componentName: componentData]
+            case Profile:
+                return self.downloadProfileExtractor(componentData)
+            case Settings:
+                return self.downloadSettingsExtractor(componentData)
+            case ArchiveSpan:
+                return self.downloadArchiveSpanExtractor(componentData)
+            case LastAcquired:
+                return componentData
+            }
+        }
+        return nil
+    }
+
+    // Retrieves the currently cached account component, wraps it, and pushes it to the backend.
+    private func syncAccountComponent(component: AccountComponent, completion: SvcStringCompletion)
+    {
+        let componentData = wrapCache(component, extractor: extractor)
+        Service.string(MCRouter.SetUserAccountData(payload), statusCode: 200..<300, tag: "SYNCACC") {
             _, response, result in completion(!result.isSuccess, result.value)
         }
     }
 
-    private func deferredSyncOnAccountComponent(component: AccountComponent,
-                                                extractor: ([String:AnyObject] -> [String:AnyObject])?,
-                                                sync: Bool)
+    private func deferredSyncOnAccountComponent(component: AccountComponent, sync: Bool)
     {
         if sync {
             requestAsyncs[component]!.0?.cancel()
@@ -470,41 +554,33 @@ public class UserManager {
     // Sets the component data in the cache as requested, and then synchronizes with the backend.
     private func pushAccountComponent(component: AccountComponent,
                                       refresh: Bool,
-                                      parameters: [String:AnyObject],
-                                      extractor: ([String:AnyObject] -> [String:AnyObject])?,
+                                      componentData: [String:AnyObject],
                                       completion: SvcStringCompletion)
     {
         // Refresh cache, and post to the backend.
-        // TOD: refresh arg value or extracted value?
-        if refresh { refreshComponentCache(component, parameters: parameters) }
-        syncAccountComponent(component, extractor: extractor, completion: completion)
+        if refresh { refreshComponentCache(component, componentData: componentData) }
+        syncAccountComponent(component, completion: completion)
     }
 
     // Sets the component data in the cache as requested, and batches synchronization requests.
     private func deferredPushOnAccountComponent(component: AccountComponent,
-                                                refresh: Bool,
-                                                sync: Bool,
-                                                parameters: [String:AnyObject],
-                                                extractor: ([String:AnyObject] -> [String:AnyObject])?)
+                                                refresh: Bool, sync: Bool,
+                                                componentData: [String:AnyObject])
     {
-        if refresh { refreshComponentCache(component, parameters: parameters) }
-        deferredSyncOnAccountComponent(component, extractor: extractor, sync: sync)
+        if refresh { refreshComponentCache(component, componentData: componentData) }
+        deferredSyncOnAccountComponent(component, sync: sync)
     }
 
     // A helper function for a binary account component that retrieves the component data from a file.
     // This is common to both the consent pdf and the profile pic.
-    private func pushBinaryFileAccountComponent(
-                    filePath: String?,
-                    fieldWrapper: String,
-                    component: AccountComponent,
-                    refresh: Bool,
-                    extractor: ([String:AnyObject] -> [String:AnyObject])?,
-                    completion: SvcStringCompletion)
+    private func pushBinaryFileAccountComponent(filePath: String?, component: AccountComponent,
+                                                refresh: Bool, completion: SvcStringCompletion)
     {
         if let path = filePath {
             if let data = NSData(contentsOfFile: path) {
-                let cache = [fieldWrapper: data.base64EncodedStringWithOptions(NSDataBase64EncodingOptions())]
-                pushAccountComponent(component, refresh: true, parameters: cache, extractor: nil, completion: completion)
+                let componentName = getComponentName(component)
+                let cache = [componentName: data.base64EncodedStringWithOptions(NSDataBase64EncodingOptions())]
+                pushAccountComponent(component, refresh: true, componentData: cache, completion: completion)
             } else {
                 let msg = UMPushReadBinaryFileError(component, path)
                 log.error(msg)
@@ -518,33 +594,34 @@ public class UserManager {
     }
 
     // Retrieves an account component from the backend service.
-    private func pullAccountComponent(component: AccountComponent,
-                                      extractor: ([String:AnyObject] -> [String:AnyObject])?,
-                                      completion: SvcObjectCompletion)
+    private func pullAccountComponent(component: AccountComponent, completion: SvcObjectCompletion)
     {
         print("!!! pullAccountComponent \(component)")
-        Service.json(MCRouter.GetUserAccountData(component), statusCode: 200..<300, tag: "GACC\(component)") {
+        Service.json(MCRouter.GetUserAccountData([component]), statusCode: 200..<300, tag: "GACC\(component)") {
             _, _, result in
-            if result.isSuccess {
+            var pullSuccess = result.isSuccess
+            if pullSuccess {
                 // All account component routes return a JSON object.
                 // Use this to refresh the component cache.
-                if let dict = result.value as? [String: AnyObject] {
-                    let refreshVal = extractor == nil ? dict : extractor!(dict)
-                    self.refreshComponentCache(component, parameters: refreshVal)
+                if let dict = result.value as? [String: AnyObject],
+                       refreshVal = unwrapResponse(component, response: dict)
+                {
+                    self.refreshComponentCache(component, componentData: refreshVal)
                     self.lastComponentLoadDate[component] = NSDate()
+                } else {
+                    // Indicate a failure if we cannot unwrap the component from the response.
+                    pullSuccess = false
                 }
             }
-            completion(!result.isSuccess, result.value)
+            completion(!pullSuccess, result.value)
         }
     }
 
     // Retrieves an account component if it is stale.
-    private func pullAccountComponentIfNeeded(component: AccountComponent,
-                                              extractor: ([String:AnyObject] -> [String:AnyObject])?,
-                                              completion: SvcObjectCompletion)
+    private func pullAccountComponentIfNeeded(component: AccountComponent, completion: SvcObjectCompletion)
     {
         if isAccountComponentOutdated(component) {
-            pullAccountComponent(component, extractor: extractor, completion: completion)
+            pullAccountComponent(component, completion: completion)
         } else {
             print("pull component \(component) skipped")
             completion(false, nil)
@@ -559,9 +636,9 @@ public class UserManager {
         }
     }
 
-    private func refreshComponentCache(component: AccountComponent, parameters: [String:AnyObject]) {
+    private func refreshComponentCache(component: AccountComponent, componentData: [String:AnyObject]) {
         if var cache = componentCache[component] {
-            for (k,v) in parameters {
+            for (k,v) in componentData {
                 cache.updateValue(v, forKey: k)
             }
             componentCache[component] = cache
@@ -581,93 +658,81 @@ public class UserManager {
         for component in components { resetCachedComponent(component) }
     }
 
-    // Batch accessor, as an async parallel set of requests to each component's web endpoint.
-    private func pullAccountComponents(components: [(AccountComponent, ([String:AnyObject] -> [String:AnyObject])?)],
-                                       completion: SvcStringCompletion)
-    {
-        let async = AsyncKit<AccountComponent, AccountComponent>()
-        async.parallel(components.map { (component, extractor) in
-            return { done in
-                self.pullAccountComponent(component, extractor: extractor) {
-                    (error, _) in
-                    if error { done(.Failure(component)) }
-                    else { done(.Success(component)) }
+    // Retrieves multiple account components in a single request.
+    // TODO: track which components succeeded or failed.
+    private func pullMultipleAccountComponents(components: [AccountComponent], completion: SvcStringCompletion) {
+        Service.json(MCRouter.GetUserAccountData(components), statusCode: 200..<300, tag: "GACC\(component)") {
+            _, _, result in
+            var pullSuccess = result.isSuccess
+            if pullSuccess {
+                // All account component routes return a JSON object.
+                // Use this to refresh the component cache.
+                if let dict = result.value as? [String: AnyObject] {
+                    for component in components {
+                        if let refreshVal = unwrapResponse(component, dict) {
+                            self.refreshComponentCache(component, componentData: refreshVal)
+                            self.lastComponentLoadDate[component] = NSDate()
+                        } else {
+                            // Indicate a failure if we cannot unwrap any component from the response.
+                            pullSuccess = false
+                            break
+                        }
+                    }
                 }
             }
-        }) { result in
-            switch result {
-            case .Success(_):
-                completion(false, UMPullComponentsInfoString)
-            case .Failure(let component):
-                completion(true, UMPullComponentError(component))
-            }
+            completion(!pullSuccess, result.value)
         }
     }
 
     public func pullFullAccount(completion: SvcStringCompletion) {
-        pullAccountComponents([.Consent, .Photo, .Profile, .Settings, .ArchiveSpan, .LastAcquired]) {
+        pullMultipleAccountComponents([ .Consent, .Photo, .Profile, .Settings, .ArchiveSpan, .LastAcquired]) {
             (error, msg) in
             completion(error, (!error && msg == UMPullComponentsInfoString) ? UMPullComponentsInfoString : msg)
         }
     }
 
+
     // MARK: - Consent accessors
     public func syncConsent(completion: SvcStringCompletion) {
-        syncAccountComponent(.Consent, extractor: nil, completion: completion)
+        syncAccountComponent(.Consent, completion: completion)
     }
 
     public func pushConsent(filePath: String?, completion: SvcStringCompletion) {
-        pushBinaryFileAccountComponent(filePath, fieldWrapper: "consent",
-            component: .Consent, refresh: true, extractor: nil, completion: completion)
+        pushBinaryFileAccountComponent(filePath, component: .Consent, refresh: true, completion: completion)
     }
 
     public func pullConsent(completion: SvcObjectCompletion) {
-        pullAccountComponent(.Consent, extractor: nil, completion: completion)
+        pullAccountComponent(.Consent, completion: completion)
     }
 
     // MARK: - Photo accessors
     public func syncPhoto(completion: SvcStringCompletion) {
-        syncAccountComponent(.Photo, extractor: nil, completion: completion)
+        syncAccountComponent(.Photo, completion: completion)
     }
 
     public func pushPhoto(filePath: String?, completion: SvcStringCompletion) {
-        pushBinaryFileAccountComponent(filePath, fieldWrapper: "photo",
-            component: .Photo, refresh: true, extractor: nil, completion: completion)
+        pushBinaryFileAccountComponent(filePath, component: .Photo, refresh: true, completion: completion)
     }
 
     public func pullPhoto(completion: SvcObjectCompletion) {
-        pullAccountComponent(.Photo, extractor: nil, completion: completion)
+        pullAccountComponent(.Photo, completion: completion)
     }
 
 
     // MARK: - Profile accessors
 
-    private func uploadProfileExtractor(data: [String:AnyObject]) -> [String:AnyObject] {
-        return Dictionary(pairs: data.filter { kv in return !profileExcludes.contains(kv.0) })
-    }
-
-    private func downloadProfileExtractor(data: [String:AnyObject]) -> [String:AnyObject] {
-        if let id = data["userid"] {
-            var profile = data
-            profile.removeValueForKey("userid")
-            profile[UMUserHashKey] = id
-            return profile
-        }
-        return data
-    }
-
     public func getProfileCache() -> [String: AnyObject] { return getCachedComponent(.Profile) }
 
     public func syncProfile(completion: SvcStringCompletion) {
-        syncAccountComponent(.Profile, extractor: self.uploadProfileExtractor, completion: completion)
+        syncAccountComponent(.Profile, completion: completion)
     }
 
-    public func pushProfile(metadata: [String: AnyObject], completion: SvcStringCompletion) {
-        pushAccountComponent(.Profile, refresh: true, parameters: metadata, extractor: self.uploadProfileExtractor, completion: completion)
+    public func pushProfile(componentData: [String: AnyObject], completion: SvcStringCompletion) {
+        pushAccountComponent(.Profile, refresh: true, componentData: componentData, completion: completion)
     }
 
     public func pullProfile(completion: SvcObjectCompletion) {
-        pullAccountComponent(.Profile, extractor: self.downloadProfileExtractor, completion: completion)
+        pullAccountComponent(.Profile, completion: completion)
     }
 
     public func isProfileOutdated() -> Bool {
@@ -675,14 +740,11 @@ public class UserManager {
     }
 
     public func pullProfileIfNeeded(completion: SvcObjectCompletion) {
-        pullAccountComponentIfNeeded(.Profile, extractor: self.downloadProfileExtractor, completion: completion)
+        pullAccountComponentIfNeeded(.Profile, completion: completion)
     }
 
     public func pullProfileWithConsent(completion: SvcStringCompletion) {
-        pullAccountComponents([
-            (.Profile, self.downloadProfileExtractor),
-            (.Consent, nil)
-        ], completion: completion)
+        pullMultipleAccountComponents([.Profile, .Consent], completion: completion)
     }
 
     public func getUserIdHash() -> String? {
@@ -692,29 +754,20 @@ public class UserManager {
 
     // MARK: - Settings accessors
 
-    private func uploadSettingsExtractor(data: [String:AnyObject]) -> [String:AnyObject] {
-        return Dictionary(pairs: data.map { kv in return (settingsServerId(kv.0), kv.1) })
-    }
-
-    private func downloadSettingsExtractor(data: [String:AnyObject]) -> [String:AnyObject] {
-        return Dictionary(pairs: data.map { kv in return (settingsClientId(kv.0), kv.1)} )
-    }
-
     public func getSettingsCache() -> [String: AnyObject] { return getCachedComponent(.Settings) }
 
     public func resetSettingsCache() { resetCachedComponent(.Settings) }
 
     public func syncSettings(completion: SvcStringCompletion) {
-        syncAccountComponent(.Settings, extractor: self.uploadSettingsExtractor, completion: completion)
+        syncAccountComponent(.Settings, completion: completion)
     }
 
-    public func pushSettings(metadata: [String: AnyObject], completion: SvcStringCompletion) {
-        pushAccountComponent(.Settings, refresh: true, parameters: metadata,
-            extractor: self.uploadSettingsExtractor, completion: completion)
+    public func pushSettings(componentData: [String: AnyObject], completion: SvcStringCompletion) {
+        pushAccountComponent(.Settings, refresh: true, componentData: componentData, completion: completion)
     }
 
     public func pullSettings(completion: SvcObjectCompletion) {
-        pullAccountComponent(.Settings, extractor: self.downloadSettingsExtractor, completion: completion)
+        pullAccountComponent(.Settings, completion: completion)
     }
 
     public func getHotWords() -> String {
@@ -735,14 +788,6 @@ public class UserManager {
 
 
     // MARK: - Historical ranges for anchor query bulk ingestion
-
-    private func uploadArchiveSpanExtractor(data: [String:AnyObject]) -> [String:AnyObject] {
-        return Dictionary(pairs: data.map { kv in return (archiveSpanServerId(kv.0), kv.1) })
-    }
-
-    private func downloadArchiveSpanExtractor(data: [String:AnyObject]) -> [String:AnyObject] {
-        return Dictionary(pairs: data.map { kv in return (archiveSpanClientId(kv.0), kv.1)} )
-    }
 
     public func getArchiveSpanCache() -> [String: AnyObject] { return getCachedComponent(.ArchiveSpan) }
 
@@ -786,8 +831,7 @@ public class UserManager {
             sdict.updateValue(start, forKey: k)
             edict.updateValue(end, forKey: k)
             let newSpan = [HMHRangeStartKey: sdict, HMHRangeEndKey: edict]
-            deferredPushOnAccountComponent(.ArchiveSpan, refresh: true, sync: sync,
-                parameters: newSpan, extractor: self.uploadArchiveSpanExtractor)
+            deferredPushOnAccountComponent(.ArchiveSpan, refresh: true, sync: sync, componentData: newSpan)
         }
 
         return (start, end)
@@ -808,8 +852,7 @@ public class UserManager {
             let newDate = decrAnchorDate(NSDate(timeIntervalSinceReferenceDate: start)).timeIntervalSinceReferenceDate
             sdict.updateValue(newDate, forKey: k)
             let newSpan = [HMHRangeStartKey: sdict]
-            deferredPushOnAccountComponent(.ArchiveSpan, refresh: true, sync: sync,
-                parameters: newSpan, extractor: self.uploadArchiveSpanExtractor)
+            deferredPushOnAccountComponent(.ArchiveSpan, refresh: true, sync: sync, componentData: newSpan)
         } else {
             log.error("Could not find historical sample range for \(key)")
         }
@@ -829,8 +872,7 @@ public class UserManager {
         {
             mdict.updateValue(min.timeIntervalSinceReferenceDate, forKey: k)
             let newSpan = [HMHRangeMinKey: mdict]
-            deferredPushOnAccountComponent(.ArchiveSpan, refresh: true, sync: sync,
-                parameters: newSpan, extractor: self.uploadArchiveSpanExtractor)
+            deferredPushOnAccountComponent(.ArchiveSpan, refresh: true, sync: sync, componentData: newSpan)
         }
     }
 
@@ -842,21 +884,16 @@ public class UserManager {
 
     // MARK : - Last acquisition times.
 
-    public func uploadLastAcquiredExtractor(data: [String:AnyObject]) -> [String:AnyObject] {
-        return Dictionary(pairs: data.map { kv in return (lastAcquiredServerId(kv.0)!, kv.1) })
-    }
-
     public func getAcquisitionTimes() -> [String: AnyObject] { return getCachedComponent(.LastAcquired) }
 
     public func resetAcquisitionTimes() { resetCachedComponent(.LastAcquired) }
 
     public func setAcquisitionTimes(timestamps: [String: AnyObject], sync: Bool = false) {
-        deferredPushOnAccountComponent(.LastAcquired, refresh: true, sync: sync,
-            parameters: timestamps, extractor: uploadLastAcquiredExtractor)
+        deferredPushOnAccountComponent(.LastAcquired, refresh: true, sync: sync, componentData: timestamps)
     }
 
     public func syncAcquisitionTimes(completion: SvcStringCompletion) {
-        syncAccountComponent(.LastAcquired, extractor: nil, completion: completion)
+        syncAccountComponent(.LastAcquired, completion: completion)
     }
 
 

@@ -62,8 +62,7 @@ class AccountManager: NSObject {
     }
 
     private func loginComplete () {
-        // TODO:
-        // Yanif: this currently pulls from Stormpath, and is no longer needed.
+        // TODO: Yanif: this currently pulls from Stormpath, and is no longer needed.
         // The profile will contain directly this information.
         UserManager.sharedManager.getUserInfo({ dict, error in
             // try parse user info
