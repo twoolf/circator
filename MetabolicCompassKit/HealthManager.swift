@@ -244,30 +244,38 @@ public class HealthManager: NSObject, WCSessionDelegate {
             fetchAggregatedSamplesOfType(sampleType, predicate: predicate, completion: completion)
 
         case is HKQuantityType:
-            let interval = NSDateComponents()
-            interval.day = 1
-
-            // Set the anchor date to midnight today.
-            let anchorDate = NSDate().startOf(.Day, inRegion: Region())
-            let quantityType = HKObjectType.quantityTypeForIdentifier(sampleType.identifier)!
-
-            // Create the query
-            let query = HKStatisticsCollectionQuery(quantityType: quantityType,
-                quantitySamplePredicate: predicate,
-                options: quantityType.aggregationOptions,
-                anchorDate: anchorDate,
-                intervalComponents: interval)
-
-            // Set the results handler
-            query.initialResultsHandler = { query, results, error in
-                guard error == nil else {
-                    log.error("Failed to fetch \(sampleType.displayText) statistics: \(error!)")
-                    completion(samples: [], error: error)
-                    return
-                }
-                completion(samples: results?.statistics().map { $0 as MCSample } ?? [], error: nil)
+            let qType = sampleType as! HKQuantityType
+            switch qType.aggregationStyle{
+                case .Discrete:
+                    let interval = NSDateComponents()
+                    interval.day = 1
+                    
+                    // Set the anchor date to midnight today.
+                    let anchorDate = NSDate().startOf(.Day, inRegion: Region())
+                    let quantityType = HKObjectType.quantityTypeForIdentifier(sampleType.identifier)!
+                    
+                    // Create the query
+                    let query = HKStatisticsCollectionQuery(quantityType: quantityType,
+                                                            quantitySamplePredicate: predicate,
+                                                            options: quantityType.aggregationOptions,
+                                                            anchorDate: anchorDate,
+                                                            intervalComponents: interval)
+                    
+                    // Set the results handler
+                    query.initialResultsHandler = { query, results, error in
+                        guard error == nil else {
+                            log.error("Failed to fetch \(sampleType.displayText) statistics: \(error!)")
+                            completion(samples: [], error: error)
+                            return
+                        }
+                        completion(samples: results?.statistics().map { $0 as MCSample } ?? [], error: nil)
+                    }
+                    healthKitStore.executeQuery(query)
+                
+                case .Cumulative:
+                    // do not calvulate average statistic for Cumulative types
+                    break
             }
-            healthKitStore.executeQuery(query)
 
         default:
             let err = NSError(domain: HMErrorDomain, code: 1048576, userInfo: [NSLocalizedDescriptionKey: "Not implemented"])

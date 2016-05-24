@@ -22,7 +22,16 @@ class DashboardMetricsAppearanceProvider: NSObject {
         return self.getColorForSampleType(sampleType, active: active) ?? UIColor.whiteColor()
     }
     
-    private func getColorForSampleType(sampleType: String, active: Bool) -> UIColor? {
+    enum SampleGroupColor: UInt32 {
+        case sgBlue = 0x388CFB
+        case sgRed = 0xE2472C
+        case sgYelow = 0xB68F14
+        case sgMagenta = 0x8627B5
+    }
+    
+    
+    private func getColorForSampleType(sampleType: String, active: Bool) -> UIColor?
+    {
         if (!active) {
             return UIColor.lightGrayColor()
         }
@@ -63,7 +72,16 @@ class DashboardMetricsAppearanceProvider: NSObject {
             return UIColor.colorWithHexString("#BA1075")
 
         default:
+            if #available(iOS 9.3, *) {
+                switch sampleType {
+                    case HKQuantityTypeIdentifierAppleExerciseTime:
+                        return UIColor.colorWithHex(SampleGroupColor.sgRed.rawValue)
+                    default:break
+                }
+
+            }
             return UIColor.whiteColor()
+            
         }
     }
     
@@ -78,15 +96,24 @@ class DashboardMetricsAppearanceProvider: NSObject {
             return NSLocalizedString("Sleep", comment: "Sleep")
         case HKQuantityTypeIdentifierBodyMassIndex:
             return NSLocalizedString("BMI", comment: "Body Mass Index")
-            
+        case HKQuantityTypeIdentifierActiveEnergyBurned:
+            return NSLocalizedString("Active Energy", comment: "energy burned")
+        case HKQuantityTypeIdentifierBasalEnergyBurned:
+            return NSLocalizedString("Resting Energy", comment: "Basal Energy")
+        case HKQuantityTypeIdentifierUVExposure:
+            return NSLocalizedString("UV Exposure", comment: "UV Exposure")
         case HKQuantityTypeIdentifierDietaryCaffeine:
             return NSLocalizedString("Caffeine", comment: "Caffeine")
         case HKQuantityTypeIdentifierDietarySugar:
             return NSLocalizedString("Sugar", comment: "Sugar")
         case HKQuantityTypeIdentifierDietaryCholesterol:
             return NSLocalizedString("Cholesterol", comment: "Cholesterol")
+        case HKQuantityTypeIdentifierDietarySodium:
+            return NSLocalizedString("Salt", comment: "Sodium")
         case HKQuantityTypeIdentifierDietaryProtein:
             return NSLocalizedString("Protein", comment: "Protein")
+        case HKQuantityTypeIdentifierDietaryFiber:
+            return NSLocalizedString("Fiber", comment: "Fiber")
         case HKQuantityTypeIdentifierDietaryFatTotal:
             return NSLocalizedString("Fat", comment: "Fat")
         case HKQuantityTypeIdentifierDietaryCarbohydrates:
@@ -112,6 +139,13 @@ class DashboardMetricsAppearanceProvider: NSObject {
         case HKQuantityTypeIdentifierActiveEnergyBurned:
             return NSLocalizedString("Active Energy Burned", comment: " Active Energy Burned")
         default:
+            if #available(iOS 9.3, *) {
+                switch sampleType {
+                    case HKQuantityTypeIdentifierAppleExerciseTime:
+                        return NSLocalizedString("Exercise", comment: "Exercise duration")
+                    default:break
+                }
+            }
             return ""
         }
     }
@@ -137,13 +171,23 @@ class DashboardMetricsAppearanceProvider: NSObject {
             return "icon-sleep"
         case HKQuantityTypeIdentifierBodyMassIndex:
             return "icon-bmi"
+        case HKQuantityTypeIdentifierActiveEnergyBurned:
+            return "icon-heart-rate"
+        case HKQuantityTypeIdentifierBasalEnergyBurned:
+            return "icon-heart-rate"
+        case HKQuantityTypeIdentifierUVExposure:
+            return "icon-uv"
         case HKQuantityTypeIdentifierDietaryCaffeine:
             return "icon-caffeine"
         case HKQuantityTypeIdentifierDietarySugar:
             return "icon-sugar"
         case HKQuantityTypeIdentifierDietaryCholesterol:
             return "icon-cholesterol"
+        case HKQuantityTypeIdentifierDietarySodium:
+            return "icon-salt"
         case HKQuantityTypeIdentifierDietaryProtein:
+            return "icon-protein"
+        case HKQuantityTypeIdentifierDietaryFiber:
             return "icon-protein"
         case HKQuantityTypeIdentifierDietaryFatTotal:
             return "icon-fat"
@@ -170,13 +214,22 @@ class DashboardMetricsAppearanceProvider: NSObject {
         case HKQuantityTypeIdentifierActiveEnergyBurned:
             return "icon-exercices"
         default:
+            if #available(iOS 9.3, *) {
+                switch sampleType {
+                    case HKQuantityTypeIdentifierAppleExerciseTime:
+                        return "icon-steps"
+                    default:break
+                }
+            }
             return ""
         }
     }
 
     func imageForSampleType(sampleType: String, active: Bool) -> UIImage?
     {
-        return UIImage(named: self.imageNameWithState(self.imageNameForSampleType(sampleType), active: active))
+        let imageName = self.imageNameWithState(self.imageNameForSampleType(sampleType), active: active)
+        let image = UIImage(named: imageName)
+        return image
     }
     
 }
