@@ -39,13 +39,13 @@ public func getComponentName(component: AccountComponent) -> String {
         return "consent"
     case .Photo:
         return "photo"
-    case Profile:
+    case .Profile:
         return "profile"
-    case Settings:
+    case .Settings:
         return "settings"
-    case ArchiveSpan:
+    case .ArchiveSpan:
         return "archive_span"
-    case LastAcquired:
+    case .LastAcquired:
         return "last_acquired"
     }
 }
