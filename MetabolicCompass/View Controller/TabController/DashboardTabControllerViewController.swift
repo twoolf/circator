@@ -91,8 +91,11 @@ class DashboardTabControllerViewController: UIViewController {
         guard let segmentedControl: UISegmentedControl = sender as? UISegmentedControl else {
             return
         }
+        
+        let hideRightButton = segmentedControl.selectedSegmentIndex == DashboardType.DailyProgress.rawValue || segmentedControl.selectedSegmentIndex == DashboardType.Balance.rawValue
+        
         navigationItem.leftBarButtonItem = segmentedControl.selectedSegmentIndex == DashboardType.DailyProgress.rawValue ? nil : self.leftNavButton
-        navigationItem.rightBarButtonItem = segmentedControl.selectedSegmentIndex == DashboardType.DailyProgress.rawValue ? nil : self.rightNavButton
+        navigationItem.rightBarButtonItem = hideRightButton ? nil : self.rightNavButton
         containerController?.selectedIndex = segmentedControl.selectedSegmentIndex
     }
 }
