@@ -9,6 +9,8 @@
 #ifndef MetabolicCompass_Bridging_Header_h
 #define MetabolicCompass_Bridging_Header_h
 
-//#import "AppLogManager/AppLogViewController.h"
+#import "AppLogViewController.h"
+#import "AppLogManager.h"
+#import "AppLogNetworkRequestItem.h"
 
 #endif /* MetabolicCompass_Bridging_Header_h */

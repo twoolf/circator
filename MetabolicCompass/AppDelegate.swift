@@ -70,13 +70,15 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         window?.rootViewController = navController
         window?.makeKeyAndVisible()
 
-        //AppLogViewController.addAppLogRecognizers()
-
+        AppLogViewController.addAppLogRecognizersToGlobalWindow()
+        Service.delegate = SALogger.sharedLogger
+        
         return true
     }
 
     func application(application: UIApplication, supportedInterfaceOrientationsForWindow window: UIWindow?) -> UIInterfaceOrientationMask {
-        return checkOrientation(self.window?.rootViewController)
+        //return checkOrientation(self.window?.rootViewController)
+        return UIInterfaceOrientationMask.Portrait
     }
 
     func checkOrientation(viewController: UIViewController?) -> UIInterfaceOrientationMask {

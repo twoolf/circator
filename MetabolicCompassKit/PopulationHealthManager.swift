@@ -10,6 +10,7 @@ import Foundation
 import HealthKit
 import Async
 
+
 /**
  This is the manager of information for the comparison population.  By providing this comparison we provide our study participants with a greater ability to view themselves in context.  Initially this is defined by the NHANES data. With sufficient enrolled subjects, this will be determined by aggregates over the ongoing study population.
  
@@ -206,14 +207,23 @@ public class PopulationHealthManager {
                     }
                 } else {
                     failed = true
+                    let err = NSError(domain: "App error", code: 0, userInfo: [NSLocalizedDescriptionKey:kvdict.description])
+                    let dict = ["title":"population data error", "error":err]
+                    NSNotificationCenter.defaultCenter().postNotificationName("ncAppLogNotification", object: nil, userInfo: dict)
                     break
                 }
             }
             if ( !failed ) {
                 Async.main {
+                    //addSALogObj("Setting population data", ["some key":"some value"])
+                    let dict = ["title":"population data", "obj":populationAggregates.description ?? ""]
+                    NSNotificationCenter.defaultCenter().postNotificationName("ncAppLogNotification", object: nil, userInfo: dict)
                     self.mostRecentAggregates = populationAggregates
                     NSNotificationCenter.defaultCenter().postNotificationName(HMDidUpdateRecentSamplesNotification, object: self)
                 }
+            }
+            else{
+                
             }
         }
     }
