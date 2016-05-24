@@ -14,8 +14,11 @@ import Async
 class BalanceSampleListController: UIViewController, UITableViewDelegate, UITableViewDataSource {
     
     @IBOutlet weak var tableView: UITableView!
+    @IBOutlet weak var tablePickerHeight: NSLayoutConstraint!
+    weak var parentCell: ManageBalanceCell!
+    let rowHeight:CGFloat = 60.0
     var selectdType: HKSampleType!
-    weak var parentCell: UITableViewCell!
+    var backgroundImage:UIImage? = nil
     var completionBlock: (Void -> Void)?
     
     var data: [DashboardMetricsConfigItem] = [] {
@@ -28,26 +31,20 @@ class BalanceSampleListController: UIViewController, UITableViewDelegate, UITabl
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        
         self.tableView.dataSource = self;
         self.tableView.delegate   = self;
-        
+    }
+    
+    override func viewWillAppear(animated: Bool) {
+        super.viewWillAppear(animated)
         self.refreshContent()
-        
-       
-        
     }
     
     func refreshContent () {
         self.data = []
-        
-        for type in PreviewManager.supportedTypes {
-            let contains = PreviewManager.balanceSampleTypes.contains(type)
-            
-            if (contains && type != self.selectdType) {
-                continue
-            }
-            
+        let supportedTypes = PreviewManager.previewChoices[parentCell.sampleTypesIndex]
+        self.tablePickerHeight.constant = CGFloat(supportedTypes.count) * rowHeight
+        for type in supportedTypes {
             self.data.append(DashboardMetricsConfigItem(type: type.identifier, active: type == self.selectdType, object: type))
         }
     }
@@ -126,15 +123,20 @@ class BalanceSampleListController: UIViewController, UITableViewDelegate, UITabl
         cell.button.selected = true
         
         Async.main(after: 0.1) {
-            self.parentCell.resignFirstResponder()
             var samples = PreviewManager.balanceSampleTypes
             let index   = PreviewManager.balanceSampleTypes.indexOf(self.selectdType)!
             samples[index] = item.object
             PreviewManager.updateBalanceSampleTypes(samples)
         }
         
-        guard let block = self.completionBlock else {return}
+        guard let block = self.completionBlock else {
+            self.closeAction()
+            return
+        }
         block()
     }
 
+    @IBAction func closeAction() {
+        self.dismissViewControllerAnimated(true, completion: nil)
+    }
 }

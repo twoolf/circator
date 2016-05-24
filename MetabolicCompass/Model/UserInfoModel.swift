@@ -172,12 +172,12 @@ class UserInfoModel: NSObject {
     
     private let emptyFieldMessage = "Please, fill all fields".localized
     private let emailInvalidFormat = "Please, provide valid email".localized
-    private let passwordInvalidFormat = "Please, provide valid password. Password must have ...".localized
-    private let firstNameInvalidFormat = "Please, provide valid password. First name must be ...".localized
-    private let lastNameInvalidFormat = "Please, provide valid password. Last name must be ...".localized
-    private let ageInvalidFormat = "Please, provide valid age. Age must be ...".localized
-    private let weightInvalidFormat = "Please, provide valid weight. Weight must be ...".localized
-    private let heightInvalidFormat = "Please, provide valid height. Heigth must be ...".localized
+    private let passwordInvalidFormat = "Please, provide valid password. Password must have at least 4 characters".localized
+    private let firstNameInvalidFormat = "Please, provide valid password. First name must be at least 2 characters".localized
+    private let lastNameInvalidFormat = "Please, provide valid password. Last name must be at least 2 characters".localized
+    private let ageInvalidFormat = "Please, provide valid age. Age must be form 5 to 100 years".localized
+    private let weightInvalidFormat = "Please, provide valid weight. Weight must be from 40kg to 350 kg".localized
+    private let heightInvalidFormat = "Please, provide valid height. Heigth must be from 75cm to 250 cm".localized
     
     private(set) var validationMessage: String?
     

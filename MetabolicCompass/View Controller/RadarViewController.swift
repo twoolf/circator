@@ -75,7 +75,7 @@ class RadarViewController : UIViewController, ChartViewDelegate {
 
     lazy var radarChart: MetabolicRadarChartView = {
         let chart = MetabolicRadarChartView()
-        
+        chart.userInteractionEnabled = false
         chart.renderer = MetabolicChartRender(chart: chart, animator: chart.chartAnimator, viewPortHandler: chart.viewPortHandler)
         chart.animate(xAxisDuration: 1.0, yAxisDuration: 1.0)
         chart.delegate = self
@@ -92,8 +92,8 @@ class RadarViewController : UIViewController, ChartViewDelegate {
         let legend = chart.legend
         legend.enabled = true
         legend.position = ScreenManager.sharedInstance.radarLegendPosition()
-        legend.font = UIFont.systemFontOfSize(12, weight: UIFontWeightRegular)
-        legend.textColor = .whiteColor()
+        legend.font = ScreenManager.appFontOfSize(12)
+        legend.textColor = UIColor.colorWithHexString("#ffffff", alpha: 0.3)!
         legend.xEntrySpace = 50.0
         legend.yEntrySpace = 5.0
         return chart

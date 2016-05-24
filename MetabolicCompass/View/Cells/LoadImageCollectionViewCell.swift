@@ -8,6 +8,8 @@
 
 import UIKit
 import AVFoundation
+import Photos
+import Async
 
 class LoadImageCollectionViewCell: CircleImageCollectionViewCell, UIImagePickerControllerDelegate, UINavigationControllerDelegate {
 
@@ -31,12 +33,7 @@ class LoadImageCollectionViewCell: CircleImageCollectionViewCell, UIImagePickerC
             actionSheet.addAction(showCameraAction)
             
             let showPhotoLibrary = UIAlertAction(title: "Choose from Album", style: .Default, handler: { (action) in
-                let accessToPhoto = UIImagePickerController.isSourceTypeAvailable(UIImagePickerControllerSourceType.SavedPhotosAlbum) //check for access to the camera roll
-                if(!accessToPhoto) {
-                    self.showAlertActionForType(.PhotoLibrary)
-                } else {
-                    self.showImagePickerWithSourceType(.PhotoLibrary)
-                }
+                self.checkCameraRoll()
             })
             actionSheet.addAction(showPhotoLibrary)
             navVC.presentViewController(actionSheet, animated: true, completion: nil)
@@ -71,6 +68,23 @@ class LoadImageCollectionViewCell: CircleImageCollectionViewCell, UIImagePickerC
         }
     }
     
+    func checkCameraRoll (){
+        PHPhotoLibrary.requestAuthorization { status in
+            Async.main{
+                switch status {
+                case .Authorized:
+                    self.showImagePickerWithSourceType(.PhotoLibrary)
+                case .Restricted:
+                    self.showAlertActionForType(.PhotoLibrary)
+                case .Denied:
+                    self.showAlertActionForType(.PhotoLibrary)
+                default:
+                    break
+                }
+            }
+        }
+    }
+    
     func checkCamera() {
         let authStatus = AVCaptureDevice.authorizationStatusForMediaType(AVMediaTypeVideo)
         switch authStatus {
@@ -84,7 +98,7 @@ class LoadImageCollectionViewCell: CircleImageCollectionViewCell, UIImagePickerC
     func alertPromptToAllowCameraAccessViaSetting() {
         if AVCaptureDevice.devicesWithMediaType(AVMediaTypeVideo).count > 0 {
             AVCaptureDevice.requestAccessForMediaType(AVMediaTypeVideo) { granted in
-                dispatch_async(dispatch_get_main_queue()) {
+                Async.main{
                     self.checkCamera()
                 }
             }

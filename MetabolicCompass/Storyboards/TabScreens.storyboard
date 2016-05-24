@@ -1087,13 +1087,24 @@
                         <viewControllerLayoutGuide type="top" id="vMy-J1-6F7"/>
                         <viewControllerLayoutGuide type="bottom" id="gsc-7r-Os0"/>
                     </layoutGuides>
-                    <view key="view" contentMode="scaleToFill" id="uEc-hF-96A">
+                    <view key="view" opaque="NO" contentMode="scaleToFill" id="uEc-hF-96A">
                         <rect key="frame" x="0.0" y="0.0" width="600" height="600"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
-                            <tableView clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="default" rowHeight="60" sectionHeaderHeight="60" sectionFooterHeight="28" translatesAutoresizingMaskIntoConstraints="NO" id="1rq-4Q-WyP" customClass="LPRTableView" customModule="MetabolicCompass" customModuleProvider="target">
-                                <rect key="frame" x="0.0" y="20" width="600" height="580"/>
-                                <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
+                            <visualEffectView opaque="NO" alpha="0.80000000000000004" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="7wo-rj-A7A">
+                                <rect key="frame" x="0.0" y="0.0" width="600" height="420"/>
+                                <view key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" id="2vI-ds-TRe">
+                                    <rect key="frame" x="0.0" y="0.0" width="600" height="420"/>
+                                    <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                                </view>
+                                <blurEffect style="dark"/>
+                            </visualEffectView>
+                            <tableView clipsSubviews="YES" contentMode="scaleToFill" bounces="NO" scrollEnabled="NO" showsHorizontalScrollIndicator="NO" showsVerticalScrollIndicator="NO" dataMode="prototypes" style="plain" separatorStyle="default" rowHeight="60" sectionHeaderHeight="60" sectionFooterHeight="28" translatesAutoresizingMaskIntoConstraints="NO" id="1rq-4Q-WyP" customClass="LPRTableView" customModule="MetabolicCompass" customModuleProvider="target">
+                                <rect key="frame" x="0.0" y="420" width="600" height="180"/>
+                                <color key="backgroundColor" red="0.0078431372549019607" green="0.11764705882352941" blue="0.27058823529411763" alpha="1" colorSpace="calibratedRGB"/>
+                                <constraints>
+                                    <constraint firstAttribute="height" constant="180" id="T9u-qF-uvU"/>
+                                </constraints>
                                 <color key="separatorColor" red="0.027450980390000001" green="0.062745098040000002" blue="0.1058823529" alpha="1" colorSpace="calibratedRGB"/>
                                 <prototypes>
                                     <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" selectionStyle="none" indentationWidth="10" reuseIdentifier="DashboardManageCell" id="Arn-qO-mtm" customClass="ManageDashboardCell" customModule="MetabolicCompass" customModuleProvider="target">
@@ -1153,20 +1164,23 @@
                                     </tableViewCell>
                                 </prototypes>
                             </tableView>
+                            <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="5GM-Cr-B4g">
+                                <rect key="frame" x="0.0" y="0.0" width="600" height="420"/>
+                                <connections>
+                                    <action selector="closeAction" destination="dur-DH-5ev" eventType="touchUpInside" id="Egw-jB-0wh"/>
+                                </connections>
+                            </button>
                         </subviews>
-                        <color key="backgroundColor" red="0.0039215686274509803" green="0.098039215686274508" blue="0.2627450980392157" alpha="1" colorSpace="calibratedRGB"/>
+                        <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
                         <constraints>
+                            <constraint firstAttribute="trailing" secondItem="7wo-rj-A7A" secondAttribute="trailing" id="B9y-6T-NZh"/>
                             <constraint firstItem="1rq-4Q-WyP" firstAttribute="leading" secondItem="uEc-hF-96A" secondAttribute="leading" id="HLm-YN-bXC"/>
+                            <constraint firstItem="7wo-rj-A7A" firstAttribute="leading" secondItem="uEc-hF-96A" secondAttribute="leading" id="Kk5-Ia-sio"/>
                             <constraint firstItem="gsc-7r-Os0" firstAttribute="top" secondItem="1rq-4Q-WyP" secondAttribute="bottom" id="cd3-up-urt"/>
-                            <constraint firstItem="1rq-4Q-WyP" firstAttribute="top" secondItem="vMy-J1-6F7" secondAttribute="bottom" id="kH4-59-XLM"/>
+                            <constraint firstItem="7wo-rj-A7A" firstAttribute="top" secondItem="vMy-J1-6F7" secondAttribute="bottom" constant="-20" id="cxJ-Ce-b4E"/>
                             <constraint firstAttribute="trailing" secondItem="1rq-4Q-WyP" secondAttribute="trailing" id="mfi-yS-Qev"/>
-                            <constraint firstItem="1rq-4Q-WyP" firstAttribute="top" secondItem="vMy-J1-6F7" secondAttribute="bottom" id="sms-Fw-wuu"/>
+                            <constraint firstItem="1rq-4Q-WyP" firstAttribute="top" secondItem="7wo-rj-A7A" secondAttribute="bottom" id="mva-2z-N3j"/>
                         </constraints>
-                        <variation key="default">
-                            <mask key="constraints">
-                                <exclude reference="kH4-59-XLM"/>
-                            </mask>
-                        </variation>
                     </view>
                     <tabBarItem key="tabBarItem" title="Balance" id="J34-dp-4Ke"/>
                     <navigationItem key="navigationItem" title="FILTER" id="NCc-Sf-ioB">
@@ -1178,6 +1192,7 @@
                     </navigationItem>
                     <simulatedStatusBarMetrics key="simulatedStatusBarMetrics" statusBarStyle="lightContent"/>
                     <connections>
+                        <outlet property="tablePickerHeight" destination="T9u-qF-uvU" id="vWY-if-y4V"/>
                         <outlet property="tableView" destination="1rq-4Q-WyP" id="0o9-4g-Tur"/>
                     </connections>
                 </viewController>

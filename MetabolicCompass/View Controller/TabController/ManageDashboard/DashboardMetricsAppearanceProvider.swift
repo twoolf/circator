@@ -37,53 +37,40 @@ class DashboardMetricsAppearanceProvider: NSObject {
         }
         
         switch sampleType {
-        case HKQuantityTypeIdentifierBodyMass:
-            return UIColor.colorWithHex(SampleGroupColor.sgBlue.rawValue)
-        case HKQuantityTypeIdentifierHeartRate:
-            return UIColor.colorWithHex(SampleGroupColor.sgRed.rawValue)
-        case HKCategoryTypeIdentifierSleepAnalysis:
-            return UIColor.colorWithHex(SampleGroupColor.sgYelow.rawValue)
-        case HKQuantityTypeIdentifierBodyMassIndex:
-            return UIColor.colorWithHexString("#A57B55")
-        case HKQuantityTypeIdentifierActiveEnergyBurned:
-            return UIColor.colorWithHex(SampleGroupColor.sgRed.rawValue)
-        case HKQuantityTypeIdentifierBasalEnergyBurned:
-            return UIColor.colorWithHex(SampleGroupColor.sgRed.rawValue)
-        case HKQuantityTypeIdentifierUVExposure:
-            return UIColor.colorWithHex(SampleGroupColor.sgYelow.rawValue)
-        case HKQuantityTypeIdentifierDietaryCaffeine:
-            return UIColor.colorWithHex(SampleGroupColor.sgMagenta.rawValue)
-        case HKQuantityTypeIdentifierDietarySugar:
-            return UIColor.colorWithHex(SampleGroupColor.sgMagenta.rawValue)
-        case HKQuantityTypeIdentifierDietaryCholesterol:
-            return UIColor.colorWithHex(SampleGroupColor.sgMagenta.rawValue)
-        case HKQuantityTypeIdentifierDietarySodium:
-            return UIColor.colorWithHex(SampleGroupColor.sgMagenta.rawValue)
-        case HKQuantityTypeIdentifierDietaryProtein:
-            return UIColor.colorWithHexString("#E64C35")
-        case HKQuantityTypeIdentifierDietaryFiber:
-            return UIColor.colorWithHexString("#E64C35")            
-        case HKQuantityTypeIdentifierDietaryFatTotal:
-            return UIColor.colorWithHexString("#E64C35")
-        case HKQuantityTypeIdentifierDietaryCarbohydrates:
-            return UIColor.colorWithHexString("#E24739")
-        case HKQuantityTypeIdentifierDietaryFatPolyunsaturated:
-            return UIColor.colorWithHexString("#A57B55")
-        case HKQuantityTypeIdentifierDietaryFatSaturated:
-            return UIColor.colorWithHexString("#A57B55")
-        case HKQuantityTypeIdentifierDietaryFatMonounsaturated:
-            return UIColor.colorWithHexString("#A57B55")
-        case HKQuantityTypeIdentifierDietaryWater:
-            return UIColor.colorWithHexString("#BA1075")
-        case HKQuantityTypeIdentifierDietaryEnergyConsumed:
+        case HKQuantityTypeIdentifierBodyMass,
+             HKQuantityTypeIdentifierBodyMassIndex,
+             HKQuantityTypeIdentifierDietaryEnergyConsumed:
             return UIColor.colorWithHexString("#388CFB")
             
-        case HKCorrelationTypeIdentifierBloodPressure:
-            return UIColor.colorWithHexString("#AA0066")
+        case HKQuantityTypeIdentifierHeartRate,
+             HKQuantityTypeIdentifierStepCount,
+             HKQuantityTypeIdentifierActiveEnergyBurned:
+            return UIColor.colorWithHexString("#E2472C")
             
-        case HKQuantityTypeIdentifierStepCount:
+        case HKCategoryTypeIdentifierSleepAnalysis,
+             HKQuantityTypeIdentifierUVExposure:
+            return UIColor.colorWithHexString("#B68F14")
+        
+        case HKQuantityTypeIdentifierDietarySugar,
+             HKQuantityTypeIdentifierDietarySodium,
+             HKQuantityTypeIdentifierDietaryCholesterol,
+             HKQuantityTypeIdentifierDietaryCaffeine:
+            return UIColor.colorWithHexString("#8627B5")
+        
+        case HKQuantityTypeIdentifierDietaryProtein,
+             HKQuantityTypeIdentifierDietaryFatTotal,
+             HKQuantityTypeIdentifierDietaryCarbohydrates:
             return UIColor.colorWithHexString("#138F16")
-            
+        
+        case HKQuantityTypeIdentifierDietaryFatPolyunsaturated,
+             HKQuantityTypeIdentifierDietaryFatMonounsaturated,
+             HKQuantityTypeIdentifierDietaryFatSaturated:
+            return UIColor.colorWithHexString("#A57B55")
+        
+        case HKQuantityTypeIdentifierDietaryWater,
+             HKCorrelationTypeIdentifierBloodPressure:
+            return UIColor.colorWithHexString("#BA1075")
+
         default:
             if #available(iOS 9.3, *) {
                 switch sampleType {
@@ -141,13 +128,16 @@ class DashboardMetricsAppearanceProvider: NSObject {
             return NSLocalizedString("Water", comment: "Water")
         case HKQuantityTypeIdentifierDietaryEnergyConsumed:
             return NSLocalizedString("Dietary energy", comment: "Dietary Energy")
-            
         case HKCorrelationTypeIdentifierBloodPressure:
             return NSLocalizedString("Blood pressure", comment: "Blood pressure")
-            
         case HKQuantityTypeIdentifierStepCount:
             return NSLocalizedString("Step count", comment: "Step count")
-            
+        case HKQuantityTypeIdentifierUVExposure:
+            return NSLocalizedString("UV Exposure", comment: "UV Exposure")
+        case HKQuantityTypeIdentifierDietarySodium:
+            return NSLocalizedString("Salt", comment: "Salt")
+        case HKQuantityTypeIdentifierActiveEnergyBurned:
+            return NSLocalizedString("Active Energy Burned", comment: " Active Energy Burned")
         default:
             if #available(iOS 9.3, *) {
                 switch sampleType {
@@ -213,13 +203,16 @@ class DashboardMetricsAppearanceProvider: NSObject {
             return "icon-water"
         case HKQuantityTypeIdentifierDietaryEnergyConsumed:
             return "icon-calories"
-            
         case HKCorrelationTypeIdentifierBloodPressure:
             return "icon-blood"
-            
         case HKQuantityTypeIdentifierStepCount:
             return "icon-steps"
-            
+        case HKQuantityTypeIdentifierUVExposure:
+            return "icon-uv"
+        case HKQuantityTypeIdentifierDietarySodium:
+            return "icon-salt"
+        case HKQuantityTypeIdentifierActiveEnergyBurned:
+            return "icon-exercices"
         default:
             if #available(iOS 9.3, *) {
                 switch sampleType {
