@@ -505,10 +505,7 @@ public class UserManager {
     // Returns an unwrapped component as dictionary, stripping any component name from the argument.
     // This is used when downloading data from the backend service.
     // Consent and photo data are returned in wrapped form.
-    private func unwrapResponse(component: AccountComponent,
-                                response: [String:AnyObject],
-                                extractor: ([String:AnyObject] -> [String:AnyObject])?)
-                    -> [String:AnyObject]?
+    private func unwrapResponse(component: AccountComponent, response: [String:AnyObject]) -> [String:AnyObject]?
     {
         let componentName = getComponentName(component)
         if let componentData = response[componentName] {
@@ -518,13 +515,13 @@ public class UserManager {
             case .Photo:
                 return [componentName: componentData]
             case .Profile:
-                return self.downloadProfileExtractor(componentData)
+                return self.downloadProfileExtractor(componentData as! [String : AnyObject])
             case .Settings:
-                return self.downloadSettingsExtractor(componentData)
+                return self.downloadSettingsExtractor(componentData as! [String : AnyObject])
             case .ArchiveSpan:
-                return self.downloadArchiveSpanExtractor(componentData)
+                return self.downloadArchiveSpanExtractor(componentData as! [String : AnyObject])
             case .LastAcquired:
-                return componentData
+                return componentData as? [String : AnyObject]
             }
         }
         return nil
@@ -533,8 +530,8 @@ public class UserManager {
     // Retrieves the currently cached account component, wraps it, and pushes it to the backend.
     private func syncAccountComponent(component: AccountComponent, completion: SvcStringCompletion)
     {
-        let componentData = wrapCache(component, extractor: extractor)
-        Service.string(MCRouter.SetUserAccountData(payload), statusCode: 200..<300, tag: "SYNCACC") {
+        let componentData = wrapCache(component)
+        Service.string(MCRouter.SetUserAccountData(componentData!), statusCode: 200..<300, tag: "SYNCACC") {
             _, response, result in completion(!result.isSuccess, result.value)
         }
     }
@@ -545,7 +542,7 @@ public class UserManager {
             requestAsyncs[component]!.0?.cancel()
             let componentDelay = requestAsyncs[component]!.1
             let newAsync = Async.background(after: componentDelay) {
-                self.syncAccountComponent(component, extractor: extractor) { _ in () }
+                self.syncAccountComponent(component) { _ in () }
             }
             requestAsyncs[component] = (newAsync, componentDelay)
         }
@@ -604,7 +601,7 @@ public class UserManager {
                 // All account component routes return a JSON object.
                 // Use this to refresh the component cache.
                 if let dict = result.value as? [String: AnyObject],
-                       refreshVal = unwrapResponse(component, response: dict)
+                       refreshVal = self.unwrapResponse(component, response: dict)
                 {
                     self.refreshComponentCache(component, componentData: refreshVal)
                     self.lastComponentLoadDate[component] = NSDate()
@@ -661,7 +658,7 @@ public class UserManager {
     // Retrieves multiple account components in a single request.
     // TODO: track which components succeeded or failed.
     private func pullMultipleAccountComponents(components: [AccountComponent], completion: SvcStringCompletion) {
-        Service.json(MCRouter.GetUserAccountData(components), statusCode: 200..<300, tag: "GACC\(component)") {
+        Service.json(MCRouter.GetUserAccountData(components), statusCode: 200..<300, tag: "GALLACC") {
             _, _, result in
             var pullSuccess = result.isSuccess
             if pullSuccess {
@@ -669,7 +666,7 @@ public class UserManager {
                 // Use this to refresh the component cache.
                 if let dict = result.value as? [String: AnyObject] {
                     for component in components {
-                        if let refreshVal = unwrapResponse(component, dict) {
+                        if let refreshVal = self.unwrapResponse(component, response: dict) {
                             self.refreshComponentCache(component, componentData: refreshVal)
                             self.lastComponentLoadDate[component] = NSDate()
                         } else {
@@ -680,7 +677,7 @@ public class UserManager {
                     }
                 }
             }
-            completion(!pullSuccess, result.value)
+            completion(!pullSuccess, UMPullComponentsInfoString)
         }
     }
 

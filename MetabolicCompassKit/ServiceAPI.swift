@@ -146,7 +146,7 @@ enum MCRouter : URLRequestConvertible {
             return mutableURLRequest
 
         case .GetUserAccountData(let components):
-            let parameters = ["components": components]
+            let parameters = ["components": components.map(getComponentName)]
             return Alamofire.ParameterEncoding.URL.encode(mutableURLRequest, parameters: parameters).0
 
         case .SetUserAccountData(let parameters):
