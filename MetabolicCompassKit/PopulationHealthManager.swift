@@ -110,9 +110,9 @@ public class PopulationHealthManager {
                         }
                     } else {
                         failed = true
-                        let err = NSError(domain: "App error", code: 0, userInfo: [NSLocalizedDescriptionKey:kvdict.description])
-                        let dict = ["title":"population data error", "error":err]
-                        NSNotificationCenter.defaultCenter().postNotificationName("ncAppLogNotification", object: nil, userInfo: dict)
+//                        let err = NSError(domain: "App error", code: 0, userInfo: [NSLocalizedDescriptionKey:kvdict.description])
+//                        let dict = ["title":"population data error", "error":err]
+//                        NSNotificationCenter.defaultCenter().postNotificationName("ncAppLogNotification", object: nil, userInfo: dict)
                         break
                     }
                 }
