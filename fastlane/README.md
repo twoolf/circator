@@ -6,21 +6,11 @@ sudo gem install fastlane
 ```
 # Available Actions
 ## iOS
-### ios testrb
-```
-fastlane ios testrb
-```
-
 ### ios setupxcode
 ```
 fastlane ios setupxcode
 ```
 Install FixCode for c&p management
-### ios setupbb
-```
-fastlane ios setupbb
-```
-Install Blackbox for secure git files
 ### ios cleanderived
 ```
 fastlane ios cleanderived
@@ -31,6 +21,11 @@ Clean DerivedData
 fastlane ios test
 ```
 Runs all the tests
+### ios setupbb
+```
+fastlane ios setupbb
+```
+Install Blackbox for secure git files
 ### ios start_coding
 ```
 fastlane ios start_coding
@@ -56,11 +51,21 @@ Create bundle identifiers on the Developer Portal
 fastlane ios create_itc_appids
 ```
 Create bundle identifiers on iTunes Connect
-### ios prepcerts
+### ios certs
 ```
-fastlane ios prepcerts
+fastlane ios certs
 ```
 Fastlane/match execution
+### ios adhoc_certs
+```
+fastlane ios adhoc_certs
+```
+Get Ad Hoc distribution certs
+### ios app_certs
+```
+fastlane ios app_certs
+```
+Get App Store distribution certs
 ### ios new_dev_certs
 ```
 fastlane ios new_dev_certs
@@ -80,17 +85,7 @@ Force new app certificates
 ```
 fastlane ios preparebuild
 ```
-Prepare for command line build
-### ios preparedeploy
-```
-fastlane ios preparedeploy
-```
-Prepare for command line deployment to the App Store
-### ios preparedevcerts
-```
-fastlane ios preparedevcerts
-```
-Prepare for command line deployment to the App Store
+Command line build preparation
 ### ios set_codesigning
 ```
 fastlane ios set_codesigning

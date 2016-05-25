@@ -10,11 +10,10 @@ import UIKit
 import MetabolicCompassKit
 
 class ProfileModel: UserInfoModel {
-    
+
     override func modelItems() -> [ModelItem] {
-        
         var fields = [ModelItem]()
-        
+
         fields.append(self.loadPhotoField)
         fields.append(self.firstNameField)
         fields.append(self.lastNameField)
@@ -24,15 +23,14 @@ class ProfileModel: UserInfoModel {
         fields.append(self.unitsSystemField)
         fields.append(self.weightField)
         fields.append(self.heightField)
-        
+
         return fields
     }
-    
+
     func setupValues() {
         let profileInfo = UserManager.sharedManager.getProfileCache()
-        
+
         for item in items {
-            
             if item.type == .FirstName {
                 item.setNewValue(AccountManager.shared.userInfo?.firstName)
             }
@@ -48,7 +46,6 @@ class ProfileModel: UserInfoModel {
             }
             else if item.type == .Email {
                 item.setNewValue(UserManager.sharedManager.getUserId())
-
             }
             else {
                 if let profileItemInfo = profileInfo[item.name]{
@@ -61,34 +58,31 @@ class ProfileModel: UserInfoModel {
                     }
                 }
             }
-            
+
         }
     }
-    
+
     private let uneditableFields:[UserInfoFiledType] = [.Email, .FirstName, .LastName]
-    
+
     func isItemEditable(item: ModelItem) -> Bool {
-        
         return !uneditableFields.contains(item.type)
     }
-    
+
     override func profileItems() -> [String : String] {
         var newItems : [ModelItem] = [ModelItem]()
-        
+
         for item in items {
             if isItemEditable(item) {
                 newItems.append(item)
             }
         }
-        
+
         return profileItems(newItems)
     }
-    
-    
+
+
     override func isModelValid() -> Bool {
-        
         resetValidationResults()
-        
         return isPhotoValid() && /* isEmailValid() && isPasswordValid() && isFirstNameValid() && isLastNameValid() && */ isAgeValid()  && isWeightValid() && isHeightValid()
     }
 }

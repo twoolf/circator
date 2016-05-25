@@ -179,7 +179,8 @@ class PlotDataAnalyzer: SampleDataAnalyzer {
 
             var index = 0
             let entries: [ChartDataEntry] = samples.map { (sample) -> ChartDataEntry in
-                return ChartDataEntry(value: sample.numeralValue!, xIndex: index++)
+                index += 1
+                return ChartDataEntry(value: sample.numeralValue!, xIndex: index-1)
             }
 
             let dataSet = LineChartDataSet(yVals: entries, label: "")
@@ -192,7 +193,8 @@ class PlotDataAnalyzer: SampleDataAnalyzer {
 
             var index = 0
             let entries: [ChartDataEntry] = values.map {
-                return ChartDataEntry(value: $0.1, xIndex: index++)
+                index += 1
+                return ChartDataEntry(value: $0.1, xIndex: index-1)
             }
 
             let dataSet = LineChartDataSet(yVals: entries, label: "")
@@ -238,7 +240,8 @@ class PlotDataAnalyzer: SampleDataAnalyzer {
 
             var index = 0
             let summaryData : [ChartDataEntry] = samples.map { (sample) -> ChartDataEntry in
-                return ChartDataEntry(value: sample.numeralValue!, xIndex: index++)
+                index += 1
+                return ChartDataEntry(value: sample.numeralValue!, xIndex: index-1)
             }
 
             let dataSet = BubbleChartDataSet(yVals: summaryData)
@@ -252,7 +255,8 @@ class PlotDataAnalyzer: SampleDataAnalyzer {
 
             var index = 0
             let summaryData : [ChartDataEntry] = values.map { (sample) -> ChartDataEntry in
-                return ChartDataEntry(value: sample.1, xIndex: index++)
+                index += 1
+                return ChartDataEntry(value: sample.1, xIndex: index-1)
             }
 
             let dataSet = BubbleChartDataSet(yVals: summaryData)

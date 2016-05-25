@@ -18,7 +18,7 @@ public typealias SvcObjectCompletion = (Bool, AnyObject?) -> Void
 
 private let devServiceURL = "https://dev.metaboliccompass.com"
 private let prodServiceURL = "https://app.metaboliccompass.com"
-private let asDevService = false
+private let asDevService = true
 
 private let resetPassDevURL = devServiceURL + "/forgot"
 private let resetPassProdURL = prodServiceURL + "/forgot"
@@ -26,7 +26,7 @@ public  let resetPassURL = asDevService ? resetPassDevURL : resetPassProdURL
 
 /**
  This class sets up the needed API for all of the reads/writes to our cloud data store.  This is needed to support our ability to add new aggregate information into the data store and to update the display on our participants screens as new information is deposited into the store.
- 
+
  - note: uses Alamofire/JSON
  - remark: authentication using OAuthToken
  */
@@ -34,7 +34,7 @@ enum MCRouter : URLRequestConvertible {
     static let baseURLString = asDevService ? devServiceURL : prodServiceURL
     static var OAuthToken: String?
     static var tokenExpireTime: NSTimeInterval = 0
-    
+
     static func updateAuthToken (token: String?) {
         OAuthToken = token
         tokenExpireTime = token != nil ? NSDate().timeIntervalSince1970 + 3600: 0
@@ -43,19 +43,17 @@ enum MCRouter : URLRequestConvertible {
     // Data API
     case UploadHKMeasures([String: AnyObject])
     case AggMeasures([String: AnyObject])
-    case MealMeasures([String: AnyObject])
-
-    // Timestamps API
-    case UploadHKTSAcquired([String: AnyObject])
 
     // User and profile management API
-    case GetUserAccountData
+    case GetUserAccountData([AccountComponent])
+
     case SetUserAccountData([String: AnyObject])
+        // For SetUserAccountData, the caller is responsible for constructing
+        // the component-specific nesting (e.g, ["consent": "<base64 string>"])
+
     case DeleteAccount
 
-    case GetConsent
-    case SetConsent([String: AnyObject])
-
+    // Token management API
     case TokenExpiry([String: AnyObject])
 
     var method: Alamofire.Method {
@@ -64,13 +62,7 @@ enum MCRouter : URLRequestConvertible {
             return .POST
 
         case .AggMeasures:
-            return .POST
-
-        case .MealMeasures:
             return .GET
-
-        case .UploadHKTSAcquired:
-            return .POST
 
         case .DeleteAccount:
             return .POST
@@ -79,12 +71,6 @@ enum MCRouter : URLRequestConvertible {
             return .GET
 
         case .SetUserAccountData:
-            return .POST
-
-        case GetConsent:
-            return .GET
-
-        case SetConsent:
             return .POST
 
         case .TokenExpiry:
@@ -98,22 +84,13 @@ enum MCRouter : URLRequestConvertible {
             return "/measures"
 
         case .AggMeasures:
-            return "/measures/aggregates"
-
-        case .MealMeasures:
-            return "/measures/meals"
-
-        case .UploadHKTSAcquired:
-            return "/timestamps/acquired"
+            return "/measures/mc/avg"
 
         case .DeleteAccount:
             return "/user/withdraw"
 
-        case .GetUserAccountData, .SetUserAccountData:
-            return "/user/profile"
-
-        case .GetConsent, .SetConsent:
-            return "/user/consent"
+        case .GetUserAccountData(_), .SetUserAccountData(_):
+            return "/user/account"
 
         case .TokenExpiry:
             return "/user/expiry"
@@ -137,27 +114,16 @@ enum MCRouter : URLRequestConvertible {
             return Alamofire.ParameterEncoding.JSON.encode(mutableURLRequest, parameters: parameters).0
 
         case .AggMeasures(let parameters):
-            return Alamofire.ParameterEncoding.JSON.encode(mutableURLRequest, parameters: parameters).0
-
-        case .MealMeasures(let parameters):
-            return Alamofire.ParameterEncoding.JSON.encode(mutableURLRequest, parameters: parameters).0
-
-        case .UploadHKTSAcquired(let parameters):
-            return Alamofire.ParameterEncoding.JSON.encode(mutableURLRequest, parameters: parameters).0
+            return Alamofire.ParameterEncoding.URL.encode(mutableURLRequest, parameters: parameters).0
 
         case .DeleteAccount:
             return mutableURLRequest
 
-        case .GetUserAccountData:
-            return mutableURLRequest
+        case .GetUserAccountData(let components):
+            let parameters = ["components": components.map(getComponentName)]
+            return Alamofire.ParameterEncoding.URL.encode(mutableURLRequest, parameters: parameters).0
 
         case .SetUserAccountData(let parameters):
-            return Alamofire.ParameterEncoding.JSON.encode(mutableURLRequest, parameters: parameters).0
-
-        case .GetConsent:
-            return mutableURLRequest
-
-        case .SetConsent(let parameters):
             return Alamofire.ParameterEncoding.JSON.encode(mutableURLRequest, parameters: parameters).0
 
         case .TokenExpiry(let parameters):
@@ -196,9 +162,8 @@ extension Alamofire.Request {
     public func logResponseString(tag: String, completion: (NSURLRequest?, NSHTTPURLResponse?, Alamofire.Result<String>) -> Void)
         -> Self
     {
-        
         return self.responseString() { req, resp, result in
-            
+
             log.debug("\(tag): " + (result.isSuccess ? "SUCCESS" : "FAILED"))
 //            if let data = req?.HTTPBody{
 //                log.debug("\n***Request body:\( String(data:data, encoding:NSUTF8StringEncoding))")
@@ -207,7 +172,8 @@ extension Alamofire.Request {
             if Service.delegate != nil{
                 Service.delegate!.didFinishStringRequest(req, response:resp, result:result)
             }
-            
+
+            log.debug("\n***result:\(result)")
             completion(req, resp, result)
         }
     }

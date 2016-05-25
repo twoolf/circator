@@ -12,34 +12,30 @@ import HealthKit
 import MetabolicCompassKit
 
 class ContentManager: NSObject {
-    
+
     static let ContentDidUpdateNotification = "ContentDidUpdateNotification"
-    
+
     private var aggregateFetchTask : Async? = nil    // Background task to fetch population aggregates.
     var isBackgroundWorkActive = false
-    
+
     internal func initializeBackgroundWork() {
-        
         if (!AccountManager.shared.isLogged() ||
             !AccountManager.shared.isAuthorized) {
             return
         }
-        
+
         Async.main() {
-            
             if (self.isBackgroundWorkActive) {
                 return
             }
-            
             self.fetchInitialAggregates()
             self.fetchRecentSamples()
             self.isBackgroundWorkActive = true
             HealthManager.sharedManager.registerObservers()
         }
     }
-    
+
     func stopBackgroundWork() {
-        
         Async.main() {
             // Clean up aggregate data fetched via the prior account.
             if let task = self.aggregateFetchTask {
@@ -49,33 +45,29 @@ class ContentManager: NSObject {
             }
         }
     }
-    
+
     func resetBackgroundWork() {
         self.stopBackgroundWork()
         self.initializeBackgroundWork()
     }
-    
+
     func fetchInitialAggregates() {
         aggregateFetchTask = Async.background {
             self.fetchAggregatesPeriodically()
         }
     }
-    
+
     func fetchAggregatesPeriodically() {
-        
         UserManager.sharedManager.ensureAccessToken { _ in
-            
             PopulationHealthManager.sharedManager.fetchAggregates()
             let freq = UserManager.sharedManager.getRefreshFrequency()
             self.aggregateFetchTask = Async.background(after: Double(freq)) {
                 self.fetchAggregatesPeriodically()
             }
         }
-        
     }
-    
+
     func fetchRecentSamples() {
-        
         AccountManager.shared.withHKCalAuth {
             HealthManager.sharedManager.fetchMostRecentSamples() { (samples, error) -> Void in
                 guard error == nil else { return }
@@ -83,5 +75,5 @@ class ContentManager: NSObject {
             }
         }
     }
-    
+
 }

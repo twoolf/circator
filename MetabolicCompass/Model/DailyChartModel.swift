@@ -25,6 +25,7 @@ class DailyChartModel : NSObject, UITableViewDataSource {
     private let stSleep = 0.33
     private let stFast = 0.66
     private let stEat = 1.0
+
     private let dayCellIdentifier = "dayCellIdentifier"
     private let emptyValueString = "- h - m"
     
@@ -70,23 +71,23 @@ class DailyChartModel : NSObject, UITableViewDataSource {
         }
         return lastSevenDays
     }()
-    
+
     func updateRowHeight (){
         self.daysTableView?.rowHeight = CGRectGetHeight(self.daysTableView!.frame)/7.0
         self.daysTableView?.reloadData()
     }
-    
+
     func registerCells() {
         let dayCellNib = UINib(nibName: "DailyProgressDayTableViewCell", bundle: nil)
         self.daysTableView?.registerNib(dayCellNib, forCellReuseIdentifier: dayCellIdentifier)
     }
-    
-    //MARK: UITableViewDataSource
-    
+
+    // MARK: -  UITableViewDataSource
+
     func tableView(tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         return self.daysStringArray.count
     }
-    
+
     func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCellWithIdentifier(dayCellIdentifier) as! DailyProgressDayTableViewCell
         cell.dayLabel.text = self.daysStringArray[indexPath.row]

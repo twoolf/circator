@@ -514,7 +514,8 @@ public class DataGenerator : GeneratorType {
         let meta : [String: AnyObject] = [sampleTag: true]
         let z : [HKSample] = []
 
-        return zip(maleOrFemale, typesToSample).reduce(z, combine: { (var acc, mt) in
+        return zip(maleOrFemale, typesToSample).reduce(z, combine: { (in_acc, mt) in
+            var acc = in_acc
             if let s = sampleBuffer[mt.0 > 0]?[mt.1.identifier]?.popLast() {
                 let ddiff = Int(floor(currentDay.timeIntervalSinceDate(s.startDate) / 86400)).days
                 let ns = ddiff.fromDate(s.startDate)
@@ -560,7 +561,7 @@ public class DataGenerator : GeneratorType {
             {
                 handle.writeData(jsdata)
             } else {
-                ++samplesSkipped
+                samplesSkipped += 1
             }
         } catch {
             log.error(error)
@@ -624,7 +625,7 @@ public class DataGenerator : GeneratorType {
                         if (i % 10) == 0 { log.info("Created batch \(i) / \(days),  \(samples.count) samples") }
                         dataset[userId]!.appendContentsOf(samples)
                     } else {
-                        ++self.daysSkipped
+                        self.daysSkipped += 1
                     }
                 }
             }
@@ -648,7 +649,7 @@ public class DataGenerator : GeneratorType {
                             firstSample = false
                         }
                     } else {
-                        ++self.daysSkipped
+                        self.daysSkipped += 1
                     }
                 }
             }

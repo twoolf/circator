@@ -18,7 +18,7 @@ public struct Deployment {
 
 /**
  This maintains the constants and strings needed for Metabolic Compass. We tie this into the options and recommendations settings in the control panel.
- 
+
  */
 
 public enum FieldDataType: Int {
@@ -52,9 +52,9 @@ public struct UserProfile {
 
     public let requiredRange      : Range = 0..<8
     public let updateableReqRange : Range = 4..<8
-    public let recommendedRange   : Range = 8..<13
-    public let optionalRange      : Range = 13..<30
-    public let updateableRange    : Range = 4..<30
+    public let recommendedRange   : Range = 8..<14
+    public let optionalRange      : Range = 14..<31
+    public let updateableRange    : Range = 4..<31
 
     public let profileFields : [String]! = [
         "Email",
@@ -69,6 +69,7 @@ public struct UserProfile {
         "Estimated bmi",
         "Resting heartrate",
         "Systolic blood pressure",
+        "Diastolic blood pressure",
         "Step count",
         "Active energy",
         "Awake time w/light",
@@ -101,6 +102,7 @@ public struct UserProfile {
         "25",
         "60 bpm",
         "120",
+        "80",
         "6000 steps",
         "2750 calories",
         "12 hours",
@@ -124,82 +126,82 @@ public struct UserProfile {
     public let profileMapping : [String: String]! = [
         "Email"                    : "email",
         "Password"                 : "password",
-        "First name"               : "firstname",
-        "Last name"                : "lastname",
+        "First name"               : "first_name",
+        "Last name"                : "last_name",
         "Sex"                      : "sex",
         "Age"                      : "age",
-        "Weight"                   : "weight",
-        "Height"                   : "height",
-        "Usual sleep"              : "sleep",
-        "Estimated bmi"            : "bmi",
-        "Resting heartrate"        : "heartrate",
-        "Systolic blood pressure"  : "systolic",
+        "Weight"                   : "body_weight",
+        "Height"                   : "body_height",
+        "Usual sleep"              : "sleep_duration",
+        "Estimated bmi"            : "body_mass_index",
+        "Resting heartrate"        : "heart_rate",
+        "Systolic blood pressure"  : "systolic_blood_pressure",
+        "Diastolic blood pressure" : "diastolic_blood_pressure",
         "Step count"               : "steps",
-        "Active energy"            : "energy",
-        "Awake time w/light"       : "awake",
-        "Fasting"                  : "fasting",
-        "Eating"                   : "eating",
-        "Calorie intake"           : "calories",
-        "Protein intake"           : "protein",
-        "Carbohydrate intake"      : "carbs",
-        "Sugar intake"             : "sugar",
-        "Fiber intake"             : "fiber",
-        "Fat intake"               : "fat",
-        "Saturated fat"            : "satfat",
-        "Monounsaturated fat"      : "monfat",
-        "Polyunsaturated fat"      : "polyfat",
-        "Cholesterol"              : "cholesterol",
-        "Salt"                     : "salt",
-        "Caffeine"                 : "caffeine",
-        "Water"                    : "water"
+        "Active energy"            : "active_energy_burned",
+        "Awake time w/light"       : "uv_exposure",
+        "Fasting"                  : "fasting_duration",
+        "Eating"                   : "meal_duration",
+        "Calorie intake"           : "dietary_energy_consumed",
+        "Caffeine"                 : "dietary_caffeine",
+        "Carbohydrate intake"      : "dietary_carbohydrates",
+        "Cholesterol"              : "dietary_cholesterol",
+        "Monounsaturated fat"      : "dietary_fat_monounsaturated",
+        "Polyunsaturated fat"      : "dietary_fat_polyunsaturated",
+        "Saturated fat"            : "dietary_fat_saturated",
+        "Fat intake"               : "dietary_fat_total",
+        "Fiber intake"             : "dietary_fiber",
+        "Protein intake"           : "dietary_protein",
+        "Salt"                     : "dietary_salt",
+        "Sugar intake"             : "dietary_sugar",
+        "Water"                    : "dietary_water"
     ]
 
     public var updateableMapping : [String: String]! {
-        return Dictionary(pairs: profileFields[4..<29].map { k in return (k, profileMapping[k]!) })
+        return Dictionary(pairs: profileFields[updateableRange].map { k in return (k, profileMapping[k]!) })
     }
-    
+
     public static func keyForItemName(itemName: String) -> String?{
         return sharedInstance.profileMapping[itemName]
     }
-    
 
     public var fields: [ProfileFieldData] = {
         var fields = [ProfileFieldData]()
-        
-        fields.append(ProfileFieldData(fieldName: "Email", profileFieldName: "email", type: .String, unitsTitle: nil))
-        fields.append(ProfileFieldData(fieldName: "Password", profileFieldName: "password", type: .String, unitsTitle: nil))
-        fields.append(ProfileFieldData(fieldName: "First name", profileFieldName: "firstname", type: .String, unitsTitle: nil))
-        fields.append(ProfileFieldData(fieldName: "Last name", profileFieldName: "lastname", type: .String, unitsTitle: nil))
-        fields.append(ProfileFieldData(fieldName: "Sex", profileFieldName: "sex", type: .Int, unitsTitle: nil))
-        fields.append(ProfileFieldData(fieldName: "Age", profileFieldName: "age", type: .Int, unitsTitle: nil))
-        fields.append(ProfileFieldData(fieldName: "Weight", profileFieldName: "weight", type: .Int, unitsTitle: nil))
-        fields.append(ProfileFieldData(fieldName: "Height", profileFieldName: "height", type: .Int, unitsTitle: nil))
-        
-        fields.append(ProfileFieldData(fieldName: "Usual sleep", profileFieldName: "sleep", type: .Int, unitsTitle: unitsTitleHours))
-        fields.append(ProfileFieldData(fieldName: "Estimated bmi", profileFieldName: "bmi", type: .Int, unitsTitle: nil))
-        fields.append(ProfileFieldData(fieldName: "Resting heartrate", profileFieldName: "heartrate", type: .Int, unitsTitle: unitsTitleHeartrate))
-        fields.append(ProfileFieldData(fieldName: "Systolic blood pressure", profileFieldName: "systolic", type: .Int, unitsTitle: nil))
-        fields.append(ProfileFieldData(fieldName: "Step count", profileFieldName: "steps", type: .Int, unitsTitle: unitsTitleSteps))
-        fields.append(ProfileFieldData(fieldName: "Active energy", profileFieldName: "energy", type: .Int, unitsTitle: unitsTitleCalories))
-        fields.append(ProfileFieldData(fieldName: "Awake time w/light", profileFieldName: "awake", type: .Int, unitsTitle: unitsTitleHours))
-        fields.append(ProfileFieldData(fieldName: "Fasting", profileFieldName: "fasting", type: .Int, unitsTitle: unitsTitleHours))
-        fields.append(ProfileFieldData(fieldName: "Eating", profileFieldName: "eating", type: .Int, unitsTitle: unitsTitleHours))
-        
-        fields.append(ProfileFieldData(fieldName: "Calorie intake", profileFieldName: "calories", type: .Decimal, unitsTitle: unitsTitleCalories))
-        fields.append(ProfileFieldData(fieldName: "Protein intake", profileFieldName: "protein", type: .Decimal, unitsTitle: unitsTitleIntake))
-        fields.append(ProfileFieldData(fieldName: "Carbohydrate intake", profileFieldName: "carbs", type: .Decimal, unitsTitle: unitsTitleIntake))
-        fields.append(ProfileFieldData(fieldName: "Sugar intake", profileFieldName: "sugar", type: .Decimal, unitsTitle: unitsTitleIntake))
-        fields.append(ProfileFieldData(fieldName: "Fiber intake", profileFieldName: "fiber", type: .Decimal, unitsTitle: unitsTitleIntake))
-        fields.append(ProfileFieldData(fieldName: "Fat intake", profileFieldName: "fat", type: .Decimal, unitsTitle: unitsTitleIntake))
- 
-        fields.append(ProfileFieldData(fieldName: "Saturated fat", profileFieldName: "satfat", type: .Decimal, unitsTitle: unitsTitleIntake))
-        fields.append(ProfileFieldData(fieldName: "Monounsaturated fat", profileFieldName: "monfat", type: .Decimal, unitsTitle: unitsTitleIntake))
-        fields.append(ProfileFieldData(fieldName: "Polyunsaturated fat", profileFieldName: "polyfat", type: .Decimal, unitsTitle: unitsTitleIntake))
-        fields.append(ProfileFieldData(fieldName: "Cholesterol", profileFieldName: "cholesterol", type: .Decimal, unitsTitle: unitsTitleMG))
-        fields.append(ProfileFieldData(fieldName: "Salt", profileFieldName: "salt", type: .Decimal, unitsTitle: unitsTitleMG))
-        fields.append(ProfileFieldData(fieldName: "Caffeine", profileFieldName: "caffeine", type: .Decimal, unitsTitle: unitsTitleMG))
-        fields.append(ProfileFieldData(fieldName: "Water", profileFieldName: "water", type: .Decimal, unitsTitle: unitsTitleML))
-        
+
+        fields.append(ProfileFieldData(fieldName: "Email",                    profileFieldName: "email",                       type: .String, unitsTitle: nil))
+        fields.append(ProfileFieldData(fieldName: "Password",                 profileFieldName: "password",                    type: .String, unitsTitle: nil))
+        fields.append(ProfileFieldData(fieldName: "First name",               profileFieldName: "first_name",                  type: .String, unitsTitle: nil))
+        fields.append(ProfileFieldData(fieldName: "Last name",                profileFieldName: "last_name",                   type: .String, unitsTitle: nil))
+        fields.append(ProfileFieldData(fieldName: "Sex",                      profileFieldName: "sex",                         type: .Int, unitsTitle: nil))
+        fields.append(ProfileFieldData(fieldName: "Age",                      profileFieldName: "age",                         type: .Int, unitsTitle: nil))
+        fields.append(ProfileFieldData(fieldName: "Weight",                   profileFieldName: "body_weight",                 type: .Int, unitsTitle: nil))
+        fields.append(ProfileFieldData(fieldName: "Height",                   profileFieldName: "body_height",                 type: .Int, unitsTitle: nil))
+
+        fields.append(ProfileFieldData(fieldName: "Usual sleep",              profileFieldName: "sleep_duration",              type: .Int, unitsTitle: unitsTitleHours))
+        fields.append(ProfileFieldData(fieldName: "Estimated bmi",            profileFieldName: "body_mass_index",             type: .Int, unitsTitle: nil))
+        fields.append(ProfileFieldData(fieldName: "Resting heartrate",        profileFieldName: "heart_rate",                  type: .Int, unitsTitle: unitsTitleHeartrate))
+        fields.append(ProfileFieldData(fieldName: "Systolic blood pressure",  profileFieldName: "systolic_blood_pressure",     type: .Int, unitsTitle: nil))
+        fields.append(ProfileFieldData(fieldName: "Diastolic blood pressure", profileFieldName: "diastolic_blood_pressure",    type: .Int, unitsTitle: nil))
+        fields.append(ProfileFieldData(fieldName: "Step count",               profileFieldName: "steps",                       type: .Int, unitsTitle: unitsTitleSteps))
+
+        fields.append(ProfileFieldData(fieldName: "Active energy",            profileFieldName: "active_energy_burned",        type: .Int, unitsTitle: unitsTitleCalories))
+        fields.append(ProfileFieldData(fieldName: "Awake time w/light",       profileFieldName: "uv_exposure",                 type: .Int, unitsTitle: unitsTitleHours))
+        fields.append(ProfileFieldData(fieldName: "Fasting",                  profileFieldName: "fasting_duration",            type: .Int, unitsTitle: unitsTitleHours))
+        fields.append(ProfileFieldData(fieldName: "Eating",                   profileFieldName: "meal_duration",               type: .Int, unitsTitle: unitsTitleHours))
+        fields.append(ProfileFieldData(fieldName: "Calorie intake",           profileFieldName: "dietary_energy_consumed",     type: .Decimal, unitsTitle: unitsTitleCalories))
+        fields.append(ProfileFieldData(fieldName: "Protein intake",           profileFieldName: "dietary_protein",             type: .Decimal, unitsTitle: unitsTitleIntake))
+        fields.append(ProfileFieldData(fieldName: "Carbohydrate intake",      profileFieldName: "dietary_carbohydrates",       type: .Decimal, unitsTitle: unitsTitleIntake))
+        fields.append(ProfileFieldData(fieldName: "Sugar intake",             profileFieldName: "dietary_sugar",               type: .Decimal, unitsTitle: unitsTitleIntake))
+        fields.append(ProfileFieldData(fieldName: "Fiber intake",             profileFieldName: "dietary_fiber",               type: .Decimal, unitsTitle: unitsTitleIntake))
+        fields.append(ProfileFieldData(fieldName: "Fat intake",               profileFieldName: "dietary_fat_total",           type: .Decimal, unitsTitle: unitsTitleIntake))
+        fields.append(ProfileFieldData(fieldName: "Saturated fat",            profileFieldName: "dietary_fat_saturated",       type: .Decimal, unitsTitle: unitsTitleIntake))
+        fields.append(ProfileFieldData(fieldName: "Monounsaturated fat",      profileFieldName: "dietary_fat_monounsaturated", type: .Decimal, unitsTitle: unitsTitleIntake))
+        fields.append(ProfileFieldData(fieldName: "Polyunsaturated fat",      profileFieldName: "dietary_fat_polyunsaturated", type: .Decimal, unitsTitle: unitsTitleIntake))
+        fields.append(ProfileFieldData(fieldName: "Cholesterol",              profileFieldName: "dietary_cholesterol",         type: .Decimal, unitsTitle: unitsTitleMG))
+        fields.append(ProfileFieldData(fieldName: "Salt",                     profileFieldName: "dietary_salt",                type: .Decimal, unitsTitle: unitsTitleMG))
+        fields.append(ProfileFieldData(fieldName: "Caffeine",                 profileFieldName: "dietary_caffeine",            type: .Decimal, unitsTitle: unitsTitleMG))
+        fields.append(ProfileFieldData(fieldName: "Water",                    profileFieldName: "dietary_water",               type: .Decimal, unitsTitle: unitsTitleML))
+
         return fields
     }()
 
@@ -597,6 +599,158 @@ public struct HMConstants
         HKQuantityTypeIdentifierStepCount                 : "67",
         HKQuantityTypeIdentifierUVExposure                : "68",
         HKObjectType.workoutType().identifier             : "69",
+    ]
+
+    // A mapping between HealthKit types and MC database schema attributes.
+    //
+    // TODO: the following types have a more complex mapping.
+    // HKCorrelationTypeIdentifierBloodPressure          : "BP",            // Maps to individual components.
+    // HKQuantityTypeIdentifierDistanceWalkingRunning    : "Distance",      // Activity
+    // HKQuantityTypeIdentifierFlightsClimbed            : "Climbed",       // Activity
+    // HKQuantityTypeIdentifierStepCount                 : "Steps",         // Activity
+    // HKObjectType.workoutType().identifier             : "Workouts/Meals" // Activity/Meal
+    //
+    // TODO: the following types should be stored as profile attribute:
+    // HKCharacteristicTypeIdentifierBloodType           : "Blood type",
+    // HKCharacteristicTypeIdentifierBiologicalSex       : "Sex",
+    // HKCharacteristicTypeIdentifierFitzpatrickSkinType : "Skin type",
+    //
+    public let hkToMCDB : [String: String] = [
+        HKCategoryTypeIdentifierAppleStandHour            : "apple_stand_hour",
+        HKCategoryTypeIdentifierSleepAnalysis             : "sleep_duration",
+        HKQuantityTypeIdentifierActiveEnergyBurned        : "active_energy_burned",
+        HKQuantityTypeIdentifierBasalBodyTemperature      : "basal_body_temperature",
+        HKQuantityTypeIdentifierBasalEnergyBurned         : "basal_energy_burned",
+        HKQuantityTypeIdentifierBloodAlcoholContent       : "blood_alcohol_content",
+        HKQuantityTypeIdentifierBloodGlucose              : "blood_glucose",
+        HKQuantityTypeIdentifierBloodPressureDiastolic    : "diastolic_blood_pressure",
+        HKQuantityTypeIdentifierBloodPressureSystolic     : "systolic_blood_pressure",
+        HKQuantityTypeIdentifierBodyFatPercentage         : "body_fat_percentage",
+        HKQuantityTypeIdentifierBodyMass                  : "body_weight",
+        HKQuantityTypeIdentifierBodyMassIndex             : "body_mass_index",
+        HKQuantityTypeIdentifierBodyTemperature           : "body_temperature",
+        HKQuantityTypeIdentifierDietaryBiotin             : "dietary_biotin",
+        HKQuantityTypeIdentifierDietaryCalcium            : "dietary_calcium",
+        HKQuantityTypeIdentifierDietaryCaffeine           : "dietary_caffeine",
+        HKQuantityTypeIdentifierDietaryCarbohydrates      : "dietary_carbohydrates",
+        HKQuantityTypeIdentifierDietaryCholesterol        : "dietary_cholesterol",
+        HKQuantityTypeIdentifierDietaryChloride           : "dietary_chloride",
+        HKQuantityTypeIdentifierDietaryChromium           : "dietary_chromium",
+        HKQuantityTypeIdentifierDietaryCopper             : "dietary_copper",
+        HKQuantityTypeIdentifierDietaryEnergyConsumed     : "dietary_energy_consumed",
+        HKQuantityTypeIdentifierDietaryFatMonounsaturated : "dietary_fat_monounsaturated",
+        HKQuantityTypeIdentifierDietaryFatPolyunsaturated : "dietary_fat_polyunsaturated",
+        HKQuantityTypeIdentifierDietaryFatSaturated       : "dietary_fat_saturated",
+        HKQuantityTypeIdentifierDietaryFatTotal           : "dietary_fat_total",
+        HKQuantityTypeIdentifierDietaryFiber              : "dietary_fiber",
+        HKQuantityTypeIdentifierDietaryFolate             : "dietary_folate",
+        HKQuantityTypeIdentifierDietaryIodine             : "dietary_iodine",
+        HKQuantityTypeIdentifierDietaryIron               : "dietary_iron",
+        HKQuantityTypeIdentifierDietaryMagnesium          : "dietary_magnesium",
+        HKQuantityTypeIdentifierDietaryManganese          : "dietary_manganese",
+        HKQuantityTypeIdentifierDietaryMolybdenum         : "dietary_molybdenum",
+        HKQuantityTypeIdentifierDietaryNiacin             : "dietary_niacin",
+        HKQuantityTypeIdentifierDietaryPantothenicAcid    : "dietary_pantothenic_acid",
+        HKQuantityTypeIdentifierDietaryPhosphorus         : "dietary_phosphorus",
+        HKQuantityTypeIdentifierDietaryPotassium          : "dietary_potassium",
+        HKQuantityTypeIdentifierDietaryProtein            : "dietary_protein",
+        HKQuantityTypeIdentifierDietaryRiboflavin         : "dietary_riboflavin",
+        HKQuantityTypeIdentifierDietarySelenium           : "dietary_selenium",
+        HKQuantityTypeIdentifierDietarySodium             : "dietary_sodium",
+        HKQuantityTypeIdentifierDietarySugar              : "dietary_sugar",
+        HKQuantityTypeIdentifierDietaryThiamin            : "dietary_thiamin",
+        HKQuantityTypeIdentifierDietaryVitaminA           : "dietary_vitaminA",
+        HKQuantityTypeIdentifierDietaryVitaminB12         : "dietary_vitaminB12",
+        HKQuantityTypeIdentifierDietaryVitaminB6          : "dietary_vitaminB6",
+        HKQuantityTypeIdentifierDietaryVitaminC           : "dietary_vitaminC",
+        HKQuantityTypeIdentifierDietaryVitaminD           : "dietary_vitaminD",
+        HKQuantityTypeIdentifierDietaryVitaminE           : "dietary_vitaminE",
+        HKQuantityTypeIdentifierDietaryVitaminK           : "dietary_vitaminK",
+        HKQuantityTypeIdentifierDietaryWater              : "dietary_water",
+        HKQuantityTypeIdentifierDietaryZinc               : "dietary_zinc",
+        HKQuantityTypeIdentifierElectrodermalActivity     : "electrodermal_activity",
+        HKQuantityTypeIdentifierForcedExpiratoryVolume1   : "forced_expiratory_volume_one_second",
+        HKQuantityTypeIdentifierForcedVitalCapacity       : "forced_vital_capacity",
+        HKQuantityTypeIdentifierHeartRate                 : "heart_rate",
+        HKQuantityTypeIdentifierHeight                    : "body_height",
+        HKQuantityTypeIdentifierInhalerUsage              : "inhaler_usage",
+        HKQuantityTypeIdentifierLeanBodyMass              : "lean_body_mass",
+        HKQuantityTypeIdentifierNikeFuel                  : "nike_fuel",
+        HKQuantityTypeIdentifierNumberOfTimesFallen       : "number_of_times_fallen",
+        HKQuantityTypeIdentifierOxygenSaturation          : "blood_oxygen_saturation",
+        HKQuantityTypeIdentifierPeakExpiratoryFlowRate    : "peak_expiratory_flow",
+        HKQuantityTypeIdentifierPeripheralPerfusionIndex  : "peripheral_perfusion_index",
+        HKQuantityTypeIdentifierRespiratoryRate           : "respiratory_rate",
+        HKQuantityTypeIdentifierUVExposure                : "uv_exposure"
+    ]
+
+    public let mcdbToHK : [String: String] = [
+        "apple_stand_hour"                    : HKCategoryTypeIdentifierAppleStandHour            ,
+        "sleep_duration"                      : HKCategoryTypeIdentifierSleepAnalysis             ,
+        "active_energy_burned"                : HKQuantityTypeIdentifierActiveEnergyBurned        ,
+        "basal_body_temperature"              : HKQuantityTypeIdentifierBasalBodyTemperature      ,
+        "basal_energy_burned"                 : HKQuantityTypeIdentifierBasalEnergyBurned         ,
+        "blood_alcohol_content"               : HKQuantityTypeIdentifierBloodAlcoholContent       ,
+        "blood_glucose"                       : HKQuantityTypeIdentifierBloodGlucose              ,
+        "diastolic_blood_pressure"            : HKQuantityTypeIdentifierBloodPressureDiastolic    ,
+        "systolic_blood_pressure"             : HKQuantityTypeIdentifierBloodPressureSystolic     ,
+        "body_fat_percentage"                 : HKQuantityTypeIdentifierBodyFatPercentage         ,
+        "body_weight"                         : HKQuantityTypeIdentifierBodyMass                  ,
+        "body_mass_index"                     : HKQuantityTypeIdentifierBodyMassIndex             ,
+        "body_temperature"                    : HKQuantityTypeIdentifierBodyTemperature           ,
+        "dietary_biotin"                      : HKQuantityTypeIdentifierDietaryBiotin             ,
+        "dietary_calcium"                     : HKQuantityTypeIdentifierDietaryCalcium            ,
+        "dietary_caffeine"                    : HKQuantityTypeIdentifierDietaryCaffeine           ,
+        "dietary_carbohydrates"               : HKQuantityTypeIdentifierDietaryCarbohydrates      ,
+        "dietary_cholesterol"                 : HKQuantityTypeIdentifierDietaryCholesterol        ,
+        "dietary_chloride"                    : HKQuantityTypeIdentifierDietaryChloride           ,
+        "dietary_chromium"                    : HKQuantityTypeIdentifierDietaryChromium           ,
+        "dietary_copper"                      : HKQuantityTypeIdentifierDietaryCopper             ,
+        "dietary_energy_consumed"             : HKQuantityTypeIdentifierDietaryEnergyConsumed     ,
+        "dietary_fat_monounsaturated"         : HKQuantityTypeIdentifierDietaryFatMonounsaturated ,
+        "dietary_fat_polyunsaturated"         : HKQuantityTypeIdentifierDietaryFatPolyunsaturated ,
+        "dietary_fat_saturated"               : HKQuantityTypeIdentifierDietaryFatSaturated       ,
+        "dietary_fat_total"                   : HKQuantityTypeIdentifierDietaryFatTotal           ,
+        "dietary_fiber"                       : HKQuantityTypeIdentifierDietaryFiber              ,
+        "dietary_folate"                      : HKQuantityTypeIdentifierDietaryFolate             ,
+        "dietary_iodine"                      : HKQuantityTypeIdentifierDietaryIodine             ,
+        "dietary_iron"                        : HKQuantityTypeIdentifierDietaryIron               ,
+        "dietary_magnesium"                   : HKQuantityTypeIdentifierDietaryMagnesium          ,
+        "dietary_manganese"                   : HKQuantityTypeIdentifierDietaryManganese          ,
+        "dietary_molybdenum"                  : HKQuantityTypeIdentifierDietaryMolybdenum         ,
+        "dietary_niacin"                      : HKQuantityTypeIdentifierDietaryNiacin             ,
+        "dietary_pantothenic_acid"            : HKQuantityTypeIdentifierDietaryPantothenicAcid    ,
+        "dietary_phosphorus"                  : HKQuantityTypeIdentifierDietaryPhosphorus         ,
+        "dietary_potassium"                   : HKQuantityTypeIdentifierDietaryPotassium          ,
+        "dietary_protein"                     : HKQuantityTypeIdentifierDietaryProtein            ,
+        "dietary_riboflavin"                  : HKQuantityTypeIdentifierDietaryRiboflavin         ,
+        "dietary_selenium"                    : HKQuantityTypeIdentifierDietarySelenium           ,
+        "dietary_sodium"                      : HKQuantityTypeIdentifierDietarySodium             ,
+        "dietary_sugar"                       : HKQuantityTypeIdentifierDietarySugar              ,
+        "dietary_thiamin"                     : HKQuantityTypeIdentifierDietaryThiamin            ,
+        "dietary_vitaminA"                    : HKQuantityTypeIdentifierDietaryVitaminA           ,
+        "dietary_vitaminB12"                  : HKQuantityTypeIdentifierDietaryVitaminB12         ,
+        "dietary_vitaminB6"                   : HKQuantityTypeIdentifierDietaryVitaminB6          ,
+        "dietary_vitaminC"                    : HKQuantityTypeIdentifierDietaryVitaminC           ,
+        "dietary_vitaminD"                    : HKQuantityTypeIdentifierDietaryVitaminD           ,
+        "dietary_vitaminE"                    : HKQuantityTypeIdentifierDietaryVitaminE           ,
+        "dietary_vitaminK"                    : HKQuantityTypeIdentifierDietaryVitaminK           ,
+        "dietary_water"                       : HKQuantityTypeIdentifierDietaryWater              ,
+        "dietary_zinc"                        : HKQuantityTypeIdentifierDietaryZinc               ,
+        "electrodermal_activity"              : HKQuantityTypeIdentifierElectrodermalActivity     ,
+        "forced_expiratory_volume_one_second" : HKQuantityTypeIdentifierForcedExpiratoryVolume1   ,
+        "forced_vital_capacity"               : HKQuantityTypeIdentifierForcedVitalCapacity       ,
+        "heart_rate"                          : HKQuantityTypeIdentifierHeartRate                 ,
+        "body_height"                         : HKQuantityTypeIdentifierHeight                    ,
+        "inhaler_usage"                       : HKQuantityTypeIdentifierInhalerUsage              ,
+        "lean_body_mass"                      : HKQuantityTypeIdentifierLeanBodyMass              ,
+        "nike_fuel"                           : HKQuantityTypeIdentifierNikeFuel                  ,
+        "number_of_times_fallen"              : HKQuantityTypeIdentifierNumberOfTimesFallen       ,
+        "blood_oxygen_saturation"             : HKQuantityTypeIdentifierOxygenSaturation          ,
+        "peak_expiratory_flow"                : HKQuantityTypeIdentifierPeakExpiratoryFlowRate    ,
+        "peripheral_perfusion_index"          : HKQuantityTypeIdentifierPeripheralPerfusionIndex  ,
+        "respiratory_rate"                    : HKQuantityTypeIdentifierRespiratoryRate           ,
+        "uv_exposure"                         : HKQuantityTypeIdentifierUVExposure
     ]
 }
 

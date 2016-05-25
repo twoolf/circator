@@ -11,10 +11,10 @@ import UIKit
 class DashboardFilterItem: NSObject {
     var title = ""
     var items: [DashboardFilterCellData] = []
- 
+
     init(title: String, items: [DashboardFilterCellData]) {
         super.init()
-        
+
         self.title = title;
         self.items = items
     }

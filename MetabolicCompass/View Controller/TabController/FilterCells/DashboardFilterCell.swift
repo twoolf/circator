@@ -18,7 +18,7 @@ class DashboardFilterCell: UITableViewCell {
     @IBOutlet weak var nameLabel: UILabel!
     weak var delegate: DashboardFilterCellDelegate?
     var data: DashboardFilterCellData? {
-      
+
         didSet {
             assert(data != nil)
             guard data != nil else { return }
@@ -26,7 +26,7 @@ class DashboardFilterCell: UITableViewCell {
             self.checkBoxButton.selected = data!.selected
         }
     }
-    
+
     override func awakeFromNib() {
         super.awakeFromNib()
         // Initialization code
@@ -39,10 +39,10 @@ class DashboardFilterCell: UITableViewCell {
     @IBAction func didPressButton(sender: AnyObject) {
         self.checkBoxButton.selected = !self.checkBoxButton.selected;
         self.data?.selected = self.checkBoxButton.selected
-        
+
         if let delegate = self.delegate {
             delegate.didChangeSelectionStatus(self.checkBoxButton.selected)
         }
     }
-    
+
 }

@@ -14,7 +14,7 @@ private let PMBalanceSampleTypesKey = DefaultsKey<[NSData]?>("balanceSampleTypes
 public  let PMDidUpdateBalanceSampleTypesNotification = "PMDidUpdateBalanceSampleTypesNotification"
 /**
 Controls the HealthKit metrics that will be displayed on picker wheels, tableviews, and radar charts
- 
+
  - Parameters:
  - previewChoices:        array of seven sub-arrays for metrics that can be displayed
  - rowIcons:              images for each of the metrics
@@ -34,7 +34,7 @@ public class PreviewManager: NSObject {
     public static let previewSampleTimes = [
         NSDate()
     ]
-    
+
     static func setupTypes() -> [HKSampleType] {
         if #available(iOS 9.3, *) {
             return [
@@ -65,64 +65,34 @@ public class PreviewManager: NSObject {
         }
         else{
             return [
-                HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierBodyMass)!,
-                HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierBodyMassIndex)!,
-                HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierDietaryEnergyConsumed)!,
-                HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierHeartRate)!,
-                HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierStepCount)!,
-                HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierActiveEnergyBurned)!,
+                HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierBodyMass)!,//
+                HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierBodyMassIndex)!,//
+                HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierDietaryEnergyConsumed)!,//
+                HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierHeartRate)!,//
+                HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierStepCount)!,//
+                HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierActiveEnergyBurned)!,//
                 HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierBasalEnergyBurned)!,
-                HKObjectType.categoryTypeForIdentifier(HKCategoryTypeIdentifierSleepAnalysis)!,
-                HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierUVExposure)!,
-                HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierDietaryProtein)!,
-                HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierDietaryFatTotal)!,
-                HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierDietaryCarbohydrates)!,
+                HKObjectType.categoryTypeForIdentifier(HKCategoryTypeIdentifierSleepAnalysis)!,//
+                HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierUVExposure)!,//
+                HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierDietaryProtein)!,//
+                HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierDietaryFatTotal)!,//
+                HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierDietaryCarbohydrates)!,//
                 HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierDietaryFiber)!,
-                HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierDietarySugar)!,
-                HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierDietarySodium)!,
-                HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierDietaryCaffeine)!,
-                HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierDietaryCholesterol)!,
-                HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierDietaryFatPolyunsaturated)!,
-                HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierDietaryFatSaturated)!,
-                HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierDietaryFatMonounsaturated)!,
-                HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierDietaryWater)!,
+                HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierDietarySugar)!,//
+                HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierDietarySodium)!,//
+                HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierDietaryCaffeine)!,//
+                HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierDietaryCholesterol)!,//
+                HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierDietaryFatPolyunsaturated)!,//
+                HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierDietaryFatSaturated)!,//
+                HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierDietaryFatMonounsaturated)!,//
+                HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierDietaryWater)!,//
                 HKObjectType.correlationTypeForIdentifier(HKCorrelationTypeIdentifierBloodPressure)!,
             ]
         }
     }
+
     public static let supportedTypes:[HKSampleType] = PreviewManager.setupTypes()
-    
 
-    
-//    @available(iOS 9.3, *)
-//    public static let supportedTypes = [
-//        HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierBodyMass)!,
-//        HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierBodyMassIndex)!,
-//        HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierDietaryEnergyConsumed)!,
-//        HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierHeartRate)!,
-//        HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierStepCount)!,
-//        HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierActiveEnergyBurned)!,
-//        HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierBasalEnergyBurned)!,
-//        HKObjectType.categoryTypeForIdentifier(HKCategoryTypeIdentifierSleepAnalysis)!,
-//        HKObjectType.categoryTypeForIdentifier(HKQuantityTypeIdentifierAppleExerciseTime)!,
-//        HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierUVExposure)!,
-//        HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierDietaryProtein)!,
-//        HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierDietaryFatTotal)!,
-//        HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierDietaryCarbohydrates)!,
-//        HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierDietaryFiber)!,
-//        HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierDietarySugar)!,
-//        HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierDietarySodium)!,
-//        HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierDietaryCaffeine)!,
-//        HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierDietaryCholesterol)!,
-//        HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierDietaryFatPolyunsaturated)!,
-//        HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierDietaryFatSaturated)!,
-//        HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierDietaryFatMonounsaturated)!,
-//        HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierDietaryWater)!,
-//        HKObjectType.correlationTypeForIdentifier(HKCorrelationTypeIdentifierBloodPressure)!,
-//    ]
-
-
-    
     public static let previewChoices: [[HKSampleType]] = [
         [
             HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierBodyMass)!,
@@ -198,16 +168,16 @@ public class PreviewManager: NSObject {
             return defaultTypes
         }
     }
-    
+
     public static func updatePreviewSampleTypes (types: [HKSampleType]) {
-    
+
         let rawTypes = types.map { (sampleType) -> NSData in
             return NSKeyedArchiver.archivedDataWithRootObject(sampleType)
         }
-        
+
         Defaults[PMSampleTypesKey] = rawTypes
     }
-    
+
     /// note archiver for retaining memory of picked metrics
     public static var balanceSampleTypes: [HKSampleType] {
         if let rawTypes = Defaults[PMBalanceSampleTypesKey] {
@@ -220,17 +190,17 @@ public class PreviewManager: NSObject {
             return defaultTypes
         }
     }
-    
+
     public static func updateBalanceSampleTypes (types: [HKSampleType]) {
-        
+
         let rawTypes = types.map { (sampleType) -> NSData in
             return NSKeyedArchiver.archivedDataWithRootObject(sampleType)
         }
-        
+
         Defaults[PMBalanceSampleTypesKey] = rawTypes
         NSNotificationCenter.defaultCenter().postNotificationName(PMDidUpdateBalanceSampleTypesNotification, object: nil)
     }
-    
+
     /// associates icon with sample type
     public static func iconForSampleType(sampleType: HKSampleType) -> UIImage {
         return rowIcons[sampleType] ?? UIImage()
