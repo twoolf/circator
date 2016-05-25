@@ -62,7 +62,7 @@ class LoadImageCollectionViewCell: CircleImageCollectionViewCell, UIImagePickerC
             message = "Please enable Photos access in Settings->Privacy->Photos->M-Compass"
         }
         let alertInfoController = UIAlertController(title: nil, message: message, preferredStyle: .Alert)
-        alertInfoController.addAction(UIAlertAction(title: "Cance", style: .Cancel, handler: nil))
+        alertInfoController.addAction(UIAlertAction(title: "OK", style: .Cancel, handler: nil))
         if let navVC = presentingViewController {
             navVC.presentViewController(alertInfoController, animated: true, completion: nil)
         }
