@@ -53,6 +53,11 @@ class AccountManager: NSObject {
         
         registerLogingLandingController.completion = completion
         
+        Async.main(after: 1) {//select the first controller of the main tabbar contoller
+            let mainTabbarController = self.rootViewController?.viewControllers[0] as! MainTabController
+            mainTabbarController.selectedIndex = 0
+        }
+        
         self.rootViewController?.pushViewController(registerLogingLandingController, animated: animated)
     }
     
