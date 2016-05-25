@@ -250,7 +250,7 @@ class RadarViewController : UIViewController, ChartViewDelegate {
         let indData = (0..<PreviewManager.balanceSampleTypes.count).map(indEntry)
         let popData = (0..<PreviewManager.balanceSampleTypes.count).map(popEntry)
 
-        let indDataSet = MetabolicChartDataSet(yVals: indData, label: NSLocalizedString("Individual", comment: "Individual"))
+        let indDataSet = MetabolicChartDataSet(yVals: indData, label: NSLocalizedString("Individual value", comment: "Individual"))
         indDataSet.fillColor = UIColor.colorWithHexString("#427DC9", alpha: 1.0)!
         indDataSet.setColor(indDataSet.fillColor)
         indDataSet.drawFilledEnabled = true
@@ -265,7 +265,7 @@ class RadarViewController : UIViewController, ChartViewDelegate {
         indDataSet.highlightCircleOuterRadius = 5
         indDataSet.drawHighlightCircleEnabled = false
         
-        let popDataSet = MetabolicChartDataSet(yVals: popData, label: NSLocalizedString("Population", comment: "Population"))
+        let popDataSet = MetabolicChartDataSet(yVals: popData, label: NSLocalizedString("Population value", comment: "Population"))
         popDataSet.fillColor = UIColor.lightGrayColor()
         popDataSet.setColor(popDataSet.fillColor.colorWithAlphaComponent(0.75))
         popDataSet.drawFilledEnabled = true
@@ -277,11 +277,11 @@ class RadarViewController : UIViewController, ChartViewDelegate {
         let xVals = PreviewManager.balanceSampleTypes.map { type in
                         return HMConstants.sharedInstance.healthKitShortNames[type.identifier]! }
 
-        let data = RadarChartData(xVals: xVals, dataSets: [popDataSet, indDataSet])
+        let data = RadarChartData(xVals: xVals, dataSets: [indDataSet, popDataSet])
         data.setDrawValues(false)
         radarChart.data = data
 
-        radarChart.highlightValue(xIndex: 0, dataSetIndex: 1, callDelegate: false)
+        radarChart.highlightValue(xIndex: 0, dataSetIndex: 0, callDelegate: false)
         radarChart.xAxis.labelTextColor = .whiteColor()
         radarChart.xAxis.labelFont = UIFont.systemFontOfSize(12, weight: UIFontWeightRegular)
         radarChart.yAxis.drawLabelsEnabled = false
