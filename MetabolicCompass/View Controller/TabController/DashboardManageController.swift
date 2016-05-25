@@ -16,7 +16,7 @@ class DashboardManageController: UIViewController, UITableViewDelegate, UITableV
     @IBOutlet weak var navigationBar: UINavigationBar!
     var data: [DashboardMetricsConfigItem] = [] {
         didSet {
-            self.tableView.reloadData()
+            //self.tableView.reloadData()
         }
     }
     
