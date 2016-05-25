@@ -514,7 +514,7 @@ class SettingsViewController: UITableViewController, UITextFieldDelegate, SFSafa
                 fields: Array(UserProfile.sharedInstance.profileFields[UserProfile.sharedInstance.optionalRange]),
                 placeholders: Array(UserProfile.sharedInstance.profilePlaceholders[UserProfile.sharedInstance.optionalRange]))
             case "Repeated Events":
-                let repeatedEventsVC = RepeatedEventsController()
+                let repeatedEventsVC = CircadianBehaviorViewController()
                 navigationController?.pushViewController(repeatedEventsVC, animated: true)
             default:
                 fatalError()

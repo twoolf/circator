@@ -641,6 +641,54 @@ class IntroViewController: UIViewController,
     }
 
     private func configureViews() {
+        
+        let backgroundView = UIView()
+        backgroundView.translatesAutoresizingMaskIntoConstraints = false
+        view.addSubview(backgroundView)
+        
+        let backgroundViewConstraints : [NSLayoutConstraint] = [
+            backgroundView.topAnchor.constraintEqualToAnchor(view.topAnchor),
+            backgroundView.leftAnchor.constraintEqualToAnchor(view.leftAnchor),
+            backgroundView.rightAnchor.constraintEqualToAnchor(view.rightAnchor),
+            backgroundView.bottomAnchor.constraintEqualToAnchor(view.bottomAnchor)
+        ]
+        
+        view.addConstraints(backgroundViewConstraints)
+        
+        let gradient = Sunpath()
+        gradient.translatesAutoresizingMaskIntoConstraints = false
+        
+        backgroundView.addSubview(gradient)
+        
+        let gradientConstraints : [NSLayoutConstraint] = [
+            
+            gradient.topAnchor.constraintEqualToAnchor(backgroundView.topAnchor),
+            gradient.leftAnchor.constraintEqualToAnchor(backgroundView.leftAnchor),
+            gradient.rightAnchor.constraintEqualToAnchor(backgroundView.rightAnchor),
+            gradient.bottomAnchor.constraintEqualToAnchor(backgroundView.bottomAnchor)
+        ]
+        
+        backgroundView.addConstraints(gradientConstraints)
+        
+        let blurEffect = UIBlurEffect(style: UIBlurEffectStyle.Light)
+        let blurEffectView = UIVisualEffectView(effect: blurEffect)
+        blurEffectView.translatesAutoresizingMaskIntoConstraints = false
+        
+        backgroundView.addSubview(blurEffectView)
+        
+        let blurEffectViewConstraints : [NSLayoutConstraint] = [
+            
+            
+            blurEffectView.topAnchor.constraintEqualToAnchor(backgroundView.topAnchor),
+            blurEffectView.leftAnchor.constraintEqualToAnchor(backgroundView.leftAnchor),
+            blurEffectView.rightAnchor.constraintEqualToAnchor(backgroundView.rightAnchor),
+            blurEffectView.bottomAnchor.constraintEqualToAnchor(backgroundView.bottomAnchor)
+        ]
+        
+        backgroundView.addConstraints(blurEffectViewConstraints)
+        
+        
+        
         view.backgroundColor = Theme.universityDarkTheme.backgroundColor
         logoImageView.translatesAutoresizingMaskIntoConstraints = false
         logoImageView.contentScaleFactor = 0.2
