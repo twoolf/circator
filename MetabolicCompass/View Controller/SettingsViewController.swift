@@ -545,9 +545,9 @@ class SettingsViewController: UITableViewController, UITextFieldDelegate, SFSafa
                         UINotifications.invalidUserPass(self.navigationController!)
                         return
                     }
-                    UserManager.sharedManager.login(txt) { (error, reason) in
-                        guard !error else {
-                            UINotifications.loginFailed(self.navigationController!, reason: reason)
+                    UserManager.sharedManager.login(txt) { res in
+                        guard res.ok else {
+                            UINotifications.loginFailed(self.navigationController!, reason: res.info)
                             return
                         }
                     }

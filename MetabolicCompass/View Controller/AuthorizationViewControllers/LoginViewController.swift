@@ -63,9 +63,9 @@ class LoginViewController: BaseViewController {
             return
         }
         
-        UserManager.sharedManager.pushConsent(consentPath) { (error, text) in
+            UserManager.sharedManager.pushConsent(consentPath) { res in
             
-            if (!error) {
+            if (res.ok) {
                 ConsentManager.sharedManager.removeConsentFile(consentPath)
             }
             
@@ -98,10 +98,10 @@ class LoginViewController: BaseViewController {
                 UINotifications.invalidUserPass(self.navigationController!)
                 return
             }
-            UserManager.sharedManager.loginWithPull { (error, text) in
-                guard !error else {
+            UserManager.sharedManager.loginWithPull { res in
+                guard res.ok else {
                     
-                    if (text == UMConsentInfoString) {
+                    if (res.info == UMConsentInfoString) {
                         self.uploadLostConsentFile()
                     }
                     else {

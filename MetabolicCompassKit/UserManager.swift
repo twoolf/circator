@@ -214,48 +214,48 @@ public class UserManager {
 
     // MARK: - Stormpath-based account creation and authentication
 
-    public func loginWithCompletion(completion: SvcStringCompletion) {
+    public func loginWithCompletion(completion: SvcResultCompletion) {
         withUserPass (getPassword()) { (user, pass) in
             Stormpath.login(username: user, password: pass, completionHandler: {
                 (accessToken, err) -> Void in
                 guard err == nil else {
                     log.error("Stormpath login failed: \(err!.localizedDescription)")
                     self.resetFull()
-                    completion(true, err!.localizedDescription)
+                    completion(RequestResult(error:err!))
                     return
                 }
 
                 log.verbose("Access token: \(Stormpath.accessToken)")
                 MCRouter.updateAuthToken(Stormpath.accessToken)
-                completion(false, nil)
+                completion(RequestResult())
             })
         }
     }
 
-    public func loginWithPush(profile: [String: AnyObject], completion: SvcStringCompletion) {
-        loginWithCompletion { (error, why) in
-            guard !error else {
-                completion(true, why)
+    public func loginWithPush(profile: [String: AnyObject], completion: SvcResultCompletion) {
+        loginWithCompletion { res in
+            guard res.ok else {
+                completion(res)
                 return
             }
             self.pushProfile(profile, completion: completion)
         }
     }
 
-    public func loginWithPull(completion: SvcStringCompletion) {
-        loginWithCompletion { (error, why) in
-            guard !error else {
-                completion(true, why)
+    public func loginWithPull(completion: SvcResultCompletion) {
+        loginWithCompletion { res in
+            guard res.ok else {
+                completion(res)
                 return
             }
-            self.pullProfile { error, _ in
-                if !error { self.pullConsent(completion) }
-                else { completion(error, nil) }
+            self.pullProfile { res in
+                if res.ok { self.pullConsent(completion) }
+                else { completion(res) }
             }
         }
     }
 
-    public func login(userPass: String, completion: SvcStringCompletion) {
+    public func login(userPass: String, completion: SvcResultCompletion) {
         withUserId { user in
             if !self.validateAccount(userPass) {
                 self.resetAccount()
@@ -390,7 +390,7 @@ public class UserManager {
                 log.warning("Attempting login: \(self.hasAccount()) \(self.hasPassword())")
 
                 if self.hasAccount() && self.hasPassword() {
-                    self.loginWithPull { (error,_) in completion(error) }
+                    self.loginWithPull { res in completion(res.fail) }
                 } else {
                     completion(true)
                 }
@@ -415,14 +415,14 @@ public class UserManager {
 
 
     // MARK: - Consent accessors
-    public func syncConsent(completion: SvcStringCompletion) {
+    public func syncConsent(completion: SvcResultCompletion) {
         let dict = ["consent": profileCache["consent"] ?? ("" as AnyObject)]
         Service.string(MCRouter.SetConsent(dict), statusCode: 200..<300, tag: "SCONSENT") {
-            _, response, result in completion(!result.isSuccess, result.value)
+            _, response, result in completion(RequestResult(afStringResult:result))
         }
     }
 
-    public func pushConsent(consentFilePath: String?, completion: SvcStringCompletion) {
+    public func pushConsent(consentFilePath: String?, completion: SvcResultCompletion) {
         if let path = consentFilePath {
             if let data = NSData(contentsOfFile: path) {
                 let metadata = ["consent": data.base64EncodedStringWithOptions(NSDataBase64EncodingOptions())]
@@ -430,34 +430,34 @@ public class UserManager {
                 syncConsent(completion)
             } else {
                 log.error("Failed to read consent file at: \(path)")
-                completion(true, nil)
+                completion(RequestResult())
             }
         } else {
             log.error("Invalid consent file path: \(consentFilePath)")
-            completion(true, nil)
+            completion(RequestResult())
         }
 
     }
 
-    public func pullConsent(completion: SvcStringCompletion) {
+    public func pullConsent(completion: SvcResultCompletion) {
         Service.string(MCRouter.GetConsent, statusCode: 200..<300, tag: "GCONSENT") {
             _, response, result in
             if result.isSuccess { self.profileCache["consent"] = result.value }
-            completion(!result.isSuccess, UMConsentInfoString)
+            completion(RequestResult(errorMessage: UMConsentInfoString))
         }
     }
 
     // MARK: - Profile (i.e., Stormpath account data) and metadata management
 
-    public func syncProfile(completion: SvcStringCompletion) {
+    public func syncProfile(completion: SvcResultCompletion) {
         // Post to the service.
         let dict = Dictionary(pairs: profileCache.filter { kv in return !profileExcludes.contains(kv.0) })
         Service.string(MCRouter.SetUserAccountData(dict), statusCode: 200..<300, tag: "UPDATEACC") {
-            _, response, result in completion(!result.isSuccess, result.value)
+            _, response, result in completion(RequestResult(afStringResult:result))
         }
     }
 
-    public func pushProfile(metadata: [String: AnyObject], completion: SvcStringCompletion) {
+    public func pushProfile(metadata: [String: AnyObject], completion: SvcResultCompletion) {
         // Refresh profile cache, and post to the backend.
         refreshProfileCache(metadata)
         syncProfile(completion)
@@ -472,17 +472,17 @@ public class UserManager {
         }
     }
 
-    public func pullProfileIfNeed(completion: SvcObjectCompletion){
+    public func pullProfileIfNeed(completion: SvcResultCompletion){
         if isProfileOutdated() {
             pullProfile(completion)
         }
         else{
             print("pull skipped")
-            completion(false, nil)
+            completion(RequestResult())
         }
     }
 
-    public func pullProfile(completion: SvcObjectCompletion) {
+    public func pullProfile(completion: SvcResultCompletion) {
         print("!!! pullProfile")
         Service.json(MCRouter.GetUserAccountData, statusCode: 200..<300, tag: "ACCDATA") {
             _, _, result in
@@ -498,34 +498,38 @@ public class UserManager {
             }
 
             // Evaluate the completion.
-            completion(!result.isSuccess, result.value)
+            completion(RequestResult(afObjectResult:result))
         }
     }
 
-    public func pushProfileWithConsent(consentFilePath: String?, metadata: [String: AnyObject], completion: SvcStringCompletion) {
+    public func pushProfileWithConsent(consentFilePath: String?, metadata: [String: AnyObject], completion: SvcResultCompletion) {
         if let path = consentFilePath {
             if let data = NSData(contentsOfFile: path) {
                 var dict = metadata
                 dict["consent"] = data.base64EncodedStringWithOptions(NSDataBase64EncodingOptions())
                 refreshProfileCache(metadata)
-                syncProfile { error, _ in
-                    if !error { self.syncConsent(completion) }
-                    else { completion(error, "Failed to sync profile") }
+                syncProfile { res in
+                    if res.ok { self.syncConsent(completion) }
+                    else {
+                        completion(RequestResult(errorMessage:"Failed to sync profile"))
+                    }
                 }
             } else {
                 log.error("Failed to read consent file at: \(path)")
-                completion(true, nil)
+                completion(RequestResult(errorMessage:"Failed to read consent file at: \(path)"))
             }
         } else {
             log.error("Invalid consent file path: \(consentFilePath)")
-            completion(true, nil)
+            completion(RequestResult(errorMessage:"Invalid consent file path: \(consentFilePath)"))
         }
     }
 
-    public func pullProfileWithConsent(completion: SvcStringCompletion) {
-        pullProfile { (error, _) in
-            if !error { self.pullConsent(completion) }
-            else { completion(error, "Failed to pull profile") }
+    public func pullProfileWithConsent(completion: SvcResultCompletion) {
+        pullProfile { res in
+            if res.ok { self.pullConsent(completion) }
+            else {
+                completion(RequestResult(errorMessage:"Failed to pull profile"))
+            }
         }
     }
 
@@ -539,14 +543,14 @@ public class UserManager {
         }
     }
 
-    public func syncAcquisitionTimes(completion: SvcStringCompletion) {
+    public func syncAcquisitionTimes(completion: SvcResultCompletion) {
         guard let ts = profileCache[HMQueryTSKey] as? [String: AnyObject] else {
-            completion(true, "")
+            completion(RequestResult(errorMessage:"no profile cache"))
             return
         }
 
         Service.string(MCRouter.UploadHKTSAcquired(ts), statusCode: 200..<300, tag: "UPDATETS") {
-            _, response, result in completion(!result.isSuccess, result.value)
+            _, response, result in completion(RequestResult(afStringResult:result))
         }
     }
 

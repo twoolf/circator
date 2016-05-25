@@ -113,16 +113,16 @@ class AccountManager: NSObject {
                     return
                 }
                 
-                UserManager.sharedManager.pullProfileWithConsent { (error, msg) in
-                    if !error {
+                UserManager.sharedManager.pullProfileWithConsent { res in
+                    if res.ok {
                         self.loginComplete()
                         
-                    } else if (msg == UMConsentInfoString) {
+                    } else if (res.info == UMConsentInfoString) {
                         self.uploadLostConsentFile()
                         self.loginComplete()
                     }
                     else {
-                        log.error("Failed to retrieve initial profile and consent: \(msg)")
+                        log.error("Failed to retrieve initial profile and consent: \(res.info)")
                     }
                 }
             }
@@ -154,13 +154,13 @@ class AccountManager: NSObject {
         }
         
         self.uploadInProgress = true
-        UserManager.sharedManager.pushConsent(consentPath) { [weak self](error, text) in
+        UserManager.sharedManager.pushConsent(consentPath) { res in
             
-            if (!error) {
+            if (res.ok) {
                 ConsentManager.sharedManager.removeConsentFile(consentPath)
             }
          
-            self?.uploadInProgress = false
+            self.uploadInProgress = false
         }
     }
 }

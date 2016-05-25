@@ -54,7 +54,7 @@ class AdditionalInfoModel: NSObject {
     }
     
     func loadValues(completion:() -> ()){
-        UserManager.sharedManager.pullProfileIfNeed { error, _ in
+        UserManager.sharedManager.pullProfileIfNeed { res in
             self.updateValues()
             completion()
         }
