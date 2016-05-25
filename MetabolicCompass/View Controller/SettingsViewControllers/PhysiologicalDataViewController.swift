@@ -65,7 +65,16 @@ class PhysiologicalDataViewController: BaseViewController {
         if dataSource.editMode {
             let additionalInfo = dataSource.model.additionalInfoDict()
                         
-            UserManager.sharedManager.pushProfile(additionalInfo, completion: { _ in
+            UserManager.sharedManager.pushProfile(additionalInfo, completion: { res in
+                if res.fail {
+                    //print("cant send profile \(res.info)")
+                    if res.info == "The Internet connection appears to be offline." {
+                        let lsMessage = "No Internet Connection. Please try again.".localized
+                        let alert = UIAlertController(title: "", message: lsMessage, preferredStyle: UIAlertControllerStyle.Alert)
+                        alert.addAction(UIAlertAction(title: "OK".localized, style: .Cancel, handler: nil))
+                        self.presentViewController(alert, animated: true, completion: nil)
+                    }
+                }
                 self.editMode = false
             })
         }
