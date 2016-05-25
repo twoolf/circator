@@ -8,39 +8,55 @@
 
 import WatchKit
 import Foundation
+import HealthKit
 
 
 class ExerciseInterfaceController: WKInterfaceController {
     @IBOutlet var exerPicker: WKInterfacePicker!
-    @IBOutlet var group: WKInterfaceGroup!
-    let duration = 1.2
-
+    @IBOutlet var enterButton: WKInterfaceButton!
+    var exerciseDuration = 1.0
     override func awakeWithContext(context: AnyObject?) {
         super.awakeWithContext(context)
         var tempItems: [WKPickerItem] = []
         for i in 0...180 {
-            // 2
             let item = WKPickerItem()
             item.contentImage = WKImage(imageName: "exercise\(i)")
             tempItems.append(item)
         }
         exerPicker.setItems(tempItems)
         
-        //group.setBackgroundImageNamed("exercise0")
-        //group.startAnimatingWithImagesInRange(NSMakeRange(0, 181), duration: duration, repeatCount: 1)
-        // Configure interface objects here.
     }
 
     override func willActivate() {
-        // This method is called when watch view controller is about to be visible to user
         super.willActivate()
     }
 
     override func didDeactivate() {
-        // This method is called when watch view controller is no longer visible
         super.didDeactivate()
     }
+    
+    func showButton() {
+        enterButton.setTitle("Saved")
+        print("HKStore should update")
+    // may want to update to enable users to log type of exercise workout (picker)
+        let workout = HKWorkout(activityType:
+            .Running,
+                    startDate: NSDate(),
+                    endDate: NSDate(),
+                    duration: exerciseDuration,
+                    totalEnergyBurned: HKQuantity(unit:HKUnit.calorieUnit(), doubleValue:5.0),
+                    totalDistance: HKQuantity(unit:HKUnit.meterUnit(), doubleValue:1.0),
+                    device: HKDevice.localDevice(),
+                    metadata: ["Apple Watch":"source"])
+        let healthKitStore:HKHealthStore = HKHealthStore()
+        healthKitStore.saveObject(workout) { success, error in
+        }
+    }
 
-
-
+    @IBAction func onSave() {
+        showButton()
+    }
+    @IBAction func onExercise(value: Int) {
+        exerciseDuration = Double(value) + 1
+    }
 }

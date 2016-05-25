@@ -8,26 +8,24 @@
 
 import WatchKit
 import Foundation
-
+import HealthKit
 
 class MealInterfaceController: WKInterfaceController {
 
     @IBOutlet var mealPicker: WKInterfacePicker!
-
+    @IBOutlet var enterButton: WKInterfaceButton!
+    
+//    var mealTypebyButton
+    var mealDuration = 0.0
     override func awakeWithContext(context: AnyObject?) {
         super.awakeWithContext(context)
         var tempItems: [WKPickerItem] = []
         for i in 0...90 {
-            // 2
             let item = WKPickerItem()
             item.contentImage = WKImage(imageName: "meal\(i)")
             tempItems.append(item)
         }
         mealPicker.setItems(tempItems)
-
-        //group.setBackgroundImageNamed("meal")
-        //group.startAnimatingWithImagesInRange(NSMakeRange(0, 181), duration: duration, repeatCount: 1)
-        // Configure interface objects here.
     }
 
     func onMealTimeChanged() {
@@ -35,14 +33,34 @@ class MealInterfaceController: WKInterfaceController {
     }
 
     override func willActivate() {
-        // This method is called when watch view controller is about to be visible to user
         super.willActivate()
     }
 
     override func didDeactivate() {
-        // This method is called when watch view controller is no longer visible
         super.didDeactivate()
     }
 
-
+    func showButton() {
+        enterButton.setTitle("Saved")
+        print("HKStore should update")
+        let workout = HKWorkout(activityType:
+            .PreparationAndRecovery,
+                                startDate: NSDate(),
+                                endDate: NSDate(),
+                                duration: mealDuration,
+                                totalEnergyBurned: HKQuantity(unit:HKUnit.calorieUnit(), doubleValue:0.0),
+                                totalDistance: HKQuantity(unit:HKUnit.meterUnit(), doubleValue:0.0),
+                                device: HKDevice.localDevice(),
+                                metadata: [mealTypebyButton.mealType:"source"])
+        let healthKitStore:HKHealthStore = HKHealthStore()
+        healthKitStore.saveObject(workout) { success, error in
+        }
+    }
+    
+    @IBAction func onMealEntry(value: Int) {
+        mealDuration = Double(value)*60
+    }
+    @IBAction func mealSaveButton() {
+        showButton()
+    }
 }
