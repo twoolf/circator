@@ -44,18 +44,17 @@ class MainSettingsViewController: BaseViewController, UICollectionViewDataSource
         
     }
 
-    override func didReceiveMemoryWarning() {
-        super.didReceiveMemoryWarning()
-        // Dispose of any resources that can be recreated.
-    }
-    
-    
     func logoutAction()  {
-        
-        AccountManager.shared.doLogout({
-            print("Logout done!")
-            AccountManager.shared.loginOrRegister()
-        })
+        let alertController = UIAlertController(title: "", message: "Are you sure you wish to log out?", preferredStyle: .Alert)
+        let cancelAction = UIAlertAction(title: "Cancel", style: .Cancel, handler: nil)
+        let okAction = UIAlertAction(title: "OK", style: .Default) { (alertAction: UIAlertAction!) in
+            AccountManager.shared.doLogout({
+                AccountManager.shared.loginOrRegister()
+            })
+        }
+        alertController.addAction(cancelAction)
+        alertController.addAction(okAction)
+        self.presentViewController(alertController, animated: true, completion: nil)
     }
     
     // MARK: - Data source
