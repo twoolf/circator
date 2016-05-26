@@ -82,15 +82,17 @@ public class AdditionalInfoDataSource: BaseDataSource {
         cell.titleLbl.text = item.name
         if let strValue = item.stringValue() {
             cell.inputTxtField.text = strValue
+            cell.inputTxtField.font = ScreenManager.appFontOfSize(15.0)
         }
         else {
             cell.inputTxtField.text = nil
+            cell.inputTxtField.font = ScreenManager.appFontOfSize(13.0)
         }
 
         cell.smallDescriptionLbl.text = item.unitsTitle
-
-        cell.inputTxtField.attributedPlaceholder = NSAttributedString(string: item.title,
-                                                                      attributes: [NSForegroundColorAttributeName : unselectedTextColor])
+        let attr = [NSForegroundColorAttributeName : unselectedTextColor]
+        print("indexPath:\(indexPath), name:\(item.name), title:\(item.title)")
+        cell.inputTxtField.attributedPlaceholder = NSAttributedString(string: item.title, attributes: attr)
 
         var keypadType = UIKeyboardType.Default
         if item.dataType == .Int {
