@@ -67,9 +67,11 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         let navController  = UINavigationController(rootViewController: mainViewController)
         AccountManager.shared.rootViewController = navController
         
+        FontScaleLabel.scaleFactor = ScreenManager.scaleFactor()
+        
         window?.rootViewController = navController
         window?.makeKeyAndVisible()
-
+        print("window \(window)")
         AppLogViewController.addAppLogRecognizersToGlobalWindow()
         Service.delegate = SALogger.sharedLogger
         

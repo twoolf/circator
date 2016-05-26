@@ -10,7 +10,7 @@ import UIKit
 import MetabolicCompassKit
 
 
-class AppLabel: UILabel {
+class AppLabel: FontScaleLabel {
     
     var fontSize: CGFloat = 14.0 {
         didSet {
