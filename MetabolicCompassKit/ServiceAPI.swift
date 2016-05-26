@@ -13,8 +13,13 @@ import SwiftyBeaver
 
 let log = SwiftyBeaver.self
 
-public typealias SvcStringCompletion = (Bool, String?) -> Void
-public typealias SvcObjectCompletion = (Bool, AnyObject?) -> Void
+//public typealias SvcResultCompletion = (Bool, String?) -> Void
+//public typealias SvcResultCompletion = (Bool, AnyObject?) -> Void
+//public typealias SvcResultCompletion = (Alamofire.Result<String>) -> Void
+//public typealias SvcResultCompletion = (Alamofire.Result<AnyObject>) -> Void
+public typealias SvcResultCompletion = (RequestResult) -> Void
+
+
 
 private let devServiceURL = "https://dev.metaboliccompass.com"
 private let prodServiceURL = "https://app.metaboliccompass.com"
@@ -23,6 +28,82 @@ private let asDevService = true
 private let resetPassDevURL = devServiceURL + "/forgot"
 private let resetPassProdURL = prodServiceURL + "/forgot"
 public  let resetPassURL = asDevService ? resetPassDevURL : resetPassProdURL
+
+public class  RequestResult{
+    private var _obj:Any? = nil
+    //private var infoMsg:String? = nil
+    private var _ok:Bool?
+    
+    enum ResultType{
+        case BoolWithMessage
+        case Error
+        case AFObject
+        case AFString
+    }
+    private var resType:ResultType
+    
+    public var error:NSError? = nil
+    public var ok:Bool {
+        switch resType {
+        case .BoolWithMessage:
+            return _ok ?? false
+        case .AFObject:
+            let afObjRes = _obj as? Alamofire.Result<AnyObject>
+            return afObjRes?.isSuccess ?? false
+        case .AFString:
+            let afStrRes = _obj as? Alamofire.Result<String>
+            return afStrRes?.isSuccess ?? false
+        case .Error:
+            let err = _obj as? NSError
+            return (err == nil)
+        }
+    }
+    
+    public var fail:Bool {
+        return !ok
+    }
+    
+    public var info:String {
+        switch resType {
+        case .BoolWithMessage:
+            return _obj as? String ?? ""
+        case .AFObject:
+            let afRes = _obj as? Alamofire.Result<AnyObject>
+            return (afRes?.error as? NSError)?.localizedDescription ?? ""
+        case .AFString:
+            let afRes = _obj as? Alamofire.Result<String>
+            return (afRes?.error as? NSError)?.localizedDescription ?? ""
+        case .Error:
+            let err = _obj as? NSError
+            return err?.localizedDescription ?? ""
+        }
+    }
+    
+    init() {
+        resType = .BoolWithMessage
+        _ok = true
+    }
+    init(errorMessage: String) {
+        resType = .BoolWithMessage
+        _ok = false
+        _obj = errorMessage
+    }
+    init(afObjectResult: Alamofire.Result<AnyObject>) {
+        resType = .AFObject
+        _obj = afObjectResult
+    }
+    init(afStringResult: Alamofire.Result<String>) {
+        resType = .AFString
+        _obj = afStringResult
+    }
+    init(error: NSError) {
+        resType = .Error
+        _obj = error
+    }
+    
+
+}
+
 
 /**
  This class sets up the needed API for all of the reads/writes to our cloud data store.  This is needed to support our ability to add new aggregate information into the data store and to update the display on our participants screens as new information is deposited into the store.
