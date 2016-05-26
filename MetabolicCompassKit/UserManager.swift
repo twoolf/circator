@@ -260,8 +260,8 @@ public class UserManager {
 
     public func loginWithCompletion(completion: SvcResultCompletion) {
         withUserPass (getPassword()) { (user, pass) in
-            Stormpath.sharedSession.login(username: user, password: pass) {
-                (success, error) -> Void in
+            Stormpath.sharedSession.login(user, password: pass) {
+                (success, err) -> Void in
                 guard success && err == nil else {
                     log.error("Stormpath login failed: \(err!.localizedDescription)")
                     self.resetFull()
@@ -317,7 +317,6 @@ public class UserManager {
         logoutWithCompletion(nil)
     }
 
-    // TODO: add consent file path parameter
     public func register(firstName: String, lastName: String, consentPath: String,
                          completion: ((Account?, Bool, String?) -> Void))
     {
@@ -326,22 +325,16 @@ public class UserManager {
             account.givenName = firstName
             account.surname = lastName
 
-            if let path = consentPath {
-                if let data = NSData(contentsOfFile: path) {
-                    let consentStr = data.base64EncodedStringWithOptions(NSDataBase64EncodingOptions())
-                    account.customFields = ["consent": consentStr]
-                    Stormpath.sharedSession.register(account) {
-                        (account, error) -> Void in
-                        if error != nil { log.error("Register failed: \(error)") }
-                        completion(account, error != nil, error?.localizedDescription)
-                    }
-                } else {
-                    let msg = UMPushReadBinaryFileError(component, path)
-                    log.error(msg)
-                    completion(nil, true, msg)
+            if let data = NSData(contentsOfFile: consentPath) {
+                let consentStr = data.base64EncodedStringWithOptions(NSDataBase64EncodingOptions())
+                account.customFields = ["consent": consentStr]
+                Stormpath.sharedSession.register(account) {
+                    (account, error) -> Void in
+                    if error != nil { log.error("Register failed: \(error)") }
+                    completion(account, error != nil, error?.localizedDescription)
                 }
             } else {
-                let msg = UMPushInvalidBinaryFileError(component, filePath)
+                let msg = UMPushReadBinaryFileError(.Consent, consentPath)
                 log.error(msg)
                 completion(nil, true, msg)
             }
@@ -358,8 +351,8 @@ public class UserManager {
 
 
     public func resetPassword(email: String, completion: ((Bool, String?) -> Void)) {
-        Stormpath.sharedSession.resetPassword(email: email) { (success, error) -> Void in
-            if error != nill { log.error("Reset Password failed: \(error)") }
+        Stormpath.sharedSession.resetPassword(email) { (success, error) -> Void in
+            if error != nil { log.error("Reset Password failed: \(error)") }
             completion(success, error?.localizedDescription)
         }
     }
@@ -1057,7 +1050,7 @@ public class UserManager {
     // MARK: - User Info : first & last names
 
     public func getUserInfo(completion: ((Account?, NSError?) -> Void)) {
-        Stormpath.sharedSession.me(completionHandler: completion)
+        Stormpath.sharedSession.me(completion)
     }
 
 }
