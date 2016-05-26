@@ -76,7 +76,7 @@ class QueryViewController: UITableViewController {
             (sender: MGSwipeTableCell!) -> Bool in
             if let idx = tableView.indexPathForCell(sender) {
                 switch QueryManager.sharedManager.getQueries()[idx.row].1 {
-                case Query.ConjunctiveQuery(_):
+                case Query.ConjunctiveQuery(_, _, _, _):
                     let builder = QueryBuilderViewController()
                     builder.buildMode = BuilderMode.Editing(idx.row)
                     self.navigationController?.pushViewController(builder, animated: true)

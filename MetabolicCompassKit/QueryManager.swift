@@ -26,7 +26,8 @@ public enum Aggregate : Int {
 public typealias Predicate = (Aggregate, String, String?, String?)
 
 public enum Query {
-    case ConjunctiveQuery([Predicate])
+    case ConjunctiveQuery(NSDate?, NSDate?, [HKObjectType]?, [Predicate])
+        // Start time, end time, columns to retrieve, conjunct array
 }
 
 public typealias Queries = [(String, Query)]
@@ -36,11 +37,11 @@ private let QMSelectedKey = DefaultsKey<Int>("QMSelectedKey")
 
 // TODO: Male/Female, age ranges (as profile queries).
 private let defaultQueries : Queries = [
-        ("Weight <50",     Query.ConjunctiveQuery([Predicate(.AggAvg, "body_weight", nil, "50")])),
-        ("Weight 50-100",  Query.ConjunctiveQuery([Predicate(.AggAvg, "body_weight", "50", "100")])),
-        ("Weight 100-150", Query.ConjunctiveQuery([Predicate(.AggAvg, "body_weight", "100", "150")])),
-        ("Weight 150-200", Query.ConjunctiveQuery([Predicate(.AggAvg, "body_weight", "150", "200")])),
-        ("Weight >200",    Query.ConjunctiveQuery([Predicate(.AggAvg, "body_weight", "200", nil)]))
+        ("Weight <50",     Query.ConjunctiveQuery(nil, nil, nil, [Predicate(.AggAvg, "body_weight", nil, "50")])),
+        ("Weight 50-100",  Query.ConjunctiveQuery(nil, nil, nil, [Predicate(.AggAvg, "body_weight", "50", "100")])),
+        ("Weight 100-150", Query.ConjunctiveQuery(nil, nil, nil, [Predicate(.AggAvg, "body_weight", "100", "150")])),
+        ("Weight 150-200", Query.ConjunctiveQuery(nil, nil, nil, [Predicate(.AggAvg, "body_weight", "150", "200")])),
+        ("Weight >200",    Query.ConjunctiveQuery(nil, nil, nil, [Predicate(.AggAvg, "body_weight", "200", nil)]))
     ]
 
 /**
@@ -120,6 +121,9 @@ private let LKey = "min"
 private let UKey = "max"
 
 private let NKey = "qname"
+private let SKey = "qstart"
+private let EKey = "qend"
+private let CKey = "qcols"
 private let QKey = "query"
 
 func serializePredicate(p: Predicate) -> [String: AnyObject] {
@@ -132,8 +136,14 @@ func serializePredicate(p: Predicate) -> [String: AnyObject] {
 func serializeQueries(qs: Queries) -> [[String: AnyObject]] {
     return qs.map { (n,q) in
         switch q {
-        case .ConjunctiveQuery(let ps):
-            return [NKey: n, QKey: ps.map(serializePredicate)]
+        case .ConjunctiveQuery(let start, let end, let columns, let conjuncts):
+            return [
+                NKey: n,
+                SKey: start,
+                EKey: end,
+                CKey: columns,
+                QKey: conjuncts.map(serializePredicate)
+            ]
         }
     }
 }
@@ -147,9 +157,12 @@ func deserializePredicate(p: [String: AnyObject]) -> Predicate {
 
 func deserializeQueries(qs: [[String: AnyObject]]) -> Queries {
     return qs.map { dict in
-        let name = dict[NKey] as! String
-        let preds = (dict[QKey] as! [[String: AnyObject]]).map(deserializePredicate)
-        return (name, .ConjunctiveQuery(preds))
+        let name    = dict[NKey] as! String
+        let start   = dict[SKey] as! NSDate?
+        let end     = dict[EKey] as! NSDate?
+        let columns = dict[CKey] as! [HKObjectType]?
+        let preds   = (dict[QKey] as! [[String: AnyObject]]).map(deserializePredicate)
+        return (name, .ConjunctiveQuery(start, end, columns, preds))
     }
 }
 
