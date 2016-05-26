@@ -258,45 +258,45 @@ public class UserManager {
 
     // MARK: - Stormpath-based account creation and authentication
 
-    public func loginWithCompletion(completion: SvcStringCompletion) {
+    public func loginWithCompletion(completion: SvcResultCompletion) {
         withUserPass (getPassword()) { (user, pass) in
             Stormpath.login(username: user, password: pass, completionHandler: {
                 (accessToken, err) -> Void in
                 guard err == nil else {
                     log.error("Stormpath login failed: \(err!.localizedDescription)")
                     self.resetFull()
-                    completion(true, err!.localizedDescription)
+                    completion(RequestResult(error:err!))
                     return
                 }
 
                 log.verbose("Access token: \(Stormpath.accessToken)")
                 MCRouter.updateAuthToken(Stormpath.accessToken)
-                completion(false, nil)
+                completion(RequestResult())
             })
         }
     }
 
-    public func loginWithPush(profile: [String: AnyObject], completion: SvcStringCompletion) {
-        loginWithCompletion { (error, why) in
-            guard !error else {
-                completion(true, why)
+    public func loginWithPush(profile: [String: AnyObject], completion: SvcResultCompletion) {
+        loginWithCompletion { res in
+            guard res.ok else {
+                completion(res)
                 return
             }
             self.pushProfile(profile, completion: completion)
         }
     }
 
-    public func loginWithPull(completion: SvcStringCompletion) {
-        loginWithCompletion { (error, why) in
-            guard !error else {
-                completion(true, why)
+    public func loginWithPull(completion: SvcResultCompletion) {
+        loginWithCompletion { res in
+            guard res.ok  else {
+                completion(res)
                 return
             }
             self.pullFullAccount(completion)
         }
     }
 
-    public func login(userPass: String, completion: SvcStringCompletion) {
+    public func login(userPass: String, completion: SvcResultCompletion) {
         withUserId { user in
             if !self.validateAccount(userPass) {
                 self.resetAccount()
@@ -428,7 +428,7 @@ public class UserManager {
                 log.warning("Attempting login: \(self.hasAccount()) \(self.hasPassword())")
 
                 if self.hasAccount() && self.hasPassword() {
-                    self.loginWithPull { (error,_) in completion(error) }
+                    self.loginWithPull { res in completion(res.fail) }
                 } else {
                     completion(true)
                 }
@@ -556,11 +556,11 @@ public class UserManager {
     }
 
     // Retrieves the currently cached account component, wraps it, and pushes it to the backend.
-    private func syncAccountComponent(component: AccountComponent, completion: SvcStringCompletion)
+    private func syncAccountComponent(component: AccountComponent, completion: SvcResultCompletion)
     {
         let componentData = wrapCache(component)
         Service.string(MCRouter.SetUserAccountData(componentData!), statusCode: 200..<300, tag: "SYNCACC") {
-            _, response, result in completion(!result.isSuccess, result.value)
+            _, response, result in completion(RequestResult(afStringResult:result))
         }
     }
 
@@ -580,7 +580,7 @@ public class UserManager {
     private func pushAccountComponent(component: AccountComponent,
                                       refresh: Bool,
                                       componentData: [String:AnyObject],
-                                      completion: SvcStringCompletion)
+                                      completion: SvcResultCompletion)
     {
         // Refresh cache, and post to the backend.
         if refresh { refreshComponentCache(component, componentData: componentData) }
@@ -599,7 +599,7 @@ public class UserManager {
     // A helper function for a binary account component that retrieves the component data from a file.
     // This is common to both the consent pdf and the profile pic.
     private func pushBinaryFileAccountComponent(filePath: String?, component: AccountComponent,
-                                                refresh: Bool, completion: SvcStringCompletion)
+                                                refresh: Bool, completion: SvcResultCompletion)
     {
         if let path = filePath {
             if let data = NSData(contentsOfFile: path) {
@@ -609,17 +609,17 @@ public class UserManager {
             } else {
                 let msg = UMPushReadBinaryFileError(component, path)
                 log.error(msg)
-                completion(true, msg)
+                completion(RequestResult(errorMessage:msg))
             }
         } else {
             let msg = UMPushInvalidBinaryFileError(component, filePath)
             log.error(msg)
-            completion(true, msg)
+            completion(RequestResult(errorMessage:msg))
         }
     }
 
     // Retrieves an account component from the backend service.
-    private func pullAccountComponent(component: AccountComponent, completion: SvcObjectCompletion)
+    private func pullAccountComponent(component: AccountComponent, completion: SvcResultCompletion)
     {
         print("!!! pullAccountComponent \(component)")
         Service.json(MCRouter.GetUserAccountData([component]), statusCode: 200..<300, tag: "GACC\(component)") {
@@ -638,18 +638,18 @@ public class UserManager {
                     pullSuccess = false
                 }
             }
-            completion(!pullSuccess, result.value)
+            completion(RequestResult(afObjectResult:result))
         }
     }
 
     // Retrieves an account component if it is stale.
-    private func pullAccountComponentIfNeeded(component: AccountComponent, completion: SvcObjectCompletion)
+    private func pullAccountComponentIfNeeded(component: AccountComponent, completion: SvcResultCompletion)
     {
         if isAccountComponentOutdated(component) {
             pullAccountComponent(component, completion: completion)
         } else {
             print("pull component \(component) skipped")
-            completion(false, nil)
+            completion(RequestResult())
         }
     }
 
@@ -684,7 +684,7 @@ public class UserManager {
     }
 
     // Retrieves multiple account components in a single request.
-    private func pullMultipleAccountComponents(components: [AccountComponent], completion: SvcObjectCompletion) {
+    private func pullMultipleAccountComponents(components: [AccountComponent], completion: SvcResultCompletion) {
         Service.json(MCRouter.GetUserAccountData(components), statusCode: 200..<300, tag: "GALLACC") {
             _, _, result in
             var pullSuccess = result.isSuccess
@@ -706,15 +706,15 @@ public class UserManager {
                     }
                 }
             }
-            completion(!pullSuccess, failedComponents.isEmpty ? nil : failedComponents)
+            let infoMsg = failedComponents.isEmpty ? "" : UMPullMultipleComponentsError(failedComponents)
+            completion(RequestResult(ok: pullSuccess, message:infoMsg))
         }
     }
 
-    public func pullFullAccount(completion: SvcStringCompletion) {
+    public func pullFullAccount(completion: SvcResultCompletion) {
         pullMultipleAccountComponents([ .Consent, .Photo, .Profile, .Settings, .ArchiveSpan, .LastAcquired]) {
-            (error, failedComponents) in
-            let msg = failedComponents == nil ? UMPullFullAccountInfoString : UMPullMultipleComponentsError(failedComponents as! [String])
-            completion(error, msg)
+            res in
+            completion(res)
         }
     }
 
@@ -722,30 +722,30 @@ public class UserManager {
     // MARK: - Consent accessors
     public func getConsent() -> [String: AnyObject] { return getCachedComponent(.Consent) }
 
-    public func syncConsent(completion: SvcStringCompletion) {
+    public func syncConsent(completion: SvcResultCompletion) {
         syncAccountComponent(.Consent, completion: completion)
     }
 
-    public func pushConsent(filePath: String?, completion: SvcStringCompletion) {
+    public func pushConsent(filePath: String?, completion: SvcResultCompletion) {
         pushBinaryFileAccountComponent(filePath, component: .Consent, refresh: true, completion: completion)
     }
 
-    public func pullConsent(completion: SvcObjectCompletion) {
+    public func pullConsent(completion: SvcResultCompletion) {
         pullAccountComponent(.Consent, completion: completion)
     }
 
     // MARK: - Photo accessors
     public func getPhoto() -> [String: AnyObject] { return getCachedComponent(.Photo) }
 
-    public func syncPhoto(completion: SvcStringCompletion) {
+    public func syncPhoto(completion: SvcResultCompletion) {
         syncAccountComponent(.Photo, completion: completion)
     }
 
-    public func pushPhoto(filePath: String?, completion: SvcStringCompletion) {
+    public func pushPhoto(filePath: String?, completion: SvcResultCompletion) {
         pushBinaryFileAccountComponent(filePath, component: .Photo, refresh: true, completion: completion)
     }
 
-    public func pullPhoto(completion: SvcObjectCompletion) {
+    public func pullPhoto(completion: SvcResultCompletion) {
         pullAccountComponent(.Photo, completion: completion)
     }
 
@@ -754,15 +754,15 @@ public class UserManager {
 
     public func getProfileCache() -> [String: AnyObject] { return getCachedComponent(.Profile) }
 
-    public func syncProfile(completion: SvcStringCompletion) {
+    public func syncProfile(completion: SvcResultCompletion) {
         syncAccountComponent(.Profile, completion: completion)
     }
 
-    public func pushProfile(componentData: [String: AnyObject], completion: SvcStringCompletion) {
+    public func pushProfile(componentData: [String: AnyObject], completion: SvcResultCompletion) {
         pushAccountComponent(.Profile, refresh: true, componentData: componentData, completion: completion)
     }
 
-    public func pullProfile(completion: SvcObjectCompletion) {
+    public func pullProfile(completion: SvcResultCompletion) {
         pullAccountComponent(.Profile, completion: completion)
     }
 
@@ -770,7 +770,7 @@ public class UserManager {
         return isAccountComponentOutdated(.Profile)
     }
 
-    public func pullProfileIfNeeded(completion: SvcObjectCompletion) {
+    public func pullProfileIfNeeded(completion: SvcResultCompletion) {
         pullAccountComponentIfNeeded(.Profile, completion: completion)
     }
 
@@ -785,15 +785,15 @@ public class UserManager {
 
     public func resetSettingsCache() { resetCachedComponent(.Settings) }
 
-    public func syncSettings(completion: SvcStringCompletion) {
+    public func syncSettings(completion: SvcResultCompletion) {
         syncAccountComponent(.Settings, completion: completion)
     }
 
-    public func pushSettings(componentData: [String: AnyObject], completion: SvcStringCompletion) {
+    public func pushSettings(componentData: [String: AnyObject], completion: SvcResultCompletion) {
         pushAccountComponent(.Settings, refresh: true, componentData: componentData, completion: completion)
     }
 
-    public func pullSettings(completion: SvcObjectCompletion) {
+    public func pullSettings(completion: SvcResultCompletion) {
         pullAccountComponent(.Settings, completion: completion)
     }
 
@@ -919,7 +919,7 @@ public class UserManager {
         deferredPushOnAccountComponent(.LastAcquired, refresh: true, sync: sync, componentData: timestamps)
     }
 
-    public func syncAcquisitionTimes(completion: SvcStringCompletion) {
+    public func syncAcquisitionTimes(completion: SvcResultCompletion) {
         syncAccountComponent(.LastAcquired, completion: completion)
     }
 

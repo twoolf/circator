@@ -83,16 +83,16 @@ class ProfileViewController: BaseViewController {
         sender.enabled = false
         let newProfileInfo = dataSource.model.profileItems()
 
-        UserManager.sharedManager.pushProfile(newProfileInfo, completion: { error, reason in
+        UserManager.sharedManager.pushProfile(newProfileInfo, completion: { res in
 
-            if !error {
+            if res.ok {
                 // save new photo
                 UserManager.sharedManager.setUserProfilePhoto(self.dataSource.model.loadPhotoField.value as? UIImage)
 
                 self.changeMode()
             }
             else {
-                let message = reason != nil ? reason! : "Your profile is not saving. Please, try later".localized
+                let message = res.info.hasContent ? res.info : "Your profile is not saving. Please, try later".localized
                 self.showAlert(withMessage: message)
             }
 

@@ -98,13 +98,13 @@ private let inputFontSize = ScreenManager.sharedInstance.profileInputFontSize()
             //print("initialProfile \(initialProfile)")
 
             // Log in and update consent after successful registration.
-            UserManager.sharedManager.loginWithPush(initialProfile) { (error, reason) in
-                guard !error else {
+            UserManager.sharedManager.loginWithPush(initialProfile) { res in
+                guard res.ok else {
                     // Registration completed, but logging in failed.
                     // Pop this view to allow the user to try logging in again through the
                     // login/logout functionality on the main dashboard.
 
-                    UINotifications.loginFailed(self.navigationController!, pop: true, asNav: true, reason: reason)
+                    UINotifications.loginFailed(self.navigationController!, pop: true, asNav: true, reason: res.info)
                     Answers.logSignUpWithMethod("SPR", success: false, customAttributes: nil)
                     return
                 }
@@ -112,8 +112,8 @@ private let inputFontSize = ScreenManager.sharedInstance.profileInputFontSize()
                 // save user profile image
                 UserManager.sharedManager.setUserProfilePhoto(userRegistrationModel.photo)
 
-                UserManager.sharedManager.pushConsent(consentPath) { (error, text) in
-                    if (!error) {
+                UserManager.sharedManager.pushConsent(consentPath) { res in
+                    if res.ok {
                         ConsentManager.sharedManager.removeConsentFile(consentPath)
                     }
 

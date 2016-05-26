@@ -13,17 +13,14 @@ import SwiftyBeaver
 
 let log = SwiftyBeaver.self
 
-//public typealias SvcResultCompletion = (Bool, String?) -> Void
-//public typealias SvcResultCompletion = (Bool, AnyObject?) -> Void
-//public typealias SvcResultCompletion = (Alamofire.Result<String>) -> Void
-//public typealias SvcResultCompletion = (Alamofire.Result<AnyObject>) -> Void
+
 public typealias SvcResultCompletion = (RequestResult) -> Void
 
 
 
 private let devServiceURL = "https://dev.metaboliccompass.com"
 private let prodServiceURL = "https://app.metaboliccompass.com"
-private let asDevService = true
+private let asDevService = false
 
 private let resetPassDevURL = devServiceURL + "/forgot"
 private let resetPassProdURL = prodServiceURL + "/forgot"
@@ -82,6 +79,11 @@ public class  RequestResult{
     init() {
         resType = .BoolWithMessage
         _ok = true
+    }
+    init(ok:Bool, message:String) {
+        resType = .BoolWithMessage
+        _ok = ok
+        _obj = message
     }
     init(errorMessage: String) {
         resType = .BoolWithMessage

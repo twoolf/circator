@@ -102,8 +102,8 @@ class AccountManager: NSObject {
         }
 
         withHKCalAuth {
-            UserManager.sharedManager.ensureAccessToken { error in
-                guard !error else {
+            UserManager.sharedManager.ensureAccessToken { ok in
+                guard ok else {
                     Async.main() {
                         self.doLogin (animated) { self.loginComplete() }
                     }
@@ -112,13 +112,13 @@ class AccountManager: NSObject {
                 
                 // TODO: Yanif: handle partial failures when a subset of account components
                 // failures beyond the consent component.
-                UserManager.sharedManager.pullFullAccount { (error, msg) in
-                    if !error {
+                UserManager.sharedManager.pullFullAccount { res in
+                    if res.ok {
                         self.loginComplete()
                         return
                     } else {
-                        if let msgStr = msg {
-                            var components = UMPullComponentErrorAsArray(msgStr)
+                        if res.info.hasContent {
+                            var components = UMPullComponentErrorAsArray(res.info)
 
                             // Try to upload the consent file if we encounter a consent pull error.
                             if components.contains(.Consent) {
@@ -132,7 +132,7 @@ class AccountManager: NSObject {
                                     log.error(UMPullMultipleComponentsError(components.map(getComponentName)))
                                 }
                             } else {
-                                log.error(msgStr)
+                                log.error(res.info)
                             }
                         } else {
                             log.error("Failed to get initial user account")
@@ -166,8 +166,8 @@ class AccountManager: NSObject {
         }
 
         self.uploadInProgress = true
-        UserManager.sharedManager.pushConsent(consentPath) { [weak self](error, text) in
-            if (!error) {
+        UserManager.sharedManager.pushConsent(consentPath) { [weak self]res in
+            if res.ok {
                 ConsentManager.sharedManager.removeConsentFile(consentPath)
             }
             self?.uploadInProgress = false

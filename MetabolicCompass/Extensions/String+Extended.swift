@@ -67,5 +67,12 @@ extension String {
         return startIndex..<endIndex
     }
     
+    var length: Int {
+        return self.characters.count
+    }
+    
+    var hasContent: Bool {
+        return self.characters.count > 0
+    }
 
 }

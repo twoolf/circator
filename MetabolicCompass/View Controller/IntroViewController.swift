@@ -606,12 +606,12 @@ class IntroViewController: UIViewController,
                     return
                 }
 
-                UserManager.sharedManager.pullFullAccount { (error, msg) in
-                    if !error {
+                UserManager.sharedManager.pullFullAccount { res in
+                    if res.ok {
                         self.initializeBackgroundWork()
                         Async.main(after: 2) { UINotifications.doWelcome(self, user: UserManager.sharedManager.getUserId() ?? "") }
                     } else {
-                        log.error(msg)
+                        log.error(res.info)
                         UINotifications.profileFetchFailed(self)
                     }
                 }

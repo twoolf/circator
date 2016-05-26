@@ -62,8 +62,8 @@ class LoginViewController: BaseViewController {
             return
         }
 
-        UserManager.sharedManager.pushConsent(consentPath) { (error, text) in
-            if (!error) {
+        UserManager.sharedManager.pushConsent(consentPath) { res in
+            if res.ok {
                 ConsentManager.sharedManager.removeConsentFile(consentPath)
             }
             self.loginComplete()
@@ -95,10 +95,10 @@ class LoginViewController: BaseViewController {
                 UINotifications.invalidUserPass(self.navigationController!)
                 return
             }
-            UserManager.sharedManager.loginWithPull { (error, text) in
-                guard !error else {
-                    if let msgStr = text {
-                        let components = UMPullComponentErrorAsArray(msgStr)
+            UserManager.sharedManager.loginWithPull { res in
+                guard res.ok else {
+                    if res.info.hasContent {
+                        let components = UMPullComponentErrorAsArray(res.info)
 
                         // Try to upload the consent file if we encounter a consent pull error.
                         if components.contains(.Consent) {
