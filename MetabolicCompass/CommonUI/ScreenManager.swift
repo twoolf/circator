@@ -17,6 +17,20 @@ import Charts
 public class ScreenManager {
     public static let sharedInstance = ScreenManager()
 
+
+// MARK: - scaling
+
+    public static let baseScreenWidth = CGFloat(375.0)
+    
+    private static var _scaleFactor:CGFloat? = nil
+    public class var scaleFactor:CGFloat {
+        if _scaleFactor == nil{
+           _scaleFactor = UIScreen.mainScreen().bounds.width / ScreenManager.baseScreenWidth
+           print("scaleFactor:\(_scaleFactor)")
+        }
+        return _scaleFactor!
+    }
+
     func labelFontSize() -> CGFloat {
         let screenSize = UIScreen.mainScreen().bounds.size
         let screenHeight = screenSize.height
@@ -223,6 +237,10 @@ public class ScreenManager {
 
     public class func appFontOfSize(size: CGFloat) -> UIFont {
         return UIFont(name: defaulytFontName, size: size)!
+    }
+    
+    public class func appScaledFontOfSize(size: CGFloat) -> UIFont {
+        return UIFont(name: defaulytFontName, size: size * ScreenManager.scaleFactor)!
     }
 
     public class func appNavBarFont() -> UIFont {

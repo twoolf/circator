@@ -9,7 +9,7 @@
 import UIKit
 import MetabolicCompassKit
 
-class AppTextField: UITextField {
+class AppTextField: FontScaleTextField {
     
     private let defaultFontSize: CGFloat = 14.0
     
