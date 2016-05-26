@@ -7,6 +7,8 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		2EDB1E975C79C562E33D32D0 /* Pods_MetabolicCompassCommon_MetabolicCompassKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = CCC0CD360152BDE2BFFB1FDD /* Pods_MetabolicCompassCommon_MetabolicCompassKit.framework */; };
+		3BAA963256EDAB3A623315D6 /* Pods_MetabolicCompassCommon_MetabolicCompass.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = DE4A4914754171DD9629E7C5 /* Pods_MetabolicCompassCommon_MetabolicCompass.framework */; };
 		7816FFBB1C1E45D3002E2ED8 /* UserManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7816FFBA1C1E45D3002E2ED8 /* UserManager.swift */; };
 		783E53D21C75856200BEBF33 /* DataGenerator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 783E53D11C75856200BEBF33 /* DataGenerator.swift */; };
 		7843F9121C1FAD9900AB8978 /* ServiceAPI.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7843F9111C1FAD9900AB8978 /* ServiceAPI.swift */; };
@@ -44,7 +46,6 @@
 		78B7342C1C90B87A00693229 /* ErrorViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7840A49A1C6E5A680005B66F /* ErrorViewController.swift */; };
 		78B7342E1C90BC6900693229 /* DebugViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7860E9121C61C470004C9741 /* DebugViewController.swift */; };
 		78BEAC9E1C5E7EE800F0B541 /* PopulationHealthManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 78BEAC9D1C5E7EE800F0B541 /* PopulationHealthManager.swift */; };
-		78E521A01C25687900FAE56A /* Pods.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 78E5219F1C25687900FAE56A /* Pods.framework */; };
 		84207D1F1CCA1FEC00776848 /* RegisterLoginProcess.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 84207D1E1CCA1FEC00776848 /* RegisterLoginProcess.storyboard */; };
 		84207D221CCA210000776848 /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 84207D211CCA210000776848 /* Images.xcassets */; };
 		84207D241CCA3C3600776848 /* RegisterLoginLandingViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84207D231CCA3C3600776848 /* RegisterLoginLandingViewController.swift */; };
@@ -107,7 +108,6 @@
 		95F400AA1CE385E80060F28C /* MainSettingsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 95F400A81CE385E80060F28C /* MainSettingsViewController.swift */; };
 		95F400AB1CE385E80060F28C /* ProfileViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 95F400A91CE385E80060F28C /* ProfileViewController.swift */; };
 		95F400AD1CE38F2F0060F28C /* ModelItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = 95F400AC1CE38F2F0060F28C /* ModelItem.swift */; };
-		A88F31F3DDADAD50F4190F8E /* Pods.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = CB09F654AB4B00C79306C728 /* Pods.framework */; };
 		E74A89761CE308800056A2D2 /* UIColor+Extended.swift in Sources */ = {isa = PBXBuildFile; fileRef = E74A89751CE308800056A2D2 /* UIColor+Extended.swift */; };
 		E74A89791CE3265C0056A2D2 /* AccountManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = E74A89781CE3265C0056A2D2 /* AccountManager.swift */; };
 		E74A897C1CE338D30056A2D2 /* ContentManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = E74A897B1CE338D30056A2D2 /* ContentManager.swift */; };
@@ -260,10 +260,9 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
-		06103AD5E3EB4C84C4980CB1 /* Pods_MetabolicCompass.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_MetabolicCompass.framework; sourceTree = BUILT_PRODUCTS_DIR; };
-		4768419D940426F855957056 /* Pods-MetabolicCompass.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-MetabolicCompass.debug.xcconfig"; path = "Pods/Target Support Files/Pods-MetabolicCompass/Pods-MetabolicCompass.debug.xcconfig"; sourceTree = "<group>"; };
-		780211561C20E33F000120CE /* Pods_MetabolicCompass.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Pods_MetabolicCompass.framework; path = "Pods/../build/Debug-iphoneos/Pods_MetabolicCompass.framework"; sourceTree = "<group>"; };
-		780211581C20E36B000120CE /* Pods_MetabolicCompass.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Pods_MetabolicCompass.framework; path = "Pods/../build/Debug-iphoneos/Pods_MetabolicCompass.framework"; sourceTree = "<group>"; };
+		0BA75400F6D719EB61C8FC31 /* Pods-MetabolicCompassCommon-MetabolicCompassKit.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-MetabolicCompassCommon-MetabolicCompassKit.debug.xcconfig"; path = "Pods/Target Support Files/Pods-MetabolicCompassCommon-MetabolicCompassKit/Pods-MetabolicCompassCommon-MetabolicCompassKit.debug.xcconfig"; sourceTree = "<group>"; };
+		2ABE17F7005EC797EF85AAC8 /* Pods-MetabolicCompassCommon-MetabolicCompassKit.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-MetabolicCompassCommon-MetabolicCompassKit.release.xcconfig"; path = "Pods/Target Support Files/Pods-MetabolicCompassCommon-MetabolicCompassKit/Pods-MetabolicCompassCommon-MetabolicCompassKit.release.xcconfig"; sourceTree = "<group>"; };
+		4615A5781ABDF9217461D325 /* Pods-MetabolicCompassCommon-MetabolicCompass.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-MetabolicCompassCommon-MetabolicCompass.debug.xcconfig"; path = "Pods/Target Support Files/Pods-MetabolicCompassCommon-MetabolicCompass/Pods-MetabolicCompassCommon-MetabolicCompass.debug.xcconfig"; sourceTree = "<group>"; };
 		7816FFBA1C1E45D3002E2ED8 /* UserManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = UserManager.swift; sourceTree = "<group>"; };
 		781CF2C01C6A6A36001DF3B2 /* EventTimeViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = EventTimeViewController.swift; sourceTree = "<group>"; };
 		781EE1231BAF3F6B00E6DDA1 /* Podfile */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = Podfile; path = ../Podfile; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.ruby; };
@@ -306,7 +305,6 @@
 		78CE00AC1C65CC5A005E955C /* RadarViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RadarViewController.swift; sourceTree = "<group>"; };
 		78E5219F1C25687900FAE56A /* Pods.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Pods.framework; path = "Pods/../build/Debug-iphoneos/Pods.framework"; sourceTree = "<group>"; };
 		78F65A4C1C25126E0074449D /* QueryBuilderViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = QueryBuilderViewController.swift; sourceTree = "<group>"; };
-		78F9FE3D1C20E48D0026D790 /* Pods_MetabolicCompass.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Pods_MetabolicCompass.framework; path = "Pods/../build/Debug-iphoneos/Pods_MetabolicCompass.framework"; sourceTree = "<group>"; };
 		84207D1E1CCA1FEC00776848 /* RegisterLoginProcess.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; path = RegisterLoginProcess.storyboard; sourceTree = "<group>"; };
 		84207D211CCA210000776848 /* Images.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Images.xcassets; sourceTree = "<group>"; };
 		84207D231CCA3C3600776848 /* RegisterLoginLandingViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RegisterLoginLandingViewController.swift; sourceTree = "<group>"; };
@@ -318,7 +316,6 @@
 		84C9CB461CE9B3A4005ED875 /* DailyProgressViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DailyProgressViewController.swift; sourceTree = "<group>"; };
 		84C9CB481CE9BB76005ED875 /* MetabolicDailyProgressChartView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MetabolicDailyProgressChartView.swift; sourceTree = "<group>"; };
 		84C9CB4D1CEA0018005ED875 /* DailyChartModel.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DailyChartModel.swift; sourceTree = "<group>"; };
-		8B4A08D995498CDA94BBB258 /* Pods-MetabolicCompass.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-MetabolicCompass.release.xcconfig"; path = "Pods/Target Support Files/Pods-MetabolicCompass/Pods-MetabolicCompass.release.xcconfig"; sourceTree = "<group>"; };
 		951BA49C1CE6295F0036600A /* BrightButton.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BrightButton.swift; sourceTree = "<group>"; };
 		951BA49E1CE630A70036600A /* UnBrightButton.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = UnBrightButton.swift; sourceTree = "<group>"; };
 		952470411CE9BC6C003E7EDF /* AppLogoLabel.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AppLogoLabel.swift; sourceTree = "<group>"; };
@@ -370,8 +367,9 @@
 		95F400A81CE385E80060F28C /* MainSettingsViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MainSettingsViewController.swift; sourceTree = "<group>"; };
 		95F400A91CE385E80060F28C /* ProfileViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ProfileViewController.swift; sourceTree = "<group>"; };
 		95F400AC1CE38F2F0060F28C /* ModelItem.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ModelItem.swift; sourceTree = "<group>"; };
-		984776BC6A59A33B4580C535 /* Pods.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = Pods.release.xcconfig; path = "Pods/Target Support Files/Pods/Pods.release.xcconfig"; sourceTree = "<group>"; };
 		CB09F654AB4B00C79306C728 /* Pods.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		CCC0CD360152BDE2BFFB1FDD /* Pods_MetabolicCompassCommon_MetabolicCompassKit.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_MetabolicCompassCommon_MetabolicCompassKit.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		DE4A4914754171DD9629E7C5 /* Pods_MetabolicCompassCommon_MetabolicCompass.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_MetabolicCompassCommon_MetabolicCompass.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		E74A89751CE308800056A2D2 /* UIColor+Extended.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "UIColor+Extended.swift"; sourceTree = "<group>"; };
 		E74A89781CE3265C0056A2D2 /* AccountManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AccountManager.swift; sourceTree = "<group>"; };
 		E74A897B1CE338D30056A2D2 /* ContentManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ContentManager.swift; sourceTree = "<group>"; };
@@ -397,7 +395,7 @@
 		E7E48DEE1CE6028600DB020F /* DashboardManageBalanceController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DashboardManageBalanceController.swift; sourceTree = "<group>"; };
 		E7E48DF01CE6033100DB020F /* ManageBalanceCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ManageBalanceCell.swift; sourceTree = "<group>"; };
 		E7E48DF41CE614E400DB020F /* BalanceSampleListController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BalanceSampleListController.swift; sourceTree = "<group>"; };
-		F28DDB83BE2DA2B65B631537 /* Pods.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = Pods.debug.xcconfig; path = "Pods/Target Support Files/Pods/Pods.debug.xcconfig"; sourceTree = "<group>"; };
+		EDB8061F342C1BF60D2C7BDE /* Pods-MetabolicCompassCommon-MetabolicCompass.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-MetabolicCompassCommon-MetabolicCompass.release.xcconfig"; path = "Pods/Target Support Files/Pods-MetabolicCompassCommon-MetabolicCompass/Pods-MetabolicCompassCommon-MetabolicCompass.release.xcconfig"; sourceTree = "<group>"; };
 		F42F5ADC1BDC85AF00195490 /* SampleDataAnalyzer.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SampleDataAnalyzer.swift; sourceTree = "<group>"; };
 		F42F5B321BE1FD1E00195490 /* MetabolicCompassKit.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = MetabolicCompassKit.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		F42F5B341BE1FD1E00195490 /* MetabolicCompassKit.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = MetabolicCompassKit.h; sourceTree = "<group>"; };
@@ -468,7 +466,7 @@
 			files = (
 				F42F5B391BE1FD1E00195490 /* MetabolicCompassKit.framework in Frameworks */,
 				7859783F1C1BC418008377F9 /* HealthKit.framework in Frameworks */,
-				A88F31F3DDADAD50F4190F8E /* Pods.framework in Frameworks */,
+				3BAA963256EDAB3A623315D6 /* Pods_MetabolicCompassCommon_MetabolicCompass.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -490,7 +488,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				78E521A01C25687900FAE56A /* Pods.framework in Frameworks */,
+				2EDB1E975C79C562E33D32D0 /* Pods_MetabolicCompassCommon_MetabolicCompassKit.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -501,16 +499,23 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		F5CCBCA3A3B3EB47CBAFCDC5 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
-		73414D62BFA06625BCA65E9B /* Pods */ = {
+		25B37DD1F7F2B1DDDD1E480A /* Pods */ = {
 			isa = PBXGroup;
 			children = (
-				4768419D940426F855957056 /* Pods-MetabolicCompass.debug.xcconfig */,
-				8B4A08D995498CDA94BBB258 /* Pods-MetabolicCompass.release.xcconfig */,
-				F28DDB83BE2DA2B65B631537 /* Pods.debug.xcconfig */,
-				984776BC6A59A33B4580C535 /* Pods.release.xcconfig */,
+				EDB8061F342C1BF60D2C7BDE /* Pods-MetabolicCompassCommon-MetabolicCompass.release.xcconfig */,
+				4615A5781ABDF9217461D325 /* Pods-MetabolicCompassCommon-MetabolicCompass.debug.xcconfig */,
+				2ABE17F7005EC797EF85AAC8 /* Pods-MetabolicCompassCommon-MetabolicCompassKit.release.xcconfig */,
+				0BA75400F6D719EB61C8FC31 /* Pods-MetabolicCompassCommon-MetabolicCompassKit.debug.xcconfig */,
 			);
 			name = Pods;
 			sourceTree = "<group>";
@@ -525,8 +530,8 @@
 				F42F5B4D1BE20CDD00195490 /* MetabolicCompassWatch */,
 				F42F5B5C1BE20CDD00195490 /* MetabolicCompassWatchExtension */,
 				7881A3DE1BAF3B3E00ECB3C6 /* Products */,
-				73414D62BFA06625BCA65E9B /* Pods */,
 				EA5EDF2A50FCED6ADBAA03DD /* Frameworks */,
+				25B37DD1F7F2B1DDDD1E480A /* Pods */,
 			);
 			sourceTree = "<group>";
 		};
@@ -835,12 +840,10 @@
 			isa = PBXGroup;
 			children = (
 				78E5219F1C25687900FAE56A /* Pods.framework */,
-				78F9FE3D1C20E48D0026D790 /* Pods_MetabolicCompass.framework */,
-				780211581C20E36B000120CE /* Pods_MetabolicCompass.framework */,
-				780211561C20E33F000120CE /* Pods_MetabolicCompass.framework */,
 				7859783E1C1BC418008377F9 /* HealthKit.framework */,
-				06103AD5E3EB4C84C4980CB1 /* Pods_MetabolicCompass.framework */,
 				CB09F654AB4B00C79306C728 /* Pods.framework */,
+				DE4A4914754171DD9629E7C5 /* Pods_MetabolicCompassCommon_MetabolicCompass.framework */,
+				CCC0CD360152BDE2BFFB1FDD /* Pods_MetabolicCompassCommon_MetabolicCompassKit.framework */,
 			);
 			name = Frameworks;
 			sourceTree = "<group>";
@@ -1040,15 +1043,15 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = 7881A4051BAF3B3E00ECB3C6 /* Build configuration list for PBXNativeTarget "MetabolicCompass" */;
 			buildPhases = (
-				FB9F9E2C08236B1B27F2789E /* Check Pods Manifest.lock */,
+				21690319E8D4F32F62A38EE3 /* 📦 Check Pods Manifest.lock */,
 				7881A3D91BAF3B3E00ECB3C6 /* Sources */,
 				7881A3DA1BAF3B3E00ECB3C6 /* Frameworks */,
 				7881A3DB1BAF3B3E00ECB3C6 /* Resources */,
-				A01C396C44B6977D7FFF92D5 /* Embed Pods Frameworks */,
-				8D97F58FF847A9E09D7ACDED /* Copy Pods Resources */,
 				F42F5B2C1BE1FCAF00195490 /* Embed Watch Content */,
 				F42F5B3E1BE1FD1F00195490 /* Embed Frameworks */,
 				784F60361C66C8CA0040F11B /* ShellScript */,
+				153A752DA6F7F6E68D1EB1AE /* 📦 Embed Pods Frameworks */,
+				7F21A1025B7E50B7C0F95B3D /* 📦 Copy Pods Resources */,
 			);
 			buildRules = (
 			);
@@ -1101,12 +1104,12 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = F42F5B3B1BE1FD1F00195490 /* Build configuration list for PBXNativeTarget "MetabolicCompassKit" */;
 			buildPhases = (
-				DCD71BE966EB36944274F9EA /* Check Pods Manifest.lock */,
+				0866C989AA97916EFAFFD318 /* 📦 Check Pods Manifest.lock */,
 				F42F5B2D1BE1FD1E00195490 /* Sources */,
 				F42F5B2E1BE1FD1E00195490 /* Frameworks */,
 				F42F5B2F1BE1FD1E00195490 /* Headers */,
 				F42F5B301BE1FD1E00195490 /* Resources */,
-				155EF693A3CB475595C074A3 /* Copy Pods Resources */,
+				E72BF7A5C8A7A339DEF79AB3 /* 📦 Copy Pods Resources */,
 			);
 			buildRules = (
 			);
@@ -1123,6 +1126,7 @@
 			buildPhases = (
 				F42F5B4A1BE20CDD00195490 /* Resources */,
 				F42F5B721BE20CDD00195490 /* Embed App Extensions */,
+				F5CCBCA3A3B3EB47CBAFCDC5 /* Frameworks */,
 			);
 			buildRules = (
 			);
@@ -1296,19 +1300,49 @@
 /* End PBXResourcesBuildPhase section */
 
 /* Begin PBXShellScriptBuildPhase section */
-		155EF693A3CB475595C074A3 /* Copy Pods Resources */ = {
+		0866C989AA97916EFAFFD318 /* 📦 Check Pods Manifest.lock */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
 			);
 			inputPaths = (
 			);
-			name = "Copy Pods Resources";
+			name = "📦 Check Pods Manifest.lock";
 			outputPaths = (
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "\"${SRCROOT}/Pods/Target Support Files/Pods/Pods-resources.sh\"\n";
+			shellScript = "diff \"${PODS_ROOT}/../Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [[ $? != 0 ]] ; then\n    cat << EOM\nerror: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\nEOM\n    exit 1\nfi\n";
+			showEnvVarsInLog = 0;
+		};
+		153A752DA6F7F6E68D1EB1AE /* 📦 Embed Pods Frameworks */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			name = "📦 Embed Pods Frameworks";
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "\"${SRCROOT}/Pods/Target Support Files/Pods-MetabolicCompassCommon-MetabolicCompass/Pods-MetabolicCompassCommon-MetabolicCompass-frameworks.sh\"\n";
+			showEnvVarsInLog = 0;
+		};
+		21690319E8D4F32F62A38EE3 /* 📦 Check Pods Manifest.lock */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			name = "📦 Check Pods Manifest.lock";
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "diff \"${PODS_ROOT}/../Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [[ $? != 0 ]] ; then\n    cat << EOM\nerror: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\nEOM\n    exit 1\nfi\n";
 			showEnvVarsInLog = 0;
 		};
 		784F60361C66C8CA0040F11B /* ShellScript */ = {
@@ -1324,64 +1358,34 @@
 			shellPath = /bin/sh;
 			shellScript = "\"${PODS_ROOT}/Fabric/run\" 9c8fe07d2ebf5808e873bbb23fe7a6c8ef76a22e 0608fae6f747cbbb131bca692ade699829f49ad28507a7c04fd0a3fa82ceaa49";
 		};
-		8D97F58FF847A9E09D7ACDED /* Copy Pods Resources */ = {
+		7F21A1025B7E50B7C0F95B3D /* 📦 Copy Pods Resources */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
 			);
 			inputPaths = (
 			);
-			name = "Copy Pods Resources";
+			name = "📦 Copy Pods Resources";
 			outputPaths = (
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "\"${SRCROOT}/Pods/Target Support Files/Pods/Pods-resources.sh\"\n";
+			shellScript = "\"${SRCROOT}/Pods/Target Support Files/Pods-MetabolicCompassCommon-MetabolicCompass/Pods-MetabolicCompassCommon-MetabolicCompass-resources.sh\"\n";
 			showEnvVarsInLog = 0;
 		};
-		A01C396C44B6977D7FFF92D5 /* Embed Pods Frameworks */ = {
+		E72BF7A5C8A7A339DEF79AB3 /* 📦 Copy Pods Resources */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
 			);
 			inputPaths = (
 			);
-			name = "Embed Pods Frameworks";
+			name = "📦 Copy Pods Resources";
 			outputPaths = (
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "\"${SRCROOT}/Pods/Target Support Files/Pods/Pods-frameworks.sh\"\n";
-			showEnvVarsInLog = 0;
-		};
-		DCD71BE966EB36944274F9EA /* Check Pods Manifest.lock */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputPaths = (
-			);
-			name = "Check Pods Manifest.lock";
-			outputPaths = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "diff \"${PODS_ROOT}/../Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [[ $? != 0 ]] ; then\n    cat << EOM\nerror: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\nEOM\n    exit 1\nfi\n";
-			showEnvVarsInLog = 0;
-		};
-		FB9F9E2C08236B1B27F2789E /* Check Pods Manifest.lock */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputPaths = (
-			);
-			name = "Check Pods Manifest.lock";
-			outputPaths = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "diff \"${PODS_ROOT}/../Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [[ $? != 0 ]] ; then\n    cat << EOM\nerror: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\nEOM\n    exit 1\nfi\n";
+			shellScript = "\"${SRCROOT}/Pods/Target Support Files/Pods-MetabolicCompassCommon-MetabolicCompassKit/Pods-MetabolicCompassCommon-MetabolicCompassKit-resources.sh\"\n";
 			showEnvVarsInLog = 0;
 		};
 /* End PBXShellScriptBuildPhase section */
@@ -1646,7 +1650,7 @@
 		};
 		786130061C25D7BC00F50DB3 /* Debug */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = F28DDB83BE2DA2B65B631537 /* Pods.debug.xcconfig */;
+			baseConfigurationReference = 0BA75400F6D719EB61C8FC31 /* Pods-MetabolicCompassCommon-MetabolicCompassKit.debug.xcconfig */;
 			buildSettings = {
 				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
@@ -1679,10 +1683,9 @@
 		};
 		786130071C25D7BC00F50DB3 /* Debug */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = F28DDB83BE2DA2B65B631537 /* Pods.debug.xcconfig */;
+			baseConfigurationReference = 4615A5781ABDF9217461D325 /* Pods-MetabolicCompassCommon-MetabolicCompass.debug.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
-				ASSETCATALOG_COMPILER_LAUNCHIMAGE_NAME = LaunchImage;
 				CODE_SIGN_ENTITLEMENTS = MetabolicCompass/MetabolicCompass.entitlements;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
@@ -1831,10 +1834,9 @@
 		};
 		7881A4071BAF3B3E00ECB3C6 /* Release */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 984776BC6A59A33B4580C535 /* Pods.release.xcconfig */;
+			baseConfigurationReference = EDB8061F342C1BF60D2C7BDE /* Pods-MetabolicCompassCommon-MetabolicCompass.release.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
-				ASSETCATALOG_COMPILER_LAUNCHIMAGE_NAME = LaunchImage;
 				CODE_SIGN_ENTITLEMENTS = MetabolicCompass/MetabolicCompass.entitlements;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
@@ -1891,7 +1893,7 @@
 		};
 		F42F5B3D1BE1FD1F00195490 /* Release */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 984776BC6A59A33B4580C535 /* Pods.release.xcconfig */;
+			baseConfigurationReference = 2ABE17F7005EC797EF85AAC8 /* Pods-MetabolicCompassCommon-MetabolicCompassKit.release.xcconfig */;
 			buildSettings = {
 				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
