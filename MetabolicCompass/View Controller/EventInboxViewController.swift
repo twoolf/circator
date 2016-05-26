@@ -9,20 +9,83 @@
 import UIKit
 import SwiftDate
 
+enum InboxItemType {
+    
+    case Event
+    case Notfication
+    var controls : [UIControl] {
+        switch self {
+        case Event:
+            return [UIControl()]
+        case Notfication:
+            return [UIControl()]
+        }
+    }
+}
+
 protocol InboxItemData {
+    
+    // date is formatted as "dd-mm-YYYY" like 27-09-1991 as September 27, 1991 for inbox view
+    var receiptDate : NSDate { get }
+    var inboxItemType : InboxItemType { get }
+    var itemContentView : UIView { get set }
+    init(receiptDate date : NSDate, inboxItemType type : InboxItemType)
+
     
 }
 
 class InboxItem : UITableViewCell {
     
-    var receiptDate : NSDate?
-    var itemData : InboxItemData?
+    var receiptDate : NSDate!
+    var itemData : InboxItemData!
+
     
     init(receiptDate date : NSDate, itemData data : InboxItemData) {
-        super.init(style: .Default, reuseIdentifier: "InboxItemTableViewCell")
         
-        self.receiptDate = date
+        super.init(style: .Default, reuseIdentifier: "InboxItemTableViewCell")
+
         self.itemData = data
+        self.receiptDate = self.itemData.receiptDate
+        
+        
+        let controlView : UIStackView = {
+            let stackView = UIStackView(arrangedSubviews: self.itemData.inboxItemType.controls)
+            stackView.translatesAutoresizingMaskIntoConstraints = false
+
+            //TODO
+            //axis
+            //distribution
+            //centered
+            //OTHER CODE TODO
+            
+            return stackView
+            
+        }()
+        
+        self.contentView.addSubview(controlView)
+        
+        let controlViewConstraints : [NSLayoutConstraint] = [
+            controlView.topAnchor.constraintEqualToAnchor(self.contentView.topAnchor, constant: 8),
+            controlView.rightAnchor.constraintEqualToAnchor(self.contentView.rightAnchor, constant: -16),
+            controlView.bottomAnchor.constraintEqualToAnchor(self.contentView.bottomAnchor, constant: -8),
+            controlView.widthAnchor.constraintEqualToAnchor(self.contentView.widthAnchor, multiplier: 0.33)
+        ]
+        
+        self.contentView.addConstraints(controlViewConstraints)
+        
+        self.itemData.itemContentView.translatesAutoresizingMaskIntoConstraints = false
+        self.contentView.addSubview(self.itemData.itemContentView)
+        
+        let itemContentsConstraints : [NSLayoutConstraint] = [
+            self.itemData.itemContentView.topAnchor.constraintEqualToAnchor(self.contentView.topAnchor, constant: 8),
+            self.itemData.itemContentView.leftAnchor.constraintEqualToAnchor(self.contentView.leftAnchor, constant: 16),
+            self.itemData.itemContentView.bottomAnchor.constraintEqualToAnchor(self.contentView.bottomAnchor, constant: -8),
+            self.itemData.itemContentView.rightAnchor.constraintEqualToAnchor(controlView.leftAnchor, constant: -16)
+        ]
+        
+        self.contentView.addConstraints(itemContentsConstraints)
+        
+        
         
     }
     
