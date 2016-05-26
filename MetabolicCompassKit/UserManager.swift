@@ -139,7 +139,7 @@ public class UserManager {
     ]
 
     init() {
-        Stormpath.setUpWithURL(MCRouter.baseURLString)
+        StormpathConfiguration.defaultConfiguration.APIURL = NSURL(string: MCRouter.baseURLString)!
     }
 
     // MARK: - Account status, and authentication
@@ -260,19 +260,19 @@ public class UserManager {
 
     public func loginWithCompletion(completion: SvcResultCompletion) {
         withUserPass (getPassword()) { (user, pass) in
-            Stormpath.login(username: user, password: pass, completionHandler: {
-                (accessToken, err) -> Void in
-                guard err == nil else {
+            Stormpath.sharedSession.login(username: user, password: pass) {
+                (success, error) -> Void in
+                guard success && err == nil else {
                     log.error("Stormpath login failed: \(err!.localizedDescription)")
                     self.resetFull()
                     completion(RequestResult(error:err!))
                     return
                 }
 
-                log.verbose("Access token: \(Stormpath.accessToken)")
-                MCRouter.updateAuthToken(Stormpath.accessToken)
+                log.verbose("Access token: \(Stormpath.sharedSession.accessToken)")
+                MCRouter.updateAuthToken(Stormpath.sharedSession.accessToken)
                 completion(RequestResult())
-            })
+            }
         }
     }
 
@@ -307,12 +307,7 @@ public class UserManager {
     }
 
     public func logoutWithCompletion(completion: (Void -> Void)?) {
-        Stormpath.logout(completionHandler: { (error) -> Void in
-            guard error == nil else {
-                log.error("Error logging out of Stormpath: \(error)")
-                return
-            }
-        })
+        Stormpath.sharedSession.logout()
         MCRouter.updateAuthToken(nil)
         resetUser()
         if let comp = completion { comp() }
@@ -322,23 +317,34 @@ public class UserManager {
         logoutWithCompletion(nil)
     }
 
-    public func register(firstName: String, lastName: String, completion: ((NSDictionary?, Bool, String?) -> Void))
+    // TODO: add consent file path parameter
+    public func register(firstName: String, lastName: String, consentPath: String,
+                         completion: ((Account?, Bool, String?) -> Void))
     {
         withUserPass(getPassword()) { (user,pass) in
-            let stormpathAccountDict : [String:String] = [
-                "email": user,
-                "password": pass,
-                "givenName": firstName,
-                "surname": lastName
-            ]
+            let account = RegistrationModel(email: user, password: pass)
+            account.givenName = firstName
+            account.surname = lastName
 
-            print("account dict: \(stormpathAccountDict)")
-
-            Stormpath.register(userDictionary: stormpathAccountDict, completionHandler: {
-                (registerDict, error) -> Void in
-                if error != nil { log.error("Register failed: \(error)") }
-                completion(registerDict, error != nil, error?.localizedDescription)
-            })
+            if let path = consentPath {
+                if let data = NSData(contentsOfFile: path) {
+                    let consentStr = data.base64EncodedStringWithOptions(NSDataBase64EncodingOptions())
+                    account.customFields = ["consent": consentStr]
+                    Stormpath.sharedSession.register(account) {
+                        (account, error) -> Void in
+                        if error != nil { log.error("Register failed: \(error)") }
+                        completion(account, error != nil, error?.localizedDescription)
+                    }
+                } else {
+                    let msg = UMPushReadBinaryFileError(component, path)
+                    log.error(msg)
+                    completion(nil, true, msg)
+                }
+            } else {
+                let msg = UMPushInvalidBinaryFileError(component, filePath)
+                log.error(msg)
+                completion(nil, true, msg)
+            }
         }
     }
 
@@ -352,21 +358,16 @@ public class UserManager {
 
 
     public func resetPassword(email: String, completion: ((Bool, String?) -> Void)) {
-        Stormpath.resetPassword(email: email, completionHandler: { (error) -> Void in
-            if error == nil {
-                completion(true, nil)
-            }
-            else {
-                log.error("Reset Password failed: \(error)")
-                completion(false, error!.localizedDescription)
-            }
-        })
+        Stormpath.sharedSession.resetPassword(email: email) { (success, error) -> Void in
+            if error != nill { log.error("Reset Password failed: \(error)") }
+            completion(success, error?.localizedDescription)
+        }
     }
 
     // MARK: - Stormpath token management.
 
     public func getAccessToken() -> String? {
-        return Stormpath.accessToken
+        return Stormpath.sharedSession.accessToken
     }
 
     public func ensureAccessToken(tried: Int, completion: (Bool -> Void)) {
@@ -376,7 +377,7 @@ public class UserManager {
             // TODO: this is a temporary workaround for issue #30, to support auto-login:
             // https://github.com/yanif/circator/issues/30
             var doReset = true
-            if let token = Stormpath.accessToken {
+            if let token = Stormpath.sharedSession.accessToken {
                 do {
                     let jwt = try decode(token)
                     if let expiry = jwt.expiresAt?.timeIntervalSince1970 {
@@ -412,8 +413,7 @@ public class UserManager {
     public func ensureAccessToken(completion: (Bool -> Void)) {
         if (MCRouter.tokenExpireTime - NSDate().timeIntervalSince1970 > 0) {
             completion(false)
-        }
-        else {
+        } else {
             self.refreshAccessToken(completion)
         }
 
@@ -422,8 +422,8 @@ public class UserManager {
     }
 
     public func refreshAccessToken(tried: Int, completion: (Bool -> Void)) {
-        Stormpath.refreshAccesToken { (_, error) in
-            guard error == nil else {
+        Stormpath.sharedSession.refreshAccessToken { (success, error) in
+            guard success && error == nil else {
                 log.warning("Refresh failed: \(error!.localizedDescription)")
                 log.warning("Attempting login: \(self.hasAccount()) \(self.hasPassword())")
 
@@ -435,10 +435,9 @@ public class UserManager {
                 return
             }
 
-            if let token = Stormpath.accessToken {
+            if let token = Stormpath.sharedSession.accessToken {
                 log.verbose("Refreshed token: \(token)")
-                MCRouter.updateAuthToken(Stormpath.accessToken)
-
+                MCRouter.updateAuthToken(Stormpath.sharedSession.accessToken)
                 self.ensureAccessToken(tried+1, completion: completion)
             } else {
                 log.error("RefreshAccessToken failed, please login manually.")
@@ -1057,10 +1056,8 @@ public class UserManager {
 
     // MARK: - User Info : first & last names
 
-    public func getUserInfo(completion: ((NSDictionary?, NSError?) -> Void)) {
-        Stormpath.me(completionHandler: { dict, error in
-            completion(dict, error)
-        })
+    public func getUserInfo(completion: ((Account?, NSError?) -> Void)) {
+        Stormpath.sharedSession.me(completionHandler: completion)
     }
 
 }

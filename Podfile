@@ -25,7 +25,7 @@ abstract_target 'MetabolicCompassCommon' do
     pod 'AsyncSwift'
     pod 'Locksmith'
     pod 'Granola', :git => 'https://github.com/yanif/Granola.git'
-    pod 'Stormpath', '~> 1.0.0'
+    pod 'Stormpath', '~> 1.2'
     pod 'Former'
     pod 'HTPressableButton'
     pod 'MGSwipeTableCell'

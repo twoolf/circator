@@ -68,15 +68,15 @@ class AccountManager: NSObject {
     private func loginComplete () {
         // TODO: Yanif: this currently pulls from Stormpath, and is no longer needed.
         // The profile will contain directly this information.
-        UserManager.sharedManager.getUserInfo({ dict, error in
+        UserManager.sharedManager.getUserInfo({ accountOpt, error in
             // try parse user info
             self.userInfo = nil
 
             if error == nil {
-                if let info = dict {
+                if let account = accountOpt {
                     self.userInfo = UserInfo()
-                    self.userInfo?.firstName = info["givenName"] as? String
-                    self.userInfo?.lastName = info["surname"] as? String
+                    self.userInfo?.firstName = account.givenName as? String
+                    self.userInfo?.lastName = account.surname as? String
                 }
             }
 

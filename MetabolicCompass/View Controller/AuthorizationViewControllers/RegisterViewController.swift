@@ -78,7 +78,9 @@ private let inputFontSize = ScreenManager.sharedInstance.profileInputFontSize()
         UINotifications.genericMsg(self.navigationController!, msg: "Registering account...")
 
         UserManager.sharedManager.overrideUserPass(userRegistrationModel.email, pass: userRegistrationModel.password)
-        UserManager.sharedManager.register(userRegistrationModel.firstName!, lastName: userRegistrationModel.lastName!) { (_, error, errormsg) in
+        UserManager.sharedManager.register(userRegistrationModel.firstName!, lastName: userRegistrationModel.lastName!, consentPath: consentPath)
+        {
+            (_, error, errormsg) in
             guard !error else {
                 // Return from this function to allow the user to try registering again with the 'Done' button.
                 // We reset the user/pass so that any view exit leaves the app without a registered user.
@@ -96,6 +98,16 @@ private let inputFontSize = ScreenManager.sharedInstance.profileInputFontSize()
 
             let initialProfile = self.dataSource.model.profileItems()
             //print("initialProfile \(initialProfile)")
+
+            /////////////////
+            // TODO: Yanif/Artem/Vlad:
+            // This is now redundant since we send the consent PDF with the user registration.
+            //
+            // We should still perform loginWithPush and setUserProfilePhoto, but we do
+            // not need to call pushConsent any more.
+            //
+            // Instead we need to notify users to check their email, and log in again once verified.
+            /////////////////
 
             // Log in and update consent after successful registration.
             UserManager.sharedManager.loginWithPush(initialProfile) { res in
