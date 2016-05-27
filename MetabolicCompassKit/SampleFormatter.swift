@@ -233,6 +233,9 @@ public class SampleFormatter: NSObject {
         switch type.identifier {
         case HKQuantityTypeIdentifierActiveEnergyBurned:
             return quantity.doubleValueForUnit(HKUnit.kilocalorieUnit())
+            
+        case HKQuantityTypeIdentifierBasalEnergyBurned:
+            return quantity.doubleValueForUnit(HKUnit.kilocalorieUnit())
 
         case HKQuantityTypeIdentifierBloodPressureDiastolic:
             return quantity.doubleValueForUnit(HKUnit.millimeterOfMercuryUnit())
@@ -276,6 +279,9 @@ public class SampleFormatter: NSObject {
         case HKQuantityTypeIdentifierDietarySodium:
             return quantity.doubleValueForUnit(HKUnit.gramUnitWithMetricPrefix(.Milli))
 
+        case HKQuantityTypeIdentifierDietaryFiber:
+            return quantity.doubleValueForUnit(HKUnit.gramUnit())
+
         case HKQuantityTypeIdentifierDietarySugar:
             return quantity.doubleValueForUnit(HKUnit.gramUnit())
 
@@ -303,7 +309,10 @@ public class SampleFormatter: NSObject {
         switch type.identifier {
         case HKQuantityTypeIdentifierActiveEnergyBurned:
             return SampleFormatter.calorieFormatter.stringFromValue(quantity.doubleValueForUnit(HKUnit.kilocalorieUnit()), unit: .Kilocalorie)
-
+            
+        case HKQuantityTypeIdentifierBasalEnergyBurned:
+            return SampleFormatter.calorieFormatter.stringFromValue(quantity.doubleValueForUnit(HKUnit.kilocalorieUnit()), unit: .Kilocalorie)
+            
         case HKQuantityTypeIdentifierBloodPressureDiastolic:
             return SampleFormatter.integerFormatter.stringFromNumber(quantity.doubleValueForUnit(HKUnit.millimeterOfMercuryUnit()))!
 
@@ -345,7 +354,10 @@ public class SampleFormatter: NSObject {
 
         case HKQuantityTypeIdentifierDietarySodium:
             return SampleFormatter.foodMassFormatter.stringFromValue(quantity.doubleValueForUnit(HKUnit.gramUnitWithMetricPrefix(.Milli)), unit: .Gram)
-
+            
+        case HKQuantityTypeIdentifierDietaryFiber:
+            return SampleFormatter.foodMassFormatter.stringFromValue(quantity.doubleValueForUnit(HKUnit.gramUnit()), unit: .Gram)
+            
         case HKQuantityTypeIdentifierDietarySugar:
             return SampleFormatter.foodMassFormatter.stringFromValue(quantity.doubleValueForUnit(HKUnit.gramUnit()), unit: .Gram)
 
