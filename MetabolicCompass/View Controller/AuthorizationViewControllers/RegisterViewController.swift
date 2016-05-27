@@ -124,16 +124,16 @@ private let inputFontSize = ScreenManager.sharedInstance.profileInputFontSize()
                 // save user profile image
                 UserManager.sharedManager.setUserProfilePhoto(userRegistrationModel.photo)
 
-                UserManager.sharedManager.pushConsent(consentPath) { res in
-                    if res.ok {
-                        ConsentManager.sharedManager.removeConsentFile(consentPath)
-                    }
-
-                    self.performSegueWithIdentifier(self.segueRegistrationCompletionIndentifier, sender: nil)
-                    self.doWelcome()
-
-                    Answers.logSignUpWithMethod("SPR", success: true, customAttributes: nil)
-                }
+//                UserManager.sharedManager.pushConsent(consentPath) { res in
+//                    if res.ok {
+//                        ConsentManager.sharedManager.removeConsentFile(consentPath)
+//                    }
+//
+//                    self.performSegueWithIdentifier(self.segueRegistrationCompletionIndentifier, sender: nil)
+//                    self.doWelcome()
+//
+//                    Answers.logSignUpWithMethod("SPR", success: true, customAttributes: nil)
+//                }
             }
         }
     }

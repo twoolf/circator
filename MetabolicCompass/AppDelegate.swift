@@ -11,6 +11,7 @@ import MetabolicCompassKit
 import SwiftyBeaver
 import Fabric
 import Crashlytics
+import Locksmith
 
 let log = SwiftyBeaver.self
 
@@ -33,6 +34,11 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
             UserManager.sharedManager.resetFull()
             NSUserDefaults.standardUserDefaults().setObject("firstrun", forKey: firstRunKey)
             NSUserDefaults.standardUserDefaults().synchronize()
+            do {
+                try Locksmith.deleteDataForUserAccount("default")
+            } catch {
+                print ("Can't delete default user data")
+            }
         }
         
         window = UIWindow(frame: UIScreen.mainScreen().bounds)

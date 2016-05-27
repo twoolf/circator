@@ -324,9 +324,11 @@ public class UserManager {
             let account = RegistrationModel(email: user, password: pass)
             account.givenName = firstName
             account.surname = lastName
-
+            print("consentPath:\(consentPath)")
             if let data = NSData(contentsOfFile: consentPath) {
+                print("consentData length:\(data.length)")
                 let consentStr = data.base64EncodedStringWithOptions(NSDataBase64EncodingOptions())
+                print("consentStr length:\(consentStr.characters.count)")
                 account.customFields = ["consent": consentStr]
                 Stormpath.sharedSession.register(account) {
                     (account, error) -> Void in
