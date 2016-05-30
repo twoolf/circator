@@ -48,6 +48,14 @@ public class ConsentManager: NSObject, ORKTaskViewControllerDelegate {
     
     private var consentHandler: ((consented: Bool) -> Void)?
     
+    public func resetConsentFilePath () {
+        do {
+            try Locksmith.deleteDataForUserAccount(unnamedAccount)
+        } catch {
+            print ("Can't delete default user data")
+        }
+    }
+    
     public func getConsentFilePath() -> String? {
         if let dictionary = Locksmith.loadDataForUserAccount(unnamedAccount),
             consentFilePath = dictionary["consentfile"] as? String

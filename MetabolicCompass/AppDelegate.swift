@@ -12,6 +12,7 @@ import SwiftyBeaver
 import Fabric
 import Crashlytics
 import Locksmith
+import SwiftyUserDefaults
 
 let log = SwiftyBeaver.self
 
@@ -30,21 +31,11 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         configureLogging()
         Fabric.with([Crashlytics.self,Answers.self])
         
-        if ((NSUserDefaults.standardUserDefaults().objectForKey(firstRunKey) == nil)) {
-            do {
-                try Locksmith.deleteDataForUserAccount("default")
-            } catch {
-                print ("Can't delete default user data")
-            }
-            
+        if ((Defaults.objectForKey(firstRunKey) == nil)) {
+            ConsentManager.sharedManager.resetConsentFilePath()
             UserManager.sharedManager.resetFull()
-            NSUserDefaults.standardUserDefaults().setObject("firstrun", forKey: firstRunKey)
-            NSUserDefaults.standardUserDefaults().synchronize()
-            do {
-                try Locksmith.deleteDataForUserAccount("default")
-            } catch {
-                print ("Can't delete default user data")
-            }
+            Defaults.setObject("firstrun", forKey: firstRunKey)
+            Defaults.synchronize()
         }
         
         window = UIWindow(frame: UIScreen.mainScreen().bounds)
