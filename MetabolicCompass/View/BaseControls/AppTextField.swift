@@ -9,7 +9,7 @@
 import UIKit
 import MetabolicCompassKit
 
-class AppTextField: FontScaleTextField {
+public class AppTextField: FontScaleTextField {
     
     private let defaultFontSize: CGFloat = 14.0
     
@@ -25,13 +25,13 @@ class AppTextField: FontScaleTextField {
         setupFont()
     }
     
-    required init?(coder aDecoder: NSCoder) {
+    required public init?(coder aDecoder: NSCoder) {
         super.init(coder: aDecoder)
         
         setupFont()
     }
     
-    override func awakeFromNib() {
+    override public func awakeFromNib() {
         super.awakeFromNib()
         
         setupFont()

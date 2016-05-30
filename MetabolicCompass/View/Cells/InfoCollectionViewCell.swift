@@ -10,10 +10,11 @@ import UIKit
 
 class InfoCollectionViewCell: BaseCollectionViewCell {
 
-    @IBOutlet weak var inputTxtField: UITextField!
+    @IBOutlet weak var inputTxtField: AppTextField!
     @IBOutlet weak var titleLbl: UILabel!
     @IBOutlet weak var textValueCommentLbl: UILabel!
     
+    @IBOutlet weak var commentLabelXConstraint: NSLayoutConstraint!
     @IBOutlet weak var titleLeftOffsetConstraint: NSLayoutConstraint!
     
     private var textOffsetIsSamll = false
@@ -64,6 +65,10 @@ class InfoCollectionViewCell: BaseCollectionViewCell {
         }
         
         cellIconImage = image
+    }
+    
+    override func valueChanged(newValue: AnyObject?) {
+        super.valueChanged(newValue)
     }
     
 }

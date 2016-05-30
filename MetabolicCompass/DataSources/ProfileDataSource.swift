@@ -73,6 +73,10 @@ class ProfileDataSource: BaseDataSource {
                     let needsUpdateIndexPathes = self.model.unitsDependedItemsIndexes()
                     collectionView.reloadItemsAtIndexPaths(needsUpdateIndexPathes)
                 }
+                if let infoCell = cell as? InfoCollectionViewCell{
+                    let w = infoCell.inputTxtField.text?.sizeWithAttributes(infoCell.inputTxtField.typingAttributes).width
+                    infoCell.commentLabelXConstraint.constant = 4.0 + (w ?? 0.0)
+                }
             }
 
         }
@@ -107,7 +111,7 @@ class ProfileDataSource: BaseDataSource {
 
     private func infoCellForIndex(indexPath: NSIndexPath, forField field: ModelItem, isEdiatble: Bool = false, keyboardType: UIKeyboardType = UIKeyboardType.Default) -> BaseCollectionViewCell {
         let cell = collectionView!.dequeueReusableCellWithReuseIdentifier(infoCellIdentifier, forIndexPath: indexPath) as! InfoCollectionViewCell
-
+        
         cell.inputTxtField.textColor = selectedTextColor
         cell.textValueCommentLbl.textColor = selectedTextColor
 
@@ -197,8 +201,15 @@ class ProfileDataSource: BaseDataSource {
     private let cellHighHeight: CGFloat = 140
     private let smallCellWidthShift: CGFloat = 16
 
-    private lazy var cellHeight: CGFloat = round((UIScreen.mainScreen().bounds.height - 200.0)  * 0.14)
+//    private  var cellHeight: CGFloat =  ((self.collectionView?.frame.size.height ?? cellHighHeight) - cellHighHeight) * 0.15 ///round((UIScreen.mainScreen().bounds.height - 200.0)
 
+    private  var _cellHeight: CGFloat = 0.0
+    var cellHeight: CGFloat{
+        if (_cellHeight ?? 0.0) == 0.0{
+            _cellHeight = ((self.collectionView?.frame.size.height ?? cellHighHeight) - cellHighHeight) * 0.16
+        }
+        return _cellHeight
+    }
 
     private func highCellSize() -> CGSize {
         let size = CGSizeMake(self.collectionView!.bounds.width, cellHighHeight)
