@@ -20,7 +20,7 @@ public typealias SvcResultCompletion = (RequestResult) -> Void
 
 private let devServiceURL = "https://dev.metaboliccompass.com"
 private let prodServiceURL = "https://app.metaboliccompass.com"
-private let asDevService = false
+private let asDevService = true
 
 private let resetPassDevURL = devServiceURL + "/forgot"
 private let resetPassProdURL = prodServiceURL + "/forgot"
