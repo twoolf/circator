@@ -44,12 +44,13 @@ class DashboardMetricsAppearanceProvider: NSObject {
             
         case HKQuantityTypeIdentifierHeartRate,
              HKQuantityTypeIdentifierStepCount,
+             HKQuantityTypeIdentifierBasalEnergyBurned,
              HKQuantityTypeIdentifierActiveEnergyBurned:
-            return UIColor.colorWithHexString("#E2472C")
+            return UIColor.colorWithHex(SampleGroupColor.sgRed.rawValue)
             
         case HKCategoryTypeIdentifierSleepAnalysis,
              HKQuantityTypeIdentifierUVExposure:
-            return UIColor.colorWithHexString("#B68F14")
+            return UIColor.colorWithHex(SampleGroupColor.sgYelow.rawValue)
         
         case HKQuantityTypeIdentifierDietarySugar,
              HKQuantityTypeIdentifierDietarySodium,
@@ -64,7 +65,8 @@ class DashboardMetricsAppearanceProvider: NSObject {
         
         case HKQuantityTypeIdentifierDietaryFatPolyunsaturated,
              HKQuantityTypeIdentifierDietaryFatMonounsaturated,
-             HKQuantityTypeIdentifierDietaryFatSaturated:
+             HKQuantityTypeIdentifierDietaryFatSaturated,
+             HKQuantityTypeIdentifierDietaryFiber:
             return UIColor.colorWithHexString("#A57B55")
         
         case HKQuantityTypeIdentifierDietaryWater,
@@ -75,7 +77,7 @@ class DashboardMetricsAppearanceProvider: NSObject {
             if #available(iOS 9.3, *) {
                 switch sampleType {
                     case HKQuantityTypeIdentifierAppleExerciseTime:
-                        return UIColor.colorWithHex(SampleGroupColor.sgRed.rawValue)
+                        return UIColor.colorWithHex(SampleGroupColor.sgYelow.rawValue)
                     default:break
                 }
 
@@ -172,9 +174,9 @@ class DashboardMetricsAppearanceProvider: NSObject {
         case HKQuantityTypeIdentifierBodyMassIndex:
             return "icon-bmi"
         case HKQuantityTypeIdentifierActiveEnergyBurned:
-            return "icon-heart-rate"
+            return "icon-active-energy"
         case HKQuantityTypeIdentifierBasalEnergyBurned:
-            return "icon-heart-rate"
+            return "icon-resting-energy"
         case HKQuantityTypeIdentifierUVExposure:
             return "icon-uv"
         case HKQuantityTypeIdentifierDietaryCaffeine:
@@ -188,7 +190,7 @@ class DashboardMetricsAppearanceProvider: NSObject {
         case HKQuantityTypeIdentifierDietaryProtein:
             return "icon-protein"
         case HKQuantityTypeIdentifierDietaryFiber:
-            return "icon-protein"
+            return "icon-fiber"
         case HKQuantityTypeIdentifierDietaryFatTotal:
             return "icon-fat"
         case HKQuantityTypeIdentifierDietaryCarbohydrates:
@@ -211,13 +213,11 @@ class DashboardMetricsAppearanceProvider: NSObject {
             return "icon-uv"
         case HKQuantityTypeIdentifierDietarySodium:
             return "icon-salt"
-        case HKQuantityTypeIdentifierActiveEnergyBurned:
-            return "icon-exercices"
         default:
             if #available(iOS 9.3, *) {
                 switch sampleType {
                     case HKQuantityTypeIdentifierAppleExerciseTime:
-                        return "icon-steps"
+                        return "icon-exercices"
                     default:break
                 }
             }

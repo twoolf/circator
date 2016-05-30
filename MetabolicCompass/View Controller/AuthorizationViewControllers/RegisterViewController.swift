@@ -78,8 +78,8 @@ private let inputFontSize = ScreenManager.sharedInstance.profileInputFontSize()
         UINotifications.genericMsg(self.navigationController!, msg: "Registering account...")
 
         UserManager.sharedManager.overrideUserPass(userRegistrationModel.email, pass: userRegistrationModel.password)
-        UserManager.sharedManager.register(userRegistrationModel.firstName!, lastName: userRegistrationModel.lastName!, consentPath: consentPath)
-        {
+    
+        UserManager.sharedManager.register(userRegistrationModel.firstName!, lastName: userRegistrationModel.lastName!, consentPath: consentPath) {
             (_, error, errormsg) in
             guard !error else {
                 // Return from this function to allow the user to try registering again with the 'Done' button.
@@ -94,57 +94,8 @@ private let inputFontSize = ScreenManager.sharedInstance.profileInputFontSize()
                 sender.enabled = true
                 return
             }
-
-
-            let initialProfile = self.dataSource.model.profileItems()
-            //print("initialProfile \(initialProfile)")
-
-            /////////////////
-            // TODO: Yanif/Artem/Vlad:
-            // This is now redundant since we send the consent PDF with the user registration.
-            //
-            // We should still perform loginWithPush and setUserProfilePhoto, but we do
-            // not need to call pushConsent any more.
-            //
-            // Instead we need to notify users to check their email, and log in again once verified.
-            /////////////////
-
-            // Log in and update consent after successful registration.
-            UserManager.sharedManager.loginWithPush(initialProfile) { res in
-                guard res.ok else {
-                    // Registration completed, but logging in failed.
-                    // Pop this view to allow the user to try logging in again through the
-                    // login/logout functionality on the main dashboard.
-
-                    UINotifications.loginFailed(self.navigationController!, pop: true, asNav: true, reason: res.info)
-                    Answers.logSignUpWithMethod("SPR", success: false, customAttributes: nil)
-                    return
-                }
-
-                // save user profile image
-                UserManager.sharedManager.setUserProfilePhoto(userRegistrationModel.photo)
-
-//                UserManager.sharedManager.pushConsent(consentPath) { res in
-//                    if res.ok {
-//                        ConsentManager.sharedManager.removeConsentFile(consentPath)
-//                    }
-//
-//                    self.performSegueWithIdentifier(self.segueRegistrationCompletionIndentifier, sender: nil)
-//                    self.doWelcome()
-//
-//                    Answers.logSignUpWithMethod("SPR", success: true, customAttributes: nil)
-//                }
-            }
-        }
-    }
-
-    override func viewDidDisappear(animated: Bool) {
-        // Remove the consent file for any scenario where we leave this view.
-        if let consentPath = ConsentManager.sharedManager.getConsentFilePath() {
-            let cPath = Path(consentPath)
-            if cPath.exists {
-                ConsentManager.sharedManager.removeConsentFile(consentPath)
-            }
+            UserManager.sharedManager.setUserProfilePhoto(userRegistrationModel.photo)
+            UINotifications.genericMsg(self, msg: "We just sent you an email. Please verify your account", pop: true, asNav: true)
         }
     }
 

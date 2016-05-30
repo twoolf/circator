@@ -37,20 +37,14 @@ public class PopulationHealthManager {
     public func resetAggregates() { mostRecentAggregates = [:] }
     
     // Retrieve aggregates for all previewed rows.
+    // TODO: enable input of start time, end time and columns retrieved in the query view controllers.
     public func fetchAggregates() {
         var columnIndex = 0
         var columns : [String:AnyObject] = [:]
+
+        var tstart  : NSDate             = NSDate(timeIntervalSince1970: 0)
+        var tend    : NSDate             = NSDate()
         
-        for hksType in PreviewManager.supportedTypes {
-            if let column = HMConstants.sharedInstance.hkToMCDB[hksType.identifier] {
-                columns[String(columnIndex)] = column
-                columnIndex += 1
-            }
-        }
-        
-        // TODO: set filtering constraints from query view controllers.
-        let tstart  : NSDate             = NSDate(timeIntervalSince1970: 0)
-        let tend    : NSDate             = NSDate()
         var filter  : [String:AnyObject] = [:]
         
         // Add population filter parameters.
@@ -58,7 +52,19 @@ public class PopulationHealthManager {
         let popQueries = QueryManager.sharedManager.getQueries()
         if popQueryIndex >= 0 && popQueryIndex < popQueries.count  {
             switch popQueries[popQueryIndex].1 {
-            case Query.ConjunctiveQuery(let aggpreds):
+            case Query.ConjunctiveQuery(let qstartOpt, let qendOpt, let qcolsOpt, let aggpreds):
+                if let qstart = qstartOpt { tstart = qstart }
+                if let qend = qEndOpt { tend = qend }
+
+                if let qcols = qcolsOpt {
+                    for hksType in qcols {
+                        if let column = HMConstants.sharedInstance.hkToMCDB[hksType.identifier] {
+                            columns[String(columnIndex)] = column
+                            columnIndex += 1
+                        }
+                    }
+                }
+
                 let predArray = aggpreds.map(serializePredicateREST)
                 for pred in predArray {
                     for (k,v) in pred {
@@ -68,9 +74,18 @@ public class PopulationHealthManager {
             }
         }
         
+        if columns.isEmpty {
+            for hksType in PreviewManager.supportedTypes {
+                if let column = HMConstants.sharedInstance.hkToMCDB[hksType.identifier] {
+                    columns[String(columnIndex)] = column
+                    columnIndex += 1
+                }
+            }
+        }
+
         let params : [String:AnyObject] = [
-            "tstart"  : tstart.timeIntervalSince1970,
-            "tend"    : tend.timeIntervalSince1970,
+            "tstart"  : Int(floor(tstart.timeIntervalSince1970)),
+            "tend"    : Int(ceil(tend.timeIntervalSince1970)),
             "columns" : columns,
             "filter"  : filter
         ]

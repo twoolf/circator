@@ -21,7 +21,7 @@ class TitledInputCollectionViewCell: BaseCollectionViewCell {
 
         inputTxtField.addTarget(self, action: #selector(InputCollectionViewCell.textFieldDidChange(_:)), forControlEvents: UIControlEvents.EditingChanged)
         inputTxtField.delegate = self
-
+        
         addDoneToolbar(toTextField: inputTxtField)
     }
     

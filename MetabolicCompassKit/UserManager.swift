@@ -324,14 +324,10 @@ public class UserManager {
             let account = RegistrationModel(email: user, password: pass)
             account.givenName = firstName
             account.surname = lastName
-            print("consentPath:\(consentPath)")
             if let data = NSData(contentsOfFile: consentPath) {
-                print("consentData length:\(data.length)")
                 let consentStr = data.base64EncodedStringWithOptions(NSDataBase64EncodingOptions())
-                print("consentStr length:\(consentStr.characters.count)")
                 account.customFields = ["consent": consentStr]
-                Stormpath.sharedSession.register(account) {
-                    (account, error) -> Void in
+                Stormpath.sharedSession.register(account) { (account, error) -> Void in
                     if error != nil { log.error("Register failed: \(error)") }
                     completion(account, error != nil, error?.localizedDescription)
                 }
@@ -502,7 +498,9 @@ public class UserManager {
             case .ArchiveSpan:
                 return [componentName: self.uploadArchiveSpanExtractor(componentData)]
             case .LastAcquired:
-                return [componentName: self.uploadLastAcquiredExtractor(componentData)]
+                fallthrough
+            default: break
+//                return [componentName: self.uploadLastAcquiredExtractor(componentData)]
             }
         }
         return nil
@@ -553,8 +551,10 @@ public class UserManager {
     private func syncAccountComponent(component: AccountComponent, completion: SvcResultCompletion)
     {
         let componentData = wrapCache(component)
-        Service.string(MCRouter.SetUserAccountData(componentData!), statusCode: 200..<300, tag: "SYNCACC") {
-            _, response, result in completion(RequestResult(afStringResult:result))
+        if let _componentData = componentData {
+            Service.string(MCRouter.SetUserAccountData(_componentData), statusCode: 200..<300, tag: "SYNCACC") {
+                _, response, result in completion(RequestResult(afStringResult:result))
+            }
         }
     }
 
