@@ -94,6 +94,7 @@ private let inputFontSize = ScreenManager.sharedInstance.profileInputFontSize()
                 sender.enabled = true
                 return
             }
+            
             UserManager.sharedManager.setUserProfilePhoto(userRegistrationModel.photo)
             UINotifications.genericMsg(self, msg: "We just sent you an email. Please verify your account")
             self.navigationController?.popViewControllerAnimated(true)

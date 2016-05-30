@@ -21,7 +21,7 @@ public class ScreenManager {
 // MARK: - scaling
 
     public static let baseScreenWidth = CGFloat(375.0)
-    
+        
     private static var _scaleFactor:CGFloat? = nil
     public class var scaleFactor:CGFloat {
         if _scaleFactor == nil{
