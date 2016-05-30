@@ -109,7 +109,8 @@ class QueryBuilderViewController: UIViewController, UITextFieldDelegate {
             self.queryName = QueryManager.sharedManager.getQueries()[row].0
 
             switch QueryManager.sharedManager.getQueries()[row].1 {
-            case .ConjunctiveQuery(let pred):
+            // TODO: Yanif: display start/end times and columns to fetch?
+            case .ConjunctiveQuery(_, _, _, let pred):
                 self.dataTableView.predicates = pred
             }
         }
@@ -274,13 +275,14 @@ class QueryBuilderViewController: UIViewController, UITextFieldDelegate {
         }
     }
 
+    // TODO: Yanif: creation and editing of start/end times and columns to fetch
     func saveQuery(sender: UIButton) {
         switch buildMode! {
         case .Creating:
-            QueryManager.sharedManager.addQuery(self.queryName, query: Query.ConjunctiveQuery(dataTableView.predicates))
+            QueryManager.sharedManager.addQuery(self.queryName, query: Query.ConjunctiveQuery(nil, nil, nil, dataTableView.predicates))
 
         case .Editing(let row):
-            QueryManager.sharedManager.updateQuery(row, name: self.queryName, query: Query.ConjunctiveQuery(dataTableView.predicates))
+            QueryManager.sharedManager.updateQuery(row, name: self.queryName, query: Query.ConjunctiveQuery(nil, nil, nil, dataTableView.predicates))
         }
         self.navigationController?.popViewControllerAnimated(true)
     }
