@@ -94,20 +94,8 @@ private let inputFontSize = ScreenManager.sharedInstance.profileInputFontSize()
                 sender.enabled = true
                 return
             }
-            
             UserManager.sharedManager.setUserProfilePhoto(userRegistrationModel.photo)
-            UINotifications.genericMsg(self, msg: "We just sent you an email. Please verify your account")
-            self.navigationController?.popViewControllerAnimated(true)
-        }
-    }
-
-    override func viewDidDisappear(animated: Bool) {
-        // Remove the consent file for any scenario where we leave this view.
-        if let consentPath = ConsentManager.sharedManager.getConsentFilePath() {
-            let cPath = Path(consentPath)
-            if cPath.exists {
-                ConsentManager.sharedManager.removeConsentFile(consentPath)
-            }
+            UINotifications.genericMsg(self, msg: "We just sent you an email. Please verify your account", pop: true, asNav: true)
         }
     }
 
