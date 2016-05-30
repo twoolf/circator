@@ -49,11 +49,11 @@ class PhysiologicalDataViewController: BaseViewController {
         }
     }
 
-    private func createBarButtonItem(title: String?, action: Selector) -> UIBarButtonItem{
-        let bbItem = UIBarButtonItem(title: title, style: UIBarButtonItemStyle.Plain, target: self, action: action)
-        bbItem.setTitleTextAttributes([NSForegroundColorAttributeName: ScreenManager.appTitleTextColor()], forState: UIControlState.Normal)
-        return bbItem
-    }
+//    private func createBarButtonItem(title: String?, action: Selector) -> UIBarButtonItem{
+//        let bbItem = UIBarButtonItem(title: title, style: UIBarButtonItemStyle.Plain, target: self, action: action)
+//        bbItem.setTitleTextAttributes([NSForegroundColorAttributeName: ScreenManager.appTitleTextColor()], forState: UIControlState.Normal)
+//        return bbItem
+//    }
 
     private func setupNavBar() {
         rightButton = createBarButtonItem(lsEditTitle, action: #selector(rightAction))

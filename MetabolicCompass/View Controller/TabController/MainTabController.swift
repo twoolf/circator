@@ -13,8 +13,8 @@ class MainTabController: UITabBarController, UITabBarControllerDelegate {
     override func viewDidLoad() {
         super.viewDidLoad()
 
-        self.navigationController?.navigationBar.barStyle = UIBarStyle.Black;
-        self.navigationController?.navigationBar.tintColor = UIColor.whiteColor()
+//        self.navigationController?.navigationBar.barStyle = UIBarStyle.Black;
+//        self.navigationController?.navigationBar.tintColor = UIColor.whiteColor()
         
         self.configureTabBar()
         

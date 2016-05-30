@@ -65,8 +65,8 @@ class BaseViewController: UIViewController, UIGestureRecognizerDelegate {
 
         let navBarTextColor = ScreenManager.sharedInstance.appNavBarTextColor()
 
-        self.navigationController?.navigationBar.tintColor = navBarTextColor
-        self.navigationController?.navigationBar.titleTextAttributes = [ NSForegroundColorAttributeName : navBarTextColor, NSFontAttributeName : ScreenManager.appNavBarFont() ]
+//        self.navigationController?.navigationBar.tintColor = navBarTextColor
+//        self.navigationController?.navigationBar.titleTextAttributes = [ NSForegroundColorAttributeName : navBarTextColor, NSFontAttributeName : ScreenManager.appNavBarFont() ]
     }
 
     override func didReceiveMemoryWarning() {
@@ -74,6 +74,11 @@ class BaseViewController: UIViewController, UIGestureRecognizerDelegate {
         // Dispose of any resources that can be recreated.
     }
 
+    func createBarButtonItem(title: String?, action: Selector) -> UIBarButtonItem{
+        let bbItem = UIBarButtonItem(title: title, style: UIBarButtonItemStyle.Plain, target: self, action: action)
+        bbItem.setTitleTextAttributes([NSForegroundColorAttributeName: ScreenManager.appTitleTextColor()], forState: UIControlState.Normal)
+        return bbItem
+    }
 
     var alertControllerOkButtonHandler: ((Void) -> Void)? = nil
 

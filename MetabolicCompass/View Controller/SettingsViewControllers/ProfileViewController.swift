@@ -30,16 +30,19 @@ class ProfileViewController: BaseViewController {
     }
 
     private func setupNavBar() {
-        rightBarBtn = UIBarButtonItem(title: NSLocalizedString("", comment: "edit profile button"),
-                                         style: .Done,
-                                         target: self,
-                                         action: #selector(rightAction))
+//        rightBarBtn = UIBarButtonItem(title: NSLocalizedString("", comment: "edit profile button"),
+//                                         style: .Done,
+//                                         target: self,
+//                                         action: #selector(rightAction))
+//
+//        cancelBarBtn = UIBarButtonItem(title: "Cancel".localized,
+//                                         style: .Done,
+//                                         target: self,
+//                                         action: #selector(cancelAction))
 
-        cancelBarBtn = UIBarButtonItem(title: "Cancel".localized,
-                                         style: .Done,
-                                         target: self,
-                                         action: #selector(cancelAction))
-
+        rightBarBtn = createBarButtonItem("", action: #selector(rightAction))
+        cancelBarBtn = createBarButtonItem("Cancel".localized, action: #selector(rightAction))
+        
         self.navigationItem.rightBarButtonItem = rightBarBtn
 
         configureNavBar()
