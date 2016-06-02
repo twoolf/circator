@@ -7,6 +7,7 @@
 //
 
 import SwiftyUserDefaults
+import HealthKit
 
 public enum Comparator : Int {
     case LT
@@ -139,9 +140,9 @@ func serializeQueries(qs: Queries) -> [[String: AnyObject]] {
         case .ConjunctiveQuery(let start, let end, let columns, let conjuncts):
             return [
                 NKey: n,
-                SKey: start,
-                EKey: end,
-                CKey: columns,
+                SKey: start!,
+                EKey: end!,
+                CKey: columns!,
                 QKey: conjuncts.map(serializePredicate)
             ]
         }
