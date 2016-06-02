@@ -50,29 +50,29 @@ public class PopulationHealthManager {
         // Add population filter parameters.
         let popQueryIndex = QueryManager.sharedManager.getSelectedQuery()
         let popQueries = QueryManager.sharedManager.getQueries()
-        if popQueryIndex >= 0 && popQueryIndex < popQueries.count  {
-            switch popQueries[popQueryIndex].1 {
-            case Query.ConjunctiveQuery(let qstartOpt, let qendOpt, let qcolsOpt, let aggpreds):
-                if let qstart = qstartOpt { tstart = qstart }
-                if let qend = qEndOpt { tend = qend }
-
-                if let qcols = qcolsOpt {
-                    for hksType in qcols {
-                        if let column = HMConstants.sharedInstance.hkToMCDB[hksType.identifier] {
-                            columns[String(columnIndex)] = column
-                            columnIndex += 1
-                        }
-                    }
-                }
-
-                let predArray = aggpreds.map(serializePredicateREST)
-                for pred in predArray {
-                    for (k,v) in pred {
-                        filter.updateValue(v, forKey: k)
-                    }
-                }
-            }
-        }
+//        if popQueryIndex >= 0 && popQueryIndex < popQueries.count  {
+//            switch popQueries[popQueryIndex].1 {
+//            case Query.ConjunctiveQuery(let qstartOpt, let qendOpt, let qcolsOpt, let aggpreds):
+//                if let qstart = qstartOpt { tstart = qstart }
+//                if let qend = qEndOpt { tend = qend }
+//
+//                if let qcols = qcolsOpt {
+//                    for hksType in qcols {
+//                        if let column = HMConstants.sharedInstance.hkToMCDB[hksType.identifier] {
+//                            columns[String(columnIndex)] = column
+//                            columnIndex += 1
+//                        }
+//                    }
+//                }
+//
+//                let predArray = aggpreds.map(serializePredicateREST)
+//                for pred in predArray {
+//                    for (k,v) in pred {
+//                        filter.updateValue(v, forKey: k)
+//                    }
+//                }
+//            }
+//        }
         
         if columns.isEmpty {
             for hksType in PreviewManager.supportedTypes {
