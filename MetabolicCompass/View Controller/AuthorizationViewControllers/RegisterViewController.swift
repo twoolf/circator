@@ -115,8 +115,8 @@ private let inputFontSize = ScreenManager.sharedInstance.profileInputFontSize()
                 self.doWelcome()
             }
             
-            UserManager.sharedManager.setUserProfilePhoto(userRegistrationModel.photo)
-            UINotifications.genericMsg(self, msg: "We just sent you an email. Please verify your account", pop: true, asNav: true)
+//            UserManager.sharedManager.setUserProfilePhoto(userRegistrationModel.photo)
+//            UINotifications.genericMsg(self, msg: "We just sent you an email. Please verify your account", pop: true, asNav: true)
         }
     }
 
