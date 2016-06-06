@@ -56,6 +56,15 @@
 		84C9CB471CE9B3A4005ED875 /* DailyProgressViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84C9CB461CE9B3A4005ED875 /* DailyProgressViewController.swift */; };
 		84C9CB491CE9BB76005ED875 /* MetabolicDailyProgressChartView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84C9CB481CE9BB76005ED875 /* MetabolicDailyProgressChartView.swift */; };
 		84C9CB4E1CEA0018005ED875 /* DailyChartModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84C9CB4D1CEA0018005ED875 /* DailyChartModel.swift */; };
+		84EF0EAD1D05606300A25760 /* AddEvents.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 84EF0EAC1D05606300A25760 /* AddEvents.storyboard */; };
+		84EF0EAF1D056F3800A25760 /* DatePickerTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84EF0EAE1D056F3800A25760 /* DatePickerTableViewCell.swift */; };
+		84EF0EB11D056F4B00A25760 /* PickerTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84EF0EB01D056F4B00A25760 /* PickerTableViewCell.swift */; };
+		84EF0EB31D056F6700A25760 /* DatePickerTableViewCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 84EF0EB21D056F6700A25760 /* DatePickerTableViewCell.xib */; };
+		84EF0EB51D056FF800A25760 /* PickerTableViewCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 84EF0EB41D056FF800A25760 /* PickerTableViewCell.xib */; };
+		84EF0EB71D05710D00A25760 /* TypeTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84EF0EB61D05710D00A25760 /* TypeTableViewCell.swift */; };
+		84EF0EB91D05711B00A25760 /* TypeTableViewCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 84EF0EB81D05711B00A25760 /* TypeTableViewCell.xib */; };
+		84EF0EBB1D05722700A25760 /* DurationTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84EF0EBA1D05722700A25760 /* DurationTableViewCell.swift */; };
+		84EF0EBD1D05723300A25760 /* DurationTableViewCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 84EF0EBC1D05723300A25760 /* DurationTableViewCell.xib */; };
 		951BA49D1CE6295F0036600A /* BrightButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 951BA49C1CE6295F0036600A /* BrightButton.swift */; };
 		951BA49F1CE630A70036600A /* UnBrightButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 951BA49E1CE630A70036600A /* UnBrightButton.swift */; };
 		952470421CE9BC6C003E7EDF /* AppLogoLabel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 952470411CE9BC6C003E7EDF /* AppLogoLabel.swift */; };
@@ -314,6 +323,15 @@
 		84C9CB461CE9B3A4005ED875 /* DailyProgressViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DailyProgressViewController.swift; sourceTree = "<group>"; };
 		84C9CB481CE9BB76005ED875 /* MetabolicDailyProgressChartView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MetabolicDailyProgressChartView.swift; sourceTree = "<group>"; };
 		84C9CB4D1CEA0018005ED875 /* DailyChartModel.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DailyChartModel.swift; sourceTree = "<group>"; };
+		84EF0EAC1D05606300A25760 /* AddEvents.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; path = AddEvents.storyboard; sourceTree = "<group>"; };
+		84EF0EAE1D056F3800A25760 /* DatePickerTableViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DatePickerTableViewCell.swift; sourceTree = "<group>"; };
+		84EF0EB01D056F4B00A25760 /* PickerTableViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PickerTableViewCell.swift; sourceTree = "<group>"; };
+		84EF0EB21D056F6700A25760 /* DatePickerTableViewCell.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = DatePickerTableViewCell.xib; sourceTree = "<group>"; };
+		84EF0EB41D056FF800A25760 /* PickerTableViewCell.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = PickerTableViewCell.xib; sourceTree = "<group>"; };
+		84EF0EB61D05710D00A25760 /* TypeTableViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TypeTableViewCell.swift; sourceTree = "<group>"; };
+		84EF0EB81D05711B00A25760 /* TypeTableViewCell.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = TypeTableViewCell.xib; sourceTree = "<group>"; };
+		84EF0EBA1D05722700A25760 /* DurationTableViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DurationTableViewCell.swift; sourceTree = "<group>"; };
+		84EF0EBC1D05723300A25760 /* DurationTableViewCell.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = DurationTableViewCell.xib; sourceTree = "<group>"; };
 		951BA49C1CE6295F0036600A /* BrightButton.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BrightButton.swift; sourceTree = "<group>"; };
 		951BA49E1CE630A70036600A /* UnBrightButton.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = UnBrightButton.swift; sourceTree = "<group>"; };
 		952470411CE9BC6C003E7EDF /* AppLogoLabel.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AppLogoLabel.swift; sourceTree = "<group>"; };
@@ -593,6 +611,7 @@
 				95F400A51CE385E10060F28C /* Settings.storyboard */,
 				84207D1E1CCA1FEC00776848 /* RegisterLoginProcess.storyboard */,
 				E7592DB41CDB3A2400E313BB /* TabScreens.storyboard */,
+				84EF0EAC1D05606300A25760 /* AddEvents.storyboard */,
 			);
 			path = Storyboards;
 			sourceTree = "<group>";
@@ -604,6 +623,13 @@
 				84207D211CCA210000776848 /* Images.xcassets */,
 			);
 			path = Resourses;
+			sourceTree = "<group>";
+		};
+		84EF0EBE1D05767500A25760 /* AddEvents */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			path = AddEvents;
 			sourceTree = "<group>";
 		};
 		952470461CE9DAED003E7EDF /* fonts */ = {
@@ -638,6 +664,14 @@
 				95D142BB1CE60312006A9118 /* DoubleCheckListTitledCollectionViewCell.xib */,
 				84AB38CF1CEA0EFA00B7DB4E /* DailyProgressDayTableViewCell.xib */,
 				84AB38D11CEA0F9900B7DB4E /* DailyProgressDayTableViewCell.swift */,
+				84EF0EAE1D056F3800A25760 /* DatePickerTableViewCell.swift */,
+				84EF0EB21D056F6700A25760 /* DatePickerTableViewCell.xib */,
+				84EF0EB01D056F4B00A25760 /* PickerTableViewCell.swift */,
+				84EF0EB41D056FF800A25760 /* PickerTableViewCell.xib */,
+				84EF0EB61D05710D00A25760 /* TypeTableViewCell.swift */,
+				84EF0EB81D05711B00A25760 /* TypeTableViewCell.xib */,
+				84EF0EBA1D05722700A25760 /* DurationTableViewCell.swift */,
+				84EF0EBC1D05723300A25760 /* DurationTableViewCell.xib */,
 			);
 			path = Cells;
 			sourceTree = "<group>";
@@ -959,6 +993,7 @@
 		F43A7C5F1BBDF43C00B6FA56 /* View Controller */ = {
 			isa = PBXGroup;
 			children = (
+				84EF0EBE1D05767500A25760 /* AddEvents */,
 				95F400A71CE385E80060F28C /* SettingsViewControllers */,
 				E7592DB61CDB471000E313BB /* TabController */,
 				95C0B9971CD23E90006E523F /* AuthorizationViewControllers */,
@@ -1248,11 +1283,16 @@
 				84207D1F1CCA1FEC00776848 /* RegisterLoginProcess.storyboard in Resources */,
 				95F4009A1CE385C60060F28C /* InfoCollectionViewCell.xib in Resources */,
 				95C0B9A41CD2563B006E523F /* TitledInputCollectionViewCell.xib in Resources */,
+				84EF0EAD1D05606300A25760 /* AddEvents.storyboard in Resources */,
 				95748C471CCFC7AA0002F6A3 /* InputCollectionViewCell.xib in Resources */,
 				95F400981CE385C60060F28C /* CircleImageCollectionViewCell.xib in Resources */,
+				84EF0EB51D056FF800A25760 /* PickerTableViewCell.xib in Resources */,
 				E7592DB51CDB3A2400E313BB /* TabScreens.storyboard in Resources */,
 				95F400A61CE385E10060F28C /* Settings.storyboard in Resources */,
 				F43A7C551BBDF25E00B6FA56 /* Images.xcassets in Resources */,
+				84EF0EB31D056F6700A25760 /* DatePickerTableViewCell.xib in Resources */,
+				84EF0EB91D05711B00A25760 /* TypeTableViewCell.xib in Resources */,
+				84EF0EBD1D05723300A25760 /* DurationTableViewCell.xib in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1438,6 +1478,7 @@
 				E75E95A91CDCB69A00A18756 /* DashboardFilterItem.swift in Sources */,
 				9580D3AB1CEB2BF20074178D /* AppButton.swift in Sources */,
 				E75E95A71CDCB18D00A18756 /* DashboardFilterHeaderCell.swift in Sources */,
+				84EF0EB11D056F4B00A25760 /* PickerTableViewCell.swift in Sources */,
 				E7E48DE51CE4A12900DB020F /* MetabolicChartRender.swift in Sources */,
 				E7592DBA1CDB704600E313BB /* DashboardTabControllerViewController.swift in Sources */,
 				F58E8B531CF342B8000B874E /* AppLogItem.m in Sources */,
@@ -1446,6 +1487,7 @@
 				9580D3A81CEB29DC0074178D /* AppLabel.swift in Sources */,
 				95C0B9A81CD25860006E523F /* BaseDataSource.swift in Sources */,
 				95C0B99B1CD23E90006E523F /* RegisterViewController.swift in Sources */,
+				84EF0EB71D05710D00A25760 /* TypeTableViewCell.swift in Sources */,
 				E7591D0E1CE1C7DE00DCBA39 /* LPRTableView.swift in Sources */,
 				F58E8B581CF342B8000B874E /* AppLogUrlProtocol.m in Sources */,
 				F5057FEB1CEF058900F66EB0 /* TextInputFilter.swift in Sources */,
@@ -1461,8 +1503,10 @@
 				F58E8B561CF342B8000B874E /* AppLogShakeView.m in Sources */,
 				84A16A601CE3630400D61935 /* UIImage+Extended.swift in Sources */,
 				95F400991CE385C60060F28C /* InfoCollectionViewCell.swift in Sources */,
+				84EF0EAF1D056F3800A25760 /* DatePickerTableViewCell.swift in Sources */,
 				95769B8B1CE49E7300F26668 /* HealthAccessViewController.swift in Sources */,
 				84AB38D21CEA0F9900B7DB4E /* DailyProgressDayTableViewCell.swift in Sources */,
+				84EF0EBB1D05722700A25760 /* DurationTableViewCell.swift in Sources */,
 				7881A3E11BAF3B3E00ECB3C6 /* AppDelegate.swift in Sources */,
 				9585680F1CD1020600EDD385 /* LoadImageCollectionViewCell.swift in Sources */,
 				E75E95AE1CDCD5A700A18756 /* DashboardMetricsConfigItem.swift in Sources */,
