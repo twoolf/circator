@@ -65,6 +65,10 @@
 		84EF0EB91D05711B00A25760 /* TypeTableViewCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 84EF0EB81D05711B00A25760 /* TypeTableViewCell.xib */; };
 		84EF0EBB1D05722700A25760 /* DurationTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84EF0EBA1D05722700A25760 /* DurationTableViewCell.swift */; };
 		84EF0EBD1D05723300A25760 /* DurationTableViewCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 84EF0EBC1D05723300A25760 /* DurationTableViewCell.xib */; };
+		84EF0EC01D0576B500A25760 /* AddMealViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84EF0EBF1D0576B500A25760 /* AddMealViewController.swift */; };
+		84EF0EC21D057F8F00A25760 /* AddMealDataSource.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84EF0EC11D057F8F00A25760 /* AddMealDataSource.swift */; };
+		84EF0EC61D0580B000A25760 /* WhenTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84EF0EC51D0580B000A25760 /* WhenTableViewCell.swift */; };
+		84EF0EC81D0580C500A25760 /* WhenTableViewCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 84EF0EC71D0580C500A25760 /* WhenTableViewCell.xib */; };
 		951BA49D1CE6295F0036600A /* BrightButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 951BA49C1CE6295F0036600A /* BrightButton.swift */; };
 		951BA49F1CE630A70036600A /* UnBrightButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 951BA49E1CE630A70036600A /* UnBrightButton.swift */; };
 		952470421CE9BC6C003E7EDF /* AppLogoLabel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 952470411CE9BC6C003E7EDF /* AppLogoLabel.swift */; };
@@ -332,6 +336,10 @@
 		84EF0EB81D05711B00A25760 /* TypeTableViewCell.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = TypeTableViewCell.xib; sourceTree = "<group>"; };
 		84EF0EBA1D05722700A25760 /* DurationTableViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DurationTableViewCell.swift; sourceTree = "<group>"; };
 		84EF0EBC1D05723300A25760 /* DurationTableViewCell.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = DurationTableViewCell.xib; sourceTree = "<group>"; };
+		84EF0EBF1D0576B500A25760 /* AddMealViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AddMealViewController.swift; sourceTree = "<group>"; };
+		84EF0EC11D057F8F00A25760 /* AddMealDataSource.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AddMealDataSource.swift; sourceTree = "<group>"; };
+		84EF0EC51D0580B000A25760 /* WhenTableViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = WhenTableViewCell.swift; sourceTree = "<group>"; };
+		84EF0EC71D0580C500A25760 /* WhenTableViewCell.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = WhenTableViewCell.xib; sourceTree = "<group>"; };
 		951BA49C1CE6295F0036600A /* BrightButton.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BrightButton.swift; sourceTree = "<group>"; };
 		951BA49E1CE630A70036600A /* UnBrightButton.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = UnBrightButton.swift; sourceTree = "<group>"; };
 		952470411CE9BC6C003E7EDF /* AppLogoLabel.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AppLogoLabel.swift; sourceTree = "<group>"; };
@@ -628,6 +636,7 @@
 		84EF0EBE1D05767500A25760 /* AddEvents */ = {
 			isa = PBXGroup;
 			children = (
+				84EF0EBF1D0576B500A25760 /* AddMealViewController.swift */,
 			);
 			path = AddEvents;
 			sourceTree = "<group>";
@@ -672,6 +681,8 @@
 				84EF0EB81D05711B00A25760 /* TypeTableViewCell.xib */,
 				84EF0EBA1D05722700A25760 /* DurationTableViewCell.swift */,
 				84EF0EBC1D05723300A25760 /* DurationTableViewCell.xib */,
+				84EF0EC51D0580B000A25760 /* WhenTableViewCell.swift */,
+				84EF0EC71D0580C500A25760 /* WhenTableViewCell.xib */,
 			);
 			path = Cells;
 			sourceTree = "<group>";
@@ -695,6 +706,7 @@
 				958568111CD12B5200EDD385 /* RegisterModelDataSource.swift */,
 				95C0B9A51CD25814006E523F /* AdditionalInfoDataSource.swift */,
 				95C0B9A71CD25860006E523F /* BaseDataSource.swift */,
+				84EF0EC11D057F8F00A25760 /* AddMealDataSource.swift */,
 			);
 			path = DataSources;
 			sourceTree = "<group>";
@@ -1273,6 +1285,7 @@
 				95D142BD1CE60312006A9118 /* DoubleCheckListTitledCollectionViewCell.xib in Resources */,
 				F58E8B4E1CF342B8000B874E /* AppLog.storyboard in Resources */,
 				84AB38D01CEA0EFA00B7DB4E /* DailyProgressDayTableViewCell.xib in Resources */,
+				84EF0EC81D0580C500A25760 /* WhenTableViewCell.xib in Resources */,
 				F43A7C571BBDF29D00B6FA56 /* LaunchScreen.storyboard in Resources */,
 				95748C511CCFC7D90002F6A3 /* DoubleCheckListCollectionViewCell.xib in Resources */,
 				952470481CE9DAEE003E7EDF /* gotham-book.ttf in Resources */,
@@ -1453,6 +1466,7 @@
 				958568051CD0BF6300EDD385 /* BaseViewController.swift in Sources */,
 				95C0B9A31CD2563B006E523F /* TitledInputCollectionViewCell.swift in Sources */,
 				958568121CD12B5200EDD385 /* RegisterModelDataSource.swift in Sources */,
+				84EF0EC01D0576B500A25760 /* AddMealViewController.swift in Sources */,
 				E7E48DEB1CE5CB2700DB020F /* MetabolicRadarChartView.swift in Sources */,
 				E7E48DE91CE4C2DC00DB020F /* MetabolicDataEntry.swift in Sources */,
 				95C0B9AA1CD25AAC006E523F /* AdditionalInfoViewController.swift in Sources */,
@@ -1470,6 +1484,7 @@
 				F43A7C5E1BBDF43600B6FA56 /* PlotButton.swift in Sources */,
 				E7E48DEF1CE6028600DB020F /* DashboardManageBalanceController.swift in Sources */,
 				E7592DB81CDB490600E313BB /* MainTabController.swift in Sources */,
+				84EF0EC61D0580B000A25760 /* WhenTableViewCell.swift in Sources */,
 				95F400AD1CE38F2F0060F28C /* ModelItem.swift in Sources */,
 				E75E95A11CDCA89700A18756 /* DashboardFilterController.swift in Sources */,
 				95769B891CE49E5C00F26668 /* NotificationsViewController.swift in Sources */,
@@ -1524,6 +1539,7 @@
 				84207D261CCA6A7E00776848 /* InputTableCellWithImage.swift in Sources */,
 				78B7342E1C90BC6900693229 /* DebugViewController.swift in Sources */,
 				78B734231C90B85700693229 /* QueryViewController.swift in Sources */,
+				84EF0EC21D057F8F00A25760 /* AddMealDataSource.swift in Sources */,
 				95748C531CCFC8020002F6A3 /* BaseCollectionViewCell.swift in Sources */,
 				84207D281CCE02A400776848 /* LoginModel.swift in Sources */,
 				78B734221C90B85400693229 /* RowSettingsViewController.swift in Sources */,
