@@ -75,10 +75,11 @@ class LoginViewController: BaseViewController {
         //UINotifications.doWelcome(self.parentView!, pop: true, user: UserManager.sharedManager.getUserId() ?? "")
 
         self.navigationController?.popToRootViewControllerAnimated(true)
-
+        
         Async.main {
             Answers.logLoginWithMethod("SPL", success: true, customAttributes: nil)
             self.parentView?.initializeBackgroundWork()
+            NSNotificationCenter.defaultCenter().postNotificationName(UMDidLoginNotifiaction, object: nil)
         }
     }
 

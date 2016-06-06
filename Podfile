@@ -39,6 +39,7 @@ abstract_target 'MetabolicCompassCommon' do
     pod 'AKPickerView-Swift'
     pod 'AsyncKit'
     pod 'Masonry'
+    pod 'PathMenu'
     
     target 'MetabolicCompassKit'
     target 'MetabolicCompass'

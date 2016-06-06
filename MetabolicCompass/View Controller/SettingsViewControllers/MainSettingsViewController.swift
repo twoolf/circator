@@ -41,7 +41,6 @@ class MainSettingsViewController: BaseViewController, UICollectionViewDataSource
         collectionView?.registerNib(titleCellNib, forCellWithReuseIdentifier: titleCellIdentifier)
 //        navigationController!.navigationBar.titleTextAttributes = [NSForegroundColorAttributeName: ScreenManager.appTitleTextColor(), NSFontAttributeName: ScreenManager.appNavBarFont()]
 //        self.navigationController?.navigationBar.tintColor = ScreenManager.appNavigationBackColor()
-        
     }
 
     func logoutAction()  {
@@ -49,6 +48,7 @@ class MainSettingsViewController: BaseViewController, UICollectionViewDataSource
         let cancelAction = UIAlertAction(title: "Cancel", style: .Cancel, handler: nil)
         let okAction = UIAlertAction(title: "OK", style: .Default) { (alertAction: UIAlertAction!) in
             AccountManager.shared.doLogout({
+                NSNotificationCenter.defaultCenter().postNotificationName(UMDidLogoutNotification, object: nil)
                 AccountManager.shared.loginOrRegister()
             })
         }

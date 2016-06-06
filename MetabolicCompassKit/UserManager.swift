@@ -33,6 +33,8 @@ public let UMConsentInfoString         = "Retrieved consent"
 public let UMPhotoInfoString           = "Retrieved photo"
 public let UMPullComponentsInfoString  = "Retrieved account components"
 public let UMPullFullAccountInfoString = "Retrieved full account"
+public let UMDidLoginNotifiaction = "didLoginNotifiaction"
+public let UMDidLogoutNotification = "didLogoutNotification"
 
 // Error generators.
 // These are public to allow other components to recreate and check error messages.
@@ -380,6 +382,7 @@ public class UserManager {
             }
             if doReset { self.resetFull() }
             completion(doReset)
+            NSNotificationCenter.defaultCenter().postNotificationName(UMDidLogoutNotification, object: nil)
             return
         }
 
