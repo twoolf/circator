@@ -8,13 +8,11 @@
 
 import UIKit
 
-class DurationTableViewCell: UITableViewCell {
-
-    @IBOutlet weak var dropdownImage: UIImageView!
+class DurationTableViewCell: BaseAddEventTableViewCell {
+    
     @IBOutlet weak var durationLabel: UILabel!
     override func awakeFromNib() {
         super.awakeFromNib()
-        // Initialization code
     }
 
     override func setSelected(selected: Bool, animated: Bool) {

@@ -8,12 +8,11 @@
 
 import UIKit
 
-class TypeTableViewCell: UITableViewCell {
+class TypeTableViewCell: BaseAddEventTableViewCell {
 
     @IBOutlet weak var typeLabel: UILabel!
     override func awakeFromNib() {
         super.awakeFromNib()
-        // Initialization code
     }
 
     override func setSelected(selected: Bool, animated: Bool) {

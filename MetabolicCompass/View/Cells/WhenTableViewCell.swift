@@ -8,13 +8,13 @@
 
 import UIKit
 
-class WhenTableViewCell: UITableViewCell {
+class WhenTableViewCell: BaseAddEventTableViewCell {
     @IBOutlet weak var timeLabel: UILabel!
     @IBOutlet weak var dayLabel: UILabel!
 
     override func awakeFromNib() {
         super.awakeFromNib()
-        // Initialization code
+        self.backgroundColor = UIColor.clearColor()
     }
 
     override func setSelected(selected: Bool, animated: Bool) {

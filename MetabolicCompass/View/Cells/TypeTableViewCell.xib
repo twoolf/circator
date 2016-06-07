@@ -3,6 +3,12 @@
     <dependencies>
         <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="10085"/>
     </dependencies>
+    <customFonts key="customFonts">
+        <mutableArray key="gotham-book.ttf">
+            <string>GothamBook</string>
+            <string>GothamBook</string>
+        </mutableArray>
+    </customFonts>
     <objects>
         <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner"/>
         <placeholder placeholderIdentifier="IBFirstResponder" id="-2" customClass="UIResponder"/>
@@ -10,38 +16,49 @@
             <rect key="frame" x="0.0" y="0.0" width="375" height="60"/>
             <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
             <subviews>
+                <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="E5v-CI-Vj0">
+                    <rect key="frame" x="0.0" y="0.0" width="375" height="1"/>
+                    <color key="backgroundColor" white="1" alpha="0.29999999999999999" colorSpace="calibratedWhite"/>
+                    <constraints>
+                        <constraint firstAttribute="height" constant="1" id="t8Z-7c-xOL"/>
+                    </constraints>
+                </view>
                 <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Type" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="Rne-Se-5eA">
-                    <rect key="frame" x="20" y="19" width="37.5" height="21"/>
-                    <fontDescription key="fontDescription" type="system" pointSize="17"/>
-                    <color key="textColor" red="0.0" green="0.0" blue="0.0" alpha="1" colorSpace="calibratedRGB"/>
+                    <rect key="frame" x="20" y="23" width="37.5" height="13.5"/>
+                    <fontDescription key="fontDescription" name="GothamBook" family="Gotham Book" pointSize="15"/>
+                    <color key="textColor" white="1" alpha="0.5" colorSpace="calibratedWhite"/>
                     <nil key="highlightedColor"/>
                 </label>
                 <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Lunch" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="pQt-v0-HlX">
-                    <rect key="frame" x="205.5" y="19" width="47.5" height="21"/>
-                    <fontDescription key="fontDescription" type="system" pointSize="17"/>
-                    <color key="textColor" red="0.0" green="0.0" blue="0.0" alpha="1" colorSpace="calibratedRGB"/>
+                    <rect key="frame" x="212.5" y="23.5" width="43" height="12.5"/>
+                    <fontDescription key="fontDescription" name="GothamBook" family="Gotham Book" pointSize="14"/>
+                    <color key="textColor" white="1" alpha="0.5" colorSpace="calibratedWhite"/>
                     <nil key="highlightedColor"/>
                 </label>
                 <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="dropdown-button-white" translatesAutoresizingMaskIntoConstraints="NO" id="knx-uk-IKo">
-                    <rect key="frame" x="320" y="21.5" width="35" height="17"/>
+                    <rect key="frame" x="338" y="26" width="17" height="8"/>
                     <constraints>
-                        <constraint firstAttribute="height" constant="17" id="QlH-Ey-hY1"/>
-                        <constraint firstAttribute="width" constant="35" id="hHJ-Z8-G1i"/>
+                        <constraint firstAttribute="height" constant="8" id="QlH-Ey-hY1"/>
+                        <constraint firstAttribute="width" constant="17" id="hHJ-Z8-G1i"/>
                     </constraints>
                 </imageView>
             </subviews>
             <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="calibratedWhite"/>
             <constraints>
                 <constraint firstItem="Rne-Se-5eA" firstAttribute="leading" secondItem="iN0-l3-epB" secondAttribute="leading" constant="20" id="6uQ-pa-nGn"/>
+                <constraint firstAttribute="trailing" secondItem="E5v-CI-Vj0" secondAttribute="trailing" id="K9E-Ah-QJf"/>
                 <constraint firstItem="pQt-v0-HlX" firstAttribute="centerY" secondItem="iN0-l3-epB" secondAttribute="centerY" id="Lvc-HF-7Ie"/>
+                <constraint firstItem="E5v-CI-Vj0" firstAttribute="leading" secondItem="iN0-l3-epB" secondAttribute="leading" id="VEJ-um-2B1"/>
                 <constraint firstItem="knx-uk-IKo" firstAttribute="centerY" secondItem="iN0-l3-epB" secondAttribute="centerY" id="j1p-io-HVk"/>
                 <constraint firstAttribute="trailing" secondItem="knx-uk-IKo" secondAttribute="trailing" constant="20" id="lVg-Us-f4G"/>
                 <constraint firstItem="Rne-Se-5eA" firstAttribute="centerY" secondItem="iN0-l3-epB" secondAttribute="centerY" id="qfK-bw-QqI"/>
-                <constraint firstAttribute="trailing" secondItem="pQt-v0-HlX" secondAttribute="trailing" constant="122" id="wdM-58-eof"/>
+                <constraint firstItem="E5v-CI-Vj0" firstAttribute="top" secondItem="iN0-l3-epB" secondAttribute="top" id="uRn-iY-SJu"/>
+                <constraint firstAttribute="trailing" secondItem="pQt-v0-HlX" secondAttribute="trailing" constant="119" id="wdM-58-eof"/>
             </constraints>
             <nil key="simulatedStatusBarMetrics"/>
             <freeformSimulatedSizeMetrics key="simulatedDestinationMetrics"/>
             <connections>
+                <outlet property="dropdownImage" destination="knx-uk-IKo" id="gNu-h6-4th"/>
                 <outlet property="typeLabel" destination="pQt-v0-HlX" id="Tb0-ZN-Ysf"/>
             </connections>
             <point key="canvasLocation" x="324.5" y="339"/>

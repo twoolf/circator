@@ -151,6 +151,19 @@ class MainTabController: UITabBarController, UITabBarControllerDelegate, PathMen
         Async.main(after: 0.4) { 
             self.hideIcons(true)
             self.hideOverlay()
+            let controller = UIStoryboard(name: "AddEvents", bundle: nil).instantiateViewControllerWithIdentifier("AddMealNavViewController") as! UINavigationController
+            let rootController = controller.viewControllers[0] as! AddMealViewController
+            switch idx {
+                case EventType.Meal.rawValue:
+                    rootController.type = .Meal
+                case EventType.Exercise.rawValue:
+                    rootController.type = .Exercise
+                case EventType.Sleep.rawValue:
+                    rootController.type = .Sleep
+                default:
+                    break
+            }
+            self.selectedViewController?.presentViewController(controller, animated: true, completion: nil)
         }
     }
     

@@ -10,11 +10,14 @@
             <rect key="frame" x="0.0" y="0.0" width="375" height="216"/>
             <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
             <subviews>
-                <datePicker contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" datePickerMode="dateAndTime" minuteInterval="1" translatesAutoresizingMaskIntoConstraints="NO" id="Fo8-qk-9P1">
+                <datePicker contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" datePickerMode="countDownTimer" minuteInterval="1" translatesAutoresizingMaskIntoConstraints="NO" id="Fo8-qk-9P1">
                     <rect key="frame" x="0.0" y="0.0" width="375" height="216"/>
                     <date key="date" timeIntervalSinceReferenceDate="486895528.96891803">
                         <!--2016-06-06 08:45:28 +0000-->
                     </date>
+                    <connections>
+                        <action selector="pickerDateChanged:" destination="iN0-l3-epB" eventType="valueChanged" id="vXg-8Z-S0V"/>
+                    </connections>
                 </datePicker>
             </subviews>
             <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="calibratedWhite"/>
@@ -27,9 +30,9 @@
             <nil key="simulatedStatusBarMetrics"/>
             <freeformSimulatedSizeMetrics key="simulatedDestinationMetrics"/>
             <connections>
-                <outlet property="datePicker" destination="Fo8-qk-9P1" id="fe0-zF-eHB"/>
+                <outlet property="datePicker" destination="Fo8-qk-9P1" id="ihZ-Yz-POh"/>
             </connections>
-            <point key="canvasLocation" x="572.5" y="281"/>
+            <point key="canvasLocation" x="490.5" y="271"/>
         </view>
     </objects>
 </document>
