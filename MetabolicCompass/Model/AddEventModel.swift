@@ -131,6 +131,31 @@ class AddEventModel: NSObject {
         }
     }
     
+    func saveExerciseEvent(completion:(success: Bool, errorMessage: String?) -> ()) {
+        let hours = Int(duration/3600.0)
+        let minutes = Int((duration - Double((hours * 3600)))/60)
+        
+        let startTime = eventDate
+        let endTime = startTime + minutes.minutes + hours.hours
+        validateTimedEvent(startTime, endTime: endTime) { (success, errorMessage) -> Void in
+            guard success else {
+                completion(success: false, errorMessage: errorMessage)
+                return
+            }
+            HealthManager.sharedManager.saveRunningWorkout(
+                startTime, endDate: endTime, distance: 0.0, distanceUnit: HKUnit(fromString: "km"),
+                kiloCalories: 0.0, metadata: [:]) {
+                (success, error ) -> Void in
+                guard error == nil else {
+                    completion(success: false, errorMessage: error.localizedDescription)
+                    return
+                }
+                log.info("Saved as exercise workout type")
+                completion(success: true, errorMessage: nil)
+            }
+        }
+    }
+    
     //MARK: Validation
     
     func validateTimedEvent(startTime: NSDate, endTime: NSDate, completion: (success: Bool, errorMessage: String?) -> ()) {

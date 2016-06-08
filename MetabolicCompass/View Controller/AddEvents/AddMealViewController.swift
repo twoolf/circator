@@ -86,15 +86,20 @@ class AddMealViewController: UIViewController, AddEventModelDelegate {
     }
     
     func closeAction () {
-        if addEventModel.mealType != MealType.Empty {
-            let alertController = UIAlertController(title: "", message: "Are you sure you wish to leave without saving?", preferredStyle: .Alert)
-            alertController.addAction(UIAlertAction(title: "YES", style: .Default, handler: { (alert) in
+        switch type {
+            case .Meal:
+                if addEventModel.mealType != MealType.Empty {
+                    let alertController = UIAlertController(title: "", message: "Are you sure you wish to leave without saving?", preferredStyle: .Alert)
+                    alertController.addAction(UIAlertAction(title: "YES", style: .Default, handler: { (alert) in
+                        self.dismissViewControllerAnimated(true, completion: nil)
+                    }))
+                    alertController.addAction(UIAlertAction(title: "NO", style: .Cancel, handler: nil))
+                    self.presentViewController(alertController, animated: true, completion: nil)
+                } else {
+                    self.dismissViewControllerAnimated(true, completion: nil)
+                }
+            default:
                 self.dismissViewControllerAnimated(true, completion: nil)
-            }))
-            alertController.addAction(UIAlertAction(title: "NO", style: .Cancel, handler: nil))
-            self.presentViewController(alertController, animated: true, completion: nil)
-        } else {
-            self.dismissViewControllerAnimated(true, completion: nil)
         }
     }
     
@@ -104,19 +109,33 @@ class AddMealViewController: UIViewController, AddEventModelDelegate {
                 addEventModel.saveMealEvent({ (success, errorMessage) in
                     Async.main {
                         guard success else {
-                            let alertController = UIAlertController(title: "", message: errorMessage, preferredStyle: .Alert)
-                            alertController.addAction(UIAlertAction(title: "OK", style: .Cancel, handler: nil))
-                            self.presentViewController(alertController, animated: true, completion: nil)
+                            self.showValidationAlert(errorMessage!)
                             return
                         }
                         self.dismissViewControllerAnimated(true, completion: nil)
                     }
                 })
             case .Exercise:
-                print("Save Exercise")
+                addEventModel.saveExerciseEvent({ (success, errorMessage) in
+                    Async.main{
+                        guard success else {
+                            self.showValidationAlert(errorMessage!)
+                            return
+                        }
+                        self.dismissViewControllerAnimated(true, completion: nil)
+                    }
+                })
             case .Sleep:
                 print("Save Sleep")
         }
+    }
+    
+    //MARK: Validation alerts
+    
+    func showValidationAlert(message: String) {
+        let alertController = UIAlertController(title: "", message: message, preferredStyle: .Alert)
+        alertController.addAction(UIAlertAction(title: "OK", style: .Cancel, handler: nil))
+        self.presentViewController(alertController, animated: true, completion: nil)
     }
     
     //MARK: AddEventModelDelegate
