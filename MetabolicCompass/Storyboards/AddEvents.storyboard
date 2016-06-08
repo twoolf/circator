@@ -29,7 +29,7 @@
         <!--Add Event View Controller-->
         <scene sceneID="hsZ-6I-19v">
             <objects>
-                <viewController storyboardIdentifier="AddEventViewController" id="MFi-UI-CmN" customClass="AddEventViewController" sceneMemberID="viewController">
+                <viewController storyboardIdentifier="AddEventViewController" id="MFi-UI-CmN" customClass="AddEventViewController" customModule="MetabolicCompass" customModuleProvider="target" sceneMemberID="viewController">
                     <layoutGuides>
                         <viewControllerLayoutGuide type="top" id="W9p-E6-fhE"/>
                         <viewControllerLayoutGuide type="bottom" id="t2r-zA-fhp"/>

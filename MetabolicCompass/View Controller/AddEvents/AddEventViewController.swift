@@ -1,5 +1,5 @@
 //
-//  AddMealViewController.swift
+//  AddEventViewController.swift
 //  MetabolicCompass
 //
 //  Created by Artem Usachov on 6/6/16.
