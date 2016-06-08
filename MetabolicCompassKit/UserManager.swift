@@ -15,6 +15,7 @@ import SwiftDate
 import Async
 import AsyncKit
 import JWTDecode
+import SwiftyUserDefaults
 
 private let UMPrimaryUserKey = "UMPrimaryUserKey"
 private let UMUserHashKey    = "UMUserHashKey"
@@ -177,6 +178,8 @@ public class UserManager {
                 } catch {
                     log.error("setAccountData: \(error)")
                 }
+            } else {
+                print("\(Locksmith.loadDataForUserAccount(user))")
             }
         }
     }
@@ -226,6 +229,24 @@ public class UserManager {
             return !pass.isEmpty
         }
         return false
+    }
+    //setting ususal date for meals
+    public func setUsualMealTime(mealType: String, forDate date: NSDate) {
+        if let user = userId {
+            let key = mealType+user
+            Defaults.setObject(date, forKey: key)
+            Defaults.synchronize()
+        }
+    }
+    
+    //get ussual date for meals
+    public func getUsualMealTime(mealType: String) -> NSDate? {
+        if let user = userId where Defaults.hasKey(mealType+user) {
+            let key = mealType+user
+            let dateOfMeal = Defaults.objectForKey(key)
+            return dateOfMeal as? NSDate
+        }
+        return nil
     }
 
     public func setPassword(userPass: String) {
@@ -408,7 +429,7 @@ public class UserManager {
         if (MCRouter.tokenExpireTime - NSDate().timeIntervalSince1970 > 0) {
             completion(false)
         } else {
-            self.refreshAccessToken(completion)
+//            self.refreshAccessToken(completion)
         }
 
         // temporary disabled, waiting for server api clarification

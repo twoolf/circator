@@ -24,9 +24,23 @@ class AddEventModel: NSObject {
     var datePickerTags:[Int] = [2]  //default date picker row
     var countDownPickerTags: [Int] = [3] //default count down pickecr row
     
-    var duration: NSTimeInterval = 1800.0
-    var eventDate: NSDate = NSDate()
-    var mealType: MealType = .Empty
+    var duration: NSTimeInterval = 1800.0 //default is 30 min
+    var eventDate: NSDate = NSDate() //default is current date
+    
+    var mealType: MealType = .Empty {
+        didSet {
+            if let mealUsualDate = UserManager.sharedManager.getUsualMealTime(mealType.rawValue) {//if we have usual event date we should prefill it for user
+                let calendar = NSCalendar.currentCalendar()
+                let components = calendar.components([.Year, .Month, .Day, .Hour, .Minute], fromDate: eventDate)
+                components.hour = mealUsualDate.hour
+                components.minute = mealUsualDate.minute
+                eventDate = calendar.dateFromComponents(components)!
+            } else {//reset event date to the default state. Current date
+                //it works in case when user selected event with existing usual time and then changed meal type
+                eventDate = NSDate()
+            }
+        }
+    }
     
     var sleepStartDate: NSDate = NSDate() {
         didSet {
@@ -135,6 +149,9 @@ class AddEventModel: NSObject {
                         completion(success: false, errorMessage: error.localizedDescription)
                         return
                     }
+                    //storing usual data for meal type
+                    let mealType = self.mealType.rawValue
+                    UserManager.sharedManager.setUsualMealTime(mealType, forDate: startTime)
                     completion(success: true, errorMessage: nil)
                     log.info("Meal saved as workout type")
             }

@@ -187,6 +187,11 @@ class AddMealDataSource: NSObject, UITableViewDataSource, UITableViewDelegate, P
             default:
                 addEventModel?.mealType = .Empty
         }
+        
+        if title != MealType.Empty.rawValue {//update when cell with usuall time of event
+            self.whenCell?.timeLabel.text = addEventModel?.getTextForTimeLabel()
+            self.whenCell?.dayLabel.text = addEventModel?.getTextForDayLabel()
+        }
     }
     
     //MARK: DatePickerTableViewCellDelegate
