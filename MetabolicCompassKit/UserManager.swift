@@ -230,6 +230,42 @@ public class UserManager {
         }
         return false
     }
+    
+    //setting usual time when user goes to sleep
+    public func setUsualWhenToSleepTime(date: NSDate) {
+        if let user = userId {
+            let key = "usualWhenToSleepTime"+user
+            Defaults.setObject(date, forKey: key)
+            Defaults.synchronize()
+        }
+    }
+    //setting usual duration user sleeping
+    public func setUsualWokeUpTime(date: NSDate) {
+        if let user = userId {
+            let key = "usualSleepDuration"+user
+            Defaults.setObject(date, forKey: key)
+            Defaults.synchronize()
+        }
+    }
+    
+    public func getUsualWhenToSleepTime() -> NSDate? {
+        if let user = userId {
+            let key = "usualWhenToSleepTime"+user
+            let date = Defaults.objectForKey(key)
+            return date as? NSDate
+        }
+        return nil
+    }
+    
+    public func getUsualWokeUpTime() -> NSDate? {
+        if let user = userId {
+            let key = "usualSleepDuration"+user
+            let duration = Defaults.objectForKey(key)
+            return duration as? NSDate
+        }
+        return nil
+    }
+    
     //setting ususal date for meals
     public func setUsualMealTime(mealType: String, forDate date: NSDate) {
         if let user = userId {
@@ -239,7 +275,7 @@ public class UserManager {
         }
     }
     
-    //get ussual date for meals
+    //get usual date for meals
     public func getUsualMealTime(mealType: String) -> NSDate? {
         if let user = userId where Defaults.hasKey(mealType+user) {
             let key = mealType+user
