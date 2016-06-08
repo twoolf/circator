@@ -13,7 +13,7 @@ class PickerTableViewCell: UITableViewCell, UIPickerViewDataSource, UIPickerView
     @IBOutlet weak var pickerView: UIPickerView!
     
     var pickerCellDelegate: PickerTableViewCellDelegate? = nil
-    var components: [String] = [MealType.Breakfast.rawValue, MealType.Lunch.rawValue, MealType.Dinner.rawValue, MealType.Snack.rawValue]
+    var components: [String] = [MealType.Empty.rawValue, MealType.Breakfast.rawValue, MealType.Lunch.rawValue, MealType.Dinner.rawValue, MealType.Snack.rawValue]
     
     override func awakeFromNib() {
         super.awakeFromNib()

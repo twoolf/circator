@@ -31,7 +31,7 @@
                     <nil key="highlightedColor"/>
                 </label>
                 <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="15 May" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="oft-oG-YnH">
-                    <rect key="frame" x="202" y="23.5" width="46.5" height="12.5"/>
+                    <rect key="frame" x="209.5" y="23.5" width="46.5" height="12.5"/>
                     <fontDescription key="fontDescription" name="GothamBook" family="Gotham Book" pointSize="14"/>
                     <color key="textColor" white="1" alpha="0.5" colorSpace="calibratedWhite"/>
                     <nil key="highlightedColor"/>
@@ -54,11 +54,11 @@
             <constraints>
                 <constraint firstItem="xuI-Sj-cZr" firstAttribute="centerY" secondItem="iN0-l3-epB" secondAttribute="centerY" id="16k-vN-FFH"/>
                 <constraint firstItem="JUX-cI-0Z2" firstAttribute="top" secondItem="iN0-l3-epB" secondAttribute="top" id="8bP-YG-MTA"/>
+                <constraint firstAttribute="trailing" secondItem="oft-oG-YnH" secondAttribute="trailing" constant="119" id="8tq-55-HWB"/>
                 <constraint firstItem="xuI-Sj-cZr" firstAttribute="leading" secondItem="iN0-l3-epB" secondAttribute="leading" constant="20" id="F73-eP-9bd"/>
                 <constraint firstAttribute="trailing" secondItem="a80-nd-dQg" secondAttribute="trailing" constant="20" id="Hib-lf-LhK"/>
                 <constraint firstAttribute="trailing" secondItem="JUX-cI-0Z2" secondAttribute="trailing" id="K8e-M6-5Yu"/>
                 <constraint firstItem="JUX-cI-0Z2" firstAttribute="leading" secondItem="iN0-l3-epB" secondAttribute="leading" id="U6f-jx-AmA"/>
-                <constraint firstItem="1Ib-zf-nbz" firstAttribute="leading" secondItem="oft-oG-YnH" secondAttribute="trailing" constant="22" id="XRo-cv-v5v"/>
                 <constraint firstItem="1Ib-zf-nbz" firstAttribute="centerY" secondItem="iN0-l3-epB" secondAttribute="centerY" id="a3q-lV-WmB"/>
                 <constraint firstItem="a80-nd-dQg" firstAttribute="leading" secondItem="1Ib-zf-nbz" secondAttribute="trailing" constant="18" id="gZW-Ut-uMy"/>
                 <constraint firstItem="oft-oG-YnH" firstAttribute="centerY" secondItem="iN0-l3-epB" secondAttribute="centerY" id="ikb-Mo-YsC"/>

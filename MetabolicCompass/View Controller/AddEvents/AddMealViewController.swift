@@ -7,6 +7,7 @@
 //
 
 import UIKit
+import Async
 
 enum EventType: Int {
     case Meal
@@ -14,7 +15,7 @@ enum EventType: Int {
     case Sleep
 }
 
-class AddMealViewController: UIViewController {
+class AddMealViewController: UIViewController, AddEventModelDelegate {
 
     @IBOutlet weak var tableVIew: UITableView!
     @IBOutlet weak var eventImage: UIImageView!
@@ -43,9 +44,12 @@ class AddMealViewController: UIViewController {
                 eventImage.image = UIImage(named: "add-exercises-big-image")!
                 self.navigationItem.title = "ADD EXERCISE TIME"
             case .Sleep:
+                sleepTimeLabel.hidden = false
+                addEventModel.delegate = self
                 addEventModel.datePickerTags = [1, 2]
                 addEventModel.countDownPickerTags = []
-                tableDataSource.dataSourceCells = [whenCellIdentifier, whenCellIdentifier]//set base cells
+                tableDataSource.sleepMode = true
+                tableDataSource.dataSourceCells = [startSleepCellIdentifier, endSleepCellIdentifier]//set base cells
                 eventImage.image = UIImage(named: "add-sleep-big-image")!
                 self.navigationItem.title = "ADD SLEEP TIME"
             default:
@@ -57,7 +61,6 @@ class AddMealViewController: UIViewController {
         self.tableVIew.dataSource = tableDataSource
         self.tableVIew.delegate = tableDataSource
     }
-    
     
     func registerCells () {
         let typeCellNib = UINib(nibName: "TypeTableViewCell", bundle: nil)
@@ -74,13 +77,51 @@ class AddMealViewController: UIViewController {
         
         let datePickerCellNib = UINib(nibName: "DatePickerTableViewCell", bundle: nil)
         self.tableVIew.registerNib(datePickerCellNib, forCellReuseIdentifier: datePickerCellIdentifier)
+        
+        let startSleppCellNib = UINib(nibName: "StartSleepTableViewCell", bundle: nil)
+        self.tableVIew.registerNib(startSleppCellNib, forCellReuseIdentifier: startSleepCellIdentifier)
+        
+        let endSleepCellNib = UINib(nibName: "EndSleepTableViewCell", bundle: nil)
+        self.tableVIew.registerNib(endSleepCellNib, forCellReuseIdentifier: endSleepCellIdentifier)
     }
     
     func closeAction () {
-        self.dismissViewControllerAnimated(true, completion: nil)
+        if addEventModel.mealType != MealType.Empty {
+            let alertController = UIAlertController(title: "", message: "Are you sure you wish to leave without saving?", preferredStyle: .Alert)
+            alertController.addAction(UIAlertAction(title: "YES", style: .Default, handler: { (alert) in
+                self.dismissViewControllerAnimated(true, completion: nil)
+            }))
+            alertController.addAction(UIAlertAction(title: "NO", style: .Cancel, handler: nil))
+            self.presentViewController(alertController, animated: true, completion: nil)
+        } else {
+            self.dismissViewControllerAnimated(true, completion: nil)
+        }
     }
     
     func doneAction () {
-        self.dismissViewControllerAnimated(true, completion: nil)
+        switch type {
+            case .Meal:
+                addEventModel.saveMealEvent({ (success, errorMessage) in
+                    Async.main {
+                        guard success else {
+                            let alertController = UIAlertController(title: "", message: errorMessage, preferredStyle: .Alert)
+                            alertController.addAction(UIAlertAction(title: "OK", style: .Cancel, handler: nil))
+                            self.presentViewController(alertController, animated: true, completion: nil)
+                            return
+                        }
+                        self.dismissViewControllerAnimated(true, completion: nil)
+                    }
+                })
+            case .Exercise:
+                print("Save Exercise")
+            case .Sleep:
+                print("Save Sleep")
+        }
+    }
+    
+    //MARK: AddEventModelDelegate
+    
+    func sleepTimeUpdated(updatedTime: NSAttributedString) {
+        sleepTimeLabel.attributedText = updatedTime
     }
 }

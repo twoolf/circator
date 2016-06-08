@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="10117" systemVersion="15F34" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES">
+    <dependencies>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="10085"/>
+    </dependencies>
+    <customFonts key="customFonts">
+        <mutableArray key="gotham-book.ttf">
+            <string>GothamBook</string>
+            <string>GothamBook</string>
+            <string>GothamBook</string>
+        </mutableArray>
+    </customFonts>
+    <objects>
+        <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner"/>
+        <placeholder placeholderIdentifier="IBFirstResponder" id="-2" customClass="UIResponder"/>
+        <view contentMode="scaleToFill" id="3dd-zd-wxB" customClass="StartSleepTableViewCell" customModule="MetabolicCompass" customModuleProvider="target">
+            <rect key="frame" x="0.0" y="0.0" width="375" height="60"/>
+            <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+            <subviews>
+                <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="GR5-WS-lUi">
+                    <rect key="frame" x="0.0" y="0.0" width="375" height="1"/>
+                    <color key="backgroundColor" red="1" green="1" blue="1" alpha="0.29999999999999999" colorSpace="calibratedRGB"/>
+                    <constraints>
+                        <constraint firstAttribute="height" constant="1" id="ReB-Ba-rCa"/>
+                    </constraints>
+                </view>
+                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Label" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="J4v-Kp-Fbp">
+                    <rect key="frame" x="271" y="22" width="49" height="16.5"/>
+                    <fontDescription key="fontDescription" name="GothamBook" family="Gotham Book" pointSize="18"/>
+                    <color key="textColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                    <nil key="highlightedColor"/>
+                </label>
+                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="15 May" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="sfb-8p-1Tb">
+                    <rect key="frame" x="202" y="23" width="46.5" height="12.5"/>
+                    <fontDescription key="fontDescription" name="GothamBook" family="Gotham Book" pointSize="14"/>
+                    <color key="textColor" white="1" alpha="0.5" colorSpace="calibratedWhite"/>
+                    <nil key="highlightedColor"/>
+                </label>
+                <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="dropdown-button-white" translatesAutoresizingMaskIntoConstraints="NO" id="iSu-eD-OFQ">
+                    <rect key="frame" x="338" y="26" width="17" height="8"/>
+                    <constraints>
+                        <constraint firstAttribute="width" constant="17" id="2m4-EN-Rcn"/>
+                        <constraint firstAttribute="height" constant="8" id="bQP-V5-4kj"/>
+                    </constraints>
+                </imageView>
+                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="When to Sleep" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="khV-5j-EfS">
+                    <rect key="frame" x="20" y="23" width="110" height="13.5"/>
+                    <fontDescription key="fontDescription" name="GothamBook" family="Gotham Book" pointSize="15"/>
+                    <color key="textColor" white="1" alpha="0.5" colorSpace="calibratedWhite"/>
+                    <nil key="highlightedColor"/>
+                </label>
+            </subviews>
+            <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="calibratedWhite"/>
+            <constraints>
+                <constraint firstItem="J4v-Kp-Fbp" firstAttribute="centerY" secondItem="3dd-zd-wxB" secondAttribute="centerY" id="2Ci-ox-bhG"/>
+                <constraint firstItem="GR5-WS-lUi" firstAttribute="leading" secondItem="3dd-zd-wxB" secondAttribute="leading" id="4xq-p0-P8D"/>
+                <constraint firstAttribute="trailing" secondItem="GR5-WS-lUi" secondAttribute="trailing" id="6f6-sl-Mt9"/>
+                <constraint firstItem="sfb-8p-1Tb" firstAttribute="centerY" secondItem="3dd-zd-wxB" secondAttribute="centerY" id="CI8-iS-OvL"/>
+                <constraint firstAttribute="trailing" secondItem="iSu-eD-OFQ" secondAttribute="trailing" constant="20" id="GiE-2m-MMy"/>
+                <constraint firstItem="iSu-eD-OFQ" firstAttribute="leading" secondItem="J4v-Kp-Fbp" secondAttribute="trailing" constant="18" id="H8w-Uc-3vi"/>
+                <constraint firstItem="khV-5j-EfS" firstAttribute="leading" secondItem="3dd-zd-wxB" secondAttribute="leading" constant="20" id="HIc-IG-Hnq"/>
+                <constraint firstItem="khV-5j-EfS" firstAttribute="centerY" secondItem="3dd-zd-wxB" secondAttribute="centerY" id="b4P-Zb-UZK"/>
+                <constraint firstItem="iSu-eD-OFQ" firstAttribute="centerY" secondItem="3dd-zd-wxB" secondAttribute="centerY" id="cFK-ez-NEB"/>
+                <constraint firstItem="J4v-Kp-Fbp" firstAttribute="leading" secondItem="sfb-8p-1Tb" secondAttribute="trailing" constant="22" id="kNN-xV-Zhv"/>
+                <constraint firstItem="GR5-WS-lUi" firstAttribute="top" secondItem="3dd-zd-wxB" secondAttribute="top" id="y8x-80-TKZ"/>
+            </constraints>
+            <nil key="simulatedStatusBarMetrics"/>
+            <freeformSimulatedSizeMetrics key="simulatedDestinationMetrics"/>
+            <connections>
+                <outlet property="dayLabel" destination="sfb-8p-1Tb" id="oFq-A1-1Kk"/>
+                <outlet property="dropdownImage" destination="iSu-eD-OFQ" id="bYi-Pf-L1j"/>
+                <outlet property="timeLabel" destination="J4v-Kp-Fbp" id="FLh-BA-8DI"/>
+            </connections>
+            <point key="canvasLocation" x="256.5" y="336"/>
+        </view>
+    </objects>
+    <resources>
+        <image name="dropdown-button-white" width="17" height="8"/>
+    </resources>
+</document>

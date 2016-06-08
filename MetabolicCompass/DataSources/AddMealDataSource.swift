@@ -13,15 +13,20 @@ public let whenCellIdentifier = "whenCellIdentifier"
 public let durationCellIdentifier = "durationCellIdentifier"
 public let pickerCellIdentifier = "pickerCellIdentifier"
 public let datePickerCellIdentifier = "datePickerCellIdentifier"
+public let startSleepCellIdentifier = "startSleepCellIdentifier"
+public let endSleepCellIdentifier = "endSleepCellIdentifier"
 
 class AddMealDataSource: NSObject, UITableViewDataSource, UITableViewDelegate, PickerTableViewCellDelegate, DatePickerTableViewCellDelegate {
     
     var addEventModel: AddEventModel? = nil
     var dataSourceCells: [String] = [typeCellIdentifier, whenCellIdentifier, durationCellIdentifier]//default cells types
+    var sleepMode = false
     
     private var typeCell: TypeTableViewCell? = nil
     private var whenCell: WhenTableViewCell? = nil
     private var durationCell: DurationTableViewCell? = nil
+    private var startSleepCell: StartSleepTableViewCell? = nil
+    private var endSleepCell: EndSleepTableViewCell? = nil
 
     private var pickerIndexPath: NSIndexPath? = nil
     private let defaultCellHeight: CGFloat = 80.0
@@ -38,6 +43,14 @@ class AddMealDataSource: NSObject, UITableViewDataSource, UITableViewDelegate, P
         cell = tableView.dequeueReusableCellWithIdentifier(cellIdentifier)
         
         switch cellIdentifier {
+            case startSleepCellIdentifier:
+                self.startSleepCell = cell as? StartSleepTableViewCell
+                self.startSleepCell?.timeLabel.text = addEventModel?.getStartSleepTimeString()
+                self.startSleepCell?.dayLabel.text = addEventModel?.getStartSleepForDayLabel()
+            case endSleepCellIdentifier:
+                self.endSleepCell = cell as? EndSleepTableViewCell
+                self.endSleepCell?.timeLabel.text = addEventModel?.getSleepEndTimeString()
+                self.endSleepCell?.dayLabel.text = addEventModel?.getEndSleepForDayLabel()
             case typeCellIdentifier:
                 self.typeCell = cell as? TypeTableViewCell
                 self.typeCell?.typeLabel.text = addEventModel?.mealType.rawValue
@@ -47,7 +60,7 @@ class AddMealDataSource: NSObject, UITableViewDataSource, UITableViewDelegate, P
                 self.whenCell?.dayLabel.text = addEventModel?.getTextForDayLabel()
             case durationCellIdentifier:
                 self.durationCell = cell as? DurationTableViewCell
-                self.durationCell?.durationLabel.text = addEventModel?.getTextForTimeInterval()
+                self.durationCell?.durationLabel.attributedText = addEventModel?.getTextForTimeInterval()
             case pickerCellIdentifier:
                 let pickerCell = cell as! PickerTableViewCell
                 pickerCell.pickerCellDelegate = self
@@ -56,11 +69,20 @@ class AddMealDataSource: NSObject, UITableViewDataSource, UITableViewDelegate, P
             case datePickerCellIdentifier:
                 let datePickerCell = cell as! DatePickerTableViewCell
                 datePickerCell.delegate = self
-                
                 if addEventModel!.datePickerRow(indexPath.row) {//date and time
                     datePickerCell.datePicker.datePickerMode = .DateAndTime
                     datePickerCell.datePicker.tag = indexPath.row
-                    datePickerCell.datePicker.date = (addEventModel?.eventDate)!
+                    if sleepMode {
+                        let endSleepPickerTag = addEventModel?.datePickerTags.last
+                        switch indexPath.row {
+                            case endSleepPickerTag!:
+                                datePickerCell.datePicker.date = (addEventModel?.sleepEndDate)!
+                            default:
+                                datePickerCell.datePicker.date = (addEventModel?.sleepStartDate)!
+                        }
+                    } else {
+                        datePickerCell.datePicker.date = (addEventModel?.eventDate)!
+                    }
                 } else if addEventModel!.countDownPickerRow(indexPath.row)  {//countdoun
                     datePickerCell.datePicker.datePickerMode = .CountDownTimer
                     datePickerCell.datePicker.tag = indexPath.row
@@ -154,6 +176,8 @@ class AddMealDataSource: NSObject, UITableViewDataSource, UITableViewDelegate, P
     func pickerSelectedRowWithTitle(title: String) {
         self.typeCell?.typeLabel.text = title
         switch title {
+            case MealType.Breakfast.rawValue:
+                addEventModel?.mealType = .Breakfast
             case MealType.Lunch.rawValue:
                 addEventModel?.mealType = .Lunch
             case MealType.Dinner.rawValue:
@@ -161,20 +185,34 @@ class AddMealDataSource: NSObject, UITableViewDataSource, UITableViewDelegate, P
             case MealType.Snack.rawValue:
                 addEventModel?.mealType = .Snack
             default:
-                addEventModel?.mealType = .Breakfast
+                addEventModel?.mealType = .Empty
         }
     }
     
     //MARK: DatePickerTableViewCellDelegate
     
     func picker(picker: UIDatePicker, didSelectDate date: NSDate) {
-        if addEventModel!.datePickerRow(picker.tag) {
-            addEventModel?.eventDate = date
-            self.whenCell?.timeLabel.text = addEventModel?.getTextForTimeLabel()
-            self.whenCell?.dayLabel.text = addEventModel?.getTextForDayLabel()
-        } else if addEventModel!.countDownPickerRow(picker.tag) {
-            addEventModel?.duration = picker.countDownDuration
-            self.durationCell?.durationLabel.text = addEventModel?.getTextForTimeInterval()
+        if sleepMode {
+            let endSleepPickerTag = addEventModel?.datePickerTags.last
+            switch picker.tag {
+                case endSleepPickerTag!://update end sleep date
+                    addEventModel?.sleepEndDate = picker.date
+                    self.endSleepCell?.timeLabel.text = addEventModel?.getSleepEndTimeString()
+                    self.endSleepCell?.dayLabel.text = addEventModel?.getEndSleepForDayLabel()
+                default://update start sleep date
+                    addEventModel?.sleepStartDate = picker.date
+                    self.startSleepCell?.timeLabel.text = addEventModel?.getStartSleepTimeString()
+                    self.startSleepCell?.dayLabel.text = addEventModel?.getStartSleepForDayLabel()
+            }
+        } else {
+            if addEventModel!.datePickerRow(picker.tag) {
+                addEventModel?.eventDate = date
+                self.whenCell?.timeLabel.text = addEventModel?.getTextForTimeLabel()
+                self.whenCell?.dayLabel.text = addEventModel?.getTextForDayLabel()
+            } else if addEventModel!.countDownPickerRow(picker.tag) {
+                addEventModel?.duration = picker.countDownDuration
+                self.durationCell?.durationLabel.attributedText = addEventModel?.getTextForTimeInterval()
+            }
         }
     }
 }

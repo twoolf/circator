@@ -57,6 +57,10 @@
 		84C9CB491CE9BB76005ED875 /* MetabolicDailyProgressChartView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84C9CB481CE9BB76005ED875 /* MetabolicDailyProgressChartView.swift */; };
 		84C9CB4E1CEA0018005ED875 /* DailyChartModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84C9CB4D1CEA0018005ED875 /* DailyChartModel.swift */; };
 		84DC44F41D06CCF00091900F /* AddEventModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84DC44F31D06CCF00091900F /* AddEventModel.swift */; };
+		84DC44F61D0704340091900F /* StartSleepTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84DC44F51D0704340091900F /* StartSleepTableViewCell.swift */; };
+		84DC44F81D0704420091900F /* EndSleepTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84DC44F71D0704420091900F /* EndSleepTableViewCell.swift */; };
+		84DC44FA1D07045C0091900F /* EndSleepTableViewCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 84DC44F91D07045C0091900F /* EndSleepTableViewCell.xib */; };
+		84DC44FC1D0704740091900F /* StartSleepTableViewCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 84DC44FB1D0704740091900F /* StartSleepTableViewCell.xib */; };
 		84EF0EAD1D05606300A25760 /* AddEvents.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 84EF0EAC1D05606300A25760 /* AddEvents.storyboard */; };
 		84EF0EAF1D056F3800A25760 /* DatePickerTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84EF0EAE1D056F3800A25760 /* DatePickerTableViewCell.swift */; };
 		84EF0EB11D056F4B00A25760 /* PickerTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84EF0EB01D056F4B00A25760 /* PickerTableViewCell.swift */; };
@@ -330,6 +334,10 @@
 		84C9CB481CE9BB76005ED875 /* MetabolicDailyProgressChartView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MetabolicDailyProgressChartView.swift; sourceTree = "<group>"; };
 		84C9CB4D1CEA0018005ED875 /* DailyChartModel.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DailyChartModel.swift; sourceTree = "<group>"; };
 		84DC44F31D06CCF00091900F /* AddEventModel.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AddEventModel.swift; sourceTree = "<group>"; };
+		84DC44F51D0704340091900F /* StartSleepTableViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = StartSleepTableViewCell.swift; sourceTree = "<group>"; };
+		84DC44F71D0704420091900F /* EndSleepTableViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = EndSleepTableViewCell.swift; sourceTree = "<group>"; };
+		84DC44F91D07045C0091900F /* EndSleepTableViewCell.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = EndSleepTableViewCell.xib; sourceTree = "<group>"; };
+		84DC44FB1D0704740091900F /* StartSleepTableViewCell.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = StartSleepTableViewCell.xib; sourceTree = "<group>"; };
 		84EF0EAC1D05606300A25760 /* AddEvents.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; path = AddEvents.storyboard; sourceTree = "<group>"; };
 		84EF0EAE1D056F3800A25760 /* DatePickerTableViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DatePickerTableViewCell.swift; sourceTree = "<group>"; };
 		84EF0EB01D056F4B00A25760 /* PickerTableViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PickerTableViewCell.swift; sourceTree = "<group>"; };
@@ -656,6 +664,7 @@
 		95748C3E1CCFC7350002F6A3 /* Cells */ = {
 			isa = PBXGroup;
 			children = (
+				84EF0EC91D058A9000A25760 /* BaseAddEventTableViewCell.swift */,
 				95F4008F1CE385C60060F28C /* CircleImageCollectionViewCell.swift */,
 				95F400901CE385C60060F28C /* CircleImageCollectionViewCell.xib */,
 				95F400911CE385C60060F28C /* InfoCollectionViewCell.swift */,
@@ -675,8 +684,8 @@
 				95769B831CE4869C00F26668 /* TitleCollectionViewCell.xib */,
 				95D142BA1CE60312006A9118 /* DoubleCheckListTitledCollectionViewCell.swift */,
 				95D142BB1CE60312006A9118 /* DoubleCheckListTitledCollectionViewCell.xib */,
-				84AB38CF1CEA0EFA00B7DB4E /* DailyProgressDayTableViewCell.xib */,
 				84AB38D11CEA0F9900B7DB4E /* DailyProgressDayTableViewCell.swift */,
+				84AB38CF1CEA0EFA00B7DB4E /* DailyProgressDayTableViewCell.xib */,
 				84EF0EAE1D056F3800A25760 /* DatePickerTableViewCell.swift */,
 				84EF0EB21D056F6700A25760 /* DatePickerTableViewCell.xib */,
 				84EF0EB01D056F4B00A25760 /* PickerTableViewCell.swift */,
@@ -687,7 +696,10 @@
 				84EF0EBC1D05723300A25760 /* DurationTableViewCell.xib */,
 				84EF0EC51D0580B000A25760 /* WhenTableViewCell.swift */,
 				84EF0EC71D0580C500A25760 /* WhenTableViewCell.xib */,
-				84EF0EC91D058A9000A25760 /* BaseAddEventTableViewCell.swift */,
+				84DC44F51D0704340091900F /* StartSleepTableViewCell.swift */,
+				84DC44FB1D0704740091900F /* StartSleepTableViewCell.xib */,
+				84DC44F71D0704420091900F /* EndSleepTableViewCell.swift */,
+				84DC44F91D07045C0091900F /* EndSleepTableViewCell.xib */,
 			);
 			path = Cells;
 			sourceTree = "<group>";
@@ -1308,7 +1320,9 @@
 				84EF0EB51D056FF800A25760 /* PickerTableViewCell.xib in Resources */,
 				E7592DB51CDB3A2400E313BB /* TabScreens.storyboard in Resources */,
 				95F400A61CE385E10060F28C /* Settings.storyboard in Resources */,
+				84DC44FC1D0704740091900F /* StartSleepTableViewCell.xib in Resources */,
 				F43A7C551BBDF25E00B6FA56 /* Images.xcassets in Resources */,
+				84DC44FA1D07045C0091900F /* EndSleepTableViewCell.xib in Resources */,
 				84EF0EB31D056F6700A25760 /* DatePickerTableViewCell.xib in Resources */,
 				84EF0EB91D05711B00A25760 /* TypeTableViewCell.xib in Resources */,
 				84EF0EBD1D05723300A25760 /* DurationTableViewCell.xib in Resources */,
@@ -1452,6 +1466,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				95C0B99A1CD23E90006E523F /* LoginViewController.swift in Sources */,
+				84DC44F81D0704420091900F /* EndSleepTableViewCell.swift in Sources */,
 				84C9CB4E1CEA0018005ED875 /* DailyChartModel.swift in Sources */,
 				95C0B9A61CD25814006E523F /* AdditionalInfoDataSource.swift in Sources */,
 				F49B2B711C7A83BD005F2BFB /* EventPickerManager.swift in Sources */,
@@ -1531,6 +1546,7 @@
 				84AB38D21CEA0F9900B7DB4E /* DailyProgressDayTableViewCell.swift in Sources */,
 				84EF0EBB1D05722700A25760 /* DurationTableViewCell.swift in Sources */,
 				7881A3E11BAF3B3E00ECB3C6 /* AppDelegate.swift in Sources */,
+				84DC44F61D0704340091900F /* StartSleepTableViewCell.swift in Sources */,
 				9585680F1CD1020600EDD385 /* LoadImageCollectionViewCell.swift in Sources */,
 				E75E95AE1CDCD5A700A18756 /* DashboardMetricsConfigItem.swift in Sources */,
 				78B7341B1C90B83A00693229 /* IntroViewController.swift in Sources */,
