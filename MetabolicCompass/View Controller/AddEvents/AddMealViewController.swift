@@ -31,6 +31,7 @@ class AddMealViewController: UIViewController, AddEventModelDelegate {
         let leftButton = UIBarButtonItem(image: UIImage(named: "close-button"), style: .Plain, target: self, action: #selector(closeAction))
         let rightButton = UIBarButtonItem(image: UIImage(named: "appruve-check-icon"), style: .Plain, target: self, action: #selector(doneAction))
         
+        self.navigationController!.navigationBar.barStyle = .Black
         self.navigationItem.rightBarButtonItem = rightButton
         self.navigationItem.leftBarButtonItem = leftButton
         
