@@ -197,13 +197,14 @@ class AddMealDataSource: NSObject, UITableViewDataSource, UITableViewDelegate, P
             switch picker.tag {
                 case endSleepPickerTag!://update end sleep date
                     addEventModel?.sleepEndDate = picker.date
-                    self.endSleepCell?.timeLabel.text = addEventModel?.getSleepEndTimeString()
-                    self.endSleepCell?.dayLabel.text = addEventModel?.getEndSleepForDayLabel()
                 default://update start sleep date
                     addEventModel?.sleepStartDate = picker.date
                     self.startSleepCell?.timeLabel.text = addEventModel?.getStartSleepTimeString()
                     self.startSleepCell?.dayLabel.text = addEventModel?.getStartSleepForDayLabel()
             }
+            //we always updating end sleep becaus it depends on when to sleep
+            self.endSleepCell?.timeLabel.text = addEventModel?.getSleepEndTimeString()
+            self.endSleepCell?.dayLabel.text = addEventModel?.getEndSleepForDayLabel()
         } else {
             if addEventModel!.datePickerRow(picker.tag) {
                 addEventModel?.eventDate = date

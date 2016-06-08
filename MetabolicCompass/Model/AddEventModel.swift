@@ -31,19 +31,29 @@ class AddEventModel: NSObject {
     var sleepStartDate: NSDate = NSDate() {
         didSet {
             sleepEndDate = NSCalendar.currentCalendar().dateByAddingUnit(NSCalendarUnit.Minute, value: 1, toDate: sleepStartDate, options: NSCalendarOptions.WrapComponents)!
+            self.delegate?.sleepTimeUpdated(getSleepTimeString())
         }
     }
     
     var sleepEndDate: NSDate = NSCalendar.currentCalendar().dateByAddingUnit(NSCalendarUnit.Minute, value: 1, toDate: NSDate(), options: NSCalendarOptions.WrapComponents)! {
         didSet {
-            let dayHourMinuteSecond: NSCalendarUnit = [.Hour, .Minute]
-            let difference = NSCalendar.currentCalendar().components(dayHourMinuteSecond, fromDate: sleepStartDate, toDate: sleepEndDate, options: [])
-            let stringDifference = "\(difference.hour)h \(difference.minute)m"
-            let attributedString = stringDifference.formatTextWithRegex("[-+]?(\\d*[.,])?\\d+",
-                                                                         format: [NSForegroundColorAttributeName: UIColor.whiteColor()],
-                                                                         defaultFormat: [NSForegroundColorAttributeName: UIColor.colorWithHexString("#ffffff", alpha: 0.3)!])
-            self.delegate?.sleepTimeUpdated(attributedString)
+            self.delegate?.sleepTimeUpdated(getSleepTimeString())
         }
+    }
+    
+    func getSleepTimeString () -> NSAttributedString {
+        let dayHourMinuteSecond: NSCalendarUnit = [.Hour, .Minute]
+        let difference = NSCalendar.currentCalendar().components(dayHourMinuteSecond, fromDate: sleepStartDate, toDate: sleepEndDate, options: [])
+        let hour = difference.hour < 0 ? 0 : difference.hour
+        let minutes = difference.minute < 0 ? 0 : difference.minute
+        let minutesSting = minutes < 10 ? "0\(minutes)" : "\(minutes)"
+        let stringDifference = "\(hour)h \(minutesSting)m"
+        let defaulytFont = ScreenManager.appFontOfSize(24)
+        let formatFont = ScreenManager.appFontOfSize(15)
+        let attributedString = stringDifference.formatTextWithRegex("[-+]?(\\d*[.,])?\\d+",
+                                                                    format: [NSForegroundColorAttributeName: UIColor.whiteColor(), NSFontAttributeName : defaulytFont],
+                                                                    defaultFormat: [NSForegroundColorAttributeName: UIColor.colorWithHexString("#ffffff", alpha: 0.3)!, NSFontAttributeName: formatFont])
+        return attributedString
     }
     
     func getStartSleepForDayLabel () -> String {
@@ -153,6 +163,35 @@ class AddEventModel: NSObject {
                 log.info("Saved as exercise workout type")
                 completion(success: true, errorMessage: nil)
             }
+        }
+    }
+    
+    func saveSleepEvent(completion:(success: Bool, errorMessage: String?) -> ()) {
+        let dayHourMinuteSecond: NSCalendarUnit = [.Hour, .Minute]
+        let difference = NSCalendar.currentCalendar().components(dayHourMinuteSecond, fromDate: sleepStartDate, toDate: sleepEndDate, options: [])
+        
+        if difference.hour < 0 || difference.minute < 0 {
+            completion(success: false, errorMessage: "\"Woke Up\" time can't be earlier then \"Went to Sleep\" time")
+            return
+        }
+        
+        let startTime = sleepStartDate
+        let endTime = sleepEndDate
+        
+        validateTimedEvent(startTime, endTime: endTime) { (success, errorMessage) -> Void in
+            guard success else {
+                completion(success: false, errorMessage: errorMessage)
+                return
+            }
+            HealthManager.sharedManager.saveSleep(startTime, endDate: endTime, metadata: [:], completion: {
+                    (success, error ) -> Void in
+                    guard error == nil else {
+                        completion(success: false, errorMessage: error.localizedDescription)
+                        log.error(error); return
+                    }
+                    log.info("Saved as sleep event")
+                    completion(success: true, errorMessage: nil)
+            })
         }
     }
     

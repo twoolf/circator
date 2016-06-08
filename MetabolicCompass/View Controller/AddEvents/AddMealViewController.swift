@@ -52,6 +52,7 @@ class AddMealViewController: UIViewController, AddEventModelDelegate {
                 tableDataSource.dataSourceCells = [startSleepCellIdentifier, endSleepCellIdentifier]//set base cells
                 eventImage.image = UIImage(named: "add-sleep-big-image")!
                 self.navigationItem.title = "ADD SLEEP TIME"
+                sleepTimeLabel.attributedText = addEventModel.getSleepTimeString()
             default:
                 self.navigationItem.title = "ADD MEAL TIME"
         }
@@ -126,7 +127,15 @@ class AddMealViewController: UIViewController, AddEventModelDelegate {
                     }
                 })
             case .Sleep:
-                print("Save Sleep")
+                addEventModel.saveSleepEvent({ (success, errorMessage) in
+                    Async.main {
+                        guard success else {
+                            self.showValidationAlert(errorMessage!)
+                            return
+                        }
+                        self.dismissViewControllerAnimated(true, completion: nil)
+                    }
+                })
         }
     }
     
