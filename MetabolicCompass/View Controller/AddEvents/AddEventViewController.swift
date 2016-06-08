@@ -40,7 +40,7 @@ class AddEventViewController: UIViewController, AddEventModelDelegate {
         switch type {
             case .Exercise:
                 addEventModel.datePickerTags = [1]
-                addEventModel.countDownPickerTags = [2]
+                addEventModel.countDownPickerTags = [2,3]
                 tableDataSource.dataSourceCells = [whenCellIdentifier, durationCellIdentifier]//set base cells
                 eventImage.image = UIImage(named: "add-exercises-big-image")!
                 self.navigationItem.title = "ADD EXERCISE TIME"

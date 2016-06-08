@@ -22,7 +22,7 @@ enum MealType: String {
 class AddEventModel: NSObject {
     var delegate: AddEventModelDelegate? = nil
     var datePickerTags:[Int] = [2]  //default date picker row
-    var countDownPickerTags: [Int] = [3] //default count down pickecr row
+    var countDownPickerTags: [Int] = [3,4] //default count down pickecr rows for meal screen
     
     var duration: NSTimeInterval = 1800.0 //default is 30 min
     var eventDate: NSDate = NSDate() //default is current date
