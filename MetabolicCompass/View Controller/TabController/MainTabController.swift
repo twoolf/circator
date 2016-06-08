@@ -152,7 +152,7 @@ class MainTabController: UITabBarController, UITabBarControllerDelegate, PathMen
             self.hideIcons(true)
             self.hideOverlay()
             let controller = UIStoryboard(name: "AddEvents", bundle: nil).instantiateViewControllerWithIdentifier("AddMealNavViewController") as! UINavigationController
-            let rootController = controller.viewControllers[0] as! AddMealViewController
+            let rootController = controller.viewControllers[0] as! AddEventViewController
             switch idx {
                 case EventType.Meal.rawValue:
                     rootController.type = .Meal

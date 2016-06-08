@@ -15,7 +15,7 @@ enum EventType: Int {
     case Sleep
 }
 
-class AddMealViewController: UIViewController, AddEventModelDelegate {
+class AddEventViewController: UIViewController, AddEventModelDelegate {
 
     @IBOutlet weak var tableVIew: UITableView!
     @IBOutlet weak var eventImage: UIImageView!

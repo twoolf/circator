@@ -70,7 +70,7 @@
 		84EF0EB91D05711B00A25760 /* TypeTableViewCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 84EF0EB81D05711B00A25760 /* TypeTableViewCell.xib */; };
 		84EF0EBB1D05722700A25760 /* DurationTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84EF0EBA1D05722700A25760 /* DurationTableViewCell.swift */; };
 		84EF0EBD1D05723300A25760 /* DurationTableViewCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 84EF0EBC1D05723300A25760 /* DurationTableViewCell.xib */; };
-		84EF0EC01D0576B500A25760 /* AddMealViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84EF0EBF1D0576B500A25760 /* AddMealViewController.swift */; };
+		84EF0EC01D0576B500A25760 /* AddEventViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84EF0EBF1D0576B500A25760 /* AddEventViewController.swift */; };
 		84EF0EC21D057F8F00A25760 /* AddMealDataSource.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84EF0EC11D057F8F00A25760 /* AddMealDataSource.swift */; };
 		84EF0EC61D0580B000A25760 /* WhenTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84EF0EC51D0580B000A25760 /* WhenTableViewCell.swift */; };
 		84EF0EC81D0580C500A25760 /* WhenTableViewCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 84EF0EC71D0580C500A25760 /* WhenTableViewCell.xib */; };
@@ -347,7 +347,7 @@
 		84EF0EB81D05711B00A25760 /* TypeTableViewCell.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = TypeTableViewCell.xib; sourceTree = "<group>"; };
 		84EF0EBA1D05722700A25760 /* DurationTableViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DurationTableViewCell.swift; sourceTree = "<group>"; };
 		84EF0EBC1D05723300A25760 /* DurationTableViewCell.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = DurationTableViewCell.xib; sourceTree = "<group>"; };
-		84EF0EBF1D0576B500A25760 /* AddMealViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AddMealViewController.swift; sourceTree = "<group>"; };
+		84EF0EBF1D0576B500A25760 /* AddEventViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AddEventViewController.swift; sourceTree = "<group>"; };
 		84EF0EC11D057F8F00A25760 /* AddMealDataSource.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AddMealDataSource.swift; sourceTree = "<group>"; };
 		84EF0EC51D0580B000A25760 /* WhenTableViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = WhenTableViewCell.swift; sourceTree = "<group>"; };
 		84EF0EC71D0580C500A25760 /* WhenTableViewCell.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = WhenTableViewCell.xib; sourceTree = "<group>"; };
@@ -648,7 +648,7 @@
 		84EF0EBE1D05767500A25760 /* AddEvents */ = {
 			isa = PBXGroup;
 			children = (
-				84EF0EBF1D0576B500A25760 /* AddMealViewController.swift */,
+				84EF0EBF1D0576B500A25760 /* AddEventViewController.swift */,
 			);
 			path = AddEvents;
 			sourceTree = "<group>";
@@ -1487,7 +1487,7 @@
 				958568051CD0BF6300EDD385 /* BaseViewController.swift in Sources */,
 				95C0B9A31CD2563B006E523F /* TitledInputCollectionViewCell.swift in Sources */,
 				958568121CD12B5200EDD385 /* RegisterModelDataSource.swift in Sources */,
-				84EF0EC01D0576B500A25760 /* AddMealViewController.swift in Sources */,
+				84EF0EC01D0576B500A25760 /* AddEventViewController.swift in Sources */,
 				E7E48DEB1CE5CB2700DB020F /* MetabolicRadarChartView.swift in Sources */,
 				E7E48DE91CE4C2DC00DB020F /* MetabolicDataEntry.swift in Sources */,
 				84EF0ECA1D058A9000A25760 /* BaseAddEventTableViewCell.swift in Sources */,
