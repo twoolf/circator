@@ -131,6 +131,15 @@ class MainTabController: UITabBarController, UITabBarControllerDelegate, PathMen
             overlay.hidden = true
             self.view.window?.rootViewController?.view.addSubview(overlay)
             self.overlayView = overlay
+            //add title for overlay
+            let titleLabel = UILabel(frame:CGRectZero)
+            titleLabel.text = "ADD ENTRY"
+            titleLabel.font = ScreenManager.appFontOfSize(16)
+            titleLabel.textColor = UIColor.colorWithHexString("#ffffff", alpha: 0.6)
+            titleLabel.textAlignment = .Center
+            titleLabel.sizeToFit()
+            titleLabel.frame = CGRectMake(0, 35, CGRectGetWidth(overlay.frame), CGRectGetHeight(titleLabel.frame))
+            overlay.contentView.addSubview(titleLabel)
             self.addMenuToView()
         }
     }
