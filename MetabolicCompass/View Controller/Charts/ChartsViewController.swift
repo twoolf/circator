@@ -26,9 +26,20 @@ class ChartsViewController: UIViewController {
     private let chartCollectionDelegate = ChartCollectionDelegate()
     private let chartsModel = BarChartModel()
     
+    //MARK: View life circle
     override func viewDidLoad() {
         super.viewDidLoad()
+        upateNavigationBar()
+        registerCells()
+
+        collectionView.delegate = chartCollectionDelegate
+        collectionView.dataSource = chartCollectionDataSource
         
+        getSampleCollectionData(DataRangeType.Week)
+    }
+    
+    //MARK: Base preparation
+    func registerCells () {
         let barChartCellNib = UINib(nibName: "BarChartCollectionCell", bundle: nil)
         collectionView?.registerNib(barChartCellNib, forCellWithReuseIdentifier: barChartCellIdentifier)
         
@@ -37,22 +48,24 @@ class ChartsViewController: UIViewController {
         
         let scatterChartCellNib = UINib(nibName: "ScatterChartCollectionCell", bundle: nil)
         collectionView.registerNib(scatterChartCellNib, forCellWithReuseIdentifier: scatterChartCellIdentifier)
-        
-        collectionView.delegate = chartCollectionDelegate
-        collectionView.dataSource = chartCollectionDataSource
-        
-        getSampleCollectionData(DataRangeType.Week)
+    }
+    
+    func upateNavigationBar () {
+        let manageButton = ScreenManager.sharedInstance.appNavButtonWithTitle("Manage")
+        manageButton.addTarget(self, action: #selector(manageCharts), forControlEvents: .TouchUpInside)
+        let manageBarButton = UIBarButtonItem(customView: manageButton)
+        self.navigationItem.leftBarButtonItem = manageBarButton
+        self.navigationItem.title = NSLocalizedString("CHART", comment: "chart screen title")
     }
     
     @IBAction func rangeChnaged(sender: UISegmentedControl) {
-        
         switch sender.selectedSegmentIndex {
-        case DataRangeType.Month.rawValue:
-            getSampleCollectionData(DataRangeType.Month)
-        case DataRangeType.Year.rawValue:
-            getSampleCollectionData(DataRangeType.Year)
-        default:
-            getSampleCollectionData(DataRangeType.Week)
+            case DataRangeType.Month.rawValue:
+                getSampleCollectionData(DataRangeType.Month)
+            case DataRangeType.Year.rawValue:
+                getSampleCollectionData(DataRangeType.Year)
+            default:
+                getSampleCollectionData(DataRangeType.Week)
         }
     }
     
@@ -94,6 +107,10 @@ class ChartsViewController: UIViewController {
         
         chartCollectionDataSource.collectionData = chartData
         collectionView.reloadData()
+    }
+    
+    func manageCharts () {
+        print ("manageCharts")
     }
 
 }

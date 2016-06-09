@@ -38,15 +38,13 @@ class DashboardTabControllerViewController: UIViewController {
         
         self.navigationItem.title = NSLocalizedString("DASHBOARD", comment: "dashboard screen title")
         
-        self.leftNavButton = UIBarButtonItem(title: NSLocalizedString("Manage", comment: "dashboard manage button"),
-                                             style: .Done,
-                                             target: self,
-                                             action: #selector(didSelectManageButton))
+        let manageButton = ScreenManager.sharedInstance.appNavButtonWithTitle(NSLocalizedString("Manage", comment: "dashboard manage button"))
+        manageButton.addTarget(self, action: #selector(didSelectManageButton), forControlEvents: .TouchUpInside)
+        self.leftNavButton = UIBarButtonItem(customView: manageButton)
         
-        self.rightNavButton = UIBarButtonItem(title: NSLocalizedString("Filters", comment: "dashboard filter button"),
-                                              style: .Done,
-                                              target: self,
-                                              action: #selector(didSelectFiltersButton))
+        let filtersButton = ScreenManager.sharedInstance.appNavButtonWithTitle(NSLocalizedString("Filters", comment: "dashboard filter button"))
+        filtersButton.addTarget(self, action: #selector(didSelectFiltersButton), forControlEvents: .TouchUpInside)
+        self.rightNavButton = UIBarButtonItem(customView: filtersButton)
         
         navigationItem.leftBarButtonItem = self.leftNavButton
         navigationItem.rightBarButtonItem = self.rightNavButton

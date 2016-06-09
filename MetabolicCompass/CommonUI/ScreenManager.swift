@@ -213,9 +213,18 @@ public class ScreenManager {
     public func appGrayColor() -> UIColor {
         return UIColor(red: 0.325, green: 0.4, blue: 0.521, alpha: 1.0)
     }
+    
+    //MARK: Nav buttons
+    
+    public func appNavButtonWithTitle (title: String) -> UIButton {
+        let manageButton = UIButton(type: .Custom)
+        manageButton.titleLabel?.font = ScreenManager.appFontOfSize(15)
+        manageButton.setTitle(title, forState: .Normal)
+        manageButton.sizeToFit()
+        return manageButton
+    }
 
-
-    // MARK: - fonts
+    //MARK: - fonts
 
     public func appBrightTextColor() -> UIColor {
         return UIColor.whiteColor()
