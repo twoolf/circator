@@ -2,6 +2,7 @@
 <document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="10117" systemVersion="15F34" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES">
     <dependencies>
         <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="10085"/>
+        <capability name="Constraints with non-1.0 multipliers" minToolsVersion="5.1"/>
     </dependencies>
     <customFonts key="customFonts">
         <mutableArray key="gotham-book.ttf">
@@ -47,14 +48,14 @@
                                     <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                     <subviews>
                                         <imageView userInteractionEnabled="NO" contentMode="center" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="add-meal-big-image" translatesAutoresizingMaskIntoConstraints="NO" id="kWT-eP-bDl">
-                                            <rect key="frame" x="90" y="65" width="140" height="105"/>
+                                            <rect key="frame" x="90" y="21.5" width="140" height="105"/>
                                             <constraints>
                                                 <constraint firstAttribute="width" constant="140" id="k0m-LL-QVD"/>
                                                 <constraint firstAttribute="height" constant="105" id="rWv-pP-tMh"/>
                                             </constraints>
                                         </imageView>
                                         <label hidden="YES" opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="0h 00m" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="KAc-uS-FVs">
-                                            <rect key="frame" x="112.5" y="178" width="96.5" height="21.5"/>
+                                            <rect key="frame" x="112.5" y="161.5" width="96.5" height="21.5"/>
                                             <fontDescription key="fontDescription" name="GothamBook" family="Gotham Book" pointSize="24"/>
                                             <color key="textColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                                             <nil key="highlightedColor"/>
@@ -62,10 +63,10 @@
                                     </subviews>
                                     <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
                                     <constraints>
-                                        <constraint firstItem="KAc-uS-FVs" firstAttribute="top" secondItem="kWT-eP-bDl" secondAttribute="bottom" constant="8" id="Y07-ch-cun"/>
+                                        <constraint firstItem="KAc-uS-FVs" firstAttribute="top" secondItem="kWT-eP-bDl" secondAttribute="bottom" constant="35" id="Y07-ch-cun"/>
                                         <constraint firstItem="KAc-uS-FVs" firstAttribute="centerX" secondItem="NtT-K8-U10" secondAttribute="centerX" id="lUP-Qc-wL8"/>
                                         <constraint firstItem="kWT-eP-bDl" firstAttribute="centerX" secondItem="NtT-K8-U10" secondAttribute="centerX" id="mTq-LY-kfM"/>
-                                        <constraint firstItem="kWT-eP-bDl" firstAttribute="centerY" secondItem="NtT-K8-U10" secondAttribute="centerY" id="sOG-a8-2m9"/>
+                                        <constraint firstItem="kWT-eP-bDl" firstAttribute="centerY" secondItem="NtT-K8-U10" secondAttribute="centerY" multiplier="0.63" id="sOG-a8-2m9"/>
                                     </constraints>
                                 </view>
                             </tableView>
