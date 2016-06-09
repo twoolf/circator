@@ -47,7 +47,7 @@ class AddEventViewController: UIViewController, AddEventModelDelegate {
             case .Sleep:
                 sleepTimeLabel.hidden = false
                 addEventModel.delegate = self
-                addEventModel.datePickerTags = [1, 2]
+                addEventModel.datePickerTags = [1, 2, 3]
                 addEventModel.countDownPickerTags = []
                 tableDataSource.sleepMode = true
                 tableDataSource.dataSourceCells = [startSleepCellIdentifier, endSleepCellIdentifier]//set base cells
