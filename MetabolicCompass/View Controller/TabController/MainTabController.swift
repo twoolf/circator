@@ -40,6 +40,7 @@ class MainTabController: UITabBarController, UITabBarControllerDelegate, PathMen
     override func viewWillAppear(animated: Bool) {
         super.viewWillAppear(animated)
         self.navigationController?.navigationBar.hidden = true
+        self.navigationController?.navigationBar.barStyle = .Black
     }
 
     override func preferredStatusBarStyle() -> UIStatusBarStyle {

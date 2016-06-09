@@ -17,13 +17,8 @@ class DashboardTabControllerViewController: UIViewController {
     }
     
     @IBOutlet weak var segmentedControll: UISegmentedControl!
+    weak var rootNavigationItem: UINavigationItem?
     var containerController: UITabBarController?;
-    weak var rootNavigationItem: UINavigationItem? {
-        didSet {
-//            self.updateNavigationItem()
-        }
-    }
-    
     private var leftNavButton: UIBarButtonItem? = nil
     private var rightNavButton: UIBarButtonItem? = nil
 
@@ -32,10 +27,14 @@ class DashboardTabControllerViewController: UIViewController {
         self.updateNavigationItem()
     }
    
+    override func preferredStatusBarStyle() -> UIStatusBarStyle {
+        return .LightContent
+    }
+    
     func updateNavigationItem() {
         
         self.navigationController?.navigationBar.tintColor = UIColor.whiteColor()
-        self.navigationController?.navigationBar.barStyle = UIBarStyle.Black;
+        self.navigationController?.navigationBar.barStyle = .Black;
         
         self.navigationItem.title = NSLocalizedString("DASHBOARD", comment: "dashboard screen title")
         
