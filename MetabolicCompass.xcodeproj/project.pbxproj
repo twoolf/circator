@@ -50,6 +50,21 @@
 		84207D241CCA3C3600776848 /* RegisterLoginLandingViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84207D231CCA3C3600776848 /* RegisterLoginLandingViewController.swift */; };
 		84207D261CCA6A7E00776848 /* InputTableCellWithImage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84207D251CCA6A7E00776848 /* InputTableCellWithImage.swift */; };
 		84207D281CCE02A400776848 /* LoginModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84207D271CCE02A400776848 /* LoginModel.swift */; };
+		842B7DB71D095EF6007F2126 /* ChartsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 842B7DB61D095EF6007F2126 /* ChartsViewController.swift */; };
+		842B7DBA1D095F5A007F2126 /* ChartCollectionDataSource.swift in Sources */ = {isa = PBXBuildFile; fileRef = 842B7DB81D095F5A007F2126 /* ChartCollectionDataSource.swift */; };
+		842B7DBB1D095F5A007F2126 /* ChartCollectionDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 842B7DB91D095F5A007F2126 /* ChartCollectionDelegate.swift */; };
+		842B7DBD1D095F71007F2126 /* BarChartModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 842B7DBC1D095F71007F2126 /* BarChartModel.swift */; };
+		842B7DBF1D09601B007F2126 /* BallonMarker.swift in Sources */ = {isa = PBXBuildFile; fileRef = 842B7DBE1D09601B007F2126 /* BallonMarker.swift */; };
+		842B7DC31D096062007F2126 /* MCChartXAxisRenderer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 842B7DC01D096062007F2126 /* MCChartXAxisRenderer.swift */; };
+		842B7DC41D096062007F2126 /* MCScatterChartDataSet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 842B7DC11D096062007F2126 /* MCScatterChartDataSet.swift */; };
+		842B7DC51D096062007F2126 /* MCScatterChartRenderer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 842B7DC21D096062007F2126 /* MCScatterChartRenderer.swift */; };
+		842B7DC81D0960A7007F2126 /* BarChartCollectionCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 842B7DC61D0960A7007F2126 /* BarChartCollectionCell.swift */; };
+		842B7DC91D0960A7007F2126 /* BarChartCollectionCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 842B7DC71D0960A7007F2126 /* BarChartCollectionCell.xib */; };
+		842B7DCB1D0960C0007F2126 /* BaseChartCollectionCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 842B7DCA1D0960C0007F2126 /* BaseChartCollectionCell.swift */; };
+		842B7DD01D0960CB007F2126 /* LineChartCollectionCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 842B7DCC1D0960CB007F2126 /* LineChartCollectionCell.swift */; };
+		842B7DD11D0960CB007F2126 /* LineChartCollectionCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 842B7DCD1D0960CB007F2126 /* LineChartCollectionCell.xib */; };
+		842B7DD21D0960CB007F2126 /* ScatterChartCollectionCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 842B7DCE1D0960CB007F2126 /* ScatterChartCollectionCell.swift */; };
+		842B7DD31D0960CB007F2126 /* ScatterChartCollectionCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 842B7DCF1D0960CB007F2126 /* ScatterChartCollectionCell.xib */; };
 		84A16A601CE3630400D61935 /* UIImage+Extended.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84A16A5F1CE3630400D61935 /* UIImage+Extended.swift */; };
 		84AB38D01CEA0EFA00B7DB4E /* DailyProgressDayTableViewCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 84AB38CF1CEA0EFA00B7DB4E /* DailyProgressDayTableViewCell.xib */; };
 		84AB38D21CEA0F9900B7DB4E /* DailyProgressDayTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84AB38D11CEA0F9900B7DB4E /* DailyProgressDayTableViewCell.swift */; };
@@ -327,11 +342,26 @@
 		84207D231CCA3C3600776848 /* RegisterLoginLandingViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RegisterLoginLandingViewController.swift; sourceTree = "<group>"; };
 		84207D251CCA6A7E00776848 /* InputTableCellWithImage.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = InputTableCellWithImage.swift; sourceTree = "<group>"; };
 		84207D271CCE02A400776848 /* LoginModel.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LoginModel.swift; sourceTree = "<group>"; };
+		842B7DB61D095EF6007F2126 /* ChartsViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ChartsViewController.swift; sourceTree = "<group>"; };
+		842B7DB81D095F5A007F2126 /* ChartCollectionDataSource.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ChartCollectionDataSource.swift; sourceTree = "<group>"; };
+		842B7DB91D095F5A007F2126 /* ChartCollectionDelegate.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ChartCollectionDelegate.swift; sourceTree = "<group>"; };
+		842B7DBC1D095F71007F2126 /* BarChartModel.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BarChartModel.swift; sourceTree = "<group>"; };
+		842B7DBE1D09601B007F2126 /* BallonMarker.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BallonMarker.swift; sourceTree = "<group>"; };
+		842B7DC01D096062007F2126 /* MCChartXAxisRenderer.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MCChartXAxisRenderer.swift; sourceTree = "<group>"; };
+		842B7DC11D096062007F2126 /* MCScatterChartDataSet.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MCScatterChartDataSet.swift; sourceTree = "<group>"; };
+		842B7DC21D096062007F2126 /* MCScatterChartRenderer.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MCScatterChartRenderer.swift; sourceTree = "<group>"; };
+		842B7DC61D0960A7007F2126 /* BarChartCollectionCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BarChartCollectionCell.swift; sourceTree = "<group>"; };
+		842B7DC71D0960A7007F2126 /* BarChartCollectionCell.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = BarChartCollectionCell.xib; sourceTree = "<group>"; };
+		842B7DCA1D0960C0007F2126 /* BaseChartCollectionCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BaseChartCollectionCell.swift; sourceTree = "<group>"; };
+		842B7DCC1D0960CB007F2126 /* LineChartCollectionCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LineChartCollectionCell.swift; sourceTree = "<group>"; };
+		842B7DCD1D0960CB007F2126 /* LineChartCollectionCell.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = LineChartCollectionCell.xib; sourceTree = "<group>"; };
+		842B7DCE1D0960CB007F2126 /* ScatterChartCollectionCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ScatterChartCollectionCell.swift; sourceTree = "<group>"; };
+		842B7DCF1D0960CB007F2126 /* ScatterChartCollectionCell.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = ScatterChartCollectionCell.xib; sourceTree = "<group>"; };
 		84A16A5F1CE3630400D61935 /* UIImage+Extended.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "UIImage+Extended.swift"; sourceTree = "<group>"; };
 		84AB38CF1CEA0EFA00B7DB4E /* DailyProgressDayTableViewCell.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = DailyProgressDayTableViewCell.xib; sourceTree = "<group>"; };
 		84AB38D11CEA0F9900B7DB4E /* DailyProgressDayTableViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DailyProgressDayTableViewCell.swift; sourceTree = "<group>"; };
 		84C9CB461CE9B3A4005ED875 /* DailyProgressViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DailyProgressViewController.swift; sourceTree = "<group>"; };
-		84C9CB481CE9BB76005ED875 /* MetabolicDailyProgressChartView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MetabolicDailyProgressChartView.swift; sourceTree = "<group>"; };
+		84C9CB481CE9BB76005ED875 /* MetabolicDailyProgressChartView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = MetabolicDailyProgressChartView.swift; path = "../Charts+Extended/MetabolicDailyProgressChartView.swift"; sourceTree = "<group>"; };
 		84C9CB4D1CEA0018005ED875 /* DailyChartModel.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DailyChartModel.swift; sourceTree = "<group>"; };
 		84DC44F31D06CCF00091900F /* AddEventModel.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AddEventModel.swift; sourceTree = "<group>"; };
 		84DC44F51D0704340091900F /* StartSleepTableViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = StartSleepTableViewCell.swift; sourceTree = "<group>"; };
@@ -427,7 +457,7 @@
 		E7E48DE41CE4A12900DB020F /* MetabolicChartRender.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MetabolicChartRender.swift; sourceTree = "<group>"; };
 		E7E48DE61CE4BCAB00DB020F /* MetabolicChartDataSet.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MetabolicChartDataSet.swift; sourceTree = "<group>"; };
 		E7E48DE81CE4C2DC00DB020F /* MetabolicDataEntry.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MetabolicDataEntry.swift; sourceTree = "<group>"; };
-		E7E48DEA1CE5CB2700DB020F /* MetabolicRadarChartView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MetabolicRadarChartView.swift; sourceTree = "<group>"; };
+		E7E48DEA1CE5CB2700DB020F /* MetabolicRadarChartView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = MetabolicRadarChartView.swift; path = "../Charts+Extended/MetabolicRadarChartView.swift"; sourceTree = "<group>"; };
 		E7E48DEE1CE6028600DB020F /* DashboardManageBalanceController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DashboardManageBalanceController.swift; sourceTree = "<group>"; };
 		E7E48DF01CE6033100DB020F /* ManageBalanceCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ManageBalanceCell.swift; sourceTree = "<group>"; };
 		E7E48DF41CE614E400DB020F /* BalanceSampleListController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BalanceSampleListController.swift; sourceTree = "<group>"; };
@@ -645,6 +675,14 @@
 			path = Resourses;
 			sourceTree = "<group>";
 		};
+		842B7DB51D095ED6007F2126 /* Charts */ = {
+			isa = PBXGroup;
+			children = (
+				842B7DB61D095EF6007F2126 /* ChartsViewController.swift */,
+			);
+			path = Charts;
+			sourceTree = "<group>";
+		};
 		84EF0EBE1D05767500A25760 /* AddEvents */ = {
 			isa = PBXGroup;
 			children = (
@@ -664,6 +702,13 @@
 		95748C3E1CCFC7350002F6A3 /* Cells */ = {
 			isa = PBXGroup;
 			children = (
+				842B7DCC1D0960CB007F2126 /* LineChartCollectionCell.swift */,
+				842B7DCD1D0960CB007F2126 /* LineChartCollectionCell.xib */,
+				842B7DCE1D0960CB007F2126 /* ScatterChartCollectionCell.swift */,
+				842B7DCF1D0960CB007F2126 /* ScatterChartCollectionCell.xib */,
+				842B7DCA1D0960C0007F2126 /* BaseChartCollectionCell.swift */,
+				842B7DC61D0960A7007F2126 /* BarChartCollectionCell.swift */,
+				842B7DC71D0960A7007F2126 /* BarChartCollectionCell.xib */,
 				84EF0EC91D058A9000A25760 /* BaseAddEventTableViewCell.swift */,
 				95F4008F1CE385C60060F28C /* CircleImageCollectionViewCell.swift */,
 				95F400901CE385C60060F28C /* CircleImageCollectionViewCell.xib */,
@@ -719,6 +764,8 @@
 		958568061CD0D39000EDD385 /* DataSources */ = {
 			isa = PBXGroup;
 			children = (
+				842B7DB81D095F5A007F2126 /* ChartCollectionDataSource.swift */,
+				842B7DB91D095F5A007F2126 /* ChartCollectionDelegate.swift */,
 				95F4009F1CE385CC0060F28C /* ProfileDataSource.swift */,
 				958568111CD12B5200EDD385 /* RegisterModelDataSource.swift */,
 				95C0B9A51CD25814006E523F /* AdditionalInfoDataSource.swift */,
@@ -869,11 +916,12 @@
 		E7E48DE31CE4A0F100DB020F /* MetabolicCharts */ = {
 			isa = PBXGroup;
 			children = (
+				842B7DC01D096062007F2126 /* MCChartXAxisRenderer.swift */,
+				842B7DC11D096062007F2126 /* MCScatterChartDataSet.swift */,
+				842B7DC21D096062007F2126 /* MCScatterChartRenderer.swift */,
 				E7E48DE41CE4A12900DB020F /* MetabolicChartRender.swift */,
 				E7E48DE61CE4BCAB00DB020F /* MetabolicChartDataSet.swift */,
 				E7E48DE81CE4C2DC00DB020F /* MetabolicDataEntry.swift */,
-				E7E48DEA1CE5CB2700DB020F /* MetabolicRadarChartView.swift */,
-				84C9CB481CE9BB76005ED875 /* MetabolicDailyProgressChartView.swift */,
 			);
 			name = MetabolicCharts;
 			path = "Charts+Extended";
@@ -990,6 +1038,7 @@
 		F43A7C591BBDF3D800B6FA56 /* Model */ = {
 			isa = PBXGroup;
 			children = (
+				842B7DBC1D095F71007F2126 /* BarChartModel.swift */,
 				95F400A11CE385D50060F28C /* ProfileModel.swift */,
 				95F400A21CE385D50060F28C /* UserInfoModel.swift */,
 				F42F5ADC1BDC85AF00195490 /* SampleDataAnalyzer.swift */,
@@ -1009,9 +1058,12 @@
 			children = (
 				9580D3A51CEB29DC0074178D /* BaseControls */,
 				95748C3E1CCFC7350002F6A3 /* Cells */,
+				E7E48DEA1CE5CB2700DB020F /* MetabolicRadarChartView.swift */,
+				84C9CB481CE9BB76005ED875 /* MetabolicDailyProgressChartView.swift */,
 				F43A7C5C1BBDF43600B6FA56 /* PlotButton.swift */,
 				F43A7C671BBE508D00B6FA56 /* IntroCompareDataTableViewCell.swift */,
 				84207D251CCA6A7E00776848 /* InputTableCellWithImage.swift */,
+				842B7DBE1D09601B007F2126 /* BallonMarker.swift */,
 				958568001CD0AFA400EDD385 /* CheckBox.swift */,
 				951BA49C1CE6295F0036600A /* BrightButton.swift */,
 				951BA49E1CE630A70036600A /* UnBrightButton.swift */,
@@ -1024,6 +1076,7 @@
 			isa = PBXGroup;
 			children = (
 				84EF0EBE1D05767500A25760 /* AddEvents */,
+				842B7DB51D095ED6007F2126 /* Charts */,
 				95F400A71CE385E80060F28C /* SettingsViewControllers */,
 				E7592DB61CDB471000E313BB /* TabController */,
 				95C0B9971CD23E90006E523F /* AuthorizationViewControllers */,
@@ -1302,8 +1355,10 @@
 			files = (
 				95D142BD1CE60312006A9118 /* DoubleCheckListTitledCollectionViewCell.xib in Resources */,
 				F58E8B4E1CF342B8000B874E /* AppLog.storyboard in Resources */,
+				842B7DD11D0960CB007F2126 /* LineChartCollectionCell.xib in Resources */,
 				84AB38D01CEA0EFA00B7DB4E /* DailyProgressDayTableViewCell.xib in Resources */,
 				84EF0EC81D0580C500A25760 /* WhenTableViewCell.xib in Resources */,
+				842B7DD31D0960CB007F2126 /* ScatterChartCollectionCell.xib in Resources */,
 				F43A7C571BBDF29D00B6FA56 /* LaunchScreen.storyboard in Resources */,
 				95748C511CCFC7D90002F6A3 /* DoubleCheckListCollectionViewCell.xib in Resources */,
 				952470481CE9DAEE003E7EDF /* gotham-book.ttf in Resources */,
@@ -1312,6 +1367,7 @@
 				84207D221CCA210000776848 /* Images.xcassets in Resources */,
 				95769B851CE4869C00F26668 /* TitleCollectionViewCell.xib in Resources */,
 				84207D1F1CCA1FEC00776848 /* RegisterLoginProcess.storyboard in Resources */,
+				842B7DC91D0960A7007F2126 /* BarChartCollectionCell.xib in Resources */,
 				95F4009A1CE385C60060F28C /* InfoCollectionViewCell.xib in Resources */,
 				95C0B9A41CD2563B006E523F /* TitledInputCollectionViewCell.xib in Resources */,
 				84EF0EAD1D05606300A25760 /* AddEvents.storyboard in Resources */,
@@ -1466,9 +1522,12 @@
 			buildActionMask = 2147483647;
 			files = (
 				95C0B99A1CD23E90006E523F /* LoginViewController.swift in Sources */,
+				842B7DC31D096062007F2126 /* MCChartXAxisRenderer.swift in Sources */,
+				842B7DB71D095EF6007F2126 /* ChartsViewController.swift in Sources */,
 				84DC44F81D0704420091900F /* EndSleepTableViewCell.swift in Sources */,
 				84C9CB4E1CEA0018005ED875 /* DailyChartModel.swift in Sources */,
 				95C0B9A61CD25814006E523F /* AdditionalInfoDataSource.swift in Sources */,
+				842B7DC51D096062007F2126 /* MCScatterChartRenderer.swift in Sources */,
 				F49B2B711C7A83BD005F2BFB /* EventPickerManager.swift in Sources */,
 				E75E95AB1CDCD10700A18756 /* DashboardManageController.swift in Sources */,
 				78B734281C90B86A00693229 /* PlotViewController.swift in Sources */,
@@ -1489,21 +1548,26 @@
 				958568121CD12B5200EDD385 /* RegisterModelDataSource.swift in Sources */,
 				84EF0EC01D0576B500A25760 /* AddEventViewController.swift in Sources */,
 				E7E48DEB1CE5CB2700DB020F /* MetabolicRadarChartView.swift in Sources */,
+				842B7DBA1D095F5A007F2126 /* ChartCollectionDataSource.swift in Sources */,
 				E7E48DE91CE4C2DC00DB020F /* MetabolicDataEntry.swift in Sources */,
+				842B7DCB1D0960C0007F2126 /* BaseChartCollectionCell.swift in Sources */,
 				84EF0ECA1D058A9000A25760 /* BaseAddEventTableViewCell.swift in Sources */,
 				95C0B9AA1CD25AAC006E523F /* AdditionalInfoViewController.swift in Sources */,
 				958568011CD0AFA400EDD385 /* CheckBox.swift in Sources */,
 				E7592DBC1CDC7BBE00E313BB /* DashboardComparisonController.swift in Sources */,
 				78B734261C90B86200693229 /* RadarViewController.swift in Sources */,
 				95C0B99D1CD23EBA006E523F /* RegistrationComplitionViewController.swift in Sources */,
+				842B7DBB1D095F5A007F2126 /* ChartCollectionDelegate.swift in Sources */,
 				E74A89761CE308800056A2D2 /* UIColor+Extended.swift in Sources */,
 				9585680C1CD0EDBD00EDD385 /* UnitsUtils.swift in Sources */,
+				842B7DC81D0960A7007F2126 /* BarChartCollectionCell.swift in Sources */,
 				F58E8B571CF342B8000B874E /* AppLogTableViewCell.m in Sources */,
 				95748C501CCFC7D90002F6A3 /* DoubleCheckListCollectionViewCell.swift in Sources */,
 				78B7342A1C90B87300693229 /* UINotifications.swift in Sources */,
 				78B734241C90B85B00693229 /* QueryBuilderViewController.swift in Sources */,
 				95769B841CE4869C00F26668 /* TitleCollectionViewCell.swift in Sources */,
 				F43A7C5E1BBDF43600B6FA56 /* PlotButton.swift in Sources */,
+				842B7DBD1D095F71007F2126 /* BarChartModel.swift in Sources */,
 				E7E48DEF1CE6028600DB020F /* DashboardManageBalanceController.swift in Sources */,
 				E7592DB81CDB490600E313BB /* MainTabController.swift in Sources */,
 				84EF0EC61D0580B000A25760 /* WhenTableViewCell.swift in Sources */,
@@ -1519,6 +1583,7 @@
 				E7E48DE51CE4A12900DB020F /* MetabolicChartRender.swift in Sources */,
 				E7592DBA1CDB704600E313BB /* DashboardTabControllerViewController.swift in Sources */,
 				F58E8B531CF342B8000B874E /* AppLogItem.m in Sources */,
+				842B7DD01D0960CB007F2126 /* LineChartCollectionCell.swift in Sources */,
 				E75E95A31CDCA8DD00A18756 /* DashboardFilterCell.swift in Sources */,
 				F58E8B501CF342B8000B874E /* AppLogDetailViewController.m in Sources */,
 				9580D3A81CEB29DC0074178D /* AppLabel.swift in Sources */,
@@ -1544,6 +1609,7 @@
 				84EF0EAF1D056F3800A25760 /* DatePickerTableViewCell.swift in Sources */,
 				95769B8B1CE49E7300F26668 /* HealthAccessViewController.swift in Sources */,
 				84AB38D21CEA0F9900B7DB4E /* DailyProgressDayTableViewCell.swift in Sources */,
+				842B7DC41D096062007F2126 /* MCScatterChartDataSet.swift in Sources */,
 				84EF0EBB1D05722700A25760 /* DurationTableViewCell.swift in Sources */,
 				7881A3E11BAF3B3E00ECB3C6 /* AppDelegate.swift in Sources */,
 				84DC44F61D0704340091900F /* StartSleepTableViewCell.swift in Sources */,
@@ -1561,11 +1627,13 @@
 				E7592DBF1CDC7E2E00E313BB /* DashboardComparisonCell.swift in Sources */,
 				E7AB666C1CDCDDBD00967316 /* ManageDashboardCell.swift in Sources */,
 				84207D261CCA6A7E00776848 /* InputTableCellWithImage.swift in Sources */,
+				842B7DD21D0960CB007F2126 /* ScatterChartCollectionCell.swift in Sources */,
 				78B7342E1C90BC6900693229 /* DebugViewController.swift in Sources */,
 				78B734231C90B85700693229 /* QueryViewController.swift in Sources */,
 				84EF0EC21D057F8F00A25760 /* AddMealDataSource.swift in Sources */,
 				95748C531CCFC8020002F6A3 /* BaseCollectionViewCell.swift in Sources */,
 				84207D281CCE02A400776848 /* LoginModel.swift in Sources */,
+				842B7DBF1D09601B007F2126 /* BallonMarker.swift in Sources */,
 				78B734221C90B85400693229 /* RowSettingsViewController.swift in Sources */,
 				F58E8B591CF342B8000B874E /* AppLogViewController.m in Sources */,
 				F56CC2B41CF6077000040604 /* FontScaleLabel.swift in Sources */,

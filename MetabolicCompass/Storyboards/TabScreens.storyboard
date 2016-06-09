@@ -38,10 +38,10 @@
             </objects>
             <point key="canvasLocation" x="1171" y="951"/>
         </scene>
-        <!--View Controller-->
+        <!--Charts View Controller-->
         <scene sceneID="FPG-E4-iuT">
             <objects>
-                <viewController automaticallyAdjustsScrollViewInsets="NO" id="t6Z-V0-9sd" sceneMemberID="viewController">
+                <viewController automaticallyAdjustsScrollViewInsets="NO" id="t6Z-V0-9sd" customClass="ChartsViewController" customModule="MetabolicCompass" customModuleProvider="target" sceneMemberID="viewController">
                     <layoutGuides>
                         <viewControllerLayoutGuide type="top" id="uCu-CU-YvL"/>
                         <viewControllerLayoutGuide type="bottom" id="z4H-gK-xrd"/>
@@ -74,6 +74,9 @@
                                                 <segment title="Month"/>
                                                 <segment title="Year"/>
                                             </segments>
+                                            <connections>
+                                                <action selector="rangeChnaged:" destination="t6Z-V0-9sd" eventType="valueChanged" id="FY6-MM-Meo"/>
+                                            </connections>
                                         </segmentedControl>
                                     </subviews>
                                     <constraints>
@@ -94,6 +97,9 @@
                     </view>
                     <navigationItem key="navigationItem" id="qvi-Zk-7qW"/>
                     <simulatedScreenMetrics key="simulatedDestinationMetrics" type="retina4"/>
+                    <connections>
+                        <outlet property="collectionView" destination="ZXm-m6-vOK" id="xae-9a-iEt"/>
+                    </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="CH7-HC-jfB" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>

@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="10117" systemVersion="15F34" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES">
+    <dependencies>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="10085"/>
+    </dependencies>
+    <objects>
+        <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner"/>
+        <placeholder placeholderIdentifier="IBFirstResponder" id="-2" customClass="UIResponder"/>
+        <view contentMode="scaleToFill" id="iN0-l3-epB" customClass="LineChartCollectionCell" customModule="ChartsMC" customModuleProvider="target">
+            <rect key="frame" x="0.0" y="0.0" width="375" height="196"/>
+            <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+            <subviews>
+                <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="chart-bg" translatesAutoresizingMaskIntoConstraints="NO" id="Wpx-p1-aWw">
+                    <rect key="frame" x="0.0" y="0.0" width="375" height="196"/>
+                </imageView>
+                <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="vjF-xW-G91" customClass="LineChartView" customModule="Charts">
+                    <rect key="frame" x="0.0" y="20" width="375" height="156"/>
+                    <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
+                </view>
+            </subviews>
+            <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="calibratedWhite"/>
+            <constraints>
+                <constraint firstItem="Wpx-p1-aWw" firstAttribute="top" secondItem="iN0-l3-epB" secondAttribute="top" id="1EE-Mc-8Gn"/>
+                <constraint firstAttribute="bottom" secondItem="Wpx-p1-aWw" secondAttribute="bottom" id="bLY-wF-VCe"/>
+                <constraint firstAttribute="bottom" secondItem="vjF-xW-G91" secondAttribute="bottom" constant="20" id="bUt-i4-LP0"/>
+                <constraint firstAttribute="trailing" secondItem="vjF-xW-G91" secondAttribute="trailing" id="eMJ-Z5-OGH"/>
+                <constraint firstItem="vjF-xW-G91" firstAttribute="top" secondItem="iN0-l3-epB" secondAttribute="top" constant="20" id="edd-1j-83Z"/>
+                <constraint firstItem="Wpx-p1-aWw" firstAttribute="leading" secondItem="iN0-l3-epB" secondAttribute="leading" id="fbz-jl-grB"/>
+                <constraint firstAttribute="trailing" secondItem="Wpx-p1-aWw" secondAttribute="trailing" id="gR9-3j-oPY"/>
+                <constraint firstItem="vjF-xW-G91" firstAttribute="leading" secondItem="iN0-l3-epB" secondAttribute="leading" id="nS8-6G-BRU"/>
+            </constraints>
+            <nil key="simulatedStatusBarMetrics"/>
+            <freeformSimulatedSizeMetrics key="simulatedDestinationMetrics"/>
+            <connections>
+                <outlet property="chartBackgroundImage" destination="Wpx-p1-aWw" id="cYK-fY-OgD"/>
+                <outlet property="chartView" destination="vjF-xW-G91" id="QGf-lt-zbh"/>
+            </connections>
+            <point key="canvasLocation" x="455.5" y="309"/>
+        </view>
+    </objects>
+    <resources>
+        <image name="chart-bg" width="1" height="1"/>
+    </resources>
+</document>
