@@ -51,6 +51,7 @@
 		81B6CB861CF5145A00C007FD /* RepeatedEventManagerViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 81B6CB851CF5145A00C007FD /* RepeatedEventManagerViewController.swift */; };
 		81B6CB881CF5147600C007FD /* EventInboxViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 81B6CB871CF5147600C007FD /* EventInboxViewController.swift */; };
 		81CDF5561CF5ED28007093E2 /* SunpathBackgroundView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 81CDF5551CF5ED28007093E2 /* SunpathBackgroundView.swift */; };
+		81F553D91D0B321A00B7CD0D /* RepeatedEventManagerViewController-clean.swift in Sources */ = {isa = PBXBuildFile; fileRef = 81F553D81D0B321A00B7CD0D /* RepeatedEventManagerViewController-clean.swift */; };
 		DDCFA73336D509D6A63B8DFB /* Pods_MetabolicCompassCommon_MetabolicCompassKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = DDA0102CE00C19A179B1109B /* Pods_MetabolicCompassCommon_MetabolicCompassKit.framework */; };
 		F0FFB99459509A6B35B88E46 /* Pods_MetabolicCompassCommon_MetabolicCompass.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = EC3BE00D3EFE9B0033BB0DEC /* Pods_MetabolicCompassCommon_MetabolicCompass.framework */; };
 		F42F5ADD1BDC85AF00195490 /* SampleDataAnalyzer.swift in Sources */ = {isa = PBXBuildFile; fileRef = F42F5ADC1BDC85AF00195490 /* SampleDataAnalyzer.swift */; };
@@ -216,6 +217,7 @@
 		81B6CB851CF5145A00C007FD /* RepeatedEventManagerViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RepeatedEventManagerViewController.swift; sourceTree = "<group>"; };
 		81B6CB871CF5147600C007FD /* EventInboxViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = EventInboxViewController.swift; sourceTree = "<group>"; };
 		81CDF5551CF5ED28007093E2 /* SunpathBackgroundView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SunpathBackgroundView.swift; sourceTree = "<group>"; };
+		81F553D81D0B321A00B7CD0D /* RepeatedEventManagerViewController-clean.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "RepeatedEventManagerViewController-clean.swift"; sourceTree = "<group>"; };
 		C8875121727CCA69982BECB2 /* Pods-MetabolicCompassCommon-MetabolicCompassKit.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-MetabolicCompassCommon-MetabolicCompassKit.release.xcconfig"; path = "Pods/Target Support Files/Pods-MetabolicCompassCommon-MetabolicCompassKit/Pods-MetabolicCompassCommon-MetabolicCompassKit.release.xcconfig"; sourceTree = "<group>"; };
 		CB09F654AB4B00C79306C728 /* Pods.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		DDA0102CE00C19A179B1109B /* Pods_MetabolicCompassCommon_MetabolicCompassKit.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_MetabolicCompassCommon_MetabolicCompassKit.framework; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -505,6 +507,7 @@
 				7840A49A1C6E5A680005B66F /* ErrorViewController.swift */,
 				81B6CB811CF5143D00C007FD /* AddEventViewController.swift */,
 				81B6CB831CF5144C00C007FD /* CircadianBehaviorViewController.swift */,
+				81F553D81D0B321A00B7CD0D /* RepeatedEventManagerViewController-clean.swift */,
 				81B6CB851CF5145A00C007FD /* RepeatedEventManagerViewController.swift */,
 				81B6CB871CF5147600C007FD /* EventInboxViewController.swift */,
 			);
@@ -884,6 +887,7 @@
 				78B7342C1C90B87A00693229 /* ErrorViewController.swift in Sources */,
 				78B7341C1C90B83E00693229 /* LoginViewController.swift in Sources */,
 				7881A3E11BAF3B3E00ECB3C6 /* AppDelegate.swift in Sources */,
+				81F553D91D0B321A00B7CD0D /* RepeatedEventManagerViewController-clean.swift in Sources */,
 				78B7341B1C90B83A00693229 /* IntroViewController.swift in Sources */,
 				81B6CB861CF5145A00C007FD /* RepeatedEventManagerViewController.swift in Sources */,
 				78B7342E1C90BC6900693229 /* DebugViewController.swift in Sources */,

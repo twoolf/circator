@@ -99,6 +99,8 @@ class InboxItem : UITableViewCell {
 
 class EventInboxItem : InboxItem {
     
+
+    
 }
 
 /*
@@ -122,22 +124,23 @@ class InboxManager {
     
     //var lastCleared : NSDate?
     
-    func fetchRepeatedEvents() {
+    func fetchRepeatedEvents() -> [InboxItem] {
         
         
         if self.lastUpdated == nil {
             self.lastUpdated = NSDate()
         }
         
-        self.loadEventsFromLastUpdated()
+        self.loadEventsSinceUpdated()
         
+        return self.items
         
         
     }
     
 
     
-    func loadEventsFromLastUpdated() {
+    func loadEventsSinceUpdated() {
         
         let calender = NSCalendar(calendarIdentifier: NSCalendarIdentifierGregorian)!
         let components = calender.components(.Minute, fromDate: self.lastUpdated!, toDate: NSDate(), options: .WrapComponents)
@@ -158,17 +161,33 @@ class InboxManager {
             
             while components.minute > 0 {
                 
-                //populate inbox item array
-                let repeatedEventAtTime = RepeatedEventsOrganizer.shared.getEventAtTimeDuringWeek()
+                let weekday = Weekday(rawValue: 1)!
                 
-                let itemData : InboxItemData? = nil
+                print(components)
                 
-                let inboxItem = EventInboxItem(receiptDate: NSDate(), itemData: itemData!)
+                //TODO
+                //is componenents.seconds the same thing as number of second elapsed since midnight of that day??
+                //let event = RepeatedEventsOrganizer.shared.getEventAtTimeDuringWeek(dayOfWeek: weekday, timeOfDayOffset: NSTimeInterval(components.second))
                 
-                self.items.append(inboxItem)
+                /* go over events for single weekday  and append them to the inbox manager */
+                
+                /*
+                if event != nil {
+                    
+                    
+                    //let inboxItem = EventInboxItem(receiptDate: NSDate(), itemData: event!)
+                    
+                    //self.items.append(inboxItem)
+                    
+                */
+                
+                /* updates counter of minutes then until now, eventually decrementing to zero */
                 
                 then.components.setValue(then.components.minute + 15, forComponent: .Minute)
+
                 components.setValue(components.minute - 15, forComponent: .Minute)
+                
+ 
             }
             
             
@@ -196,7 +215,14 @@ class EventInboxViewController: UIViewController {
     
     private func configure() {
         
-        inbox.fetchRepeatedEvents()
+        
+        
+        let events = inbox.fetchRepeatedEvents()
+        
+        
+        
+        
+        
     }
     
     func reloadData() {
