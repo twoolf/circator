@@ -26,7 +26,7 @@ class BaseChartCollectionCell: UICollectionViewCell {
         baseChartPreperation(self.chartView)
         
         self.backgroundColor = UIColor.clearColor()
-        self.userInteractionEnabled = false
+        self.contentView.userInteractionEnabled = false
     }
     
     func baseChartPreperation (chart: BarLineChartViewBase){
@@ -55,7 +55,7 @@ class BaseChartCollectionCell: UICollectionViewCell {
         
         let rightAxis = chart.rightAxis
         rightAxis.enabled = false
-        
+            
         chart.descriptionText = ""
         chart.legend.enabled = false
         chart.legend.formSize = 0

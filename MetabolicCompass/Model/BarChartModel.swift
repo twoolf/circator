@@ -5,6 +5,7 @@
 
 import Foundation
 import Charts
+import SwiftDate
 
 enum ChartType {
     case BarChart
@@ -14,23 +15,7 @@ enum ChartType {
 
 class BarChartModel {
     //MARK: Data for YEAR
-    
-    func getXValuesForYear () -> [String] {
-        var xValsArr: [String] = []
-        let numOfMonth = 12
         
-        xValsArr.append(" ")//space for gap
-        
-        for index in 1...numOfMonth {
-            let monthString = String(index)
-            xValsArr.append(monthString)
-        }
-        
-        xValsArr.append(" ")//space for gap
-        
-        return xValsArr
-    }
-    
     func getYValuesForYear (maxRange:UInt32 = 39) -> [BarChartDataEntry] {
         let numOfMonth = 12
         var yVals: [BarChartDataEntry] = []
@@ -46,7 +31,7 @@ class BarChartModel {
     
     func getChartDataForYear(type: ChartType) -> ChartData {
         
-        let xValsArr = getXValuesForYear()
+        let xValsArr = getYearTitles()
         let yValsTop = getYValuesForYear()
         let yValsBottom = getYValuesForYear(UInt32(10))
 
@@ -62,31 +47,6 @@ class BarChartModel {
     
     //MARK: Data for MONTH
     
-    func getXValuesForMonth() -> [String] {
-        var xValsArr: [String] = []
-        let numberOfDays = 31
-        
-        //empty labels for gap
-        xValsArr.append("")
-        xValsArr.append("")
-        xValsArr.append("")
-        
-        for index in 1...numberOfDays {
-            let dayString = String(index)
-            if index == 19 {
-                xValsArr.append("May " + dayString)
-            } else {
-                xValsArr.append(dayString)
-            }
-        }
-        //empty labels for gap
-        xValsArr.append("")
-        xValsArr.append("")
-        xValsArr.append("")
-        
-        return xValsArr
-    }
-    
     func getYValuesForMonth(maxRange:UInt32 = 20) -> [ChartDataEntry] {
         let numberOfDays = 31
         var yVals: [ChartDataEntry] = []
@@ -101,7 +61,7 @@ class BarChartModel {
     }
 
     func getChartDataForMonth(type: ChartType) -> ChartData {
-        let xValsArr = getXValuesForMonth()
+        let xValsArr = getMonthTitles()
         let yValsTop = getYValuesForMonth()
         let yValsBottom = getYValuesForMonth(UInt32(10))
 
@@ -144,7 +104,7 @@ class BarChartModel {
     }
     
     func getChartDataForWeek(type: ChartType) -> ChartData {
-        let xVals = ["", "10", "11", "12", "13", "14", "15", "16", ""]
+        let xVals = getWeekTitles()
         let yValsTop = ChartType.ScatterChart == type ? getValuesForWeekScatterChart () : getYValuesForWeek()
 //        let yValsBottom = getYValuesForWeek(UInt32(10))
 
@@ -197,5 +157,127 @@ class BarChartModel {
         
         let chartData = ScatterChartData(xVals: xVals, dataSets: [topDataSet, bottomDataSet])
         return chartData
+    }
+    
+    //MARK: Week titles
+    func getWeekTitles () -> [String] {
+        let currentDate = NSDate()
+        let weekAgoDate = currentDate - 7.days
+        var weekTitles: [String] = []
+        var prevMonthDates: [NSDate] = []
+        var currentMonthDates: [NSDate] = []
+        
+        weekTitles.append("")//create a gap for the left side
+        
+        for index in 1...7 {
+            let day = weekAgoDate + index.days
+            if day.month < currentDate.month {
+                prevMonthDates.append(day)
+            } else {
+                currentMonthDates.append(day)
+            }
+        }
+        
+        for (index, date) in prevMonthDates.enumerate() {
+            weekTitles.append(convertDateToWeekString(date, forIndex: index))
+        }
+    
+        for (index, date) in currentMonthDates.enumerate() {
+            weekTitles.append(convertDateToWeekString(date, forIndex: index))
+        }
+        
+        weekTitles.append("")//create a gap for the right side
+        return weekTitles
+    }
+    
+    //MARK: Month titles
+    func getMonthTitles () -> [String] {
+        var monthTitles: [String] = []
+        let currentDate = NSDate()
+        let numberOfDays = 31//max number of days in one month
+        let monthAgoDate = currentDate - numberOfDays.days
+        var prevMonthDates: [NSDate] = []
+        var currentMonthDates: [NSDate] = []
+        
+        //empty labels for left gap
+        monthTitles.append("")
+        monthTitles.append("")
+        monthTitles.append("")
+
+        for index in 1...numberOfDays {
+            let day = monthAgoDate + index.days
+            if day.month < currentDate.month {
+                prevMonthDates.append(day)
+            } else {
+                currentMonthDates.append(day)
+            }
+        }
+        
+        for (index, date) in prevMonthDates.enumerate() {
+            monthTitles.append(convertDateToWeekString(date, forIndex: index))
+        }
+        
+        for (index, date) in currentMonthDates.enumerate() {
+            monthTitles.append(convertDateToWeekString(date, forIndex: index))
+        }
+        
+        //empty labels for right gap
+        monthTitles.append("")
+        monthTitles.append("")
+        monthTitles.append("")
+        
+        return monthTitles
+    }
+    
+    func getYearTitles () -> [String]{
+        let numOfMonth = 12
+        let currentDate = NSDate()
+        let dateYearAgo = currentDate - numOfMonth.months
+        var prevYearMonthes: [NSDate] = []
+        var currentYearMonthes: [NSDate] = []
+        var yearTitles: [String] = []
+        
+        yearTitles.append(" ")//space for gap
+        
+        for index in 1...numOfMonth {
+            let date = dateYearAgo + index.months
+            date.year < currentDate.year ? prevYearMonthes.append(date) : currentYearMonthes.append(date)
+        }
+        
+        for (index, date) in prevYearMonthes.enumerate() {
+            yearTitles.append(convertDateToYearString(date, forIndex: index))
+        }
+        
+        for (index, date) in currentYearMonthes.enumerate() {
+            yearTitles.append(convertDateToYearString(date, forIndex: index))
+        }
+        
+        yearTitles.append(" ")//space for gap
+        
+        return yearTitles
+    }
+    
+    //MARK: Help
+    
+    func convertDateToYearString (date: NSDate, forIndex index: Int) -> String {
+        let month = date.monthName
+        let cutRange = month.startIndex ..< month.startIndex.advancedBy(3)
+        let monthName = month.length > 3 ? month.substringWithRange(cutRange) : month
+        
+        if index == 0 {
+            return monthName + " \(date.year)"
+        }
+        
+        return monthName
+    }
+    
+    func convertDateToWeekString (date: NSDate, forIndex index: Int) -> String {
+        if index == 0 {
+            let month = date.monthName
+            let cutRange = month.startIndex ..< month.startIndex.advancedBy(3)
+            let monthName = month.length > 3 ? month.substringWithRange(cutRange) : month
+            return monthName + " \(date.day)"
+        }
+        return "\(date.day)"
     }
 }
