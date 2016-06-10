@@ -126,9 +126,6 @@ public class PopulationHealthManager {
         if let response = payload as? [String:AnyObject],
                aggregates = response["items"] as? [[String:AnyObject]]
         {
-            if aggregates.count > 0 {
-                log.debug("\(aggregates[0])")
-            }
             var failed = false
             for sample in aggregates {
                 for (column, val) in sample {
