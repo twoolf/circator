@@ -17,6 +17,10 @@ import AsyncKit
 import JWTDecode
 import SwiftyUserDefaults
 
+// Helper typealiases to indicate whether the bool argument expects an error or success status.
+public typealias ErrorCompletion = Bool -> Void
+public typealias SuccessCompletion = Bool -> Void
+
 private let UMPrimaryUserKey = "UMPrimaryUserKey"
 private let UMUserHashKey    = "UMUserHashKey"
 
@@ -294,7 +298,7 @@ public class UserManager {
     }
 
     // Set a username and password in keychain, invoking a completion with an error status.
-    public func ensureUserPass(user: String?, pass: String?, completion: Bool -> Void) {
+    public func ensureUserPass(user: String?, pass: String?, completion: ErrorCompletion) {
         if let u = user, p = pass {
             guard !(u.isEmpty || p.isEmpty) else {
                 completion(true)
@@ -398,7 +402,7 @@ public class UserManager {
         }
     }
 
-    public func withdraw(completion: (Bool -> Void)) {
+    public func withdraw(completion: SuccessCompletion) {
         Service.string(MCRouter.DeleteAccount, statusCode: 200..<300, tag: "WITHDRAW") {
             _, response, result in
             if result.isSuccess { self.resetFull() }
@@ -420,7 +424,19 @@ public class UserManager {
         return Stormpath.sharedSession.accessToken
     }
 
-    public func ensureAccessToken(tried: Int, completion: (Bool -> Void)) {
+    // Recursive checking of the access token's expiry.
+    // This method retrieves the expiry time for the current access token using the
+    // REST API's expiry route.
+    //
+    // If the token has expired, we refresh it with the refreshAccessToken method, and
+    // recursively enter this function with an incremented 'tried' counter.
+    //
+    // Once we hit our maximum number of retries, we attempt to decode the token locally
+    // to check whether it has expired.
+    //
+    // TODO: Yanif: remove checking local expiration, since this should never be feasible.
+    //
+    public func ensureAccessToken(tried: Int, completion: ErrorCompletion) {
         guard tried < UserManager.maxTokenRetries else {
             log.error("Failed to get access token within \(UserManager.maxTokenRetries) iterations")
             // Get the expiry time locally from the token if available.
@@ -443,7 +459,7 @@ public class UserManager {
             return
         }
 
-        Service.json(MCRouter.TokenExpiry([:]), statusCode: 200..<300, tag: "ACCTOK") {
+        Service.json(MCRouter.TokenExpiry, statusCode: 200..<300, tag: "ACCTOK") {
             _, response, result in
                 guard result.isSuccess else {
                     self.refreshAccessToken(tried, completion: completion)
@@ -461,18 +477,16 @@ public class UserManager {
         }
     }
 
-    public func ensureAccessToken(completion: (Bool -> Void)) {
-        if (MCRouter.tokenExpireTime - NSDate().timeIntervalSince1970 > 0) {
-            completion(false)
+    public func ensureAccessToken(completion: ErrorCompletion) {
+        if let token = Stormpath.sharedSession.accessToken {
+            MCRouter.updateAuthToken(token)
+            ensureAccessToken(0, completion: completion)
         } else {
-//            self.refreshAccessToken(completion)
+            self.refreshAccessToken(completion)
         }
-
-        // temporary disabled, waiting for server api clarification
-        // ensureAccessToken(0, completion: completion)
     }
 
-    public func refreshAccessToken(tried: Int, completion: (Bool -> Void)) {
+    public func refreshAccessToken(tried: Int, completion: ErrorCompletion) {
         Stormpath.sharedSession.refreshAccessToken { (success, error) in
             guard success && error == nil else {
                 log.warning("Refresh failed: \(error!.localizedDescription)")
@@ -497,7 +511,7 @@ public class UserManager {
         }
     }
 
-    public func refreshAccessToken(completion: (Bool -> Void)) {
+    public func refreshAccessToken(completion: ErrorCompletion) {
         refreshAccessToken(0, completion: completion)
     }
 

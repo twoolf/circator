@@ -58,8 +58,15 @@ class ContentManager: NSObject {
     }
 
     func fetchAggregatesPeriodically() {
-        UserManager.sharedManager.ensureAccessToken { _ in
-            PopulationHealthManager.sharedManager.fetchAggregates()
+        UserManager.sharedManager.ensureAccessToken { error in
+            // Do not fetch any aggregates if we do not have a valid access token.
+            // Regardless, we try to fetch the aggregates again, with the next request also
+            // attempting to ensure a valid access token even if we did not get one this time.
+            if error {
+                log.warning("Could not ensure an access token while fetching aggregates, trying later...")
+            } else {
+                PopulationHealthManager.sharedManager.fetchAggregates()
+            }
             let freq = UserManager.sharedManager.getRefreshFrequency()
             self.aggregateFetchTask = Async.background(after: Double(freq)) {
                 self.fetchAggregatesPeriodically()
