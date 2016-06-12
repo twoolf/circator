@@ -6,15 +6,15 @@
 //  Copyright © 2016 Edwin L. Whitman, Yanif Ahmad, Tom Woolf. All rights reserved.
 //
 
-/*
 import UIKit
 import Former
 
 // MARK: - Data Structures
 
 public enum Weekday : Int {
+    
     case Sunday = 1
-    case Monday 
+    case Monday
     case Tuesday
     case Wednesday
     case Thursday
@@ -126,129 +126,71 @@ class RepeatedEventsOrganizer : NSObject {
     static let shared = RepeatedEventsOrganizer()
     
     private var repeatedEvents : [RepeatedEvent] = []
-    private var eventsForWeek : [Int : [Event?]] = [Weekday.Monday.rawValue : [], Weekday.Tuesday.rawValue : [], Weekday.Wednesday.rawValue : [], Weekday.Thursday.rawValue : [], Weekday.Friday.rawValue : [], Weekday.Saturday.rawValue : [], Weekday.Sunday.rawValue : []]
-    
-    override init() {
-        super.init()
-    }
     
     convenience init(RepeatedEvents events : [RepeatedEvent]) {
         self.init()
-        for event in events {
-            self.repeatedEvents.append(event)
-        }
-        for item in self.repeatedEvents {
-            self.addRepeatedEvent(RepeatedEvent: item)
-        }
-    }
-    
-    func reloadEventsForWeek() {
-        
-        self.eventsForWeek = [Weekday.Monday.rawValue : [], Weekday.Tuesday.rawValue : [], Weekday.Wednesday.rawValue : [], Weekday.Thursday.rawValue : [], Weekday.Friday.rawValue : [], Weekday.Saturday.rawValue : [], Weekday.Sunday.rawValue : []]
-        
-        for repeated in self.repeatedEvents {
-            for weekday in repeated.frequency {
-                eventsForWeek[weekday.rawValue]!.append(repeated.event)
-            }
-        }
-        
+        self.repeatedEvents = events
     }
     
     func addRepeatedEvent(RepeatedEvent event : RepeatedEvent) -> Bool {
         
-        //checks if added event conflicts with any existing event
-        for eventsForDay in eventsForWeek {
-            for optional in eventsForDay.1 {
-                if let eventOfDay = optional {
-                    if event.event.timeOfDayOffset < eventOfDay.timeOfDayOffset {
-                        if event.event.timeOfDayOffset + event.event.duration > eventOfDay.timeOfDayOffset {
+        for eventToCheck in repeatedEvents {
+            for dayToCheck in eventToCheck.frequency {
+                for dayOfEvent in event.frequency {
+                    if dayToCheck == dayOfEvent {
+                        if event.event.timeOfDayOffset < eventToCheck.event.timeOfDayOffset {
+                            if event.event.timeOfDayOffset + event.event.duration > eventToCheck.event.timeOfDayOffset {
+                                return false
+                            }
+                        }
+                        if event.event.timeOfDayOffset > eventToCheck.event.timeOfDayOffset {
+                            if eventToCheck.event.timeOfDayOffset + eventToCheck.event.duration > event.event.timeOfDayOffset {
+                                return false
+                            }
+                        }
+                        if event.event.timeOfDayOffset == eventToCheck.event.timeOfDayOffset {
                             return false
                         }
-                    } else if event.event.timeOfDayOffset > eventOfDay.timeOfDayOffset {
-                        if eventOfDay.timeOfDayOffset + eventOfDay.duration > event.event.timeOfDayOffset {
-                            return false
-                        }
-                    } else {
-                        return false
                     }
                 }
             }
         }
-        
-        //adding repeated event
+
         repeatedEvents.append(event)
-        for day in event.frequency {
-            eventsForWeek[day.rawValue]!.append(Event(nameOfEvent: event.event.name, typeOfEvent: event.event.eventType, timeOfDayOffsetInSeconds: event.event.timeOfDayOffset, durationInSeconds: event.event.duration))
-        }
-        
         return true
     }
     
     func removeRepeatedEvent(RepeatedEvent event : RepeatedEvent) -> Bool {
-        
-        print(self.repeatedEvents.count)
-        
         for i in Range(0..<self.repeatedEvents.count) {
             if self.repeatedEvents[i] == event {
-                
-                print(i)
                 self.repeatedEvents.removeAtIndex(i)
-                self.reloadEventsForWeek()
                 return true
             }
         }
         return false
     }
     
-    func getEventsForDay(DayOfWeek day : Weekday) -> [Event?] {
-        return self.eventsForWeek[day.rawValue]!
-    }
-    
-    func getEventDataByIntervalForDay(DayOfWeek day : Weekday) -> [Event?] {
-        var eventsForDay : [Event?] = [Event?](count: 72, repeatedValue: nil)
-        for event in self.getEventsForDay(DayOfWeek: day) {
-            let jumps : Int = Int(event!.timeOfDayOffset/3600.0)
-            let index : Int = Int(event!.timeOfDayOffset/1800.0) + jumps + 1
-            eventsForDay.insert(event, atIndex: index)
-        }
-        return eventsForDay
-    }
-    
-    func getDaysWhenEventOccurs(Event event : Event) -> [Weekday] {
+    func getEventsForDay(DayOfWeek day : Weekday) -> [RepeatedEvent] {
         
-        var days : [Weekday] = []
-        for repeatedEvent in self.repeatedEvents {
-            if repeatedEvent.event == event {
-                days = repeatedEvent.frequency
+        var events : [RepeatedEvent] = []
+        
+        for eventToCheck in self.repeatedEvents {
+            for dayToCheck in eventToCheck.frequency {
+                if day == dayToCheck {
+                    events.append(eventToCheck)
+                }
             }
         }
-        return days
+        
+        return events
     }
     
     /*
-    func getEventAtTimeDuringWeek(dayOfWeek weekday : Weekday, timeOfDayOffset time : NSTimeInterval) -> Event? {
-        
-        let eventsOfDay = self.eventsForWeek[weekday.rawValue]
-        
-        if let events = eventsOfDay {
-            
-            if events.count > 0  {
-                
-                for event in events {
-                    
-                    if event?.timeOfDayOffset == time {
-                        
-                        return event!
-                    }
-                }
-            }
-            
-            
-        }
-        
+     //TODO
+     //method needed for asynchronous request of event starting at time now, should be done in 30 minute intervals
+     func getEventAtTimeDuringWeek(dayOfWeek weekday : Weekday, timeOfDayOffset time : NSTimeInterval) -> Event? {
         return nil
-
-    }
+     }
      */
 }
 
@@ -256,6 +198,8 @@ class RepeatedEventsOrganizer : NSObject {
 // MARK: - Main View Controller
 
 class RepeatedEventManagerViewController: UIViewController {
+    
+    static let sharedManager = RepeatedEventManagerViewController()
     
     //UIButton subclass to associate button with selected weekday
     class WeekdayButton : UIButton {
@@ -288,7 +232,7 @@ class RepeatedEventManagerViewController: UIViewController {
         button.setBackgroundImage(drawCircle(FillColor: UIColor.clearColor()), forState: .Normal)
         button.setBackgroundImage(drawCircle(FillColor: UIColor.whiteColor()), forState: .Selected)
         button.setBackgroundImage(drawCircle(FillColor: UIColor(white: 0.667, alpha: 0.5)), forState: .Highlighted)
-        button.addTarget(self, action: "setWeekdayView:", forControlEvents: .TouchUpInside)
+        button.addTarget(self, action: #selector(RepeatedEventManagerViewController.setWeekdayView(_:)), forControlEvents: .TouchUpInside)
         return button
     }()
     
@@ -305,7 +249,7 @@ class RepeatedEventManagerViewController: UIViewController {
         button.setBackgroundImage(drawCircle(FillColor: UIColor.whiteColor()), forState: .Selected)
         button.setBackgroundImage(drawCircle(FillColor: UIColor(red: 83, green: 83, blue: 83, alpha: 0.5)), forState: .Highlighted)
         
-        button.addTarget(self, action: "setWeekdayView:", forControlEvents: .TouchUpInside)
+        button.addTarget(self, action: #selector(RepeatedEventManagerViewController.setWeekdayView(_:)), forControlEvents: .TouchUpInside)
         return button
     }()
     
@@ -320,7 +264,7 @@ class RepeatedEventManagerViewController: UIViewController {
         button.setBackgroundImage(drawCircle(FillColor: UIColor.clearColor()), forState: .Normal)
         button.setBackgroundImage(drawCircle(FillColor: UIColor.whiteColor()), forState: .Selected)
         button.setBackgroundImage(drawCircle(FillColor: UIColor(red: 83, green: 83, blue: 83, alpha: 0.5)), forState: .Highlighted)
-        button.addTarget(self, action: "setWeekdayView:", forControlEvents: .TouchUpInside)
+        button.addTarget(self, action: #selector(RepeatedEventManagerViewController.setWeekdayView(_:)), forControlEvents: .TouchUpInside)
         return button
     }()
     
@@ -335,7 +279,7 @@ class RepeatedEventManagerViewController: UIViewController {
         button.setBackgroundImage(drawCircle(FillColor: UIColor.clearColor()), forState: .Normal)
         button.setBackgroundImage(drawCircle(FillColor: UIColor.whiteColor()), forState: .Selected)
         button.setBackgroundImage(drawCircle(FillColor: UIColor(red: 83, green: 83, blue: 83, alpha: 0.5)), forState: .Highlighted)
-        button.addTarget(self, action: "setWeekdayView:", forControlEvents: .TouchUpInside)
+        button.addTarget(self, action: #selector(RepeatedEventManagerViewController.setWeekdayView(_:)), forControlEvents: .TouchUpInside)
         return button
     }()
     
@@ -350,7 +294,7 @@ class RepeatedEventManagerViewController: UIViewController {
         button.setBackgroundImage(drawCircle(FillColor: UIColor.clearColor()), forState: .Normal)
         button.setBackgroundImage(drawCircle(FillColor: UIColor.whiteColor()), forState: .Selected)
         button.setBackgroundImage(drawCircle(FillColor: UIColor(red: 83, green: 83, blue: 83, alpha: 0.5)), forState: .Highlighted)
-        button.addTarget(self, action: "setWeekdayView:", forControlEvents: .TouchUpInside)
+        button.addTarget(self, action: #selector(RepeatedEventManagerViewController.setWeekdayView(_:)), forControlEvents: .TouchUpInside)
         return button
     }()
     
@@ -365,7 +309,7 @@ class RepeatedEventManagerViewController: UIViewController {
         button.setBackgroundImage(drawCircle(FillColor: UIColor.clearColor()), forState: .Normal)
         button.setBackgroundImage(drawCircle(FillColor: UIColor.whiteColor()), forState: .Selected)
         button.setBackgroundImage(drawCircle(FillColor: UIColor(red: 83, green: 83, blue: 83, alpha: 0.5)), forState: .Highlighted)
-        button.addTarget(self, action: "setWeekdayView:", forControlEvents: .TouchUpInside)
+        button.addTarget(self, action: #selector(RepeatedEventManagerViewController.setWeekdayView(_:)), forControlEvents: .TouchUpInside)
         return button
     }()
     
@@ -380,7 +324,7 @@ class RepeatedEventManagerViewController: UIViewController {
         button.setBackgroundImage(drawCircle(FillColor: UIColor.clearColor()), forState: .Normal)
         button.setBackgroundImage(drawCircle(FillColor: UIColor.whiteColor()), forState: .Selected)
         button.setBackgroundImage(drawCircle(FillColor: UIColor(red: 83, green: 83, blue: 83, alpha: 0.5)), forState: .Highlighted)
-        button.addTarget(self, action: "setWeekdayView:", forControlEvents: .TouchUpInside)
+        button.addTarget(self, action: #selector(RepeatedEventManagerViewController.setWeekdayView(_:)), forControlEvents: .TouchUpInside)
         return button
     }()
     
@@ -400,24 +344,13 @@ class RepeatedEventManagerViewController: UIViewController {
         return stackView
     }()
     
-    //variables used within table view
-    
-    //TODO: some of these variables should be initialized in or need to be moved to data source delegate...??
-    
     var currentWeekday : WeekdayButton?
     
-    var weekdayLabel : UILabel = UILabel()
+    var weekdayLabel = UILabel()
     
-    var events : RepeatedEventsOrganizer = RepeatedEventsOrganizer.shared
+    var events = RepeatedEventsOrganizer.shared
     
-    var eventsList : EventsListTableViewController = EventsListTableViewController()
-    
-    
-    func loadData() {
-        
-        self.eventsList.loadData(RepeatedEvents: self.events)
-        
-    }
+    var eventsListView : RepeatedEventPlannerView!
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -425,32 +358,16 @@ class RepeatedEventManagerViewController: UIViewController {
         //add test data
         let sunday : [Weekday] = [Weekday.Sunday]
         let somedays : [Weekday] = [Weekday.Sunday, Weekday.Monday, Weekday.Wednesday, Weekday.Friday]
-        
-        
         let sleep : RepeatedEvent = RepeatedEvent(metabolicEvent: Event(nameOfEvent: "sleep", typeOfEvent: .Sleep, timeOfDayOffsetInSeconds: 0, durationInSeconds: 10800), daysOfWeekOccurs: somedays)
         self.events.addRepeatedEvent(RepeatedEvent: sleep)
-        
         let breakfast : RepeatedEvent = RepeatedEvent(metabolicEvent: Event(nameOfEvent: "breakfast", typeOfEvent: .Meal, timeOfDayOffsetInSeconds: 18000, durationInSeconds: 1800), daysOfWeekOccurs: somedays)
         self.events.addRepeatedEvent(RepeatedEvent: breakfast)
-        
         let workout : RepeatedEvent = RepeatedEvent(metabolicEvent: Event(nameOfEvent: "workout", typeOfEvent: .Exercise, timeOfDayOffsetInSeconds: 32400, durationInSeconds: 25200), daysOfWeekOccurs: sunday)
         self.events.addRepeatedEvent(RepeatedEvent: workout)
         
         
-        self.currentWeekday = self.weekdayButtons[NSDate().weekday - 1]
-        self.currentWeekday?.selected = true
-        //sets weekday label to selected day
-        self.weekdayLabel.text = self.currentWeekday!.day.description
-        
-        //sets day state of table view and reloads data
-        eventsList.setData(DayOfWeek: (self.currentWeekday?.day)!)
-        eventsList.tableView.reloadData()
-        
-        
-        //load and configure data
-        //suspect
-        self.eventsList.loadData(RepeatedEvents: self.events)
         self.configureView()
+        self.selectCurrentWeekday()
     }
     
     override func viewWillAppear(animated: Bool) {
@@ -462,25 +379,18 @@ class RepeatedEventManagerViewController: UIViewController {
     //Sets configuration of view controller
     private func configureView() {
         
-        //self.navigationItem.title = "Repeated Events"
-        //self.navigationItem.rightBarButtonItem = UIBarButtonItem.init(barButtonSystemItem: .Add, target: self, action: "addRepeatedEvent:")
-        
-        //set up table view
-        self.eventsList.automaticallyAdjustsScrollViewInsets = false
-        let eventsListView = self.eventsList.view
-        eventsListView.translatesAutoresizingMaskIntoConstraints = false
-        self.addChildViewController(self.eventsList)
+        self.eventsListView = RepeatedEventPlannerView(intervalHeight: 32.0, frame: self.view.bounds)
+        self.eventsListView.translatesAutoresizingMaskIntoConstraints = false
         view.addSubview(eventsListView)
         let eventsListViewConstraints: [NSLayoutConstraint] = [
             eventsListView.topAnchor.constraintEqualToAnchor(topLayoutGuide.bottomAnchor),
             eventsListView.bottomAnchor.constraintEqualToAnchor(bottomLayoutGuide.topAnchor),
-            eventsListView.leadingAnchor.constraintEqualToAnchor(view.layoutMarginsGuide.leadingAnchor, constant: -30),
-            eventsListView.trailingAnchor.constraintEqualToAnchor(view.layoutMarginsGuide.trailingAnchor, constant: 15),
-            ]
+            eventsListView.leftAnchor.constraintEqualToAnchor(view.leftAnchor),
+            eventsListView.rightAnchor.constraintEqualToAnchor(view.rightAnchor)
+        ]
         
         view.addConstraints(eventsListViewConstraints)
-        
-        //adding weekday selector view
+
         weekdayRowSelector.translatesAutoresizingMaskIntoConstraints = false
         view.addSubview(weekdayRowSelector)
         
@@ -494,7 +404,6 @@ class RepeatedEventManagerViewController: UIViewController {
         
         view.addConstraints(weekdayRowSelectorConstraints)
         
-        //set up weekday view
         self.weekdayLabel.translatesAutoresizingMaskIntoConstraints = false
         self.weekdayLabel.textAlignment = .Center
         self.weekdayLabel.font = UIFont.systemFontOfSize(20, weight: UIFontWeightSemibold)
@@ -509,35 +418,31 @@ class RepeatedEventManagerViewController: UIViewController {
             weekdayLabel.rightAnchor.constraintEqualToAnchor(view.layoutMarginsGuide.rightAnchor),
             weekdayLabel.leftAnchor.constraintEqualToAnchor(view.layoutMarginsGuide.leftAnchor),
             weekdayLabel.centerXAnchor.constraintEqualToAnchor(view.layoutMarginsGuide.centerXAnchor),
-            ]
+        ]
         
         view.addConstraints(weekdayLabelConstraints)
-        
         
         let blurEffect = UIBlurEffect(style: UIBlurEffectStyle.Light)
         let blurEffectView = UIVisualEffectView(effect: blurEffect)
         blurEffectView.translatesAutoresizingMaskIntoConstraints = false
-        
         blurEffectView.backgroundColor = UIColor.lightGrayColor().colorWithAlphaComponent(0.5)
-        
         view.addSubview(blurEffectView)
-        
         let blurEffectViewConstraints : [NSLayoutConstraint] = [
             blurEffectView.topAnchor.constraintEqualToAnchor(topLayoutGuide.bottomAnchor),
             blurEffectView.bottomAnchor.constraintEqualToAnchor(weekdayLabel.bottomAnchor),
             blurEffectView.rightAnchor.constraintEqualToAnchor(view.rightAnchor),
             blurEffectView.leftAnchor.constraintEqualToAnchor(view.leftAnchor)
         ]
-        
         view.addConstraints(blurEffectViewConstraints)
         
         view.bringSubviewToFront(weekdayLabel)
         view.bringSubviewToFront(weekdayRowSelector)
         
-        
-        self.eventsList.tableView.contentInset = UIEdgeInsetsMake(30 + weekdayRowSelector.bounds.height, 0, 0, 0)
-
-        
+    }
+    
+    override func viewDidLayoutSubviews() {
+        super.viewDidLayoutSubviews()
+        self.eventsListView.contentInset = UIEdgeInsetsMake(weekdayLabel.bounds.height + weekdayRowSelector.bounds.height + 15, 0, 0, 0)
     }
     
     func addRepeatedEvent(sender: UIBarItem) {
@@ -554,313 +459,257 @@ class RepeatedEventManagerViewController: UIViewController {
         currentWeekday?.selected = false
         sender.selected = true
         
-        //sets day state of table view and reloads data
-        eventsList.setData(DayOfWeek: sender.day)
-        eventsList.tableView.reloadData()
+        let events = self.events.getEventsForDay(DayOfWeek: sender.day)
+        self.eventsListView.layoutEvents(eventsToLayout: events)
         
         //set current day as sender
         currentWeekday = sender
         
     }
     
-    class EventsListTableViewController : UITableViewController {
+    func selectCurrentWeekday() {
         
+        self.setWeekdayView(self.weekdayButtons[NSDate().weekday - 1])
         
-        
-        let hours : [String] = ["12 AM", "1 AM", "2 AM", "3 AM", "4 AM", "5 AM", "6 AM", "7 AM", "8 AM", "9 AM", "10 AM", "11 AM", "Noon", "1 PM", "2 PM", "3 PM", "4 PM", "5 PM", "6 PM", "7 PM", "8 PM", "9 PM", "10 PM", "11 PM", "12 AM"]
-        
-        //where day would be set to current day in time
-        var currentDay : Weekday = Weekday.Sunday
-        
-        //where initial data would be loaded from plist
-        var events : RepeatedEventsOrganizer = RepeatedEventsOrganizer.shared
-        
-        func loadData(RepeatedEvents eventData : RepeatedEventsOrganizer) {
-            self.events = eventData
-        }
-        
-        func setData(DayOfWeek day : Weekday) {
-            
-            //tableView.setContentOffset(CGPointZero, animated:true)
-            self.currentDay = day
-            for view in tableView.subviews {
-                if view is EventItemView {
-                    if !self.events.getDaysWhenEventOccurs(Event: (view as! EventItemView).event!).contains(self.currentDay) {
-                        view.removeFromSuperview()
-                    }
-                }
-            }
-        }
-        
-        override func viewDidLoad() {
-            super.viewDidLoad()
-            tableView.separatorColor = UIColor.clearColor()
-        }
-        
-        override func viewWillAppear(animated: Bool) {
-            super.viewWillAppear(animated)
-            tableView.reloadData()
-        }
-        
-        //Set section of table
-        override func numberOfSectionsInTableView(tableView: UITableView) -> Int {
-            //two of these sections are to format the seperator lines properly
-            return 3
-        }
-        
-        //Set table to have one cell for every 30 mins within day
-        override func tableView(tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-            
-            //main content
-            if section == 1 {
-                return 24 * 2 + 24 + 1
-            }
-            //top and bottom buffer sections
-            return 1
-        }
-        
-        //sets height of cells in table
-        override func tableView(tableView: UITableView, heightForRowAtIndexPath indexPath: NSIndexPath) -> CGFloat {
-            if indexPath.row % 3 == 0 || indexPath.row == 73 {
-                //edge case: height of buffer cell in top and bottom sections
-                if indexPath.section != 1 {
-                    return 5.0
-                }
-                //height of time seperator cells
-                return 1.0
-            } else {
-                //height of cell containing event item view
-                return 32.0
-            }
-        }
-        
-        override func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell {
-            let cell = UITableViewCell()
-            
-            //removes white layer of each cell's default background for proper line seperator rendering
-            cell.backgroundColor = UIColor.clearColor()
-            
-            //clears subviews previously rendered to cell
-            for view in cell.contentView.subviews {
-                view.removeFromSuperview()
-            }
-            
-            //sets cell to be filled with event item cell
-            if indexPath.row % 3 != 0 && indexPath.row != 73 {
-                
-                let eventsForDay = self.events.getEventDataByIntervalForDay(DayOfWeek: self.currentDay)
-                
-                //set up event item view
-                if let data = eventsForDay[indexPath.row] {
-                    
-                    //ensures that no conflicting views are added
-                    for view in tableView.subviews {
-                        if view is EventItemView {
-                            if (view as! EventItemView).event! == data {
-                                view.removeFromSuperview()
-                            }
-                        }
-                    }
-                    
-                    let eventView = EventItemView(Event: data)
-                    eventView.addTarget(self, action: "eventDetailDoubleTap:", forControlEvents: .TouchDownRepeat)
-                    
-                    eventView.translatesAutoresizingMaskIntoConstraints = false
-                    
-                    view.addSubview(eventView)
-                    
-                    
-                    //event item placement
-                    let cellHeight = 32.0
-                    let seperatorLinePaddingHeight = Double(Int((data.duration)/3600.0)) * 2 - 1.5
-                    let seperatorLinePaddingOffset = Double(Int((data.timeOfDayOffset)/3600.0)) * 2 - 1.5
-                    
-                    let height : CGFloat = CGFloat((data.duration/1800.0) * cellHeight + seperatorLinePaddingHeight)
-                    let offset : CGFloat = CGFloat((data.timeOfDayOffset/1800.0) * cellHeight + seperatorLinePaddingOffset)
-                    
-                    let eventViewConstraints : [NSLayoutConstraint] = [
-                        eventView.leftAnchor.constraintEqualToAnchor(self.view.leftAnchor, constant: 105),
-                        eventView.widthAnchor.constraintEqualToAnchor(self.view.widthAnchor, constant: -135),
-                        eventView.topAnchor.constraintEqualToAnchor(self.view.topAnchor, constant: offset + 7.5),
-                        eventView.bottomAnchor.constraintEqualToAnchor(eventView.topAnchor, constant: height),
-                        ]
-                    
-                    view.addConstraints(eventViewConstraints)
-                    
-                    // TODO: refractor into seperate subclass
-                    // set event view's contents
-                    
-                    let eventTitle = UILabel()
-                    eventTitle.translatesAutoresizingMaskIntoConstraints = false
-                    eventTitle.text = data.name
-                    eventTitle.font = UIFont.systemFontOfSize(14, weight: UIFontWeightSemibold)
-                    eventTitle.textColor = UIColor.whiteColor()
-                    
-                    let eventIcon = UIButton()
-                    eventIcon.translatesAutoresizingMaskIntoConstraints = false
-                    eventIcon.setBackgroundImage(drawCircle(FillColor: UIColor.whiteColor()), forState: .Normal)
-                    eventIcon.adjustsImageWhenHighlighted = false
-                    eventIcon.titleLabel?.adjustsFontSizeToFitWidth = true
-                    eventIcon.titleLabel?.textAlignment = .Center
-                    eventIcon.titleLabel?.minimumScaleFactor = 0.5;
-                    
-                    let eventIconInner = UIImageView()
-                    eventIconInner.translatesAutoresizingMaskIntoConstraints = false
-                    
-                    eventIcon.addSubview(eventIconInner)
-                    let eventIconInnerConstraints : [NSLayoutConstraint] = [
-                        eventIconInner.centerXAnchor.constraintEqualToAnchor(eventIcon.centerXAnchor),
-                        eventIconInner.centerYAnchor.constraintEqualToAnchor(eventIcon.centerYAnchor),
-                        NSLayoutConstraint(item: eventIconInner, attribute: .Height, relatedBy: .Equal, toItem: eventIcon, attribute: .Height, multiplier: 0.75, constant: 0),
-                        NSLayoutConstraint(item: eventIconInner, attribute: .Width, relatedBy: .Equal, toItem: eventIcon, attribute: .Width, multiplier: 0.75, constant: 0)
-                    ]
-                    eventIcon.addConstraints(eventIconInnerConstraints)
-                    
-                    eventView.addSubview(eventTitle)
-                    eventView.addSubview(eventIcon)
-                    
-                    let eventViewContentConstraints : [NSLayoutConstraint] = [
-                        eventTitle.leftAnchor.constraintEqualToAnchor(eventView.leftAnchor, constant: 7.5),
-                        eventTitle.bottomAnchor.constraintEqualToAnchor(eventView.bottomAnchor, constant: -7.5),
-                        eventIcon.rightAnchor.constraintEqualToAnchor(eventView.rightAnchor, constant: -3.5),
-                        NSLayoutConstraint(item: eventIcon, attribute: .Width, relatedBy: .Equal, toItem: nil, attribute: .NotAnAttribute, multiplier: 0, constant: 25),
-                        eventIcon.bottomAnchor.constraintEqualToAnchor(eventView.bottomAnchor, constant: -3.5),
-                        eventIcon.heightAnchor.constraintEqualToAnchor(eventIcon.widthAnchor)
-                        
-                    ]
-                    
-                    eventView.addConstraints(eventViewContentConstraints)
-                    
-                    switch data.eventType {
-                    case .Meal:
-                        eventView.backgroundColor = UIColor.greenColor().colorWithAlphaComponent(0.25)
-                        //eventIcon.setTitle("M", forState: .Normal)
-                        eventIconInner.image = drawCircle(FillColor: UIColor.greenColor().colorWithAlphaComponent(0.25))
-                    case .Sleep:
-                        eventView.backgroundColor = UIColor.blueColor().colorWithAlphaComponent(0.25)
-                        //eventIcon.setTitle("S", forState: .Normal)
-                        eventIconInner.image = drawCircle(FillColor: UIColor.blueColor().colorWithAlphaComponent(0.25))
-                    case .Exercise:
-                        eventView.backgroundColor = UIColor.redColor().colorWithAlphaComponent(0.25)
-                        //eventIcon.setTitle("E", forState: .Normal)
-                        eventIconInner.image = drawCircle(FillColor: UIColor.redColor().colorWithAlphaComponent(0.25))
-                    }
-                    
-                }
-                
-                //sets cell to filled with time seperator
-            } else {
-                
-                // TODO: refractor time seperator into separate subclass
-                //time label for seperator
-                let timeLabel = UILabel()
-                timeLabel.translatesAutoresizingMaskIntoConstraints = false
-                timeLabel.text = hours[indexPath.row/3]
-                timeLabel.font = UIFont.systemFontOfSize(11, weight: UIFontWeightSemibold)
-                timeLabel.textColor = UIColor.lightGrayColor()
-                
-                cell.contentView.addSubview(timeLabel)
-                
-                let timeLabelConstraints : [NSLayoutConstraint] = [
-                    timeLabel.centerYAnchor.constraintEqualToAnchor(cell.contentView.centerYAnchor),
-                    timeLabel.heightAnchor.constraintEqualToAnchor(cell.contentView.heightAnchor, constant: 10),
-                    timeLabel.leftAnchor.constraintEqualToAnchor(cell.contentView.leftAnchor, constant: 30)
-                ]
-                
-                cell.contentView.addConstraints(timeLabelConstraints)
-                
-                //seperator line adjacent to time label, 1 pixel high
-                let seperatorLine = UIView(frame: CGRectMake(0,0,1,1))
-                seperatorLine.translatesAutoresizingMaskIntoConstraints = false
-                seperatorLine.backgroundColor = UIColor.lightGrayColor()
-                
-                cell.contentView.addSubview(seperatorLine)
-                
-                let seperatorLineConstraints : [NSLayoutConstraint] = [
-                    seperatorLine.topAnchor.constraintEqualToAnchor(cell.contentView.topAnchor),
-                    seperatorLine.heightAnchor.constraintEqualToAnchor(cell.contentView.heightAnchor),
-                    //seperatorLine.widthAnchor.constraintEqualToAnchor(cell.widthAnchor),
-                    seperatorLine.leftAnchor.constraintEqualToAnchor(timeLabel.rightAnchor, constant: 15),
-                    seperatorLine.rightAnchor.constraintEqualToAnchor(cell.contentView.rightAnchor)
-                ]
-                
-                cell.contentView.addConstraints(seperatorLineConstraints)
-                
-                // edge case: for buffer sections, remove all renderings
-                if indexPath.section != 1 {
-                    for view in cell.contentView.subviews {
-                        view.removeFromSuperview()
-                    }
-                }
-                
-            }
-            
-            return cell
-        }
-        
-        func eventDetailDoubleTap(sender: EventItemView) {
-            var repeatedEvent : RepeatedEvent?
-            for item in events.repeatedEvents {
-                let check = item.event
-                if check == sender.event! {
-                    repeatedEvent = item
-                }
-            }
-            let vc : RepeatedEventDetailViewController = RepeatedEventDetailViewController()
-            vc.configureView(RepeatedEvent: repeatedEvent!)
-            navigationController?.pushViewController(vc, animated: true)
-        }
-        
-        //proprietry table view formatting
-        override func tableView(tableView: UITableView, estimatedHeightForRowAtIndexPath indexPath: NSIndexPath) -> CGFloat {
-            return UITableViewAutomaticDimension
-        }
-        
-        override func tableView(tableView: UITableView, shouldHighlightRowAtIndexPath indexPath: NSIndexPath) -> Bool {
-            return false
-        }
-        
-        override func tableView(tableView: UITableView, indentationLevelForRowAtIndexPath indexPath: NSIndexPath) -> Int {
-            return 0
-        }
     }
+    
+    func relayoutEvents() {
+        
+        let events = self.events.getEventsForDay(DayOfWeek: self.currentWeekday!.day)
+        self.eventsListView.layoutEvents(eventsToLayout: events)
+    }
+    
+    class RepeatedEventPlannerView : UIScrollView {
+        
+        var contentView : UIView!
+        
+        //an interval is defined as 30 minutes of time
+        var intervalHeight : CGFloat!
+        
+        init(intervalHeight height : CGFloat, frame: CGRect = CGRectZero) {
+            super.init(frame : frame)
+            self.intervalHeight = height
+            self.configureView()
+        }
+        
+        required init?(coder aDecoder: NSCoder) {
+            super.init(coder: aDecoder)
+        }
+        
+        private func configureView() {
+            
+            let contentView : UIView = {
+
+                let height : CGFloat = {
+                    let dayIntervalHeight : CGFloat = self.intervalHeight * 48
+                    let padding : CGFloat = {
+                        let paddingTop : CGFloat = 5.0
+                        let paddingBottom : CGFloat = 5.0
+                        return paddingTop + paddingBottom
+                    }()
+                    return dayIntervalHeight + padding
+                }()
+                
+                let view = UIView(frame: CGRectMake(0, 0, self.bounds.width, height))
+                
+                var previous : UIView?
+                
+                for hour in ["12 AM", "1 AM", "2 AM", "3 AM", "4 AM", "5 AM", "6 AM", "7 AM", "8 AM", "9 AM", "10 AM", "11 AM", "Noon", "1 PM", "2 PM", "3 PM", "4 PM", "5 PM", "6 PM", "7 PM", "8 PM", "9 PM", "10 PM", "11 PM", "12 AM"] {
+                    
+                    let timeLabel = UILabel()
+                    timeLabel.translatesAutoresizingMaskIntoConstraints = false
+                    timeLabel.text = hour
+                    timeLabel.font = UIFont.systemFontOfSize(11, weight: UIFontWeightSemibold)
+                    timeLabel.textColor = UIColor.lightGrayColor()
+                    
+                    view.addSubview(timeLabel)
+                    
+                    var timeLabelConstraints : [NSLayoutConstraint] = [
+                        timeLabel.heightAnchor.constraintEqualToConstant(10.0),
+                        timeLabel.leftAnchor.constraintEqualToAnchor(view.leftAnchor, constant: 30)
+                    ]
+                    
+                    //correctly lays out seperator lines such that they are dependent upon each other
+                    if previous != nil {
+                        timeLabelConstraints.append(timeLabel.topAnchor.constraintEqualToAnchor(previous?.bottomAnchor, constant: self.intervalHeight * 2 - 10.0))
+                    } else {
+                        timeLabelConstraints.append(timeLabel.topAnchor.constraintEqualToAnchor(view.topAnchor))
+                    }
+                    
+                    view.addConstraints(timeLabelConstraints)
+                    
+                    let seperatorLine = UIView()
+                    seperatorLine.translatesAutoresizingMaskIntoConstraints = false
+                    seperatorLine.backgroundColor = UIColor.lightGrayColor()
+                    
+                    view.addSubview(seperatorLine)
+                    
+                    let seperatorLineConstraints : [NSLayoutConstraint] = [
+                        seperatorLine.heightAnchor.constraintEqualToConstant(1.0),
+                        seperatorLine.centerYAnchor.constraintEqualToAnchor(timeLabel.centerYAnchor),
+                        seperatorLine.leftAnchor.constraintEqualToAnchor(timeLabel.rightAnchor, constant: 15),
+                        seperatorLine.rightAnchor.constraintEqualToAnchor(view.rightAnchor)
+                    ]
+                    
+                    view.addConstraints(seperatorLineConstraints)
+                    
+                    //ensures next separator to be laid out is dependent upon the previous one
+                    previous = timeLabel
+                }
+                
+                return view
+            }()
+
+            self.contentView = contentView
+            self.contentSize = self.contentView.bounds.size
+            self.addSubview(contentView)
+        
+        }
+        
+        func clearEvents() {
+            for view in self.contentView.subviews {
+                if view is RepeatedEventItemView {
+                    view.removeFromSuperview()
+                }
+            }
+        }
+        
+        func layoutEvent(eventToLayout event : RepeatedEvent) {
+            
+            let eventItem = RepeatedEventItemView(repeatedEvent: event)
+            eventItem.translatesAutoresizingMaskIntoConstraints = false
+            eventItem.addTarget(self, action: #selector(RepeatedEventPlannerView.eventDetailDoubleTap(_:)), forControlEvents: .TouchDownRepeat)
+            
+            self.contentView.addSubview(eventItem)
+
+            let height : CGFloat = CGFloat(event.event.duration/1800.0) * self.intervalHeight
+            let offset : CGFloat = CGFloat(event.event.timeOfDayOffset/1800.0) * self.intervalHeight
+            
+            let eventViewConstraints : [NSLayoutConstraint] = [
+                eventItem.leftAnchor.constraintEqualToAnchor(self.contentView.leftAnchor, constant: 105),
+                eventItem.widthAnchor.constraintEqualToAnchor(self.contentView.widthAnchor, constant: -135),
+                eventItem.topAnchor.constraintEqualToAnchor(self.contentView.topAnchor, constant: offset + 5.5),
+                eventItem.bottomAnchor.constraintEqualToAnchor(eventItem.topAnchor, constant: height - 1),
+            ]
+            
+            self.contentView.addConstraints(eventViewConstraints)
+        }
+        
+        func layoutEvents(eventsToLayout events : [RepeatedEvent]) {
+            self.clearEvents()
+            for event in events {
+                self.layoutEvent(eventToLayout: event)
+            }
+        }
+        
+        func eventDetailDoubleTap(sender: RepeatedEventItemView) {
+            let vc = RepeatedEventDetailViewController(repeatedEvent: sender.event)
+            (self.window?.rootViewController as! UINavigationController).pushViewController(vc, animated: true)
+        }
+
+    }
+
 }
 
-class EventItemView: UIButton {
+
+class RepeatedEventItemView: UIButton {
     
-    var event : Event?
-    
-    init(Event event : Event, frame: CGRect = CGRectZero) {
-        
-        super.init(frame : frame)
-        self.event = event
-        
-    }
+    var event : RepeatedEvent!
     
     required init?(coder aDecoder: NSCoder) {
         super.init(coder: aDecoder)
+    }
+    
+    init(repeatedEvent event : RepeatedEvent, frame: CGRect = CGRectZero) {
+        super.init(frame : frame)
+        self.event = event
+        self.configureView()
+    }
+    
+    private func configureView() {
+        
+        self.layer.cornerRadius = 16.0
+        
+        let eventTitle = UILabel()
+        eventTitle.translatesAutoresizingMaskIntoConstraints = false
+        eventTitle.text = self.event.event.name
+        eventTitle.font = UIFont.systemFontOfSize(14, weight: UIFontWeightSemibold)
+        eventTitle.textColor = UIColor.whiteColor()
+        
+        let eventIcon = UIButton()
+        eventIcon.translatesAutoresizingMaskIntoConstraints = false
+        eventIcon.setBackgroundImage(drawCircle(FillColor: UIColor.whiteColor()), forState: .Normal)
+        eventIcon.adjustsImageWhenHighlighted = false
+        eventIcon.titleLabel?.adjustsFontSizeToFitWidth = true
+        eventIcon.titleLabel?.textAlignment = .Center
+        eventIcon.titleLabel?.minimumScaleFactor = 0.5;
+        
+        let eventIconInner = UIImageView()
+        eventIconInner.translatesAutoresizingMaskIntoConstraints = false
+        
+        eventIcon.addSubview(eventIconInner)
+        let eventIconInnerConstraints : [NSLayoutConstraint] = [
+            eventIconInner.centerXAnchor.constraintEqualToAnchor(eventIcon.centerXAnchor),
+            eventIconInner.centerYAnchor.constraintEqualToAnchor(eventIcon.centerYAnchor),
+            NSLayoutConstraint(item: eventIconInner, attribute: .Height, relatedBy: .Equal, toItem: eventIcon, attribute: .Height, multiplier: 0.75, constant: 0),
+            NSLayoutConstraint(item: eventIconInner, attribute: .Width, relatedBy: .Equal, toItem: eventIcon, attribute: .Width, multiplier: 0.75, constant: 0)
+        ]
+        
+        eventIcon.addConstraints(eventIconInnerConstraints)
+        
+        self.addSubview(eventTitle)
+        self.addSubview(eventIcon)
+        
+        let eventViewContentConstraints : [NSLayoutConstraint] = [
+            eventTitle.leftAnchor.constraintEqualToAnchor(self.leftAnchor, constant: 7.5),
+            eventTitle.bottomAnchor.constraintEqualToAnchor(self.bottomAnchor, constant: -7.5),
+            eventIcon.rightAnchor.constraintEqualToAnchor(self.rightAnchor, constant: -3.5),
+            NSLayoutConstraint(item: eventIcon, attribute: .Width, relatedBy: .Equal, toItem: nil, attribute: .NotAnAttribute, multiplier: 0, constant: 25),
+            eventIcon.bottomAnchor.constraintEqualToAnchor(self.bottomAnchor, constant: -3.5),
+            eventIcon.heightAnchor.constraintEqualToAnchor(eventIcon.widthAnchor)
+            
+        ]
+        
+        self.addConstraints(eventViewContentConstraints)
+        
+        switch self.event.event.eventType {
+        case .Meal:
+            self.backgroundColor = UIColor.greenColor().colorWithAlphaComponent(0.25)
+            //eventIcon.setTitle("M", forState: .Normal)
+            eventIconInner.image = drawCircle(FillColor: UIColor.greenColor().colorWithAlphaComponent(0.25))
+        case .Sleep:
+            self.backgroundColor = UIColor.blueColor().colorWithAlphaComponent(0.25)
+            //eventIcon.setTitle("S", forState: .Normal)
+            eventIconInner.image = drawCircle(FillColor: UIColor.blueColor().colorWithAlphaComponent(0.25))
+        case .Exercise:
+            self.backgroundColor = UIColor.redColor().colorWithAlphaComponent(0.25)
+            //eventIcon.setTitle("E", forState: .Normal)
+            eventIconInner.image = drawCircle(FillColor: UIColor.redColor().colorWithAlphaComponent(0.25))
+        }
     }
 }
 
 class RepeatedEventDetailViewController : UIViewController {
     
-    var event : RepeatedEvent?
+    var event : RepeatedEvent!
+    
+    convenience init(repeatedEvent event : RepeatedEvent) {
+        self.init()
+        self.event = event
+    }
     
     override func viewDidLoad() {
         super.viewDidLoad()
         self.formatView()
-        navigationItem.title = "Detail"
-        
+        self.configureView()
     }
     
     func formatView() {
-        
+        navigationItem.title = "Detail"
         self.view.backgroundColor = UIColor(white: 0.9, alpha: 1)
     }
     
-    func configureView(RepeatedEvent repeatedEvent : RepeatedEvent) {
-        
-        self.event = repeatedEvent
+    private func configureView() {
         
         let eventIcon = UIImageView()
         eventIcon.translatesAutoresizingMaskIntoConstraints = false
@@ -871,19 +720,15 @@ class RepeatedEventDetailViewController : UIViewController {
             eventIcon.rightAnchor.constraintEqualToAnchor(view.layoutMarginsGuide.rightAnchor),
             NSLayoutConstraint(item: eventIcon, attribute: .Width, relatedBy: .Equal, toItem: view.layoutMarginsGuide, attribute: .Width, multiplier: 0.25, constant: 0),
             eventIcon.heightAnchor.constraintEqualToAnchor(eventIcon.widthAnchor)
-            //NSLayoutConstraint(item: eventIcon, attribute: .Width, relatedBy: .Equal, toItem: view, attribute: .Width, multiplier: 0.333, constant: 0)
         ]
         view.addConstraints(eventIconConstraints)
         
         switch self.event!.event.eventType {
         case .Meal:
-            //eventIcon.setTitle("M", forState: .Normal)
             eventIcon.image = drawCircle(FillColor: UIColor.greenColor().colorWithAlphaComponent(0.5))
         case .Sleep:
-            //eventIcon.setTitle("S", forState: .Normal)
             eventIcon.image = drawCircle(FillColor: UIColor.blueColor().colorWithAlphaComponent(0.5))
         case .Exercise:
-            //eventIcon.setTitle("E", forState: .Normal)
             eventIcon.image = drawCircle(FillColor: UIColor.redColor().colorWithAlphaComponent(0.5))
         }
         
@@ -898,7 +743,7 @@ class RepeatedEventDetailViewController : UIViewController {
             eventTitleLabel.topAnchor.constraintEqualToAnchor(eventIcon.topAnchor),
             eventTitleLabel.leftAnchor.constraintEqualToAnchor(view.layoutMarginsGuide.leftAnchor),
             eventTitleLabel.rightAnchor.constraintEqualToAnchor(eventIcon.leftAnchor),
-            ]
+        ]
         view.addConstraints(eventTitleLabelConstraints)
         
         let eventTimeLabel = UILabel()
@@ -906,6 +751,8 @@ class RepeatedEventDetailViewController : UIViewController {
         eventTimeLabel.font = UIFont.systemFontOfSize(20, weight: UIFontWeightThin)
         eventTimeLabel.textColor = UIColor.blackColor()
         
+        //TODO
+        //events that end or start on the half-hour are not displaying correctly
         
         let formatTime: (NSDate -> String) = { time in
             let timeFormatter = NSDateFormatter()
@@ -1045,23 +892,18 @@ class RepeatedEventDetailViewController : UIViewController {
         alertController.addAction(cancelAction)
         
         let deleteEventAction = UIAlertAction(title: "Delete", style: .Destructive) { action in
-            print(self.navigationController?.viewControllers)
             
-            for vc in (self.navigationController?.viewControllers)! {
-                if vc is RepeatedEventManagerViewController {
-                    (vc as! RepeatedEventManagerViewController).events.removeRepeatedEvent(RepeatedEvent: self.event!)
-                    (vc as! RepeatedEventManagerViewController).eventsList.tableView.reloadData()
-                    //print((vc as! RepeatedEventsListViewController).eventsList.view.subviews)
-                    for view in (vc as! RepeatedEventManagerViewController).eventsList.view.subviews {
-                        if view is EventItemView && (view as! EventItemView).event! == self.event?.event {
-                            view.removeFromSuperview()
-                        }
-                    }
+            RepeatedEventsOrganizer.shared.removeRepeatedEvent(RepeatedEvent: self.event)
+            
+            for view in RepeatedEventManagerViewController.sharedManager.eventsListView.contentView.subviews {
+                if view is RepeatedEventItemView && (view as! RepeatedEventItemView).event == self.event {
+                    view.removeFromSuperview()
                 }
             }
             
             self.navigationController?.popViewControllerAnimated(true)
         }
+        
         alertController.addAction(deleteEventAction)
         self.presentViewController(alertController, animated: true, completion: nil)
     }
@@ -1070,8 +912,8 @@ class RepeatedEventDetailViewController : UIViewController {
 
 class NewRepeatedEventViewController: UIViewController {
     
-    var event : RepeatedEvent?
-    var form : RepeatedEventFormViewController?
+    var event : RepeatedEvent!
+    var form : RepeatedEventFormViewController!
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -1091,8 +933,8 @@ class NewRepeatedEventViewController: UIViewController {
         
         let navigationItems = UINavigationItem()
         
-        let left = UIBarButtonItem(title: "cancel", style: .Plain, target: self, action: "cancel:")
-        let right = UIBarButtonItem(title: "add", style: .Plain, target: self, action: "add:")
+        let left = UIBarButtonItem(title: "cancel", style: .Plain, target: self, action: #selector(NewRepeatedEventViewController.cancel(_:)))
+        let right = UIBarButtonItem(title: "add", style: .Plain, target: self, action: #selector(NewRepeatedEventViewController.add(_:)))
         
         navigationItems.title = "New Repeated Event"
         navigationItems.leftBarButtonItem = left
@@ -1103,8 +945,6 @@ class NewRepeatedEventViewController: UIViewController {
         view.addSubview(navigationBar)
         
         let navigationBarConstraints : [NSLayoutConstraint] = [
-            
-            //NSLayoutConstraint(item: navigationBar, attribute: .Top, relatedBy: .Equal, toItem: nil, attribute: .NotAnAttribute, multiplier: 0, constant: UIApplication.sharedApplication().statusBarFrame.size.height),
             navigationBar.topAnchor.constraintEqualToAnchor(topLayoutGuide.bottomAnchor),
             navigationBar.leftAnchor.constraintEqualToAnchor(view.leftAnchor),
             navigationBar.rightAnchor.constraintEqualToAnchor(view.rightAnchor)
@@ -1130,10 +970,12 @@ class NewRepeatedEventViewController: UIViewController {
     }
     
     func cancel(sender: UIBarItem) {
+        
         self.dismissViewControllerAnimated(true, completion: nil)
     }
     
     func add(sender: UIBarItem) {
+        
         var eventTitle : String?
         var eventType : EventType?
         var timeOfDayOffsetInSeconds : NSTimeInterval?
@@ -1141,18 +983,9 @@ class NewRepeatedEventViewController: UIViewController {
         var OccursOnDays: [Weekday] = []
         var note : String?
         
-        print(self.presentingViewController?.childViewControllers)
-        
-        var relvc : UIViewController?
-        
-        //use static instance 
-        for vc in (self.presentingViewController?.childViewControllers)! {
-            if vc is RepeatedEventManagerViewController {
-                relvc = vc
-            }
-        }
-        
-        let presenting = relvc as! RepeatedEventManagerViewController
+        //TODO
+        //testing needed
+        //believe there are few bugs here, needs more rigorous testing to ensure events are added properly with various test cases
         
         if form?.eventTitle != nil {
             if form?.eventTitle?.characters.count > 16 {
@@ -1170,7 +1003,6 @@ class NewRepeatedEventViewController: UIViewController {
         }
         
         if form?.eventType != nil {
-            print(form?.eventType)
             eventType = form?.eventType
         } else {
             UINotifications.genericError(self, msg: "Event type required.")
@@ -1196,7 +1028,6 @@ class NewRepeatedEventViewController: UIViewController {
         }
         
         if form?.selectedDays.count > 0 {
-            print(form?.selectedDays)
             if let selectedDays = form?.selectedDays {
                 for day in Array<Int>(selectedDays) {
                     if let weekday = Weekday(rawValue: day + 1) {
@@ -1210,23 +1041,20 @@ class NewRepeatedEventViewController: UIViewController {
             return
         }
         
-        print("\(OccursOnDays)")
         note = form?.note
         
         let event = Event(nameOfEvent: eventTitle!, typeOfEvent: eventType!, timeOfDayOffsetInSeconds: timeOfDayOffsetInSeconds!, durationInSeconds: durationInSeconds!, additionalInfo: note)
         
         //must check if event conflicts with any other existing events
         
-        let check = presenting.events.addRepeatedEvent(RepeatedEvent: RepeatedEvent(metabolicEvent: event, daysOfWeekOccurs: OccursOnDays))
+        let check = RepeatedEventsOrganizer.shared.addRepeatedEvent(RepeatedEvent: RepeatedEvent(metabolicEvent: event, daysOfWeekOccurs: OccursOnDays))
         
         if !check {
             UINotifications.genericError(self, msg: "Event conflicts with existing event.")
             return
         }
-        
-        presenting.loadData()
+
         self.dismissViewControllerAnimated(true, completion: nil)
-        print("added")
         
     }
 }
@@ -1338,7 +1166,7 @@ final class RepeatedEventFormViewController: FormViewController {
                 
                 $0.datePicker.datePickerMode = .Time
                 $0.datePicker.minuteInterval = 30
-
+                
             }.onDateChanged { time in
                 if let start = self.timeOfDayOffsetInSeconds {
                     var end : NSTimeInterval = 0
@@ -1528,4 +1356,3 @@ class DaySelectionViewController: UIViewController {
         }
     }
 }
- */

@@ -62,7 +62,7 @@ class CircadianBehaviorViewController: UITabBarController {
         let eventInboxViewController = EventInboxViewController()
         eventInboxViewController.tabBarItem = UITabBarItem(title: "Event Inbox", image: resizeImage(image: UIImage(named: "download-box-4"), scaledToSize: CGSizeMake(30, 30)), selectedImage: resizeImage(image: UIImage(named: "download-box-5"), scaledToSize: CGSizeMake(30, 30)))
         
-        let repeatedEventManagerViewController = RepeatedEventManagerViewController()
+        let repeatedEventManagerViewController = RepeatedEventManagerViewController.sharedManager
         repeatedEventManagerViewController.tabBarItem = UITabBarItem(title: "Repeated Events", image: resizeImage(image: UIImage(named: "image-logo"), scaledToSize: CGSizeMake(30, 30)), selectedImage: resizeImage(image: UIImage(named: "image-logo"), scaledToSize: CGSizeMake(30, 30)))
         
         let spacerForAddEventButton = UIViewController()
