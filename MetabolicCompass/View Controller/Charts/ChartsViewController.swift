@@ -36,18 +36,7 @@ class ChartsViewController: UIViewController {
         chartCollectionDataSource.model = chartsModel
         collectionView.delegate = chartCollectionDelegate
         collectionView.dataSource = chartCollectionDataSource
-    }
-    
-    override func viewWillAppear(animated: Bool) {
-        super.viewWillAppear(animated)
-        getChartsData()
-    }
-    
-    //MARK: Base preparation
-    
-    func getChartsData () {
         
-        let group = dispatch_group_create()
         for qType in PreviewManager.supportedTypes {
             if qType.identifier == HKCategoryTypeIdentifierSleepAnalysis {
                 continue
@@ -60,12 +49,34 @@ class ChartsViewController: UIViewController {
                 // Fallback on earlier versions
             }
             chartCollectionDataSource.data.append(qType.identifier)
+        }
+    }
+    
+    override func viewWillAppear(animated: Bool) {
+        super.viewWillAppear(animated)
+        getChartsData()
+    }
+    
+    //MARK: Base preparation
+    
+    func getChartsData () {
+        let group = dispatch_group_create()
+        for qType in PreviewManager.supportedTypes {
+            if qType.identifier == HKCategoryTypeIdentifierSleepAnalysis {
+                continue
+            }
+            if #available(iOS 9.3, *) {
+                if qType.identifier == HKQuantityTypeIdentifierAppleExerciseTime {
+                    continue
+                }
+            } else {
+                // Fallback on earlier versions
+            }
             dispatch_group_enter(group)
             chartsModel.getAllRangesDataForType(qType.identifier == HKCorrelationTypeIdentifierBloodPressure ? HKQuantityTypeIdentifierBloodPressureSystolic : qType.identifier) {
                 dispatch_group_leave(group)
             }
         }
-        
         dispatch_group_notify(group, dispatch_get_main_queue()) {
             self.collectionView.reloadData()
         }
