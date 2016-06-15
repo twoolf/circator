@@ -9,7 +9,7 @@
 import Foundation
 import UIKit
 import Charts
-
+import HealthKit
 
 class ChartCollectionDataSource: NSObject, UICollectionViewDataSource {
 
@@ -28,7 +28,7 @@ class ChartCollectionDataSource: NSObject, UICollectionViewDataSource {
     func collectionView(collectionView: UICollectionView, cellForItemAtIndexPath indexPath: NSIndexPath) -> UICollectionViewCell {
         let cell: BaseChartCollectionCell
         
-        let typeToShow = data[indexPath.row]
+        let typeToShow = data[indexPath.row] == HKCorrelationTypeIdentifierBloodPressure ? HKQuantityTypeIdentifierBloodPressureSystolic : data[indexPath.row]
         let chartType: ChartType = (model?.chartTypeForQuantityTypeIdentifier(typeToShow))!
         let key = typeToShow + "\((model?.rangeType.rawValue)!)"
         let chartData = model?.typesChartData[key]
@@ -44,7 +44,7 @@ class ChartCollectionDataSource: NSObject, UICollectionViewDataSource {
             cell.updateLeftAxisWith(chartData?.yMin, maxValue: chartData?.yMax)
             cell.chartView.data = chartData
         }
-        cell.chartTitleLabel.text = appearanceProvider.stringForSampleType(typeToShow)
+        cell.chartTitleLabel.text = appearanceProvider.stringForSampleType(typeToShow == HKQuantityTypeIdentifierBloodPressureSystolic ? HKCorrelationTypeIdentifierBloodPressure : typeToShow)
         return cell
     }
     
