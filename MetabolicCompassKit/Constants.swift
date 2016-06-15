@@ -605,16 +605,20 @@ public struct HMConstants
     //
     // TODO: the following types have a more complex mapping.
     // HKCorrelationTypeIdentifierBloodPressure          : "BP",            // Maps to individual components.
-    // HKQuantityTypeIdentifierDistanceWalkingRunning    : "Distance",      // Activity
-    // HKQuantityTypeIdentifierFlightsClimbed            : "Climbed",       // Activity
-    // HKQuantityTypeIdentifierStepCount                 : "Steps",         // Activity
-    // HKObjectType.workoutType().identifier             : "Workouts/Meals" // Activity/Meal
     //
     // TODO: the following types should be stored as profile attribute:
     // HKCharacteristicTypeIdentifierBloodType           : "Blood type",
     // HKCharacteristicTypeIdentifierBiologicalSex       : "Sex",
     // HKCharacteristicTypeIdentifierFitzpatrickSkinType : "Skin type",
     //
+
+    // HealthKit quantity types that should query activity values subcomponents.
+    public let hkQuantityToMCDBActivity : [String: (String, String)] = [
+        HKQuantityTypeIdentifierDistanceWalkingRunning    : ("distance_walking_running", "distance"),
+        HKQuantityTypeIdentifierFlightsClimbed            : ("flights_climbed", "flights"),
+        HKQuantityTypeIdentifierStepCount                 : ("step_count", "step_count")
+    ]
+
     public let hkToMCDB : [String: String] = [
         HKCategoryTypeIdentifierAppleStandHour            : "apple_stand_hour",
         HKCategoryTypeIdentifierSleepAnalysis             : "sleep_duration",
@@ -751,6 +755,67 @@ public struct HMConstants
         "peripheral_perfusion_index"          : HKQuantityTypeIdentifierPeripheralPerfusionIndex  ,
         "respiratory_rate"                    : HKQuantityTypeIdentifierRespiratoryRate           ,
         "uv_exposure"                         : HKQuantityTypeIdentifierUVExposure
+    ]
+
+    public let hkActivityToMCDB : [HKWorkoutActivityType: String] = [
+        .AmericanFootball             : "american_football"               ,
+        .Archery                      : "archery"                         ,
+        .AustralianFootball           : "australian_football"             ,
+        .Badminton                    : "badminton"                       ,
+        .Baseball                     : "baseball"                        ,
+        .Basketball                   : "basketball"                      ,
+        .Bowling                      : "bowling"                         ,
+        .Boxing                       : "boxing"                          ,
+        .Climbing                     : "climbing"                        ,
+        .Cricket                      : "cricket"                         ,
+        .CrossTraining                : "cross_training"                  ,
+        .Curling                      : "curling"                         ,
+        .Cycling                      : "cycling"                         ,
+        .Dance                        : "dance"                           ,
+        .DanceInspiredTraining        : "dance_inspired_training"         ,
+        .Elliptical                   : "elliptical"                      ,
+        .EquestrianSports             : "equestrian_sports"               ,
+        .Fencing                      : "fencing"                         ,
+        .Fishing                      : "fishing"                         ,
+        .FunctionalStrengthTraining   : "functional_strength_training"    ,
+        .Golf                         : "golf"                            ,
+        .Gymnastics                   : "gymnastics"                      ,
+        .Handball                     : "handball"                        ,
+        .Hiking                       : "hiking"                          ,
+        .Hockey                       : "hockey"                          ,
+        .Hunting                      : "hunting"                         ,
+        .Lacrosse                     : "lacrosse"                        ,
+        .MartialArts                  : "martial_arts"                    ,
+        .MindAndBody                  : "mind_and_body"                   ,
+        .MixedMetabolicCardioTraining : "mixed_metabolic_cardio_training" ,
+        .PaddleSports                 : "paddle_sports"                   ,
+        .Play                         : "play"                            ,
+        .PreparationAndRecovery       : "preparation_and_recovery"        ,
+        .Racquetball                  : "racquetball"                     ,
+        .Rowing                       : "rowing"                          ,
+        .Rugby                        : "rugby"                           ,
+        .Running                      : "running"                         ,
+        .Sailing                      : "sailing"                         ,
+        .SkatingSports                : "skating_sports"                  ,
+        .SnowSports                   : "snow_sports"                     ,
+        .Soccer                       : "soccer"                          ,
+        .Softball                     : "softball"                        ,
+        .Squash                       : "squash"                          ,
+        .StairClimbing                : "stair_climbing"                  ,
+        .SurfingSports                : "surfing_sports"                  ,
+        .Swimming                     : "swimming"                        ,
+        .TableTennis                  : "table_tennis"                    ,
+        .Tennis                       : "tennis"                          ,
+        .TrackAndField                : "track_and_field"                 ,
+        .TraditionalStrengthTraining  : "traditional_strength_training"   ,
+        .Volleyball                   : "volleyball"                      ,
+        .Walking                      : "walking"                         ,
+        .WaterFitness                 : "water_fitness"                   ,
+        .WaterPolo                    : "water_polo"                      ,
+        .WaterSports                  : "water_sports"                    ,
+        .Wrestling                    : "wrestling"                       ,
+        .Yoga                         : "yoga"                            ,
+        .Other                        : "other"
     ]
 }
 

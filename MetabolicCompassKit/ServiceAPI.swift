@@ -137,7 +137,7 @@ enum MCRouter : URLRequestConvertible {
     case DeleteAccount
 
     // Token management API
-    case TokenExpiry([String: AnyObject])
+    case TokenExpiry
 
     var method: Alamofire.Method {
         switch self {
@@ -209,8 +209,8 @@ enum MCRouter : URLRequestConvertible {
         case .SetUserAccountData(let parameters):
             return Alamofire.ParameterEncoding.JSON.encode(mutableURLRequest, parameters: parameters).0
 
-        case .TokenExpiry(let parameters):
-            return Alamofire.ParameterEncoding.JSON.encode(mutableURLRequest, parameters: parameters).0
+        case .TokenExpiry:
+            return mutableURLRequest
         }
     }
 

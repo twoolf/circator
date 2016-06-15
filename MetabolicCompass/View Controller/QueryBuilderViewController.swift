@@ -8,6 +8,7 @@
 
 import MetabolicCompassKit
 import UIKit
+import HealthKit
 import Former
 import HTPressableButton
 import MGSwipeTableCell
@@ -33,11 +34,12 @@ class QueryBuilderViewController: UIViewController, UITextFieldDelegate {
     let queryTableView: UITableView = UITableView(frame: CGRect.zero, style: .Plain)
     lazy var former: Former = Former(tableView: self.queryTableView)
 
+    // TODO: meal/activity attributes.
+    // TODO: humanize attribute names.
     static let attributeOptions =
         PreviewManager.supportedTypes.flatMap { type in
             HMConstants.sharedInstance.hkToMCDB[type.identifier]
         }
-        // PopulationHealthManager.attributeNamesBySampleType.map { (key, value) in value.1 }
 
     static let aggregateOperators = ["avg", "min", "max"]
 
@@ -267,7 +269,23 @@ class QueryBuilderViewController: UIViewController, UITextFieldDelegate {
 
     func addPredicate(sender: UIButton) {
         if ( !(lowerBound == nil && upperBound == nil) ) {
-            let pred = (Aggregate(rawValue: aggregateSelected)!, attribute, lowerBound, upperBound)
+
+            // TODO: meal/activity info based on attribute information.
+            var hkType : HKObjectType? = nil
+            let hkIdentifier = HMConstants.sharedInstance.mcdbToHK[attribute]!
+
+            switch hkIdentifier {
+            case HKCategoryTypeIdentifierSleepAnalysis:
+                hkType = HKObjectType.categoryTypeForIdentifier(hkIdentifier)!
+            case HKCategoryTypeIdentifierAppleStandHour:
+                hkType = HKObjectType.categoryTypeForIdentifier(hkIdentifier)!
+            default:
+                hkType = HKObjectType.quantityTypeForIdentifier(hkIdentifier)!
+            }
+
+            let mcQueryAttr : MCQueryAttribute = (hkType!, nil)
+            let pred = (Aggregate(rawValue: aggregateSelected)!, mcQueryAttr, lowerBound, upperBound)
+
             dataTableView.predicates.append(pred)
             dataTableView.reloadData()
         } else {
@@ -290,7 +308,7 @@ class QueryBuilderViewController: UIViewController, UITextFieldDelegate {
 
 class PredicateTableView : UITableView, UITableViewDelegate, UITableViewDataSource {
 
-    var predicates : [(Aggregate, String, String?, String?)] = []
+    var predicates : [MCQueryPredicate] = []
 
     override init(frame: CGRect, style: UITableViewStyle) {
         super.init(frame: frame, style: style)
@@ -320,19 +338,20 @@ class PredicateTableView : UITableView, UITableViewDelegate, UITableViewDataSour
         let cell = tableView.dequeueReusableCellWithIdentifier("predicateCell", forIndexPath: indexPath) as! MGSwipeTableCell
 
         cell.backgroundColor = Theme.universityDarkTheme.backgroundColor
-        let (aggr,attr,lb,ub) = predicates[indexPath.row]
+        let (aggr,mcattr,lb,ub) = predicates[indexPath.row]
         let aggstr = QueryBuilderViewController.aggregateOperators[aggr.rawValue]
+        let attrstr = HMConstants.sharedInstance.hkToMCDB[mcattr.0.identifier]
 
         var celltxt = "<invalid>"
         if let lbstr = lb {
             if let ubstr = ub {
-                celltxt = "\(lbstr) <= \(aggstr)(\(attr)) <= \(ubstr)"
+                celltxt = "\(lbstr) <= \(aggstr)(\(attrstr)) <= \(ubstr)"
             } else {
-                celltxt = "\(lbstr) <= \(aggstr)(\(attr))"
+                celltxt = "\(lbstr) <= \(aggstr)(\(attrstr))"
             }
         } else {
             if let ubstr = ub {
-                celltxt = "\(aggstr)(\(attr)) <= \(ubstr)"
+                celltxt = "\(aggstr)(\(attrstr)) <= \(ubstr)"
             }
         }
 

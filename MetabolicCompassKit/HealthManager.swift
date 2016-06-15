@@ -255,15 +255,17 @@ public class HealthManager: NSObject, WCSessionDelegate {
 
         case is HKQuantityType:
             let qType = sampleType as! HKQuantityType
-            switch qType.aggregationStyle{
+
+            let interval = NSDateComponents()
+            interval.day = 1
+
+            // Set the anchor date to midnight today.
+            let anchorDate = NSDate().startOf(.Day, inRegion: Region())
+            let quantityType = HKObjectType.quantityTypeForIdentifier(sampleType.identifier)!
+
+            switch qType.aggregationStyle {
                 case .Discrete:
-                    let interval = NSDateComponents()
-                    interval.day = 1
-                    
-                    // Set the anchor date to midnight today.
-                    let anchorDate = NSDate().startOf(.Day, inRegion: Region())
-                    let quantityType = HKObjectType.quantityTypeForIdentifier(sampleType.identifier)!
-                    
+
                     // Create the query
                     let query = HKStatisticsCollectionQuery(quantityType: quantityType,
                                                             quantitySamplePredicate: predicate,
@@ -283,8 +285,20 @@ public class HealthManager: NSObject, WCSessionDelegate {
                     healthKitStore.executeQuery(query)
                 
                 case .Cumulative:
-                    // do not calvulate average statistic for Cumulative types
-                    break
+
+                    let predicate = HKQuery.predicateForSamplesWithStartDate(anchorDate, endDate: NSDate(), options: .StrictStartDate)
+
+                    let query = HKStatisticsQuery(quantityType: quantityType, quantitySamplePredicate: predicate, options: .CumulativeSum) {
+                        query, result, error in
+                        guard error == nil else {
+                            log.error("Failed to fetch \(sampleType.displayText) statistics: \(error!)")
+                            completion(samples: [], error: error)
+                            return
+                        }
+                        completion(samples: (result == nil ? [] : [result! as MCSample]) ?? [], error: nil)
+                    }
+                    
+                    healthKitStore.executeQuery(query)
             }
 
         default:

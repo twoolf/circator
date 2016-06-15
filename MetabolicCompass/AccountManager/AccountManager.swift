@@ -102,8 +102,8 @@ class AccountManager: NSObject {
         }
 
         withHKCalAuth {
-            UserManager.sharedManager.ensureAccessToken { ok in
-                guard ok else {
+            UserManager.sharedManager.ensureAccessToken { error in
+                guard !error else {
                     Async.main() {
                         self.doLogin (animated) { self.loginComplete() }
                     }
