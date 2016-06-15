@@ -20,6 +20,7 @@ enum DataRangeType : Int {
 class ChartsViewController: UIViewController {
 
     @IBOutlet weak var collectionView: UICollectionView!
+    @IBOutlet weak var activityIndicator: UIActivityIndicatorView!
     private var rangeType = DataRangeType.Week
     private let barChartCellIdentifier = "BarChartCollectionCell"
     private let lineChartCellIdentifier = "LineChartCollectionCell"
@@ -60,6 +61,9 @@ class ChartsViewController: UIViewController {
     //MARK: Base preparation
     
     func getChartsData () {
+        if chartsModel.typesChartData.count == 0 {
+            activityIndicator.startAnimating()
+        }
         let group = dispatch_group_create()
         for qType in PreviewManager.supportedTypes {
             if qType.identifier == HKCategoryTypeIdentifierSleepAnalysis {
@@ -78,6 +82,7 @@ class ChartsViewController: UIViewController {
             }
         }
         dispatch_group_notify(group, dispatch_get_main_queue()) {
+            self.activityIndicator.stopAnimating()
             self.collectionView.reloadData()
         }
     }
