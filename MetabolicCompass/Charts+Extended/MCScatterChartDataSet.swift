@@ -21,12 +21,48 @@ class MCScatterChartDataSet: ScatterChartDataSet {
         super.init()
     }
     
+    override internal var yMin: Double {
+        get {
+            var entryValues: [Double] = []
+            for dataEntry in self.yVals {
+                let entry = dataEntry as? BarChartDataEntry
+                if let values = entry?.values where values.count > 0 {
+                    entryValues += values
+                } else {
+                    entryValues.append(dataEntry.value)
+                }
+            }
+            if entryValues.count > 0 {
+                return entryValues.reduce(entryValues[0], combine: { min($0, $1) })
+            }
+            return 0
+        }
+    }
+    
+    override internal var yMax: Double {
+        get {
+            var entryValues: [Double] = []
+            for dataEntry in self.yVals {
+                let entry = dataEntry as? BarChartDataEntry
+                if let values = entry?.values where values.count > 0 {
+                    entryValues += values
+                } else {
+                    entryValues.append(dataEntry.value)
+                }
+            }
+            if entryValues.count > 0 {
+                return entryValues.reduce(entryValues[0], combine: { max($0, $1) })
+            }
+            return 0.0
+        }
+    }
+    
     override init(yVals: [ChartDataEntry]?, label: String?) {
         super.init(yVals: yVals, label: label)
         self.scatterShapeHoleColor = UIColor(colorLiteralRed: 51.0/255.0, green: 138.0/255.0, blue: 255.0/255.0, alpha: 1.0)
         self.colors = [UIColor.whiteColor()]
     }
-
+    
     var dataSetType: DataSetType = .HartRate {
         didSet {
             switch self.dataSetType {
