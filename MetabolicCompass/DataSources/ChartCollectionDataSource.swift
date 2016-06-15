@@ -14,25 +14,32 @@ import Charts
 class ChartCollectionDataSource: NSObject, UICollectionViewDataSource {
 
     internal var collectionData: [ChartData] = []
-    
+    internal var model: BarChartModel?
+    internal var data: [String] = []
     private let barChartCellIdentifier = "BarChartCollectionCell"
     private let lineChartCellIdentifier = "LineChartCollectionCell"
     private let scatterChartCellIdentifier = "ScatterChartCollectionCell"
     
     func collectionView(collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        return collectionData.count
+        return data.count
     }
     
     func collectionView(collectionView: UICollectionView, cellForItemAtIndexPath indexPath: NSIndexPath) -> UICollectionViewCell {
         let cell: BaseChartCollectionCell
-        if (indexPath.row % 3 == 0) {
+        
+        let typeToShow = data[indexPath.row]
+        let chartType: ChartType = (model?.chartTypeForQuantityTypeIdentifier(typeToShow))!
+        let key = typeToShow + "\((model?.rangeType.rawValue)!)"
+        let chartData = model?.typesChartData[key]
+        if(chartType == ChartType.BarChart) {
             cell = collectionView.dequeueReusableCellWithReuseIdentifier(barChartCellIdentifier, forIndexPath: indexPath) as! BarChartCollectionCell
-        } else if (indexPath.row % 2 == 0){
-            cell = collectionView.dequeueReusableCellWithReuseIdentifier(scatterChartCellIdentifier, forIndexPath: indexPath) as! ScatterChartCollectionCell
-        } else {
+        } else if (chartType == ChartType.LineChart) {
             cell = collectionView.dequeueReusableCellWithReuseIdentifier(lineChartCellIdentifier, forIndexPath: indexPath) as! LineChartCollectionCell
+        } else {//Scatter chart
+            cell = collectionView.dequeueReusableCellWithReuseIdentifier(scatterChartCellIdentifier, forIndexPath: indexPath) as! ScatterChartCollectionCell
         }
-        cell.chartView.data = collectionData[indexPath.row]
+        cell.updateLeftAxisWith(chartData?.yMin, maxValue: chartData?.yMax)
+        cell.chartView.data = chartData
         return cell
     }
     

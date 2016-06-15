@@ -39,15 +39,8 @@ class BaseChartCollectionCell: UICollectionViewCell {
         xAxis.labelTextColor = UIColor.whiteColor()
         xAxis.axisLineColor = UIColor.whiteColor()
         
-        let topLimit = ChartLimitLine(limit:50)
-        topLimit.lineWidth = 1
-        topLimit.lineDashLengths = [3.0, 3.0]
-        topLimit.lineColor = UIColor.whiteColor()
-        
         let leftAxis = chart.leftAxis
-        leftAxis.addLimitLine(topLimit)
-        leftAxis.axisMaxValue = 50.0
-        leftAxis.axisMinValue = 0.0
+        
         leftAxis.drawLimitLinesBehindDataEnabled = true
         leftAxis.drawAxisLineEnabled = false
         leftAxis.drawGridLinesEnabled = false
@@ -55,7 +48,7 @@ class BaseChartCollectionCell: UICollectionViewCell {
         
         let rightAxis = chart.rightAxis
         rightAxis.enabled = false
-            
+        
         chart.descriptionText = ""
         chart.legend.enabled = false
         chart.legend.formSize = 0
@@ -64,6 +57,21 @@ class BaseChartCollectionCell: UICollectionViewCell {
         chart.drawMarkers = true
         chart.scaleXEnabled = false
         chart.scaleYEnabled = false
+    }
+    
+    func updateLeftAxisWith(minValue: Double?, maxValue: Double?) {        
+        let leftAxis = chartView.leftAxis
+        leftAxis.removeAllLimitLines()
+        if let maxValue = maxValue, let minValue = minValue {
+            let topLimitMax = maxValue + (maxValue/3)
+            let topLimit = ChartLimitLine(limit:topLimitMax)
+            topLimit.lineWidth = 1
+            topLimit.lineDashLengths = [3.0, 3.0]
+            topLimit.lineColor = UIColor.whiteColor()
+            leftAxis.axisMaxValue = topLimitMax
+            leftAxis.axisMinValue = minValue - (minValue/3)
+            leftAxis.addLimitLine(topLimit)
+        }
     }
     
     func getChartMarker() -> BalloonMarker {
