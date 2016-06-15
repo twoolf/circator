@@ -702,11 +702,11 @@
 		95748C3E1CCFC7350002F6A3 /* Cells */ = {
 			isa = PBXGroup;
 			children = (
+				842B7DCA1D0960C0007F2126 /* BaseChartCollectionCell.swift */,
 				842B7DCC1D0960CB007F2126 /* LineChartCollectionCell.swift */,
 				842B7DCD1D0960CB007F2126 /* LineChartCollectionCell.xib */,
 				842B7DCE1D0960CB007F2126 /* ScatterChartCollectionCell.swift */,
 				842B7DCF1D0960CB007F2126 /* ScatterChartCollectionCell.xib */,
-				842B7DCA1D0960C0007F2126 /* BaseChartCollectionCell.swift */,
 				842B7DC61D0960A7007F2126 /* BarChartCollectionCell.swift */,
 				842B7DC71D0960A7007F2126 /* BarChartCollectionCell.xib */,
 				84EF0EC91D058A9000A25760 /* BaseAddEventTableViewCell.swift */,
