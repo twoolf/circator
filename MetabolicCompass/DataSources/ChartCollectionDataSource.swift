@@ -16,6 +16,7 @@ class ChartCollectionDataSource: NSObject, UICollectionViewDataSource {
     internal var collectionData: [ChartData] = []
     internal var model: BarChartModel?
     internal var data: [String] = []
+    private let appearanceProvider = DashboardMetricsAppearanceProvider()
     private let barChartCellIdentifier = "BarChartCollectionCell"
     private let lineChartCellIdentifier = "LineChartCollectionCell"
     private let scatterChartCellIdentifier = "ScatterChartCollectionCell"
@@ -38,8 +39,12 @@ class ChartCollectionDataSource: NSObject, UICollectionViewDataSource {
         } else {//Scatter chart
             cell = collectionView.dequeueReusableCellWithReuseIdentifier(scatterChartCellIdentifier, forIndexPath: indexPath) as! ScatterChartCollectionCell
         }
-        cell.updateLeftAxisWith(chartData?.yMin, maxValue: chartData?.yMax)
-        cell.chartView.data = chartData
+        cell.chartView.data = nil
+        if let yMax = chartData?.yMax, yMin = chartData?.yMin where yMax > 0 || yMin > 0 {
+            cell.updateLeftAxisWith(chartData?.yMin, maxValue: chartData?.yMax)
+            cell.chartView.data = chartData
+        }
+        cell.chartTitleLabel.text = appearanceProvider.stringForSampleType(typeToShow)
         return cell
     }
     

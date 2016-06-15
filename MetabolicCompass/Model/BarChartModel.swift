@@ -156,7 +156,7 @@ class BarChartModel : NSObject {
     private func barChartDataWith(xVals: [String], yVals: [ChartDataEntry]) -> BarChartData {
         let daysDataSet = BarChartDataSet(yVals: yVals, label: "")
         daysDataSet.barSpace = 0.9
-        daysDataSet.colors = [UIColor .whiteColor()]
+        daysDataSet.colors = [UIColor.colorWithHexString("#ffffff", alpha: 0.8)!]
         daysDataSet.drawValuesEnabled = false
 
         let barChartData = BarChartData(xVals: xVals, dataSets: [daysDataSet])
@@ -252,7 +252,7 @@ class BarChartModel : NSObject {
                 }
                 
             } else if type == HKCategoryTypeIdentifierSleepAnalysis {
-                
+//                HealthManager.sharedManager.getStatisticsForSleepInPeriod(period)
             } else {
                 HealthManager.sharedManager.getStatisticForPeriod(period, forType: type) { (statisticsVlues) in
                     let key = type + "\(period.rawValue)"

@@ -34,11 +34,6 @@ class ChartsViewController: UIViewController {
         upateNavigationBar()
         registerCells()
         chartCollectionDataSource.model = chartsModel
-        chartCollectionDataSource.data = [HKQuantityTypeIdentifierBloodPressureSystolic,
-                                          HKQuantityTypeIdentifierHeartRate,
-                                          HKQuantityTypeIdentifierUVExposure,
-                                          HKQuantityTypeIdentifierDietaryProtein,
-                                          HKQuantityTypeIdentifierStepCount]//get from manage charts
         collectionView.delegate = chartCollectionDelegate
         collectionView.dataSource = chartCollectionDataSource
     }
@@ -52,16 +47,21 @@ class ChartsViewController: UIViewController {
     
     func getChartsData () {
         
-        let dataToGet = [HKQuantityTypeIdentifierBloodPressureSystolic,
-                         HKQuantityTypeIdentifierHeartRate,
-                         HKQuantityTypeIdentifierUVExposure,
-                         HKQuantityTypeIdentifierDietaryProtein,
-                         HKQuantityTypeIdentifierStepCount]
         let group = dispatch_group_create()
-        
-        for qType in dataToGet {
+        for qType in PreviewManager.supportedTypes {
+            if qType.identifier == HKCategoryTypeIdentifierSleepAnalysis {
+                continue
+            }
+            if #available(iOS 9.3, *) {
+                if qType.identifier == HKQuantityTypeIdentifierAppleExerciseTime {
+                    continue
+                }
+            } else {
+                // Fallback on earlier versions
+            }
+            chartCollectionDataSource.data.append(qType.identifier)
             dispatch_group_enter(group)
-            chartsModel.getAllRangesDataForType(qType) {
+            chartsModel.getAllRangesDataForType(qType.identifier == HKCorrelationTypeIdentifierBloodPressure ? HKQuantityTypeIdentifierBloodPressureSystolic : qType.identifier) {
                 dispatch_group_leave(group)
             }
         }
