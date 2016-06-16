@@ -215,13 +215,17 @@ func serializeQueries(qs: Queries) -> [[String: AnyObject]] {
     return qs.map { (n,q) in
         switch q {
         case .ConjunctiveQuery(let start, let end, let columns, let conjuncts):
-            return [
-                NKey: n,
-                SKey: start!,
-                EKey: end!,
-                CKey: columns!.map(serializeMCQueryAttribute),
-                QKey: conjuncts.map(serializeMCQueryPredicate)
-            ]
+            var result : [String:AnyObject] = [NKey: n, QKey: conjuncts.map(serializeMCQueryPredicate)]
+            if start != nil {
+                result[SKey] = start!
+            }
+            if end != nil {
+                result[EKey] = end!
+            }
+            if columns != nil {
+                result[CKey] = columns!.map(serializeMCQueryAttribute)
+            }
+            return result
         }
     }
 }
@@ -236,10 +240,10 @@ func deserializeMCQueryPredicate(p: [String: AnyObject]) -> MCQueryPredicate {
 func deserializeQueries(qs: [[String: AnyObject]]) -> Queries {
     return qs.map { dict in
         let name    = dict[NKey] as! String
-        let start   = dict[SKey] as! NSDate?
-        let end     = dict[EKey] as! NSDate?
-        let columns = dict[CKey] as! [MCQueryAttribute]?
         let preds   = (dict[QKey] as! [[String: AnyObject]]).map(deserializeMCQueryPredicate)
+        let start   = dict[SKey] as? NSDate
+        let end     = dict[EKey] as? NSDate
+        let columns = dict[CKey] as? [MCQueryAttribute]
         return (name, .ConjunctiveQuery(start, end, columns, preds))
     }
 }
