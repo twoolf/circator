@@ -114,6 +114,7 @@ class DashboardFilterController: UIViewController, UITableViewDelegate, UITableV
 
     func tableView(tableView: UITableView, didSelectRowAtIndexPath indexPath: NSIndexPath) {
         let cell = tableView.cellForRowAtIndexPath(indexPath) as? DashboardFilterCell
+        let filterItem = self.data[indexPath.section]
         let filterItems = self.data[indexPath.section].items
         let selectedItem = filterItems[indexPath.row]//See DashboardFilterCellData
         
@@ -134,29 +135,30 @@ class DashboardFilterController: UIViewController, UITableViewDelegate, UITableV
         }
         if let predicate = selectedItem.predicate {//get predicate based of selected item
             selectedRows["\(indexPath.section).\(indexPath.row)"] = QueryManager.sharedManager.getQueries().count//add item to selected rows and it's index
-//            let query = Query.ConjunctiveQuery(nil, nil, nil, [predicate])//cereate query
-//            QueryManager.sharedManager.addQuery("\(selectedItem.title)", query: query)//add query to query manager
+            let query = Query.ConjunctiveQuery(nil, nil, nil, [predicate])//cereate query
+            QueryManager.sharedManager.addQuery("\(filterItem.title)", query: query)//add query to query manager
         }
         cell?.didPressButton(self)//set cell as selected
     }
+    
     //MARK: Help
     func removeItemForKey(key: String) {
         if let queryIndex = selectedRows[key] {//removing query at index
-//            QueryManager.sharedManager.removeQuery(queryIndex)
+            QueryManager.sharedManager.removeQuery(queryIndex)
         }
         selectedRows.removeValueForKey(key)
     }
     
     func addData () {
         self.data = [DashboardFilterItem(title: "Weight",
-            items: [DashboardFilterCellData(title: "Under 90",
-                hkType: HKQuantityTypeIdentifierBodyMass, aggrType: Aggregate.AggMax, lowerBound: 0, upperBound: 90),
-                DashboardFilterCellData(title: "Between 90-140",
-                    hkType: HKQuantityTypeIdentifierBodyMass, aggrType: Aggregate.AggAvg, lowerBound: 90, upperBound: 140),
-                DashboardFilterCellData(title: "Between 140-200",
-                    hkType: HKQuantityTypeIdentifierBodyMass, aggrType: Aggregate.AggAvg, lowerBound: 140, upperBound: 200),
-                DashboardFilterCellData(title: "More than 200",
-                    hkType: HKQuantityTypeIdentifierBodyMass, aggrType: Aggregate.AggMin, lowerBound: 200, upperBound: Int.max)]),
+                        items: [DashboardFilterCellData(title: "Under 90",
+                                                        hkType: HKQuantityTypeIdentifierBodyMass, aggrType: Aggregate.AggMax, lowerBound: 0, upperBound: 90),
+                                DashboardFilterCellData(title: "Between 90-140",
+                                                        hkType: HKQuantityTypeIdentifierBodyMass, aggrType: Aggregate.AggAvg, lowerBound: 90, upperBound: 140),
+                                DashboardFilterCellData(title: "Between 140-200",
+                                                        hkType: HKQuantityTypeIdentifierBodyMass, aggrType: Aggregate.AggAvg, lowerBound: 140, upperBound: 200),
+                                DashboardFilterCellData(title: "More than 200",
+                                                        hkType: HKQuantityTypeIdentifierBodyMass, aggrType: Aggregate.AggMin, lowerBound: 200, upperBound: Int.max)]),
                      
                      DashboardFilterItem(title: "Body Mass Index",
                         items: [DashboardFilterCellData(title: "Under 18(underweight)",
@@ -342,20 +344,7 @@ class DashboardFilterController: UIViewController, UITableViewDelegate, UITableV
                         items: [DashboardFilterCellData(title: "Less than 60", hkType: HKQuantityTypeIdentifierBloodPressureDiastolic, aggrType: Aggregate.AggMax, lowerBound: 0, upperBound: 60),
                             DashboardFilterCellData(title: "Between 60-70", hkType: HKQuantityTypeIdentifierBloodPressureDiastolic, aggrType: Aggregate.AggAvg, lowerBound: 60, upperBound: 70),
                             DashboardFilterCellData(title: "Between 70-80", hkType: HKQuantityTypeIdentifierBloodPressureDiastolic, aggrType: Aggregate.AggAvg, lowerBound: 70, upperBound: 80),
-                            DashboardFilterCellData(title: "More than 80", hkType: HKQuantityTypeIdentifierBloodPressureDiastolic, aggrType: Aggregate.AggMin, lowerBound: 80, upperBound: Int.max)]),
-                     
-                     //                     DashboardFilterItem(title: "Fasting Duration",
-            //                        items: [DashboardFilterCellData(title: "Less than 8", hkType: HKQuantityTypeIdentifierDietarySodium, aggrType: Aggregate.AggMax, lowerBound: 0, upperBound: 1000),
-            //                            DashboardFilterCellData(title: "Between 8 and 12", hkType: HKQuantityTypeIdentifierDietarySodium, aggrType: Aggregate.AggMax, lowerBound: 0, upperBound: 1000),
-            //                            DashboardFilterCellData(title: "Between 12 and 16", hkType: HKQuantityTypeIdentifierDietarySodium, aggrType: Aggregate.AggMax, lowerBound: 0, upperBound: 1000),
-            //                            DashboardFilterCellData(title: "More than 16", hkType: HKQuantityTypeIdentifierDietarySodium, aggrType: Aggregate.AggMax, lowerBound: 0, upperBound: 1000)]),
-            //
-            //                     DashboardFilterItem(title: "Eating Duration",
-            //                        items: [DashboardFilterCellData(title: "Less than 8", hkType: HKQuantityTypeIdentifierDietarySodium, aggrType: Aggregate.AggMax, lowerBound: 0, upperBound: 1000),
-            //                            DashboardFilterCellData(title: "Between 8 and 12", hkType: HKQuantityTypeIdentifierDietarySodium, aggrType: Aggregate.AggMax, lowerBound: 0, upperBound: 1000),
-            //                            DashboardFilterCellData(title: "Between 12 and 16", hkType: HKQuantityTypeIdentifierDietarySodium, aggrType: Aggregate.AggMax, lowerBound: 0, upperBound: 1000),
-            //                            DashboardFilterCellData(title: "More than 16", hkType: HKQuantityTypeIdentifierDietarySodium, aggrType: Aggregate.AggMax, lowerBound: 0, upperBound: 1000)]),
-            
+                            DashboardFilterCellData(title: "More than 80", hkType: HKQuantityTypeIdentifierBloodPressureDiastolic, aggrType: Aggregate.AggMin, lowerBound: 80, upperBound: Int.max)])
         ]
         
         if #available(iOS 9.3, *) {
