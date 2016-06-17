@@ -86,7 +86,7 @@ class DashboardManageController: UIViewController, UITableViewDelegate, UITableV
          let cell = tableView.dequeueReusableCellWithIdentifier(cellIdentifier, forIndexPath: indexPath) as! ManageDashboardCell
         
         let item = self.data[indexPath.row]
-        cell.showsReorderControl         = false
+        cell.showsReorderControl = false
         cell.updateSelectionStatus(item.active, appearanceProvider: appearanceProvider, itemType: item.type)
         return cell;
     }

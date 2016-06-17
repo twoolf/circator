@@ -71,6 +71,7 @@
 		84B727AC1D13E5B100839E54 /* EventInboxViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84B727A91D13E5B100839E54 /* EventInboxViewController.swift */; };
 		84B727AD1D13E5B100839E54 /* RepeatedEventManagerViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84B727AA1D13E5B100839E54 /* RepeatedEventManagerViewController.swift */; };
 		84B727AF1D13E62200839E54 /* LogEventViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84B727AE1D13E62200839E54 /* LogEventViewController.swift */; };
+		84B727B11D13FB5A00839E54 /* ManageChartsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84B727B01D13FB5A00839E54 /* ManageChartsViewController.swift */; };
 		84C9CB471CE9B3A4005ED875 /* DailyProgressViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84C9CB461CE9B3A4005ED875 /* DailyProgressViewController.swift */; };
 		84C9CB491CE9BB76005ED875 /* MetabolicDailyProgressChartView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84C9CB481CE9BB76005ED875 /* MetabolicDailyProgressChartView.swift */; };
 		84C9CB4E1CEA0018005ED875 /* DailyChartModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84C9CB4D1CEA0018005ED875 /* DailyChartModel.swift */; };
@@ -368,6 +369,7 @@
 		84B727A91D13E5B100839E54 /* EventInboxViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = EventInboxViewController.swift; sourceTree = "<group>"; };
 		84B727AA1D13E5B100839E54 /* RepeatedEventManagerViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RepeatedEventManagerViewController.swift; sourceTree = "<group>"; };
 		84B727AE1D13E62200839E54 /* LogEventViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LogEventViewController.swift; sourceTree = "<group>"; };
+		84B727B01D13FB5A00839E54 /* ManageChartsViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ManageChartsViewController.swift; sourceTree = "<group>"; };
 		84C9CB461CE9B3A4005ED875 /* DailyProgressViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DailyProgressViewController.swift; sourceTree = "<group>"; };
 		84C9CB481CE9BB76005ED875 /* MetabolicDailyProgressChartView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = MetabolicDailyProgressChartView.swift; path = "../Charts+Extended/MetabolicDailyProgressChartView.swift"; sourceTree = "<group>"; };
 		84C9CB4D1CEA0018005ED875 /* DailyChartModel.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DailyChartModel.swift; sourceTree = "<group>"; };
@@ -685,6 +687,7 @@
 			isa = PBXGroup;
 			children = (
 				842B7DB61D095EF6007F2126 /* ChartsViewController.swift */,
+				84B727B01D13FB5A00839E54 /* ManageChartsViewController.swift */,
 			);
 			path = Charts;
 			sourceTree = "<group>";
@@ -1554,6 +1557,7 @@
 				84B727AC1D13E5B100839E54 /* EventInboxViewController.swift in Sources */,
 				78B7341E1C90B84600693229 /* ProfileSubviewController.swift in Sources */,
 				958568051CD0BF6300EDD385 /* BaseViewController.swift in Sources */,
+				84B727B11D13FB5A00839E54 /* ManageChartsViewController.swift in Sources */,
 				95C0B9A31CD2563B006E523F /* TitledInputCollectionViewCell.swift in Sources */,
 				958568121CD12B5200EDD385 /* RegisterModelDataSource.swift in Sources */,
 				84EF0EC01D0576B500A25760 /* AddEventViewController.swift in Sources */,
