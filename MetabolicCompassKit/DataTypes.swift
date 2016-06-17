@@ -380,6 +380,8 @@ public extension HKSampleType {
         case HKWorkoutTypeIdentifier:
             return HKUnit.hourUnit()
             
+        case HKQuantityTypeIdentifierDietaryFiber:
+            return HKUnit.gramUnit()
         default:
             return nil
         }
