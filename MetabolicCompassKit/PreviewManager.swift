@@ -209,7 +209,13 @@ public class PreviewManager: NSObject {
                 return NSKeyedUnarchiver.unarchiveObjectWithData(data) as! HKSampleType
             }
         } else {
-            let defaultTypes = Array(self.supportedTypes[0..<7])
+            let defaultTypes = [HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierBodyMass)!,
+                                HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierHeartRate)!,
+                                HKObjectType.categoryTypeForIdentifier(HKCategoryTypeIdentifierSleepAnalysis)!,
+                                HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierDietaryProtein)!,
+                                HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierDietarySugar)!,
+                                HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierDietaryFatPolyunsaturated)!,
+                                HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierDietaryWater)!]
             self.updateBalanceSampleTypes(defaultTypes)
             return defaultTypes
         }
