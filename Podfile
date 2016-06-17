@@ -38,7 +38,7 @@ abstract_target 'MetabolicCompassCommon' do
     pod 'JWTDecode', '~> 1.0'
     pod 'AKPickerView-Swift'
     pod 'AsyncKit'
-    pod 'Masonry'
+#    pod 'Masonry'
     pod 'PathMenu'
     
     target 'MetabolicCompassKit'

@@ -65,7 +65,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         let tabBarScreen = tabBarStoryboard.instantiateViewControllerWithIdentifier("TabBarController")
         mainViewController = tabBarScreen
 
-
 //        mainViewController = IntroViewController(nibName: nil, bundle: nil)
         let navController  = UINavigationController(rootViewController: mainViewController)
         AccountManager.shared.rootViewController = navController
@@ -75,9 +74,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 
         window?.rootViewController = navController
         window?.makeKeyAndVisible()
-        print("window \(window)")
-        AppLogViewController.addAppLogRecognizersToGlobalWindow()
-        Service.delegate = SALogger.sharedLogger
         
         return true
     }
