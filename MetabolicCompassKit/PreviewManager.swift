@@ -10,6 +10,9 @@ import HealthKit
 import SwiftyUserDefaults
 
 private let PMSampleTypesKey = DefaultsKey<[NSData]?>("previewSampleTypes")
+private let PMMangeSampleTypesKey = DefaultsKey<[NSData]?>("mangeSampleTypesKey")
+private let PMChartsSampleTypesKey = DefaultsKey<[NSData]?>("cahrtsSampleTypes")
+private let PMManageChartsSampleTypesKey = DefaultsKey<[NSData]?>("manageCahrtsSampleTypes")
 private let PMBalanceSampleTypesKey = DefaultsKey<[NSData]?>("balanceSampleTypes")
 public  let PMDidUpdateBalanceSampleTypesNotification = "PMDidUpdateBalanceSampleTypesNotification"
 /**
@@ -156,7 +159,7 @@ public class PreviewManager: NSObject {
         return Dictionary(pairs: previewIcons.map { (k,v) in return (k, UIImage(named: v)!) })
     }()
 
-    /// note archiver for retaining memory of picked metrics
+    //MARK: Preview Sample Types
     public static var previewSampleTypes: [HKSampleType] {
         if let rawTypes = Defaults[PMSampleTypesKey] {
             return rawTypes.map { (data) -> HKSampleType in
@@ -168,7 +171,7 @@ public class PreviewManager: NSObject {
             return defaultTypes
         }
     }
-
+    
     public static func updatePreviewSampleTypes (types: [HKSampleType]) {
 
         let rawTypes = types.map { (sampleType) -> NSData in
@@ -177,8 +180,29 @@ public class PreviewManager: NSObject {
 
         Defaults[PMSampleTypesKey] = rawTypes
     }
+    
+    public static var managePreviewSampleTypes: [HKSampleType] {
+        if let rawTypes = Defaults[PMMangeSampleTypesKey] {
+            return rawTypes.map { (data) -> HKSampleType in
+                return NSKeyedUnarchiver.unarchiveObjectWithData(data) as! HKSampleType
+            }
+        } else {
+            let defaultTypes = self.supportedTypes
+            self.updateMangePreviewSampleTypes(defaultTypes)
+            return defaultTypes
+        }
+    }
+    
+    public static func updateMangePreviewSampleTypes (types: [HKSampleType]) {
+        
+        let rawTypes = types.map { (sampleType) -> NSData in
+            return NSKeyedArchiver.archivedDataWithRootObject(sampleType)
+        }
+        
+        Defaults[PMMangeSampleTypesKey] = rawTypes
+    }
 
-    /// note archiver for retaining memory of picked metrics
+    //MARK: Balance Sample Types
     public static var balanceSampleTypes: [HKSampleType] {
         if let rawTypes = Defaults[PMBalanceSampleTypesKey] {
             return rawTypes.map { (data) -> HKSampleType in
@@ -200,7 +224,50 @@ public class PreviewManager: NSObject {
         Defaults[PMBalanceSampleTypesKey] = rawTypes
         NSNotificationCenter.defaultCenter().postNotificationName(PMDidUpdateBalanceSampleTypesNotification, object: nil)
     }
-
+    
+    //MARK: Charts Sample Types
+    public static var chartsSampleTypes: [HKSampleType] {
+        if let rawTypes = Defaults[PMChartsSampleTypesKey] {
+            return rawTypes.map { (data) -> HKSampleType in
+                return NSKeyedUnarchiver.unarchiveObjectWithData(data) as! HKSampleType
+            }
+        } else {
+            let defaultTypes = self.supportedTypes
+            self.updateChartsSampleTypes(defaultTypes)
+            return defaultTypes
+        }
+    }
+    
+    public static func updateChartsSampleTypes (types: [HKSampleType]) {
+        
+        let rawTypes = types.map { (sampleType) -> NSData in
+            return NSKeyedArchiver.archivedDataWithRootObject(sampleType)
+        }
+        
+        Defaults[PMChartsSampleTypesKey] = rawTypes
+    }
+    
+    public static var manageChartsSampleTypes: [HKSampleType] {
+        if let rawTypes = Defaults[PMManageChartsSampleTypesKey] {
+            return rawTypes.map { (data) -> HKSampleType in
+                return NSKeyedUnarchiver.unarchiveObjectWithData(data) as! HKSampleType
+            }
+        } else {
+            let defaultTypes = self.supportedTypes
+            self.updateManageChartsSampleTypes(defaultTypes)
+            return defaultTypes
+        }
+    }
+    
+    public static func updateManageChartsSampleTypes (types: [HKSampleType]) {
+        
+        let rawTypes = types.map { (sampleType) -> NSData in
+            return NSKeyedArchiver.archivedDataWithRootObject(sampleType)
+        }
+        
+        Defaults[PMManageChartsSampleTypesKey] = rawTypes
+    }
+    
     /// associates icon with sample type
     public static func iconForSampleType(sampleType: HKSampleType) -> UIImage {
         return rowIcons[sampleType] ?? UIImage()

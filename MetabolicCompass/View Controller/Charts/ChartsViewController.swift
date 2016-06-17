@@ -37,35 +37,22 @@ class ChartsViewController: UIViewController {
         chartCollectionDataSource.model = chartsModel
         collectionView.delegate = chartCollectionDelegate
         collectionView.dataSource = chartCollectionDataSource
-        
-        for qType in PreviewManager.supportedTypes {
-            if qType.identifier == HKCategoryTypeIdentifierSleepAnalysis {
-                continue
-            }
-            if #available(iOS 9.3, *) {
-                if qType.identifier == HKQuantityTypeIdentifierAppleExerciseTime {
-                    continue
-                }
-            } else {
-                // Fallback on earlier versions
-            }
-            chartCollectionDataSource.data.append(qType.identifier)
-        }
     }
     
     override func viewWillAppear(animated: Bool) {
         super.viewWillAppear(animated)
+        chartCollectionDataSource.updateData()
+        collectionView.reloadData()
         getChartsData()
     }
     
     //MARK: Base preparation
-    
     func getChartsData () {
         if chartsModel.typesChartData.count == 0 {
             activityIndicator.startAnimating()
         }
         let group = dispatch_group_create()
-        for qType in PreviewManager.supportedTypes {
+        for qType in PreviewManager.chartsSampleTypes {
             if qType.identifier == HKCategoryTypeIdentifierSleepAnalysis {
                 continue
             }
@@ -119,7 +106,8 @@ class ChartsViewController: UIViewController {
     }
     
     func manageCharts () {
-        print ("manageCharts")
+        let manageController = UIStoryboard(name: "TabScreens", bundle: nil).instantiateViewControllerWithIdentifier("manageCharts")
+        self.presentViewController(manageController, animated: true) {}
     }
 
 }

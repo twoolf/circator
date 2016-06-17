@@ -14,12 +14,9 @@ class DashboardManageController: UIViewController, UITableViewDelegate, UITableV
 
     @IBOutlet weak var tableView: UITableView!
     @IBOutlet weak var navigationBar: UINavigationBar!
-    var data: [DashboardMetricsConfigItem] = [] {
-        didSet {
-            //self.tableView.reloadData()
-        }
-    }
+    var data: [DashboardMetricsConfigItem] = []
     
+    private var manageData: [HKSampleType] = []
     private let appearanceProvider = DashboardMetricsAppearanceProvider()
     
     override func viewDidLoad() {
@@ -33,12 +30,11 @@ class DashboardManageController: UIViewController, UITableViewDelegate, UITableV
         self.tableView.dataSource = self;
         self.tableView.delegate   = self;
         self.tableView.allowsSelectionDuringEditing = true
-        
-        self.data = []
-        
-        for type in PreviewManager.supportedTypes {
+
+        for type in PreviewManager.managePreviewSampleTypes {
             let active = PreviewManager.previewSampleTypes.contains(type)
-            self.data.append(DashboardMetricsConfigItem(type: type.identifier, active: active, object: type))
+            data.append(DashboardMetricsConfigItem(type: type.identifier, active: active, object: type))
+            manageData.append(type)
         }
         
         self.tableView.editing = true
@@ -55,15 +51,11 @@ class DashboardManageController: UIViewController, UITableViewDelegate, UITableV
         }
         
         PreviewManager.updatePreviewSampleTypes(samples)
+        PreviewManager.updateMangePreviewSampleTypes(manageData)
     }
     
     override func preferredStatusBarStyle() -> UIStatusBarStyle {
         return .LightContent;
-    }
-
-    override func didReceiveMemoryWarning() {
-        super.didReceiveMemoryWarning()
-        // Dispose of any resources that can be recreated.
     }
     
     @IBAction func onClose(sender: AnyObject) {
@@ -82,9 +74,7 @@ class DashboardManageController: UIViewController, UITableViewDelegate, UITableV
     private let cellIdentifier = "DashboardManageCell"
     
     func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell {
-        
-         let cell = tableView.dequeueReusableCellWithIdentifier(cellIdentifier, forIndexPath: indexPath) as! ManageDashboardCell
-        
+        let cell = tableView.dequeueReusableCellWithIdentifier(cellIdentifier, forIndexPath: indexPath) as! ManageDashboardCell
         let item = self.data[indexPath.row]
         cell.showsReorderControl = false
         cell.updateSelectionStatus(item.active, appearanceProvider: appearanceProvider, itemType: item.type)
@@ -136,6 +126,10 @@ class DashboardManageController: UIViewController, UITableViewDelegate, UITableV
         let itemToMove = self.data[fromIndexPath.row]
         self.data.removeAtIndex(fromIndexPath.row)
         self.data.insert(itemToMove, atIndex: toIndexPath.row)
+        
+        let manageItemToMove = manageData[fromIndexPath.row]
+        manageData.removeAtIndex(fromIndexPath.row)
+        manageData.insert(manageItemToMove, atIndex: toIndexPath.row)
     }
     
     func tableView(tableView: UITableView, willDisplayCell cell: UITableViewCell, forRowAtIndexPath indexPath: NSIndexPath) {
