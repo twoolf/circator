@@ -42,6 +42,8 @@ class CorrelationViewController: UIViewController, ChartViewDelegate {
         return label
     }()
     
+    
+    
     lazy var correlationChart: LineChartView = {
         let chart = LineChartView()
         chart.delegate = self
