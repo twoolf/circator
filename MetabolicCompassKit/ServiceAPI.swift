@@ -17,14 +17,18 @@ let log = SwiftyBeaver.self
 public typealias SvcResultCompletion = (RequestResult) -> Void
 
 
+private let apiPathComponent = "/api/v1"
 
-private let devServiceURL = "https://dev.metaboliccompass.com"
-private let prodServiceURL = "https://app.metaboliccompass.com"
-private let asDevService = true
+private let asDevService   = true
+private let devServiceURL  = NSURL(string: "https://dev.metaboliccompass.com")!
+private let devApiURL      = devServiceURL.URLByAppendingPathComponent(apiPathComponent)
+private let prodServiceURL = NSURL(string: "https://app.metaboliccompass.com")!
+private let prodApiURL     = prodServiceURL.URLByAppendingPathComponent(apiPathComponent)
 
-private let resetPassDevURL = devServiceURL + "/forgot"
-private let resetPassProdURL = prodServiceURL + "/forgot"
-public  let resetPassURL = asDevService ? resetPassDevURL : resetPassProdURL
+
+private let resetPassDevURL  = devServiceURL.URLByAppendingPathComponent("/forgot")
+private let resetPassProdURL = prodServiceURL.URLByAppendingPathComponent("/forgot")
+public  let resetPassURL     = asDevService ? resetPassDevURL : resetPassProdURL
 
 public class  RequestResult{
     private var _obj:Any? = nil
@@ -114,7 +118,8 @@ public class  RequestResult{
  - remark: authentication using OAuthToken
  */
 enum MCRouter : URLRequestConvertible {
-    static let baseURLString = asDevService ? devServiceURL : prodServiceURL
+    static let baseURL = asDevService ? devServiceURL : prodServiceURL
+    static let apiURL  = asDevService ? devApiURL : prodApiURL
     static var OAuthToken: String?
     static var tokenExpireTime: NSTimeInterval = 0
 
@@ -183,8 +188,7 @@ enum MCRouter : URLRequestConvertible {
     // MARK: URLRequestConvertible
 
     var URLRequest: NSMutableURLRequest {
-        let URL = NSURL(string: MCRouter.baseURLString)!
-        let mutableURLRequest = NSMutableURLRequest(URL: URL.URLByAppendingPathComponent(path))
+        let mutableURLRequest = NSMutableURLRequest(URL: MCRouter.apiURL.URLByAppendingPathComponent(path))
         mutableURLRequest.HTTPMethod = method.rawValue
 
         if let token = MCRouter.OAuthToken {
@@ -192,8 +196,7 @@ enum MCRouter : URLRequestConvertible {
         }
 
         switch self {
-        case .UploadHKMeasures(var parameters):
-            parameters["userid"] = UserManager.sharedManager.getUserIdHash() ?? ""
+        case .UploadHKMeasures(let parameters):
             return Alamofire.ParameterEncoding.JSON.encode(mutableURLRequest, parameters: parameters).0
 
         case .AggMeasures(let parameters):

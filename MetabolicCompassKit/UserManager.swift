@@ -146,7 +146,7 @@ public class UserManager {
     ]
 
     init() {
-        StormpathConfiguration.defaultConfiguration.APIURL = NSURL(string: MCRouter.baseURLString)!
+        StormpathConfiguration.defaultConfiguration.APIURL = MCRouter.baseURL
     }
 
     // MARK: - Account status, and authentication
