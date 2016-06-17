@@ -31,7 +31,7 @@
                     <nil key="highlightedColor"/>
                 </label>
                 <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="15 May" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="sfb-8p-1Tb">
-                    <rect key="frame" x="202" y="23" width="46.5" height="12.5"/>
+                    <rect key="frame" x="209.5" y="23" width="46.5" height="12.5"/>
                     <fontDescription key="fontDescription" name="GothamBook" family="Gotham Book" pointSize="14"/>
                     <color key="textColor" white="1" alpha="0.5" colorSpace="calibratedWhite"/>
                     <nil key="highlightedColor"/>
@@ -61,7 +61,7 @@
                 <constraint firstItem="khV-5j-EfS" firstAttribute="leading" secondItem="3dd-zd-wxB" secondAttribute="leading" constant="20" id="HIc-IG-Hnq"/>
                 <constraint firstItem="khV-5j-EfS" firstAttribute="centerY" secondItem="3dd-zd-wxB" secondAttribute="centerY" id="b4P-Zb-UZK"/>
                 <constraint firstItem="iSu-eD-OFQ" firstAttribute="centerY" secondItem="3dd-zd-wxB" secondAttribute="centerY" id="cFK-ez-NEB"/>
-                <constraint firstItem="J4v-Kp-Fbp" firstAttribute="leading" secondItem="sfb-8p-1Tb" secondAttribute="trailing" constant="22" id="kNN-xV-Zhv"/>
+                <constraint firstAttribute="trailing" secondItem="sfb-8p-1Tb" secondAttribute="trailing" constant="119" id="unB-rm-aaR"/>
                 <constraint firstItem="GR5-WS-lUi" firstAttribute="top" secondItem="3dd-zd-wxB" secondAttribute="top" id="y8x-80-TKZ"/>
             </constraints>
             <nil key="simulatedStatusBarMetrics"/>

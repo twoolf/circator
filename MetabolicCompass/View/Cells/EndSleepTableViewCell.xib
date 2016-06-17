@@ -31,7 +31,7 @@
                     <nil key="highlightedColor"/>
                 </label>
                 <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="15 May" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="sgG-WC-Zhu">
-                    <rect key="frame" x="202" y="23" width="46.5" height="12.5"/>
+                    <rect key="frame" x="209.5" y="23" width="46.5" height="12.5"/>
                     <fontDescription key="fontDescription" name="GothamBook" family="Gotham Book" pointSize="14"/>
                     <color key="textColor" white="1" alpha="0.5" colorSpace="calibratedWhite"/>
                     <nil key="highlightedColor"/>
@@ -64,7 +64,6 @@
                 <constraint firstAttribute="trailing" secondItem="poU-Xn-66t" secondAttribute="trailing" constant="20" id="8Oc-92-5Um"/>
                 <constraint firstAttribute="trailing" secondItem="cJ5-GF-hBJ" secondAttribute="trailing" id="JfR-Sl-Sro"/>
                 <constraint firstItem="sgG-WC-Zhu" firstAttribute="centerY" secondItem="NGI-BS-Fid" secondAttribute="centerY" id="OiX-vv-fB1"/>
-                <constraint firstItem="qDa-ID-80C" firstAttribute="leading" secondItem="sgG-WC-Zhu" secondAttribute="trailing" constant="22" id="RuI-P1-7Zy"/>
                 <constraint firstItem="rqf-EU-C2v" firstAttribute="leading" secondItem="NGI-BS-Fid" secondAttribute="leading" id="ch9-2E-77Q"/>
                 <constraint firstItem="cJ5-GF-hBJ" firstAttribute="top" secondItem="NGI-BS-Fid" secondAttribute="top" id="f8k-of-laM"/>
                 <constraint firstItem="cJ5-GF-hBJ" firstAttribute="leading" secondItem="NGI-BS-Fid" secondAttribute="leading" id="fd2-pw-ou2"/>
@@ -72,6 +71,7 @@
                 <constraint firstAttribute="bottom" secondItem="rqf-EU-C2v" secondAttribute="bottom" id="hEe-0i-P0H"/>
                 <constraint firstAttribute="trailing" secondItem="rqf-EU-C2v" secondAttribute="trailing" id="mgX-zJ-ZMK"/>
                 <constraint firstItem="qDa-ID-80C" firstAttribute="centerY" secondItem="NGI-BS-Fid" secondAttribute="centerY" id="sxD-rf-eyi"/>
+                <constraint firstAttribute="trailing" secondItem="sgG-WC-Zhu" secondAttribute="trailing" constant="119" id="vk5-0c-Zfh"/>
                 <constraint firstItem="poU-Xn-66t" firstAttribute="centerY" secondItem="NGI-BS-Fid" secondAttribute="centerY" id="vvR-rI-8bt"/>
             </constraints>
             <nil key="simulatedStatusBarMetrics"/>
