@@ -1056,9 +1056,6 @@
 				E7592DB61CDB471000E313BB /* TabController */,
 				95C0B9971CD23E90006E523F /* AuthorizationViewControllers */,
 				84B727AE1D13E62200839E54 /* LogEventViewController.swift */,
-				84B727A81D13E5B100839E54 /* CircadianBehaviorViewController.swift */,
-				84B727A91D13E5B100839E54 /* EventInboxViewController.swift */,
-				84B727AA1D13E5B100839E54 /* RepeatedEventManagerViewController.swift */,
 				7881A3E21BAF3B3E00ECB3C6 /* IntroViewController.swift */,
 				786817601C6CF37D0018ABB5 /* ProfileSubviewController.swift */,
 				F4F4DA571C0257130073E9EE /* SettingsViewController.swift */,
@@ -1076,6 +1073,9 @@
 				84207D231CCA3C3600776848 /* RegisterLoginLandingViewController.swift */,
 				958568041CD0BF6300EDD385 /* BaseViewController.swift */,
 				84C9CB461CE9B3A4005ED875 /* DailyProgressViewController.swift */,
+				84B727A81D13E5B100839E54 /* CircadianBehaviorViewController.swift */,
+				84B727AA1D13E5B100839E54 /* RepeatedEventManagerViewController.swift */,
+				84B727A91D13E5B100839E54 /* EventInboxViewController.swift */,
 			);
 			path = "View Controller";
 			sourceTree = "<group>";
