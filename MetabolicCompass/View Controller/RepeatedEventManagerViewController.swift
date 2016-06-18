@@ -1053,6 +1053,9 @@ class NewRepeatedEventViewController: UIViewController {
             UINotifications.genericError(self, msg: "Event conflicts with existing event.")
             return
         }
+        
+        //updates planner view with added event in the case that the added event occurs on already selected day
+        RepeatedEventManagerViewController.sharedManager.relayoutEvents()
 
         self.dismissViewControllerAnimated(true, completion: nil)
         
