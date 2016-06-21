@@ -326,11 +326,10 @@ class DailyChartModel : NSObject, UITableViewDataSource {
                     if eatingTime.hour == 0 && eatingTime.minute == 0 {
                         self.eatingText = self.emptyValueString
                     } else {
-                        self.eatingText = eatingTime.toString(DateFormat.Custom("HH h mm m"))!
+                        self.eatingText = eatingTime.toString(DateFormat.Custom("HH 'h' mm 'm'"))!
                     }
-                    
-                    self.lastAteText = lastAte == nil ? self.emptyValueString : lastAte!.toString(DateFormat.Custom("HH h mm m"))!
-    
+
+                    self.lastAteText = lastAte == nil ? self.emptyValueString : lastAte!.toString(DateFormat.Custom("HH 'h' mm 'm'"))!
                     self.delegate?.dailyProgressStatCollected?()
                 }
             }
