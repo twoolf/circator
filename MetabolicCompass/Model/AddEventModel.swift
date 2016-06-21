@@ -150,7 +150,7 @@ class AddEventModel: NSObject {
         if let whenWokeUp = UserManager.sharedManager.getUsualWokeUpTime() {
             return AddEventModel.applyTimeForDate(whenWokeUp, toDate: NSDate())
         }
-        return NSDate() + 1.minutes
+        return NSDate()
     }
     
     class func applyTimeForDate(fromDate: NSDate, toDate: NSDate) -> NSDate {
@@ -223,11 +223,13 @@ class AddEventModel: NSObject {
     }
     
     func saveSleepEvent(completion:(success: Bool, errorMessage: String?) -> ()) {
-        let dayHourMinuteSecond: NSCalendarUnit = [.Hour, .Minute]
+        let dayHourMinuteSecond: NSCalendarUnit = [.Month, .Day, .Hour, .Minute]
         let difference = NSCalendar.currentCalendar().components(dayHourMinuteSecond, fromDate: sleepStartDate, toDate: sleepEndDate, options: [])
-        
         if difference.hour < 0 || difference.minute < 0 {
             completion(success: false, errorMessage: "\"Woke Up\" time can't be earlier then \"Went to Sleep\" time")
+            return
+        } else if (sleepStartDate.day == sleepEndDate.day && difference.hour == 0 && difference.minute == 0 && difference.month == 0) {
+            completion(success: false, errorMessage: "Total time of sleeping must be at least 1 minute")
             return
         }
         
