@@ -91,18 +91,26 @@ class AddEventViewController: UIViewController, AddEventModelDelegate {
         switch type {
             case .Meal:
                 if addEventModel.mealType != MealType.Empty {
-                    let alertController = UIAlertController(title: "", message: "Are you sure you wish to leave without saving?", preferredStyle: .Alert)
-                    alertController.addAction(UIAlertAction(title: "YES", style: .Default, handler: { (alert) in
-                        self.dismissViewControllerAnimated(true, completion: nil)
-                    }))
-                    alertController.addAction(UIAlertAction(title: "NO", style: .Cancel, handler: nil))
-                    self.presentViewController(alertController, animated: true, completion: nil)
+                    showConfirmAlert()
                 } else {
                     self.dismissViewControllerAnimated(true, completion: nil)
                 }
             default:
-                self.dismissViewControllerAnimated(true, completion: nil)
+                if addEventModel.dataWasChanged {
+                    showConfirmAlert()
+                } else {
+                    self.dismissViewControllerAnimated(true, completion: nil)
+                }
         }
+    }
+    
+    func showConfirmAlert (){
+        let alertController = UIAlertController(title: "", message: "Are you sure you wish to leave without saving?", preferredStyle: .Alert)
+        alertController.addAction(UIAlertAction(title: "YES", style: .Default, handler: { (alert) in
+            self.dismissViewControllerAnimated(true, completion: nil)
+        }))
+        alertController.addAction(UIAlertAction(title: "NO", style: .Cancel, handler: nil))
+        self.presentViewController(alertController, animated: true, completion: nil)
     }
     
     func doneAction () {

@@ -20,12 +20,20 @@ enum MealType: String {
 }
 
 class AddEventModel: NSObject {
+    var dataWasChanged = false
     var delegate: AddEventModelDelegate? = nil
     var datePickerTags:[Int] = [2]  //default date picker row
     var countDownPickerTags: [Int] = [3,4] //default count down pickecr rows for meal screen
-    
-    var duration: NSTimeInterval = 1800.0 //default is 30 min
-    var eventDate: NSDate = NSDate() //default is current date
+    var duration: NSTimeInterval = 1800.0 {//default is 30 min
+        didSet {
+            dataWasChanged = true
+        }
+    }
+    var eventDate: NSDate = NSDate() {//default is current date
+        didSet {
+            dataWasChanged = true
+        }
+    }
     
     var mealType: MealType = .Empty {
         didSet {
@@ -48,12 +56,14 @@ class AddEventModel: NSObject {
 //            } else {//in case when we have no saved dates for sleep just adding 1 minute to sleepStartDate
 //                sleepEndDate = sleepStartDate + 1.minutes
 //            }
+            dataWasChanged = true
             self.delegate?.sleepTimeUpdated(getSleepTimeString())
         }
     }
     
     var sleepEndDate: NSDate =  AddEventModel.getDefaultWokeUpDate() {
         didSet {
+            dataWasChanged = true
             self.delegate?.sleepTimeUpdated(getSleepTimeString())
         }
     }
