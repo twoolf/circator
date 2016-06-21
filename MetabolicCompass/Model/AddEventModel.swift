@@ -256,13 +256,11 @@ class AddEventModel: NSObject {
     }
     
     //MARK: Validation
-    
     func validateTimedEvent(startTime: NSDate, endTime: NSDate, completion: (success: Bool, errorMessage: String?) -> ()) {
         // Fetch all sleep and workout data since yesterday.
-        let (yesterday, now) = (1.days.ago, NSDate())
         let sleepTy = HKObjectType.categoryTypeForIdentifier(HKCategoryTypeIdentifierSleepAnalysis)!
         let workoutTy = HKWorkoutType.workoutType()
-        let datePredicate = HKQuery.predicateForSamplesWithStartDate(yesterday, endDate: now, options: .None)
+        let datePredicate = HKQuery.predicateForSamplesWithStartDate(startTime, endDate: endTime, options: .None)
         let typesAndPredicates = [sleepTy: datePredicate, workoutTy: datePredicate]
         
         // Aggregate sleep, exercise and meal events.
@@ -272,7 +270,6 @@ class AddEventModel: NSObject {
                 guard !acc else { return acc }
                 return kv.1.reduce(acc, combine: { (acc, s) in return acc || !( startTime >= s.endDate || endTime <= s.startDate ) })
             })
-            
             if !overlaps {
                 completion(success: true, errorMessage: nil)
             } else {
