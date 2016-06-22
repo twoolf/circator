@@ -117,11 +117,13 @@ public class SampleFormatter: NSObject {
     }
 
     public func stringFromStatistics(statistics: HKStatistics) -> String {
+        //Cumulative has sumQuantity Discrete has quantity
+        let quantity = statistics.sumQuantity() != nil ? statistics.sumQuantity() : statistics.quantity
         // Guaranteed to be quantity sample here
-        guard let quantity = statistics.quantity else {
+        guard (quantity != nil) else {
             return emptyString
         }
-        return stringFromQuantity(quantity, type: statistics.quantityType)
+        return stringFromQuantity(quantity!, type: statistics.quantityType)
     }
 
     public func numberFromHKSamples(samples: [HKSample]) -> Double {
