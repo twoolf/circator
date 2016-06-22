@@ -287,7 +287,6 @@ public class HealthManager: NSObject, WCSessionDelegate {
                 case .Cumulative:
 
                     let predicate = HKQuery.predicateForSamplesWithStartDate(anchorDate, endDate: NSDate(), options: .StrictStartDate)
-
                     let query = HKStatisticsQuery(quantityType: quantityType, quantitySamplePredicate: predicate, options: .CumulativeSum) {
                         query, result, error in
                         guard error == nil else {
@@ -974,15 +973,17 @@ public class HealthManager: NSObject, WCSessionDelegate {
         }
         
         let (statisticsQuery, startDate, endDate) = getQueryForPeriod(statisticsRange, qType: quantityType, statisticsOptions: statisticsOptions)
-        
+        let group = dispatch_group_create()
         statisticsQuery.initialResultsHandler = { query, results, error in
-            
             guard let statsCollection = results else {
                 // Perform proper error handling here
                 fatalError("*** An error occurred while calculating the statistics: \(error?.localizedDescription) ***")
             }
             var statisticsValues: [Double] = []
+            //cereate group
             statsCollection.enumerateStatisticsFromDate(startDate, toDate: endDate, withBlock: { (statistics, stop) in
+                //enter group
+                dispatch_group_enter(group)
                 var doubleMaxValue = 0.0
                 switch quantityType.aggregationStyle {
                     case .Discrete:
@@ -994,9 +995,35 @@ public class HealthManager: NSObject, WCSessionDelegate {
                             doubleMaxValue = maxValue.doubleValueForUnit(quantityType.defaultUnit!)
                         }
                 }
-                statisticsValues.append(round(doubleMaxValue))
+                statisticsValues.append(round(doubleMaxValue))//add max double value
+                if statisticsRange == .Year && quantityType.aggregationStyle == .Cumulative {//for year we should calculate avg value for each moth
+                    //Cumulative can get only summ for moth so we should execute sample query to get number of samples for each month
+                    let index = statisticsValues.count - 1//get the index if the sum value for Cumulative quantity. Later we will replace value at this index with avg value
+                    let sampleQueryStartDate = startDate + index.months //calculate start date for sample query
+                    let sampleQueryEndDate = sampleQueryStartDate + 1.months //calculcate end date for sample query
+                    let smaplePredicate = HKQuery.predicateForSamplesWithStartDate(sampleQueryStartDate, endDate: sampleQueryEndDate, options: .None)//create predicate for this month
+                    let sampleQuery = HKSampleQuery.init(sampleType: quantityType,
+                        predicate: smaplePredicate,
+                        limit: HKObjectQueryNoLimit,
+                        sortDescriptors: nil,
+                        resultsHandler: { (query, results, error) in
+                        //leave group
+                        if let results = results {//if we have result
+                            let value = statisticsValues[index]//get sum value for index
+                            let avgValue = value/Double(results.count)//calculate avg value for moth
+                            statisticsValues[index] = round(avgValue)//replace summ value with avg value
+                        }
+                        dispatch_group_leave(group)//leav group
+                    })
+                    self.healthKitStore.executeQuery(sampleQuery)
+                } else {
+                    dispatch_group_leave(group)
+                }
             })
-            completion(statisticsVlues: statisticsValues)
+            //notify group
+            dispatch_group_notify(group, dispatch_get_main_queue()) {
+                completion(statisticsVlues: statisticsValues)
+            }
         }
         
         healthKitStore.executeQuery(statisticsQuery)
