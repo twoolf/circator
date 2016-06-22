@@ -89,7 +89,8 @@ class BarChartModel : NSObject {
     
     //MARK: Prepate chart data
     func convertStatisticsValues(stisticsValues: [Double], forRange range: HealthManagerStatisticsRangeType) -> [ChartDataEntry] {
-        let indexIncrement = range == .Month ? 2 : 1;
+        let indexIncrement = range == .Month || range == .Year ? 2 : 1;//For year and Month we add 2 for index because we ahve empty values on left and right to make a gap for xAxis
+        //for week we have only one empty value left and right on xAxis
         var yVals: [ChartDataEntry] = []
         
         for (index, value) in stisticsValues.enumerate() {
@@ -99,7 +100,6 @@ class BarChartModel : NSObject {
         }
         return yVals
     }
-    
     
     func getChartDataForRange(range: HealthManagerStatisticsRangeType, type: ChartType, values: [Double], minValues: [Double]?) -> ChartData {
         switch range {
@@ -114,7 +114,7 @@ class BarChartModel : NSObject {
     
     func getYValuesForScatterChart (minValues: [Double], maxValues: [Double], period: HealthManagerStatisticsRangeType) -> [ChartDataEntry] {
         var yVals: [ChartDataEntry] = []
-        let indexIncrement = period == .Month ? 2 : 1;
+        let indexIncrement = period == .Month || period == .Year ? 2 : 1;
         for (index, minValue) in minValues.enumerate() {
             let maxValue = maxValues[index]
             if maxValue > 0 && minValue > 0 {
