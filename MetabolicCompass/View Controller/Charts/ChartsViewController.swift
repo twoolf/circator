@@ -41,9 +41,15 @@ class ChartsViewController: UIViewController {
     
     override func viewWillAppear(animated: Bool) {
         super.viewWillAppear(animated)
+        NSNotificationCenter.defaultCenter().addObserver(self, selector: #selector(getChartsData), name: UIApplicationWillEnterForegroundNotification, object: nil)
         chartCollectionDataSource.updateData()
         collectionView.reloadData()
         getChartsData()
+    }
+    
+    override func viewWillDisappear(animated: Bool) {
+        super.viewWillDisappear(animated)
+        NSNotificationCenter.defaultCenter().removeObserver(self)
     }
     
     //MARK: Base preparation
