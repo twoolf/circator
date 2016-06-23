@@ -8,6 +8,7 @@
 
 import UIKit
 import MetabolicCompassKit
+import SwiftyUserDefaults
 
 class AdditionalInfoViewController: BaseViewController {
 
@@ -18,39 +19,38 @@ class AdditionalInfoViewController: BaseViewController {
 
     override func viewDidLoad() {
         super.viewDidLoad()
-
         setupScrollViewForKeyboardsActions(collectionView)
-
         dataSource.collectionView = self.collectionView
-
-        self.configureNavBar()
-    }
-
-    override func didReceiveMemoryWarning() {
-        super.didReceiveMemoryWarning()
-        // Dispose of any resources that can be recreated.
+        configureNavBar()
     }
 
     private func configureNavBar() {
-        let nextBtn = UIBarButtonItem(title: "Next".localized, style: UIBarButtonItemStyle.Plain, target: self, action: #selector(AdditionalInfoViewController.nextAction(_:)))
+        
+        let cancelButton = ScreenManager.sharedInstance.appNavButtonWithTitle("Cancel".localized)
+        cancelButton.addTarget(self, action: #selector(cancelAction), forControlEvents: .TouchUpInside)
+        let cancelBarButton = UIBarButtonItem(customView: cancelButton)
 
-        self.navigationItem.rightBarButtonItems = [nextBtn]
+        let nextButton = ScreenManager.sharedInstance.appNavButtonWithTitle("Next".localized)
+        nextButton.addTarget(self, action: #selector(nextAction), forControlEvents: .TouchUpInside)
+        let nextBarButton = UIBarButtonItem(customView: nextButton)
+        
+        self.navigationItem.rightBarButtonItems = [nextBarButton]
+        self.navigationItem.leftBarButtonItems = [cancelBarButton]
+        self.navigationItem.title = NSLocalizedString("PHYSIOLOGICAL DATA", comment: "additional info data")
     }
-
-    func nextAction(sender: UIBarButtonItem) {
-
+    
+    func cancelAction () {
+        self.dismissViewControllerAnimated(true, completion: { [weak controller = self.registerViewController] in
+            controller?.registartionComplete()
+        });
+    }
+    
+    func nextAction() {
         startAction()
-
         let additionalInfo = dataSource.model.additionalInfoDict()
-
-        //print("add info: \(additionalInfo)")
-
-        UserManager.sharedManager.pushProfile(additionalInfo, completion: { _ in
-
-            self.dismissViewControllerAnimated(true, completion: { [weak controller = self.registerViewController] in
-                controller?.registartionComplete()
-            });
-
-        })
+        UserManager.sharedManager.saveAdditionalProfileData(additionalInfo)
+        self.dismissViewControllerAnimated(true, completion: { [weak controller = self.registerViewController] in
+            controller?.registartionComplete()
+        });
     }
 }

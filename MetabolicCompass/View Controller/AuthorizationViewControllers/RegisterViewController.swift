@@ -13,6 +13,7 @@ import Former
 import FileKit
 import Crashlytics
 import SwiftDate
+import SwiftyUserDefaults
 
 private let lblFontSize = ScreenManager.sharedInstance.profileLabelFontSize()
 private let inputFontSize = ScreenManager.sharedInstance.profileInputFontSize()
@@ -76,11 +77,10 @@ private let inputFontSize = ScreenManager.sharedInstance.profileInputFontSize()
         sender.enabled = false
 
         UINotifications.genericMsg(self.navigationController!, msg: "Registering account...")
-
         UserManager.sharedManager.overrideUserPass(userRegistrationModel.email, pass: userRegistrationModel.password)
-    
-        UserManager.sharedManager.register(userRegistrationModel.firstName!, lastName: userRegistrationModel.lastName!, consentPath: consentPath) {
-            (_, error, errormsg) in
+        
+        let initialProfile = self.dataSource.model.profileItems()
+        UserManager.sharedManager.register(userRegistrationModel.firstName!, lastName: userRegistrationModel.lastName!, consentPath: consentPath, initialData: initialProfile) { (_, error, errormsg) in
             guard !error else {
                 // Return from this function to allow the user to try registering again with the 'Done' button.
                 // We reset the user/pass so that any view exit leaves the app without a registered user.
@@ -94,29 +94,12 @@ private let inputFontSize = ScreenManager.sharedInstance.profileInputFontSize()
                 sender.enabled = true
                 return
             }
-            
-            let initialProfile = self.dataSource.model.profileItems()
-            // Log in and update consent after successful registration.
-            UserManager.sharedManager.loginWithPush(initialProfile) { res in
-                guard res.ok else {
-                    // Registration completed, but logging in failed.
-                    // Pop this view to allow the user to try logging in again through the
-                    // login/logout functionality on the main dashboard.
-                    
-                    UINotifications.loginFailed(self.navigationController!, pop: true, asNav: true, reason: res.info)
-                    Answers.logSignUpWithMethod("SPR", success: false, customAttributes: nil)
-                    return
-                }
-                
-                // save user profile image
-                UserManager.sharedManager.setUserProfilePhoto(userRegistrationModel.photo)
-                //move user to the dashboard
-                self.performSegueWithIdentifier(self.segueRegistrationCompletionIndentifier, sender: nil)
-                self.doWelcome()
-            }
-            
-//            UserManager.sharedManager.setUserProfilePhoto(userRegistrationModel.photo)
-//            UINotifications.genericMsg(self, msg: "We just sent you an email. Please verify your account", pop: true, asNav: true)
+            //will be used for the first login with method
+            UserManager.sharedManager.saveInitialProfileData(initialProfile)
+            UserManager.sharedManager.setAsFirstLogin()
+            // save user profile image
+            UserManager.sharedManager.setUserProfilePhoto(userRegistrationModel.photo)
+            self.performSegueWithIdentifier(self.segueRegistrationCompletionIndentifier, sender: nil)
         }
     }
 
@@ -146,9 +129,7 @@ private let inputFontSize = ScreenManager.sharedInstance.profileInputFontSize()
     }
 
     func registartionComplete() {
-        navigationController?.popToRootViewControllerAnimated(true)
-        doWelcome()
-        if let comp = self.registerCompletion { comp() }
+        self.navigationController?.popViewControllerAnimated(true)
     }
 
     // MARK: - Navigation

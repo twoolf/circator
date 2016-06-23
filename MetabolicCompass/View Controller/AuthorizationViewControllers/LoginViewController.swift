@@ -12,6 +12,7 @@ import Async
 import Former
 import Crashlytics
 import Dodo
+import SwiftyUserDefaults
 
 /**
  This class is used to control the Login screens for the App.  By separating the logic into this view controller we enable changes to the login process to be clearly defined in this block of code.
@@ -99,11 +100,10 @@ class LoginViewController: BaseViewController {
                 guard res.ok else {
                     if res.info.hasContent {
                         let components = UMPullComponentErrorAsArray(res.info)
-
+                        
                         // Try to upload the consent file if we encounter a consent pull error.
                         if components.contains(.Consent) {
                             self.uploadLostConsentFile()
-
                             // Raise a notification if there are other errors.
                             if components.count > 1 {
                                 Answers.logLoginWithMethod("SPL", success: false, customAttributes: nil)
@@ -113,15 +113,21 @@ class LoginViewController: BaseViewController {
                             Answers.logLoginWithMethod("SPL", success: false, customAttributes: nil)
                             UINotifications.loginFailed(self, reason: "Failed to get user account")
                         }
-                    }
-                    else {
+                    } else {
                         Answers.logLoginWithMethod("SPL", success: false, customAttributes: nil)
-                        //UINotifications.invalidUserPass(self.navigationController!)
                         UINotifications.invalidUserPass(self)
                     }
                     return
                 }
-
+                if UserManager.sharedManager.isItFirstLogin() {//if it's first login
+                    if let additionalInfo = UserManager.sharedManager.getAdditoinalProfileData() {//and user has an additional data. we will push it to the server
+                        UserManager.sharedManager.pushProfile(additionalInfo , completion: { _ in
+                            UserManager.sharedManager.removeFirstLogin()
+                        })
+                    } else {//in other case we just remove marker for first login
+                        UserManager.sharedManager.removeFirstLogin()
+                    }
+                }
                 self.loginComplete()
             }
         }

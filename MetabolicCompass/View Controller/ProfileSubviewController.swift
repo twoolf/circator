@@ -42,7 +42,7 @@ class ProfileSubviewController : FormViewController {
 
         view.backgroundColor = bgColor
 
-        let profileDoneButton = UIBarButtonItem(barButtonSystemItem: .Done, target: self, action: "updateProfile")
+        let profileDoneButton = UIBarButtonItem(barButtonSystemItem: .Done, target: self, action: #selector(updateProfile))
         navigationItem.rightBarButtonItem = profileDoneButton
 
         profileUpdateAsyncs = Array(count: profileFields.count, repeatedValue: nil)

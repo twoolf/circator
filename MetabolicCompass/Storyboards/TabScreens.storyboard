@@ -184,8 +184,8 @@
                                             </constraints>
                                             <variation key="default">
                                                 <mask key="constraints">
-                                                    <exclude reference="Wdf-iS-NNu"/>
                                                     <exclude reference="FFC-1E-v95"/>
+                                                    <exclude reference="Wdf-iS-NNu"/>
                                                 </mask>
                                             </variation>
                                         </tableViewCellContentView>

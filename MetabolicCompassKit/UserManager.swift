@@ -66,6 +66,13 @@ public let UMPullComponentErrorAsArray : String -> [AccountComponent] = { errorM
     return result
 }
 
+extension Dictionary {
+    mutating func update(other:Dictionary) {
+        for (key,value) in other {
+            self.updateValue(value, forKey:key)
+        }
+    }
+}
 
 /**
  This manages the users for Metabolic Compass. We need to enable users to maintain access to their data and to delete themselves from the study if they so desire. In addition we maintain, in this class, the ability to do this securely, using OAuth and our third party authenticator (Stormpath)
@@ -80,7 +87,9 @@ public class UserManager {
     public static let maxTokenRetries  = 2
     public static let defaultRefreshFrequency = 30
     public static let defaultHotwords = "food log"
-
+    public static let initialProfileDataKey = "initialProfileData"
+    public static let additionalInfoDataKey = "additionalInfoData"
+    private static let firstLoginKey = "firstLoginKey"
     // Primary user
     public var userId: String? {
         get {
@@ -113,7 +122,7 @@ public class UserManager {
     }
 
     var tokenExpiry : NSTimeInterval = NSDate().timeIntervalSince1970   // Expiry in time interval since 1970.
-
+    
     // Account component dictionary cache.
     private(set) public var componentCache : [AccountComponent: [String: AnyObject]] = [
         .Consent      : [:],
@@ -157,7 +166,31 @@ public class UserManager {
         }
         return false
     }
-
+    
+    public func removeFirstLogin () {
+        Defaults.removeObjectForKey(UserManager.firstLoginKey + "." + userId!)
+        Defaults.synchronize()
+    }
+    
+    public func setAsFirstLogin () {
+        Defaults.setObject("1", forKey: UserManager.firstLoginKey + "." + userId!)
+        Defaults.synchronize()
+    }
+    
+    public func isItFirstLogin () -> Bool {
+        let firstLoginObject = Defaults.objectForKey(UserManager.firstLoginKey + "." + userId!)
+        return firstLoginObject != nil
+    }
+    
+    public func saveAdditionalProfileData (data: [String: AnyObject]) {
+        Defaults.setObject(data, forKey: UserManager.additionalInfoDataKey + "." + userId!)
+        Defaults.synchronize()
+    }
+    
+    public func getAdditoinalProfileData () -> [String: AnyObject]? {
+        return Defaults.objectForKey(UserManager.additionalInfoDataKey + "." + userId!) as? [String: AnyObject]
+    }
+    
     public func getUserId() -> String?     { return userId }
     public func setUserId(userId: String)  { self.userId = userId }
     public func resetUserId()              { self.userId = nil }
@@ -380,9 +413,7 @@ public class UserManager {
         logoutWithCompletion(nil)
     }
 
-    public func register(firstName: String, lastName: String, consentPath: String,
-                         completion: ((Account?, Bool, String?) -> Void))
-    {
+    public func register(firstName: String, lastName: String, consentPath: String, initialData: [String: String], completion: ((Account?, Bool, String?) -> Void)) {
         withUserPass(getPassword()) { (user,pass) in
             let account = RegistrationModel(email: user, password: pass)
             account.givenName = firstName
@@ -390,6 +421,7 @@ public class UserManager {
             if let data = NSData(contentsOfFile: consentPath) {
                 let consentStr = data.base64EncodedStringWithOptions(NSDataBase64EncodingOptions())
                 account.customFields = ["consent": consentStr]
+                account.customFields.update(initialData)
                 Stormpath.sharedSession.register(account) { (account, error) -> Void in
                     if error != nil { log.error("Register failed: \(error)") }
                     completion(account, error != nil, error?.localizedDescription)
@@ -780,7 +812,11 @@ public class UserManager {
     }
 
     public func pullFullAccount(completion: SvcResultCompletion) {
-        pullMultipleAccountComponents([ .Consent, .Photo, .Profile, .Settings, .ArchiveSpan, .LastAcquired]) {
+//        pullMultipleAccountComponents([ .Consent, .Photo, .Profile, .Settings, .ArchiveSpan, .LastAcquired]) {
+//            res in
+//            completion(res)
+//        }
+        pullMultipleAccountComponents([ .Consent, .Photo, .Profile, .Settings]) {
             res in
             completion(res)
         }
