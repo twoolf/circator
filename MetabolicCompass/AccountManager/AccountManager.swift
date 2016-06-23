@@ -95,8 +95,8 @@ class AccountManager: NSObject {
     func loginAndInitialize(animated: Bool = true) {
 
         assert(self.rootViewController != nil, "Please, specify root navigation controller")
-
-        guard UserManager.sharedManager.hasAccount() else {
+        
+        guard isAuthorized else {
             self.doLogin (animated) { self.loginComplete() }
             return
         }
