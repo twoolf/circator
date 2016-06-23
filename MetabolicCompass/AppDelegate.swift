@@ -51,7 +51,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         // Set translucent. (Default value is already true, so this can be removed if desired.)
         UINavigationBar.appearance().translucent = true
         UINavigationBar.appearance().titleTextAttributes = [NSForegroundColorAttributeName: ScreenManager.appTitleTextColor(), NSFontAttributeName: ScreenManager.appNavBarFont()]
-        UINavigationBar.appearance().tintColor = ScreenManager.appNavigationBackColor()
+//        UINavigationBar.appearance().tintColor = ScreenManager.appNavigationBackColor()
 
 
         //set custom back button image
