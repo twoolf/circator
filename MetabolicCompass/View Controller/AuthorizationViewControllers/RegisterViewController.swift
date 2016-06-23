@@ -95,7 +95,6 @@ private let inputFontSize = ScreenManager.sharedInstance.profileInputFontSize()
                 return
             }
             //will be used for the first login with method
-            UserManager.sharedManager.saveInitialProfileData(initialProfile)
             UserManager.sharedManager.setAsFirstLogin()
             // save user profile image
             UserManager.sharedManager.setUserProfilePhoto(userRegistrationModel.photo)
