@@ -837,7 +837,7 @@
                         <segue destination="oWN-dV-l5k" kind="relationship" relationship="viewControllers" id="Ebz-RA-b5D"/>
                         <segue destination="qWq-YZ-ETd" kind="relationship" relationship="viewControllers" id="g5D-5Y-TSv"/>
                         <segue destination="CLs-2F-M2w" kind="relationship" relationship="viewControllers" id="zTE-7j-zEZ"/>
-                        <segue destination="5fL-pS-JNk" kind="relationship" relationship="viewControllers" id="U6h-Gf-KSy"/>
+                        <segue destination="DFz-R8-yBZ" kind="relationship" relationship="viewControllers" id="tUU-WW-lVG"/>
                         <segue destination="Jx3-9U-Swk" kind="relationship" relationship="viewControllers" id="iNT-iZ-yvH"/>
                     </connections>
                 </tabBarController>
@@ -864,9 +864,27 @@
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="fjk-qu-Goi" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="240" y="951"/>
+            <point key="canvasLocation" x="-93" y="1069"/>
         </scene>
-        <!--Learn-->
+        <!--Correlate-->
+        <scene sceneID="hEk-hJ-qL1">
+            <objects>
+                <navigationController id="DFz-R8-yBZ" sceneMemberID="viewController">
+                    <tabBarItem key="tabBarItem" title="Correlate" image="icon-correlate-unactive" selectedImage="icon-correlate-active" id="zbD-KN-FJq"/>
+                    <simulatedScreenMetrics key="simulatedDestinationMetrics" type="retina4"/>
+                    <navigationBar key="navigationBar" contentMode="scaleToFill" id="ut8-IG-czx">
+                        <rect key="frame" x="0.0" y="0.0" width="320" height="44"/>
+                        <autoresizingMask key="autoresizingMask"/>
+                    </navigationBar>
+                    <connections>
+                        <segue destination="5fL-pS-JNk" kind="relationship" relationship="rootViewController" id="WsK-kI-VLE"/>
+                    </connections>
+                </navigationController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="Bhv-az-7m2" userLabel="First Responder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="309" y="1069"/>
+        </scene>
+        <!--CORRELATE-->
         <scene sceneID="qZr-f0-B73">
             <objects>
                 <viewController id="5fL-pS-JNk" sceneMemberID="viewController">
@@ -877,13 +895,24 @@
                     <view key="view" contentMode="scaleToFill" id="eLB-zj-Ogg">
                         <rect key="frame" x="0.0" y="0.0" width="320" height="568"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
-                        <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                        <subviews>
+                            <imageView userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" misplaced="YES" image="img-under-construction" translatesAutoresizingMaskIntoConstraints="NO" id="rJe-74-gg9">
+                                <rect key="frame" x="0.0" y="64" width="320" height="504"/>
+                            </imageView>
+                        </subviews>
+                        <color key="backgroundColor" red="0.015686274509803921" green="0.15294117647058825" blue="0.32549019607843138" alpha="1" colorSpace="calibratedRGB"/>
+                        <constraints>
+                            <constraint firstItem="rJe-74-gg9" firstAttribute="leading" secondItem="eLB-zj-Ogg" secondAttribute="leading" id="RRV-N4-rQW"/>
+                            <constraint firstItem="zJN-Dk-uE6" firstAttribute="top" secondItem="rJe-74-gg9" secondAttribute="bottom" id="ZS5-6t-xbB"/>
+                            <constraint firstAttribute="trailing" secondItem="rJe-74-gg9" secondAttribute="trailing" id="fhH-7H-Kca"/>
+                            <constraint firstItem="rJe-74-gg9" firstAttribute="top" secondItem="zIm-E1-bbh" secondAttribute="bottom" id="tlS-Y1-bKs"/>
+                        </constraints>
                     </view>
-                    <tabBarItem key="tabBarItem" title="Learn" image="icon-learn-unactive" selectedImage="icon-learn-active" id="LeJ-hk-ufK"/>
+                    <navigationItem key="navigationItem" title="CORRELATE" id="voK-RY-HNm"/>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="G1V-Tu-1up" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="703" y="951"/>
+            <point key="canvasLocation" x="703" y="1069"/>
         </scene>
         <!--Navigation Controller-->
         <scene sceneID="VjX-o8-IrO">
@@ -1403,13 +1432,14 @@
         <image name="close-button" width="15" height="15"/>
         <image name="icon-chart-active" width="33" height="23"/>
         <image name="icon-chart-unactive" width="33" height="23"/>
+        <image name="icon-correlate-active" width="28" height="22"/>
+        <image name="icon-correlate-unactive" width="28" height="22"/>
         <image name="icon-dashboard-active" width="37" height="19"/>
         <image name="icon-dashboard-unactive" width="37" height="19"/>
         <image name="icon-group-results" width="28" height="20"/>
-        <image name="icon-learn-active" width="34" height="21"/>
-        <image name="icon-learn-unactive" width="34" height="21"/>
         <image name="icon-manage-filters-active" width="20" height="17"/>
         <image name="icon-personal-results" width="14" height="19"/>
         <image name="icon-weight-normal" width="26" height="26"/>
+        <image name="img-under-construction" width="375" height="538"/>
     </resources>
 </document>
