@@ -25,7 +25,11 @@ class AccountManager: NSObject {
     var rootViewController    : UINavigationController?
     var contentManager        = ContentManager()
     var uploadInProgress      = false
-    var isAuthorized          = false
+    var isAuthorized: Bool  {
+        get {            
+            return UserManager.sharedManager.isLoggedIn()
+        }
+    }
     var isHealthKitAuthorized = false
 
     private(set) var userInfo: UserInfo?
@@ -59,7 +63,7 @@ class AccountManager: NSObject {
     }
 
     func doLogout(completion: (Void -> Void)?) {
-        self.isAuthorized = false
+//        self.isAuthorized = false
         UserManager.sharedManager.logoutWithCompletion(completion)
         self.contentManager.stopBackgroundWork()
         PopulationHealthManager.sharedManager.resetAggregates()
@@ -81,7 +85,7 @@ class AccountManager: NSObject {
             }
 
             Async.main() {
-                self.isAuthorized = true
+//                self.isAuthorized = true
                 self.contentManager.initializeBackgroundWork();
                 NSNotificationCenter.defaultCenter().postNotificationName(self.didCompleteLoginNotification, object: nil)
             }

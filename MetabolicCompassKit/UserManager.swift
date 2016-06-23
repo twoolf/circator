@@ -167,6 +167,10 @@ public class UserManager {
         return false
     }
     
+    public func isLoggedIn () -> Bool {
+        return Stormpath.sharedSession.accessToken != nil
+    }
+    
     public func removeFirstLogin () {
         Defaults.removeObjectForKey(UserManager.firstLoginKey + "." + userId!)
         Defaults.synchronize()
