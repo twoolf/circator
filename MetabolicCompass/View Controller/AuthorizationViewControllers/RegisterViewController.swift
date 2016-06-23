@@ -31,9 +31,9 @@ private let inputFontSize = ScreenManager.sharedInstance.profileInputFontSize()
     internal var consentOnLoad : Bool = false
     internal var registerCompletion : (Void -> Void)?
     internal var parentView: IntroViewController?
-
     private var stashedUserId : String?
-
+    
+    //MARK: View life circle
     override func viewWillAppear(animated: Bool) {
         super.viewWillAppear(animated)
         navigationController?.setNavigationBarHidden(false, animated: false)
@@ -42,8 +42,8 @@ private let inputFontSize = ScreenManager.sharedInstance.profileInputFontSize()
     override func viewWillDisappear(animated: Bool) {
         super.viewWillDisappear(animated)
         UIDevice.currentDevice().setValue(UIInterfaceOrientation.Portrait.rawValue, forKey: "orientation")
+        
     }
-
     override func viewDidLoad() {
         super.viewDidLoad()
 
@@ -53,13 +53,14 @@ private let inputFontSize = ScreenManager.sharedInstance.profileInputFontSize()
         dataSource.collectionView = self.collectionView
 
         self.setNeedsStatusBarAppearanceUpdate()
-        if ( consentOnLoad ) { doConsent() }
+        self.doConsent()
     }
 
     override func preferredStatusBarStyle() -> UIStatusBarStyle {
         return .LightContent;
     }
-
+   
+    //MARK: Actions
     @IBAction func registerAction(sender: UIButton) {
         startAction()
 
@@ -105,8 +106,7 @@ private let inputFontSize = ScreenManager.sharedInstance.profileInputFontSize()
     func doConsent() {
         stashedUserId = UserManager.sharedManager.getUserId()
         UserManager.sharedManager.resetFull()
-        ConsentManager.sharedManager.checkConsentWithBaseViewController(self.navigationController!) {
-            [weak self] (consented) -> Void in
+        ConsentManager.sharedManager.checkConsentWithBaseViewController(self.navigationController!) { [weak self] (consented) -> Void in
             guard consented else {
                 UserManager.sharedManager.resetFull()
                 if let user = self!.stashedUserId {
@@ -115,15 +115,6 @@ private let inputFontSize = ScreenManager.sharedInstance.profileInputFontSize()
                 self!.navigationController?.popViewControllerAnimated(true)
                 return
             }
-        }
-    }
-
-    func doWelcome() {
-        Async.main {
-            self.parentView?.view.dodo.style.bar.hideAfterDelaySeconds = 3
-            self.parentView?.view.dodo.style.bar.hideOnTap = true
-            self.parentView?.view.dodo.success("Welcome " + (UserManager.sharedManager.getUserId() ?? ""))
-            self.parentView?.initializeBackgroundWork()
         }
     }
 
