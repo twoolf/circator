@@ -32,6 +32,7 @@ public typealias HMAnchorSamplesBlock  = (added: [HKSample], deleted: [HKDeleted
 public let HMErrorDomain                        = "HMErrorDomain"
 public let HMSampleTypeIdentifierSleepDuration  = "HMSampleTypeIdentifierSleepDuration"
 public let HMDidUpdateRecentSamplesNotification = "HMDidUpdateRecentSamplesNotification"
+public let HMDidUpdatedChartsData = "HMDidUpdatedChartsData"
 
 private let HMAnchorKey      = DefaultsKey<[String: AnyObject]?>("HKClientAnchorKey")
 private let HMAnchorTSKey    = DefaultsKey<[String: AnyObject]?>("HKAnchorTSKey")
@@ -45,7 +46,7 @@ private let noLimit  = Int(HKObjectQueryNoLimit)
 private let noAnchor = HKQueryAnchor(fromValue: Int(HKAnchoredObjectQueryNoAnchor))
 private let dateAsc  = NSSortDescriptor(key: HKSampleSortIdentifierStartDate, ascending: true)
 private let dateDesc = NSSortDescriptor(key: HKSampleSortIdentifierStartDate, ascending: false)
-
+private let lastChartsDataCacheKey = "lastChartsDataCacheKey"
 public enum HealthManagerStatisticsRangeType : Int {
     case Week = 0
     case Month
@@ -949,6 +950,109 @@ public class HealthManager: NSObject, WCSessionDelegate {
         saveWorkout(startDate, endDate: endDate, activityType: HKWorkoutActivityType.PreparationAndRecovery, distance: distance, distanceUnit: distanceUnit, kiloCalories: kiloCalories, metadata: metadata, completion: completion)
     }
     
+    public func collectDataForCharts() {
+        let periods: [HealthManagerStatisticsRangeType] = [HealthManagerStatisticsRangeType.Week, HealthManagerStatisticsRangeType.Month, HealthManagerStatisticsRangeType.Year]
+        let group = dispatch_group_create()
+        for sampleType in PreviewManager.manageChartsSampleTypes {
+            let type = sampleType.identifier == HKCorrelationTypeIdentifierBloodPressure ? HKQuantityTypeIdentifierBloodPressureDiastolic : sampleType.identifier
+            if #available(iOS 9.3, *) {
+                if type == HKQuantityTypeIdentifierAppleExerciseTime {
+                    continue
+                }
+            }
+            for period in periods {
+                let key = UserManager.sharedManager.userId! + type + "\(period.rawValue)"
+                //enter main group
+                dispatch_group_enter(group)
+                if period == HealthManagerStatisticsRangeType.Year {//if it's yaear most havy operation
+                    if let cacheDate = Defaults.objectForKey(lastChartsDataCacheKey) as? NSDate {//check if we already have a cache
+                            if cacheDate.isInToday() {//if we already cached data today. skip iteration and leave group
+                                dispatch_group_leave(group)
+                                continue
+                            }
+                        }
+                }
+                if  type == HKQuantityTypeIdentifierHeartRate ||
+                    type == HKQuantityTypeIdentifierUVExposure {//we should get max and min values. because for this type we are using scatter chart
+                    HealthManager.sharedManager.getMinMaxValuesForPeriod(period, forType: type, completion: { (statisticsMaxValues, statisticsMinValues) in
+                        let minAndMaxValues = [statisticsMaxValues, statisticsMinValues]
+                        let minAndMaxValuesData = NSKeyedArchiver.archivedDataWithRootObject(minAndMaxValues)
+                        Defaults[key] = minAndMaxValuesData
+                        dispatch_group_leave(group)//leave main group
+                    })
+                } else if type == HKQuantityTypeIdentifierBloodPressureSystolic {//we should also get data for HKQuantityTypeIdentifierBloodPressureDiastolic
+                    let bloodPressureGroup = dispatch_group_create()
+                    dispatch_group_enter(bloodPressureGroup)
+                    
+                    var systolicMinValues: [Double] = []
+                    var diastolicMinValues: [Double] = []
+                    var systolicMaxValues: [Double] = []
+                    var diastolicMaxValues: [Double] = []
+                    
+                    HealthManager.sharedManager.getMinMaxValuesForPeriod(period, forType: type, completion: { (statisticsMaxValues, statisticsMinValues) in
+                        systolicMinValues = statisticsMinValues
+                        systolicMaxValues = statisticsMaxValues
+                        dispatch_group_leave(bloodPressureGroup)
+                    })
+                    
+                    let diastolicType = HKQuantityTypeIdentifierBloodPressureDiastolic
+                    dispatch_group_enter(bloodPressureGroup)
+                    HealthManager.sharedManager.getMinMaxValuesForPeriod(period, forType: diastolicType, completion: { (statisticsMaxValues, statisticsMinValues) in
+                        diastolicMinValues = statisticsMinValues
+                        diastolicMaxValues = statisticsMaxValues
+                        dispatch_group_leave(bloodPressureGroup)
+                    })
+                    
+                    dispatch_group_notify(bloodPressureGroup, dispatch_get_main_queue()) {//leav main group
+                        let bloodPressureValues = [systolicMaxValues, systolicMinValues, diastolicMaxValues, diastolicMinValues]
+                        let bloodPressureValuesData = NSKeyedArchiver.archivedDataWithRootObject(bloodPressureValues)
+                        Defaults[key] = bloodPressureValuesData
+                        dispatch_group_leave(group)//leave main group
+                    }
+                    
+                } else if type == HKCategoryTypeIdentifierSleepAnalysis {
+                    //HealthManager.sharedManager.getStatisticsForSleepInPeriod(period)
+                } else {
+                    HealthManager.sharedManager.getStatisticForPeriod(period, forType: type) { (statisticsVlues) in
+                        let statisticsVluesData = NSKeyedArchiver.archivedDataWithRootObject(statisticsVlues)
+                        Defaults[key] = statisticsVluesData
+                        dispatch_group_leave(group)//leave main group
+                    }
+                }
+            }
+        }
+        
+        //after completion notify that we finished collecting statistics for type
+        dispatch_group_notify(group, dispatch_get_main_queue()) {
+            Defaults.setObject(NSDate(), forKey: lastChartsDataCacheKey)
+            Defaults.synchronize()
+            NSNotificationCenter.defaultCenter().postNotificationName(HMDidUpdatedChartsData, object: nil)
+        }
+    }
+    
+    public func getChartDataForQuantity (type: String, inPeriod period: HealthManagerStatisticsRangeType) -> AnyObject {
+        let key = UserManager.sharedManager.userId! + type + "\(period.rawValue)"
+        let typeData = Defaults.objectForKey(key) as? NSData
+        if  type == HKQuantityTypeIdentifierHeartRate ||
+            type == HKQuantityTypeIdentifierUVExposure ||
+            type == HKQuantityTypeIdentifierBloodPressureSystolic {
+            if let typeData = typeData {
+                let typeDataArray = NSKeyedUnarchiver.unarchiveObjectWithData(typeData) as? [[Double]]
+                if let typeDataArray = typeDataArray {
+                    return typeDataArray
+                }
+            }
+        } else {
+            if let typeData = typeData {
+                let typeDataArray = NSKeyedUnarchiver.unarchiveObjectWithData(typeData) as? [Double]
+                if let typeDataArray = typeDataArray {
+                    return typeDataArray
+                }
+            }
+        }
+        return []
+    }
+    
     //MARK: Static queries for types
     /**
         Return statics for the given period
@@ -958,7 +1062,7 @@ public class HealthManager: NSObject, WCSessionDelegate {
         - returns: array of double values with statistics
     */
     public func getStatisticForPeriod(statisticsRange: HealthManagerStatisticsRangeType, forType type: String, completion: (statisticsVlues: [Double]) -> Void) {
-
+        print("type - \(type)")
         guard let quantityType = HKObjectType.quantityTypeForIdentifier(type) else {
             fatalError("*** Unable to create a \(type) count type ***")
         }
@@ -973,17 +1077,13 @@ public class HealthManager: NSObject, WCSessionDelegate {
         }
         
         let (statisticsQuery, startDate, endDate) = getQueryForPeriod(statisticsRange, qType: quantityType, statisticsOptions: statisticsOptions)
-        let group = dispatch_group_create()
         statisticsQuery.initialResultsHandler = { query, results, error in
             guard let statsCollection = results else {
                 // Perform proper error handling here
                 fatalError("*** An error occurred while calculating the statistics: \(error?.localizedDescription) ***")
             }
             var statisticsValues: [Double] = []
-            //cereate group
             statsCollection.enumerateStatisticsFromDate(startDate, toDate: endDate, withBlock: { (statistics, stop) in
-                //enter group
-                dispatch_group_enter(group)
                 var doubleMaxValue = 0.0
                 switch quantityType.aggregationStyle {
                     case .Discrete:
@@ -996,36 +1096,23 @@ public class HealthManager: NSObject, WCSessionDelegate {
                         }
                 }
                 statisticsValues.append(round(doubleMaxValue))//add max double value
-                if statisticsRange == .Year && quantityType.aggregationStyle == .Cumulative {//for year we should calculate avg value for each moth
-                    //Cumulative can get only summ for moth so we should execute sample query to get number of samples for each month
-                    let index = statisticsValues.count - 1//get the index if the sum value for Cumulative quantity. Later we will replace value at this index with avg value
-                    let sampleQueryStartDate = startDate + index.months //calculate start date for sample query
-                    let sampleQueryEndDate = sampleQueryStartDate + 1.months //calculcate end date for sample query
-                    let smaplePredicate = HKQuery.predicateForSamplesWithStartDate(sampleQueryStartDate, endDate: sampleQueryEndDate, options: .None)//create predicate for this month
-                    let sampleQuery = HKSampleQuery.init(sampleType: quantityType,
-                        predicate: smaplePredicate,
-                        limit: HKObjectQueryNoLimit,
-                        sortDescriptors: nil,
-                        resultsHandler: { (query, results, error) in
-                        //leave group
-                        if let results = results {//if we have result
-                            let value = statisticsValues[index]//get sum value for index
-                            let avgValue = value/Double(results.count)//calculate avg value for moth
-                            statisticsValues[index] = round(avgValue)//replace summ value with avg value
-                        }
-                        dispatch_group_leave(group)//leav group
-                    })
-                    self.healthKitStore.executeQuery(sampleQuery)
-                } else {
-                    dispatch_group_leave(group)
-                }
             })
-            //notify group
-            dispatch_group_notify(group, dispatch_get_main_queue()) {
+            if statisticsRange == .Year && quantityType.aggregationStyle == .Cumulative {
+                self.getSamplesForYear(type, completion: { (numberOfDaysWithSamplesForEachMonth) in
+                    for statIndex in 1...statisticsValues.count {
+                        let indexOfArray = statIndex - 1
+                        let summFoMoth = statisticsValues[indexOfArray]
+                        let numOfEventsInMoth = numberOfDaysWithSamplesForEachMonth[indexOfArray]
+                        if (summFoMoth > 0 && numOfEventsInMoth > 0) {
+                            statisticsValues[indexOfArray] = summFoMoth/numOfEventsInMoth
+                        }
+                    }
+                    completion(statisticsVlues: statisticsValues)
+                })
+            } else {
                 completion(statisticsVlues: statisticsValues)
             }
         }
-        
         healthKitStore.executeQuery(statisticsQuery)
     }
     
@@ -1083,6 +1170,53 @@ public class HealthManager: NSObject, WCSessionDelegate {
         
         dispatch_group_notify(group, dispatch_get_main_queue()) {
             completion(statisticsMaxVlues: statisticsMaxValues, statisticsMinVlues: statisticsMinValues)
+        }
+    }
+    
+    public func getSamplesForYear (type: String, completion: (numberOfDaysWithSamplesForEachMonth: [Double]) -> Void) {
+        guard let quantityType = HKObjectType.quantityTypeForIdentifier(type) else {
+            fatalError("*** Unable to create a \(type) count type ***")
+        }
+        let group = dispatch_group_create()
+        let calendar = NSCalendar.currentCalendar()
+        let startDate = calendar.dateByAddingUnit(.Month, value: -11, toDate: NSDate(), options: [])!        
+        var numberOfDaysWithSamples:[Double] = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+        //get all samples for year
+        for monthInedx in 0...11 {//iterate from 0 to 10 that equals 12 monthes
+            dispatch_group_enter(group)
+            let incrementIndex = monthInedx + 1
+            let predicateStartDate = startDate + incrementIndex.months//increase start date each iteration with one month
+            //create start of month date
+            let components = calendar.components([.Year, .Month], fromDate: predicateStartDate)
+            let startOfMonth = calendar.dateFromComponents(components)!
+            //create end of month date
+            let endComponents = NSDateComponents()
+            endComponents.month = 1
+            endComponents.day = -1
+            let endOfMonth = calendar.dateByAddingComponents(endComponents, toDate: startOfMonth, options: [])!
+            //var that will keep a prev sample day
+            var prevSampelDay = 0
+            let smaplePredicate = HKQuery.predicateForSamplesWithStartDate(startOfMonth, endDate: endOfMonth, options: .None)//create predicate for year
+            
+            //create query for 1 month period
+            let sampleQuery = HKSampleQuery.init(sampleType: quantityType, predicate: smaplePredicate, limit: HKObjectQueryNoLimit, sortDescriptors: nil, resultsHandler: { (query, results, error) in
+                if let result = results {//if we have samples for the month period
+                    var samplesNumber = numberOfDaysWithSamples[monthInedx]
+                    for sample in result {//need to keep previous day to summ number of smaples by days
+                        if sample.startDate.day != prevSampelDay {//if sample is in the same month
+                            samplesNumber += 1
+                            prevSampelDay = sample.startDate.day
+                        }
+                    }//end for with samples
+                    numberOfDaysWithSamples[monthInedx] = samplesNumber
+                }
+                dispatch_group_leave(group)
+            })
+            healthKitStore.executeQuery(sampleQuery)
+        }
+        
+        dispatch_group_notify(group, dispatch_get_main_queue()) { 
+            completion(numberOfDaysWithSamplesForEachMonth: numberOfDaysWithSamples)
         }
     }
     

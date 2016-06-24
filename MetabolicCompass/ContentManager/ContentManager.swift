@@ -32,6 +32,9 @@ class ContentManager: NSObject {
             self.fetchRecentSamples()
             self.isBackgroundWorkActive = true
             HealthManager.sharedManager.registerObservers()
+            AccountManager.shared.withHKCalAuth {
+                HealthManager.sharedManager.collectDataForCharts()
+            }
         }
     }
 

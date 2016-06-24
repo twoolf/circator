@@ -41,10 +41,10 @@ class ChartsViewController: UIViewController {
     
     override func viewWillAppear(animated: Bool) {
         super.viewWillAppear(animated)
-        NSNotificationCenter.defaultCenter().addObserver(self, selector: #selector(getChartsData), name: UIApplicationWillEnterForegroundNotification, object: nil)
+        NSNotificationCenter.defaultCenter().addObserver(self, selector: #selector(updateChartsData), name: UIApplicationWillEnterForegroundNotification, object: nil)
+        NSNotificationCenter.defaultCenter().addObserver(self, selector: #selector(updateChartsData), name: HMDidUpdatedChartsData, object: nil)
         chartCollectionDataSource.updateData()
-        collectionView.reloadData()
-        getChartsData()
+        self.collectionView.reloadData()
     }
     
     override func viewWillDisappear(animated: Bool) {
@@ -53,28 +53,9 @@ class ChartsViewController: UIViewController {
     }
     
     //MARK: Base preparation
-    func getChartsData () {
-        if chartsModel.typesChartData.count == 0 {
-            activityIndicator.startAnimating()
-        }
-        let group = dispatch_group_create()
-        for qType in PreviewManager.chartsSampleTypes {
-            if qType.identifier == HKCategoryTypeIdentifierSleepAnalysis {
-                continue
-            }
-            if #available(iOS 9.3, *) {
-                if qType.identifier == HKQuantityTypeIdentifierAppleExerciseTime {
-                    continue
-                }
-            } else {
-                // Fallback on earlier versions
-            }
-            dispatch_group_enter(group)
-            chartsModel.getAllRangesDataForType(qType.identifier == HKCorrelationTypeIdentifierBloodPressure ? HKQuantityTypeIdentifierBloodPressureSystolic : qType.identifier) {
-                dispatch_group_leave(group)
-            }
-        }
-        dispatch_group_notify(group, dispatch_get_main_queue()) {
+    func updateChartsData () {
+        activityIndicator.startAnimating()
+        chartsModel.getAllDataForType() {
             self.activityIndicator.stopAnimating()
             self.collectionView.reloadData()
         }
@@ -108,7 +89,7 @@ class ChartsViewController: UIViewController {
             default:
                 chartsModel.rangeType = .Week
         }
-        collectionView.reloadData()
+        updateChartsData()
     }
     
     func manageCharts () {
