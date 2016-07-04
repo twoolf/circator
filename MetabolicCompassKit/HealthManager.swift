@@ -951,16 +951,22 @@ public class HealthManager: NSObject, WCSessionDelegate {
     }
     
     public func collectDataForCharts() {
+        print("START TIME - \(NSDate())")
         let periods: [HealthManagerStatisticsRangeType] = [HealthManagerStatisticsRangeType.Week, HealthManagerStatisticsRangeType.Month, HealthManagerStatisticsRangeType.Year]
         let group = dispatch_group_create()
+//      chartsSampleTypes
         for sampleType in PreviewManager.manageChartsSampleTypes {
-            let type = sampleType.identifier == HKCorrelationTypeIdentifierBloodPressure ? HKQuantityTypeIdentifierBloodPressureDiastolic : sampleType.identifier
+            let type = sampleType.identifier == HKCorrelationTypeIdentifierBloodPressure ? HKQuantityTypeIdentifierBloodPressureSystolic : sampleType.identifier
             if #available(iOS 9.3, *) {
                 if type == HKQuantityTypeIdentifierAppleExerciseTime {
                     continue
                 }
             }
+            if (type == HKCategoryTypeIdentifierSleepAnalysis) {
+                continue
+            }
             for period in periods {
+//                print("\(type) - \(period)")
                 let key = UserManager.sharedManager.userId! + type + "\(period.rawValue)"
                 //enter main group
                 dispatch_group_enter(group)
@@ -978,6 +984,7 @@ public class HealthManager: NSObject, WCSessionDelegate {
                         let minAndMaxValues = [statisticsMaxValues, statisticsMinValues]
                         let minAndMaxValuesData = NSKeyedArchiver.archivedDataWithRootObject(minAndMaxValues)
                         Defaults[key] = minAndMaxValuesData
+//                        print("\(type) - \(period) leave")
                         dispatch_group_leave(group)//leave main group
                     })
                 } else if type == HKQuantityTypeIdentifierBloodPressureSystolic {//we should also get data for HKQuantityTypeIdentifierBloodPressureDiastolic
@@ -1027,6 +1034,7 @@ public class HealthManager: NSObject, WCSessionDelegate {
             Defaults.setObject(NSDate(), forKey: lastChartsDataCacheKey)
             Defaults.synchronize()
             NSNotificationCenter.defaultCenter().postNotificationName(HMDidUpdatedChartsData, object: nil)
+            print("END TIME - \(NSDate())")
         }
     }
     
@@ -1062,7 +1070,6 @@ public class HealthManager: NSObject, WCSessionDelegate {
         - returns: array of double values with statistics
     */
     public func getStatisticForPeriod(statisticsRange: HealthManagerStatisticsRangeType, forType type: String, completion: (statisticsVlues: [Double]) -> Void) {
-        print("type - \(type)")
         guard let quantityType = HKObjectType.quantityTypeForIdentifier(type) else {
             fatalError("*** Unable to create a \(type) count type ***")
         }
@@ -1181,41 +1188,50 @@ public class HealthManager: NSObject, WCSessionDelegate {
         let calendar = NSCalendar.currentCalendar()
         let startDate = calendar.dateByAddingUnit(.Month, value: -11, toDate: NSDate(), options: [])!        
         var numberOfDaysWithSamples:[Double] = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
-        //get all samples for year
-        for monthInedx in 0...11 {//iterate from 0 to 10 that equals 12 monthes
-            dispatch_group_enter(group)
-            let incrementIndex = monthInedx + 1
-            let predicateStartDate = startDate + incrementIndex.months//increase start date each iteration with one month
-            //create start of month date
-            let components = calendar.components([.Year, .Month], fromDate: predicateStartDate)
-            let startOfMonth = calendar.dateFromComponents(components)!
-            //create end of month date
-            let endComponents = NSDateComponents()
-            endComponents.month = 1
-            endComponents.day = -1
-            let endOfMonth = calendar.dateByAddingComponents(endComponents, toDate: startOfMonth, options: [])!
-            //var that will keep a prev sample day
-            var prevSampelDay = 0
-            let smaplePredicate = HKQuery.predicateForSamplesWithStartDate(startOfMonth, endDate: endOfMonth, options: .None)//create predicate for year
-            
-            //create query for 1 month period
-            let sampleQuery = HKSampleQuery.init(sampleType: quantityType, predicate: smaplePredicate, limit: HKObjectQueryNoLimit, sortDescriptors: nil, resultsHandler: { (query, results, error) in
-                if let result = results {//if we have samples for the month period
-                    var samplesNumber = numberOfDaysWithSamples[monthInedx]
-                    for sample in result {//need to keep previous day to summ number of smaples by days
-                        if sample.startDate.day != prevSampelDay {//if sample is in the same month
-                            samplesNumber += 1
-                            prevSampelDay = sample.startDate.day
-                        }
-                    }//end for with samples
-                    numberOfDaysWithSamples[monthInedx] = samplesNumber
+        let smaplePredicate = HKQuery.predicateForSamplesWithStartDate(startDate, endDate: NSDate(), options: .None)//create predicate for year
+        dispatch_group_enter(group)
+        
+        let uniqDayDateFormatter = NSDateFormatter()
+        uniqDayDateFormatter.dateFormat = "yyyy-MM-dd"
+        
+        let uniqMonthDateFormatter = NSDateFormatter()
+        uniqMonthDateFormatter.dateFormat = "yyyy-MM"
+        
+        let sampleQuery = HKSampleQuery.init(sampleType: quantityType, predicate: smaplePredicate, limit: HKObjectQueryNoLimit, sortDescriptors: nil, resultsHandler: { (query, results, error) in
+            if let result = results {//if we have samples for the month period
+//                print("END QUERY EXEQUTE - \(NSDate())")
+                var seenDate:[String:Bool] = [:]
+                let filteredResults = result.filter({ (sample) -> Bool in
+                    let sampleDateKey = uniqDayDateFormatter.stringFromDate(sample.startDate)
+                    let retValue:Bool? = seenDate[sampleDateKey]
+                    seenDate[sampleDateKey] = false
+                    if retValue != nil {
+                        return retValue!
+                    } else {
+                        return true
+                    }
+                })
+                for monthInedx in 0...11 {//iterate from 0 to 10 that equals 12 monthes
+                    dispatch_group_enter(group)
+                    let incrementIndex = monthInedx + 1
+                    let predicateStartDate = calendar.dateByAddingUnit(.Month, value: incrementIndex, toDate: startDate, options: [])! //increase start date each iteration with one month
+                    //create start of month date
+                    let components = calendar.components([.Year, .Month], fromDate: predicateStartDate)
+                    let mothResults = filteredResults.filter({ (sample) -> Bool in
+                        let sampleDate = sample.startDate
+                        let sampleComponents = calendar.components([.Year, .Month], fromDate: sampleDate)
+                        return components.month == sampleComponents.month && components.year == sampleComponents.year
+                    })
+                    numberOfDaysWithSamples[monthInedx] = Double(mothResults.count)
+                    dispatch_group_leave(group)
                 }
                 dispatch_group_leave(group)
-            })
-            healthKitStore.executeQuery(sampleQuery)
-        }
-        
-        dispatch_group_notify(group, dispatch_get_main_queue()) { 
+            }
+        })
+//        print("START QUERY EXEQUTE - \(NSDate())")
+        healthKitStore.executeQuery(sampleQuery)
+        dispatch_group_notify(group, dispatch_get_main_queue()) {
+//            print("END OF CALCULATION - \(NSDate())")
             completion(numberOfDaysWithSamplesForEachMonth: numberOfDaysWithSamples)
         }
     }
