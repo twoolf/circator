@@ -204,27 +204,26 @@ class BarChartModel : NSObject {
     }
     
     //MARK: Get all data for type
-    func getAllDataForType(completion: () -> Void) {
+    func getAllDataForCurrentPeriod(completion: () -> Void) {
+        let group = dispatch_group_create()
         for qType in PreviewManager.chartsSampleTypes {
-            if qType.identifier == HKCategoryTypeIdentifierSleepAnalysis {
-                continue
-            }
+            dispatch_group_enter(group)
             if #available(iOS 9.3, *) {
                 if qType.identifier == HKQuantityTypeIdentifierAppleExerciseTime {
+                    dispatch_group_leave(group)
                     continue
                 }
             }
             let type = qType.identifier == HKCorrelationTypeIdentifierBloodPressure ? HKQuantityTypeIdentifierBloodPressureSystolic : qType.identifier
             let chartType = chartTypeForQuantityTypeIdentifier(type)
+            let key = type + "\(self.rangeType.rawValue)"
             if type == HKQuantityTypeIdentifierHeartRate ||
                 type == HKQuantityTypeIdentifierUVExposure {//we should get max and min values. because for this type we are using scatter chart
-                let key = type + "\(self.rangeType.rawValue)"
                 let values = HealthManager.sharedManager.getChartDataForQuantity(type, inPeriod: self.rangeType) as! [[Double]]
                 if values.count > 0 {
                     self.typesChartData[key] = self.getChartDataForRange(self.rangeType, type: chartType, values: values[0], minValues: values[1])
                 }
             } else if type == HKQuantityTypeIdentifierBloodPressureSystolic {//we should also get data for HKQuantityTypeIdentifierBloodPressureDiastolic
-                let key = type + "\(self.rangeType.rawValue)"
                 let values = HealthManager.sharedManager.getChartDataForQuantity(type, inPeriod: self.rangeType) as! [[Double]]
                 if values.count > 0 {
                     self.typesChartData[key] = self.getBloodPressureChartData(self.rangeType,
@@ -233,17 +232,17 @@ class BarChartModel : NSObject {
                                                                               diastolicMax: values[2],
                                                                               diastolicMin: values[3])
                 }
-                
-                
             } else if type == HKCategoryTypeIdentifierSleepAnalysis {
 //                HealthManager.sharedManager.getStatisticsForSleepInPeriod(period)
             } else {
-                let key = type + "\(self.rangeType.rawValue)"
                 let values = HealthManager.sharedManager.getChartDataForQuantity(type, inPeriod: self.rangeType) as! [Double]
                 self.typesChartData[key] = self.getChartDataForRange(self.rangeType, type: chartType, values: values, minValues: nil)
             }
+            dispatch_group_leave(group)
         }
-        completion()
+        dispatch_group_notify(group, dispatch_get_main_queue()) { 
+            completion()
+        }
     }
     
     //MARK: Chart titles for X

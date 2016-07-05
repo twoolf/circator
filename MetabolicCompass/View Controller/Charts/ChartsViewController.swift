@@ -44,7 +44,7 @@ class ChartsViewController: UIViewController {
         NSNotificationCenter.defaultCenter().addObserver(self, selector: #selector(updateChartsData), name: UIApplicationWillEnterForegroundNotification, object: nil)
         NSNotificationCenter.defaultCenter().addObserver(self, selector: #selector(updateChartsData), name: HMDidUpdatedChartsData, object: nil)
         chartCollectionDataSource.updateData()
-        self.collectionView.reloadData()
+        updateChartsData()
     }
     
     override func viewWillDisappear(animated: Bool) {
@@ -55,7 +55,7 @@ class ChartsViewController: UIViewController {
     //MARK: Base preparation
     func updateChartsData () {
         activityIndicator.startAnimating()
-        chartsModel.getAllDataForType() {
+        chartsModel.getAllDataForCurrentPeriod() {
             self.activityIndicator.stopAnimating()
             self.collectionView.reloadData()
         }
