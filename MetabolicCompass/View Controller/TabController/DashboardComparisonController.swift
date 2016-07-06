@@ -24,7 +24,7 @@ class DashboardComparisonController: UIViewController, UITableViewDelegate, UITa
         AccountManager.shared.loginAndInitialize(false)
     }
     
-    func contenteDidUpdate (notification: NSNotification) {
+    func contentDidUpdate (notification: NSNotification) {
         self.tableView.reloadData()
     }
     
@@ -32,7 +32,7 @@ class DashboardComparisonController: UIViewController, UITableViewDelegate, UITa
         super.viewWillAppear(animated)
         AccountManager.shared.contentManager.initializeBackgroundWork()
         self.tableView.reloadData()
-        NSNotificationCenter.defaultCenter().addObserver(self, selector: #selector(contenteDidUpdate), name: HMDidUpdateRecentSamplesNotification, object: nil)
+        NSNotificationCenter.defaultCenter().addObserver(self, selector: #selector(contentDidUpdate), name: HMDidUpdateRecentSamplesNotification, object: nil)
         NSNotificationCenter.defaultCenter().addObserver(self, selector: #selector(updateContent), name: UIApplicationDidBecomeActiveNotification, object: nil)
     }
     
