@@ -78,7 +78,11 @@ class MainTabController: UITabBarController, UITabBarControllerDelegate, PathMen
     //MARK: Notifications
     func userDidLogin() {
         Async.main(after: 0.5) {
-            self.menu!.hidden = false
+            if self.menu != nil {
+                self.menu!.hidden = false
+            } else {
+                self.userDidLogin()
+            }
         }
     }
     
