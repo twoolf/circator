@@ -254,14 +254,14 @@ public extension MCAggregateSample {
         }
 
         required public init?(coder aDecoder: NSCoder) {
-            guard let startDate    = aDecoder.decodeObjectForKey("startDate")    as? NSDate   else { aggregate = nil; super.init(); return nil }
-            guard let endDate      = aDecoder.decodeObjectForKey("endDate")      as? NSDate   else { aggregate = nil; super.init(); return nil }
-            guard let numeralValue = aDecoder.decodeObjectForKey("numeralValue") as? Double?  else { aggregate = nil; super.init(); return nil }
-            guard let defaultUnit  = aDecoder.decodeObjectForKey("defaultUnit")  as? HKUnit?  else { aggregate = nil; super.init(); return nil }
-            guard let hkType       = aDecoder.decodeObjectForKey("hkType")       as? HKSampleType?  else { aggregate = nil; super.init(); return nil }
-            guard let aggOp        = aDecoder.decodeObjectForKey("aggOp")        as? UInt     else { aggregate = nil; super.init(); return nil }
-            guard let runningAgg   = aDecoder.decodeObjectForKey("runningAgg")   as? [Double] else { aggregate = nil; super.init(); return nil }
-            guard let runningCnt   = aDecoder.decodeObjectForKey("runningCng")   as? Int      else { aggregate = nil; super.init(); return nil }
+            guard let startDate    = aDecoder.decodeObjectForKey("startDate")    as? NSDate         else { log.error("Failed to rebuild MCAggregateSample startDate"); aggregate = nil; super.init(); return nil }
+            guard let endDate      = aDecoder.decodeObjectForKey("endDate")      as? NSDate         else { log.error("Failed to rebuild MCAggregateSample endDate"); aggregate = nil; super.init(); return nil }
+            guard let numeralValue = aDecoder.decodeObjectForKey("numeralValue") as? Double?        else { log.error("Failed to rebuild MCAggregateSample numeralValue"); aggregate = nil; super.init(); return nil }
+            guard let defaultUnit  = aDecoder.decodeObjectForKey("defaultUnit")  as? HKUnit?        else { log.error("Failed to rebuild MCAggregateSample defaultUnit"); aggregate = nil; super.init(); return nil }
+            guard let hkType       = aDecoder.decodeObjectForKey("hkType")       as? HKSampleType?  else { log.error("Failed to rebuild MCAggregateSample hkType"); aggregate = nil; super.init(); return nil }
+            guard let aggOp        = aDecoder.decodeObjectForKey("aggOp")        as? UInt           else { log.error("Failed to rebuild MCAggregateSample aggOp"); aggregate = nil; super.init(); return nil }
+            guard let runningAgg   = aDecoder.decodeObjectForKey("runningAgg")   as? [Double]       else { log.error("Failed to rebuild MCAggregateSample runningAgg"); aggregate = nil; super.init(); return nil }
+            guard let runningCnt   = aDecoder.decodeObjectForKey("runningCnt")   as? Int            else { log.error("Failed to rebuild MCAggregateSample runningCnt"); aggregate = nil; super.init(); return nil }
 
             aggregate = MCAggregateSample(startDate: startDate, endDate: endDate, numeralValue: numeralValue, defaultUnit: defaultUnit,
                                           hkType: hkType, aggOp: HKStatisticsOptions(rawValue: aggOp), runningAgg: runningAgg, runningCnt: runningCnt)
