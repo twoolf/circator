@@ -63,7 +63,7 @@ public class UINotifications {
             Async.main {
                 vc.view.dodo.style.bar.hideAfterDelaySeconds = 3
                 vc.view.dodo.style.bar.hideOnTap = true
-                vc.view.dodo.error("Login failed " + (reason ?? ""))
+                vc.view.dodo.error("Login failed: " + (reason ?? ""))
             }
         }
     }
