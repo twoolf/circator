@@ -570,14 +570,14 @@ public class HealthManager: NSObject, WCSessionDelegate {
                         failure(error)
                         return
                     }
-                    log.warning("Caching aggregates for \(key)")
+                    log.verbose("Caching aggregates for \(key)")
                     success(MCAggregateArray(aggregates: aggregates), .Date(self.getCacheExpiry(period)))
                 }
             }
         }, completion: {object, isLoadedFromCache, error in
-            log.warning("Cache result \(key) \(isLoadedFromCache)")
+            log.verbose("Cache result \(key) \(isLoadedFromCache)")
             if let aggArray = object {
-                log.warning("Cache result \(key) size \(aggArray.aggregates.count)")
+                log.verbose("Cache result \(key) size \(aggArray.aggregates.count)")
                 self.queryResultAsSamples(.AggregatedSamples(aggArray.aggregates), error: error, completion: completion)
             } else {
                 completion(samples: [], error: error)
@@ -625,7 +625,7 @@ public class HealthManager: NSObject, WCSessionDelegate {
                     failure(error)
                     return
                 }
-                log.warning("Caching daily aggregates for \(key)")
+                log.verbose("Caching daily aggregates for \(key)")
                 success(MCAggregateArray(aggregates: aggregates), .Date(self.getCacheExpiry(period)))
             }
 
@@ -637,9 +637,9 @@ public class HealthManager: NSObject, WCSessionDelegate {
                 }
             }
         }, completion: {object, isLoadedFromCache, error in
-            log.warning("Cache daily result \(key) \(isLoadedFromCache)")
+            log.verbose("Cache daily result \(key) \(isLoadedFromCache)")
             if let aggArray = object {
-                log.warning("Cache daily result \(key) size \(aggArray.aggregates.count)")
+                log.verbose("Cache daily result \(key) size \(aggArray.aggregates.count)")
                 self.queryResultAsSamples(.AggregatedSamples(aggArray.aggregates), error: error, completion: completion)
             } else {
                 completion(samples: [], error: error)
@@ -702,14 +702,14 @@ public class HealthManager: NSObject, WCSessionDelegate {
                         failure(error)
                         return
                     }
-                    log.warning("Caching minmax aggregates for \(key) ")
+                    log.verbose("Caching minmax aggregates for \(key) ")
                     success(MCAggregateArray(aggregates: aggregates), .Date(self.getCacheExpiry(period)))
                 }
             }
         }, completion: {object, isLoadedFromCache, error in
-            log.warning("Cache minmax result \(key) \(isLoadedFromCache)")
+            log.verbose("Cache minmax result \(key) \(isLoadedFromCache)")
             if let aggArray = object {
-                log.warning("Cache minmax result \(key) size \(aggArray.aggregates.count)")
+                log.verbose("Cache minmax result \(key) size \(aggArray.aggregates.count)")
                 completion(aggArray.aggregates.map { finalize(.DiscreteMin, $0) }, aggArray.aggregates.map { finalize(.DiscreteMax, $0) }, error)
             } else {
                 completion([], [], error)
@@ -1360,7 +1360,7 @@ public class HealthManager: NSObject, WCSessionDelegate {
     // MARK: - Chart queries
 
     public func collectDataForCharts() {
-        log.warning("Clearing HMAggregateCache")
+        log.verbose("Clearing HMAggregateCache expired objects")
         aggregateCache.removeExpiredObjects()
 
         let periods: [HealthManagerStatisticsRangeType] = [
@@ -1383,7 +1383,7 @@ public class HealthManager: NSObject, WCSessionDelegate {
             let keyPrefix = type
 
             for period in periods {
-                log.warning("Collecting chart data for \(keyPrefix) \(period)")
+                log.verbose("Collecting chart data for \(keyPrefix) \(period)")
 
                 dispatch_group_enter(group)
                 // We should get max and min values. because for this type we are using scatter chart
@@ -1456,9 +1456,9 @@ public class HealthManager: NSObject, WCSessionDelegate {
         }
 
         if let aggArray = aggregateCache[key] {
-            log.warning("Cache hit for \(key) (size \(aggArray.aggregates.count))")
+            log.verbose("Cache hit for \(key) (size \(aggArray.aggregates.count))")
         } else {
-            log.warning("Cache miss for \(key)")
+            log.verbose("Cache miss for \(key)")
         }
 
         if asMinMax {

@@ -128,7 +128,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         console.colored = false
         console.minLevel = .Info
 
-        let paths : [String : SwiftyBeaver.Level] = ["ServiceAPI":.Verbose, "HealthManager":.Verbose]
+        let paths : [String : SwiftyBeaver.Level] = ["ServiceAPI":.Verbose, "HealthManager":.Debug]
         let pathfuns : [String : (String, SwiftyBeaver.Level)] = [:]
 
         for (p,l) in paths { console.addMinLevelFilter(l, path: p) }
