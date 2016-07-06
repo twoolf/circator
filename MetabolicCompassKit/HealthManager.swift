@@ -1367,6 +1367,7 @@ public class HealthManager: NSObject, WCSessionDelegate {
         ]
 
         let group = dispatch_group_create()
+
         for sampleType in PreviewManager.manageChartsSampleTypes {
             let type = sampleType.identifier == HKCorrelationTypeIdentifierBloodPressure ? HKQuantityTypeIdentifierBloodPressureSystolic : sampleType.identifier
 

@@ -28,8 +28,8 @@ class ChartsViewController: UIViewController {
     private let chartCollectionDataSource = ChartCollectionDataSource()
     private let chartCollectionDelegate = ChartCollectionDelegate()
     private let chartsModel = BarChartModel()
-    
-    //MARK: View life circle
+
+    // MARK :- View life cycle
     override func viewDidLoad() {
         super.viewDidLoad()
         upateNavigationBar()
@@ -38,7 +38,7 @@ class ChartsViewController: UIViewController {
         collectionView.delegate = chartCollectionDelegate
         collectionView.dataSource = chartCollectionDataSource
     }
-    
+
     override func viewWillAppear(animated: Bool) {
         super.viewWillAppear(animated)
         NSNotificationCenter.defaultCenter().addObserver(self, selector: #selector(updateChartsData), name: UIApplicationWillEnterForegroundNotification, object: nil)
@@ -46,32 +46,32 @@ class ChartsViewController: UIViewController {
         chartCollectionDataSource.updateData()
         updateChartsData()
     }
-    
+
     override func viewWillDisappear(animated: Bool) {
         super.viewWillDisappear(animated)
         NSNotificationCenter.defaultCenter().removeObserver(self)
     }
-    
-    //MARK: Base preparation
+
+    // MARK :- Base preparation
     func updateChartsData () {
         activityIndicator.startAnimating()
-        chartsModel.getAllDataForType() {
+        chartsModel.getAllDataForCurrentPeriod() {
             self.activityIndicator.stopAnimating()
             self.collectionView.reloadData()
         }
     }
-    
+
     func registerCells () {
         let barChartCellNib = UINib(nibName: "BarChartCollectionCell", bundle: nil)
         collectionView?.registerNib(barChartCellNib, forCellWithReuseIdentifier: barChartCellIdentifier)
-        
+
         let lineChartCellNib = UINib(nibName: "LineChartCollectionCell", bundle: nil)
         collectionView?.registerNib(lineChartCellNib, forCellWithReuseIdentifier: lineChartCellIdentifier)
-        
+
         let scatterChartCellNib = UINib(nibName: "ScatterChartCollectionCell", bundle: nil)
         collectionView.registerNib(scatterChartCellNib, forCellWithReuseIdentifier: scatterChartCellIdentifier)
     }
-    
+
     func upateNavigationBar () {
         let manageButton = ScreenManager.sharedInstance.appNavButtonWithTitle("Manage")
         manageButton.addTarget(self, action: #selector(manageCharts), forControlEvents: .TouchUpInside)
@@ -79,7 +79,7 @@ class ChartsViewController: UIViewController {
         self.navigationItem.leftBarButtonItem = manageBarButton
         self.navigationItem.title = NSLocalizedString("CHART", comment: "chart screen title")
     }
-    
+
     @IBAction func rangeChnaged(sender: UISegmentedControl) {
         switch sender.selectedSegmentIndex {
             case HealthManagerStatisticsRangeType.Month.rawValue:
@@ -91,7 +91,7 @@ class ChartsViewController: UIViewController {
         }
         updateChartsData()
     }
-    
+
     func manageCharts () {
         let manageController = UIStoryboard(name: "TabScreens", bundle: nil).instantiateViewControllerWithIdentifier("manageCharts")
         self.presentViewController(manageController, animated: true) {}
