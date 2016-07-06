@@ -107,16 +107,24 @@ class LoginViewController: BaseViewController {
                             // Raise a notification if there are other errors.
                             if components.count > 1 {
                                 Answers.logLoginWithMethod("SPL", success: false, customAttributes: nil)
-                                UINotifications.loginFailed(self, reason: "Failed to get user account")
+                                let componentNames = components.map { getComponentName($0) }.joinWithSeparator(", ")
+                                let reason = components.isEmpty ? "" : " (missing \(componentNames))"
+                                UINotifications.loginFailed(self, reason: "Failed to get account\(reason)")
                             }
                         } else {
                             Answers.logLoginWithMethod("SPL", success: false, customAttributes: nil)
-                            UINotifications.loginFailed(self, reason: "Failed to get user account")
+                            let componentNames = components.map { getComponentName($0) }.joinWithSeparator(", ")
+                            let reason = components.isEmpty ? "" : " (missing \(componentNames))"
+                            UINotifications.loginFailed(self, reason: "Failed to get account\(reason)")
                         }
                     } else {
                         Answers.logLoginWithMethod("SPL", success: false, customAttributes: nil)
                         UINotifications.invalidUserPass(self)
                     }
+
+                    // Explicitly logout on an error to clear the UserManager's userid.
+                    // This way the user does not see the dashboard on app relaunch.
+                    UserManager.sharedManager.logout()
                     return
                 }
                 if UserManager.sharedManager.isItFirstLogin() {//if it's first login

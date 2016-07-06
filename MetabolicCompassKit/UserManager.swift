@@ -788,7 +788,7 @@ public class UserManager {
     }
 
     // Retrieves multiple account components in a single request.
-    private func pullMultipleAccountComponents(components: [AccountComponent], completion: SvcResultCompletion) {
+    private func pullMultipleAccountComponents(components: [AccountComponent], requiredComponents: [AccountComponent], completion: SvcResultCompletion) {
         Service.json(MCRouter.GetUserAccountData(components), statusCode: 200..<300, tag: "GALLACC") {
             _, _, result in
             var pullSuccess = result.isSuccess
@@ -801,8 +801,9 @@ public class UserManager {
                         if let refreshVal = self.unwrapResponse(component, response: dict) {
                             self.refreshComponentCache(component, componentData: refreshVal)
                             self.lastComponentLoadDate[component] = NSDate()
-                        } else {
-                            // Indicate a failure if we cannot unwrap any component from the response.
+                        }
+                        else if requiredComponents.contains(component) {
+                            // Indicate a failure if we cannot unwrap a required component from the response.
                             failedComponents.append(getComponentName(component))
                             pullSuccess = false
                             break
@@ -816,14 +817,9 @@ public class UserManager {
     }
 
     public func pullFullAccount(completion: SvcResultCompletion) {
-//        pullMultipleAccountComponents([ .Consent, .Photo, .Profile, .Settings, .ArchiveSpan, .LastAcquired]) {
-//            res in
-//            completion(res)
-//        }
-        pullMultipleAccountComponents([ .Consent, .Photo, .Profile, .Settings]) {
-            res in
-            completion(res)
-        }
+        pullMultipleAccountComponents([ .Consent, .Photo, .Profile, .Settings, .ArchiveSpan, .LastAcquired],
+                                      requiredComponents: [.Consent, .Profile, .Settings],
+                                      completion: completion)
     }
 
 
