@@ -203,50 +203,60 @@ class BarChartModel : NSObject {
         return chartData
     }
     
-    //MARK: Get all data for type
+    // MARK :- Get all data for type
+
     func getAllDataForType(completion: () -> Void) {
+        let group = dispatch_group_create()
         for qType in PreviewManager.chartsSampleTypes {
-            if qType.identifier == HKCategoryTypeIdentifierSleepAnalysis {
-                continue
-            }
+            dispatch_group_enter(group)
+
             if #available(iOS 9.3, *) {
                 if qType.identifier == HKQuantityTypeIdentifierAppleExerciseTime {
+                    dispatch_group_leave(group)
                     continue
                 }
             }
+
             let type = qType.identifier == HKCorrelationTypeIdentifierBloodPressure ? HKQuantityTypeIdentifierBloodPressureSystolic : qType.identifier
             let chartType = chartTypeForQuantityTypeIdentifier(type)
-            if type == HKQuantityTypeIdentifierHeartRate ||
-                type == HKQuantityTypeIdentifierUVExposure {//we should get max and min values. because for this type we are using scatter chart
-                let key = type + "\(self.rangeType.rawValue)"
-                let values = HealthManager.sharedManager.getChartDataForQuantity(type, inPeriod: self.rangeType) as! [[Double]]
-                if values.count > 0 {
-                    self.typesChartData[key] = self.getChartDataForRange(self.rangeType, type: chartType, values: values[0], minValues: values[1])
+            let key = type + "\(self.rangeType.rawValue)"
+            log.warning("Getting chart data for \(type)")
+
+            if type == HKQuantityTypeIdentifierHeartRate || type == HKQuantityTypeIdentifierUVExposure {
+                // We should get max and min values. because for this type we are using scatter chart
+                HealthManager.sharedManager.getChartDataForQuantity(qType, inPeriod: self.rangeType) { obj in
+                    let values = obj as! [[Double]]
+                    if values.count > 0 {
+                        self.typesChartData[key] = self.getChartDataForRange(self.rangeType, type: chartType, values: values[0], minValues: values[1])
+                    }
+                    dispatch_group_leave(group)
                 }
-            } else if type == HKQuantityTypeIdentifierBloodPressureSystolic {//we should also get data for HKQuantityTypeIdentifierBloodPressureDiastolic
-                let key = type + "\(self.rangeType.rawValue)"
-                let values = HealthManager.sharedManager.getChartDataForQuantity(type, inPeriod: self.rangeType) as! [[Double]]
-                if values.count > 0 {
-                    self.typesChartData[key] = self.getBloodPressureChartData(self.rangeType,
-                                                                              systolicMax: values[0],
-                                                                              systolicMin: values[1],
-                                                                              diastolicMax: values[2],
-                                                                              diastolicMin: values[3])
+            } else if type == HKQuantityTypeIdentifierBloodPressureSystolic {
+                // We should also get data for HKQuantityTypeIdentifierBloodPressureDiastolic
+                HealthManager.sharedManager.getChartDataForQuantity(HKObjectType.quantityTypeForIdentifier(type)!, inPeriod: self.rangeType) { obj in
+                    let values = obj as! [[Double]]
+                    if values.count > 0 {
+                        self.typesChartData[key] = self.getBloodPressureChartData(self.rangeType,
+                                                                                  systolicMax: values[0], systolicMin: values[1],
+                                                                                  diastolicMax: values[2], diastolicMin: values[3])
+                    }
+                    dispatch_group_leave(group)
                 }
-                
-                
-            } else if type == HKCategoryTypeIdentifierSleepAnalysis {
-//                HealthManager.sharedManager.getStatisticsForSleepInPeriod(period)
             } else {
-                let key = type + "\(self.rangeType.rawValue)"
-                let values = HealthManager.sharedManager.getChartDataForQuantity(type, inPeriod: self.rangeType) as! [Double]
-                self.typesChartData[key] = self.getChartDataForRange(self.rangeType, type: chartType, values: values, minValues: nil)
+                HealthManager.sharedManager.getChartDataForQuantity(qType, inPeriod: self.rangeType) { obj in
+                    let values = obj as! [Double]
+                    self.typesChartData[key] = self.getChartDataForRange(self.rangeType, type: chartType, values: values, minValues: nil)
+                    dispatch_group_leave(group)
+                }
             }
         }
-        completion()
+        dispatch_group_notify(group, dispatch_get_main_queue()) {
+            completion()
+        }
     }
     
-    //MARK: Chart titles for X
+    // MARK :- Chart titles for X
+
     func getWeekTitles () -> [String] {
         let currentDate = NSDate()
         let weekAgoDate = currentDate - 7.days

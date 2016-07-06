@@ -65,6 +65,7 @@ class AccountManager: NSObject {
     func doLogout(completion: (Void -> Void)?) {
 //        self.isAuthorized = false
         UserManager.sharedManager.logoutWithCompletion(completion)
+        HealthManager.sharedManager.reset()
         self.contentManager.stopBackgroundWork()
         PopulationHealthManager.sharedManager.resetAggregates()
     }
@@ -79,8 +80,8 @@ class AccountManager: NSObject {
             if error == nil {
                 if let account = accountOpt {
                     self.userInfo = UserInfo()
-                    self.userInfo?.firstName = account.givenName as? String
-                    self.userInfo?.lastName = account.surname as? String
+                    self.userInfo?.firstName = account.givenName
+                    self.userInfo?.lastName = account.surname
                 }
             }
 

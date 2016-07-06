@@ -136,15 +136,15 @@ public class PopulationHealthManager {
                         switch typeIdentifier {
                         case HKCategoryTypeIdentifierSleepAnalysis:
                             let sampleType = HKObjectType.categoryTypeForIdentifier(HKCategoryTypeIdentifierSleepAnalysis)!
-                            populationAggregates[sampleType] = [MCAggregateSample(value: sampleValue, sampleType: sampleType)]
+                            populationAggregates[sampleType] = [MCAggregateSample(value: sampleValue, sampleType: sampleType, op: sampleType.aggregationOptions)]
 
                         case HKCategoryTypeIdentifierAppleStandHour:
                             let sampleType = HKObjectType.categoryTypeForIdentifier(HKCategoryTypeIdentifierAppleStandHour)!
-                            populationAggregates[sampleType] = [MCAggregateSample(value: sampleValue, sampleType: sampleType)]
+                            populationAggregates[sampleType] = [MCAggregateSample(value: sampleValue, sampleType: sampleType, op: sampleType.aggregationOptions)]
 
                         default:
                             let sampleType = HKObjectType.quantityTypeForIdentifier(typeIdentifier)!
-                            populationAggregates[sampleType] = [MCAggregateSample(value: sampleValue, sampleType: sampleType)]
+                            populationAggregates[sampleType] = [MCAggregateSample(value: sampleValue, sampleType: sampleType, op: sampleType.aggregationOptions)]
                         }
                     } else {
                         failed = true
