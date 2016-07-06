@@ -577,6 +577,7 @@ public class HealthManager: NSObject, WCSessionDelegate {
         }, completion: {object, isLoadedFromCache, error in
             log.warning("Cache result \(key) \(isLoadedFromCache)")
             if let aggArray = object {
+                log.warning("Cache result \(key) size \(aggArray.aggregates.count)")
                 self.queryResultAsSamples(.AggregatedSamples(aggArray.aggregates), error: error, completion: completion)
             } else {
                 completion(samples: [], error: error)
@@ -638,6 +639,7 @@ public class HealthManager: NSObject, WCSessionDelegate {
         }, completion: {object, isLoadedFromCache, error in
             log.warning("Cache daily result \(key) \(isLoadedFromCache)")
             if let aggArray = object {
+                log.warning("Cache daily result \(key) size \(aggArray.aggregates.count)")
                 self.queryResultAsSamples(.AggregatedSamples(aggArray.aggregates), error: error, completion: completion)
             } else {
                 completion(samples: [], error: error)
@@ -700,13 +702,14 @@ public class HealthManager: NSObject, WCSessionDelegate {
                         failure(error)
                         return
                     }
-                    log.warning("Caching minmax aggregates for \(key)")
+                    log.warning("Caching minmax aggregates for \(key) ")
                     success(MCAggregateArray(aggregates: aggregates), .Date(self.getCacheExpiry(period)))
                 }
             }
         }, completion: {object, isLoadedFromCache, error in
             log.warning("Cache minmax result \(key) \(isLoadedFromCache)")
             if let aggArray = object {
+                log.warning("Cache minmax result \(key) size \(aggArray.aggregates.count)")
                 completion(aggArray.aggregates.map { finalize(.DiscreteMin, $0) }, aggArray.aggregates.map { finalize(.DiscreteMax, $0) }, error)
             } else {
                 completion([], [], error)
@@ -1452,8 +1455,8 @@ public class HealthManager: NSObject, WCSessionDelegate {
             key = getPeriodCacheKey(keyPrefix, aggOp: .DiscreteAverage, period: period)
         }
 
-        if let _ = aggregateCache[key] {
-            log.warning("Cache hit for \(key)")
+        if let aggArray = aggregateCache[key] {
+            log.warning("Cache hit for \(key) (size \(aggArray.aggregates.count))")
         } else {
             log.warning("Cache miss for \(key)")
         }
@@ -1496,8 +1499,9 @@ public class HealthManager: NSObject, WCSessionDelegate {
                     }
 
                     if let aggArray = self.aggregateCache[key] {
-                        completion([aggArray.aggregates.map { return finalizeAgg(.DiscreteMax, $0).numeralValue! },
-                                    aggArray.aggregates.map { return finalizeAgg(.DiscreteMin, $0).numeralValue! }])
+                        let mins = aggArray.aggregates.map { return finalizeAgg(.DiscreteMin, $0).numeralValue! }
+                        let maxs = aggArray.aggregates.map { return finalizeAgg(.DiscreteMax, $0).numeralValue! }
+                        completion([maxs, mins])
                     }
                 }
             }
