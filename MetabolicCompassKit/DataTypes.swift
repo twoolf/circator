@@ -99,6 +99,20 @@ public struct MCAggregateSample : MCSample {
         defaultUnit = statistic.defaultUnit
         hkType = statistic.hkType
         aggOp = op
+
+        // Initialize internal statistics.
+        if let sumQ = statistic.sumQuantity() {
+            runningAgg[0] = sumQ.doubleValueForUnit(statistic.defaultUnit!)
+        } else if let avgQ = statistic.averageQuantity() {
+            runningAgg[0] = avgQ.doubleValueForUnit(statistic.defaultUnit!)
+            runningCnt = 1
+        }
+        if let minQ = statistic.minimumQuantity() {
+            runningAgg[1] = minQ.doubleValueForUnit(statistic.defaultUnit!)
+        }
+        if let maxQ = statistic.maximumQuantity() {
+            runningAgg[2] = maxQ.doubleValueForUnit(statistic.defaultUnit!)
+        }
     }
 
     public init(startDate: NSDate, endDate: NSDate, numeralValue: Double?, defaultUnit: HKUnit?,
