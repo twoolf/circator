@@ -250,7 +250,6 @@ class BarChartModel : NSObject {
                     dispatch_group_leave(group)
                 }
             }
-            dispatch_group_leave(group)
         }
         dispatch_group_notify(group, dispatch_get_main_queue()) {
             completion()
