@@ -1108,6 +1108,31 @@ public class HealthManager: NSObject, WCSessionDelegate {
 
     public func startBackgroundObserverForType(type: HKSampleType, maxResultsPerQuery: Int = noLimit, anchorQueryCallback: HMAnchorSamplesBlock) -> Void
     {
+        let invalidateCache : Void -> Void = { _ in
+            let cacheType = type.identifier == HKCorrelationTypeIdentifierBloodPressure ? HKQuantityTypeIdentifierBloodPressureSystolic : type.identifier
+            let cacheKeyPrefix = cacheType
+            let expiredPeriods : [HealthManagerStatisticsRangeType] = [.Week, .Month, .Year]
+            var expiredKeys : [String]
+
+            let minMaxKeys = expiredPeriods.map { self.getPeriodCacheKey(cacheKeyPrefix, aggOp: [.DiscreteMin, .DiscreteMax], period: $0) }
+            let avgKeys = expiredPeriods.map { self.getPeriodCacheKey(cacheKeyPrefix, aggOp: .DiscreteAverage, period: $0) }
+
+            if cacheType == HKQuantityTypeIdentifierHeartRate || cacheType == HKQuantityTypeIdentifierUVExposure {
+                expiredKeys = minMaxKeys
+            } else if cacheType == HKQuantityTypeIdentifierBloodPressureSystolic {
+                let diastolicKeyPrefix = HKQuantityTypeIdentifierBloodPressureDiastolic
+                expiredKeys = minMaxKeys
+                expiredKeys.appendContentsOf(
+                    expiredPeriods.map { self.getPeriodCacheKey(diastolicKeyPrefix, aggOp: [.DiscreteMin, .DiscreteMax], period: $0) })
+            } else {
+                expiredKeys = avgKeys
+            }
+            expiredKeys.forEach {
+                log.info("Invalidating aggregate cache for \($0)")
+                self.aggregateCache.removeObjectForKey($0)
+            }
+        }
+
         let onBackgroundStarted = {(success: Bool, nsError: NSError?) -> Void in
             guard success else {
                 log.error(nsError)
@@ -1161,6 +1186,12 @@ public class HealthManager: NSObject, WCSessionDelegate {
 
                 self.fetchAnchoredSamplesOfType(type, predicate: predicate, anchor: anchor, maxResults: maxResultsPerQuery, callContinuously: false) {
                     (added, deleted, newAnchor, error) -> Void in
+
+                    // Invalidate caches only if we have actually added or removed data according to the anchor query.
+                    if added.count > 0 || deleted.count > 0 {
+                        invalidateCache()
+                    }
+
                     anchorQueryCallback(added: added, deleted: deleted, newAnchor: newAnchor, error: error)
                     if let anchor = newAnchor {
                         self.setAnchorForType(anchor, forType: type)
@@ -1394,6 +1425,7 @@ public class HealthManager: NSObject, WCSessionDelegate {
                     }
                 } else if type == HKQuantityTypeIdentifierBloodPressureSystolic {
                     // We should also get data for HKQuantityTypeIdentifierBloodPressureDiastolic
+                    let diastolicKeyPrefix = HKQuantityTypeIdentifierBloodPressureDiastolic
                     let bloodPressureGroup = dispatch_group_create()
 
                     dispatch_group_enter(bloodPressureGroup)
@@ -1404,7 +1436,7 @@ public class HealthManager: NSObject, WCSessionDelegate {
 
                     let diastolicType = HKQuantityTypeIdentifierBloodPressureDiastolic
                     dispatch_group_enter(bloodPressureGroup)
-                    self.getMinMaxOfTypeForPeriod(keyPrefix, sampleType: HKObjectType.quantityTypeForIdentifier(diastolicType)!, period: period) {
+                    self.getMinMaxOfTypeForPeriod(diastolicKeyPrefix, sampleType: HKObjectType.quantityTypeForIdentifier(diastolicType)!, period: period) {
                         if $2 != nil { log.error($2) }
                         dispatch_group_leave(bloodPressureGroup)
                     }
@@ -1463,6 +1495,7 @@ public class HealthManager: NSObject, WCSessionDelegate {
 
         if asMinMax {
             if asBP {
+                let diastolicKeyPrefix = HKQuantityTypeIdentifierBloodPressureDiastolic
                 let diastolicType = HKQuantityTypeIdentifierBloodPressureDiastolic
                 let bloodPressureGroup = dispatch_group_create()
 
@@ -1473,13 +1506,12 @@ public class HealthManager: NSObject, WCSessionDelegate {
                 }
 
                 dispatch_group_enter(bloodPressureGroup)
-                self.getMinMaxOfTypeForPeriod(keyPrefix, sampleType: HKObjectType.quantityTypeForIdentifier(diastolicType)!, period: period) {
+                self.getMinMaxOfTypeForPeriod(diastolicKeyPrefix, sampleType: HKObjectType.quantityTypeForIdentifier(diastolicType)!, period: period) {
                     if $2 != nil { log.error($2) }
                     dispatch_group_leave(bloodPressureGroup)
                 }
 
                 dispatch_group_notify(bloodPressureGroup, dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_BACKGROUND, 0)) {
-                    let diastolicKeyPrefix = HKQuantityTypeIdentifierBloodPressureDiastolic
                     let diastolicKey = self.getPeriodCacheKey(diastolicKeyPrefix, aggOp: [.DiscreteMin, .DiscreteMax], period: period)
 
                     if let systolicAggArray = self.aggregateCache[key], diastolicAggArray = self.aggregateCache[diastolicKey] {

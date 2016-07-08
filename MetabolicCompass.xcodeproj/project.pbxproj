@@ -20,6 +20,8 @@
 		7881A3E11BAF3B3E00ECB3C6 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7881A3E01BAF3B3E00ECB3C6 /* AppDelegate.swift */; };
 		7881A3F61BAF3B3E00ECB3C6 /* MetabolicCompassTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7881A3F51BAF3B3E00ECB3C6 /* MetabolicCompassTests.swift */; };
 		7881A4011BAF3B3E00ECB3C6 /* MetabolicCompassUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7881A4001BAF3B3E00ECB3C6 /* MetabolicCompassUITests.swift */; };
+		788BA17E1D2DE6B50031C26B /* PathMenu.swift in Sources */ = {isa = PBXBuildFile; fileRef = 788BA17D1D2DE6B50031C26B /* PathMenu.swift */; };
+		788BA1801D2DE6C70031C26B /* PathMenuItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = 788BA17F1D2DE6C70031C26B /* PathMenuItem.swift */; };
 		788CF4E71C8B7B2D004E1706 /* DataTypes.swift in Sources */ = {isa = PBXBuildFile; fileRef = 788CF4E61C8B7B2D004E1706 /* DataTypes.swift */; };
 		78AC90CC1C1E859F008C931B /* UserAccount.swift in Sources */ = {isa = PBXBuildFile; fileRef = 78AC90CB1C1E859F008C931B /* UserAccount.swift */; };
 		78B45B261CE3B6210010AC4C /* ExerciseInterfaceController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 78B45B201CE3B6200010AC4C /* ExerciseInterfaceController.swift */; };
@@ -314,7 +316,9 @@
 		7881A3FC1BAF3B3E00ECB3C6 /* MetabolicCompassUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = MetabolicCompassUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		7881A4001BAF3B3E00ECB3C6 /* MetabolicCompassUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MetabolicCompassUITests.swift; sourceTree = "<group>"; };
 		7881A4021BAF3B3E00ECB3C6 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
-		7884E8E71C5F0804000261EE /* UINotifications.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = UINotifications.swift; sourceTree = "<group>"; };
+		7884E8E71C5F0804000261EE /* UINotifications.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = UINotifications.swift; path = "../View Controller/UINotifications.swift"; sourceTree = "<group>"; };
+		788BA17D1D2DE6B50031C26B /* PathMenu.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = PathMenu.swift; path = AddEventMenu/PathMenu.swift; sourceTree = "<group>"; };
+		788BA17F1D2DE6C70031C26B /* PathMenuItem.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = PathMenuItem.swift; path = AddEventMenu/PathMenuItem.swift; sourceTree = "<group>"; };
 		788CF4E61C8B7B2D004E1706 /* DataTypes.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DataTypes.swift; sourceTree = "<group>"; };
 		78AC90CB1C1E859F008C931B /* UserAccount.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = UserAccount.swift; sourceTree = "<group>"; };
 		78B279C21C80FFE5005A6249 /* MetabolicCompassWatchExtension.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.xml; path = MetabolicCompassWatchExtension.entitlements; sourceTree = "<group>"; };
@@ -592,6 +596,7 @@
 			isa = PBXGroup;
 			children = (
 				7881A3E01BAF3B3E00ECB3C6 /* AppDelegate.swift */,
+				788BA17C1D2DE6690031C26B /* AddEventMenu */,
 				F515CFC91CECC88000318CB6 /* CommonUI */,
 				E7E48DE31CE4A0F100DB020F /* MetabolicCharts */,
 				E74A897A1CE338BA0056A2D2 /* ContentManager */,
@@ -626,6 +631,15 @@
 				7881A4021BAF3B3E00ECB3C6 /* Info.plist */,
 			);
 			path = MetabolicCompassUITests;
+			sourceTree = "<group>";
+		};
+		788BA17C1D2DE6690031C26B /* AddEventMenu */ = {
+			isa = PBXGroup;
+			children = (
+				788BA17D1D2DE6B50031C26B /* PathMenu.swift */,
+				788BA17F1D2DE6C70031C26B /* PathMenuItem.swift */,
+			);
+			name = AddEventMenu;
 			sourceTree = "<group>";
 		};
 		84207D1D1CCA1FA900776848 /* Storyboards */ = {
@@ -1067,7 +1081,6 @@
 				F44B1A2C1BDAC20D002238E6 /* PlotViewController.swift */,
 				F42F5B941BE2C89200195490 /* CorrelationViewController.swift */,
 				7860E9121C61C470004C9741 /* DebugViewController.swift */,
-				7884E8E71C5F0804000261EE /* UINotifications.swift */,
 				7840A4981C6E53A80005B66F /* VariantViewController.swift */,
 				7840A49A1C6E5A680005B66F /* ErrorViewController.swift */,
 				84207D231CCA3C3600776848 /* RegisterLoginLandingViewController.swift */,
@@ -1084,6 +1097,7 @@
 			isa = PBXGroup;
 			children = (
 				F515CFCA1CECC88000318CB6 /* ScreenManager.swift */,
+				7884E8E71C5F0804000261EE /* UINotifications.swift */,
 			);
 			path = CommonUI;
 			sourceTree = "<group>";
@@ -1519,6 +1533,7 @@
 				E7E48DEF1CE6028600DB020F /* DashboardManageBalanceController.swift in Sources */,
 				E7592DB81CDB490600E313BB /* MainTabController.swift in Sources */,
 				84EF0EC61D0580B000A25760 /* WhenTableViewCell.swift in Sources */,
+				788BA17E1D2DE6B50031C26B /* PathMenu.swift in Sources */,
 				95F400AD1CE38F2F0060F28C /* ModelItem.swift in Sources */,
 				E75E95A11CDCA89700A18756 /* DashboardFilterController.swift in Sources */,
 				95769B891CE49E5C00F26668 /* NotificationsViewController.swift in Sources */,
@@ -1560,6 +1575,7 @@
 				9585680F1CD1020600EDD385 /* LoadImageCollectionViewCell.swift in Sources */,
 				E75E95AE1CDCD5A700A18756 /* DashboardMetricsConfigItem.swift in Sources */,
 				78B7341B1C90B83A00693229 /* IntroViewController.swift in Sources */,
+				788BA1801D2DE6C70031C26B /* PathMenuItem.swift in Sources */,
 				E75E95A51CDCAD3300A18756 /* DashboardFilterCellData.swift in Sources */,
 				E7E48DF51CE614E400DB020F /* BalanceSampleListController.swift in Sources */,
 				84207D241CCA3C3600776848 /* RegisterLoginLandingViewController.swift in Sources */,
