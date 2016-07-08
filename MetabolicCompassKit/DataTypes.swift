@@ -27,9 +27,40 @@ public protocol MCSample {
     var hkType       : HKSampleType? { get }
 }
 
+public struct MCStatisticSample : MCSample {
+    public var statistic    : HKStatistics
+    public var numeralValue : Double?
+
+    public var startDate    : NSDate        { return statistic.startDate   }
+    public var endDate      : NSDate        { return statistic.endDate     }
+    public var defaultUnit  : HKUnit?       { return statistic.defaultUnit }
+    public var hkType       : HKSampleType? { return statistic.hkType      }
+
+    public init(statistic: HKStatistics, statsOption: HKStatisticsOptions) {
+        self.statistic = statistic
+        self.numeralValue = nil
+        if ( statsOption.contains(.DiscreteAverage) ) {
+            self.numeralValue = statistic.averageQuantity()?.doubleValueForUnit(defaultUnit!)
+        }
+        if ( statsOption.contains(.DiscreteMin) ) {
+            self.numeralValue = statistic.minimumQuantity()?.doubleValueForUnit(defaultUnit!)
+        }
+        if ( statsOption.contains(.DiscreteMax) ) {
+            self.numeralValue = statistic.maximumQuantity()?.doubleValueForUnit(defaultUnit!)
+        }
+        if ( statsOption.contains(.CumulativeSum) ) {
+            self.numeralValue = statistic.sumQuantity()?.doubleValueForUnit(defaultUnit!)
+        }
+    }
+}
+
 /*
- * An aggregated or derived sample, providing an increment function to merge multiple samples.
- * The increment can only be applied to samples of a matching type.
+ * Generalized aggregation, irrespective of HKSampleType.
+ *
+ * This relies on the numeralValue field provided by the MCSample protocol to provide
+ * a valid numeric representation for all HKSampleTypes.
+ *
+ * The increment operation provided within can only be applied to samples of a matching type.
  */
 public struct MCAggregateSample : MCSample {
     public var startDate    : NSDate
@@ -37,25 +68,91 @@ public struct MCAggregateSample : MCSample {
     public var numeralValue : Double?
     public var defaultUnit  : HKUnit?
     public var hkType       : HKSampleType?
+    public var aggOp        : HKStatisticsOptions
 
-    var avgTotal: Double = 0.0
-    var avgCount: Int = 0
+    var runningAgg: [Double] = [0.0, 0.0, 0.0]
+    var runningCnt: Int = 0
 
-    public init(sample: MCSample) {
+    public init(sample: MCSample, op: HKStatisticsOptions) {
         startDate = sample.startDate
         endDate = sample.endDate
         numeralValue = nil
         defaultUnit = nil
         hkType = sample.hkType
+        aggOp = op
         self.incr(sample)
     }
 
-    public init(value: Double?, sampleType: HKSampleType?) {
+    public init(value: Double?, sampleType: HKSampleType?, op: HKStatisticsOptions) {
         startDate = NSDate()
         endDate = NSDate()
         numeralValue = value
         defaultUnit = sampleType?.defaultUnit
         hkType = sampleType
+        aggOp = op
+    }
+
+    public init(statistic: HKStatistics, op: HKStatisticsOptions) {
+        startDate = statistic.startDate
+        endDate = statistic.endDate
+        numeralValue = statistic.numeralValue
+        defaultUnit = statistic.defaultUnit
+        hkType = statistic.hkType
+        aggOp = op
+
+        // Initialize internal statistics.
+        if let sumQ = statistic.sumQuantity() {
+            runningAgg[0] = sumQ.doubleValueForUnit(statistic.defaultUnit!)
+        } else if let avgQ = statistic.averageQuantity() {
+            runningAgg[0] = avgQ.doubleValueForUnit(statistic.defaultUnit!)
+            runningCnt = 1
+        }
+        if let minQ = statistic.minimumQuantity() {
+            runningAgg[1] = minQ.doubleValueForUnit(statistic.defaultUnit!)
+        }
+        if let maxQ = statistic.maximumQuantity() {
+            runningAgg[2] = maxQ.doubleValueForUnit(statistic.defaultUnit!)
+        }
+    }
+
+    public init(startDate: NSDate, endDate: NSDate, numeralValue: Double?, defaultUnit: HKUnit?,
+                hkType: HKSampleType?, aggOp: HKStatisticsOptions, runningAgg: [Double], runningCnt: Int)
+    {
+        self.startDate = startDate
+        self.endDate = endDate
+        self.numeralValue = numeralValue
+        self.defaultUnit = defaultUnit
+        self.hkType = hkType
+        self.aggOp = aggOp
+        self.runningAgg = runningAgg
+        self.runningCnt = runningCnt
+    }
+
+    public mutating func rsum(sample: MCSample) {
+        runningAgg[0] += sample.numeralValue!
+        runningCnt += 1
+    }
+
+    public mutating func rmin(sample: MCSample) {
+        runningAgg[1] = min(runningAgg[1], sample.numeralValue!)
+        runningCnt += 1
+    }
+
+    public mutating func rmax(sample: MCSample) {
+        runningAgg[2] = max(runningAgg[2], sample.numeralValue!)
+        runningCnt += 1
+    }
+
+    public mutating func incrOp(sample: MCSample) {
+        if aggOp.contains(.DiscreteAverage) || aggOp.contains(.CumulativeSum) {
+            rsum(sample)
+        }
+        if aggOp.contains(.DiscreteMin) {
+            rmin(sample)
+        }
+        if aggOp.contains(.DiscreteMax) {
+            rmax(sample)
+        }
     }
 
     public mutating func incr(sample: MCSample) {
@@ -63,97 +160,30 @@ public struct MCAggregateSample : MCSample {
             startDate = min(sample.startDate, startDate)
             endDate = max(sample.endDate, endDate)
 
-            switch hkType!.identifier {
-            case HKCategoryTypeIdentifierSleepAnalysis:
-                avgTotal += sample.numeralValue!
-                avgCount += 1
+            switch hkType! {
+            case is HKCategoryType:
+                switch hkType!.identifier {
+                case HKCategoryTypeIdentifierSleepAnalysis:
+                    incrOp(sample)
 
-            case HKCorrelationTypeIdentifierBloodPressure:
-                avgTotal += sample.numeralValue!
-                avgCount += 1
+                default:
+                    log.error("Cannot aggregate \(hkType)")
+                }
 
-            case HKQuantityTypeIdentifierActiveEnergyBurned:
-                numeralValue = (numeralValue ?? 0.0) + sample.numeralValue!
+            case is HKCorrelationType:
+                switch hkType!.identifier {
+                case HKCorrelationTypeIdentifierBloodPressure:
+                    incrOp(sample)
 
-            case HKQuantityTypeIdentifierBasalEnergyBurned:
-                avgTotal += sample.numeralValue!
-                avgCount += 1
+                default:
+                    log.error("Cannot aggregate \(hkType)")
+                }
 
-            case HKQuantityTypeIdentifierBloodGlucose:
-                avgTotal += sample.numeralValue!
-                avgCount += 1
+            case is HKWorkoutType:
+                incrOp(sample)
 
-            case HKQuantityTypeIdentifierBloodPressureSystolic:
-                avgTotal += sample.numeralValue!
-                avgCount += 1
-
-            case HKQuantityTypeIdentifierBloodPressureDiastolic:
-                avgTotal += sample.numeralValue!
-                avgCount += 1
-
-            case HKQuantityTypeIdentifierBodyMass:
-                avgTotal += sample.numeralValue!
-                avgCount += 1
-
-            case HKQuantityTypeIdentifierBodyMassIndex:
-                avgTotal += sample.numeralValue!
-                avgCount += 1
-
-            case HKQuantityTypeIdentifierDietaryCaffeine:
-                numeralValue = (numeralValue ?? 0.0) + sample.numeralValue!
-
-            case HKQuantityTypeIdentifierDietaryCarbohydrates:
-                numeralValue = (numeralValue ?? 0.0) + sample.numeralValue!
-
-            case HKQuantityTypeIdentifierDietaryCholesterol:
-                numeralValue = (numeralValue ?? 0.0) + sample.numeralValue!
-
-            case HKQuantityTypeIdentifierDietaryEnergyConsumed:
-                numeralValue = (numeralValue ?? 0.0) + sample.numeralValue!
-
-            case HKQuantityTypeIdentifierDietaryFatMonounsaturated:
-                numeralValue = (numeralValue ?? 0.0) + sample.numeralValue!
-
-            case HKQuantityTypeIdentifierDietaryFatPolyunsaturated:
-                numeralValue = (numeralValue ?? 0.0) + sample.numeralValue!
-
-            case HKQuantityTypeIdentifierDietaryFatSaturated:
-                numeralValue = (numeralValue ?? 0.0) + sample.numeralValue!
-
-            case HKQuantityTypeIdentifierDietaryFatTotal:
-                numeralValue = (numeralValue ?? 0.0) + sample.numeralValue!
-
-            case HKQuantityTypeIdentifierDietaryProtein:
-                numeralValue = (numeralValue ?? 0.0) + sample.numeralValue!
-
-            case HKQuantityTypeIdentifierDietarySodium:
-                numeralValue = (numeralValue ?? 0.0) + sample.numeralValue!
-
-            case HKQuantityTypeIdentifierDietarySugar:
-                numeralValue = (numeralValue ?? 0.0) + sample.numeralValue!
-
-            case HKQuantityTypeIdentifierDietaryWater:
-                numeralValue = (numeralValue ?? 0.0) + sample.numeralValue!
-
-            case HKQuantityTypeIdentifierDistanceWalkingRunning:
-                numeralValue = (numeralValue ?? 0.0) + sample.numeralValue!
-
-            case HKQuantityTypeIdentifierFlightsClimbed:
-                numeralValue = (numeralValue ?? 0.0) + sample.numeralValue!
-
-            case HKQuantityTypeIdentifierHeartRate:
-                avgTotal += sample.numeralValue!
-                avgCount += 1
-
-            case HKQuantityTypeIdentifierStepCount:
-                numeralValue = (numeralValue ?? 0.0) + sample.numeralValue!
-
-            case HKQuantityTypeIdentifierUVExposure:
-                avgTotal += sample.numeralValue!
-                avgCount += 1
-
-            case HKWorkoutTypeIdentifier:
-                numeralValue = (numeralValue ?? 0.0) + sample.numeralValue!
+            case is HKQuantityType:
+                incrOp(sample)
 
             default:
                 log.error("Cannot aggregate \(hkType)")
@@ -165,137 +195,215 @@ public struct MCAggregateSample : MCSample {
     }
 
     public mutating func final() {
-        switch hkType!.identifier {
-        case HKCategoryTypeIdentifierSleepAnalysis:
-            numeralValue = avgTotal / Double(avgCount)
+        if aggOp.contains(.CumulativeSum) {
+            numeralValue = runningAgg[0]
+        } else if aggOp.contains(.DiscreteAverage) {
+            numeralValue = runningAgg[0] / Double(runningCnt)
+        } else if aggOp.contains(.DiscreteMin) {
+            numeralValue = runningAgg[1]
+        } else if aggOp.contains(.DiscreteMax) {
+            numeralValue = runningAgg[2]
+        }
+    }
 
-        case HKCorrelationTypeIdentifierBloodPressure:
-            numeralValue = avgTotal / Double(avgCount)
+    public mutating func finalAggregate(finalOp: HKStatisticsOptions) {
+        if aggOp.contains(.CumulativeSum) && finalOp.contains(.CumulativeSum) {
+            numeralValue = runningAgg[0]
+        } else if aggOp.contains(.DiscreteAverage) && finalOp.contains(.DiscreteAverage) {
+            numeralValue = runningAgg[0] / Double(runningCnt)
+        } else if aggOp.contains(.DiscreteMin) && finalOp.contains(.DiscreteMin) {
+            numeralValue = runningAgg[1]
+        } else if aggOp.contains(.DiscreteMax) && finalOp.contains(.DiscreteMax) {
+            numeralValue = runningAgg[2]
+        }
+    }
 
-        case HKQuantityTypeIdentifierBasalEnergyBurned:
-            numeralValue = avgTotal / Double(avgCount)
+    public func query(stats: HKStatisticsOptions) -> Double? {
+        if ( stats.contains(.CumulativeSum) && aggOp.contains(.CumulativeSum) ) {
+            return runningAgg[0]
+        }
+        if ( stats.contains(.DiscreteAverage) && aggOp.contains(.DiscreteAverage) ) {
+            return runningAgg[0] / Double(runningCnt)
+        }
+        if ( stats.contains(.DiscreteMin) && aggOp.contains(.DiscreteMin) ) {
+            return runningAgg[1]
+        }
+        if ( stats.contains(.DiscreteMax) && aggOp.contains(.DiscreteMax) ) {
+            return runningAgg[2]
+        }
+        return nil
+    }
 
-        case HKQuantityTypeIdentifierBloodGlucose:
-            numeralValue = avgTotal / Double(avgCount)
+    // Encoding/decoding.
+    public static func encode(aggregate: MCAggregateSample) -> MCAggregateSampleCoding {
+        return MCAggregateSampleCoding(aggregate: aggregate)
+    }
 
-        case HKQuantityTypeIdentifierBloodPressureSystolic:
-            numeralValue = avgTotal / Double(avgCount)
+    public static func decode(aggregateEncoding: MCAggregateSampleCoding) -> MCAggregateSample? {
+        return aggregateEncoding.aggregate
+    }
+}
 
-        case HKQuantityTypeIdentifierBloodPressureDiastolic:
-            numeralValue = avgTotal / Double(avgCount)
+public extension MCAggregateSample {
+    public class MCAggregateSampleCoding: NSObject, NSCoding {
+        var aggregate: MCAggregateSample?
+
+        init(aggregate: MCAggregateSample) {
+            self.aggregate = aggregate
+            super.init()
+        }
+
+        required public init?(coder aDecoder: NSCoder) {
+            guard let startDate    = aDecoder.decodeObjectForKey("startDate")    as? NSDate         else { log.error("Failed to rebuild MCAggregateSample startDate"); aggregate = nil; super.init(); return nil }
+            guard let endDate      = aDecoder.decodeObjectForKey("endDate")      as? NSDate         else { log.error("Failed to rebuild MCAggregateSample endDate"); aggregate = nil; super.init(); return nil }
+            guard let numeralValue = aDecoder.decodeObjectForKey("numeralValue") as? Double?        else { log.error("Failed to rebuild MCAggregateSample numeralValue"); aggregate = nil; super.init(); return nil }
+            guard let defaultUnit  = aDecoder.decodeObjectForKey("defaultUnit")  as? HKUnit?        else { log.error("Failed to rebuild MCAggregateSample defaultUnit"); aggregate = nil; super.init(); return nil }
+            guard let hkType       = aDecoder.decodeObjectForKey("hkType")       as? HKSampleType?  else { log.error("Failed to rebuild MCAggregateSample hkType"); aggregate = nil; super.init(); return nil }
+            guard let aggOp        = aDecoder.decodeObjectForKey("aggOp")        as? UInt           else { log.error("Failed to rebuild MCAggregateSample aggOp"); aggregate = nil; super.init(); return nil }
+            guard let runningAgg   = aDecoder.decodeObjectForKey("runningAgg")   as? [Double]       else { log.error("Failed to rebuild MCAggregateSample runningAgg"); aggregate = nil; super.init(); return nil }
+            guard let runningCnt   = aDecoder.decodeObjectForKey("runningCnt")   as? Int            else { log.error("Failed to rebuild MCAggregateSample runningCnt"); aggregate = nil; super.init(); return nil }
+
+            aggregate = MCAggregateSample(startDate: startDate, endDate: endDate, numeralValue: numeralValue, defaultUnit: defaultUnit,
+                                          hkType: hkType, aggOp: HKStatisticsOptions(rawValue: aggOp), runningAgg: runningAgg, runningCnt: runningCnt)
             
-        case HKQuantityTypeIdentifierBodyMass:
-            numeralValue = avgTotal / Double(avgCount)
-            
-        case HKQuantityTypeIdentifierBodyMassIndex:
-            numeralValue = avgTotal / Double(avgCount)
-            
-        case HKQuantityTypeIdentifierHeartRate:
-            numeralValue = avgTotal / Double(avgCount)
-            
-        case HKQuantityTypeIdentifierUVExposure:
-            numeralValue = avgTotal / Double(avgCount)
-            
-        default:
-            ()
+            super.init()
+        }
+
+        public func encodeWithCoder(aCoder: NSCoder) {
+            aCoder.encodeObject(aggregate!.startDate,      forKey: "startDate")
+            aCoder.encodeObject(aggregate!.endDate,        forKey: "endDate")
+            aCoder.encodeObject(aggregate!.numeralValue,   forKey: "numeralValue")
+            aCoder.encodeObject(aggregate!.defaultUnit,    forKey: "defaultUnit")
+            aCoder.encodeObject(aggregate!.hkType,         forKey: "hkType")
+            aCoder.encodeObject(aggregate!.aggOp.rawValue, forKey: "aggOp")
+            aCoder.encodeObject(aggregate!.runningAgg,     forKey: "runningAgg")
+            aCoder.encodeObject(aggregate!.runningCnt,     forKey: "runningCnt")
         }
     }
 }
 
+public class MCAggregateArray: NSObject, NSCoding {
+    public var aggregates : [MCAggregateSample]
+
+    init(aggregates: [MCAggregateSample]) {
+        self.aggregates = aggregates
+    }
+
+    required public convenience init?(coder aDecoder: NSCoder) {
+        guard let aggs = aDecoder.decodeObjectForKey("aggregates") as? [MCAggregateSample.MCAggregateSampleCoding] else { return nil }
+        self.init(aggregates: aggs.flatMap({ return MCAggregateSample.decode($0) }))
+    }
+
+    public func encodeWithCoder(aCoder: NSCoder) {
+        aCoder.encodeObject(aggregates.map { return MCAggregateSample.encode($0) }, forKey: "aggregates")
+    }
+}
+
+
 // MARK: - Categories & Extensions
 
-extension HKStatistics: MCSample { }
-extension HKSample: MCSample { }
+// Default aggregation for all subtypes of HKSampleType.
 
 public extension HKSampleType {
-    public var displayText: String? {
-        switch identifier {
-        case HKCategoryTypeIdentifierSleepAnalysis:
-            return NSLocalizedString("Sleep", comment: "HealthKit data type")
+    var aggregationOptions: HKStatisticsOptions {
+        switch self {
+        case is HKCategoryType:
+            return (self as! HKCategoryType).aggregationOptions
 
-        case HKCorrelationTypeIdentifierBloodPressure:
-            return NSLocalizedString("Blood pressure", comment: "HealthKit data type")
+        case is HKCorrelationType:
+            return (self as! HKCorrelationType).aggregationOptions
 
-        case HKQuantityTypeIdentifierActiveEnergyBurned:
-            return NSLocalizedString("Active Energy Burned", comment: "HealthKit data type")
+        case is HKWorkoutType:
+            return (self as! HKWorkoutType).aggregationOptions
 
-        case HKQuantityTypeIdentifierBasalEnergyBurned:
-            return NSLocalizedString("Basal Energy Burned", comment: "HealthKit data type")
-
-        case HKQuantityTypeIdentifierBloodGlucose:
-            return NSLocalizedString("Blood Glucose", comment: "HealthKit data type")
-
-        case HKQuantityTypeIdentifierBloodPressureDiastolic:
-            return NSLocalizedString("Blood Pressure Diastolic", comment: "HealthKit data type")
-
-        case HKQuantityTypeIdentifierBloodPressureSystolic:
-            return NSLocalizedString("Blood Pressure Systolic", comment: "HealthKit data type")
-
-        case HKQuantityTypeIdentifierBodyMass:
-            return NSLocalizedString("Weight", comment: "HealthKit data type")
-
-        case HKQuantityTypeIdentifierBodyMassIndex:
-            return NSLocalizedString("Body Mass Index", comment: "HealthKit data type")
-
-        case HKQuantityTypeIdentifierDietaryCaffeine:
-            return NSLocalizedString("Caffeine", comment: "HealthKit data type")
-
-        case HKQuantityTypeIdentifierDietaryCarbohydrates:
-            return NSLocalizedString("Carbohydrates", comment: "HealthKit data type")
-
-        case HKQuantityTypeIdentifierDietaryCholesterol:
-            return NSLocalizedString("Cholesterol", comment: "HealthKit data type")
-
-        case HKQuantityTypeIdentifierDietaryEnergyConsumed:
-            return NSLocalizedString("Food calories", comment: "HealthKit data type")
-
-        case HKQuantityTypeIdentifierDietaryFatMonounsaturated:
-            return NSLocalizedString("Monounsaturated Fat", comment: "HealthKit data type")
-
-        case HKQuantityTypeIdentifierDietaryFatPolyunsaturated:
-            return NSLocalizedString("Polyunsaturated Fat", comment: "HealthKit data type")
-
-        case HKQuantityTypeIdentifierDietaryFatSaturated:
-            return NSLocalizedString("Saturated Fat", comment: "HealthKit data type")
-
-        case HKQuantityTypeIdentifierDietaryFatTotal:
-            return NSLocalizedString("Fat", comment: "HealthKit data type")
-
-        case HKQuantityTypeIdentifierDietaryProtein:
-            return NSLocalizedString("Protein", comment: "HealthKit data type")
-
-        case HKQuantityTypeIdentifierDietarySodium:
-            return NSLocalizedString("Salt", comment: "HealthKit data type")
-
-        case HKQuantityTypeIdentifierDietarySugar:
-            return NSLocalizedString("Sugar", comment: "HealthKit data type")
-
-        case HKQuantityTypeIdentifierDietaryWater:
-            return NSLocalizedString("Water", comment: "HealthKit data type")
-
-        case HKQuantityTypeIdentifierDistanceWalkingRunning:
-            return NSLocalizedString("Walking and Running Distance", comment: "HealthKit data type")
-
-        case HKQuantityTypeIdentifierFlightsClimbed:
-            return NSLocalizedString("Flights Climbed", comment: "HealthKit data type")
-
-        case HKQuantityTypeIdentifierHeartRate:
-            return NSLocalizedString("Heartrate", comment: "HealthKit data type")
-
-        case HKQuantityTypeIdentifierStepCount:
-            return NSLocalizedString("Step Count", comment: "HealthKit data type")
-
-        case HKQuantityTypeIdentifierUVExposure:
-            return NSLocalizedString("UV Exposure", comment: "HealthKit data type")
-
-        case HKWorkoutTypeIdentifier:
-            return NSLocalizedString("Workouts/Meals", comment: "HealthKit data type")
+        case is HKQuantityType:
+            return (self as! HKQuantityType).aggregationOptions
 
         default:
-            return nil
+            fatalError("Invalid aggregation overy \(self.identifier)")
+        }
+    }
+}
+
+public extension HKCategoryType {
+    override var aggregationOptions: HKStatisticsOptions { return .DiscreteAverage }
+}
+
+public extension HKCorrelationType {
+    override var aggregationOptions: HKStatisticsOptions { return .DiscreteAverage }
+}
+
+public extension HKWorkoutType {
+    override var aggregationOptions: HKStatisticsOptions { return .CumulativeSum }
+}
+
+public extension HKQuantityType {
+    override var aggregationOptions: HKStatisticsOptions {
+        switch aggregationStyle {
+        case .Discrete:
+            return .DiscreteAverage
+        case .Cumulative:
+            return .CumulativeSum
+        }
+    }
+}
+
+// Duration aggregate for HKSample arrays.
+public extension Array where Element: HKSample {
+    public var sleepDuration: NSTimeInterval? {
+        return filter { (sample) -> Bool in
+            let categorySample = sample as! HKCategorySample
+            return categorySample.sampleType.identifier == HKCategoryTypeIdentifierSleepAnalysis
+                && categorySample.value == HKCategoryValueSleepAnalysis.Asleep.rawValue
+            }.map { (sample) -> NSTimeInterval in
+                return sample.endDate.timeIntervalSinceDate(sample.startDate)
+            }.reduce(0) { $0 + $1 }
+    }
+
+    public var workoutDuration: NSTimeInterval? {
+        return filter { (sample) -> Bool in
+            let categorySample = sample as! HKWorkout
+            return categorySample.sampleType.identifier == HKWorkoutTypeIdentifier
+            }.map { (sample) -> NSTimeInterval in
+                return sample.endDate.timeIntervalSinceDate(sample.startDate)
+            }.reduce(0) { $0 + $1 }
+    }
+}
+
+/*
+ * MCSample extensions for HKStatistics.
+ */
+extension HKStatistics: MCSample { }
+
+public extension HKStatistics {
+    var quantity: HKQuantity? {
+        switch quantityType.aggregationStyle {
+        case .Discrete:
+            return averageQuantity()
+        case .Cumulative:
+            return sumQuantity()
         }
     }
 
+    public var numeralValue: Double? {
+        guard defaultUnit != nil && quantity != nil else {
+            return nil
+        }
+        return quantity!.doubleValueForUnit(defaultUnit!)
+    }
+
+    public var defaultUnit: HKUnit? { return quantityType.defaultUnit }
+
+    public var hkType: HKSampleType? { return quantityType }
+}
+
+/*
+ * MCSample extensions for HKSample.
+ */
+
+extension HKSample: MCSample { }
+
+public extension HKSampleType {
     public var defaultUnit: HKUnit? {
         let isMetric: Bool = NSLocale.currentLocale().objectForKey(NSLocaleUsesMetricSystem)!.boolValue
         switch identifier {
@@ -380,260 +488,12 @@ public extension HKSampleType {
         case HKWorkoutTypeIdentifier:
             return HKUnit.hourUnit()
             
+        case HKQuantityTypeIdentifierDietaryFiber:
+            return HKUnit.gramUnit()
         default:
             return nil
         }
     }
-}
-
-public extension HKQuantityType {
-    var aggregationOptions: HKStatisticsOptions {
-        switch identifier {
-        case HKCategoryTypeIdentifierSleepAnalysis:
-            return .DiscreteAverage
-
-        case HKCorrelationTypeIdentifierBloodPressure:
-            return .DiscreteAverage
-
-        case HKQuantityTypeIdentifierActiveEnergyBurned:
-            return .CumulativeSum
-
-        case HKQuantityTypeIdentifierBasalEnergyBurned:
-            return .DiscreteAverage
-
-        case HKQuantityTypeIdentifierBloodGlucose:
-            return .DiscreteAverage
-
-        case HKQuantityTypeIdentifierBloodPressureSystolic:
-            return .DiscreteAverage
-
-        case HKQuantityTypeIdentifierBloodPressureDiastolic:
-            return .DiscreteAverage
-
-        case HKQuantityTypeIdentifierBodyMass:
-            return .DiscreteAverage
-
-        case HKQuantityTypeIdentifierBodyMassIndex:
-            return .DiscreteAverage
-
-        case HKQuantityTypeIdentifierDietaryCaffeine:
-            return .CumulativeSum
-
-        case HKQuantityTypeIdentifierDietaryCarbohydrates:
-            return .CumulativeSum
-
-        case HKQuantityTypeIdentifierDietaryCholesterol:
-            return .CumulativeSum
-
-        case HKQuantityTypeIdentifierDietaryEnergyConsumed:
-            return .CumulativeSum
-
-        case HKQuantityTypeIdentifierDietaryFatMonounsaturated:
-            return .CumulativeSum
-
-        case HKQuantityTypeIdentifierDietaryFatPolyunsaturated:
-            return .CumulativeSum
-
-        case HKQuantityTypeIdentifierDietaryFatSaturated:
-            return .CumulativeSum
-
-        case HKQuantityTypeIdentifierDietaryFatTotal:
-            return .CumulativeSum
-
-        case HKQuantityTypeIdentifierDietaryProtein:
-            return .CumulativeSum
-
-        case HKQuantityTypeIdentifierDietarySodium:
-            return .CumulativeSum
-
-        case HKQuantityTypeIdentifierDietarySugar:
-            return .CumulativeSum
-
-        case HKQuantityTypeIdentifierDietaryWater:
-            return .CumulativeSum
-
-        case HKQuantityTypeIdentifierDistanceWalkingRunning:
-            return .CumulativeSum
-
-        case HKQuantityTypeIdentifierFlightsClimbed:
-            return .CumulativeSum
-
-        case HKQuantityTypeIdentifierHeartRate:
-            return .DiscreteAverage
-
-        case HKQuantityTypeIdentifierStepCount:
-            return .CumulativeSum
-
-        case HKQuantityTypeIdentifierUVExposure:
-            return .DiscreteAverage
-
-        case HKWorkoutTypeIdentifier:
-            return .CumulativeSum
-
-        default:
-            return .None
-        }
-    }
-}
-
-public extension HKStatistics {
-    var quantity: HKQuantity? {
-        switch quantityType.identifier {
-
-        case HKCategoryTypeIdentifierSleepAnalysis:
-            return averageQuantity()
-
-        case HKCorrelationTypeIdentifierBloodPressure:
-            return sumQuantity()
-
-        case HKQuantityTypeIdentifierActiveEnergyBurned:
-            return sumQuantity()
-
-        case HKQuantityTypeIdentifierBasalEnergyBurned:
-            return averageQuantity()
-
-        case HKQuantityTypeIdentifierBodyMass:
-            return averageQuantity()
-
-        case HKQuantityTypeIdentifierBodyMassIndex:
-            return averageQuantity()
-
-        case HKQuantityTypeIdentifierBloodGlucose:
-            return sumQuantity()
-
-        case HKQuantityTypeIdentifierBloodPressureSystolic:
-            return sumQuantity()
-
-        case HKQuantityTypeIdentifierBloodPressureDiastolic:
-            return sumQuantity()
-
-        case HKQuantityTypeIdentifierDietaryCaffeine:
-            return sumQuantity()
-
-        case HKQuantityTypeIdentifierDietaryCarbohydrates:
-            return sumQuantity()
-
-        case HKQuantityTypeIdentifierDietaryCholesterol:
-            return sumQuantity()
-
-        case HKQuantityTypeIdentifierDietaryEnergyConsumed:
-            return sumQuantity()
-
-        case HKQuantityTypeIdentifierDietaryFatMonounsaturated:
-            return sumQuantity()
-
-        case HKQuantityTypeIdentifierDietaryFatPolyunsaturated:
-            return sumQuantity()
-
-        case HKQuantityTypeIdentifierDietaryFatSaturated:
-            return sumQuantity()
-
-        case HKQuantityTypeIdentifierDietaryFatTotal:
-            return sumQuantity()
-
-        case HKQuantityTypeIdentifierDietaryProtein:
-            return sumQuantity()
-
-        case HKQuantityTypeIdentifierDietarySodium:
-            return sumQuantity()
-
-        case HKQuantityTypeIdentifierDietarySugar:
-            return sumQuantity()
-
-        case HKQuantityTypeIdentifierDietaryWater:
-            return sumQuantity()
-
-        case HKQuantityTypeIdentifierDistanceWalkingRunning:
-            return sumQuantity()
-
-        case HKQuantityTypeIdentifierFlightsClimbed:
-            return sumQuantity()
-
-        case HKQuantityTypeIdentifierHeartRate:
-            return averageQuantity()
-
-        case HKQuantityTypeIdentifierStepCount:
-            return sumQuantity()
-
-        case HKQuantityTypeIdentifierUVExposure:
-            return sumQuantity()
-
-        case HKWorkoutTypeIdentifier:
-            return sumQuantity()
-
-        default:
-            log.warning("Invalid quantity type \(quantityType.identifier) for HKStatistics")
-            return sumQuantity()
-        }
-    }
-
-    public var numeralValue: Double? {
-        guard defaultUnit != nil && quantity != nil else {
-            return nil
-        }
-        switch quantityType.identifier {
-        case HKCategoryTypeIdentifierSleepAnalysis:
-            fallthrough
-        case HKCorrelationTypeIdentifierBloodPressure:
-            fallthrough
-        case HKQuantityTypeIdentifierActiveEnergyBurned:
-            fallthrough
-        case HKQuantityTypeIdentifierBasalEnergyBurned:
-            fallthrough
-        case HKQuantityTypeIdentifierBloodGlucose:
-            fallthrough
-        case HKQuantityTypeIdentifierBloodPressureDiastolic:
-            fallthrough
-        case HKQuantityTypeIdentifierBloodPressureSystolic:
-            fallthrough
-        case HKQuantityTypeIdentifierBodyMass:
-            fallthrough
-        case HKQuantityTypeIdentifierBodyMassIndex:
-            fallthrough
-        case HKQuantityTypeIdentifierDietaryCaffeine:
-            fallthrough
-        case HKQuantityTypeIdentifierDietaryCarbohydrates:
-            fallthrough
-        case HKQuantityTypeIdentifierDietaryCholesterol:
-            fallthrough
-        case HKQuantityTypeIdentifierDietaryEnergyConsumed:
-            fallthrough
-        case HKQuantityTypeIdentifierDietaryFatMonounsaturated:
-            fallthrough
-        case HKQuantityTypeIdentifierDietaryFatPolyunsaturated:
-            fallthrough
-        case HKQuantityTypeIdentifierDietaryFatSaturated:
-            fallthrough
-        case HKQuantityTypeIdentifierDietaryFatTotal:
-            fallthrough
-        case HKQuantityTypeIdentifierDietaryProtein:
-            fallthrough
-        case HKQuantityTypeIdentifierDietarySodium:
-            fallthrough
-        case HKQuantityTypeIdentifierDietarySugar:
-            fallthrough
-        case HKQuantityTypeIdentifierDietaryWater:
-            fallthrough
-        case HKQuantityTypeIdentifierDistanceWalkingRunning:
-            fallthrough
-        case HKQuantityTypeIdentifierFlightsClimbed:
-            fallthrough
-        case HKQuantityTypeIdentifierHeartRate:
-            fallthrough
-        case HKQuantityTypeIdentifierStepCount:
-            fallthrough
-        case HKQuantityTypeIdentifierUVExposure:
-            fallthrough
-        case HKWorkoutTypeIdentifier:
-            return quantity!.doubleValueForUnit(defaultUnit!)
-        default:
-            return nil
-        }
-    }
-
-    public var defaultUnit: HKUnit? { return quantityType.defaultUnit }
-
-    public var hkType: HKSampleType? { return quantityType }
 }
 
 public extension HKSample {
@@ -641,96 +501,36 @@ public extension HKSample {
         guard defaultUnit != nil else {
             return nil
         }
-        switch sampleType.identifier {
-        case HKCategoryTypeIdentifierSleepAnalysis:
-            let sample = (self as! HKCategorySample)
-            let secs = HKQuantity(unit: HKUnit.secondUnit(), doubleValue: sample.endDate.timeIntervalSinceDate(sample.startDate))
-            return secs.doubleValueForUnit(defaultUnit!)
+        switch sampleType {
+        case is HKCategoryType:
+            switch sampleType.identifier {
+            case HKCategoryTypeIdentifierSleepAnalysis:
+                let sample = (self as! HKCategorySample)
+                let secs = HKQuantity(unit: HKUnit.secondUnit(), doubleValue: sample.endDate.timeIntervalSinceDate(sample.startDate))
+                return secs.doubleValueForUnit(defaultUnit!)
+            default:
+                return nil
+            }
 
-        case HKCorrelationTypeIdentifierBloodPressure:
-            return ((self as! HKCorrelation).objects.first as! HKQuantitySample).quantity.doubleValueForUnit(defaultUnit!)
+        case is HKCorrelationType:
+            switch sampleType.identifier {
+            case HKCorrelationTypeIdentifierBloodPressure:
+                return ((self as! HKCorrelation).objects.first as! HKQuantitySample).quantity.doubleValueForUnit(defaultUnit!)
+            default:
+                return nil
+            }
 
-        case HKQuantityTypeIdentifierActiveEnergyBurned:
-            fallthrough
-
-        case HKQuantityTypeIdentifierBasalEnergyBurned:
-            fallthrough
-
-        case HKQuantityTypeIdentifierBloodGlucose:
-            fallthrough
-
-        case HKQuantityTypeIdentifierBloodPressureSystolic:
-            fallthrough
-
-        case HKQuantityTypeIdentifierBloodPressureDiastolic:
-            fallthrough
-
-        case HKQuantityTypeIdentifierBodyMass:
-            fallthrough
-
-        case HKQuantityTypeIdentifierBodyMassIndex:
-            fallthrough
-
-        case HKQuantityTypeIdentifierDietaryCarbohydrates:
-            fallthrough
-
-        case HKQuantityTypeIdentifierDietaryEnergyConsumed:
-            fallthrough
-
-        case HKQuantityTypeIdentifierDietaryProtein:
-            fallthrough
-
-        case HKQuantityTypeIdentifierDietaryFatMonounsaturated:
-            fallthrough
-
-        case HKQuantityTypeIdentifierDietaryFatPolyunsaturated:
-            fallthrough
-
-        case HKQuantityTypeIdentifierDietaryFatSaturated:
-            fallthrough
-
-        case HKQuantityTypeIdentifierDietaryFatTotal:
-            fallthrough
-
-        case HKQuantityTypeIdentifierDietarySugar:
-            fallthrough
-
-        case HKQuantityTypeIdentifierDietarySodium:
-            fallthrough
-
-        case HKQuantityTypeIdentifierDietaryCaffeine:
-            fallthrough
-
-        case HKQuantityTypeIdentifierDietaryWater:
-            fallthrough
-
-        case HKQuantityTypeIdentifierDistanceWalkingRunning:
-            fallthrough
-
-        case HKQuantityTypeIdentifierFlightsClimbed:
-            fallthrough
-
-        case HKQuantityTypeIdentifierHeartRate:
-            fallthrough
-
-        case HKQuantityTypeIdentifierStepCount:
-            fallthrough
-
-        case HKQuantityTypeIdentifierUVExposure:
-            return (self as! HKQuantitySample).quantity.doubleValueForUnit(defaultUnit!)
-
-        case HKWorkoutTypeIdentifier:
+        case is HKWorkoutType:
             let sample = (self as! HKWorkout)
             let secs = HKQuantity(unit: HKUnit.secondUnit(), doubleValue: sample.duration)
             return secs.doubleValueForUnit(defaultUnit!)
 
+        case is HKQuantityType:
+            return (self as! HKQuantitySample).quantity.doubleValueForUnit(defaultUnit!)
+
         default:
             return nil
         }
-    }
-
-    public var allNumeralValues: [Double]? {
-        return numeralValue != nil ? [numeralValue!] : nil
     }
 
     public var defaultUnit: HKUnit? { return sampleType.defaultUnit }
@@ -738,39 +538,93 @@ public extension HKSample {
     public var hkType: HKSampleType? { return sampleType }
 }
 
-public extension HKCorrelation {
-    public override var allNumeralValues: [Double]? {
-        guard defaultUnit != nil else {
-            return nil
-        }
-        switch sampleType.identifier {
+// Readable type description.
+public extension HKSampleType {
+    public var displayText: String? {
+        switch identifier {
+        case HKCategoryTypeIdentifierSleepAnalysis:
+            return NSLocalizedString("Sleep", comment: "HealthKit data type")
+
         case HKCorrelationTypeIdentifierBloodPressure:
-            return objects.map { (sample) -> Double in
-                (sample as! HKQuantitySample).quantity.doubleValueForUnit(defaultUnit!)
-            }
+            return NSLocalizedString("Blood pressure", comment: "HealthKit data type")
+
+        case HKQuantityTypeIdentifierActiveEnergyBurned:
+            return NSLocalizedString("Active Energy Burned", comment: "HealthKit data type")
+
+        case HKQuantityTypeIdentifierBasalEnergyBurned:
+            return NSLocalizedString("Basal Energy Burned", comment: "HealthKit data type")
+
+        case HKQuantityTypeIdentifierBloodGlucose:
+            return NSLocalizedString("Blood Glucose", comment: "HealthKit data type")
+
+        case HKQuantityTypeIdentifierBloodPressureDiastolic:
+            return NSLocalizedString("Blood Pressure Diastolic", comment: "HealthKit data type")
+
+        case HKQuantityTypeIdentifierBloodPressureSystolic:
+            return NSLocalizedString("Blood Pressure Systolic", comment: "HealthKit data type")
+
+        case HKQuantityTypeIdentifierBodyMass:
+            return NSLocalizedString("Weight", comment: "HealthKit data type")
+
+        case HKQuantityTypeIdentifierBodyMassIndex:
+            return NSLocalizedString("Body Mass Index", comment: "HealthKit data type")
+
+        case HKQuantityTypeIdentifierDietaryCaffeine:
+            return NSLocalizedString("Caffeine", comment: "HealthKit data type")
+
+        case HKQuantityTypeIdentifierDietaryCarbohydrates:
+            return NSLocalizedString("Carbohydrates", comment: "HealthKit data type")
+
+        case HKQuantityTypeIdentifierDietaryCholesterol:
+            return NSLocalizedString("Cholesterol", comment: "HealthKit data type")
+
+        case HKQuantityTypeIdentifierDietaryEnergyConsumed:
+            return NSLocalizedString("Food calories", comment: "HealthKit data type")
+
+        case HKQuantityTypeIdentifierDietaryFatMonounsaturated:
+            return NSLocalizedString("Monounsaturated Fat", comment: "HealthKit data type")
+
+        case HKQuantityTypeIdentifierDietaryFatPolyunsaturated:
+            return NSLocalizedString("Polyunsaturated Fat", comment: "HealthKit data type")
+
+        case HKQuantityTypeIdentifierDietaryFatSaturated:
+            return NSLocalizedString("Saturated Fat", comment: "HealthKit data type")
+
+        case HKQuantityTypeIdentifierDietaryFatTotal:
+            return NSLocalizedString("Fat", comment: "HealthKit data type")
+
+        case HKQuantityTypeIdentifierDietaryProtein:
+            return NSLocalizedString("Protein", comment: "HealthKit data type")
+
+        case HKQuantityTypeIdentifierDietarySodium:
+            return NSLocalizedString("Salt", comment: "HealthKit data type")
+
+        case HKQuantityTypeIdentifierDietarySugar:
+            return NSLocalizedString("Sugar", comment: "HealthKit data type")
+
+        case HKQuantityTypeIdentifierDietaryWater:
+            return NSLocalizedString("Water", comment: "HealthKit data type")
+
+        case HKQuantityTypeIdentifierDistanceWalkingRunning:
+            return NSLocalizedString("Walking and Running Distance", comment: "HealthKit data type")
+
+        case HKQuantityTypeIdentifierFlightsClimbed:
+            return NSLocalizedString("Flights Climbed", comment: "HealthKit data type")
+
+        case HKQuantityTypeIdentifierHeartRate:
+            return NSLocalizedString("Heartrate", comment: "HealthKit data type")
+
+        case HKQuantityTypeIdentifierStepCount:
+            return NSLocalizedString("Step Count", comment: "HealthKit data type")
+
+        case HKQuantityTypeIdentifierUVExposure:
+            return NSLocalizedString("UV Exposure", comment: "HealthKit data type")
+            
+        case HKWorkoutTypeIdentifier:
+            return NSLocalizedString("Workouts/Meals", comment: "HealthKit data type")
+            
         default:
             return nil
         }
-    }
-}
-
-public extension Array where Element: HKSample {
-    public var sleepDuration: NSTimeInterval? {
-        return filter { (sample) -> Bool in
-            let categorySample = sample as! HKCategorySample
-            return categorySample.sampleType.identifier == HKCategoryTypeIdentifierSleepAnalysis
-                && categorySample.value == HKCategoryValueSleepAnalysis.Asleep.rawValue
-            }.map { (sample) -> NSTimeInterval in
-                return sample.endDate.timeIntervalSinceDate(sample.startDate)
-            }.reduce(0) { $0 + $1 }
-    }
-    
-    public var workoutDuration: NSTimeInterval? {
-        return filter { (sample) -> Bool in
-            let categorySample = sample as! HKWorkout
-            return categorySample.sampleType.identifier == HKWorkoutTypeIdentifier
-            }.map { (sample) -> NSTimeInterval in
-                return sample.endDate.timeIntervalSinceDate(sample.startDate)
-            }.reduce(0) { $0 + $1 }
     }
 }

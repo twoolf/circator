@@ -52,7 +52,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, WCSessionDelegate {
         // Set translucent. (Default value is already true, so this can be removed if desired.)
         UINavigationBar.appearance().translucent = true
         UINavigationBar.appearance().titleTextAttributes = [NSForegroundColorAttributeName: ScreenManager.appTitleTextColor(), NSFontAttributeName: ScreenManager.appNavBarFont()]
-        UINavigationBar.appearance().tintColor = ScreenManager.appNavigationBackColor()
+//        UINavigationBar.appearance().tintColor = ScreenManager.appNavigationBackColor()
 
 
         //set custom back button image
@@ -66,7 +66,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate, WCSessionDelegate {
         let tabBarScreen = tabBarStoryboard.instantiateViewControllerWithIdentifier("TabBarController")
         mainViewController = tabBarScreen
 
-
 //        mainViewController = IntroViewController(nibName: nil, bundle: nil)
         let navController  = UINavigationController(rootViewController: mainViewController)
         AccountManager.shared.rootViewController = navController
@@ -76,9 +75,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate, WCSessionDelegate {
 
         window?.rootViewController = navController
         window?.makeKeyAndVisible()
-        print("window \(window)")
-        AppLogViewController.addAppLogRecognizersToGlobalWindow()
-        Service.delegate = SALogger.sharedLogger
         
         return true
     }
@@ -133,7 +129,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, WCSessionDelegate {
         console.colored = false
         console.minLevel = .Info
 
-        let paths : [String : SwiftyBeaver.Level] = ["ServiceAPI":.Verbose, "HealthManager":.Verbose]
+        let paths : [String : SwiftyBeaver.Level] = ["ServiceAPI":.Verbose, "HealthManager":.Debug]
         let pathfuns : [String : (String, SwiftyBeaver.Level)] = [:]
 
         for (p,l) in paths { console.addMinLevelFilter(l, path: p) }

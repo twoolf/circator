@@ -63,7 +63,7 @@ public class UINotifications {
             Async.main {
                 vc.view.dodo.style.bar.hideAfterDelaySeconds = 3
                 vc.view.dodo.style.bar.hideOnTap = true
-                vc.view.dodo.error("Login failed " + (reason ?? ""))
+                vc.view.dodo.error("Login failed: " + (reason ?? ""))
             }
         }
     }
@@ -166,6 +166,14 @@ public class UINotifications {
                 vc.view.dodo.style.bar.hideOnTap = true
                 vc.view.dodo.error(msg)
             }
+        }
+    }
+
+    public static func genericErrorOnView(view: UIView, msg: String, nohide: Bool = false) {
+        Async.main {
+            if !nohide { view.dodo.style.bar.hideAfterDelaySeconds = 3 }
+            view.dodo.style.bar.hideOnTap = true
+            view.dodo.error(msg)
         }
     }
 

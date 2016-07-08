@@ -66,7 +66,7 @@ class ScrollSelectionViewCell: BaseCollectionViewCell, AKPickerViewDataSource, A
     
     func setSelectedValue(value: Int) {
         let valueIndex = value - minValue
-        pickerView?.selectItem(valueIndex)
+        pickerView?.selectItem(max(valueIndex, minValue))
         valueLbl.text = String(value)
     }
 

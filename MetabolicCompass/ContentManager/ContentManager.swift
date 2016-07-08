@@ -17,6 +17,7 @@ class ContentManager: NSObject {
 
     private var aggregateFetchTask : Async? = nil    // Background task to fetch population aggregates.
     var isBackgroundWorkActive = false
+    var isObservationActive = false
 
     internal func initializeBackgroundWork() {
         if (!AccountManager.shared.isLogged() ||
@@ -31,7 +32,13 @@ class ContentManager: NSObject {
             self.fetchInitialAggregates()
             self.fetchRecentSamples()
             self.isBackgroundWorkActive = true
-            HealthManager.sharedManager.registerObservers()
+            if !self.isObservationActive {
+                HealthManager.sharedManager.registerObservers()
+                self.isObservationActive = true
+            }
+            AccountManager.shared.withHKCalAuth {
+                HealthManager.sharedManager.collectDataForCharts()
+            }
         }
     }
 

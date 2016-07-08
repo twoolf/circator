@@ -10,16 +10,21 @@ import Foundation
 import UIKit
 import Charts
 import HealthKit
+import MetabolicCompassKit
 
 class ChartCollectionDataSource: NSObject, UICollectionViewDataSource {
 
     internal var collectionData: [ChartData] = []
     internal var model: BarChartModel?
-    internal var data: [String] = []
+    internal var data: [HKSampleType] = PreviewManager.chartsSampleTypes
     private let appearanceProvider = DashboardMetricsAppearanceProvider()
     private let barChartCellIdentifier = "BarChartCollectionCell"
     private let lineChartCellIdentifier = "LineChartCollectionCell"
     private let scatterChartCellIdentifier = "ScatterChartCollectionCell"
+    
+    func updateData () {
+        data = PreviewManager.chartsSampleTypes
+    }
     
     func collectionView(collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
         return data.count
@@ -28,7 +33,8 @@ class ChartCollectionDataSource: NSObject, UICollectionViewDataSource {
     func collectionView(collectionView: UICollectionView, cellForItemAtIndexPath indexPath: NSIndexPath) -> UICollectionViewCell {
         let cell: BaseChartCollectionCell
         
-        let typeToShow = data[indexPath.row] == HKCorrelationTypeIdentifierBloodPressure ? HKQuantityTypeIdentifierBloodPressureSystolic : data[indexPath.row]
+        let type = data[indexPath.row]
+        let typeToShow = type.identifier == HKCorrelationTypeIdentifierBloodPressure ? HKQuantityTypeIdentifierBloodPressureSystolic : type.identifier
         let chartType: ChartType = (model?.chartTypeForQuantityTypeIdentifier(typeToShow))!
         let key = typeToShow + "\((model?.rangeType.rawValue)!)"
         let chartData = model?.typesChartData[key]
@@ -46,9 +52,5 @@ class ChartCollectionDataSource: NSObject, UICollectionViewDataSource {
         }
         cell.chartTitleLabel.text = appearanceProvider.stringForSampleType(typeToShow == HKQuantityTypeIdentifierBloodPressureSystolic ? HKCorrelationTypeIdentifierBloodPressure : typeToShow)
         return cell
-    }
-    
-    func collectionView(collectionView: UICollectionView, viewForSupplementaryElementOfKind kind: String, atIndexPath indexPath: NSIndexPath) -> UICollectionReusableView {
-        return collectionView.dequeueReusableSupplementaryViewOfKind(kind, withReuseIdentifier: "segmentHeader", forIndexPath: indexPath)
     }
 }

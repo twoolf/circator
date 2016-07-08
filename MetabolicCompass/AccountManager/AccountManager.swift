@@ -25,7 +25,11 @@ class AccountManager: NSObject {
     var rootViewController    : UINavigationController?
     var contentManager        = ContentManager()
     var uploadInProgress      = false
-    var isAuthorized          = false
+    var isAuthorized: Bool  {
+        get {            
+            return UserManager.sharedManager.isLoggedIn()
+        }
+    }
     var isHealthKitAuthorized = false
 
     private(set) var userInfo: UserInfo?
@@ -59,8 +63,9 @@ class AccountManager: NSObject {
     }
 
     func doLogout(completion: (Void -> Void)?) {
-        self.isAuthorized = false
+//        self.isAuthorized = false
         UserManager.sharedManager.logoutWithCompletion(completion)
+        HealthManager.sharedManager.reset()
         self.contentManager.stopBackgroundWork()
         PopulationHealthManager.sharedManager.resetAggregates()
     }
@@ -75,13 +80,13 @@ class AccountManager: NSObject {
             if error == nil {
                 if let account = accountOpt {
                     self.userInfo = UserInfo()
-                    self.userInfo?.firstName = account.givenName as? String
-                    self.userInfo?.lastName = account.surname as? String
+                    self.userInfo?.firstName = account.givenName
+                    self.userInfo?.lastName = account.surname
                 }
             }
 
             Async.main() {
-                self.isAuthorized = true
+//                self.isAuthorized = true
                 self.contentManager.initializeBackgroundWork();
                 NSNotificationCenter.defaultCenter().postNotificationName(self.didCompleteLoginNotification, object: nil)
             }
@@ -95,8 +100,8 @@ class AccountManager: NSObject {
     func loginAndInitialize(animated: Bool = true) {
 
         assert(self.rootViewController != nil, "Please, specify root navigation controller")
-
-        guard UserManager.sharedManager.hasAccount() else {
+        
+        guard isAuthorized else {
             self.doLogin (animated) { self.loginComplete() }
             return
         }

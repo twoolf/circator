@@ -28,8 +28,8 @@ class ChartsViewController: UIViewController {
     private let chartCollectionDataSource = ChartCollectionDataSource()
     private let chartCollectionDelegate = ChartCollectionDelegate()
     private let chartsModel = BarChartModel()
-    
-    //MARK: View life circle
+
+    // MARK :- View life cycle
     override func viewDidLoad() {
         super.viewDidLoad()
         upateNavigationBar()
@@ -37,67 +37,41 @@ class ChartsViewController: UIViewController {
         chartCollectionDataSource.model = chartsModel
         collectionView.delegate = chartCollectionDelegate
         collectionView.dataSource = chartCollectionDataSource
-        
-        for qType in PreviewManager.supportedTypes {
-            if qType.identifier == HKCategoryTypeIdentifierSleepAnalysis {
-                continue
-            }
-            if #available(iOS 9.3, *) {
-                if qType.identifier == HKQuantityTypeIdentifierAppleExerciseTime {
-                    continue
-                }
-            } else {
-                // Fallback on earlier versions
-            }
-            chartCollectionDataSource.data.append(qType.identifier)
-        }
     }
-    
+
     override func viewWillAppear(animated: Bool) {
         super.viewWillAppear(animated)
-        getChartsData()
+        NSNotificationCenter.defaultCenter().addObserver(self, selector: #selector(updateChartsData), name: UIApplicationWillEnterForegroundNotification, object: nil)
+        NSNotificationCenter.defaultCenter().addObserver(self, selector: #selector(updateChartsData), name: HMDidUpdatedChartsData, object: nil)
+        chartCollectionDataSource.updateData()
+        updateChartsData()
     }
-    
-    //MARK: Base preparation
-    
-    func getChartsData () {
-        if chartsModel.typesChartData.count == 0 {
-            activityIndicator.startAnimating()
-        }
-        let group = dispatch_group_create()
-        for qType in PreviewManager.supportedTypes {
-            if qType.identifier == HKCategoryTypeIdentifierSleepAnalysis {
-                continue
-            }
-            if #available(iOS 9.3, *) {
-                if qType.identifier == HKQuantityTypeIdentifierAppleExerciseTime {
-                    continue
-                }
-            } else {
-                // Fallback on earlier versions
-            }
-            dispatch_group_enter(group)
-            chartsModel.getAllRangesDataForType(qType.identifier == HKCorrelationTypeIdentifierBloodPressure ? HKQuantityTypeIdentifierBloodPressureSystolic : qType.identifier) {
-                dispatch_group_leave(group)
-            }
-        }
-        dispatch_group_notify(group, dispatch_get_main_queue()) {
+
+    override func viewWillDisappear(animated: Bool) {
+        super.viewWillDisappear(animated)
+        NSNotificationCenter.defaultCenter().removeObserver(self)
+    }
+
+    // MARK :- Base preparation
+    func updateChartsData () {
+        activityIndicator.startAnimating()
+        chartsModel.getAllDataForCurrentPeriod() {
             self.activityIndicator.stopAnimating()
             self.collectionView.reloadData()
         }
     }
-    
+
     func registerCells () {
         let barChartCellNib = UINib(nibName: "BarChartCollectionCell", bundle: nil)
         collectionView?.registerNib(barChartCellNib, forCellWithReuseIdentifier: barChartCellIdentifier)
-        
+
         let lineChartCellNib = UINib(nibName: "LineChartCollectionCell", bundle: nil)
         collectionView?.registerNib(lineChartCellNib, forCellWithReuseIdentifier: lineChartCellIdentifier)
-        
+
         let scatterChartCellNib = UINib(nibName: "ScatterChartCollectionCell", bundle: nil)
         collectionView.registerNib(scatterChartCellNib, forCellWithReuseIdentifier: scatterChartCellIdentifier)
     }
-    
+
     func upateNavigationBar () {
         let manageButton = ScreenManager.sharedInstance.appNavButtonWithTitle("Manage")
         manageButton.addTarget(self, action: #selector(manageCharts), forControlEvents: .TouchUpInside)
@@ -105,7 +79,7 @@ class ChartsViewController: UIViewController {
         self.navigationItem.leftBarButtonItem = manageBarButton
         self.navigationItem.title = NSLocalizedString("CHART", comment: "chart screen title")
     }
-    
+
     @IBAction func rangeChnaged(sender: UISegmentedControl) {
         switch sender.selectedSegmentIndex {
             case HealthManagerStatisticsRangeType.Month.rawValue:
@@ -115,11 +89,12 @@ class ChartsViewController: UIViewController {
             default:
                 chartsModel.rangeType = .Week
         }
-        collectionView.reloadData()
+        updateChartsData()
     }
-    
+
     func manageCharts () {
-        print ("manageCharts")
+        let manageController = UIStoryboard(name: "TabScreens", bundle: nil).instantiateViewControllerWithIdentifier("manageCharts")
+        self.presentViewController(manageController, animated: true) {}
     }
 
 }

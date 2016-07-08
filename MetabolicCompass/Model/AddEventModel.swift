@@ -20,12 +20,20 @@ enum MealType: String {
 }
 
 class AddEventModel: NSObject {
+    var dataWasChanged = false
     var delegate: AddEventModelDelegate? = nil
     var datePickerTags:[Int] = [2]  //default date picker row
     var countDownPickerTags: [Int] = [3,4] //default count down pickecr rows for meal screen
-    
-    var duration: NSTimeInterval = 1800.0 //default is 30 min
-    var eventDate: NSDate = NSDate() //default is current date
+    var duration: NSTimeInterval = 1800.0 {//default is 30 min
+        didSet {
+            dataWasChanged = true
+        }
+    }
+    var eventDate: NSDate = NSDate() {//default is current date
+        didSet {
+            dataWasChanged = true
+        }
+    }
     
     var mealType: MealType = .Empty {
         didSet {
@@ -48,12 +56,14 @@ class AddEventModel: NSObject {
 //            } else {//in case when we have no saved dates for sleep just adding 1 minute to sleepStartDate
 //                sleepEndDate = sleepStartDate + 1.minutes
 //            }
+            dataWasChanged = true
             self.delegate?.sleepTimeUpdated(getSleepTimeString())
         }
     }
     
     var sleepEndDate: NSDate =  AddEventModel.getDefaultWokeUpDate() {
         didSet {
+            dataWasChanged = true
             self.delegate?.sleepTimeUpdated(getSleepTimeString())
         }
     }
@@ -140,7 +150,7 @@ class AddEventModel: NSObject {
         if let whenWokeUp = UserManager.sharedManager.getUsualWokeUpTime() {
             return AddEventModel.applyTimeForDate(whenWokeUp, toDate: NSDate())
         }
-        return NSDate() + 1.minutes
+        return NSDate()
     }
     
     class func applyTimeForDate(fromDate: NSDate, toDate: NSDate) -> NSDate {
@@ -213,11 +223,13 @@ class AddEventModel: NSObject {
     }
     
     func saveSleepEvent(completion:(success: Bool, errorMessage: String?) -> ()) {
-        let dayHourMinuteSecond: NSCalendarUnit = [.Hour, .Minute]
+        let dayHourMinuteSecond: NSCalendarUnit = [.Month, .Day, .Hour, .Minute]
         let difference = NSCalendar.currentCalendar().components(dayHourMinuteSecond, fromDate: sleepStartDate, toDate: sleepEndDate, options: [])
-        
         if difference.hour < 0 || difference.minute < 0 {
             completion(success: false, errorMessage: "\"Woke Up\" time can't be earlier then \"Went to Sleep\" time")
+            return
+        } else if (sleepStartDate.day == sleepEndDate.day && difference.hour == 0 && difference.minute == 0 && difference.month == 0) {
+            completion(success: false, errorMessage: "Total time of sleeping must be at least 1 minute")
             return
         }
         
@@ -244,13 +256,11 @@ class AddEventModel: NSObject {
     }
     
     //MARK: Validation
-    
     func validateTimedEvent(startTime: NSDate, endTime: NSDate, completion: (success: Bool, errorMessage: String?) -> ()) {
         // Fetch all sleep and workout data since yesterday.
-        let (yesterday, now) = (1.days.ago, NSDate())
         let sleepTy = HKObjectType.categoryTypeForIdentifier(HKCategoryTypeIdentifierSleepAnalysis)!
         let workoutTy = HKWorkoutType.workoutType()
-        let datePredicate = HKQuery.predicateForSamplesWithStartDate(yesterday, endDate: now, options: .None)
+        let datePredicate = HKQuery.predicateForSamplesWithStartDate(startTime, endDate: endTime, options: .None)
         let typesAndPredicates = [sleepTy: datePredicate, workoutTy: datePredicate]
         
         // Aggregate sleep, exercise and meal events.
@@ -260,7 +270,6 @@ class AddEventModel: NSObject {
                 guard !acc else { return acc }
                 return kv.1.reduce(acc, combine: { (acc, s) in return acc || !( startTime >= s.endDate || endTime <= s.startDate ) })
             })
-            
             if !overlaps {
                 completion(success: true, errorMessage: nil)
             } else {

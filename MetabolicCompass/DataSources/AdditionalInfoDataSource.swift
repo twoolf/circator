@@ -59,21 +59,18 @@ public class AdditionalInfoDataSource: BaseDataSource {
             cell.smallDescriptionLbl.text = item.unitsTitle
             cell.pickerShown = editMode
 
-            if let value = item.intValue() {
+            if let value = item.intValue() where value > 0 {
                 cell.setSelectedValue(value)
-            }
-            else {
+            } else {
                 let defaultValue = 8
                 self.model.setNewValueForItem(atIndexPath: indexPath, newValue: defaultValue)
                 cell.setSelectedValue(defaultValue)
             }
-
             cell.changesHandler = { (cell: UICollectionViewCell, newValue: AnyObject?) -> () in
                 if let indexPath = self.collectionView!.indexPathForCell(cell) {
                     self.model.setNewValueForItem(atIndexPath: indexPath, newValue: newValue)
                 }
             }
-
             return cell
         }
 

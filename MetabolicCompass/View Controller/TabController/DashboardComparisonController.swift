@@ -10,12 +10,8 @@ import UIKit
 import HealthKit
 import MetabolicCompassKit
 
-class DashboardComparisonController:
-    UIViewController,
-    UITableViewDelegate,
-    UITableViewDataSource
-{
-
+class DashboardComparisonController: UIViewController, UITableViewDelegate, UITableViewDataSource {
+    private let dashboardComparisonCellIdentifier = "ComparisonCell"
     @IBOutlet weak var tableView: UITableView!
     
     override func viewDidLoad() {
@@ -28,23 +24,16 @@ class DashboardComparisonController:
         AccountManager.shared.loginAndInitialize(false)
     }
     
-    func contenteDidUpdate (notification: NSNotification) {
+    func contentDidUpdate (notification: NSNotification) {
         self.tableView.reloadData()
     }
     
     override func viewWillAppear(animated: Bool) {
         super.viewWillAppear(animated)
-        
         AccountManager.shared.contentManager.initializeBackgroundWork()
         self.tableView.reloadData()
-        
-
-        NSNotificationCenter.defaultCenter().addObserver(self, selector: #selector(contenteDidUpdate),
-                                                         name: HMDidUpdateRecentSamplesNotification,
-                                                         object: nil)
+        NSNotificationCenter.defaultCenter().addObserver(self, selector: #selector(contentDidUpdate), name: HMDidUpdateRecentSamplesNotification, object: nil)
         NSNotificationCenter.defaultCenter().addObserver(self, selector: #selector(updateContent), name: UIApplicationDidBecomeActiveNotification, object: nil)
-        
-        
     }
     
     func updateContent() {
@@ -57,25 +46,13 @@ class DashboardComparisonController:
         NSNotificationCenter.defaultCenter().removeObserver(self)
     }
     
-    override func didReceiveMemoryWarning() {
-        super.didReceiveMemoryWarning()
-        // Dispose of any resources that can be recreated.
-    }
-    
-    func numberOfSectionsInTableView(tableView: UITableView) -> Int {
-        return 1
-    }
-    
+    //MARK: UITableViewDataSource
     func tableView(tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         return PreviewManager.previewSampleTypes.count
     }
-    
-    private let dashboardComparisonCellIdentifier = "ComparisonCell"
-    
+
     func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell {
-        
         let cell = tableView.dequeueReusableCellWithIdentifier(dashboardComparisonCellIdentifier, forIndexPath: indexPath) as! DashboardComparisonCell
-        
         let sampleType = PreviewManager.previewSampleTypes[indexPath.row]
         cell.sampleType = sampleType
         let timeSinceRefresh = NSDate().timeIntervalSinceDate(PopulationHealthManager.sharedManager.aggregateRefreshDate)

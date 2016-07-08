@@ -12,6 +12,7 @@ import Async
 import Former
 import Crashlytics
 import Dodo
+import SwiftyUserDefaults
 
 /**
  This class is used to control the Login screens for the App.  By separating the logic into this view controller we enable changes to the login process to be clearly defined in this block of code.
@@ -99,29 +100,42 @@ class LoginViewController: BaseViewController {
                 guard res.ok else {
                     if res.info.hasContent {
                         let components = UMPullComponentErrorAsArray(res.info)
-
+                        
                         // Try to upload the consent file if we encounter a consent pull error.
                         if components.contains(.Consent) {
                             self.uploadLostConsentFile()
-
                             // Raise a notification if there are other errors.
                             if components.count > 1 {
                                 Answers.logLoginWithMethod("SPL", success: false, customAttributes: nil)
-                                UINotifications.loginFailed(self, reason: "Failed to get user account")
+                                let componentNames = components.map { getComponentName($0) }.joinWithSeparator(", ")
+                                let reason = components.isEmpty ? "" : " (missing \(componentNames))"
+                                UINotifications.loginFailed(self, reason: "Failed to get account\(reason)")
                             }
                         } else {
                             Answers.logLoginWithMethod("SPL", success: false, customAttributes: nil)
-                            UINotifications.loginFailed(self, reason: "Failed to get user account")
+                            let componentNames = components.map { getComponentName($0) }.joinWithSeparator(", ")
+                            let reason = components.isEmpty ? "" : " (missing \(componentNames))"
+                            UINotifications.loginFailed(self, reason: "Failed to get account\(reason)")
                         }
-                    }
-                    else {
+                    } else {
                         Answers.logLoginWithMethod("SPL", success: false, customAttributes: nil)
-                        //UINotifications.invalidUserPass(self.navigationController!)
                         UINotifications.invalidUserPass(self)
                     }
+
+                    // Explicitly logout on an error to clear the UserManager's userid.
+                    // This way the user does not see the dashboard on app relaunch.
+                    UserManager.sharedManager.logout()
                     return
                 }
-
+                if UserManager.sharedManager.isItFirstLogin() {//if it's first login
+                    if let additionalInfo = UserManager.sharedManager.getAdditoinalProfileData() {//and user has an additional data. we will push it to the server
+                        UserManager.sharedManager.pushProfile(additionalInfo , completion: { _ in
+                            UserManager.sharedManager.removeFirstLogin()
+                        })
+                    } else {//in other case we just remove marker for first login
+                        UserManager.sharedManager.removeFirstLogin()
+                    }
+                }
                 self.loginComplete()
             }
         }

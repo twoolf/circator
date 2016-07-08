@@ -57,7 +57,7 @@ class UserInfoModel: NSObject {
     }()
 
     lazy private(set) var unitsSystemField : ModelItem = {
-         return ModelItem(name: "units", title: "Units", type: .Units, iconImageName: "icon-measure", value: UnitsSystem.Metric.rawValue)
+         return ModelItem(name: "metric", title: "Units", type: .Units, iconImageName: "icon-measure", value: UnitsSystem.Metric.rawValue)
     }()
 
 
@@ -92,24 +92,29 @@ class UserInfoModel: NSObject {
 
     func profileItems(newItems: [ModelItem]) -> [String : String]  {
         var profile = [String : String]()
-
-        for item in newItems {
-            if item.type != .Photo {
-
+        for item in newItems {            
+            if item.type == .FirstName || item.type == .LastName || item.type == .Email || item.type == .Password || item.type == .Photo {
+                 continue
+            } else {
+                print(item.type)
                 if item.type == .Gender {
                     if let value = item.intValue() {
                         let gender = Gender(rawValue: value)!.title
-                        //                        print("Selected gender: \(gender)")
                         profile[item.name] = gender
                     }
                 }
-
+                
+                if item.type == .Units {
+                    if let value = item.intValue() {
+                        profile[item.name] = value == 1 ? "true" : "false"
+                    }
+                }
+                
                 if let value = item.value as? String {
                     profile[item.name] = value
                 }
             }
         }
-
         return profile
     }
 

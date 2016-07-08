@@ -394,7 +394,7 @@ public class ConsentManager: NSObject, ORKTaskViewControllerDelegate {
             let taskViewController = ORKTaskViewController(task: consentTaskWithEligibilitySection(), taskRunUUID: nil)
             taskViewController.delegate = self
             taskViewController.view.tintColor = Theme.universityDarkTheme.backgroundColor
-            viewController.view.window?.rootViewController!.presentViewController(taskViewController, animated: true, completion: nil)
+            viewController.presentViewController(taskViewController, animated: true, completion: nil)
             return
         }
         self.consentHandler?(consented: true)

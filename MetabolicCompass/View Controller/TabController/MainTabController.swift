@@ -7,14 +7,13 @@
 //
 
 import UIKit
-import PathMenu
 import Async
 import MetabolicCompassKit
 
-class MainTabController: UITabBarController, UITabBarControllerDelegate, PathMenuDelegate {
+class MainTabController: UITabBarController, UITabBarControllerDelegate, ManageEventMenuDelegate {
 
     private var overlayView: UIVisualEffectView? = nil
-    private var menu: PathMenu? = nil
+    private var menu: ManageEventMenu? = nil
     
     //MARK: View life circle
     override func viewDidLoad() {
@@ -78,7 +77,11 @@ class MainTabController: UITabBarController, UITabBarControllerDelegate, PathMen
     //MARK: Notifications
     func userDidLogin() {
         Async.main(after: 0.5) {
-            self.menu!.hidden = false
+            if self.menu != nil {
+                self.menu!.hidden = false
+            } else {
+                self.userDidLogin()
+            }
         }
     }
     
@@ -86,10 +89,9 @@ class MainTabController: UITabBarController, UITabBarControllerDelegate, PathMen
         self.menu!.hidden = true
     }
     
-    //MARK: Workign with PathMenu
+    //MARK: Working with ManageEventMenu
     
     func addMenuToView () {
-
         let addExercisesImage = UIImage(named:"add-exercises-button")!
         let addExercisesItem = PathMenuItem(image: addExercisesImage, highlightedImage: nil, contentImage: nil)
 
@@ -98,36 +100,32 @@ class MainTabController: UITabBarController, UITabBarControllerDelegate, PathMen
 
         let addSleepImage = UIImage(named:"add-sleep-button")!
         let addSleepItem = PathMenuItem(image: addSleepImage, highlightedImage: nil, contentImage: nil)
-        
+
+
         let items = [addMealItem, addExercisesItem, addSleepItem]
-        
+
         let startItem = PathMenuItem(image: UIImage(named: "button-dashboard-add-data")!,
                                      highlightedImage: UIImage(named: "button-dashboard-add-data"),
                                      contentImage: UIImage(named: "button-dashboard-add-data"),
                                      highlightedContentImage: UIImage(named: "button-dashboard-add-data"))
         
-        self.menu = PathMenu(frame: view.bounds, startItem: startItem, items: items)
+        self.menu = ManageEventMenu(frame: view.bounds, startItem: startItem, items: items)
 
         self.menu!.delegate = self
         self.menu!.startPoint     = CGPointMake(view.frame.width/2, view.frame.size.height - 26.0)
-        self.menu!.menuWholeAngle = CGFloat(M_PI) - CGFloat(M_PI/5)
-        self.menu!.rotateAngle    = -CGFloat(M_PI_2) + CGFloat(M_PI/5) * 1/2
         self.menu!.timeOffset     = 0.0
-        self.menu!.farRadius      = 110.0
-        self.menu!.nearRadius     = 90.0
-        self.menu!.endRadius      = 100.0
-        self.menu!.animationDuration = 0.5
+        self.menu!.animationDuration = 0.15
         self.menu!.hidden = !UserManager.sharedManager.hasAccount()
         self.view.window?.rootViewController?.view.addSubview(self.menu!)
     }
     
-    //MARK: Working with overlayView
+    // MARK :- Add event blur overlay
     
     func addOverlay () {
         if self.overlayView == nil {
             let overlay = UIVisualEffectView(effect: UIBlurEffect(style: .Dark))
             overlay.frame = (self.view.window?.rootViewController?.view.bounds)!
-            overlay.alpha = 0.8
+            overlay.alpha = 0.9
             overlay.userInteractionEnabled = true
             overlay.hidden = true
             self.view.window?.rootViewController?.view.addSubview(overlay)
@@ -148,16 +146,15 @@ class MainTabController: UITabBarController, UITabBarControllerDelegate, PathMen
     func hideOverlay() {
         self.overlayView?.hidden = true
     }
-    
+
     func hideIcons(hide: Bool) {
-        for manuItem in self.menu!.menuItems {
-            manuItem.hidden = hide
-        }
+        self.menu?.tableView.hidden = hide
     }
+
+    // MARK :- ManageEventMenuDelegate implementation
     
-    //MARK: PathMenuDelegate
-    
-    func pathMenu(menu: PathMenu, didSelectIndex idx: Int) {
+    func manageEventMenu(menu: ManageEventMenu, didSelectIndex idx: Int) {
+        log.info("Main Tab pathMemu \(idx)")
         Async.main(after: 0.4) { 
             self.hideIcons(true)
             self.hideOverlay()
@@ -177,24 +174,24 @@ class MainTabController: UITabBarController, UITabBarControllerDelegate, PathMen
         }
     }
     
-    func pathMenuWillAnimateOpen(menu: PathMenu) {
+    func manageEventMenuWillAnimateOpen(menu: ManageEventMenu) {
         self.overlayView?.hidden = false
         hideIcons(false)
     }
     
-    func pathMenuWillAnimateClose(menu: PathMenu) {
-        
+    func manageEventMenuWillAnimateClose(menu: ManageEventMenu) {
+
+    }
+
+    func manageEventMenuDidFinishAnimationOpen(menu: ManageEventMenu) {
+
     }
     
-    func pathMenuDidFinishAnimationOpen(menu: PathMenu) {
-        
-    }
-    
-    func pathMenuDidFinishAnimationClose(menu: PathMenu) {
+    func manageEventMenuDidFinishAnimationClose(menu: ManageEventMenu) {
         self.hideOverlay()
         hideIcons(true)
     }
-    
+
     //MARK: Deinit
     deinit {
         NSNotificationCenter.defaultCenter().removeObserver(self)
