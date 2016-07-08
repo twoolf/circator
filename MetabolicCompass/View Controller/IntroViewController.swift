@@ -9,6 +9,7 @@
 import UIKit
 import HealthKit
 import MetabolicCompassKit
+import WatchConnectivity
 import Async
 import Dodo
 import HTPressableButton
@@ -28,7 +29,7 @@ private let hkAccessTimeout = 60.seconds
  
  */
 class IntroViewController: UIViewController,
-                           UITableViewDataSource,
+                           UITableViewDataSource, WCSessionDelegate,
                            UITableViewDelegate, UIPickerViewDelegate, UIPickerViewDataSource
 {
     lazy var dashboardRows : Int = {
@@ -39,6 +40,7 @@ class IntroViewController: UIViewController,
     private var hkAccessAsync : Async? = nil         // Background task to notify if HealthKit is slow to access.
     private var aggregateFetchTask : Async? = nil    // Background task to fetch population aggregates.
 
+    var session : WCSession!
     private var pagesController: PagesController!
     private var timeEventPagesController: PagesController!
 
@@ -113,7 +115,7 @@ class IntroViewController: UIViewController,
         button.buttonColor = UIColor.ht_emeraldColor()
         button.shadowColor = UIColor.ht_nephritisColor()
         button.shadowHeight = 6
-        button.addTarget(self, action: "showAttributes:", forControlEvents: .TouchUpInside)
+        button.addTarget(self, action: #selector(IntroViewController.showAttributes(_:)), forControlEvents: .TouchUpInside)
         return button
     }()
 
@@ -152,7 +154,7 @@ class IntroViewController: UIViewController,
         button.buttonColor = IntroViewController.subTEBColor
         button.shadowColor = IntroViewController.subTEBSColor
         button.shadowHeight = 6
-        button.addTarget(self, action: "showAttributes:", forControlEvents: .TouchUpInside)
+        button.addTarget(self, action: #selector(IntroViewController.showAttributes(_:)), forControlEvents: .TouchUpInside)
         return button
     }()
 
@@ -168,7 +170,7 @@ class IntroViewController: UIViewController,
         button.buttonColor = IntroViewController.subTEBColor
         button.shadowColor = IntroViewController.subTEBSColor
         button.shadowHeight = 6
-        button.addTarget(self, action: "showAttributes:", forControlEvents: .TouchUpInside)
+        button.addTarget(self, action: #selector(IntroViewController.showAttributes(_:)), forControlEvents: .TouchUpInside)
         return button
     }()
 
@@ -184,7 +186,7 @@ class IntroViewController: UIViewController,
         button.buttonColor = IntroViewController.subTEBColor
         button.shadowColor = IntroViewController.subTEBSColor
         button.shadowHeight = 6
-        button.addTarget(self, action: "showAttributes:", forControlEvents: .TouchUpInside)
+        button.addTarget(self, action: #selector(IntroViewController.showAttributes(_:)), forControlEvents: .TouchUpInside)
         return button
     }()
 
@@ -208,7 +210,7 @@ class IntroViewController: UIViewController,
         button.buttonColor = UIColor.ht_sunflowerColor()
         button.shadowColor = UIColor.ht_citrusColor()
         button.shadowHeight = 6
-        button.addTarget(self, action: "toggleTimedEvent", forControlEvents: .TouchUpInside)
+        button.addTarget(self, action: #selector(IntroViewController.toggleTimedEvent), forControlEvents: .TouchUpInside)
         return button
     }()
 
@@ -238,7 +240,7 @@ class IntroViewController: UIViewController,
         button.buttonColor = UIColor.ht_peterRiverColor()
         button.shadowColor = UIColor.ht_belizeHoleColor()
         button.shadowHeight = 6
-        button.addTarget(self, action: "showAttributes:", forControlEvents: .TouchUpInside)
+        button.addTarget(self, action: #selector(IntroViewController.showAttributes(_:)), forControlEvents: .TouchUpInside)
         return button
     }()
 
@@ -262,7 +264,7 @@ class IntroViewController: UIViewController,
         let image = UIImage(named: "icon_logout") as UIImage?
         let button = UIButton(type: .Custom)
         button.setImage(image, forState: .Normal)
-        button.addTarget(self, action: "toggleLogin:", forControlEvents: .TouchUpInside)
+        button.addTarget(self, action: #selector(IntroViewController.toggleLogin(_:)), forControlEvents: .TouchUpInside)
         button.backgroundColor = Theme.universityDarkTheme.backgroundColor
         return button
     }()
@@ -271,7 +273,7 @@ class IntroViewController: UIViewController,
         let image = UIImage(named: "icon_query") as UIImage?
         let button = UIButton(type: .Custom)
         button.setImage(image, forState: .Normal)
-        button.addTarget(self, action: "showQuery:", forControlEvents: .TouchUpInside)
+        button.addTarget(self, action: #selector(IntroViewController.showQuery(_:)), forControlEvents: .TouchUpInside)
         button.backgroundColor = Theme.universityDarkTheme.backgroundColor
         return button
     }()
@@ -280,7 +282,7 @@ class IntroViewController: UIViewController,
         let image = UIImage(named: "icon_settings") as UIImage?
         let button = UIButton(type: .Custom)
         button.setImage(image, forState: .Normal)
-        button.addTarget(self, action: "showSettings:", forControlEvents: .TouchUpInside)
+        button.addTarget(self, action: #selector(IntroViewController.showSettings(_:)), forControlEvents: .TouchUpInside)
         button.backgroundColor = Theme.universityDarkTheme.backgroundColor
         return button
     }()
@@ -330,7 +332,7 @@ class IntroViewController: UIViewController,
         button.buttonColor = UIColor.ht_mediumColor()
         button.shadowColor = UIColor.ht_mediumDarkColor()
         button.shadowHeight = 6
-        button.addTarget(self, action: "toggleTimer:", forControlEvents: .TouchUpInside)
+        button.addTarget(self, action: #selector(IntroViewController.toggleTimer(_:)), forControlEvents: .TouchUpInside)
         return button
     }()
 
@@ -469,9 +471,9 @@ class IntroViewController: UIViewController,
             let view = UIToolbar()
             view.frame = CGRectMake(0, 0, 0, 44)
             view.items = [
-                UIBarButtonItem(barButtonSystemItem: .Cancel, target: self, action: "dismissPopup:"),
-                UIBarButtonItem(barButtonSystemItem: .FlexibleSpace, target: nil, action: ""),
-                UIBarButtonItem(barButtonSystemItem: .Done, target: self, action: "selectAttribute:")
+                UIBarButtonItem(barButtonSystemItem: .Cancel, target: self, action: #selector(IntroViewController.dismissPopup(_:))),
+                UIBarButtonItem(barButtonSystemItem: .FlexibleSpace, target: nil, action: Selector("")),
+                UIBarButtonItem(barButtonSystemItem: .Done, target: self, action: #selector(IntroViewController.selectAttribute(_:)))
             ]
 
             return view
@@ -629,6 +631,11 @@ class IntroViewController: UIViewController,
         NSNotificationCenter.defaultCenter().addObserverForName(HMDidUpdateRecentSamplesNotification, object: nil, queue: NSOperationQueue.mainQueue()) { (_) -> Void in
             self.tableView.reloadData()
             self.radarController.reloadData()
+        }
+        if (WCSession.isSupported()) {
+            session = WCSession.defaultSession()
+            session.delegate = self;
+            session.activateSession()
         }
     }
 

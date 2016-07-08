@@ -2,7 +2,7 @@
 //  WorkoutConfiguration.swift
 //  MetabolicCompass
 //
-//  Created by twoolf on 5/18/16.
+//  Created by twoolf on 6/15/16.
 //  Copyright © 2016 Yanif Ahmad, Tom Woolf. All rights reserved.
 //
 

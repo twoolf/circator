@@ -378,6 +378,10 @@ class EventTimeViewController : UIViewController {
                     let fastingHrs = Int(floor(stats.2))
                     let fastingMins = (today + Int(round((stats.2 % 1.0) * 60.0)).minutes).toString(DateFormat.Custom("mm"))!
                     self.fastingLabel.text = "\(fastingHrs):\(fastingMins)"
+                    print("in EventTimeViewController, fasting hours: \(fastingHrs)")
+                    print("   and fasting minutes: \(fastingMins)")
+//                    MetricsStore.sharedInstance.fastingTime = fastingHrs
+                    
 
                     self.eatingLabel.text  = (today + Int(stats.0 * 3600.0).seconds).toString(DateFormat.Custom("HH:mm"))!
                     self.lastAteLabel.text = lastAte == nil ? "N/A" : lastAte!.toString(DateFormat.Custom("HH:mm"))!

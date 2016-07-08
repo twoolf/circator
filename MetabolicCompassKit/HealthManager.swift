@@ -1105,6 +1105,6 @@ public class HealthManager: NSObject, WCSessionDelegate {
         } catch {
             log.error(error)
         }
-    }
+    }  
 }
 

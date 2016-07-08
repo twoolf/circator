@@ -2,7 +2,7 @@
 //  HealthManager_Watch.swift
 //  MetabolicCompass
 //
-//  Created by twoolf on 5/17/16.
+//  Created by twoolf on 6/15/16.
 //  Copyright © 2016 Yanif Ahmad, Tom Woolf. All rights reserved.
 //
 
@@ -12,7 +12,7 @@ import HealthKit
 // This extension adds support for saving an HKWorkoutSession from Watch
 class HealthManager: NSObject {
     
-        lazy var healthKitStore: HKHealthStore = HKHealthStore()
+    lazy var healthKitStore: HKHealthStore = HKHealthStore()
     /// This function saves a workout from a WorkoutSessionService and its HKWorkoutSession
     func saveWorkout(workoutService: WorkoutSessionService,
                      completion: (Bool, NSError!) -> Void) {

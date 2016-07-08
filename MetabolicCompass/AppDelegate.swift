@@ -13,6 +13,7 @@ import Fabric
 import Crashlytics
 import Locksmith
 import SwiftyUserDefaults
+import WatchConnectivity
 
 let log = SwiftyBeaver.self
 
@@ -21,7 +22,7 @@ let log = SwiftyBeaver.self
 An overview of the Circator files and their connections follows. First, a reader should realize that MC="Metabolic Compass" and that the abbreviation is common in the code.  Also, Circator was the working name for Metabolic Compass, so the two names are present frequently and refer to this same application. Lastly, to orient those looking at the code, the CircatorKit provides the core functionality needed for the Circator code.  Highlights of that functionality are that all of the HealthKit calls and all of the formatting/unit conversions are done with CircatorKit code, and that the consent flow through ResearchKit along with the account set-up and API calls are in the CircatorKit code.
 
 */
-class AppDelegate: UIResponder, UIApplicationDelegate {
+class AppDelegate: UIResponder, UIApplicationDelegate, WCSessionDelegate {
 
     var window: UIWindow?
     var mainViewController: UIViewController!
@@ -140,5 +141,29 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 
         log.addDestination(console)
     }
+    
+    private func setupWatchConnectivity() {
+        if WCSession.isSupported() {
+            let session = WCSession.defaultSession()
+            session.delegate = self
+            session.activateSession()
+        }
+    }
+    
+    private func sendDictValuesToWatch() {
+        var testDict:[String:String] = ["str1": "1.0"]
+        if WCSession.isSupported() {
+            let session = WCSession.defaultSession()
+            if session.watchAppInstalled {
+                do {
+                    //                        let dictionary = ["movies": movies]
+                    try session.updateApplicationContext(testDict)
+                } catch {
+                    print("ERROR: \(error)")
+                }
+            }
+        }
+    }
 }
+
 

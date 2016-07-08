@@ -163,7 +163,7 @@ class PlotViewController: UIViewController, ChartViewDelegate {
         navigationController?.setNavigationBarHidden(false, animated: false)
 
         UIDevice.currentDevice().beginGeneratingDeviceOrientationNotifications()
-        NSNotificationCenter.defaultCenter().addObserver(self, selector: "deviceDidRotate:", name: UIDeviceOrientationDidChangeNotification, object: nil)
+        NSNotificationCenter.defaultCenter().addObserver(self, selector: #selector(PlotViewController.deviceDidRotate(_:)), name: UIDeviceOrientationDidChangeNotification, object: nil)
     }
 
     override func viewDidAppear(animated: Bool) {
