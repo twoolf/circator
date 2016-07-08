@@ -1,7 +1,8 @@
 //
-//  PathMenu.swift
-//  PathMenu
+//  ManageEventMenu.swift
+//  Derived from PathMenu/PathMenu.swift
 //
+//  PathMenu Copyright:
 //  Created by pixyzehn on 12/27/14.
 //  Copyright (c) 2014 pixyzehn. All rights reserved.
 //
@@ -15,12 +16,12 @@ import Former
 import HTPressableButton
 import AKPickerView_Swift
 
-public protocol PathMenuDelegate: class {
-    func pathMenu(menu: PathMenu, didSelectIndex idx: Int)
-    func pathMenuDidFinishAnimationClose(menu: PathMenu)
-    func pathMenuDidFinishAnimationOpen(menu: PathMenu)
-    func pathMenuWillAnimateOpen(menu: PathMenu)
-    func pathMenuWillAnimateClose(menu: PathMenu)
+public protocol ManageEventMenuDelegate: class {
+    func manageEventMenu(menu: ManageEventMenu, didSelectIndex idx: Int)
+    func manageEventMenuDidFinishAnimationClose(menu: ManageEventMenu)
+    func manageEventMenuDidFinishAnimationOpen(menu: ManageEventMenu)
+    func manageEventMenuWillAnimateOpen(menu: ManageEventMenu)
+    func manageEventMenuWillAnimateClose(menu: ManageEventMenu)
 }
 
 class PickerManager: NSObject, AKPickerViewDelegate, AKPickerViewDataSource {
@@ -79,7 +80,7 @@ class FavoritesButton : MCButton {
     }
 }
 
-public class PathMenu: UIView, PathMenuItemDelegate, UITableViewDelegate, UITableViewDataSource {
+public class ManageEventMenu: UIView, PathMenuItemDelegate, UITableViewDelegate, UITableViewDataSource {
 
     //MARK: tags for menu components.
     public let favoritesTag = 1000
@@ -88,7 +89,7 @@ public class PathMenu: UIView, PathMenuItemDelegate, UITableViewDelegate, UITabl
     public var menuItems: [PathMenuItem] = []
 
     public var startButton: PathMenuItem?
-    public weak var delegate: PathMenuDelegate?
+    public weak var delegate: ManageEventMenuDelegate?
 
     public var flag: Int?
     public var timer: NSTimer?
@@ -195,7 +196,7 @@ public class PathMenu: UIView, PathMenuItemDelegate, UITableViewDelegate, UITabl
 
     private func setupQuickAdd() {
         tableView.hidden = true
-        tableView.alpha = 0.0
+        tableView.layer.opacity = 0.0
 
         tableView.registerClass(UITableViewCell.self, forCellReuseIdentifier: addEventCellIdentifier)
         tableView.registerClass(UITableViewCell.self, forCellReuseIdentifier: addEventSectionHeaderCellIdentifier)
@@ -489,10 +490,10 @@ public class PathMenu: UIView, PathMenuItemDelegate, UITableViewDelegate, UITabl
     override public func animationDidStop(anim: CAAnimation, finished flag: Bool) {
         if let animId = anim.valueForKey("id") {
             if animId.isEqual("lastAnimation") {
-                delegate?.pathMenuDidFinishAnimationClose(self)
+                delegate?.manageEventMenuDidFinishAnimationClose(self)
             }
             if animId.isEqual("firstAnimation") {
-                delegate?.pathMenuDidFinishAnimationOpen(self)
+                delegate?.manageEventMenuDidFinishAnimationOpen(self)
             }
         }
     }
@@ -513,14 +514,14 @@ public class PathMenu: UIView, PathMenuItemDelegate, UITableViewDelegate, UITabl
         if item == startButton { return }
 
         motionState = .Close
-        delegate?.pathMenuWillAnimateClose(self)
+        delegate?.manageEventMenuWillAnimateClose(self)
         
         let angle = motionState == .Expand ? CGFloat(M_PI_4) + CGFloat(M_PI) : 0.0
         UIView.animateWithDuration(Double(startMenuAnimationDuration!), animations: { [weak self] () -> Void in
             self?.startButton?.transform = CGAffineTransformMakeRotation(angle)
         })
         
-        delegate?.pathMenu(self, didSelectIndex: item.tag - itemsTag)
+        delegate?.manageEventMenu(self, didSelectIndex: item.tag - itemsTag)
     }
     
     //MARK: Animation, Position
@@ -534,13 +535,13 @@ public class PathMenu: UIView, PathMenuItemDelegate, UITableViewDelegate, UITabl
         switch state {
         case .Close:
             setMenu()
-            delegate?.pathMenuWillAnimateOpen(self)
+            delegate?.manageEventMenuWillAnimateOpen(self)
             selector = #selector(expand)
             flag = 0
             motionState = .Expand
             angle = CGFloat(M_PI_4) + CGFloat(M_PI)
         case .Expand:
-            delegate?.pathMenuWillAnimateClose(self)
+            delegate?.manageEventMenuWillAnimateClose(self)
             selector = #selector(close)
             flag = 10
             motionState = .Close
@@ -570,10 +571,15 @@ public class PathMenu: UIView, PathMenuItemDelegate, UITableViewDelegate, UITabl
         opacityAnimation.fromValue = NSNumber(float: 0.0)
         opacityAnimation.toValue = NSNumber(float: 1.0)
 
+        let scaleAnimation = CABasicAnimation(keyPath: "transform")
+        scaleAnimation.fromValue = NSValue(CATransform3D: CATransform3DMakeScale(1.2, 1.2, 1))
+        scaleAnimation.toValue = NSValue(CATransform3D: CATransform3DMakeScale(1, 1, 1))
+
         let animationgroup: CAAnimationGroup = CAAnimationGroup()
-        animationgroup.animations     = [opacityAnimation]
+        animationgroup.animations     = [opacityAnimation, scaleAnimation]
         animationgroup.duration       = CFTimeInterval(animationDuration!)
         animationgroup.fillMode       = kCAFillModeForwards
+        animationgroup.timingFunction = CAMediaTimingFunction(name: kCAMediaTimingFunctionEaseIn)
         animationgroup.delegate = self
 
         if flag == 10 {
@@ -581,6 +587,7 @@ public class PathMenu: UIView, PathMenuItemDelegate, UITableViewDelegate, UITabl
         }
 
         tableView.layer.addAnimation(animationgroup, forKey: "Expand")
+        tableView.layer.opacity = 1.0
 
         flag! += 1
     }
@@ -596,10 +603,15 @@ public class PathMenu: UIView, PathMenuItemDelegate, UITableViewDelegate, UITabl
         opacityAnimation.fromValue = NSNumber(float: 1.0)
         opacityAnimation.toValue = NSNumber(float: 0.0)
 
+        let scaleAnimation = CABasicAnimation(keyPath: "transform")
+        scaleAnimation.fromValue = NSValue(CATransform3D: CATransform3DMakeScale(1, 1, 1))
+        scaleAnimation.toValue = NSValue(CATransform3D: CATransform3DMakeScale(1.2, 1.2, 1))
+
         let animationgroup: CAAnimationGroup = CAAnimationGroup()
-        animationgroup.animations     = [opacityAnimation]
+        animationgroup.animations     = [opacityAnimation, scaleAnimation]
         animationgroup.duration       = CFTimeInterval(animationDuration!)
         animationgroup.fillMode       = kCAFillModeForwards
+        animationgroup.timingFunction = CAMediaTimingFunction(name: kCAMediaTimingFunctionEaseIn)
         animationgroup.delegate = self
 
         if flag == 0 {
@@ -607,6 +619,7 @@ public class PathMenu: UIView, PathMenuItemDelegate, UITableViewDelegate, UITabl
         }
 
         tableView.layer.addAnimation(animationgroup, forKey: "Close")
+        tableView.layer.opacity = 0.0
 
         flag! -= 1
     }
@@ -780,40 +793,6 @@ public class PathMenu: UIView, PathMenuItemDelegate, UITableViewDelegate, UITabl
         }
         return cell;
     }
-
-    /*
-    public func tableView(tableView: UITableView, willDisplayCell cell: UITableViewCell, forRowAtIndexPath indexPath: NSIndexPath) {
-        cell.alpha = 0
-        UIView.beginAnimations("fadeIn", context: nil)
-        UIView.setAnimationDuration(0.8)
-        cell.alpha = 1
-        UIView.commitAnimations()
-    }
-
-    public func tableView(tableView: UITableView, willDisplayHeaderView view: UIView, forSection section: Int) {
-        view.alpha = 0
-        UIView.beginAnimations("fadeIn", context: nil)
-        UIView.setAnimationDuration(0.8)
-        view.alpha = 1
-        UIView.commitAnimations()
-    }
-
-    public func tableView(tableView: UITableView, didEndDisplayingCell cell: UITableViewCell, forRowAtIndexPath indexPath: NSIndexPath) {
-        cell.alpha = 1
-        UIView.beginAnimations("fadeIn", context: nil)
-        UIView.setAnimationDuration(0.8)
-        cell.alpha = 0
-        UIView.commitAnimations()
-    }
-
-    public func tableView(tableView: UITableView, didEndDisplayingHeaderView view: UIView, forSection section: Int) {
-        view.alpha = 1
-        UIView.beginAnimations("fadeIn", context: nil)
-        UIView.setAnimationDuration(0.8)
-        view.alpha = 0
-        UIView.commitAnimations()
-    }
-    */
 
     /*
     public func tableView(tableView: UITableView, estimatedHeightForRowAtIndexPath indexPath: NSIndexPath) -> CGFloat {

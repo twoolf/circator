@@ -20,7 +20,7 @@
 		7881A3E11BAF3B3E00ECB3C6 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7881A3E01BAF3B3E00ECB3C6 /* AppDelegate.swift */; };
 		7881A3F61BAF3B3E00ECB3C6 /* MetabolicCompassTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7881A3F51BAF3B3E00ECB3C6 /* MetabolicCompassTests.swift */; };
 		7881A4011BAF3B3E00ECB3C6 /* MetabolicCompassUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7881A4001BAF3B3E00ECB3C6 /* MetabolicCompassUITests.swift */; };
-		788BA17E1D2DE6B50031C26B /* PathMenu.swift in Sources */ = {isa = PBXBuildFile; fileRef = 788BA17D1D2DE6B50031C26B /* PathMenu.swift */; };
+		788BA17E1D2DE6B50031C26B /* ManageEventMenu.swift in Sources */ = {isa = PBXBuildFile; fileRef = 788BA17D1D2DE6B50031C26B /* ManageEventMenu.swift */; };
 		788BA1801D2DE6C70031C26B /* PathMenuItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = 788BA17F1D2DE6C70031C26B /* PathMenuItem.swift */; };
 		788CF4E71C8B7B2D004E1706 /* DataTypes.swift in Sources */ = {isa = PBXBuildFile; fileRef = 788CF4E61C8B7B2D004E1706 /* DataTypes.swift */; };
 		78AC90CC1C1E859F008C931B /* UserAccount.swift in Sources */ = {isa = PBXBuildFile; fileRef = 78AC90CB1C1E859F008C931B /* UserAccount.swift */; };
@@ -317,7 +317,7 @@
 		7881A4001BAF3B3E00ECB3C6 /* MetabolicCompassUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MetabolicCompassUITests.swift; sourceTree = "<group>"; };
 		7881A4021BAF3B3E00ECB3C6 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		7884E8E71C5F0804000261EE /* UINotifications.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = UINotifications.swift; path = "../View Controller/UINotifications.swift"; sourceTree = "<group>"; };
-		788BA17D1D2DE6B50031C26B /* PathMenu.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = PathMenu.swift; path = AddEventMenu/PathMenu.swift; sourceTree = "<group>"; };
+		788BA17D1D2DE6B50031C26B /* ManageEventMenu.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = ManageEventMenu.swift; path = AddEventMenu/ManageEventMenu.swift; sourceTree = "<group>"; };
 		788BA17F1D2DE6C70031C26B /* PathMenuItem.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = PathMenuItem.swift; path = AddEventMenu/PathMenuItem.swift; sourceTree = "<group>"; };
 		788CF4E61C8B7B2D004E1706 /* DataTypes.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DataTypes.swift; sourceTree = "<group>"; };
 		78AC90CB1C1E859F008C931B /* UserAccount.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = UserAccount.swift; sourceTree = "<group>"; };
@@ -596,7 +596,7 @@
 			isa = PBXGroup;
 			children = (
 				7881A3E01BAF3B3E00ECB3C6 /* AppDelegate.swift */,
-				788BA17C1D2DE6690031C26B /* AddEventMenu */,
+				788BA17C1D2DE6690031C26B /* ManageEventMenu */,
 				F515CFC91CECC88000318CB6 /* CommonUI */,
 				E7E48DE31CE4A0F100DB020F /* MetabolicCharts */,
 				E74A897A1CE338BA0056A2D2 /* ContentManager */,
@@ -633,13 +633,13 @@
 			path = MetabolicCompassUITests;
 			sourceTree = "<group>";
 		};
-		788BA17C1D2DE6690031C26B /* AddEventMenu */ = {
+		788BA17C1D2DE6690031C26B /* ManageEventMenu */ = {
 			isa = PBXGroup;
 			children = (
-				788BA17D1D2DE6B50031C26B /* PathMenu.swift */,
+				788BA17D1D2DE6B50031C26B /* ManageEventMenu.swift */,
 				788BA17F1D2DE6C70031C26B /* PathMenuItem.swift */,
 			);
-			name = AddEventMenu;
+			name = ManageEventMenu;
 			sourceTree = "<group>";
 		};
 		84207D1D1CCA1FA900776848 /* Storyboards */ = {
@@ -1533,7 +1533,7 @@
 				E7E48DEF1CE6028600DB020F /* DashboardManageBalanceController.swift in Sources */,
 				E7592DB81CDB490600E313BB /* MainTabController.swift in Sources */,
 				84EF0EC61D0580B000A25760 /* WhenTableViewCell.swift in Sources */,
-				788BA17E1D2DE6B50031C26B /* PathMenu.swift in Sources */,
+				788BA17E1D2DE6B50031C26B /* ManageEventMenu.swift in Sources */,
 				95F400AD1CE38F2F0060F28C /* ModelItem.swift in Sources */,
 				E75E95A11CDCA89700A18756 /* DashboardFilterController.swift in Sources */,
 				95769B891CE49E5C00F26668 /* NotificationsViewController.swift in Sources */,
