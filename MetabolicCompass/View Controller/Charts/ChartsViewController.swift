@@ -8,6 +8,8 @@
 
 import UIKit
 import Charts
+import HealthKit
+import MetabolicCompassKit
 
 enum DataRangeType : Int {
     case Week = 0
@@ -18,7 +20,8 @@ enum DataRangeType : Int {
 class ChartsViewController: UIViewController {
 
     @IBOutlet weak var collectionView: UICollectionView!
-    
+    @IBOutlet weak var activityIndicator: UIActivityIndicatorView!
+    private var rangeType = DataRangeType.Week
     private let barChartCellIdentifier = "BarChartCollectionCell"
     private let lineChartCellIdentifier = "LineChartCollectionCell"
     private let scatterChartCellIdentifier = "ScatterChartCollectionCell"
@@ -31,14 +34,59 @@ class ChartsViewController: UIViewController {
         super.viewDidLoad()
         upateNavigationBar()
         registerCells()
-
+        chartCollectionDataSource.model = chartsModel
         collectionView.delegate = chartCollectionDelegate
         collectionView.dataSource = chartCollectionDataSource
         
-        getSampleCollectionData(DataRangeType.Week)
+        for qType in PreviewManager.supportedTypes {
+            if qType.identifier == HKCategoryTypeIdentifierSleepAnalysis {
+                continue
+            }
+            if #available(iOS 9.3, *) {
+                if qType.identifier == HKQuantityTypeIdentifierAppleExerciseTime {
+                    continue
+                }
+            } else {
+                // Fallback on earlier versions
+            }
+            chartCollectionDataSource.data.append(qType.identifier)
+        }
+    }
+    
+    override func viewWillAppear(animated: Bool) {
+        super.viewWillAppear(animated)
+        getChartsData()
     }
     
     //MARK: Base preparation
+    
+    func getChartsData () {
+        if chartsModel.typesChartData.count == 0 {
+            activityIndicator.startAnimating()
+        }
+        let group = dispatch_group_create()
+        for qType in PreviewManager.supportedTypes {
+            if qType.identifier == HKCategoryTypeIdentifierSleepAnalysis {
+                continue
+            }
+            if #available(iOS 9.3, *) {
+                if qType.identifier == HKQuantityTypeIdentifierAppleExerciseTime {
+                    continue
+                }
+            } else {
+                // Fallback on earlier versions
+            }
+            dispatch_group_enter(group)
+            chartsModel.getAllRangesDataForType(qType.identifier == HKCorrelationTypeIdentifierBloodPressure ? HKQuantityTypeIdentifierBloodPressureSystolic : qType.identifier) {
+                dispatch_group_leave(group)
+            }
+        }
+        dispatch_group_notify(group, dispatch_get_main_queue()) {
+            self.activityIndicator.stopAnimating()
+            self.collectionView.reloadData()
+        }
+    }
+    
     func registerCells () {
         let barChartCellNib = UINib(nibName: "BarChartCollectionCell", bundle: nil)
         collectionView?.registerNib(barChartCellNib, forCellWithReuseIdentifier: barChartCellIdentifier)
@@ -60,52 +108,13 @@ class ChartsViewController: UIViewController {
     
     @IBAction func rangeChnaged(sender: UISegmentedControl) {
         switch sender.selectedSegmentIndex {
-            case DataRangeType.Month.rawValue:
-                getSampleCollectionData(DataRangeType.Month)
-            case DataRangeType.Year.rawValue:
-                getSampleCollectionData(DataRangeType.Year)
+            case HealthManagerStatisticsRangeType.Month.rawValue:
+                chartsModel.rangeType = .Month
+            case HealthManagerStatisticsRangeType.Year.rawValue:
+                chartsModel.rangeType = .Year
             default:
-                getSampleCollectionData(DataRangeType.Week)
+                chartsModel.rangeType = .Week
         }
-    }
-    
-    func getSampleCollectionData (range: DataRangeType) {
-        let iterations = 3
-        var chartData:[ChartData] = []
-        switch range {
-        case .Month:
-            for index in 0...iterations {
-                if (index % 3 == 0) {
-                    chartData.append(chartsModel.getChartDataForMonth(ChartType.BarChart))
-                } else if (index % 2 == 0) {
-                    chartData.append(chartsModel.getChartDataForMonth(ChartType.ScatterChart))
-                } else {
-                    chartData.append(chartsModel.getChartDataForMonth(ChartType.LineChart))
-                }
-            }
-        case .Year:
-            for index in 0...iterations {
-                if (index % 3 == 0) {
-                    chartData.append(chartsModel.getChartDataForYear(ChartType.BarChart))
-                } else if (index % 2 == 0) {
-                    chartData.append(chartsModel.getChartDataForYear(ChartType.ScatterChart))
-                } else {
-                    chartData.append(chartsModel.getChartDataForYear(ChartType.LineChart))
-                }
-            }
-        default:
-            for index in 0...iterations {
-                if (index % 3 == 0) {
-                    chartData.append(chartsModel.getChartDataForWeek(ChartType.BarChart))
-                } else if (index % 2 == 0) {
-                    chartData.append(chartsModel.getChartDataForWeek(ChartType.ScatterChart))
-                } else {
-                    chartData.append(chartsModel.getChartDataForWeek(ChartType.LineChart))
-                }
-            }
-        }
-        
-        chartCollectionDataSource.collectionData = chartData
         collectionView.reloadData()
     }
     

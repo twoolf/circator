@@ -46,6 +46,12 @@ private let noAnchor = HKQueryAnchor(fromValue: Int(HKAnchoredObjectQueryNoAncho
 private let dateAsc  = NSSortDescriptor(key: HKSampleSortIdentifierStartDate, ascending: true)
 private let dateDesc = NSSortDescriptor(key: HKSampleSortIdentifierStartDate, ascending: false)
 
+public enum HealthManagerStatisticsRangeType : Int {
+    case Week = 0
+    case Month
+    case Year
+}
+
 /**
  This is the main manager of information reads/writes from HealthKit.  We use AnchorQueries to support continued updates.  Please see Apple Docs for syntax on reading/writing
 
@@ -942,6 +948,161 @@ public class HealthManager: NSObject, WCSessionDelegate {
     public func savePreparationAndRecoveryWorkout(startDate: NSDate, endDate: NSDate, distance:Double, distanceUnit: HKUnit, kiloCalories: Double, metadata: NSDictionary, completion: ( (Bool, NSError!) -> Void)!)
     {
         saveWorkout(startDate, endDate: endDate, activityType: HKWorkoutActivityType.PreparationAndRecovery, distance: distance, distanceUnit: distanceUnit, kiloCalories: kiloCalories, metadata: metadata, completion: completion)
+    }
+    
+    //MARK: Static queries for types
+    /**
+        Return statics for the given period
+     
+        - parameter statisticsRange: HealthManagerStatisticsRangeType Week, Month or Year
+        - parameter type: some of HKQuantityTypeIdentifier
+        - returns: array of double values with statistics
+    */
+    public func getStatisticForPeriod(statisticsRange: HealthManagerStatisticsRangeType, forType type: String, completion: (statisticsVlues: [Double]) -> Void) {
+
+        guard let quantityType = HKObjectType.quantityTypeForIdentifier(type) else {
+            fatalError("*** Unable to create a \(type) count type ***")
+        }
+        
+        //set options type for HKStatisticsCollectionQuery
+        var statisticsOptions: HKStatisticsOptions
+        switch quantityType.aggregationStyle {
+            case .Discrete:
+                statisticsOptions = .DiscreteAverage
+            case .Cumulative:
+                statisticsOptions = .CumulativeSum
+        }
+        
+        let (statisticsQuery, startDate, endDate) = getQueryForPeriod(statisticsRange, qType: quantityType, statisticsOptions: statisticsOptions)
+        
+        statisticsQuery.initialResultsHandler = { query, results, error in
+            
+            guard let statsCollection = results else {
+                // Perform proper error handling here
+                fatalError("*** An error occurred while calculating the statistics: \(error?.localizedDescription) ***")
+            }
+            var statisticsValues: [Double] = []
+            statsCollection.enumerateStatisticsFromDate(startDate, toDate: endDate, withBlock: { (statistics, stop) in
+                var doubleMaxValue = 0.0
+                switch quantityType.aggregationStyle {
+                    case .Discrete:
+                        if let maxValue = statistics.averageQuantity() {
+                            doubleMaxValue = maxValue.doubleValueForUnit(quantityType.defaultUnit!)
+                        }
+                    case .Cumulative:
+                        if let maxValue = statistics.sumQuantity() {
+                            doubleMaxValue = maxValue.doubleValueForUnit(quantityType.defaultUnit!)
+                        }
+                }
+                statisticsValues.append(round(doubleMaxValue))
+            })
+            completion(statisticsVlues: statisticsValues)
+        }
+        
+        healthKitStore.executeQuery(statisticsQuery)
+    }
+    
+    public func getMinMaxValuesForPeriod(statisticsRange: HealthManagerStatisticsRangeType, forType type: String, completion: (statisticsMaxVlues: [Double], statisticsMinVlues: [Double]) -> Void) {
+        
+        let group = dispatch_group_create()
+        
+        let statisticsMinOptions: HKStatisticsOptions = .DiscreteMin
+        let statisticsMaxOptions: HKStatisticsOptions = .DiscreteMax
+        
+        guard let quantityType = HKObjectType.quantityTypeForIdentifier(type) else {
+            fatalError("*** Unable to create a \(type) count type ***")
+        }
+        var statisticsMaxValues: [Double] = []
+        var statisticsMinValues: [Double] = []
+        
+        let (minQuery, minStartDate, minEndDate) = getQueryForPeriod(statisticsRange, qType: quantityType, statisticsOptions: statisticsMinOptions)
+        let (maxQuery, maxStartDate, maxEndDate) = getQueryForPeriod(statisticsRange, qType: quantityType, statisticsOptions: statisticsMaxOptions)
+        
+        dispatch_group_enter(group)
+        minQuery.initialResultsHandler = { query, results, error in
+            guard let statsCollection = results else {
+                // Perform proper error handling here
+                fatalError("*** An error occurred while calculating the statistics: \(error?.localizedDescription) ***")
+            }
+            
+            statsCollection.enumerateStatisticsFromDate(minStartDate, toDate: minEndDate, withBlock: { (statistics, stop) in
+                var doubleMinValue = 0.0
+                if let minValue = statistics.minimumQuantity() {
+                    doubleMinValue = minValue.doubleValueForUnit(quantityType.defaultUnit!)
+                }
+                statisticsMinValues.append(round(doubleMinValue))
+            })
+            dispatch_group_leave(group)
+        }
+        
+        dispatch_group_enter(group)
+        maxQuery.initialResultsHandler = { query, results, error in
+            guard let statsCollection = results else {
+                // Perform proper error handling here
+                fatalError("*** An error occurred while calculating the statistics: \(error?.localizedDescription) ***")
+            }
+            statsCollection.enumerateStatisticsFromDate(maxStartDate, toDate: maxEndDate, withBlock: { (statistics, stop) in
+                var doubleMaxValue = 0.0
+                if let maxValue = statistics.maximumQuantity() {
+                    doubleMaxValue = maxValue.doubleValueForUnit(quantityType.defaultUnit!)
+                }
+                statisticsMaxValues.append(round(doubleMaxValue))
+            })
+            dispatch_group_leave(group)
+        }
+        
+        healthKitStore.executeQuery(minQuery)
+        healthKitStore.executeQuery(maxQuery)
+        
+        dispatch_group_notify(group, dispatch_get_main_queue()) {
+            completion(statisticsMaxVlues: statisticsMaxValues, statisticsMinVlues: statisticsMinValues)
+        }
+    }
+    
+    func getQueryForPeriod(statisticsRange: HealthManagerStatisticsRangeType, qType: HKQuantityType, statisticsOptions: HKStatisticsOptions) -> (HKStatisticsCollectionQuery, NSDate, NSDate) {
+        let calendar = NSCalendar.currentCalendar()
+        let interval = NSDateComponents()
+        var anchorComponents = calendar.components([.Day, .Month, .Year, .Weekday], fromDate: NSDate())
+        let anchorYearComponents = calendar.components([.Month, .Year], fromDate: NSDate())
+        let endDateYearComponents = calendar.components([.Month, .Year], fromDate: NSDate())
+        endDateYearComponents.month += 1
+        //start end end date for statistics
+        var endDate = NSDate()
+        let endDateForYear = calendar.dateFromComponents(endDateYearComponents)!
+        var startDate: NSDate
+        
+        //prepare interval and day components based on range
+        switch statisticsRange {
+        case .Week:
+            interval.day = 1
+            anchorComponents.day -= 6
+            startDate = calendar.dateByAddingUnit(.Day, value: -6, toDate: endDate, options: [])!
+        case .Month:
+            interval.day = 1
+            anchorComponents.day -= 31
+            startDate = calendar.dateByAddingUnit(.Day, value: -31, toDate: endDate, options: [])!
+        case .Year:
+            endDate = endDateForYear
+            interval.month = 1
+            anchorYearComponents.month -= 11
+            anchorComponents = anchorYearComponents
+            startDate = calendar.dateByAddingUnit(.Month, value: -11, toDate: endDate, options: [])!
+        }
+        
+        //Create anchorDate for HKStatisticsCollectionQuery
+        guard let anchorDate = calendar.dateFromComponents(anchorComponents) else {
+            fatalError("*** Unable to create date from components ***")
+        }
+
+        let sampleQueryPredicate = HKQuery.predicateForSamplesWithStartDate(anchorDate, endDate: endDate, options: .None)
+        
+        let query = HKStatisticsCollectionQuery(quantityType: qType,
+                                                quantitySamplePredicate: sampleQueryPredicate,
+                                                options: statisticsOptions,
+                                                anchorDate: anchorDate,
+                                                intervalComponents: interval)
+        
+        return (query, startDate, endDate)
     }
 
     // MARK: - Removing samples from HealthKit

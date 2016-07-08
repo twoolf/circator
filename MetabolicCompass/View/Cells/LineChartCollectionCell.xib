@@ -3,10 +3,17 @@
     <dependencies>
         <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="10085"/>
     </dependencies>
+    <customFonts key="customFonts">
+        <mutableArray key="gotham-book.ttf">
+            <string>GothamBook</string>
+            <string>GothamBook</string>
+            <string>GothamBook</string>
+        </mutableArray>
+    </customFonts>
     <objects>
         <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner"/>
         <placeholder placeholderIdentifier="IBFirstResponder" id="-2" customClass="UIResponder"/>
-        <view contentMode="scaleToFill" id="iN0-l3-epB" customClass="LineChartCollectionCell" customModule="ChartsMC" customModuleProvider="target">
+        <view contentMode="scaleToFill" id="iN0-l3-epB" customClass="LineChartCollectionCell" customModule="MetabolicCompass" customModuleProvider="target">
             <rect key="frame" x="0.0" y="0.0" width="375" height="196"/>
             <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
             <subviews>
@@ -17,22 +24,49 @@
                     <rect key="frame" x="0.0" y="20" width="375" height="156"/>
                     <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
                 </view>
+                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Label" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="JtI-Cj-pYn">
+                    <rect key="frame" x="12" y="12" width="41" height="13.5"/>
+                    <fontDescription key="fontDescription" name="GothamBook" family="Gotham Book" pointSize="15"/>
+                    <color key="textColor" red="1" green="1" blue="1" alpha="0.69999999999999996" colorSpace="calibratedRGB"/>
+                    <nil key="highlightedColor"/>
+                </label>
+                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Label" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="O9W-hR-BVK">
+                    <rect key="frame" x="337" y="35" width="27.5" height="9"/>
+                    <fontDescription key="fontDescription" name="GothamBook" family="Gotham Book" pointSize="10"/>
+                    <color key="textColor" white="1" alpha="0.40000000000000002" colorSpace="calibratedWhite"/>
+                    <nil key="highlightedColor"/>
+                </label>
+                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Label" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="c4z-Eg-OnB">
+                    <rect key="frame" x="337.5" y="147" width="27.5" height="9"/>
+                    <fontDescription key="fontDescription" name="GothamBook" family="Gotham Book" pointSize="10"/>
+                    <color key="textColor" white="1" alpha="0.40000000000000002" colorSpace="calibratedWhite"/>
+                    <nil key="highlightedColor"/>
+                </label>
             </subviews>
             <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="calibratedWhite"/>
             <constraints>
                 <constraint firstItem="Wpx-p1-aWw" firstAttribute="top" secondItem="iN0-l3-epB" secondAttribute="top" id="1EE-Mc-8Gn"/>
+                <constraint firstItem="JtI-Cj-pYn" firstAttribute="leading" secondItem="iN0-l3-epB" secondAttribute="leading" constant="12" id="82y-zA-q7X"/>
+                <constraint firstItem="O9W-hR-BVK" firstAttribute="top" secondItem="iN0-l3-epB" secondAttribute="top" constant="35" id="J38-h2-47b"/>
+                <constraint firstAttribute="trailing" secondItem="O9W-hR-BVK" secondAttribute="trailing" constant="10" id="NSQ-Ge-M0T"/>
+                <constraint firstAttribute="bottom" secondItem="c4z-Eg-OnB" secondAttribute="bottom" constant="40" id="ahl-jj-CQF"/>
                 <constraint firstAttribute="bottom" secondItem="Wpx-p1-aWw" secondAttribute="bottom" id="bLY-wF-VCe"/>
                 <constraint firstAttribute="bottom" secondItem="vjF-xW-G91" secondAttribute="bottom" constant="20" id="bUt-i4-LP0"/>
+                <constraint firstAttribute="trailing" secondItem="c4z-Eg-OnB" secondAttribute="trailing" constant="10" id="c19-bg-36f"/>
                 <constraint firstAttribute="trailing" secondItem="vjF-xW-G91" secondAttribute="trailing" id="eMJ-Z5-OGH"/>
                 <constraint firstItem="vjF-xW-G91" firstAttribute="top" secondItem="iN0-l3-epB" secondAttribute="top" constant="20" id="edd-1j-83Z"/>
                 <constraint firstItem="Wpx-p1-aWw" firstAttribute="leading" secondItem="iN0-l3-epB" secondAttribute="leading" id="fbz-jl-grB"/>
                 <constraint firstAttribute="trailing" secondItem="Wpx-p1-aWw" secondAttribute="trailing" id="gR9-3j-oPY"/>
                 <constraint firstItem="vjF-xW-G91" firstAttribute="leading" secondItem="iN0-l3-epB" secondAttribute="leading" id="nS8-6G-BRU"/>
+                <constraint firstItem="JtI-Cj-pYn" firstAttribute="top" secondItem="iN0-l3-epB" secondAttribute="top" constant="12" id="vXk-11-6PP"/>
             </constraints>
             <nil key="simulatedStatusBarMetrics"/>
             <freeformSimulatedSizeMetrics key="simulatedDestinationMetrics"/>
             <connections>
                 <outlet property="chartBackgroundImage" destination="Wpx-p1-aWw" id="cYK-fY-OgD"/>
+                <outlet property="chartMaxValueLabel" destination="O9W-hR-BVK" id="RFH-hA-AMa"/>
+                <outlet property="chartMinValueLabel" destination="c4z-Eg-OnB" id="WSj-KR-wQ3"/>
+                <outlet property="chartTitleLabel" destination="JtI-Cj-pYn" id="eWV-xE-kqk"/>
                 <outlet property="chartView" destination="vjF-xW-G91" id="QGf-lt-zbh"/>
             </connections>
             <point key="canvasLocation" x="455.5" y="309"/>

@@ -6,6 +6,8 @@
 import Foundation
 import Charts
 import SwiftDate
+import HealthKit
+import MetabolicCompassKit
 
 enum ChartType {
     case BarChart
@@ -13,117 +15,148 @@ enum ChartType {
     case ScatterChart
 }
 
-class BarChartModel {
-    //MARK: Data for YEAR
-        
-    func getYValuesForYear (maxRange:UInt32 = 39) -> [BarChartDataEntry] {
-        let numOfMonth = 12
-        var yVals: [BarChartDataEntry] = []
-        var range = maxRange
-        
-        for index in 1...numOfMonth {
-            range += 1
-            let value = Double(arc4random_uniform(range))
-            yVals.append(BarChartDataEntry(value: max(value, 10.0), xIndex: index))
+class BarChartModel : NSObject {
+    
+    var rangeType: HealthManagerStatisticsRangeType = HealthManagerStatisticsRangeType.Week
+    var typesChartData: [String: ChartData] = [:]
+    
+    private var chartTypeToQuantityType: [String: ChartType] = [HKQuantityTypeIdentifierDietaryEnergyConsumed : .BarChart,
+                                                                HKQuantityTypeIdentifierBasalEnergyBurned : .BarChart,
+                                                                HKQuantityTypeIdentifierStepCount : .BarChart,
+                                                                HKQuantityTypeIdentifierActiveEnergyBurned : .BarChart,
+                                                                HKCategoryTypeIdentifierSleepAnalysis : .BarChart,
+                                                                HKQuantityTypeIdentifierDietaryProtein : .BarChart,
+                                                                HKQuantityTypeIdentifierDietaryFatTotal : .BarChart,
+                                                                HKQuantityTypeIdentifierDietaryCarbohydrates : .BarChart,
+                                                                HKQuantityTypeIdentifierDietaryFiber : .BarChart,
+                                                                HKQuantityTypeIdentifierDietarySugar : .BarChart,
+                                                                HKQuantityTypeIdentifierDietarySodium : .BarChart, //salt
+                                                                HKQuantityTypeIdentifierDietaryCaffeine : .BarChart,
+                                                                HKQuantityTypeIdentifierDietaryCholesterol: .BarChart,
+                                                                HKQuantityTypeIdentifierDietaryFatPolyunsaturated : .BarChart,
+                                                                HKQuantityTypeIdentifierDietaryFatSaturated : .BarChart,
+                                                                HKQuantityTypeIdentifierDietaryFatMonounsaturated : .BarChart,
+                                                                HKQuantityTypeIdentifierDietaryWater : .BarChart,
+                                                                HKQuantityTypeIdentifierBodyMassIndex : .LineChart,
+                                                                HKQuantityTypeIdentifierBodyMass : .LineChart,
+                                                                HKQuantityTypeIdentifierHeartRate : .ScatterChart,
+                                                                HKQuantityTypeIdentifierBloodPressureSystolic : .ScatterChart,
+                                                                HKQuantityTypeIdentifierBloodPressureDiastolic : .ScatterChart,
+                                                                HKQuantityTypeIdentifierUVExposure : .ScatterChart]
+    
+    override init() {
+        super.init()
+        if #available(iOS 9.3, *) {//only for ios 9.3
+            chartTypeToQuantityType [HKQuantityTypeIdentifierAppleExerciseTime] = .BarChart
         }
-        return yVals
     }
     
-    func getChartDataForYear(type: ChartType) -> ChartData {
+    //MARK: Data for YEAR
+    func getChartDataForYear(type: ChartType, values: [Double], minValues: [Double]?) -> ChartData {
         
-        let xValsArr = getYearTitles()
-        let yValsTop = getYValuesForYear()
-        let yValsBottom = getYValuesForYear(UInt32(10))
-
-        switch type {
-            case .BarChart:
-                return barChartDataWith(xValsArr, yVals: yValsTop)
-            case .LineChart:
-                return lineChartDataWith(xValsArr, yVals: yValsTop)
-            case .ScatterChart:
-                return scatterChartDataWith(xValsArr, yVals1: yValsTop, yVals2: yValsBottom)
+        let xVals = getYearTitles()
+        var yVals: [ChartDataEntry] = []
+        if let minValues = minValues {
+            yVals = getYValuesForScatterChart(minValues, maxValues: values, period: .Year)
+        } else {
+            yVals = convertStatisticsValues(values, forRange: .Year)
         }
+        
+        return getChartDataFor(xVals, yVals: yVals, type: type)
     }
     
     //MARK: Data for MONTH
-    
-    func getYValuesForMonth(maxRange:UInt32 = 20) -> [ChartDataEntry] {
-        let numberOfDays = 31
-        var yVals: [ChartDataEntry] = []
-        var range = maxRange
+    func getChartDataForMonth(type: ChartType, values: [Double], minValues: [Double]?) -> ChartData {
+        let xVals = getMonthTitles()
+        var yVals = convertStatisticsValues(values, forRange: .Month)
+        if let minValues = minValues {
+            yVals = getYValuesForScatterChart(minValues, maxValues: values, period: .Month)
+        }
         
-        for index in 2...numberOfDays+2 {
-            range += 1
-            let value = Double(arc4random_uniform(range))
-            yVals.append(BarChartDataEntry(value: max(value, 10.0), xIndex: index))
-        }
-        return yVals
-    }
-
-    func getChartDataForMonth(type: ChartType) -> ChartData {
-        let xValsArr = getMonthTitles()
-        let yValsTop = getYValuesForMonth()
-        let yValsBottom = getYValuesForMonth(UInt32(10))
-
-        switch type {
-            case .BarChart:
-                return barChartDataWith(xValsArr, yVals: yValsTop)
-            case .LineChart:
-                return lineChartDataWith(xValsArr, yVals: yValsTop)
-            case .ScatterChart:
-                return scatterChartDataWith(xValsArr, yVals1: yValsTop, yVals2: yValsBottom)
-        }
+        return getChartDataFor(xVals, yVals: yVals, type: type)
     }
     
     //MARK: Data for WEEK
-    
-    func getYValuesForWeek(maxRange:UInt32 = 39)-> [ChartDataEntry] {
-        var yVals: [ChartDataEntry] = []
-        var range: UInt32 = maxRange
-        
-        for index in 1...7 {
-            range += 1
-            let value = Double(arc4random_uniform(range))
-            yVals.append(BarChartDataEntry(value: max(value, 10.0), xIndex: index))
-        }
-        
-        return yVals
-    }
-    
-    func getValuesForWeekScatterChart () -> [ChartDataEntry]{
-        var yVals: [ChartDataEntry] = []
-        var range: UInt32 = 39
-        
-        for index in 1...7 {
-            range += 1
-            let value = Double(arc4random_uniform(range))
-            yVals.append(BarChartDataEntry(values: [min(value, 4.0), value] , xIndex: index))
-        }
-        
-        return yVals
-    }
-    
-    func getChartDataForWeek(type: ChartType) -> ChartData {
+    func getChartDataForWeek(type: ChartType, values: [Double], minValues: [Double]?) -> ChartData {
         let xVals = getWeekTitles()
-        let yValsTop = ChartType.ScatterChart == type ? getValuesForWeekScatterChart () : getYValuesForWeek()
-//        let yValsBottom = getYValuesForWeek(UInt32(10))
-
-        switch type {
-            case .BarChart:
-                return barChartDataWith(xVals, yVals: yValsTop)
-            case .LineChart:
-                return lineChartDataWith(xVals, yVals: yValsTop)
-            case .ScatterChart:
-                return scatterChartDataWith(xVals, yVals1: yValsTop, yVals2: [])
+        var yVals = convertStatisticsValues(values, forRange: .Week)
+        if let minValues = minValues {
+            yVals = getYValuesForScatterChart(minValues, maxValues: values, period: .Week)
         }
+        
+        return getChartDataFor(xVals, yVals: yVals, type: type)
     }
     
     //MARK: Prepate chart data
-
+    func convertStatisticsValues(stisticsValues: [Double], forRange range: HealthManagerStatisticsRangeType) -> [ChartDataEntry] {
+        let indexIncrement = range == .Month ? 2 : 1;
+        var yVals: [ChartDataEntry] = []
+        
+        for (index, value) in stisticsValues.enumerate() {
+            if value > 0.0 {
+                yVals.append(BarChartDataEntry(value: value, xIndex: index+indexIncrement))
+            }
+        }
+        return yVals
+    }
+    
+    
+    func getChartDataForRange(range: HealthManagerStatisticsRangeType, type: ChartType, values: [Double], minValues: [Double]?) -> ChartData {
+        switch range {
+            case .Week:
+                return self.getChartDataForWeek(type, values: values, minValues: minValues)
+            case .Month:
+                return self.getChartDataForMonth(type, values: values, minValues: minValues)
+            case .Year:
+                return self.getChartDataForYear(type, values: values, minValues: minValues)
+        }
+    }
+    
+    func getYValuesForScatterChart (minValues: [Double], maxValues: [Double], period: HealthManagerStatisticsRangeType) -> [ChartDataEntry] {
+        var yVals: [ChartDataEntry] = []
+        let indexIncrement = period == .Month ? 2 : 1;
+        for (index, minValue) in minValues.enumerate() {
+            let maxValue = maxValues[index]
+            if maxValue > 0 && minValue > 0 {
+                yVals.append(BarChartDataEntry(values: [minValue, maxValue] , xIndex: index+indexIncrement))
+            } else if maxValue > 0 {
+                yVals.append(BarChartDataEntry(values: [maxValue] , xIndex: index+indexIncrement))
+            }
+        }
+        return yVals
+    }
+    
+    func getChartDataFor(xVals: [String], yVals: [ChartDataEntry], type: ChartType) -> ChartData {
+        switch type {
+            case .BarChart:
+                return barChartDataWith(xVals, yVals: yVals)
+            case .LineChart:
+                return lineChartDataWith(xVals, yVals: yVals)
+            case .ScatterChart:
+                return scatterChartDataWith(xVals, yVals: yVals)
+        }
+    }
+    
+    func getBloodPressureChartData(range: HealthManagerStatisticsRangeType, systolicMax: [Double], systolicMin: [Double], diastolicMax: [Double], diastolicMin: [Double]) -> ChartData{
+        let systolicWeekData = getYValuesForScatterChart(systolicMin, maxValues: systolicMax, period: range)
+        let diastolicWeekData = getYValuesForScatterChart(diastolicMin, maxValues: diastolicMax, period: range)
+        var xVals: [String] = []
+        switch range {
+            case .Week:
+                xVals = getWeekTitles()
+            case .Month:
+                xVals = getMonthTitles()
+            case .Year:
+                xVals = getYearTitles()
+        
+        }
+        return scatterChartDataWith(xVals, yVals1: systolicWeekData, yVals2: diastolicWeekData)
+    }
+    
     private func barChartDataWith(xVals: [String], yVals: [ChartDataEntry]) -> BarChartData {
         let daysDataSet = BarChartDataSet(yVals: yVals, label: "")
         daysDataSet.barSpace = 0.9
-        daysDataSet.colors = [UIColor .whiteColor()]
+        daysDataSet.colors = [UIColor.colorWithHexString("#ffffff", alpha: 0.8)!]
         daysDataSet.drawValuesEnabled = false
 
         let barChartData = BarChartData(xVals: xVals, dataSets: [daysDataSet])
@@ -143,23 +176,98 @@ class BarChartModel {
         return lineChartData
     }
     
-    private func scatterChartDataWith(xVals: [String], yVals1:[ChartDataEntry], yVals2:[ChartDataEntry]) -> ScatterChartData {
+    private func scatterChartDataWith(xVals: [String], yVals:[ChartDataEntry], dataSetType: DataSetType = DataSetType.HartRate) -> ScatterChartData {
         
-        let topDataSet = MCScatterChartDataSet(yVals: yVals2, label: "")
-        topDataSet.dataSetType = DataSetType.BloodPressureTop
-        topDataSet.colors = [UIColor.whiteColor()]
-        topDataSet.drawValuesEnabled = false
+        let dataSet = MCScatterChartDataSet(yVals: yVals, label: "")
+        dataSet.dataSetType = dataSetType
+        dataSet.colors = [UIColor.whiteColor()]
+        dataSet.drawValuesEnabled = false
         
-        let bottomDataSet = MCScatterChartDataSet(yVals: yVals1, label: "")
-        bottomDataSet.dataSetType = DataSetType.HartRate
-        bottomDataSet.colors = [UIColor.whiteColor()]
-        bottomDataSet.drawValuesEnabled = false
-        
-        let chartData = ScatterChartData(xVals: xVals, dataSets: [topDataSet, bottomDataSet])
+        let chartData = ScatterChartData(xVals: xVals, dataSets: [dataSet])
         return chartData
     }
     
-    //MARK: Week titles
+    private func scatterChartDataWith(xVals: [String], yVals1:[ChartDataEntry], yVals2:[ChartDataEntry]) -> ScatterChartData {
+        
+        let dataSet1 = MCScatterChartDataSet(yVals: yVals1, label: "")
+        dataSet1.dataSetType = .BloodPressureTop
+        dataSet1.colors = [UIColor.whiteColor()]
+        dataSet1.drawValuesEnabled = false
+        
+        let dataSet2 = MCScatterChartDataSet(yVals: yVals2, label: "")
+        dataSet2.dataSetType = .BloodPressureBottom
+        dataSet2.colors = [UIColor.whiteColor()]
+        dataSet2.drawValuesEnabled = false
+        
+        let chartData = ScatterChartData(xVals: xVals, dataSets: [dataSet1, dataSet2])
+        return chartData
+    }
+    
+    //MARK: Get all data for type
+    func getAllRangesDataForType(type: String, completion: () -> Void) {
+        let chartType = chartTypeForQuantityTypeIdentifier(type)
+        let periods: [HealthManagerStatisticsRangeType] = [HealthManagerStatisticsRangeType.Week, HealthManagerStatisticsRangeType.Month, HealthManagerStatisticsRangeType.Year]
+        let group = dispatch_group_create()
+        
+        for period in periods {
+            dispatch_group_enter(group)
+            if type == HKQuantityTypeIdentifierHeartRate ||
+               type == HKQuantityTypeIdentifierUVExposure {//we should get max and min values. because for this type we are using scatter chart
+                HealthManager.sharedManager.getMinMaxValuesForPeriod(period, forType: type, completion: { (statisticsMaxValues, statisticsMinValues) in
+                    let key = type + "\(period.rawValue)"
+                    self.typesChartData[key] = self.getChartDataForRange(period, type: chartType, values: statisticsMaxValues, minValues: statisticsMinValues)
+                    dispatch_group_leave(group)
+                })
+            } else if type == HKQuantityTypeIdentifierBloodPressureSystolic {//we should also get data for HKQuantityTypeIdentifierBloodPressureDiastolic
+                let bloodPressureGroup = dispatch_group_create()
+                dispatch_group_enter(bloodPressureGroup)
+                
+                var systolicMinValues: [Double] = []
+                var diastolicMinValues: [Double] = []
+                var systolicMaxValues: [Double] = []
+                var diastolicMaxValues: [Double] = []
+                
+                HealthManager.sharedManager.getMinMaxValuesForPeriod(period, forType: type, completion: { (statisticsMaxValues, statisticsMinValues) in
+                    systolicMinValues = statisticsMinValues
+                    systolicMaxValues = statisticsMaxValues
+                    dispatch_group_leave(bloodPressureGroup)
+                })
+                
+                let diastolicType = HKQuantityTypeIdentifierBloodPressureDiastolic
+                dispatch_group_enter(bloodPressureGroup)
+                HealthManager.sharedManager.getMinMaxValuesForPeriod(period, forType: diastolicType, completion: { (statisticsMaxValues, statisticsMinValues) in
+                    diastolicMinValues = statisticsMinValues
+                    diastolicMaxValues = statisticsMaxValues
+                    dispatch_group_leave(bloodPressureGroup)
+                })
+                
+                dispatch_group_notify(bloodPressureGroup, dispatch_get_main_queue()) {//leav main group
+                    let key = type + "\(period.rawValue)"
+                    self.typesChartData[key] = self.getBloodPressureChartData(period,
+                                                                              systolicMax: systolicMaxValues,
+                                                                              systolicMin: systolicMinValues,
+                                                                              diastolicMax: diastolicMaxValues,
+                                                                              diastolicMin: diastolicMinValues)
+                    dispatch_group_leave(group)
+                }
+                
+            } else if type == HKCategoryTypeIdentifierSleepAnalysis {
+//                HealthManager.sharedManager.getStatisticsForSleepInPeriod(period)
+            } else {
+                HealthManager.sharedManager.getStatisticForPeriod(period, forType: type) { (statisticsVlues) in
+                    let key = type + "\(period.rawValue)"
+                    self.typesChartData[key] = self.getChartDataForRange(period, type: chartType, values: statisticsVlues, minValues: nil)
+                    dispatch_group_leave(group)
+                }
+            }
+        }
+        //after completion notify that we finished collecting statistics for type
+        dispatch_group_notify(group, dispatch_get_main_queue()) {
+            completion()
+        }
+    }
+    
+    //MARK: Chart titles for X
     func getWeekTitles () -> [String] {
         let currentDate = NSDate()
         let weekAgoDate = currentDate - 7.days
@@ -190,7 +298,6 @@ class BarChartModel {
         return weekTitles
     }
     
-    //MARK: Month titles
     func getMonthTitles () -> [String] {
         var monthTitles: [String] = []
         let currentDate = NSDate()
@@ -258,6 +365,12 @@ class BarChartModel {
     }
     
     //MARK: Help
+    func chartTypeForQuantityTypeIdentifier(qType: String) -> ChartType {
+        if let chartType = chartTypeToQuantityType[qType] {
+            return chartType
+        }
+        return .BarChart
+    }
     
     func convertDateToYearString (date: NSDate, forIndex index: Int) -> String {
         let month = date.monthName

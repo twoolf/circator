@@ -87,7 +87,7 @@ class DashboardMetricsAppearanceProvider: NSObject {
         }
     }
     
-    private func stringForSampleType(sampleType: String) -> String
+    func stringForSampleType(sampleType: String) -> String
     {
         switch sampleType {
         case HKQuantityTypeIdentifierBodyMass:

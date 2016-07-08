@@ -40,14 +40,14 @@ class AddEventModel: NSObject {
     
     var sleepStartDate: NSDate = AddEventModel.getDefaultStartSleepDate() {
         didSet {
-            if let whenWokeUp = UserManager.sharedManager.getUsualWokeUpTime(), let goSleepDate = UserManager.sharedManager.getUsualWhenToSleepTime() {
-                //we have default values of wokeup and go to sleep
-                let dayHourMinuteSecond: NSCalendarUnit = [.Hour, .Minute]
-                let difference = NSCalendar.currentCalendar().components(dayHourMinuteSecond, fromDate: goSleepDate, toDate: whenWokeUp, options: [])//calculate difference between dates in hours and minutes
-                sleepEndDate = sleepStartDate + difference.hour.hours + difference.minute.minutes//add hours and minutes to the currently selected when go to sleep date
-            } else {//in case when we have no saved dates for sleep just adding 1 minute to sleepStartDate
-                sleepEndDate = sleepStartDate + 1.minutes
-            }
+//            if let whenWokeUp = UserManager.sharedManager.getUsualWokeUpTime(), let goSleepDate = UserManager.sharedManager.getUsualWhenToSleepTime() {
+//                //we have default values of wokeup and go to sleep
+//                let dayHourMinuteSecond: NSCalendarUnit = [.Hour, .Minute]
+//                let difference = NSCalendar.currentCalendar().components(dayHourMinuteSecond, fromDate: goSleepDate, toDate: whenWokeUp, options: [])//calculate difference between dates in hours and minutes
+//                sleepEndDate = sleepStartDate + difference.hour.hours + difference.minute.minutes//add hours and minutes to the currently selected when go to sleep date
+//            } else {//in case when we have no saved dates for sleep just adding 1 minute to sleepStartDate
+//                sleepEndDate = sleepStartDate + 1.minutes
+//            }
             self.delegate?.sleepTimeUpdated(getSleepTimeString())
         }
     }

@@ -73,12 +73,12 @@ class AddMealDataSource: NSObject, UITableViewDataSource, UITableViewDelegate, P
                     datePickerCell.datePicker.datePickerMode = .DateAndTime
                     datePickerCell.datePicker.tag = indexPath.row
                     if sleepMode {
-                        let endSleepPickerTag = addEventModel?.datePickerTags.last
+                        let startSleepPickerTag = addEventModel?.datePickerTags.first
                         switch indexPath.row {
-                            case endSleepPickerTag!:
-                                datePickerCell.datePicker.date = (addEventModel?.sleepEndDate)!
-                            default:
+                            case startSleepPickerTag!:
                                 datePickerCell.datePicker.date = (addEventModel?.sleepStartDate)!
+                            default:
+                                datePickerCell.datePicker.date = (addEventModel?.sleepEndDate)!
                         }
                     } else {
                         datePickerCell.datePicker.date = (addEventModel?.eventDate)!
@@ -198,18 +198,17 @@ class AddMealDataSource: NSObject, UITableViewDataSource, UITableViewDelegate, P
     
     func picker(picker: UIDatePicker, didSelectDate date: NSDate) {
         if sleepMode {
-            let endSleepPickerTag = addEventModel?.datePickerTags.last
+            let startSleepPickerTag = addEventModel?.datePickerTags.first
             switch picker.tag {
-                case endSleepPickerTag!://update end sleep date
-                    addEventModel?.sleepEndDate = picker.date
-                default://update start sleep date
+                case startSleepPickerTag!://update end sleep date
                     addEventModel?.sleepStartDate = picker.date
                     self.startSleepCell?.timeLabel.text = addEventModel?.getStartSleepTimeString()
                     self.startSleepCell?.dayLabel.text = addEventModel?.getStartSleepForDayLabel()
-            }
-            //we always updating end sleep becaus it depends on when to sleep
-            self.endSleepCell?.timeLabel.text = addEventModel?.getSleepEndTimeString()
-            self.endSleepCell?.dayLabel.text = addEventModel?.getEndSleepForDayLabel()
+                default://update end sleep date
+                    addEventModel?.sleepEndDate = picker.date
+                    self.endSleepCell?.timeLabel.text = addEventModel?.getSleepEndTimeString()
+                    self.endSleepCell?.dayLabel.text = addEventModel?.getEndSleepForDayLabel()
+            }            
         } else {
             if addEventModel!.datePickerRow(picker.tag) {
                 addEventModel?.eventDate = date

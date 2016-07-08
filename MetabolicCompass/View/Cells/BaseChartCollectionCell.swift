@@ -11,13 +11,17 @@ import UIKit
 import Charts
 
 class BaseChartCollectionCell: UICollectionViewCell {
-    
+    @IBOutlet weak var chartTitleLabel: UILabel!
+    @IBOutlet weak var chartMinValueLabel: UILabel!
+    @IBOutlet weak var chartMaxValueLabel: UILabel!
     @IBOutlet weak var chartBackgroundImage: UIImageView!
     @IBOutlet weak var chartView: BarLineChartViewBase!
     
     override func awakeFromNib() {
         super.awakeFromNib()
         
+        chartMinValueLabel.text = ""
+        chartMaxValueLabel.text = ""
         chartBackgroundImage.layer.cornerRadius = 5.0
         chartBackgroundImage.layer.masksToBounds = true
         chartBackgroundImage.layer.borderWidth = 1.5
@@ -26,7 +30,13 @@ class BaseChartCollectionCell: UICollectionViewCell {
         baseChartPreperation(self.chartView)
         
         self.backgroundColor = UIColor.clearColor()
-        self.contentView.userInteractionEnabled = false
+//        self.contentView.userInteractionEnabled = false
+    }
+    
+    override func prepareForReuse() {
+        super.prepareForReuse()
+        chartMinValueLabel.text = ""
+        chartMaxValueLabel.text = ""
     }
     
     func baseChartPreperation (chart: BarLineChartViewBase){
@@ -36,18 +46,11 @@ class BaseChartCollectionCell: UICollectionViewCell {
         xAxis.axisLineDashLengths = [3.0]
         xAxis.gridLineDashPhase = 1
         xAxis.labelPosition = .Bottom
-        xAxis.labelTextColor = UIColor.whiteColor()
-        xAxis.axisLineColor = UIColor.whiteColor()
-        
-        let topLimit = ChartLimitLine(limit:50)
-        topLimit.lineWidth = 1
-        topLimit.lineDashLengths = [3.0, 3.0]
-        topLimit.lineColor = UIColor.whiteColor()
+        xAxis.labelTextColor = UIColor.colorWithHexString("#ffffff", alpha: 0.4)!
+        xAxis.axisLineColor = UIColor.colorWithHexString("#ffffff", alpha: 0.4)!
         
         let leftAxis = chart.leftAxis
-        leftAxis.addLimitLine(topLimit)
-        leftAxis.axisMaxValue = 50.0
-        leftAxis.axisMinValue = 0.0
+        
         leftAxis.drawLimitLinesBehindDataEnabled = true
         leftAxis.drawAxisLineEnabled = false
         leftAxis.drawGridLinesEnabled = false
@@ -55,15 +58,38 @@ class BaseChartCollectionCell: UICollectionViewCell {
         
         let rightAxis = chart.rightAxis
         rightAxis.enabled = false
-            
+        
         chart.descriptionText = ""
+        chart.noDataText = "No data available"
+        chart.infoFont = ScreenManager.appFontOfSize(15)
+        chart.infoTextColor = UIColor.colorWithHexString("#ffffff", alpha: 0.7)
         chart.legend.enabled = false
         chart.legend.formSize = 0
-        let marker:BalloonMarker = getChartMarker()
-        chart.marker = marker
-        chart.drawMarkers = true
+        
+//        let marker:BalloonMarker = getChartMarker()
+//        chart.marker = marker
+//        chart.drawMarkers = true
+        
         chart.scaleXEnabled = false
         chart.scaleYEnabled = false
+    }
+    
+    func updateLeftAxisWith(minValue: Double?, maxValue: Double?) {        
+        let leftAxis = chartView.leftAxis
+        leftAxis.removeAllLimitLines()
+        if let maxValue = maxValue, let minValue = minValue {
+            let topLimitMax = maxValue + (maxValue/3)
+            let topLimit = ChartLimitLine(limit:topLimitMax)
+            topLimit.lineWidth = 1
+            topLimit.lineDashLengths = [3.0, 3.0]
+            topLimit.lineColor = UIColor.colorWithHexString("#338aff", alpha: 0.4)!
+            leftAxis.axisMaxValue = topLimitMax
+            leftAxis.axisMinValue = minValue - (minValue/3)
+            leftAxis.addLimitLine(topLimit)
+            
+            chartMinValueLabel.text = String(format:"%.0f", leftAxis.axisMinValue)
+            chartMaxValueLabel.text = String(format:"%.0f", leftAxis.axisMaxValue)
+        }
     }
     
     func getChartMarker() -> BalloonMarker {

@@ -644,13 +644,9 @@ class SettingsViewController: UITableViewController, UITextFieldDelegate, SFSafa
     }
 
     func doResetPassword(sender: UIButton) {
-        if let url = NSURL(string: resetPassURL) {
-            let vc = SFSafariViewController(URL: url, entersReaderIfAvailable: true)
-            vc.delegate = self
-            presentViewController(vc, animated: true, completion: nil)
-        } else {
-            log.error("Failed to reset password (URL creation)")
-        }
+        let vc = SFSafariViewController(URL: resetPassURL, entersReaderIfAvailable: true)
+        vc.delegate = self
+        presentViewController(vc, animated: true, completion: nil)
     }
 
     func safariViewControllerDidFinish(controller: SFSafariViewController) {

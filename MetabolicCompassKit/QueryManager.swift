@@ -49,24 +49,6 @@ public typealias Queries = [(String, Query)]
 private let QMQueriesKey  = DefaultsKey<[AnyObject]?>("QMQueriesKey")
 private let QMSelectedKey = DefaultsKey<Int>("QMSelectedKey")
 
-// TODO: Male/Female, age ranges (as profile queries).
-private let defaultQueries : Queries = [
-    ("Weight <50",     Query.ConjunctiveQuery(nil, nil, nil,
-        [MCQueryPredicate(.AggAvg, (HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierBodyMass)!, nil), nil, "50")])),
-
-    ("Weight 50-100",  Query.ConjunctiveQuery(nil, nil, nil,
-        [MCQueryPredicate(.AggAvg, (HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierBodyMass)!, nil), "50", "100")])),
-
-    ("Weight 100-150", Query.ConjunctiveQuery(nil, nil, nil,
-        [MCQueryPredicate(.AggAvg, (HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierBodyMass)!, nil), "100", "150")])),
-
-    ("Weight 150-200", Query.ConjunctiveQuery(nil, nil, nil,
-        [MCQueryPredicate(.AggAvg, (HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierBodyMass)!, nil), "150", "200")])),
-
-    ("Weight >200",    Query.ConjunctiveQuery(nil, nil, nil,
-        [MCQueryPredicate(.AggAvg, (HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierBodyMass)!, nil), "200", nil)]))
-]
-
 /**
  This class manages queries to enable more meaningful comparisons against population data.  For example, to limit the population column on the first page or the densities shown on the radar plot to individuals within a particular weight range or to a particular gender, this query filter would be used.
 
@@ -75,7 +57,7 @@ private let defaultQueries : Queries = [
 public class QueryManager {
     public static let sharedManager = QueryManager()
 
-    var queries: Queries = defaultQueries
+    var queries: Queries = []
     var querySelected : Int = -1
 
     init() { load() }
@@ -83,7 +65,7 @@ public class QueryManager {
     func load() {
         let qs = Defaults[QMQueriesKey] as? [[String:AnyObject]] ?? []
         let dsQueries = deserializeQueries(qs)
-        queries = dsQueries.isEmpty ? defaultQueries : dsQueries
+        queries = dsQueries.isEmpty ? [] : dsQueries
         querySelected = dsQueries.isEmpty ? -1 : Defaults[QMSelectedKey]
     }
 
@@ -215,13 +197,17 @@ func serializeQueries(qs: Queries) -> [[String: AnyObject]] {
     return qs.map { (n,q) in
         switch q {
         case .ConjunctiveQuery(let start, let end, let columns, let conjuncts):
-            return [
-                NKey: n,
-                SKey: start!,
-                EKey: end!,
-                CKey: columns!.map(serializeMCQueryAttribute),
-                QKey: conjuncts.map(serializeMCQueryPredicate)
-            ]
+            var result : [String:AnyObject] = [NKey: n, QKey: conjuncts.map(serializeMCQueryPredicate)]
+            if start != nil {
+                result[SKey] = start!
+            }
+            if end != nil {
+                result[EKey] = end!
+            }
+            if columns != nil {
+                result[CKey] = columns!.map(serializeMCQueryAttribute)
+            }
+            return result
         }
     }
 }
@@ -236,10 +222,10 @@ func deserializeMCQueryPredicate(p: [String: AnyObject]) -> MCQueryPredicate {
 func deserializeQueries(qs: [[String: AnyObject]]) -> Queries {
     return qs.map { dict in
         let name    = dict[NKey] as! String
-        let start   = dict[SKey] as! NSDate?
-        let end     = dict[EKey] as! NSDate?
-        let columns = dict[CKey] as! [MCQueryAttribute]?
         let preds   = (dict[QKey] as! [[String: AnyObject]]).map(deserializeMCQueryPredicate)
+        let start   = dict[SKey] as? NSDate
+        let end     = dict[EKey] as? NSDate
+        let columns = dict[CKey] as? [MCQueryAttribute]
         return (name, .ConjunctiveQuery(start, end, columns, preds))
     }
 }

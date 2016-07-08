@@ -29,7 +29,7 @@ class DashboardFilterCell: UITableViewCell {
 
     override func awakeFromNib() {
         super.awakeFromNib()
-        // Initialization code
+        self.checkBoxButton.userInteractionEnabled = false
     }
 
     override func setSelected(selected: Bool, animated: Bool) {
