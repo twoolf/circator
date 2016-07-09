@@ -25,9 +25,9 @@ class SleepTimesInterfaceController: WKInterfaceController {
     override func awakeWithContext(context: AnyObject?) {
         super.awakeWithContext(context)
         var tempItems: [WKPickerItem] = []
-        for i in 0...47 {
+        for i in 0...48 {
             let item = WKPickerItem()
-            item.contentImage = WKImage(imageName: "Sleep\(i)")
+            item.contentImage = WKImage(imageName: "Time\(i)")
             tempItems.append(item)
         }
         sleepTimesPicker.setItems(tempItems)

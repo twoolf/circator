@@ -2,15 +2,7 @@ platform :ios, '9.0'
 
 use_frameworks!
 
-post_install do |installer|
-  installer.pods_project.targets.each do |target|
-    target.build_configurations.each do |config|
-      config.build_settings['GCC_NO_COMMON_BLOCKS'] = 'NO'
-    end
-  end
-end
-
-abstract_target 'MetabolicCompassCommon' do
+def shared_pods
     pod 'ResearchKit', :git => 'https://github.com/twoolf/ResearchKit.git'
     pod 'Charts', :git => 'https://github.com/danielgindi/ios-charts.git'
     pod 'Alamofire', '~> 2.0'
@@ -38,7 +30,30 @@ abstract_target 'MetabolicCompassCommon' do
     pod 'AsyncKit'
     pod 'SteviaLayout'
     pod 'AwesomeCache'
-    
-    target 'MetabolicCompassKit'
-    target 'MetabolicCompass'
+end
+
+target 'MetabolicCompassKit' do
+    shared_pods
+end
+
+target 'MetabolicCompass' do
+    shared_pods
+end
+
+target 'MetabolicCompassWatchExtension' do 
+ platform :watchos, '2.0'
+ pod 'SwiftDate'
+end
+
+target 'MetabolicCompassWatch' do
+ platform :watchos, '2.0'
+ pod 'SwiftDate'
+end
+
+post_install do |installer|
+  installer.pods_project.targets.each do |target|
+    target.build_configurations.each do |config|
+      config.build_settings['GCC_NO_COMMON_BLOCKS'] = 'NO'
+    end
+  end
 end
