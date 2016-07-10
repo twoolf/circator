@@ -247,8 +247,11 @@ class RadarViewController : UIViewController, ChartViewDelegate {
     }
 
     func reloadData() {
-        let indData = (0..<PreviewManager.balanceSampleTypes.count).map(indEntry)
-        let popData = (0..<PreviewManager.balanceSampleTypes.count).map(popEntry)
+        let sampleTypeRange = 0..<(max(PreviewManager.balanceSampleTypes.count, 8))
+        let sampleTypes = sampleTypeRange.map { PreviewManager.balanceSampleTypes[$0] }
+
+        let indData = sampleTypeRange.map(indEntry)
+        let popData = sampleTypeRange.map(popEntry)
 
         let indDataSet = MetabolicChartDataSet(yVals: indData, label: NSLocalizedString("Individual value", comment: "Individual"))
         indDataSet.fillColor = UIColor.colorWithHexString("#427DC9", alpha: 1.0)!
@@ -274,8 +277,7 @@ class RadarViewController : UIViewController, ChartViewDelegate {
         popDataSet.drawHighlightCircleEnabled = false
         
         
-        let xVals = PreviewManager.balanceSampleTypes.map { type in
-                        return HMConstants.sharedInstance.healthKitShortNames[type.identifier]! }
+        let xVals = sampleTypes.map { type in return HMConstants.sharedInstance.healthKitShortNames[type.identifier]! }
 
         let data = RadarChartData(xVals: xVals, dataSets: [indDataSet, popDataSet])
         data.setDrawValues(false)

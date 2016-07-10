@@ -51,7 +51,7 @@ class DashboardManageController: UIViewController, UITableViewDelegate, UITableV
         }
         
         PreviewManager.updatePreviewSampleTypes(samples)
-        PreviewManager.updateMangePreviewSampleTypes(manageData)
+        PreviewManager.updateManagePreviewSampleTypes(manageData)
     }
     
     override func preferredStatusBarStyle() -> UIStatusBarStyle {

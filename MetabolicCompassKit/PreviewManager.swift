@@ -10,9 +10,9 @@ import HealthKit
 import SwiftyUserDefaults
 
 private let PMSampleTypesKey = DefaultsKey<[NSData]?>("previewSampleTypes")
-private let PMMangeSampleTypesKey = DefaultsKey<[NSData]?>("mangeSampleTypesKey")
-private let PMChartsSampleTypesKey = DefaultsKey<[NSData]?>("cahrtsSampleTypes")
-private let PMManageChartsSampleTypesKey = DefaultsKey<[NSData]?>("manageCahrtsSampleTypes")
+private let PMManageSampleTypesKey = DefaultsKey<[NSData]?>("manageSampleTypesKey")
+private let PMChartsSampleTypesKey = DefaultsKey<[NSData]?>("chartsSampleTypes")
+private let PMManageChartsSampleTypesKey = DefaultsKey<[NSData]?>("manageChartsSampleTypes")
 private let PMBalanceSampleTypesKey = DefaultsKey<[NSData]?>("balanceSampleTypes")
 public  let PMDidUpdateBalanceSampleTypesNotification = "PMDidUpdateBalanceSampleTypesNotification"
 /**
@@ -182,28 +182,33 @@ public class PreviewManager: NSObject {
     }
     
     public static var managePreviewSampleTypes: [HKSampleType] {
-        if let rawTypes = Defaults[PMMangeSampleTypesKey] {
+        if let rawTypes = Defaults[PMManageSampleTypesKey] {
             return rawTypes.map { (data) -> HKSampleType in
                 return NSKeyedUnarchiver.unarchiveObjectWithData(data) as! HKSampleType
             }
         } else {
             let defaultTypes = self.supportedTypes
-            self.updateMangePreviewSampleTypes(defaultTypes)
+            self.updateManagePreviewSampleTypes(defaultTypes)
             return defaultTypes
         }
     }
     
-    public static func updateMangePreviewSampleTypes (types: [HKSampleType]) {
+    public static func updateManagePreviewSampleTypes (types: [HKSampleType]) {
         
         let rawTypes = types.map { (sampleType) -> NSData in
             return NSKeyedArchiver.archivedDataWithRootObject(sampleType)
         }
         
-        Defaults[PMMangeSampleTypesKey] = rawTypes
+        Defaults[PMManageSampleTypesKey] = rawTypes
     }
 
     //MARK: Balance Sample Types
     public static var balanceSampleTypes: [HKSampleType] {
+        // For now, balance types refer to the preview sample types.
+        // This unifies the types across the dashboard comparison and balance screens.
+        return PreviewManager.previewSampleTypes
+
+        /*
         if let rawTypes = Defaults[PMBalanceSampleTypesKey] {
             return rawTypes.map { (data) -> HKSampleType in
                 return NSKeyedUnarchiver.unarchiveObjectWithData(data) as! HKSampleType
@@ -219,13 +224,21 @@ public class PreviewManager: NSObject {
             self.updateBalanceSampleTypes(defaultTypes)
             return defaultTypes
         }
+        */
     }
 
     public static func updateBalanceSampleTypes (types: [HKSampleType]) {
-
+        // For now, update the preview sample types.
+        // This unifies the types across the dashboard comparison and balance screens.
         let rawTypes = types.map { (sampleType) -> NSData in
             return NSKeyedArchiver.archivedDataWithRootObject(sampleType)
         }
+
+        /*
+        let rawTypes = types.map { (sampleType) -> NSData in
+            return NSKeyedArchiver.archivedDataWithRootObject(sampleType)
+        }
+        */
 
         Defaults[PMBalanceSampleTypesKey] = rawTypes
         NSNotificationCenter.defaultCenter().postNotificationName(PMDidUpdateBalanceSampleTypesNotification, object: nil)
