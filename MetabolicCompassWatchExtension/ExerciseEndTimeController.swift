@@ -15,16 +15,16 @@ import HealthKit
 import SwiftDate
 
 struct exerciseTimeVariable {
-    var exerciseEnd: Int
+    var exerciseBegin: Int
 }
-var exerciseTimeStruc = exerciseTimeVariable(exerciseEnd:36)
+var exerciseTimeStruc = exerciseTimeVariable(exerciseBegin:36)
 
 class ExerciseEndTimeController: WKInterfaceController {
     
     @IBOutlet var exerciseEndTimePicker: WKInterfacePicker!
     @IBOutlet var exerciseEndTimeButton: WKInterfaceButton!
     
-    var exerciseEndTime = 0
+    var exerciseBeginTime = 0
     override func awakeWithContext(context: AnyObject?) {
         super.awakeWithContext(context)
         var tempItems: [WKPickerItem] = []
@@ -36,16 +36,16 @@ class ExerciseEndTimeController: WKInterfaceController {
         exerciseEndTimePicker.setItems(tempItems)
         
         let thisRegion = DateRegion()
-        var endTimePointer = 24
+        var beginTimePointer = 24
         let calendar = NSCalendar.currentCalendar()
-        var endDate = NSDate()
-        let endComponents = calendar.components([.Year, .Month, .Day, .Hour, .Minute], fromDate: endDate)
-        if endComponents.minute < 15 {
-            endTimePointer = 2*endComponents.hour
+        var beginDate = NSDate()
+        let beginComponents = calendar.components([.Year, .Month, .Day, .Hour, .Minute], fromDate: beginDate)
+        if beginComponents.minute < 15 {
+            beginTimePointer = 2*beginComponents.hour
         } else {
-            endTimePointer = 2*endComponents.hour + 1
+            beginTimePointer = 2*beginComponents.hour + 1
         }
-        exerciseEndTimePicker.setSelectedItemIndex(endTimePointer)
+        exerciseEndTimePicker.setSelectedItemIndex(beginTimePointer-2)
     }
     
     override func willActivate() {
@@ -58,13 +58,13 @@ class ExerciseEndTimeController: WKInterfaceController {
     
     
     @IBAction func onExerciseStartTime(value: Int) {
-        exerciseEndTime = value
+        exerciseBeginTime = value
     }
     
     @IBAction func onExerciseStartTimeSave() {
-        exerciseTimeStruc.exerciseEnd = exerciseEndTime
-        print("End of exercise time: and variable --")
-        print(exerciseTimeStruc.exerciseEnd)
+        exerciseTimeStruc.exerciseBegin = exerciseBeginTime
+        print("Begin of exercise time: and variable --")
+        print(exerciseTimeStruc.exerciseBegin)
         pushControllerWithName("ExerciseStartTimeController", context: self)
     }
 }

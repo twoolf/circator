@@ -15,9 +15,9 @@ import HealthKit
 import SwiftDate
 
 struct sleepTimesVariables {
-    var sleepEnd: Int
+    var sleepBegin: Int
 }
-var sleepTimesStruc = sleepTimesVariables(sleepEnd:2)
+var sleepTimesStruc = sleepTimesVariables(sleepBegin:2)
 
 class SleepInterfaceController: WKInterfaceController {
     
@@ -35,17 +35,17 @@ class SleepInterfaceController: WKInterfaceController {
         }
 
         let thisRegion = DateRegion()
-        var endTimePointer = 24
+        var beginTimePointer = 24
         let calendar = NSCalendar.currentCalendar()
-        var endDate = NSDate()
-        let endComponents = calendar.components([.Year, .Month, .Day, .Hour, .Minute], fromDate: endDate)
-        if endComponents.minute < 15 {
-            endTimePointer = 2*endComponents.hour
+        var beginDate = NSDate()
+        let beginComponents = calendar.components([.Year, .Month, .Day, .Hour, .Minute], fromDate: beginDate)
+        if beginComponents.minute < 15 {
+            beginTimePointer = 2*beginComponents.hour
         } else {
-            endTimePointer = 2*endComponents.hour + 1
+            beginTimePointer = 2*beginComponents.hour + 1
         }
         sleepPicker.setItems(tempItems)
-        sleepPicker.setSelectedItemIndex(endTimePointer)
+        sleepPicker.setSelectedItemIndex(beginTimePointer-16)
     }
     
     override func willActivate() {
@@ -60,9 +60,9 @@ class SleepInterfaceController: WKInterfaceController {
         sleep = value
     }
     @IBAction func sleepSaveButton() {
-        sleepTimesStruc.sleepEnd = sleep
-        print("Wake from Sleep: and variable --")
-        print(sleepTimesStruc.sleepEnd)
+        sleepTimesStruc.sleepBegin = sleep
+        print("Begin from Sleep: and variable --")
+        print(sleepTimesStruc.sleepBegin)
         pushControllerWithName("SleepTimesInterfaceController", context: self)
     }
     }

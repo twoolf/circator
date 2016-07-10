@@ -37,7 +37,7 @@ class ComplicationController: NSObject, CLKComplicationDataSource {
     
     func getCurrentTimelineEntryForComplication(complication: CLKComplication, withHandler handler: ((CLKComplicationTimelineEntry?) -> Void)) {
         var shortText = MetricsStore.sharedInstance.fastingTime
-        if complication.family == .UtilitarianSmall || complication.family == .UtilitarianLarge
+        if complication.family == .UtilitarianSmall || complication.family == .UtilitarianLarge || complication.family == .ModularSmall || complication.family == .ModularLarge || complication.family == .CircularSmall
         {
             //            let startDate = NSDate()
             let startDate = getStartDateFromUserDefaults()
@@ -174,15 +174,56 @@ class ComplicationController: NSObject, CLKComplicationDataSource {
             largeUtil.textProvider = CLKSimpleTextProvider(text: MetricsStore.sharedInstance.fastingTime)
             handler(largeUtil)
         }
+        if complication.family == .ModularSmall {
+            let smallUtil = CLKComplicationTemplateModularSmallRingText()
+            smallUtil.textProvider = CLKSimpleTextProvider(text: MetricsStore.sharedInstance.fastingTime)
+            handler(smallUtil)
+        }
+        if complication.family == .ModularLarge {
+            let largeUtil = CLKComplicationTemplateModularLargeTallBody()
+            largeUtil.headerTextProvider = CLKSimpleTextProvider(text: "Fasting Time")
+            largeUtil.bodyTextProvider = CLKSimpleTextProvider(text: MetricsStore.sharedInstance.fastingTime)
+            handler(largeUtil)
+        }
+        
+        if complication.family == .CircularSmall {
+            let smallUtil = CLKComplicationTemplateCircularSmallSimpleText()
+            smallUtil.textProvider = CLKSimpleTextProvider(text: MetricsStore.sharedInstance.fastingTime)
+            handler(smallUtil)
+        }
         print("in getPlaceholderTemplateForComplication \(MetricsStore.sharedInstance.fastingTime)")
     }
     
     func createComplicationEntry(shortText: String, date: NSDate, family: CLKComplicationFamily) -> CLKComplicationTimelineEntry {
-          let smallFlat = CLKComplicationTemplateUtilitarianSmallFlat()
-          smallFlat.textProvider = CLKSimpleTextProvider(text: shortText)
-          let newEntry = CLKComplicationTimelineEntry(date: date, complicationTemplate: smallFlat)
-          print("added new Complication entry to Entries \(date) and \(shortText)")
-        return(newEntry)
+        if  family == CLKComplicationFamily.UtilitarianSmall {
+            let smallFlat = CLKComplicationTemplateUtilitarianSmallFlat()
+            smallFlat.textProvider = CLKSimpleTextProvider(text: shortText)
+            let newEntry = CLKComplicationTimelineEntry(date: date, complicationTemplate: smallFlat)
+            return(newEntry)
+        } else if family == CLKComplicationFamily.UtilitarianLarge {
+            let largeFlat = CLKComplicationTemplateUtilitarianLargeFlat()
+            largeFlat.textProvider = CLKSimpleTextProvider(text: shortText)
+            let newEntry = CLKComplicationTimelineEntry(date: date, complicationTemplate: largeFlat)
+            return(newEntry)
+        } else if family == CLKComplicationFamily.ModularLarge {
+          let largeFlat = CLKComplicationTemplateModularLargeTallBody()
+            largeFlat.headerTextProvider = CLKSimpleTextProvider(text: "Fasting Time")
+            largeFlat.bodyTextProvider = CLKSimpleTextProvider(text: shortText)
+            let newEntry = CLKComplicationTimelineEntry(date: date, complicationTemplate: largeFlat)
+            return(newEntry)
+        } else if family == CLKComplicationFamily.ModularSmall {
+            let smallFlat = CLKComplicationTemplateModularSmallSimpleText()
+            smallFlat.textProvider = CLKSimpleTextProvider(text: shortText)
+            let newEntry = CLKComplicationTimelineEntry(date: date, complicationTemplate: smallFlat)
+            return(newEntry)
+        } else  {
+            let smallFlat = CLKComplicationTemplateCircularSmallRingText()
+            smallFlat.textProvider = CLKSimpleTextProvider(text: shortText)
+            let newEntry = CLKComplicationTimelineEntry(date: date, complicationTemplate: smallFlat)
+            return(newEntry)
+        }
+        print("added new Complication entry to Entries \(date) and \(shortText)")
+        
     }
     
     func requestedUpdateDidBegin() {
@@ -191,6 +232,12 @@ class ComplicationController: NSObject, CLKComplicationDataSource {
         createComplicationEntry(MetricsStore.sharedInstance.fastingTime, date: NSDate(),family: CLKComplicationFamily.UtilitarianSmall)
         
         createComplicationEntry(MetricsStore.sharedInstance.fastingTime, date: NSDate(),family: CLKComplicationFamily.UtilitarianLarge)
+        
+        createComplicationEntry(MetricsStore.sharedInstance.fastingTime, date: NSDate(),family: CLKComplicationFamily.ModularLarge)
+        
+        createComplicationEntry(MetricsStore.sharedInstance.fastingTime, date: NSDate(),family: CLKComplicationFamily.ModularSmall)
+        
+        createComplicationEntry(MetricsStore.sharedInstance.fastingTime, date: NSDate(),family: CLKComplicationFamily.CircularSmall)
         
         let server=CLKComplicationServer.sharedInstance()
         
