@@ -16,6 +16,9 @@
 		785978411C1BD4F1008377F9 /* EventManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 785978401C1BD4F1008377F9 /* EventManager.swift */; };
 		7861300F1C25F42B00F50DB3 /* QueryManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7861300E1C25F42B00F50DB3 /* QueryManager.swift */; };
 		7863EA9C1C27302B0038DE7A /* ConsentManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7863EA9B1C27302B0038DE7A /* ConsentManager.swift */; };
+		786818881D33044A00CAE4ED /* BalanceBarView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 786818851D33044A00CAE4ED /* BalanceBarView.swift */; };
+		786818891D33044A00CAE4ED /* FastingDataModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 786818861D33044A00CAE4ED /* FastingDataModel.swift */; };
+		7868188A1D33044A00CAE4ED /* FastingViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 786818871D33044A00CAE4ED /* FastingViewController.swift */; };
 		786DF10D1C72AFE0007C2D4C /* Constants.swift in Sources */ = {isa = PBXBuildFile; fileRef = 786DF10C1C72AFE0007C2D4C /* Constants.swift */; };
 		7881A3E11BAF3B3E00ECB3C6 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7881A3E01BAF3B3E00ECB3C6 /* AppDelegate.swift */; };
 		7881A3F61BAF3B3E00ECB3C6 /* MetabolicCompassTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7881A3F51BAF3B3E00ECB3C6 /* MetabolicCompassTests.swift */; };
@@ -330,6 +333,9 @@
 		7861300E1C25F42B00F50DB3 /* QueryManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = QueryManager.swift; sourceTree = "<group>"; };
 		7863EA9B1C27302B0038DE7A /* ConsentManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ConsentManager.swift; sourceTree = "<group>"; };
 		786817601C6CF37D0018ABB5 /* ProfileSubviewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ProfileSubviewController.swift; sourceTree = "<group>"; };
+		786818851D33044A00CAE4ED /* BalanceBarView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BalanceBarView.swift; sourceTree = "<group>"; };
+		786818861D33044A00CAE4ED /* FastingDataModel.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FastingDataModel.swift; sourceTree = "<group>"; };
+		786818871D33044A00CAE4ED /* FastingViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FastingViewController.swift; sourceTree = "<group>"; };
 		786DF10C1C72AFE0007C2D4C /* Constants.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Constants.swift; sourceTree = "<group>"; };
 		7881A3DD1BAF3B3E00ECB3C6 /* MetabolicCompass.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = MetabolicCompass.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		7881A3E01BAF3B3E00ECB3C6 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
@@ -599,6 +605,16 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		786818841D33040200CAE4ED /* Fasting */ = {
+			isa = PBXGroup;
+			children = (
+				786818851D33044A00CAE4ED /* BalanceBarView.swift */,
+				786818861D33044A00CAE4ED /* FastingDataModel.swift */,
+				786818871D33044A00CAE4ED /* FastingViewController.swift */,
+			);
+			path = Fasting;
+			sourceTree = "<group>";
+		};
 		7881A3D41BAF3B3E00ECB3C6 = {
 			isa = PBXGroup;
 			children = (
@@ -1134,6 +1150,7 @@
 		F43A7C5F1BBDF43C00B6FA56 /* View Controller */ = {
 			isa = PBXGroup;
 			children = (
+				786818841D33040200CAE4ED /* Fasting */,
 				84EF0EBE1D05767500A25760 /* AddEvents */,
 				842B7DB51D095ED6007F2126 /* Charts */,
 				95F400A71CE385E80060F28C /* SettingsViewControllers */,
@@ -1647,6 +1664,7 @@
 				958568031CD0B18900EDD385 /* RegistrationModel.swift in Sources */,
 				84B727AB1D13E5B100839E54 /* CircadianBehaviorViewController.swift in Sources */,
 				84C9CB471CE9B3A4005ED875 /* DailyProgressViewController.swift in Sources */,
+				7868188A1D33044A00CAE4ED /* FastingViewController.swift in Sources */,
 				E75E95B21CDCD6CB00A18756 /* DashboardMetricsAppearanceProvider.swift in Sources */,
 				95769B871CE49E4000F26668 /* PhysiologicalDataViewController.swift in Sources */,
 				E7E48DF11CE6033100DB020F /* ManageBalanceCell.swift in Sources */,
@@ -1701,6 +1719,7 @@
 				95C0B9A81CD25860006E523F /* BaseDataSource.swift in Sources */,
 				95C0B99B1CD23E90006E523F /* RegisterViewController.swift in Sources */,
 				84EF0EB71D05710D00A25760 /* TypeTableViewCell.swift in Sources */,
+				786818881D33044A00CAE4ED /* BalanceBarView.swift in Sources */,
 				E7591D0E1CE1C7DE00DCBA39 /* LPRTableView.swift in Sources */,
 				F5057FEB1CEF058900F66EB0 /* TextInputFilter.swift in Sources */,
 				95F400971CE385C60060F28C /* CircleImageCollectionViewCell.swift in Sources */,
@@ -1758,6 +1777,7 @@
 				E7E48DE71CE4BCAB00DB020F /* MetabolicChartDataSet.swift in Sources */,
 				95F400AB1CE385E80060F28C /* ProfileViewController.swift in Sources */,
 				95F400AA1CE385E80060F28C /* MainSettingsViewController.swift in Sources */,
+				786818891D33044A00CAE4ED /* FastingDataModel.swift in Sources */,
 				95748C461CCFC7AA0002F6A3 /* InputCollectionViewCell.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
