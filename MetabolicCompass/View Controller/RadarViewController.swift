@@ -207,7 +207,6 @@ class RadarViewController : UIViewController, ChartViewDelegate {
                paramdict = logisticParametersByType[sex.biologicalSex == HKBiologicalSex.Male],
                (x0, k) = paramdict[type.identifier]
         {
-//            print ("quantity \(quantity) and value: to check \(1 / (1 + exp(-k * (quantity - x0))))  ")
             return min(1.0,(1 / (1 + exp(-k * (quantity - x0)))) + 0.2)
         }
         return 1 / (1 + exp(-quantity))
@@ -225,7 +224,6 @@ class RadarViewController : UIViewController, ChartViewDelegate {
                                       image: appearanceProvider.imageForSampleType(type.identifier, active: true))
         }
         let nval = normalizeType(type, quantity: val)
-        print("type \(type), i \(i)")
         return MetabolicDataEntry(value: nval, xIndex: i,
                                   pointColor: appearanceProvider.colorForSampleType(type.identifier, active: true),
                                   image: appearanceProvider.imageForSampleType(type.identifier, active: true))
@@ -247,7 +245,7 @@ class RadarViewController : UIViewController, ChartViewDelegate {
     }
 
     func reloadData() {
-        let sampleTypeRange = 0..<(max(PreviewManager.balanceSampleTypes.count, 8))
+        let sampleTypeRange = 0..<(min(PreviewManager.balanceSampleTypes.count, 8))
         let sampleTypes = sampleTypeRange.map { PreviewManager.balanceSampleTypes[$0] }
 
         let indData = sampleTypeRange.map(indEntry)
