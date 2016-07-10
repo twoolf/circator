@@ -16,7 +16,7 @@ class WaterStartTimeController: WKInterfaceController {
     @IBOutlet var waterTimeStart: WKInterfacePicker!
     @IBOutlet var waterTimesEnterStart: WKInterfaceButton!
     
-    var waterStart = 0
+    var waterClose = 0
     override func awakeWithContext(context: AnyObject?) {
         super.awakeWithContext(context)
         var tempItems: [WKPickerItem] = []
@@ -26,7 +26,7 @@ class WaterStartTimeController: WKInterfaceController {
             tempItems.append(item)
         }
         waterTimeStart.setItems(tempItems)
-        waterTimeStart.setSelectedItemIndex(waterEndTimeSelected.waterEnd-2)
+        waterTimeStart.setSelectedItemIndex(waterBeginTimeSelected.waterBegin+1)
     }
     
     override func willActivate() {
@@ -38,7 +38,7 @@ class WaterStartTimeController: WKInterfaceController {
     }
     
     func showButton() {
-        let buttonColor = UIColor(red: 0.01, green: 0.41, blue: 0.22, alpha: 1.0)
+        let buttonColor = UIColor(red: 0.0, green: 0.18, blue: 0.45, alpha: 0.5)
         waterTimesEnterStart.setBackgroundColor(buttonColor)
         waterTimesEnterStart.setTitle("Saved")
         print("HKStore should be updated for Water")
@@ -46,75 +46,75 @@ class WaterStartTimeController: WKInterfaceController {
         // setting up conversion of saved value from 'finished drinking' in 1st screen
         let thisRegion = DateRegion()
         let calendar = NSCalendar.currentCalendar()
-        var endDate = NSDate.today(inRegion: thisRegion)
-        print("end date should be midnight of today: \(endDate)")
-        let endComponents = calendar.components([.Year, .Month, .Day, .Hour, .Minute], fromDate: endDate)
-        var timeConvertEnd:Int = 0
-        var timeAddHalfHourEnd:Int = 0
+        var beginDate = NSDate.today(inRegion: thisRegion)
+        print("begin date should be midnight of today: \(beginDate)")
+        let beginComponents = calendar.components([.Year, .Month, .Day, .Hour, .Minute], fromDate: beginDate)
+        var timeConvertBegin:Int = 0
+        var timeAddHalfHourBegin:Int = 0
         
         // note: imageset (0-47) is keyed into 24-hour schedule
         //  so 0=midnight, 2=1AM, 4=2AM, etc
-        if waterEndTimeSelected.waterEnd % 2 == 0 {
-            print("\(waterEndTimeSelected.waterEnd) from water times 1st screen is even")
+        if waterBeginTimeSelected.waterBegin % 2 == 0 {
+            print("\(waterBeginTimeSelected.waterBegin) from water times 1st screen is even")
             _=0
-            timeConvertEnd = ( (waterEndTimeSelected.waterEnd)/2 )
+            timeConvertBegin = ( (waterBeginTimeSelected.waterBegin)/2 )
         } else {
-            print("\(waterEndTimeSelected.waterEnd) from water times 1st screen is odd")
-            timeConvertEnd = ( (waterEndTimeSelected.waterEnd-1)/2 )
-            timeAddHalfHourEnd=30
+            print("\(waterBeginTimeSelected.waterBegin) from water times 1st screen is odd")
+            timeConvertBegin = ( (waterBeginTimeSelected.waterBegin-1)/2 )
+            timeAddHalfHourBegin=30
         }
-        endComponents.hour = timeConvertEnd
-        endComponents.minute = timeAddHalfHourEnd
-        print("should have adjusted, hour and minute for endTime: \(timeConvertEnd)")
-        print("    and \(timeAddHalfHourEnd)")
-        endDate = calendar.dateFromComponents(endComponents)!
-        print("new endDate based on first screen: \(endDate)")
+        beginComponents.hour = timeConvertBegin
+        beginComponents.minute = timeAddHalfHourBegin
+        print("should have adjusted, hour and minute for beginTime: \(timeConvertBegin)")
+        print("    and \(timeAddHalfHourBegin)")
+        beginDate = calendar.dateFromComponents(beginComponents)!
+        print("new beginDate based on first screen: \(beginDate)")
         
         // setting up values from current picker and getting 'beginning of water' ready
-        var startDate = NSDate.today(inRegion: thisRegion)
-        var timeConvertStart:Int = 0
-        var timeAddHalfHourStart:Int = 0
+        var closeDate = NSDate.today(inRegion: thisRegion)
+        var timeConvertClose:Int = 0
+        var timeAddHalfHourClose:Int = 0
         
-        if waterStart % 2 == 0 {
-            print("\(waterStart) from water 2nd screen is even")
+        if waterClose % 2 == 0 {
+            print("\(waterClose) from water 2nd screen is even")
             _=0
-            timeConvertStart = ( (waterStart)/2)
+            timeConvertClose = ( (waterClose)/2)
         } else {
-            print("\(waterStart) from water 2nd screen is odd")
+            print("\(waterClose) from water 2nd screen is odd")
             _=30
-            timeConvertStart = ( (waterStart-1)/2  )
-            timeAddHalfHourStart=30
+            timeConvertClose = ( (waterClose-1)/2  )
+            timeAddHalfHourClose=30
         }
         
-        let startComponents = calendar.components([.Year, .Month, .Day, .Hour, .Minute], fromDate: startDate)
-        startComponents.hour = timeConvertStart
-        startComponents.minute = timeAddHalfHourStart
-        startDate = calendar.dateFromComponents(startComponents)!
+        let closeComponents = calendar.components([.Year, .Month, .Day, .Hour, .Minute], fromDate: closeDate)
+        closeComponents.hour = timeConvertClose
+        closeComponents.minute = timeAddHalfHourClose
+        closeDate = calendar.dateFromComponents(closeComponents)!
         
-        print("should have end adjusted, hour and minute for start point: \(timeConvertStart)")
-        print("    and \(timeAddHalfHourStart)")
-        if startDate > endDate {
-            startComponents.day = startComponents.day-1
-            print("adjusted start day by one")
-            startDate = calendar.dateFromComponents(startComponents)!
+        print("should have end adjusted, hour and minute for close point: \(timeConvertClose)")
+        print("    and \(timeAddHalfHourClose)")
+        if closeDate > beginDate {
+            closeComponents.day = closeComponents.day-1
+            print("adjusted close day by one")
+            closeDate = calendar.dateFromComponents(closeComponents)!
         }
         
-        print("computing a startDate (2nd screen): \(startDate)")
-        print("and an ending date of (1st screen): \(endDate)")
+        print("computing a closeDate (2nd screen): \(closeDate)")
+        print("and an beginning date of (1st screen): \(beginDate)")
         
-        let waterDurationHours = endComponents.hour - startComponents.hour
-        let waterDurationMinutes = endComponents.minute - startComponents.minute
+        let waterDurationHours = beginComponents.hour - closeComponents.hour
+        let waterDurationMinutes = beginComponents.minute - closeComponents.minute
         let waterDurationTime = waterDurationHours*60+waterDurationMinutes
         
-        if (startDate>endDate){
-            print("logic error on startDate not earlier than endDate")
-            startDate=endDate - 1.hours
+        if (closeDate>beginDate){
+            print("logic error on closeDate not earlier than beginDate")
+            closeDate=closeDate - 1.hours
         }
         
         let sample = HKQuantitySample(type: HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierDietaryWater)!,
                                       quantity: HKQuantity.init(unit: HKUnit.literUnitWithMetricPrefix(HKMetricPrefix.Milli), doubleValue: waterEnterButton.waterAmount),
-                                      startDate: startDate,
-                                      endDate: endDate,
+                                      startDate: beginDate,
+                                      endDate: closeDate,
                                       metadata:["Apple Watch" : "water entry"])
         let healthKitStore:HKHealthStore = HKHealthStore()
         healthKitStore.saveObject(sample) { success, error in
@@ -122,9 +122,9 @@ class WaterStartTimeController: WKInterfaceController {
     }
     
     @IBAction func onWaterStartTimePicker(value: Int) {
-        waterStart = value
+        waterClose = value
         print("in 2nd water picker")
-        print(waterStart)
+        print(waterClose)
     }
     
     @IBAction func onWaterStartTimeButton() {

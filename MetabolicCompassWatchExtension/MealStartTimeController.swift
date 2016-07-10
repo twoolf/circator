@@ -16,7 +16,7 @@ class MealStartTimeController: WKInterfaceController {
     @IBOutlet var mealStartTimePicker: WKInterfacePicker!
     @IBOutlet var mealStartTimeButton: WKInterfaceButton!
     
-    var mealStart = 0
+    var mealClose = 0
     //    var mealTypebyButton
     override func awakeWithContext(context: AnyObject?) {
         super.awakeWithContext(context)
@@ -27,7 +27,7 @@ class MealStartTimeController: WKInterfaceController {
             tempItems.append(item)
         }
         mealStartTimePicker.setItems(tempItems)
-        mealStartTimePicker.setSelectedItemIndex((mealTimesStruc.mealEnd)-2)
+        mealStartTimePicker.setSelectedItemIndex((mealTimesStruc.mealBegin)+2)
     }
     
     func onMealTimeChanged() {
@@ -42,7 +42,7 @@ class MealStartTimeController: WKInterfaceController {
     }
     
     func showButton()    {
-        let buttonColor = UIColor(red: 0.01, green: 0.41, blue: 0.22, alpha: 1.0)
+        let buttonColor = UIColor(red: 0.13, green: 0.55, blue: 0.13, alpha: 0.5)
         mealStartTimeButton.setBackgroundColor(buttonColor)
         mealStartTimeButton.setTitle("Saved")
         print("HKStore should be updated for Meal")
@@ -50,80 +50,80 @@ class MealStartTimeController: WKInterfaceController {
         // setting up conversion of saved value from 'waking from sleep' in 1st screen
         let thisRegion = DateRegion()
         let calendar = NSCalendar.currentCalendar()
-        var endDate = NSDate.today(inRegion: thisRegion)
-        print("end date should be midnight of today: \(endDate)")
-        let endComponents = calendar.components([.Year, .Month, .Day, .Hour, .Minute], fromDate: endDate)
-        var timeConvertEnd:Int = 0
-        var timeAddHalfHourEnd:Int = 0
+        var beginDate = NSDate.today(inRegion: thisRegion)
+        print("begin date should be midnight of today: \(beginDate)")
+        let beginComponents = calendar.components([.Year, .Month, .Day, .Hour, .Minute], fromDate: beginDate)
+        var timeConvertBegin:Int = 0
+        var timeAddHalfHourBegin:Int = 0
         
         // note: imageset (0-47) is keyed into 24-hour schedule
         //  so 0=midnight, 2=1AM, 4=2AM, etc
-        if mealTimesStruc.mealEnd % 2 == 0 {
-            print("\(mealTimesStruc.mealEnd) from meal times 1st screen is even")
+        if mealTimesStruc.mealBegin % 2 == 0 {
+            print("\(mealTimesStruc.mealBegin) from meal times 1st screen is even")
             _=0
-            timeConvertEnd = ( (mealTimesStruc.mealEnd)/2 )
+            timeConvertBegin = ( (mealTimesStruc.mealBegin)/2 )
             //            print("timeConvertStart: \(timeConvertStart)")
             //            startDate = startDate + timeConvertStart.hours
             //            print("new start date: \(startDate)")
         } else {
-            print("\(mealTimesStruc.mealEnd) from meal times 1st screen is odd")
-            timeConvertEnd = ( (mealTimesStruc.mealEnd-1)/2 )
-            timeAddHalfHourEnd=30
+            print("\(mealTimesStruc.mealBegin) from meal times 1st screen is odd")
+            timeConvertBegin = ( (mealTimesStruc.mealBegin-1)/2 )
+            timeAddHalfHourBegin=30
             //            print("timeConvertStart: \(timeConvertStart)")
             //            startDate = startDate + timeConvertStart.hours + 30.minutes
             //            print("new start date: \(startDate)")
         }
-        endComponents.hour = timeConvertEnd
-        endComponents.minute = timeAddHalfHourEnd
-        print("should have adjusted, hour and minute for endTime: \(timeConvertEnd)")
-        print("    and \(timeAddHalfHourEnd)")
-        endDate = calendar.dateFromComponents(endComponents)!
-        print("new endDate based on first screen: \(endDate)")
+        beginComponents.hour = timeConvertBegin
+        beginComponents.minute = timeAddHalfHourBegin
+        print("should have adjusted, hour and minute for beginTime: \(timeConvertBegin)")
+        print("    and \(timeAddHalfHourBegin)")
+        beginDate = calendar.dateFromComponents(beginComponents)!
+        print("new beginDate based on first screen: \(beginDate)")
         
         // setting up values from current picker and getting 'beginning of sleep' ready
-        var startDate = NSDate.today(inRegion: thisRegion)
-        var timeConvertStart:Int = 0
-        var timeAddHalfHourStart:Int = 0
+        var closeDate = NSDate.today(inRegion: thisRegion)
+        var timeConvertClose:Int = 0
+        var timeAddHalfHourClose:Int = 0
         
-        if mealStart % 2 == 0 {
-            print("\(mealStart) from meal 2nd screen is even")
+        if mealClose % 2 == 0 {
+            print("\(mealClose) from meal 2nd screen is even")
             _=0
-            timeConvertStart = ( (mealStart)/2)
+            timeConvertClose = ( (mealClose)/2)
             //            endDate = endDate + timeConvertEnd.hours
         } else {
-            print("\(mealStart) from meal 2nd screen is odd")
+            print("\(mealClose) from meal 2nd screen is odd")
             _=30
-            timeConvertStart = ( (mealStart-1)/2  )
-            timeAddHalfHourStart=30
+            timeConvertClose = ( (mealClose-1)/2  )
+            timeAddHalfHourClose=30
             //            endDate = endDate + timeConvertEnd.hours + 30.minutes
         }
         
         //        var endDate = NSDate().startOf(.Day, inRegion: Region())
         
-        let startComponents = calendar.components([.Year, .Month, .Day, .Hour, .Minute], fromDate: startDate)
-        startComponents.hour = timeConvertStart
-        startComponents.minute = timeAddHalfHourStart
-        startDate = calendar.dateFromComponents(startComponents)!
+        let closeComponents = calendar.components([.Year, .Month, .Day, .Hour, .Minute], fromDate: closeDate)
+        closeComponents.hour = timeConvertClose
+        closeComponents.minute = timeAddHalfHourClose
+        closeDate = calendar.dateFromComponents(closeComponents)!
         
-        print("should have end adjusted, hour and minute for start point: \(timeConvertStart)")
-        print("    and \(timeAddHalfHourStart)")
-        if startDate > endDate {
-            startComponents.day = startComponents.day-1
-            print("adjusted start day by one")
-            startDate = calendar.dateFromComponents(startComponents)!
+        print("should have end adjusted, hour and minute for start point: \(timeConvertClose)")
+        print("    and \(timeAddHalfHourClose)")
+        if closeDate > beginDate {
+            closeComponents.day = closeComponents.day-1
+            print("adjusted close day by one")
+            closeDate = calendar.dateFromComponents(closeComponents)!
         }
         
-        print("computing a startDate (2nd screen): \(startDate)")
-        print("and an ending date of (1st screen): \(endDate)")
+        print("computing a beginning date (2nd screen): \(beginDate)")
+        print("and an closing date of (1st screen): \(closeDate)")
         
-        let mealDurationHours = endComponents.hour - startComponents.hour
-        let mealDurationMinutes = endComponents.minute - startComponents.minute
+        let mealDurationHours = beginComponents.hour - closeComponents.hour
+        let mealDurationMinutes = beginComponents.minute - closeComponents.minute
         let mealDurationTime = mealDurationHours*60+mealDurationMinutes
         
         let workout = HKWorkout(activityType:
             .PreparationAndRecovery,
-                                startDate: startDate,
-                                endDate: endDate,
+                                startDate: beginDate,
+                                endDate: closeDate,
                                 duration: Double(mealDurationTime)*60,
                                 totalEnergyBurned: HKQuantity(unit:HKUnit.calorieUnit(), doubleValue:0.0),
                                 totalDistance: HKQuantity(unit:HKUnit.meterUnit(), doubleValue:0.0),
@@ -136,7 +136,7 @@ class MealStartTimeController: WKInterfaceController {
     }
     
     @IBAction func onMealEntry(value: Int) {
-        mealStart = value
+        mealClose = value
     }
     
     @IBAction func mealSaveButton() {
