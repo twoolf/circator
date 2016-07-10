@@ -70,7 +70,7 @@ class WaterInterfaceController: WKInterfaceController {
         var tempItems: [WKPickerItem] = []
         for i in 0...8 {
             let item = WKPickerItem()
-            item.contentImage = WKImage(imageName: "water\(i)")
+            item.contentImage = WKImage(imageName: "WaterInCups\(i)")
             tempItems.append(item)
         }
         waterPicker.setItems(tempItems)

@@ -20,6 +20,7 @@ class ExerciseStartTimeController: WKInterfaceController {
 
     override func awakeWithContext(context: AnyObject?) {
         super.awakeWithContext(context)
+        exerciseStartTimeButton.setTitle("End \(exerciseTypebyButton.exerciseType) ")
         var tempItems: [WKPickerItem] = []
         for i in 0...48 {
             let item = WKPickerItem()
@@ -104,10 +105,10 @@ class ExerciseStartTimeController: WKInterfaceController {
         
         print("should have end adjusted, hour and minute for close point: \(timeConvertClose)")
         print("    and \(timeAddHalfHourClose)")
-        if closeDate > beginDate {
-            closeComponents.day = closeComponents.day-1
-            print("adjusted close day by one")
-            closeDate = calendar.dateFromComponents(closeComponents)!
+        if closeDate < beginDate {
+            beginComponents.day = beginComponents.day-1
+            print("adjusted begin day by one")
+            beginDate = calendar.dateFromComponents(beginComponents)!
         }
         
         print("computing a closeDate (2nd screen): \(closeDate)")
@@ -117,8 +118,27 @@ class ExerciseStartTimeController: WKInterfaceController {
         let exerciseDurationMinutes = beginComponents.minute - closeComponents.minute
         let exerciseDurationTime = exerciseDurationHours*60+exerciseDurationMinutes
         
+/*        var workout = HKWorkoutActivityType.Running
+        if ( (exerciseTypebyButton.exerciseType) == "Running") {
+             workout = HKWorkoutActivityType.Running
+        } else if ( (exerciseTypebyButton.exerciseType) == "Walking") {
+             workout = HKWorkoutActivityType.Walking
+        } */
+        
         let workout = HKWorkout(activityType:
             .Running,
+                                startDate: beginDate,
+                                endDate: closeDate,
+                                duration: Double(exerciseDurationTime)*60,
+                                totalEnergyBurned: HKQuantity(unit:HKUnit.calorieUnit(), doubleValue:0.0),
+                                totalDistance: HKQuantity(unit:HKUnit.meterUnit(), doubleValue:0.0),
+                                device: HKDevice.localDevice(),
+                                metadata: [mealTypebyButton.mealType:"source"])
+        let healthKitStore:HKHealthStore = HKHealthStore()
+        healthKitStore.saveObject(workout) { success, error in
+        }
+/*
+        let workout = HKWorkoutActivityType(activityType: .Running,
                                 startDate: beginDate,
                                 endDate: closeDate,
                                 duration: Double(exerciseDurationTime)*60,
@@ -129,6 +149,7 @@ class ExerciseStartTimeController: WKInterfaceController {
         let healthKitStore:HKHealthStore = HKHealthStore()
         healthKitStore.saveObject(workout) { success, error in
         }
+ */
         
     }
     

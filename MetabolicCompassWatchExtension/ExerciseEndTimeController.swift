@@ -27,6 +27,7 @@ class ExerciseEndTimeController: WKInterfaceController {
     var exerciseBeginTime = 0
     override func awakeWithContext(context: AnyObject?) {
         super.awakeWithContext(context)
+        exerciseEndTimeButton.setTitle("Begin \(exerciseTypebyButton.exerciseType) ")
         var tempItems: [WKPickerItem] = []
         for i in 0...48 {
             let item = WKPickerItem()
