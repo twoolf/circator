@@ -234,13 +234,8 @@ public class PreviewManager: NSObject {
             return NSKeyedArchiver.archivedDataWithRootObject(sampleType)
         }
 
-        /*
-        let rawTypes = types.map { (sampleType) -> NSData in
-            return NSKeyedArchiver.archivedDataWithRootObject(sampleType)
-        }
-        */
-
-        Defaults[PMBalanceSampleTypesKey] = rawTypes
+        Defaults[PMSampleTypesKey] = rawTypes
+        //Defaults[PMBalanceSampleTypesKey] = rawTypes
         NSNotificationCenter.defaultCenter().postNotificationName(PMDidUpdateBalanceSampleTypesNotification, object: nil)
     }
     
