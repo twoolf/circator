@@ -83,24 +83,13 @@ public struct MCAggregateSample : MCSample {
         self.incr(sample)
     }
 
-    public init(value: Double?, sampleType: HKSampleType?, op: HKStatisticsOptions) {
-        startDate = NSDate()
-        endDate = NSDate()
+    public init(startDate: NSDate = NSDate(), endDate: NSDate = NSDate(), value: Double?, sampleType: HKSampleType?, op: HKStatisticsOptions) {
+        self.startDate = startDate
+        self.endDate = endDate
         numeralValue = value
         defaultUnit = sampleType?.defaultUnit
         hkType = sampleType
         aggOp = op
-    }
-
-    public init(value: Double?, sampleType: HKSampleType?, op: HKStatisticsOptions, runningAgg: [Double], runningCnt: Int) {
-        startDate = NSDate()
-        endDate = NSDate()
-        numeralValue = value
-        defaultUnit = sampleType?.defaultUnit
-        hkType = sampleType
-        aggOp = op
-        self.runningAgg = runningAgg
-        self.runningCnt = runningCnt
     }
 
     public init(statistic: HKStatistics, op: HKStatisticsOptions) {

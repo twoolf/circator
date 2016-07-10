@@ -329,14 +329,14 @@ class BarChartModel : NSObject {
     func getYearTitles () -> [String]{
         let numOfMonth = 12
         let currentDate = NSDate()
-        let dateYearAgo = currentDate - numOfMonth.months
+        let dateYearAgo = currentDate - 1.years
         var prevYearMonthes: [NSDate] = []
         var currentYearMonthes: [NSDate] = []
         var yearTitles: [String] = []
 
         yearTitles.append(" ")//space for gap
 
-        for index in 1...numOfMonth {
+        for index in 0...(numOfMonth-1) {
             let date = dateYearAgo + index.months
             date.year < currentDate.year ? prevYearMonthes.append(date) : currentYearMonthes.append(date)
         }
