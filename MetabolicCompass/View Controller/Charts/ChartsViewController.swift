@@ -28,11 +28,12 @@ class ChartsViewController: UIViewController {
     private let chartCollectionDataSource = ChartCollectionDataSource()
     private let chartCollectionDelegate = ChartCollectionDelegate()
     private let chartsModel = BarChartModel()
+    private var segmentControl: UISegmentedControl? = nil
 
     // MARK :- View life cycle
     override func viewDidLoad() {
         super.viewDidLoad()
-        upateNavigationBar()
+        updateNavigationBar()
         registerCells()
         chartCollectionDataSource.model = chartsModel
         collectionView.delegate = chartCollectionDelegate
@@ -72,7 +73,7 @@ class ChartsViewController: UIViewController {
         collectionView.registerNib(scatterChartCellNib, forCellWithReuseIdentifier: scatterChartCellIdentifier)
     }
 
-    func upateNavigationBar () {
+    func updateNavigationBar () {
         let manageButton = ScreenManager.sharedInstance.appNavButtonWithTitle("Manage")
         manageButton.addTarget(self, action: #selector(manageCharts), forControlEvents: .TouchUpInside)
         let manageBarButton = UIBarButtonItem(customView: manageButton)
@@ -80,21 +81,46 @@ class ChartsViewController: UIViewController {
         self.navigationItem.title = NSLocalizedString("CHART", comment: "chart screen title")
     }
 
-    @IBAction func rangeChnaged(sender: UISegmentedControl) {
+    @IBAction func rangeChanged(sender: UISegmentedControl) {
+        self.segmentControl = sender
+        var showCorrelate = false
+        let correlateSegment = sender.numberOfSegments-1
+
         switch sender.selectedSegmentIndex {
             case HealthManagerStatisticsRangeType.Month.rawValue:
                 chartsModel.rangeType = .Month
             case HealthManagerStatisticsRangeType.Year.rawValue:
                 chartsModel.rangeType = .Year
+            case correlateSegment:
+                showCorrelate = true
+                break
             default:
                 chartsModel.rangeType = .Week
         }
-        updateChartsData()
+        if showCorrelate { correlateChart() }
+        else { updateChartsData() }
     }
 
     func manageCharts () {
         let manageController = UIStoryboard(name: "TabScreens", bundle: nil).instantiateViewControllerWithIdentifier("manageCharts")
         self.presentViewController(manageController, animated: true) {}
+    }
+
+    func correlateChart () {
+        if let correlateController = UIStoryboard(name: "TabScreens", bundle: nil).instantiateViewControllerWithIdentifier("correlatePlaceholder") as? UINavigationController {
+            let leftButton = UIBarButtonItem(image: UIImage(named: "close-button"), style: .Plain, target: self, action: #selector(dismissCorrelateChart))
+            correlateController.viewControllers[0].navigationItem.setLeftBarButtonItem(leftButton, animated: false)
+            self.presentViewController(correlateController, animated: true, completion: nil)
+        }
+    }
+
+    func dismissCorrelateChart() {
+        dismissViewControllerAnimated(true) { _ in
+            if let sc = self.segmentControl {
+                sc.selectedSegmentIndex = 0
+                self.rangeChanged(sc)
+            }
+        }
     }
 
 }

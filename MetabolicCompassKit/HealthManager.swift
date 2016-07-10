@@ -46,6 +46,7 @@ public typealias HMCorrelationBlock    = ([MCSample], [MCSample], NSError?) -> V
 
 public typealias HMCircadianBlock          = (intervals: [(NSDate, CircadianEvent)], error: NSError?) -> Void
 public typealias HMCircadianAggregateBlock = (aggregates: [(NSDate, Double)], error: NSError?) -> Void
+public typealias HMCircadianCategoryBlock  = (categories: [Int:Double], error: NSError?) -> Void
 
 public typealias HMFastingCorrelationBlock = ([(NSDate, Double, MCSample)], NSError?) -> Void
 
@@ -140,9 +141,10 @@ public class HealthManager: NSObject, WCSessionDelegate {
             startDate = endDate - 1.weeks
 
         case .Month:
+            // Retrieve a full 31 days worth of data, regardless of the month duration (e.g., 28/29/30/31 days)
             unit = .Day
             endDate = endDate.startOf(.Day) + 1.days
-            startDate = endDate - 1.months
+            startDate = endDate - 32.days
 
         case .Year:
             unit = .Month
@@ -382,11 +384,21 @@ public class HealthManager: NSObject, WCSessionDelegate {
         }
     }
 
+    private func aggregateSamplesManually(sampleType: HKSampleType, aggOp: HKStatisticsOptions, samples: [MCSample]) -> MCAggregateSample {
+        if samples.count == 0 {
+            return MCAggregateSample(value: 0.0, sampleType: sampleType, op: aggOp)
+        }
+
+        var agg = MCAggregateSample(sample: samples[0], op: aggOp)
+        samples.dropFirst().forEach { sample in agg.incr(sample) }
+        return agg
+    }
+
     // Group-by the desired aggregation calendar unit, returning a dictionary of MCAggregateSamples.
     private func aggregateByPeriod(aggUnit: NSCalendarUnit, aggOp: HKStatisticsOptions, samples: [MCSample]) -> [NSDate: MCAggregateSample] {
         var byPeriod: [NSDate: MCAggregateSample] = [:]
         samples.forEach { sample in
-            let periodStart = sample.startDate.startOf(aggUnit, inRegion: Region())
+            let periodStart = sample.startDate.startOf(aggUnit)
             if var agg = byPeriod[periodStart] {
                 agg.incr(sample)
                 byPeriod[periodStart] = agg
@@ -428,6 +440,198 @@ public class HealthManager: NSObject, WCSessionDelegate {
             completion(samples: byPeriod.sort({ (a,b) in return a.0 < b.0 }).map { $0.1 }, error: nil)
         }
     }
+
+    private func coverAggregatePeriod<T>(tag: String, sampleType: HKSampleType, startDate: NSDate, endDate: NSDate,
+                                      aggUnit: NSCalendarUnit, aggOp: HKStatisticsOptions,
+                                      sparseAggs: [MCAggregateSample], withFinalization: Bool = false,
+                                      transform: MCAggregateSample -> T)
+                                      -> [T]
+    {
+        // MCAggregateSample.final is idempotent, thus this function can be called multiple times.
+        let finalize: MCAggregateSample -> MCAggregateSample = { var agg = $0; agg.final(); return agg }
+
+        let delta = NSDateComponents()
+        delta.setValue(1, forComponent: aggUnit)
+
+        var i: Int = 0
+        var aggregates: [T] = []
+        let dateRange = DateRange(startDate: startDate, endDate: endDate, stepUnits: aggUnit)
+
+        /*
+        if sampleType.identifier == HKQuantityTypeIdentifierBasalEnergyBurned || sampleType.identifier == HKQuantityTypeIdentifierStepCount {
+            log.verbose("\(tag) dates \(startDate) \(endDate)")
+        }
+
+        if sampleType.identifier == HKQuantityTypeIdentifierBasalEnergyBurned || sampleType.identifier == HKQuantityTypeIdentifierStepCount {
+            log.info("\(tag) aggs \(sparseAggs.count) \(sparseAggs)")
+            if sparseAggs.count > 0 && sparseAggs[0].startDate < startDate {
+                log.verbose("\(tag) aggs starts before range \(startDate) \(sparseAggs[0].startDate)")
+            }
+        }
+        */
+
+        while i < sparseAggs.count && sparseAggs[i].startDate.startOf(aggUnit) < startDate.startOf(aggUnit) {
+            i += 1
+        }
+
+        for date in dateRange {
+            if i < sparseAggs.count && date.startOf(aggUnit) == sparseAggs[i].startDate.startOf(aggUnit) {
+                aggregates.append(transform(withFinalization ? finalize(sparseAggs[i]) : sparseAggs[i]))
+                i += 1
+            } else {
+                aggregates.append(transform(MCAggregateSample(startDate: date, endDate: date + delta, value: 0.0, sampleType: sampleType, op: aggOp)))
+            }
+            /*
+            if sampleType.identifier == HKQuantityTypeIdentifierBasalEnergyBurned || sampleType.identifier == HKQuantityTypeIdentifierStepCount {
+                log.verbose("\(tag) \(date) \(i) \(aggregates.last!)")
+            }
+            */
+        }
+        return aggregates
+    }
+
+    private func coverStatisticsPeriod<T>(tag: String, sampleType: HKSampleType, startDate: NSDate, endDate: NSDate,
+                                          aggUnit: NSCalendarUnit, aggOp: HKStatisticsOptions,
+                                          sparseStats: [HKStatistics], transform: MCAggregateSample -> T)
+                                          -> [T]
+    {
+        let delta = NSDateComponents()
+        delta.setValue(1, forComponent: aggUnit)
+
+        var i: Int = 0
+        var statistics: [T] = []
+        let dateRange = DateRange(startDate: startDate, endDate: endDate, stepUnits: aggUnit)
+
+        /*
+        if sampleType.identifier == HKQuantityTypeIdentifierBasalEnergyBurned || sampleType.identifier == HKQuantityTypeIdentifierStepCount {
+            log.verbose("\(tag) dates \(startDate) \(endDate)")
+        }
+
+        if sampleType.identifier == HKQuantityTypeIdentifierBasalEnergyBurned || sampleType.identifier == HKQuantityTypeIdentifierStepCount {
+            log.verbose("\(tag) stats \(sparseStats.count) \(sparseStats)")
+            if sparseStats.count > 0 && sparseStats[0].startDate < startDate {
+                log.verbose("\(tag) stats starts before range \(startDate) \(sparseStats[0].startDate)")
+            }
+        }
+        */
+
+        while i < sparseStats.count && sparseStats[i].startDate.startOf(aggUnit) < startDate.startOf(aggUnit) {
+            i += 1
+        }
+
+        for date in dateRange {
+            if i < sparseStats.count && date.startOf(aggUnit) == sparseStats[i].startDate.startOf(aggUnit) {
+                statistics.append(transform(MCAggregateSample(statistic: sparseStats[i], op: aggOp)))
+                i += 1
+            } else {
+                statistics.append(transform(MCAggregateSample(startDate: date, endDate: date + delta, value: 0.0, sampleType: sampleType, op: aggOp)))
+            }
+            /*
+            if sampleType.identifier == HKQuantityTypeIdentifierBasalEnergyBurned || sampleType.identifier == HKQuantityTypeIdentifierStepCount {
+                log.verbose("\(tag) \(date) \(i) \(statistics.last!)")
+            }
+            */
+        }
+        return statistics
+    }
+
+    // Period-covering variants of the above helpers.
+    // These ensure that there is a sample for every calendar unit contained within the given time period.
+    private func queryResultAsAggregatesForPeriod(sampleType: HKSampleType, startDate: NSDate, endDate: NSDate,
+                                                  aggUnit: NSCalendarUnit, aggOp: HKStatisticsOptions,
+                                                  result: AggregateQueryResult, error: NSError?,
+                                                  completion: ([MCAggregateSample], NSError?) -> Void)
+    {
+        guard error == nil else {
+            completion([], error)
+            return
+        }
+
+        var aggregates: [MCAggregateSample] = []
+
+        switch result {
+        case .AggregatedSamples(let sparseAggs):
+            aggregates = self.coverAggregatePeriod("QRAP", sampleType: sampleType, startDate: startDate, endDate: endDate,
+                                                   aggUnit: aggUnit, aggOp: aggOp, sparseAggs: sparseAggs, withFinalization: true, transform: { $0 })
+
+        case .Statistics(let statistics):
+            aggregates = self.coverStatisticsPeriod("QRAP", sampleType: sampleType, startDate: startDate, endDate: endDate,
+                                                    aggUnit: aggUnit, aggOp: aggOp, sparseStats: statistics, transform: { $0 })
+
+        case .None:
+            aggregates = []
+        }
+
+        completion(aggregates, error)
+    }
+
+    private func queryResultAsSamplesForPeriod(sampleType: HKSampleType, startDate: NSDate, endDate: NSDate,
+                                               aggUnit: NSCalendarUnit, aggOp: HKStatisticsOptions,
+                                               result: AggregateQueryResult, error: NSError?, completion: HMSampleBlock)
+    {
+        guard error == nil else {
+            completion(samples: [], error: error)
+            return
+        }
+
+        var samples: [MCSample] = []
+
+        switch result {
+        case .AggregatedSamples(let sparseAggs):
+            samples = self.coverAggregatePeriod("QRASP", sampleType: sampleType, startDate: startDate, endDate: endDate,
+                                                aggUnit: aggUnit, aggOp: aggOp, sparseAggs: sparseAggs, withFinalization: true,
+                                                transform: { $0 as MCSample })
+
+        case .Statistics(let statistics):
+            samples = self.coverStatisticsPeriod("QRASP", sampleType: sampleType, startDate: startDate, endDate: endDate,
+                                                aggUnit: aggUnit, aggOp: aggOp, sparseStats: statistics, transform: { $0 as MCSample })
+
+        case .None:
+            samples = []
+        }
+
+        completion(samples: samples, error: error)
+    }
+
+
+    private func finalizePartialAggregationForPeriod(sampleType: HKSampleType, startDate: NSDate, endDate: NSDate,
+                                                     aggUnit: NSCalendarUnit, aggOp: HKStatisticsOptions,
+                                                     result: AggregateQueryResult, error: NSError?,
+                                                     completion: (([MCAggregateSample], NSError?) -> Void))
+    {
+        self.queryResultAsSamples(result, error: error) { (samples, error) in
+            guard error == nil else {
+                completion([], error)
+                return
+            }
+            let byPeriod = self.aggregateByPeriod(aggUnit, aggOp: aggOp, samples: samples)
+            let sparseAggs = byPeriod.sort({ (a,b) in return a.0 < b.0 }).map { $0.1 }
+            let aggregates = self.coverAggregatePeriod("FPAP", sampleType: sampleType, startDate: startDate, endDate: endDate,
+                                                       aggUnit: aggUnit, aggOp: aggOp, sparseAggs: sparseAggs, transform: { $0 })
+            completion(aggregates, nil)
+        }
+    }
+
+    private func finalizePartialAggregationAsSamplesForPeriod(sampleType: HKSampleType, startDate: NSDate, endDate: NSDate,
+                                                              aggUnit: NSCalendarUnit, aggOp: HKStatisticsOptions,
+                                                              result: AggregateQueryResult, error: NSError?,
+                                                              completion: HMSampleBlock)
+    {
+        self.queryResultAsSamples(result, error: error) { (samples, error) in
+            guard error == nil else {
+                completion(samples: [], error: error)
+                return
+            }
+
+            let byPeriod = self.aggregateByPeriod(aggUnit, aggOp: aggOp, samples: samples)
+            let sparseAggs = byPeriod.sort({ (a,b) in return a.0 < b.0 }).map { $0.1 }
+            let samples = self.coverAggregatePeriod("FPASP", sampleType: sampleType, startDate: startDate, endDate: endDate,
+                                                    aggUnit: aggUnit, aggOp: aggOp, sparseAggs: sparseAggs, transform: { $0 as MCSample })
+
+            completion(samples: samples, error: nil)
+        }
+    }
+
 
     // Returns aggregate values by processing samples retrieved from HealthKit.
     // We return an aggregate for each calendar unit as specified by the aggUnit parameter.
@@ -503,7 +707,7 @@ public class HealthManager: NSObject, WCSessionDelegate {
             } else {
                 // Query processing via a HealthKit statistics query.
                 // Set the anchor date to the start of the temporal aggregation unit (i.e., day/week/month/year).
-                let anchorDate = NSDate().startOf(aggUnit, inRegion: Region())
+                let anchorDate = NSDate().startOf(aggUnit)
 
                 // Create the query
                 let query = HKStatisticsCollectionQuery(quantityType: quantityType,
@@ -593,16 +797,18 @@ public class HealthManager: NSObject, WCSessionDelegate {
                                                     aggOp: HKStatisticsOptions,
                                                     completion: HMSampleBlock)
     {
-        let (predicate, _, _, aggUnit) = periodAggregation(period)
+        let (predicate, startDate, endDate, aggUnit) = periodAggregation(period)
         let byDay = sampleType.aggregationOptions == .CumulativeSum
 
         fetchAggregatesOfType(sampleType, predicate: predicate, aggUnit: byDay ? .Day : aggUnit, aggOp: byDay ? .CumulativeSum : aggOp) {
             if byDay {
                 // Compute aggregates at aggUnit granularity by first partially aggregating per day,
                 // and then computing final aggregates as daily averages.
-                self.finalizePartialAggregationAsSamples(aggUnit, aggOp: aggOp, result: $0, error: $1, completion: completion)
+                self.finalizePartialAggregationAsSamplesForPeriod(sampleType, startDate: startDate, endDate: endDate,
+                                                                  aggUnit: aggUnit, aggOp: aggOp, result: $0, error: $1, completion: completion)
             } else {
-                self.queryResultAsSamples($0, error: $1, completion: completion)
+                self.queryResultAsSamplesForPeriod(sampleType, startDate: startDate, endDate: endDate,
+                                                   aggUnit: aggUnit, aggOp: aggOp, result: $0, error: $1, completion: completion)
             }
         }
     }
@@ -614,7 +820,7 @@ public class HealthManager: NSObject, WCSessionDelegate {
                                                   aggOp: HKStatisticsOptions,
                                                   completion: HMSampleBlock)
     {
-        let (predicate, _, _, aggUnit) = periodAggregation(period)
+        let (predicate, startDate, endDate, aggUnit) = periodAggregation(period)
         let key = getPeriodCacheKey(keyPrefix, aggOp: aggOp, period: period)
 
         let byDay = sampleType.aggregationOptions == .CumulativeSum
@@ -631,9 +837,13 @@ public class HealthManager: NSObject, WCSessionDelegate {
 
             self.fetchAggregatesOfType(sampleType, predicate: predicate, aggUnit: byDay ? .Day : aggUnit, aggOp: byDay ? .CumulativeSum : aggOp) {
                 if byDay {
-                    self.finalizePartialAggregation(aggUnit, aggOp: aggOp, result: $0, error: $1) { doCache($0, $1) }
+                    self.finalizePartialAggregationForPeriod(sampleType, startDate: startDate, endDate: endDate,
+                                                             aggUnit: aggUnit, aggOp: aggOp, result: $0, error: $1)
+                    { doCache($0, $1) }
                 } else {
-                    self.queryResultAsAggregates(aggOp, result: $0, error: $1) { doCache($0, $1) }
+                    self.queryResultAsAggregatesForPeriod(sampleType, startDate: startDate, endDate: endDate,
+                                                          aggUnit: aggUnit, aggOp: aggOp, result: $0, error: $1)
+                    { doCache($0, $1) }
                 }
             }
         }, completion: {object, isLoadedFromCache, error in
@@ -652,31 +862,21 @@ public class HealthManager: NSObject, WCSessionDelegate {
                                            period: HealthManagerStatisticsRangeType,
                                            completion: ([MCSample], [MCSample], NSError?) -> Void)
     {
-        let (predicate, _, _, aggUnit) = periodAggregation(period)
+        let (predicate, startDate, endDate, aggUnit) = periodAggregation(period)
 
         let finalize : (HKStatisticsOptions, MCAggregateSample) -> MCSample = {
             var agg = $1; agg.finalAggregate($0); return agg as MCSample
         }
 
         fetchAggregatesOfType(sampleType, predicate: predicate, aggUnit: aggUnit, aggOp: [.DiscreteMin, .DiscreteMax]) {
-            (result, error) in
-
-            guard error == nil else {
-                completion([], [], error)
-                return
-            }
-
-            switch result {
-            case .AggregatedSamples(let aggregates):
+            self.queryResultAsAggregatesForPeriod(sampleType, startDate: startDate, endDate: endDate,
+                                                  aggUnit: aggUnit, aggOp: [.DiscreteMin, .DiscreteMax], result: $0, error: $1)
+            { (aggregates, error) in
+                guard error == nil else {
+                    completion([], [], error)
+                    return
+                }
                 completion(aggregates.map { finalize(.DiscreteMin, $0) }, aggregates.map { finalize(.DiscreteMax, $0) }, error)
-
-            case .Statistics(let statistics):
-                completion(statistics.map { return MCStatisticSample(statistic: $0, statsOption: .DiscreteMin) },
-                           statistics.map { return MCStatisticSample(statistic: $0, statsOption: .DiscreteMax) },
-                           error)
-
-            case .None:
-                completion([], [], error)
             }
         }
     }
@@ -688,7 +888,7 @@ public class HealthManager: NSObject, WCSessionDelegate {
                                          completion: ([MCSample], [MCSample], NSError?) -> Void)
     {
         let aggOp: HKStatisticsOptions = [.DiscreteMin, .DiscreteMax]
-        let (predicate, _, _, aggUnit) = periodAggregation(period)
+        let (predicate, startDate, endDate, aggUnit) = periodAggregation(period)
         let key = getPeriodCacheKey(keyPrefix, aggOp: aggOp, period: period)
 
         let finalize : (HKStatisticsOptions, MCAggregateSample) -> MCSample = {
@@ -697,7 +897,9 @@ public class HealthManager: NSObject, WCSessionDelegate {
 
         aggregateCache.setObjectForKey(key, cacheBlock: { success, failure in
             self.fetchAggregatesOfType(sampleType, predicate: predicate, aggUnit: aggUnit, aggOp: aggOp) {
-                self.queryResultAsAggregates(aggOp, result: $0, error: $1) { (aggregates, error) in
+                self.queryResultAsAggregatesForPeriod(sampleType, startDate: startDate, endDate: endDate,
+                                                      aggUnit: aggUnit, aggOp: aggOp, result: $0, error: $1)
+                { (aggregates, error) in
                     guard error == nil else {
                         failure(error)
                         return
@@ -728,12 +930,12 @@ public class HealthManager: NSObject, WCSessionDelegate {
             var output: [(NSDate, MCSample, MCSample)] = []
             var arr1ByDay : [NSDate: MCSample] = [:]
             arr1.forEach { s in
-                let start = s.startDate.startOf(.Day, inRegion: Region())
+                let start = s.startDate.startOf(.Day)
                 arr1ByDay.updateValue(s, forKey: start)
             }
 
             arr2.forEach { s in
-                let start = s.startDate.startOf(.Day, inRegion: Region())
+                let start = s.startDate.startOf(.Day)
                 if let match = arr1ByDay[start] { output.append((start, match, s)) }
             }
             return output
@@ -837,6 +1039,8 @@ public class HealthManager: NSObject, WCSessionDelegate {
                         guard let v = s as? HKWorkout else { return [] }
                         switch v.workoutActivityType {
                         case HKWorkoutActivityType.PreparationAndRecovery:
+                            // TODO: check for "Meal Type" key in metadata to distinguish from other P&R events
+                            // (e.g., added from other apps)
                             return [(st, .Meal), (en, .Meal)]
                         default:
                             return [(st, .Exercise), (en, .Exercise)]
@@ -931,45 +1135,78 @@ public class HealthManager: NSObject, WCSessionDelegate {
     }
 
     // A filter-aggregate query template.
-    public func fetchAggregatedCircadianEvents<T>(predicate: ((NSDate, CircadianEvent) -> Bool)? = nil,
-                                                  aggregator: ((T, (NSDate, CircadianEvent)) -> T), initial: T, final: (T -> [(NSDate, Double)]),
-                                                  completion: HMCircadianAggregateBlock)
+    public func fetchAggregatedCircadianEvents<T,U>(predicate: ((NSDate, CircadianEvent) -> Bool)? = nil,
+                                                    aggregator: ((T, (NSDate, CircadianEvent)) -> T),
+                                                    initialAccum: T, initialResult: U,
+                                                    final: (T -> U),
+                                                    completion: (U, error: NSError?) -> Void)
     {
         fetchCircadianEventIntervals(NSDate.distantPast()) { (intervals, error) in
             guard error == nil else {
-                completion(aggregates: [], error: error)
+                completion(initialResult, error: error)
                 return
             }
 
             let filtered = predicate == nil ? intervals : intervals.filter(predicate!)
-            let accum = filtered.reduce(initial, combine: aggregator)
-            completion(aggregates: final(accum), error: nil)
+            let accum = filtered.reduce(initialAccum, combine: aggregator)
+            completion(final(accum), error: nil)
+        }
+    }
+
+    // Time-restricted version of the above function.
+    public func fetchAggregatedCircadianEvents<T,U>(startDate: NSDate, endDate: NSDate,
+                                                    predicate: ((NSDate, CircadianEvent) -> Bool)? = nil,
+                                                    aggregator: ((T, (NSDate, CircadianEvent)) -> T),
+                                                    initialAccum: T, initialResult: U,
+                                                    final: (T -> U),
+                                                    completion: (U, error: NSError?) -> Void)
+    {
+        fetchCircadianEventIntervals(startDate, endDate: endDate) { (intervals, error) in
+            guard error == nil else {
+                completion(initialResult, error: error)
+                return
+            }
+
+            let filtered = predicate == nil ? intervals : intervals.filter(predicate!)
+            let accum = filtered.reduce(initialAccum, combine: aggregator)
+            completion(final(accum), error: nil)
         }
     }
 
     // Compute total eating times per day by filtering and aggregating over meal events.
-    public func fetchEatingTimes(completion: HMCircadianAggregateBlock) {
+    public func fetchEatingTimes(completion: HMCircadianAggregateBlock)
+    {
+        // Accumulator:
+        // i. boolean indicating whether the current endpoint starts an interval.
+        // ii. an NSDate indicating when the previous endpoint occurred.
+        // iii. a dictionary of accumulated eating times per day.
         typealias Accum = (Bool, NSDate!, [NSDate: Double])
+
         let aggregator : (Accum, (NSDate, CircadianEvent)) -> Accum = { (acc, e) in
-            if !acc.0 && acc.1 != nil {
+            let startOfInterval = acc.0
+            let prevIntervalEndpointDate = acc.1
+            let eatingTimesByDay = acc.2
+            if !startOfInterval && prevIntervalEndpointDate != nil {
                 switch e.1 {
                 case .Meal:
-                    let day = acc.1.startOf(.Day, inRegion: Region())
-                    var nacc = acc.2
-                    nacc.updateValue((acc.2[day] ?? 0.0) + e.0.timeIntervalSinceDate(acc.1!), forKey: day)
-                    return (!acc.0, e.0, nacc)
+                    let day = prevIntervalEndpointDate.startOf(.Day)
+                    var nAcc = eatingTimesByDay
+                    let nEat = (eatingTimesByDay[day] ?? 0.0) + e.0.timeIntervalSinceDate(prevIntervalEndpointDate!)
+                    nAcc.updateValue(nEat, forKey: day)
+                    return (!startOfInterval, e.0, nAcc)
                 default:
-                    return (!acc.0, e.0, acc.2)
+                    return (!startOfInterval, e.0, eatingTimesByDay)
                 }
             }
-            return (!acc.0, e.0, acc.2)
+            return (!startOfInterval, e.0, eatingTimesByDay)
         }
         let initial : Accum = (true, nil, [:])
         let final : (Accum -> [(NSDate, Double)]) = { acc in
-            return acc.2.map { return ($0.0, $0.1 / 3600.0) }.sort { (a,b) in return a.0 < b.0 }
+            let eatingTimesByDay = acc.2
+            return eatingTimesByDay.map { return ($0.0, $0.1 / 3600.0) }.sort { (a,b) in return a.0 < b.0 }
         }
 
-        fetchAggregatedCircadianEvents(nil, aggregator: aggregator, initial: initial, final: final, completion: completion)
+        fetchAggregatedCircadianEvents(nil, aggregator: aggregator, initialAccum: initial, initialResult: [], final: final, completion: completion)
     }
 
     // Compute max fasting times per day by filtering and aggregating over everything other than meal events.
@@ -977,35 +1214,35 @@ public class HealthManager: NSObject, WCSessionDelegate {
     public func fetchMaxFastingTimes(completion: HMCircadianAggregateBlock)
     {
         // Accumulator:
-        // i. boolean indicating event start.
+        // i. boolean indicating whether the current endpoint starts an interval.
         // ii. start of this fasting event.
         // iii. the previous event.
         // iv. a dictionary of accumulated fasting intervals.
         typealias Accum = (Bool, NSDate!, NSDate!, [NSDate: Double])
 
         let predicate : (NSDate, CircadianEvent) -> Bool = {
-                switch $0.1 {
-                case .Exercise, .Fast, .Sleep:
-                    return true
-                default:
-                    return false
-                }
+            switch $0.1 {
+            case .Exercise, .Fast, .Sleep:
+                return true
+            default:
+                return false
             }
+        }
 
         let aggregator : (Accum, (NSDate, CircadianEvent)) -> Accum = { (acc, e) in
             var byDay = acc.3
-            let (iStart, prevFast, prevEvt) = (acc.0, acc.1, acc.2)
+            let (startOfInterval, prevFast, prevEvt) = (acc.0, acc.1, acc.2)
             var nextFast = prevFast
-            if iStart && prevFast != nil && prevEvt != nil && e.0 != prevEvt {
-                let fastStartDay = prevFast.startOf(.Day, inRegion: Region())
+            if startOfInterval && prevFast != nil && prevEvt != nil && e.0 != prevEvt {
+                let fastStartDay = prevFast.startOf(.Day)
                 let duration = prevEvt.timeIntervalSinceDate(prevFast)
                 let currentMax = byDay[fastStartDay] ?? duration
                 byDay.updateValue(currentMax >= duration ? currentMax : duration, forKey: fastStartDay)
                 nextFast = e.0
-            } else if iStart && prevFast == nil {
+            } else if startOfInterval && prevFast == nil {
                 nextFast = e.0
             }
-            return (!acc.0, nextFast, e.0, byDay)
+            return (!startOfInterval, nextFast, e.0, byDay)
         }
 
         let initial : Accum = (true, nil, nil, [:])
@@ -1013,7 +1250,7 @@ public class HealthManager: NSObject, WCSessionDelegate {
             var byDay = acc.3
             if let finalFast = acc.1, finalEvt = acc.2 {
                 if finalFast != finalEvt {
-                    let fastStartDay = finalFast.startOf(.Day, inRegion: Region())
+                    let fastStartDay = finalFast.startOf(.Day)
                     let duration = finalEvt.timeIntervalSinceDate(finalFast)
                     let currentMax = byDay[fastStartDay] ?? duration
                     byDay.updateValue(currentMax >= duration ? currentMax : duration, forKey: fastStartDay)
@@ -1022,7 +1259,277 @@ public class HealthManager: NSObject, WCSessionDelegate {
             return byDay.map { return ($0.0, $0.1 / 3600.0) }.sort { (a,b) in return a.0 < b.0 }
         }
 
-        fetchAggregatedCircadianEvents(predicate, aggregator: aggregator, initial: initial, final: final, completion: completion)
+        fetchAggregatedCircadianEvents(predicate, aggregator: aggregator, initialAccum: initial, initialResult: [], final: final, completion: completion)
+    }
+
+    // Computes the number of days in the last year that have at least one sample, for the given types.
+    // TODO: cache invalidation in observer query.
+    public func fetchSampleCollectionDays(sampleTypes: [HKSampleType], completion: ([HKSampleType:Int], NSError?) -> Void) {
+        var someError: NSError? = nil
+        let group = dispatch_group_create()
+        var results : [HKSampleType:Int] = [:]
+
+        let period : HealthManagerStatisticsRangeType = .Year
+        let (predicate, _, _, _) = periodAggregation(period)
+
+        for sampleType in sampleTypes {
+            dispatch_group_enter(group)
+            let type = sampleType.identifier == HKCorrelationTypeIdentifierBloodPressure ? HKQuantityTypeIdentifierBloodPressureSystolic : sampleType.identifier
+            let proxyType = sampleType.identifier == type ? sampleType : HKObjectType.quantityTypeForIdentifier(type)!
+
+            if #available(iOS 9.3, *) {
+                if type == HKQuantityTypeIdentifierAppleExerciseTime {
+                    dispatch_group_leave(group)
+                    continue
+                }
+            }
+
+            let aggOp = proxyType.aggregationOptions
+            let keyPrefix = "\(type)_cd"
+            let key = getPeriodCacheKey(keyPrefix, aggOp: aggOp, period: period)
+
+            var queryStartTime: NSDate! = nil
+
+            aggregateCache.setObjectForKey(key, cacheBlock: { success, failure in
+                // This caches a singleton array by aggregating over all samples for the year.
+                let doCache : ([MCSample], NSError?) -> Void = { (samples, error) in
+                    guard error == nil else {
+                        failure(error)
+                        return
+                    }
+                    log.verbose("Caching sample collection days for \(key)")
+                    let agg = self.aggregateSamplesManually(proxyType, aggOp: aggOp, samples: samples)
+                    log.info("Finished SCQ for \(key) \(NSDate().timeIntervalSinceDate(queryStartTime!))")
+                    success(MCAggregateArray(aggregates: [agg]), .Date(self.getCacheExpiry(period)))
+                }
+
+                log.info("Starting SCQ for \(key)")
+                queryStartTime = NSDate()
+
+                self.fetchAggregatesOfType(proxyType, predicate: predicate, aggUnit: .Day, aggOp: aggOp) {
+                    self.queryResultAsSamples($0, error: $1) { doCache($0, $1) }
+                }
+            }, completion: {object, isLoadedFromCache, error in
+                log.verbose("Cache sample collection days result \(key) \(isLoadedFromCache)")
+
+                guard error == nil else {
+                    log.error(error)
+                    someError = error
+                    results.updateValue(0, forKey: sampleType)
+                    dispatch_group_leave(group)
+                    return
+                }
+
+                if let aggArray = object {
+                    log.verbose("Cache sample collection days result \(key) size \(aggArray.aggregates.count)")
+                    if aggArray.aggregates.count > 0 {
+                        results.updateValue(aggArray.aggregates[0].count(), forKey: sampleType)
+                    } else {
+                        log.info("No aggregates found for collection days")
+                        results.updateValue(0, forKey: sampleType)
+                    }
+                    dispatch_group_leave(group)
+                } else {
+                    log.info("No aggregate array found for collection days")
+                    results.updateValue(0, forKey: sampleType)
+                    dispatch_group_leave(group)
+                }
+            })
+        }
+
+        dispatch_group_notify(group, dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_BACKGROUND, 0)) {
+            completion(results, someError)
+        }
+    }
+
+    // Fetches summed circadian event durations, grouped according the the given function,
+    // and within the specified start and end date.
+    public func fetchCircadianDurationsByGroup<G: Hashable>(
+                    startDate: NSDate, endDate: NSDate,
+                    predicate: ((NSDate, CircadianEvent) -> Bool)? = nil, groupBy: ((NSDate, CircadianEvent) -> G),
+                    completion: ([G:Double], NSError?) -> Void)
+    {
+        // Accumulator:
+        // i. boolean indicating whether the current endpoint starts an interval.
+        // ii. the previous event.
+        // iii. a dictionary of accumulated durations per group.
+        typealias Accum = (Bool, NSDate!, [G:Double])
+
+        let aggregator : (Accum, (NSDate, CircadianEvent)) -> Accum = { (acc, e) in
+            var partialAgg = acc.2
+            let (startOfInterval, prevEvtDate) = (acc.0, acc.1)
+            let groupKey = groupBy(e.0, e.1)
+
+            if !startOfInterval && prevEvtDate != nil {
+                // Accumulate the interval duration for the current category.
+                var nAcc = partialAgg
+                let nDur = (partialAgg[groupKey] ?? 0.0) + e.0.timeIntervalSinceDate(prevEvtDate!)
+                nAcc.updateValue(nDur, forKey: groupKey)
+            }
+            return (!startOfInterval, e.0, partialAgg)
+        }
+
+        let initial : Accum = (true, nil, [:])
+        let final : (Accum -> [G:Double]) = { return $0.2 }
+
+        fetchAggregatedCircadianEvents(startDate, endDate: endDate, predicate: predicate, aggregator: aggregator,
+                                       initialAccum: initial, initialResult: [:], final: final, completion: completion)
+    }
+
+    // General purpose fasting variability query, aggregating durations according to the given calendar unit.
+    // This uses a one-pass variance/stddev calculation to finalize the resulting durations.
+    public func fetchFastingVariability(startDate: NSDate, endDate: NSDate, aggUnit: NSCalendarUnit,
+                                        completion: (variability: Double, error: NSError?) -> Void)
+    {
+        let predicate: ((NSDate, CircadianEvent) -> Bool) = {
+            switch $0.1 {
+            case .Exercise, .Fast, .Sleep:
+                return true
+            default:
+                return false
+            }
+        }
+
+        let group : (NSDate, CircadianEvent) -> NSDate = { return $0.0.startOf(aggUnit) }
+
+        fetchCircadianDurationsByGroup(startDate, endDate: endDate, predicate: predicate, groupBy: group) {
+            (table, error) in
+            guard error == nil else {
+                completion(variability: 0.0, error: error)
+                return
+            }
+            // One-pass moment calculation.
+            // State: [n, oldM, newM, oldS, newS]
+            var st : [Double] = [0.0, 0.0, 0.0, 0.0, 0.0]
+            table.forEach { v in
+                st[0] += 1
+                if st[0] == 1.0 { st[1] = v.1; st[2] = v.1; st[3] = 0.0; st[4] = 0.0; }
+                else {
+                    st[2] = st[1] + (v.1 - st[1]) / st[0]
+                    st[4] = st[3] + (v.1 - st[1]) * (v.1 - st[2])
+                    st[1] = st[2]
+                    st[3] = st[4]
+                }
+            }
+            let variance = st[0] > 1.0 ? ( st[4] / (st[0] - 1.0) ) : 0.0
+            let stddev = sqrt(variance)
+            completion(variability: stddev, error: error)
+        }
+    }
+
+    public func fetchWeeklyFastingVariability(startDate: NSDate = 1.years.ago, endDate: NSDate = NSDate(),
+                                              completion: (variability: Double, error: NSError?) -> Void)
+    {
+        log.info("Starting WFV query")
+        let queryStartTime = NSDate()
+        fetchFastingVariability(startDate, endDate: endDate, aggUnit: .WeekOfYear) {
+            log.info("Finished WFV query \(NSDate().timeIntervalSinceDate(queryStartTime))")
+            completion(variability: $0, error: $1)
+        }
+    }
+
+    public func fetchDailyFastingVariability(startDate: NSDate = 1.months.ago, endDate: NSDate = NSDate(),
+                                             completion: (variability: Double, error: NSError?) -> Void)
+    {
+        log.info("Starting DFV query")
+        let queryStartTime = NSDate()
+        fetchFastingVariability(startDate, endDate: endDate, aggUnit: .Day) {
+            log.info("Finished DFV query \(NSDate().timeIntervalSinceDate(queryStartTime))")
+            completion(variability: $0, error: $1)
+        }
+    }
+
+    // Returns total time spent fasting and non-fasting in the last week
+    public func fetchWeeklyFastState(completion: (fast: Double, nonFast: Double, error: NSError?) -> Void) {
+        let group : (NSDate, CircadianEvent) -> Int = { e in
+            switch e.1 {
+            case .Meal:
+                return 0
+
+            case .Exercise, .Sleep, .Fast:
+                return 1
+            }
+        }
+
+        log.info("Starting WF STATE query")
+        let queryStartTime = NSDate()
+        fetchCircadianDurationsByGroup(1.weeks.ago, endDate: NSDate(), groupBy: group) { (categories, error) in
+            log.info("Finished WF STATE query \(NSDate().timeIntervalSinceDate(queryStartTime))")
+            guard error == nil else {
+                completion(fast: 0.0, nonFast: 0.0, error: error)
+                return
+            }
+            completion(fast: categories[0] ?? 0.0, nonFast: categories[1] ?? 0.0, error: error)
+        }
+    }
+
+    // Returns total time spent fasting while sleeping and fasting while awake in the last week
+    public func fetchWeeklyFastType(completion: (fastSleep: Double, fastAwake: Double, error: NSError?) -> Void) {
+        let predicate: ((NSDate, CircadianEvent) -> Bool) = {
+            switch $0.1 {
+            case .Exercise, .Fast, .Sleep:
+                return true
+            default:
+                return false
+            }
+        }
+
+        let group : (NSDate, CircadianEvent) -> Int = { e in
+            switch e.1 {
+            case .Sleep:
+                return 0
+            case .Exercise, .Fast:
+                return 1
+            default:
+                return 2
+            }
+        }
+
+        log.info("Starting WF TYPE query")
+        let queryStartTime = NSDate()
+        fetchCircadianDurationsByGroup(1.weeks.ago, endDate: NSDate(), predicate: predicate, groupBy: group) { (categories, error) in
+            log.info("Finished WF TYPE query \(NSDate().timeIntervalSinceDate(queryStartTime))")
+            guard error == nil else {
+                completion(fastSleep: 0.0, fastAwake: 0.0, error: error)
+                return
+            }
+            completion(fastSleep: categories[0] ?? 0.0, fastAwake: categories[1] ?? 0.0, error: error)
+        }
+    }
+
+    // Returns total time spent eating and exercising in the last week
+    public func fetchWeeklyEatAndExercise(completion: (eatingTime: Double, exerciseTime: Double, error: NSError?) -> Void) {
+        let predicate: ((NSDate, CircadianEvent) -> Bool) = {
+            switch $0.1 {
+            case .Exercise, .Meal:
+                return true
+            default:
+                return false
+            }
+
+        }
+
+        let group : (NSDate, CircadianEvent) -> Int = { e in
+            switch e.1 {
+            case .Meal:
+                return 0
+            case .Exercise:
+                return 1
+            default:
+                return 2
+            }
+        }
+
+        log.info("Starting WEE query")
+        let queryStartTime = NSDate()
+        fetchCircadianDurationsByGroup(1.weeks.ago, endDate: NSDate(), predicate: predicate, groupBy: group) { (categories, error) in
+            log.info("Finished WEE query \(NSDate().timeIntervalSinceDate(queryStartTime))")
+            guard error == nil else {
+                completion(eatingTime: 0.0, exerciseTime: 0.0, error: error)
+                return
+            }
+            completion(eatingTime: categories[0] ?? 0.0, exerciseTime: categories[1] ?? 0.0, error: error)
+        }
     }
 
     public func correlateWithFasting(sortFasting: Bool, type: HKSampleType, predicate: NSPredicate? = nil, completion: HMFastingCorrelationBlock) {
@@ -1033,12 +1540,12 @@ public class HealthManager: NSObject, WCSessionDelegate {
             var output:[(NSDate, Double, MCSample)] = []
             var byDay: [NSDate: Double] = [:]
             fasting.forEach { f in
-                let start = f.0.startOf(.Day, inRegion: Region())
+                let start = f.0.startOf(.Day)
                 byDay.updateValue((byDay[start] ?? 0.0) + f.1, forKey: start)
             }
 
             samples.forEach { s in
-                let start = s.startDate.startOf(.Day, inRegion: Region())
+                let start = s.startDate.startOf(.Day)
                 if let match = byDay[start] { output.append((start, match, s)) }
             }
             return output
@@ -1158,7 +1665,7 @@ public class HealthManager: NSObject, WCSessionDelegate {
                 {
                     if let (_, hend) = UserManager.sharedManager.getHistoricalRangeForType(type.identifier) {
                         // We use acquisition times stored in the profile if available rather than the current time,
-                        // to grab all data since the last remote upload to the server.
+                        // to grab all data since the last acquisition time uploaded to the server.
                         let lastAcqTS = UserManager.sharedManager.getAcquisitionTimes()
                         if let acqK = UserManager.sharedManager.hkToMCDB(type.identifier),
                                typeTS = lastAcqTS[acqK] as? NSTimeInterval
@@ -1167,17 +1674,25 @@ public class HealthManager: NSObject, WCSessionDelegate {
                             predicate = HKQuery.predicateForSamplesWithStartDate(importStart, endDate: NSDate(), options: .None)
                             log.info("Data import since \(importStart): \(tname)")
                         } else {
+                            // We have no server acquisition time available.
+                            // Here, we upload all samples between the end of the historical range (i.e., when the
+                            // app was first run on the device), to a point in the near future.
                             let nearFuture = 1.minutes.fromNow
                             let pstart = NSDate(timeIntervalSinceReferenceDate: hend)
                             predicate = HKQuery.predicateForSamplesWithStartDate(pstart, endDate: nearFuture, options: .None)
                             log.info("Data import from \(pstart) \(nearFuture): \(tname)")
                         }
                     } else {
+                        // We have no anchor available.
+                        // We consider this the first run of the app on this device, and initialize the historical range
+                        // (i.e., the archive span).
+                        // This captures how much data is available on the device prior to using our app.
                         let (start, end) = UserManager.sharedManager.initializeHistoricalRangeForType(type.identifier, sync: true)
                         let (dstart, dend) = (NSDate(timeIntervalSinceReferenceDate: start), NSDate(timeIntervalSinceReferenceDate: end))
                         predicate = HKQuery.predicateForSamplesWithStartDate(dstart, endDate: dend, options: .None)
 
                         Async.background(after: 0.5) {
+                            // We use getOldestSampleForType to initialize the archive span minimums.
                             log.verbose("Registering bulk ingestion availability for: \(tname)")
                             self.getOldestSampleForType(type) { _ in () }
                         }
@@ -1691,3 +2206,47 @@ public class HealthManager: NSObject, WCSessionDelegate {
     }  
 }
 
+// Helper struct for iterating over date ranges.
+struct DateRange : SequenceType {
+
+    var calendar: NSCalendar = NSCalendar(calendarIdentifier: NSCalendarIdentifierGregorian)!
+
+    var startDate: NSDate
+    var endDate: NSDate
+    var stepUnits: NSCalendarUnit
+    var stepValue: Int
+
+    var currentStep: Int = 0
+
+    init(startDate: NSDate, endDate: NSDate, stepUnits: NSCalendarUnit, stepValue: Int = 1) {
+        self.startDate = startDate
+        self.endDate = endDate
+        self.stepUnits = stepUnits
+        self.stepValue = stepValue
+    }
+
+    func generate() -> Generator {
+        return Generator(range: self)
+    }
+
+    struct Generator: GeneratorType {
+
+        var range: DateRange
+
+        mutating func next() -> NSDate? {
+            if range.currentStep == 0 { range.currentStep += 1; return range.startDate }
+            else {
+                if let nextDate = range.calendar.dateByAddingUnit(range.stepUnits, value: range.stepValue, toDate: range.startDate, options: NSCalendarOptions(rawValue: 0)) {
+                    range.currentStep += 1
+                    if range.endDate <= nextDate {
+                        return nil
+                    } else {
+                        range.startDate = nextDate
+                        return nextDate
+                    }
+                }
+                return nil
+            }
+        }
+    }
+}

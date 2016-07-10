@@ -83,9 +83,9 @@ public struct MCAggregateSample : MCSample {
         self.incr(sample)
     }
 
-    public init(value: Double?, sampleType: HKSampleType?, op: HKStatisticsOptions) {
-        startDate = NSDate()
-        endDate = NSDate()
+    public init(startDate: NSDate = NSDate(), endDate: NSDate = NSDate(), value: Double?, sampleType: HKSampleType?, op: HKStatisticsOptions) {
+        self.startDate = startDate
+        self.endDate = endDate
         numeralValue = value
         defaultUnit = sampleType?.defaultUnit
         hkType = sampleType
@@ -234,6 +234,8 @@ public struct MCAggregateSample : MCSample {
         return nil
     }
 
+    public func count() -> Int { return runningCnt }
+
     // Encoding/decoding.
     public static func encode(aggregate: MCAggregateSample) -> MCAggregateSampleCoding {
         return MCAggregateSampleCoding(aggregate: aggregate)
@@ -265,7 +267,7 @@ public extension MCAggregateSample {
 
             aggregate = MCAggregateSample(startDate: startDate, endDate: endDate, numeralValue: numeralValue, defaultUnit: defaultUnit,
                                           hkType: hkType, aggOp: HKStatisticsOptions(rawValue: aggOp), runningAgg: runningAgg, runningCnt: runningCnt)
-            
+
             super.init()
         }
 
@@ -481,13 +483,13 @@ public extension HKSampleType {
 
         case HKQuantityTypeIdentifierStepCount:
             return HKUnit.countUnit()
-            
+
         case HKQuantityTypeIdentifierUVExposure:
             return HKUnit.countUnit()
-            
+
         case HKWorkoutTypeIdentifier:
             return HKUnit.hourUnit()
-            
+
         case HKQuantityTypeIdentifierDietaryFiber:
             return HKUnit.gramUnit()
         default:
@@ -545,8 +547,20 @@ public extension HKSampleType {
         case HKCategoryTypeIdentifierSleepAnalysis:
             return NSLocalizedString("Sleep", comment: "HealthKit data type")
 
+        case HKCategoryTypeIdentifierAppleStandHour:
+            return NSLocalizedString("Hours Standing", comment: "HealthKit data type")
+
+        case HKCharacteristicTypeIdentifierBloodType:
+            return NSLocalizedString("Blood Type", comment: "HealthKit data type")
+
+        case HKCharacteristicTypeIdentifierBiologicalSex:
+            return NSLocalizedString("Gender", comment: "HealthKit data type")
+
+        case HKCharacteristicTypeIdentifierFitzpatrickSkinType:
+            return NSLocalizedString("Skin Type", comment: "HealthKit data type")
+
         case HKCorrelationTypeIdentifierBloodPressure:
-            return NSLocalizedString("Blood pressure", comment: "HealthKit data type")
+            return NSLocalizedString("Blood Pressure", comment: "HealthKit data type")
 
         case HKQuantityTypeIdentifierActiveEnergyBurned:
             return NSLocalizedString("Active Energy Burned", comment: "HealthKit data type")
@@ -612,17 +626,146 @@ public extension HKSampleType {
             return NSLocalizedString("Flights Climbed", comment: "HealthKit data type")
 
         case HKQuantityTypeIdentifierHeartRate:
-            return NSLocalizedString("Heartrate", comment: "HealthKit data type")
+            return NSLocalizedString("Heart Rate", comment: "HealthKit data type")
 
         case HKQuantityTypeIdentifierStepCount:
             return NSLocalizedString("Step Count", comment: "HealthKit data type")
 
         case HKQuantityTypeIdentifierUVExposure:
             return NSLocalizedString("UV Exposure", comment: "HealthKit data type")
-            
+
         case HKWorkoutTypeIdentifier:
             return NSLocalizedString("Workouts/Meals", comment: "HealthKit data type")
-            
+
+        case HKQuantityTypeIdentifierBasalBodyTemperature:
+            return NSLocalizedString("Basal Body Temperature", comment: "HealthKit data type")
+
+        case HKQuantityTypeIdentifierBloodAlcoholContent:
+            return NSLocalizedString("Blood Alcohol", comment: "HealthKit data type")
+
+        case HKQuantityTypeIdentifierBodyFatPercentage:
+            return NSLocalizedString("", comment: "HealthKit data type")
+
+        case HKQuantityTypeIdentifierBodyTemperature:
+            return NSLocalizedString("Body Temperature", comment: "HealthKit data type")
+
+        case HKQuantityTypeIdentifierDietaryBiotin:
+            return NSLocalizedString("Biotin", comment: "HealthKit data type")
+
+        case HKQuantityTypeIdentifierDietaryCalcium:
+            return NSLocalizedString("Calcium", comment: "HealthKit data type")
+
+        case HKQuantityTypeIdentifierDietaryChloride:
+            return NSLocalizedString("Chloride", comment: "HealthKit data type")
+
+        case HKQuantityTypeIdentifierDietaryChromium:
+            return NSLocalizedString("Chromium", comment: "HealthKit data type")
+
+        case HKQuantityTypeIdentifierDietaryCopper:
+            return NSLocalizedString("Copper", comment: "HealthKit data type")
+
+        case HKQuantityTypeIdentifierDietaryFiber:
+            return NSLocalizedString("Fiber", comment: "HealthKit data type")
+
+        case HKQuantityTypeIdentifierDietaryFolate:
+            return NSLocalizedString("Folate", comment: "HealthKit data type")
+
+        case HKQuantityTypeIdentifierDietaryIodine:
+            return NSLocalizedString("Iodine", comment: "HealthKit data type")
+
+        case HKQuantityTypeIdentifierDietaryIron:
+            return NSLocalizedString("Iron", comment: "HealthKit data type")
+
+        case HKQuantityTypeIdentifierDietaryMagnesium:
+            return NSLocalizedString("Magnesium", comment: "HealthKit data type")
+
+        case HKQuantityTypeIdentifierDietaryManganese:
+            return NSLocalizedString("Manganese", comment: "HealthKit data type")
+
+        case HKQuantityTypeIdentifierDietaryMolybdenum:
+            return NSLocalizedString("Molybdenum", comment: "HealthKit data type")
+
+        case HKQuantityTypeIdentifierDietaryNiacin:
+            return NSLocalizedString("Niacin", comment: "HealthKit data type")
+
+        case HKQuantityTypeIdentifierDietaryPantothenicAcid:
+            return NSLocalizedString("Pantothenic Acid", comment: "HealthKit data type")
+
+        case HKQuantityTypeIdentifierDietaryPhosphorus:
+            return NSLocalizedString("Phosphorus", comment: "HealthKit data type")
+
+        case HKQuantityTypeIdentifierDietaryPotassium:
+            return NSLocalizedString("Potassium", comment: "HealthKit data type")
+
+        case HKQuantityTypeIdentifierDietaryRiboflavin:
+            return NSLocalizedString("Riboflavin", comment: "HealthKit data type")
+
+        case HKQuantityTypeIdentifierDietarySelenium:
+            return NSLocalizedString("Selenium", comment: "HealthKit data type")
+
+        case HKQuantityTypeIdentifierDietaryThiamin:
+            return NSLocalizedString("Thiamin", comment: "HealthKit data type")
+
+        case HKQuantityTypeIdentifierDietaryVitaminA:
+            return NSLocalizedString("Vitamin A", comment: "HealthKit data type")
+
+        case HKQuantityTypeIdentifierDietaryVitaminB12:
+            return NSLocalizedString("Vitamin B12", comment: "HealthKit data type")
+
+        case HKQuantityTypeIdentifierDietaryVitaminB6:
+            return NSLocalizedString("Vitamin B6", comment: "HealthKit data type")
+
+        case HKQuantityTypeIdentifierDietaryVitaminC:
+            return NSLocalizedString("Vitamin C", comment: "HealthKit data type")
+
+        case HKQuantityTypeIdentifierDietaryVitaminD:
+            return NSLocalizedString("Vitamin D", comment: "HealthKit data type")
+
+        case HKQuantityTypeIdentifierDietaryVitaminE:
+            return NSLocalizedString("Vitamin E", comment: "HealthKit data type")
+
+        case HKQuantityTypeIdentifierDietaryVitaminK:
+            return NSLocalizedString("Vitamin K", comment: "HealthKit data type")
+
+        case HKQuantityTypeIdentifierDietaryZinc:
+            return NSLocalizedString("Zinc", comment: "HealthKit data type")
+
+        case HKQuantityTypeIdentifierElectrodermalActivity:
+            return NSLocalizedString("Electrodermal Activity", comment: "HealthKit data type")
+
+        case HKQuantityTypeIdentifierForcedExpiratoryVolume1:
+            return NSLocalizedString("FEV1", comment: "HealthKit data type")
+
+        case HKQuantityTypeIdentifierForcedVitalCapacity:
+            return NSLocalizedString("FVC", comment: "HealthKit data type")
+
+        case HKQuantityTypeIdentifierHeight:
+            return NSLocalizedString("Height", comment: "HealthKit data type")
+
+        case HKQuantityTypeIdentifierInhalerUsage:
+            return NSLocalizedString("Inhaler Usage", comment: "HealthKit data type")
+
+        case HKQuantityTypeIdentifierLeanBodyMass:
+            return NSLocalizedString("Lean Body Mass", comment: "HealthKit data type")
+
+        case HKQuantityTypeIdentifierNikeFuel:
+            return NSLocalizedString("Nike Fuel", comment: "HealthKit data type")
+
+        case HKQuantityTypeIdentifierNumberOfTimesFallen:
+            return NSLocalizedString("Times Fallen", comment: "HealthKit data type")
+
+        case HKQuantityTypeIdentifierOxygenSaturation:
+            return NSLocalizedString("Blood Oxygen Saturation", comment: "HealthKit data type")
+
+        case HKQuantityTypeIdentifierPeakExpiratoryFlowRate:
+            return NSLocalizedString("PEF", comment: "HealthKit data type")
+
+        case HKQuantityTypeIdentifierPeripheralPerfusionIndex:
+            return NSLocalizedString("PPI", comment: "HealthKit data type")
+
+        case HKQuantityTypeIdentifierRespiratoryRate:
+            return NSLocalizedString("RR", comment: "HealthKit data type")
+
         default:
             return nil
         }
