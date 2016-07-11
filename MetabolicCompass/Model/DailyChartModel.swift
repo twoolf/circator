@@ -13,13 +13,42 @@ import HealthKit
 import MetabolicCompassKit
 import SwiftDate
 import Async
+import AwesomeCache
 
 @objc protocol DailyChartModelProtocol {
     optional func dataCollectingFinished()
     optional func dailyProgressStatCollected()
 }
 
+class DailyProgressDayInfo: NSObject, NSCoding {
+    
+    static var dayColorsKey = "dayColors"
+    static var dayValuesKey = "dayValues"
+    
+    internal var dayColors: [UIColor] = [UIColor.clearColor()]
+    internal var dayValues: [Double] = [24.0]
+    
+    init(colors: [UIColor], values: [Double]) {
+        self.dayColors = colors
+        self.dayValues = values
+    }
+    
+    required internal convenience init?(coder aDecoder: NSCoder) {
+        guard let colors = aDecoder.decodeObjectForKey(DailyProgressDayInfo.dayColorsKey) as? [UIColor] else { return nil }
+        guard let values = aDecoder.decodeObjectForKey(DailyProgressDayInfo.dayValuesKey) as? [Double] else { return nil }
+        self.init(colors: colors, values: values)
+    }
+    
+    internal func encodeWithCoder(aCoder: NSCoder) {
+        aCoder.encodeObject(dayColors, forKey: DailyProgressDayInfo.dayColorsKey)
+        aCoder.encodeObject(dayValues, forKey: DailyProgressDayInfo.dayValuesKey)
+    }
+}
+
+typealias MCDaylyProgressCache = Cache<DailyProgressDayInfo>
+
 class DailyChartModel : NSObject, UITableViewDataSource {
+
     /// initializations of these variables creates offsets so plots of event transitions are square waves
     private let stWorkout = 0.0
     private let stSleep = 0.33
@@ -29,6 +58,8 @@ class DailyChartModel : NSObject, UITableViewDataSource {
     private let dayCellIdentifier = "dayCellIdentifier"
     private let emptyValueString = "- h - m"
     
+    var cachedDailyProgress: MCDaylyProgressCache
+    
     var delegate:DailyChartModelProtocol? = nil
     var chartDataArray: [[Double]] = []
     var chartColorsArray: [[UIColor]] = []
@@ -36,6 +67,15 @@ class DailyChartModel : NSObject, UITableViewDataSource {
     var lastAteText: String = ""
     var eatingText: String = ""
     var daysTableView: UITableView?
+    
+    override init() {
+        do {
+            self.cachedDailyProgress = try MCDaylyProgressCache(name: "MCDaylyProgressCache")
+        } catch _ {
+            fatalError("Unable to create HealthManager aggregate cache.")
+        }
+        super.init()
+    }
     
     var daysArray: [NSDate] = {
         var lastSevenDays: [NSDate] = []
@@ -114,65 +154,77 @@ class DailyChartModel : NSObject, UITableViewDataSource {
     }
     
     func prepareChartData () {
-        Async.main(after: 0.5) {
-            self.chartDataArray = []
-            self.chartColorsArray = []
-            self.getDataForDay(nil, lastDay: false)
-        }
+        self.chartDataArray = []
+        self.chartColorsArray = []
+        self.getDataForDay(nil, lastDay: false)
     }
     
     func getDataForDay(day: NSDate?, lastDay:Bool) {
         let startDay = day == nil ? self.daysArray.first! : day!
-//        print("===================================")
-//        print("getDataForDay \(startDay)")
+        let today = startDay.isInToday()
         let dateIndex = self.daysArray.indexOf(startDay)
-        let endOfDay = self.endOfDay(startDay)
+        let cacheKey = "\(startDay.month)_\(startDay.day)_\(startDay.year)"
+        self.cachedDailyProgress.setObjectForKey(cacheKey, cacheBlock: { (success, error) in
+            self.getCircadianEventsForDay(startDay, comletion: { (dayInfo) in
+                success(dayInfo, .Seconds(today ? 5 : 60))//if it's today we will add cache time for 10 seconds in other cases cache will be saved for 1 minute
+            })
+        }, completion: { (dayInfoFromCache, loadedFromCache, error) in
+            if (dayInfoFromCache != nil) {
+                self.chartColorsArray.append((dayInfoFromCache?.dayColors)!)
+                self.chartDataArray.append((dayInfoFromCache?.dayValues)!)
+            }
+            if !lastDay {//we still have data te retrive
+                let lastElement = dateIndex == (self.daysArray.indexOf(self.daysArray.last!)! - 1)
+                Async.main {
+                    self.getDataForDay(self.daysArray[dateIndex!+1], lastDay: lastElement)
+                }
+            } else {//end of recursion
+                Async.main {
+                    self.delegate?.dataCollectingFinished?()
+                }
+            }
+        })
+    }
+    
+    func getCircadianEventsForDay(day: NSDate, comletion: (dayInfo: DailyProgressDayInfo) -> Void) {
+        
+        let endOfDay = self.endOfDay(day)
         var dayEvents:[Double] = []
         var dayColors:[UIColor] = []
         var previousEventType: CircadianEvent?
         var previousEventDate: NSDate? = nil
-        HealthManager.sharedManager.fetchCircadianEventIntervals(startDay, endDate: endOfDay, completion: { (intervals, error) in
-//            print("fetchCircadianEventIntervals - \(startDay) - \(endOfDay)")
+        
+        HealthManager.sharedManager.fetchCircadianEventIntervals(day, endDate: endOfDay, completion: { (intervals, error) in
             guard error == nil else {
                 log.error("Failed to fetch circadian events: \(error)")
                 return
             }
-            if intervals.isEmpty {//we have no data to display
-                //we will mark it as fasting and put 24h
-                dayEvents.append(24.0)
-                dayColors.append(UIColor.clearColor())
-            } else {
+            if !intervals.isEmpty {
                 for event in intervals {
                     let (eventDate, eventType) = event //assign tuple values to vars
                     if endOfDay.day < eventDate.day {
                         print(previousEventDate)
                         let endEventDate = self.endOfDay(previousEventDate!)
                         let eventDuration = self.getDifferenceForEvents(previousEventDate, currentEventDate: endEventDate)
-//                        print("\(eventType) - \(eventDuration)")
+                        
                         dayEvents.append(eventDuration)
                         dayColors.append(self.getColorForEventType(eventType))
                         break
                     }
                     if previousEventDate != nil && eventType == previousEventType {//we alredy have a prev event and can calculate how match time it took
                         let eventDuration = self.getDifferenceForEvents(previousEventDate, currentEventDate: eventDate)
-//                        print("\(eventType) - \(eventDuration)")
+                        
                         dayEvents.append(eventDuration)
                         dayColors.append(self.getColorForEventType(eventType))
                     }
                     previousEventDate = eventDate
                     previousEventType = eventType
                 }
+                let dayInfo = DailyProgressDayInfo(colors: dayColors, values: dayEvents)
+                comletion(dayInfo: dayInfo)
+                return
             }
-            let lastElement = dateIndex == (self.daysArray.indexOf(self.daysArray.last!)! - 1)
-            self.chartDataArray.append(dayEvents)
-            self.chartColorsArray.append(dayColors)
-            if !lastDay {//we still have data te retrive
-                self.getDataForDay(self.daysArray[dateIndex!+1], lastDay: lastElement)
-            } else {//end of recursion
-                Async.main {
-                    self.delegate?.dataCollectingFinished?()
-                }
-            }
+            comletion(dayInfo: DailyProgressDayInfo(colors: [UIColor.clearColor()], values: [24.0]))
         })
     }
     
