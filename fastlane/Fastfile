@@ -324,14 +324,26 @@ platform :ios do
   end
 
   desc "Build and submit a beta build to Apple TestFlight"
-  lane :beta_testflight do
-    build_app
+  lane :beta_testflight do |options|
+    pods = options.key?(:pods) ? options[:pods] : false
+    force_certs = options.key?(:force_certs) ? options[:force_certs] : false
+    if options[:build_number]
+        build_app(pods: pods, force_certs: force_certs, build_number: options[:build_number])
+    else
+        build_app(pods: pods, force_certs: force_certs)
+    end
     beta_upload_testflight
   end
 
   desc "Build and submit a beta build to Fabric/Crashlytics"
   lane :beta_fabric do
-    build_dev
+    pods = options.key?(:pods) ? options[:pods] : false
+    force_certs = options.key?(:force_certs) ? options[:force_certs] : false
+    if options[:build_number]
+        build_dev(pods: pods, force_certs: force_certs, build_number: options[:build_number])
+    else
+        build_dev(pods: pods, force_certs: force_certs)
+    end
     beta_upload_fabric
   end
 
