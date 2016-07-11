@@ -28,6 +28,7 @@ class MealInterfaceController: WKInterfaceController {
     //    var mealTypebyButton
     override func awakeWithContext(context: AnyObject?) {
         super.awakeWithContext(context)
+        enterButton.setTitle("Started \(mealTypebyButton.mealType)")
         var tempItems: [WKPickerItem] = []
         for i in 0...48 {
             let item = WKPickerItem()
