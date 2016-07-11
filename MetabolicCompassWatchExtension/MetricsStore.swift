@@ -35,8 +35,8 @@ class MetricsStore {
     var MonosaturatedFat: String = "8"
     var Water: String = "800 ml"
     var BloodPressure: String = "120/80"
-    var fastingTime = "8 hr"
-    var eatingTime = "2 hr"
-    var lastAte = "2 hr"
+    var fastingTime = "no data"
+    var eatingTime = "no data"
+    var lastAte = "no data"
 }
 
