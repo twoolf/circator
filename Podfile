@@ -9,7 +9,7 @@ def shared_pods
     pod 'SwiftyJSON', :git => 'https://github.com/SwiftyJSON/SwiftyJSON.git'
     pod 'SwiftDate'
     pod 'SwiftyUserDefaults'
-    pod 'SwiftyBeaver', '~> 0.2'
+    pod 'SwiftyBeaver'
     pod 'Dodo', '~> 2.0'
     pod 'CryptoSwift'
     pod 'AsyncSwift'

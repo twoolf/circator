@@ -106,7 +106,7 @@ class WaterStartTimeController: WKInterfaceController {
         let waterDurationMinutes = beginComponents.minute - closeComponents.minute
         let waterDurationTime = waterDurationHours*60+waterDurationMinutes
         
-        if (closeDate>beginDate){
+        if (closeDate<beginDate){
             print("logic error on closeDate not earlier than beginDate")
             closeDate=closeDate - 1.hours
         }

@@ -175,7 +175,7 @@ class ComplicationController: NSObject, CLKComplicationDataSource {
             handler(largeUtil)
         }
         if complication.family == .ModularSmall {
-            let smallUtil = CLKComplicationTemplateModularSmallRingText()
+            let smallUtil = CLKComplicationTemplateModularSmallSimpleText()
             smallUtil.textProvider = CLKSimpleTextProvider(text: MetricsStore.sharedInstance.fastingTime)
             handler(smallUtil)
         }
