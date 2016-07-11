@@ -50,8 +50,8 @@ class ExerciseStartTimeController: WKInterfaceController {
         var timeConvertBegin:Int = 0
         var timeAddHalfHourBegin:Int = 0
         
-        // note: imageset (0-47) is keyed into 24-hour schedule
-        //  so 0=midnight, 2=1AM, 4=2AM, etc
+        // note: imageset (0-48) is keyed into 24-hour schedule
+        //  so 0=midnight, 2=1AM, 4=2AM, 48=midnight etc
         if exerciseTimeStruc.exerciseBegin % 2 == 0 {
             timeConvertBegin = ( (exerciseTimeStruc.exerciseBegin)/2 )
         } else {
@@ -61,24 +61,20 @@ class ExerciseStartTimeController: WKInterfaceController {
         beginComponents.hour = timeConvertBegin
         beginComponents.minute = timeAddHalfHourBegin
         beginDate = calendar.dateFromComponents(beginComponents)!
-
-        // setting up values from current picker and getting 'beginning of exercise' ready
+        print("new beginDate based on first screen: \(beginDate)")
+        
+        var closeDate = NSDate()
         var timeConvertClose:Int = 0
         var timeAddHalfHourClose:Int = 0
         
         if exerciseClose % 2 == 0 {
             timeConvertClose = ( (exerciseClose)/2)
-            //            endDate = endDate + timeConvertEnd.hours
         } else {
             timeConvertClose = ( (exerciseClose-1)/2  )
             timeAddHalfHourClose=30
-            //            endDate = endDate + timeConvertEnd.hours + 30.minutes
         }
         
-        //        var endDate = NSDate().startOf(.Day, inRegion: Region())
-        
-        var closeDate = NSDate()
-        let closeComponents = calendar.components([.Year, .Month, .Day], fromDate: closeDate)
+        let closeComponents = calendar.components([.Year, .Month, .Day, .Hour, .Minute], fromDate: closeDate)
         closeComponents.hour = timeConvertClose
         closeComponents.minute = timeAddHalfHourClose
         closeDate = calendar.dateFromComponents(closeComponents)!
@@ -91,16 +87,6 @@ class ExerciseStartTimeController: WKInterfaceController {
         let exerciseDurationHours = beginComponents.hour - closeComponents.hour
         let exerciseDurationMinutes = beginComponents.minute - closeComponents.minute
         let exerciseDurationTime = exerciseDurationHours*60+exerciseDurationMinutes
-        
-        /*
-        var workout = HKWorkoutActivityType.Running
-        if ( (exerciseTypebyButton.exerciseType) == "Running") {
-             workout = HKWorkoutActivityType.Running
-        } else if ( (exerciseTypebyButton.exerciseType) == "Walking") {
-             workout = HKWorkoutActivityType.Walking
-        }
-        */
-        
         let workout = HKWorkout(activityType: .Running,
                                 startDate: beginDate,
                                 endDate: closeDate,
@@ -112,19 +98,6 @@ class ExerciseStartTimeController: WKInterfaceController {
         let healthKitStore:HKHealthStore = HKHealthStore()
         healthKitStore.saveObject(workout) { success, error in
         }
-        /*
-        let workout = HKWorkoutActivityType(activityType: .Running,
-                                startDate: beginDate,
-                                endDate: closeDate,
-                                duration: Double(exerciseDurationTime)*60,
-                                totalEnergyBurned: HKQuantity(unit:HKUnit.calorieUnit(), doubleValue:100.0),
-                                totalDistance: HKQuantity(unit:HKUnit.meterUnit(), doubleValue:1.0),
-                                device: HKDevice.localDevice(),
-                                metadata: [exerciseTypebyButton.exerciseType:"source"])
-        let healthKitStore:HKHealthStore = HKHealthStore()
-        healthKitStore.saveObject(workout) { success, error in
-        }
-        */
         
     }
     

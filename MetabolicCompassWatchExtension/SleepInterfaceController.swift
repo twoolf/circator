@@ -6,9 +6,6 @@
 //  Copyright © 2016 Yanif Ahmad, Tom Woolf. All rights reserved.
 //
 
-// note: logic is to have first entry be the 'end' time (sleep wake) and
-//          then second screen is the 'start' of sleep (sleep began)
-
 import WatchKit
 import Foundation
 import HealthKit

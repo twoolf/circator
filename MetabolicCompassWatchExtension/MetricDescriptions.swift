@@ -48,14 +48,6 @@ extension MetricDescriptions {
         guard let file = NSBundle.mainBundle().pathForResource("Metrics", ofType: "plist") else { return [] }
         guard let metricStrings = NSArray(contentsOfFile: file) as? [String] else { return [] }
         let metrics = [MetricDescriptions(metric_name: "weight", HKSampleName: "HKSampleType", metric_units: "lbs")]
-        /*        let metrics = metricStrings.map { s -> MetricDescriptions in
-         let components = (s as NSString).componentsSeparatedByString(",")
-         print("in metrics-1: \(components[0])")
-         print("in metrics-2: \(components[1])")
-         print("in metrics-3: \(components[2])")
-         return MetricDescriptions(metric_name: components[0], HKSampleName: components[1], metric_units: components[2])
-         */
-        //        }
         return metrics
     }
 }

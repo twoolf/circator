@@ -72,14 +72,10 @@ class MealStartTimeController: WKInterfaceController {
         
         if mealClose % 2 == 0 {
             timeConvertClose = ( (mealClose)/2)
-            //            endDate = endDate + timeConvertEnd.hours
         } else {
             timeConvertClose = ( (mealClose-1)/2  )
             timeAddHalfHourClose=30
-            //            endDate = endDate + timeConvertEnd.hours + 30.minutes
         }
-        
-        //        var endDate = NSDate().startOf(.Day, inRegion: Region())
         
         var closeDate = NSDate()
         let closeComponents = calendar.components([.Year, .Month, .Day, .Hour, .Minute], fromDate: closeDate)

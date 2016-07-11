@@ -673,9 +673,6 @@ class IntroInterfaceController: WKInterfaceController, WCSessionDelegate  {
     var session : WCSession!
     
     let healthKitStore:HKHealthStore = HKHealthStore()
-    //    var healthConditions: HealthConditions = HealthConditions.loadConditions()
-    //    var healthMetrics: HealthMetrics
-    //    var healthMetrics: HealthMetrics = HealthMetrics.loadConditions()
     
     override init() {
         super.init()
@@ -716,7 +713,7 @@ class IntroInterfaceController: WKInterfaceController, WCSessionDelegate  {
         
         func reloadComplications() {
             let server = CLKComplicationServer.sharedInstance()
-            //        print("in reloadComplications: \(server.activeComplications)")
+
             guard let complications = server.activeComplications where complications.count > 0 else {
                 print("hit a zero in reloadComplications")
                 return
@@ -725,36 +722,14 @@ class IntroInterfaceController: WKInterfaceController, WCSessionDelegate  {
             for complication in complications  {
                 server.extendTimelineForComplication(complication)
                 print("value from complication: \(complication.description)")
-                //            print("value from complication: \(complications.)")
             }
         }
 
         
         print("ready to run reloadDataTake2")
-        reloadDataTake2()
-        
+        reloadDataTake2()        
         reloadComplications()
         
-        /*
-         func reloadComplications() {
-         let server = CLKComplicationServer.sharedInstance()
-         print("in reloadComplications: \(server.activeComplications)")
-         guard let complications = server.activeComplications where complications.count > 0 else {
-         print("hit a zero in reloadComplications")
-         return
-         }
-         
-         for complication in complications  {
-         server.reloadTimelineForComplication(complication)
-         }
-         }
-         */
-        //        reloadComplications()
-        
-        
-        //        HealthMetrics.updateWeight()
-        //        var healthMetrics: HealthMetrics
-        //        HealthMetrics.updateHealthInfo(healthMetrics)
     }
     
     override func didDeactivate() {
@@ -793,7 +768,6 @@ class IntroInterfaceController: WKInterfaceController, WCSessionDelegate  {
                     return;
                 }
                 
-                //                var weightLocalizedString = self.kUnknownString;
                 self.weightHK = mostRecentWeight as? HKQuantitySample;
                 if let kilograms = self.weightHK?.quantity.doubleValueForUnit(HKUnit.gramUnitWithMetricPrefix(.Kilo)) {
                     let weightFormatter = NSMassFormatter()
@@ -819,7 +793,6 @@ class IntroInterfaceController: WKInterfaceController, WCSessionDelegate  {
                     return;
                 }
                 
-                //                var heightLocalizedString = self.kUnknownString;
                 self.heightHK = mostRecentHeight as? HKQuantitySample;
                 if let meters = self.heightHK?.quantity.doubleValueForUnit(HKUnit.meterUnit()) {
                     let heightFormatter = NSLengthFormatter()
@@ -867,8 +840,8 @@ class IntroInterfaceController: WKInterfaceController, WCSessionDelegate  {
             
                 self.proteinHK = mostRecentProtein as? HKQuantitySample;
                 if let grams = self.proteinHK?.quantity.doubleValueForUnit(HKUnit.gramUnit()) {
-//                    let weightFormatter = NSMassFormatter()
-//                    self.proteinLocalizedString = weightFormatter.unitStringFromValue(grams, unit: HKUnit.gramUnit)
+                    let weightFormatter = NSMassFormatter()
+                    self.proteinLocalizedString = weightFormatter.stringFromKilograms(grams/1000)
                 }
                 
                 dispatch_async(dispatch_get_main_queue(), { () -> Void in
@@ -1390,3 +1363,4 @@ class IntroInterfaceController: WKInterfaceController, WCSessionDelegate  {
         }
     }
 }
+

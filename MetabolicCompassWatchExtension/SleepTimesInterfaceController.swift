@@ -6,10 +6,6 @@
 //  Copyright © 2016 Yanif Ahmad, Tom Woolf. All rights reserved.
 //
 
-// note:   the logic is to use 'sleep end' from 1st screen and w/picker in
-//         this screen to find 'sleep start' and then write to HealthKit
-// remember as well that 'sleep end' needs to be adjusted, since it may or
-//         may not reflect the current time
 
 import Foundation
 import WatchKit

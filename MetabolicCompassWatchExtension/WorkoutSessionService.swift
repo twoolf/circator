@@ -10,22 +10,17 @@ import Foundation
 import HealthKit
 
 protocol WorkoutSessionServiceDelegate: class {
-    /// This method is called when an HKWorkoutSession is correctly started
+
     func workoutSessionService(service: WorkoutSessionService, didStartWorkoutAtDate startDate: NSDate)
     
-    /// This method is called when an HKWorkoutSession is correctly stopped
     func workoutSessionService(service: WorkoutSessionService, didStopWorkoutAtDate endDate: NSDate)
     
-    /// This method is called when a workout is successfully saved
     func workoutSessionServiceDidSave(service: WorkoutSessionService)
     
-    /// This method is called when an anchored query receives new heart rate data
     func workoutSessionService(service: WorkoutSessionService, didUpdateHeartrate heartRate:Double)
     
-    /// This method is called when an anchored query receives new distance data
     func workoutSessionService(service: WorkoutSessionService, didUpdateDistance distance:Double)
     
-    /// This method is called when an anchored query receives new energy data
     func workoutSessionService(service: WorkoutSessionService, didUpdateEnergyBurned energy:Double)
 }
 

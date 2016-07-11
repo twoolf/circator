@@ -61,11 +61,7 @@ final class HealthConditions: NSObject {
     {
         let sampleType = HKSampleType.quantityTypeForIdentifier(HKQuantityTypeIdentifierBodyMass)
         var weight:HKQuantitySample?
-//        let height:HKQuantitySample?
-//        _:Double = 22.0
         let kUnknownString   = "Unknown"
-//        var HKBMIString:String = "24.0"
-//        let healthKitStore:HKHealthStore = HKHealthStore()
         readMostRecentSample(sampleType!, completion: { (mostRecentWeight, error) -> Void in
             
             if( error != nil )
@@ -92,10 +88,9 @@ final class HealthConditions: NSObject {
     func updateHeight()
     {
         var height, weight:HKQuantitySample?
-//        _:Double = 22.0
         let kUnknownString   = "Unknown"
         var HKBMIString:String = "24.0"
-//        _:HKHealthStore = HKHealthStore()
+        
         let sampleType = HKSampleType.quantityTypeForIdentifier(HKQuantityTypeIdentifierHeight)
         readMostRecentSample(sampleType!, completion: { (mostRecentHeight, error) -> Void in
             
@@ -122,10 +117,6 @@ final class HealthConditions: NSObject {
     
     func calculateBMIWithWeightInKilograms(weightInKilograms:Double, heightInMeters:Double) -> Double?
     {
-//        var height, weight:HKQuantitySample?
-//        var bmi:Double = 22.0
-//        let kUnknownString   = "Unknown"
-//        var HKBMIString:String = "24.0"
         if heightInMeters == 0 {
             return nil;
         }
@@ -137,7 +128,6 @@ final class HealthConditions: NSObject {
         var height:HKQuantitySample?
         var weight:HKQuantitySample?
         var bmi:Double = 22.0
-//        let kUnknownString   = "Unknown"
         var HKBMIString:String = "24.0"
         if weight != nil && height != nil {
             let weightInKilograms = weight!.quantity.doubleValueForUnit(HKUnit.gramUnitWithMetricPrefix(.Kilo))
@@ -149,12 +139,6 @@ final class HealthConditions: NSObject {
     }
     
     func updateHealthInfo() {
-        //        updateWeight();
-        //        print("updated weight info")
-        //        updateHeight();
-        //        print("updated height info")
-        //        updateBMI();
-        //        print("updated bmi info")
     }
     
 }
@@ -173,11 +157,11 @@ extension HealthConditions {
         
         for (i, value) in weightMetrics.enumerate() {
             let pounds = value.pounds
-            if (i == 0) { // First data point
+            if (i == 0) {
                 let nextPounds = weightMetrics[i+1].pounds
                 value.situation = pounds > nextPounds ? .Falling : .Rising
                 continue
-            } else if (i == weightMetrics.count-1) { // Last data point
+            } else if (i == weightMetrics.count-1) { 
                 let prevPounds = weightMetrics[i-1].pounds
                 value.situation = prevPounds > pounds ? .Falling : .Rising
                 continue
@@ -224,17 +208,6 @@ extension HealthConditions {
         return (docPath as NSString).stringByAppendingPathComponent("HealthConditions")
     }
     
-    /*    static func loadConditions() -> HealthConditions {
-     if let data = NSData(contentsOfFile: storePath) {
-     let savedConditions = NSKeyedUnarchiver.unarchiveObjectWithData(data) as! HealthConditions
-     return savedConditions
-     } else {
-     print("initial file not present")
-     let metrics = MetricDescriptions.allMetrics();
-     return HealthConditions(metrics: metrics)
-     }
-     }
-     */
     static func saveConditions(healthConditions:HealthConditions) {
         NSKeyedArchiver.archiveRootObject(healthConditions, toFile: storePath)
     }
