@@ -204,11 +204,6 @@ public class PreviewManager: NSObject {
 
     //MARK: Balance Sample Types
     public static var balanceSampleTypes: [HKSampleType] {
-        // For now, balance types refer to the preview sample types.
-        // This unifies the types across the dashboard comparison and balance screens.
-        return PreviewManager.previewSampleTypes
-
-        /*
         if let rawTypes = Defaults[PMBalanceSampleTypesKey] {
             return rawTypes.map { (data) -> HKSampleType in
                 return NSKeyedUnarchiver.unarchiveObjectWithData(data) as! HKSampleType
@@ -224,18 +219,14 @@ public class PreviewManager: NSObject {
             self.updateBalanceSampleTypes(defaultTypes)
             return defaultTypes
         }
-        */
     }
 
     public static func updateBalanceSampleTypes (types: [HKSampleType]) {
-        // For now, update the preview sample types.
-        // This unifies the types across the dashboard comparison and balance screens.
         let rawTypes = types.map { (sampleType) -> NSData in
             return NSKeyedArchiver.archivedDataWithRootObject(sampleType)
         }
 
-        Defaults[PMSampleTypesKey] = rawTypes
-        //Defaults[PMBalanceSampleTypesKey] = rawTypes
+        Defaults[PMBalanceSampleTypesKey] = rawTypes
         NSNotificationCenter.defaultCenter().postNotificationName(PMDidUpdateBalanceSampleTypesNotification, object: nil)
     }
     
