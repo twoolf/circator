@@ -20,6 +20,7 @@ class ExerciseStartTimeController: WKInterfaceController {
 
     override func awakeWithContext(context: AnyObject?) {
         super.awakeWithContext(context)
+        exerciseStartTimeButton.setTitle("End \(exerciseTypebyButton.exerciseType) ")
         var tempItems: [WKPickerItem] = []
         for i in 0...48 {
             let item = WKPickerItem()
@@ -117,8 +118,27 @@ class ExerciseStartTimeController: WKInterfaceController {
         let exerciseDurationMinutes = beginComponents.minute - closeComponents.minute
         let exerciseDurationTime = exerciseDurationHours*60+exerciseDurationMinutes
         
+/*        var workout = HKWorkoutActivityType.Running
+        if ( (exerciseTypebyButton.exerciseType) == "Running") {
+             workout = HKWorkoutActivityType.Running
+        } else if ( (exerciseTypebyButton.exerciseType) == "Walking") {
+             workout = HKWorkoutActivityType.Walking
+        } */
+        
         let workout = HKWorkout(activityType:
             .Running,
+                                startDate: beginDate,
+                                endDate: closeDate,
+                                duration: Double(exerciseDurationTime)*60,
+                                totalEnergyBurned: HKQuantity(unit:HKUnit.calorieUnit(), doubleValue:0.0),
+                                totalDistance: HKQuantity(unit:HKUnit.meterUnit(), doubleValue:0.0),
+                                device: HKDevice.localDevice(),
+                                metadata: [mealTypebyButton.mealType:"source"])
+        let healthKitStore:HKHealthStore = HKHealthStore()
+        healthKitStore.saveObject(workout) { success, error in
+        }
+/*
+        let workout = HKWorkoutActivityType(activityType: .Running,
                                 startDate: beginDate,
                                 endDate: closeDate,
                                 duration: Double(exerciseDurationTime)*60,
@@ -129,6 +149,7 @@ class ExerciseStartTimeController: WKInterfaceController {
         let healthKitStore:HKHealthStore = HKHealthStore()
         healthKitStore.saveObject(workout) { success, error in
         }
+ */
         
     }
     
