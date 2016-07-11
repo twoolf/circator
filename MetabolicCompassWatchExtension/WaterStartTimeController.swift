@@ -107,8 +107,8 @@ class WaterStartTimeController: WKInterfaceController {
         let waterDurationTime = waterDurationHours*60+waterDurationMinutes
         
         if (closeDate<beginDate){
-            print("logic error on closeDate not earlier than beginDate")
-            closeDate=closeDate - 1.hours
+            print("logic error on beginDate not earlier than closeDate")
+            closeDate=closeDate + 1.hours
         }
         
         let sample = HKQuantitySample(type: HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierDietaryWater)!,
