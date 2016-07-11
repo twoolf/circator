@@ -367,7 +367,7 @@ public class SampleFormatter: NSObject {
             return SampleFormatter.numberFormatter.stringFromNumber(quantity.doubleValueForUnit(HKUnit.mileUnit()))!
 
         case HKQuantityTypeIdentifierDietaryWater:
-            return SampleFormatter.numberFormatter.stringFromNumber(quantity.doubleValueForUnit(HKUnit.literUnitWithMetricPrefix(.Milli)))!
+            return "\(SampleFormatter.numberFormatter.stringFromNumber(quantity.doubleValueForUnit(HKUnit.literUnitWithMetricPrefix(.Milli)))!) ml"
 
         case HKQuantityTypeIdentifierHeartRate:
             return "\(SampleFormatter.numberFormatter.stringFromNumber(quantity.doubleValueForUnit(HKUnit.countUnit().unitDividedByUnit(HKUnit.minuteUnit())))!) bpm"
@@ -377,7 +377,7 @@ public class SampleFormatter: NSObject {
 
         case HKQuantityTypeIdentifierUVExposure:
             return SampleFormatter.numberFormatter.stringFromNumber(quantity.doubleValueForUnit(HKUnit.countUnit()))!
-
+            
         default:
             return emptyString
         }
