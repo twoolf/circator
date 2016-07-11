@@ -42,12 +42,10 @@ end
 
 target 'MetabolicCompassWatchExtension' do 
  platform :watchos, '2.0'
- pod 'SwiftDate'
 end
 
 target 'MetabolicCompassWatch' do
  platform :watchos, '2.0'
- pod 'SwiftDate'
 end
 
 post_install do |installer|

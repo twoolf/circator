@@ -12,7 +12,6 @@
 import WatchKit
 import Foundation
 import HealthKit
-import SwiftDate
 
 struct exerciseTimeVariable {
     var exerciseBegin: Int
@@ -36,10 +35,9 @@ class ExerciseEndTimeController: WKInterfaceController {
         }
         exerciseEndTimePicker.setItems(tempItems)
         
-        let thisRegion = DateRegion()
         var beginTimePointer = 24
         let calendar = NSCalendar.currentCalendar()
-        var beginDate = NSDate()
+        let beginDate = NSDate()
         let beginComponents = calendar.components([.Year, .Month, .Day, .Hour, .Minute], fromDate: beginDate)
         if beginComponents.minute < 15 {
             beginTimePointer = 2*beginComponents.hour
@@ -64,8 +62,6 @@ class ExerciseEndTimeController: WKInterfaceController {
     
     @IBAction func onExerciseStartTimeSave() {
         exerciseTimeStruc.exerciseBegin = exerciseBeginTime
-        print("Begin of exercise time: and variable --")
-        print(exerciseTimeStruc.exerciseBegin)
         pushControllerWithName("ExerciseStartTimeController", context: self)
     }
 }

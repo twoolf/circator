@@ -8,13 +8,8 @@
 
 import WatchKit
 import WatchConnectivity
-//import Async
-//import AsyncSwift
 import Foundation
 import HealthKit
-//import AFNetworking
-//import MMWormhole
-import SwiftDate
 import ClockKit
 
 protocol MCSample {
@@ -26,11 +21,11 @@ protocol MCSample {
 }
 
 struct MCAggregateSample : MCSample {
-    public var startDate    : NSDate
-    public var endDate      : NSDate
-    public var numeralValue : Double?
-    public var defaultUnit  : HKUnit?
-    public var hkType       : HKSampleType?
+    var startDate    : NSDate
+    var endDate      : NSDate
+    var numeralValue : Double?
+    var defaultUnit  : HKUnit?
+    var hkType       : HKSampleType?
     
     var avgTotal: Double = 0.0
     var avgCount: Int = 0
@@ -54,8 +49,8 @@ struct MCAggregateSample : MCSample {
     
     mutating func incr(sample: MCSample) {
         if hkType == sample.hkType {
-            startDate = min(sample.startDate, startDate)
-            endDate = max(sample.endDate, endDate)
+            startDate = sample.startDate.earlierDate(startDate)
+            endDate = sample.endDate.laterDate(endDate)
             
             switch hkType!.identifier {
             case HKCategoryTypeIdentifierSleepAnalysis:
@@ -774,7 +769,7 @@ class IntroInterfaceController: WKInterfaceController, WCSessionDelegate  {
             let limit = 1
             let sampleQuery = HKSampleQuery(sampleType: sampleType, predicate: mostRecentPredicate, limit: limit, sortDescriptors: [sortDescriptor])
             { (sampleQuery, results, error ) -> Void in
-                if let queryError = error {
+                guard error == nil else {
                     completion(nil,error)
                     return;
                 }
@@ -906,7 +901,7 @@ class IntroInterfaceController: WKInterfaceController, WCSessionDelegate  {
         typealias Event = (NSDate, Double)
         typealias IEvent = (Double, Double)?
         
-        let yesterday = 1.days.ago
+        let yesterday = NSDate().dateByAddingTimeInterval(-(24*60.0*60.0))
         let startDate = yesterday
         
         fetchCircadianEventIntervals(startDate) { (intervals, error) -> Void in
@@ -944,7 +939,6 @@ class IntroInterfaceController: WKInterfaceController, WCSessionDelegate  {
                                 let eventMetabolicState = event.1
                                 
                                 let prevEvent = acc.3
-                                let prevEndpointWasIntervalStart = acc.4
                                 let prevEndpointWasIntervalEnd = !acc.4
                                 var prevStateWasFasting = acc.6
                                 let isFasting = eventMetabolicState != stEat
@@ -980,28 +974,27 @@ class IntroInterfaceController: WKInterfaceController, WCSessionDelegate  {
                                     prevStateWasFasting
                                 )
                         })
-                    
-                    let today = NSDate().startOf(.Day, inRegion: Region())
-                    let lastAte : NSDate? = stats.1 == 0 ? nil : ( startDate + Int(round(stats.1 * 3600.0)).seconds )
-                    
+
+                    let calendar = NSCalendar.currentCalendar()
+
+                    let todayComponents = calendar.components([.Year, .Month, .Day], fromDate: NSDate())
+                    let today = calendar.dateFromComponents(todayComponents)!
+
+                    let dateFormatter = NSDateFormatter()
+                    dateFormatter.dateFormat = "mm"
+                    dateFormatter.dateStyle = NSDateFormatterStyle.MediumStyle
+
                     let fastingHrs = Int(floor(stats.2))
-                    let fastingMins = (today + Int(round((stats.2 % 1.0) * 60.0)).minutes).toString(DateFormat.Custom("mm"))!
-                    //                        self.fastingLabel.text = "\(fastingHrs):\(fastingMins)"
-                    print("in EventTimeViewController, fasting hours: \(fastingHrs)")
-                    print("   and fasting minutes: \(fastingMins)")
+                    let todayPlusMins = today.dateByAddingTimeInterval(round((stats.2 % 1.0) * 60.0 * 60.0))
+                    let fastingMins = dateFormatter.stringFromDate(todayPlusMins)
+
                     MetricsStore.sharedInstance.fastingTime = "\(fastingHrs):\(fastingMins)"
-                    
-                    
-                    //                        self.eatingLabel.text  = (today + Int(stats.0 * 3600.0).seconds).toString(DateFormat.Custom("HH:mm"))!
-                    //                        self.lastAteLabel.text = lastAte == nil ? "N/A" : lastAte!.toString(DateFormat.Custom("HH:mm"))!
                 }
-                //                    self.mealChart.setNeedsDisplay()
-                
             })
         }
     }
     
-    func fetchCircadianEventIntervals(startDate: NSDate = 1.days.ago,
+    func fetchCircadianEventIntervals(startDate: NSDate = NSDate().dateByAddingTimeInterval(-(24*60.0*60.0)),
                                       endDate: NSDate = NSDate(),
                                       completion: HMCircadianBlock)
     {
@@ -1022,7 +1015,7 @@ class IntroInterfaceController: WKInterfaceController, WCSessionDelegate  {
                 switch ty {
                 case is HKWorkoutType:
                     return vals.flatMap { s -> [Event] in
-                        let st = s.startDate < startDate ? startDate : s.startDate
+                        let st = s.startDate.laterDate(startDate)
                         let en = s.endDate
                         guard let v = s as? HKWorkout else { return [] }
                         switch v.workoutActivityType {
@@ -1038,7 +1031,7 @@ class IntroInterfaceController: WKInterfaceController, WCSessionDelegate  {
                         return nil
                     }
                     return vals.flatMap { s -> [Event] in
-                        let st = s.startDate < startDate ? startDate : s.startDate
+                        let st = s.startDate.laterDate(startDate)
                         let en = s.endDate
                         return [(st, .Sleep), (en, .Sleep)]
                     }
@@ -1049,8 +1042,8 @@ class IntroInterfaceController: WKInterfaceController, WCSessionDelegate  {
                 }
             }
             
-            let sortedEvents = extendedEvents.flatten().sort { (a,b) in return a.0 < b.0 }
-            let epsilon = 1.seconds
+            let sortedEvents = extendedEvents.flatten().sort { (a,b) in return a.0.compare(b.0) == .OrderedAscending }
+            let epsilon = 1.0 // in seconds.
             let lastev = sortedEvents.last ?? sortedEvents.first!
             let lst = lastev.0 == endDate ? [] : [(lastev.0, CircadianEvent.Fast), (endDate, CircadianEvent.Fast)]
             
@@ -1077,14 +1070,14 @@ class IntroInterfaceController: WKInterfaceController, WCSessionDelegate  {
                     let prevEventEndpointDate = prevEvent.0
                     
                     if (eventIsIntervalStart && prevEventEndpointDate == eventEndpointDate) {
-                        
-                        let newResult = resultArray + [(eventEndpointDate + epsilon, eventMetabolicState)]
+                        let newResult = resultArray + [(eventEndpointDate.dateByAddingTimeInterval(1), eventMetabolicState)]
                         return (newResult, nextEventAsIntervalStart, event)
                     } else if eventIsIntervalStart {
                         
-                        let fastEventStart = prevEventEndpointDate + epsilon
-                        let modifiedEventEndpoint = eventEndpointDate - epsilon
-                        let fastEventEnd = modifiedEventEndpoint - 1.days > fastEventStart ? fastEventStart + 1.days : modifiedEventEndpoint
+                        let fastEventStart = prevEventEndpointDate.dateByAddingTimeInterval(epsilon)
+                        let modifiedEventEndpoint = eventEndpointDate.dateByAddingTimeInterval(-epsilon)
+                        let fastEventEnd = fastEventStart.compare(modifiedEventEndpoint.dateByAddingTimeInterval(-(24*60.0*60.0))) == .OrderedAscending ?
+                                                fastEventStart.dateByAddingTimeInterval(24 * 60.0 * 60.0) : modifiedEventEndpoint
                         let newResult = resultArray + [(fastEventStart, .Fast), (fastEventEnd, .Fast), event]
                         return (newResult, nextEventAsIntervalStart, event)
                     } else {
@@ -1152,7 +1145,7 @@ class IntroInterfaceController: WKInterfaceController, WCSessionDelegate  {
                 completion(samples: [], error: error)
                 return
             }
-            completion(samples: samples?.map { $0 as! MCSample } ?? [], error: nil)
+            completion(samples: samples ?? [], error: nil)
         }
         healthKitStore.executeQuery(query)
     }
@@ -1183,11 +1176,12 @@ class IntroInterfaceController: WKInterfaceController, WCSessionDelegate  {
     
     func fetchEatingTimes(completion: HMCircadianAggregateBlock) {
         typealias Accum = (Bool, NSDate!, [NSDate: Double])
+        let calendar = NSCalendar.currentCalendar()
         let aggregator : (Accum, (NSDate, CircadianEvent)) -> Accum = { (acc, e) in
             if !acc.0 && acc.1 != nil {
                 switch e.1 {
                 case .Meal:
-                    let day = acc.1.startOf(.Day, inRegion: Region())
+                    let day = calendar.dateFromComponents(calendar.components([.Year, .Month, .Day], fromDate: acc.1))!
                     var nacc = acc.2
                     nacc.updateValue((acc.2[day] ?? 0.0) + e.0.timeIntervalSinceDate(acc.1!), forKey: day)
                     return (!acc.0, e.0, nacc)
@@ -1199,7 +1193,7 @@ class IntroInterfaceController: WKInterfaceController, WCSessionDelegate  {
         }
         let initial : Accum = (true, nil, [:])
         let final : (Accum -> [(NSDate, Double)]) = { acc in
-            return acc.2.map { return ($0.0, $0.1 / 3600.0) }.sort { (a,b) in return a.0 < b.0 }
+            return acc.2.map { return ($0.0, $0.1 / 3600.0) }.sort { (a,b) in return a.0.compare(b.0) == .OrderedAscending }
         }
         
         fetchAggregatedCircadianEvents(nil, aggregator: aggregator, initial: initial, final: final, completion: completion)
@@ -1223,12 +1217,13 @@ class IntroInterfaceController: WKInterfaceController, WCSessionDelegate  {
             }
         }
         
+        let calendar = NSCalendar.currentCalendar()
         let aggregator : (Accum, (NSDate, CircadianEvent)) -> Accum = { (acc, e) in
             var byDay = acc.3
             let (iStart, prevFast, prevEvt) = (acc.0, acc.1, acc.2)
             var nextFast = prevFast
             if iStart && prevFast != nil && prevEvt != nil && e.0 != prevEvt {
-                let fastStartDay = prevFast.startOf(.Day, inRegion: Region())
+                let fastStartDay = calendar.dateFromComponents(calendar.components([.Year, .Month, .Day], fromDate: prevFast))!
                 let duration = prevEvt.timeIntervalSinceDate(prevFast)
                 let currentMax = byDay[fastStartDay] ?? duration
                 byDay.updateValue(currentMax >= duration ? currentMax : duration, forKey: fastStartDay)
@@ -1244,13 +1239,13 @@ class IntroInterfaceController: WKInterfaceController, WCSessionDelegate  {
             var byDay = acc.3
             if let finalFast = acc.1, finalEvt = acc.2 {
                 if finalFast != finalEvt {
-                    let fastStartDay = finalFast.startOf(.Day, inRegion: Region())
+                    let fastStartDay = calendar.dateFromComponents(calendar.components([.Year, .Month, .Day], fromDate: finalFast))!
                     let duration = finalEvt.timeIntervalSinceDate(finalFast)
                     let currentMax = byDay[fastStartDay] ?? duration
                     byDay.updateValue(currentMax >= duration ? currentMax : duration, forKey: fastStartDay)
                 }
             }
-            return byDay.map { return ($0.0, $0.1 / 3600.0) }.sort { (a,b) in return a.0 < b.0 }
+            return byDay.map { return ($0.0, $0.1 / 3600.0) }.sort { (a,b) in return a.0.compare(b.0) == .OrderedAscending }
         }
         
         fetchAggregatedCircadianEvents(predicate, aggregator: aggregator, initial: initial, final: final, completion: completion)
@@ -1259,17 +1254,18 @@ class IntroInterfaceController: WKInterfaceController, WCSessionDelegate  {
     func correlateWithFasting(sortFasting: Bool, type: HKSampleType, predicate: NSPredicate? = nil, completion: HMFastingCorrelationBlock) {
         var results1: [MCSample]?
         var results2: [(NSDate, Double)]?
-        
+
+        let calendar = NSCalendar.currentCalendar()
         func intersect(samples: [MCSample], fasting: [(NSDate, Double)]) -> [(NSDate, Double, MCSample)] {
             var output:[(NSDate, Double, MCSample)] = []
             var byDay: [NSDate: Double] = [:]
             fasting.forEach { f in
-                let start = f.0.startOf(.Day, inRegion: Region())
+                let start = calendar.dateFromComponents(calendar.components([.Year, .Month, .Day], fromDate: f.0))!
                 byDay.updateValue((byDay[start] ?? 0.0) + f.1, forKey: start)
             }
             
             samples.forEach { s in
-                let start = s.startDate.startOf(.Day, inRegion: Region())
+                let start = calendar.dateFromComponents(calendar.components([.Year, .Month, .Day], fromDate: s.startDate))!
                 if let match = byDay[start] { output.append((start, match, s)) }
             }
             return output
@@ -1336,11 +1332,13 @@ class IntroInterfaceController: WKInterfaceController, WCSessionDelegate  {
             fetchAggregatedSamplesOfType(sampleType, predicate: predicate, completion: completion)
             
         case is HKQuantityType:
+            let calendar = NSCalendar.currentCalendar()
             let interval = NSDateComponents()
             interval.day = 1
             
             // Set the anchor date to midnight today.
-            let anchorDate = NSDate().startOf(.Day, inRegion: Region())
+            let anchorDate = calendar.dateFromComponents(calendar.components([.Year, .Month, .Day], fromDate: NSDate()))!
+
             let quantityType = HKObjectType.quantityTypeForIdentifier(sampleType.identifier)!
             
             // Create the query
@@ -1370,6 +1368,7 @@ class IntroInterfaceController: WKInterfaceController, WCSessionDelegate  {
     func fetchAggregatedSamplesOfType(sampleType: HKSampleType, aggregateUnit: NSCalendarUnit = .Day, predicate: NSPredicate? = nil,
                                              limit: Int = noLimit, sortDescriptors: [NSSortDescriptor]? = [dateAsc], completion: HMSampleBlock)
     {
+        let calendar = NSCalendar.currentCalendar()
         fetchSamplesOfType(sampleType, predicate: predicate, limit: limit, sortDescriptors: sortDescriptors) { samples, error in
             guard error == nil else {
                 completion(samples: [], error: error)
@@ -1377,7 +1376,7 @@ class IntroInterfaceController: WKInterfaceController, WCSessionDelegate  {
             }
             var byDay: [NSDate: MCAggregateSample] = [:]
             samples.forEach { sample in
-                let day = sample.startDate.startOf(aggregateUnit, inRegion: Region())
+                let day = calendar.dateFromComponents(calendar.components([.Year, .Month, .Day], fromDate: sample.startDate))!
                 if var agg = byDay[day] {
                     agg.incr(sample)
                     byDay[day] = agg
@@ -1385,100 +1384,9 @@ class IntroInterfaceController: WKInterfaceController, WCSessionDelegate  {
                     byDay[day] = MCAggregateSample(sample: sample)
                 }
             }
-            
-            let doFinal: ((NSDate, MCAggregateSample) -> MCSample) = { (_,var agg) in agg.final(); return agg as MCSample }
-            completion(samples: byDay.sort({ (a,b) in return a.0 < b.0 }).map(doFinal), error: nil)
+
+            let doFinal: ((NSDate, MCAggregateSample) -> MCSample) = { (_, in_agg) in var agg = in_agg; agg.final(); return agg as MCSample }
+            completion(samples: byDay.sort({ (a,b) in return a.0.compare(b.0) == .OrderedAscending }).map(doFinal), error: nil)
         }
     }
-
-
 }
-
- /*
- 
-
-
-
-
- 
- 
-
- 
- 
- 
- 
-                                    } else {
-                                        prevStateWasFasting = prevEvent == nil ? false : prevEvent.1 != self.stEat
-
- 
-                        let today = NSDate().startOf(.Day, inRegion: Region())
-                        let lastAte : NSDate? = stats.1 == 0 ? nil : ( startDate + Int(round(stats.1 * 3600.0)).seconds )
-                        print("adding new circadian times")
-                        let fastingHrs = Int(floor(stats.2))
-                        let fastingMins = (today + Int(round((stats.2 % 1.0) * 60.0)).minutes).toString(DateFormat.Custom("mm"))!
-                        print("in IntroInterfaceController of WatchExtension: \(fastingHrs)")
-                        print(" and minutes: \(fastingMins)")
-                        MetricsStore.sharedInstance.fastingTime = "\(fastingHrs):\(fastingMins)"
-                        MetricsStore.sharedInstance.eatingTime  = (today + Int(stats.0 * 3600.0).seconds).toString(DateFormat.Custom("HH:mm"))!
-                        MetricsStore.sharedInstance.lastAte = lastAte == nil ? "N/A" : lastAte!.toString(DateFormat.Custom("HH:mm"))!
-/*                        if WCSession.isSupported() {
-                            let session = WCSession.defaultSession()
-                            if session.watchAppInstalled {
-                                let userInfo = ["fastingHrs":fastingHrs, "fastingMins":fastingMins]
-                                session.transferUserInfo(userInfo as! [String : AnyObject])
-                            }
-                        } */
-                    }
-//                    mealChart.setNeedsDisplay()
-/*                    Answers.logContentViewWithName("MealTimes",
-                        contentType: HKWorkoutType.workoutType().identifier,
-                        contentId: NSDate().toString(DateFormat.Custom("YYYY-MM-dd:HH:mm:ss")),
-                        customAttributes: nil)  */
-                })
-                
-            }
-//            print("at reloadData call for Circadian")
-            reloadData()
-            print("at reloadData call for Circadian")
-*/
-
-
-/*
-        // This method is called when watch view controller is no longer visible
-        
-        updateHealthInfo()
-        MetricsStore.sharedInstance.weight = weightLocalizedString
-        MetricsStore.sharedInstance.BMI = HKBMIString
-        MetricsStore.sharedInstance.Fat = "90"
-        MetricsStore.sharedInstance.Carbohydrate = "190"
-        MetricsStore.sharedInstance.Protein = "290"
-        
- 
-       
-        
-        //        HealthMetrics.saveConditions(self.healthMetrics)
-        //        print("should have written to file: \(weightLocalizedString)")
-        //            print("should have writtento file: \(bmiHK)")
-        //        print("should have written to file: \(HKBMIString)")
-        //    healthMetrics.BMI = "check"
-        //    HealthMetrics.updateBMI(healthMetrics)
- //   }
-//}
-/*extension IntroInterfaceController {
- func refresh() {
- let yesterday = NSDate(timeIntervalSinceNow: -24 * 60 * 60)
- let today = NSDate()
- healthConditions.loadWeightMetrics(from: yesterday, to: today) { success in
- dispatch_async(dispatch_get_main_queue()) {
- if (success) {
- HealthConditions.saveConditions(self.healthConditions)
- }
- else {
- print("Failed to load data")
- }
- }
- }
- */
- */
-
-

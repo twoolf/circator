@@ -12,7 +12,6 @@
 import WatchKit
 import Foundation
 import HealthKit
-import SwiftDate
 
 struct sleepTimesVariables {
     var sleepBegin: Int
@@ -34,10 +33,9 @@ class SleepInterfaceController: WKInterfaceController {
             tempItems.append(item)
         }
 
-        let thisRegion = DateRegion()
         var beginTimePointer = 24
         let calendar = NSCalendar.currentCalendar()
-        var beginDate = NSDate()
+        let beginDate = NSDate()
         let beginComponents = calendar.components([.Year, .Month, .Day, .Hour, .Minute], fromDate: beginDate)
         if beginComponents.minute < 15 {
             beginTimePointer = 2*beginComponents.hour
@@ -61,8 +59,6 @@ class SleepInterfaceController: WKInterfaceController {
     }
     @IBAction func sleepSaveButton() {
         sleepTimesStruc.sleepBegin = sleep
-        print("Begin from Sleep: and variable --")
-        print(sleepTimesStruc.sleepBegin)
         pushControllerWithName("SleepTimesInterfaceController", context: self)
     }
     }

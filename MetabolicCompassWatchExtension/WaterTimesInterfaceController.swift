@@ -10,7 +10,6 @@
 import Foundation
 import WatchKit
 import HealthKit
-import SwiftDate
 
 struct waterBeginTimeVariable {
     var waterBegin: Int
@@ -32,10 +31,9 @@ class WaterTimesInterfaceController: WKInterfaceController {
             item.contentImage = WKImage(imageName: "Time\(i)")
             tempItems.append(item)
         }
-        let thisRegion = DateRegion()
         var beginTimePointer = 24
         let calendar = NSCalendar.currentCalendar()
-        var beginDate = NSDate()
+        let beginDate = NSDate()
         let beginComponents = calendar.components([.Year, .Month, .Day, .Hour, .Minute], fromDate: beginDate)
         if beginComponents.minute < 15 {
             beginTimePointer = 2*beginComponents.hour
@@ -58,8 +56,6 @@ class WaterTimesInterfaceController: WKInterfaceController {
     
     @IBAction func onWaterTimePick(value: Int) {
         waterBegin = value
-        print("in water picker for begin time")
-        print(waterBegin)
     }
 
     @IBAction func onWaterTimesEnter() {
