@@ -61,12 +61,16 @@ final class HealthConditions: NSObject {
     {
         let sampleType = HKSampleType.quantityTypeForIdentifier(HKQuantityTypeIdentifierBodyMass)
         var weight:HKQuantitySample?
+//        let height:HKQuantitySample?
+//        _:Double = 22.0
         let kUnknownString   = "Unknown"
+//        var HKBMIString:String = "24.0"
+//        let healthKitStore:HKHealthStore = HKHealthStore()
         readMostRecentSample(sampleType!, completion: { (mostRecentWeight, error) -> Void in
             
             if( error != nil )
             {
-//                print("Error reading weight from HealthKit Store: \(error.localizedDescription)")
+                print("Error reading weight from HealthKit Store: \(error.localizedDescription)")
                 return;
             }
             
@@ -80,7 +84,7 @@ final class HealthConditions: NSObject {
             
             dispatch_async(dispatch_get_main_queue(), { () -> Void in
                 self.updateBMI()
-//                print("in weight update: \(weightLocalizedString)")
+                print("in weight update: \(weightLocalizedString)")
             });
         });
     }
@@ -88,15 +92,16 @@ final class HealthConditions: NSObject {
     func updateHeight()
     {
         var height, weight:HKQuantitySample?
+//        _:Double = 22.0
         let kUnknownString   = "Unknown"
         var HKBMIString:String = "24.0"
-        
+//        _:HKHealthStore = HKHealthStore()
         let sampleType = HKSampleType.quantityTypeForIdentifier(HKQuantityTypeIdentifierHeight)
         readMostRecentSample(sampleType!, completion: { (mostRecentHeight, error) -> Void in
             
             if( error != nil )
             {
-//                print("Error reading height from HealthKit Store: \(error.localizedDescription)")
+                print("Error reading height from HealthKit Store: \(error.localizedDescription)")
                 return;
             }
             
@@ -109,7 +114,7 @@ final class HealthConditions: NSObject {
             }
             
             dispatch_async(dispatch_get_main_queue(), { () -> Void in
-//                print("in height update: \(heightLocalizedString)")
+                print("in height update: \(heightLocalizedString)")
                 self.updateBMI()
             });
         })
@@ -117,6 +122,10 @@ final class HealthConditions: NSObject {
     
     func calculateBMIWithWeightInKilograms(weightInKilograms:Double, heightInMeters:Double) -> Double?
     {
+//        var height, weight:HKQuantitySample?
+//        var bmi:Double = 22.0
+//        let kUnknownString   = "Unknown"
+//        var HKBMIString:String = "24.0"
         if heightInMeters == 0 {
             return nil;
         }
@@ -128,17 +137,24 @@ final class HealthConditions: NSObject {
         var height:HKQuantitySample?
         var weight:HKQuantitySample?
         var bmi:Double = 22.0
+//        let kUnknownString   = "Unknown"
         var HKBMIString:String = "24.0"
         if weight != nil && height != nil {
             let weightInKilograms = weight!.quantity.doubleValueForUnit(HKUnit.gramUnitWithMetricPrefix(.Kilo))
             let heightInMeters = height!.quantity.doubleValueForUnit(HKUnit.meterUnit())
             bmi = calculateBMIWithWeightInKilograms(weightInKilograms, heightInMeters: heightInMeters)!
         }
-//        print("new bmi in HealthConditions: \(bmi)")
+        print("new bmi in HealthConditions: \(bmi)")
         HKBMIString = String(format: "%.1f", bmi)
     }
     
     func updateHealthInfo() {
+        //        updateWeight();
+        //        print("updated weight info")
+        //        updateHeight();
+        //        print("updated height info")
+        //        updateBMI();
+        //        print("updated bmi info")
     }
     
 }
@@ -157,11 +173,11 @@ extension HealthConditions {
         
         for (i, value) in weightMetrics.enumerate() {
             let pounds = value.pounds
-            if (i == 0) {
+            if (i == 0) { // First data point
                 let nextPounds = weightMetrics[i+1].pounds
                 value.situation = pounds > nextPounds ? .Falling : .Rising
                 continue
-            } else if (i == weightMetrics.count-1) { 
+            } else if (i == weightMetrics.count-1) { // Last data point
                 let prevPounds = weightMetrics[i-1].pounds
                 value.situation = prevPounds > pounds ? .Falling : .Rising
                 continue
@@ -194,7 +210,7 @@ extension HealthConditions {
         ]
         params["begin_date"] = HealthConditions.dateFormatter.stringFromDate(fromDate)
         params["end_date"] = HealthConditions.dateFormatter.stringFromDate(toDate)
-//        print("in loadWeightMetrics")
+        print("in loadWeightMetrics")
         updateHealthInfo()
         completion(success: true)
     }
@@ -208,6 +224,17 @@ extension HealthConditions {
         return (docPath as NSString).stringByAppendingPathComponent("HealthConditions")
     }
     
+    /*    static func loadConditions() -> HealthConditions {
+     if let data = NSData(contentsOfFile: storePath) {
+     let savedConditions = NSKeyedUnarchiver.unarchiveObjectWithData(data) as! HealthConditions
+     return savedConditions
+     } else {
+     print("initial file not present")
+     let metrics = MetricDescriptions.allMetrics();
+     return HealthConditions(metrics: metrics)
+     }
+     }
+     */
     static func saveConditions(healthConditions:HealthConditions) {
         NSKeyedArchiver.archiveRootObject(healthConditions, toFile: storePath)
     }

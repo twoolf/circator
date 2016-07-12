@@ -6,9 +6,13 @@
 //  Copyright © 2016 Yanif Ahmad, Tom Woolf. All rights reserved.
 //
 
+// similar to Sleep pickers, the first screen is set by time of day and determines
+//   the 'end point' while the 2nd screen is used to set the start of the eating event
+
 import WatchKit
 import Foundation
 import HealthKit
+import SwiftDate
 
 struct mealTimesVariables {
     var mealBegin: Int
@@ -33,9 +37,10 @@ class MealInterfaceController: WKInterfaceController {
         }
         mealPicker.setItems(tempItems)
         
+        let thisRegion = DateRegion()
         var beginTimePointer = 24
         let calendar = NSCalendar.currentCalendar()
-        let beginDate = NSDate()
+        var beginDate = NSDate()
         let beginComponents = calendar.components([.Year, .Month, .Day, .Hour, .Minute], fromDate: beginDate)
         if beginComponents.minute < 15 {
             beginTimePointer = 2*beginComponents.hour
@@ -60,29 +65,43 @@ class MealInterfaceController: WKInterfaceController {
         let buttonColor = UIColor(red: 0.01, green: 0.41, blue: 0.22, alpha: 1.0)
         enterButton.setBackgroundColor(buttonColor)
         enterButton.setTitle("Saved")
-
-        // initially assumes duration w/current time being end point; start-time by picker
+// initially assumes duration w/current time being end point; start-time by picker
+        print("HKStore should update for meal: \(mealTypebyButton.mealType) ")
+        let thisRegion = DateRegion()
         let calendar = NSCalendar.currentCalendar()
-        let beginDate = NSDate()
-
+        var beginDate = NSDate()
+        let beginComponents = calendar.components([.Year, .Month, .Day, .Hour, .Minute], fromDate: beginDate)
+    
+        var closeDate = beginDate
+        let closeComponents = calendar.components([.Year, .Month, .Day, .Hour, .Minute], fromDate: beginDate)
+    
         var timeConvertClose:Int = 0
         var timeAddHalfHourClose:Int = 0
-        let mealDuration = 0
+        var mealDuration = 0
         if mealDuration % 2 == 0 {
+            print("\(mealDuration) from meal duration is even")
+            _=0
             timeConvertClose = ( (mealDuration)/2)
         } else {
+            print("\(mealDuration) from meal duration is odd")
+            _=30
             timeConvertClose = ( (mealDuration-1)/2  )
             timeAddHalfHourClose=30
         }
         
-        let closeComponents = calendar.components([.Year, .Month, .Day, .Hour, .Minute], fromDate: beginDate)
         closeComponents.hour = timeConvertClose
         closeComponents.minute = timeAddHalfHourClose
-        let closeDate = calendar.dateFromComponents(closeComponents)!
+        closeDate = calendar.dateFromComponents(closeComponents)!
         
+        let mealDurationHours = beginComponents.hour - closeComponents.hour
         let mealDurationDate = beginDate.timeIntervalSinceDate(closeDate)
-
-        let workout = HKWorkout(activityType: .PreparationAndRecovery,
+        if (beginDate<closeDate){
+            print("begin Date is before close Date")
+            print("\(beginDate) and \(closeDate)")
+        }
+        
+        let workout = HKWorkout(activityType:
+            .PreparationAndRecovery,
                                 startDate: beginDate,
                                 endDate: closeDate,
                                 duration: mealDurationDate,
@@ -100,7 +119,10 @@ class MealInterfaceController: WKInterfaceController {
     }
     @IBAction func mealSaveButton() {
         mealTimesStruc.mealBegin = mealTime
+        print("Begin of meal time: and variable --")
+        print(mealTimesStruc.mealBegin)
         pushControllerWithName("MealStartTimeController", context: self)
+//        showButton()
     }
 }
 
