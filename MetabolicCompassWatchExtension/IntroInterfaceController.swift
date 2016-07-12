@@ -144,7 +144,7 @@ struct MCAggregateSample : MCSample {
             case HKWorkoutTypeIdentifier:
                 numeralValue = (numeralValue ?? 0.0) + sample.numeralValue!
                 
-            default:
+            default: break
 //                print("Cannot aggregate \(hkType)")
             }
             
