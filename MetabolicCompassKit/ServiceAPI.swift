@@ -129,8 +129,9 @@ enum MCRouter : URLRequestConvertible {
     }
 
     // Data API
-    case UploadHKMeasures([String: AnyObject])
-    case AggMeasures([String: AnyObject])
+    case AddMeasures([String: AnyObject])
+    case RemoveMeasures([String: AnyObject])
+    case AggregateMeasures([String: AnyObject])
 
     // User and profile management API
     case GetUserAccountData([AccountComponent])
@@ -146,10 +147,13 @@ enum MCRouter : URLRequestConvertible {
 
     var method: Alamofire.Method {
         switch self {
-        case .UploadHKMeasures:
+        case .AddMeasures:
             return .POST
 
-        case .AggMeasures:
+        case .RemoveMeasures:
+            return .POST
+
+        case .AggregateMeasures:
             return .GET
 
         case .DeleteAccount:
@@ -168,10 +172,13 @@ enum MCRouter : URLRequestConvertible {
 
     var path: String {
         switch self {
-        case .UploadHKMeasures:
+        case .AddMeasures:
             return "/measures"
 
-        case .AggMeasures:
+        case .RemoveMeasures:
+            return "/measures/mc/delete"
+
+        case .AggregateMeasures:
             return "/measures/mc/avg"
 
         case .DeleteAccount:
@@ -196,10 +203,13 @@ enum MCRouter : URLRequestConvertible {
         }
 
         switch self {
-        case .UploadHKMeasures(let parameters):
+        case .AddMeasures(let parameters):
             return Alamofire.ParameterEncoding.JSON.encode(mutableURLRequest, parameters: parameters).0
 
-        case .AggMeasures(let parameters):
+        case .RemoveMeasures(let parameters):
+            return Alamofire.ParameterEncoding.JSON.encode(mutableURLRequest, parameters: parameters).0
+
+        case .AggregateMeasures(let parameters):
             return Alamofire.ParameterEncoding.URL.encode(mutableURLRequest, parameters: parameters).0
 
         case .DeleteAccount:

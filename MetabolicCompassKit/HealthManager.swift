@@ -2073,14 +2073,14 @@ public class HealthManager: NSObject, WCSessionDelegate {
     }
 
     func uploadSample(jsonObj: [String: AnyObject]) -> () {
-        Service.string(MCRouter.UploadHKMeasures(jsonObj), statusCode: 200..<300, tag: "UPLOAD") {
+        Service.string(MCRouter.AddMeasures(jsonObj), statusCode: 200..<300, tag: "UPLOAD") {
             _, response, result in
             log.info("Upload: \(result.value)")
         }
     }
 
     public func uploadSampleBlock(jsonObjBlock: [[String:AnyObject]]) -> () {
-        Service.string(MCRouter.UploadHKMeasures(["block":jsonObjBlock]), statusCode: 200..<300, tag: "UPLOAD") {
+        Service.string(MCRouter.AddMeasures(["block":jsonObjBlock]), statusCode: 200..<300, tag: "UPLOAD") {
             _, response, result in
             log.info("Upload: \(result.value)")
         }
@@ -2173,6 +2173,8 @@ public class HealthManager: NSObject, WCSessionDelegate {
             completion(true, nil)
         }
     }
+
+    // MARK: - TODO: Synchronized deletion helpers.
 
 
     // MARK: - Apple Watch

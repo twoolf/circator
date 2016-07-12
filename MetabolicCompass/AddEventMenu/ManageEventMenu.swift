@@ -28,13 +28,21 @@ class PickerManager: NSObject, AKPickerViewDelegate, AKPickerViewDataSource {
     var data : [String]
     var current : String
 
+    override init() {
+        self.data = []
+        self.current = ""
+    }
+
     init(data: [String]) {
         self.data = data
         self.current = ""
     }
 
-    // MARK: - AKPickerViewDataSource
+    func refreshData(data: [String]) {
+        self.data = data
+    }
 
+    // MARK: - AKPickerViewDataSource
     func numberOfItemsInPickerView(pickerView: AKPickerView) -> Int {
         return self.data.count
     }
@@ -80,73 +88,85 @@ class FavoritesButton : MCButton {
     }
 }
 
-public class ManageEventMenu: UIView, PathMenuItemDelegate, UITableViewDelegate, UITableViewDataSource {
+/// AKPickerViews as Former cells/rows.
+public class AKPickerCell: FormCell, AKPickerFormableRow {
+    private var picker: AKPickerView! = nil
+    private var manager: PickerManager! = nil
 
+    public override func updateWithRowFormer(rowFormer: RowFormer) {
+        super.updateWithRowFormer(rowFormer)
+    }
+
+    public override func setup() {
+        manager = PickerManager()
+
+        // Delete Recent picker.
+        picker = AKPickerView()
+        picker.delegate = manager
+        picker.dataSource = manager
+        picker.interitemSpacing = 50
+
+        let pickerFont = UIFont.systemFontOfSize(16.0)
+        picker.font = pickerFont
+        picker.highlightedFont = pickerFont
+
+        picker.backgroundColor = UIColor.clearColor().colorWithAlphaComponent(0.0)
+        picker.highlightedTextColor = UIColor.whiteColor()
+        picker.textColor = UIColor.whiteColor().colorWithAlphaComponent(0.7)
+        picker.reloadData()
+
+        picker.translatesAutoresizingMaskIntoConstraints = false
+        contentView.addSubview(picker)
+
+        let pickerConstraints : [NSLayoutConstraint] = [
+            contentView.topAnchor.constraintEqualToAnchor(picker.topAnchor),
+            contentView.bottomAnchor.constraintEqualToAnchor(picker.bottomAnchor),
+            contentView.leadingAnchor.constraintEqualToAnchor(picker.leadingAnchor),
+            contentView.trailingAnchor.constraintEqualToAnchor(picker.trailingAnchor),
+            picker.heightAnchor.constraintEqualToConstant(40.0)
+        ]
+
+        contentView.addConstraints(pickerConstraints)
+    }
+
+    public func formPicker() -> AKPickerView? {
+        return picker
+    }
+}
+
+public protocol AKPickerFormableRow {
+    func formPicker() -> AKPickerView?
+}
+
+public class AKPickerRowFormer<T: UITableViewCell where T: AKPickerFormableRow> : BaseRowFormer<T>, Formable {
+    public required init(instantiateType: Former.InstantiateType = .Class, cellSetup: (T -> Void)? = nil) {
+        super.init(instantiateType: instantiateType, cellSetup: cellSetup)
+    }
+
+    public override func update() {
+        super.update()
+    }
+}
+
+// A UITableView subclass to implement circadian event addition
+public class AddEventTable: UITableView, UITableViewDelegate, UITableViewDataSource
+{
     //MARK: tags for menu components.
     public let favoritesTag = 1000
     public let itemsTag = 2000
 
-    public var menuItems: [PathMenuItem] = []
-
-    public var startButton: PathMenuItem?
-    public weak var delegate: ManageEventMenuDelegate?
-
-    public var flag: Int?
-    public var timer: NSTimer?
-
-    public var timeOffset: CGFloat!
-
-    public var animationDuration: CGFloat!
-    public var startMenuAnimationDuration: CGFloat!
-
-    public var motionState: State?
-
-    public var startPoint: CGPoint = CGPointZero {
-        didSet {
-            startButton?.center = startPoint
-        }
-    }
-
-    //MARK: Image
-
-    public var image: UIImage? {
-        didSet {
-            startButton?.image = image
-        }
-    }
-
-    public var highlightedImage: UIImage? {
-        didSet {
-            startButton?.highlightedImage = highlightedImage
-        }
-    }
-
-    public var contentImage: UIImage? {
-        didSet {
-            startButton?.contentImageView?.image = contentImage
-        }
-    }
-
-    public var highlightedContentImage: UIImage? {
-        didSet {
-            startButton?.contentImageView?.highlightedImage = highlightedContentImage
-        }
-    }
-    
-
-    //MARK: Quick add event table.
-    public let tableView: UITableView = UITableView(frame: CGRect.zero, style: .Grouped)
+    public var menuItems: [PathMenuItem]
 
     private let addEventCellIdentifier = "addEventCell"
     private let addEventSectionHeaderCellIdentifier = "addEventSectionHeaderCell"
 
-    private let pickerSections = ["1-Tap Favorites", "Quick Add Event", "Detailed Event"]
+    private let addPickerSections = ["1-Tap Favorites", "Quick Add Event", "Detailed Event"]
 
-    private var favoritesData : [(String, Int)] = []
-    private var favoritesButtons : [UIStackView] = []
+    private var addFavoritesData : [(String, Int)] = []
+    private var addFavoritesButtons : [UIStackView] = []
 
     private let quickAddSectionData = [
-          ["Breakfast", "Lunch", "Dinner", "Snack", "Running", "Cycling", "Exercise"]
+        ["Breakfast", "Lunch", "Dinner", "Snack", "Running", "Cycling", "Exercise"]
         , ["5", "10", "15", "20", "30", "45", "60", "75", "90", "120"]
     ]
 
@@ -154,65 +174,44 @@ public class ManageEventMenu: UIView, PathMenuItemDelegate, UITableViewDelegate,
     private var quickAddManagers: [PickerManager] = []
     private var quickAddHeaderViews : [UIView] = []
 
-    struct Duration {
-        static var DefaultAnimation: CGFloat      = 0.5
-        static var MenuDefaultAnimation: CGFloat  = 0.2
+    public init(frame: CGRect, style: UITableViewStyle, menuItems: [PathMenuItem]) {
+        self.menuItems = menuItems
+        super.init(frame: frame, style: style)
+        self.setupTable()
     }
-
-    public enum State {
-        case Close
-        case Expand
-    }
-        
+    
     required public init?(coder aDecoder: NSCoder) {
-        super.init(coder: aDecoder)
-    }
-    
-    override public init(frame: CGRect) {
-        super.init(frame: frame)
-    }
-    
-    convenience public init(frame: CGRect!, startItem: PathMenuItem?, items:[PathMenuItem]?) {
-        self.init(frame: frame)
-
-        self.menuItems = items ?? []
-        self.menuItems.enumerate().forEach { (index, item) in
-            item.tag = itemsTag + index
+        guard let mi = aDecoder.decodeObjectForKey("menuItems") as? [PathMenuItem] else {
+            menuItems = []; super.init(frame: CGRect.zero, style: .Grouped); return nil
         }
 
-        self.timeOffset = 0.036
-        self.animationDuration = Duration.DefaultAnimation
-        self.startMenuAnimationDuration = Duration.MenuDefaultAnimation
-        self.startPoint = CGPointMake(UIScreen.mainScreen().bounds.width/2, UIScreen.mainScreen().bounds.height/2)
-        self.motionState = .Close
-        
-        self.startButton = startItem
-        self.startButton!.delegate = self
-        self.startButton!.center = startPoint
-        self.addSubview(startButton!)
-
-        self.setupQuickAdd()
+        menuItems = mi
+        super.init(coder: aDecoder)
     }
 
-    private func setupQuickAdd() {
-        tableView.hidden = true
-        tableView.layer.opacity = 0.0
+    override public func encodeWithCoder(aCoder: NSCoder) {
+        aCoder.encodeObject(menuItems, forKey: "menuItems")
+    }
 
-        tableView.registerClass(UITableViewCell.self, forCellReuseIdentifier: addEventCellIdentifier)
-        tableView.registerClass(UITableViewCell.self, forCellReuseIdentifier: addEventSectionHeaderCellIdentifier)
+    private func setupTable() {
+        self.hidden = true
+        self.layer.opacity = 0.0
 
-        tableView.delegate = self;
-        tableView.dataSource = self;
+        self.registerClass(UITableViewCell.self, forCellReuseIdentifier: addEventCellIdentifier)
+        self.registerClass(UITableViewCell.self, forCellReuseIdentifier: addEventSectionHeaderCellIdentifier)
 
-        tableView.estimatedRowHeight = 80.0
-        tableView.estimatedSectionHeaderHeight = 40.0
-        tableView.rowHeight = UITableViewAutomaticDimension
-        tableView.sectionHeaderHeight = UITableViewAutomaticDimension
+        self.delegate = self;
+        self.dataSource = self;
 
-        tableView.separatorInset = UIEdgeInsetsZero
-        tableView.layoutMargins = UIEdgeInsetsZero
+        self.estimatedRowHeight = 80.0
+        self.estimatedSectionHeaderHeight = 40.0
+        self.rowHeight = UITableViewAutomaticDimension
+        self.sectionHeaderHeight = UITableViewAutomaticDimension
+
+        self.separatorInset = UIEdgeInsetsZero
+        self.layoutMargins = UIEdgeInsetsZero
         if #available(iOS 9, *) {
-            tableView.cellLayoutMarginsFollowReadableWidth = false
+            self.cellLayoutMarginsFollowReadableWidth = false
         }
 
         self.setupFavorites()
@@ -245,9 +244,9 @@ public class ManageEventMenu: UIView, PathMenuItemDelegate, UITableViewDelegate,
             label.font = UIFont.systemFontOfSize(17, weight: UIFontWeightRegular)
             label.textColor = .whiteColor()
             label.textAlignment = .Center
-            label.text = pickerSections[1]
+            label.text = addPickerSections[1]
             return label
-        }())
+            }())
 
         quickAddHeaderViews.append({
             let button = MCButton(frame: CGRectMake(0, 0, 100, 44), buttonStyle: .Rounded)
@@ -261,27 +260,26 @@ public class ManageEventMenu: UIView, PathMenuItemDelegate, UITableViewDelegate,
             button.addTarget(self, action: #selector(handleQuickAddTap(_:)), forControlEvents: .TouchUpInside)
             return button
         }())
-
     }
 
     func setupFavorites() {
         let hour = NSDate().nearestHour
         if 3 <= hour && hour < 11 {
             // Breakfast and early lunch
-            self.favoritesData = [("Breakfast", 15), ("Breakfast", 30), ("Breakfast", 60), ("Lunch", 30), ("Lunch", 60)]
+            self.addFavoritesData = [("Breakfast", 15), ("Breakfast", 30), ("Breakfast", 60), ("Lunch", 30), ("Lunch", 60)]
         }
 
         if 11 <= hour && hour < 18 {
             // Lunch and early dinner
-            self.favoritesData = [("Lunch", 15), ("Lunch", 30), ("Lunch", 60), ("Dinner", 30), ("Dinner", 60)]
+            self.addFavoritesData = [("Lunch", 15), ("Lunch", 30), ("Lunch", 60), ("Dinner", 30), ("Dinner", 60)]
         }
 
         if 18 <= hour || hour < 3 {
             // Dinner
-            self.favoritesData = [("Dinner", 15), ("Dinner", 30), ("Dinner", 45), ("Dinner", 60), ("Dinner", 90)]
+            self.addFavoritesData = [("Dinner", 15), ("Dinner", 30), ("Dinner", 45), ("Dinner", 60), ("Dinner", 90)]
         }
 
-        self.favoritesButtons = self.favoritesData.enumerate().flatMap { (index, buttonSpec) in
+        self.addFavoritesButtons = self.addFavoritesData.enumerate().flatMap { (index, buttonSpec) in
             let favButton: UIButton = {
                 let button = FavoritesButton(frame: CGRectMake(110, 300, 100, 100), buttonStyle: .Circular, mealType: buttonSpec.0, duration: buttonSpec.1)
                 button.tag = self.favoritesTag + index
@@ -310,7 +308,7 @@ public class ManageEventMenu: UIView, PathMenuItemDelegate, UITableViewDelegate,
                 stack.alignment = UIStackViewAlignment.Fill
                 return stack
             }()
-            
+
             return stack
         }
     }
@@ -480,6 +478,434 @@ public class ManageEventMenu: UIView, PathMenuItemDelegate, UITableViewDelegate,
         }
     }
 
+    //MARK: UITableViewDataSource
+
+    public func numberOfSectionsInTableView(tableView: UITableView) -> Int {
+        return addPickerSections.count
+    }
+
+    public func tableView(tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+        if section == 0 {
+            return 1
+        } else if section == 1 {
+            return quickAddSectionData.count
+        } else {
+            return 1
+        }
+    }
+
+    public func tableView(tableView: UITableView, titleForHeaderInSection section: Int) -> String? {
+        return addPickerSections[section]
+    }
+
+    public func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell {
+        let cell = tableView.dequeueReusableCellWithIdentifier(addEventCellIdentifier, forIndexPath: indexPath)
+
+        for sv in cell.contentView.subviews { sv.removeFromSuperview() }
+        cell.textLabel?.hidden = true
+        cell.imageView?.image = nil
+        cell.accessoryType = .None
+        cell.selectionStyle = .None
+
+        cell.backgroundColor = UIColor.clearColor()
+        cell.contentView.backgroundColor = UIColor.clearColor()
+
+        if indexPath.section == 0 || indexPath.section == 2 {
+            if indexPath.section == 0 {
+                setupFavorites()
+            }
+
+            let stackView: UIStackView = UIStackView(arrangedSubviews: indexPath.section == 0 ? self.addFavoritesButtons : (self.menuItems ?? []))
+            stackView.axis = .Horizontal
+            stackView.distribution = UIStackViewDistribution.FillEqually
+            stackView.alignment = UIStackViewAlignment.Fill
+            stackView.spacing = 10
+
+            stackView.translatesAutoresizingMaskIntoConstraints = false
+            cell.contentView.addSubview(stackView)
+
+            var stackConstraints : [NSLayoutConstraint] = [
+                cell.contentView.topAnchor.constraintEqualToAnchor(stackView.topAnchor, constant: -10),
+                cell.contentView.bottomAnchor.constraintEqualToAnchor(stackView.bottomAnchor, constant: 10),
+                cell.contentView.leadingAnchor.constraintEqualToAnchor(stackView.leadingAnchor),
+                cell.contentView.trailingAnchor.constraintEqualToAnchor(stackView.trailingAnchor)
+            ]
+
+            if indexPath.section == 0 {
+                self.addFavoritesButtons.forEach { stack in
+                    let button = stack.arrangedSubviews[0]
+                    let label = stack.arrangedSubviews[1]
+                    stackConstraints.appendContentsOf([
+                        button.heightAnchor.constraintEqualToAnchor(button.widthAnchor),
+                        label.widthAnchor.constraintEqualToAnchor(button.widthAnchor),
+                        label.topAnchor.constraintEqualToAnchor(button.bottomAnchor),
+                        label.heightAnchor.constraintEqualToConstant(15),
+                        stack.topAnchor.constraintEqualToAnchor(button.topAnchor),
+                        stack.bottomAnchor.constraintEqualToAnchor(label.bottomAnchor),
+                        stack.leadingAnchor.constraintEqualToAnchor(button.leadingAnchor),
+                        stack.trailingAnchor.constraintEqualToAnchor(button.trailingAnchor)
+                        ])
+                }
+            }
+            cell.contentView.addConstraints(stackConstraints)
+        }
+        else if indexPath.section == 1 {
+            cell.separatorInset = UIEdgeInsetsZero
+            cell.layoutMargins = UIEdgeInsetsZero
+
+            let picker = quickAddPickers[indexPath.row]
+            picker.translatesAutoresizingMaskIntoConstraints = false
+            cell.contentView.addSubview(picker)
+
+            let pickerConstraints : [NSLayoutConstraint] = [
+                cell.contentView.topAnchor.constraintEqualToAnchor(picker.topAnchor),
+                cell.contentView.bottomAnchor.constraintEqualToAnchor(picker.bottomAnchor),
+                cell.contentView.leadingAnchor.constraintEqualToAnchor(picker.leadingAnchor),
+                cell.contentView.trailingAnchor.constraintEqualToAnchor(picker.trailingAnchor),
+                picker.heightAnchor.constraintEqualToConstant(40.0)
+            ]
+
+            cell.contentView.addConstraints(pickerConstraints)
+        }
+
+        return cell
+    }
+
+    //MARK: UITableViewDelegate
+    public func tableView(tableView: UITableView, viewForHeaderInSection section: Int) -> UIView? {
+        let cell = tableView.dequeueReusableCellWithIdentifier(addEventSectionHeaderCellIdentifier)!
+
+        if section == 1 {
+            for sv in cell.contentView.subviews { sv.removeFromSuperview() }
+            cell.textLabel?.text = self.addPickerSections[section]
+            cell.textLabel?.textColor = .whiteColor()
+
+            cell.imageView?.image = nil
+            cell.accessoryType = .None
+            cell.selectionStyle = .None
+
+            cell.backgroundColor = UIColor.clearColor()
+            cell.contentView.backgroundColor = UIColor.clearColor()
+
+            cell.separatorInset = UIEdgeInsetsZero
+            cell.layoutMargins = UIEdgeInsetsZero
+
+            let button = self.quickAddHeaderViews[1]
+            button.translatesAutoresizingMaskIntoConstraints = false
+            cell.contentView.addSubview(button)
+
+            let buttonConstraints : [NSLayoutConstraint] = [
+                cell.contentView.topAnchor.constraintEqualToAnchor(button.topAnchor),
+                cell.contentView.bottomAnchor.constraintEqualToAnchor(button.bottomAnchor),
+                cell.contentView.trailingAnchor.constraintEqualToAnchor(button.trailingAnchor),
+                button.widthAnchor.constraintEqualToConstant(100),
+                button.heightAnchor.constraintEqualToConstant(44)
+            ]
+
+            cell.contentView.addConstraints(buttonConstraints)
+
+        } else {
+            cell.textLabel?.text = self.addPickerSections[section]
+            cell.textLabel?.textColor = .whiteColor()
+        }
+        return cell;
+    }
+}
+
+// A UITableView subclass to implement circadian event deletion
+// This is implemented as a Former-based form
+public class DeleteEventTable: UITableView
+{
+    public var menuItems: [PathMenuItem]
+    private lazy var delFormer: Former = Former(tableView: self)
+
+    private let delPickerSections = ["Delete All Recent Events", "Delete Events By Date"]
+
+    private let quickDelRecentData =
+        ["15m", "30m", "1h", "1h 30m", "2h", "3h", "4h", "6h", "8h", "12h", "18h", "24h"]
+
+    private var quickDelRecentPicker: AKPickerView! = nil
+    private var quickDelRecentManager: PickerManager! = nil
+    private var quickDelDateRows: [FormInlineDatePickerCell] = []
+    private var quickDelHeaderViews : [UIView] = []
+
+    public init(frame: CGRect, style: UITableViewStyle, menuItems: [PathMenuItem]) {
+        self.menuItems = menuItems
+        super.init(frame: frame, style: style)
+        self.setupFormer()
+    }
+
+    required public init?(coder aDecoder: NSCoder) {
+        guard let mi = aDecoder.decodeObjectForKey("menuItems") as? [PathMenuItem] else {
+            menuItems = []; super.init(frame: CGRect.zero, style: .Grouped); return nil
+        }
+
+        menuItems = mi
+        super.init(coder: aDecoder)
+    }
+
+    override public func encodeWithCoder(aCoder: NSCoder) {
+        aCoder.encodeObject(menuItems, forKey: "menuItems")
+    }
+
+    private func setupFormer() {
+        self.hidden = true
+
+        self.separatorInset = UIEdgeInsetsZero
+        self.layoutMargins = UIEdgeInsetsZero
+
+        let mediumDateShortTime: NSDate -> String = { date in
+            let dateFormatter = NSDateFormatter()
+            dateFormatter.locale = .currentLocale()
+            dateFormatter.timeStyle = .ShortStyle
+            dateFormatter.dateStyle = .MediumStyle
+            return dateFormatter.stringFromDate(date)
+        }
+
+        let deleteRecentRow = AKPickerRowFormer<AKPickerCell>() {
+                $0.backgroundColor = .clearColor()
+                $0.manager.refreshData(self.quickDelRecentData)
+                $0.picker.reloadData()
+            }.configure {
+                $0.rowHeight = UITableViewAutomaticDimension
+        }
+
+        let deleteByDateRows = ["Start Date", "End Date"].map { rowName in
+            return InlineDatePickerRowFormer<FormInlineDatePickerCell>() {
+                $0.backgroundColor = .clearColor()
+                $0.titleLabel.text = rowName
+                $0.titleLabel.textColor = .whiteColor()
+                $0.titleLabel.font = UIFont.systemFontOfSize(16, weight: UIFontWeightRegular)
+                $0.displayLabel.textColor = .lightGrayColor()
+                $0.displayLabel.font = UIFont.systemFontOfSize(16, weight: UIFontWeightRegular)
+                }.inlineCellSetup {
+                    $0.datePicker.datePickerMode = .DateAndTime
+                    $0.datePicker.minuteInterval = 15
+                }.configure {
+                    $0.displayEditingColor = .whiteColor()
+                }.displayTextFromDate(mediumDateShortTime)
+        }
+
+        let headers = delPickerSections.map { sectionName in
+            return LabelViewFormer<FormLabelHeaderView> {
+                $0.contentView.backgroundColor = .clearColor()
+                $0.titleLabel.backgroundColor = .clearColor()
+                $0.titleLabel.textColor = .whiteColor()
+                $0.titleLabel.font = UIFont.systemFontOfSize(17, weight: UIFontWeightRegular)
+
+                let button: MCButton = {
+                    let button = MCButton(frame: CGRectMake(0, 0, 100, 44), buttonStyle: .Rounded)
+                    button.buttonColor = .clearColor()
+                    button.shadowColor = .clearColor()
+                    button.shadowHeight = 0
+                    button.setTitle("Delete", forState: .Normal)
+                    button.setTitleColor(.whiteColor(), forState: .Normal)
+                    button.titleLabel?.font = UIFont.systemFontOfSize(14, weight: UIFontWeightRegular)
+                    button.titleLabel?.textAlignment = .Right
+                    if sectionName == self.delPickerSections[0] {
+                        button.addTarget(self, action: #selector(self.handleQuickDelRecentTap(_:)), forControlEvents: .TouchUpInside)
+
+                    } else {
+                        button.addTarget(self, action: #selector(self.handleQuickDelDateTap(_:)), forControlEvents: .TouchUpInside)
+                    }
+                    return button
+                }()
+
+                button.translatesAutoresizingMaskIntoConstraints = false
+                $0.contentView.addSubview(button)
+
+                let buttonConstraints : [NSLayoutConstraint] = [
+                    $0.contentView.topAnchor.constraintEqualToAnchor(button.topAnchor),
+                    $0.contentView.bottomAnchor.constraintEqualToAnchor(button.bottomAnchor),
+                    $0.contentView.trailingAnchor.constraintEqualToAnchor(button.trailingAnchor),
+                    button.widthAnchor.constraintEqualToConstant(100),
+                    button.heightAnchor.constraintEqualToConstant(44)
+                ]
+
+                $0.contentView.addConstraints(buttonConstraints)
+
+                }.configure { view in
+                    view.viewHeight = 44
+                    view.text = sectionName
+            }
+        }
+
+        let deleteRecentSection = SectionFormer(rowFormer: deleteRecentRow).set(headerViewFormer: headers[0])
+        let deleteByDateSection = SectionFormer(rowFormers: deleteByDateRows).set(headerViewFormer: headers[1])
+        delFormer.append(sectionFormer: deleteRecentSection, deleteByDateSection)
+
+    }
+
+    //TODO: for adds, we add to HealthKit and rely on the observer query to push to the backend.
+    // For deletes, we need to refine the observer queries to provide similar functionality.
+    // Currently deletions are simply dropped on the floor.
+    func handleQuickDelRecentTap(sender: UIButton) {
+        log.info("Delete recent tapped")
+    }
+
+    func handleQuickDelDateTap(sender: UIButton) {
+        log.info("Delete by date tapped")
+    }
+}
+
+public class ManageEventMenu: UIView, PathMenuItemDelegate {
+
+    //MARK: Internal typdefs
+    struct Duration {
+        static var DefaultAnimation: CGFloat      = 0.5
+        static var MenuDefaultAnimation: CGFloat  = 0.2
+    }
+
+    public enum State {
+        case Close
+        case Expand
+    }
+
+    //MARK: tags for menu components.
+    public let favoritesTag = 1000
+    public let itemsTag = 2000
+
+    public var menuItems: [PathMenuItem] = []
+
+    public var startButton: PathMenuItem?
+    public weak var delegate: ManageEventMenuDelegate?
+
+    public var flag: Int?
+    public var timer: NSTimer?
+
+    public var timeOffset: CGFloat!
+
+    public var animationDuration: CGFloat!
+    public var startMenuAnimationDuration: CGFloat!
+
+    public var motionState: State?
+
+    public var startPoint: CGPoint = CGPointZero {
+        didSet {
+            startButton?.center = startPoint
+        }
+    }
+
+    //MARK: Image
+
+    public var image: UIImage? {
+        didSet {
+            startButton?.image = image
+        }
+    }
+
+    public var highlightedImage: UIImage? {
+        didSet {
+            startButton?.highlightedImage = highlightedImage
+        }
+    }
+
+    public var contentImage: UIImage? {
+        didSet {
+            startButton?.contentImageView?.image = contentImage
+        }
+    }
+
+    public var highlightedContentImage: UIImage? {
+        didSet {
+            startButton?.contentImageView?.highlightedImage = highlightedContentImage
+        }
+    }
+    
+
+    //MARK: Quick add event table.
+    public var addTableView: AddEventTable! = nil
+
+    //MARK: Quick delete event table.
+    public var delTableView: DeleteEventTable! = nil
+
+    //MARK: Segmented control for add/delete interation
+    var segmenter: UISegmentedControl! = nil
+
+    //MARK: Initializers
+    required public init?(coder aDecoder: NSCoder) {
+        super.init(coder: aDecoder)
+    }
+
+    override public init(frame: CGRect) {
+        super.init(frame: frame)
+    }
+    
+    convenience public init(frame: CGRect!, startItem: PathMenuItem?, items:[PathMenuItem]?) {
+        self.init(frame: frame)
+
+        self.menuItems = items ?? []
+        self.menuItems.enumerate().forEach { (index, item) in
+            item.tag = itemsTag + index
+        }
+
+        self.timeOffset = 0.036
+        self.animationDuration = Duration.DefaultAnimation
+        self.startMenuAnimationDuration = Duration.MenuDefaultAnimation
+        self.startPoint = CGPointMake(UIScreen.mainScreen().bounds.width/2, UIScreen.mainScreen().bounds.height/2)
+        self.motionState = .Close
+        
+        self.startButton = startItem
+        self.startButton!.delegate = self
+        self.startButton!.center = startPoint
+        self.addSubview(startButton!)
+
+        self.addTableView = AddEventTable(frame: CGRect.zero, style: .Grouped, menuItems: self.menuItems)
+        self.delTableView = DeleteEventTable(frame: CGRect.zero, style: .Grouped, menuItems: self.menuItems)
+
+        let attrs = [NSFontAttributeName: UIFont.systemFontOfSize(17, weight: UIFontWeightRegular)]
+        self.segmenter = UISegmentedControl(items: ["Add event", "Delete events"])
+        self.segmenter.selectedSegmentIndex = 0
+        self.segmenter.setTitleTextAttributes(attrs, forState: .Normal)
+        self.segmenter.addTarget(self, action: #selector(segmentChanged(_:)), forControlEvents: .ValueChanged)
+
+        self.segmenter.hidden = true
+        self.segmenter.translatesAutoresizingMaskIntoConstraints = false
+        self.addSubview(segmenter)
+
+        let segConstraints : [NSLayoutConstraint] = [
+            segmenter.topAnchor.constraintEqualToAnchor(topAnchor, constant: 60.0),
+            segmenter.heightAnchor.constraintEqualToConstant(30.0),
+            segmenter.leadingAnchor.constraintEqualToAnchor(leadingAnchor, constant: 20.0),
+            segmenter.trailingAnchor.constraintEqualToAnchor(trailingAnchor, constant: -20.0)
+        ]
+
+        self.addConstraints(segConstraints)
+    }
+
+    public func getCurrentTable() -> UITableView? {
+        if segmenter.selectedSegmentIndex == 0 {
+            return addTableView
+        } else {
+            return delTableView
+        }
+    }
+
+    public func getOtherTable() -> UITableView! {
+        if segmenter.selectedSegmentIndex == 0 {
+            return delTableView
+        } else {
+            return addTableView
+        }
+    }
+
+    public func hideView(hide: Bool = false) {
+        self.segmenter.hidden = hide
+        refreshHiddenFromSegmenter(hide)
+    }
+
+    public func refreshHiddenFromSegmenter(hide: Bool = false) {
+        getCurrentTable()?.hidden = hide
+        getOtherTable()?.hidden = true
+    }
+
+    func segmentChanged(sender: UISegmentedControl) {
+        Async.main {
+            self.refreshHiddenFromSegmenter()
+            self.updateViewFromSegmenter()
+        }
+    }
+
     //MARK: UIView's methods
 
     override public func pointInside(point: CGPoint, withEvent event: UIEvent?) -> Bool {
@@ -586,8 +1012,8 @@ public class ManageEventMenu: UIView, PathMenuItemDelegate, UITableViewDelegate,
             animationgroup.setValue("firstAnimation", forKey: "id")
         }
 
-        tableView.layer.addAnimation(animationgroup, forKey: "Expand")
-        tableView.layer.opacity = 1.0
+        getCurrentTable()?.layer.addAnimation(animationgroup, forKey: "Expand")
+        getCurrentTable()?.layer.opacity = 1.0
 
         flag! += 1
     }
@@ -618,8 +1044,8 @@ public class ManageEventMenu: UIView, PathMenuItemDelegate, UITableViewDelegate,
             animationgroup.setValue("lastAnimation", forKey: "id")
         }
 
-        tableView.layer.addAnimation(animationgroup, forKey: "Close")
-        tableView.layer.opacity = 0.0
+        getCurrentTable()?.layer.addAnimation(animationgroup, forKey: "Close")
+        getCurrentTable()?.layer.opacity = 0.0
 
         flag! -= 1
     }
@@ -630,181 +1056,36 @@ public class ManageEventMenu: UIView, PathMenuItemDelegate, UITableViewDelegate,
             item.tag = itemsTag + index
             item.delegate = self
         }
-
-        tableView.backgroundColor = .clearColor()
-        tableView.translatesAutoresizingMaskIntoConstraints = false
-        insertSubview(tableView, belowSubview: startButton!)
-
-        let tableConstraints = [
-            NSLayoutConstraint.constraintsWithVisualFormat(
-                "V:|-60-[table]-0-|",
-                options: [],
-                metrics: nil,
-                views: ["table": tableView]
-            ),
-            NSLayoutConstraint.constraintsWithVisualFormat(
-                "H:|-10-[table]-10-|",
-                options: [],
-                metrics: nil,
-                views: ["table": tableView]
-            )
-            ].flatMap { $0 }
-
-        self.addConstraints(tableConstraints)
+        updateViewFromSegmenter()
     }
 
-    //MARK: UITableViewDataSource
-
-    public func numberOfSectionsInTableView(tableView: UITableView) -> Int {
-        return pickerSections.count
-    }
-
-    public func tableView(tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        if section == 0 {
-            return 1
-        } else if section == 1 {
-            return quickAddSectionData.count
-        } else {
-            return 1
-        }
-    }
-
-    public func tableView(tableView: UITableView, titleForHeaderInSection section: Int) -> String? {
-        return pickerSections[section]
-    }
-
-    /*
-    public func tableView(tableView: UITableView, heightForRowAtIndexPath indexPath: NSIndexPath) -> CGFloat {
-        if indexPath.section == 0 { return 100.0 }
-        if indexPath.section == 1 { return 44.0 }
-        return 65.0
-    }
-    */
-
-    public func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell {
-        let cell = tableView.dequeueReusableCellWithIdentifier(addEventCellIdentifier, forIndexPath: indexPath)
-
-        for sv in cell.contentView.subviews { sv.removeFromSuperview() }
-        cell.textLabel?.hidden = true
-        cell.imageView?.image = nil
-        cell.accessoryType = .None
-        cell.selectionStyle = .None
-
-        cell.backgroundColor = UIColor.clearColor()
-        cell.contentView.backgroundColor = UIColor.clearColor()
-
-        if indexPath.section == 0 || indexPath.section == 2 {
-            if indexPath.section == 0 {
-                setupFavorites()
+    func removeTablesFromSuperview() {
+        for sv in subviews {
+            if let _ = sv as? AddEventTable {
+                sv.removeFromSuperview()
             }
-
-            let stackView: UIStackView = UIStackView(arrangedSubviews: indexPath.section == 0 ? self.favoritesButtons : (self.menuItems ?? []))
-            stackView.axis = .Horizontal
-            stackView.distribution = UIStackViewDistribution.FillEqually
-            stackView.alignment = UIStackViewAlignment.Fill
-            stackView.spacing = 10
-
-            stackView.translatesAutoresizingMaskIntoConstraints = false
-            cell.contentView.addSubview(stackView)
-
-            var stackConstraints : [NSLayoutConstraint] = [
-                cell.contentView.topAnchor.constraintEqualToAnchor(stackView.topAnchor, constant: -10),
-                cell.contentView.bottomAnchor.constraintEqualToAnchor(stackView.bottomAnchor, constant: 10),
-                cell.contentView.leadingAnchor.constraintEqualToAnchor(stackView.leadingAnchor),
-                cell.contentView.trailingAnchor.constraintEqualToAnchor(stackView.trailingAnchor)
-            ]
-
-            if indexPath.section == 0 {
-                self.favoritesButtons.forEach { stack in
-                    let button = stack.arrangedSubviews[0]
-                    let label = stack.arrangedSubviews[1]
-                    stackConstraints.appendContentsOf([
-                        button.heightAnchor.constraintEqualToAnchor(button.widthAnchor),
-                        label.widthAnchor.constraintEqualToAnchor(button.widthAnchor),
-                        label.topAnchor.constraintEqualToAnchor(button.bottomAnchor),
-                        label.heightAnchor.constraintEqualToConstant(15),
-                        stack.topAnchor.constraintEqualToAnchor(button.topAnchor),
-                        stack.bottomAnchor.constraintEqualToAnchor(label.bottomAnchor),
-                        stack.leadingAnchor.constraintEqualToAnchor(button.leadingAnchor),
-                        stack.trailingAnchor.constraintEqualToAnchor(button.trailingAnchor)
-                    ])
-                }
+            else if let _ = sv as? DeleteEventTable {
+                sv.removeFromSuperview()
             }
-            cell.contentView.addConstraints(stackConstraints)
         }
-        else if indexPath.section == 1 {
-            cell.separatorInset = UIEdgeInsetsZero
-            cell.layoutMargins = UIEdgeInsetsZero
+    }
 
-            let picker = quickAddPickers[indexPath.row]
-            picker.translatesAutoresizingMaskIntoConstraints = false
-            cell.contentView.addSubview(picker)
+    public func updateViewFromSegmenter() {
+        removeTablesFromSuperview()
 
-            let pickerConstraints : [NSLayoutConstraint] = [
-                cell.contentView.topAnchor.constraintEqualToAnchor(picker.topAnchor),
-                cell.contentView.bottomAnchor.constraintEqualToAnchor(picker.bottomAnchor),
-                cell.contentView.leadingAnchor.constraintEqualToAnchor(picker.leadingAnchor),
-                cell.contentView.trailingAnchor.constraintEqualToAnchor(picker.trailingAnchor),
-                picker.heightAnchor.constraintEqualToConstant(40.0)
+        if let table = getCurrentTable() {
+            table.backgroundColor = .clearColor()
+            table.translatesAutoresizingMaskIntoConstraints = false
+            insertSubview(table, belowSubview: startButton!)
+
+            let tableConstraints: [NSLayoutConstraint] = [
+                table.topAnchor.constraintEqualToAnchor(segmenter.bottomAnchor),
+                table.bottomAnchor.constraintEqualToAnchor(bottomAnchor),
+                table.leadingAnchor.constraintEqualToAnchor(leadingAnchor),
+                table.trailingAnchor.constraintEqualToAnchor(trailingAnchor)
             ]
-
-            cell.contentView.addConstraints(pickerConstraints)
+            self.addConstraints(tableConstraints)
         }
-
-        return cell
     }
-
-    //MARK: UITableViewDelegate
-    public func tableView(tableView: UITableView, viewForHeaderInSection section: Int) -> UIView? {
-        let cell = tableView.dequeueReusableCellWithIdentifier(addEventSectionHeaderCellIdentifier)!
-        
-        if section == 1 {
-            for sv in cell.contentView.subviews { sv.removeFromSuperview() }
-            cell.textLabel?.text = self.pickerSections[section]
-            cell.textLabel?.textColor = .whiteColor()
-
-            cell.imageView?.image = nil
-            cell.accessoryType = .None
-            cell.selectionStyle = .None
-
-            cell.backgroundColor = UIColor.clearColor()
-            cell.contentView.backgroundColor = UIColor.clearColor()
-
-            cell.separatorInset = UIEdgeInsetsZero
-            cell.layoutMargins = UIEdgeInsetsZero
-
-            let button = self.quickAddHeaderViews[1]
-            button.translatesAutoresizingMaskIntoConstraints = false
-            cell.contentView.addSubview(button)
-
-            let buttonConstraints : [NSLayoutConstraint] = [
-                cell.contentView.topAnchor.constraintEqualToAnchor(button.topAnchor),
-                cell.contentView.bottomAnchor.constraintEqualToAnchor(button.bottomAnchor),
-                cell.contentView.trailingAnchor.constraintEqualToAnchor(button.trailingAnchor),
-                button.widthAnchor.constraintEqualToConstant(100),
-                button.heightAnchor.constraintEqualToConstant(44)
-            ]
-
-            cell.contentView.addConstraints(buttonConstraints)
-
-        } else {
-            cell.textLabel?.text = self.pickerSections[section]
-            cell.textLabel?.textColor = .whiteColor()
-        }
-        return cell;
-    }
-
-    /*
-    public func tableView(tableView: UITableView, estimatedHeightForRowAtIndexPath indexPath: NSIndexPath) -> CGFloat {
-        if section == 0 { return 100 }
-        return 40
-    }
-
-    public func tableView(tableView: UITableView, estimatedHeightForHeaderInSection section: Int) -> CGFloat {
-        if section == 0 { return 100 }
-        return 40
-    }
-    */
-
 }
 

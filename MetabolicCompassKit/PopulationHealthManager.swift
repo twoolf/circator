@@ -112,7 +112,7 @@ public class PopulationHealthManager {
             "userfilter"   : userfilter
         ]
 
-        Service.json(MCRouter.AggMeasures(params), statusCode: 200..<300, tag: "AGGPOST") {
+        Service.json(MCRouter.AggregateMeasures(params), statusCode: 200..<300, tag: "AGGPOST") {
             _, response, result in
             guard !result.isSuccess else {
                 self.refreshAggregatesFromMsg(result.value)

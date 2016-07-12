@@ -132,7 +132,7 @@ class MainTabController: UITabBarController, UITabBarControllerDelegate, ManageE
             self.overlayView = overlay
             //add title for overlay
             let titleLabel = UILabel(frame:CGRectZero)
-            titleLabel.text = "ADD ENTRY"
+            titleLabel.text = "MANAGE EVENTS"
             titleLabel.font = ScreenManager.appFontOfSize(16)
             titleLabel.textColor = UIColor.colorWithHexString("#ffffff", alpha: 0.6)
             titleLabel.textAlignment = .Center
@@ -148,7 +148,7 @@ class MainTabController: UITabBarController, UITabBarControllerDelegate, ManageE
     }
 
     func hideIcons(hide: Bool) {
-        self.menu?.tableView.hidden = hide
+        self.menu?.hideView(hide)
     }
 
     // MARK :- ManageEventMenuDelegate implementation
