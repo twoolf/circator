@@ -35,7 +35,7 @@ class GlanceController: WKInterfaceController {
     
     override func willActivate() {
         super.willActivate()
-        print("new glance conditions")
+//        print("new glance conditions")
         firstRow.setText("M-Compass Stats:")
         firstRow.setTextColor(UIColor.greenColor())
         maxDailyFastingString = "Fast: \(MetricsStore.sharedInstance.fastingTime)"

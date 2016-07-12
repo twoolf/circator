@@ -66,7 +66,7 @@ final class HealthConditions: NSObject {
             
             if( error != nil )
             {
-                print("Error reading weight from HealthKit Store: \(error.localizedDescription)")
+//                print("Error reading weight from HealthKit Store: \(error.localizedDescription)")
                 return;
             }
             
@@ -80,7 +80,7 @@ final class HealthConditions: NSObject {
             
             dispatch_async(dispatch_get_main_queue(), { () -> Void in
                 self.updateBMI()
-                print("in weight update: \(weightLocalizedString)")
+//                print("in weight update: \(weightLocalizedString)")
             });
         });
     }
@@ -96,7 +96,7 @@ final class HealthConditions: NSObject {
             
             if( error != nil )
             {
-                print("Error reading height from HealthKit Store: \(error.localizedDescription)")
+//                print("Error reading height from HealthKit Store: \(error.localizedDescription)")
                 return;
             }
             
@@ -109,7 +109,7 @@ final class HealthConditions: NSObject {
             }
             
             dispatch_async(dispatch_get_main_queue(), { () -> Void in
-                print("in height update: \(heightLocalizedString)")
+//                print("in height update: \(heightLocalizedString)")
                 self.updateBMI()
             });
         })
@@ -134,7 +134,7 @@ final class HealthConditions: NSObject {
             let heightInMeters = height!.quantity.doubleValueForUnit(HKUnit.meterUnit())
             bmi = calculateBMIWithWeightInKilograms(weightInKilograms, heightInMeters: heightInMeters)!
         }
-        print("new bmi in HealthConditions: \(bmi)")
+//        print("new bmi in HealthConditions: \(bmi)")
         HKBMIString = String(format: "%.1f", bmi)
     }
     
@@ -194,7 +194,7 @@ extension HealthConditions {
         ]
         params["begin_date"] = HealthConditions.dateFormatter.stringFromDate(fromDate)
         params["end_date"] = HealthConditions.dateFormatter.stringFromDate(toDate)
-        print("in loadWeightMetrics")
+//        print("in loadWeightMetrics")
         updateHealthInfo()
         completion(success: true)
     }

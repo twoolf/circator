@@ -145,11 +145,11 @@ struct MCAggregateSample : MCSample {
                 numeralValue = (numeralValue ?? 0.0) + sample.numeralValue!
                 
             default:
-                print("Cannot aggregate \(hkType)")
+//                print("Cannot aggregate \(hkType)")
             }
             
         } else {
-            print("Invalid sample aggregation between \(hkType) and \(sample.hkType)")
+//            print("Invalid sample aggregation between \(hkType) and \(sample.hkType)")
         }
     }
     
@@ -279,7 +279,7 @@ public extension HKStatistics {
             return sumQuantity()
             
         default:
-            print("Invalid quantity type \(quantityType.identifier) for HKStatistics")
+//            print("Invalid quantity type \(quantityType.identifier) for HKStatistics")
             return sumQuantity()
         }
     }
@@ -715,18 +715,18 @@ class IntroInterfaceController: WKInterfaceController, WCSessionDelegate  {
             let server = CLKComplicationServer.sharedInstance()
 
             guard let complications = server.activeComplications where complications.count > 0 else {
-                print("hit a zero in reloadComplications")
+//                print("hit a zero in reloadComplications")
                 return
             }
             
             for complication in complications  {
                 server.extendTimelineForComplication(complication)
-                print("value from complication: \(complication.description)")
+//                print("value from complication: \(complication.description)")
             }
         }
 
         
-        print("ready to run reloadDataTake2")
+//        print("ready to run reloadDataTake2")
         reloadDataTake2()        
         reloadComplications()
         
@@ -764,7 +764,7 @@ class IntroInterfaceController: WKInterfaceController, WCSessionDelegate  {
                 
                 if( error != nil )
                 {
-                    print("Error reading weight from HealthKit Store: \(error.localizedDescription)")
+//                    print("Error reading weight from HealthKit Store: \(error.localizedDescription)")
                     return;
                 }
                 
@@ -777,7 +777,7 @@ class IntroInterfaceController: WKInterfaceController, WCSessionDelegate  {
                 
                 dispatch_async(dispatch_get_main_queue(), { () -> Void in
                     updateBMI()
-                    print("in weight update of interface controller: \(self.weightLocalizedString)")
+//                    print("in weight update of interface controller: \(self.weightLocalizedString)")
                 });
             });
         }
@@ -789,7 +789,7 @@ class IntroInterfaceController: WKInterfaceController, WCSessionDelegate  {
                 
                 if( error != nil )
                 {
-                    print("Error reading height from HealthKit Store: \(error.localizedDescription)")
+//                    print("Error reading height from HealthKit Store: \(error.localizedDescription)")
                     return;
                 }
                 
@@ -801,7 +801,7 @@ class IntroInterfaceController: WKInterfaceController, WCSessionDelegate  {
                 }
                 
                 dispatch_async(dispatch_get_main_queue(), { () -> Void in
-                    print("in height update of interface controller: \(self.heightLocalizedString)")
+//                    print("in height update of interface controller: \(self.heightLocalizedString)")
                     updateBMI()
                 });
             })
@@ -822,7 +822,7 @@ class IntroInterfaceController: WKInterfaceController, WCSessionDelegate  {
                 let heightInMeters = heightHK!.quantity.doubleValueForUnit(HKUnit.meterUnit())
                 bmiHK = calculateBMIWithWeightInKilograms(weightInKilograms, heightInMeters: heightInMeters)!
             }
-            print("new bmi in IntroInterfaceController: \(bmiHK)")
+//            print("new bmi in IntroInterfaceController: \(bmiHK)")
             HKBMIString = String(format: "%.1f", bmiHK)
         }
         
@@ -834,7 +834,7 @@ class IntroInterfaceController: WKInterfaceController, WCSessionDelegate  {
                 
                 if( error != nil )
                 {
-                    print("Error reading dietary protein from HealthKit Store: \(error.localizedDescription)")
+//                    print("Error reading dietary protein from HealthKit Store: \(error.localizedDescription)")
                     return;
                 }
             
@@ -845,18 +845,18 @@ class IntroInterfaceController: WKInterfaceController, WCSessionDelegate  {
                 }
                 
                 dispatch_async(dispatch_get_main_queue(), { () -> Void in
-                    print("in protein update of interface controller: \(self.proteinLocalizedString)")
+//                    print("in protein update of interface controller: \(self.proteinLocalizedString)")
                 });
             });
         }
         
         func updateHealthInfo() {
             updateWeight();
-            print("updated weight info")
+//            print("updated weight info")
             updateHeight();
-            print("updated height info")
+//            print("updated height info")
             updateBMI();
-            print("updated bmi info")
+//            print("updated bmi info")
         }
         
         updateHealthInfo()
@@ -880,12 +880,12 @@ class IntroInterfaceController: WKInterfaceController, WCSessionDelegate  {
         fetchCircadianEventIntervals(startDate) { (intervals, error) -> Void in
             dispatch_async(dispatch_get_main_queue(), {
                 guard error == nil else {
-                    print("Failed to fetch circadian events: \(error)")
+//                    print("Failed to fetch circadian events: \(error)")
                     return
                 }
                 
                 if intervals.isEmpty {
-                    print("series is Empty")
+//                    print("series is Empty")
                     
                 } else {
                     
@@ -1010,7 +1010,7 @@ class IntroInterfaceController: WKInterfaceController, WCSessionDelegate  {
                     }
                     
                 default:
-                    print("Unexpected type \(ty.identifier) while fetching circadian event intervals")
+//                    print("Unexpected type \(ty.identifier) while fetching circadian event intervals")
                     return nil
                 }
             }
@@ -1072,12 +1072,12 @@ class IntroInterfaceController: WKInterfaceController, WCSessionDelegate  {
             dispatch_group_enter(group)
             fetchSamplesOfType(type, predicate: predicate, limit: noLimit) { (samples, error) in
                 guard error == nil else {
-                    //                        print("Could not fetch recent samples for \(type.displayText): \(error)")
+//                        print("Could not fetch recent samples for \(type.displayText): \(error)")
                     dispatch_group_leave(group)
                     return
                 }
                 guard samples.isEmpty == false else {
-                    //                        print("No recent samples available for \(type.displayText)")
+//                        print("No recent samples available for \(type.displayText)")
                     dispatch_group_leave(group)
                     return
                 }
@@ -1324,7 +1324,7 @@ class IntroInterfaceController: WKInterfaceController, WCSessionDelegate  {
             // Set the results handler
             query.initialResultsHandler = { query, results, error in
                 guard error == nil else {
-                    print("Failed to fetch \(sampleType.displayText) statistics: \(error!)")
+//                    print("Failed to fetch \(sampleType.displayText) statistics: \(error!)")
                     completion(samples: [], error: error)
                     return
                 }

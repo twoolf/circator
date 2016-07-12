@@ -105,7 +105,7 @@ extension WorkoutSessionService: HKWorkoutSessionDelegate {
             case .Ended:
                 self.sessionEnded(date)
             default:
-                print("Something weird happened. Not a valid state")
+//                print("Something weird happened. Not a valid state")
             }
         }
     }

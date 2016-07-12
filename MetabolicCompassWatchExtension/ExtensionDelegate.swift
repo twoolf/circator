@@ -39,7 +39,7 @@ class ExtensionDelegate: NSObject, WKExtensionDelegate, WCSessionDelegate {
         dispatch_async(dispatch_get_main_queue()) { () -> Void in
             if let fastingHrs  = userInfo["fastingHrs"]  as? String,
                 let fastingMins = userInfo["fastingMins"] as? String {
-                print("information transferred: \(fastingHrs)")
+//                print("information transferred: \(fastingHrs)")
             }
         }
     }

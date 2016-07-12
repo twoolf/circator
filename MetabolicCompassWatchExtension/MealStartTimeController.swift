@@ -45,7 +45,7 @@ class MealStartTimeController: WKInterfaceController {
         let buttonColor = UIColor(red: 0.13, green: 0.55, blue: 0.13, alpha: 0.5)
         mealStartTimeButton.setBackgroundColor(buttonColor)
         mealStartTimeButton.setTitle("Saved")
-        print("HKStore should be updated for Meal")
+//        print("HKStore should be updated for Meal")
         
         // setting up conversion of saved value from 'waking from sleep' in 1st screen
         let calendar = NSCalendar.currentCalendar()

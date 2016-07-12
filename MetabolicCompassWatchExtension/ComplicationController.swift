@@ -61,7 +61,7 @@ class ComplicationController: NSObject, CLKComplicationDataSource {
     
     func getCurrentTimelineEntryForComplication(complication: CLKComplication, withHandler handler: ((CLKComplicationTimelineEntry?) -> Void)) {
         reloadFastingTimeData()
-        print("updated Fasting Time from getCurrentTimelineEntryForComplication")
+//        print("updated Fasting Time from getCurrentTimelineEntryForComplication")
         var shortText = MetricsStore.sharedInstance.fastingTime
         if complication.family == .UtilitarianSmall || complication.family == .UtilitarianLarge || complication.family == .ModularSmall || complication.family == .ModularLarge || complication.family == .CircularSmall
         {
@@ -99,7 +99,7 @@ class ComplicationController: NSObject, CLKComplicationDataSource {
             shortText = MetricsStore.sharedInstance.fastingTime
             let entry = createComplicationEntry(shortText, date: NSDate(), family: complication.family)
             
-            print("in getCurrentTimelineEntryForComplication: \(entry)")
+//            print("in getCurrentTimelineEntryForComplication: \(entry)")
             handler(entry)
         } else {
             handler(nil)
@@ -108,14 +108,14 @@ class ComplicationController: NSObject, CLKComplicationDataSource {
     }
     
     func getTimelineEntriesForComplication(complication: CLKComplication, beforeDate date: NSDate, limit: Int, withHandler handler: (([CLKComplicationTimelineEntry]?) -> Void)) {
-        reloadFastingTimeData()
-        print("updated Fasting Time from getTimelineEntriesForComplication")
+//        reloadFastingTimeData()
+//        print("updated Fasting Time from getTimelineEntriesForComplication")
         handler(nil)
     }
     
     func getTimelineEntriesForComplication(complication: CLKComplication, afterDate date: NSDate, limit: Int, withHandler handler: (([CLKComplicationTimelineEntry]?) -> Void)) {
         reloadFastingTimeData()
-        print("updated Fasting Time from getTimelineEntriesForComplication")
+//        print("updated Fasting Time from getTimelineEntriesForComplication")
         let startDate = getStartDateFromUserDefaults()
         let sabbaticalDate = getSabbaticalDate(startDate)
         let componentDay = userCalendar.components(.Day, fromDate: date, toDate: sabbaticalDate, options: [])
@@ -161,8 +161,8 @@ class ComplicationController: NSObject, CLKComplicationDataSource {
     func getNextRequestedUpdateDateWithHandler(handler: (NSDate?) -> Void) {
         handler(NSDate(timeIntervalSinceNow: 5))
         reloadFastingTimeData()
-        print("updated Fasting Time from getNextRequestedUpdateDateWithHandler")
-        print("getNextRequestedUpdateDateWithHandler called \(NSDate.description())")
+//        print("updated Fasting Time from getNextRequestedUpdateDateWithHandler")
+//        print("getNextRequestedUpdateDateWithHandler called \(NSDate.description())")
     }
     
     func reloadFastingTimeData() {
@@ -175,12 +175,12 @@ class ComplicationController: NSObject, CLKComplicationDataSource {
         fetchCircadianEventIntervals(startDate) { (intervals, error) -> Void in
             dispatch_async(dispatch_get_main_queue(), {
                 guard error == nil else {
-                    print("Failed to fetch circadian events: \(error)")
+//                    print("Failed to fetch circadian events: \(error)")
                     return
                 }
                 
                 if intervals.isEmpty {
-                    print("series is Empty")
+//                    print("series is Empty")
                     
                 } else {
                     
@@ -255,8 +255,8 @@ class ComplicationController: NSObject, CLKComplicationDataSource {
                     let todayPlusMins = today.dateByAddingTimeInterval(round((stats.2 % 1.0) * 60.0 * 60.0))
                     let fastingMins = dateFormatter.stringFromDate(todayPlusMins)
                     
-                    print("in EventTimeViewController, fasting hours: \(fastingHrs)")
-                    print("   and fasting minutes: \(fastingMins)")
+//                    print("in EventTimeViewController, fasting hours: \(fastingHrs)")
+//                    print("   and fasting minutes: \(fastingMins)")
                     MetricsStore.sharedInstance.fastingTime = "\(fastingHrs):\(fastingMins)"
                     
                 }
@@ -308,7 +308,7 @@ class ComplicationController: NSObject, CLKComplicationDataSource {
                     }
                     
                 default:
-                    print("Unexpected type \(ty.identifier) while fetching circadian event intervals")
+//                    print("Unexpected type \(ty.identifier) while fetching circadian event intervals")
                     return nil
                 }
             }
@@ -447,7 +447,7 @@ class ComplicationController: NSObject, CLKComplicationDataSource {
             smallUtil.textProvider = CLKSimpleTextProvider(text: MetricsStore.sharedInstance.fastingTime)
             handler(smallUtil)
         }
-        print("in getPlaceholderTemplateForComplication \(MetricsStore.sharedInstance.fastingTime)")
+//        print("in getPlaceholderTemplateForComplication \(MetricsStore.sharedInstance.fastingTime)")
     }
     
     func createComplicationEntry(shortText: String, date: NSDate, family: CLKComplicationFamily) -> CLKComplicationTimelineEntry {
@@ -478,12 +478,12 @@ class ComplicationController: NSObject, CLKComplicationDataSource {
             let newEntry = CLKComplicationTimelineEntry(date: date, complicationTemplate: smallFlat)
             return(newEntry)
         }
-        print("added new Complication entry to Entries \(date) and \(shortText)")
+//        print("added new Complication entry to Entries \(date) and \(shortText)")
         
     }
     
     func requestedUpdateDidBegin() {
-        print("Complication update is starting")
+//        print("Complication update is starting")
         
         createComplicationEntry(MetricsStore.sharedInstance.fastingTime, date: NSDate(),family: CLKComplicationFamily.UtilitarianSmall)
         
@@ -499,12 +499,12 @@ class ComplicationController: NSObject, CLKComplicationDataSource {
         
         for comp in (server.activeComplications)! {
             server.reloadTimelineForComplication(comp)
-            print("Timeline has been reloaded")
+//            print("Timeline has been reloaded")
         }
     }
     
     func requestedUpdateBudgetExhausted() {
-        print("Budget exhausted")
+//        print("Budget exhausted")
     }
     
     func getSabbaticalDate(startDate: NSDate) -> NSDate {

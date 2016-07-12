@@ -61,7 +61,7 @@ class ExerciseStartTimeController: WKInterfaceController {
         beginComponents.hour = timeConvertBegin
         beginComponents.minute = timeAddHalfHourBegin
         beginDate = calendar.dateFromComponents(beginComponents)!
-        print("new beginDate based on first screen: \(beginDate)")
+//        print("new beginDate based on first screen: \(beginDate)")
         
         var closeDate = NSDate()
         var timeConvertClose:Int = 0
