@@ -801,8 +801,7 @@ public class UserManager {
                         if let refreshVal = self.unwrapResponse(component, response: dict) {
                             self.refreshComponentCache(component, componentData: refreshVal)
                             self.lastComponentLoadDate[component] = NSDate()
-                        }
-                        else if requiredComponents.contains(component) {
+                        } else if requiredComponents.contains(component) {
                             // Indicate a failure if we cannot unwrap a required component from the response.
                             failedComponents.append(getComponentName(component))
                             pullSuccess = false

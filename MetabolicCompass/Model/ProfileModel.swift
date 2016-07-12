@@ -29,7 +29,6 @@ class ProfileModel: UserInfoModel {
 
     func setupValues() {
         let profileInfo = UserManager.sharedManager.getProfileCache()
-
         for item in items {
             if item.type == .FirstName {
                 item.setNewValue(AccountManager.shared.userInfo?.firstName)
@@ -46,8 +45,7 @@ class ProfileModel: UserInfoModel {
             }
             else if item.type == .Email {
                 item.setNewValue(UserManager.sharedManager.getUserId())
-            }
-            else {
+            } else {
                 if let profileItemInfo = profileInfo[item.name]{
                     if item.type == .Gender {
                         let gender = Gender.valueByTitle(profileItemInfo as! String)
@@ -70,17 +68,14 @@ class ProfileModel: UserInfoModel {
 
     override func profileItems() -> [String : String] {
         var newItems : [ModelItem] = [ModelItem]()
-
         for item in items {
             if isItemEditable(item) {
                 newItems.append(item)
             }
         }
-
         return profileItems(newItems)
     }
-
-
+    
     override func isModelValid() -> Bool {
         resetValidationResults()
         return isPhotoValid() && /* isEmailValid() && isPasswordValid() && isFirstNameValid() && isLastNameValid() && */ isAgeValid()  && isWeightValid() && isHeightValid()

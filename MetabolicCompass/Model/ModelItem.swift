@@ -54,7 +54,6 @@ class ModelItem: NSObject {
     private(set) var unitsTitle: String?
 
     var dataType: FieldDataType = .String
-
     var key: String?{
         get {
             return UserProfile.keyForItemName(name)
@@ -119,5 +118,4 @@ class ModelItem: NSObject {
         }
         return nil
     }
-
 }

@@ -52,13 +52,11 @@ class ProfileDataSource: BaseDataSource {
         let cellType = field.type
         if cellType == .Photo {
              cell = loadPhotoCellForIndex(indexPath, forField: field)
-        }
-        else {
+        } else {
             let cellEditMode = editMode && model.isItemEditable(field)
             if cellEditMode {
                 cell = infoEditableCellForIndex(indexPath, forField: field)
-            }
-            else {
+            } else {
                 cell = infoCellForIndex(indexPath, forField: field)
             }
         }
@@ -78,12 +76,9 @@ class ProfileDataSource: BaseDataSource {
                     infoCell.commentLabelXConstraint.constant = 4.0 + (w ?? 0.0)
                 }
             }
-
         }
-
         return cell!
     }
-
 
     func collectionView(collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAtIndexPath indexPath: NSIndexPath) -> CGSize {
         let field = model.itemAtIndexPath(indexPath)
