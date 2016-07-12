@@ -221,7 +221,7 @@ platform :ios do
       ENV[metadata[1]] = uuid
     }
 
-    gym(scheme: "MetabolicCompass", use_legacy_build_api: true)
+    gym(scheme: "MetabolicCompass")
   end
 
   desc "Build an adhoc archive"
@@ -249,7 +249,7 @@ platform :ios do
       ENV[metadata[1]] = uuid
     }
 
-    gym(scheme: "MetabolicCompass", use_legacy_build_api: true)
+    gym(scheme: "MetabolicCompass")
   end
 
   desc "Build a release archive"
@@ -277,7 +277,7 @@ platform :ios do
       ENV[metadata[1]] = uuid
     }
 
-    gym(scheme: "MetabolicCompass", use_legacy_build_api: true)
+    gym(scheme: "MetabolicCompass")
   end
 
   desc "Resign a development archive"
