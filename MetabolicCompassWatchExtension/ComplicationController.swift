@@ -160,7 +160,7 @@ class ComplicationController: NSObject, CLKComplicationDataSource {
     
     func getNextRequestedUpdateDateWithHandler(handler: (NSDate?) -> Void) {
         handler(NSDate(timeIntervalSinceNow: 5))
-        reloadFastingTimeData()
+//        reloadFastingTimeData()
 //        print("updated Fasting Time from getNextRequestedUpdateDateWithHandler")
 //        print("getNextRequestedUpdateDateWithHandler called \(NSDate.description())")
     }
