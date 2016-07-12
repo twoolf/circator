@@ -308,16 +308,17 @@ public class SampleFormatter: NSObject {
     }
 
     private func stringFromQuantity(quantity: HKQuantity, type: HKQuantityType) -> String {
+        let milliGramUnit = HKUnit.gramUnitWithMetricPrefix(.Milli)
         switch type.identifier {
         case HKQuantityTypeIdentifierActiveEnergyBurned:
-            return SampleFormatter.calorieFormatter.stringFromValue(quantity.doubleValueForUnit(HKUnit.kilocalorieUnit()), unit: .Kilocalorie)
-            
+            fallthrough
+        case HKQuantityTypeIdentifierDietaryEnergyConsumed:
+            fallthrough
         case HKQuantityTypeIdentifierBasalEnergyBurned:
             return SampleFormatter.calorieFormatter.stringFromValue(quantity.doubleValueForUnit(HKUnit.kilocalorieUnit()), unit: .Kilocalorie)
             
         case HKQuantityTypeIdentifierBloodPressureDiastolic:
-            return SampleFormatter.integerFormatter.stringFromNumber(quantity.doubleValueForUnit(HKUnit.millimeterOfMercuryUnit()))!
-
+            fallthrough
         case HKQuantityTypeIdentifierBloodPressureSystolic:
             return SampleFormatter.integerFormatter.stringFromNumber(quantity.doubleValueForUnit(HKUnit.millimeterOfMercuryUnit()))!
 
@@ -325,41 +326,33 @@ public class SampleFormatter: NSObject {
             return SampleFormatter.bodyMassFormatter.stringFromKilograms(quantity.doubleValueForUnit(HKUnit.gramUnitWithMetricPrefix(.Kilo)))
 
         case HKQuantityTypeIdentifierBodyMassIndex:
+            fallthrough
+        case HKQuantityTypeIdentifierStepCount:
+            fallthrough
+        case HKQuantityTypeIdentifierUVExposure:
             return SampleFormatter.numberFormatter.stringFromNumber(quantity.doubleValueForUnit(HKUnit.countUnit()))!
 
         case HKQuantityTypeIdentifierDietaryCaffeine:
-            return SampleFormatter.foodMassFormatter.stringFromValue(quantity.doubleValueForUnit(HKUnit.gramUnitWithMetricPrefix(.Milli)), unit: .Gram)
+            fallthrough
+        case HKQuantityTypeIdentifierDietaryCholesterol:
+            fallthrough
+        case HKQuantityTypeIdentifierDietarySodium:
+            return "\(SampleFormatter.numberFormatter.stringFromNumber(quantity.doubleValueForUnit(milliGramUnit))!) mg"
 
         case HKQuantityTypeIdentifierDietaryCarbohydrates:
-            return SampleFormatter.foodMassFormatter.stringFromValue(quantity.doubleValueForUnit(HKUnit.gramUnit()), unit: .Gram)
-
-        case HKQuantityTypeIdentifierDietaryCholesterol:
-            return SampleFormatter.foodMassFormatter.stringFromValue(quantity.doubleValueForUnit(HKUnit.gramUnitWithMetricPrefix(.Milli)), unit: .Gram)
-
-        case HKQuantityTypeIdentifierDietaryEnergyConsumed:
-            return SampleFormatter.calorieFormatter.stringFromValue(quantity.doubleValueForUnit(HKUnit.kilocalorieUnit()), unit: .Kilocalorie)
-
+            fallthrough
         case HKQuantityTypeIdentifierDietaryFatMonounsaturated:
-            return SampleFormatter.foodMassFormatter.stringFromValue(quantity.doubleValueForUnit(HKUnit.gramUnit()), unit: .Gram)
-
+            fallthrough
         case HKQuantityTypeIdentifierDietaryFatPolyunsaturated:
-            return SampleFormatter.foodMassFormatter.stringFromValue(quantity.doubleValueForUnit(HKUnit.gramUnit()), unit: .Gram)
-            
+            fallthrough
         case HKQuantityTypeIdentifierDietaryFatSaturated:
-            return SampleFormatter.foodMassFormatter.stringFromValue(quantity.doubleValueForUnit(HKUnit.gramUnit()), unit: .Gram)
-
+            fallthrough
         case HKQuantityTypeIdentifierDietaryFatTotal:
-            return SampleFormatter.foodMassFormatter.stringFromValue(quantity.doubleValueForUnit(HKUnit.gramUnit()), unit: .Gram)
-
+            fallthrough
         case HKQuantityTypeIdentifierDietaryProtein:
-            return SampleFormatter.foodMassFormatter.stringFromValue(quantity.doubleValueForUnit(HKUnit.gramUnit()), unit: .Gram)
-
-        case HKQuantityTypeIdentifierDietarySodium:
-            return SampleFormatter.foodMassFormatter.stringFromValue(quantity.doubleValueForUnit(HKUnit.gramUnitWithMetricPrefix(.Milli)), unit: .Gram)
-            
+            fallthrough
         case HKQuantityTypeIdentifierDietaryFiber:
-            return SampleFormatter.foodMassFormatter.stringFromValue(quantity.doubleValueForUnit(HKUnit.gramUnit()), unit: .Gram)
-            
+            fallthrough
         case HKQuantityTypeIdentifierDietarySugar:
             return SampleFormatter.foodMassFormatter.stringFromValue(quantity.doubleValueForUnit(HKUnit.gramUnit()), unit: .Gram)
 
@@ -371,12 +364,6 @@ public class SampleFormatter: NSObject {
 
         case HKQuantityTypeIdentifierHeartRate:
             return "\(SampleFormatter.numberFormatter.stringFromNumber(quantity.doubleValueForUnit(HKUnit.countUnit().unitDividedByUnit(HKUnit.minuteUnit())))!) bpm"
-
-        case HKQuantityTypeIdentifierStepCount:
-            return SampleFormatter.numberFormatter.stringFromNumber(quantity.doubleValueForUnit(HKUnit.countUnit()))!
-
-        case HKQuantityTypeIdentifierUVExposure:
-            return SampleFormatter.numberFormatter.stringFromNumber(quantity.doubleValueForUnit(HKUnit.countUnit()))!
             
         default:
             return emptyString
@@ -397,11 +384,12 @@ public class SampleFormatter: NSObject {
     private func stringFromMCSample(quantity: Double, type: HKSampleType) -> String {
         switch type.identifier {
         case HKQuantityTypeIdentifierActiveEnergyBurned:
+            fallthrough
+        case HKQuantityTypeIdentifierBasalEnergyBurned:
             return SampleFormatter.calorieFormatter.stringFromValue(quantity, unit: .Kilocalorie)
 
         case HKQuantityTypeIdentifierBloodPressureDiastolic:
-            return SampleFormatter.integerFormatter.stringFromNumber(quantity)!
-
+            fallthrough
         case HKQuantityTypeIdentifierBloodPressureSystolic:
             return SampleFormatter.integerFormatter.stringFromNumber(quantity)!
 
@@ -417,34 +405,29 @@ public class SampleFormatter: NSObject {
             return "\(SampleFormatter.numberFormatter.stringFromNumber(quantity)!) mg"
 
         case HKQuantityTypeIdentifierDietaryCarbohydrates:
+            fallthrough
+        case HKQuantityTypeIdentifierDietaryFiber:
+            fallthrough
+        case HKQuantityTypeIdentifierDietaryFatMonounsaturated:
+            fallthrough
+        case HKQuantityTypeIdentifierDietaryFatPolyunsaturated:
+            fallthrough
+        case HKQuantityTypeIdentifierDietaryFatSaturated:
+            fallthrough
+        case HKQuantityTypeIdentifierDietaryFatTotal:
+            fallthrough
+        case HKQuantityTypeIdentifierDietaryProtein:
+            fallthrough
+        case HKQuantityTypeIdentifierDietarySugar:
             return "\(SampleFormatter.numberFormatter.stringFromNumber(quantity)!) g"
-
+        
         case HKQuantityTypeIdentifierDietaryCholesterol:
+            fallthrough
+        case HKQuantityTypeIdentifierDietarySodium:
             return "\(SampleFormatter.numberFormatter.stringFromNumber(quantity)!) mg"
 
         case HKQuantityTypeIdentifierDietaryEnergyConsumed:
             return SampleFormatter.calorieFormatter.stringFromValue(quantity, unit: .Kilocalorie)
-
-        case HKQuantityTypeIdentifierDietaryFatMonounsaturated:
-            return "\(SampleFormatter.numberFormatter.stringFromNumber(quantity)!) g"
-
-        case HKQuantityTypeIdentifierDietaryFatPolyunsaturated:
-            return "\(SampleFormatter.numberFormatter.stringFromNumber(quantity)!) g"
-
-        case HKQuantityTypeIdentifierDietaryFatSaturated:
-            return "\(SampleFormatter.numberFormatter.stringFromNumber(quantity)!) g"
-
-        case HKQuantityTypeIdentifierDietaryFatTotal:
-            return "\(SampleFormatter.numberFormatter.stringFromNumber(quantity)!) g"
-
-        case HKQuantityTypeIdentifierDietaryProtein:
-            return "\(SampleFormatter.numberFormatter.stringFromNumber(quantity)!) g"
-
-        case HKQuantityTypeIdentifierDietarySodium:
-            return "\(SampleFormatter.numberFormatter.stringFromNumber(quantity)!) mg"
-
-        case HKQuantityTypeIdentifierDietarySugar:
-            return "\(SampleFormatter.numberFormatter.stringFromNumber(quantity)!) g"
 
         case HKQuantityTypeIdentifierDistanceWalkingRunning:
             return "\(SampleFormatter.numberFormatter.stringFromNumber(quantity)!) miles"
