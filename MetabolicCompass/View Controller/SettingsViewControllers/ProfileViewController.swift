@@ -106,7 +106,6 @@ class ProfileViewController: BaseViewController {
 
     private func changeMode() {
         self.dataSource.swithMode()
-
         self.configureNavBar()
     }
 
