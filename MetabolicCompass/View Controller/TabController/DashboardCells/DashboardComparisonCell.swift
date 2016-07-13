@@ -58,19 +58,20 @@ class DashboardComparisonCell: UITableViewCell {
         let text = IntroCompareDataTableViewCell.healthFormatter.stringFromSamples(results)
         localSampleValueTextField.attributedText = text.formatTextWithRegex("[-+]?(\\d*[.,/])?\\d+",
                                                                             format: [NSForegroundColorAttributeName: defaultDigitColor,
-                                                                                NSFontAttributeName : ScreenManager.appFontOfSize(17)],
+                                                                                NSFontAttributeName : ScreenManager.appFontOfSize(16)],
                                                                             defaultFormat: [NSForegroundColorAttributeName: defaultTextColor,
-                                                                                NSFontAttributeName : ScreenManager.appFontOfSize(17)])
+                                                                                NSFontAttributeName : ScreenManager.appFontOfSize(16)])
     }
     
     /// note setUserData above that uses this call
     private func loadPopSamples(results: [MCSample], stale: Bool) {
+        
         let text = IntroCompareDataTableViewCell.healthFormatter.stringFromSamples(results)
         populationSampleValueTextField.attributedText = text.formatTextWithRegex("[-+]?(\\d*[.,/])?\\d+",
                                                                                  format: [NSForegroundColorAttributeName: defaultDigitColor,
-                                                                                    NSFontAttributeName : ScreenManager.appFontOfSize(17)],
+                                                                                    NSFontAttributeName : ScreenManager.appFontOfSize(16)],
                                                                                  defaultFormat: [NSForegroundColorAttributeName: defaultTextColor,
-                                                                                    NSFontAttributeName : ScreenManager.appFontOfSize(17)])
+                                                                                    NSFontAttributeName : ScreenManager.appFontOfSize(16)])
     }
     
     
