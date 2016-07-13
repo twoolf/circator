@@ -12,6 +12,7 @@ import UIKit
 import HealthKit
 import MetabolicCompassKit
 import Async
+import SwiftDate
 import Former
 import HTPressableButton
 import AKPickerView_Swift
@@ -25,20 +26,24 @@ public protocol ManageEventMenuDelegate: class {
 }
 
 class PickerManager: NSObject, AKPickerViewDelegate, AKPickerViewDataSource {
-    var data : [String]
+    var items: [String]
+    var data : [String:AnyObject]
     var current : String
 
     override init() {
-        self.data = []
+        self.items = []
+        self.data = [:]
         self.current = ""
     }
 
-    init(data: [String]) {
+    init(items: [String], data: [String:AnyObject]) {
+        self.items = items
         self.data = data
         self.current = ""
     }
 
-    func refreshData(data: [String]) {
+    func refreshData(items: [String], data: [String:AnyObject]) {
+        self.items = items
         self.data = data
     }
 
@@ -48,14 +53,15 @@ class PickerManager: NSObject, AKPickerViewDelegate, AKPickerViewDataSource {
     }
 
     func pickerView(pickerView: AKPickerView, titleForItem item: Int) -> String {
-        return self.data[item]
+        return self.items[item]
     }
 
     func pickerView(pickerView: AKPickerView, didSelectItem item: Int) {
-        current = self.data[item]
+        current = self.items[item]
     }
 
-    func getSelectedItem() -> String { return current }
+    func getSelectedItem() -> String { return current.isEmpty && items.count > 0 ? items[0] : current }
+    func getSelectedValue() -> AnyObject? { return current.isEmpty && items.count > 0 ? data[items[0]] : data[current] }
 }
 
 // Wrapper class that stores the meal type and duration.
@@ -217,7 +223,10 @@ public class AddEventTable: UITableView, UITableViewDelegate, UITableViewDataSou
         self.setupFavorites()
 
         quickAddManagers = quickAddSectionData.enumerate().flatMap { (index,_) in
-            return index > 1 ? nil : PickerManager(data: quickAddSectionData[index])
+            if index > 1 { return nil }
+            var data: [String: AnyObject] = [:]
+            quickAddSectionData[index].forEach { data[$0] = $0 }
+            return PickerManager(items: quickAddSectionData[index], data: data)
         }
 
         quickAddPickers = quickAddSectionData.enumerate().flatMap { (index, _) in
@@ -621,13 +630,38 @@ public class DeleteEventTable: UITableView
 
     private let delPickerSections = ["Delete All Recent Events", "Delete Events By Date"]
 
-    private let quickDelRecentData =
-        ["15m", "30m", "1h", "1h 30m", "2h", "3h", "4h", "6h", "8h", "12h", "18h", "24h"]
+    private let quickDelRecentItems = [
+        "15m",
+        "30m",
+        "1h",
+        "1h 30m",
+        "2h",
+        "3h",
+        "4h",
+        "6h",
+        "8h",
+        "12h",
+        "18h",
+        "24h"
+    ]
 
-    private var quickDelRecentPicker: AKPickerView! = nil
+    private let quickDelRecentData = [
+        "15m"    : 15,
+        "30m"    : 30,
+        "1h"     : 60,
+        "1h 30m" : 90,
+        "2h"     : 120,
+        "3h"     : 180,
+        "4h"     : 240,
+        "6h"     : 360,
+        "8h"     : 480,
+        "12h"    : 720,
+        "18h"    : 1080,
+        "24h"    : 1440
+    ]
+
     private var quickDelRecentManager: PickerManager! = nil
-    private var quickDelDateRows: [FormInlineDatePickerCell] = []
-    private var quickDelHeaderViews : [UIView] = []
+    private var quickDelDates: [NSDate] = []
 
     public init(frame: CGRect, style: UITableViewStyle, menuItems: [PathMenuItem]) {
         self.menuItems = menuItems
@@ -664,13 +698,18 @@ public class DeleteEventTable: UITableView
 
         let deleteRecentRow = AKPickerRowFormer<AKPickerCell>() {
                 $0.backgroundColor = .clearColor()
-                $0.manager.refreshData(self.quickDelRecentData)
+                $0.manager.refreshData(self.quickDelRecentItems, data: self.quickDelRecentData)
                 $0.picker.reloadData()
+                self.quickDelRecentManager = $0.manager
             }.configure {
                 $0.rowHeight = UITableViewAutomaticDimension
         }
 
-        let deleteByDateRows = ["Start Date", "End Date"].map { rowName in
+        var endDate = NSDate()
+        endDate = endDate.add(minutes: 15 - (endDate.minute % 15))
+        quickDelDates = [endDate - 15.minutes, endDate]
+
+        let deleteByDateRows = ["Start Date", "End Date"].enumerate().map { (index, rowName) in
             return InlineDatePickerRowFormer<FormInlineDatePickerCell>() {
                 $0.backgroundColor = .clearColor()
                 $0.titleLabel.text = rowName
@@ -681,10 +720,15 @@ public class DeleteEventTable: UITableView
                 }.inlineCellSetup {
                     $0.datePicker.datePickerMode = .DateAndTime
                     $0.datePicker.minuteInterval = 15
+                    $0.datePicker.date = self.quickDelDates[index]
                 }.configure {
                     $0.displayEditingColor = .whiteColor()
+                    $0.date = self.quickDelDates[index]
                 }.displayTextFromDate(mediumDateShortTime)
         }
+
+        deleteByDateRows[0].onDateChanged { self.quickDelDates[0] = $0 }
+        deleteByDateRows[1].onDateChanged { self.quickDelDates[1] = $0 }
 
         let headers = delPickerSections.map { sectionName in
             return LabelViewFormer<FormLabelHeaderView> {
@@ -736,15 +780,30 @@ public class DeleteEventTable: UITableView
 
     }
 
-    //TODO: for adds, we add to HealthKit and rely on the observer query to push to the backend.
-    // For deletes, we need to refine the observer queries to provide similar functionality.
-    // Currently deletions are simply dropped on the floor.
     func handleQuickDelRecentTap(sender: UIButton) {
         log.info("Delete recent tapped")
+        if let mins = quickDelRecentManager.getSelectedValue() as? Int {
+            let endDate = NSDate()
+            let startDate = endDate.dateByAddingTimeInterval(-(Double(mins) * 60.0))
+            log.info("Delete circadian events between \(startDate) \(endDate)")
+            HealthManager.sharedManager.deleteCircadianEventsSync(startDate, endDate: endDate) { error in
+                if error != nil { log.error(error) }
+            }
+        }
     }
 
     func handleQuickDelDateTap(sender: UIButton) {
-        log.info("Delete by date tapped")
+        let startDate = quickDelDates[0]
+        let endDate = quickDelDates[1]
+        if startDate < endDate {
+            log.info("Delete circadian events between \(startDate) \(endDate)")
+            HealthManager.sharedManager.deleteCircadianEventsSync(startDate, endDate: endDate) { error in
+                if error != nil { log.error(error) }
+            }
+        } else {
+            UINotifications.genericErrorOnView(self.superview!, msg: "Start date must be before the end date")
+
+        }
     }
 }
 

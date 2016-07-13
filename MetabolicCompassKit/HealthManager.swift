@@ -119,7 +119,8 @@ public class HealthManager: NSObject, WCSessionDelegate {
         if let st = startDate {
             let conjuncts = [
                 HKQuery.predicateForSamplesWithStartDate(st, endDate: endDate, options: .None),
-                HKQuery.predicateForWorkoutsWithWorkoutActivityType(HKWorkoutActivityType.PreparationAndRecovery)
+                HKQuery.predicateForWorkoutsWithWorkoutActivityType(HKWorkoutActivityType.PreparationAndRecovery),
+                HKQuery.predicateForObjectsWithMetadataKey("Meal Type")
             ]
             predicate = NSCompoundPredicate(andPredicateWithSubpredicates: conjuncts)
         } else {
@@ -1903,6 +1904,69 @@ public class HealthManager: NSObject, WCSessionDelegate {
         }
     }
 
+    // Synchronized delete helper for remote and on-device sample removal.
+    public func deleteSamplesSync(startDate: NSDate, endDate: NSDate, measures: [String:AnyObject],
+                                  typesAndPredicates: [HKSampleType: NSPredicate], completion: NSError? -> Void)
+    {
+        // Delete remotely.
+        let params: [String: AnyObject] = [
+            "tstart": startDate,
+            "tend": endDate,
+            "columns": measures
+        ]
+
+        Service.json(MCRouter.RemoveMeasures(params), statusCode: 200..<300, tag: "DELPOST") {
+            _, response, result in
+            log.info("Deletions: \(result.value)")
+            guard result.isSuccess else {
+                log.error("Failed to delete samples on the server, server may potentially diverge from device.")
+                return
+            }
+
+            // On success, delete locally
+            self.deleteSamples(typesAndPredicates) { (deleted, error) in
+                if error != nil {
+                    log.error("Failed to delete samples on the device, HealthKit may potentially diverge from the server.")
+                    log.error(error)
+                }
+                completion(error)
+            }
+        }
+    }
+
+    public func deleteCircadianEventsSync(startDate: NSDate, endDate: NSDate, completion: NSError? -> Void) {
+        let measures: [String:AnyObject] = [
+            "0": "meal_duration",
+            "1": "activity_duration",
+            "2": "activity_value"
+        ]
+
+        let mealConjuncts = [
+            HKQuery.predicateForWorkoutsWithWorkoutActivityType(.PreparationAndRecovery),
+            HKQuery.predicateForObjectsWithMetadataKey("Meal Type")
+        ]
+        let mealPredicate = NSCompoundPredicate(andPredicateWithSubpredicates: mealConjuncts)
+
+        let circadianEventPredicates: NSPredicate = NSCompoundPredicate(orPredicateWithSubpredicates: [
+            mealPredicate,
+            HKQuery.predicateForWorkoutsWithWorkoutActivityType(.Running),
+            HKQuery.predicateForWorkoutsWithWorkoutActivityType(.Cycling),
+            HKQuery.predicateForWorkoutsWithWorkoutActivityType(.Swimming),
+        ])
+
+        let sleepType = HKCategoryType.categoryTypeForIdentifier(HKCategoryTypeIdentifierSleepAnalysis)!
+        let sleepPredicate = HKQuery.predicateForCategorySamplesWithOperatorType(.EqualToPredicateOperatorType, value: HKCategoryValueSleepAnalysis.Asleep.rawValue)
+
+        let typesAndPredicates: [HKSampleType: NSPredicate] = [
+            HKWorkoutType.workoutType(): circadianEventPredicates,
+            sleepType: sleepPredicate
+        ]
+
+        self.deleteSamplesSync(startDate, endDate: endDate, measures: measures,
+                               typesAndPredicates: typesAndPredicates, completion: completion)
+    }
+    
+
     // MARK: - Chart queries
 
     public func collectDataForCharts() {
@@ -2173,8 +2237,6 @@ public class HealthManager: NSObject, WCSessionDelegate {
             completion(true, nil)
         }
     }
-
-    // MARK: - TODO: Synchronized deletion helpers.
 
 
     // MARK: - Apple Watch
