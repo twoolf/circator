@@ -57,7 +57,7 @@ class UserInfoModel: NSObject {
     }()
 
     lazy private(set) var unitsSystemField : ModelItem = {
-         return ModelItem(name: "metric", title: "Units", type: .Units, iconImageName: "icon-measure", value: UnitsSystem.Metric.rawValue)
+         return ModelItem(name: "metric", title: "Units", type: .Units, iconImageName: "icon-measure", value: UnitsSystem.Imperial.rawValue)
     }()
 
 
