@@ -71,6 +71,7 @@ class AddMealDataSource: NSObject, UITableViewDataSource, UITableViewDelegate, P
                 datePickerCell.delegate = self
                 if addEventModel!.datePickerRow(indexPath.row) {//date and time
                     datePickerCell.datePicker.datePickerMode = .DateAndTime
+                    datePickerCell.datePicker.minuteInterval = 5
                     datePickerCell.datePicker.tag = indexPath.row
                     if sleepMode {
                         let startSleepPickerTag = addEventModel?.datePickerTags.first
@@ -85,6 +86,7 @@ class AddMealDataSource: NSObject, UITableViewDataSource, UITableViewDelegate, P
                     }
                 } else if addEventModel!.countDownPickerRow(indexPath.row)  {//countdoun
                     datePickerCell.datePicker.datePickerMode = .CountDownTimer
+                    datePickerCell.datePicker.minuteInterval = 5
                     datePickerCell.datePicker.tag = indexPath.row
                     datePickerCell.datePicker.countDownDuration = (addEventModel?.duration)!
                 }
