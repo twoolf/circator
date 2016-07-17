@@ -37,7 +37,6 @@ class DailyProgressViewController : UIViewController, DailyChartModelProtocol {
         self.dailyChartModel.registerCells()
         self.dailyProgressChartDaysTable.dataSource = self.dailyChartModel
         self.dailyProgressChartView.prepareChart()
-        NSNotificationCenter.defaultCenter().addObserver(self, selector: #selector(self.contentDidUpdate), name: MEMDidUpdateCircadianEvents, object: nil)
     }
     
     override func viewDidAppear(animated: Bool) {
@@ -53,9 +52,8 @@ class DailyProgressViewController : UIViewController, DailyChartModelProtocol {
         self.contentDidUpdate()
     }
 
-    func contentDidUpdate() {
+    public func contentDidUpdate() {
         Async.main {
-            log.info("DPVC CDU")
             self.activityIndicator.startAnimating()
             self.dailyChartModel.prepareChartData()
             self.dailyChartModel.getDailyProgress()
@@ -66,7 +64,6 @@ class DailyProgressViewController : UIViewController, DailyChartModelProtocol {
     
     func dataCollectingFinished() {
         Async.main {
-            log.info("DPVC DCF")
             self.activityIndicator.stopAnimating()
             self.dailyProgressChartView.updateChartData(self.dailyChartModel.chartDataArray, chartColorsArray: self.dailyChartModel.chartColorsArray)
             self.dailyProgressChartView.setNeedsDisplay()
