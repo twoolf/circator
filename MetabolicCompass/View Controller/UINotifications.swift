@@ -169,6 +169,14 @@ public class UINotifications {
         }
     }
 
+    public static func genericMsgOnView(view: UIView, msg: String, nohide: Bool = false) {
+        Async.main {
+            if !nohide { view.dodo.style.bar.hideAfterDelaySeconds = 3 }
+            view.dodo.style.bar.hideOnTap = true
+            view.dodo.info(msg)
+        }
+    }
+
     public static func genericErrorOnView(view: UIView, msg: String, nohide: Bool = false) {
         Async.main {
             if !nohide { view.dodo.style.bar.hideAfterDelaySeconds = 3 }

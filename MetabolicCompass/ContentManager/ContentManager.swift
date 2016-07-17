@@ -29,6 +29,7 @@ class ContentManager: NSObject {
             if (self.isBackgroundWorkActive) {
                 return
             }
+            log.warning("Starting background work")
             self.fetchInitialAggregates()
             self.fetchRecentSamples()
             self.isBackgroundWorkActive = true
@@ -46,6 +47,7 @@ class ContentManager: NSObject {
         Async.main() {
             // Clean up aggregate data fetched via the prior account.
             if let task = self.aggregateFetchTask {
+                log.warning("Stopping background work")
                 task.cancel()
                 self.aggregateFetchTask = nil
                 self.isBackgroundWorkActive = false

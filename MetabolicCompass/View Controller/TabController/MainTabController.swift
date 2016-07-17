@@ -154,8 +154,7 @@ class MainTabController: UITabBarController, UITabBarControllerDelegate, ManageE
     // MARK :- ManageEventMenuDelegate implementation
     
     func manageEventMenu(menu: ManageEventMenu, didSelectIndex idx: Int) {
-        log.info("Main Tab pathMemu \(idx)")
-        Async.main(after: 0.4) { 
+        Async.main(after: 0.4) {
             self.hideIcons(true)
             self.hideOverlay()
             let controller = UIStoryboard(name: "AddEvents", bundle: nil).instantiateViewControllerWithIdentifier("AddMealNavViewController") as! UINavigationController
@@ -190,6 +189,11 @@ class MainTabController: UITabBarController, UITabBarControllerDelegate, ManageE
     func manageEventMenuDidFinishAnimationClose(menu: ManageEventMenu) {
         self.hideOverlay()
         hideIcons(true)
+
+//        log.info("MTVC FAC")
+//        Async.background(after: 1.0) {
+//            NSNotificationCenter.defaultCenter().postNotificationName(MEMDidUpdateCircadianEvents, object: nil)
+//        }
     }
 
     //MARK: Deinit

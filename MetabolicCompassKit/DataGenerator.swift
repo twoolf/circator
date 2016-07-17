@@ -555,7 +555,7 @@ public class DataGenerator : GeneratorType {
 
     func writeSample(handle: NSFileHandle, sample: HKSample, asFirst: Bool) {
         do {
-            let js = try JSON(HealthManager.serializer.dictForSample(sample))
+            let js = try JSON(RemoteSampleManager.serializer.dictForSample(sample))
             if let jsstr = js.rawString(),
                    jsdata = ((asFirst ? "" : ",") + jsstr).dataUsingEncoding(NSUTF8StringEncoding)
             {
@@ -789,7 +789,7 @@ public class DataGenerator : GeneratorType {
         for type in coveringTypes {
             typesAndPredicates[type] = HKQuery.predicateForObjectsWithMetadataKey(tag)
         }
-        HealthManager.sharedManager.deleteSamples(typesAndPredicates, completion: completion)
+        HealthManager.sharedManager.deleteSamples(typesAndPredicates: typesAndPredicates, completion: completion)
     }
 
     public func removeLocalInMemoryDataset(completion: (Int, NSError!) -> Void) {

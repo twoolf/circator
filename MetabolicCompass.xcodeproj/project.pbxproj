@@ -9,6 +9,7 @@
 /* Begin PBXBuildFile section */
 		0D79EDFDE09AD125810BA7C6 /* Pods_MetabolicCompass.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4C8B3FF8B2773E3BB6E363ED /* Pods_MetabolicCompass.framework */; };
 		17FFC4CA0BA7FDDC8C6C002E /* Pods_MetabolicCompassWatch.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 10E3AB7E8488EA4E63B9B8EC /* Pods_MetabolicCompassWatch.framework */; };
+		781377DF1D3A9A5D00F6BA35 /* RemoteSampleManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 781377DE1D3A9A5D00F6BA35 /* RemoteSampleManager.swift */; };
 		7816FFBB1C1E45D3002E2ED8 /* UserManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7816FFBA1C1E45D3002E2ED8 /* UserManager.swift */; };
 		783E53D21C75856200BEBF33 /* DataGenerator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 783E53D11C75856200BEBF33 /* DataGenerator.swift */; };
 		7843F9121C1FAD9900AB8978 /* ServiceAPI.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7843F9111C1FAD9900AB8978 /* ServiceAPI.swift */; };
@@ -318,6 +319,7 @@
 		4C8B3FF8B2773E3BB6E363ED /* Pods_MetabolicCompass.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_MetabolicCompass.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		5F9C59E725732AE0A239C21F /* Pods-MetabolicCompassWatch.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-MetabolicCompassWatch.debug.xcconfig"; path = "Pods/Target Support Files/Pods-MetabolicCompassWatch/Pods-MetabolicCompassWatch.debug.xcconfig"; sourceTree = "<group>"; };
 		658EF9D4A636C5CCD0D95144 /* Pods-MetabolicCompassWatch.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-MetabolicCompassWatch.release.xcconfig"; path = "Pods/Target Support Files/Pods-MetabolicCompassWatch/Pods-MetabolicCompassWatch.release.xcconfig"; sourceTree = "<group>"; };
+		781377DE1D3A9A5D00F6BA35 /* RemoteSampleManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RemoteSampleManager.swift; sourceTree = "<group>"; };
 		7816FFBA1C1E45D3002E2ED8 /* UserManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = UserManager.swift; sourceTree = "<group>"; };
 		781CF2C01C6A6A36001DF3B2 /* EventTimeViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = EventTimeViewController.swift; sourceTree = "<group>"; };
 		781EE1231BAF3F6B00E6DDA1 /* Podfile */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = Podfile; path = ../Podfile; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.ruby; };
@@ -1032,6 +1034,7 @@
 				78AC90CB1C1E859F008C931B /* UserAccount.swift */,
 				7816FFBA1C1E45D3002E2ED8 /* UserManager.swift */,
 				F42F5B361BE1FD1E00195490 /* Info.plist */,
+				781377DE1D3A9A5D00F6BA35 /* RemoteSampleManager.swift */,
 			);
 			path = MetabolicCompassKit;
 			sourceTree = "<group>";
@@ -1810,6 +1813,7 @@
 				F42F5B471BE2048400195490 /* Theme.swift in Sources */,
 				F42F5B461BE2048400195490 /* SampleFormatter.swift in Sources */,
 				7861300F1C25F42B00F50DB3 /* QueryManager.swift in Sources */,
+				781377DF1D3A9A5D00F6BA35 /* RemoteSampleManager.swift in Sources */,
 				F42F5B451BE2048400195490 /* HealthManager.swift in Sources */,
 				783E53D21C75856200BEBF33 /* DataGenerator.swift in Sources */,
 				7843F9121C1FAD9900AB8978 /* ServiceAPI.swift in Sources */,

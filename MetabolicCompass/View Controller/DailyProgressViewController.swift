@@ -9,11 +9,12 @@
 import Foundation
 import UIKit
 import MetabolicCompassKit
+import Async
 
 class DailyProgressViewController : UIViewController, DailyChartModelProtocol {
     
     var dailyChartModel = DailyChartModel()
-    
+
     @IBOutlet weak var daysTableView: UITableView!
     @IBOutlet weak var dailyProgressChartView: MetabolicDailyPorgressChartView!
     @IBOutlet weak var dailyProgressChartScrollView: UIScrollView!
@@ -36,6 +37,7 @@ class DailyProgressViewController : UIViewController, DailyChartModelProtocol {
         self.dailyChartModel.registerCells()
         self.dailyProgressChartDaysTable.dataSource = self.dailyChartModel
         self.dailyProgressChartView.prepareChart()
+        NSNotificationCenter.defaultCenter().addObserver(self, selector: #selector(self.contentDidUpdate), name: MEMDidUpdateCircadianEvents, object: nil)
     }
     
     override func viewDidAppear(animated: Bool) {
@@ -48,16 +50,27 @@ class DailyProgressViewController : UIViewController, DailyChartModelProtocol {
         let mainScrollViewContentHeight = self.mainScrollView.contentSize.height
         self.mainScrollView.contentSize = CGSizeMake(mainScrollViewContentWidth, mainScrollViewContentHeight)
         //updating chart data
-        self.activityIndicator.startAnimating()
-        self.dailyChartModel.prepareChartData()
-        self.dailyChartModel.getDailyProgress()
+        self.contentDidUpdate()
+    }
+
+    func contentDidUpdate() {
+        Async.main {
+            log.info("DPVC CDU")
+            self.activityIndicator.startAnimating()
+            self.dailyChartModel.prepareChartData()
+            self.dailyChartModel.getDailyProgress()
+        }
     }
     
     //MARK: DailyChartModelProtocol
     
     func dataCollectingFinished() {
-        self.activityIndicator.stopAnimating()
-        self.dailyProgressChartView.updateChartData(self.dailyChartModel.chartDataArray, chartColorsArray: self.dailyChartModel.chartColorsArray)
+        Async.main {
+            log.info("DPVC DCF")
+            self.activityIndicator.stopAnimating()
+            self.dailyProgressChartView.updateChartData(self.dailyChartModel.chartDataArray, chartColorsArray: self.dailyChartModel.chartColorsArray)
+            self.dailyProgressChartView.setNeedsDisplay()
+        }
     }
     
     func dailyProgressStatCollected() {
@@ -72,5 +85,10 @@ class DailyProgressViewController : UIViewController, DailyChartModelProtocol {
         self.lastAteLabel.attributedText = self.dailyChartModel.lastAteText.formatTextWithRegex("[-+]?(\\d*[.,])?\\d+",
                                                                                                 format: [NSForegroundColorAttributeName: UIColor.whiteColor()],
                                                                                                 defaultFormat: [NSForegroundColorAttributeName: UIColor.colorWithHexString("#ffffff", alpha: 0.3)!])
+    }
+
+    //MARK: Deinit
+    deinit {
+        NSNotificationCenter.defaultCenter().removeObserver(self)
     }
 }
