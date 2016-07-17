@@ -24,6 +24,8 @@ public class BalanceBarView : UIView {
 
     private var barConstraints: [NSLayoutConstraint] = []
 
+    private var tip: TapTip! = nil
+
     public override init(frame: CGRect) {
         super.init(frame: frame)
     }
@@ -63,6 +65,13 @@ public class BalanceBarView : UIView {
 
         refreshConstraints(false)
         refreshData()
+    }
+
+    convenience init(ratio: CGFloat = 0.5, title: NSAttributedString, color1: UIColor, color2: UIColor, tooltipText: String) {
+        self.init(ratio: ratio, title: title, color1: color1, color2: color2)
+        self.tip = TapTip(forView: self, text: tooltipText, asTop: false)
+        self.addGestureRecognizer(tip.tapRecognizer)
+        self.userInteractionEnabled = true
     }
 
     public func refreshData() {

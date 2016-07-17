@@ -12,7 +12,7 @@ import HealthKit
 import MetabolicCompassKit
 import Async
 import Charts
-import SteviaLayout
+import EasyTipView
 
 private let fastingViewLabelSize: CGFloat = 12.0
 private let fastingViewTextSize: CGFloat = 24.0
@@ -117,9 +117,11 @@ public class FastingViewController : UIViewController, ChartViewDelegate {
         title.addAttributes(attrs1, range: NSRange(location:23, length: 1))
         title.addAttributes(attrs2, range: NSRange(location:37, length: 1))
 
+        let tooltip = "This compares the hours you spent fasting while asleep in the last week vs the hours spent fasting while awake"
         let bar = BalanceBarView(title: title,
                                  color1: FastingViewController.orange,
-                                 color2: FastingViewController.blue)
+                                 color2: FastingViewController.blue,
+                                 tooltipText: tooltip)
         return bar
     }()
 
@@ -134,14 +136,22 @@ public class FastingViewController : UIViewController, ChartViewDelegate {
         title.addAttributes(attrs1, range: NSRange(location:15, length: 1))
         title.addAttributes(attrs2, range: NSRange(location:32, length: 1))
 
+        let tooltip = "This compares the hours you spent in the last week eating vs the hours spent exercising"
         let bar = BalanceBarView(title: title,
                                  color1: FastingViewController.yellow,
-                                 color2: FastingViewController.green)
+                                 color2: FastingViewController.green,
+                                 tooltipText: tooltip)
         return bar
     }()
 
     lazy var cwfLabel: UIStackView = createNumberLabel("Cumulative Weekly Fasting", labelFontSize: fastingViewLabelSize, value: 0.0, unit: "hrs")
     lazy var wfvLabel: UIStackView = createNumberLabel("Weekly Fasting Variability", labelFontSize: fastingViewLabelSize, value: 0.0, unit: "hrs")
+
+    private let cwfTipMsg = "Your cumulative weekly fasting is the total number of hours that you've spent fasting over the last 7 days"
+    private let wfvTipMsg = "Your weekly fasting variability shows you how much your fasting hours varies day-by-day. We calculate this over the last week."
+
+    private var cwfTip: TapTip! = nil
+    private var wfvTip: TapTip! = nil
 
     override public func viewWillAppear(animated: Bool) {
         super.viewWillAppear(animated)
@@ -175,6 +185,8 @@ public class FastingViewController : UIViewController, ChartViewDelegate {
             _ in return self.pieChart
         })
 
+        setupTooltips()
+
         let labelStack: UIStackView = {
             let stack = UIStackView(arrangedSubviews: [cwfLabel, wfvLabel])
             stack.axis = .Horizontal
@@ -206,6 +218,17 @@ public class FastingViewController : UIViewController, ChartViewDelegate {
             labelStack.heightAnchor.constraintEqualToConstant(80),
         ]
         fastingView.addConstraints(constraints)
+    }
+
+    func setupTooltips() {
+        cwfTip = TapTip(forView: cwfLabel, text: cwfTipMsg, asTop: true)
+        wfvTip = TapTip(forView: wfvLabel, text: wfvTipMsg, asTop: true)
+
+        cwfLabel.addGestureRecognizer(cwfTip.tapRecognizer)
+        cwfLabel.userInteractionEnabled = true
+
+        wfvLabel.addGestureRecognizer(wfvTip.tapRecognizer)
+        wfvLabel.userInteractionEnabled = true
     }
 
     func refreshPieChart() {
@@ -303,5 +326,6 @@ public class FastingViewController : UIViewController, ChartViewDelegate {
         pieChart.centerText = ""
         pieChart.drawCenterTextEnabled = false
     }
+
 }
 

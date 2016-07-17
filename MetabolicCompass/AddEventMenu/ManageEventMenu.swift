@@ -182,8 +182,11 @@ public class AddEventTable: UITableView, UITableViewDelegate, UITableViewDataSou
     private var quickAddManagers: [PickerManager] = []
     private var quickAddHeaderViews : [UIView] = []
 
-    public init(frame: CGRect, style: UITableViewStyle, menuItems: [PathMenuItem]) {
+    private var notificationView: UIView! = nil
+
+    public init(frame: CGRect, style: UITableViewStyle, menuItems: [PathMenuItem], notificationView: UIView!) {
         self.menuItems = menuItems
+        self.notificationView = notificationView
         super.init(frame: frame, style: style)
         self.setupTable()
     }
@@ -327,7 +330,7 @@ public class AddEventTable: UITableView, UITableViewDelegate, UITableViewDataSou
     func circadianOpCompletion(sender: UIButton) -> (NSError? -> Void) {
         return { error in
             Async.main {
-                if error == nil { UINotifications.genericMsgOnView(self.superview!, msg: "Successfully added events.") }
+                if error == nil { UINotifications.genericSuccessMsgOnView(self.notificationView ?? self.superview!, msg: "Successfully added events.") }
                 sender.enabled = true
                 sender.setNeedsDisplay()
             }
@@ -356,7 +359,7 @@ public class AddEventTable: UITableView, UITableViewDelegate, UITableViewDataSou
             else {
                 let msg = "This event overlaps with another, please try again"
                 let err = NSError(domain: HMErrorDomain, code: 1048576, userInfo: [NSLocalizedDescriptionKey: msg])
-                UINotifications.genericErrorOnView(self, msg: msg)
+                UINotifications.genericErrorOnView(self.notificationView ?? self.superview!, msg: msg)
                 completion(err)
             }
         }
@@ -476,7 +479,7 @@ public class AddEventTable: UITableView, UITableViewDelegate, UITableViewDataSou
             Async.main {
                 let msg = "Unknown quick add event type \(quickAddType)"
                 log.error(msg)
-                UINotifications.genericErrorOnView(self, msg: msg)
+                UINotifications.genericErrorOnView(self.notificationView ?? self.superview!, msg: msg)
                 sender.enabled = true
                 sender.setNeedsDisplay()
             }
@@ -659,8 +662,11 @@ public class DeleteEventTable: UITableView
     private var quickDelRecentManager: PickerManager! = nil
     private var quickDelDates: [NSDate] = []
 
-    public init(frame: CGRect, style: UITableViewStyle, menuItems: [PathMenuItem]) {
+    private var notificationView: UIView! = nil
+
+    public init(frame: CGRect, style: UITableViewStyle, menuItems: [PathMenuItem], notificationView: UIView!) {
         self.menuItems = menuItems
+        self.notificationView = notificationView
         super.init(frame: frame, style: style)
         self.setupFormer()
     }
@@ -779,7 +785,7 @@ public class DeleteEventTable: UITableView
     func circadianOpCompletion(error: NSError?) {
         if error != nil { log.error(error) }
         else {
-            Async.main { UINotifications.genericMsgOnView(self.superview!, msg: "Successfully deleted events.") }
+            Async.main { UINotifications.genericSuccessMsgOnView(self.notificationView ?? self.superview!, msg: "Successfully deleted events.") }
             NSNotificationCenter.defaultCenter().postNotificationName(MEMDidUpdateCircadianEvents, object: nil)
         }
     }
@@ -801,7 +807,7 @@ public class DeleteEventTable: UITableView
             log.info("Delete circadian events between \(startDate) \(endDate)")
             HealthManager.sharedManager.deleteCircadianEvents(startDate, endDate: endDate, completion: self.circadianOpCompletion)
         } else {
-            UINotifications.genericErrorOnView(self.superview!, msg: "Start date must be before the end date")
+            UINotifications.genericErrorOnView(self.notificationView ?? self.superview!, msg: "Start date must be before the end date")
         }
     }
 }
@@ -908,9 +914,6 @@ public class ManageEventMenu: UIView, PathMenuItemDelegate {
         self.startButton!.center = startPoint
         self.addSubview(startButton!)
 
-        self.addTableView = AddEventTable(frame: CGRect.zero, style: .Grouped, menuItems: self.menuItems)
-        self.delTableView = DeleteEventTable(frame: CGRect.zero, style: .Grouped, menuItems: self.menuItems)
-
         let attrs = [NSFontAttributeName: UIFont.systemFontOfSize(17, weight: UIFontWeightRegular)]
         self.segmenter = UISegmentedControl(items: ["Add event", "Delete events"])
         self.segmenter.selectedSegmentIndex = 0
@@ -929,6 +932,9 @@ public class ManageEventMenu: UIView, PathMenuItemDelegate {
         ]
 
         self.addConstraints(segConstraints)
+
+        self.addTableView = AddEventTable(frame: CGRect.zero, style: .Grouped, menuItems: self.menuItems, notificationView: self.segmenter)
+        self.delTableView = DeleteEventTable(frame: CGRect.zero, style: .Grouped, menuItems: self.menuItems, notificationView: self.segmenter)
     }
 
     public func getCurrentTable() -> UITableView? {

@@ -28,8 +28,8 @@ def shared_pods
     pod 'JWTDecode', '~> 1.0'
     pod 'AKPickerView-Swift'
     pod 'AsyncKit'
-    pod 'SteviaLayout'
     pod 'AwesomeCache'
+    pod 'EasyTipView'
 end
 
 target 'MetabolicCompassKit' do

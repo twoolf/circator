@@ -121,8 +121,8 @@ class MainTabController: UITabBarController, UITabBarControllerDelegate, ManageE
         self.menu = ManageEventMenu(frame: view.bounds, startItem: startItem, items: items)
 
         self.menu!.delegate = self
-        self.menu!.startPoint     = CGPointMake(view.frame.width/2, view.frame.size.height - 26.0)
-        self.menu!.timeOffset     = 0.0
+        self.menu!.startPoint = CGPointMake(view.frame.width/2, view.frame.size.height - 26.0)
+        self.menu!.timeOffset = 0.0
         self.menu!.animationDuration = 0.15
         self.menu!.hidden = !UserManager.sharedManager.hasAccount()
         self.view.window?.rootViewController?.view.addSubview(self.menu!)
