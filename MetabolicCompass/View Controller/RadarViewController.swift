@@ -75,12 +75,12 @@ class RadarViewController : UIViewController, ChartViewDelegate {
 
     lazy var radarChart: MetabolicRadarChartView = {
         let chart = MetabolicRadarChartView()
-        chart.userInteractionEnabled = false
         chart.renderer = MetabolicChartRender(chart: chart, animator: chart.chartAnimator, viewPortHandler: chart.viewPortHandler)
         chart.animate(xAxisDuration: 1.0, yAxisDuration: 1.0)
         chart.delegate = self
         chart.descriptionText = ""
         chart.rotationEnabled = false
+        chart.highlightPerTapEnabled = false
 
         chart.yAxis.axisMinValue = 0.1
         chart.yAxis.axisRange = 1.0
@@ -99,6 +99,8 @@ class RadarViewController : UIViewController, ChartViewDelegate {
         return chart
     }()
 
+    var radarTip: TapTip! = nil
+
     var initialImage : UIImage! = nil
     var initialMsg : String! = "HealthKit not authorized"
 
@@ -112,21 +114,17 @@ class RadarViewController : UIViewController, ChartViewDelegate {
 
     override func viewWillAppear(animated: Bool) {
         super.viewWillAppear(animated)
-        
         NSNotificationCenter.defaultCenter().addObserver(self, selector: #selector(contentDidChange), name: PMDidUpdateBalanceSampleTypesNotification, object: nil)
     }
     
     func contentDidChange() {
-        
         Async.main {
             self.reloadData()
         }
-        
     }
     
     override func viewWillDisappear(animated: Bool) {
         super.viewWillDisappear(animated)
-        
         NSNotificationCenter.defaultCenter().removeObserver(self)
     }
 
@@ -143,9 +141,7 @@ class RadarViewController : UIViewController, ChartViewDelegate {
 
     override func viewDidLoad() {
         super.viewDidLoad()
-        
-        
-        
+
         configureViews()
         radarChart.layoutIfNeeded()
         reloadData()
@@ -153,20 +149,29 @@ class RadarViewController : UIViewController, ChartViewDelegate {
 
     func configureViews() {
         if authorized {
-            view.subviews.forEach { $0.removeFromSuperview() }
-            radarChart.translatesAutoresizingMaskIntoConstraints = false
-            view.addSubview(radarChart)
-            let rcConstraints: [NSLayoutConstraint] = [
-                radarChart.topAnchor.constraintEqualToAnchor(view.topAnchor),
-                radarChart.leftAnchor.constraintEqualToAnchor(view.leftAnchor),
-                radarChart.rightAnchor.constraintEqualToAnchor(view.rightAnchor),
-//                radarChart.bottomAnchor.constraintEqualToAnchor(view.bottomAnchor),
-                radarChart.bottomAnchor.constraintGreaterThanOrEqualToAnchor(view.bottomAnchor, constant: -ScreenManager.sharedInstance.radarChartBottomIndent())
-            ]
-            view.addConstraints(rcConstraints)
+            configureAuthorizedView()
         } else {
             configureUnauthorizedView()
         }
+    }
+
+    func configureAuthorizedView() {
+        view.subviews.forEach { $0.removeFromSuperview() }
+        radarChart.translatesAutoresizingMaskIntoConstraints = false
+        view.addSubview(radarChart)
+        let rcConstraints: [NSLayoutConstraint] = [
+            radarChart.topAnchor.constraintEqualToAnchor(view.topAnchor),
+            radarChart.leftAnchor.constraintEqualToAnchor(view.leftAnchor),
+            radarChart.rightAnchor.constraintEqualToAnchor(view.rightAnchor),
+            //radarChart.bottomAnchor.constraintEqualToAnchor(view.bottomAnchor),
+            radarChart.bottomAnchor.constraintGreaterThanOrEqualToAnchor(view.bottomAnchor, constant: -ScreenManager.sharedInstance.radarChartBottomIndent())
+        ]
+        view.addConstraints(rcConstraints)
+
+        let desc = "This chart shows how balanced your measures are relative to the population. A person with perfectly average measures across the board would show a uniform shape."
+        radarTip = TapTip(forView: radarChart, text: desc, width: 350, numTaps: 2, numTouches: 2, asTop: false)
+        radarChart.addGestureRecognizer(radarTip.tapRecognizer)
+        radarChart.userInteractionEnabled = true
     }
 
     func configureUnauthorizedView() {

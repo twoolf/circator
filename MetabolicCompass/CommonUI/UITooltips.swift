@@ -47,14 +47,16 @@ public class TapTip : NSObject, EasyTipViewDelegate {
     public var targetView: UIView
     public var tapRecognizer: UITapGestureRecognizer! = nil
 
-    public init(forView view: UIView, text: String, asTop: Bool = false) {
+    public init(forView view: UIView, text: String, width: CGFloat? = nil, numTaps: Int = 2, numTouches: Int = 1, asTop: Bool = false) {
         self.targetView = view
         super.init()
 
-        let preferences = asTop ? UITooltips.sharedInstance.tipAbove() : UITooltips.sharedInstance.tipBelow()
+        var preferences = asTop ? UITooltips.sharedInstance.tipAbove() : UITooltips.sharedInstance.tipBelow()
+        preferences.positioning.maxWidth = width ?? preferences.positioning.maxWidth
         tipView = EasyTipView(text: text, preferences: preferences, delegate: self)
         tapRecognizer = UITapGestureRecognizer(target: self, action: #selector(showTip))
-        tapRecognizer.numberOfTapsRequired = 2
+        tapRecognizer.numberOfTapsRequired = numTaps
+        tapRecognizer.numberOfTouchesRequired = numTouches
     }
 
     public func showTip() {

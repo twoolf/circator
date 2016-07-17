@@ -45,6 +45,14 @@ class DailyProgressViewController : UIViewController, DailyChartModelProtocol {
         self.dailyChartModel.delegate = self
         self.dailyChartModel.registerCells()
         self.dailyProgressChartDaysTable.dataSource = self.dailyChartModel
+
+        self.dailyProgressChartView.changeColorCompletion = { _ in
+            Async.main {
+                self.dailyChartModel.toggleHighlightFasting()
+                self.contentDidUpdate()
+            }
+        }
+
         self.dailyProgressChartView.prepareChart()
     }
     
