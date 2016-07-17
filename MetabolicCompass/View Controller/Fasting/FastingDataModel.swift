@@ -132,10 +132,7 @@ public class FastingDataModel : NSObject {
             }
 
             self.refreshChartEntries()
-
-            log.info("Updated fasting data model")
-            self.logModel()
-
+            // self.logModel()
             completion(nil)
         }
     }

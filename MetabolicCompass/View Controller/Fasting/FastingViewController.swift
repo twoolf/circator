@@ -67,6 +67,8 @@ public class FastingViewController : UIViewController, ChartViewDelegate {
 
     @IBOutlet weak var fastingView: UIView!
 
+    var activityIndicator: UIActivityIndicatorView! = nil
+
     private var model: FastingDataModel = FastingDataModel()
 
     lazy var pieChart: PieChartView = {
@@ -85,6 +87,19 @@ public class FastingViewController : UIViewController, ChartViewDelegate {
         return chart
     }()
 
+
+    lazy var pieChartColors: [NSUIColor] = {
+        // Populate 15 colors. Add more if needed.
+        var colors : [NSUIColor] = []
+        colors.appendContentsOf(ChartColorTemplates.joyful())
+        colors.appendContentsOf(ChartColorTemplates.colorful())
+        colors.appendContentsOf(ChartColorTemplates.pastel())
+        //colors.appendContentsOf(ChartColorTemplates.vordiplom())
+        //colors.appendContentsOf(ChartColorTemplates.liberty())
+        //colors.appendContentsOf(ChartColorTemplates.material())
+
+        return GKRandomSource.sharedRandom().arrayByShufflingObjectsInArray(colors) as! [NSUIColor]
+    }()
 
     public static let orange = ChartColorTemplates.colorful()[1]
     public static let blue   = ChartColorTemplates.joyful()[4]
@@ -130,11 +145,26 @@ public class FastingViewController : UIViewController, ChartViewDelegate {
 
     override public func viewWillAppear(animated: Bool) {
         super.viewWillAppear(animated)
+        self.activityIndicator.startAnimating()
         self.refreshData()
     }
 
     override public func viewDidLoad() {
         super.viewDidLoad()
+
+        activityIndicator = UIActivityIndicatorView()
+
+        activityIndicator.translatesAutoresizingMaskIntoConstraints = false
+        view.addSubview(activityIndicator)
+
+        let constraints: [NSLayoutConstraint] = [
+            activityIndicator.topAnchor.constraintEqualToAnchor(view.topAnchor),
+            activityIndicator.bottomAnchor.constraintEqualToAnchor(view.bottomAnchor),
+            activityIndicator.leadingAnchor.constraintEqualToAnchor(view.leadingAnchor),
+            activityIndicator.trailingAnchor.constraintEqualToAnchor(view.trailingAnchor)
+        ]
+        view.addConstraints(constraints)
+
         setupView()
     }
 
@@ -180,17 +210,7 @@ public class FastingViewController : UIViewController, ChartViewDelegate {
 
     func refreshPieChart() {
         let pieChartDataSet = PieChartDataSet(yVals: self.model.samplesCollectedDataEntries.map { $0.1 }, label: "Samples per type")
-
-        // Populate 15 colors. Add more if needed.
-        var colors : [NSUIColor] = []
-        colors.appendContentsOf(ChartColorTemplates.joyful())
-        colors.appendContentsOf(ChartColorTemplates.colorful())
-        colors.appendContentsOf(ChartColorTemplates.pastel())
-        //colors.appendContentsOf(ChartColorTemplates.vordiplom())
-        //colors.appendContentsOf(ChartColorTemplates.liberty())
-        //colors.appendContentsOf(ChartColorTemplates.material())
-
-        pieChartDataSet.colors = GKRandomSource.sharedRandom().arrayByShufflingObjectsInArray(colors) as! [NSUIColor]
+        pieChartDataSet.colors = pieChartColors
         pieChartDataSet.drawValuesEnabled = false
 
         let xVals : [String] = self.model.samplesCollectedDataEntries.map {
@@ -220,6 +240,7 @@ public class FastingViewController : UIViewController, ChartViewDelegate {
             log.info("FastingViewController refreshing charts (\(NSDate().timeIntervalSinceDate(refreshStartDate)))")
 
             Async.main {
+                self.activityIndicator.stopAnimating()
                 self.refreshPieChart()
 
                 let saTotal = self.model.fastSleep + self.model.fastAwake
