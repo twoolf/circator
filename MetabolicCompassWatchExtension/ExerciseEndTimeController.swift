@@ -64,8 +64,8 @@ class ExerciseEndTimeController: WKInterfaceController {
     
     @IBAction func onExerciseStartTimeSave() {
         exerciseTimeStruc.exerciseBegin = exerciseBeginTime
-        print("Begin of exercise time: and variable --")
-        print(exerciseTimeStruc.exerciseBegin)
+//        print("Begin of exercise time: and variable --")
+//        print(exerciseTimeStruc.exerciseBegin)
         pushControllerWithName("ExerciseStartTimeController", context: self)
     }
 }

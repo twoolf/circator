@@ -19,8 +19,8 @@ class MetricsStore {
     var StepCount: String = "10001"
     var ActiveEnergy: String = "1200"
     var RestingEnergy: String = "900"
-    var Sleep: String = "8 hr"
-    var Exercise: String = "2 hr"
+    var Sleep: NSDate = NSDate()
+    var Exercise: NSDate = NSDate()
     var UVExposure: String = "8"
     var Protein: String = "1215"
     var Carbohydrate: String = "1776"
@@ -36,7 +36,9 @@ class MetricsStore {
     var Water: String = "800 ml"
     var BloodPressure: String = "120/80"
     var fastingTime = "no data"
-    var eatingTime = "no data"
+    var currentFastingTime = "none"
+    var lastEatingTime = "no data"
     var lastAte = "no data"
+    var lastAteAsNSDate: NSDate = NSDate()
 }
 
