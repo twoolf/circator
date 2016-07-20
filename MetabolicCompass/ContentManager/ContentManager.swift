@@ -34,7 +34,7 @@ class ContentManager: NSObject {
             self.fetchRecentSamples()
             self.isBackgroundWorkActive = true
             if !self.isObservationActive {
-                HealthManager.sharedManager.registerObservers()
+                UploadManager.sharedManager.registerUploadObservers()
                 self.isObservationActive = true
             }
             AccountManager.shared.withHKCalAuth {

@@ -1014,17 +1014,17 @@ public class UserManager {
 
     // MARK : - Last acquisition times.
 
-    public func getAcquisitionSeqids() -> [String: AnyObject] { return getCachedComponent(.LastAcquired) }
+    public func getAcquisitionSeq() -> [String: AnyObject] { return getCachedComponent(.LastAcquired) }
 
-    public func getAcquisitionSeqid(key: String) -> AnyObject? { return getCachedComponent(.LastAcquired)[key] }
+    public func getAcquisitionSeq(key: String) -> AnyObject? { return getCachedComponent(.LastAcquired)[key] }
 
-    public func resetAcquisitionSeqids() { resetCachedComponent(.LastAcquired) }
+    public func resetAcquisitionSeq() { resetCachedComponent(.LastAcquired) }
 
-    public func setAcquisitionSeqids(seqids: [String: AnyObject], sync: Bool = false) {
+    public func setAcquisitionSeq(seqids: [String: AnyObject], sync: Bool = false) {
         deferredPushOnAccountComponent(.LastAcquired, refresh: true, sync: sync, componentData: seqids)
     }
 
-    public func syncAcquisitionSeqids(completion: SvcResultCompletion) {
+    public func syncAcquisitionSeq(completion: SvcResultCompletion) {
         syncAccountComponent(.LastAcquired, completion: completion)
     }
 

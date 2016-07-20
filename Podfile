@@ -6,6 +6,8 @@ def shared_pods
     pod 'ResearchKit', :git => 'https://github.com/twoolf/ResearchKit.git'
     pod 'Charts', :git => 'https://github.com/danielgindi/ios-charts.git'
     pod 'Alamofire', '~> 2.0'
+    pod 'Realm'
+    pod 'RealmSwift'
     pod 'SwiftyJSON', :git => 'https://github.com/SwiftyJSON/SwiftyJSON.git'
     pod 'SwiftDate'
     pod 'SwiftyUserDefaults'

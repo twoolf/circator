@@ -59,12 +59,12 @@ class DebugViewController : FormViewController {
             let tname = type.displayText ?? type.identifier
             return LabelRowFormer<FormLabelCell>() {
                     $0.textLabel?.textColor = .grayColor()
-                    $0.textLabel?.text = "\(tname) \(HealthManager.sharedManager.getRemoteAnchorForType(type))"
+                    $0.textLabel?.text = "\(tname) \(UploadManager.sharedManager.getRemoteAnchorForType(type))"
                 }.configure {
                     $0.enabled = true
                 }.onSelected { row in
-                    log.info("\(tname) \(HealthManager.sharedManager.getRemoteAnchorForType(type))")
-                    row.text = "\(tname) \(HealthManager.sharedManager.getRemoteAnchorForType(type))"
+                    log.info("\(tname) \(UploadManager.sharedManager.getRemoteAnchorForType(type))")
+                    row.text = "\(tname) \(UploadManager.sharedManager.getRemoteAnchorForType(type))"
             }
         }
 
@@ -75,28 +75,8 @@ class DebugViewController : FormViewController {
                             }.configure {
                                 $0.enabled = true
                             }.onSelected { row in
-                                HealthManager.sharedManager.resetAnchors()
+                                UploadManager.sharedManager.resetAnchors()
                         })
-
-        labelRows.append(LabelRowFormer<FormLabelCell>() {
-                            $0.textLabel?.text = "Sync anchors (local)"
-                            $0.textLabel?.textColor = .redColor()
-                            $0.textLabel?.font = .boldSystemFontOfSize(22)
-                            }.configure {
-                                $0.enabled = true
-                            }.onSelected { row in
-                                HealthManager.sharedManager.syncAnchors()
-            })
-
-        labelRows.append(LabelRowFormer<FormLabelCell>() {
-                            $0.textLabel?.text = "Sync anchors (remote)"
-                            $0.textLabel?.textColor = .redColor()
-                            $0.textLabel?.font = .boldSystemFontOfSize(22)
-                            }.configure {
-                                $0.enabled = true
-                            }.onSelected { row in
-                                HealthManager.sharedManager.syncAnchors(true)
-            })
 
         labelRows.append(LabelRowFormer<FormLabelCell>() {
             $0.textLabel?.text = "Force a crash"
@@ -314,8 +294,8 @@ class DebugViewController : FormViewController {
                             autoreleasepool { _ in
                                 log.info("Uploading block of size \(block.count)")
                                 do {
-                                    let jsonObjs = try block.map(RemoteSampleManager.sharedManager.jsonifySample)
-                                    RemoteSampleManager.sharedManager.putSample(jsonObjs)
+                                    let jsonObjs = try block.map(UploadManager.sharedManager.jsonifySample)
+                                    UploadManager.sharedManager.putBlockSample(jsonObjs)
                                 } catch  {
                                     log.info("problems with: (\(HealthManager.description())")
                                 }

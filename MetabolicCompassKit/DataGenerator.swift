@@ -555,7 +555,7 @@ public class DataGenerator : GeneratorType {
 
     func writeSample(handle: NSFileHandle, sample: HKSample, asFirst: Bool) {
         do {
-            let js = try JSON(RemoteSampleManager.serializer.dictForSample(sample))
+            let js = try JSON(UploadManager.serializer.dictForSample(sample))
             if let jsstr = js.rawString(),
                    jsdata = ((asFirst ? "" : ",") + jsstr).dataUsingEncoding(NSUTF8StringEncoding)
             {

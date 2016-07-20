@@ -129,7 +129,7 @@ public class PopulationHealthManager {
             var failed = false
             for sample in aggregates {
                 for (column, val) in sample {
-                    log.info("Refreshing population aggregate for \(column)")
+                    log.verbose("Refreshing population aggregate for \(column)")
                     if let sampleValue = val as? Double,
                         typeIdentifier = HMConstants.sharedInstance.mcdbToHK[column]
                     {
@@ -148,16 +148,16 @@ public class PopulationHealthManager {
                         }
                     } else {
                         failed = true
-                        //                        let err = NSError(domain: "App error", code: 0, userInfo: [NSLocalizedDescriptionKey:kvdict.description])
-                        //                        let dict = ["title":"population data error", "error":err]
-                        //                        NSNotificationCenter.defaultCenter().postNotificationName("ncAppLogNotification", object: nil, userInfo: dict)
+                        // let err = NSError(domain: "App error", code: 0, userInfo: [NSLocalizedDescriptionKey:kvdict.description])
+                        // let dict = ["title":"population data error", "error":err]
+                        // NSNotificationCenter.defaultCenter().postNotificationName("ncAppLogNotification", object: nil, userInfo: dict)
                     }
                 }
             }
             if ( !failed ) {
                 Async.main {
-                    //                    let dict = ["title":"population data", "obj":populationAggregates.description ?? ""]
-                    //                    NSNotificationCenter.defaultCenter().postNotificationName("ncAppLogNotification", object: nil, userInfo: dict)
+                    // let dict = ["title":"population data", "obj":populationAggregates.description ?? ""]
+                    // NSNotificationCenter.defaultCenter().postNotificationName("ncAppLogNotification", object: nil, userInfo: dict)
                     self.mostRecentAggregates = populationAggregates
                     NSNotificationCenter.defaultCenter().postNotificationName(HMDidUpdateRecentSamplesNotification, object: self)
                 }
