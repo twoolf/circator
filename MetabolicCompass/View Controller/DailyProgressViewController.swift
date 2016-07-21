@@ -35,6 +35,8 @@ class DailyProgressViewController : UIViewController, DailyChartModelProtocol {
     private var maxDailyFastingTip: TapTip! = nil
     private var lastAteTip: TapTip! = nil
 
+    private var updateContentWithAnimation = true
+
     //MARK: View life circle
     
     override func viewDidLoad() {
@@ -48,6 +50,7 @@ class DailyProgressViewController : UIViewController, DailyChartModelProtocol {
 
         self.dailyProgressChartView.changeColorCompletion = { _ in
             Async.main {
+                self.updateContentWithAnimation = false
                 self.dailyChartModel.toggleHighlightFasting()
                 self.contentDidUpdate()
             }
@@ -100,7 +103,10 @@ class DailyProgressViewController : UIViewController, DailyChartModelProtocol {
     func dataCollectingFinished() {
         Async.main {
             self.activityIndicator.stopAnimating()
-            self.dailyProgressChartView.updateChartData(self.dailyChartModel.chartDataArray, chartColorsArray: self.dailyChartModel.chartColorsArray)
+            self.dailyProgressChartView.updateChartData(self.updateContentWithAnimation,
+                                                        valuesArr: self.dailyChartModel.chartDataArray,
+                                                        chartColorsArray: self.dailyChartModel.chartColorsArray)
+            self.updateContentWithAnimation = true
             self.dailyProgressChartView.setNeedsDisplay()
         }
     }

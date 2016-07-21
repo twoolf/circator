@@ -95,7 +95,7 @@ class MetabolicDailyPorgressChartView : HorizontalBarChartView, DailyChartModelP
         self.userInteractionEnabled = true
     }
 
-    func updateChartData (valuesArr: [[Double]], chartColorsArray: [[UIColor]]) {
+    func updateChartData (animate: Bool = true, valuesArr: [[Double]], chartColorsArray: [[UIColor]]) {
         //days
         let days = ["", "", "", "", "", "", ""]
         var dataSetArray: [BarChartDataSet] = []
@@ -115,7 +115,7 @@ class MetabolicDailyPorgressChartView : HorizontalBarChartView, DailyChartModelP
         rightAxis.axisMinValue = max(0.0, self.data!.yMin - 1.0)
         rightAxis.axisMaxValue = min(24.0, self.data!.yMax + 1.0)
         rightAxis.labelCount = Int(rightAxis.axisMaxValue - rightAxis.axisMinValue)
-        self.animate(yAxisDuration: 1.0)
+        if animate { self.animate(yAxisDuration: 1.0) }
     }
 
     func toggleColors() {

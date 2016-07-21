@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="10117" systemVersion="15F34" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="10117" systemVersion="15G31" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES">
     <dependencies>
         <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="10085"/>
         <capability name="Constraints to layout margins" minToolsVersion="6.0"/>
@@ -333,7 +333,7 @@
                                                 <rect key="frame" x="40" y="0.0" width="560" height="630"/>
                                                 <subviews>
                                                     <view userInteractionEnabled="NO" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="I37-NR-mQN" userLabel="cahrtsView" customClass="MetabolicDailyPorgressChartView" customModule="MetabolicCompass" customModuleProvider="target">
-                                                        <rect key="frame" x="0.0" y="0.0" width="2400" height="630"/>
+                                                        <rect key="frame" x="0.0" y="0.0" width="1500" height="630"/>
                                                         <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
                                                     </view>
                                                 </subviews>
@@ -633,7 +633,7 @@
                                     <constraint firstItem="knG-td-mRS" firstAttribute="centerY" secondItem="50N-gd-54d" secondAttribute="centerY" id="CRo-ih-kp0"/>
                                     <constraint firstItem="50N-gd-54d" firstAttribute="centerX" secondItem="AIB-Ol-8pc" secondAttribute="centerX" id="I9b-Sb-wIw"/>
                                     <constraint firstItem="50N-gd-54d" firstAttribute="leading" secondItem="AIB-Ol-8pc" secondAttribute="leading" id="IuO-DR-zhJ"/>
-                                    <constraint firstItem="I37-NR-mQN" firstAttribute="width" secondItem="AIB-Ol-8pc" secondAttribute="width" multiplier="4" id="RYE-3Y-2Ld"/>
+                                    <constraint firstItem="I37-NR-mQN" firstAttribute="width" secondItem="AIB-Ol-8pc" secondAttribute="width" multiplier="2.5" id="RYE-3Y-2Ld"/>
                                     <constraint firstItem="YZb-i2-8A1" firstAttribute="top" secondItem="50N-gd-54d" secondAttribute="bottom" id="Ryp-NP-eTo"/>
                                     <constraint firstItem="jTj-28-W43" firstAttribute="width" secondItem="AIB-Ol-8pc" secondAttribute="width" id="XMJ-RC-g5W"/>
                                     <constraint firstItem="knG-td-mRS" firstAttribute="centerX" secondItem="50N-gd-54d" secondAttribute="centerX" id="bts-bN-38F"/>
