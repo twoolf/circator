@@ -297,7 +297,8 @@ public class UploadManager: NSObject {
         var addedJson: [[String:AnyObject]] = []
         do {
             addedJson = try added.map(self.jsonifySample)
-        } catch {
+        } catch let error {
+            log.error(error)
             return nil
         }
 
@@ -315,9 +316,15 @@ public class UploadManager: NSObject {
         var measures: [String] = []
         if let measureid = HMConstants.sharedInstance.hkToMCDB[logEntry.msid] {
             measures = [measureid]
-        } else if logEntry.msid == HKWorkoutType.workoutType().identifier {
+        }
+        else if logEntry.msid == HKWorkoutType.workoutType().identifier {
             measures = ["meal_duration", "food_type", "activity_duration", "activity_type", "activity_value"]
-        } else {
+        }
+        else if let _ = HMConstants.sharedInstance.hkQuantityToMCDBActivity[logEntry.msid] {
+            measures = ["activity_duration", "activity_type", "activity_value"]
+        }
+        else {
+            log.warning("No MCDB identifier found for \(logEntry.msid)")
             return nil
         }
 
@@ -430,13 +437,13 @@ public class UploadManager: NSObject {
                                 }
                             }
                         } else {
-                            log.info("No realm object found for \(entryKey)")
+                            log.warning("No realm object found for \(entryKey)")
                         }
                     }
                 }
             }
             else {
-                log.info("No sample type found for retried upload")
+                log.warning("No sample type found for retried upload")
                 logEntry.logEntryCompact()
             }
         }
@@ -469,20 +476,32 @@ public class UploadManager: NSObject {
                 let realm = try! Realm()
 
                 uploadSlice.forEach {
-                    if let logEntry = realm.objectForPrimaryKey(UMLogEntry.self, key: $0.0),
-                        params = self.jsonifyLogEntry(logEntry, added: $0.1, deleted: $0.2)
-                    {
-                        log.info("Syncing UMLogEntry")
-                        logEntry.logEntryCompact()
-                        block.append(params)
-                        blockKeys.append($0.0)
+                    if let logEntry = realm.objectForPrimaryKey(UMLogEntry.self, key: $0.0) {
+                        if let params = self.jsonifyLogEntry(logEntry, added: $0.1, deleted: $0.2) {
+                            log.info("Syncing UMLogEntry")
+                            logEntry.logEntryCompact()
+                            block.append(params)
+                            blockKeys.append($0.0)
+                        } else {
+                            log.warning("Unable to JSONify log entry")
+                            logEntry.logEntry()
+                        }
+                    } else {
+                        log.warning("No log entry found for key: \($0.0)")
                     }
                 }
 
-                Service.json(MCRouter.AddSeqMeasures(["block": block]), statusCode: 200..<300, tag: "UPLOADLOG") {
-                    _, response, result in
-                    log.verbose("Upload log entries: \(result.value)")
-                    self.onCompletedUpload(result.isSuccess, sampleKeys: blockKeys)
+                if block.count > 0 {
+                    log.info("Syncing \(block.count) log entries with keys \(blockKeys.joinWithSeparator(", "))")
+
+                    Service.json(MCRouter.AddSeqMeasures(["block": block]), statusCode: 200..<300, tag: "UPLOADLOG") {
+                        _, response, result in
+                        log.verbose("Upload log entries: \(result.value)")
+                        self.onCompletedUpload(result.isSuccess, sampleKeys: blockKeys)
+                    }
+                }
+                else {
+                    log.info("Skipping log entry sync, no log entries to upload")
                 }
 
                 // Recur as an upload loop while we still have elements in the upload queue.

@@ -286,7 +286,10 @@ extension Alamofire.Request {
                 Service.delegate!.didFinishJSONRequest(req, response:resp, result:result)
             }
             log.debug("\n***result:\(result)")
-            if !result.isSuccess { log.debug("\n***response:\(resp)") }
+            if !result.isSuccess {
+                log.debug("\n***response:\(resp)")
+                log.debug("\n***error:\(result.error)")
+            }
             completion(req, resp, result)
         }
     }
