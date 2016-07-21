@@ -23,8 +23,6 @@ def shared_pods
     pod 'MGSwipeTableCell'
     pod 'Pages'
     pod 'SwiftChart'
-    pod 'Fabric'
-    pod 'Crashlytics'
     pod 'SORandom'
     pod 'FileKit', '~> 2.0.0'
     pod 'JWTDecode', '~> 1.0'
@@ -40,6 +38,8 @@ end
 
 target 'MetabolicCompass' do
     shared_pods
+    pod 'Crashlytics'
+    pod 'Fabric'
 end
 
 target 'MetabolicCompassWatchExtension' do 
