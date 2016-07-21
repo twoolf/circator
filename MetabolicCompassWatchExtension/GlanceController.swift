@@ -19,7 +19,9 @@ class GlanceController: WKInterfaceController {
 
     var weightString:String = "150"
     var BMIString:String = "23.4"
-    var maxDailyFastingString:String = "12.0"
+    var maxDailyFastingString:String = "need data"
+    var currentFastingTimeString:String = "need data"
+    var lastAteAsString:String = "no data"
     var proteinString:String = "ProteinAsString"
     var carbohydrateString:String = "carbs"
     var fatString:String = "fat"
@@ -28,6 +30,8 @@ class GlanceController: WKInterfaceController {
     var firstRowString:String = "entry"
     var secondRowString:String = "2nd row"
     var thirdRowString:String = "3rd row long"
+    var wokeFromSleep:String = "data needed"
+    var finishedExerciseLast:String = "no data"
     
     override func awakeWithContext(context: AnyObject?) {
         super.awakeWithContext(context)
@@ -40,18 +44,24 @@ class GlanceController: WKInterfaceController {
         firstRow.setTextColor(UIColor.greenColor())
         maxDailyFastingString = "Fast: \(MetricsStore.sharedInstance.fastingTime)"
         secondRow.setText(maxDailyFastingString)
+        currentFastingTimeString = "Current Fast: \(MetricsStore.sharedInstance.currentFastingTime)"
+        lastAteAsString = "Last Ate: \(MetricsStore.sharedInstance.lastAte)"
+        secondRow.setText(maxDailyFastingString)
+        
+        let dateFormatter = NSDateFormatter()
+        dateFormatter.dateFormat = "HH:mm"
+        wokeFromSleep = "sleep:  " + dateFormatter.stringFromDate(MetricsStore.sharedInstance.Sleep)
+        finishedExerciseLast = "exercise:   " + dateFormatter.stringFromDate(MetricsStore.sharedInstance.Exercise)
         weightString         = "     Lbs:    " + MetricsStore.sharedInstance.weight
         BMIString            = "     BMI:    " + MetricsStore.sharedInstance.BMI
         proteinString        = "     Prot:   " + MetricsStore.sharedInstance.Protein
         carbohydrateString   = "     Carb:   " + MetricsStore.sharedInstance.Carbohydrate
         fatString            = "     Fat:    " + MetricsStore.sharedInstance.Fat
         stepsString          = "     Steps:  " + MetricsStore.sharedInstance.StepCount
-        thirdRowString = weightString + "\n" +
-            BMIString + "\n" +
-            proteinString + "\n" +
-            fatString + "\n" +
-            carbohydrateString + "\n" +
-            stepsString
+        thirdRowString =
+            currentFastingTimeString + "\n" +
+            wokeFromSleep + "\n" +
+            finishedExerciseLast
         thirdRow.setText(thirdRowString)
         thirdRow.setTextColor(UIColor.blueColor())
         fourthRow.setText("")

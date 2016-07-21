@@ -93,7 +93,7 @@ class WaterStartTimeController: WKInterfaceController {
         
         print("should have end adjusted, hour and minute for close point: \(timeConvertClose)")
         print("    and \(timeAddHalfHourClose)")
-        if closeDate > beginDate {
+        if closeDate < beginDate {
             closeComponents.day = closeComponents.day-1
             print("adjusted close day by one")
             closeDate = calendar.dateFromComponents(closeComponents)!
@@ -107,8 +107,8 @@ class WaterStartTimeController: WKInterfaceController {
         let waterDurationTime = waterDurationHours*60+waterDurationMinutes
         
         if (closeDate<beginDate){
-            print("logic error on closeDate not later than beginDate")
-            closeDate=closeDate - 1.hours
+            print("logic error on beginDate not earlier than closeDate")
+            closeDate=closeDate + 1.hours
         }
         
         let sample = HKQuantitySample(type: HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierDietaryWater)!,

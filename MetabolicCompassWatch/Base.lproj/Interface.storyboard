@@ -8,7 +8,7 @@
         <!--IntroInterfaceController-->
         <scene sceneID="aou-V4-d1y">
             <objects>
-                <controller identifier="IntroInterfaecController" id="AgC-eL-Hgc" userLabel="IntroInterfaceController" customClass="IntroInterfaceController" customModule="MetabolicCompassWatchExtension">
+                <controller identifier="IntroInterfaecController" title="M-Compass" id="AgC-eL-Hgc" userLabel="IntroInterfaceController" customClass="IntroInterfaceController" customModule="MetabolicCompassWatchExtension">
                     <items>
                         <group width="1" height="1" alignment="left" layout="vertical" spacing="0.0" id="7YB-7w-psE">
                             <items>
@@ -55,10 +55,10 @@
             </objects>
             <point key="canvasLocation" x="-288" y="313"/>
         </scene>
-        <!--MealTimesInterfaceController-->
+        <!--M-Compass-->
         <scene sceneID="eCA-eR-aXu">
             <objects>
-                <controller identifier="MealTimesInterfaceController" id="bN8-zq-f9S" customClass="MealTimesInterfaceController" customModule="MetabolicCompassWatchExtension">
+                <controller identifier="MealTimesInterfaceController" title="M-Compass" id="bN8-zq-f9S" customClass="MealTimesInterfaceController" customModule="MetabolicCompassWatchExtension">
                     <items>
                         <group width="1" height="1" alignment="left" layout="vertical" spacing="9" id="wIp-Ym-8he">
                             <items>
@@ -100,10 +100,10 @@
             </objects>
             <point key="canvasLocation" x="-33" y="-215"/>
         </scene>
-        <!--MealInterfaceController-->
+        <!--M-Compass-->
         <scene sceneID="pMY-eT-Nzc">
             <objects>
-                <controller identifier="MealInterfaceController" id="dUL-SX-553" customClass="MealInterfaceController" customModule="MetabolicCompassWatchExtension">
+                <controller identifier="MealInterfaceController" title="M-Compass" id="dUL-SX-553" customClass="MealInterfaceController" customModule="MetabolicCompassWatchExtension">
                     <items>
                         <button width="0.80000000000000004" height="0.20000000000000001" alignment="center" verticalAlignment="bottom" title="Meal Started" id="ykV-3c-2BM">
                             <color key="titleColor" red="0.93725490199999995" green="0.93725490199999995" blue="0.95686274510000002" alpha="1" colorSpace="calibratedRGB"/>
@@ -126,10 +126,10 @@
             </objects>
             <point key="canvasLocation" x="209" y="-215"/>
         </scene>
-        <!--MealStartTimeController-->
+        <!--M-Compass-->
         <scene sceneID="OEn-Jy-QbD">
             <objects>
-                <controller identifier="MealStartTimeController" id="uRt-F4-FMq" customClass="MealStartTimeController" customModule="MetabolicCompassWatchExtension">
+                <controller identifier="MealStartTimeController" title="M-Compass" id="uRt-F4-FMq" customClass="MealStartTimeController" customModule="MetabolicCompassWatchExtension">
                     <items>
                         <button width="0.80000000000000004" height="0.20000000000000001" alignment="center" verticalAlignment="bottom" title="Meal Ended" id="Tf0-ui-XmJ">
                             <color key="backgroundColor" red="0.13333333333333333" green="0.54509803921568623" blue="0.13333333333333333" alpha="1" colorSpace="calibratedRGB"/>
@@ -151,10 +151,10 @@
             </objects>
             <point key="canvasLocation" x="452" y="-213"/>
         </scene>
-        <!--SleepInterfaceController-->
+        <!--M-Compass-->
         <scene sceneID="0rq-CP-qZy">
             <objects>
-                <controller identifier="SleepInterfaceController" id="Sk5-u4-eDK" customClass="SleepInterfaceController" customModule="MetabolicCompassWatchExtension">
+                <controller identifier="SleepInterfaceController" title="M-Compass" id="Sk5-u4-eDK" customClass="SleepInterfaceController" customModule="MetabolicCompassWatchExtension">
                     <items>
                         <picker height="0.80000000000000004" alignment="left" style="sequence" id="jNS-ju-jML">
                             <connections>
@@ -177,10 +177,10 @@
             </objects>
             <point key="canvasLocation" x="-33" y="98"/>
         </scene>
-        <!--SleepTimesInterfaceController-->
+        <!--M-Compass-->
         <scene sceneID="Igg-p8-0k0">
             <objects>
-                <controller identifier="SleepTimesInterfaceController" id="4kd-6r-qyL" customClass="SleepTimesInterfaceController" customModule="MetabolicCompassWatchExtension">
+                <controller identifier="SleepTimesInterfaceController" title="M-Compass" id="4kd-6r-qyL" customClass="SleepTimesInterfaceController" customModule="MetabolicCompassWatchExtension">
                     <items>
                         <picker height="0.80000000000000004" alignment="left" style="sequence" id="BXT-YD-1v7">
                             <connections>
@@ -203,10 +203,10 @@
             </objects>
             <point key="canvasLocation" x="203" y="101"/>
         </scene>
-        <!--WaterInterfaceController-->
+        <!--M-Compass-->
         <scene sceneID="jir-tl-faX">
             <objects>
-                <controller identifier="WaterInterfaceController" id="YiA-fx-NQl" customClass="WaterInterfaceController" customModule="MetabolicCompassWatchExtension">
+                <controller identifier="WaterInterfaceController" title="M-Compass" id="YiA-fx-NQl" customClass="WaterInterfaceController" customModule="MetabolicCompassWatchExtension">
                     <items>
                         <picker height="0.80000000000000004" alignment="left" style="sequence" id="oZJ-jU-Zf2">
                             <connections>
@@ -229,10 +229,10 @@
             </objects>
             <point key="canvasLocation" x="-33" y="714"/>
         </scene>
-        <!--ExerciseInterfaceController-->
+        <!--M-Compass-->
         <scene sceneID="rav-D0-NpW">
             <objects>
-                <controller identifier="ExerciseInterfaceController" id="uYH-JB-1gX" customClass="ExerciseInterfaceController" customModule="MetabolicCompassWatchExtension">
+                <controller identifier="ExerciseInterfaceController" title="M-Compass" id="uYH-JB-1gX" customClass="ExerciseInterfaceController" customModule="MetabolicCompassWatchExtension">
                     <items>
                         <button width="1" height="0.20000000000000001" heightAdjustment="6" alignment="left" title="Running" id="8pr-71-C42">
                             <color key="backgroundColor" red="0.50196078431372548" green="0.0" blue="0.12549019607843137" alpha="1" colorSpace="calibratedRGB"/>
@@ -269,10 +269,10 @@
             </objects>
             <point key="canvasLocation" x="-33" y="375"/>
         </scene>
-        <!--ExerciseEndTimeController-->
+        <!--M-Compass-->
         <scene sceneID="8MO-dw-R00">
             <objects>
-                <controller identifier="ExerciseEndTimeController" id="wDG-ji-Wah" customClass="ExerciseEndTimeController" customModule="MetabolicCompassWatchExtension">
+                <controller identifier="ExerciseEndTimeController" title="M-Compass" id="wDG-ji-Wah" customClass="ExerciseEndTimeController" customModule="MetabolicCompassWatchExtension">
                     <items>
                         <picker height="0.80000000000000004" alignment="left" style="sequence" id="V3f-6x-gu1">
                             <connections>
@@ -294,10 +294,10 @@
             </objects>
             <point key="canvasLocation" x="201" y="375"/>
         </scene>
-        <!--ExerciseStartTimeController-->
+        <!--M-Compass-->
         <scene sceneID="Oz9-S1-5I5">
             <objects>
-                <controller identifier="ExerciseStartTimeController" id="Kk7-9z-hth" customClass="ExerciseStartTimeController" customModule="MetabolicCompassWatchExtension">
+                <controller identifier="ExerciseStartTimeController" title="M-Compass" id="Kk7-9z-hth" customClass="ExerciseStartTimeController" customModule="MetabolicCompassWatchExtension">
                     <items>
                         <picker height="0.80000000000000004" alignment="left" style="sequence" id="dib-I6-Wrw">
                             <connections>
@@ -342,10 +342,10 @@
             </objects>
             <point key="canvasLocation" x="-203" y="1008"/>
         </scene>
-        <!--WaterTimesInterfaceController-->
+        <!--M-Compass-->
         <scene sceneID="emA-xW-5ap">
             <objects>
-                <controller identifier="WaterTimesInterfaceController" id="7yX-Li-sdf" customClass="WaterTimesInterfaceController" customModule="MetabolicCompassWatchExtension">
+                <controller identifier="WaterTimesInterfaceController" title="M-Compass" id="7yX-Li-sdf" customClass="WaterTimesInterfaceController" customModule="MetabolicCompassWatchExtension">
                     <items>
                         <button width="1" height="0.20000000000000001" alignment="center" verticalAlignment="bottom" title="Started Drinking" id="8Sm-H9-yge">
                             <color key="backgroundColor" red="0.0" green="0.1764705882352941" blue="0.44705882352941173" alpha="1" colorSpace="calibratedRGB"/>
@@ -391,10 +391,10 @@
             </objects>
             <point key="canvasLocation" x="553" y="1001"/>
         </scene>
-        <!--WaterStartTimeController-->
+        <!--M-Compass-->
         <scene sceneID="SBZ-0X-1Sa">
             <objects>
-                <controller identifier="WaterStartTimeController" id="TxF-Mq-DhK" customClass="WaterStartTimeController" customModule="MetabolicCompassWatchExtension">
+                <controller identifier="WaterStartTimeController" title="M-Compass" id="TxF-Mq-DhK" customClass="WaterStartTimeController" customModule="MetabolicCompassWatchExtension">
                     <items>
                         <picker height="0.80000000000000004" alignment="left" style="sequence" id="3sP-nz-pgd">
                             <connections>

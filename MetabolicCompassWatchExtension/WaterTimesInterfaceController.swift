@@ -58,8 +58,8 @@ class WaterTimesInterfaceController: WKInterfaceController {
     
     @IBAction func onWaterTimePick(value: Int) {
         waterBegin = value
-        print("in water picker for begin time")
-        print(waterBegin)
+//        print("in water picker for begin time")
+//        print(waterBegin)
     }
 
     @IBAction func onWaterTimesEnter() {
