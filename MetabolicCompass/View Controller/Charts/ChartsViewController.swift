@@ -79,6 +79,11 @@ class ChartsViewController: UIViewController {
         let manageBarButton = UIBarButtonItem(customView: manageButton)
         self.navigationItem.leftBarButtonItem = manageBarButton
         self.navigationItem.title = NSLocalizedString("CHART", comment: "chart screen title")
+        
+        let correlateButton = ScreenManager.sharedInstance.appNavButtonWithTitle("Correlate")
+        correlateButton.addTarget(self, action: #selector(correlateChart), forControlEvents: .TouchUpInside)
+        let corrButton = UIBarButtonItem(customView: correlateButton)
+        self.navigationItem.rightBarButtonItem = corrButton
     }
 
     @IBAction func rangeChanged(sender: UISegmentedControl) {
@@ -91,14 +96,11 @@ class ChartsViewController: UIViewController {
                 chartsModel.rangeType = .Month
             case HealthManagerStatisticsRangeType.Year.rawValue:
                 chartsModel.rangeType = .Year
-            case correlateSegment:
-                showCorrelate = true
                 break
             default:
                 chartsModel.rangeType = .Week
         }
-        if showCorrelate { correlateChart() }
-        else { updateChartsData() }
+        updateChartsData()
     }
 
     func manageCharts () {

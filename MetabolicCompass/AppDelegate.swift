@@ -132,8 +132,8 @@ class AppDelegate: UIResponder, UIApplicationDelegate, WCSessionDelegate {
         let paths : [String : SwiftyBeaver.Level] = ["ServiceAPI":.Verbose, "HealthManager":.Debug]
         let pathfuns : [String : SwiftyBeaver.Level] = [:]
 
-        for (p,l) in paths { console.addFilter(Filters.Path.contains(p, minLevel: l)) }
-        for (f,l) in pathfuns { console.addFilter(Filters.Function.contains(f, minLevel: l)) }
+//        for (p,l) in paths { console.addFilter(Filters.Path.contains(p, minLevel: l)) }
+//        for (f,l) in pathfuns { console.addFilter(Filters.Function.contains(f, minLevel: l)) }
 
         log.addDestination(console)
     }
