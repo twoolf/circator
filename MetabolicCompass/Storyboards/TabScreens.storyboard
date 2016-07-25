@@ -1,5 +1,9 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<<<<<<< HEAD
 <document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="10116" systemVersion="15E65" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES">
+=======
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="10117" systemVersion="15G31" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES">
+>>>>>>> origin/develop
     <dependencies>
         <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="10085"/>
         <capability name="Constraints to layout margins" minToolsVersion="6.0"/>
@@ -332,7 +336,7 @@
                                                 <rect key="frame" x="40" y="0.0" width="560" height="630"/>
                                                 <subviews>
                                                     <view userInteractionEnabled="NO" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="I37-NR-mQN" userLabel="cahrtsView" customClass="MetabolicDailyPorgressChartView" customModule="MetabolicCompass" customModuleProvider="target">
-                                                        <rect key="frame" x="0.0" y="0.0" width="2400" height="630"/>
+                                                        <rect key="frame" x="0.0" y="0.0" width="1500" height="630"/>
                                                         <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
                                                     </view>
                                                 </subviews>
@@ -632,7 +636,7 @@
                                     <constraint firstItem="knG-td-mRS" firstAttribute="centerY" secondItem="50N-gd-54d" secondAttribute="centerY" id="CRo-ih-kp0"/>
                                     <constraint firstItem="50N-gd-54d" firstAttribute="centerX" secondItem="AIB-Ol-8pc" secondAttribute="centerX" id="I9b-Sb-wIw"/>
                                     <constraint firstItem="50N-gd-54d" firstAttribute="leading" secondItem="AIB-Ol-8pc" secondAttribute="leading" id="IuO-DR-zhJ"/>
-                                    <constraint firstItem="I37-NR-mQN" firstAttribute="width" secondItem="AIB-Ol-8pc" secondAttribute="width" multiplier="4" id="RYE-3Y-2Ld"/>
+                                    <constraint firstItem="I37-NR-mQN" firstAttribute="width" secondItem="AIB-Ol-8pc" secondAttribute="width" multiplier="2.5" id="RYE-3Y-2Ld"/>
                                     <constraint firstItem="YZb-i2-8A1" firstAttribute="top" secondItem="50N-gd-54d" secondAttribute="bottom" id="Ryp-NP-eTo"/>
                                     <constraint firstItem="jTj-28-W43" firstAttribute="width" secondItem="AIB-Ol-8pc" secondAttribute="width" id="XMJ-RC-g5W"/>
                                     <constraint firstItem="knG-td-mRS" firstAttribute="centerX" secondItem="50N-gd-54d" secondAttribute="centerX" id="bts-bN-38F"/>
@@ -660,16 +664,22 @@
                     <connections>
                         <outlet property="activityIndicator" destination="knG-td-mRS" id="rrw-Zk-yFs"/>
                         <outlet property="chartLegendHeight" destination="INw-WX-Ez3" id="gVJ-Pp-A7O"/>
+                        <outlet property="dailyEatingContainer" destination="XUl-Ek-RhE" id="E0n-xx-wD5"/>
                         <outlet property="dailyEatingLabel" destination="CMR-xK-vQc" id="u2d-We-LYm"/>
                         <outlet property="dailyProgressChartDaysTable" destination="jSF-Vm-Zcr" id="fsB-Js-5lI"/>
                         <outlet property="dailyProgressChartScrollView" destination="Sex-Yf-ycL" id="Wi8-51-pmg"/>
                         <outlet property="dailyProgressChartView" destination="I37-NR-mQN" id="88p-Tl-aFI"/>
                         <outlet property="dailyValuesTopMargin" destination="zxO-i2-yTQ" id="yHF-Dr-ZbF"/>
                         <outlet property="daysTableView" destination="jSF-Vm-Zcr" id="DGE-8g-Jwl"/>
+                        <outlet property="eatingSquare" destination="GYz-Yf-147" id="7Wj-y5-DIE"/>
+                        <outlet property="exerciseSquare" destination="vhh-RK-JWV" id="twY-xy-FRl"/>
                         <outlet property="fastingSquare" destination="Utb-vk-b7M" id="4Ui-vD-CZ7"/>
+                        <outlet property="lastAteContainer" destination="qU9-Da-kkH" id="9Bd-Q3-wDi"/>
                         <outlet property="lastAteLabel" destination="2ke-34-lkH" id="wvV-kA-awH"/>
                         <outlet property="mainScrollView" destination="AIB-Ol-8pc" id="fTS-qn-OSO"/>
-                        <outlet property="maxDailyFasting" destination="SHe-9q-ZHi" id="s1b-HZ-cLv"/>
+                        <outlet property="maxDailyFastingContainer" destination="xMj-8W-XKU" id="MOf-Dh-ubX"/>
+                        <outlet property="maxDailyFastingLabel" destination="SHe-9q-ZHi" id="j12-NQ-FC2"/>
+                        <outlet property="sleepSquare" destination="Eu7-UC-v2V" id="5MH-Re-C0x"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="4fJ-Ba-2vo" userLabel="First Responder" sceneMemberID="firstResponder"/>

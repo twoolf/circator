@@ -12,7 +12,7 @@ import Charts
 enum DataSetType {
     case BloodPressureTop
     case BloodPressureBottom
-    case HartRate
+    case HeartRate
 }
 
 class MCScatterChartDataSet: ScatterChartDataSet {
@@ -63,7 +63,7 @@ class MCScatterChartDataSet: ScatterChartDataSet {
         self.colors = [UIColor.whiteColor()]
     }
     
-    var dataSetType: DataSetType = .HartRate {
+    var dataSetType: DataSetType = .HeartRate {
         didSet {
             switch self.dataSetType {
                 case .BloodPressureTop:

@@ -102,6 +102,13 @@ public class PopulationHealthManager {
                     columns[String(columnIndex)] = column
                     columnIndex += 1
                 }
+                else if let (activity_category, quantity) = HMConstants.sharedInstance.hkQuantityToMCDBActivity[hksType.identifier] {
+                    columns[String(columnIndex)] = ["activity_value": [activity_category:quantity]]
+                    columnIndex += 1
+                }
+                else {
+                    log.warning("No population query column available for \(hksType.identifier)")
+                }
             }
         }
 
@@ -112,7 +119,7 @@ public class PopulationHealthManager {
             "userfilter"   : userfilter
         ]
 
-        Service.json(MCRouter.AggMeasures(params), statusCode: 200..<300, tag: "AGGPOST") {
+        Service.json(MCRouter.AggregateMeasures(params), statusCode: 200..<300, tag: "AGGPOST") {
             _, response, result in
             guard !result.isSuccess else {
                 self.refreshAggregatesFromMsg(result.value)
@@ -121,6 +128,14 @@ public class PopulationHealthManager {
         }
     }
 
+    // TODO: the current implementation of population aggregates is not sufficiently precise to distinguish between meals/activities.
+    // These values are all treated as workout types, and thus produce a single population aggregate given mostRecentAggregtes is indexed
+    // by a HKSampleType.
+    //
+    // We need to reimplement mostRecentAggregates as a mapping between a triple of (HKSampleType, MCDBType, Quantity) => value
+    // where MCDBType is a union type, MCDBType = HKWorkoutActivityType | String (e.g., for meals)
+    // and   Quantity is a String (e.g., distance, kcal_burned, step_count, flights)
+    //
     func refreshAggregatesFromMsg(payload: AnyObject?) {
         var populationAggregates : [HKSampleType: [MCSample]] = [:]
         if let response = payload as? [String:AnyObject],
@@ -129,9 +144,32 @@ public class PopulationHealthManager {
             var failed = false
             for sample in aggregates {
                 for (column, val) in sample {
-                    log.info("Refreshing population aggregate for \(column)")
-                    if let sampleValue = val as? Double,
-                        typeIdentifier = HMConstants.sharedInstance.mcdbToHK[column]
+                    log.verbose("Refreshing population aggregate for \(column)")
+
+                    // Handle meal_duration/activity_duration/activity_value columns.
+                    // TODO: this only supports activity values that are HealthKit quantities for now (step count, flights climbed, distance/walking/running)
+                    // We should support all MCDB meals/activity categories.
+                    if HMConstants.sharedInstance.mcdbCategorized.contains(column) {
+                        let categoryQuantities: [String: (String, String)] = column == "activity_value" ? HMConstants.sharedInstance.mcdbActivityToHKQuantity : [:]
+                        if let categorizedVals = val as? [String:AnyObject] {
+                            for (category, catval) in categorizedVals {
+                                if let (mcdbQuantity, hkQuantity) = categoryQuantities[category],
+                                        categoryValues = catval as? [String: AnyObject],
+                                        sampleValue = categoryValues[mcdbQuantity] as? Double
+                                {
+                                    let sampleType = HKObjectType.quantityTypeForIdentifier(hkQuantity)!
+                                    populationAggregates[sampleType] = [MCAggregateSample(value: sampleValue, sampleType: sampleType, op: sampleType.aggregationOptions)]
+                                }
+                                else {
+                                    log.error("Invalid MCDB categorized quantity in popquery response: \(category) \(catval)")
+                                }
+                            }
+                        }
+                        else {
+                            log.error("Invalid MCDB categorized values in popquery response: \(val)")
+                        }
+                    }
+                    else if let sampleValue = val as? Double, typeIdentifier = HMConstants.sharedInstance.mcdbToHK[column]
                     {
                         switch typeIdentifier {
                         case HKCategoryTypeIdentifierSleepAnalysis:
@@ -148,20 +186,26 @@ public class PopulationHealthManager {
                         }
                     } else {
                         failed = true
-                        //                        let err = NSError(domain: "App error", code: 0, userInfo: [NSLocalizedDescriptionKey:kvdict.description])
-                        //                        let dict = ["title":"population data error", "error":err]
-                        //                        NSNotificationCenter.defaultCenter().postNotificationName("ncAppLogNotification", object: nil, userInfo: dict)
+                        // let err = NSError(domain: "App error", code: 0, userInfo: [NSLocalizedDescriptionKey:kvdict.description])
+                        // let dict = ["title":"population data error", "error":err]
+                        // NSNotificationCenter.defaultCenter().postNotificationName("ncAppLogNotification", object: nil, userInfo: dict)
                     }
                 }
             }
             if ( !failed ) {
                 Async.main {
-                    //                    let dict = ["title":"population data", "obj":populationAggregates.description ?? ""]
-                    //                    NSNotificationCenter.defaultCenter().postNotificationName("ncAppLogNotification", object: nil, userInfo: dict)
+                    // let dict = ["title":"population data", "obj":populationAggregates.description ?? ""]
+                    // NSNotificationCenter.defaultCenter().postNotificationName("ncAppLogNotification", object: nil, userInfo: dict)
                     self.mostRecentAggregates = populationAggregates
                     NSNotificationCenter.defaultCenter().postNotificationName(HMDidUpdateRecentSamplesNotification, object: self)
                 }
             }
+            else {
+                log.error("Failed to retrieve population aggregates from response: \(response)")
+            }
+        }
+        else {
+            log.error("Failed to deserialize population query response")
         }
     }
 }

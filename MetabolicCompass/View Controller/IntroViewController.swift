@@ -540,7 +540,7 @@ class IntroViewController: UIViewController,
             self.radarController.authorized = true
             self.fetchInitialAggregates()
             self.fetchRecentSamples()
-            HealthManager.sharedManager.registerObservers()
+            UploadManager.sharedManager.registerUploadObservers()
         }
     }
 

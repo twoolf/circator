@@ -13,14 +13,16 @@ import MetabolicCompassKit
 class DashboardComparisonController: UIViewController, UITableViewDelegate, UITableViewDataSource {
     private let dashboardComparisonCellIdentifier = "ComparisonCell"
     @IBOutlet weak var tableView: UITableView!
-    
+
+    var comparisonTip: TapTip! = nil
+
     override func viewDidLoad() {
         super.viewDidLoad()
 
         self.tableView.dataSource      = self
         self.tableView.delegate        = self
         self.tableView.allowsSelection = false
-        
+
         AccountManager.shared.loginAndInitialize(false)
     }
     
@@ -62,6 +64,16 @@ class DashboardComparisonController: UIViewController, UITableViewDelegate, UITa
         cell.setUserData(HealthManager.sharedManager.mostRecentSamples[sampleType] ?? [HKSample](),
                          populationAverageData: PopulationHealthManager.sharedManager.mostRecentAggregates[sampleType] ?? [],
                          stalePopulation: stale)
+
+        if indexPath.section == 0 && indexPath.row == 0 && comparisonTip == nil {
+            let targetView = cell
+
+            let desc = "This table helps you compare your personal health stats (left column) to the aggregate population stats (right column) in our study. You can pick which measures to display with the Manage button, and change the population compared with the Filter button."
+            comparisonTip = TapTip(forView: targetView, text: desc, width: 350, numTaps: 2, numTouches: 2, asTop: false)
+            targetView.addGestureRecognizer(comparisonTip.tapRecognizer)
+            targetView.userInteractionEnabled = true
+        }
+
         return cell
     }
 

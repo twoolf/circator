@@ -144,7 +144,7 @@ final class HealthConditions: NSObject {
             let heightInMeters = height!.quantity.doubleValueForUnit(HKUnit.meterUnit())
             bmi = calculateBMIWithWeightInKilograms(weightInKilograms, heightInMeters: heightInMeters)!
         }
-        print("new bmi in HealthConditions: \(bmi)")
+//        print("new bmi in HealthConditions: \(bmi)")
         HKBMIString = String(format: "%.1f", bmi)
     }
     

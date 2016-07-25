@@ -622,7 +622,7 @@ class SettingsViewController: UITableViewController, UITextFieldDelegate, SFSafa
     func doDeleteAccount(sender: UIButton) {
         let sheet = UIAlertController(title: "Withdraw from Metabolic Compass", message: "Are you sure you want to delete your account?", preferredStyle: .Alert)
         let yes = UIAlertAction(title: "Yes", style: .Default) { action -> Void in
-            UserManager.sharedManager.withdraw { success in
+            UserManager.sharedManager.withdraw(false) { success in
                 if success {
                     PopulationHealthManager.sharedManager.resetAggregates()
                     if let iv = self.introView {

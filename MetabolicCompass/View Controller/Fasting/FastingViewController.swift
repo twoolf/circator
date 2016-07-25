@@ -12,7 +12,7 @@ import HealthKit
 import MetabolicCompassKit
 import Async
 import Charts
-import SteviaLayout
+import EasyTipView
 
 private let fastingViewLabelSize: CGFloat = 12.0
 private let fastingViewTextSize: CGFloat = 24.0
@@ -67,6 +67,8 @@ public class FastingViewController : UIViewController, ChartViewDelegate {
 
     @IBOutlet weak var fastingView: UIView!
 
+    var activityIndicator: UIActivityIndicatorView! = nil
+
     private var model: FastingDataModel = FastingDataModel()
 
     lazy var pieChart: PieChartView = {
@@ -86,6 +88,19 @@ public class FastingViewController : UIViewController, ChartViewDelegate {
     }()
 
 
+    lazy var pieChartColors: [NSUIColor] = {
+        // Populate 15 colors. Add more if needed.
+        var colors : [NSUIColor] = []
+        colors.appendContentsOf(ChartColorTemplates.joyful())
+        colors.appendContentsOf(ChartColorTemplates.colorful())
+        colors.appendContentsOf(ChartColorTemplates.pastel())
+        //colors.appendContentsOf(ChartColorTemplates.vordiplom())
+        //colors.appendContentsOf(ChartColorTemplates.liberty())
+        //colors.appendContentsOf(ChartColorTemplates.material())
+
+        return GKRandomSource.sharedRandom().arrayByShufflingObjectsInArray(colors) as! [NSUIColor]
+    }()
+
     public static let orange = ChartColorTemplates.colorful()[1]
     public static let blue   = ChartColorTemplates.joyful()[4]
     public static let yellow = ChartColorTemplates.colorful()[2]
@@ -102,9 +117,11 @@ public class FastingViewController : UIViewController, ChartViewDelegate {
         title.addAttributes(attrs1, range: NSRange(location:23, length: 1))
         title.addAttributes(attrs2, range: NSRange(location:37, length: 1))
 
+        let tooltip = "This compares the hours you spent fasting while asleep in the last week vs the hours spent fasting while awake"
         let bar = BalanceBarView(title: title,
                                  color1: FastingViewController.orange,
-                                 color2: FastingViewController.blue)
+                                 color2: FastingViewController.blue,
+                                 tooltipText: tooltip)
         return bar
     }()
 
@@ -119,22 +136,45 @@ public class FastingViewController : UIViewController, ChartViewDelegate {
         title.addAttributes(attrs1, range: NSRange(location:15, length: 1))
         title.addAttributes(attrs2, range: NSRange(location:32, length: 1))
 
+        let tooltip = "This compares the hours you spent in the last week eating vs the hours spent exercising"
         let bar = BalanceBarView(title: title,
                                  color1: FastingViewController.yellow,
-                                 color2: FastingViewController.green)
+                                 color2: FastingViewController.green,
+                                 tooltipText: tooltip)
         return bar
     }()
 
     lazy var cwfLabel: UIStackView = createNumberLabel("Cumulative Weekly Fasting", labelFontSize: fastingViewLabelSize, value: 0.0, unit: "hrs")
     lazy var wfvLabel: UIStackView = createNumberLabel("Weekly Fasting Variability", labelFontSize: fastingViewLabelSize, value: 0.0, unit: "hrs")
 
+    private let cwfTipMsg = "Your cumulative weekly fasting is the total number of hours that you've spent fasting over the last 7 days"
+    private let wfvTipMsg = "Your weekly fasting variability shows you how much your fasting hours varies day-by-day. We calculate this over the last week."
+
+    private var cwfTip: TapTip! = nil
+    private var wfvTip: TapTip! = nil
+
     override public func viewWillAppear(animated: Bool) {
         super.viewWillAppear(animated)
+        self.activityIndicator.startAnimating()
         self.refreshData()
     }
 
     override public func viewDidLoad() {
         super.viewDidLoad()
+
+        activityIndicator = UIActivityIndicatorView()
+
+        activityIndicator.translatesAutoresizingMaskIntoConstraints = false
+        view.addSubview(activityIndicator)
+
+        let constraints: [NSLayoutConstraint] = [
+            activityIndicator.topAnchor.constraintEqualToAnchor(view.topAnchor),
+            activityIndicator.bottomAnchor.constraintEqualToAnchor(view.bottomAnchor),
+            activityIndicator.leadingAnchor.constraintEqualToAnchor(view.leadingAnchor),
+            activityIndicator.trailingAnchor.constraintEqualToAnchor(view.trailingAnchor)
+        ]
+        view.addConstraints(constraints)
+
         setupView()
     }
 
@@ -144,6 +184,8 @@ public class FastingViewController : UIViewController, ChartViewDelegate {
         let pieChartStack: UIStackView = createLabelledComponent("Data Collected This Year", labelFontSize: fastingViewLabelSize, value: (), constructor: {
             _ in return self.pieChart
         })
+
+        setupTooltips()
 
         let labelStack: UIStackView = {
             let stack = UIStackView(arrangedSubviews: [cwfLabel, wfvLabel])
@@ -178,19 +220,20 @@ public class FastingViewController : UIViewController, ChartViewDelegate {
         fastingView.addConstraints(constraints)
     }
 
+    func setupTooltips() {
+        cwfTip = TapTip(forView: cwfLabel, text: cwfTipMsg, asTop: true)
+        wfvTip = TapTip(forView: wfvLabel, text: wfvTipMsg, asTop: true)
+
+        cwfLabel.addGestureRecognizer(cwfTip.tapRecognizer)
+        cwfLabel.userInteractionEnabled = true
+
+        wfvLabel.addGestureRecognizer(wfvTip.tapRecognizer)
+        wfvLabel.userInteractionEnabled = true
+    }
+
     func refreshPieChart() {
         let pieChartDataSet = PieChartDataSet(yVals: self.model.samplesCollectedDataEntries.map { $0.1 }, label: "Samples per type")
-
-        // Populate 15 colors. Add more if needed.
-        var colors : [NSUIColor] = []
-        colors.appendContentsOf(ChartColorTemplates.joyful())
-        colors.appendContentsOf(ChartColorTemplates.colorful())
-        colors.appendContentsOf(ChartColorTemplates.pastel())
-        //colors.appendContentsOf(ChartColorTemplates.vordiplom())
-        //colors.appendContentsOf(ChartColorTemplates.liberty())
-        //colors.appendContentsOf(ChartColorTemplates.material())
-
-        pieChartDataSet.colors = GKRandomSource.sharedRandom().arrayByShufflingObjectsInArray(colors) as! [NSUIColor]
+        pieChartDataSet.colors = pieChartColors
         pieChartDataSet.drawValuesEnabled = false
 
         let xVals : [String] = self.model.samplesCollectedDataEntries.map {
@@ -220,6 +263,7 @@ public class FastingViewController : UIViewController, ChartViewDelegate {
             log.info("FastingViewController refreshing charts (\(NSDate().timeIntervalSinceDate(refreshStartDate)))")
 
             Async.main {
+                self.activityIndicator.stopAnimating()
                 self.refreshPieChart()
 
                 let saTotal = self.model.fastSleep + self.model.fastAwake
@@ -282,5 +326,6 @@ public class FastingViewController : UIViewController, ChartViewDelegate {
         pieChart.centerText = ""
         pieChart.drawCenterTextEnabled = false
     }
+
 }
 

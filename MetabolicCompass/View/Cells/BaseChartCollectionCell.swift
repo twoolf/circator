@@ -30,7 +30,7 @@ class BaseChartCollectionCell: UICollectionViewCell {
         baseChartPreperation(self.chartView)
         
         self.backgroundColor = UIColor.clearColor()
-//        self.contentView.userInteractionEnabled = false
+        self.contentView.userInteractionEnabled = false
     }
     
     override func prepareForReuse() {
@@ -66,10 +66,10 @@ class BaseChartCollectionCell: UICollectionViewCell {
         chart.legend.enabled = false
         chart.legend.formSize = 0
         
-//        let marker:BalloonMarker = getChartMarker()
-//        chart.marker = marker
-//        chart.drawMarkers = true
-        
+        let marker:BalloonMarker = getChartMarker()
+        chart.marker = marker
+        chart.drawMarkers = true
+
         chart.scaleXEnabled = false
         chart.scaleYEnabled = false
     }
@@ -95,7 +95,7 @@ class BaseChartCollectionCell: UICollectionViewCell {
     func getChartMarker() -> BalloonMarker {
         let marker:BalloonMarker = BalloonMarker(color: UIColor.whiteColor(),
                                                  font: UIFont.systemFontOfSize(10),
-                                                 insets: UIEdgeInsets(top: 5.0, left: 8.0, bottom: 0.0, right: 8.0))
+                                                 insets: UIEdgeInsets(top: 5.0, left: 2.0, bottom: 0.0, right: 2.0))
         marker.minimumSize = CGSizeMake(37.0, 29.0)
         return marker
     }

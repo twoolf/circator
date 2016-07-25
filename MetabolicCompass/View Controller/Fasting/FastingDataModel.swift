@@ -46,7 +46,7 @@ public class FastingDataModel : NSObject {
             samplesCollected[sampleType] = 100
         }
         self.refreshChartEntries()
-        self.logModel()
+        //self.logModel()
     }
 
     public func updateData(completion: NSError? -> Void) {
@@ -132,10 +132,7 @@ public class FastingDataModel : NSObject {
             }
 
             self.refreshChartEntries()
-
-            log.info("Updated fasting data model")
-            self.logModel()
-
+            // self.logModel()
             completion(nil)
         }
     }

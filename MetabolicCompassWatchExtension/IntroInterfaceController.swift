@@ -25,7 +25,27 @@ protocol MCSample {
     var hkType       : HKSampleType? { get }
 }
 
-struct MCAggregateSample : MCSample {
+private let refDate  = NSDate(timeIntervalSinceReferenceDate: 0)
+private let noLimit  = Int(HKObjectQueryNoLimit)
+private let noAnchor = HKQueryAnchor(fromValue: Int(HKAnchoredObjectQueryNoAnchor))
+private let dateAsc  = NSSortDescriptor(key: HKSampleSortIdentifierStartDate, ascending: true)
+private let dateDesc = NSSortDescriptor(key: HKSampleSortIdentifierStartDate, ascending: false)
+private let lastChartsDataCacheKey = "lastChartsDataCacheKey"
+
+// Enums
+public enum HealthManagerStatisticsRangeType : Int {
+    case Week = 0
+    case Month
+    case Year
+}
+
+public enum AggregateQueryResult {
+    case AggregatedSamples([MCAggregateSample])
+    case Statistics([HKStatistics])
+    case None
+}
+
+public struct MCAggregateSample : MCSample {
     public var startDate    : NSDate
     public var endDate      : NSDate
     public var numeralValue : Double?
@@ -644,11 +664,6 @@ let stSleep = 0.33
 let stFast = 0.66
 let stEat = 1.0
 
-let refDate  = NSDate(timeIntervalSinceReferenceDate: 0)
-let noLimit  = Int(HKObjectQueryNoLimit)
-let noAnchor = HKQueryAnchor(fromValue: Int(HKAnchoredObjectQueryNoAnchor))
-let dateAsc  = NSSortDescriptor(key: HKSampleSortIdentifierStartDate, ascending: true)
-let dateDesc = NSSortDescriptor(key: HKSampleSortIdentifierStartDate, ascending: false)
 
 class IntroInterfaceController: WKInterfaceController, WCSessionDelegate  {
     
@@ -673,8 +688,6 @@ class IntroInterfaceController: WKInterfaceController, WCSessionDelegate  {
         case Sleep
         case Exercise
     }
-
-    
     var session : WCSession!
     
     let healthKitStore:HKHealthStore = HKHealthStore()
@@ -719,9 +732,14 @@ class IntroInterfaceController: WKInterfaceController, WCSessionDelegate  {
         // This method is called when watch view controller is about to be visible to user
         super.willActivate()
         
+//        print("ready to run reloadDataTake2")
+//        IntroInterfaceController.reloadDataTake2()
+//        print("data should be updated")
+ 
+/*
         func reloadComplications() {
             let server = CLKComplicationServer.sharedInstance()
-            //        print("in reloadComplications: \(server.activeComplications)")
+            print("in reloadComplications of IntroInterface: \(server.activeComplications)")
             guard let complications = server.activeComplications where complications.count > 0 else {
                 print("hit a zero in reloadComplications")
                 return
@@ -733,12 +751,12 @@ class IntroInterfaceController: WKInterfaceController, WCSessionDelegate  {
                 //            print("value from complication: \(complications.)")
             }
         }
-
-        
+*/
+ /*
         print("ready to run reloadDataTake2")
-        reloadDataTake2()
-        
-        reloadComplications()
+        IntroInterfaceController.reloadDataTake2()
+        print("data should be updated")
+        reloadComplications() */
         
         /*
          func reloadComplications() {
@@ -764,6 +782,22 @@ class IntroInterfaceController: WKInterfaceController, WCSessionDelegate  {
     
     override func didDeactivate() {
         super.didDeactivate()
+        IntroInterfaceController.reloadDataTake2()
+        
+        func reloadComplications() {
+            let server = CLKComplicationServer.sharedInstance()
+            print("in reloadComplications: \(server.activeComplications)")
+            guard let complications = server.activeComplications where complications.count > 0 else {
+                print("hit a zero in reloadComplications")
+                return
+            }
+            
+            for complication in complications  {
+                server.reloadTimelineForComplication(complication)
+            }
+        }
+        
+        reloadComplications()
 
         func readMostRecentSample(sampleType:HKSampleType , completion:     ((HKSample!, NSError!) -> Void)!)
         {
@@ -854,7 +888,7 @@ class IntroInterfaceController: WKInterfaceController, WCSessionDelegate  {
                 let heightInMeters = heightHK!.quantity.doubleValueForUnit(HKUnit.meterUnit())
                 bmiHK = calculateBMIWithWeightInKilograms(weightInKilograms, heightInMeters: heightInMeters)!
             }
-            print("new bmi in IntroInterfaceController: \(bmiHK)")
+//            print("new bmi in IntroInterfaceController: \(bmiHK)")
             HKBMIString = String(format: "%.1f", bmiHK)
         }
         
@@ -898,11 +932,11 @@ class IntroInterfaceController: WKInterfaceController, WCSessionDelegate  {
         MetricsStore.sharedInstance.Fat = "90"
         MetricsStore.sharedInstance.Carbohydrate = "190"
         MetricsStore.sharedInstance.Protein = "290"
-        
     }
     
+
     
-    func reloadDataTake2() {
+    class func reloadDataTake2() {
         typealias Event = (NSDate, Double)
         typealias IEvent = (Double, Double)?
         
@@ -983,13 +1017,29 @@ class IntroInterfaceController: WKInterfaceController, WCSessionDelegate  {
                     
                     let today = NSDate().startOf(.Day, inRegion: Region())
                     let lastAte : NSDate? = stats.1 == 0 ? nil : ( startDate + Int(round(stats.1 * 3600.0)).seconds )
+                    print("stored lastAteAsNSDate \(lastAte)")
+                    MetricsStore.sharedInstance.lastAteAsNSDate = lastAte!
                     
                     let fastingHrs = Int(floor(stats.2))
                     let fastingMins = (today + Int(round((stats.2 % 1.0) * 60.0)).minutes).toString(DateFormat.Custom("mm"))!
                     //                        self.fastingLabel.text = "\(fastingHrs):\(fastingMins)"
-                    print("in EventTimeViewController, fasting hours: \(fastingHrs)")
+                    print("in IntroInterfaceController, fasting hours: \(fastingHrs)")
                     print("   and fasting minutes: \(fastingMins)")
                     MetricsStore.sharedInstance.fastingTime = "\(fastingHrs):\(fastingMins)"
+                    
+                    let currentFastingHrs = Int(floor(stats.5))
+                    let currentFastingMins = (today + Int(round((stats.5 % 1.0) * 60.0)).minutes).toString(DateFormat.Custom("mm"))!
+
+                    print("current fasting hours: \(currentFastingHrs)")
+                    print("   and current fasting minutes: \(currentFastingMins)")
+                    MetricsStore.sharedInstance.currentFastingTime = "\(currentFastingHrs):\(currentFastingMins)"
+                    
+                    let newLastEatingTimeHrs = Int(floor(stats.1))
+                    let newLastEatingTimeMins = (today + Int(round((stats.1 % 1.0) * 60.0)).minutes).toString(DateFormat.Custom("mm"))!
+                    
+                    print("last eating time: \(newLastEatingTimeHrs)")
+                    print("   and last eating time minutes: \(newLastEatingTimeMins)")
+                    MetricsStore.sharedInstance.lastEatingTime = "\(newLastEatingTimeHrs):\(newLastEatingTimeMins)"
                     
                     
                     //                        self.eatingLabel.text  = (today + Int(stats.0 * 3600.0).seconds).toString(DateFormat.Custom("HH:mm"))!
@@ -1001,7 +1051,7 @@ class IntroInterfaceController: WKInterfaceController, WCSessionDelegate  {
         }
     }
     
-    func fetchCircadianEventIntervals(startDate: NSDate = 1.days.ago,
+    class func fetchCircadianEventIntervals(startDate: NSDate = 1.days.ago,
                                       endDate: NSDate = NSDate(),
                                       completion: HMCircadianBlock)
     {
@@ -1030,6 +1080,7 @@ class IntroInterfaceController: WKInterfaceController, WCSessionDelegate  {
                             return [(st, .Meal), (en, .Meal)]
                         default:
                             return [(st, .Exercise), (en, .Exercise)]
+                            MetricsStore.sharedInstance.Exercise = en
                         }
                     }
                     
@@ -1041,6 +1092,7 @@ class IntroInterfaceController: WKInterfaceController, WCSessionDelegate  {
                         let st = s.startDate < startDate ? startDate : s.startDate
                         let en = s.endDate
                         return [(st, .Sleep), (en, .Sleep)]
+                        MetricsStore.sharedInstance.Sleep = en
                     }
                     
                 default:
@@ -1097,14 +1149,14 @@ class IntroInterfaceController: WKInterfaceController, WCSessionDelegate  {
         }
     }
     
-    func fetchSamples(typesAndPredicates: [HKSampleType: NSPredicate?], completion: HMTypedSampleBlock)
+    class func fetchSamples(typesAndPredicates: [HKSampleType: NSPredicate?], completion: HMTypedSampleBlock)
     {
         let group = dispatch_group_create()
         var samplesByType = [HKSampleType: [MCSample]]()
         
         typesAndPredicates.forEach { (type, predicate) -> () in
             dispatch_group_enter(group)
-            fetchSamplesOfType(type, predicate: predicate, limit: noLimit) { (samples, error) in
+            IntroInterfaceController.fetchSamplesOfType(type, predicate: predicate, limit: noLimit) { (samples, error) in
                 guard error == nil else {
                     //                        print("Could not fetch recent samples for \(type.displayText): \(error)")
                     dispatch_group_leave(group)
@@ -1126,7 +1178,7 @@ class IntroInterfaceController: WKInterfaceController, WCSessionDelegate  {
         }
     }
     
-    func valueOfCircadianEvent(e: CircadianEvent) -> Double {
+    class func valueOfCircadianEvent(e: CircadianEvent) -> Double {
         switch e {
         case .Meal:
             return stEat
@@ -1143,7 +1195,7 @@ class IntroInterfaceController: WKInterfaceController, WCSessionDelegate  {
     }
     
     
-    func fetchSamplesOfType(sampleType: HKSampleType, predicate: NSPredicate? = nil, limit: Int = noLimit,
+    class func fetchSamplesOfType(sampleType: HKSampleType, predicate: NSPredicate? = nil, limit: Int = noLimit,
                             sortDescriptors: [NSSortDescriptor]? = [dateAsc], completion: HMSampleBlock)
     {
         let query = HKSampleQuery(sampleType: sampleType, predicate: predicate, limit: limit, sortDescriptors: sortDescriptors) {
@@ -1154,22 +1206,22 @@ class IntroInterfaceController: WKInterfaceController, WCSessionDelegate  {
             }
             completion(samples: samples?.map { $0 as! MCSample } ?? [], error: nil)
         }
-        healthKitStore.executeQuery(query)
+        HKHealthStore().executeQuery(query)
     }
     
     // Query food diary events stored as prep and recovery workouts in HealthKit
-    func fetchPreparationAndRecoveryWorkout(oldestFirst: Bool, beginDate: NSDate? = nil, completion: HMSampleBlock)
+    public func fetchPreparationAndRecoveryWorkout(oldestFirst: Bool, beginDate: NSDate? = nil, completion: HMSampleBlock)
     {
-        let predicate = mealsSincePredicate(beginDate)
+        let predicate = IntroInterfaceController.mealsSincePredicate(beginDate)
         let sortDescriptor = NSSortDescriptor(key:HKSampleSortIdentifierStartDate, ascending: oldestFirst)
-        fetchSamplesOfType(HKWorkoutType.workoutType(), predicate: predicate, limit: noLimit, sortDescriptors: [sortDescriptor], completion: completion)
+        IntroInterfaceController.fetchSamplesOfType(HKWorkoutType.workoutType(), predicate: predicate, limit: noLimit, sortDescriptors: [sortDescriptor], completion: completion)
     }
     
-    func fetchAggregatedCircadianEvents<T>(predicate: ((NSDate, CircadianEvent) -> Bool)? = nil,
+    class func fetchAggregatedCircadianEvents<T>(predicate: ((NSDate, CircadianEvent) -> Bool)? = nil,
                                                aggregator: ((T, (NSDate, CircadianEvent)) -> T), initial: T, final: (T -> [(NSDate, Double)]),
                                                completion: HMCircadianAggregateBlock)
     {
-        fetchCircadianEventIntervals(NSDate.distantPast()) { (intervals, error) in
+        IntroInterfaceController.fetchCircadianEventIntervals(NSDate.distantPast()) { (intervals, error) in
             guard error == nil else {
                 completion(aggregates: [], error: error)
                 return
@@ -1181,7 +1233,7 @@ class IntroInterfaceController: WKInterfaceController, WCSessionDelegate  {
         }
     }
     
-    func fetchEatingTimes(completion: HMCircadianAggregateBlock) {
+    class func fetchEatingTimes(completion: HMCircadianAggregateBlock) {
         typealias Accum = (Bool, NSDate!, [NSDate: Double])
         let aggregator : (Accum, (NSDate, CircadianEvent)) -> Accum = { (acc, e) in
             if !acc.0 && acc.1 != nil {
@@ -1202,10 +1254,10 @@ class IntroInterfaceController: WKInterfaceController, WCSessionDelegate  {
             return acc.2.map { return ($0.0, $0.1 / 3600.0) }.sort { (a,b) in return a.0 < b.0 }
         }
         
-        fetchAggregatedCircadianEvents(nil, aggregator: aggregator, initial: initial, final: final, completion: completion)
+        IntroInterfaceController.fetchAggregatedCircadianEvents(nil, aggregator: aggregator, initial: initial, final: final, completion: completion)
     }
     
-    func fetchMaxFastingTimes(completion: HMCircadianAggregateBlock)
+    public func fetchMaxFastingTimes(completion: HMCircadianAggregateBlock)
     {
         // Accumulator:
         // i. boolean indicating event start.
@@ -1253,64 +1305,10 @@ class IntroInterfaceController: WKInterfaceController, WCSessionDelegate  {
             return byDay.map { return ($0.0, $0.1 / 3600.0) }.sort { (a,b) in return a.0 < b.0 }
         }
         
-        fetchAggregatedCircadianEvents(predicate, aggregator: aggregator, initial: initial, final: final, completion: completion)
+        IntroInterfaceController.fetchAggregatedCircadianEvents(predicate, aggregator: aggregator, initial: initial, final: final, completion: completion)
     }
     
-    func correlateWithFasting(sortFasting: Bool, type: HKSampleType, predicate: NSPredicate? = nil, completion: HMFastingCorrelationBlock) {
-        var results1: [MCSample]?
-        var results2: [(NSDate, Double)]?
-        
-        func intersect(samples: [MCSample], fasting: [(NSDate, Double)]) -> [(NSDate, Double, MCSample)] {
-            var output:[(NSDate, Double, MCSample)] = []
-            var byDay: [NSDate: Double] = [:]
-            fasting.forEach { f in
-                let start = f.0.startOf(.Day, inRegion: Region())
-                byDay.updateValue((byDay[start] ?? 0.0) + f.1, forKey: start)
-            }
-            
-            samples.forEach { s in
-                let start = s.startDate.startOf(.Day, inRegion: Region())
-                if let match = byDay[start] { output.append((start, match, s)) }
-            }
-            return output
-        }
-        
-        let group = dispatch_group_create()
-        dispatch_group_enter(group)
-        fetchStatisticsOfType(type, predicate: predicate) { (results, error) -> Void in
-            guard error == nil else {
-                completion([], error)
-                dispatch_group_leave(group)
-                return
-            }
-            results1 = results
-            dispatch_group_leave(group)
-        }
-        dispatch_group_enter(group)
-        fetchMaxFastingTimes { (results, error) -> Void in
-            guard error == nil else {
-                completion([], error)
-                dispatch_group_leave(group)
-                return
-            }
-            results2 = results
-            dispatch_group_leave(group)
-        }
-        
-        dispatch_group_notify(group, dispatch_get_main_queue()) {
-            guard !(results1 == nil || results2 == nil) else {
-                let desc = results1 == nil ? (results2 == nil ? "LHS and RHS" : "LHS") : "RHS"
-                let err = NSError(domain: self.HMErrorDomain, code: 1048576, userInfo: [NSLocalizedDescriptionKey: "Invalid \(desc) statistics"])
-                completion([], err)
-                return
-            }
-            var zipped = intersect(results1!, fasting: results2!)
-            zipped.sortInPlace { (a,b) in return ( sortFasting ? a.1 < b.1 : a.2.numeralValue! < b.2.numeralValue! ) }
-            completion(zipped, nil)
-        }
-    }
-    
-    func mealsSincePredicate(startDate: NSDate? = nil, endDate: NSDate = NSDate()) -> NSPredicate? {
+    class func mealsSincePredicate(startDate: NSDate? = nil, endDate: NSDate = NSDate()) -> NSPredicate? {
         var predicate : NSPredicate? = nil
         if let st = startDate {
             let conjuncts = [
@@ -1324,7 +1322,7 @@ class IntroInterfaceController: WKInterfaceController, WCSessionDelegate  {
         return predicate
     }
     
-    func fetchStatisticsOfType(sampleType: HKSampleType, predicate: NSPredicate? = nil, completion: HMSampleBlock) {
+    public func fetchStatisticsOfType(sampleType: HKSampleType, predicate: NSPredicate? = nil, completion: HMSampleBlock) {
         switch sampleType {
         case is HKCategoryType:
             fallthrough
@@ -1367,10 +1365,10 @@ class IntroInterfaceController: WKInterfaceController, WCSessionDelegate  {
         }
     }
     
-    func fetchAggregatedSamplesOfType(sampleType: HKSampleType, aggregateUnit: NSCalendarUnit = .Day, predicate: NSPredicate? = nil,
+    public func fetchAggregatedSamplesOfType(sampleType: HKSampleType, aggregateUnit: NSCalendarUnit = .Day, predicate: NSPredicate? = nil,
                                              limit: Int = noLimit, sortDescriptors: [NSSortDescriptor]? = [dateAsc], completion: HMSampleBlock)
     {
-        fetchSamplesOfType(sampleType, predicate: predicate, limit: limit, sortDescriptors: sortDescriptors) { samples, error in
+        IntroInterfaceController.fetchSamplesOfType(sampleType, predicate: predicate, limit: limit, sortDescriptors: sortDescriptors) { samples, error in
             guard error == nil else {
                 completion(samples: [], error: error)
                 return
@@ -1388,6 +1386,51 @@ class IntroInterfaceController: WKInterfaceController, WCSessionDelegate  {
             
             let doFinal: ((NSDate, MCAggregateSample) -> MCSample) = { (_,var agg) in agg.final(); return agg as MCSample }
             completion(samples: byDay.sort({ (a,b) in return a.0 < b.0 }).map(doFinal), error: nil)
+        }
+    }
+    
+    // Helper struct for iterating over date ranges.
+    struct DateRange : SequenceType {
+        
+        var calendar: NSCalendar = NSCalendar(calendarIdentifier: NSCalendarIdentifierGregorian)!
+        
+        var startDate: NSDate
+        var endDate: NSDate
+        var stepUnits: NSCalendarUnit
+        var stepValue: Int
+        
+        var currentStep: Int = 0
+        
+        init(startDate: NSDate, endDate: NSDate, stepUnits: NSCalendarUnit, stepValue: Int = 1) {
+            self.startDate = startDate
+            self.endDate = endDate
+            self.stepUnits = stepUnits
+            self.stepValue = stepValue
+        }
+        
+        func generate() -> Generator {
+            return Generator(range: self)
+        }
+        
+        struct Generator: GeneratorType {
+            
+            var range: DateRange
+            
+            mutating func next() -> NSDate? {
+                if range.currentStep == 0 { range.currentStep += 1; return range.startDate }
+                else {
+                    if let nextDate = range.calendar.dateByAddingUnit(range.stepUnits, value: range.stepValue, toDate: range.startDate, options: NSCalendarOptions(rawValue: 0)) {
+                        range.currentStep += 1
+                        if range.endDate <= nextDate {
+                            return nil
+                        } else {
+                            range.startDate = nextDate
+                            return nextDate
+                        }
+                    }
+                    return nil
+                }
+            }
         }
     }
 

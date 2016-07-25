@@ -48,14 +48,14 @@
                                     <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                     <subviews>
                                         <imageView userInteractionEnabled="NO" contentMode="center" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="add-meal-big-image" translatesAutoresizingMaskIntoConstraints="NO" id="kWT-eP-bDl">
-                                            <rect key="frame" x="90" y="21.5" width="140" height="105"/>
+                                            <rect key="frame" x="90" y="22" width="140" height="105"/>
                                             <constraints>
                                                 <constraint firstAttribute="width" constant="140" id="k0m-LL-QVD"/>
                                                 <constraint firstAttribute="height" constant="105" id="rWv-pP-tMh"/>
                                             </constraints>
                                         </imageView>
-                                        <label hidden="YES" opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="0h 00m" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="KAc-uS-FVs">
-                                            <rect key="frame" x="112.5" y="161.5" width="96.5" height="21.5"/>
+                                        <label hidden="YES" opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" misplaced="YES" text="0h 00m" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="KAc-uS-FVs">
+                                            <rect key="frame" x="113" y="162" width="96" height="21"/>
                                             <fontDescription key="fontDescription" name="GothamBook" family="Gotham Book" pointSize="24"/>
                                             <color key="textColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                                             <nil key="highlightedColor"/>

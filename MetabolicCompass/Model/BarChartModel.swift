@@ -171,17 +171,21 @@ class BarChartModel : NSObject {
         lineChartDataSet.circleHoleRadius = 1.5
         lineChartDataSet.circleHoleColor = UIColor(colorLiteralRed: 51.0/255.0, green: 138.0/255.0, blue: 255.0/255.0, alpha: 1.0)
         lineChartDataSet.circleColors = [UIColor.whiteColor()]
-        let lineChartData = LineChartData(xVals: xVals, dataSets: [lineChartDataSet])
+        lineChartDataSet.drawHorizontalHighlightIndicatorEnabled = false
+        lineChartDataSet.drawVerticalHighlightIndicatorEnabled = false
 
+        let lineChartData = LineChartData(xVals: xVals, dataSets: [lineChartDataSet])
         return lineChartData
     }
 
-    private func scatterChartDataWith(xVals: [String], yVals:[ChartDataEntry], dataSetType: DataSetType = DataSetType.HartRate) -> ScatterChartData {
+    private func scatterChartDataWith(xVals: [String], yVals:[ChartDataEntry], dataSetType: DataSetType = DataSetType.HeartRate) -> ScatterChartData {
 
         let dataSet = MCScatterChartDataSet(yVals: yVals, label: "")
         dataSet.dataSetType = dataSetType
         dataSet.colors = [UIColor.whiteColor()]
         dataSet.drawValuesEnabled = false
+        dataSet.drawHorizontalHighlightIndicatorEnabled = false
+        dataSet.drawVerticalHighlightIndicatorEnabled = false
 
         let chartData = ScatterChartData(xVals: xVals, dataSets: [dataSet])
         return chartData
@@ -193,11 +197,15 @@ class BarChartModel : NSObject {
         dataSet1.dataSetType = .BloodPressureTop
         dataSet1.colors = [UIColor.whiteColor()]
         dataSet1.drawValuesEnabled = false
+        dataSet1.drawHorizontalHighlightIndicatorEnabled = false
+        dataSet1.drawVerticalHighlightIndicatorEnabled = false
 
         let dataSet2 = MCScatterChartDataSet(yVals: yVals2, label: "")
         dataSet2.dataSetType = .BloodPressureBottom
         dataSet2.colors = [UIColor.whiteColor()]
         dataSet2.drawValuesEnabled = false
+        dataSet2.drawHorizontalHighlightIndicatorEnabled = false
+        dataSet2.drawVerticalHighlightIndicatorEnabled = false
 
         let chartData = ScatterChartData(xVals: xVals, dataSets: [dataSet1, dataSet2])
         return chartData

@@ -67,7 +67,9 @@ class DailyChartModel : NSObject, UITableViewDataSource {
     var lastAteText: String = ""
     var eatingText: String = ""
     var daysTableView: UITableView?
-    
+
+    var highlightFasting: Bool = false
+
     override init() {
         do {
             self.cachedDailyProgress = try MCDaylyProgressCache(name: "MCDaylyProgressCache")
@@ -179,6 +181,8 @@ class DailyChartModel : NSObject, UITableViewDataSource {
                     self.getDataForDay(self.daysArray[dateIndex!+1], lastDay: lastElement)
                 }
             } else {//end of recursion
+                self.chartColorsArray = self.chartColorsArray.map { return $0.map(self.selectColor) }
+
                 Async.main {
                     self.delegate?.dataCollectingFinished?()
                 }
@@ -392,16 +396,16 @@ class DailyChartModel : NSObject, UITableViewDataSource {
         var eventColor: UIColor = MetabolicDailyPorgressChartView.fastingColor
         switch eventType {
         case .Exercise:
-            eventColor = MetabolicDailyPorgressChartView.exerciseColor
+            eventColor = highlightFasting ? MetabolicDailyPorgressChartView.mutedExerciseColor : MetabolicDailyPorgressChartView.exerciseColor
             break
         case .Sleep :
-            eventColor = MetabolicDailyPorgressChartView.sleepColor
+            eventColor = highlightFasting ? MetabolicDailyPorgressChartView.mutedSleepColor : MetabolicDailyPorgressChartView.sleepColor
             break
         case .Meal :
-            eventColor = MetabolicDailyPorgressChartView.eatingColor
+            eventColor = highlightFasting ? MetabolicDailyPorgressChartView.mutedEatingColor : MetabolicDailyPorgressChartView.eatingColor
             break
         default:
-            eventColor = MetabolicDailyPorgressChartView.fastingColor
+            eventColor = highlightFasting ? MetabolicDailyPorgressChartView.highlightFastingColor : MetabolicDailyPorgressChartView.fastingColor
         }
         return eventColor
     }
@@ -437,5 +441,33 @@ class DailyChartModel : NSObject, UITableViewDataSource {
     func roundToPlaces(daoubleToRound: Double, places:Int) -> Double {
         let divisor = pow(10.0, Double(places))
         return round(daoubleToRound * divisor) / divisor
+    }
+
+    func selectColor(color: UIColor) -> UIColor {
+        if CGColorEqualToColor(color.CGColor, MetabolicDailyPorgressChartView.mutedExerciseColor.CGColor)
+            || CGColorEqualToColor(color.CGColor, MetabolicDailyPorgressChartView.exerciseColor.CGColor)
+        {
+            return highlightFasting ? MetabolicDailyPorgressChartView.mutedExerciseColor : MetabolicDailyPorgressChartView.exerciseColor
+        }
+        if CGColorEqualToColor(color.CGColor, MetabolicDailyPorgressChartView.mutedSleepColor.CGColor)
+            || CGColorEqualToColor(color.CGColor, MetabolicDailyPorgressChartView.sleepColor.CGColor)
+        {
+            return highlightFasting ? MetabolicDailyPorgressChartView.mutedSleepColor : MetabolicDailyPorgressChartView.sleepColor
+        }
+        if CGColorEqualToColor(color.CGColor, MetabolicDailyPorgressChartView.mutedEatingColor.CGColor)
+            || CGColorEqualToColor(color.CGColor, MetabolicDailyPorgressChartView.eatingColor.CGColor)
+        {
+            return highlightFasting ? MetabolicDailyPorgressChartView.mutedEatingColor : MetabolicDailyPorgressChartView.eatingColor
+        }
+        if CGColorEqualToColor(color.CGColor, MetabolicDailyPorgressChartView.highlightFastingColor.CGColor)
+            || CGColorEqualToColor(color.CGColor, MetabolicDailyPorgressChartView.fastingColor.CGColor)
+        {
+            return highlightFasting ? MetabolicDailyPorgressChartView.highlightFastingColor : MetabolicDailyPorgressChartView.fastingColor
+        }
+        return color
+    }
+
+    func toggleHighlightFasting() {
+        self.highlightFasting = !self.highlightFasting
     }
 }

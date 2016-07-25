@@ -438,8 +438,9 @@ public class UserManager {
         }
     }
 
-    public func withdraw(completion: SuccessCompletion) {
-        Service.string(MCRouter.DeleteAccount, statusCode: 200..<300, tag: "WITHDRAW") {
+    public func withdraw(keepData: Bool, completion: SuccessCompletion) {
+        let params = ["keepData": keepData]
+        Service.string(MCRouter.DeleteAccount(params), statusCode: 200..<300, tag: "WITHDRAW") {
             _, response, result in
             if result.isSuccess { self.resetFull() }
             completion(result.isSuccess)
@@ -1014,15 +1015,17 @@ public class UserManager {
 
     // MARK : - Last acquisition times.
 
-    public func getAcquisitionTimes() -> [String: AnyObject] { return getCachedComponent(.LastAcquired) }
+    public func getAcquisitionSeq() -> [String: AnyObject] { return getCachedComponent(.LastAcquired) }
 
-    public func resetAcquisitionTimes() { resetCachedComponent(.LastAcquired) }
+    public func getAcquisitionSeq(key: String) -> AnyObject? { return getCachedComponent(.LastAcquired)[key] }
 
-    public func setAcquisitionTimes(timestamps: [String: AnyObject], sync: Bool = false) {
-        deferredPushOnAccountComponent(.LastAcquired, refresh: true, sync: sync, componentData: timestamps)
+    public func resetAcquisitionSeq() { resetCachedComponent(.LastAcquired) }
+
+    public func setAcquisitionSeq(seqids: [String: AnyObject], sync: Bool = false) {
+        deferredPushOnAccountComponent(.LastAcquired, refresh: true, sync: sync, componentData: seqids)
     }
 
-    public func syncAcquisitionTimes(completion: SvcResultCompletion) {
+    public func syncAcquisitionSeq(completion: SvcResultCompletion) {
         syncAccountComponent(.LastAcquired, completion: completion)
     }
 

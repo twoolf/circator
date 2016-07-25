@@ -9,7 +9,6 @@
 import HealthKit
 import WatchConnectivity
 import Async
-import Granola
 import Alamofire
 import SwiftyJSON
 import SwiftyBeaver
@@ -20,7 +19,6 @@ import AwesomeCache
 // Constants.
 private let refDate  = NSDate(timeIntervalSinceReferenceDate: 0)
 private let noLimit  = Int(HKObjectQueryNoLimit)
-private let noAnchor = HKQueryAnchor(fromValue: Int(HKAnchoredObjectQueryNoAnchor))
 private let dateAsc  = NSSortDescriptor(key: HKSampleSortIdentifierStartDate, ascending: true)
 private let dateDesc = NSSortDescriptor(key: HKSampleSortIdentifierStartDate, ascending: false)
 private let lastChartsDataCacheKey = "lastChartsDataCacheKey"
@@ -52,6 +50,7 @@ public typealias HMFastingCorrelationBlock = ([(NSDate, Double, MCSample)], NSEr
 
 public typealias HMAnchorQueryBlock    = (HKAnchoredObjectQuery, [HKSample]?, [HKDeletedObject]?, HKQueryAnchor?, NSError?) -> Void
 public typealias HMAnchorSamplesBlock  = (added: [HKSample], deleted: [HKDeletedObject], newAnchor: HKQueryAnchor?, error: NSError?) -> Void
+public typealias HMAnchorSamplesCBlock = (added: [HKSample], deleted: [HKDeletedObject], newAnchor: HKQueryAnchor?, error: NSError?, completion: () -> Void) -> Void
 
 public typealias HMAggregateCache = Cache<MCAggregateArray>
 
@@ -59,12 +58,6 @@ public let HMErrorDomain                        = "HMErrorDomain"
 public let HMSampleTypeIdentifierSleepDuration  = "HMSampleTypeIdentifierSleepDuration"
 public let HMDidUpdateRecentSamplesNotification = "HMDidUpdateRecentSamplesNotification"
 public let HMDidUpdatedChartsData = "HMDidUpdatedChartsData"
-
-private let HMAnchorKey      = DefaultsKey<[String: AnyObject]?>("HKClientAnchorKey")
-private let HMAnchorTSKey    = DefaultsKey<[String: AnyObject]?>("HKAnchorTSKey")
-private let HMHRangeStartKey = DefaultsKey<[String: AnyObject]>("HKHRangeStartKey")
-private let HMHRangeEndKey   = DefaultsKey<[String: AnyObject]>("HKHRangeEndKey")
-private let HMHRangeMinKey   = DefaultsKey<[String: AnyObject]>("HKHRangeMinKey")
 
 
 /**
@@ -74,7 +67,6 @@ private let HMHRangeMinKey   = DefaultsKey<[String: AnyObject]>("HKHRangeMinKey"
 public class HealthManager: NSObject, WCSessionDelegate {
 
     public static let sharedManager = HealthManager()
-    public static let serializer = OMHSerializer()
 
     lazy var healthKitStore: HKHealthStore = HKHealthStore()
     var aggregateCache: HMAggregateCache
@@ -119,7 +111,8 @@ public class HealthManager: NSObject, WCSessionDelegate {
         if let st = startDate {
             let conjuncts = [
                 HKQuery.predicateForSamplesWithStartDate(st, endDate: endDate, options: .None),
-                HKQuery.predicateForWorkoutsWithWorkoutActivityType(HKWorkoutActivityType.PreparationAndRecovery)
+                HKQuery.predicateForWorkoutsWithWorkoutActivityType(HKWorkoutActivityType.PreparationAndRecovery),
+                HKQuery.predicateForObjectsWithMetadataKey("Meal Type")
             ]
             predicate = NSCompoundPredicate(andPredicateWithSubpredicates: conjuncts)
         } else {
@@ -156,6 +149,14 @@ public class HealthManager: NSObject, WCSessionDelegate {
         return (predicate, startDate, endDate, unit)
     }
 
+    // MARK: - Sample testing
+    public func isGeneratedSample(sample: HKSample) -> Bool {
+        if let unwrappedMetadata = sample.metadata, _ = unwrappedMetadata[HMConstants.sharedInstance.generatedSampleKey] {
+            return true
+        }
+        return false
+    }
+
     // MARK: - Characteristic type queries
 
     public func getBiologicalSex() -> HKBiologicalSexObject? {
@@ -169,6 +170,7 @@ public class HealthManager: NSObject, WCSessionDelegate {
 
     // MARK: - HealthKit sample and statistics retrieval.
 
+    // Retrieves Healthit samples for the given type, predicate, limit and sorting
     // Completion handler is on background queue
     public func fetchSamplesOfType(sampleType: HKSampleType, predicate: NSPredicate? = nil, limit: Int = noLimit,
                                    sortDescriptors: [NSSortDescriptor]? = [dateAsc], completion: HMSampleBlock)
@@ -183,6 +185,18 @@ public class HealthManager: NSObject, WCSessionDelegate {
         }
         healthKitStore.executeQuery(query)
     }
+
+    // Retrieves the HealthKit samples for the given UUIDs, further filtering them according to the specified predicate.
+    public func fetchSamplesByUUID(sampleType: HKSampleType, uuids: Set<NSUUID>, predicate: NSPredicate? = nil, limit: Int = noLimit,
+                                   sortDescriptors: [NSSortDescriptor]? = [dateAsc], completion: HMSampleBlock)
+    {
+        var uuidPredicate: NSPredicate = HKQuery.predicateForObjectsWithUUIDs(uuids)
+        if let p = predicate {
+            uuidPredicate = NSCompoundPredicate(andPredicateWithSubpredicates: [p, uuidPredicate])
+        }
+        fetchSamplesOfType(sampleType, predicate: uuidPredicate, limit: limit, sortDescriptors: sortDescriptors, completion: completion)
+    }
+
 
     // Fetches HealthKit samples of the given type for the last day, ordered by their collection date.
     public func fetchMostRecentSample(sampleType: HKSampleType, completion: HMSampleBlock)
@@ -295,6 +309,38 @@ public class HealthManager: NSObject, WCSessionDelegate {
         }
     }
 
+    // MARK: - Oldest sample retrieval
+
+    private func getOldestSampleForType(type: HKSampleType, completion: HKSampleType -> ()) {
+        let tname = type.displayText ?? type.identifier
+        HealthManager.sharedManager.fetchSamplesOfType(type, predicate: nil, limit: 1) { (samples, error) in
+            guard error == nil else {
+                log.error("Could not get oldest sample for: \(tname)")
+                return
+            }
+            let minDate = samples.isEmpty ? NSDate() : samples[0].startDate
+            UserManager.sharedManager.setHistoricalRangeMinForType(type.identifier, min: minDate, sync: true)
+            log.info("Lower bound date for \(tname): \(minDate)")
+            completion(type)
+        }
+    }
+
+    // MARK: - Anchor queries
+    private func fetchAnchoredSamplesOfType(type: HKSampleType, predicate: NSPredicate?, anchor: HKQueryAnchor?,
+                                            maxResults: Int, callContinuously: Bool, completion: HMAnchorSamplesBlock)
+    {
+        let hkAnchor = anchor ?? noAnchor
+        let onAnchorQueryResults: HMAnchorQueryBlock = {
+            (query, addedObjects, deletedObjects, newAnchor, nsError) -> Void in
+            completion(added: addedObjects ?? [], deleted: deletedObjects ?? [], newAnchor: newAnchor, error: nsError)
+        }
+        let anchoredQuery = HKAnchoredObjectQuery(type: type, predicate: predicate, anchor: hkAnchor, limit: Int(maxResults), resultsHandler: onAnchorQueryResults)
+        if callContinuously {
+            anchoredQuery.updateHandler = onAnchorQueryResults
+        }
+        healthKitStore.executeQuery(anchoredQuery)
+    }
+
     // MARK: - Aggregate caching helpers.
     private func getCacheDateKeyFormatter(aggUnit: NSCalendarUnit) -> NSDateFormatter {
         let formatter = NSDateFormatter()
@@ -316,14 +362,14 @@ public class HealthManager: NSObject, WCSessionDelegate {
     }
 
     // Cache keys.
-    private func getAggregateCacheKey(keyPrefix: String, aggUnit: NSCalendarUnit, aggOp: HKStatisticsOptions) -> String
+    public func getAggregateCacheKey(keyPrefix: String, aggUnit: NSCalendarUnit, aggOp: HKStatisticsOptions) -> String
     {
         let currentUnit = NSDate().startOf(aggUnit)
         let formatter = getCacheDateKeyFormatter(aggUnit)
         return "\(keyPrefix)_\(aggOp.rawValue)_\(formatter.stringFromDate(currentUnit))"
     }
 
-    private func getPeriodCacheKey(keyPrefix: String, aggOp: HKStatisticsOptions, period: HealthManagerStatisticsRangeType) -> String {
+    public func getPeriodCacheKey(keyPrefix: String, aggOp: HKStatisticsOptions, period: HealthManagerStatisticsRangeType) -> String {
         return "\(keyPrefix)_\(aggOp.rawValue)_\(period.rawValue)"
     }
 
@@ -1587,236 +1633,6 @@ public class HealthManager: NSObject, WCSessionDelegate {
     }
 
 
-    // MARK: - Observers
-
-    public func registerObservers() {
-        authorizeHealthKit { (success, _) -> Void in
-            guard success else {
-                return
-            }
-
-            HMConstants.sharedInstance.healthKitTypesToObserve.forEach { (type) in
-                self.startBackgroundObserverForType(type) { (added, _, _, error) -> Void in
-                    guard error == nil else {
-                        log.error("Failed to register observers: \(error)")
-                        return
-                    }
-                    self.uploadSamplesForType(type, added: added.filter { sample in
-                        if let unwrappedMetadata = sample.metadata {
-                            return unwrappedMetadata[HMConstants.sharedInstance.generatedSampleKey] == nil
-                        }
-                        return false
-                    })
-                }
-            }
-        }
-
-    }
-
-    public func startBackgroundObserverForType(type: HKSampleType, maxResultsPerQuery: Int = noLimit, anchorQueryCallback: HMAnchorSamplesBlock) -> Void
-    {
-        let invalidateCache : Void -> Void = { _ in
-            let cacheType = type.identifier == HKCorrelationTypeIdentifierBloodPressure ? HKQuantityTypeIdentifierBloodPressureSystolic : type.identifier
-            let cacheKeyPrefix = cacheType
-            let expiredPeriods : [HealthManagerStatisticsRangeType] = [.Week, .Month, .Year]
-            var expiredKeys : [String]
-
-            let minMaxKeys = expiredPeriods.map { self.getPeriodCacheKey(cacheKeyPrefix, aggOp: [.DiscreteMin, .DiscreteMax], period: $0) }
-            let avgKeys = expiredPeriods.map { self.getPeriodCacheKey(cacheKeyPrefix, aggOp: .DiscreteAverage, period: $0) }
-
-            if cacheType == HKQuantityTypeIdentifierHeartRate || cacheType == HKQuantityTypeIdentifierUVExposure {
-                expiredKeys = minMaxKeys
-            } else if cacheType == HKQuantityTypeIdentifierBloodPressureSystolic {
-                let diastolicKeyPrefix = HKQuantityTypeIdentifierBloodPressureDiastolic
-                expiredKeys = minMaxKeys
-                expiredKeys.appendContentsOf(
-                    expiredPeriods.map { self.getPeriodCacheKey(diastolicKeyPrefix, aggOp: [.DiscreteMin, .DiscreteMax], period: $0) })
-            } else {
-                expiredKeys = avgKeys
-            }
-            expiredKeys.forEach {
-                log.info("Invalidating aggregate cache for \($0)")
-                self.aggregateCache.removeObjectForKey($0)
-            }
-        }
-
-        let onBackgroundStarted = {(success: Bool, nsError: NSError?) -> Void in
-            guard success else {
-                log.error(nsError)
-                return
-            }
-            // Create and execute an observer query that itself issues an anchored query every
-            // time new data is added or deleted in HealthKit.
-            let obsQuery = HKObserverQuery(sampleType: type, predicate: nil) {
-                query, completion, obsError in
-                guard obsError == nil else {
-                    log.error(obsError)
-                    return
-                }
-
-                let anchor = self.getAnchorForType(type)
-                let tname = type.displayText ?? type.identifier
-
-                var predicate : NSPredicate? = nil
-
-                // When initializing an anchor query, apply a predicate to limit the initial results.
-                // If we already have a historical range, we filter samples to the current timestamp.
-                if anchor == noAnchor
-                {
-                    if let (_, hend) = UserManager.sharedManager.getHistoricalRangeForType(type.identifier) {
-                        // We use acquisition times stored in the profile if available rather than the current time,
-                        // to grab all data since the last acquisition time uploaded to the server.
-                        let lastAcqTS = UserManager.sharedManager.getAcquisitionTimes()
-                        if let acqK = UserManager.sharedManager.hkToMCDB(type.identifier),
-                               typeTS = lastAcqTS[acqK] as? NSTimeInterval
-                        {
-                            let importStart = NSDate(timeIntervalSinceReferenceDate: typeTS)
-                            predicate = HKQuery.predicateForSamplesWithStartDate(importStart, endDate: NSDate(), options: .None)
-                            log.info("Data import since \(importStart): \(tname)")
-                        } else {
-                            // We have no server acquisition time available.
-                            // Here, we upload all samples between the end of the historical range (i.e., when the
-                            // app was first run on the device), to a point in the near future.
-                            let nearFuture = 1.minutes.fromNow
-                            let pstart = NSDate(timeIntervalSinceReferenceDate: hend)
-                            predicate = HKQuery.predicateForSamplesWithStartDate(pstart, endDate: nearFuture, options: .None)
-                            log.info("Data import from \(pstart) \(nearFuture): \(tname)")
-                        }
-                    } else {
-                        // We have no anchor available.
-                        // We consider this the first run of the app on this device, and initialize the historical range
-                        // (i.e., the archive span).
-                        // This captures how much data is available on the device prior to using our app.
-                        let (start, end) = UserManager.sharedManager.initializeHistoricalRangeForType(type.identifier, sync: true)
-                        let (dstart, dend) = (NSDate(timeIntervalSinceReferenceDate: start), NSDate(timeIntervalSinceReferenceDate: end))
-                        predicate = HKQuery.predicateForSamplesWithStartDate(dstart, endDate: dend, options: .None)
-
-                        Async.background(after: 0.5) {
-                            // We use getOldestSampleForType to initialize the archive span minimums.
-                            log.verbose("Registering bulk ingestion availability for: \(tname)")
-                            self.getOldestSampleForType(type) { _ in () }
-                        }
-                    }
-                }
-
-                self.fetchAnchoredSamplesOfType(type, predicate: predicate, anchor: anchor, maxResults: maxResultsPerQuery, callContinuously: false) {
-                    (added, deleted, newAnchor, error) -> Void in
-
-                    // Invalidate caches only if we have actually added or removed data according to the anchor query.
-                    if added.count > 0 || deleted.count > 0 {
-                        invalidateCache()
-                    }
-
-                    anchorQueryCallback(added: added, deleted: deleted, newAnchor: newAnchor, error: error)
-                    if let anchor = newAnchor {
-                        self.setAnchorForType(anchor, forType: type)
-
-                        // Refresh the latest acquisition timestamp for this measure.
-                        let ts  = self.getAnchorTSForType(type)
-                        let nts = added.reduce(ts, combine: { (acc,x) in return max(acc, x.startDate.timeIntervalSinceReferenceDate) })
-                        if nts > ts {
-                            self.setAnchorTSForType(nts, forType: type)
-
-                            // Push acquisition times to the backend.
-                            self.pushAcquisition(type)
-                        }
-                    }
-                    completion()
-                }
-            }
-            self.healthKitStore.executeQuery(obsQuery)
-        }
-        healthKitStore.enableBackgroundDeliveryForType(type, frequency: HKUpdateFrequency.Immediate, withCompletion: onBackgroundStarted)
-    }
-
-    private func fetchAnchoredSamplesOfType(type: HKSampleType, predicate: NSPredicate?, anchor: HKQueryAnchor?,
-                                            maxResults: Int, callContinuously: Bool, completion: HMAnchorSamplesBlock)
-    {
-        let hkAnchor = anchor ?? noAnchor
-        let onAnchorQueryResults: HMAnchorQueryBlock = {
-            (query, addedObjects, deletedObjects, newAnchor, nsError) -> Void in
-            completion(added: addedObjects ?? [], deleted: deletedObjects ?? [], newAnchor: newAnchor, error: nsError)
-        }
-        let anchoredQuery = HKAnchoredObjectQuery(type: type, predicate: predicate, anchor: hkAnchor, limit: Int(maxResults), resultsHandler: onAnchorQueryResults)
-        if callContinuously {
-            anchoredQuery.updateHandler = onAnchorQueryResults
-        }
-        healthKitStore.executeQuery(anchoredQuery)
-    }
-
-    // Note: the UserManager batches timestamps based on cancelling a deferred synchronization timer.
-    private func pushAcquisition(type: HKSampleType) {
-        syncAnchorTS(true)
-    }
-
-    // MARK: - Anchor metadata accessors
-
-    // Setter and getter for the anchor object returned by HealthKit, as stored in user defaults.
-    public func getAnchorForType(type: HKSampleType) -> HKQueryAnchor {
-        if let anchorDict = Defaults[HMAnchorKey] {
-            if let encodedAnchor = anchorDict[type.identifier] as? NSData {
-                return NSKeyedUnarchiver.unarchiveObjectWithData(encodedAnchor) as! HKQueryAnchor
-            }
-        }
-        return noAnchor
-    }
-
-    public func setAnchorForType(anchor: HKQueryAnchor, forType type: HKSampleType) {
-        let encodedAnchor = NSKeyedArchiver.archivedDataWithRootObject(anchor)
-        if !Defaults.hasKey(HMAnchorKey) {
-            Defaults[HMAnchorKey] = [type.identifier: encodedAnchor]
-        } else {
-            Defaults[HMAnchorKey]![type.identifier] = encodedAnchor
-        }
-        Defaults.synchronize()
-    }
-
-    // Setter and getter for anchor timestamps (i.e., the date associated with the anchor as the acquisition time).
-    public func getAnchorTSForType(type: HKSampleType) -> NSTimeInterval {
-        return Defaults[HMAnchorTSKey]?[type.identifier] as? NSTimeInterval ?? refDate.timeIntervalSinceReferenceDate
-    }
-
-    public func setAnchorTSForType(ts: NSTimeInterval, forType type: HKSampleType) {
-        if !Defaults.hasKey(HMAnchorTSKey) {
-            Defaults[HMAnchorTSKey] = [type.identifier: ts]
-        } else {
-            Defaults[HMAnchorTSKey]![type.identifier] = ts
-        }
-        Defaults.synchronize()
-    }
-
-    // Pushes the anchor timestamps (i.e., last acquisition times) to the user's profile.
-    public func syncAnchorTS(sync: Bool = false) {
-        if let ts = Defaults[HMAnchorTSKey] {
-            UserManager.sharedManager.setAcquisitionTimes(ts, sync: sync)
-        } else {
-            log.warning("Skipping acquisition timestamp sync (timestamps not found)")
-        }
-    }
-
-    public func resetAnchors() {
-        HMConstants.sharedInstance.healthKitTypesToObserve.forEach { type in
-            self.setAnchorForType(noAnchor, forType: type)
-            self.setAnchorTSForType(refDate.timeIntervalSinceReferenceDate, forType: type)
-        }
-    }
-
-    // Get both the anchor object and its timestamp.
-    public func getAnchorAndTSForType(type: HKSampleType) -> (HKQueryAnchor, NSTimeInterval) {
-        if let anchorDict = Defaults[HMAnchorKey], tsDict = Defaults[HMAnchorTSKey] {
-            if let encodedAnchor = anchorDict[type.identifier] as? NSData,
-                ts = tsDict[type.identifier] as? NSTimeInterval
-            {
-                return (NSKeyedUnarchiver.unarchiveObjectWithData(encodedAnchor) as! HKQueryAnchor, ts)
-            }
-        }
-        return (noAnchor, refDate.timeIntervalSinceReferenceDate)
-    }
-
-    // Return acquisition times for all measures.
-    public func getAnchorTS() -> [String: AnyObject]? { return Defaults[HMAnchorTSKey] }
-
-
     // MARK: - Writing into HealthKit
     public func saveSample(sample: HKSample, completion: (Bool, NSError?) -> Void)
     {
@@ -1879,16 +1695,51 @@ public class HealthManager: NSObject, WCSessionDelegate {
 
     // MARK: - Removing samples from HealthKit
 
-    public func deleteSamples(typesAndPredicates: [HKSampleType: NSPredicate], completion: (deleted: Int, error: NSError!) -> Void) {
+    // Due to HealthKit bug, taken from: https://gist.github.com/bendodson/c0f0a6a1f601dc4573ba
+    func deleteSamplesOfType(sampleType: HKSampleType, startDate: NSDate?, endDate: NSDate?, predicate: NSPredicate,
+                             withCompletion completion: (success: Bool, count: Int, error: NSError?) -> Void)
+    {
+        let predWithInterval =
+            startDate == nil && endDate == nil ?
+                predicate :
+                NSCompoundPredicate(andPredicateWithSubpredicates: [
+                    predicate, HKQuery.predicateForSamplesWithStartDate(startDate, endDate: endDate, options: .None)
+                ])
+
+        let query = HKSampleQuery(sampleType: sampleType, predicate: predWithInterval, limit: 0, sortDescriptors: nil) { (query, results, error) -> Void in
+            if let _ = error {
+                completion(success: false, count: 0, error: error)
+                return
+            }
+
+            if let objects = results {
+                if objects.count == 0 {
+                    completion(success: true, count: 0, error: nil)
+                } else {
+                    self.healthKitStore.deleteObjects(objects, withCompletion: { (success, error) -> Void in
+                        completion(success: error == nil, count: objects.count, error: error)
+                    })
+                }
+            } else {
+                completion(success: true, count: 0, error: nil)
+            }
+
+        }
+        healthKitStore.executeQuery(query)
+    }
+
+    public func deleteSamples(startDate: NSDate? = nil, endDate: NSDate? = nil, typesAndPredicates: [HKSampleType: NSPredicate],
+                              completion: (deleted: Int, error: NSError!) -> Void)
+    {
         let group = dispatch_group_create()
         var numDeleted = 0
 
         typesAndPredicates.forEach { (type, predicate) -> () in
             dispatch_group_enter(group)
-            healthKitStore.deleteObjectsOfType(type, predicate: predicate) {
+            self.deleteSamplesOfType(type, startDate: startDate, endDate: endDate, predicate: predicate) {
                 (success, count, error) in
-                guard error == nil else {
-                    log.error("Could not delete samples for \(type.displayText): \(error)")
+                guard success && error == nil else {
+                    log.error("Could not delete samples for \(type.displayText)(\(success)): \(error)")
                     dispatch_group_leave(group)
                     return
                 }
@@ -1901,6 +1752,116 @@ public class HealthManager: NSObject, WCSessionDelegate {
             // TODO: partial error handling, i.e., when a subset of the desired types fail in their queries.
             completion(deleted: numDeleted, error: nil)
         }
+    }
+
+    public func deleteCircadianEvents(startDate: NSDate, endDate: NSDate, completion: NSError? -> Void) {
+        let withSourcePredicate: NSPredicate -> NSPredicate = { pred in
+            return NSCompoundPredicate(andPredicateWithSubpredicates: [
+                pred, HKQuery.predicateForObjectsFromSource(HKSource.defaultSource())
+            ])
+        }
+
+        let mealConjuncts = [
+            HKQuery.predicateForWorkoutsWithWorkoutActivityType(.PreparationAndRecovery),
+            HKQuery.predicateForObjectsWithMetadataKey("Meal Type")
+        ]
+        let mealPredicate = NSCompoundPredicate(andPredicateWithSubpredicates: mealConjuncts)
+
+        let circadianEventPredicates: NSPredicate = NSCompoundPredicate(orPredicateWithSubpredicates: [
+            mealPredicate,
+            HKQuery.predicateForWorkoutsWithWorkoutActivityType(.Running),
+            HKQuery.predicateForWorkoutsWithWorkoutActivityType(.Cycling),
+            HKQuery.predicateForWorkoutsWithWorkoutActivityType(.Swimming),
+        ])
+
+        let sleepType = HKCategoryType.categoryTypeForIdentifier(HKCategoryTypeIdentifierSleepAnalysis)!
+        let sleepPredicate = HKQuery.predicateForCategorySamplesWithOperatorType(.EqualToPredicateOperatorType, value: HKCategoryValueSleepAnalysis.Asleep.rawValue)
+
+        let typesAndPredicates: [HKSampleType: NSPredicate] = [
+            HKWorkoutType.workoutType(): withSourcePredicate(circadianEventPredicates)
+          , sleepType: withSourcePredicate(sleepPredicate)
+        ]
+
+        self.deleteSamples(startDate, endDate: endDate, typesAndPredicates: typesAndPredicates) { (deleted, error) in
+            if error != nil {
+                log.error("Failed to delete samples on the device, HealthKit may potentially diverge from the server.")
+                log.error(error)
+            }
+            completion(error)
+        }
+    }
+
+
+    // MARK: - Cache invalidation
+
+    public func invalidateCache(type: HKSampleType) {
+        let cacheType = type.identifier == HKCorrelationTypeIdentifierBloodPressure ? HKQuantityTypeIdentifierBloodPressureSystolic : type.identifier
+        let cacheKeyPrefix = cacheType
+        let expiredPeriods : [HealthManagerStatisticsRangeType] = [.Week, .Month, .Year]
+        var expiredKeys : [String]
+
+        let minMaxKeys = expiredPeriods.map { self.getPeriodCacheKey(cacheKeyPrefix, aggOp: [.DiscreteMin, .DiscreteMax], period: $0) }
+        let avgKeys = expiredPeriods.map { self.getPeriodCacheKey(cacheKeyPrefix, aggOp: .DiscreteAverage, period: $0) }
+
+        if cacheType == HKQuantityTypeIdentifierHeartRate || cacheType == HKQuantityTypeIdentifierUVExposure {
+            expiredKeys = minMaxKeys
+        } else if cacheType == HKQuantityTypeIdentifierBloodPressureSystolic {
+            let diastolicKeyPrefix = HKQuantityTypeIdentifierBloodPressureDiastolic
+            expiredKeys = minMaxKeys
+            expiredKeys.appendContentsOf(
+                expiredPeriods.map { self.getPeriodCacheKey(diastolicKeyPrefix, aggOp: [.DiscreteMin, .DiscreteMax], period: $0) })
+        } else {
+            expiredKeys = avgKeys
+        }
+        expiredKeys.forEach {
+            log.info("Invalidating aggregate cache for \($0)")
+            self.aggregateCache.removeObjectForKey($0)
+        }
+    }
+
+    // MARK: - Observers
+    public func startBackgroundObserverForType(type: HKSampleType, maxResultsPerQuery: Int = Int(HKObjectQueryNoLimit),
+                                               getAnchorCallback: HKSampleType -> (Bool, HKQueryAnchor?, NSPredicate?),
+                                               anchorQueryCallback: HMAnchorSamplesCBlock) -> Void
+    {
+        let onBackgroundStarted = {(success: Bool, nsError: NSError?) -> Void in
+            guard success else {
+                log.error(nsError)
+                return
+            }
+            // Create and execute an observer query that itself issues an anchored query every
+            // time new data is added or deleted in HealthKit.
+            let obsQuery = HKObserverQuery(sampleType: type, predicate: nil) {
+                query, completion, obsError in
+                guard obsError == nil else {
+                    log.error(obsError)
+                    return
+                }
+
+                let tname = type.displayText ?? type.identifier
+                let (needsOldestSamples, anchor, predicate) = getAnchorCallback(type)
+                if needsOldestSamples {
+                    Async.background(after: 0.5) {
+                        // We use getOldestSampleForType to initialize the archive span minimums.
+                        log.verbose("Registering bulk ingestion availability for: \(tname)")
+                        self.getOldestSampleForType(type) { _ in () }
+                    }
+                }
+
+                self.fetchAnchoredSamplesOfType(type, predicate: predicate, anchor: anchor, maxResults: maxResultsPerQuery, callContinuously: false) {
+                    (added, deleted, newAnchor, error) -> Void in
+
+                    // Invalidate caches only if we have actually added or removed data according to the anchor query.
+                    if added.count > 0 || deleted.count > 0 {
+                        self.invalidateCache(type)
+                    }
+
+                    anchorQueryCallback(added: added, deleted: deleted, newAnchor: newAnchor, error: error, completion: completion)
+                }
+            }
+            self.healthKitStore.executeQuery(obsQuery)
+        }
+        healthKitStore.enableBackgroundDeliveryForType(type, frequency: HKUpdateFrequency.Immediate, withCompletion: onBackgroundStarted)
     }
 
     // MARK: - Chart queries
@@ -2066,113 +2027,6 @@ public class HealthManager: NSObject, WCSessionDelegate {
         }
     }
 
-    // MARK: - Upload helpers.
-
-    public func jsonifySample(sample : HKSample) throws -> [String : AnyObject] {
-        return try HealthManager.serializer.dictForSample(sample)
-    }
-
-    func uploadSample(jsonObj: [String: AnyObject]) -> () {
-        Service.string(MCRouter.UploadHKMeasures(jsonObj), statusCode: 200..<300, tag: "UPLOAD") {
-            _, response, result in
-            log.info("Upload: \(result.value)")
-        }
-    }
-
-    public func uploadSampleBlock(jsonObjBlock: [[String:AnyObject]]) -> () {
-        Service.string(MCRouter.UploadHKMeasures(["block":jsonObjBlock]), statusCode: 200..<300, tag: "UPLOAD") {
-            _, response, result in
-            log.info("Upload: \(result.value)")
-        }
-    }
-
-    func uploadSamplesForType(type: HKSampleType, added: [HKSample]) {
-        do {
-            let tname = type.displayText ?? type.identifier
-            log.info("Uploading \(added.count) \(tname) samples")
-
-            let blockSize = 100
-            let totalBlocks = ((added.count / blockSize)+1)
-            if ( added.count > 20 ) {
-                for i in 0..<totalBlocks {
-                    autoreleasepool { _ in
-                        do {
-                            log.info("Uploading block \(i) / \(totalBlocks)")
-                            let jsonObjs = try added[(i*blockSize)..<(min((i+1)*blockSize, added.count))].map(self.jsonifySample)
-                            self.uploadSampleBlock(jsonObjs)
-                        } catch {
-                            log.error(error)
-                        }
-                    }
-                }
-            } else {
-                let jsons = try added.map(self.jsonifySample)
-                jsons.forEach(self.uploadSample)
-            }
-        } catch {
-            log.error(error)
-        }
-    }
-
-    private func uploadInitialAnchorForType(type: HKSampleType, completion: (Bool, (Bool, NSDate)?) -> Void) {
-        let tname = type.displayText ?? type.identifier
-        if let wend = UserManager.sharedManager.getHistoricalRangeStartForType(type.identifier) {
-            let dwend = NSDate(timeIntervalSinceReferenceDate: wend)
-            let dwstart = UserManager.sharedManager.decrAnchorDate(dwend)
-            let pred = HKQuery.predicateForSamplesWithStartDate(dwstart, endDate: dwend, options: .None)
-            fetchSamplesOfType(type, predicate: pred, limit: noLimit) { (samples, error) in
-                guard error == nil else {
-                    log.error("Could not get initial anchor samples for: \(tname) \(dwstart) \(dwend)")
-                    return
-                }
-
-                let hksamples = samples as! [HKSample]
-                self.uploadSamplesForType(type, added: hksamples)
-                UserManager.sharedManager.decrHistoricalRangeStartForType(type.identifier)
-
-                log.info("Uploaded \(tname) to \(dwstart)")
-                if let min = UserManager.sharedManager.getHistoricalRangeMinForType(type.identifier) {
-                    let dmin = NSDate(timeIntervalSinceReferenceDate: min)
-                    if dwstart > dmin {
-                        completion(false, (false, dwstart))
-                        Async.background(after: 0.5) { self.uploadInitialAnchorForType(type, completion: completion) }
-                    } else {
-                        completion(false, (true, dmin))
-                    }
-                } else {
-                    log.error("No earliest sample found for \(tname)")
-                }
-            }
-        } else {
-            log.info("No bulk anchor date found for \(tname)")
-        }
-    }
-
-    private func getOldestSampleForType(type: HKSampleType, completion: HKSampleType -> ()) {
-        let tname = type.displayText ?? type.identifier
-        fetchSamplesOfType(type, predicate: nil, limit: 1) { (samples, error) in
-            guard error == nil else {
-                log.error("Could not get oldest sample for: \(tname)")
-                return
-            }
-            let minDate = samples.isEmpty ? NSDate() : samples[0].startDate
-            UserManager.sharedManager.setHistoricalRangeMinForType(type.identifier, min: minDate, sync: true)
-            log.info("Lower bound date for \(tname): \(minDate)")
-            completion(type)
-        }
-    }
-
-    private func backgroundUploadForType(type: HKSampleType, completion: (Bool, (Bool, NSDate)?) -> Void) {
-        let tname = type.displayText ?? type.identifier
-        if let _ = UserManager.sharedManager.getHistoricalRangeForType(type.identifier),
-               _ = UserManager.sharedManager.getHistoricalRangeMinForType(type.identifier)
-        {
-            self.uploadInitialAnchorForType(type, completion: completion)
-        } else {
-            log.warning("No historical range found for \(tname)")
-            completion(true, nil)
-        }
-    }
 
 
     // MARK: - Apple Watch

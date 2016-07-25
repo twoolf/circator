@@ -30,6 +30,9 @@ private let resetPassDevURL  = devServiceURL.URLByAppendingPathComponent("/forgo
 private let resetPassProdURL = prodServiceURL.URLByAppendingPathComponent("/forgot")
 public  let resetPassURL     = asDevService ? resetPassDevURL : resetPassProdURL
 
+public let aboutURL         = (asDevService ? devServiceURL : prodServiceURL).URLByAppendingPathComponent("about")
+public let privacyPolicyURL = (asDevService ? devServiceURL : prodServiceURL).URLByAppendingPathComponent("privacy")
+
 public class  RequestResult{
     private var _obj:Any? = nil
     //private var infoMsg:String? = nil
@@ -129,8 +132,10 @@ enum MCRouter : URLRequestConvertible {
     }
 
     // Data API
-    case UploadHKMeasures([String: AnyObject])
-    case AggMeasures([String: AnyObject])
+    case AddMeasures([String: AnyObject])
+    case AddSeqMeasures([String: AnyObject])
+    case RemoveMeasures([String: AnyObject])
+    case AggregateMeasures([String: AnyObject])
 
     // User and profile management API
     case GetUserAccountData([AccountComponent])
@@ -139,17 +144,23 @@ enum MCRouter : URLRequestConvertible {
         // For SetUserAccountData, the caller is responsible for constructing
         // the component-specific nesting (e.g, ["consent": "<base64 string>"])
 
-    case DeleteAccount
+    case DeleteAccount([String: AnyObject])
 
     // Token management API
     case TokenExpiry
 
     var method: Alamofire.Method {
         switch self {
-        case .UploadHKMeasures:
+        case .AddMeasures:
             return .POST
 
-        case .AggMeasures:
+        case .AddSeqMeasures:
+            return .POST
+
+        case .RemoveMeasures:
+            return .POST
+
+        case .AggregateMeasures:
             return .GET
 
         case .DeleteAccount:
@@ -168,11 +179,17 @@ enum MCRouter : URLRequestConvertible {
 
     var path: String {
         switch self {
-        case .UploadHKMeasures:
+        case .AddMeasures:
             return "/measures"
 
-        case .AggMeasures:
-            return "/measures/mc/avg"
+        case .AddSeqMeasures:
+            return "/measures/granolalog"
+
+        case .RemoveMeasures:
+            return "/measures/mc/delete"
+
+        case .AggregateMeasures:
+            return "/measures/mc/dbavg"
 
         case .DeleteAccount:
             return "/user/withdraw"
@@ -196,14 +213,20 @@ enum MCRouter : URLRequestConvertible {
         }
 
         switch self {
-        case .UploadHKMeasures(let parameters):
+        case .AddMeasures(let parameters):
             return Alamofire.ParameterEncoding.JSON.encode(mutableURLRequest, parameters: parameters).0
 
-        case .AggMeasures(let parameters):
+        case .AddSeqMeasures(let parameters):
+            return Alamofire.ParameterEncoding.JSON.encode(mutableURLRequest, parameters: parameters).0
+
+        case .RemoveMeasures(let parameters):
+            return Alamofire.ParameterEncoding.JSON.encode(mutableURLRequest, parameters: parameters).0
+
+        case .AggregateMeasures(let parameters):
             return Alamofire.ParameterEncoding.URL.encode(mutableURLRequest, parameters: parameters).0
 
-        case .DeleteAccount:
-            return mutableURLRequest
+        case .DeleteAccount(let parameters):
+            return Alamofire.ParameterEncoding.JSON.encode(mutableURLRequest, parameters: parameters).0
 
         case .GetUserAccountData(let components):
             let parameters = ["components": components.map(getComponentName)]
@@ -222,7 +245,6 @@ enum MCRouter : URLRequestConvertible {
 public protocol ServiceRequestResultDelegate {
     func didFinishJSONRequest(request:NSURLRequest?, response:NSHTTPURLResponse?, result:Alamofire.Result<AnyObject>)
     func didFinishStringRequest(request:NSURLRequest?, response:NSHTTPURLResponse?, result:Alamofire.Result<String>)
-//      func myFunc()
 }
 
 public class Service {
@@ -249,16 +271,10 @@ extension Alamofire.Request {
         -> Self
     {
         return self.responseString() { req, resp, result in
-
             log.debug("\(tag): " + (result.isSuccess ? "SUCCESS" : "FAILED"))
-//            if let data = req?.HTTPBody{
-//                log.debug("\n***Request body:\( String(data:data, encoding:NSUTF8StringEncoding))")
-//            }
-            
             if Service.delegate != nil{
                 Service.delegate!.didFinishStringRequest(req, response:resp, result:result)
             }
-
             log.debug("\n***result:\(result)")
             completion(req, resp, result)
         }
@@ -268,15 +284,16 @@ extension Alamofire.Request {
         -> Self
     {
         return self.responseJSON() { req, resp, result in
-        
-//            print("request:\(req), response:\(resp)")
-//            if req?.URL?.absoluteString == "https://app.metaboliccompass.com/user/expiry"{
-//                print("expiry request:\(req), response:\(resp)")
-//            }
+            log.debug("\(tag): " + (result.isSuccess ? "SUCCESS" : "FAILED"))
             if Service.delegate != nil{
                 Service.delegate!.didFinishJSONRequest(req, response:resp, result:result)
             }
-            log.debug("\(tag): " + (result.isSuccess ? "SUCCESS" : "FAILED"))
+            log.debug("\n***result:\(result)")
+            if !result.isSuccess {
+                log.debug("\n***response:\(resp)")
+                log.debug("\n***error:\(result.error)")
+                debugPrint(resp)
+            }
             completion(req, resp, result)
         }
     }

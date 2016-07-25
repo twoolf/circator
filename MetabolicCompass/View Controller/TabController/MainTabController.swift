@@ -14,7 +14,10 @@ class MainTabController: UITabBarController, UITabBarControllerDelegate, ManageE
 
     private var overlayView: UIVisualEffectView? = nil
     private var menu: ManageEventMenu? = nil
-    
+
+    private var lastMenuUseAddedEvents = false
+    private var dailyProgressVC: DailyProgressViewController? = nil
+
     //MARK: View life circle
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -29,6 +32,7 @@ class MainTabController: UITabBarController, UITabBarControllerDelegate, ManageE
         }
         NSNotificationCenter.defaultCenter().addObserver(self, selector: #selector(userDidLogin), name: UMDidLoginNotifiaction, object: nil)
         NSNotificationCenter.defaultCenter().addObserver(self, selector: #selector(userDidLogout), name: UMDidLogoutNotification, object: nil)
+        NSNotificationCenter.defaultCenter().addObserver(self, selector: #selector(userAddedCircadianEvents), name: MEMDidUpdateCircadianEvents, object: nil)
     }
     
     override func viewDidAppear(animated: Bool) {
@@ -84,11 +88,16 @@ class MainTabController: UITabBarController, UITabBarControllerDelegate, ManageE
             }
         }
     }
-    
+
     func userDidLogout() {
         self.menu!.hidden = true
     }
+
+    func userAddedCircadianEvents() {
+        lastMenuUseAddedEvents = true
+    }
     
+
     //MARK: Working with ManageEventMenu
     
     func addMenuToView () {
@@ -112,8 +121,8 @@ class MainTabController: UITabBarController, UITabBarControllerDelegate, ManageE
         self.menu = ManageEventMenu(frame: view.bounds, startItem: startItem, items: items)
 
         self.menu!.delegate = self
-        self.menu!.startPoint     = CGPointMake(view.frame.width/2, view.frame.size.height - 26.0)
-        self.menu!.timeOffset     = 0.0
+        self.menu!.startPoint = CGPointMake(view.frame.width/2, view.frame.size.height - 26.0)
+        self.menu!.timeOffset = 0.0
         self.menu!.animationDuration = 0.15
         self.menu!.hidden = !UserManager.sharedManager.hasAccount()
         self.view.window?.rootViewController?.view.addSubview(self.menu!)
@@ -132,7 +141,7 @@ class MainTabController: UITabBarController, UITabBarControllerDelegate, ManageE
             self.overlayView = overlay
             //add title for overlay
             let titleLabel = UILabel(frame:CGRectZero)
-            titleLabel.text = "ADD ENTRY"
+            titleLabel.text = "MANAGE EVENTS"
             titleLabel.font = ScreenManager.appFontOfSize(16)
             titleLabel.textColor = UIColor.colorWithHexString("#ffffff", alpha: 0.6)
             titleLabel.textAlignment = .Center
@@ -148,14 +157,13 @@ class MainTabController: UITabBarController, UITabBarControllerDelegate, ManageE
     }
 
     func hideIcons(hide: Bool) {
-        self.menu?.tableView.hidden = hide
+        self.menu?.hideView(hide)
     }
 
     // MARK :- ManageEventMenuDelegate implementation
     
     func manageEventMenu(menu: ManageEventMenu, didSelectIndex idx: Int) {
-        log.info("Main Tab pathMemu \(idx)")
-        Async.main(after: 0.4) { 
+        Async.main(after: 0.4) {
             self.hideIcons(true)
             self.hideOverlay()
             let controller = UIStoryboard(name: "AddEvents", bundle: nil).instantiateViewControllerWithIdentifier("AddMealNavViewController") as! UINavigationController
@@ -175,6 +183,7 @@ class MainTabController: UITabBarController, UITabBarControllerDelegate, ManageE
     }
     
     func manageEventMenuWillAnimateOpen(menu: ManageEventMenu) {
+        lastMenuUseAddedEvents = false
         self.overlayView?.hidden = false
         hideIcons(false)
     }
@@ -186,10 +195,43 @@ class MainTabController: UITabBarController, UITabBarControllerDelegate, ManageE
     func manageEventMenuDidFinishAnimationOpen(menu: ManageEventMenu) {
 
     }
-    
+
     func manageEventMenuDidFinishAnimationClose(menu: ManageEventMenu) {
         self.hideOverlay()
         hideIcons(true)
+
+        if lastMenuUseAddedEvents {
+            initializeDailyProgressVC()
+            if dailyProgressVC != nil {
+                Async.background(after: 1.0) {
+                    self.dailyProgressVC?.contentDidUpdate()
+                }
+            } else {
+                log.warning("No DailyProgressViewController available")
+            }
+        }
+    }
+
+    func initializeDailyProgressVC() {
+        if dailyProgressVC == nil {
+            for svc in self.selectedViewController!.childViewControllers {
+                if let _ = svc as? DashboardTabControllerViewController {
+                    for svc2 in svc.childViewControllers {
+                        if let _ = svc2 as? UITabBarController {
+                            for svc3 in svc2.childViewControllers {
+                                if let dpvc = svc3 as? DailyProgressViewController {
+                                    dailyProgressVC = dpvc
+                                    break
+                                }
+                            }
+                            break
+                        }
+                    }
+                    break
+                }
+            }
+            log.verbose("Daily progress view controller after init: \(dailyProgressVC)")
+        }
     }
 
     //MARK: Deinit

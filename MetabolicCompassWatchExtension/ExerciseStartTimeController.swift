@@ -43,13 +43,13 @@ class ExerciseStartTimeController: WKInterfaceController {
         let buttonColor = UIColor(red: 0.50, green: 0.0, blue: 0.13, alpha: 0.5)
         exerciseStartTimeButton.setBackgroundColor(buttonColor)
         exerciseStartTimeButton.setTitle("Saved")
-        print("HKStore should be updated for Exercise")
+//        print("HKStore should be updated for Exercise")
         
         // setting up conversion of saved value from 'end of exercise' in 1st screen
         let thisRegion = DateRegion()
         let calendar = NSCalendar.currentCalendar()
         var beginDate = NSDate.today(inRegion: thisRegion)
-        print("begin date should be midnight of today: \(beginDate)")
+//        print("begin date should be midnight of today: \(beginDate)")
         let beginComponents = calendar.components([.Year, .Month, .Day, .Hour, .Minute], fromDate: beginDate)
         var timeConvertBegin:Int = 0
         var timeAddHalfHourBegin:Int = 0
@@ -57,14 +57,14 @@ class ExerciseStartTimeController: WKInterfaceController {
         // note: imageset (0-47) is keyed into 24-hour schedule
         //  so 0=midnight, 2=1AM, 4=2AM, etc
         if exerciseTimeStruc.exerciseBegin % 2 == 0 {
-            print("\(exerciseTimeStruc.exerciseBegin) from exercise times 1st screen is even")
+//            print("\(exerciseTimeStruc.exerciseBegin) from exercise times 1st screen is even")
             _=0
             timeConvertBegin = ( (exerciseTimeStruc.exerciseBegin)/2 )
             //            print("timeConvertStart: \(timeConvertStart)")
             //            startDate = startDate + timeConvertStart.hours
             //            print("new start date: \(startDate)")
         } else {
-            print("\(exerciseTimeStruc.exerciseBegin) from exercise time 1st screen is odd")
+//            print("\(exerciseTimeStruc.exerciseBegin) from exercise time 1st screen is odd")
             timeConvertBegin = ( (exerciseTimeStruc.exerciseBegin-1)/2 )
             timeAddHalfHourBegin=30
             //            print("timeConvertStart: \(timeConvertStart)")
@@ -73,10 +73,10 @@ class ExerciseStartTimeController: WKInterfaceController {
         }
         beginComponents.hour = timeConvertBegin
         beginComponents.minute = timeAddHalfHourBegin
-        print("should have adjusted, hour and minute for beginTime: \(timeConvertBegin)")
-        print("    and \(timeAddHalfHourBegin)")
+//        print("should have adjusted, hour and minute for beginTime: \(timeConvertBegin)")
+//        print("    and \(timeAddHalfHourBegin)")
         beginDate = calendar.dateFromComponents(beginComponents)!
-        print("new beginDate based on first screen: \(beginDate)")
+//        print("new beginDate based on first screen: \(beginDate)")
         
         // setting up values from current picker and getting 'beginning of exercise' ready
         var closeDate = NSDate.today(inRegion: thisRegion)
@@ -84,12 +84,12 @@ class ExerciseStartTimeController: WKInterfaceController {
         var timeAddHalfHourClose:Int = 0
         
         if exerciseClose % 2 == 0 {
-            print("\(exerciseClose) from exercise 2nd screen is even")
+//            print("\(exerciseClose) from exercise 2nd screen is even")
             _=0
             timeConvertClose = ( (exerciseClose)/2)
             //            endDate = endDate + timeConvertEnd.hours
         } else {
-            print("\(exerciseClose) from exercise 2nd screen is odd")
+//            print("\(exerciseClose) from exercise 2nd screen is odd")
             _=30
             timeConvertClose = ( (exerciseClose-1)/2  )
             timeAddHalfHourClose=30
@@ -103,16 +103,16 @@ class ExerciseStartTimeController: WKInterfaceController {
         closeComponents.minute = timeAddHalfHourClose
         closeDate = calendar.dateFromComponents(closeComponents)!
         
-        print("should have end adjusted, hour and minute for close point: \(timeConvertClose)")
-        print("    and \(timeAddHalfHourClose)")
+//        print("should have end adjusted, hour and minute for close point: \(timeConvertClose)")
+//        print("    and \(timeAddHalfHourClose)")
         if closeDate < beginDate {
-            beginComponents.day = beginComponents.day-1
-            print("adjusted begin day by one")
-            beginDate = calendar.dateFromComponents(beginComponents)!
+            closeComponents.day = closeComponents.day-1
+//            print("adjusted close day by one")
+            closeDate = calendar.dateFromComponents(closeComponents)!
         }
         
-        print("computing a closeDate (2nd screen): \(closeDate)")
-        print("and an beginning date of (1st screen): \(beginDate)")
+//        print("computing a closeDate (2nd screen): \(closeDate)")
+//        print("and an beginning date of (1st screen): \(beginDate)")
         
         let exerciseDurationHours = beginComponents.hour - closeComponents.hour
         let exerciseDurationMinutes = beginComponents.minute - closeComponents.minute
