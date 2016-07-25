@@ -666,12 +666,15 @@
                         <outlet property="dailyProgressChartScrollView" destination="Sex-Yf-ycL" id="Wi8-51-pmg"/>
                         <outlet property="dailyProgressChartView" destination="I37-NR-mQN" id="88p-Tl-aFI"/>
                         <outlet property="daysTableView" destination="jSF-Vm-Zcr" id="DGE-8g-Jwl"/>
+                        <outlet property="eatingSquare" destination="GYz-Yf-147" id="7Wj-y5-DIE"/>
+                        <outlet property="exerciseSquare" destination="vhh-RK-JWV" id="twY-xy-FRl"/>
                         <outlet property="fastingSquare" destination="Utb-vk-b7M" id="4Ui-vD-CZ7"/>
                         <outlet property="lastAteContainer" destination="qU9-Da-kkH" id="9Bd-Q3-wDi"/>
                         <outlet property="lastAteLabel" destination="2ke-34-lkH" id="wvV-kA-awH"/>
                         <outlet property="mainScrollView" destination="AIB-Ol-8pc" id="fTS-qn-OSO"/>
                         <outlet property="maxDailyFastingContainer" destination="xMj-8W-XKU" id="MOf-Dh-ubX"/>
                         <outlet property="maxDailyFastingLabel" destination="SHe-9q-ZHi" id="j12-NQ-FC2"/>
+                        <outlet property="sleepSquare" destination="Eu7-UC-v2V" id="5MH-Re-C0x"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="4fJ-Ba-2vo" userLabel="First Responder" sceneMemberID="firstResponder"/>

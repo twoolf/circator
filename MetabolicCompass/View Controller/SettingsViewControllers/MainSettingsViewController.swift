@@ -7,6 +7,7 @@
 //
 
 import UIKit
+import SafariServices
 import MetabolicCompassKit
 
 class SettingsItem : NSObject {
@@ -56,38 +57,107 @@ class MainSettingsViewController: BaseViewController, UICollectionViewDataSource
         alertController.addAction(okAction)
         self.presentViewController(alertController, animated: true, completion: nil)
     }
-    
+
+    func webAction(asPrivacyPolicy: Bool) {
+        let vc = SFSafariViewController(URL: asPrivacyPolicy ? privacyPolicyURL : aboutURL, entersReaderIfAvailable: false)
+        presentViewController(vc, animated: true, completion: nil)
+    }
+
+    func withdrawAction() {
+        let alertController = UIAlertController(title: nil, message: "Are you sure you wish to withdraw?", preferredStyle: .ActionSheet)
+
+        let doWithdraw = { keepData in
+            AccountManager.shared.doWithdraw(keepData) { success in
+                AccountManager.shared.loginOrRegister()
+                if success {
+                    let msg = "Thanks for using Metabolic Compass!"
+                    UINotifications.genericMsg(self.navigationController!, msg: msg, pop: true, asNav: true)
+                } else {
+                    let msg = "Failed to withdraw, please try again later"
+                    UINotifications.genericError(self.navigationController!, msg: msg, pop: false, asNav: true)
+                }
+            }
+        }
+
+        let withKeepAction = UIAlertAction(title: "Yes, and keep my data for research", style: .Default) {
+            (alertAction: UIAlertAction!) in
+            doWithdraw(true)
+        }
+
+        let withDeleteAction = UIAlertAction(title: "Yes, but delete all of my data", style: .Destructive) {
+            (alertAction: UIAlertAction!) in
+            doWithdraw(false)
+        }
+
+        let cancelAction = UIAlertAction(title: "Cancel", style: .Cancel, handler: nil)
+        alertController.addAction(withKeepAction)
+        alertController.addAction(withDeleteAction)
+        alertController.addAction(cancelAction)
+        self.presentViewController(alertController, animated: true, completion: nil)
+    }
+
     // MARK: - Data source
     
     private let segueProfileIdentifier = "profileSegue"
     private let seguePhysiologicalIdentifier = "physiologicalSegue"
     private let segueNotificationsIdentifier = "notificationsSegue"
     private let segueHealthAccessIdentifier = "healthAccessSegue"
-    
+
+    private var aboutItemIndex: Int = 0
+    private var privacyPolicyItemIndex: Int = 0
     private var logoutItemIndex : Int = 0
-    
+    private var withdrawItemIndex: Int = 0
+
     private lazy var items : [SettingsItem] = {
        var settingsItems = [SettingsItem]()
         
         settingsItems.append(SettingsItem(title: "Profile".localized, iconImageName: "icon-settings-profile", segueIdentifier: self.segueProfileIdentifier))
         settingsItems.append(SettingsItem(title: "Physiological Profile".localized, iconImageName: "icon-settings-physiological", segueIdentifier: self.seguePhysiologicalIdentifier))
-//        settingsItems.append(SettingsItem(title: "Notifications".localized, iconImageName: "icon-settings-notifications", segueIdentifier: self.segueNotificationsIdentifier))
-//        settingsItems.append(SettingsItem(title: "Health Access".localized, iconImageName: "icon-settings-health", segueIdentifier: self.segueHealthAccessIdentifier))
-    
-        settingsItems.append(SettingsItem(title: "Log out".localized, iconImageName: "icon-settings-logout"))
+        // settingsItems.append(SettingsItem(title: "Notifications".localized, iconImageName: "icon-settings-notifications", segueIdentifier: self.segueNotificationsIdentifier))
+        // settingsItems.append(SettingsItem(title: "Health Access".localized, iconImageName: "icon-settings-health", segueIdentifier: self.segueHealthAccessIdentifier))
+
+        settingsItems.append(SettingsItem(title: "About Us".localized, iconImageName: "icon-settings-health"))
+        self.aboutItemIndex = settingsItems.count - 1
+
+        settingsItems.append(SettingsItem(title: "Privacy Policy".localized, iconImageName: "icon-settings-health"))
+        self.privacyPolicyItemIndex = settingsItems.count - 1
+
+        settingsItems.append(SettingsItem(title: "Log Out".localized, iconImageName: "icon-settings-logout"))
         self.logoutItemIndex = settingsItems.count - 1
-        
+
+        settingsItems.append(SettingsItem(title: "Withdraw From This Study".localized, iconImageName: "icon-settings-logout"))
+        self.withdrawItemIndex = settingsItems.count - 1
+
         return settingsItems
     }()
     
     private func itemAtIndexPath(indexPath: NSIndexPath) -> SettingsItem {
         return items[indexPath.row]
     }
-    
+
+    private func cellHasSubviewAtIndexPath(indexPath: NSIndexPath) -> Bool {
+        return !( isCellAboutAtIndexPath(indexPath)
+                    || isCellPrivacyPolicyAtIndexPath(indexPath)
+                    || isCellLogoutAtIndexPath(indexPath)
+                    || isCellWithdrawAtIndexPath(indexPath) )
+    }
+
+    private func isCellAboutAtIndexPath(indexPath: NSIndexPath) -> Bool {
+        return indexPath.row == aboutItemIndex
+    }
+
+    private func isCellPrivacyPolicyAtIndexPath(indexPath: NSIndexPath) -> Bool {
+        return indexPath.row == privacyPolicyItemIndex
+    }
+
     private func isCellLogoutAtIndexPath(indexPath: NSIndexPath) -> Bool {
         return indexPath.row == logoutItemIndex
     }
-    
+
+    private func isCellWithdrawAtIndexPath(indexPath: NSIndexPath) -> Bool {
+        return indexPath.row == withdrawItemIndex
+    }
+
     // MARK: - UICollectionView DataSource & Delegate
     
     
@@ -107,7 +177,7 @@ class MainSettingsViewController: BaseViewController, UICollectionViewDataSource
             cell.cellImage?.image = UIImage(named: imageName)
         }
         
-        if isCellLogoutAtIndexPath(indexPath) {
+        if !cellHasSubviewAtIndexPath(indexPath) {
             cell.hasAccessoryView = false
         }
         
@@ -117,9 +187,18 @@ class MainSettingsViewController: BaseViewController, UICollectionViewDataSource
     }
 
     func collectionView(collectionView: UICollectionView, didSelectItemAtIndexPath indexPath: NSIndexPath) {
-        
-        if isCellLogoutAtIndexPath(indexPath) {
+
+        let asAboutCell = isCellAboutAtIndexPath(indexPath)
+        let asPrivacyPolicyCell = isCellPrivacyPolicyAtIndexPath(indexPath)
+
+        if asAboutCell || asPrivacyPolicyCell  {
+            webAction(asPrivacyPolicyCell)
+        }
+        else if isCellLogoutAtIndexPath(indexPath) {
             logoutAction()
+        }
+        else if isCellWithdrawAtIndexPath(indexPath) {
+            withdrawAction()
         }
         else {
             let item = itemAtIndexPath(indexPath)

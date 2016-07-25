@@ -20,9 +20,13 @@ class DailyProgressViewController : UIViewController, DailyChartModelProtocol {
     @IBOutlet weak var dailyProgressChartScrollView: UIScrollView!
     @IBOutlet weak var dailyProgressChartDaysTable: UITableView!
     @IBOutlet weak var mainScrollView: UIScrollView!
-    @IBOutlet weak var fastingSquare: UIView!
     @IBOutlet weak var activityIndicator: UIActivityIndicatorView!
-    
+
+    @IBOutlet weak var fastingSquare: UIView!
+    @IBOutlet weak var sleepSquare: UIView!
+    @IBOutlet weak var eatingSquare: UIView!
+    @IBOutlet weak var exerciseSquare: UIView!
+
     @IBOutlet weak var dailyEatingLabel: UILabel!
     @IBOutlet weak var maxDailyFastingLabel: UILabel!
     @IBOutlet weak var lastAteLabel: UILabel!
@@ -52,6 +56,17 @@ class DailyProgressViewController : UIViewController, DailyChartModelProtocol {
             Async.main {
                 self.updateContentWithAnimation = false
                 self.dailyChartModel.toggleHighlightFasting()
+                if self.dailyChartModel.highlightFasting {
+                    self.fastingSquare.backgroundColor  = MetabolicDailyPorgressChartView.highlightFastingColor
+                    self.sleepSquare.backgroundColor    = MetabolicDailyPorgressChartView.mutedSleepColor
+                    self.eatingSquare.backgroundColor   = MetabolicDailyPorgressChartView.mutedEatingColor
+                    self.exerciseSquare.backgroundColor = MetabolicDailyPorgressChartView.mutedExerciseColor
+                } else {
+                    self.fastingSquare.backgroundColor  = MetabolicDailyPorgressChartView.fastingColor
+                    self.sleepSquare.backgroundColor    = MetabolicDailyPorgressChartView.sleepColor
+                    self.eatingSquare.backgroundColor   = MetabolicDailyPorgressChartView.eatingColor
+                    self.exerciseSquare.backgroundColor = MetabolicDailyPorgressChartView.exerciseColor
+                }
                 self.contentDidUpdate()
             }
         }

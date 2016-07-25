@@ -612,11 +612,22 @@ public struct HMConstants
     // HKCharacteristicTypeIdentifierFitzpatrickSkinType : "Skin type",
     //
 
+    // MCDB columns that are categorized types.
+    public let mcdbCategorized: Set<String>  = ["meal_duration", "activity_duration", "activity_value"]
+
     // HealthKit quantity types that should query activity values subcomponents.
     public let hkQuantityToMCDBActivity : [String: (String, String)] = [
         HKQuantityTypeIdentifierDistanceWalkingRunning    : ("distance_walking_running", "distance"),
         HKQuantityTypeIdentifierFlightsClimbed            : ("flights_climbed", "flights"),
         HKQuantityTypeIdentifierStepCount                 : ("step_count", "step_count")
+    ]
+
+    // MCDB categorized values that should convert into HealthKit quantities.
+    // This should be the inverse of the hkQuantityToMCDBActivity mapping.
+    public let mcdbActivityToHKQuantity: [String: (String, String)] = [
+        "distance_walking_running" : ("distance",   HKQuantityTypeIdentifierDistanceWalkingRunning),
+        "flights_climbed"          : ("flights",    HKQuantityTypeIdentifierFlightsClimbed),
+        "step_count"               : ("step_count", HKQuantityTypeIdentifierStepCount)
     ]
 
     public let hkToMCDB : [String: String] = [

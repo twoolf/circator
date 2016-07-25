@@ -438,8 +438,9 @@ public class UserManager {
         }
     }
 
-    public func withdraw(completion: SuccessCompletion) {
-        Service.string(MCRouter.DeleteAccount, statusCode: 200..<300, tag: "WITHDRAW") {
+    public func withdraw(keepData: Bool, completion: SuccessCompletion) {
+        let params = ["keepData": keepData]
+        Service.string(MCRouter.DeleteAccount(params), statusCode: 200..<300, tag: "WITHDRAW") {
             _, response, result in
             if result.isSuccess { self.resetFull() }
             completion(result.isSuccess)

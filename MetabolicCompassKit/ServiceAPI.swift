@@ -30,6 +30,9 @@ private let resetPassDevURL  = devServiceURL.URLByAppendingPathComponent("/forgo
 private let resetPassProdURL = prodServiceURL.URLByAppendingPathComponent("/forgot")
 public  let resetPassURL     = asDevService ? resetPassDevURL : resetPassProdURL
 
+public let aboutURL         = (asDevService ? devServiceURL : prodServiceURL).URLByAppendingPathComponent("about")
+public let privacyPolicyURL = (asDevService ? devServiceURL : prodServiceURL).URLByAppendingPathComponent("privacy")
+
 public class  RequestResult{
     private var _obj:Any? = nil
     //private var infoMsg:String? = nil
@@ -141,7 +144,7 @@ enum MCRouter : URLRequestConvertible {
         // For SetUserAccountData, the caller is responsible for constructing
         // the component-specific nesting (e.g, ["consent": "<base64 string>"])
 
-    case DeleteAccount
+    case DeleteAccount([String: AnyObject])
 
     // Token management API
     case TokenExpiry
@@ -186,7 +189,7 @@ enum MCRouter : URLRequestConvertible {
             return "/measures/mc/delete"
 
         case .AggregateMeasures:
-            return "/measures/mc/avg"
+            return "/measures/mc/dbavg"
 
         case .DeleteAccount:
             return "/user/withdraw"
@@ -222,8 +225,8 @@ enum MCRouter : URLRequestConvertible {
         case .AggregateMeasures(let parameters):
             return Alamofire.ParameterEncoding.URL.encode(mutableURLRequest, parameters: parameters).0
 
-        case .DeleteAccount:
-            return mutableURLRequest
+        case .DeleteAccount(let parameters):
+            return Alamofire.ParameterEncoding.JSON.encode(mutableURLRequest, parameters: parameters).0
 
         case .GetUserAccountData(let components):
             let parameters = ["components": components.map(getComponentName)]
@@ -289,6 +292,7 @@ extension Alamofire.Request {
             if !result.isSuccess {
                 log.debug("\n***response:\(resp)")
                 log.debug("\n***error:\(result.error)")
+                debugPrint(resp)
             }
             completion(req, resp, result)
         }

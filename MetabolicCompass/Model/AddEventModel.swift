@@ -138,10 +138,15 @@ class AddEventModel: NSObject {
     //MARK: Class methods
     
     class func getDefaultStartSleepDate() -> NSDate {
-        if let whenToSleepDate = UserManager.sharedManager.getUsualWhenToSleepTime() {//if we have usual time user go to sleep
-            //we will apply it as default value for when go to sleep date
-            let yesterday = 1.days.ago
-            return AddEventModel.applyTimeForDate(whenToSleepDate, toDate: yesterday)
+        if let whenToSleepDate = UserManager.sharedManager.getUsualWhenToSleepTime() {
+            // If we have usual time user go to sleep, we use it as default value
+            // If the value is after midday, we treat it as a date/time object for yesterday.
+            if whenToSleepDate.hour >= 12 {
+                return AddEventModel.applyTimeForDate(whenToSleepDate, toDate: 1.days.ago)
+            } else {
+                return AddEventModel.applyTimeForDate(whenToSleepDate, toDate: NSDate())
+            }
+
         }
         return NSDate()//if we have no date for usual sleep then just use current date
     }

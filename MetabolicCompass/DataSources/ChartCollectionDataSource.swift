@@ -49,6 +49,11 @@ class ChartCollectionDataSource: NSObject, UICollectionViewDataSource {
         if let yMax = chartData?.yMax, yMin = chartData?.yMin where yMax > 0 || yMin > 0 {
             cell.updateLeftAxisWith(chartData?.yMin, maxValue: chartData?.yMax)
             cell.chartView.data = chartData
+            if let marker = cell.chartView.marker as? BalloonMarker {
+                marker.yMax = cell.chartView.leftAxis.axisMaxValue
+                marker.yMin = cell.chartView.leftAxis.axisMinValue
+                marker.yPixelRange = Double(cell.chartView.contentRect.height)
+            }
         }
         cell.chartTitleLabel.text = appearanceProvider.stringForSampleType(typeToShow == HKQuantityTypeIdentifierBloodPressureSystolic ? HKCorrelationTypeIdentifierBloodPressure : typeToShow)
         return cell

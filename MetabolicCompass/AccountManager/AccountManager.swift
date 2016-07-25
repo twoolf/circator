@@ -70,6 +70,13 @@ class AccountManager: NSObject {
         PopulationHealthManager.sharedManager.resetAggregates()
     }
 
+    func doWithdraw(keepData: Bool, completion: Bool -> Void) {
+        UserManager.sharedManager.withdraw(keepData, completion: completion)
+        HealthManager.sharedManager.reset()
+        self.contentManager.stopBackgroundWork()
+        PopulationHealthManager.sharedManager.resetAggregates()
+    }
+
     private func loginComplete () {
         // TODO: Yanif: this currently pulls from Stormpath, and is no longer needed.
         // The profile will contain directly this information.
