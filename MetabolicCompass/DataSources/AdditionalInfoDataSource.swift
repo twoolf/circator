@@ -12,6 +12,11 @@ import MetabolicCompassKit
 
 class HeaderView: UICollectionReusableView {
     @IBOutlet weak var titleLbl: UILabel!
+    
+    override func awakeFromNib() {
+        super.awakeFromNib()
+        titleLbl.font = ScreenManager.appFontOfSize(15)
+    }
 }
 
 public class AdditionalInfoDataSource: BaseDataSource {
@@ -29,6 +34,9 @@ public class AdditionalInfoDataSource: BaseDataSource {
 
         let scrollSelectionCellNib = UINib(nibName: "ScrollSelectionViewCell", bundle: nil)
         collectionView?.registerNib(scrollSelectionCellNib, forCellWithReuseIdentifier: scrollSelectionCellIdentifier)
+        
+        let physiologicalHeaderViewNib = UINib(nibName: "PhysiologicalHeaderView", bundle: nil)
+        collectionView?.registerNib(physiologicalHeaderViewNib, forSupplementaryViewOfKind: UICollectionElementKindSectionHeader, withReuseIdentifier: "sectionHeaderView")
     }
 
     internal func isSleepCellAtIndexPath(indexPath: NSIndexPath) -> Bool {
@@ -88,7 +96,6 @@ public class AdditionalInfoDataSource: BaseDataSource {
 
         cell.smallDescriptionLbl.text = item.unitsTitle
         let attr = [NSForegroundColorAttributeName : unselectedTextColor]
-        print("indexPath:\(indexPath), name:\(item.name), title:\(item.title)")
         cell.inputTxtField.attributedPlaceholder = NSAttributedString(string: item.title, attributes: attr)
 
         var keypadType = UIKeyboardType.Default
@@ -118,14 +125,16 @@ public class AdditionalInfoDataSource: BaseDataSource {
 
     func collectionView(collectionView: UICollectionView, viewForSupplementaryElementOfKind kind: String, atIndexPath indexPath: NSIndexPath) -> UICollectionReusableView {
         if kind == UICollectionElementKindSectionHeader {
-            let headerView = collectionView.dequeueReusableSupplementaryViewOfKind(kind, withReuseIdentifier: "headerView", forIndexPath: indexPath) as! HeaderView
+            let headerView = collectionView.dequeueReusableSupplementaryViewOfKind(kind, withReuseIdentifier: "sectionHeaderView", forIndexPath: indexPath) as! HeaderView
             headerView.titleLbl.text = model.sectionTitleAtIndexPath(indexPath)
             return headerView
         }
-
         return UICollectionReusableView()
     }
-
+    
+    func collectionView(collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, referenceSizeForHeaderInSection section: Int) -> CGSize {
+        return CGSizeMake(CGRectGetWidth(collectionView.frame), 50)
+    }
 
     // MARK: - Cells sizes
     private let cellHeight: CGFloat = 60

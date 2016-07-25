@@ -36,9 +36,7 @@ class PhysiologicalDataViewController: BaseViewController {
         super.viewDidLoad()
         dataSource.editMode = false
         setupScrollViewForKeyboardsActions(collectionView)
-
         dataSource.collectionView = self.collectionView
-
         self.setupNavBar()
     }
 
@@ -64,31 +62,24 @@ class PhysiologicalDataViewController: BaseViewController {
     func rightAction(sender: UIBarButtonItem) {
         if dataSource.editMode {
             let additionalInfo = dataSource.model.additionalInfoDict()
-
             UserManager.sharedManager.pushProfile(additionalInfo, completion: { _ in
                 self.editMode = false
             })
-        }
-        else{
+        } else{
             editMode = true
         }
-
     }
 
     func leftAction(sender: UIBarButtonItem) {
         let lsConfirmTitle = "Confirm cancel".localized
         let lsConfirmMessage = "Your changes have not been saved yet. Exit without saving?".localized
-
         let confirmAlert = UIAlertController(title: lsConfirmTitle, message: lsConfirmMessage, preferredStyle: UIAlertControllerStyle.Alert)
-
         confirmAlert.addAction(UIAlertAction(title: "Yes".localized, style: .Default, handler: { (action: UIAlertAction!) in
             //reset data & change mode
             self.dataSource.reset()
             self.editMode = false
         }))
-
         confirmAlert.addAction(UIAlertAction(title: "No".localized, style: .Cancel, handler: nil))
-
         presentViewController(confirmAlert, animated: true, completion: nil)
 
     }

@@ -9,6 +9,7 @@
 import Foundation
 import UIKit
 import MetabolicCompassKit
+import SafariServices
 
 class RegisterLoginLandingViewController: BaseViewController {
     
@@ -50,4 +51,10 @@ class RegisterLoginLandingViewController: BaseViewController {
             regViewController.registerCompletion = completion
         }        
     }
+    
+    @IBAction func privacyPolicy() {
+        let svc = SFSafariViewController(URL: NSURL(string: "https://app.metaboliccompass.com/privacy_policy")!)
+        self.presentViewController(svc, animated: true, completion: nil)
+    }
+
 }

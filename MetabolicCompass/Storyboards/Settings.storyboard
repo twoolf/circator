@@ -2,13 +2,7 @@
 <document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="10117" systemVersion="15F34" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" initialViewController="Qy7-Sp-vSZ">
     <dependencies>
         <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="10085"/>
-        <capability name="Constraints to layout margins" minToolsVersion="6.0"/>
     </dependencies>
-    <customFonts key="customFonts">
-        <mutableArray key="Gotham Book.otf">
-            <string>Gotham-Book</string>
-        </mutableArray>
-    </customFonts>
     <scenes>
         <!--Settings-->
         <scene sceneID="tw4-jp-zk0">
@@ -19,11 +13,11 @@
                         <viewControllerLayoutGuide type="bottom" id="txk-Dm-0EL"/>
                     </layoutGuides>
                     <view key="view" contentMode="scaleToFill" id="eCY-2u-eWc">
-                        <rect key="frame" x="0.0" y="0.0" width="600" height="600"/>
+                        <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
                             <collectionView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" dataMode="prototypes" translatesAutoresizingMaskIntoConstraints="NO" id="dlh-ry-47Q">
-                                <rect key="frame" x="0.0" y="64" width="600" height="487"/>
+                                <rect key="frame" x="0.0" y="64" width="375" height="554"/>
                                 <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
                                 <collectionViewFlowLayout key="collectionViewLayout" minimumLineSpacing="10" minimumInteritemSpacing="10" id="Jam-Bj-J68">
                                     <size key="itemSize" width="200" height="50"/>
@@ -33,7 +27,7 @@
                                 </collectionViewFlowLayout>
                                 <cells>
                                     <collectionViewCell opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" id="7J3-Ml-7Q1">
-                                        <rect key="frame" x="0.0" y="0.0" width="200" height="50"/>
+                                        <rect key="frame" x="87.5" y="0.0" width="200" height="50"/>
                                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                         <view key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center">
                                             <rect key="frame" x="0.0" y="0.0" width="200" height="50"/>
@@ -54,6 +48,7 @@
                     </view>
                     <navigationItem key="navigationItem" id="vJl-mY-3aU"/>
                     <simulatedTabBarMetrics key="simulatedBottomBarMetrics"/>
+                    <simulatedScreenMetrics key="simulatedDestinationMetrics" type="retina47"/>
                     <connections>
                         <outlet property="collectionView" destination="dlh-ry-47Q" id="S3o-vT-Nrh"/>
                         <segue destination="BJF-k9-5Id" kind="show" identifier="profileSegue" id="r63-xo-WVL"/>
@@ -75,14 +70,15 @@
                         <viewControllerLayoutGuide type="bottom" id="gmD-lV-b90"/>
                     </layoutGuides>
                     <view key="view" contentMode="scaleToFill" id="phP-EE-yrS">
-                        <rect key="frame" x="0.0" y="0.0" width="600" height="600"/>
+                        <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                     </view>
+                    <simulatedScreenMetrics key="simulatedDestinationMetrics" type="retina47"/>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="9em-0O-2ay" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="2080" y="1050"/>
+            <point key="canvasLocation" x="2087.5" y="1157.5"/>
         </scene>
         <!--Notifications View Controller-->
         <scene sceneID="53m-9w-5SF">
@@ -93,14 +89,14 @@
                         <viewControllerLayoutGuide type="bottom" id="ku9-jP-Aj9"/>
                     </layoutGuides>
                     <view key="view" contentMode="scaleToFill" id="bcb-Oy-gbI">
-                        <rect key="frame" x="0.0" y="0.0" width="600" height="600"/>
+                        <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                     </view>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="PBM-BI-Y9P" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="2801" y="1044"/>
+            <point key="canvasLocation" x="2826.5" y="1163.5"/>
         </scene>
         <!--PROFILE-->
         <scene sceneID="EIJ-ks-ea5">
@@ -111,11 +107,11 @@
                         <viewControllerLayoutGuide type="bottom" id="SoM-SZ-wUi"/>
                     </layoutGuides>
                     <view key="view" contentMode="scaleToFill" id="eqp-NP-wIJ">
-                        <rect key="frame" x="0.0" y="0.0" width="600" height="600"/>
+                        <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
                             <collectionView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" dataMode="prototypes" translatesAutoresizingMaskIntoConstraints="NO" id="cWd-Wq-34X">
-                                <rect key="frame" x="0.0" y="64" width="600" height="487"/>
+                                <rect key="frame" x="0.0" y="64" width="375" height="554"/>
                                 <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
                                 <collectionViewFlowLayout key="collectionViewLayout" minimumLineSpacing="0.0" minimumInteritemSpacing="0.0" id="H5q-am-5sV">
                                     <size key="itemSize" width="200" height="50"/>
@@ -125,7 +121,7 @@
                                 </collectionViewFlowLayout>
                                 <cells>
                                     <collectionViewCell opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" id="HYq-W9-Okq">
-                                        <rect key="frame" x="0.0" y="64" width="200" height="50"/>
+                                        <rect key="frame" x="87.5" y="64" width="200" height="50"/>
                                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                         <view key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center">
                                             <rect key="frame" x="0.0" y="0.0" width="200" height="50"/>
@@ -150,32 +146,32 @@
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="fh1-ly-nPA" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="2827" y="-417"/>
+            <point key="canvasLocation" x="2826.5" y="-537.5"/>
         </scene>
         <!--PHYSIOLOGICAL DATA-->
         <scene sceneID="AtO-kT-G7t">
             <objects>
-                <viewController title="PHYSIOLOGICAL DATA" id="JBd-Oq-cRO" customClass="PhysiologicalDataViewController" customModule="MetabolicCompass" customModuleProvider="target" sceneMemberID="viewController">
+                <viewController title="PHYSIOLOGICAL DATA" automaticallyAdjustsScrollViewInsets="NO" id="JBd-Oq-cRO" customClass="PhysiologicalDataViewController" customModule="MetabolicCompass" customModuleProvider="target" sceneMemberID="viewController">
                     <layoutGuides>
                         <viewControllerLayoutGuide type="top" id="5RB-a8-bcg"/>
                         <viewControllerLayoutGuide type="bottom" id="DgP-Gx-bwR"/>
                     </layoutGuides>
                     <view key="view" contentMode="scaleToFill" id="MWk-Xx-8p5">
-                        <rect key="frame" x="0.0" y="0.0" width="375" height="657"/>
+                        <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
                             <collectionView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" dataMode="prototypes" translatesAutoresizingMaskIntoConstraints="NO" id="fKR-ep-vg3">
-                                <rect key="frame" x="0.0" y="64" width="375" height="544"/>
+                                <rect key="frame" x="0.0" y="64" width="375" height="554"/>
                                 <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
                                 <collectionViewFlowLayout key="collectionViewLayout" minimumLineSpacing="10" minimumInteritemSpacing="10" id="waL-MW-sOc">
                                     <size key="itemSize" width="50" height="50"/>
-                                    <size key="headerReferenceSize" width="50" height="50"/>
+                                    <size key="headerReferenceSize" width="0.0" height="0.0"/>
                                     <size key="footerReferenceSize" width="0.0" height="0.0"/>
                                     <inset key="sectionInset" minX="0.0" minY="0.0" maxX="0.0" maxY="0.0"/>
                                 </collectionViewFlowLayout>
                                 <cells>
                                     <collectionViewCell opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" id="aWG-4K-PLf">
-                                        <rect key="frame" x="0.0" y="114" width="50" height="50"/>
+                                        <rect key="frame" x="0.0" y="0.0" width="50" height="50"/>
                                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                         <view key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center">
                                             <rect key="frame" x="0.0" y="0.0" width="50" height="50"/>
@@ -184,27 +180,6 @@
                                         </view>
                                     </collectionViewCell>
                                 </cells>
-                                <collectionReusableView key="sectionHeaderView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" reuseIdentifier="headerView" id="eCf-yX-ag8" customClass="HeaderView" customModule="MetabolicCompass" customModuleProvider="target">
-                                    <rect key="frame" x="0.0" y="64" width="375" height="50"/>
-                                    <autoresizingMask key="autoresizingMask"/>
-                                    <subviews>
-                                        <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Label" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="Zr7-bW-S88">
-                                            <rect key="frame" x="24" y="17" width="327" height="17"/>
-                                            <fontDescription key="fontDescription" name="Gotham-Book" family="Gotham" pointSize="15"/>
-                                            <color key="textColor" red="0.20000000000000001" green="0.54117647058823526" blue="1" alpha="1" colorSpace="calibratedRGB"/>
-                                            <nil key="highlightedColor"/>
-                                        </label>
-                                    </subviews>
-                                    <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
-                                    <constraints>
-                                        <constraint firstAttribute="trailingMargin" secondItem="Zr7-bW-S88" secondAttribute="trailing" constant="16" id="F7b-b9-CRq"/>
-                                        <constraint firstItem="Zr7-bW-S88" firstAttribute="leading" secondItem="eCf-yX-ag8" secondAttribute="leadingMargin" constant="16" id="as6-uf-rY8"/>
-                                        <constraint firstItem="Zr7-bW-S88" firstAttribute="centerY" secondItem="eCf-yX-ag8" secondAttribute="centerY" id="e20-VZ-yq0"/>
-                                    </constraints>
-                                    <connections>
-                                        <outlet property="titleLbl" destination="Zr7-bW-S88" id="G7g-b3-Grc"/>
-                                    </connections>
-                                </collectionReusableView>
                             </collectionView>
                         </subviews>
                         <color key="backgroundColor" red="0.094117647058823528" green="0.17647058823529413" blue="0.40784313725490196" alpha="1" colorSpace="calibratedRGB"/>
@@ -216,15 +191,14 @@
                         </constraints>
                     </view>
                     <navigationItem key="navigationItem" title="PHYSIOLOGICAL DATA" id="zGs-li-VsU"/>
-                    <freeformSimulatedSizeMetrics key="simulatedDestinationMetrics"/>
-                    <size key="freeformSize" width="375" height="657"/>
+                    <simulatedScreenMetrics key="simulatedDestinationMetrics" type="retina47"/>
                     <connections>
                         <outlet property="collectionView" destination="fKR-ep-vg3" id="qrY-CE-T8d"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="GrY-Zu-saj" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="2827" y="271"/>
+            <point key="canvasLocation" x="2826.5" y="270.5"/>
         </scene>
         <!--Settings-->
         <scene sceneID="eSs-WU-LQb">
@@ -232,6 +206,7 @@
                 <navigationController automaticallyAdjustsScrollViewInsets="NO" id="Qy7-Sp-vSZ" sceneMemberID="viewController">
                     <tabBarItem key="tabBarItem" title="Settings" image="icon-settings-unactive" selectedImage="icon-settings-active" id="4eg-nd-LSY"/>
                     <toolbarItems/>
+                    <simulatedScreenMetrics key="simulatedDestinationMetrics" type="retina47"/>
                     <navigationBar key="navigationBar" contentMode="scaleToFill" id="9Ug-Kw-YQQ">
                         <rect key="frame" x="0.0" y="0.0" width="320" height="44"/>
                         <autoresizingMask key="autoresizingMask"/>
@@ -243,7 +218,7 @@
                 </navigationController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="FZH-IY-hGU" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="1276" y="271"/>
+            <point key="canvasLocation" x="1579.5" y="270.5"/>
         </scene>
     </scenes>
     <resources>

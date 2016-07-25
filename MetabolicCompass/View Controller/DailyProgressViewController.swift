@@ -11,6 +11,30 @@ import UIKit
 import MetabolicCompassKit
 import Async
 
+enum UIUserInterfaceIdiom : Int
+{
+    case Unspecified
+    case Phone
+    case Pad
+}
+
+struct ScreenSize
+{
+    static let SCREEN_WIDTH         = UIScreen.mainScreen().bounds.size.width
+    static let SCREEN_HEIGHT        = UIScreen.mainScreen().bounds.size.height
+    static let SCREEN_MAX_LENGTH    = max(ScreenSize.SCREEN_WIDTH, ScreenSize.SCREEN_HEIGHT)
+    static let SCREEN_MIN_LENGTH    = min(ScreenSize.SCREEN_WIDTH, ScreenSize.SCREEN_HEIGHT)
+}
+
+struct DeviceType
+{
+    static let IS_IPHONE_4_OR_LESS  = UIDevice.currentDevice().userInterfaceIdiom == .Phone && ScreenSize.SCREEN_MAX_LENGTH < 568.0
+    static let IS_IPHONE_5          = UIDevice.currentDevice().userInterfaceIdiom == .Phone && ScreenSize.SCREEN_MAX_LENGTH == 568.0
+    static let IS_IPHONE_6          = UIDevice.currentDevice().userInterfaceIdiom == .Phone && ScreenSize.SCREEN_MAX_LENGTH == 667.0
+    static let IS_IPHONE_6P         = UIDevice.currentDevice().userInterfaceIdiom == .Phone && ScreenSize.SCREEN_MAX_LENGTH == 736.0
+    static let IS_IPAD              = UIDevice.currentDevice().userInterfaceIdiom == .Pad && ScreenSize.SCREEN_MAX_LENGTH == 1024.0
+}
+
 class DailyProgressViewController : UIViewController, DailyChartModelProtocol {
     
     var dailyChartModel = DailyChartModel()
@@ -30,6 +54,8 @@ class DailyProgressViewController : UIViewController, DailyChartModelProtocol {
     @IBOutlet weak var dailyEatingLabel: UILabel!
     @IBOutlet weak var maxDailyFastingLabel: UILabel!
     @IBOutlet weak var lastAteLabel: UILabel!
+    @IBOutlet weak var chartLegendHeight: NSLayoutConstraint!
+    @IBOutlet weak var dailyValuesTopMargin: NSLayoutConstraint!
 
     @IBOutlet weak var dailyEatingContainer: UIView!
     @IBOutlet weak var maxDailyFastingContainer: UIView!
@@ -138,6 +164,15 @@ class DailyProgressViewController : UIViewController, DailyChartModelProtocol {
         self.lastAteLabel.attributedText = self.dailyChartModel.lastAteText.formatTextWithRegex("[-+]?(\\d*[.,])?\\d+",
                                                                                                 format: [NSForegroundColorAttributeName: UIColor.whiteColor()],
                                                                                                 defaultFormat: [NSForegroundColorAttributeName: UIColor.colorWithHexString("#ffffff", alpha: 0.3)!])
+    }
+    
+    override func viewDidLayoutSubviews() {
+        super.viewDidLayoutSubviews()
+        if DeviceType.IS_IPHONE_4_OR_LESS {
+            self.chartLegendHeight.constant -= 10
+        } else if DeviceType.IS_IPHONE_5 {
+            self.chartLegendHeight.constant -= 5
+        }
     }
 
     //MARK: Deinit
