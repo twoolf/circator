@@ -29,6 +29,8 @@ class AppDelegate: UIResponder, UIApplicationDelegate, WCSessionDelegate {
     private let firstRunKey = "FirstRun"
     func application(application: UIApplication, didFinishLaunchingWithOptions launchOptions: [NSObject: AnyObject]?) -> Bool
     {
+        HKMock.mock()
+        
         configureLogging()
         Fabric.with([Crashlytics.self,Answers.self])
         
@@ -160,6 +162,60 @@ class AppDelegate: UIResponder, UIApplicationDelegate, WCSessionDelegate {
             }
         }
     }
+}
+
+
+import Foundation
+import HealthKit
+
+class HKMock {
+    
+
+    class func mock() {
+        
+        let bundleURL = NSBundle.mainBundle().bundleURL
+        let documentsUrl = bundleURL.URLByAppendingPathComponent("health_data_mock.json")
+        
+        // create your instance of HKHeakthStore
+        let healthStore     = HKHealthStore()
+        
+        
+        // create a profile from an output file
+//        let profile = HealthKitProfile(fileAtPath:documentsUrl)
+//        let importer = HealthKitProfileImporter(healthStore: healthStore)
+        
+//        importer.importProfile(profile, deleteExistingData: false, onProgress: { (message, progressInPercent) in
+//            print("progressprogressprogressprogress")
+//            }) { (error) in
+//                print("progressDoneprogressDoneprogressDone")
+//        }
+        
+//
+//        importer.importProfile(
+//            profile,
+//            deleteExistingData: true,
+//            onProgress: {
+//                (message: String, progressInPercent: NSNumber?)->Void in
+//                NSOperationQueue.mainQueue().addOperationWithBlock(){
+//                    // output progress information
+//                }
+//            },
+//            onCompletion: {
+//                (error: ErrorType?)-> Void in
+//                NSOperationQueue.mainQueue().addOperationWithBlock(){
+//                    
+//                    if let exportError = error {
+//                        print(exportError)
+//                    } else {
+//                        //everything went well
+//                    }
+//                }
+//            }
+//        )
+//    
+    }
+    
+   
 }
 
 

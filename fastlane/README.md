@@ -81,11 +81,6 @@ Force new adhoc certificates
 fastlane ios new_app_certs
 ```
 Force new app certificates
-### ios preparebuild
-```
-fastlane ios preparebuild
-```
-Command line build preparation
 ### ios set_codesigning
 ```
 fastlane ios set_codesigning
@@ -96,6 +91,11 @@ Set XCode project code signing and provisioning
 fastlane ios build_version
 ```
 Set a specific build number
+### ios preparebuild
+```
+fastlane ios preparebuild
+```
+Command line build preparation
 ### ios build_dev
 ```
 fastlane ios build_dev
@@ -154,6 +154,6 @@ Build and submit a beta build to Fabric/Crashlytics
 
 ----
 
-This README.md is auto-generated and will be re-generated every time to run [fastlane](https://fastlane.tools).  
-More information about fastlane can be found on [https://fastlane.tools](https://fastlane.tools).  
-The documentation of fastlane can be found on [GitHub](https://github.com/fastlane/fastlane).
+This README.md is auto-generated and will be re-generated every time to run [fastlane](https://fastlane.tools).
+More information about fastlane can be found on [https://fastlane.tools](https://fastlane.tools).
+The documentation of fastlane can be found on [GitHub](https://github.com/fastlane/fastlane/tree/master/fastlane).
