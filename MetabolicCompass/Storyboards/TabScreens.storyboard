@@ -889,7 +889,7 @@
                         <rect key="frame" x="0.0" y="0.0" width="320" height="568"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
-                            <imageView userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" misplaced="YES" image="img-under-construction" translatesAutoresizingMaskIntoConstraints="NO" id="rJe-74-gg9">
+                            <imageView hidden="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" misplaced="YES" image="img-under-construction" translatesAutoresizingMaskIntoConstraints="NO" id="rJe-74-gg9">
                                 <rect key="frame" x="0.0" y="64" width="320" height="504"/>
                             </imageView>
                         </subviews>

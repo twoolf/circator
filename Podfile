@@ -30,6 +30,7 @@ def shared_pods
     pod 'AsyncKit'
     pod 'SteviaLayout'
     pod 'AwesomeCache'
+    pod 'HealthKitSampleGenerator'
 end
 
 target 'MetabolicCompassKit' do
