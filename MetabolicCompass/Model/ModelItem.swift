@@ -92,18 +92,24 @@ class ModelItem: NSObject {
             return UnitsSystem(rawValue: units)?.title
         }
 
-        if let _value = value as? String {
-            return _value.trimmed()
+        if let _value = value as? Float {
+            return String(format: "%.3g", _value)
         }
         else if let _value = value as? Int {
             return String(_value)
+        }
+        else if let _value = value as? String {
+            return _value.trimmed()
         }
 
         return nil
     }
 
     func intValue() -> Int? {
-        if let _value = value as? Int {
+        if let _value = value as? Float {
+            return Int(_value)
+        }
+        else if let _value = value as? Int {
             return _value
         }
         else if let _value = value as? String {
@@ -116,6 +122,9 @@ class ModelItem: NSObject {
     func floatValue() -> Float? {
         if let _value = value as? Float {
             return _value
+        }
+        else if let _value = value as? Int {
+            return Float(_value)
         }
         else if let _value = value as? String {
             return Float(_value)
