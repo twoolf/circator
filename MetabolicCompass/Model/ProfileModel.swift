@@ -39,10 +39,6 @@ class ProfileModel: UserInfoModel {
             else if item.type == .Photo {
                 item.setNewValue(UserManager.sharedManager.userProfilePhoto())
             }
-            else if item.type == .Units {
-                // TODO: get REAL user units value
-                item.setNewValue(UnitsSystem.Metric.rawValue)
-            }
             else if item.type == .Email {
                 item.setNewValue(UserManager.sharedManager.getUserId())
             } else {
