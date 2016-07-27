@@ -19,6 +19,8 @@
 		786818881D33044A00CAE4ED /* BalanceBarView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 786818851D33044A00CAE4ED /* BalanceBarView.swift */; };
 		786818891D33044A00CAE4ED /* FastingDataModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 786818861D33044A00CAE4ED /* FastingDataModel.swift */; };
 		7868188A1D33044A00CAE4ED /* FastingViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 786818871D33044A00CAE4ED /* FastingViewController.swift */; };
+		786DEBB41D48F9DC00D6654E /* UploadManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 786DEBB31D48F9DC00D6654E /* UploadManager.swift */; };
+		786DEBB61D48FA7A00D6654E /* UITooltips.swift in Sources */ = {isa = PBXBuildFile; fileRef = 786DEBB51D48FA7A00D6654E /* UITooltips.swift */; };
 		786DF10D1C72AFE0007C2D4C /* Constants.swift in Sources */ = {isa = PBXBuildFile; fileRef = 786DF10C1C72AFE0007C2D4C /* Constants.swift */; };
 		7881A3E11BAF3B3E00ECB3C6 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7881A3E01BAF3B3E00ECB3C6 /* AppDelegate.swift */; };
 		7881A3F61BAF3B3E00ECB3C6 /* MetabolicCompassTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7881A3F51BAF3B3E00ECB3C6 /* MetabolicCompassTests.swift */; };
@@ -337,6 +339,8 @@
 		786818851D33044A00CAE4ED /* BalanceBarView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BalanceBarView.swift; sourceTree = "<group>"; };
 		786818861D33044A00CAE4ED /* FastingDataModel.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FastingDataModel.swift; sourceTree = "<group>"; };
 		786818871D33044A00CAE4ED /* FastingViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FastingViewController.swift; sourceTree = "<group>"; };
+		786DEBB31D48F9DC00D6654E /* UploadManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = UploadManager.swift; sourceTree = "<group>"; };
+		786DEBB51D48FA7A00D6654E /* UITooltips.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = UITooltips.swift; sourceTree = "<group>"; };
 		786DF10C1C72AFE0007C2D4C /* Constants.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Constants.swift; sourceTree = "<group>"; };
 		7881A3DD1BAF3B3E00ECB3C6 /* MetabolicCompass.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = MetabolicCompass.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		7881A3E01BAF3B3E00ECB3C6 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
@@ -1032,6 +1036,7 @@
 				F42F5B431BE2048400195490 /* SampleFormatter.swift */,
 				7843F9111C1FAD9900AB8978 /* ServiceAPI.swift */,
 				F42F5B441BE2048400195490 /* Theme.swift */,
+				786DEBB31D48F9DC00D6654E /* UploadManager.swift */,
 				78AC90CB1C1E859F008C931B /* UserAccount.swift */,
 				7816FFBA1C1E45D3002E2ED8 /* UserManager.swift */,
 				F42F5B361BE1FD1E00195490 /* Info.plist */,
@@ -1188,6 +1193,7 @@
 			children = (
 				F515CFCA1CECC88000318CB6 /* ScreenManager.swift */,
 				7884E8E71C5F0804000261EE /* UINotifications.swift */,
+				786DEBB51D48FA7A00D6654E /* UITooltips.swift */,
 			);
 			path = CommonUI;
 			sourceTree = "<group>";
@@ -1730,6 +1736,7 @@
 				952470421CE9BC6C003E7EDF /* AppLogoLabel.swift in Sources */,
 				78B7342B1C90B87600693229 /* VariantViewController.swift in Sources */,
 				78B734271C90B86700693229 /* EventTimeViewController.swift in Sources */,
+				786DEBB61D48FA7A00D6654E /* UITooltips.swift in Sources */,
 				84B727AD1D13E5B100839E54 /* RepeatedEventManagerViewController.swift in Sources */,
 				F42F5ADD1BDC85AF00195490 /* SampleDataAnalyzer.swift in Sources */,
 				958568091CD0D3A000EDD385 /* String+Extended.swift in Sources */,
@@ -1814,6 +1821,7 @@
 				F42F5B471BE2048400195490 /* Theme.swift in Sources */,
 				F42F5B461BE2048400195490 /* SampleFormatter.swift in Sources */,
 				7861300F1C25F42B00F50DB3 /* QueryManager.swift in Sources */,
+				786DEBB41D48F9DC00D6654E /* UploadManager.swift in Sources */,
 				F42F5B451BE2048400195490 /* HealthManager.swift in Sources */,
 				783E53D21C75856200BEBF33 /* DataGenerator.swift in Sources */,
 				7843F9121C1FAD9900AB8978 /* ServiceAPI.swift in Sources */,
