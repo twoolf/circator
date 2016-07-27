@@ -1221,6 +1221,7 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = 7881A4051BAF3B3E00ECB3C6 /* Build configuration list for PBXNativeTarget "MetabolicCompass" */;
 			buildPhases = (
+				51D34364226B81CFBBA7E750 /* 📦 Check Pods Manifest.lock */,
 				B018C9EA6C6096AB28FECC71 /* [CP] Check Pods Manifest.lock */,
 				7881A3D91BAF3B3E00ECB3C6 /* Sources */,
 				7881A3DA1BAF3B3E00ECB3C6 /* Frameworks */,
@@ -1230,6 +1231,8 @@
 				784F60361C66C8CA0040F11B /* ShellScript */,
 				543370CFCC4B0569499B41C3 /* [CP] Embed Pods Frameworks */,
 				A149B074514CE9E69DA52925 /* [CP] Copy Pods Resources */,
+				CB0AF39020B6248364B4B160 /* 📦 Embed Pods Frameworks */,
+				7D41A20BFD5E18EC3C2554E6 /* 📦 Copy Pods Resources */,
 			);
 			buildRules = (
 			);
@@ -1282,12 +1285,14 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = F42F5B3B1BE1FD1F00195490 /* Build configuration list for PBXNativeTarget "MetabolicCompassKit" */;
 			buildPhases = (
+				DD40F297BA3CD7105F0F083C /* 📦 Check Pods Manifest.lock */,
 				EDF6FFB746AC3E86B8403170 /* [CP] Check Pods Manifest.lock */,
 				F42F5B2D1BE1FD1E00195490 /* Sources */,
 				F42F5B2E1BE1FD1E00195490 /* Frameworks */,
 				F42F5B2F1BE1FD1E00195490 /* Headers */,
 				F42F5B301BE1FD1E00195490 /* Resources */,
 				F982058619CA11087652513C /* [CP] Copy Pods Resources */,
+				674261F3D3AC0E275166105B /* 📦 Copy Pods Resources */,
 			);
 			buildRules = (
 			);
@@ -1302,11 +1307,13 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = F42F5B731BE20CDD00195490 /* Build configuration list for PBXNativeTarget "MetabolicCompassWatch" */;
 			buildPhases = (
+				2705D306EB305AD3B12E01A1 /* 📦 Check Pods Manifest.lock */,
 				1EAB924C91361390745C33B6 /* [CP] Check Pods Manifest.lock */,
 				F42F5B4A1BE20CDD00195490 /* Resources */,
 				F42F5B721BE20CDD00195490 /* Embed App Extensions */,
 				F5CCBCA3A3B3EB47CBAFCDC5 /* Frameworks */,
 				B7861AC3AF5373A85B25C244 /* [CP] Copy Pods Resources */,
+				8BB72E92CA5320CCA5CB2E68 /* 📦 Copy Pods Resources */,
 			);
 			buildRules = (
 			);
@@ -1322,6 +1329,7 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = F42F5B6F1BE20CDD00195490 /* Build configuration list for PBXNativeTarget "MetabolicCompassWatchExtension" */;
 			buildPhases = (
+				A769A4738DAB5DA58798F64E /* 📦 Check Pods Manifest.lock */,
 				F968FB0CB21AAB7B8B06FC08 /* [CP] Check Pods Manifest.lock */,
 				F42F5B541BE20CDD00195490 /* Sources */,
 				F42F5B551BE20CDD00195490 /* Frameworks */,
@@ -1329,6 +1337,8 @@
 				F42F5B931BE22EA900195490 /* Embed Frameworks */,
 				C748D91099DA53BE3D90ED17 /* [CP] Embed Pods Frameworks */,
 				2D3CCB36216A3BD42BF190A7 /* [CP] Copy Pods Resources */,
+				80D90B59DB1B29D3046DD498 /* 📦 Embed Pods Frameworks */,
+				B408168D0AAA1FA950BC0029 /* 📦 Copy Pods Resources */,
 			);
 			buildRules = (
 			);
@@ -1515,6 +1525,21 @@
 			shellScript = "diff \"${PODS_ROOT}/../Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [[ $? != 0 ]] ; then\n    cat << EOM\nerror: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\nEOM\n    exit 1\nfi\n";
 			showEnvVarsInLog = 0;
 		};
+		2705D306EB305AD3B12E01A1 /* 📦 Check Pods Manifest.lock */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			name = "📦 Check Pods Manifest.lock";
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "diff \"${PODS_ROOT}/../Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [[ $? != 0 ]] ; then\n    cat << EOM\nerror: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\nEOM\n    exit 1\nfi\n";
+			showEnvVarsInLog = 0;
+		};
 		2D3CCB36216A3BD42BF190A7 /* [CP] Copy Pods Resources */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
@@ -1528,6 +1553,21 @@
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
 			shellScript = "\"${SRCROOT}/Pods/Target Support Files/Pods-MetabolicCompassWatchExtension/Pods-MetabolicCompassWatchExtension-resources.sh\"\n";
+			showEnvVarsInLog = 0;
+		};
+		51D34364226B81CFBBA7E750 /* 📦 Check Pods Manifest.lock */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			name = "📦 Check Pods Manifest.lock";
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "diff \"${PODS_ROOT}/../Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [[ $? != 0 ]] ; then\n    cat << EOM\nerror: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\nEOM\n    exit 1\nfi\n";
 			showEnvVarsInLog = 0;
 		};
 		543370CFCC4B0569499B41C3 /* [CP] Embed Pods Frameworks */ = {
@@ -1545,6 +1585,21 @@
 			shellScript = "\"${SRCROOT}/Pods/Target Support Files/Pods-MetabolicCompass/Pods-MetabolicCompass-frameworks.sh\"\n";
 			showEnvVarsInLog = 0;
 		};
+		674261F3D3AC0E275166105B /* 📦 Copy Pods Resources */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			name = "📦 Copy Pods Resources";
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "\"${SRCROOT}/Pods/Target Support Files/Pods-MetabolicCompassKit/Pods-MetabolicCompassKit-resources.sh\"\n";
+			showEnvVarsInLog = 0;
+		};
 		784F60361C66C8CA0040F11B /* ShellScript */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
@@ -1557,6 +1612,51 @@
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
 			shellScript = "\"${PODS_ROOT}/Fabric/run\" 9c8fe07d2ebf5808e873bbb23fe7a6c8ef76a22e 0608fae6f747cbbb131bca692ade699829f49ad28507a7c04fd0a3fa82ceaa49";
+		};
+		7D41A20BFD5E18EC3C2554E6 /* 📦 Copy Pods Resources */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			name = "📦 Copy Pods Resources";
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "\"${SRCROOT}/Pods/Target Support Files/Pods-MetabolicCompass/Pods-MetabolicCompass-resources.sh\"\n";
+			showEnvVarsInLog = 0;
+		};
+		80D90B59DB1B29D3046DD498 /* 📦 Embed Pods Frameworks */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			name = "📦 Embed Pods Frameworks";
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "\"${SRCROOT}/Pods/Target Support Files/Pods-MetabolicCompassWatchExtension/Pods-MetabolicCompassWatchExtension-frameworks.sh\"\n";
+			showEnvVarsInLog = 0;
+		};
+		8BB72E92CA5320CCA5CB2E68 /* 📦 Copy Pods Resources */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			name = "📦 Copy Pods Resources";
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "\"${SRCROOT}/Pods/Target Support Files/Pods-MetabolicCompassWatch/Pods-MetabolicCompassWatch-resources.sh\"\n";
+			showEnvVarsInLog = 0;
 		};
 		A149B074514CE9E69DA52925 /* [CP] Copy Pods Resources */ = {
 			isa = PBXShellScriptBuildPhase;
@@ -1573,6 +1673,21 @@
 			shellScript = "\"${SRCROOT}/Pods/Target Support Files/Pods-MetabolicCompass/Pods-MetabolicCompass-resources.sh\"\n";
 			showEnvVarsInLog = 0;
 		};
+		A769A4738DAB5DA58798F64E /* 📦 Check Pods Manifest.lock */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			name = "📦 Check Pods Manifest.lock";
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "diff \"${PODS_ROOT}/../Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [[ $? != 0 ]] ; then\n    cat << EOM\nerror: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\nEOM\n    exit 1\nfi\n";
+			showEnvVarsInLog = 0;
+		};
 		B018C9EA6C6096AB28FECC71 /* [CP] Check Pods Manifest.lock */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
@@ -1586,6 +1701,21 @@
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
 			shellScript = "diff \"${PODS_ROOT}/../Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [[ $? != 0 ]] ; then\n    cat << EOM\nerror: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\nEOM\n    exit 1\nfi\n";
+			showEnvVarsInLog = 0;
+		};
+		B408168D0AAA1FA950BC0029 /* 📦 Copy Pods Resources */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			name = "📦 Copy Pods Resources";
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "\"${SRCROOT}/Pods/Target Support Files/Pods-MetabolicCompassWatchExtension/Pods-MetabolicCompassWatchExtension-resources.sh\"\n";
 			showEnvVarsInLog = 0;
 		};
 		B7861AC3AF5373A85B25C244 /* [CP] Copy Pods Resources */ = {
@@ -1616,6 +1746,36 @@
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
 			shellScript = "\"${SRCROOT}/Pods/Target Support Files/Pods-MetabolicCompassWatchExtension/Pods-MetabolicCompassWatchExtension-frameworks.sh\"\n";
+			showEnvVarsInLog = 0;
+		};
+		CB0AF39020B6248364B4B160 /* 📦 Embed Pods Frameworks */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			name = "📦 Embed Pods Frameworks";
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "\"${SRCROOT}/Pods/Target Support Files/Pods-MetabolicCompass/Pods-MetabolicCompass-frameworks.sh\"\n";
+			showEnvVarsInLog = 0;
+		};
+		DD40F297BA3CD7105F0F083C /* 📦 Check Pods Manifest.lock */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			name = "📦 Check Pods Manifest.lock";
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "diff \"${PODS_ROOT}/../Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [[ $? != 0 ]] ; then\n    cat << EOM\nerror: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\nEOM\n    exit 1\nfi\n";
 			showEnvVarsInLog = 0;
 		};
 		EDF6FFB746AC3E86B8403170 /* [CP] Check Pods Manifest.lock */ = {
@@ -1969,10 +2129,10 @@
 				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
-				CURRENT_PROJECT_VERSION = 21;
+				CURRENT_PROJECT_VERSION = 22;
 				DEFINES_MODULE = YES;
 				DYLIB_COMPATIBILITY_VERSION = 1;
-				DYLIB_CURRENT_VERSION = 21;
+				DYLIB_CURRENT_VERSION = 22;
 				DYLIB_INSTALL_NAME_BASE = "@rpath";
 				EMBEDDED_CONTENT_CONTAINS_SWIFT = NO;
 				FRAMEWORK_SEARCH_PATHS = "$(inherited)";
@@ -2003,7 +2163,7 @@
 				CODE_SIGN_ENTITLEMENTS = MetabolicCompass/MetabolicCompass.entitlements;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
-				CURRENT_PROJECT_VERSION = 21;
+				CURRENT_PROJECT_VERSION = 22;
 				EMBEDDED_CONTENT_CONTAINS_SWIFT = YES;
 				FRAMEWORK_SEARCH_PATHS = "$(inherited)";
 				GCC_OPTIMIZATION_LEVEL = 0;
@@ -2156,7 +2316,7 @@
 				CODE_SIGN_ENTITLEMENTS = MetabolicCompass/MetabolicCompass.entitlements;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
-				CURRENT_PROJECT_VERSION = 21;
+				CURRENT_PROJECT_VERSION = 22;
 				EMBEDDED_CONTENT_CONTAINS_SWIFT = YES;
 				FRAMEWORK_SEARCH_PATHS = "$(inherited)";
 				GCC_OPTIMIZATION_LEVEL = s;
@@ -2214,10 +2374,10 @@
 				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
-				CURRENT_PROJECT_VERSION = 21;
+				CURRENT_PROJECT_VERSION = 22;
 				DEFINES_MODULE = YES;
 				DYLIB_COMPATIBILITY_VERSION = 1;
-				DYLIB_CURRENT_VERSION = 21;
+				DYLIB_CURRENT_VERSION = 22;
 				DYLIB_INSTALL_NAME_BASE = "@rpath";
 				EMBEDDED_CONTENT_CONTAINS_SWIFT = NO;
 				FRAMEWORK_SEARCH_PATHS = "$(inherited)";

@@ -31,6 +31,7 @@ def shared_pods
     pod 'AwesomeCache'
     pod 'EasyTipView'
     pod 'HealthKitSampleGenerator'
+    pod 'SteviaLayout'
 end
 
 target 'MetabolicCompassKit' do
