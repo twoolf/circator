@@ -6,6 +6,8 @@ def shared_pods
     pod 'ResearchKit', :git => 'https://github.com/twoolf/ResearchKit.git'
     pod 'Charts', :git => 'https://github.com/danielgindi/ios-charts.git'
     pod 'Alamofire', '~> 2.0'
+    pod 'Realm'
+    pod 'RealmSwift'
     pod 'SwiftyJSON', :git => 'https://github.com/SwiftyJSON/SwiftyJSON.git'
     pod 'SwiftDate'
     pod 'SwiftyUserDefaults'
@@ -21,15 +23,13 @@ def shared_pods
     pod 'MGSwipeTableCell'
     pod 'Pages'
     pod 'SwiftChart'
-    pod 'Fabric'
-    pod 'Crashlytics'
     pod 'SORandom'
     pod 'FileKit', '~> 2.0.0'
     pod 'JWTDecode', '~> 1.0'
     pod 'AKPickerView-Swift'
     pod 'AsyncKit'
-    pod 'SteviaLayout'
     pod 'AwesomeCache'
+    pod 'EasyTipView'
     pod 'HealthKitSampleGenerator'
 end
 
@@ -39,6 +39,8 @@ end
 
 target 'MetabolicCompass' do
     shared_pods
+    pod 'Crashlytics'
+    pod 'Fabric'
 end
 
 target 'MetabolicCompassWatchExtension' do 
