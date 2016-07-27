@@ -95,6 +95,10 @@ class ModelItem: NSObject {
         if let _value = value as? String {
             return _value.trimmed()
         }
+        else if let _value = value as? Int {
+            return String(_value)
+        }
+
         return nil
     }
 

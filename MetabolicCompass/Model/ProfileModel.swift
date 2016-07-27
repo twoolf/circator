@@ -54,6 +54,8 @@ class ProfileModel: UserInfoModel {
                     else {
                         item.setNewValue(profileItemInfo)
                     }
+                } else {
+                    log.warning("Could not find profile field for \(item.name)")
                 }
             }
 
