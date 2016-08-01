@@ -77,7 +77,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, WCSessionDelegate {
 
         window?.rootViewController = navController
         window?.makeKeyAndVisible()
-        
+                
         return true
     }
 
