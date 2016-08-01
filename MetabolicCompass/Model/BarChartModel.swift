@@ -202,6 +202,40 @@ class BarChartModel : NSObject {
         let chartData = ScatterChartData(xVals: xVals, dataSets: [dataSet1, dataSet2])
         return chartData
     }
+    
+    func scatterChartDataWithMultipleEntries(xVals: [String], yVals:[[ChartDataEntry]], types: [DataSetType?]) -> ScatterChartData {
+        
+        assert(xVals.count != yVals.count, "Data input is invalid, x and y value arrays count should be equal")
+
+        var dataSets = [MCScatterChartDataSet]()
+        
+        var i = 0
+        while i <= yVals.count {
+            let dataSet1 = MCScatterChartDataSet(yVals: yVals[i], label: "")
+            dataSet1.colors = i % 2 == 0 ? [UIColor.whiteColor()] : [UIColor.redColor()]
+            if types[i] != nil { dataSet1.dataSetType = types[i]! }
+            dataSet1.drawValuesEnabled = false
+            dataSets.append(dataSet1)
+            i += 1
+        }
+        
+        let chartData = ScatterChartData(xVals: xVals, dataSets: dataSets)
+        return chartData
+    }
+    
+    func scatterChartDataWithMultipleDataSets(xVals: [String?], dataSets:[IChartDataSet]) -> ScatterChartData? {
+        
+        var i = 0
+        for dataSet1 in dataSets {
+            if let dSet = dataSet1 as? ChartBaseDataSet {
+                dSet.colors = i % 2 == 0 ? [UIColor.whiteColor()] : [UIColor.redColor()]
+            }
+            i += 1
+        }
+        
+        let chartData = ScatterChartData(xVals: xVals, dataSets: dataSets)
+        return chartData
+    }
 
     // MARK :- Get all data for type
 
