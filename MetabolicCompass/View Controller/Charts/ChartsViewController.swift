@@ -109,10 +109,11 @@ class ChartsViewController: UIViewController {
     }
 
     func correlateChart () {
-        if let correlateController = UIStoryboard(name: "TabScreens", bundle: nil).instantiateViewControllerWithIdentifier("correlatePlaceholder") as? UINavigationController {
+        if let correlateController = UIStoryboard(name: "TabScreens", bundle: nil).instantiateViewControllerWithIdentifier("correlatePlaceholder") as? UIViewController {
             let leftButton = UIBarButtonItem(image: UIImage(named: "close-button"), style: .Plain, target: self, action: #selector(dismissCorrelateChart))
-            correlateController.viewControllers[0].navigationItem.setLeftBarButtonItem(leftButton, animated: false)
-            self.presentViewController(correlateController, animated: true, completion: nil)
+//            correlateController.viewControllers[0].navigationItem.setLeftBarButtonItem(leftButton, animated: false)
+            self.showViewController(correlateController, sender: self)
+            
         }
     }
 

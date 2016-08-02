@@ -25,25 +25,29 @@ class CorrelationChartsViewController: UIViewController, UITableViewDelegate, UI
     @IBOutlet weak var scatterChartContainer: UIView!
     @IBOutlet weak var correlatoinChartContainer: UIView!
     
-    @IBOutlet weak var scatterCh: ScatterChartCollectionCell!
-    @IBOutlet weak var correlCh: ScatterChartCollectionCell!
+    @IBOutlet weak var scatterCh: ScatterCorrelcationCell!
+    @IBOutlet weak var correlCh: TwoLineCorrelcationCell!
     //MARK: - VARS
     internal var data: [HKSampleType] = PreviewManager.chartsSampleTypes
     private var rangeType = DataRangeType.Week
-    private let chartsModel = BarChartModel()
+    private let scatterChartsModel = BarChartModel()
+    private let lineChartsModel = BarChartModel()
+
 
     override func viewDidLoad() {
         super.viewDidLoad()
 
-        scatterCh = NSBundle.mainBundle().loadNibNamed("ScatterChartCollectionCell", owner: self, options: nil).last as? ScatterChartCollectionCell
-        correlCh = NSBundle.mainBundle().loadNibNamed("ScatterChartCollectionCell", owner: self, options: nil).last as? ScatterChartCollectionCell
+        scatterCh = NSBundle.mainBundle().loadNibNamed("ScatterCorrelcationCell", owner: self, options: nil).last as? ScatterCorrelcationCell
+        correlCh = NSBundle.mainBundle().loadNibNamed("TwoLineCorrelcationCell", owner: self, options: nil).last as? TwoLineCorrelcationCell
         scatterCh?.frame = correlatoinChartContainer.bounds
         correlCh?.frame = correlatoinChartContainer.bounds
 
         scatterChartContainer.addSubview(scatterCh!)
         correlatoinChartContainer.addSubview(correlCh!)
         
-        // Do any additional setup after loading the view.
+        scatterChartContainer.hidden = false
+        correlatoinChartContainer.hidden = true
+
     }
 
     override func didReceiveMemoryWarning() {
@@ -55,12 +59,13 @@ class CorrelationChartsViewController: UIViewController, UITableViewDelegate, UI
 //MARK: VC Legacy methods: should be moved to super class
     func updateChartsData () {
         activityIndicator.startAnimating()
-//         () {
-//            self.activityIndicator.stopAnimating()
-//            self.updateChartData()
-//        }
-        
-        getChartDataForRange(range: HealthManagerStatisticsRangeType, type: ChartType, values: [Double], minValues: [Double]?)
+        scatterChartsModel.gettAllDataForSpecifiedType(ChartType.ScatterChart) {
+            self.lineChartsModel.gettAllDataForSpecifiedType(ChartType.LineChart) {
+                self.activityIndicator.stopAnimating()
+                self.updateChartData()
+            }
+        }
+
     }
     
     override func viewWillAppear(animated: Bool) {
@@ -125,46 +130,79 @@ class CorrelationChartsViewController: UIViewController, UITableViewDelegate, UI
         var secondType = pickerData[1][selectedPickerRows[1]].identifier
         secondType = appearanceProvider.titleForSampleType(secondType, active: false).string
 
-        let titleString = firstType + " / " + secondType
+        let titleString = firstType
         (scatterCh.chartTitleLabel.text, correlCh.chartTitleLabel.text) = (titleString, titleString)
+        (scatterCh.subtitleLabel.text, correlCh.subtitleLabel.text) = (secondType, secondType)
     }
     
     func updateChartData() {
-        let model = chartsModel
+        updateChartDataForChartsModel(scatterChartsModel)
+        updateChartDataForChartsModel(lineChartsModel)
+        updateChartTitle()
+    }
+    
+    func updateChartDataForChartsModel(model: BarChartModel) {
         
         var dataSets = [IChartDataSet]()
-//        let sets = MCScatterChartDataSet
         var types = [DataSetType]()
         
         var xValues = [String?]()
         
+        var selectedIndexCount = 0
         for pickerDataArray in pickerData {
-            let type = pickerData[0][pickerView.selectedRowInComponent(0)]
+            let type = pickerDataArray[self.selectedPickerRows[selectedIndexCount]]
+            selectedIndexCount += 1
             let typeToShow = type.identifier == HKCorrelationTypeIdentifierBloodPressure ? HKQuantityTypeIdentifierBloodPressureSystolic : type.identifier
             let key = typeToShow + "\((model.rangeType.rawValue))"
+            print("keykeykeykeykeykeykeykey", key)
             let chartData = model.typesChartData[key]
+            if (chartData == nil) {
+                scatterCh.chartView.data = nil
+                correlCh.chartView.data = nil
+                return
+            }
             xValues = (chartData?.xVals)!
             dataSets.append((chartData?.dataSets[0])!)
         }
         
-        let chartData = chartsModel.scatterChartDataWithMultipleDataSets(xValues, dataSets: dataSets)
+        if (model == scatterChartsModel) {
+            let chartData = model.scatterChartDataWithMultipleDataSets(xValues, dataSets: dataSets)
+            
+            if let yMax = chartData?.yMax, yMin = chartData?.yMin where yMax > 0 || yMin > 0 {
+                scatterCh.chartView.data = nil
+                var xValues: [String?] = Array(count: 8, repeatedValue: "")
+                
+                if let dSet = dataSets[1] as? ChartDataSet {
+                    for yValye in dSet.yVals {
+                        xValues[yValye.xIndex] = ("\(yValye.value)")
+                    }
+                }
+                scatterCh.updateLeftAxisWith(chartData?.yMin, maxValue: chartData?.yMax)
+                scatterCh.chartView.data = chartData
+                scatterCh.updateXAxisWith(xValues)
+                scatterCh.drawLimitLine()
+            }
+            else {
+                scatterCh.chartView.data = nil
+            }
+        }
+        else {
+            let chartData = model.lineChartWithMultipleDataSets(xValues, dataSets: dataSets)
+            let rightChartData = LineChartData(xVals: xValues, dataSets: [dataSets[1]])
+            
+            if let yMax = chartData?.yMax, yMin = chartData?.yMin where yMax > 0 || yMin > 0 {
+                correlCh.chartView.data = nil
+                correlCh.updateLeftAxisWith(chartData?.yMin, maxValue: chartData?.yMax)
+                correlCh.updateMinMaxTitlesWithValues("\(rightChartData.yMin)", maxValue: "\(rightChartData.yMax)")
+                correlCh.drawLimitLine()
+                correlCh.chartView.data = chartData
+            }
+            else {
+                correlCh.chartView.data = nil
+            }
+        }
 
-        if let yMax = chartData?.yMax, yMin = chartData?.yMin where yMax > 0 || yMin > 0 {
-            scatterCh.chartView.data = nil
-            scatterCh.updateLeftAxisWith(chartData?.yMin, maxValue: chartData?.yMax)
-            scatterCh.chartView.data = chartsModel.scatterChartDataWithMultipleDataSets(xValues, dataSets: dataSets)
-            print("chartDatachartDatachartData", chartData)
-        }
         
-        if let yMax = chartData?.yMax, yMin = chartData?.yMin where yMax > 0 || yMin > 0 {
-            correlCh.chartView.data = nil
-            correlCh.updateLeftAxisWith(chartData?.yMin, maxValue: chartData?.yMax)
-            correlCh.chartView.data = chartsModel.scatterChartDataWithMultipleDataSets(xValues, dataSets: dataSets)
-            print("chartDatachartDatachartData", chartData)
-        }
-        
-//        updateChartsData()
-        updateChartTitle()
     }
     
     lazy var assistTextField : UITextField = {
@@ -194,6 +232,9 @@ class CorrelationChartsViewController: UIViewController, UITableViewDelegate, UI
         picker.backgroundColor = self.tableView.backgroundColor
         
         for type in PreviewManager.manageChartsSampleTypes {
+            if (type.identifier == HKCorrelationTypeIdentifierBloodPressure) {
+                continue
+            }
             self.pickerData[0].append(type)
             self.pickerData[1].append(type)
             self.pickerIdentifiers[0].append(type.identifier)

@@ -39,6 +39,23 @@ class BaseChartCollectionCell: UICollectionViewCell {
         chartMaxValueLabel.text = ""
     }
     
+    func addYLimitLine(index:Double) {
+        let limitLine = ChartLimitLine(limit: index)
+        limitLine.lineDashLengths = [3.0]
+        limitLine.lineDashPhase = 1
+        limitLine.lineColor = NSUIColor.grayColor()
+        self.chartView.xAxis.addLimitLine(limitLine)
+    }
+        
+    func drawLimitLine()
+    {
+        let limitLine = ChartLimitLine(limit: self.chartView.chartYMax)
+        limitLine.lineDashLengths = [3.0]
+        limitLine.lineDashPhase = 1
+        limitLine.lineColor = NSUIColor.grayColor()
+        self.chartView.leftAxis.addLimitLine(limitLine)
+    }
+    
     func baseChartPreperation (chart: BarLineChartViewBase){
         let xAxis = chart.xAxis
         xAxis.drawGridLinesEnabled = false
@@ -90,6 +107,12 @@ class BaseChartCollectionCell: UICollectionViewCell {
             chartMinValueLabel.text = String(format:"%.0f", leftAxis.axisMinValue)
             chartMaxValueLabel.text = String(format:"%.0f", leftAxis.axisMaxValue)
         }
+    }
+    
+    func updateXAxisWith(xValues:[String?]) {
+        let xAxis = chartView.xAxis
+        xAxis.removeAllLimitLines()
+        xAxis.values = xValues
     }
     
     func getChartMarker() -> BalloonMarker {

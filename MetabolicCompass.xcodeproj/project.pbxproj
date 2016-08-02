@@ -7,6 +7,10 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		11FE4B8F1D507F1D007A8D8E /* ScatterCorrelcationCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 11FE4B8E1D507F1D007A8D8E /* ScatterCorrelcationCell.xib */; };
+		11FE4B911D508020007A8D8E /* ScatterCorrelcationCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 11FE4B901D508020007A8D8E /* ScatterCorrelcationCell.swift */; };
+		11FE4B931D50A5B4007A8D8E /* TwoLineCorrelcationCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 11FE4B921D50A5B4007A8D8E /* TwoLineCorrelcationCell.xib */; };
+		11FE4B951D50A5DD007A8D8E /* TwoLineCorrelcationCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 11FE4B941D50A5DD007A8D8E /* TwoLineCorrelcationCell.swift */; };
 		1C2DA13F1D479CD500C738DF /* MetabolicChart.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1C2DA13E1D479CD400C738DF /* MetabolicChart.swift */; };
 		1C2DA1411D47A72100C738DF /* health_data_mock.json in Resources */ = {isa = PBXBuildFile; fileRef = 1C2DA1401D47A72100C738DF /* health_data_mock.json */; };
 		1C2DA1421D47A72100C738DF /* health_data_mock.json in Resources */ = {isa = PBXBuildFile; fileRef = 1C2DA1401D47A72100C738DF /* health_data_mock.json */; };
@@ -320,6 +324,10 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		11FE4B8E1D507F1D007A8D8E /* ScatterCorrelcationCell.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = ScatterCorrelcationCell.xib; sourceTree = "<group>"; };
+		11FE4B901D508020007A8D8E /* ScatterCorrelcationCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ScatterCorrelcationCell.swift; sourceTree = "<group>"; };
+		11FE4B921D50A5B4007A8D8E /* TwoLineCorrelcationCell.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = TwoLineCorrelcationCell.xib; sourceTree = "<group>"; };
+		11FE4B941D50A5DD007A8D8E /* TwoLineCorrelcationCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TwoLineCorrelcationCell.swift; sourceTree = "<group>"; };
 		1C2DA13E1D479CD400C738DF /* MetabolicChart.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MetabolicChart.swift; sourceTree = "<group>"; };
 		1C2DA1401D47A72100C738DF /* health_data_mock.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = health_data_mock.json; sourceTree = "<group>"; };
 		1C7107BD1D4B14B500C2B3D4 /* CorrelationChartsViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CorrelationChartsViewController.swift; sourceTree = "<group>"; };
@@ -779,6 +787,10 @@
 				842B7DCD1D0960CB007F2126 /* LineChartCollectionCell.xib */,
 				842B7DCE1D0960CB007F2126 /* ScatterChartCollectionCell.swift */,
 				842B7DCF1D0960CB007F2126 /* ScatterChartCollectionCell.xib */,
+				11FE4B921D50A5B4007A8D8E /* TwoLineCorrelcationCell.xib */,
+				11FE4B941D50A5DD007A8D8E /* TwoLineCorrelcationCell.swift */,
+				11FE4B8E1D507F1D007A8D8E /* ScatterCorrelcationCell.xib */,
+				11FE4B901D508020007A8D8E /* ScatterCorrelcationCell.swift */,
 				842B7DC61D0960A7007F2126 /* BarChartCollectionCell.swift */,
 				842B7DC71D0960A7007F2126 /* BarChartCollectionCell.xib */,
 				84EF0EC91D058A9000A25760 /* BaseAddEventTableViewCell.swift */,
@@ -1438,6 +1450,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				95D142BD1CE60312006A9118 /* DoubleCheckListTitledCollectionViewCell.xib in Resources */,
+				11FE4B8F1D507F1D007A8D8E /* ScatterCorrelcationCell.xib in Resources */,
 				842B7DD11D0960CB007F2126 /* LineChartCollectionCell.xib in Resources */,
 				84AB38D01CEA0EFA00B7DB4E /* DailyProgressDayTableViewCell.xib in Resources */,
 				84EF0EC81D0580C500A25760 /* WhenTableViewCell.xib in Resources */,
@@ -1455,6 +1468,7 @@
 				95F4009A1CE385C60060F28C /* InfoCollectionViewCell.xib in Resources */,
 				95C0B9A41CD2563B006E523F /* TitledInputCollectionViewCell.xib in Resources */,
 				84EF0EAD1D05606300A25760 /* AddEvents.storyboard in Resources */,
+				11FE4B931D50A5B4007A8D8E /* TwoLineCorrelcationCell.xib in Resources */,
 				95748C471CCFC7AA0002F6A3 /* InputCollectionViewCell.xib in Resources */,
 				95F400981CE385C60060F28C /* CircleImageCollectionViewCell.xib in Resources */,
 				843B40941D364BCE0044691C /* PhysiologicalHeaderView.xib in Resources */,
@@ -1851,6 +1865,7 @@
 				958568031CD0B18900EDD385 /* RegistrationModel.swift in Sources */,
 				84B727AB1D13E5B100839E54 /* CircadianBehaviorViewController.swift in Sources */,
 				84C9CB471CE9B3A4005ED875 /* DailyProgressViewController.swift in Sources */,
+				11FE4B911D508020007A8D8E /* ScatterCorrelcationCell.swift in Sources */,
 				7868188A1D33044A00CAE4ED /* FastingViewController.swift in Sources */,
 				E75E95B21CDCD6CB00A18756 /* DashboardMetricsAppearanceProvider.swift in Sources */,
 				95769B871CE49E4000F26668 /* PhysiologicalDataViewController.swift in Sources */,
@@ -1952,6 +1967,7 @@
 				84EF0EC21D057F8F00A25760 /* AddMealDataSource.swift in Sources */,
 				95748C531CCFC8020002F6A3 /* BaseCollectionViewCell.swift in Sources */,
 				84207D281CCE02A400776848 /* LoginModel.swift in Sources */,
+				11FE4B951D50A5DD007A8D8E /* TwoLineCorrelcationCell.swift in Sources */,
 				842B7DBF1D09601B007F2126 /* BallonMarker.swift in Sources */,
 				78B734221C90B85400693229 /* RowSettingsViewController.swift in Sources */,
 				F56CC2B41CF6077000040604 /* FontScaleLabel.swift in Sources */,

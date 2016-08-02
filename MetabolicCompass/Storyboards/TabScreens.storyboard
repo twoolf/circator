@@ -863,7 +863,7 @@
         <!--Navigation Controller-->
         <scene sceneID="hEk-hJ-qL1">
             <objects>
-                <navigationController storyboardIdentifier="correlatePlaceholder" id="DFz-R8-yBZ" sceneMemberID="viewController">
+                <navigationController id="DFz-R8-yBZ" sceneMemberID="viewController">
                     <simulatedScreenMetrics key="simulatedDestinationMetrics" type="retina4"/>
                     <navigationBar key="navigationBar" contentMode="scaleToFill" id="ut8-IG-czx">
                         <rect key="frame" x="0.0" y="0.0" width="320" height="44"/>
@@ -880,7 +880,7 @@
         <!--CORRELATE-->
         <scene sceneID="qZr-f0-B73">
             <objects>
-                <viewController id="5fL-pS-JNk" customClass="CorrelationChartsViewController" customModule="MetabolicCompass" customModuleProvider="target" sceneMemberID="viewController">
+                <viewController storyboardIdentifier="correlatePlaceholder" id="5fL-pS-JNk" customClass="CorrelationChartsViewController" customModule="MetabolicCompass" customModuleProvider="target" sceneMemberID="viewController">
                     <layoutGuides>
                         <viewControllerLayoutGuide type="top" id="zIm-E1-bbh"/>
                         <viewControllerLayoutGuide type="bottom" id="zJN-Dk-uE6"/>
@@ -909,7 +909,7 @@
                             </segmentedControl>
                             <tableView clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="default" sectionIndexMinimumDisplayRowCount="2" rowHeight="65" sectionHeaderHeight="1" sectionFooterHeight="1" translatesAutoresizingMaskIntoConstraints="NO" id="T5m-AF-9w4">
                                 <rect key="frame" x="0.0" y="135" width="320" height="128"/>
-                                <color key="backgroundColor" red="0.0" green="0.0" blue="0.0" alpha="1" colorSpace="calibratedRGB"/>
+                                <color key="backgroundColor" red="0.0039215686274509803" green="0.14901960784313725" blue="0.31764705882352939" alpha="1" colorSpace="calibratedRGB"/>
                                 <constraints>
                                     <constraint firstAttribute="height" constant="128" id="RfD-8d-Nvw"/>
                                 </constraints>
@@ -950,7 +950,7 @@
                                                 <constraint firstItem="TVF-Vh-R6S" firstAttribute="top" secondItem="DDe-Ug-o22" secondAttribute="topMargin" constant="10" id="qWU-TS-t5F"/>
                                             </constraints>
                                         </tableViewCellContentView>
-                                        <color key="backgroundColor" red="0.0" green="0.0" blue="0.0" alpha="1" colorSpace="calibratedRGB"/>
+                                        <color key="backgroundColor" red="0.0039215686274509803" green="0.14901960784313725" blue="0.31764705882352939" alpha="1" colorSpace="calibratedRGB"/>
                                         <connections>
                                             <outlet property="healthImageView" destination="TVF-Vh-R6S" id="iSO-Gz-cmp"/>
                                             <outlet property="titleLabel" destination="gCV-wV-aKD" id="Bqs-Zf-U9j"/>
@@ -991,7 +991,7 @@
                                                 <constraint firstItem="YpW-db-ltm" firstAttribute="leading" secondItem="ZOL-sK-2de" secondAttribute="trailing" constant="18" id="xQ1-TC-9Xa"/>
                                             </constraints>
                                         </tableViewCellContentView>
-                                        <color key="backgroundColor" red="0.0" green="0.0" blue="0.0" alpha="1" colorSpace="calibratedRGB"/>
+                                        <color key="backgroundColor" red="0.0039215686274509803" green="0.14901960784313725" blue="0.31764705882352939" alpha="1" colorSpace="calibratedRGB"/>
                                         <connections>
                                             <outlet property="healthImageView" destination="ZOL-sK-2de" id="6XM-kx-Q5G"/>
                                             <outlet property="titleLabel" destination="YpW-db-ltm" id="mwO-Z5-oDR"/>
@@ -1005,30 +1005,30 @@
                                 </connections>
                             </tableView>
                             <containerView opaque="NO" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="Z2E-kJ-Yvb">
-                                <rect key="frame" x="10" y="270" width="300" height="250"/>
+                                <rect key="frame" x="10" y="270" width="300" height="190"/>
                                 <constraints>
                                     <constraint firstAttribute="width" constant="300" id="InD-Z9-yOt"/>
-                                    <constraint firstAttribute="height" constant="250" id="Z2t-cM-Tx5"/>
+                                    <constraint firstAttribute="height" constant="190" id="Z2t-cM-Tx5"/>
                                 </constraints>
                                 <connections>
                                     <segue destination="d8V-AL-YKb" kind="embed" id="MZC-gt-Y9Y"/>
                                 </connections>
                             </containerView>
                             <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="G5Z-r6-mWz" userLabel="ChartsContainer">
-                                <rect key="frame" x="10" y="270" width="300" height="250"/>
+                                <rect key="frame" x="10" y="270" width="300" height="190"/>
                             </view>
                             <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="chw-8A-tfy" userLabel="CorrelationChart">
-                                <rect key="frame" x="10" y="270" width="300" height="250"/>
+                                <rect key="frame" x="10" y="270" width="300" height="190"/>
                             </view>
                             <activityIndicatorView hidden="YES" opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" hidesWhenStopped="YES" style="white" translatesAutoresizingMaskIntoConstraints="NO" id="9Ic-rh-nLe">
-                                <rect key="frame" x="150" y="385" width="20" height="20"/>
+                                <rect key="frame" x="150" y="355" width="20" height="20"/>
                                 <constraints>
                                     <constraint firstAttribute="height" constant="20" id="1aX-Lo-Jmi"/>
                                     <constraint firstAttribute="width" constant="20" id="BfL-sV-fgy"/>
                                 </constraints>
                             </activityIndicatorView>
                         </subviews>
-                        <color key="backgroundColor" red="0.0" green="0.0" blue="0.0" alpha="1" colorSpace="calibratedRGB"/>
+                        <color key="backgroundColor" red="0.0039215686274509803" green="0.14901960784313725" blue="0.31764705882352939" alpha="1" colorSpace="calibratedRGB"/>
                         <constraints>
                             <constraint firstItem="T5m-AF-9w4" firstAttribute="centerX" secondItem="eLB-zj-Ogg" secondAttribute="centerX" id="6v3-eQ-TDm"/>
                             <constraint firstItem="cnt-tK-wBX" firstAttribute="leading" secondItem="eLB-zj-Ogg" secondAttribute="leadingMargin" constant="-4" id="8i8-LT-J89"/>
