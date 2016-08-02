@@ -200,7 +200,7 @@ class DailyChartModel : NSObject, UITableViewDataSource {
         
         HealthManager.sharedManager.fetchCircadianEventIntervals(day, endDate: endOfDay, completion: { (intervals, error) in
             guard error == nil else {
-                log.error("Failed to fetch circadian events: \(error)")
+                Log.error("Failed to fetch circadian events: \(error)")
                 return
             }
             if !intervals.isEmpty {
@@ -243,7 +243,7 @@ class DailyChartModel : NSObject, UITableViewDataSource {
         HealthManager.sharedManager.fetchCircadianEventIntervals(startDate) { (intervals, error) -> Void in
             Async.main {
                 guard error == nil else {
-                    log.error("Failed to fetch circadian events: \(error)")
+                    Log.error("Failed to fetch circadian events: \(error)")
                     return
                 }
                 if intervals.isEmpty {

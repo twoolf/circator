@@ -100,7 +100,7 @@ class ProfileSubviewController : FormViewController {
     }
 
     func updateProfile() {
-        log.info("Updating profile..")
+        Log.info("Updating profile..")
         navigationController?.popViewControllerAnimated(true)
     }
 }

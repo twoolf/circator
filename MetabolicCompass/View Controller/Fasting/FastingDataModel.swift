@@ -56,7 +56,7 @@ public class FastingDataModel : NSObject {
         dispatch_group_enter(group)
         HealthManager.sharedManager.fetchSampleCollectionDays(PreviewManager.manageChartsSampleTypes) { (table, error) in
             guard error == nil else {
-                log.error(error)
+                Log.error(error as! String)
                 someError.append(error)
                 dispatch_group_leave(group)
                 return
@@ -69,13 +69,13 @@ public class FastingDataModel : NSObject {
         dispatch_group_enter(group)
         HealthManager.sharedManager.fetchWeeklyFastState { (cFast, cNonFast, error) in
             guard error == nil else {
-                log.error(error)
+                Log.error(error as! String)
                 someError.append(error)
                 dispatch_group_leave(group)
                 return
             }
 
-            log.info("WF STATE result: \(cFast) \(cNonFast)")
+            Log.info("WF STATE result: \(cFast) \(cNonFast)")
             self.cumulativeWeeklyFasting = cFast
             self.cumulativeWeeklyNonFast = cNonFast
             dispatch_group_leave(group)
@@ -84,13 +84,13 @@ public class FastingDataModel : NSObject {
         dispatch_group_enter(group)
         HealthManager.sharedManager.fetchWeeklyFastingVariability { (variability, error) in
             guard error == nil else {
-                log.error(error)
+                Log.error(error as! String)
                 someError.append(error)
                 dispatch_group_leave(group)
                 return
             }
 
-            log.info("WF variability result: \(variability)")
+            Log.info("WF variability result: \(variability)")
             self.weeklyFastingVariability = variability
             dispatch_group_leave(group)
         }
@@ -98,13 +98,13 @@ public class FastingDataModel : NSObject {
         dispatch_group_enter(group)
         HealthManager.sharedManager.fetchWeeklyFastType { (fSleep, fAwake, error) in
             guard error == nil else {
-                log.error(error)
+                Log.error(error as! String)
                 someError.append(error)
                 dispatch_group_leave(group)
                 return
             }
 
-            log.info("WF TYPE result: \(fSleep) \(fAwake)")
+            Log.info("WF TYPE result: \(fSleep) \(fAwake)")
             self.fastSleep = fSleep
             self.fastAwake = fAwake
             dispatch_group_leave(group)
@@ -113,13 +113,13 @@ public class FastingDataModel : NSObject {
         dispatch_group_enter(group)
         HealthManager.sharedManager.fetchWeeklyEatAndExercise { (tEat, tExercise, error) in
             guard error == nil else {
-                log.error(error)
+                Log.error(error as! String)
                 someError.append(error)
                 dispatch_group_leave(group)
                 return
             }
 
-            log.info("WEE result: \(tEat) \(tExercise)")
+            Log.info("WEE result: \(tEat) \(tExercise)")
             self.fastEat = tEat
             self.fastExercise = tExercise
             dispatch_group_leave(group)
@@ -169,14 +169,14 @@ public class FastingDataModel : NSObject {
     }
 
     func logModel() {
-        log.info("fastSlp: \(self.fastSleep)")
-        log.info("fastAwk: \(self.fastAwake)")
-        log.info("fastEat: \(self.fastEat)")
-        log.info("fastExc: \(self.fastExercise)")
-        log.info("cwf: \(self.cumulativeWeeklyFasting)")
-        log.info("cwnf: \(self.cumulativeWeeklyNonFast)")
-        log.info("wvf: \(self.weeklyFastingVariability)")
-        log.info("sd: \(self.samplesCollected)")
+        Log.info("fastSlp: \(self.fastSleep)")
+        Log.info("fastAwk: \(self.fastAwake)")
+        Log.info("fastEat: \(self.fastEat)")
+        Log.info("fastExc: \(self.fastExercise)")
+        Log.info("cwf: \(self.cumulativeWeeklyFasting)")
+        Log.info("cwnf: \(self.cumulativeWeeklyNonFast)")
+        Log.info("wvf: \(self.weeklyFastingVariability)")
+        Log.info("sd: \(self.samplesCollected)")
     }
 }
 

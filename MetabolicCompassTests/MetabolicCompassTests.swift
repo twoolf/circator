@@ -8,9 +8,9 @@
 
 import XCTest
 import Async
-import SwiftyBeaver
+import CocoaLumberjack
 
-let log = SwiftyBeaver.self
+//let log = SwiftyBeaver.self
 
 @testable import MetabolicCompassKit
 @testable import MetabolicCompass

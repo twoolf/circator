@@ -236,7 +236,7 @@ class SettingsViewController: UITableViewController, UITextFieldDelegate, SFSafa
                 historySlider?.formSlider().value = 100.0
                 historySlider?.formSlider().addTarget(self, action: "sliderValueDidChange:", forControlEvents: .ValueChanged)
                 let disable : Void -> Void = { _ in
-                    log.info("No historical range available")
+                    Log.info("No historical range available")
                     self.hMin = 0.0
                     self.hMax = 0.0
                     self.historySlider?.formSlider().enabled = false
@@ -246,7 +246,7 @@ class SettingsViewController: UITableViewController, UITextFieldDelegate, SFSafa
                 }
 
                 if let (start, end) = UserManager.sharedManager.getHistoricalRange() {
-                    log.info("Historical range: \(start) --- \(end)")
+                    Log.info("Historical range: \(start) --- \(end)")
                     hMin = start
                     hMax = end
                     if abs(hMax - hMin) < 10.0 {
@@ -464,7 +464,7 @@ class SettingsViewController: UITableViewController, UITextFieldDelegate, SFSafa
                 }
 
             default:
-                log.error("Invalid settings tableview section")
+                Log.error("Invalid settings tableview section")
             }
 
             formCells[indexPath.section]!.insert(formCell, atIndex: indexPath.row)
@@ -600,13 +600,13 @@ class SettingsViewController: UITableViewController, UITextFieldDelegate, SFSafa
         if let mappedK = UserProfile.sharedInstance.profileMapping[kvv.0] {
             UserManager.sharedManager.pushProfile([mappedK:kvv.1], completion: {_ in return})
         } else {
-            log.error("No mapping found for profile update: \(kvv.0) = \(kvv.1)")
+            Log.error("No mapping found for profile update: \(kvv.0) = \(kvv.1)")
             if let vc = kvv.2 { UINotifications.genericError(vc, msg: "Invalid profile field") }
         }
     }
 
     func sliderValueDidChange(sender:UISlider!) {
-        log.warning("Slider: \(sender.value)")
+        Log.warning("Slider: \(sender.value)")
         if hMin != 0.0 {
             let d = NSDate(timeIntervalSinceReferenceDate: hMin + Double(1.0 - (sender.value / 100.0))  * (hMax - hMin))
             historySlider?.formTitleLabel()?.text = d.toString(DateFormat.Custom("MM/dd/YYYY"))
@@ -616,7 +616,7 @@ class SettingsViewController: UITableViewController, UITextFieldDelegate, SFSafa
     }
 
     func doUpload(sender: UIButton) {
-        log.warning("Upload clicked")
+        Log.warning("Upload clicked")
     }
 
     func doDeleteAccount(sender: UIButton) {
@@ -626,7 +626,7 @@ class SettingsViewController: UITableViewController, UITextFieldDelegate, SFSafa
                 if success {
                     PopulationHealthManager.sharedManager.resetAggregates()
                     if let iv = self.introView {
-                        log.info("Resetting IntroView on deletion")
+                        Log.info("Resetting IntroView on deletion")
                         iv.doDataRefresh()
                     }
                     let msg = "Thanks for using Metabolic Compass!"

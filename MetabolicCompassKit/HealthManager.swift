@@ -11,10 +11,11 @@ import WatchConnectivity
 import Async
 import Alamofire
 import SwiftyJSON
-import SwiftyBeaver
+import CocoaLumberjack
 import SwiftyUserDefaults
 import SwiftDate
 import AwesomeCache
+import QueryHK
 
 // Constants.
 private let refDate  = NSDate(timeIntervalSinceReferenceDate: 0)
@@ -163,7 +164,7 @@ public class HealthManager: NSObject, WCSessionDelegate {
         do {
             return try self.healthKitStore.biologicalSex()
         } catch {
-            log.error("Failed to get biological sex.")
+            Log.error("Failed to get biological sex.")
         }
         return nil
     }
@@ -223,12 +224,12 @@ public class HealthManager: NSObject, WCSessionDelegate {
 
         let updateSamples : (HKSampleType, [MCSample], NSError?) -> Void = { (type, statistics, error) in
             guard error == nil else {
-                log.error("Could not fetch recent samples for \(type.displayText): \(error)")
+                Log.error("Could not fetch recent samples for \(type.displayText): \(error)")
                 dispatch_group_leave(group)
                 return
             }
             guard statistics.isEmpty == false else {
-                log.warning("No recent samples available for \(type.displayText)")
+                Log.warning("No recent samples available for \(type.displayText)")
                 dispatch_group_leave(group)
                 return
             }
@@ -289,12 +290,12 @@ public class HealthManager: NSObject, WCSessionDelegate {
             dispatch_group_enter(group)
             self.fetchSamplesOfType(type, predicate: predicate, limit: noLimit) { (samples, error) in
                 guard error == nil else {
-                    log.error("Could not fetch recent samples for \(type.displayText): \(error)")
+                    Log.error("Could not fetch recent samples for \(type.displayText): \(error)")
                     dispatch_group_leave(group)
                     return
                 }
                 guard samples.isEmpty == false else {
-                    log.warning("No recent samples available for \(type.displayText)")
+                    Log.warning("No recent samples available for \(type.displayText)")
                     dispatch_group_leave(group)
                     return
                 }
@@ -315,12 +316,12 @@ public class HealthManager: NSObject, WCSessionDelegate {
         let tname = type.displayText ?? type.identifier
         HealthManager.sharedManager.fetchSamplesOfType(type, predicate: nil, limit: 1) { (samples, error) in
             guard error == nil else {
-                log.error("Could not get oldest sample for: \(tname)")
+                Log.error("Could not get oldest sample for: \(tname)")
                 return
             }
             let minDate = samples.isEmpty ? NSDate() : samples[0].startDate
             UserManager.sharedManager.setHistoricalRangeMinForType(type.identifier, min: minDate, sync: true)
-            log.info("Lower bound date for \(tname): \(minDate)")
+            Log.info("Lower bound date for \(tname): \(minDate)")
             completion(type)
         }
     }
@@ -765,7 +766,7 @@ public class HealthManager: NSObject, WCSessionDelegate {
                 // Set the results handler
                 query.initialResultsHandler = { query, results, error in
                     guard error == nil else {
-                        log.error("Failed to fetch \(sampleType) statistics: \(error!)")
+                        Log.error("Failed to fetch \(sampleType) statistics: \(error!)")
                         completion(aggregates: .None, error: error)
                         return
                     }
@@ -820,14 +821,14 @@ public class HealthManager: NSObject, WCSessionDelegate {
                         failure(error)
                         return
                     }
-                    log.verbose("Caching aggregates for \(key)")
+                    Log.verbose("Caching aggregates for \(key)")
                     success(MCAggregateArray(aggregates: aggregates), .Date(self.getCacheExpiry(period)))
                 }
             }
         }, completion: {object, isLoadedFromCache, error in
-            log.verbose("Cache result \(key) \(isLoadedFromCache)")
+            Log.verbose("Cache result \(key) \(isLoadedFromCache)")
             if let aggArray = object {
-                log.verbose("Cache result \(key) size \(aggArray.aggregates.count)")
+                Log.verbose("Cache result \(key) size \(aggArray.aggregates.count)")
                 self.queryResultAsSamples(.AggregatedSamples(aggArray.aggregates), error: error, completion: completion)
             } else {
                 completion(samples: [], error: error)
@@ -877,7 +878,7 @@ public class HealthManager: NSObject, WCSessionDelegate {
                     failure(error)
                     return
                 }
-                log.verbose("Caching daily aggregates for \(key)")
+                Log.verbose("Caching daily aggregates for \(key)")
                 success(MCAggregateArray(aggregates: aggregates), .Date(self.getCacheExpiry(period)))
             }
 
@@ -893,9 +894,9 @@ public class HealthManager: NSObject, WCSessionDelegate {
                 }
             }
         }, completion: {object, isLoadedFromCache, error in
-            log.verbose("Cache daily result \(key) \(isLoadedFromCache)")
+            Log.verbose("Cache daily result \(key) \(isLoadedFromCache)")
             if let aggArray = object {
-                log.verbose("Cache daily result \(key) size \(aggArray.aggregates.count)")
+                Log.verbose("Cache daily result \(key) size \(aggArray.aggregates.count)")
                 self.queryResultAsSamples(.AggregatedSamples(aggArray.aggregates), error: error, completion: completion)
             } else {
                 completion(samples: [], error: error)
@@ -950,14 +951,14 @@ public class HealthManager: NSObject, WCSessionDelegate {
                         failure(error)
                         return
                     }
-                    log.verbose("Caching minmax aggregates for \(key) ")
+                    Log.verbose("Caching minmax aggregates for \(key) ")
                     success(MCAggregateArray(aggregates: aggregates), .Date(self.getCacheExpiry(period)))
                 }
             }
         }, completion: {object, isLoadedFromCache, error in
-            log.verbose("Cache minmax result \(key) \(isLoadedFromCache)")
+            Log.verbose("Cache minmax result \(key) \(isLoadedFromCache)")
             if let aggArray = object {
-                log.verbose("Cache minmax result \(key) size \(aggArray.aggregates.count)")
+                Log.verbose("Cache minmax result \(key) size \(aggArray.aggregates.count)")
                 completion(aggArray.aggregates.map { finalize(.DiscreteMin, $0) }, aggArray.aggregates.map { finalize(.DiscreteMax, $0) }, error)
             } else {
                 completion([], [], error)
@@ -1105,7 +1106,7 @@ public class HealthManager: NSObject, WCSessionDelegate {
                     }
 
                 default:
-                    log.error("Unexpected type \(ty.identifier) while fetching circadian event intervals")
+                    Log.error("Unexpected type \(ty.identifier) while fetching circadian event intervals")
                     return nil
                 }
             }
@@ -1343,23 +1344,23 @@ public class HealthManager: NSObject, WCSessionDelegate {
                         failure(error)
                         return
                     }
-                    log.verbose("Caching sample collection days for \(key)")
+                    Log.verbose("Caching sample collection days for \(key)")
                     let agg = self.aggregateSamplesManually(proxyType, aggOp: aggOp, samples: samples)
-                    log.info("Finished SCQ for \(key) \(NSDate().timeIntervalSinceDate(queryStartTime!))")
+                    Log.info("Finished SCQ for \(key) \(NSDate().timeIntervalSinceDate(queryStartTime!))")
                     success(MCAggregateArray(aggregates: [agg]), .Date(self.getCacheExpiry(period)))
                 }
 
-                log.info("Starting SCQ for \(key)")
+                Log.info("Starting SCQ for \(key)")
                 queryStartTime = NSDate()
 
                 self.fetchAggregatesOfType(proxyType, predicate: predicate, aggUnit: .Day, aggOp: aggOp) {
                     self.queryResultAsSamples($0, error: $1) { doCache($0, $1) }
                 }
             }, completion: {object, isLoadedFromCache, error in
-                log.verbose("Cache sample collection days result \(key) \(isLoadedFromCache)")
+                Log.verbose("Cache sample collection days result \(key) \(isLoadedFromCache)")
 
                 guard error == nil else {
-                    log.error(error)
+                    Log.error(error as! String)
                     someError = error
                     results.updateValue(0, forKey: sampleType)
                     dispatch_group_leave(group)
@@ -1367,16 +1368,16 @@ public class HealthManager: NSObject, WCSessionDelegate {
                 }
 
                 if let aggArray = object {
-                    log.verbose("Cache sample collection days result \(key) size \(aggArray.aggregates.count)")
+                    Log.verbose("Cache sample collection days result \(key) size \(aggArray.aggregates.count)")
                     if aggArray.aggregates.count > 0 {
                         results.updateValue(aggArray.aggregates[0].count(), forKey: sampleType)
                     } else {
-                        log.info("No aggregates found for collection days")
+                        Log.info("No aggregates found for collection days")
                         results.updateValue(0, forKey: sampleType)
                     }
                     dispatch_group_leave(group)
                 } else {
-                    log.info("No aggregate array found for collection days")
+                    Log.info("No aggregate array found for collection days")
                     results.updateValue(0, forKey: sampleType)
                     dispatch_group_leave(group)
                 }
@@ -1466,10 +1467,10 @@ public class HealthManager: NSObject, WCSessionDelegate {
     public func fetchWeeklyFastingVariability(startDate: NSDate = 1.years.ago, endDate: NSDate = NSDate(),
                                               completion: (variability: Double, error: NSError?) -> Void)
     {
-        log.info("Starting WFV query")
+        Log.info("Starting WFV query")
         let queryStartTime = NSDate()
         fetchFastingVariability(startDate, endDate: endDate, aggUnit: .WeekOfYear) {
-            log.info("Finished WFV query \(NSDate().timeIntervalSinceDate(queryStartTime))")
+            Log.info("Finished WFV query \(NSDate().timeIntervalSinceDate(queryStartTime))")
             completion(variability: $0, error: $1)
         }
     }
@@ -1477,10 +1478,10 @@ public class HealthManager: NSObject, WCSessionDelegate {
     public func fetchDailyFastingVariability(startDate: NSDate = 1.months.ago, endDate: NSDate = NSDate(),
                                              completion: (variability: Double, error: NSError?) -> Void)
     {
-        log.info("Starting DFV query")
+        Log.info("Starting DFV query")
         let queryStartTime = NSDate()
         fetchFastingVariability(startDate, endDate: endDate, aggUnit: .Day) {
-            log.info("Finished DFV query \(NSDate().timeIntervalSinceDate(queryStartTime))")
+            Log.info("Finished DFV query \(NSDate().timeIntervalSinceDate(queryStartTime))")
             completion(variability: $0, error: $1)
         }
     }
@@ -1497,10 +1498,10 @@ public class HealthManager: NSObject, WCSessionDelegate {
             }
         }
 
-        log.info("Starting WF STATE query")
+        Log.info("Starting WF STATE query")
         let queryStartTime = NSDate()
         fetchCircadianDurationsByGroup(1.weeks.ago, endDate: NSDate(), groupBy: group) { (categories, error) in
-            log.info("Finished WF STATE query \(NSDate().timeIntervalSinceDate(queryStartTime))")
+            Log.info("Finished WF STATE query \(NSDate().timeIntervalSinceDate(queryStartTime))")
             guard error == nil else {
                 completion(fast: 0.0, nonFast: 0.0, error: error)
                 return
@@ -1531,10 +1532,10 @@ public class HealthManager: NSObject, WCSessionDelegate {
             }
         }
 
-        log.info("Starting WF TYPE query")
+        Log.info("Starting WF TYPE query")
         let queryStartTime = NSDate()
         fetchCircadianDurationsByGroup(1.weeks.ago, endDate: NSDate(), predicate: predicate, groupBy: group) { (categories, error) in
-            log.info("Finished WF TYPE query \(NSDate().timeIntervalSinceDate(queryStartTime))")
+            Log.info("Finished WF TYPE query \(NSDate().timeIntervalSinceDate(queryStartTime))")
             guard error == nil else {
                 completion(fastSleep: 0.0, fastAwake: 0.0, error: error)
                 return
@@ -1566,10 +1567,10 @@ public class HealthManager: NSObject, WCSessionDelegate {
             }
         }
 
-        log.info("Starting WEE query")
+        Log.info("Starting WEE query")
         let queryStartTime = NSDate()
         fetchCircadianDurationsByGroup(1.weeks.ago, endDate: NSDate(), predicate: predicate, groupBy: group) { (categories, error) in
-            log.info("Finished WEE query \(NSDate().timeIntervalSinceDate(queryStartTime))")
+            Log.info("Finished WEE query \(NSDate().timeIntervalSinceDate(queryStartTime))")
             guard error == nil else {
                 completion(eatingTime: 0.0, exerciseTime: 0.0, error: error)
                 return
@@ -1646,7 +1647,7 @@ public class HealthManager: NSObject, WCSessionDelegate {
 
     public func saveSleep(startDate: NSDate, endDate: NSDate, metadata: NSDictionary, completion: ( (Bool, NSError!) -> Void)!)
     {
-        log.debug("Saving sleep \(startDate) \(endDate)")
+        Log.debug("Saving sleep \(startDate) \(endDate)")
 
         let type = HKObjectType.categoryTypeForIdentifier(HKCategoryTypeIdentifierSleepAnalysis)!
         let sample = HKCategorySample(type: type, value: HKCategoryValueSleepAnalysis.Asleep.rawValue, startDate: startDate, endDate: endDate, metadata: metadata as? [String : AnyObject])
@@ -1657,7 +1658,7 @@ public class HealthManager: NSObject, WCSessionDelegate {
         })
     }
 
-    public func saveWorkout(startDate: NSDate, endDate: NSDate, activityType: HKWorkoutActivityType, distance: Double, distanceUnit: HKUnit, kiloCalories: Double, metadata:NSDictionary, completion: ( (Bool, NSError!) -> Void)!)
+/*    public func saveWorkout(startDate: NSDate, endDate: NSDate, activityType: HKWorkoutActivityType, distance: Double, distanceUnit: HKUnit, kiloCalories: Double, metadata:NSDictionary, completion: ( (Bool, NSError!) -> Void)!)
     {
         log.debug("Saving workout \(startDate) \(endDate)")
 
@@ -1690,7 +1691,7 @@ public class HealthManager: NSObject, WCSessionDelegate {
     public func savePreparationAndRecoveryWorkout(startDate: NSDate, endDate: NSDate, distance:Double, distanceUnit: HKUnit, kiloCalories: Double, metadata: NSDictionary, completion: ( (Bool, NSError!) -> Void)!)
     {
         saveWorkout(startDate, endDate: endDate, activityType: HKWorkoutActivityType.PreparationAndRecovery, distance: distance, distanceUnit: distanceUnit, kiloCalories: kiloCalories, metadata: metadata, completion: completion)
-    }
+    } */
 
 
     // MARK: - Removing samples from HealthKit
@@ -1739,7 +1740,7 @@ public class HealthManager: NSObject, WCSessionDelegate {
             self.deleteSamplesOfType(type, startDate: startDate, endDate: endDate, predicate: predicate) {
                 (success, count, error) in
                 guard success && error == nil else {
-                    log.error("Could not delete samples for \(type.displayText)(\(success)): \(error)")
+                    Log.error("Could not delete samples for \(type.displayText)(\(success)): \(error)")
                     dispatch_group_leave(group)
                     return
                 }
@@ -1784,8 +1785,8 @@ public class HealthManager: NSObject, WCSessionDelegate {
 
         self.deleteSamples(startDate, endDate: endDate, typesAndPredicates: typesAndPredicates) { (deleted, error) in
             if error != nil {
-                log.error("Failed to delete samples on the device, HealthKit may potentially diverge from the server.")
-                log.error(error)
+                Log.error("Failed to delete samples on the device, HealthKit may potentially diverge from the server.")
+                Log.error(error as! String)
             }
             completion(error)
         }
@@ -1814,7 +1815,7 @@ public class HealthManager: NSObject, WCSessionDelegate {
             expiredKeys = avgKeys
         }
         expiredKeys.forEach {
-            log.info("Invalidating aggregate cache for \($0)")
+            Log.info("Invalidating aggregate cache for \($0)")
             self.aggregateCache.removeObjectForKey($0)
         }
     }
@@ -1826,7 +1827,7 @@ public class HealthManager: NSObject, WCSessionDelegate {
     {
         let onBackgroundStarted = {(success: Bool, nsError: NSError?) -> Void in
             guard success else {
-                log.error(nsError)
+                Log.error(nsError as! String)
                 return
             }
             // Create and execute an observer query that itself issues an anchored query every
@@ -1834,7 +1835,7 @@ public class HealthManager: NSObject, WCSessionDelegate {
             let obsQuery = HKObserverQuery(sampleType: type, predicate: nil) {
                 query, completion, obsError in
                 guard obsError == nil else {
-                    log.error(obsError)
+                    Log.error(obsError as! String)
                     return
                 }
 
@@ -1843,7 +1844,7 @@ public class HealthManager: NSObject, WCSessionDelegate {
                 if needsOldestSamples {
                     Async.background(after: 0.5) {
                         // We use getOldestSampleForType to initialize the archive span minimums.
-                        log.verbose("Registering bulk ingestion availability for: \(tname)")
+                        Log.verbose("Registering bulk ingestion availability for: \(tname)")
                         self.getOldestSampleForType(type) { _ in () }
                     }
                 }
@@ -1867,7 +1868,7 @@ public class HealthManager: NSObject, WCSessionDelegate {
     // MARK: - Chart queries
 
     public func collectDataForCharts() {
-        log.verbose("Clearing HMAggregateCache expired objects")
+        Log.verbose("Clearing HMAggregateCache expired objects")
         aggregateCache.removeExpiredObjects()
 
         let periods: [HealthManagerStatisticsRangeType] = [
@@ -1890,13 +1891,13 @@ public class HealthManager: NSObject, WCSessionDelegate {
             let keyPrefix = type
 
             for period in periods {
-                log.verbose("Collecting chart data for \(keyPrefix) \(period)")
+                Log.verbose("Collecting chart data for \(keyPrefix) \(period)")
 
                 dispatch_group_enter(group)
                 // We should get max and min values. because for this type we are using scatter chart
                 if type == HKQuantityTypeIdentifierHeartRate || type == HKQuantityTypeIdentifierUVExposure {
                     self.getMinMaxOfTypeForPeriod(keyPrefix, sampleType: sampleType, period: period) {
-                        if $2 != nil { log.error($2) }
+                        if $2 != nil { Log.error($2 as! String) }
                         dispatch_group_leave(group)
                     }
                 } else if type == HKQuantityTypeIdentifierBloodPressureSystolic {
@@ -1906,14 +1907,14 @@ public class HealthManager: NSObject, WCSessionDelegate {
 
                     dispatch_group_enter(bloodPressureGroup)
                     self.getMinMaxOfTypeForPeriod(keyPrefix, sampleType: HKObjectType.quantityTypeForIdentifier(type)!, period: period) {
-                        if $2 != nil { log.error($2) }
+                        if $2 != nil { Log.error($2 as! String) }
                         dispatch_group_leave(bloodPressureGroup)
                     }
 
                     let diastolicType = HKQuantityTypeIdentifierBloodPressureDiastolic
                     dispatch_group_enter(bloodPressureGroup)
                     self.getMinMaxOfTypeForPeriod(diastolicKeyPrefix, sampleType: HKObjectType.quantityTypeForIdentifier(diastolicType)!, period: period) {
-                        if $2 != nil { log.error($2) }
+                        if $2 != nil { Log.error($2 as! String) }
                         dispatch_group_leave(bloodPressureGroup)
                     }
 
@@ -1923,7 +1924,7 @@ public class HealthManager: NSObject, WCSessionDelegate {
 
                 } else {
                     self.getDailyStatisticsOfTypeForPeriod(keyPrefix, sampleType: sampleType, period: period, aggOp: .DiscreteAverage) {
-                        if $1 != nil { log.error($1) }
+                        if $1 != nil { Log.error($1 as! String) }
                         dispatch_group_leave(group) //leave main group
                     }
                 }
@@ -1964,9 +1965,9 @@ public class HealthManager: NSObject, WCSessionDelegate {
         }
 
         if let aggArray = aggregateCache[key] {
-            log.verbose("Cache hit for \(key) (size \(aggArray.aggregates.count))")
+            Log.verbose("Cache hit for \(key) (size \(aggArray.aggregates.count))")
         } else {
-            log.verbose("Cache miss for \(key)")
+            Log.verbose("Cache miss for \(key)")
         }
 
         if asMinMax {
@@ -1977,13 +1978,13 @@ public class HealthManager: NSObject, WCSessionDelegate {
 
                 dispatch_group_enter(bloodPressureGroup)
                 self.getMinMaxOfTypeForPeriod(keyPrefix, sampleType: HKObjectType.quantityTypeForIdentifier(type)!, period: period) {
-                    if $2 != nil { log.error($2) }
+                    if $2 != nil { Log.error($2 as! String) }
                     dispatch_group_leave(bloodPressureGroup)
                 }
 
                 dispatch_group_enter(bloodPressureGroup)
                 self.getMinMaxOfTypeForPeriod(diastolicKeyPrefix, sampleType: HKObjectType.quantityTypeForIdentifier(diastolicType)!, period: period) {
-                    if $2 != nil { log.error($2) }
+                    if $2 != nil { Log.error($2 as! String) }
                     dispatch_group_leave(bloodPressureGroup)
                 }
 
@@ -2055,7 +2056,7 @@ public class HealthManager: NSObject, WCSessionDelegate {
             }
             try WCSession.defaultSession().updateApplicationContext(["context": applicationContext])
         } catch {
-            log.error(error)
+            Log.error(error as! String)
         }
     }  
 }

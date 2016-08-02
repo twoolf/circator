@@ -229,7 +229,7 @@ class BarChartModel : NSObject {
             let chartType = chartTypeForQuantityTypeIdentifier(type)
             let key = type + "\(self.rangeType.rawValue)"
 
-            log.warning("Getting chart data for \(type)")
+            Log.warning("Getting chart data for \(type)")
 
             if type == HKQuantityTypeIdentifierHeartRate || type == HKQuantityTypeIdentifierUVExposure {
                 // We should get max and min values. because for this type we are using scatter chart

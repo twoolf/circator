@@ -63,7 +63,7 @@ class DebugViewController : FormViewController {
                 }.configure {
                     $0.enabled = true
                 }.onSelected { row in
-                    log.info("\(tname) \(UploadManager.sharedManager.getRemoteAnchorForType(type))")
+                    Log.info("\(tname) \(UploadManager.sharedManager.getRemoteAnchorForType(type))")
                     row.text = "\(tname) \(UploadManager.sharedManager.getRemoteAnchorForType(type))"
             }
         }
@@ -262,7 +262,7 @@ class DebugViewController : FormViewController {
                 let asPopulation = genNumUsers > 0
                 let desc = asPopulation ? "\(genNumUsers) users" : "user \(genUserId!)"
                 if let st = genStart.toDate(genDateFormat), en = genEnd.toDate(genDateFormat) {
-                    log.info("Generating data for \(desc) between \(st) and \(en)")
+                    Log.info("Generating data for \(desc) between \(st) and \(en)")
                     if asPopulation {
                         DataGenerator.sharedInstance.generateDatasetForService(
                         "output.json", numUsers: genNumUsers, size: genSize, startDate: st, endDate: en)
@@ -286,22 +286,22 @@ class DebugViewController : FormViewController {
                genEnd              = generatorParamValues["cEnd"]      as? String
         {
             if let st = genStart.toDate(genDateFormat), en = genEnd.toDate(genDateFormat) {
-                log.info("Generating covering dataset between \(st) and \(en)")
+                Log.info("Generating covering dataset between \(st) and \(en)")
                 DataGenerator.sharedInstance.generateInMemoryCoveringDataset(genSamplesPerType, startDate: st, endDate: en)
                 {
                     $0.forEach { (_,block) in
                         if !block.isEmpty {
                             autoreleasepool { _ in
-                                log.info("Uploading block of size \(block.count)")
+                                Log.info("Uploading block of size \(block.count)")
                                 do {
                                     let jsonObjs = try block.map(UploadManager.sharedManager.jsonifySample)
                                     UploadManager.sharedManager.putBlockSample(jsonObjs)
                                 } catch  {
-                                    log.info("problems with: (\(HealthManager.description())")
+                                    Log.info("problems with: (\(HealthManager.description())")
                                 }
                             }
                         } else {
-                            log.info("Empty block for covering data generator")
+                            Log.info("Empty block for covering data generator")
                         }
                     }
                 }
@@ -318,7 +318,7 @@ class DebugViewController : FormViewController {
                genEnd              = generatorParamValues["lEnd"]      as? String
         {
             if let st = genStart.toDate(genDateFormat), en = genEnd.toDate(genDateFormat) {
-                log.info("Generating local dataset between \(st) and \(en)")
+                Log.info("Generating local dataset between \(st) and \(en)")
                 DataGenerator.sharedInstance.generateLocalInMemoryCoveringDatasetWithoutUpload(genSamplesPerType, startDate: st, endDate: en)
             } else {
                 UINotifications.genericError(self.navigationController!, msg: "Invalid start/end date for local dataset generation")
@@ -333,7 +333,7 @@ class DebugViewController : FormViewController {
             genEnd              = generatorParamValues["lEnd"]      as? String
         {
             if let st = genStart.toDate(genDateFormat), en = genEnd.toDate(genDateFormat) {
-                log.info("Generating local dataset between \(st) and \(en)")
+                Log.info("Generating local dataset between \(st) and \(en)")
                 DataGenerator.sharedInstance.generateLocalInMemoryCoveringDatasetWithUpload(genSamplesPerType, startDate: st, endDate: en)
             } else {
                 UINotifications.genericError(self.navigationController!, msg: "Invalid start/end date for local dataset generation")
@@ -343,8 +343,8 @@ class DebugViewController : FormViewController {
 
     func doCleanupLocal() {
         DataGenerator.sharedInstance.removeLocalInMemoryDataset { (deleted, error) in
-            guard error == nil else { log.error(error); return }
-            log.info("Deleted \(deleted) generated samples")
+            guard error == nil else { Log.error(error as! String); return }
+            Log.info("Deleted \(deleted) generated samples")
         }
     }
 

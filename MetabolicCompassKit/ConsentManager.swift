@@ -419,7 +419,7 @@ public class ConsentManager: NSObject, ORKTaskViewControllerDelegate {
         case .Discarded:
             break
         case .Failed:
-            log.error("Consent view failed: \(error)")
+            Log.error("Consent view failed: \(error)")
         case .Saved:
             break
         }

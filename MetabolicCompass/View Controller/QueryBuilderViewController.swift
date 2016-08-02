@@ -289,7 +289,7 @@ class QueryBuilderViewController: UIViewController, UITextFieldDelegate {
             dataTableView.predicates.append(pred)
             dataTableView.reloadData()
         } else {
-            log.error("Invalid predicate, no bounds are set.")
+            Log.error("Invalid predicate, no bounds are set.")
         }
     }
 

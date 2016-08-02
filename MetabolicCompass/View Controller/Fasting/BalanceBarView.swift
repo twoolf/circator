@@ -94,7 +94,7 @@ public class BalanceBarView : UIView {
 
         // Clean ratio value
         if ratio < 0.0 || ratio > 1.0 {
-            log.warning("Invalid ratio of \(ratio), resetting to 0.5")
+            Log.error("Invalid ratio of \(ratio), resetting to 0.5")
             ratio = 0.5
         }
 

@@ -141,13 +141,13 @@ class AccountManager: NSObject {
                                     self.loginComplete()
                                 } else {
                                     components = components.filter { $0 != .Consent }
-                                    log.error(UMPullMultipleComponentsError(components.map(getComponentName)))
+                                    Log.error(UMPullMultipleComponentsError(components.map(getComponentName)))
                                 }
                             } else {
-                                log.error(res.info)
+                                Log.error(res.info)
                             }
                         } else {
-                            log.error("Failed to get initial user account")
+                            Log.error("Failed to get initial user account")
                         }
                     }
                 }
@@ -159,7 +159,7 @@ class AccountManager: NSObject {
         HealthManager.sharedManager.authorizeHealthKit { (success, error) -> Void in
             guard error == nil else {
                 self.isHealthKitAuthorized = false
-                log.error("no healthkit \(error)")
+                Log.error("no healthkit \(error)")
                 return
             }
 

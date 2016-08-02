@@ -10,6 +10,74 @@ import Foundation
 import HealthKit
 import Async
 
+/*public enum LoggerMessageType: Int {
+    case debug = 1
+    case verbose = 2
+    case info = 3
+    case warning = 4
+    case error = 5
+}
+
+extension LoggerMessageType: CustomStringConvertible {
+    public var description: String {
+        switch self {
+        case .verbose:
+            return "VERBOSE"
+        case .info:
+            return "INFO"
+        case .debug:
+            return "DEBUG"
+        case .warning:
+            return "WARNING"
+        case .error:
+            return "ERROR"
+        }
+    }
+}
+
+public protocol Logger {
+    
+    func log(_ type: LoggerMessageType, msg: String,
+               functionName: String, lineNum: Int, fileName: String )
+    
+}
+
+public class Log {
+    
+    public static var logger: Logger?
+    
+    
+    public static func verbose(_ msg: String, functionName: String = #function,
+                                 lineNum: Int = #line, fileName: String = #file ) {
+        logger?.log( .verbose, msg: msg,
+                     functionName: functionName, lineNum: lineNum, fileName: fileName)
+    }
+    
+    public class func info(_ msg: String, functionName: String = #function,
+                             lineNum: Int = #line, fileName: String = #file) {
+        logger?.log( .info, msg: msg,
+                     functionName: functionName, lineNum: lineNum, fileName: fileName)
+    }
+    
+    public class func warning(_ msg: String, functionName: String = #function,
+                                lineNum: Int = #line, fileName: String = #file) {
+        logger?.log( .warning, msg: msg,
+                     functionName: functionName, lineNum: lineNum, fileName: fileName)
+    }
+    
+    public class func error(_ msg: String, functionName: String = #function,
+                              lineNum: Int = #line, fileName: String = #file) {
+        logger?.log( .error, msg: msg,
+                     functionName: functionName, lineNum: lineNum, fileName: fileName)
+    }
+    
+    public class func debug(_ msg: String, functionName: String = #function,
+                              lineNum: Int = #line, fileName: String = #file) {
+        logger?.log( .debug, msg: msg,
+                     functionName: functionName, lineNum: lineNum, fileName: fileName)
+    }
+} */
+
 /**
  This is the manager of information for the comparison population.
  By providing this comparison we provide our study participants with a greater ability to view themselves in context.
@@ -107,7 +175,7 @@ public class PopulationHealthManager {
                     columnIndex += 1
                 }
                 else {
-                    log.warning("No population query column available for \(hksType.identifier)")
+                    Log.warning("No population query column available for \(hksType.identifier)")
                 }
             }
         }
@@ -144,7 +212,7 @@ public class PopulationHealthManager {
             var failed = false
             for sample in aggregates {
                 for (column, val) in sample {
-                    log.verbose("Refreshing population aggregate for \(column)")
+                    Log.verbose("Refreshing population aggregate for \(column)")
 
                     // Handle meal_duration/activity_duration/activity_value columns.
                     // TODO: this only supports activity values that are HealthKit quantities for now (step count, flights climbed, distance/walking/running)
@@ -161,12 +229,12 @@ public class PopulationHealthManager {
                                     populationAggregates[sampleType] = [MCAggregateSample(value: sampleValue, sampleType: sampleType, op: sampleType.aggregationOptions)]
                                 }
                                 else {
-                                    log.error("Invalid MCDB categorized quantity in popquery response: \(category) \(catval)")
+                                    Log.error("Invalid MCDB categorized quantity in popquery response: \(category) \(catval)")
                                 }
                             }
                         }
                         else {
-                            log.error("Invalid MCDB categorized values in popquery response: \(val)")
+                            Log.error("Invalid MCDB categorized values in popquery response: \(val)")
                         }
                     }
                     else if let sampleValue = val as? Double, typeIdentifier = HMConstants.sharedInstance.mcdbToHK[column]
@@ -201,11 +269,11 @@ public class PopulationHealthManager {
                 }
             }
             else {
-                log.error("Failed to retrieve population aggregates from response: \(response)")
+                Log.error("Failed to retrieve population aggregates from response: \(response)")
             }
         }
         else {
-            log.error("Failed to deserialize population query response")
+            Log.error("Failed to deserialize population query response")
         }
     }
 }

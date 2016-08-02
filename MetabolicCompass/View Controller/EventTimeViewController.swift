@@ -231,7 +231,7 @@ class EventTimeViewController : UIViewController {
         HealthManager.sharedManager.fetchCircadianEventIntervals(startDate) { (intervals, error) -> Void in
             Async.main {
                 guard error == nil else {
-                    log.error("Failed to fetch circadian events: \(error)")
+                    Log.error("Failed to fetch circadian events: \(error)")
                     return
                 }
 

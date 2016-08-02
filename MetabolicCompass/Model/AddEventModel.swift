@@ -10,6 +10,7 @@ import UIKit
 import SwiftDate
 import MetabolicCompassKit
 import HealthKit
+import QueryHK
 
 enum MealType: String {
     case Empty = ""
@@ -186,7 +187,7 @@ class AddEventModel: NSObject {
                 completion(success: false, errorMessage: errorMessage)
                 return
             }
-            HealthManager.sharedManager.savePreparationAndRecoveryWorkout(
+            QueryHK.sharedManager.savePreparationAndRecoveryWorkout(
                 startTime, endDate: endTime, distance: 0.0, distanceUnit: HKUnit(fromString: "km"),
                 kiloCalories: 0.0, metadata: metaMeals) { (success, error ) -> Void in
                     guard error == nil else {
@@ -197,7 +198,7 @@ class AddEventModel: NSObject {
                     let mealType = self.mealType.rawValue
                     UserManager.sharedManager.setUsualMealTime(mealType, forDate: startTime)
                     completion(success: true, errorMessage: nil)
-                    log.info("Meal saved as workout type")
+                    Log.error("Meal saved as workout type")
             }
         }
     }
@@ -213,7 +214,7 @@ class AddEventModel: NSObject {
                 completion(success: false, errorMessage: errorMessage)
                 return
             }
-            HealthManager.sharedManager.saveRunningWorkout(
+            QueryHK.sharedManager.saveRunningWorkout(
                 startTime, endDate: endTime, distance: 0.0, distanceUnit: HKUnit(fromString: "km"),
                 kiloCalories: 0.0, metadata: [:]) {
                 (success, error ) -> Void in
@@ -221,7 +222,7 @@ class AddEventModel: NSObject {
                     completion(success: false, errorMessage: error.localizedDescription)
                     return
                 }
-                log.info("Saved as exercise workout type")
+                Log.error("Saved as exercise workout type")
                 completion(success: true, errorMessage: nil)
             }
         }
@@ -250,11 +251,12 @@ class AddEventModel: NSObject {
                     (success, error ) -> Void in
                     guard error == nil else {
                         completion(success: false, errorMessage: error.localizedDescription)
-                        log.error(error); return
+                        Log.error(error as! String)
+                        return
                     }
                     UserManager.sharedManager.setUsualWhenToSleepTime(startTime)
                     UserManager.sharedManager.setUsualWokeUpTime(endTime)
-                    log.info("Saved as sleep event")
+                    Log.error("Saved as sleep event")
                     completion(success: true, errorMessage: nil)
             })
         }
@@ -270,7 +272,7 @@ class AddEventModel: NSObject {
         
         // Aggregate sleep, exercise and meal events.
         HealthManager.sharedManager.fetchSamples(typesAndPredicates) { (samples, error) -> Void in
-            guard error == nil else { log.error(error); return }
+            guard error == nil else { Log.error(error as! String); return }
             let overlaps = samples.reduce(false, combine: { (acc, kv) in
                 guard !acc else { return acc }
                 return kv.1.reduce(acc, combine: { (acc, s) in return acc || !( startTime >= s.endDate || endTime <= s.startDate ) })

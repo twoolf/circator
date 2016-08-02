@@ -564,7 +564,7 @@ public class DataGenerator : GeneratorType {
                 samplesSkipped += 1
             }
         } catch {
-            log.error(error)
+            Log.error(error as! String)
         }
     }
 
@@ -585,7 +585,7 @@ public class DataGenerator : GeneratorType {
             if let outhndl = output.handleForWriting {
                 outhndl.writeData(gpreamble)
                 users.forEach { userId in
-                    log.info("Generating dataset for \(userId)")
+                    Log.info("Generating dataset for \(userId)")
 
                     let upreamble = ((firstUser ? "" : ",") + "{ \"id\": \"\(userId)\", \"samples\": [").dataUsingEncoding(NSUTF8StringEncoding)!
                     let upostamble = "]}".dataUsingEncoding(NSUTF8StringEncoding)!
@@ -598,13 +598,13 @@ public class DataGenerator : GeneratorType {
                 }
                 outhndl.writeData(gpostamble)
 
-                log.info("Created a HealthKit dataset of size \(output.size! / (1024*1024)) MB at: \(output.path)")
-                log.info("Skipped \(samplesSkipped) samples, \(daysSkipped) days")
+                Log.info("Created a HealthKit dataset of size \(output.size! / (1024*1024)) MB at: \(output.path)")
+                Log.info("Skipped \(samplesSkipped) samples, \(daysSkipped) days")
             } else {
-                log.error("Could not write dataset to \(output.path)")
+                Log.error("Could not write dataset to \(output.path)")
             }
         } catch {
-            log.error(error)
+            Log.error(error as! String)
         }
     }
 
@@ -616,13 +616,13 @@ public class DataGenerator : GeneratorType {
         daysSkipped = 0
 
         users.forEach { userId in
-            log.info("Generating dataset for \(userId)")
+            Log.info("Generating dataset for \(userId)")
             dataset[userId] = []
             (0..<days).forEach { i in
                 autoreleasepool { _ in
                     self.currentDay = startDateDay + i.days
                     if let samples : [HKSample] = self.next() {
-                        if (i % 10) == 0 { log.info("Created batch \(i) / \(days),  \(samples.count) samples") }
+                        if (i % 10) == 0 { Log.info("Created batch \(i) / \(days),  \(samples.count) samples") }
                         dataset[userId]!.appendContentsOf(samples)
                     } else {
                         self.daysSkipped += 1
@@ -642,7 +642,7 @@ public class DataGenerator : GeneratorType {
                 autoreleasepool { _ in
                     self.currentDay = startDateDay + i.days
                     if let samples : [HKSample] = self.next() {
-                        if (i % 10) == 0 { log.info("Writing batch \(i) / \(days),  \(samples.count) samples") }
+                        if (i % 10) == 0 { Log.info("Writing batch \(i) / \(days),  \(samples.count) samples") }
                         var firstSample = true
                         samples.forEach { s in
                             self.writeSample(outhndl, sample: s, asFirst: firstSample)
@@ -755,9 +755,9 @@ public class DataGenerator : GeneratorType {
         self.coveringDataset = true
         self.samplesPerType = samplesPerType
 
-        log.info("Generating covering dataset for types:")
+        Log.info("Generating covering dataset for types:")
         coveringTypes.forEach {
-            log.info("    " + $0.identifier)
+            Log.info("    " + $0.identifier)
         }
 
         generateInMemory(["<yourself>"], startDateDay: startDateDay, days: days) {
@@ -765,10 +765,10 @@ public class DataGenerator : GeneratorType {
                 if !block.isEmpty {
                     HealthManager.sharedManager.saveSamples(block) {
                         (success, error) -> Void in
-                        guard error == nil else { log.error(error); return }
+                        guard error == nil else { Log.error("error"); return }
                     }
                 } else {
-                    log.info("Empty block for covering data generator")
+                    Log.info("Empty block for covering data generator")
                 }
             }
         }

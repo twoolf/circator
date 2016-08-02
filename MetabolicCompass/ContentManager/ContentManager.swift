@@ -29,7 +29,7 @@ class ContentManager: NSObject {
             if (self.isBackgroundWorkActive) {
                 return
             }
-            log.warning("Starting background work")
+            Log.warning("Starting background work")
             self.fetchInitialAggregates()
             self.fetchRecentSamples()
             self.isBackgroundWorkActive = true
@@ -47,7 +47,7 @@ class ContentManager: NSObject {
         Async.main() {
             // Clean up aggregate data fetched via the prior account.
             if let task = self.aggregateFetchTask {
-                log.warning("Stopping background work")
+                Log.warning("Stopping background work")
                 task.cancel()
                 self.aggregateFetchTask = nil
                 self.isBackgroundWorkActive = false
@@ -72,7 +72,7 @@ class ContentManager: NSObject {
             // Regardless, we try to fetch the aggregates again, with the next request also
             // attempting to ensure a valid access token even if we did not get one this time.
             if error {
-                log.warning("Could not ensure an access token while fetching aggregates, trying later...")
+                Log.warning("Could not ensure an access token while fetching aggregates, trying later...")
             } else {
                 PopulationHealthManager.sharedManager.fetchAggregates()
             }

@@ -11,6 +11,7 @@ import EventKit
 import HealthKit
 import WatchConnectivity
 import SwiftyUserDefaults
+import QueryHK
 
 public let EKMStartSessionNotification = "EKMStartSessionNotification"
 
@@ -85,7 +86,7 @@ public class EventManager : NSObject, WCSessionDelegate {
             (accessGranted, error) in
 
             guard error == nil else {
-                log.error("Calendar access error: \(error)")
+                Log.error("Calendar access error: \(error)")
                 return
             }
 
@@ -158,7 +159,7 @@ public class EventManager : NSObject, WCSessionDelegate {
                             try eventKitStore.saveEvent(ev, span: EKSpan.ThisEvent, commit: false)
                             doCommit = true
                         } catch {
-                            log.error("Error saving event id: \(error)")
+                            Log.error("Error saving event id: \(error)")
                         }
                     }
 
@@ -188,19 +189,19 @@ public class EventManager : NSObject, WCSessionDelegate {
                     for eid in eitems.1 {
                         let sstr = dateFormatter.stringFromDate(eitems.0.start)
                         let estr = dateFormatter.stringFromDate(eitems.0.end)
-                        log.debug("Writing food log " + sstr + "->" + estr + " " + eid.1)
+                        Log.debug("Writing food log " + sstr + "->" + estr + " " + eid.1)
 
                         let emeta = ["Source":"Calendar","EventId":String(eid.0), "Data":eid.1]
-                        HealthManager.sharedManager.savePreparationAndRecoveryWorkout(
+                        QueryHK.sharedManager.savePreparationAndRecoveryWorkout(
                             eitems.0.start, endDate: eitems.0.end,
                             distance: 0.0, distanceUnit: HKUnit.meterUnit(), kiloCalories: 0.0,
                             metadata: emeta,
                             completion: { (success, error ) -> Void in
                                 guard error == nil else {
-                                    log.error(error)
+                                    Log.error("error")
                                     return
                                 }
-                                log.debug("Food log event saved")
+                                Log.debug("Food log event saved")
                             }
                         )
                     }
@@ -212,7 +213,7 @@ public class EventManager : NSObject, WCSessionDelegate {
                         try self.eventKitStore.commit()
                         self.setEventCounter()
                     } catch {
-                        log.error("Error committing event ids: \(error)")
+                        Log.error("Error committing event ids: \(error)")
                     }
                 }
             }

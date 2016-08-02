@@ -8,6 +8,73 @@
 
 import UIKit
 
+public enum LoggerMessageType: Int {
+    case debug = 1
+    case verbose = 2
+    case info = 3
+    case warning = 4
+    case error = 5
+}
+
+extension LoggerMessageType: CustomStringConvertible {
+    public var description: String {
+        switch self {
+        case .verbose:
+            return "VERBOSE"
+        case .info:
+            return "INFO"
+        case .debug:
+            return "DEBUG"
+        case .warning:
+            return "WARNING"
+        case .error:
+            return "ERROR"
+        }
+    }
+}
+
+public protocol Logger {
+    
+    func log(_ type: LoggerMessageType, msg: String,
+               functionName: String, lineNum: Int, fileName: String )
+    
+}
+
+public class Log {
+    
+    public static var logger: Logger?
+    
+    
+    public static func verbose(_ msg: String, functionName: String = #function,
+                                 lineNum: Int = #line, fileName: String = #file ) {
+        logger?.log( .verbose, msg: msg,
+                     functionName: functionName, lineNum: lineNum, fileName: fileName)
+    }
+    
+    public class func info(_ msg: String, functionName: String = #function,
+                             lineNum: Int = #line, fileName: String = #file) {
+        logger?.log( .info, msg: msg,
+                     functionName: functionName, lineNum: lineNum, fileName: fileName)
+    }
+    
+    public class func warning(_ msg: String, functionName: String = #function,
+                                lineNum: Int = #line, fileName: String = #file) {
+        logger?.log( .warning, msg: msg,
+                     functionName: functionName, lineNum: lineNum, fileName: fileName)
+    }
+    
+    public class func error(_ msg: String, functionName: String = #function,
+                              lineNum: Int = #line, fileName: String = #file) {
+        logger?.log( .error, msg: msg,
+                     functionName: functionName, lineNum: lineNum, fileName: fileName)
+    }
+    
+    public class func debug(_ msg: String, functionName: String = #function,
+                              lineNum: Int = #line, fileName: String = #file) {
+        logger?.log( .debug, msg: msg,
+                     functionName: functionName, lineNum: lineNum, fileName: fileName)
+    }
+}
 /**
  With this class we support the different picker menus that are present at various points in the App. Changes here can be used to support different formats for the picker wheels or different increments in time. The current choices seem to be validated by our initial beta users.
  
@@ -101,7 +168,7 @@ class EventPickerManager: NSObject, UIPickerViewDataSource, UIPickerViewDelegate
         switch event {
         case .Sleep:
             if component >= EventPickerManager.sleepEndpointTypeStrings.count {
-                log.info("Invalid PV NRC \(pickerView.numberOfComponents) \(component)")
+                Log.error("Invalid PV NRC \(pickerView.numberOfComponents) \(component)")
                 return 0
             }
             return EventPickerManager.sleepEndpointTypeStrings[component].count
@@ -109,7 +176,7 @@ class EventPickerManager: NSObject, UIPickerViewDataSource, UIPickerViewDelegate
             return EventPickerManager.previewMealTypeStrings[component].count
         case .Exercise:
             if component >= EventPickerManager.durationTypeStrings.count {
-                log.info("Invalid PV NRC \(pickerView.numberOfComponents) \(component)")
+                Log.error("Invalid PV NRC \(pickerView.numberOfComponents) \(component)")
                 return 0
             }
             return EventPickerManager.durationTypeStrings[component].count
@@ -120,13 +187,13 @@ class EventPickerManager: NSObject, UIPickerViewDataSource, UIPickerViewDelegate
         switch event {
         case .Sleep:
             if component >= EventPickerManager.sleepEndpointTypeStrings.count {
-                log.info("Invalid PVRow \(pickerView.numberOfComponents) \(component)")
+                Log.error("Invalid PVRow \(pickerView.numberOfComponents) \(component)")
                 return nil
             }
             return EventPickerManager.sleepEndpointTypeStrings[component][row]
         case .Exercise:
             if component >= EventPickerManager.durationTypeStrings.count {
-                log.info("Invalid PVRow \(pickerView.numberOfComponents) \(component)")
+                Log.error("Invalid PVRow \(pickerView.numberOfComponents) \(component)")
                 return nil
             }
             return EventPickerManager.durationTypeStrings[component][row]

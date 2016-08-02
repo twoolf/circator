@@ -8,16 +8,16 @@
 
 import WatchKit
 import WatchConnectivity
-//import Async
-//import AsyncSwift
 import Foundation
 import HealthKit
-//import AFNetworking
-//import MMWormhole
 import SwiftDate
 import ClockKit
+import QueryHK
+import CocoaLumberjack
 
-protocol MCSample {
+//let log = SwiftyBeaver.self
+
+/*protocol MCSample {
     var startDate    : NSDate        { get }
     var endDate      : NSDate        { get }
     var numeralValue : Double?       { get }
@@ -662,7 +662,7 @@ public extension HKSampleType {
 let stWorkout = 0.0
 let stSleep = 0.33
 let stFast = 0.66
-let stEat = 1.0
+let stEat = 1.0 */
 
 
 class IntroInterfaceController: WKInterfaceController, WCSessionDelegate  {
@@ -677,20 +677,20 @@ class IntroInterfaceController: WKInterfaceController, WCSessionDelegate  {
     var weightLocalizedString:String = "151 lb"
     var heightLocalizedString:String = "5 ft"
     var proteinLocalizedString:String = "50 gms"
-    typealias HMTypedSampleBlock    = (samples: [HKSampleType: [MCSample]], error: NSError?) -> Void
+//    typealias HMTypedSampleBlock    = (samples: [HKSampleType: [MCSample]], error: NSError?) -> Void
     typealias HMCircadianBlock          = (intervals: [(NSDate, CircadianEvent)], error: NSError?) -> Void
     typealias HMCircadianAggregateBlock = (aggregates: [(NSDate, Double)], error: NSError?) -> Void
-    typealias HMFastingCorrelationBlock = ([(NSDate, Double, MCSample)], NSError?) -> Void
-    typealias HMSampleBlock         = (samples: [MCSample], error: NSError?) -> Void
+//    typealias HMFastingCorrelationBlock = ([(NSDate, Double, MCSample)], NSError?) -> Void
+//    typealias HMSampleBlock         = (samples: [MCSample], error: NSError?) -> Void
     enum CircadianEvent {
         case Meal
         case Fast
         case Sleep
         case Exercise
-    }
+    } 
     var session : WCSession!
     
-    let healthKitStore:HKHealthStore = HKHealthStore()
+//    let healthKitStore:HKHealthStore = HKHealthStore()
     //    var healthConditions: HealthConditions = HealthConditions.loadConditions()
     //    var healthMetrics: HealthMetrics
     //    var healthMetrics: HealthMetrics = HealthMetrics.loadConditions()
@@ -782,7 +782,7 @@ class IntroInterfaceController: WKInterfaceController, WCSessionDelegate  {
     
     override func didDeactivate() {
         super.didDeactivate()
-        IntroInterfaceController.reloadDataTake2()
+        QueryHK.sharedManager.reloadDataTake2()
         
         func reloadComplications() {
             let server = CLKComplicationServer.sharedInstance()
@@ -799,7 +799,7 @@ class IntroInterfaceController: WKInterfaceController, WCSessionDelegate  {
         
         reloadComplications()
 
-        func readMostRecentSample(sampleType:HKSampleType , completion:     ((HKSample!, NSError!) -> Void)!)
+/*        func readMostRecentSample(sampleType:HKSampleType , completion:     ((HKSample!, NSError!) -> Void)!)
         {
             let past = NSDate.distantPast()
             let now   = NSDate()
@@ -820,7 +820,7 @@ class IntroInterfaceController: WKInterfaceController, WCSessionDelegate  {
             self.healthKitStore.executeQuery(sampleQuery)
         }
         
-        func updateWeight()
+       func updateWeight()
         {
             let sampleType = HKSampleType.quantityTypeForIdentifier (HKQuantityTypeIdentifierBodyMass)
             
@@ -891,12 +891,11 @@ class IntroInterfaceController: WKInterfaceController, WCSessionDelegate  {
 //            print("new bmi in IntroInterfaceController: \(bmiHK)")
             HKBMIString = String(format: "%.1f", bmiHK)
         }
-        
         func updateProtein()
         {
             let sampleType = HKSampleType.quantityTypeForIdentifier (HKQuantityTypeIdentifierDietaryProtein)
             
-            readMostRecentSample(sampleType!, completion: { (mostRecentProtein, error) -> Void in
+            QueryHK.sharedManager.readMostRecentSample(sampleType!, completion: { (mostRecentProtein, error) -> Void in
                 
                 if( error != nil )
                 {
@@ -914,17 +913,18 @@ class IntroInterfaceController: WKInterfaceController, WCSessionDelegate  {
                     print("in protein update of interface controller: \(self.proteinLocalizedString)")
                 });
             });
-        }
+        }*/
         
         func updateHealthInfo() {
-            updateWeight();
+            QueryHK.sharedManager.updateWeight();
             print("updated weight info")
-            updateHeight();
+            QueryHK.sharedManager.updateHeight();
             print("updated height info")
-            updateBMI();
+            QueryHK.sharedManager.updateBMI();
             print("updated bmi info")
         }
-        
+ 
+
         updateHealthInfo()
 
         MetricsStore.sharedInstance.weight = weightLocalizedString
@@ -935,7 +935,7 @@ class IntroInterfaceController: WKInterfaceController, WCSessionDelegate  {
     }
     
 
-    
+    /*
     class func reloadDataTake2() {
         typealias Event = (NSDate, Double)
         typealias IEvent = (Double, Double)?
@@ -1433,95 +1433,6 @@ class IntroInterfaceController: WKInterfaceController, WCSessionDelegate  {
             }
         }
     }
-
-
-}
-
- /*
- 
-
-
-
-
- 
- 
-
- 
- 
- 
- 
-                                    } else {
-                                        prevStateWasFasting = prevEvent == nil ? false : prevEvent.1 != self.stEat
-
- 
-                        let today = NSDate().startOf(.Day, inRegion: Region())
-                        let lastAte : NSDate? = stats.1 == 0 ? nil : ( startDate + Int(round(stats.1 * 3600.0)).seconds )
-                        print("adding new circadian times")
-                        let fastingHrs = Int(floor(stats.2))
-                        let fastingMins = (today + Int(round((stats.2 % 1.0) * 60.0)).minutes).toString(DateFormat.Custom("mm"))!
-                        print("in IntroInterfaceController of WatchExtension: \(fastingHrs)")
-                        print(" and minutes: \(fastingMins)")
-                        MetricsStore.sharedInstance.fastingTime = "\(fastingHrs):\(fastingMins)"
-                        MetricsStore.sharedInstance.eatingTime  = (today + Int(stats.0 * 3600.0).seconds).toString(DateFormat.Custom("HH:mm"))!
-                        MetricsStore.sharedInstance.lastAte = lastAte == nil ? "N/A" : lastAte!.toString(DateFormat.Custom("HH:mm"))!
-/*                        if WCSession.isSupported() {
-                            let session = WCSession.defaultSession()
-                            if session.watchAppInstalled {
-                                let userInfo = ["fastingHrs":fastingHrs, "fastingMins":fastingMins]
-                                session.transferUserInfo(userInfo as! [String : AnyObject])
-                            }
-                        } */
-                    }
-//                    mealChart.setNeedsDisplay()
-/*                    Answers.logContentViewWithName("MealTimes",
-                        contentType: HKWorkoutType.workoutType().identifier,
-                        contentId: NSDate().toString(DateFormat.Custom("YYYY-MM-dd:HH:mm:ss")),
-                        customAttributes: nil)  */
-                })
-                
-            }
-//            print("at reloadData call for Circadian")
-            reloadData()
-            print("at reloadData call for Circadian")
 */
 
-
-/*
-        // This method is called when watch view controller is no longer visible
-        
-        updateHealthInfo()
-        MetricsStore.sharedInstance.weight = weightLocalizedString
-        MetricsStore.sharedInstance.BMI = HKBMIString
-        MetricsStore.sharedInstance.Fat = "90"
-        MetricsStore.sharedInstance.Carbohydrate = "190"
-        MetricsStore.sharedInstance.Protein = "290"
-        
- 
-       
-        
-        //        HealthMetrics.saveConditions(self.healthMetrics)
-        //        print("should have written to file: \(weightLocalizedString)")
-        //            print("should have writtento file: \(bmiHK)")
-        //        print("should have written to file: \(HKBMIString)")
-        //    healthMetrics.BMI = "check"
-        //    HealthMetrics.updateBMI(healthMetrics)
- //   }
-//}
-/*extension IntroInterfaceController {
- func refresh() {
- let yesterday = NSDate(timeIntervalSinceNow: -24 * 60 * 60)
- let today = NSDate()
- healthConditions.loadWeightMetrics(from: yesterday, to: today) { success in
- dispatch_async(dispatch_get_main_queue()) {
- if (success) {
- HealthConditions.saveConditions(self.healthConditions)
- }
- else {
- print("Failed to load data")
- }
- }
- }
- */
- */
-
-
+}

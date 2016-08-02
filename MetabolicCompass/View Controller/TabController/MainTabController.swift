@@ -207,7 +207,7 @@ class MainTabController: UITabBarController, UITabBarControllerDelegate, ManageE
                     self.dailyProgressVC?.contentDidUpdate()
                 }
             } else {
-                log.warning("No DailyProgressViewController available")
+                Log.warning("No DailyProgressViewController available")
             }
         }
     }
@@ -230,7 +230,7 @@ class MainTabController: UITabBarController, UITabBarControllerDelegate, ManageE
                     break
                 }
             }
-            log.verbose("Daily progress view controller after init: \(dailyProgressVC)")
+            Log.verbose("Daily progress view controller after init: \(dailyProgressVC)")
         }
     }
 

@@ -9,9 +9,9 @@
 import Foundation
 import HealthKit
 import Alamofire
-import SwiftyBeaver
+import CocoaLumberjack
 
-let log = SwiftyBeaver.self
+//let log = SwiftyBeaver.self
 
 
 public typealias SvcResultCompletion = (RequestResult) -> Void
@@ -271,11 +271,11 @@ extension Alamofire.Request {
         -> Self
     {
         return self.responseString() { req, resp, result in
-            log.debug("\(tag): " + (result.isSuccess ? "SUCCESS" : "FAILED"))
+            Log.debug("\(tag): " + (result.isSuccess ? "SUCCESS" : "FAILED"))
             if Service.delegate != nil{
                 Service.delegate!.didFinishStringRequest(req, response:resp, result:result)
             }
-            log.debug("\n***result:\(result)")
+            Log.debug("\n***result:\(result)")
             completion(req, resp, result)
         }
     }
@@ -284,14 +284,14 @@ extension Alamofire.Request {
         -> Self
     {
         return self.responseJSON() { req, resp, result in
-            log.debug("\(tag): " + (result.isSuccess ? "SUCCESS" : "FAILED"))
+            Log.debug("\(tag): " + (result.isSuccess ? "SUCCESS" : "FAILED"))
             if Service.delegate != nil{
                 Service.delegate!.didFinishJSONRequest(req, response:resp, result:result)
             }
-            log.debug("\n***result:\(result)")
+            Log.debug("\n***result:\(result)")
             if !result.isSuccess {
-                log.debug("\n***response:\(resp)")
-                log.debug("\n***error:\(result.error)")
+                Log.debug("\n***response:\(resp)")
+                Log.debug("\n***error:\(result.error)")
                 debugPrint(resp)
             }
             completion(req, resp, result)

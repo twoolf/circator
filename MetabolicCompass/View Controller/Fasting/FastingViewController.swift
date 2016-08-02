@@ -251,16 +251,16 @@ public class FastingViewController : UIViewController, ChartViewDelegate {
     }
 
     public func refreshData() {
-        log.info("FastingViewController refreshing data")
+        Log.info("FastingViewController refreshing data")
         let refreshStartDate = NSDate()
 
         model.updateData { error in
             guard error == nil else {
-                log.error(error)
+                Log.error(error as! String)
                 return
             }
 
-            log.info("FastingViewController refreshing charts (\(NSDate().timeIntervalSinceDate(refreshStartDate)))")
+            Log.info("FastingViewController refreshing charts (\(NSDate().timeIntervalSinceDate(refreshStartDate)))")
 
             Async.main {
                 self.activityIndicator.stopAnimating()
