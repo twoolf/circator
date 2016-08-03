@@ -108,19 +108,19 @@ class AccountManager: NSObject {
 
         assert(self.rootViewController != nil, "Please, specify root navigation controller")
         
-        guard isAuthorized else {
-            self.doLogin (animated) { self.loginComplete() }
-            return
-        }
+//        guard isAuthorized else {
+//            self.doLogin (animated) { self.loginComplete() }
+//            return
+//        }
 
         withHKCalAuth {
             UserManager.sharedManager.ensureAccessToken { error in
-                guard !error else {
-                    Async.main() {
-                        self.doLogin (animated) { self.loginComplete() }
-                    }
-                    return
-                }
+//                guard !error else {
+//                    Async.main() {
+//                        self.doLogin (animated) { self.loginComplete() }
+//                    }
+//                    return
+//                }
                 
                 // TODO: Yanif: handle partial failures when a subset of account components
                 // failures beyond the consent component.
