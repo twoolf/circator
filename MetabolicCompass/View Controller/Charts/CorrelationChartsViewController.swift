@@ -11,6 +11,7 @@ import Charts
 import HealthKit
 import MetabolicCompassKit
 import AKPickerView_Swift
+import SwiftyUserDefaults
 
 class CorrelationChartsViewController: UIViewController, UITableViewDelegate, UITableViewDataSource {
     //MARK: - IB VARS
@@ -33,10 +34,18 @@ class CorrelationChartsViewController: UIViewController, UITableViewDelegate, UI
     private let scatterChartsModel = BarChartModel()
     private let lineChartsModel = BarChartModel()
 
+    private let TopCorrelationType = DefaultsKey<Int?>("TopCorrelationType")
+    private let BottomCorrelationType = DefaultsKey<Int?>("BottomCorrelationType")
 
     override func viewDidLoad() {
         super.viewDidLoad()
-
+        
+        self.selectedPickerRows[0] = Defaults[TopCorrelationType] != nil ? Defaults[TopCorrelationType]! : -1
+        self.selectedPickerRows[1] = Defaults[BottomCorrelationType] != nil ? Defaults[BottomCorrelationType]! : -1
+        
+        self.pickerView.reloadAllComponents()
+       self.tableView.reloadData()
+        
         scatterCh = NSBundle.mainBundle().loadNibNamed("ScatterCorrelcationCell", owner: self, options: nil).last as? ScatterCorrelcationCell
         correlCh = NSBundle.mainBundle().loadNibNamed("TwoLineCorrelcationCell", owner: self, options: nil).last as? TwoLineCorrelcationCell
         scatterCh?.frame = correlatoinChartContainer.bounds
@@ -47,6 +56,12 @@ class CorrelationChartsViewController: UIViewController, UITableViewDelegate, UI
         
         scatterChartContainer.hidden = false
         correlatoinChartContainer.hidden = true
+        
+        let px = 1 / UIScreen.mainScreen().scale
+        let frame = CGRectMake(0, 0, self.tableView.frame.size.width, px)
+        let line: UIView = UIView(frame: frame)
+        self.tableView.tableHeaderView = line
+        line.backgroundColor = self.tableView.separatorColor
 
     }
 
@@ -83,11 +98,19 @@ class CorrelationChartsViewController: UIViewController, UITableViewDelegate, UI
         let cell = self.tableView.dequeueReusableCellWithIdentifier(
             "CorrelationCell" + "\(indexPath.row)", forIndexPath: indexPath) as! CorrelationTabeViewCell
         
-        let type = pickerData[indexPath.row][pickerView.selectedRowInComponent(0)].identifier
-        let image = appearanceProvider.imageForSampleType(pickerData[indexPath.row][pickerView.selectedRowInComponent(0)].identifier, active: true)
-        
-        cell.healthImageView?.image = image
-        cell.titleLabel.text = appearanceProvider.titleForSampleType(type, active: false).string
+        if (self.selectedPickerRows[indexPath.row] >= 0) {
+            let type = pickerData[indexPath.row][self.selectedPickerRows[indexPath.row]].identifier
+            
+            let image = appearanceProvider.imageForSampleType(pickerData[indexPath.row][self.selectedPickerRows[indexPath.row]].identifier, active: true)
+            
+            cell.healthImageView?.image = image
+            cell.titleLabel.text = appearanceProvider.titleForSampleType(type, active: false).string
+        }
+        else {
+            cell.titleLabel.text = "Choose metric"
+            cell.healthImageView?.image = nil
+        }
+
         return cell
     }
     
@@ -100,11 +123,18 @@ class CorrelationChartsViewController: UIViewController, UITableViewDelegate, UI
             self.selectedIndexPath = indexPath
             assistTextField.becomeFirstResponder()
         }
-        reloadPickerToCurrentCell(indexPath)
+        if (self.selectedPickerRows[indexPath.row] >= 0) {
+            reloadPickerToCurrentCell(indexPath)
+        }
     }
     
     func reloadPickerToCurrentCell(indexPath:NSIndexPath) {
         let cell = tableView.cellForRowAtIndexPath(indexPath) as! CorrelationTabeViewCell
+        cell.alpha = 0.4
+        UIView.animateWithDuration(0.2) { 
+            cell.alpha = 1.0
+
+        }
         let typeSring = appearanceProvider.typeFromString(cell.titleLabel.text!)
         let row = pickerIdentifiers[indexPath.row].indexOf(typeSring)
         pickerView.selectRow(row!, inComponent: 0, animated: true)
@@ -118,7 +148,7 @@ class CorrelationChartsViewController: UIViewController, UITableViewDelegate, UI
     var appearanceProvider = DashboardMetricsAppearanceProvider()
     
     var selectedIndexPath : NSIndexPath?
-    var selectedPickerRows = [0,0]
+    var selectedPickerRows = [-1,-1]
     
     func hideTextField() {
         assistTextField.resignFirstResponder()
@@ -136,15 +166,29 @@ class CorrelationChartsViewController: UIViewController, UITableViewDelegate, UI
     }
     
     func updateChartData() {
-        updateChartDataForChartsModel(scatterChartsModel)
-        updateChartDataForChartsModel(lineChartsModel)
-        updateChartTitle()
+        if ((self.selectedPickerRows[0] >= 0) && (self.selectedPickerRows[1] >= 0)) {
+            scatterCh.chartView.noDataText = "No data available"
+            correlCh.chartView.noDataText = "No data available"
+            updateChartDataForChartsModel(scatterChartsModel)
+            updateChartDataForChartsModel(lineChartsModel)
+            updateChartTitle()
+        }
+        else {
+            scatterCh.chartView.noDataText = "Choose both metrics"
+            correlCh.chartView.noDataText = "Choose both metrics"
+            scatterCh.chartView.data = nil
+            correlCh.chartView.data = nil
+            (scatterCh.chartTitleLabel.text, correlCh.chartTitleLabel.text) = ("", "")
+            (scatterCh.subtitleLabel.text, correlCh.subtitleLabel.text) = ("", "")
+            correlCh.secondaryChartMinValueLabel.text = ""
+            correlCh.secondaryChartMaxValueLabel.text = ""
+            return
+        }
     }
     
     func updateChartDataForChartsModel(model: BarChartModel) {
         
         var dataSets = [IChartDataSet]()
-        var types = [DataSetType]()
         
         var xValues = [String?]()
         
@@ -154,7 +198,6 @@ class CorrelationChartsViewController: UIViewController, UITableViewDelegate, UI
             selectedIndexCount += 1
             let typeToShow = type.identifier == HKCorrelationTypeIdentifierBloodPressure ? HKQuantityTypeIdentifierBloodPressureSystolic : type.identifier
             let key = typeToShow + "\((model.rangeType.rawValue))"
-            print("keykeykeykeykeykeykeykey", key)
             let chartData = model.typesChartData[key]
             if (chartData == nil) {
                 scatterCh.chartView.data = nil
@@ -170,16 +213,9 @@ class CorrelationChartsViewController: UIViewController, UITableViewDelegate, UI
             
             if let yMax = chartData?.yMax, yMin = chartData?.yMin where yMax > 0 || yMin > 0 {
                 scatterCh.chartView.data = nil
-                var xValues: [String?] = Array(count: 8, repeatedValue: "")
-                
-                if let dSet = dataSets[1] as? ChartDataSet {
-                    for yValye in dSet.yVals {
-                        xValues[yValye.xIndex] = ("\(yValye.value)")
-                    }
-                }
+
                 scatterCh.updateLeftAxisWith(chartData?.yMin, maxValue: chartData?.yMax)
                 scatterCh.chartView.data = chartData
-                scatterCh.updateXAxisWith(xValues)
                 scatterCh.drawLimitLine()
             }
             else {
@@ -210,11 +246,16 @@ class CorrelationChartsViewController: UIViewController, UITableViewDelegate, UI
         tv.inputView = self.pickerView
         tv.inputAccessoryView = {
             let view = UIToolbar()
+            view.translucent = false
+            view.barTintColor = self.tableView.backgroundColor
             view.frame = CGRectMake(0, 0, 0, 44)
             view.barStyle = .Black
+            let button = UIBarButtonItem(title: "Done", style: UIBarButtonItemStyle.Plain, target: self, action:  #selector(hideTextField))
+            button.tintColor = UIColor.colorWithHexString("#7E8FA6")
+            view.tintColor = UIColor.colorWithHexString("#7E8FA6")
             view.items = [
                 UIBarButtonItem(barButtonSystemItem: .FlexibleSpace, target: nil, action: nil),
-                UIBarButtonItem(barButtonSystemItem: .Done, target: self, action: #selector(hideTextField))
+                button
             ]
             
             return view
@@ -279,8 +320,14 @@ extension CorrelationChartsViewController : UIPickerViewDataSource {
 
 extension CorrelationChartsViewController : UIPickerViewDelegate {
     func pickerView(pickerView: UIPickerView, didSelectRow row: Int, inComponent component: Int) {
-        self.tableView.reloadRowsAtIndexPaths([self.selectedIndexPath!], withRowAnimation: .None)
         self.selectedPickerRows[self.selectedIndexPath!.row] = row
+        if (self.selectedIndexPath!.row > 0) {
+            Defaults[BottomCorrelationType] = row
+        }
+        else {
+            Defaults[TopCorrelationType] = row
+        }
+        self.tableView.reloadRowsAtIndexPaths([self.selectedIndexPath!], withRowAnimation: .None)
         updateChartData()
     }
 }

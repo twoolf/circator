@@ -224,7 +224,54 @@ class BarChartModel : NSObject {
     }
     
     func scatterChartDataWithMultipleDataSets(xVals: [String?], dataSets:[IChartDataSet]) -> ScatterChartData? {
-        let chartData = ScatterChartData(xVals: xVals, dataSets: [dataSets[0]])
+        
+        var xValues : [String] = Array()
+        
+        let finalDataSet = dataSets[0]
+
+        if let dSet = dataSets[1] as? ChartDataSet {
+            for yValye in dSet.yVals {
+                if (dataSets[0].yValForXIndex(yValye.xIndex) != Double.NaN){
+                    xValues.append("\(yValye.value)")
+                }
+            }
+        }
+        
+        if let dSet = dataSets[0] as? ChartDataSet {
+            for yValye in dSet.yVals {
+                if (dataSets[1].yValForXIndex(yValye.xIndex) == Double.NaN){
+                    finalDataSet.removeEntry(dSet.entryForXIndex(yValye.xIndex)!)
+                }
+            }
+        }
+        
+        xValues = xValues.sort()
+        
+        var newValues : [String] = Array()
+        
+        if (xValues.count > 1) {
+            
+            let minValue = Double(xValues.first!)
+            let maxValue = Double(xValues.last!)
+            
+            let koef = (maxValue! - minValue!)/7
+            
+            var i = 0
+            while i < 7 {
+                var value = Double(i) * koef
+                value = value > 1 ? abs(value) : value
+                if (value > 1) {
+                    newValues.append("\(Int(value))")
+                }
+                else {
+                    newValues.append("\(value)")
+                }
+                i += 1
+            }
+        }
+        
+        let chartData = ScatterChartData(xVals: newValues, dataSets: [finalDataSet])
+        
         return chartData
     }
     

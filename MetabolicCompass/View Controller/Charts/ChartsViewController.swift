@@ -111,8 +111,9 @@ class ChartsViewController: UIViewController {
     func correlateChart () {
         if let correlateController = UIStoryboard(name: "TabScreens", bundle: nil).instantiateViewControllerWithIdentifier("correlatePlaceholder") as? UIViewController {
             let leftButton = UIBarButtonItem(image: UIImage(named: "close-button"), style: .Plain, target: self, action: #selector(dismissCorrelateChart))
-//            correlateController.viewControllers[0].navigationItem.setLeftBarButtonItem(leftButton, animated: false)
-            self.showViewController(correlateController, sender: self)
+
+            self.navigationItem.backBarButtonItem = UIBarButtonItem(title: "", style: .Plain, target: nil, action: nil)
+            self.navigationController?.pushViewController(correlateController, animated: true)
             
         }
     }
