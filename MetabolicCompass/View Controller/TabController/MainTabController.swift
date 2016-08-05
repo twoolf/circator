@@ -9,9 +9,11 @@
 import UIKit
 import Async
 import MetabolicCompassKit
+import SwiftyBeaver
 
 class MainTabController: UITabBarController, UITabBarControllerDelegate, ManageEventMenuDelegate {
 
+    private let log = SwiftyBeaver.self
     private var overlayView: UIVisualEffectView? = nil
     private var menu: ManageEventMenu? = nil
 
@@ -207,7 +209,7 @@ class MainTabController: UITabBarController, UITabBarControllerDelegate, ManageE
                     self.dailyProgressVC?.contentDidUpdate()
                 }
             } else {
-                Log.warning("No DailyProgressViewController available")
+                log.warning("No DailyProgressViewController available")
             }
         }
     }
@@ -230,7 +232,7 @@ class MainTabController: UITabBarController, UITabBarControllerDelegate, ManageE
                     break
                 }
             }
-            Log.verbose("Daily progress view controller after init: \(dailyProgressVC)")
+            log.verbose("Daily progress view controller after init: \(dailyProgressVC)")
         }
     }
 

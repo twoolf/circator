@@ -10,9 +10,10 @@ import UIKit
 import Async
 import HealthKit
 import MetabolicCompassKit
+import SwiftyBeaver
 
 class ContentManager: NSObject {
-
+    private let log = SwiftyBeaver.self
     static let ContentDidUpdateNotification = "ContentDidUpdateNotification"
 
     private var aggregateFetchTask : Async? = nil    // Background task to fetch population aggregates.
@@ -29,7 +30,7 @@ class ContentManager: NSObject {
             if (self.isBackgroundWorkActive) {
                 return
             }
-            Log.warning("Starting background work")
+            self.log.warning("Starting background work")
             self.fetchInitialAggregates()
             self.fetchRecentSamples()
             self.isBackgroundWorkActive = true
@@ -47,7 +48,7 @@ class ContentManager: NSObject {
         Async.main() {
             // Clean up aggregate data fetched via the prior account.
             if let task = self.aggregateFetchTask {
-                Log.warning("Stopping background work")
+                self.log.warning("Stopping background work")
                 task.cancel()
                 self.aggregateFetchTask = nil
                 self.isBackgroundWorkActive = false
@@ -72,7 +73,7 @@ class ContentManager: NSObject {
             // Regardless, we try to fetch the aggregates again, with the next request also
             // attempting to ensure a valid access token even if we did not get one this time.
             if error {
-                Log.warning("Could not ensure an access token while fetching aggregates, trying later...")
+                self.log.warning("Could not ensure an access token while fetching aggregates, trying later...")
             } else {
                 PopulationHealthManager.sharedManager.fetchAggregates()
             }

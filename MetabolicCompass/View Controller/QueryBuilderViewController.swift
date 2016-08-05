@@ -14,6 +14,7 @@ import HTPressableButton
 import MGSwipeTableCell
 import Crashlytics
 import SwiftDate
+import SwiftyBeaver
 
 enum BuilderMode {
     case Editing(Int)
@@ -34,6 +35,7 @@ class QueryBuilderViewController: UIViewController, UITextFieldDelegate {
     let queryTableView: UITableView = UITableView(frame: CGRect.zero, style: .Plain)
     lazy var former: Former = Former(tableView: self.queryTableView)
 
+    private let log = SwiftyBeaver.self
     // TODO: meal/activity attributes.
     // TODO: humanize attribute names.
     static let attributeOptions =
@@ -289,7 +291,7 @@ class QueryBuilderViewController: UIViewController, UITextFieldDelegate {
             dataTableView.predicates.append(pred)
             dataTableView.reloadData()
         } else {
-            Log.error("Invalid predicate, no bounds are set.")
+            log.error("Invalid predicate, no bounds are set.")
         }
     }
 

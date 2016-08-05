@@ -9,6 +9,7 @@
 import ResearchKit
 import Locksmith
 import Async
+import SwiftyBeaver
 
 public typealias ConsentBlock = ((consented: Bool) -> Void)?
 
@@ -20,6 +21,7 @@ private let unnamedAccount = "default"
  
  */
 public class ConsentManager: NSObject, ORKTaskViewControllerDelegate {
+    private let log = SwiftyBeaver.self
     private enum Identifier {
         case EligibilityTask
 
@@ -419,7 +421,7 @@ public class ConsentManager: NSObject, ORKTaskViewControllerDelegate {
         case .Discarded:
             break
         case .Failed:
-            Log.error("Consent view failed: \(error)")
+            log.error("Consent view failed: \(error)")
         case .Saved:
             break
         }

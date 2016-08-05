@@ -6,8 +6,10 @@
 //  Copyright © 2016 Yanif Ahmad, Tom Woolf. All rights reserved.
 //
 
+/*
 import Foundation
-import CocoaLumberjack.DDDispatchQueueLogFormatter
+import SwiftyBeaver
+//import CocoaLumberjack.DDDispatchQueueLogFormatter
 
 class Formatter: DDDispatchQueueLogFormatter {
     let df: NSDateFormatter
@@ -47,4 +49,4 @@ class Formatter: DDDispatchQueueLogFormatter {
         
         return formattedLog;
     }
-}
+} */

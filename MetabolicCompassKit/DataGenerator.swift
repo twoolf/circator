@@ -13,6 +13,7 @@ import SORandom
 import SwiftDate
 import FileKit
 import SwiftyJSON
+import SwiftyBeaver
 
 public typealias MCSampler = (NSDate, Double, Double?) -> HKSample?
 public typealias DatasetCompletion = [String: [HKSample]] -> ()
@@ -36,6 +37,7 @@ private let filteredTypeIdentifiers = [
  */
 public class DataGenerator : GeneratorType {
 
+    private let log = SwiftyBeaver.self
     public static let sharedInstance = DataGenerator()
 
     let generatorTypes : [HKSampleType] = Array(PreviewManager.previewChoices.flatten()).filter { t in
@@ -564,7 +566,7 @@ public class DataGenerator : GeneratorType {
                 samplesSkipped += 1
             }
         } catch {
-            Log.error(error as! String)
+            log.error(error as! String)
         }
     }
 
@@ -585,7 +587,7 @@ public class DataGenerator : GeneratorType {
             if let outhndl = output.handleForWriting {
                 outhndl.writeData(gpreamble)
                 users.forEach { userId in
-                    Log.info("Generating dataset for \(userId)")
+                    log.info("Generating dataset for \(userId)")
 
                     let upreamble = ((firstUser ? "" : ",") + "{ \"id\": \"\(userId)\", \"samples\": [").dataUsingEncoding(NSUTF8StringEncoding)!
                     let upostamble = "]}".dataUsingEncoding(NSUTF8StringEncoding)!
@@ -598,13 +600,13 @@ public class DataGenerator : GeneratorType {
                 }
                 outhndl.writeData(gpostamble)
 
-                Log.info("Created a HealthKit dataset of size \(output.size! / (1024*1024)) MB at: \(output.path)")
-                Log.info("Skipped \(samplesSkipped) samples, \(daysSkipped) days")
+                log.info("Created a HealthKit dataset of size \(output.size! / (1024*1024)) MB at: \(output.path)")
+                log.info("Skipped \(samplesSkipped) samples, \(daysSkipped) days")
             } else {
-                Log.error("Could not write dataset to \(output.path)")
+                log.error("Could not write dataset to \(output.path)")
             }
         } catch {
-            Log.error(error as! String)
+            log.error(error as! String)
         }
     }
 
@@ -616,13 +618,13 @@ public class DataGenerator : GeneratorType {
         daysSkipped = 0
 
         users.forEach { userId in
-            Log.info("Generating dataset for \(userId)")
+            log.info("Generating dataset for \(userId)")
             dataset[userId] = []
             (0..<days).forEach { i in
                 autoreleasepool { _ in
                     self.currentDay = startDateDay + i.days
                     if let samples : [HKSample] = self.next() {
-                        if (i % 10) == 0 { Log.info("Created batch \(i) / \(days),  \(samples.count) samples") }
+                        if (i % 10) == 0 { log.info("Created batch \(i) / \(days),  \(samples.count) samples") }
                         dataset[userId]!.appendContentsOf(samples)
                     } else {
                         self.daysSkipped += 1
@@ -642,7 +644,7 @@ public class DataGenerator : GeneratorType {
                 autoreleasepool { _ in
                     self.currentDay = startDateDay + i.days
                     if let samples : [HKSample] = self.next() {
-                        if (i % 10) == 0 { Log.info("Writing batch \(i) / \(days),  \(samples.count) samples") }
+                        if (i % 10) == 0 { self.log.info("Writing batch \(i) / \(days),  \(samples.count) samples") }
                         var firstSample = true
                         samples.forEach { s in
                             self.writeSample(outhndl, sample: s, asFirst: firstSample)
@@ -755,9 +757,9 @@ public class DataGenerator : GeneratorType {
         self.coveringDataset = true
         self.samplesPerType = samplesPerType
 
-        Log.info("Generating covering dataset for types:")
+        log.info("Generating covering dataset for types:")
         coveringTypes.forEach {
-            Log.info("    " + $0.identifier)
+            log.info("    " + $0.identifier)
         }
 
         generateInMemory(["<yourself>"], startDateDay: startDateDay, days: days) {
@@ -765,10 +767,10 @@ public class DataGenerator : GeneratorType {
                 if !block.isEmpty {
                     HealthManager.sharedManager.saveSamples(block) {
                         (success, error) -> Void in
-                        guard error == nil else { Log.error("error"); return }
+                        guard error == nil else { self.log.error("error"); return }
                     }
                 } else {
-                    Log.info("Empty block for covering data generator")
+                    self.log.info("Empty block for covering data generator")
                 }
             }
         }

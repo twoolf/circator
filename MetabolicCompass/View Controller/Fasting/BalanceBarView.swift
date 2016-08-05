@@ -7,11 +7,13 @@
 //
 
 import UIKit
+import SwiftyBeaver
 
 private let fastingViewLabelSize: CGFloat = 12.0
 private let fastingViewTextSize: CGFloat = 24.0
 
 public class BalanceBarView : UIView {
+    private let log = SwiftyBeaver.self
     public var ratio: CGFloat = 0.5
 
     public var color1: UIColor = .redColor()
@@ -94,7 +96,7 @@ public class BalanceBarView : UIView {
 
         // Clean ratio value
         if ratio < 0.0 || ratio > 1.0 {
-            Log.error("Invalid ratio of \(ratio), resetting to 0.5")
+            log.error("Invalid ratio of \(ratio), resetting to 0.5")
             ratio = 0.5
         }
 

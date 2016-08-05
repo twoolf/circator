@@ -14,6 +14,7 @@ import SwiftDate
 import Async
 import AwesomeCache
 import QueryHK
+import SwiftyBeaver
 
 @objc protocol DailyChartModelProtocol {
     optional func dataCollectingFinished()
@@ -21,7 +22,7 @@ import QueryHK
 }
 
 class DailyProgressDayInfo: NSObject, NSCoding {
-    
+    private let log = SwiftyBeaver.self
     static var dayColorsKey = "dayColors"
     static var dayValuesKey = "dayValues"
     
@@ -49,6 +50,7 @@ typealias MCDaylyProgressCache = Cache<DailyProgressDayInfo>
 
 class DailyChartModel : NSObject, UITableViewDataSource {
 
+    private let log = SwiftyBeaver.self
     /// initializations of these variables creates offsets so plots of event transitions are square waves
     private let stWorkout = 0.0
     private let stSleep = 0.33
@@ -200,7 +202,7 @@ class DailyChartModel : NSObject, UITableViewDataSource {
         
         QueryHK.sharedManager.fetchCircadianEventIntervals(day, endDate: endOfDay, completion: { (intervals, error) in
             guard error == nil else {
-                Log.error("Failed to fetch circadian events: \(error)")
+                self.log.error("Failed to fetch circadian events: \(error)")
                 return
             }
             if !intervals.isEmpty {
@@ -243,7 +245,7 @@ class DailyChartModel : NSObject, UITableViewDataSource {
         QueryHK.sharedManager.fetchCircadianEventIntervals(startDate) { (intervals, error) -> Void in
             Async.main {
                 guard error == nil else {
-                    Log.error("Failed to fetch circadian events: \(error)")
+                    self.log.error("Failed to fetch circadian events: \(error)")
                     return
                 }
                 if intervals.isEmpty {

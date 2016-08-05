@@ -12,7 +12,7 @@ def shared_pods
     pod 'SwiftyJSON', :git => 'https://github.com/SwiftyJSON/SwiftyJSON.git'
     pod 'SwiftDate'
     pod 'SwiftyUserDefaults'
-    pod 'CocoaLumberjack'
+    pod 'SwiftyBeaver'
     pod 'Dodo', '~> 2.0'
     pod 'CryptoSwift'
     pod 'AsyncSwift'
@@ -46,7 +46,7 @@ end
 target 'MetabolicCompassWatchExtension' do 
  platform :watchos, '2.0'
  pod 'SwiftDate'
- pod 'CocoaLumberjack'
+ pod 'SwiftyBeaver'
  pod 'AwesomeCache'
  pod 'QueryHK', :git => 'https://github.com/twoolf/QueryHK.git'
 end
@@ -54,7 +54,7 @@ end
 target 'MetabolicCompassWatch' do
  platform :watchos, '2.0'
  pod 'SwiftDate'
- pod 'CocoaLumberjack'
+ pod 'SwiftyBeaver'
  pod 'AwesomeCache'
  pod 'QueryHK', :git => 'https://github.com/twoolf/QueryHK.git'
 end

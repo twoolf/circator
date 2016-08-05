@@ -10,6 +10,7 @@ import Foundation
 import MetabolicCompassKit
 import Former
 import Async
+import SwiftyBeaver
 
 private let lblFontSize = ScreenManager.sharedInstance.profileLabelFontSize()
 private let inputFontSize = ScreenManager.sharedInstance.profileInputFontSize()
@@ -21,6 +22,7 @@ private let inputFontSize = ScreenManager.sharedInstance.profileInputFontSize()
  */
 class ProfileSubviewController : FormViewController {
 
+    private let log = SwiftyBeaver.self
     var profileFields       : [String] = []
     var profilePlaceholders : [String] = []
 
@@ -100,7 +102,7 @@ class ProfileSubviewController : FormViewController {
     }
 
     func updateProfile() {
-        Log.info("Updating profile..")
+        log.info("Updating profile..")
         navigationController?.popViewControllerAnimated(true)
     }
 }

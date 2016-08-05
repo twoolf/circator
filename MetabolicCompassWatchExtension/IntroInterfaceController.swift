@@ -13,7 +13,8 @@ import HealthKit
 import SwiftDate
 import ClockKit
 import QueryHK
-import CocoaLumberjack
+//import SwiftyBeaver
+//import CocoaLumberjack
 
 //let log = SwiftyBeaver.self
 
@@ -74,7 +75,7 @@ class IntroInterfaceController: WKInterfaceController, WCSessionDelegate  {
         func reloadComplications() {
             let server = CLKComplicationServer.sharedInstance()
             guard let complications = server.activeComplications where complications.count > 0 else {
-                Log.error("hit a zero in reloadComplications")
+//                log.error("hit a zero in reloadComplications")
                 return
             }
             

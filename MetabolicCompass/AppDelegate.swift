@@ -8,16 +8,15 @@
 
 import UIKit
 import MetabolicCompassKit
-import CocoaLumberjack
+//import CocoaLumberjack
 import Fabric
 import Crashlytics
 import Locksmith
 import SwiftyUserDefaults
 import WatchConnectivity
+import SwiftyBeaver
 
-
-
-//public let log = SwiftyBeaver.self
+//let log = SwiftyBeaver.self
 
 @UIApplicationMain
 /**
@@ -27,13 +26,14 @@ An overview of the Circator files and their connections follows. First, a reader
 class AppDelegate: UIResponder, UIApplicationDelegate, WCSessionDelegate {
 
 //    public static let log = SwiftyBeaver.self
-//    let LOG = (UIApplication.sharedApplication().delegate as! AppDelegate).SwiftyBeaver.self
+    private let log = SwiftyBeaver.self
+//    let log = (UIApplication.sharedApplication().delegate as! AppDelegate).SwiftyBeaver.self
     var window: UIWindow?
     var mainViewController: UIViewController!
     private let firstRunKey = "FirstRun"
     func application(application: UIApplication, didFinishLaunchingWithOptions launchOptions: [NSObject: AnyObject]?) -> Bool
     {
-//        configureLogging()
+        configureLogging()
         Fabric.with([Crashlytics.self,Answers.self])
         
         if ((Defaults.objectForKey(firstRunKey) == nil)) {
@@ -127,7 +127,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, WCSessionDelegate {
         // Called when the application is about to terminate. Save data if appropriate. See also applicationDidEnterBackground:.
     }
 
-/*    func configureLogging() {
+    func configureLogging() {
         // add log destinations. at least one is needed!
         let console = ConsoleDestination()
         console.detailOutput = true
@@ -141,7 +141,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, WCSessionDelegate {
         for (f,l) in pathfuns { console.addFilter(Filters.Function.contains(f, minLevel: l)) }
 
         log.addDestination(console)
-    } */
+    }
     
     private func setupWatchConnectivity() {
         if WCSession.isSupported() {

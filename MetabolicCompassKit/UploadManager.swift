@@ -15,6 +15,8 @@ import Async
 import Granola
 import SwiftDate
 import SwiftyUserDefaults
+import SwiftyBeaver
+
 
 public let noAnchor = HKQueryAnchor(fromValue: Int(HKAnchoredObjectQueryNoAnchor))
 
@@ -72,6 +74,7 @@ public class UMSampleUUID: Object {
 }
 
 public class UMLogEntry: Object {
+    private let log = SwiftyBeaver.self
     public dynamic var id: Int = 0
     public dynamic var msid = String()
     public dynamic var ts = NSDate()
@@ -100,7 +103,7 @@ public class UMLogEntry: Object {
         self.delete_uuids.appendContentsOf(deleted.map { return UMSampleUUID(deletion: $0) })
         self.retry_ts = NSDate() + retryPeriodBase.seconds
         self.compoundKey = compoundKeyValue()
-        Log.info("Created UMLogEntry")
+        log.info("Created UMLogEntry")
         self.logEntry()
     }
 
@@ -125,26 +128,27 @@ public class UMLogEntry: Object {
     }
 
     public func logEntry() {
-        Log.info("id:\(self.id)")
-        Log.info("msid:\(self.msid)")
-        Log.info("ts:\(self.ts)")
-        Log.info("anchor:\(self.anchor.base64EncodedStringWithOptions(NSDataBase64EncodingOptions(rawValue: 0)))")
-        Log.info("insert_uuids:\(self.insert_uuids.count)")
-        Log.info("delete_uuids:\(self.delete_uuids.count)")
-        Log.info("retry_ts:\(self.retry_ts)")
-        Log.info("retry_count:\(self.retry_count)")
+        log.info("id:\(self.id)")
+        log.info("msid:\(self.msid)")
+        log.info("ts:\(self.ts)")
+        log.info("anchor:\(self.anchor.base64EncodedStringWithOptions(NSDataBase64EncodingOptions(rawValue: 0)))")
+        log.info("insert_uuids:\(self.insert_uuids.count)")
+        log.info("delete_uuids:\(self.delete_uuids.count)")
+        log.info("retry_ts:\(self.retry_ts)")
+        log.info("retry_count:\(self.retry_count)")
     }
 
     public func logEntryCompact() {
-        Log.info("id:\(self.id)")
-        Log.info("msid:\(self.msid)")
-        Log.info("ts:\(self.ts)")
-        Log.info("retry_count:\(self.retry_count)")
+        log.info("id:\(self.id)")
+        log.info("msid:\(self.msid)")
+        log.info("ts:\(self.ts)")
+        log.info("retry_count:\(self.retry_count)")
     }
 
 }
 
 public class UploadManager: NSObject {
+    private let log = SwiftyBeaver.self
     public static let sharedManager: UploadManager = UploadManager()
 
     // Random number generation
@@ -185,7 +189,7 @@ public class UploadManager: NSObject {
             return (encodedKey, data.base64EncodedStringWithOptions(NSDataBase64EncodingOptions(rawValue: 0)))
         }
         else {
-            Log.error("Error encoding anchor for \(type)")
+            log.error("Error encoding anchor for \(type)")
             return nil
         }
     }
@@ -260,7 +264,7 @@ public class UploadManager: NSObject {
                     // We have a remote anchor available, and do not use a temporal predicate.
                     anchor = anchorForType
                     remoteAnchor = true
-                    Log.info("Data import from anchor \(anchor): \(tname)")
+                    log.info("Data import from anchor \(anchor): \(tname)")
                 } else {
                     // We have no server acquisition time available.
                     // Here, we upload all samples between the end of the historical range (i.e., when the
@@ -268,7 +272,7 @@ public class UploadManager: NSObject {
                     let nearFuture = 1.minutes.fromNow
                     let pstart = NSDate(timeIntervalSinceReferenceDate: hend)
                     predicate = HKQuery.predicateForSamplesWithStartDate(pstart, endDate: nearFuture, options: .None)
-                    Log.info("Data import from \(pstart) \(nearFuture): \(tname)")
+                    log.info("Data import from \(pstart) \(nearFuture): \(tname)")
 
                 }
             } else {
@@ -283,7 +287,7 @@ public class UploadManager: NSObject {
             }
         }
 
-        Log.info("Anchor for \(tname)(\(remoteAnchor)): \(anchor)")
+        log.info("Anchor for \(tname)(\(remoteAnchor)): \(anchor)")
         return (needOldestSamples, anchor, predicate)
     }
 
@@ -298,7 +302,7 @@ public class UploadManager: NSObject {
         do {
             addedJson = try added.map(self.jsonifySample)
         } catch let error {
-            Log.error(error as! String)
+            log.error(error as! String)
             return nil
         }
 
@@ -324,7 +328,7 @@ public class UploadManager: NSObject {
             measures = ["activity_duration", "activity_type", "activity_value"]
         }
         else {
-            Log.warning("No MCDB identifier found for \(logEntry.msid)")
+            log.warning("No MCDB identifier found for \(logEntry.msid)")
             return nil
         }
 
@@ -336,23 +340,26 @@ public class UploadManager: NSObject {
     }
 
     public func putSample(jsonObj: [String: AnyObject]) -> () {
+        let log = SwiftyBeaver.self
         Service.string(MCRouter.AddMeasures(jsonObj), statusCode: 200..<300, tag: "UPLOAD") {
             _, response, result in
-            Log.info("Upload: \(result.value)")
+            log.info("Upload: \(result.value)")
         }
     }
 
     public func putBlockSample(jsonObjBlock: [[String:AnyObject]]) -> () {
+        let log = SwiftyBeaver.self
         Service.string(MCRouter.AddMeasures(["block":jsonObjBlock]), statusCode: 200..<300, tag: "UPLOAD") {
             _, response, result in
-            Log.info("Upload: \(result.value)")
+            log.info("Upload: \(result.value)")
         }
     }
 
     public func putSample(type: HKSampleType, added: [HKSample]) {
+        let log = SwiftyBeaver.self
         do {
             let tname = type.displayText ?? type.identifier
-            Log.info("Uploading \(added.count) \(tname) samples")
+            log.info("Uploading \(added.count) \(tname) samples")
 
             let blockSize = 100
             let totalBlocks = ((added.count / blockSize)+1)
@@ -360,11 +367,11 @@ public class UploadManager: NSObject {
                 for i in 0..<totalBlocks {
                     autoreleasepool { _ in
                         do {
-                            Log.info("Uploading block \(i) / \(totalBlocks)")
+                            log.info("Uploading block \(i) / \(totalBlocks)")
                             let jsonObjs = try added[(i*blockSize)..<(min((i+1)*blockSize, added.count))].map(self.jsonifySample)
                             self.putBlockSample(jsonObjs)
                         } catch {
-                            Log.error(error as! String)
+                            log.error(error as! String)
                         }
                     }
                 }
@@ -373,17 +380,18 @@ public class UploadManager: NSObject {
                 jsons.forEach(self.putSample)
             }
         } catch {
-            Log.error(error as! String)
+            log.error(error as! String)
         }
     }
 
     public func retryPendingUploads(force: Bool = false) {
+        let log = SwiftyBeaver.self
         // Dispatch retries based on the persistent pending list
         let now = NSDate()
         let realm = try! Realm()
 
         for logEntry in realm.objects(UMLogEntry.self).filter({ return (force || $0.retry_ts < now) }) {
-            Log.info("Retrying pending upload")
+            log.info("Retrying pending upload")
             logEntry.logEntryCompact()
 
             let entryKey: String = logEntry.compoundKey
@@ -407,19 +415,19 @@ public class UploadManager: NSObject {
                 let uuids = Set(logEntry.insert_uuids.map { return UMSampleUUID.uuidOfNSData($0.uuid) })
                 let deleted: [NSUUID] = logEntry.delete_uuids.map { return UMSampleUUID.uuidOfNSData($0.uuid) }
 
-                Log.info("Retry upload invoking fetchSamplesByUUID for \(entryKey)")
+                log.info("Retry upload invoking fetchSamplesByUUID for \(entryKey)")
 
                 HealthManager.sharedManager.fetchSamplesByUUID(type, uuids: uuids) { (samples, error) in
                     // We need a new Realm instance since this completion will execute in a different thread
                     // than the realm instance outside the above loop.
-                    Log.info("Retry upload in fetchSamplesByUUID completion for \(entryKey)")
+                    log.info("Retry upload in fetchSamplesByUUID completion for \(entryKey)")
                     let realm = try! Realm()
                     if error != nil {
-                        Log.error(error as! String)
+                        log.error(error as! String)
                         realm.delete(logEntry)
                     } else {
                         if let logEntry = realm.objectForPrimaryKey(UMLogEntry.self, key: entryKey) {
-                            Log.info("Enqueueing retried upload \(logEntry.id) \(logEntry.compoundKey) with \(samples.count) inserts, \(deleted.count) deletions")
+                            log.info("Enqueueing retried upload \(logEntry.id) \(logEntry.compoundKey) with \(samples.count) inserts, \(deleted.count) deletions")
 
                             let added: [HKSample] = samples.map { $0 as! HKSample }
                             self.batchLogEntryUpload(logEntry.compoundKey, added: added, deleted: deleted)
@@ -430,31 +438,32 @@ public class UploadManager: NSObject {
                                     let backoff = max(maxBackoff, self.rngSource.nextIntWithUpperBound(logEntry.retry_count) * retryPeriodBase)
                                     logEntry.retry_ts = now + backoff.seconds
                                     logEntry.retry_count += 1
-                                    Log.info("Backed off log entry \(logEntry.id) \(logEntry.compoundKey) to \(logEntry.retry_count) \(logEntry.retry_ts)")
+                                    log.info("Backed off log entry \(logEntry.id) \(logEntry.compoundKey) to \(logEntry.retry_count) \(logEntry.retry_ts)")
                                 } else {
-                                    Log.info("Too many retries for \(logEntry.id) \(logEntry.compoundKey) \(logEntry.retry_count), deleting...")
+                                    log.info("Too many retries for \(logEntry.id) \(logEntry.compoundKey) \(logEntry.retry_count), deleting...")
                                     realm.delete(logEntry)
                                 }
                             }
                         } else {
-                            Log.warning("No realm object found for \(entryKey)")
+                            log.warning("No realm object found for \(entryKey)")
                         }
                     }
                 }
             }
             else {
-                Log.warning("No sample type found for retried upload")
+                log.warning("No sample type found for retried upload")
                 logEntry.logEntryCompact()
             }
         }
     }
 
     func onCompletedUpload(success: Bool, sampleKeys: [String]) {
+        let log = SwiftyBeaver.self
         // Clear completed uploads from the persistent pending list
         let realm = try! Realm()
         try! realm.write {
             if success {
-                Log.info("Completed pending uploads \(sampleKeys.joinWithSeparator(", "))")
+                log.info("Completed pending uploads \(sampleKeys.joinWithSeparator(", "))")
                 let objects = sampleKeys.flatMap { realm.objectForPrimaryKey(UMLogEntry.self, key: $0) }
                 realm.delete(objects)
             }
@@ -465,6 +474,7 @@ public class UploadManager: NSObject {
     }
 
     func syncLogEntryBuffer() {
+        let log = SwiftyBeaver.self
         if !logEntryBatchBuffer.isEmpty {
             autoreleasepool { _ in
                 let batchSize = min(logEntryBatchBuffer.count, logEntryUploadBatchSize)
@@ -478,30 +488,30 @@ public class UploadManager: NSObject {
                 uploadSlice.forEach {
                     if let logEntry = realm.objectForPrimaryKey(UMLogEntry.self, key: $0.0) {
                         if let params = self.jsonifyLogEntry(logEntry, added: $0.1, deleted: $0.2) {
-                            Log.info("Syncing UMLogEntry")
+                            log.info("Syncing UMLogEntry")
                             logEntry.logEntryCompact()
                             block.append(params)
                             blockKeys.append($0.0)
                         } else {
-                            Log.warning("Unable to JSONify log entry")
+                            log.warning("Unable to JSONify log entry")
                             logEntry.logEntry()
                         }
                     } else {
-                        Log.warning("No log entry found for key: \($0.0)")
+                        log.warning("No log entry found for key: \($0.0)")
                     }
                 }
 
                 if block.count > 0 {
-                    Log.info("Syncing \(block.count) log entries with keys \(blockKeys.joinWithSeparator(", "))")
+                    log.info("Syncing \(block.count) log entries with keys \(blockKeys.joinWithSeparator(", "))")
 
                     Service.json(MCRouter.AddSeqMeasures(["block": block]), statusCode: 200..<300, tag: "UPLOADLOG") {
                         _, response, result in
-                        Log.verbose("Upload log entries: \(result.value)")
+                        log.verbose("Upload log entries: \(result.value)")
                         self.onCompletedUpload(result.isSuccess, sampleKeys: blockKeys)
                     }
                 }
                 else {
-                    Log.info("Skipping log entry sync, no log entries to upload")
+                    log.info("Skipping log entry sync, no log entries to upload")
                 }
 
                 // Recur as an upload loop while we still have elements in the upload queue.
@@ -514,11 +524,12 @@ public class UploadManager: NSObject {
                 }
             }
         } else {
-            Log.info("Skipping syncLogEntryBuffer, empty upload buffer")
+            log.info("Skipping syncLogEntryBuffer, empty upload buffer")
         }
     }
 
     func batchLogEntryUpload(logEntryKey: String, added: [HKSample], deleted: [NSUUID]) {
+        let log = SwiftyBeaver.self
         logEntryBatchBuffer.append((logEntryKey, added, deleted))
         logEntryUploadAsync?.cancel()
         logEntryUploadAsync = Async.customQueue(self.uploadQueue, after: logEntryUploadDelay) {
@@ -527,7 +538,7 @@ public class UploadManager: NSObject {
 
         // Throttle if upload buffer is large.
         if logEntryBatchBuffer.count > uploadBufferThrottleLimit && !NSThread.isMainThread() {
-            Log.warning("Throttling upload enqueueing for \(logEntryUploadDelay * 3) secs")
+            log.warning("Throttling upload enqueueing for \(logEntryUploadDelay * 3) secs")
             NSThread.sleepForTimeInterval(logEntryUploadDelay * 3)
         }
     }
@@ -581,6 +592,7 @@ public class UploadManager: NSObject {
 
     public func deleteSamples(startDate: NSDate, endDate: NSDate, measures: [String:AnyObject], completion: Bool -> Void) {
         // Delete remotely.
+        let log = SwiftyBeaver.self
         let params: [String: AnyObject] = [
             "tstart"  : Int(floor(startDate.timeIntervalSince1970)),
             "tend"    : Int(ceil(endDate.timeIntervalSince1970)),
@@ -589,30 +601,31 @@ public class UploadManager: NSObject {
 
         Service.json(MCRouter.RemoveMeasures(params), statusCode: 200..<300, tag: "DELPOST") {
             _, response, result in
-            Log.verbose("Deletions: \(result.value)")
+            log.verbose("Deletions: \(result.value)")
             if !result.isSuccess {
-                Log.error("Failed to delete samples on the server, server may potentially diverge from device.")
+                log.error("Failed to delete samples on the server, server may potentially diverge from device.")
             }
             completion(result.isSuccess)
         }
     }
 
     public func cleanPendingUploads() {
-        Log.info("Upload Manager state before reset")
+        let log = SwiftyBeaver.self
+        log.info("Upload Manager state before reset")
         logMetadata()
 
         let realm = try! Realm()
         try! realm.write {
             for logEntry in realm.objects(UMLogEntry.self) {
                 if logEntry.insert_uuids.count > uploadBlockSize || logEntry.delete_uuids.count > uploadBlockSize {
-                    Log.warning("Clearing log entry")
+                    log.warning("Clearing log entry")
                     logEntry.logEntry()
                     realm.delete(logEntry)
                 }
             }
         }
 
-        Log.info("Upload Manager state after reset")
+        log.info("Upload Manager state after reset")
         logMetadata()
     }
 
@@ -620,7 +633,7 @@ public class UploadManager: NSObject {
         let realm = try! Realm()
 
         realm.objects(UMLogSequenceNumber.self).forEach { seqno in
-            Log.info("SEQ msid: \(seqno.msid) id: \(seqno.seqid)")
+            log.info("SEQ msid: \(seqno.msid) id: \(seqno.seqid)")
         }
 
 
@@ -632,6 +645,7 @@ public class UploadManager: NSObject {
     // MARK: - Upload helpers.
 
     private func uploadInitialAnchorForType(type: HKSampleType, completion: (Bool, (Bool, NSDate)?) -> Void) {
+        let log = SwiftyBeaver.self
         let tname = type.displayText ?? type.identifier
         if let wend = UserManager.sharedManager.getHistoricalRangeStartForType(type.identifier) {
             let dwend = NSDate(timeIntervalSinceReferenceDate: wend)
@@ -639,7 +653,7 @@ public class UploadManager: NSObject {
             let pred = HKQuery.predicateForSamplesWithStartDate(dwstart, endDate: dwend, options: .None)
             HealthManager.sharedManager.fetchSamplesOfType(type, predicate: pred) { (samples, error) in
                 guard error == nil else {
-                    Log.error("Could not get initial anchor samples for: \(tname) \(dwstart) \(dwend)")
+                    log.error("Could not get initial anchor samples for: \(tname) \(dwstart) \(dwend)")
                     return
                 }
 
@@ -647,7 +661,7 @@ public class UploadManager: NSObject {
                 UploadManager.sharedManager.putSample(type, added: hksamples)
                 UserManager.sharedManager.decrHistoricalRangeStartForType(type.identifier)
 
-                Log.info("Uploaded \(tname) to \(dwstart)")
+                log.info("Uploaded \(tname) to \(dwstart)")
                 if let min = UserManager.sharedManager.getHistoricalRangeMinForType(type.identifier) {
                     let dmin = NSDate(timeIntervalSinceReferenceDate: min)
                     if dwstart > dmin {
@@ -657,22 +671,23 @@ public class UploadManager: NSObject {
                         completion(false, (true, dmin))
                     }
                 } else {
-                    Log.error("No earliest sample found for \(tname)")
+                    log.error("No earliest sample found for \(tname)")
                 }
             }
         } else {
-            Log.info("No bulk anchor date found for \(tname)")
+            log.info("No bulk anchor date found for \(tname)")
         }
     }
 
     private func backgroundUploadForType(type: HKSampleType, completion: (Bool, (Bool, NSDate)?) -> Void) {
+        let log = SwiftyBeaver.self
         let tname = type.displayText ?? type.identifier
         if let _ = UserManager.sharedManager.getHistoricalRangeForType(type.identifier),
             _ = UserManager.sharedManager.getHistoricalRangeMinForType(type.identifier)
         {
             self.uploadInitialAnchorForType(type, completion: completion)
         } else {
-            Log.warning("No historical range found for \(tname)")
+            log.warning("No historical range found for \(tname)")
             completion(true, nil)
         }
     }
@@ -680,6 +695,7 @@ public class UploadManager: NSObject {
     // MARK: - Observers
 
     public func registerUploadObservers() {
+        let log = SwiftyBeaver.self
         HealthManager.sharedManager.authorizeHealthKit { (success, _) -> Void in
             guard success else {
                 return
@@ -692,7 +708,7 @@ public class UploadManager: NSObject {
                 HealthManager.sharedManager.startBackgroundObserverForType(type, getAnchorCallback: UploadManager.sharedManager.getNextAnchor)
                 { (added, deleted, newAnchor, error, completion) -> Void in
                     guard error == nil else {
-                        Log.error("Failed to register observers: \(error)")
+                        log.error("Failed to register observers: \(error)")
                         completion()
                         return
                     }
@@ -705,7 +721,7 @@ public class UploadManager: NSObject {
                         UploadManager.sharedManager.uploadAnchorCallback(type, anchor: newAnchor, added: userAdded, deleted: deleted)
                     }
                     else {
-                        Log.info("Skipping upload for \(typeId): \(userAdded.count) insertions \(deleted.count) deletions")
+                        log.info("Skipping upload for \(typeId): \(userAdded.count) insertions \(deleted.count) deletions")
                     }
                     completion()
                 }

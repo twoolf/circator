@@ -13,6 +13,7 @@ import MetabolicCompassKit
 import Async
 import Charts
 import EasyTipView
+import SwiftyBeaver
 
 private let fastingViewLabelSize: CGFloat = 12.0
 private let fastingViewTextSize: CGFloat = 24.0
@@ -68,7 +69,7 @@ public class FastingViewController : UIViewController, ChartViewDelegate {
     @IBOutlet weak var fastingView: UIView!
 
     var activityIndicator: UIActivityIndicatorView! = nil
-
+    private let log = SwiftyBeaver.self
     private var model: FastingDataModel = FastingDataModel()
 
     lazy var pieChart: PieChartView = {
@@ -251,16 +252,16 @@ public class FastingViewController : UIViewController, ChartViewDelegate {
     }
 
     public func refreshData() {
-        Log.info("FastingViewController refreshing data")
+        log.info("FastingViewController refreshing data")
         let refreshStartDate = NSDate()
 
         model.updateData { error in
             guard error == nil else {
-                Log.error(error as! String)
+                self.log.error(error as! String)
                 return
             }
 
-            Log.info("FastingViewController refreshing charts (\(NSDate().timeIntervalSinceDate(refreshStartDate)))")
+            self.log.info("FastingViewController refreshing charts (\(NSDate().timeIntervalSinceDate(refreshStartDate)))")
 
             Async.main {
                 self.activityIndicator.stopAnimating()

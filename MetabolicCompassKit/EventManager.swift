@@ -12,6 +12,8 @@ import HealthKit
 import WatchConnectivity
 import SwiftyUserDefaults
 import QueryHK
+import SwiftyBeaver
+
 
 public let EKMStartSessionNotification = "EKMStartSessionNotification"
 
@@ -39,6 +41,7 @@ func ==(lhs: DiningEventKey, rhs: DiningEventKey) -> Bool
  */
 public class EventManager : NSObject, WCSessionDelegate {
 
+    private let log = SwiftyBeaver.self
     public static let sharedManager = EventManager()
 
     lazy var eventKitStore: EKEventStore = EKEventStore()
@@ -86,7 +89,7 @@ public class EventManager : NSObject, WCSessionDelegate {
             (accessGranted, error) in
 
             guard error == nil else {
-                Log.error("Calendar access error: \(error)")
+                self.log.error("Calendar access error: \(error)")
                 return
             }
 
@@ -159,7 +162,7 @@ public class EventManager : NSObject, WCSessionDelegate {
                             try eventKitStore.saveEvent(ev, span: EKSpan.ThisEvent, commit: false)
                             doCommit = true
                         } catch {
-                            Log.error("Error saving event id: \(error)")
+                            log.error("Error saving event id: \(error)")
                         }
                     }
 
@@ -189,7 +192,7 @@ public class EventManager : NSObject, WCSessionDelegate {
                     for eid in eitems.1 {
                         let sstr = dateFormatter.stringFromDate(eitems.0.start)
                         let estr = dateFormatter.stringFromDate(eitems.0.end)
-                        Log.debug("Writing food log " + sstr + "->" + estr + " " + eid.1)
+                        self.log.debug("Writing food log " + sstr + "->" + estr + " " + eid.1)
 
                         let emeta = ["Source":"Calendar","EventId":String(eid.0), "Data":eid.1]
                         QueryHK.sharedManager.savePreparationAndRecoveryWorkout(
@@ -198,10 +201,10 @@ public class EventManager : NSObject, WCSessionDelegate {
                             metadata: emeta,
                             completion: { (success, error ) -> Void in
                                 guard error == nil else {
-                                    Log.error("error")
+                                    self.log.error("error")
                                     return
                                 }
-                                Log.debug("Food log event saved")
+                                self.log.debug("Food log event saved")
                             }
                         )
                     }
@@ -213,7 +216,7 @@ public class EventManager : NSObject, WCSessionDelegate {
                         try self.eventKitStore.commit()
                         self.setEventCounter()
                     } catch {
-                        Log.error("Error committing event ids: \(error)")
+                        self.log.error("Error committing event ids: \(error)")
                     }
                 }
             }

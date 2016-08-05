@@ -11,6 +11,7 @@ import HealthKit
 import MetabolicCompassKit
 import Charts
 import QueryHK
+import SwiftyBeaver
 
 public enum SamplesCollectedIndex {
     case HKType(HKSampleType)
@@ -18,6 +19,7 @@ public enum SamplesCollectedIndex {
 }
 
 public class FastingDataModel : NSObject {
+    private let log = SwiftyBeaver.self
     public var samplesCollected: [HKSampleType: Int] = [:]
     public var samplesCollectedDataEntries: [(SamplesCollectedIndex, ChartDataEntry)] = []
 
@@ -57,7 +59,7 @@ public class FastingDataModel : NSObject {
         dispatch_group_enter(group)
         QueryHK.sharedManager.fetchSampleCollectionDays(PreviewManager.manageChartsSampleTypes) { (table, error) in
             guard error == nil else {
-                Log.error(error as! String)
+                self.log.error(error as! String)
                 someError.append(error)
                 dispatch_group_leave(group)
                 return
@@ -70,13 +72,13 @@ public class FastingDataModel : NSObject {
         dispatch_group_enter(group)
         QueryHK.sharedManager.fetchWeeklyFastState { (cFast, cNonFast, error) in
             guard error == nil else {
-                Log.error(error as! String)
+                self.log.error(error as! String)
                 someError.append(error)
                 dispatch_group_leave(group)
                 return
             }
 
-            Log.info("WF STATE result: \(cFast) \(cNonFast)")
+            self.log.info("WF STATE result: \(cFast) \(cNonFast)")
             self.cumulativeWeeklyFasting = cFast
             self.cumulativeWeeklyNonFast = cNonFast
             dispatch_group_leave(group)
@@ -85,13 +87,13 @@ public class FastingDataModel : NSObject {
         dispatch_group_enter(group)
         QueryHK.sharedManager.fetchWeeklyFastingVariability { (variability, error) in
             guard error == nil else {
-                Log.error(error as! String)
+                self.log.error(error as! String)
                 someError.append(error)
                 dispatch_group_leave(group)
                 return
             }
 
-            Log.info("WF variability result: \(variability)")
+            self.log.info("WF variability result: \(variability)")
             self.weeklyFastingVariability = variability
             dispatch_group_leave(group)
         }
@@ -99,13 +101,13 @@ public class FastingDataModel : NSObject {
         dispatch_group_enter(group)
         QueryHK.sharedManager.fetchWeeklyFastType { (fSleep, fAwake, error) in
             guard error == nil else {
-                Log.error(error as! String)
+                self.log.error(error as! String)
                 someError.append(error)
                 dispatch_group_leave(group)
                 return
             }
 
-            Log.info("WF TYPE result: \(fSleep) \(fAwake)")
+            self.log.info("WF TYPE result: \(fSleep) \(fAwake)")
             self.fastSleep = fSleep
             self.fastAwake = fAwake
             dispatch_group_leave(group)
@@ -114,13 +116,13 @@ public class FastingDataModel : NSObject {
         dispatch_group_enter(group)
         QueryHK.sharedManager.fetchWeeklyEatAndExercise { (tEat, tExercise, error) in
             guard error == nil else {
-                Log.error(error as! String)
+                self.log.error(error as! String)
                 someError.append(error)
                 dispatch_group_leave(group)
                 return
             }
 
-            Log.info("WEE result: \(tEat) \(tExercise)")
+            self.log.info("WEE result: \(tEat) \(tExercise)")
             self.fastEat = tEat
             self.fastExercise = tExercise
             dispatch_group_leave(group)
@@ -170,14 +172,14 @@ public class FastingDataModel : NSObject {
     }
 
     func logModel() {
-        Log.info("fastSlp: \(self.fastSleep)")
-        Log.info("fastAwk: \(self.fastAwake)")
-        Log.info("fastEat: \(self.fastEat)")
-        Log.info("fastExc: \(self.fastExercise)")
-        Log.info("cwf: \(self.cumulativeWeeklyFasting)")
-        Log.info("cwnf: \(self.cumulativeWeeklyNonFast)")
-        Log.info("wvf: \(self.weeklyFastingVariability)")
-        Log.info("sd: \(self.samplesCollected)")
+        log.info("fastSlp: \(self.fastSleep)")
+        log.info("fastAwk: \(self.fastAwake)")
+        log.info("fastEat: \(self.fastEat)")
+        log.info("fastExc: \(self.fastExercise)")
+        log.info("cwf: \(self.cumulativeWeeklyFasting)")
+        log.info("cwnf: \(self.cumulativeWeeklyNonFast)")
+        log.info("wvf: \(self.weeklyFastingVariability)")
+        log.info("sd: \(self.samplesCollected)")
     }
 }
 

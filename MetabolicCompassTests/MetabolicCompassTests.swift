@@ -8,7 +8,8 @@
 
 import XCTest
 import Async
-import CocoaLumberjack
+import SwiftyBeaver
+//import CocoaLumberjack
 
 //let log = SwiftyBeaver.self
 

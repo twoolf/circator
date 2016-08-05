@@ -17,6 +17,7 @@ import Former
 import HTPressableButton
 import AKPickerView_Swift
 import QueryHK
+import SwiftyBeaver
 
 public let MEMDidUpdateCircadianEvents = "MEMDidUpdateCircadianEvents"
 
@@ -101,6 +102,7 @@ class FavoritesButton : MCButton {
 public class AKPickerCell: FormCell, AKPickerFormableRow {
     private var picker: AKPickerView! = nil
     private var manager: PickerManager! = nil
+    private let log = SwiftyBeaver.self
 
     public override func updateWithRowFormer(rowFormer: RowFormer) {
         super.updateWithRowFormer(rowFormer)
@@ -163,6 +165,7 @@ public class AddEventTable: UITableView, UITableViewDelegate, UITableViewDataSou
     //MARK: tags for menu components.
     public let favoritesTag = 1000
     public let itemsTag = 2000
+    private let log = SwiftyBeaver.self
 
     public var menuItems: [PathMenuItem]
 
@@ -335,7 +338,7 @@ public class AddEventTable: UITableView, UITableViewDelegate, UITableViewDataSou
                 sender.enabled = true
                 sender.setNeedsDisplay()
             }
-            if error != nil { Log.error(error as! String) }
+            if error != nil { self.log.error(error as! String) }
             else { NSNotificationCenter.defaultCenter().postNotificationName(MEMDidUpdateCircadianEvents, object: nil) }
         }
     }
@@ -350,7 +353,7 @@ public class AddEventTable: UITableView, UITableViewDelegate, UITableViewDataSou
 
         // Aggregate sleep, exercise and meal events.
         HealthManager.sharedManager.fetchSamples(typesAndPredicates) { (samples, error) -> Void in
-            guard error == nil else { Log.error(error as! String); return }
+            guard error == nil else { self.log.error(error as! String); return }
             let overlaps = samples.reduce(false, combine: { (acc, kv) in
                 guard !acc else { return acc }
                 return kv.1.reduce(acc, combine: { (acc, s) in return acc || !( startTime >= s.endDate || endTime <= s.startDate ) })
@@ -371,7 +374,7 @@ public class AddEventTable: UITableView, UITableViewDelegate, UITableViewDataSou
         let startTime = minutesSinceStart.minutes.ago
         let metadata = ["Meal Type": mealType]
 
-        Log.error("Saving meal event: \(mealType) \(startTime) \(endTime)")
+        log.error("Saving meal event: \(mealType) \(startTime) \(endTime)")
 
         validateTimedEvent(startTime, endTime: endTime) { error in
             guard error == nil else {
@@ -384,8 +387,8 @@ public class AddEventTable: UITableView, UITableViewDelegate, UITableViewDataSou
                 kiloCalories: 0.0, metadata: metadata)
             {
                 (success, error) -> Void in
-                if error != nil { Log.error(error as! String) }
-                else { Log.error("Saved meal event as workout type: \(mealType) \(startTime) \(endTime)") }
+                if error != nil { self.log.error(error as! String) }
+                else { self.log.error("Saved meal event as workout type: \(mealType) \(startTime) \(endTime)") }
                 completion(error)
             }
         }
@@ -395,9 +398,9 @@ public class AddEventTable: UITableView, UITableViewDelegate, UITableViewDataSou
         let endTime = NSDate()
         let startTime = minutesSinceStart.minutes.ago
 
-        Log.error("Saving exercise event: \(workoutType) \(startTime) \(endTime)")
+        log.error("Saving exercise event: \(workoutType) \(startTime) \(endTime)")
 
-        Log.error("Exercise event \(startTime) \(endTime)")
+        log.error("Exercise event \(startTime) \(endTime)")
         validateTimedEvent(startTime, endTime: endTime) { error in
             guard error == nil else {
                 completion(error)
@@ -409,8 +412,8 @@ public class AddEventTable: UITableView, UITableViewDelegate, UITableViewDataSou
                 distance: 0.0, distanceUnit: HKUnit(fromString: "km"), kiloCalories: 0.0, metadata: [:])
             {
                 (success, error ) -> Void in
-                if error != nil { Log.error(error as! String) }
-                else { Log.error("Saved exercise event as workout type: \(workoutType) \(startTime) \(endTime)") }
+                if error != nil { self.log.error(error as! String) }
+                else { self.log.error("Saved exercise event as workout type: \(workoutType) \(startTime) \(endTime)") }
                 completion(error)
             }
         }
@@ -421,7 +424,7 @@ public class AddEventTable: UITableView, UITableViewDelegate, UITableViewDataSou
             sender.enabled = false
             addMeal(fButton.mealType, minutesSinceStart: fButton.duration, completion: circadianOpCompletion(sender))
         } else {
-            Log.error("Invalid sender for handleFavoritesTap (expected a FavoritesButton)")
+            log.error("Invalid sender for handleFavoritesTap (expected a FavoritesButton)")
         }
     }
 
@@ -462,7 +465,7 @@ public class AddEventTable: UITableView, UITableViewDelegate, UITableViewDataSou
                 addMeal(mt, minutesSinceStart: minutesSinceStart, completion: circadianOpCompletion(sender))
             } else {
                 sender.enabled = true
-                Log.error("Failed to convert duration into integer: \(quickAddDuration)")
+                log.error("Failed to convert duration into integer: \(quickAddDuration)")
             }
         }
         else if let wt = workoutType {
@@ -472,14 +475,14 @@ public class AddEventTable: UITableView, UITableViewDelegate, UITableViewDataSou
                 Async.main {
                     sender.enabled = true
                     sender.setNeedsDisplay()
-                    Log.error("Failed to convert duration into integer: \(quickAddDuration)")
+                    self.log.error("Failed to convert duration into integer: \(quickAddDuration)")
                 }
             }
         }
         else {
             Async.main {
                 let msg = "Unknown quick add event type \(quickAddType)"
-                Log.error(msg)
+                self.log.error(msg)
                 UINotifications.genericErrorOnView(self.notificationView ?? self.superview!, msg: msg)
                 sender.enabled = true
                 sender.setNeedsDisplay()
@@ -625,6 +628,7 @@ public class AddEventTable: UITableView, UITableViewDelegate, UITableViewDataSou
 // This is implemented as a Former-based form
 public class DeleteEventTable: UITableView
 {
+    private let log = SwiftyBeaver.self
     public var menuItems: [PathMenuItem]
     private lazy var delFormer: Former = Former(tableView: self)
 
@@ -784,7 +788,7 @@ public class DeleteEventTable: UITableView
     }
 
     func circadianOpCompletion(error: NSError?) {
-        if error != nil { Log.error(error as! String) }
+        if error != nil { log.error(error as! String) }
         else {
             Async.main { UINotifications.genericSuccessMsgOnView(self.notificationView ?? self.superview!, msg: "Successfully deleted events.") }
             NSNotificationCenter.defaultCenter().postNotificationName(MEMDidUpdateCircadianEvents, object: nil)
@@ -792,11 +796,11 @@ public class DeleteEventTable: UITableView
     }
 
     func handleQuickDelRecentTap(sender: UIButton) {
-        Log.error("Delete recent tapped")
+        log.error("Delete recent tapped")
         if let mins = quickDelRecentManager.getSelectedValue() as? Int {
             let endDate = NSDate()
             let startDate = endDate.dateByAddingTimeInterval(-(Double(mins) * 60.0))
-            Log.error("Delete circadian events between \(startDate) \(endDate)")
+            log.error("Delete circadian events between \(startDate) \(endDate)")
             HealthManager.sharedManager.deleteCircadianEvents(startDate, endDate: endDate, completion: self.circadianOpCompletion)
         }
     }
@@ -805,7 +809,7 @@ public class DeleteEventTable: UITableView
         let startDate = quickDelDates[0]
         let endDate = quickDelDates[1]
         if startDate < endDate {
-            Log.error("Delete circadian events between \(startDate) \(endDate)")
+            log.error("Delete circadian events between \(startDate) \(endDate)")
             HealthManager.sharedManager.deleteCircadianEvents(startDate, endDate: endDate, completion: self.circadianOpCompletion)
         } else {
             UINotifications.genericErrorOnView(self.notificationView ?? self.superview!, msg: "Start date must be before the end date")

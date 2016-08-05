@@ -10,6 +10,7 @@ import UIKit
 import HealthKit
 import MetabolicCompassKit
 import Async
+import SwiftyBeaver
 
 class UserInfo : NSObject {
     var firstName: String?
@@ -17,7 +18,7 @@ class UserInfo : NSObject {
 }
 
 class AccountManager: NSObject {
-
+    private let log = SwiftyBeaver.self
     private let didCompleteLoginNotification = "registrationCompleteNotification"
 
     static let shared = AccountManager()
@@ -141,13 +142,13 @@ class AccountManager: NSObject {
                                     self.loginComplete()
                                 } else {
                                     components = components.filter { $0 != .Consent }
-                                    Log.error(UMPullMultipleComponentsError(components.map(getComponentName)))
+                                    self.log.error(UMPullMultipleComponentsError(components.map(getComponentName)))
                                 }
                             } else {
-                                Log.error(res.info)
+                                self.log.error(res.info)
                             }
                         } else {
-                            Log.error("Failed to get initial user account")
+                            self.log.error("Failed to get initial user account")
                         }
                     }
                 }
@@ -159,7 +160,7 @@ class AccountManager: NSObject {
         HealthManager.sharedManager.authorizeHealthKit { (success, error) -> Void in
             guard error == nil else {
                 self.isHealthKitAuthorized = false
-                Log.error("no healthkit \(error)")
+                self.log.error("no healthkit \(error)")
                 return
             }
 

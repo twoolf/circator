@@ -13,6 +13,7 @@ import SwiftDate
 import Async
 import SwiftChart
 import QueryHK
+import SwiftyBeaver
 
 /// initializations of these variables creates offsets so plots of event transitions are square waves
 private let stWorkout = 0.0
@@ -46,6 +47,7 @@ private let plotFontSize = ScreenManager.sharedInstance.eventTimeViewPlotFontSiz
  - remark: st=start and en=end as abbreviations on events, Ty=Type, epsilon needed to avoid diagonal lines / overlapping events
  */
 class EventTimeViewController : UIViewController {
+    private let log = SwiftyBeaver.self
     lazy var healthFormatter : SampleFormatter = { return SampleFormatter() }()
 
     lazy var fastingDescLabel : UILabel = {
@@ -232,7 +234,7 @@ class EventTimeViewController : UIViewController {
         QueryHK.sharedManager.fetchCircadianEventIntervals(startDate) { (intervals, error) -> Void in
             Async.main {
                 guard error == nil else {
-                    Log.error("Failed to fetch circadian events: \(error)")
+                    self.log.error("Failed to fetch circadian events: \(error)")
                     return
                 }
 

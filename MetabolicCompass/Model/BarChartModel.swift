@@ -9,6 +9,7 @@ import SwiftDate
 import HealthKit
 import MetabolicCompassKit
 import QueryHK
+import SwiftyBeaver
 
 enum ChartType {
     case BarChart
@@ -215,6 +216,7 @@ class BarChartModel : NSObject {
     // MARK :- Get all data for type
 
     func getAllDataForCurrentPeriod(completion: () -> Void) {
+        let log = SwiftyBeaver.self
         let group = dispatch_group_create()
         for qType in PreviewManager.chartsSampleTypes {
             dispatch_group_enter(group)
@@ -230,7 +232,7 @@ class BarChartModel : NSObject {
             let chartType = chartTypeForQuantityTypeIdentifier(type)
             let key = type + "\(self.rangeType.rawValue)"
 
-            Log.warning("Getting chart data for \(type)")
+            log.warning("Getting chart data for \(type)")
 
             if type == HKQuantityTypeIdentifierHeartRate || type == HKQuantityTypeIdentifierUVExposure {
                 // We should get max and min values. because for this type we are using scatter chart

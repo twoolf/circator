@@ -185,12 +185,12 @@ class ComplicationController: NSObject, CLKComplicationDataSource {
     
     func getNextRequestedUpdateDateWithHandler(handler: (NSDate?) -> Void) {
         let nextUpdate = NSDate() + 10.minutes
-//        Log.Error("called getNextRequestedUpdateDateWithHandler")
+//        log.error("called getNextRequestedUpdateDateWithHandler")
         handler(nextUpdate)
     }
     
     func requestedUpdateBudgetExhausted() {
-//        Log.Error("Budget exhausted")
+//        log.error("Budget exhausted")
     }
     
     // MARK: - Placeholder Templates

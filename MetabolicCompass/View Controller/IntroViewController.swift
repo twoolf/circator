@@ -18,6 +18,7 @@ import Pages
 import Charts
 import SwiftDate
 import QueryHK
+import SwiftyBeaver
 
 let IntroViewTableViewCellIdentifier = "IntroViewTableViewCellIdentifier"
 private let mcControlButtonHeight = ScreenManager.sharedInstance.dashboardButtonHeight()
@@ -33,6 +34,7 @@ class IntroViewController: UIViewController,
                            UITableViewDataSource, WCSessionDelegate,
                            UITableViewDelegate, UIPickerViewDelegate, UIPickerViewDataSource
 {
+    private let log = SwiftyBeaver.self
     lazy var dashboardRows : Int = {
         return ScreenManager.sharedInstance.dashboardRows()
     }()
@@ -614,7 +616,7 @@ class IntroViewController: UIViewController,
                         self.initializeBackgroundWork()
                         Async.main(after: 2) { UINotifications.doWelcome(self, user: UserManager.sharedManager.getUserId() ?? "") }
                     } else {
-                        Log.error(res.info as! String)
+                        self.log.error(res.info as! String)
                         UINotifications.profileFetchFailed(self)
                     }
                 }
@@ -918,7 +920,7 @@ class IntroViewController: UIViewController,
     }
 
     func clampTime(t: NSDate, upper: NSDate, lower: NSDate) -> NSDate? {
-        Log.error("Clamp \(t) \(lower) \(upper)")
+        log.error("Clamp \(t) \(lower) \(upper)")
         var result = t
         if t < lower {
             result = result + 1.days
@@ -942,7 +944,7 @@ class IntroViewController: UIViewController,
 
         // Aggregate sleep, exercise and meal events.
         HealthManager.sharedManager.fetchSamples(typesAndPredicates) { (samples, error) -> Void in
-            guard error == nil else { Log.error(error as! String); return }
+            guard error == nil else { self.log.error(error as! String); return }
             let overlaps = samples.reduce(false, combine: { (acc, kv) in
                 guard !acc else { return acc }
                 return kv.1.reduce(acc, combine: { (acc, s) in return acc || !( startTime >= s.endDate || endTime <= s.startDate ) })
@@ -983,15 +985,15 @@ class IntroViewController: UIViewController,
                     
                     let metaMeals = ["Meal Type": String(EventPickerManager.previewMealTypeStrings[0][pickerView.selectedRowInComponent(0)])]
                     
-                    Log.error("Meal event \(startTime) \(endTime)")
+                    log.error("Meal event \(startTime) \(endTime)")
                     validateTimedEvent(startTime, endTime: endTime) {
                         QueryHK.sharedManager.savePreparationAndRecoveryWorkout(
                             startTime, endDate: endTime, distance: 0.0, distanceUnit: HKUnit(fromString: "km"),
                             kiloCalories: 0.0, metadata: metaMeals)
                         {
                             (success, error ) -> Void in
-                            guard error == nil else { Log.error(error as! String); return }
-                            Log.error("Meal saved as workout type")
+                            guard error == nil else { self.log.error(error as! String); return }
+                            self.log.error("Meal saved as workout type")
                             self.refreshMealController()
                         }
                     }
@@ -1008,20 +1010,20 @@ class IntroViewController: UIViewController,
                 let startTime : NSDate! = clampTime(today + startDelta.hour.hours + startDelta.minute.minutes, upper: now, lower: ago24)
                 let endTime : NSDate! = clampTime(today + endDelta.hour.hours + endDelta.minute.minutes, upper: now, lower: ago24)
                 
-                Log.error("Sleep event \(startTime) \(endTime)")
+                log.error("Sleep event \(startTime) \(endTime)")
                 if startTime == nil || endTime == nil || startTime! >= endTime! {
                     let msg = ( startTime == nil || endTime == nil ) ?
                         "Unspecified sleep time, please re-enter" : "Ending time greater than starting time, please re-enter"
 
                     UINotifications.genericError(self, msg: msg)
                 } else {
-                    Log.error("Sleep event \(startTime) \(endTime)")
+                    log.error("Sleep event \(startTime) \(endTime)")
                     validateTimedEvent(startTime, endTime: endTime) {
                         HealthManager.sharedManager.saveSleep(startTime!, endDate: endTime!, metadata: [:], completion:
                         {
                             (success, error ) -> Void in
-                            guard error == nil else { Log.error(error as! String); return }
-                            Log.error("Saved as sleep event")
+                            guard error == nil else { self.log.error(error as! String); return }
+                            self.log.error("Saved as sleep event")
                             self.refreshMealController()
                         })
                     }
@@ -1040,15 +1042,15 @@ class IntroViewController: UIViewController,
                 if let startTime = startTimeO {
                     let endTime = startTime + Int(durationHrStr)!.hours + Int(durationMinStr)!.minutes
                     
-                    Log.error("Exercise event \(startTime) \(endTime)")
+                    log.error("Exercise event \(startTime) \(endTime)")
                     validateTimedEvent(startTime, endTime: endTime) {
                         QueryHK.sharedManager.saveRunningWorkout(
                             startTime, endDate: endTime, distance: 0.0, distanceUnit: HKUnit(fromString: "km"),
                             kiloCalories: 0.0, metadata: [:])
                         {
                             (success, error ) -> Void in
-                            guard error == nil else { Log.error(error as! String); return }
-                            Log.error("Saved as exercise workout type")
+                            guard error == nil else { self.log.error(error as! String); return }
+                            self.log.error("Saved as exercise workout type")
                             self.refreshMealController()
                         }
                     }
@@ -1285,10 +1287,10 @@ class IntroViewController: UIViewController,
             distance: 0.0, distanceUnit:kmUnit, kiloCalories: 0.0, metadata: metaMeals,
             completion: { (success, error ) -> Void in
                 guard error == nil else {
-                    Log.error("Failed to save meal time: \(error as! String)")
+                    self.log.error("Failed to save meal time: \(error as! String)")
                     return
                 }
-                Log.error("Timed meal saved as workout-type")
+                self.log.error("Timed meal saved as workout-type")
                 self.refreshMealController()
             })
     }

@@ -16,74 +16,8 @@ import Async
 import AsyncKit
 import JWTDecode
 import SwiftyUserDefaults
+import SwiftyBeaver
 
-public enum LoggerMessageType: Int {
-    case debug = 1
-    case verbose = 2
-    case info = 3
-    case warning = 4
-    case error = 5
-}
-
-extension LoggerMessageType: CustomStringConvertible {
-    public var description: String {
-        switch self {
-        case .verbose:
-            return "VERBOSE"
-        case .info:
-            return "INFO"
-        case .debug:
-            return "DEBUG"
-        case .warning:
-            return "WARNING"
-        case .error:
-            return "ERROR"
-        }
-    }
-}
-
-public protocol Logger {
-    
-    func log(_ type: LoggerMessageType, msg: String,
-               functionName: String, lineNum: Int, fileName: String )
-    
-}
-
-public class Log {
-    
-    public static var logger: Logger?
-    
-    
-    public static func verbose(_ msg: String, functionName: String = #function,
-                                 lineNum: Int = #line, fileName: String = #file ) {
-        logger?.log( .verbose, msg: msg,
-                     functionName: functionName, lineNum: lineNum, fileName: fileName)
-    }
-    
-    public class func info(_ msg: String, functionName: String = #function,
-                             lineNum: Int = #line, fileName: String = #file) {
-        logger?.log( .info, msg: msg,
-                     functionName: functionName, lineNum: lineNum, fileName: fileName)
-    }
-    
-    public class func warning(_ msg: String, functionName: String = #function,
-                                lineNum: Int = #line, fileName: String = #file) {
-        logger?.log( .warning, msg: msg,
-                     functionName: functionName, lineNum: lineNum, fileName: fileName)
-    }
-    
-    public class func error(_ msg: String, functionName: String = #function,
-                              lineNum: Int = #line, fileName: String = #file) {
-        logger?.log( .error, msg: msg,
-                     functionName: functionName, lineNum: lineNum, fileName: fileName)
-    }
-    
-    public class func debug(_ msg: String, functionName: String = #function,
-                              lineNum: Int = #line, fileName: String = #file) {
-        logger?.log( .debug, msg: msg,
-                     functionName: functionName, lineNum: lineNum, fileName: fileName)
-    }
-}
 
 // Helper typealiases to indicate whether the bool argument expects an error or success status.
 public typealias ErrorCompletion = Bool -> Void
@@ -148,7 +82,7 @@ extension Dictionary {
  - note: We use Stormpath and tokens for authentication
  */
 public class UserManager {
-
+    private let log = SwiftyBeaver.self
     public static let sharedManager = UserManager()
 
     // Constants.
@@ -184,7 +118,7 @@ public class UserManager {
                     }
                 }
             } catch {
-                Log.error("userId.set: \(error)")
+                log.error("userId.set: \(error)")
             }
         }
     }
@@ -285,7 +219,7 @@ public class UserManager {
                 do {
                     try Locksmith.updateData(datadict, forUserAccount: user)
                 } catch {
-                    Log.error("setAccountData: \(error)")
+                    self.log.error("setAccountData: \(error)")
                 }
             } else {
                 print("\(Locksmith.loadDataForUserAccount(user))")
@@ -306,7 +240,7 @@ public class UserManager {
         do {
             try account.createInSecureStore()
         } catch {
-            Log.error("createAccount: \(error)")
+            log.error("createAccount: \(error)")
         }
     }
 
@@ -321,7 +255,7 @@ public class UserManager {
             do {
                 try account.deleteFromSecureStore()
             } catch {
-                Log.warning("resetAccount: \(error)")
+                self.log.warning("resetAccount: \(error)")
             }
         }
     }
@@ -431,13 +365,13 @@ public class UserManager {
             Stormpath.sharedSession.login(user, password: pass) {
                 (success, err) -> Void in
                 guard success && err == nil else {
-                    Log.error("Stormpath login failed: \(err!.localizedDescription)")
+                    self.log.error("Stormpath login failed: \(err!.localizedDescription)")
                     self.resetFull()
                     completion(RequestResult(error:err!))
                     return
                 }
 
-                Log.verbose("Access token: \(Stormpath.sharedSession.accessToken)")
+                self.log.verbose("Access token: \(Stormpath.sharedSession.accessToken)")
                 MCRouter.updateAuthToken(Stormpath.sharedSession.accessToken)
                 completion(RequestResult())
             }
@@ -495,12 +429,12 @@ public class UserManager {
                 account.customFields = ["consent": consentStr]
                 account.customFields.update(initialData)
                 Stormpath.sharedSession.register(account) { (account, error) -> Void in
-                    if error != nil { Log.error("Register failed: \(error)") }
+                    if error != nil { self.log.error("Register failed: \(error)") }
                     completion(account, error != nil, error?.localizedDescription)
                 }
             } else {
                 let msg = UMPushReadBinaryFileError(.Consent, consentPath)
-                Log.error(msg)
+                self.log.error(msg)
                 completion(nil, true, msg)
             }
         }
@@ -518,7 +452,7 @@ public class UserManager {
 
     public func resetPassword(email: String, completion: ((Bool, String?) -> Void)) {
         Stormpath.sharedSession.resetPassword(email) { (success, error) -> Void in
-            if error != nil { Log.error("Reset Password failed: \(error)") }
+            if error != nil { self.log.error("Reset Password failed: \(error)") }
             completion(success, error?.localizedDescription)
         }
     }
@@ -543,7 +477,7 @@ public class UserManager {
     //
     public func ensureAccessToken(tried: Int, completion: ErrorCompletion) {
         guard tried < UserManager.maxTokenRetries else {
-            Log.error("Failed to get access token within \(UserManager.maxTokenRetries) iterations")
+            log.error("Failed to get access token within \(UserManager.maxTokenRetries) iterations")
             // Get the expiry time locally from the token if available.
             // TODO: this is a temporary workaround for issue #30, to support auto-login:
             // https://github.com/yanif/circator/issues/30
@@ -554,7 +488,7 @@ public class UserManager {
                     if let expiry = jwt.expiresAt?.timeIntervalSince1970 {
                         doReset = false
                         self.tokenExpiry = expiry
-                        Log.info("Setting expiry as \(expiry)")
+                        log.info("Setting expiry as \(expiry)")
                     }
                 } catch {}
             }
@@ -594,8 +528,8 @@ public class UserManager {
     public func refreshAccessToken(tried: Int, completion: ErrorCompletion) {
         Stormpath.sharedSession.refreshAccessToken { (success, error) in
             guard success && error == nil else {
-                Log.warning("Refresh failed: \(error!.localizedDescription)")
-                Log.warning("Attempting login: \(self.hasAccount()) \(self.hasPassword())")
+                self.log.warning("Refresh failed: \(error!.localizedDescription)")
+                self.log.warning("Attempting login: \(self.hasAccount()) \(self.hasPassword())")
 
                 if self.hasAccount() && self.hasPassword() {
                     self.loginWithPull { res in completion(res.fail) }
@@ -606,11 +540,11 @@ public class UserManager {
             }
 
             if let token = Stormpath.sharedSession.accessToken {
-                Log.verbose("Refreshed token: \(token)")
+                self.log.verbose("Refreshed token: \(token)")
                 MCRouter.updateAuthToken(Stormpath.sharedSession.accessToken)
                 self.ensureAccessToken(tried+1, completion: completion)
             } else {
-                Log.error("RefreshAccessToken failed, please login manually.")
+                self.log.error("RefreshAccessToken failed, please login manually.")
                 completion(true)
             }
         }
@@ -781,12 +715,12 @@ public class UserManager {
                 pushAccountComponent(component, refresh: true, componentData: cache, completion: completion)
             } else {
                 let msg = UMPushReadBinaryFileError(component, path)
-                Log.error(msg)
+                log.error(msg)
                 completion(RequestResult(errorMessage:msg))
             }
         } else {
             let msg = UMPushInvalidBinaryFileError(component, filePath)
-            Log.error(msg)
+            log.error(msg)
             completion(RequestResult(errorMessage:msg))
         }
     }
@@ -1053,7 +987,7 @@ public class UserManager {
             let newSpan = [HMHRangeStartKey: sdict]
             deferredPushOnAccountComponent(.ArchiveSpan, refresh: true, sync: sync, componentData: newSpan)
         } else {
-            Log.error("Could not find historical sample range for \(key)")
+            log.error("Could not find historical sample range for \(key)")
         }
     }
 
@@ -1138,17 +1072,17 @@ public class UserManager {
 
     func withUserId (completion: (String -> Void)) {
         if let user = userId { completion(user) }
-        else { Log.error("No user id available") }
+        else { log.error("No user id available") }
     }
 
     func withUserPass (password: String?, completion: ((String, String) -> Void)) {
         if let user = userId, pass = password { completion(user, pass) }
-        else { Log.error("No user/password available") }
+        else { log.error("No user/password available") }
     }
 
     func withUserPass (username: String?, password: String?, completion: ((String, String) -> Void)) {
         if let user = username, pass = password { completion(user, pass) }
-        else { Log.error("No user/password available") }
+        else { log.error("No user/password available") }
     }
 
     // Resets all user-specific data, but preserves the last user id.
