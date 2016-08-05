@@ -48,8 +48,9 @@ public class PopulationHealthManager {
         var userfilter  : [String:AnyObject] = [:]
 
         // Add population filter parameters.
-        let popQueryIndex = QueryManager.sharedManager.getSelectedQuery()
+        var popQueryIndex = QueryManager.sharedManager.getSelectedQuery()
         let popQueries = QueryManager.sharedManager.getQueries()
+        popQueryIndex = -1;
         if popQueryIndex >= 0 && popQueryIndex < popQueries.count  {
             switch popQueries[popQueryIndex].1 {
             case Query.ConjunctiveQuery(let qstartOpt, let qendOpt, let qcolsOpt, let aggpreds):
@@ -158,7 +159,7 @@ public class PopulationHealthManager {
                                         sampleValue = categoryValues[mcdbQuantity] as? Double
                                 {
                                     let sampleType = HKObjectType.quantityTypeForIdentifier(hkQuantity)!
-                                    populationAggregates[sampleType] = [MCAggregateSample(value: sampleValue, sampleType: sampleType, op: sampleType.aggregationOptions)]
+                                    populationAggregates[sampleType] = [doubleAsAggregate(sampleType, sampleValue: sampleValue)]
                                 }
                                 else {
                                     log.error("Invalid MCDB categorized quantity in popquery response: \(category) \(catval)")
@@ -174,15 +175,15 @@ public class PopulationHealthManager {
                         switch typeIdentifier {
                         case HKCategoryTypeIdentifierSleepAnalysis:
                             let sampleType = HKObjectType.categoryTypeForIdentifier(HKCategoryTypeIdentifierSleepAnalysis)!
-                            populationAggregates[sampleType] = [MCAggregateSample(value: sampleValue, sampleType: sampleType, op: sampleType.aggregationOptions)]
+                            populationAggregates[sampleType] = [doubleAsAggregate(sampleType, sampleValue: sampleValue)]
 
                         case HKCategoryTypeIdentifierAppleStandHour:
                             let sampleType = HKObjectType.categoryTypeForIdentifier(HKCategoryTypeIdentifierAppleStandHour)!
-                            populationAggregates[sampleType] = [MCAggregateSample(value: sampleValue, sampleType: sampleType, op: sampleType.aggregationOptions)]
+                            populationAggregates[sampleType] = [doubleAsAggregate(sampleType, sampleValue: sampleValue)]
 
                         default:
                             let sampleType = HKObjectType.quantityTypeForIdentifier(typeIdentifier)!
-                            populationAggregates[sampleType] = [MCAggregateSample(value: sampleValue, sampleType: sampleType, op: sampleType.aggregationOptions)]
+                            populationAggregates[sampleType] = [doubleAsAggregate(sampleType, sampleValue: sampleValue)]
                         }
                     } else {
                         failed = true
@@ -207,5 +208,11 @@ public class PopulationHealthManager {
         else {
             log.error("Failed to deserialize population query response")
         }
+    }
+
+    func doubleAsAggregate(sampleType: HKSampleType, sampleValue: Double) -> MCAggregateSample {
+        let convertedSampleValue = HKQuantity(unit: sampleType.serviceUnit!, doubleValue: sampleValue).doubleValueForUnit(sampleType.defaultUnit!)
+        log.info("Popquery \(sampleType.displayText ?? sampleType.identifier) \(sampleValue) \(convertedSampleValue)")
+        return MCAggregateSample(value: convertedSampleValue, sampleType: sampleType, op: sampleType.aggregationOptions)
     }
 }

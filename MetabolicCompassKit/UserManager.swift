@@ -272,60 +272,6 @@ public class UserManager {
         return false
     }
     
-    //setting usual time when user goes to sleep
-    public func setUsualWhenToSleepTime(date: NSDate) {
-        if let user = userId {
-            let key = "usualWhenToSleepTime"+user
-            Defaults.setObject(date, forKey: key)
-            Defaults.synchronize()
-        }
-    }
-    //setting usual duration user sleeping
-    public func setUsualWokeUpTime(date: NSDate) {
-        if let user = userId {
-            let key = "usualSleepDuration"+user
-            Defaults.setObject(date, forKey: key)
-            Defaults.synchronize()
-        }
-    }
-    
-    public func getUsualWhenToSleepTime() -> NSDate? {
-        if let user = userId {
-            let key = "usualWhenToSleepTime"+user
-            let date = Defaults.objectForKey(key)
-            return date as? NSDate
-        }
-        return nil
-    }
-    
-    public func getUsualWokeUpTime() -> NSDate? {
-        if let user = userId {
-            let key = "usualSleepDuration"+user
-            let duration = Defaults.objectForKey(key)
-            return duration as? NSDate
-        }
-        return nil
-    }
-    
-    //setting ususal date for meals
-    public func setUsualMealTime(mealType: String, forDate date: NSDate) {
-        if let user = userId {
-            let key = mealType+user
-            Defaults.setObject(date, forKey: key)
-            Defaults.synchronize()
-        }
-    }
-    
-    //get usual date for meals
-    public func getUsualMealTime(mealType: String) -> NSDate? {
-        if let user = userId where Defaults.hasKey(mealType+user) {
-            let key = mealType+user
-            let dateOfMeal = Defaults.objectForKey(key)
-            return dateOfMeal as? NSDate
-        }
-        return nil
-    }
-
     public func setPassword(userPass: String) {
         if hasAccount() {
             setAccountData(["password": userPass])
@@ -1165,6 +1111,77 @@ public class UserManager {
 
     public func getUserInfo(completion: ((Account?, NSError?) -> Void)) {
         Stormpath.sharedSession.me(completion)
+    }
+
+    // MARK: - User units preferences
+
+    public func useMetricUnits() -> Bool? {
+        if let metricObj = getProfileCache()["metric"] {
+            if let metricI = metricObj as? Int {
+                return metricI > 0
+            } else if let metricB = metricObj as? Bool {
+                return metricB
+            } else if let metricS = metricObj as? String {
+                return !(metricS == "false")
+            }
+        }
+        return nil
+    }
+
+    // MARK: - Default meal & activity times
+
+    //setting usual time when user goes to sleep
+    public func setUsualWhenToSleepTime(date: NSDate) {
+        if let user = userId {
+            let key = "usualWhenToSleepTime"+user
+            Defaults.setObject(date, forKey: key)
+            Defaults.synchronize()
+        }
+    }
+    //setting usual duration user sleeping
+    public func setUsualWokeUpTime(date: NSDate) {
+        if let user = userId {
+            let key = "usualSleepDuration"+user
+            Defaults.setObject(date, forKey: key)
+            Defaults.synchronize()
+        }
+    }
+
+    public func getUsualWhenToSleepTime() -> NSDate? {
+        if let user = userId {
+            let key = "usualWhenToSleepTime"+user
+            let date = Defaults.objectForKey(key)
+            return date as? NSDate
+        }
+        return nil
+    }
+
+    public func getUsualWokeUpTime() -> NSDate? {
+        if let user = userId {
+            let key = "usualSleepDuration"+user
+            let duration = Defaults.objectForKey(key)
+            return duration as? NSDate
+        }
+        return nil
+    }
+
+    //setting ususal date for meals
+    public func setUsualMealTime(mealType: String, forDate date: NSDate) {
+        if let user = userId {
+            let key = mealType+user
+            Defaults.setObject(date, forKey: key)
+            Defaults.synchronize()
+        }
+    }
+
+    //get usual date for meals
+    public func getUsualMealTime(mealType: String) -> NSDate? {
+        if let user = userId where Defaults.hasKey(mealType+user) {
+            let key = mealType+user
+            let dateOfMeal = Defaults.objectForKey(key)
+            return dateOfMeal as? NSDate
+        }
+        return nil
     }
 
 }

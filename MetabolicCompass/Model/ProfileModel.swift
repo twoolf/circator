@@ -30,16 +30,7 @@ class ProfileModel: UserInfoModel {
     func setupValues() {
         let profileInfo = UserManager.sharedManager.getProfileCache()
 
-        var units: UnitsSystem! = UnitsSystem.Imperial
-        if let metricObj = profileInfo["metric"] {
-            if let metricI = metricObj as? Int {
-                units = metricI > 0 ? UnitsSystem.Metric : UnitsSystem.Imperial
-            } else if let metricB = metricObj as? Bool {
-                units = metricB ? UnitsSystem.Metric : UnitsSystem.Imperial
-            } else if let metricS = metricObj as? String {
-                units = metricS == "false" ? UnitsSystem.Imperial : UnitsSystem.Metric
-            }
-        }
+        let units: UnitsSystem! = (UserManager.sharedManager.useMetricUnits() ?? true) ? UnitsSystem.Metric : UnitsSystem.Imperial
 
         for item in items {
             if item.type == .FirstName {
@@ -63,10 +54,10 @@ class ProfileModel: UserInfoModel {
                         item.setNewValue(profileItemInfo)
                         if let value = item.floatValue() {
                             if item.type == .Weight {
-                                // Convert from kg to lb
+                                // Convert from kg to lb as needed
                                 item.setNewValue(UnitsUtils.weightValue(valueInDefaultSystem: value, withUnits: units))
                             } else {
-                                // Convert from cm to ft/in
+                                // Convert from cm to ft/in as needed
                                 item.setNewValue(UnitsUtils.heightValue(valueInDefaultSystem: value, withUnits: units))
                             }
                         }

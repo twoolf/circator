@@ -55,23 +55,31 @@ class DashboardComparisonCell: UITableViewCell {
     private let defaultDigitColor = UIColor.whiteColor()
     
     private func loadUserSamples( results: [MCSample]) {
-        let text = IntroCompareDataTableViewCell.healthFormatter.stringFromSamples(results)
-        localSampleValueTextField.attributedText = text.formatTextWithRegex("[-+]?(\\d*[.,/])?\\d+",
-                                                                            format: [NSForegroundColorAttributeName: defaultDigitColor,
-                                                                                NSFontAttributeName : ScreenManager.appFontOfSize(16)],
-                                                                            defaultFormat: [NSForegroundColorAttributeName: defaultTextColor,
-                                                                                NSFontAttributeName : ScreenManager.appFontOfSize(16)])
+        let text = DashboardComparisonCell.healthFormatter.stringFromSamples(results)
+
+        let formatAttrs = [NSForegroundColorAttributeName: defaultDigitColor,
+                           NSFontAttributeName : ScreenManager.appFontOfSize(16)]
+
+        let defaultFormatAttrs = [NSForegroundColorAttributeName: defaultTextColor,
+                                  NSFontAttributeName : ScreenManager.appFontOfSize(16)]
+
+        localSampleValueTextField.attributedText =
+            text.formatTextWithRegex("[-+]?(\\d*[.,/])?\\d+", format: formatAttrs, defaultFormat: defaultFormatAttrs)
     }
     
     /// note setUserData above that uses this call
     private func loadPopSamples(results: [MCSample], stale: Bool) {
         
-        let text = IntroCompareDataTableViewCell.healthFormatter.stringFromSamples(results)
-        populationSampleValueTextField.attributedText = text.formatTextWithRegex("[-+]?(\\d*[.,/])?\\d+",
-                                                                                 format: [NSForegroundColorAttributeName: defaultDigitColor,
-                                                                                    NSFontAttributeName : ScreenManager.appFontOfSize(16)],
-                                                                                 defaultFormat: [NSForegroundColorAttributeName: defaultTextColor,
-                                                                                    NSFontAttributeName : ScreenManager.appFontOfSize(16)])
+        let text = DashboardComparisonCell.healthFormatter.stringFromSamples(results)
+
+        let formatAttrs = [NSForegroundColorAttributeName: defaultDigitColor,
+                           NSFontAttributeName : ScreenManager.appFontOfSize(16)]
+
+        let defaultFormatAttrs = [NSForegroundColorAttributeName: defaultTextColor,
+                                  NSFontAttributeName : ScreenManager.appFontOfSize(16)]
+
+        populationSampleValueTextField.attributedText =
+            text.formatTextWithRegex("[-+]?(\\d*[.,/])?\\d+", format: formatAttrs, defaultFormat: defaultFormatAttrs)
     }
     
     
