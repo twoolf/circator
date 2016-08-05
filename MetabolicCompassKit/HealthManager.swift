@@ -70,6 +70,7 @@ public class HealthManager: NSObject, WCSessionDelegate {
 
     lazy var healthKitStore: HKHealthStore = HKHealthStore()
     var aggregateCache: HMAggregateCache
+    var observerQueries: [HKQuery] = []
 
     public var mostRecentSamples = [HKSampleType: [MCSample]]() {
         didSet {
@@ -1859,9 +1860,21 @@ public class HealthManager: NSObject, WCSessionDelegate {
                     anchorQueryCallback(added: added, deleted: deleted, newAnchor: newAnchor, error: error, completion: completion)
                 }
             }
+            self.observerQueries.append(obsQuery)
             self.healthKitStore.executeQuery(obsQuery)
         }
         healthKitStore.enableBackgroundDeliveryForType(type, frequency: HKUpdateFrequency.Immediate, withCompletion: onBackgroundStarted)
+    }
+
+    public func stopAllBackgroundObservers(completion: (Bool, NSError?) -> Void) {
+        healthKitStore.disableAllBackgroundDeliveryWithCompletion { (success, error) in
+            if !(success && error == nil) { log.error(error) }
+            else {
+                self.observerQueries.forEach { self.healthKitStore.stopQuery($0) }
+                self.observerQueries.removeAll()
+            }
+            completion(success, error)
+        }
     }
 
     // MARK: - Chart queries

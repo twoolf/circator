@@ -10,6 +10,7 @@ import UIKit
 import Async
 import HealthKit
 import MetabolicCompassKit
+import ReachabilitySwift
 
 class ContentManager: NSObject {
 
@@ -19,9 +20,32 @@ class ContentManager: NSObject {
     var isBackgroundWorkActive = false
     var isObservationActive = false
 
+    private var reachability: Reachability! = nil
+
+    override init() {
+        do {
+            self.reachability = try Reachability.reachabilityForInternetConnection()
+            super.init()
+
+            self.reachability.whenReachable = self.handleReachable
+            self.reachability.whenUnreachable = self.handleUnreachable
+            try self.reachability.startNotifier()
+        } catch {
+            let msg = "Failed to create reachability detector"
+            log.error(msg)
+            fatalError(msg)
+        }
+
+    }
+
     internal func initializeBackgroundWork() {
         if (!AccountManager.shared.isLogged() ||
             !AccountManager.shared.isAuthorized) {
+            return
+        }
+
+        if !reachability.isReachable() {
+            log.info("Skipping background work, network unreachable!")
             return
         }
 
@@ -29,6 +53,7 @@ class ContentManager: NSObject {
             if (self.isBackgroundWorkActive) {
                 return
             }
+
             log.warning("Starting background work")
             self.fetchInitialAggregates()
             self.fetchRecentSamples()
@@ -58,6 +83,23 @@ class ContentManager: NSObject {
     func resetBackgroundWork() {
         self.stopBackgroundWork()
         self.initializeBackgroundWork()
+    }
+
+    func stopObservation() {
+        Async.main() {
+            if (!self.isObservationActive) {
+                return
+            }
+            log.warning("Stopping background observers")
+            UploadManager.sharedManager.deregisterUploadObservers { (success, error) in
+                guard success && error == nil else {
+                    log.error(error)
+                    return
+                }
+                log.warning("Stopped background observers")
+                self.isObservationActive = false
+            }
+        }
     }
 
     func fetchInitialAggregates() {
@@ -92,4 +134,18 @@ class ContentManager: NSObject {
         }
     }
 
+    func handleReachable(reachability: Reachability) {
+        log.info("Reachable via \(reachability.isReachableViaWiFi() ? "Wi-fi" : "Cellular")")
+        self.initializeBackgroundWork()
+    }
+
+    func handleUnreachable(reachability: Reachability) {
+        log.info("Network unreachable, disabling connectivity...")
+        self.stopObservation()
+        self.stopBackgroundWork()
+    }
+
+    deinit {
+        reachability.stopNotifier()
+    }
 }
