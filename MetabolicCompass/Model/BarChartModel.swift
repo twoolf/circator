@@ -230,7 +230,7 @@ class BarChartModel : NSObject {
         let chartData = ScatterChartData(xVals: xVals, dataSets: dataSets)
         return chartData
     }
-    //TODO: Rost remove first empayt x value + round x values 
+    //TODO: Rost remove first empayt x value + round x values
     func scatterChartDataWithMultipleDataSets(xVals: [String?], dataSets:[IChartDataSet]) -> ScatterChartData? {
         
         var xValues : [String] = Array()
