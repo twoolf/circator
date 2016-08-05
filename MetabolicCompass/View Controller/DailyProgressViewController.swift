@@ -133,7 +133,9 @@ class DailyProgressViewController : UIViewController, DailyChartModelProtocol {
 
     func contentDidUpdate() {
         Async.main {
-            self.activityIndicator.startAnimating()
+            if self.activityIndicator != nil {
+                self.activityIndicator.startAnimating()
+            }
             self.dailyChartModel.prepareChartData()
             self.dailyChartModel.getDailyProgress()
         }

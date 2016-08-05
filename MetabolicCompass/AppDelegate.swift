@@ -35,7 +35,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate, WCSessionDelegate {
         Fabric.with([Crashlytics.self,Answers.self])
         
         if ((Defaults.objectForKey(firstRunKey) == nil)) {
-            ConsentManager.sharedManager.resetConsentFilePath()
             UserManager.sharedManager.resetFull()
             Defaults.setObject("firstrun", forKey: firstRunKey)
             Defaults.synchronize()
