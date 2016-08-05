@@ -108,7 +108,13 @@ class DailyChartModel : NSObject, UITableViewDataSource {
             dateComponents.day -= 1;
             if let date = date {
                 let dateString = formatter.stringFromDate(date)
-                lastSevenDays.append(dateString.stringByAppendingString(" th"))
+                if date.day % 10 == 1 {
+                    lastSevenDays.append(dateString.stringByAppendingString(" st"))
+                } else if date.day % 10 == 2 {
+                    lastSevenDays.append(dateString.stringByAppendingString(" nd"))
+                } else {
+                    lastSevenDays.append(dateString.stringByAppendingString(" th"))
+                }
             }
         }
         return lastSevenDays
