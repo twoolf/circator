@@ -6,7 +6,7 @@
 //  Copyright © 2016 Yanif Ahmad, Tom Woolf. All rights reserved.
 //
 
-
+/*
 import Foundation
 import HealthKit
 
@@ -20,6 +20,8 @@ public enum CircadianEvent {
 /*
  * A protocol for unifying common metadata across HKSample and HKStatistic
  */
+
+
 public protocol MCSample {
     var startDate    : NSDate        { get }
     var endDate      : NSDate        { get }
@@ -27,6 +29,7 @@ public protocol MCSample {
     var defaultUnit  : HKUnit?       { get }
     var hkType       : HKSampleType? { get }
 }
+
 
 public struct MCStatisticSample : MCSample {
     public var statistic    : HKStatistics
@@ -246,6 +249,7 @@ public struct MCAggregateSample : MCSample {
         return aggregateEncoding.aggregate
     }
 }
+
 
 public extension MCAggregateSample {
     public class MCAggregateSampleCoding: NSObject, NSCoding {
@@ -771,4 +775,4 @@ public extension HKSampleType {
             return nil
         }
     }
-}
+} */

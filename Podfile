@@ -47,6 +47,7 @@ target 'MetabolicCompassWatchExtension' do
  platform :watchos, '2.0'
  pod 'SwiftDate'
  pod 'CocoaLumberjack'
+ pod 'AwesomeCache'
  pod 'QueryHK', :git => 'https://github.com/twoolf/QueryHK.git'
 end
 
@@ -54,6 +55,7 @@ target 'MetabolicCompassWatch' do
  platform :watchos, '2.0'
  pod 'SwiftDate'
  pod 'CocoaLumberjack'
+ pod 'AwesomeCache'
  pod 'QueryHK', :git => 'https://github.com/twoolf/QueryHK.git'
 end
 

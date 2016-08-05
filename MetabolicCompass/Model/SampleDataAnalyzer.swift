@@ -11,6 +11,7 @@ import MetabolicCompassKit
 import HealthKit
 import Charts
 import SwiftDate
+import QueryHK
 
 enum PlotSpec {
     case PlotPredicate(String, NSPredicate!)

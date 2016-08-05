@@ -9,6 +9,7 @@
 import Foundation
 import HealthKit
 import Async
+import QueryHK
 
 /*public enum LoggerMessageType: Int {
     case debug = 1

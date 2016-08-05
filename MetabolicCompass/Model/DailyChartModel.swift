@@ -8,12 +8,12 @@
 
 import Foundation
 import UIKit
-
 import HealthKit
 import MetabolicCompassKit
 import SwiftDate
 import Async
 import AwesomeCache
+import QueryHK
 
 @objc protocol DailyChartModelProtocol {
     optional func dataCollectingFinished()
@@ -198,7 +198,7 @@ class DailyChartModel : NSObject, UITableViewDataSource {
         var previousEventType: CircadianEvent?
         var previousEventDate: NSDate? = nil
         
-        HealthManager.sharedManager.fetchCircadianEventIntervals(day, endDate: endOfDay, completion: { (intervals, error) in
+        QueryHK.sharedManager.fetchCircadianEventIntervals(day, endDate: endOfDay, completion: { (intervals, error) in
             guard error == nil else {
                 Log.error("Failed to fetch circadian events: \(error)")
                 return
@@ -240,7 +240,7 @@ class DailyChartModel : NSObject, UITableViewDataSource {
         let yesterday = 1.days.ago
         let startDate = yesterday
         
-        HealthManager.sharedManager.fetchCircadianEventIntervals(startDate) { (intervals, error) -> Void in
+        QueryHK.sharedManager.fetchCircadianEventIntervals(startDate) { (intervals, error) -> Void in
             Async.main {
                 guard error == nil else {
                     Log.error("Failed to fetch circadian events: \(error)")

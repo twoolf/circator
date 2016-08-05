@@ -10,6 +10,7 @@ import UIKit
 import HealthKit
 import MetabolicCompassKit
 import Charts
+import QueryHK
 
 public enum SamplesCollectedIndex {
     case HKType(HKSampleType)
@@ -54,7 +55,7 @@ public class FastingDataModel : NSObject {
         let group = dispatch_group_create()
 
         dispatch_group_enter(group)
-        HealthManager.sharedManager.fetchSampleCollectionDays(PreviewManager.manageChartsSampleTypes) { (table, error) in
+        QueryHK.sharedManager.fetchSampleCollectionDays(PreviewManager.manageChartsSampleTypes) { (table, error) in
             guard error == nil else {
                 Log.error(error as! String)
                 someError.append(error)
@@ -67,7 +68,7 @@ public class FastingDataModel : NSObject {
         }
 
         dispatch_group_enter(group)
-        HealthManager.sharedManager.fetchWeeklyFastState { (cFast, cNonFast, error) in
+        QueryHK.sharedManager.fetchWeeklyFastState { (cFast, cNonFast, error) in
             guard error == nil else {
                 Log.error(error as! String)
                 someError.append(error)
@@ -82,7 +83,7 @@ public class FastingDataModel : NSObject {
         }
 
         dispatch_group_enter(group)
-        HealthManager.sharedManager.fetchWeeklyFastingVariability { (variability, error) in
+        QueryHK.sharedManager.fetchWeeklyFastingVariability { (variability, error) in
             guard error == nil else {
                 Log.error(error as! String)
                 someError.append(error)
@@ -96,7 +97,7 @@ public class FastingDataModel : NSObject {
         }
 
         dispatch_group_enter(group)
-        HealthManager.sharedManager.fetchWeeklyFastType { (fSleep, fAwake, error) in
+        QueryHK.sharedManager.fetchWeeklyFastType { (fSleep, fAwake, error) in
             guard error == nil else {
                 Log.error(error as! String)
                 someError.append(error)
@@ -111,7 +112,7 @@ public class FastingDataModel : NSObject {
         }
 
         dispatch_group_enter(group)
-        HealthManager.sharedManager.fetchWeeklyEatAndExercise { (tEat, tExercise, error) in
+        QueryHK.sharedManager.fetchWeeklyEatAndExercise { (tEat, tExercise, error) in
             guard error == nil else {
                 Log.error(error as! String)
                 someError.append(error)

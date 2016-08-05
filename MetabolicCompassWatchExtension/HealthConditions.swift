@@ -58,7 +58,7 @@ final class HealthConditions: NSObject {
         healthKitStore.executeQuery(sampleQuery)
     }
     
-    func updateWeight()
+/*    func updateWeight()
     {
         let sampleType = HKSampleType.quantityTypeForIdentifier(HKQuantityTypeIdentifierBodyMass)
         var weight:HKQuantitySample?
@@ -156,7 +156,7 @@ final class HealthConditions: NSObject {
         //        print("updated height info")
         //        updateBMI();
         //        print("updated bmi info")
-    }
+    }*/
     
 }
 
@@ -212,7 +212,7 @@ extension HealthConditions {
         params["begin_date"] = HealthConditions.dateFormatter.stringFromDate(fromDate)
         params["end_date"] = HealthConditions.dateFormatter.stringFromDate(toDate)
         print("in loadWeightMetrics")
-        updateHealthInfo()
+//        updateHealthInfo()
         completion(success: true)
     }
 }

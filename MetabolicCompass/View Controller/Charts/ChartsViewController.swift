@@ -10,6 +10,7 @@ import UIKit
 import Charts
 import HealthKit
 import MetabolicCompassKit
+import QueryHK
 
 enum DataRangeType : Int {
     case Week = 0
@@ -87,9 +88,9 @@ class ChartsViewController: UIViewController {
         let correlateSegment = sender.numberOfSegments-1
 
         switch sender.selectedSegmentIndex {
-            case HealthManagerStatisticsRangeType.Month.rawValue:
+            case QueryHK.HealthManagerStatisticsRangeType.Month.rawValue:
                 chartsModel.rangeType = .Month
-            case HealthManagerStatisticsRangeType.Year.rawValue:
+            case QueryHK.HealthManagerStatisticsRangeType.Year.rawValue:
                 chartsModel.rangeType = .Year
             case correlateSegment:
                 showCorrelate = true
