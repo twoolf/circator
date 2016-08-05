@@ -130,11 +130,7 @@ class CorrelationChartsViewController: UIViewController, UITableViewDelegate, UI
     
     func reloadPickerToCurrentCell(indexPath:NSIndexPath) {
         let cell = tableView.cellForRowAtIndexPath(indexPath) as! CorrelationTabeViewCell
-        cell.alpha = 0.4
-        UIView.animateWithDuration(0.2) { 
-            cell.alpha = 1.0
-
-        }
+        cell.setSelected(true, animated: true)
         let typeSring = appearanceProvider.typeFromString(cell.titleLabel.text!)
         let row = pickerIdentifiers[indexPath.row].indexOf(typeSring)
         pickerView.selectRow(row!, inComponent: 0, animated: true)
@@ -176,14 +172,20 @@ class CorrelationChartsViewController: UIViewController, UITableViewDelegate, UI
         else {
             scatterCh.chartView.noDataText = "Choose both metrics"
             correlCh.chartView.noDataText = "Choose both metrics"
-            scatterCh.chartView.data = nil
-            correlCh.chartView.data = nil
-            (scatterCh.chartTitleLabel.text, correlCh.chartTitleLabel.text) = ("", "")
-            (scatterCh.subtitleLabel.text, correlCh.subtitleLabel.text) = ("", "")
-            correlCh.secondaryChartMinValueLabel.text = ""
-            correlCh.secondaryChartMaxValueLabel.text = ""
+            resetAllCharts()
             return
         }
+    }
+    
+    func resetAllCharts() {
+        scatterCh.chartView.data = nil
+        correlCh.chartView.data = nil
+        correlCh.updateMinMaxTitlesWithValues("", maxValue: "")
+        correlCh.chartMinValueLabel.text = ""
+        correlCh.chartMaxValueLabel.text = ""
+        
+        scatterCh.chartMinValueLabel.text = ""
+        scatterCh.chartMaxValueLabel.text = ""
     }
     
     func updateChartDataForChartsModel(model: BarChartModel) {
@@ -200,12 +202,18 @@ class CorrelationChartsViewController: UIViewController, UITableViewDelegate, UI
             let key = typeToShow + "\((model.rangeType.rawValue))"
             let chartData = model.typesChartData[key]
             if (chartData == nil) {
-                scatterCh.chartView.data = nil
-                correlCh.chartView.data = nil
+                resetAllCharts()
                 return
             }
             xValues = (chartData?.xVals)!
             dataSets.append((chartData?.dataSets[0])!)
+        }
+        
+        for dSet in dataSets {
+            if dSet.entryCount < 1 {
+                resetAllCharts()
+                return
+            }
         }
         
         if (model == scatterChartsModel) {
@@ -219,7 +227,7 @@ class CorrelationChartsViewController: UIViewController, UITableViewDelegate, UI
                 scatterCh.drawLimitLine()
             }
             else {
-                scatterCh.chartView.data = nil
+                resetAllCharts()
             }
         }
         else {
@@ -234,7 +242,7 @@ class CorrelationChartsViewController: UIViewController, UITableViewDelegate, UI
                 correlCh.chartView.data = chartData
             }
             else {
-                correlCh.chartView.data = nil
+                resetAllCharts()
             }
         }
 

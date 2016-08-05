@@ -252,6 +252,10 @@ public class UserManager {
             let account = UserAccount(username: user, password: "")
             do {
                 try account.deleteFromSecureStore()
+                Stormpath.sharedSession.logout()
+                ConsentManager.sharedManager.resetConsentFilePath()
+                HealthManager.sharedManager.reset()
+                PopulationHealthManager.sharedManager.resetAggregates()
             } catch {
                 log.warning("resetAccount: \(error)")
             }
