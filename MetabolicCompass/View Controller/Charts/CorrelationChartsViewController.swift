@@ -130,11 +130,7 @@ class CorrelationChartsViewController: UIViewController, UITableViewDelegate, UI
     
     func reloadPickerToCurrentCell(indexPath:NSIndexPath) {
         let cell = tableView.cellForRowAtIndexPath(indexPath) as! CorrelationTabeViewCell
-        cell.alpha = 0.4
-        UIView.animateWithDuration(0.2) { 
-            cell.alpha = 1.0
-
-        }
+        cell.setSelected(true, animated: true)
         let typeSring = appearanceProvider.typeFromString(cell.titleLabel.text!)
         let row = pickerIdentifiers[indexPath.row].indexOf(typeSring)
         pickerView.selectRow(row!, inComponent: 0, animated: true)
