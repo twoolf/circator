@@ -107,7 +107,7 @@ public class DataGenerator : GeneratorType {
         HKWorkoutActivityType.Other
     ]
 
-    let generatorUnits : [String: HKUnit] = [
+    public let generatorUnits : [String: HKUnit] = [
         HKCategoryTypeIdentifierAppleStandHour            : HKUnit.hourUnit(),
         HKCategoryTypeIdentifierSleepAnalysis             : HKUnit.hourUnit(),
         HKQuantityTypeIdentifierActiveEnergyBurned        : HKUnit.kilocalorieUnit(),
