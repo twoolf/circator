@@ -32,6 +32,7 @@ def shared_pods
     pod 'EasyTipView'
     pod 'HealthKitSampleGenerator'
     pod 'ReachabilitySwift'
+    pod 'Navajo-Swift'
 end
 
 target 'MetabolicCompassKit' do

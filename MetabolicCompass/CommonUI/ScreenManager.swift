@@ -53,6 +53,11 @@ public class ScreenManager {
         }
     }
 
+    public func tooltipMaxWidth() -> CGFloat {
+        let screensize = UIScreen.mainScreen().bounds.size
+        return 0.9 * screensize.width
+    }
+
     public func dashboardRows() -> Int {
         let screenSize = UIScreen.mainScreen().bounds.size
         let screenHeight = screenSize.height

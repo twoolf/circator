@@ -8,6 +8,7 @@
 
 import UIKit
 import MetabolicCompassKit
+import Navajo_Swift
 
 class UserInfoModel: NSObject {
 
@@ -175,15 +176,15 @@ class UserInfoModel: NSObject {
 
     // MARK: - Validate properties
 
-    private let emptyFieldMessage = "Please, fill all fields".localized
-    private let emailInvalidFormat = "Please, provide valid email".localized
+    private let emptyFieldMessage  = "Please enter all fields".localized
+    private let emailInvalidFormat = "Please provide a valid email address".localized
     
-    private let passwordInvalidFormat = "Please, provide valid password. Password must have at least 4 characters".localized
-    private let firstNameInvalidFormat = "Please, provide valid password. First name must be at least 2 characters".localized
-    private let lastNameInvalidFormat = "Please, provide valid password. Last name must be at least 2 characters".localized
-    private let ageInvalidFormat = "Please, provide valid age. Age must be form 5 to 100 years".localized
-    private let weightInvalidFormat = "Please, provide valid weight. Weight must be from 40kg to 350 kg".localized
-    private let heightInvalidFormat = "Please, provide valid height. Heigth must be from 75cm to 250 cm".localized
+    private let passwordInvalidFormat  = "Please provide a valid password (must have 1 upper, 1 lower, and 1 number characters)".localized
+    private let firstNameInvalidFormat = "Please enter a valid first name (must be at least 2 characters)".localized
+    private let lastNameInvalidFormat  = "Please enter a valid surname (must be at least 2 characters)".localized
+    private let ageInvalidFormat       = "Please enter a valid age (must be between 18 and 100 years)".localized
+    private let weightInvalidFormat    = "Please enter a valid weight (must be from 40kg to 350 kg)".localized
+    private let heightInvalidFormat    = "Please enter a valid height (must be from 75cm to 250 cm)".localized
     
     private(set) var validationMessage: String?
 
@@ -220,7 +221,22 @@ class UserInfoModel: NSObject {
 
 
     func isPasswordValid() -> Bool {
-        return isValidString(password, minLength: 4, incorrectMessage: passwordInvalidFormat)
+        if isRequiredStringValid(password) {
+            let lengthRule = NJOLengthRule(min: 8, max: 100)
+            let lowerRule  = NJORequiredCharacterRule(preset: .LowercaseCharacter)
+            let upperRule  = NJORequiredCharacterRule(preset: .UppercaseCharacter)
+            let numberRule = NJORequiredCharacterRule(preset: .DecimalDigitCharacter)
+            let validator = NJOPasswordValidator(rules: [lengthRule, lowerRule, upperRule, numberRule])
+
+            let failingRules = validator.validatePassword(password!)
+            if let _ = failingRules {
+                validationMessage = passwordInvalidFormat
+                return false
+            }
+            return true
+        }
+        validationMessage = emptyFieldMessage
+        return false
     }
 
     func isFirstNameValid() -> Bool {
@@ -257,7 +273,7 @@ class UserInfoModel: NSObject {
 
 
     func isAgeValid() -> Bool {
-        let isValid = isRequiredIntValidInRange(age, minValue: 5, maxValue: 100)
+        let isValid = isRequiredIntValidInRange(age, minValue: 18, maxValue: 100)
 
         if !isValid {
             validationMessage = age == nil ? emptyFieldMessage : ageInvalidFormat

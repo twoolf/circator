@@ -66,6 +66,15 @@ public let UMPullComponentErrorAsArray : String -> [AccountComponent] = { errorM
     return result
 }
 
+public let granularity1Min = 60.0
+public let granularity5Mins = 300.0
+public let granularity10Mins = 600.0
+
+public func floorDate(date: NSDate, granularity: Double) -> NSDate {
+    return NSDate(timeIntervalSinceReferenceDate:
+        (floor(date.timeIntervalSinceReferenceDate / granularity) * granularity))
+}
+
 extension Dictionary {
     mutating func update(other:Dictionary) {
         for (key,value) in other {
@@ -1155,7 +1164,9 @@ public class UserManager {
         if let user = userId {
             let key = "usualWhenToSleepTime"+user
             let date = Defaults.objectForKey(key)
-            return date as? NSDate
+            if let d = date as? NSDate {
+                return floorDate(d, granularity: granularity5Mins)
+            }
         }
         return nil
     }
@@ -1164,7 +1175,9 @@ public class UserManager {
         if let user = userId {
             let key = "usualSleepDuration"+user
             let duration = Defaults.objectForKey(key)
-            return duration as? NSDate
+            if let d = duration as? NSDate {
+                return floorDate(d, granularity: granularity5Mins)
+            }
         }
         return nil
     }
@@ -1183,7 +1196,10 @@ public class UserManager {
         if let user = userId where Defaults.hasKey(mealType+user) {
             let key = mealType+user
             let dateOfMeal = Defaults.objectForKey(key)
-            return dateOfMeal as? NSDate
+            if let d = dateOfMeal as? NSDate {
+                return floorDate(d, granularity: granularity5Mins)
+            }
+
         }
         return nil
     }
