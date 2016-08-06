@@ -19,7 +19,6 @@ class DashboardComparisonCell: UITableViewCell {
     
     static let healthFormatter = SampleFormatter()
     
-    
     var sampleType: HKSampleType? {
         didSet {
             guard sampleType != nil else {
@@ -33,7 +32,7 @@ class DashboardComparisonCell: UITableViewCell {
     }
     
     private let appearanceProvider = DashboardMetricsAppearanceProvider()
-    
+
     override func awakeFromNib() {
         super.awakeFromNib()
         // Initialization code
@@ -53,11 +52,15 @@ class DashboardComparisonCell: UITableViewCell {
     
     private let defaultTextColor  = UIColor(red: 62.0/255.0, green: 84.0/255.0, blue: 117.0/255.0, alpha: 1.0)
     private let defaultDigitColor = UIColor.whiteColor()
-    
-    private func loadUserSamples( results: [MCSample]) {
-        let text = DashboardComparisonCell.healthFormatter.stringFromSamples(results)
+    private let staleDigitColor   = UIColor.yellowColor()
 
-        let formatAttrs = [NSForegroundColorAttributeName: defaultDigitColor,
+    private func loadUserSamples(results: [MCSample]) {
+        let stale = (results.last?.startDate < 1.days.ago) ?? false
+
+        var text = DashboardComparisonCell.healthFormatter.stringFromSamples(results)
+        if stale { text = text + "**" }
+
+        let formatAttrs = [NSForegroundColorAttributeName: stale ? staleDigitColor : defaultDigitColor,
                            NSFontAttributeName : ScreenManager.appFontOfSize(16)]
 
         let defaultFormatAttrs = [NSForegroundColorAttributeName: defaultTextColor,
@@ -70,9 +73,10 @@ class DashboardComparisonCell: UITableViewCell {
     /// note setUserData above that uses this call
     private func loadPopSamples(results: [MCSample], stale: Bool) {
         
-        let text = DashboardComparisonCell.healthFormatter.stringFromSamples(results)
+        var text = DashboardComparisonCell.healthFormatter.stringFromSamples(results)
+        if stale { text = text + "**" }
 
-        let formatAttrs = [NSForegroundColorAttributeName: defaultDigitColor,
+        let formatAttrs = [NSForegroundColorAttributeName: stale ? staleDigitColor : defaultDigitColor,
                            NSFontAttributeName : ScreenManager.appFontOfSize(16)]
 
         let defaultFormatAttrs = [NSForegroundColorAttributeName: defaultTextColor,
