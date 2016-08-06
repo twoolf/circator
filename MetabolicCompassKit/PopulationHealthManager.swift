@@ -89,7 +89,25 @@ public class PopulationHealthManager {
                     }
                 }
 
-                let predArray = aggpreds.map(serializeMCQueryPredicateREST)
+                let units : UnitsSystem = UserManager.sharedManager.useMetricUnits() ? .Metric : .Imperial
+                let convert : (String, Int) -> Int = { (type, value) in
+                    return Int((type == HKQuantityTypeIdentifierHeight) ?
+                        UnitsUtils.heightValueInDefaultSystem(fromValue: Float(value), inUnitsSystem: units)
+                        : UnitsUtils.weightValueInDefaultSystem(fromValue: Float(value), inUnitsSystem: units))
+                }
+
+                let predArray = aggpreds.map {
+                    let predicateType = $0.1.0.identifier
+                    if HMConstants.sharedInstance.healthKitTypesWithCustomMetrics.contains(predicateType) {
+                        if let lower = $0.2, upper = $0.3, lowerInt = Int(lower), upperInt = Int(upper) {
+                            return ($0.0, $0.1, String(convert(predicateType, lowerInt)), String(convert(predicateType, upperInt)))
+                        }
+                        return $0
+                    } else {
+                        return $0
+                    }
+                }.map(serializeMCQueryPredicateREST)
+
                 for pred in predArray {
                     for (k,v) in pred {
                         userfilter.updateValue(v, forKey: k)

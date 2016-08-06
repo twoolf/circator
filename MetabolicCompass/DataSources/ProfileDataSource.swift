@@ -7,6 +7,7 @@
 //
 
 import UIKit
+import MetabolicCompassKit
 
 class ProfileDataSource: BaseDataSource {
 

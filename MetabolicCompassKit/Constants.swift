@@ -222,6 +222,12 @@ public struct HMConstants
     public let generatedSampleKey : String = "MCLGen"
     public let generatedUploadSampleKey : String = "MCUGen"
 
+    public let healthKitTypesWithCustomMetrics: Set<String> = [
+        HKQuantityTypeIdentifierBodyMass,
+        HKQuantityTypeIdentifierHeight,
+        HKQuantityTypeIdentifierLeanBodyMass
+    ]
+
     // Note: these are in alphabetical order within each type.
     public let healthKitTypesToRead : Set<HKObjectType>? = [
         HKObjectType.categoryTypeForIdentifier(HKCategoryTypeIdentifierSleepAnalysis)!,
