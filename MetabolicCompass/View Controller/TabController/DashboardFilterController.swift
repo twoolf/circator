@@ -15,15 +15,19 @@ import Async
 class DashboardFilterController: UIViewController, UITableViewDelegate, UITableViewDataSource {
     
     @IBOutlet weak var tableView: UITableView!
-    private var delselectAll = false
-    private var selectedRows: [String: Int] = [:]
+    private var deselectAll = false
+
     private let selectedRowsDefaultsKey = "\(UserManager.sharedManager.userId).selectedFilters"
-    
+
+    // A hashtable specifying which row is selected in each section.
+    private var selectedRows: [String:AnyObject] = [:]
+
     var data: [DashboardFilterItem] = [] {
         didSet {
             self.tableView.reloadData()
         }
     }
+
     //MARK: View life circle
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -35,9 +39,13 @@ class DashboardFilterController: UIViewController, UITableViewDelegate, UITableV
         self.navigationItem.leftBarButtonItem = leftButton
         self.navigationItem.rightBarButtonItem = rightBarButtonItem
         
-        if let userSelectedRows = Defaults.objectForKey(selectedRowsDefaultsKey) as? NSDictionary {
-            selectedRows = userSelectedRows as! [String : Int]
+        if let userSelectedRows = Defaults.objectForKey(selectedRowsDefaultsKey) as? [String: AnyObject] {
+            selectedRows = userSelectedRows
+        } else {
+            log.warning("Clearing saved filter for \(selectedRowsDefaultsKey)")
+            Defaults.remove(selectedRowsDefaultsKey)
         }
+
         self.tableView.delegate = self;
         self.tableView.dataSource = self;
         self.navigationController?.navigationBar.barStyle = .Black;
@@ -54,13 +62,11 @@ class DashboardFilterController: UIViewController, UITableViewDelegate, UITableV
     //MARK: Actions
     
     func clearAll () {
-        delselectAll = true
+        deselectAll = true
         selectedRows.removeAll()
         tableView.reloadData()
-        Async.main(after: 0.5) { 
-           self.delselectAll = false
-        }
-        //TODO: Remove all data from Query manager
+        refreshQuery()
+        Async.main(after: 2.0) { self.deselectAll = false }
     }
     
     func closeAction() {
@@ -79,18 +85,17 @@ class DashboardFilterController: UIViewController, UITableViewDelegate, UITableV
     }
 
     func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell {
-
         let cell  = tableView.dequeueReusableCellWithIdentifier(dashboardFilterCellIdentifier, forIndexPath: indexPath) as! DashboardFilterCell
         let item = self.data[indexPath.section].items[indexPath.row]
-        if delselectAll {
+        if deselectAll {
             item.selected = false
             if cell.checkBoxButton.selected {
                 cell.didPressButton(self)
             }
         }
         cell.data = item
-        if let _ = selectedRows["\(indexPath.section).\(indexPath.row)"] {
-            if !cell.checkBoxButton.selected {//pervent deselect
+        if let selectedRowForSection = selectedRows["\(indexPath.section)"] as? Int {
+            if selectedRowForSection == indexPath.row && !cell.checkBoxButton.selected { // prevent deselect
                 cell.didPressButton(self)
             }
         }
@@ -114,41 +119,70 @@ class DashboardFilterController: UIViewController, UITableViewDelegate, UITableV
 
     func tableView(tableView: UITableView, didSelectRowAtIndexPath indexPath: NSIndexPath) {
         let cell = tableView.cellForRowAtIndexPath(indexPath) as? DashboardFilterCell
-        let filterItem = self.data[indexPath.section]
         let filterItems = self.data[indexPath.section].items
         let selectedItem = filterItems[indexPath.row]//See DashboardFilterCellData
         
-        if selectedItem.selected {//item alerady selected so just remove it and deselect
+        if selectedItem.selected { // item already selected so just remove it and deselect
             cell?.didPressButton(self)
-            let selectedKey = String("\(indexPath.section).\(indexPath.row)")
-            removeItemForKey(selectedKey)
-            return
+            deselectRow(indexPath.section, row: indexPath.row, refresh: true)
         } else {
+            // Deselect all other items in this section. This enforces mutually exclusive filters.
             for (index, item) in filterItems.enumerate() {
                 if (item.selected && indexPath.row != index) {
                     let currentlySelectedCell = tableView.cellForRowAtIndexPath(NSIndexPath(forRow: index, inSection: indexPath.section)) as? DashboardFilterCell
                     currentlySelectedCell?.didPressButton(self)
-                    let selectedKey = String("\(indexPath.section).\(index)")
-                    removeItemForKey(selectedKey)
+                    deselectRow(indexPath.section, row: index)
                 }
             }
+
+            selectRow(indexPath.section, row: indexPath.row)
+            cell?.didPressButton(self)//set cell as selected
         }
-        if let predicate = selectedItem.predicate {//get predicate based of selected item
-            selectedRows["\(indexPath.section).\(indexPath.row)"] = QueryManager.sharedManager.getQueries().count//add item to selected rows and it's index
-            let query = Query.ConjunctiveQuery(nil, nil, nil, [predicate])//cereate query
-            QueryManager.sharedManager.addQuery("\(filterItem.title)", query: query)//add query to query manager
-        }
-        cell?.didPressButton(self)//set cell as selected
     }
     
     //MARK: Help
-    func removeItemForKey(key: String) {
-        if let queryIndex = selectedRows[key] {//removing query at index
-            QueryManager.sharedManager.removeQuery(queryIndex)
-        }
-        selectedRows.removeValueForKey(key)
+    func selectRow(section: Int, row: Int) {
+        selectedRows.updateValue(row, forKey: "\(section)")
+        refreshQuery()
     }
-    
+
+    func deselectRow(section: Int, row: Int, refresh: Bool = false) {
+        let key = "\(section)"
+        if let selectedRowForSection = selectedRows[key] as? Int {
+            if selectedRowForSection == row {
+                selectedRows.removeValueForKey(key)
+                if refresh { refreshQuery() }
+            }
+        }
+    }
+
+    func refreshQuery() {
+        var conjunctDescriptions: [String] = []
+        var currentConjuncts : [MCQueryPredicate] = []
+        for (key, value) in selectedRows {
+            if let section = Int(key), row = value as? Int {
+                if let predicate = self.data[section].items[row].predicate {
+                    let ctitle = self.data[section].items[row].title
+                    conjunctDescriptions.append(ctitle)
+                    currentConjuncts.append(predicate)
+                } else {
+                    log.error("No predicate found for filter at index: \(section) \(row)")
+                }
+            } else {
+                log.error("Invalid key/value pair as filter index: \(key) \(value)")
+            }
+        }
+
+        QueryManager.sharedManager.clearQueries()
+
+        if !currentConjuncts.isEmpty {
+            let title = conjunctDescriptions.joinWithSeparator(" and ")
+            let query = Query.ConjunctiveQuery(nil, nil, nil, currentConjuncts)
+            QueryManager.sharedManager.addQuery(title, query: query)
+            QueryManager.sharedManager.selectQuery(0)
+        }
+    }
+
     func addData () {
         self.data = [DashboardFilterItem(title: "Weight",
                         items: [DashboardFilterCellData(title: "under 90",

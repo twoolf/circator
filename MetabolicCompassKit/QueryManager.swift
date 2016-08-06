@@ -105,6 +105,12 @@ public class QueryManager {
         saveQueries()
     }
 
+    public func clearQueries() {
+        queries.removeAll()
+        querySelected = -1
+        save()
+    }
+
     public func getSelectedQuery() -> Int {
         return querySelected
     }

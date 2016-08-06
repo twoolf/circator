@@ -48,11 +48,16 @@ public class PopulationHealthManager {
         var userfilter  : [String:AnyObject] = [:]
 
         // Add population filter parameters.
-        var popQueryIndex = QueryManager.sharedManager.getSelectedQuery()
+        let popQueryIndex = QueryManager.sharedManager.getSelectedQuery()
         let popQueries = QueryManager.sharedManager.getQueries()
-        popQueryIndex = -1;
+
+        log.info("Current popqueries \(popQueries)")
+
         if popQueryIndex >= 0 && popQueryIndex < popQueries.count  {
-            switch popQueries[popQueryIndex].1 {
+            let popQuery = popQueries[popQueryIndex]
+            log.info("Found active popquery \(popQuery.0) \(popQuery.1)")
+
+            switch popQuery.1 {
             case Query.ConjunctiveQuery(let qstartOpt, let qendOpt, let qcolsOpt, let aggpreds):
                 if let qstart = qstartOpt { tstart = qstart }
                 if let qend = qendOpt { tend = qend }
@@ -95,6 +100,8 @@ public class PopulationHealthManager {
                     }
                 }
             }
+        } else {
+            log.info("No active popquery")
         }
 
         if columns.isEmpty {
