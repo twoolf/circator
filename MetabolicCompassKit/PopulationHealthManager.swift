@@ -51,12 +51,8 @@ public class PopulationHealthManager {
         let popQueryIndex = QueryManager.sharedManager.getSelectedQuery()
         let popQueries = QueryManager.sharedManager.getQueries()
 
-        log.info("Current popqueries \(popQueries)")
-
         if popQueryIndex >= 0 && popQueryIndex < popQueries.count  {
             let popQuery = popQueries[popQueryIndex]
-            log.info("Found active popquery \(popQuery.0) \(popQuery.1)")
-
             switch popQuery.1 {
             case Query.ConjunctiveQuery(let qstartOpt, let qendOpt, let qcolsOpt, let aggpreds):
                 if let qstart = qstartOpt { tstart = qstart }
@@ -100,8 +96,6 @@ public class PopulationHealthManager {
                     }
                 }
             }
-        } else {
-            log.info("No active popquery")
         }
 
         if columns.isEmpty {

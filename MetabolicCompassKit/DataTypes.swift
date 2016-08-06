@@ -408,8 +408,7 @@ extension HKSample: MCSample { }
 public extension HKSampleType {
 
     public var defaultUnit: HKUnit? {
-        let isMetric: Bool = UserManager.sharedManager.useMetricUnits() ??
-                                NSLocale.currentLocale().objectForKey(NSLocaleUsesMetricSystem)!.boolValue
+        let isMetric: Bool = UserManager.sharedManager.useMetricUnits()
 
         switch identifier {
         case HKCategoryTypeIdentifierSleepAnalysis:

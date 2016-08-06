@@ -1128,7 +1128,7 @@ public class UserManager {
 
     // MARK: - User units preferences
 
-    public func useMetricUnits() -> Bool? {
+    public func useMetricUnits() -> Bool {
         if let metricObj = getProfileCache()["metric"] {
             if let metricI = metricObj as? Int {
                 return metricI > 0
@@ -1138,7 +1138,7 @@ public class UserManager {
                 return !(metricS == "false")
             }
         }
-        return nil
+        return HMConstants.sharedInstance.defaultToMetricUnits
     }
 
     // MARK: - Default meal & activity times

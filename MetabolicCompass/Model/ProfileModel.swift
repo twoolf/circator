@@ -30,7 +30,7 @@ class ProfileModel: UserInfoModel {
     func setupValues() {
         let profileInfo = UserManager.sharedManager.getProfileCache()
 
-        let units: UnitsSystem! = (UserManager.sharedManager.useMetricUnits() ?? true) ? UnitsSystem.Metric : UnitsSystem.Imperial
+        let units: UnitsSystem! = UserManager.sharedManager.useMetricUnits() ? UnitsSystem.Metric : UnitsSystem.Imperial
 
         for item in items {
             if item.type == .FirstName {

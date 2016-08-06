@@ -14,9 +14,13 @@ class DashboardComparisonCell: UITableViewCell {
 
     @IBOutlet weak var sampleName: UILabel!
     @IBOutlet weak var sampleIcon: UIImageView!
+    @IBOutlet weak var groupIcon: UIImageView!
     @IBOutlet weak var localSampleValueTextField: UILabel!
     @IBOutlet weak var populationSampleValueTextField: UILabel!
-    
+
+    static let groupFilterImage = UIImage(named: "icon-group-results-filtered")
+    static let groupNormalImage = UIImage(named: "icon-group-results")
+
     static let healthFormatter = SampleFormatter()
     
     var sampleType: HKSampleType? {
@@ -42,6 +46,11 @@ class DashboardComparisonCell: UITableViewCell {
         super.setSelected(selected, animated: animated)
 
         // Configure the view for the selected state
+    }
+
+    /// updates the group icon based on whether this cell's type is used as a population filter.
+    func setPopulationFiltering(active: Bool) {
+        groupIcon?.image = active ? DashboardComparisonCell.groupFilterImage : DashboardComparisonCell.groupNormalImage
     }
 
     /// loading both User and Population samples

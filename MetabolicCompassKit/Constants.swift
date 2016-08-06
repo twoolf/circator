@@ -215,6 +215,9 @@ public struct HMConstants
 {
     public static let sharedInstance = HMConstants()
 
+    // Default values if unavailable in user profile.
+    public let defaultToMetricUnits = NSLocale.currentLocale().objectForKey(NSLocaleUsesMetricSystem)!.boolValue
+
     // Metadata key for generated samples.
     public let generatedSampleKey : String = "MCLGen"
     public let generatedUploadSampleKey : String = "MCUGen"

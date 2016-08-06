@@ -57,6 +57,10 @@ class DashboardComparisonController: UIViewController, UITableViewDelegate, UITa
         let cell = tableView.dequeueReusableCellWithIdentifier(dashboardComparisonCellIdentifier, forIndexPath: indexPath) as! DashboardComparisonCell
         let sampleType = PreviewManager.previewSampleTypes[indexPath.row]
         cell.sampleType = sampleType
+
+        let active = QueryManager.sharedManager.isQueriedType(sampleType)
+        cell.setPopulationFiltering(active)
+
         let timeSinceRefresh = NSDate().timeIntervalSinceDate(PopulationHealthManager.sharedManager.aggregateRefreshDate)
         let refreshPeriod = UserManager.sharedManager.getRefreshFrequency() ?? Int.max
         let stale = timeSinceRefresh > Double(refreshPeriod)
