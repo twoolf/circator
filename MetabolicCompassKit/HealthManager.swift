@@ -199,21 +199,10 @@ public class HealthManager: NSObject, WCSessionDelegate {
     }
 
 
-    // Fetches HealthKit samples of the given type for the last day, ordered by their collection date.
+    // Fetches the latest HealthKit sample of the given type.
     public func fetchMostRecentSample(sampleType: HKSampleType, completion: HMSampleBlock)
     {
-        let mostRecentPredicate: NSPredicate
-        let limit: Int
-
-        if sampleType.identifier == HKCategoryTypeIdentifierSleepAnalysis {
-            mostRecentPredicate = HKQuery.predicateForSamplesWithStartDate(1.days.ago, endDate: NSDate(), options: .None)
-            limit = noLimit
-        } else {
-            mostRecentPredicate = HKQuery.predicateForSamplesWithStartDate(NSDate.distantPast(), endDate: NSDate(), options: .None)
-            limit = 1
-        }
-
-        fetchSamplesOfType(sampleType, predicate: mostRecentPredicate, limit: limit, sortDescriptors: [dateDesc], completion: completion)
+        fetchSamplesOfType(sampleType, predicate: nil, limit: 1, sortDescriptors: [dateDesc], completion: completion)
     }
 
     // Fetches HealthKit samples for multiple types, using GCD to retrieve each type asynchronously and concurrently.
@@ -238,9 +227,24 @@ public class HealthManager: NSObject, WCSessionDelegate {
         }
 
         let onStatistic : HKSampleType -> Void = { type in
-            let predicate = HKSampleQuery.predicateForSamplesWithStartDate(4.days.ago, endDate: nil, options: HKQueryOptions())
-            self.fetchStatisticsOfType(type, predicate: predicate) { (statistics, error) in
-                updateSamples(type, statistics, error)
+            // First run a pilot query to retrieve the acquisition date of the last sample.
+            self.fetchMostRecentSample(type) { (samples, error) in
+                guard error == nil else {
+                    log.error("Could not fetch recent samples for \(type.displayText): \(error)")
+                    dispatch_group_leave(group)
+                    return
+                }
+
+                if let lastSample = samples.last {
+                    // Then run a statistics query to aggregate relative to the recent sample date.
+                    let recentWindowStartDate = lastSample.startDate - 4.days
+                    let predicate = HKSampleQuery.predicateForSamplesWithStartDate(recentWindowStartDate, endDate: nil, options: .None)
+                    self.fetchStatisticsOfType(type, predicate: predicate) { (statistics, error) in
+                        updateSamples(type, statistics, error)
+                    }
+                } else {
+                    updateSamples(type, samples, error)
+                }
             }
         }
 
@@ -258,17 +262,14 @@ public class HealthManager: NSObject, WCSessionDelegate {
 
         types.forEach { (type) -> () in
             dispatch_group_enter(group)
-            if ( (type.identifier != HKCategoryTypeIdentifierSleepAnalysis)
-                && (type.identifier != HKCorrelationTypeIdentifierBloodPressure)
-                && (type.identifier != HKWorkoutTypeIdentifier))
-            {
-                onStatistic(type)
-            } else if (type.identifier == HKCategoryTypeIdentifierSleepAnalysis) {
+            if (type.identifier == HKCategoryTypeIdentifierSleepAnalysis) {
                 onCatOrCorr(type)
             } else if (type.identifier == HKCorrelationTypeIdentifierBloodPressure) {
                 onCatOrCorr(type)
             } else if (type.identifier == HKWorkoutTypeIdentifier) {
                 onWorkout(type)
+            } else {
+                onStatistic(type)
             }
         }
 
@@ -504,19 +505,6 @@ public class HealthManager: NSObject, WCSessionDelegate {
         var aggregates: [T] = []
         let dateRange = DateRange(startDate: startDate, endDate: endDate, stepUnits: aggUnit)
 
-        /*
-        if sampleType.identifier == HKQuantityTypeIdentifierBasalEnergyBurned || sampleType.identifier == HKQuantityTypeIdentifierStepCount {
-            log.verbose("\(tag) dates \(startDate) \(endDate)")
-        }
-
-        if sampleType.identifier == HKQuantityTypeIdentifierBasalEnergyBurned || sampleType.identifier == HKQuantityTypeIdentifierStepCount {
-            log.info("\(tag) aggs \(sparseAggs.count) \(sparseAggs)")
-            if sparseAggs.count > 0 && sparseAggs[0].startDate < startDate {
-                log.verbose("\(tag) aggs starts before range \(startDate) \(sparseAggs[0].startDate)")
-            }
-        }
-        */
-
         while i < sparseAggs.count && sparseAggs[i].startDate.startOf(aggUnit) < startDate.startOf(aggUnit) {
             i += 1
         }
@@ -528,11 +516,6 @@ public class HealthManager: NSObject, WCSessionDelegate {
             } else {
                 aggregates.append(transform(MCAggregateSample(startDate: date, endDate: date + delta, value: 0.0, sampleType: sampleType, op: aggOp)))
             }
-            /*
-            if sampleType.identifier == HKQuantityTypeIdentifierBasalEnergyBurned || sampleType.identifier == HKQuantityTypeIdentifierStepCount {
-                log.verbose("\(tag) \(date) \(i) \(aggregates.last!)")
-            }
-            */
         }
         return aggregates
     }
@@ -549,19 +532,6 @@ public class HealthManager: NSObject, WCSessionDelegate {
         var statistics: [T] = []
         let dateRange = DateRange(startDate: startDate, endDate: endDate, stepUnits: aggUnit)
 
-        /*
-        if sampleType.identifier == HKQuantityTypeIdentifierBasalEnergyBurned || sampleType.identifier == HKQuantityTypeIdentifierStepCount {
-            log.verbose("\(tag) dates \(startDate) \(endDate)")
-        }
-
-        if sampleType.identifier == HKQuantityTypeIdentifierBasalEnergyBurned || sampleType.identifier == HKQuantityTypeIdentifierStepCount {
-            log.verbose("\(tag) stats \(sparseStats.count) \(sparseStats)")
-            if sparseStats.count > 0 && sparseStats[0].startDate < startDate {
-                log.verbose("\(tag) stats starts before range \(startDate) \(sparseStats[0].startDate)")
-            }
-        }
-        */
-
         while i < sparseStats.count && sparseStats[i].startDate.startOf(aggUnit) < startDate.startOf(aggUnit) {
             i += 1
         }
@@ -573,11 +543,6 @@ public class HealthManager: NSObject, WCSessionDelegate {
             } else {
                 statistics.append(transform(MCAggregateSample(startDate: date, endDate: date + delta, value: 0.0, sampleType: sampleType, op: aggOp)))
             }
-            /*
-            if sampleType.identifier == HKQuantityTypeIdentifierBasalEnergyBurned || sampleType.identifier == HKQuantityTypeIdentifierStepCount {
-                log.verbose("\(tag) \(date) \(i) \(statistics.last!)")
-            }
-            */
         }
         return statistics
     }
