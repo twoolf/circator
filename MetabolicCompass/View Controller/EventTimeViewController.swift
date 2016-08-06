@@ -12,7 +12,7 @@ import Crashlytics
 import SwiftDate
 import Async
 import SwiftChart
-import QueryHK
+import MCcircadianQueries
 import SwiftyBeaver
 
 /// initializations of these variables creates offsets so plots of event transitions are square waves
@@ -231,7 +231,7 @@ class EventTimeViewController : UIViewController {
         let yesterday = 1.days.ago
         let startDate = yesterday
 
-        QueryHK.sharedManager.fetchCircadianEventIntervals(startDate) { (intervals, error) -> Void in
+        MCcircadianQueries.sharedManager.fetchCircadianEventIntervals(startDate) { (intervals, error) -> Void in
             Async.main {
                 guard error == nil else {
                     self.log.error("Failed to fetch circadian events: \(error)")

@@ -17,7 +17,7 @@ import ResearchKit
 import Pages
 import Charts
 import SwiftDate
-import QueryHK
+import MCcircadianQueries
 import SwiftyBeaver
 
 let IntroViewTableViewCellIdentifier = "IntroViewTableViewCellIdentifier"
@@ -987,7 +987,7 @@ class IntroViewController: UIViewController,
                     
                     log.error("Meal event \(startTime) \(endTime)")
                     validateTimedEvent(startTime, endTime: endTime) {
-                        QueryHK.sharedManager.savePreparationAndRecoveryWorkout(
+                        MCcircadianQueries.sharedManager.savePreparationAndRecoveryWorkout(
                             startTime, endDate: endTime, distance: 0.0, distanceUnit: HKUnit(fromString: "km"),
                             kiloCalories: 0.0, metadata: metaMeals)
                         {
@@ -1044,7 +1044,7 @@ class IntroViewController: UIViewController,
                     
                     log.error("Exercise event \(startTime) \(endTime)")
                     validateTimedEvent(startTime, endTime: endTime) {
-                        QueryHK.sharedManager.saveRunningWorkout(
+                        MCcircadianQueries.sharedManager.saveRunningWorkout(
                             startTime, endDate: endTime, distance: 0.0, distanceUnit: HKUnit(fromString: "km"),
                             kiloCalories: 0.0, metadata: [:])
                         {
@@ -1283,7 +1283,7 @@ class IntroViewController: UIViewController,
         let kmUnit = HKUnit(fromString: "km")
         let metaMeals = ["Source":"Timer"]
 
-        QueryHK.sharedManager.savePreparationAndRecoveryWorkout(timerStartDate, endDate: timerEndDate,
+        MCcircadianQueries.sharedManager.savePreparationAndRecoveryWorkout(timerStartDate, endDate: timerEndDate,
             distance: 0.0, distanceUnit:kmUnit, kiloCalories: 0.0, metadata: metaMeals,
             completion: { (success, error ) -> Void in
                 guard error == nil else {

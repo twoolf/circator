@@ -12,7 +12,7 @@ import Foundation
 import HealthKit
 import SwiftDate
 import ClockKit
-import QueryHK
+import MCcircadianQueries
 //import SwiftyBeaver
 //import CocoaLumberjack
 
@@ -70,7 +70,7 @@ class IntroInterfaceController: WKInterfaceController, WCSessionDelegate  {
     
     override func didDeactivate() {
         super.didDeactivate()
-        QueryHK.sharedManager.reloadDataTake2()
+        MCcircadianQueries.sharedManager.reloadDataTake2()
         
         func reloadComplications() {
             let server = CLKComplicationServer.sharedInstance()
@@ -87,9 +87,9 @@ class IntroInterfaceController: WKInterfaceController, WCSessionDelegate  {
         reloadComplications()
 
  /*       func updateHealthInfo() {
-            QueryHK.sharedManager.updateWeight();
-            QueryHK.sharedManager.updateHeight();
-            QueryHK.sharedManager.updateBMI();
+            MCcircadianQueries.sharedManager.updateWeight();
+            MCcircadianQueries.sharedManager.updateHeight();
+            MCcircadianQueries.sharedManager.updateBMI();
         }
  
         updateHealthInfo() */

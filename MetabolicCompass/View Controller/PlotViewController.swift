@@ -14,7 +14,7 @@ import Crashlytics
 import SwiftDate
 import Async
 import Pages
-import QueryHK
+import MCcircadianQueries
 
 /**
  This class controls the display of our temporal plots and of our summary statistics.  The ability of the user to see the comparison of their data over time nicely complements what is present in HealthKit and is meant to help keep the participants motiviated into making positive metabolic changes.
@@ -113,7 +113,7 @@ class PlotViewController: UIViewController, ChartViewDelegate {
                 Async.background {
                     switch spec {
                     case .PlotFasting:
-                        QueryHK.sharedManager.fetchMaxFastingTimes { (aggregates, error) -> Void in
+                        MCcircadianQueries.sharedManager.fetchMaxFastingTimes { (aggregates, error) -> Void in
                             guard error == nil else {
                                 self.showError()
                                 return
@@ -126,7 +126,7 @@ class PlotViewController: UIViewController, ChartViewDelegate {
                         }
 
                     case let .PlotPredicate(_, predicate):
-                        QueryHK.sharedManager.fetchStatisticsOfType(self.sampleType, predicate: predicate) { (results, error) -> Void in
+                        MCcircadianQueries.sharedManager.fetchStatisticsOfType(self.sampleType, predicate: predicate) { (results, error) -> Void in
                             guard error == nil else {
                                 self.showError()
                                 return

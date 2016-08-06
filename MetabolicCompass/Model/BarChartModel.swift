@@ -8,7 +8,7 @@ import Charts
 import SwiftDate
 import HealthKit
 import MetabolicCompassKit
-import QueryHK
+import MCcircadianQueries
 import SwiftyBeaver
 
 enum ChartType {
@@ -19,7 +19,7 @@ enum ChartType {
 
 class BarChartModel : NSObject {
 
-    var rangeType: QueryHK.HealthManagerStatisticsRangeType = QueryHK.HealthManagerStatisticsRangeType.Week
+    var rangeType: MCcircadianQueries.HealthManagerStatisticsRangeType = MCcircadianQueries.HealthManagerStatisticsRangeType.Week
     var typesChartData: [String: ChartData] = [:]
 
     private var chartTypeToQuantityType: [String: ChartType] = [HKQuantityTypeIdentifierDietaryEnergyConsumed : .BarChart,
@@ -90,7 +90,7 @@ class BarChartModel : NSObject {
     }
 
     //MARK: Prepate chart data
-    func convertStatisticsValues(stisticsValues: [Double], forRange range: QueryHK.HealthManagerStatisticsRangeType) -> [ChartDataEntry] {
+    func convertStatisticsValues(stisticsValues: [Double], forRange range: MCcircadianQueries.HealthManagerStatisticsRangeType) -> [ChartDataEntry] {
         let indexIncrement = range == .Month ? 2 : 1;//For year and Month we add 2 for index because we ahve empty values on left and right to make a gap for xAxis
         //for week we have only one empty value left and right on xAxis
         var yVals: [ChartDataEntry] = []
@@ -103,7 +103,7 @@ class BarChartModel : NSObject {
         return yVals
     }
 
-    func getChartDataForRange(range: QueryHK.HealthManagerStatisticsRangeType, type: ChartType, values: [Double], minValues: [Double]?) -> ChartData {
+    func getChartDataForRange(range: MCcircadianQueries.HealthManagerStatisticsRangeType, type: ChartType, values: [Double], minValues: [Double]?) -> ChartData {
         switch range {
             case .Week:
                 return self.getChartDataForWeek(type, values: values, minValues: minValues)
@@ -114,7 +114,7 @@ class BarChartModel : NSObject {
         }
     }
 
-    func getYValuesForScatterChart (minValues: [Double], maxValues: [Double], period: QueryHK.HealthManagerStatisticsRangeType) -> [ChartDataEntry] {
+    func getYValuesForScatterChart (minValues: [Double], maxValues: [Double], period: MCcircadianQueries.HealthManagerStatisticsRangeType) -> [ChartDataEntry] {
         var yVals: [ChartDataEntry] = []
         let indexIncrement = period == .Month || period == .Year ? 2 : 1;
         for (index, minValue) in minValues.enumerate() {
@@ -139,7 +139,7 @@ class BarChartModel : NSObject {
         }
     }
 
-    func getBloodPressureChartData(range: QueryHK.HealthManagerStatisticsRangeType, systolicMax: [Double], systolicMin: [Double], diastolicMax: [Double], diastolicMin: [Double]) -> ChartData{
+    func getBloodPressureChartData(range: MCcircadianQueries.HealthManagerStatisticsRangeType, systolicMax: [Double], systolicMin: [Double], diastolicMax: [Double], diastolicMin: [Double]) -> ChartData{
         let systolicWeekData = getYValuesForScatterChart(systolicMin, maxValues: systolicMax, period: range)
         let diastolicWeekData = getYValuesForScatterChart(diastolicMin, maxValues: diastolicMax, period: range)
         var xVals: [String] = []

@@ -14,7 +14,7 @@ import Crashlytics
 import SwiftDate
 import Pages
 import Async
-import QueryHK
+import MCcircadianQueries
 
 /**
  This class controls thedisplay of correlation plots (2nd button from left on bottom of the screen).  The type of correlation that is used will show two curves (with different y-values) moving along in a similar way if they are correlated (e.g. both increasing linearly).  If only one variable is increasing, while the other is seen to fluctuate throughout that time, then the two variables are most likely not correlated.
@@ -87,7 +87,7 @@ class CorrelationViewController: UIViewController, ChartViewDelegate {
                 Async.background {
                     switch (lsp, rsp) {
                     case (.PlotFasting, .PlotFasting):
-                        QueryHK.sharedManager.fetchMaxFastingTimes { (aggregates, error) in
+                        MCcircadianQueries.sharedManager.fetchMaxFastingTimes { (aggregates, error) in
                             guard (error == nil) && !aggregates.isEmpty else {
                                 Async.main {
                                     if let idx = self.errorIndex, pv = self.parentViewController as? PagesController {
@@ -100,7 +100,7 @@ class CorrelationViewController: UIViewController, ChartViewDelegate {
                         }
 
                     case let (.PlotFasting, .PlotPredicate(_, predicate)):
-                        QueryHK.sharedManager.correlateWithFasting(true, type: self.sampleTypes[1], predicate: predicate) {
+                        MCcircadianQueries.sharedManager.correlateWithFasting(true, type: self.sampleTypes[1], predicate: predicate) {
                             (zipped, error) -> Void in
                             guard (error == nil) && !zipped.isEmpty else {
                                 Async.main {
@@ -114,7 +114,7 @@ class CorrelationViewController: UIViewController, ChartViewDelegate {
                         }
 
                     case let (.PlotPredicate(_, predicate), .PlotFasting):
-                        QueryHK.sharedManager.correlateWithFasting(false, type: self.sampleTypes[0], predicate: predicate) {
+                        MCcircadianQueries.sharedManager.correlateWithFasting(false, type: self.sampleTypes[0], predicate: predicate) {
                             (zipped, error) -> Void in
                             guard (error == nil) && !zipped.isEmpty else {
                                 Async.main {

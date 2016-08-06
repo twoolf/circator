@@ -11,7 +11,7 @@ import EventKit
 import HealthKit
 import WatchConnectivity
 import SwiftyUserDefaults
-import QueryHK
+import MCcircadianQueries
 import SwiftyBeaver
 
 
@@ -195,7 +195,7 @@ public class EventManager : NSObject, WCSessionDelegate {
                         self.log.debug("Writing food log " + sstr + "->" + estr + " " + eid.1)
 
                         let emeta = ["Source":"Calendar","EventId":String(eid.0), "Data":eid.1]
-                        QueryHK.sharedManager.savePreparationAndRecoveryWorkout(
+                        MCcircadianQueries.sharedManager.savePreparationAndRecoveryWorkout(
                             eitems.0.start, endDate: eitems.0.end,
                             distance: 0.0, distanceUnit: HKUnit.meterUnit(), kiloCalories: 0.0,
                             metadata: emeta,

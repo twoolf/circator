@@ -9,7 +9,7 @@
 import Foundation
 import HealthKit
 import Async
-import QueryHK
+import MCcircadianQueries
 import SwiftyBeaver
 
 /**

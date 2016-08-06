@@ -10,7 +10,7 @@ import UIKit
 import SwiftDate
 import MetabolicCompassKit
 import HealthKit
-import QueryHK
+import MCcircadianQueries
 import SwiftyBeaver
 
 enum MealType: String {
@@ -189,7 +189,7 @@ class AddEventModel: NSObject {
                 completion(success: false, errorMessage: errorMessage)
                 return
             }
-            QueryHK.sharedManager.savePreparationAndRecoveryWorkout(
+            MCcircadianQueries.sharedManager.savePreparationAndRecoveryWorkout(
                 startTime, endDate: endTime, distance: 0.0, distanceUnit: HKUnit(fromString: "km"),
                 kiloCalories: 0.0, metadata: metaMeals) { (success, error ) -> Void in
                     guard error == nil else {
@@ -216,7 +216,7 @@ class AddEventModel: NSObject {
                 completion(success: false, errorMessage: errorMessage)
                 return
             }
-            QueryHK.sharedManager.saveRunningWorkout(
+            MCcircadianQueries.sharedManager.saveRunningWorkout(
                 startTime, endDate: endTime, distance: 0.0, distanceUnit: HKUnit(fromString: "km"),
                 kiloCalories: 0.0, metadata: [:]) {
                 (success, error ) -> Void in

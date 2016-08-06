@@ -10,7 +10,7 @@ import UIKit
 import HealthKit
 import MetabolicCompassKit
 import Charts
-import QueryHK
+import MCcircadianQueries
 import SwiftyBeaver
 
 public enum SamplesCollectedIndex {
@@ -57,7 +57,7 @@ public class FastingDataModel : NSObject {
         let group = dispatch_group_create()
 
         dispatch_group_enter(group)
-        QueryHK.sharedManager.fetchSampleCollectionDays(PreviewManager.manageChartsSampleTypes) { (table, error) in
+        MCcircadianQueries.sharedManager.fetchSampleCollectionDays(PreviewManager.manageChartsSampleTypes) { (table, error) in
             guard error == nil else {
                 self.log.error(error as! String)
                 someError.append(error)
@@ -70,7 +70,7 @@ public class FastingDataModel : NSObject {
         }
 
         dispatch_group_enter(group)
-        QueryHK.sharedManager.fetchWeeklyFastState { (cFast, cNonFast, error) in
+        MCcircadianQueries.sharedManager.fetchWeeklyFastState { (cFast, cNonFast, error) in
             guard error == nil else {
                 self.log.error(error as! String)
                 someError.append(error)
@@ -85,7 +85,7 @@ public class FastingDataModel : NSObject {
         }
 
         dispatch_group_enter(group)
-        QueryHK.sharedManager.fetchWeeklyFastingVariability { (variability, error) in
+        MCcircadianQueries.sharedManager.fetchWeeklyFastingVariability { (variability, error) in
             guard error == nil else {
                 self.log.error(error as! String)
                 someError.append(error)
@@ -99,7 +99,7 @@ public class FastingDataModel : NSObject {
         }
 
         dispatch_group_enter(group)
-        QueryHK.sharedManager.fetchWeeklyFastType { (fSleep, fAwake, error) in
+        MCcircadianQueries.sharedManager.fetchWeeklyFastType { (fSleep, fAwake, error) in
             guard error == nil else {
                 self.log.error(error as! String)
                 someError.append(error)
@@ -114,7 +114,7 @@ public class FastingDataModel : NSObject {
         }
 
         dispatch_group_enter(group)
-        QueryHK.sharedManager.fetchWeeklyEatAndExercise { (tEat, tExercise, error) in
+        MCcircadianQueries.sharedManager.fetchWeeklyEatAndExercise { (tEat, tExercise, error) in
             guard error == nil else {
                 self.log.error(error as! String)
                 someError.append(error)

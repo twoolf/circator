@@ -16,7 +16,7 @@ import SwiftDate
 import Former
 import HTPressableButton
 import AKPickerView_Swift
-import QueryHK
+import MCcircadianQueries
 import SwiftyBeaver
 
 public let MEMDidUpdateCircadianEvents = "MEMDidUpdateCircadianEvents"
@@ -382,7 +382,7 @@ public class AddEventTable: UITableView, UITableViewDelegate, UITableViewDataSou
                 return
             }
 
-            QueryHK.sharedManager.savePreparationAndRecoveryWorkout(
+            MCcircadianQueries.sharedManager.savePreparationAndRecoveryWorkout(
                 startTime, endDate: endTime, distance: 0.0, distanceUnit: HKUnit(fromString: "km"),
                 kiloCalories: 0.0, metadata: metadata)
             {
@@ -407,7 +407,7 @@ public class AddEventTable: UITableView, UITableViewDelegate, UITableViewDataSou
                 return
             }
 
-            QueryHK.sharedManager.saveWorkout(
+            MCcircadianQueries.sharedManager.saveWorkout(
                 startTime, endDate: endTime, activityType: workoutType,
                 distance: 0.0, distanceUnit: HKUnit(fromString: "km"), kiloCalories: 0.0, metadata: [:])
             {
