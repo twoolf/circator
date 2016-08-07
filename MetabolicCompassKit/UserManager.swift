@@ -75,6 +75,11 @@ public func floorDate(date: NSDate, granularity: Double) -> NSDate {
         (floor(date.timeIntervalSinceReferenceDate / granularity) * granularity))
 }
 
+public func roundDate(date: NSDate, granularity: Double) -> NSDate {
+    return NSDate(timeIntervalSinceReferenceDate:
+        (round(date.timeIntervalSinceReferenceDate / granularity) * granularity))
+}
+
 extension Dictionary {
     mutating func update(other:Dictionary) {
         for (key,value) in other {

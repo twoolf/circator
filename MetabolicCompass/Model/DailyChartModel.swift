@@ -380,18 +380,30 @@ class DailyChartModel : NSObject, UITableViewDataSource {
                     
                     let today = NSDate().startOf(.Day, inRegion: Region())
                     let lastAte : NSDate? = stats.1 == 0 ? nil : ( startDate + Int(round(stats.1 * 3600.0)).seconds)
-                    let fastingHrs = Int(floor(stats.2))
-                    let fastingMins = (today + Int(round((stats.2 % 1.0) * 60.0)).minutes).toString(DateFormat.Custom("mm"))!
-    
-                    self.fastingText = "\(fastingHrs) h \(fastingMins) m"
-                    let eatingTime = (today + Int(stats.0 * 3600.0).seconds)
+
+                    let eatingTime = roundDate((today + Int(stats.0 * 3600.0).seconds), granularity: granularity1Min)
                     if eatingTime.hour == 0 && eatingTime.minute == 0 {
                         self.eatingText = self.emptyValueString
                     } else {
                         self.eatingText = eatingTime.toString(DateFormat.Custom("HH 'h' mm 'm'"))!
                     }
 
-                    self.lastAteText = lastAte == nil ? self.emptyValueString : lastAte!.toString(DateFormat.Custom("HH 'h' mm 'm'"))!
+                    let fastingHrs = Int(floor(stats.2))
+                    let fastingMins = (today + Int(round((stats.2 % 1.0) * 60.0)).minutes).toString(DateFormat.Custom("mm"))!
+                    self.fastingText = "\(fastingHrs) h \(fastingMins) m"
+
+                    if let lastAte = lastAte {
+                        let components = NSDate().components - lastAte.components
+                        if components.day > 0 {
+                            let mins = (today + components.minute.minutes).toString(DateFormat.Custom("mm 'm'"))!
+                            self.lastAteText = "\(components.day * 24 + components.hour) h \(mins)"
+                        } else {
+                            self.lastAteText = (today + components).toString(DateFormat.Custom("HH 'h' mm 'm'"))!
+                        }
+                    } else {
+                        self.lastAteText = self.emptyValueString
+                    }
+
                     self.delegate?.dailyProgressStatCollected?()
                 }
             }
