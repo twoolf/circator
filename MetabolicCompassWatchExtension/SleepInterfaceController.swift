@@ -61,8 +61,6 @@ class SleepInterfaceController: WKInterfaceController {
     }
     @IBAction func sleepSaveButton() {
         sleepTimesStruc.sleepBegin = sleep
-        print("Begin from Sleep: and variable --")
-        print(sleepTimesStruc.sleepBegin)
         pushControllerWithName("SleepTimesInterfaceController", context: self)
     }
     }

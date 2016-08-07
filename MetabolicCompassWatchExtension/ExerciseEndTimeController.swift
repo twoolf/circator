@@ -6,9 +6,6 @@
 //  Copyright © 2016 Yanif Ahmad, Tom Woolf. All rights reserved.
 //
 
-// similar to Sleep pickers, the first screen is set by time of day and determines
-//   the 'end point' while the 2nd screen is used to set the start of the eating event
-
 import WatchKit
 import Foundation
 import HealthKit
@@ -64,8 +61,6 @@ class ExerciseEndTimeController: WKInterfaceController {
     
     @IBAction func onExerciseStartTimeSave() {
         exerciseTimeStruc.exerciseBegin = exerciseBeginTime
-//        print("Begin of exercise time: and variable --")
-//        print(exerciseTimeStruc.exerciseBegin)
         pushControllerWithName("ExerciseStartTimeController", context: self)
     }
 }

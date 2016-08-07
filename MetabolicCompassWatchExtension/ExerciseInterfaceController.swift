@@ -35,29 +35,21 @@ class ExerciseInterfaceController: WKInterfaceController {
     
     @IBAction func onRun() {
         exerciseTypebyButton.exerciseType = "Running"
-//        print("Running selected with value:")
-//        print(exerciseTypebyButton.exerciseType)
         pushControllerWithName("ExerciseEndTimeController", context: self)
     }
     
     @IBAction func onCycle() {
         exerciseTypebyButton.exerciseType = "Cycling"
-//        print("Cycling selected with value:")
-//        print(exerciseTypebyButton.exerciseType)
         pushControllerWithName("ExerciseEndTimeController", context: self)
     }
     
     @IBAction func onSwim() {
         exerciseTypebyButton.exerciseType = "Swimming"
-//        print("Swimming selected: with variable --")
-//        print(exerciseTypebyButton.exerciseType)
         pushControllerWithName("ExerciseEndTimeController", context: self)
     }
 
     @IBAction func onWalk() {
         exerciseTypebyButton.exerciseType = "Walking"
-//        print("Walking selected:  with variable --")
-//        print(exerciseTypebyButton.exerciseType)
         pushControllerWithName("ExerciseEndTimeController", context: self)
     }
     
