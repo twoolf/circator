@@ -12,18 +12,30 @@ import HealthKit
 import SwiftyUserDefaults
 import Async
 
-class DashboardFilterController: UIViewController, UITableViewDelegate, UITableViewDataSource {
+class DashboardFilterController: UIViewController, UITableViewDelegate, UITableViewDataSource, UIGestureRecognizerDelegate {
     
     @IBOutlet weak var tableView: UITableView!
+    private let headerIdentifier = "DashboardFilterHeaderView"
+
     private var deselectAll = false
 
     private let selectedRowsDefaultsKey = "\(UserManager.sharedManager.userId).selectedFilters"
+    private let sectionVisibilityDefaultsKey = "\(UserManager.sharedManager.userId).sectionsVisible"
 
     // A hashtable specifying which row is selected in each section.
     private var selectedRows: [String:AnyObject] = [:]
 
+    private var sectionVisibility: [Bool] = []
+    private var sectionGestureRecognizers: [UITapGestureRecognizer?] = []
+
     var data: [DashboardFilterItem] = [] {
         didSet {
+            if sectionVisibility.count != self.data.count {
+                sectionVisibility = [Bool](count: self.data.count, repeatedValue: true)
+            }
+            if sectionGestureRecognizers.count != self.data.count {
+                sectionGestureRecognizers = [UITapGestureRecognizer?](count: self.data.count, repeatedValue: nil)
+            }
             self.tableView.reloadData()
         }
     }
@@ -39,13 +51,8 @@ class DashboardFilterController: UIViewController, UITableViewDelegate, UITableV
         self.navigationItem.leftBarButtonItem = leftButton
         self.navigationItem.rightBarButtonItem = rightBarButtonItem
         
-        if let userSelectedRows = Defaults.objectForKey(selectedRowsDefaultsKey) as? [String: AnyObject] {
-            selectedRows = userSelectedRows
-        } else {
-            log.warning("Clearing saved filter for \(selectedRowsDefaultsKey)")
-            Defaults.remove(selectedRowsDefaultsKey)
-        }
-
+        loadSettings()
+        registerViews()
         self.tableView.delegate = self;
         self.tableView.dataSource = self;
         self.navigationController?.navigationBar.barStyle = .Black;
@@ -55,10 +62,36 @@ class DashboardFilterController: UIViewController, UITableViewDelegate, UITableV
     
     override func viewWillDisappear(animated: Bool) {
         super.viewWillDisappear(animated)
+        saveSettings()
+    }
+
+    func registerViews () {
+        let headerNib = UINib(nibName: "DashboardFilterHeaderView", bundle: nil)
+        tableView.registerNib(headerNib, forHeaderFooterViewReuseIdentifier:  headerIdentifier)
+    }
+
+    func loadSettings() {
+        if let userSelectedRows = Defaults.objectForKey(selectedRowsDefaultsKey) as? [String: AnyObject] {
+            selectedRows = userSelectedRows
+        } else {
+            log.warning("Clearing defaults for \(selectedRowsDefaultsKey)")
+            Defaults.remove(selectedRowsDefaultsKey)
+        }
+
+        if let userSectionsVisible = Defaults.objectForKey(sectionVisibilityDefaultsKey) as? [Bool] {
+            sectionVisibility = userSectionsVisible
+        } else {
+            log.warning("Clearing defaults for \(sectionVisibilityDefaultsKey)")
+            Defaults.remove(sectionVisibilityDefaultsKey)
+        }
+    }
+
+    func saveSettings() {
         Defaults.setObject(selectedRows, forKey: selectedRowsDefaultsKey)
+        Defaults.setObject(sectionVisibility, forKey: sectionVisibilityDefaultsKey)
         Defaults.synchronize()
     }
-    
+
     //MARK: Actions
     
     func clearAll () {
@@ -81,7 +114,10 @@ class DashboardFilterController: UIViewController, UITableViewDelegate, UITableV
     }
 
     func tableView(tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return data[section].items.count
+        if sectionVisibility[section] {
+            return data[section].items.count
+        }
+        return 0
     }
 
     func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell {
@@ -104,9 +140,24 @@ class DashboardFilterController: UIViewController, UITableViewDelegate, UITableV
     
     //MARK: UITableViewDelegate
     func tableView(tableView: UITableView, viewForHeaderInSection section: Int) -> UIView? {
-        let cell = tableView.dequeueReusableCellWithIdentifier("DashboardHeaderCell") as! DashboardFilterHeaderCell
-        cell.captionLabel.text = self.data[section].title
-        return cell;
+        let view = tableView.dequeueReusableHeaderFooterViewWithIdentifier(headerIdentifier) as! DashboardFilterHeaderView
+        view.captionLabel.text = self.data[section].title
+
+        if sectionGestureRecognizers[section] == nil {
+            let tapRecognizer = UITapGestureRecognizer(target: self, action: #selector(toggleSectionVisibility))
+            tapRecognizer.delegate = self
+            tapRecognizer.numberOfTouchesRequired = 1
+            tapRecognizer.numberOfTapsRequired = 2
+            sectionGestureRecognizers[section] = tapRecognizer
+            view.tag = section
+            view.addGestureRecognizer(tapRecognizer)
+        } else {
+            view.gestureRecognizers?.forEach { view.removeGestureRecognizer($0) }
+            view.tag = section
+            view.addGestureRecognizer(sectionGestureRecognizers[section]!)
+        }
+
+        return view;
     }
 
     func tableView(tableView: UITableView, estimatedHeightForHeaderInSection section: Int) -> CGFloat {
@@ -140,7 +191,14 @@ class DashboardFilterController: UIViewController, UITableViewDelegate, UITableV
         }
     }
     
-    //MARK: Help
+    // MARK: Helpers
+    func toggleSectionVisibility(sender: UITapGestureRecognizer) {
+        if let section = sender.view?.tag {
+            sectionVisibility[section] = !sectionVisibility[section]
+            self.tableView.reloadData()
+        }
+    }
+
     func selectRow(section: Int, row: Int) {
         selectedRows.updateValue(row, forKey: "\(section)")
         refreshQuery()
@@ -185,9 +243,13 @@ class DashboardFilterController: UIViewController, UITableViewDelegate, UITableV
 
     func addData () {
         let specs = (UserManager.sharedManager.useMetricUnits() ? metricFilterSpecs : imperialFilterSpecs) + commonFilterSpecs
+
         self.data = filterSpecsToItems(specs)
 
         if #available(iOS 9.3, *) {
+            sectionVisibility.append(true)
+            sectionGestureRecognizers.append(nil)
+
             self.data.append(DashboardFilterItem(title: "Exercise",
                 items: [DashboardFilterCellData(title: "under 20 minutes",
                     hkType: HKQuantityTypeIdentifierAppleExerciseTime, aggrType: Aggregate.AggAvg, lowerBound: 0, upperBound: 20),

@@ -152,9 +152,17 @@ class DailyChartModel : NSObject, UITableViewDataSource {
         return getChartDateRange(endDate).map { date in
             let dateString = formatter.stringFromDate(date)
             if date.day % 10 == 1 {
-                return dateString.stringByAppendingString(" st")
+                if date.day == 11 {
+                    return dateString.stringByAppendingString(" th")
+                } else {
+                    return dateString.stringByAppendingString(" st")
+                }
             } else if date.day % 10 == 2 {
-                return dateString.stringByAppendingString(" nd")
+                if date.day == 12 {
+                    return dateString.stringByAppendingString(" th")
+                } else {
+                    return dateString.stringByAppendingString(" nd")
+                }
             } else {
                 return dateString.stringByAppendingString(" th")
             }

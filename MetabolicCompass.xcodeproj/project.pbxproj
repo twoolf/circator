@@ -63,6 +63,7 @@
 		78B7342C1C90B87A00693229 /* ErrorViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7840A49A1C6E5A680005B66F /* ErrorViewController.swift */; };
 		78B7342E1C90BC6900693229 /* DebugViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7860E9121C61C470004C9741 /* DebugViewController.swift */; };
 		78BEAC9E1C5E7EE800F0B541 /* PopulationHealthManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 78BEAC9D1C5E7EE800F0B541 /* PopulationHealthManager.swift */; };
+		78D47DD31D57BE2700F432D1 /* DashboardFilterHeaderView.xib in Resources */ = {isa = PBXBuildFile; fileRef = 78D47DD21D57BE2700F432D1 /* DashboardFilterHeaderView.xib */; };
 		78E7C2101D32F83200DE0495 /* ExerciseEndTimeController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 78E7C1FE1D32F83200DE0495 /* ExerciseEndTimeController.swift */; };
 		78E7C2111D32F83200DE0495 /* ExerciseStartTimeController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 78E7C1FF1D32F83200DE0495 /* ExerciseStartTimeController.swift */; };
 		78E7C2121D32F83200DE0495 /* ExerciseType_Watch.swift in Sources */ = {isa = PBXBuildFile; fileRef = 78E7C2001D32F83200DE0495 /* ExerciseType_Watch.swift */; };
@@ -196,7 +197,7 @@
 		E75E95A11CDCA89700A18756 /* DashboardFilterController.swift in Sources */ = {isa = PBXBuildFile; fileRef = E75E95A01CDCA89700A18756 /* DashboardFilterController.swift */; };
 		E75E95A31CDCA8DD00A18756 /* DashboardFilterCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = E75E95A21CDCA8DD00A18756 /* DashboardFilterCell.swift */; };
 		E75E95A51CDCAD3300A18756 /* DashboardFilterCellData.swift in Sources */ = {isa = PBXBuildFile; fileRef = E75E95A41CDCAD3300A18756 /* DashboardFilterCellData.swift */; };
-		E75E95A71CDCB18D00A18756 /* DashboardFilterHeaderCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = E75E95A61CDCB18D00A18756 /* DashboardFilterHeaderCell.swift */; };
+		E75E95A71CDCB18D00A18756 /* DashboardFilterHeaderView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E75E95A61CDCB18D00A18756 /* DashboardFilterHeaderView.swift */; };
 		E75E95A91CDCB69A00A18756 /* DashboardFilterItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = E75E95A81CDCB69A00A18756 /* DashboardFilterItem.swift */; };
 		E75E95AB1CDCD10700A18756 /* DashboardManageController.swift in Sources */ = {isa = PBXBuildFile; fileRef = E75E95AA1CDCD10700A18756 /* DashboardManageController.swift */; };
 		E75E95AE1CDCD5A700A18756 /* DashboardMetricsConfigItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = E75E95AD1CDCD5A700A18756 /* DashboardMetricsConfigItem.swift */; };
@@ -386,6 +387,7 @@
 		78B45B251CE3B6210010AC4C /* WaterInterfaceController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = WaterInterfaceController.swift; sourceTree = "<group>"; };
 		78BEAC9D1C5E7EE800F0B541 /* PopulationHealthManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PopulationHealthManager.swift; sourceTree = "<group>"; };
 		78CE00AC1C65CC5A005E955C /* RadarViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RadarViewController.swift; sourceTree = "<group>"; };
+		78D47DD21D57BE2700F432D1 /* DashboardFilterHeaderView.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = DashboardFilterHeaderView.xib; sourceTree = "<group>"; };
 		78E5219F1C25687900FAE56A /* Pods.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Pods.framework; path = "Pods/../build/Debug-iphoneos/Pods.framework"; sourceTree = "<group>"; };
 		78E7C1FE1D32F83200DE0495 /* ExerciseEndTimeController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ExerciseEndTimeController.swift; sourceTree = "<group>"; };
 		78E7C1FF1D32F83200DE0495 /* ExerciseStartTimeController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ExerciseStartTimeController.swift; sourceTree = "<group>"; };
@@ -526,7 +528,7 @@
 		E75E95A01CDCA89700A18756 /* DashboardFilterController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DashboardFilterController.swift; sourceTree = "<group>"; };
 		E75E95A21CDCA8DD00A18756 /* DashboardFilterCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DashboardFilterCell.swift; sourceTree = "<group>"; };
 		E75E95A41CDCAD3300A18756 /* DashboardFilterCellData.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DashboardFilterCellData.swift; sourceTree = "<group>"; };
-		E75E95A61CDCB18D00A18756 /* DashboardFilterHeaderCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DashboardFilterHeaderCell.swift; sourceTree = "<group>"; };
+		E75E95A61CDCB18D00A18756 /* DashboardFilterHeaderView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DashboardFilterHeaderView.swift; sourceTree = "<group>"; };
 		E75E95A81CDCB69A00A18756 /* DashboardFilterItem.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DashboardFilterItem.swift; sourceTree = "<group>"; };
 		E75E95AA1CDCD10700A18756 /* DashboardManageController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DashboardManageController.swift; sourceTree = "<group>"; };
 		E75E95AD1CDCD5A700A18756 /* DashboardMetricsConfigItem.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DashboardMetricsConfigItem.swift; sourceTree = "<group>"; };
@@ -962,7 +964,8 @@
 			children = (
 				E75E95AF1CDCD63500A18756 /* DataModels */,
 				E75E95A21CDCA8DD00A18756 /* DashboardFilterCell.swift */,
-				E75E95A61CDCB18D00A18756 /* DashboardFilterHeaderCell.swift */,
+				E75E95A61CDCB18D00A18756 /* DashboardFilterHeaderView.swift */,
+				78D47DD21D57BE2700F432D1 /* DashboardFilterHeaderView.xib */,
 			);
 			path = FilterCells;
 			sourceTree = "<group>";
@@ -1471,6 +1474,7 @@
 				95635AA41CD3ACF300BCC467 /* ScrollSelectionViewCell.xib in Resources */,
 				958568101CD1020600EDD385 /* LoadImageCollectionViewCell.xib in Resources */,
 				84207D221CCA210000776848 /* Images.xcassets in Resources */,
+				78D47DD31D57BE2700F432D1 /* DashboardFilterHeaderView.xib in Resources */,
 				1C2DA1421D47A72100C738DF /* health_data_mock.json in Resources */,
 				95769B851CE4869C00F26668 /* TitleCollectionViewCell.xib in Resources */,
 				84207D1F1CCA1FEC00776848 /* RegisterLoginProcess.storyboard in Resources */,
@@ -1982,7 +1986,7 @@
 				95D142BC1CE60312006A9118 /* DoubleCheckListTitledCollectionViewCell.swift in Sources */,
 				E75E95A91CDCB69A00A18756 /* DashboardFilterItem.swift in Sources */,
 				9580D3AB1CEB2BF20074178D /* AppButton.swift in Sources */,
-				E75E95A71CDCB18D00A18756 /* DashboardFilterHeaderCell.swift in Sources */,
+				E75E95A71CDCB18D00A18756 /* DashboardFilterHeaderView.swift in Sources */,
 				1C7107BE1D4B14B500C2B3D4 /* CorrelationChartsViewController.swift in Sources */,
 				84EF0EB11D056F4B00A25760 /* PickerTableViewCell.swift in Sources */,
 				E7E48DE51CE4A12900DB020F /* MetabolicChartRender.swift in Sources */,

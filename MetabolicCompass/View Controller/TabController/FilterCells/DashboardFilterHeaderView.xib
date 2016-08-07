@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="10117" systemVersion="15G31" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES">
+    <dependencies>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="10085"/>
+    </dependencies>
+    <objects>
+        <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner"/>
+        <placeholder placeholderIdentifier="IBFirstResponder" id="-2" customClass="UIResponder"/>
+        <view contentMode="scaleToFill" id="iN0-l3-epB" userLabel="DashboardFilterHeaderView" customClass="DashboardFilterHeaderView" customModule="MetabolicCompass" customModuleProvider="target">
+            <rect key="frame" x="0.0" y="0.0" width="600" height="600"/>
+            <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+            <subviews>
+                <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="wvl-eD-BJI">
+                    <rect key="frame" x="0.0" y="0.0" width="600" height="600"/>
+                    <subviews>
+                        <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Label" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="XvE-zK-mUa" userLabel="Title Label">
+                            <rect key="frame" x="15" y="0.0" width="585" height="600"/>
+                            <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                            <color key="textColor" red="0.16078431372549018" green="0.44705882352941173" blue="1" alpha="1" colorSpace="calibratedRGB"/>
+                            <nil key="highlightedColor"/>
+                        </label>
+                    </subviews>
+                    <color key="backgroundColor" red="0.0078431372550000003" green="0.1176470588" blue="0.27058823529999998" alpha="1" colorSpace="calibratedRGB"/>
+                    <constraints>
+                        <constraint firstItem="XvE-zK-mUa" firstAttribute="leading" secondItem="wvl-eD-BJI" secondAttribute="leading" constant="15" id="DhW-Ma-iW5"/>
+                        <constraint firstItem="XvE-zK-mUa" firstAttribute="height" secondItem="wvl-eD-BJI" secondAttribute="height" id="MhF-9I-XNb"/>
+                        <constraint firstItem="XvE-zK-mUa" firstAttribute="top" secondItem="wvl-eD-BJI" secondAttribute="top" id="Ye4-tM-dKO"/>
+                        <constraint firstAttribute="bottom" secondItem="XvE-zK-mUa" secondAttribute="bottom" id="fZ6-xJ-LeI"/>
+                        <constraint firstAttribute="trailing" secondItem="XvE-zK-mUa" secondAttribute="trailing" id="nUE-N2-0jU"/>
+                        <constraint firstItem="XvE-zK-mUa" firstAttribute="centerY" secondItem="wvl-eD-BJI" secondAttribute="centerY" id="vIh-QP-OrG"/>
+                    </constraints>
+                </view>
+            </subviews>
+            <constraints>
+                <constraint firstItem="wvl-eD-BJI" firstAttribute="top" secondItem="iN0-l3-epB" secondAttribute="top" id="TSo-Td-3wn"/>
+                <constraint firstAttribute="trailing" secondItem="wvl-eD-BJI" secondAttribute="trailing" id="auH-go-vIL"/>
+                <constraint firstItem="wvl-eD-BJI" firstAttribute="leading" secondItem="iN0-l3-epB" secondAttribute="leading" id="ehI-Df-l32"/>
+                <constraint firstAttribute="bottom" secondItem="wvl-eD-BJI" secondAttribute="bottom" id="iKA-1H-1FN"/>
+            </constraints>
+            <connections>
+                <outlet property="captionLabel" destination="XvE-zK-mUa" id="FOy-hL-Eni"/>
+            </connections>
+        </view>
+    </objects>
+</document>

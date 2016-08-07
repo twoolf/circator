@@ -1,5 +1,5 @@
 //
-//  DashboardFilterHeaderCell.swift
+//  DashboardFilterHeaderView.swift
 //  MetabolicCompass
 //
 //  Created by Inaiur on 5/6/16.
@@ -8,7 +8,7 @@
 
 import UIKit
 
-class DashboardFilterHeaderCell: UITableViewCell {
+class DashboardFilterHeaderView: UITableViewHeaderFooterView {
 
     @IBOutlet weak var captionLabel: UILabel!
 
@@ -16,11 +16,4 @@ class DashboardFilterHeaderCell: UITableViewCell {
         super.awakeFromNib()
         // Initialization code
     }
-
-    override func setSelected(selected: Bool, animated: Bool) {
-        super.setSelected(selected, animated: animated)
-
-        // Configure the view for the selected state
-    }
-
 }
