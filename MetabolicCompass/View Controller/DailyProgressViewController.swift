@@ -125,7 +125,7 @@ class DailyProgressViewController : UIViewController, DailyChartModelProtocol {
         maxDailyFastingContainer.addGestureRecognizer(maxDailyFastingTip.tapRecognizer)
         maxDailyFastingContainer.userInteractionEnabled = true
 
-        let lastAteMsg = "Time (in hours and minutes) since your last meal"
+        let lastAteMsg = "Time elapsed since your last meal (in hours and minutes)"
         lastAteTip = TapTip(forView: lastAteContainer, text: lastAteMsg, asTop: true)
         lastAteContainer.addGestureRecognizer(lastAteTip.tapRecognizer)
         lastAteContainer.userInteractionEnabled = true
