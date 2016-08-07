@@ -87,6 +87,8 @@ public class FastingViewController : UIViewController, ChartViewDelegate {
         return chart
     }()
 
+    private let pieTipMsg = "This pie chart shows a breakdown of the types of data you've been collecting over the past year"
+    private var pieTip: TapTip! = nil
 
     lazy var pieChartColors: [NSUIColor] = {
         // Populate 15 colors. Add more if needed.
@@ -221,6 +223,9 @@ public class FastingViewController : UIViewController, ChartViewDelegate {
     }
 
     func setupTooltips() {
+        pieTip = TapTip(forView: pieChart, text: pieTipMsg, numTouches: 2, asTop: false)
+        pieChart.addGestureRecognizer(pieTip.tapRecognizer)
+
         cwfTip = TapTip(forView: cwfLabel, text: cwfTipMsg, asTop: true)
         wfvTip = TapTip(forView: wfvLabel, text: wfvTipMsg, asTop: true)
 
@@ -279,7 +284,7 @@ public class FastingViewController : UIViewController, ChartViewDelegate {
                     if saTotal == 0.0 {
                         cwfSubLabel.text = "N/A"
                     } else {
-                        cwfSubLabel.text = String(format: "%.2f", self.model.cumulativeWeeklyFasting)
+                        cwfSubLabel.text = String(format: "%.1f h", (self.model.cumulativeWeeklyFasting / 3600.0))
                     }
                     cwfSubLabel.setNeedsDisplay()
                 }
@@ -288,7 +293,7 @@ public class FastingViewController : UIViewController, ChartViewDelegate {
                     if saTotal == 0.0 {
                         wfvSubLabel.text = "N/A"
                     } else {
-                        wfvSubLabel.text = String(format: "%.2f", self.model.weeklyFastingVariability)
+                        wfvSubLabel.text = String(format: "%.1f h", (self.model.weeklyFastingVariability / 3600.0))
                     }
                     wfvSubLabel.setNeedsDisplay()
                 }

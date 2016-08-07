@@ -79,6 +79,7 @@ public class BalanceBarView : UIView {
             label1.backgroundColor = color1
             label2.backgroundColor = color2
             barText.text = "\(Int(ratio*100.0))%"
+            refreshConstraints(true)
         } else {
             label1.backgroundColor = UIColor.lightGrayColor()
             label2.backgroundColor = UIColor.darkGrayColor()
@@ -89,7 +90,7 @@ public class BalanceBarView : UIView {
 
     public func refreshConstraints(withRemove: Bool) {
         if withRemove {
-            removeConstraints(constraints)
+            removeConstraints(barConstraints)
         }
 
         // Clean ratio value
@@ -97,6 +98,23 @@ public class BalanceBarView : UIView {
             log.warning("Invalid ratio of \(ratio), resetting to 0.5")
             ratio = 0.5
         }
+
+        var extraConstraints: [NSLayoutConstraint] = []
+        let l1wmul = ratio == 0.0 ? 0.01 : (ratio == 1.0 ? 0.99 : ratio)
+        let l2wmul = 1 - l1wmul
+
+        if ratio < 0.5 {
+            extraConstraints = [
+                label1.widthAnchor.constraintEqualToAnchor(widthAnchor, multiplier: l1wmul, constant: 0.0),
+                label2.leadingAnchor.constraintEqualToAnchor(label1.trailingAnchor),
+            ]
+        } else {
+            extraConstraints = [
+                label1.trailingAnchor.constraintEqualToAnchor(label2.leadingAnchor),
+                label2.widthAnchor.constraintEqualToAnchor(widthAnchor, multiplier: l2wmul, constant: 0.0),
+            ]
+        }
+
 
         barConstraints = [
             barTitle.topAnchor.constraintEqualToAnchor(topAnchor),
@@ -109,13 +127,11 @@ public class BalanceBarView : UIView {
             barTitle.trailingAnchor.constraintEqualToAnchor(trailingAnchor),
             label1.leadingAnchor.constraintEqualToAnchor(leadingAnchor, constant: 10.0),
             label2.trailingAnchor.constraintEqualToAnchor(trailingAnchor, constant: -10.0),
-            label1.widthAnchor.constraintEqualToAnchor(widthAnchor, multiplier: ratio, constant: 0.0),
-            label2.widthAnchor.constraintEqualToAnchor(widthAnchor, multiplier: 1-ratio, constant: 0.0),
             barText.topAnchor.constraintEqualToAnchor(label1.topAnchor),
             barText.bottomAnchor.constraintEqualToAnchor(label1.bottomAnchor),
             barText.leadingAnchor.constraintEqualToAnchor(label1.leadingAnchor),
             barText.trailingAnchor.constraintEqualToAnchor(label2.trailingAnchor)
-        ]
+        ] + extraConstraints
         
         addConstraints(barConstraints)
     }

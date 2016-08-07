@@ -75,7 +75,7 @@ public class FastingDataModel : NSObject {
                 return
             }
 
-            log.info("WF STATE result: \(cFast) \(cNonFast)")
+            log.info("WF F/NF STATE result: \(cFast) \(cNonFast)")
             self.cumulativeWeeklyFasting = cFast
             self.cumulativeWeeklyNonFast = cNonFast
             dispatch_group_leave(group)
@@ -104,7 +104,7 @@ public class FastingDataModel : NSObject {
                 return
             }
 
-            log.info("WF TYPE result: \(fSleep) \(fAwake)")
+            log.info("WF FS/FA TYPE result: \(fSleep) \(fAwake)")
             self.fastSleep = fSleep
             self.fastAwake = fAwake
             dispatch_group_leave(group)

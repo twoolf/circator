@@ -6,6 +6,7 @@
 //  Copyright © 2015 Yanif Ahmad, Tom Woolf. All rights reserved.
 //
 
+import Darwin
 import HealthKit
 import WatchConnectivity
 import Async
@@ -103,6 +104,28 @@ public class HealthManager: NSObject, WCSessionDelegate {
         }
 
         healthKitStore.requestAuthorizationToShareTypes(HMConstants.sharedInstance.healthKitTypesToWrite, readTypes: HMConstants.sharedInstance.healthKitTypesToRead, completion: completion)
+    }
+
+    // MARK: - Helpers
+    func durationOfCalendarUnitInSeconds(aggUnit: NSCalendarUnit) -> Double {
+        switch aggUnit {
+        case NSCalendarUnit.Second:
+            return 1.0
+        case NSCalendarUnit.Minute:
+            return 60.0
+        case NSCalendarUnit.Hour:
+            return 60.0*60.0
+        case NSCalendarUnit.Day:
+            return 24.0*60.0*60.0
+        case NSCalendarUnit.WeekOfYear, NSCalendarUnit.WeekOfMonth:
+            return 7*24.0*60.0*60.0
+        case NSCalendarUnit.Month:
+            return 31*24.0*60.0*60.0
+        case NSCalendarUnit.Year:
+            return 365*24.0*60.0*60.0
+        default:
+            return DBL_MAX
+        }
     }
 
     // MARK: - Predicate construction
@@ -1197,15 +1220,14 @@ public class HealthManager: NSObject, WCSessionDelegate {
         let aggregator : (Accum, (NSDate, CircadianEvent)) -> Accum = { (acc, e) in
             let startOfInterval = acc.0
             let prevIntervalEndpointDate = acc.1
-            let eatingTimesByDay = acc.2
+            var eatingTimesByDay = acc.2
             if !startOfInterval && prevIntervalEndpointDate != nil {
                 switch e.1 {
                 case .Meal:
                     let day = prevIntervalEndpointDate.startOf(.Day)
-                    var nAcc = eatingTimesByDay
                     let nEat = (eatingTimesByDay[day] ?? 0.0) + e.0.timeIntervalSinceDate(prevIntervalEndpointDate!)
-                    nAcc.updateValue(nEat, forKey: day)
-                    return (!startOfInterval, e.0, nAcc)
+                    eatingTimesByDay.updateValue(nEat, forKey: day)
+                    return (!startOfInterval, e.0, eatingTimesByDay)
                 default:
                     return (!startOfInterval, e.0, eatingTimesByDay)
                 }
@@ -1357,8 +1379,10 @@ public class HealthManager: NSObject, WCSessionDelegate {
     // Fetches summed circadian event durations, grouped according the the given function,
     // and within the specified start and end date.
     public func fetchCircadianDurationsByGroup<G: Hashable>(
-                    startDate: NSDate, endDate: NSDate,
-                    predicate: ((NSDate, CircadianEvent) -> Bool)? = nil, groupBy: ((NSDate, CircadianEvent) -> G),
+                    tag: String, startDate: NSDate, endDate: NSDate,
+                    predicate: ((NSDate, CircadianEvent) -> Bool)? = nil,
+                    transform: (Double -> Double)? = nil,
+                    groupBy: ((NSDate, CircadianEvent) -> G),
                     completion: ([G:Double], NSError?) -> Void)
     {
         // Accumulator:
@@ -1374,9 +1398,9 @@ public class HealthManager: NSObject, WCSessionDelegate {
 
             if !startOfInterval && prevEvtDate != nil {
                 // Accumulate the interval duration for the current category.
-                var nAcc = partialAgg
-                let nDur = (partialAgg[groupKey] ?? 0.0) + e.0.timeIntervalSinceDate(prevEvtDate!)
-                nAcc.updateValue(nDur, forKey: groupKey)
+                let incr = transform == nil ? e.0.timeIntervalSinceDate(prevEvtDate!) : transform!(e.0.timeIntervalSinceDate(prevEvtDate!))
+                let nDur = (partialAgg[groupKey] ?? 0.0) + incr
+                partialAgg.updateValue(nDur, forKey: groupKey)
             }
             return (!startOfInterval, e.0, partialAgg)
         }
@@ -1402,14 +1426,31 @@ public class HealthManager: NSObject, WCSessionDelegate {
             }
         }
 
+        let unitDuration : Double = durationOfCalendarUnitInSeconds(aggUnit)
+        let truncateToAggUnit : Double -> Double = { return min($0, unitDuration) }
+
         let group : (NSDate, CircadianEvent) -> NSDate = { return $0.0.startOf(aggUnit) }
 
-        fetchCircadianDurationsByGroup(startDate, endDate: endDate, predicate: predicate, groupBy: group) {
+        fetchCircadianDurationsByGroup("FV", startDate: startDate, endDate: endDate, predicate: predicate, transform: truncateToAggUnit, groupBy: group) {
             (table, error) in
             guard error == nil else {
                 completion(variability: 0.0, error: error)
                 return
             }
+            // One pass variance calculation.
+            // State: [n, mean, M2]
+            var st: [Double] = [0.0, 0.0, 0.0]
+            table.forEach { v in
+                log.info("FV \(v.0) \(v.1)")
+                st[0] += 1
+                let delta = v.1 - st[1]
+                st[1] += delta/st[0]
+                st[2] += delta * (v.1 - st[1])
+            }
+            let variance = st[0] > 1.0 ? ( st[2] / (st[0] - 1.0) ) : 0.0
+            let stddev = variance > 0.0 ? sqrt(variance) : 0.0
+
+            /*
             // One-pass moment calculation.
             // State: [n, oldM, newM, oldS, newS]
             var st : [Double] = [0.0, 0.0, 0.0, 0.0, 0.0]
@@ -1425,6 +1466,7 @@ public class HealthManager: NSObject, WCSessionDelegate {
             }
             let variance = st[0] > 1.0 ? ( st[4] / (st[0] - 1.0) ) : 0.0
             let stddev = sqrt(variance)
+            */
             completion(variability: stddev, error: error)
         }
     }
@@ -1455,17 +1497,17 @@ public class HealthManager: NSObject, WCSessionDelegate {
     public func fetchWeeklyFastState(completion: (fast: Double, nonFast: Double, error: NSError?) -> Void) {
         let group : (NSDate, CircadianEvent) -> Int = { e in
             switch e.1 {
-            case .Meal:
+            case .Exercise, .Sleep, .Fast:
                 return 0
 
-            case .Exercise, .Sleep, .Fast:
+            case .Meal:
                 return 1
             }
         }
 
         log.info("Starting WF STATE query")
         let queryStartTime = NSDate()
-        fetchCircadianDurationsByGroup(1.weeks.ago, endDate: NSDate(), groupBy: group) { (categories, error) in
+        fetchCircadianDurationsByGroup("WFS", startDate: 1.weeks.ago, endDate: NSDate(), groupBy: group) { (categories, error) in
             log.info("Finished WF STATE query \(NSDate().timeIntervalSinceDate(queryStartTime))")
             guard error == nil else {
                 completion(fast: 0.0, nonFast: 0.0, error: error)
@@ -1499,7 +1541,7 @@ public class HealthManager: NSObject, WCSessionDelegate {
 
         log.info("Starting WF TYPE query")
         let queryStartTime = NSDate()
-        fetchCircadianDurationsByGroup(1.weeks.ago, endDate: NSDate(), predicate: predicate, groupBy: group) { (categories, error) in
+        fetchCircadianDurationsByGroup("WFT", startDate: 1.weeks.ago, endDate: NSDate(), predicate: predicate, groupBy: group) { (categories, error) in
             log.info("Finished WF TYPE query \(NSDate().timeIntervalSinceDate(queryStartTime))")
             guard error == nil else {
                 completion(fastSleep: 0.0, fastAwake: 0.0, error: error)
@@ -1534,7 +1576,7 @@ public class HealthManager: NSObject, WCSessionDelegate {
 
         log.info("Starting WEE query")
         let queryStartTime = NSDate()
-        fetchCircadianDurationsByGroup(1.weeks.ago, endDate: NSDate(), predicate: predicate, groupBy: group) { (categories, error) in
+        fetchCircadianDurationsByGroup("WEE", startDate: 1.weeks.ago, endDate: NSDate(), predicate: predicate, groupBy: group) { (categories, error) in
             log.info("Finished WEE query \(NSDate().timeIntervalSinceDate(queryStartTime))")
             guard error == nil else {
                 completion(eatingTime: 0.0, exerciseTime: 0.0, error: error)
