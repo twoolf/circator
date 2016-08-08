@@ -55,10 +55,12 @@ class ChartsViewController: UIViewController {
 
     // MARK :- Base preparation
     func updateChartsData () {
-        activityIndicator.startAnimating()
-        chartsModel.getAllDataForCurrentPeriod() {
-            self.activityIndicator.stopAnimating()
-            self.collectionView.reloadData()
+        if !activityIndicator.isAnimating() {
+            activityIndicator.startAnimating()
+            chartsModel.getAllDataForCurrentPeriod() {
+                self.activityIndicator.stopAnimating()
+                self.collectionView.reloadData()
+            }
         }
     }
 

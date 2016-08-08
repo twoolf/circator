@@ -44,7 +44,7 @@ class CorrelationChartsViewController: UIViewController, UITableViewDelegate, UI
         self.selectedPickerRows[1] = Defaults[BottomCorrelationType] != nil ? Defaults[BottomCorrelationType]! : -1
         
         self.pickerView.reloadAllComponents()
-       self.tableView.reloadData()
+        self.tableView.reloadData()
         
         scatterCh = NSBundle.mainBundle().loadNibNamed("ScatterCorrelcationCell", owner: self, options: nil).last as? ScatterCorrelcationCell
         correlCh = NSBundle.mainBundle().loadNibNamed("TwoLineCorrelcationCell", owner: self, options: nil).last as? TwoLineCorrelcationCell
@@ -73,14 +73,15 @@ class CorrelationChartsViewController: UIViewController, UITableViewDelegate, UI
 
 //MARK: VC Legacy methods: should be moved to super class
     func updateChartsData () {
-        activityIndicator.startAnimating()
-        scatterChartsModel.gettAllDataForSpecifiedType(ChartType.ScatterChart) {
-            self.lineChartsModel.gettAllDataForSpecifiedType(ChartType.LineChart) {
-                self.activityIndicator.stopAnimating()
-                self.updateChartData()
+        if !activityIndicator.isAnimating() {
+            activityIndicator.startAnimating()
+            scatterChartsModel.gettAllDataForSpecifiedType(ChartType.ScatterChart) {
+                self.lineChartsModel.gettAllDataForSpecifiedType(ChartType.LineChart) {
+                    self.activityIndicator.stopAnimating()
+                    self.updateChartData()
+                }
             }
         }
-
     }
     
     override func viewWillAppear(animated: Bool) {
