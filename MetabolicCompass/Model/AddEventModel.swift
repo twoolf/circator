@@ -21,18 +21,23 @@ enum MealType: String {
     case Snack = "Snack"
 }
 
+let defaultDuration = 1800 // Default event duration is 30 min
+
 class AddEventModel: NSObject {
     private let log = SwiftyBeaver.self
+
     var dataWasChanged = false
     var delegate: AddEventModelDelegate? = nil
     var datePickerTags:[Int] = [2]  //default date picker row
     var countDownPickerTags: [Int] = [3,4] //default count down pickecr rows for meal screen
-    var duration: NSTimeInterval = 1800.0 {//default is 30 min
+
+    var duration: NSTimeInterval = Double(defaultDuration) {
         didSet {
             dataWasChanged = true
         }
     }
-    var eventDate: NSDate = NSDate() {//default is current date
+
+    var eventDate: NSDate = floorDate(NSDate(), granularity: granularity5Mins) - defaultDuration.seconds {//default is current date
         didSet {
             dataWasChanged = true
         }
@@ -44,21 +49,13 @@ class AddEventModel: NSObject {
                 eventDate = AddEventModel.applyTimeForDate(mealUsualDate, toDate: eventDate)
             } else {//reset event date to the default state. Current date
                 //it works in case when user selected event with existing usual time and then changed meal type
-                eventDate = NSDate()
+                eventDate = floorDate(NSDate(), granularity: granularity5Mins)
             }
         }
     }
     
     var sleepStartDate: NSDate = AddEventModel.getDefaultStartSleepDate() {
         didSet {
-//            if let whenWokeUp = UserManager.sharedManager.getUsualWokeUpTime(), let goSleepDate = UserManager.sharedManager.getUsualWhenToSleepTime() {
-//                //we have default values of wokeup and go to sleep
-//                let dayHourMinuteSecond: NSCalendarUnit = [.Hour, .Minute]
-//                let difference = NSCalendar.currentCalendar().components(dayHourMinuteSecond, fromDate: goSleepDate, toDate: whenWokeUp, options: [])//calculate difference between dates in hours and minutes
-//                sleepEndDate = sleepStartDate + difference.hour.hours + difference.minute.minutes//add hours and minutes to the currently selected when go to sleep date
-//            } else {//in case when we have no saved dates for sleep just adding 1 minute to sleepStartDate
-//                sleepEndDate = sleepStartDate + 1.minutes
-//            }
             dataWasChanged = true
             self.delegate?.sleepTimeUpdated(getSleepTimeString())
         }
@@ -70,7 +67,7 @@ class AddEventModel: NSObject {
             self.delegate?.sleepTimeUpdated(getSleepTimeString())
         }
     }
-    
+
     func getSleepTimeString () -> NSAttributedString {
         let dayHourMinuteSecond: NSCalendarUnit = [.Hour, .Minute]
         let difference = NSCalendar.currentCalendar().components(dayHourMinuteSecond, fromDate: sleepStartDate, toDate: sleepEndDate, options: [])
@@ -151,14 +148,16 @@ class AddEventModel: NSObject {
             }
 
         }
-        return NSDate()//if we have no date for usual sleep then just use current date
+
+        // If we have no date for usual sleep then just use current date
+        return floorDate(NSDate(), granularity: granularity5Mins)
     }
     
     class func getDefaultWokeUpDate() -> NSDate {
         if let whenWokeUp = UserManager.sharedManager.getUsualWokeUpTime() {
             return AddEventModel.applyTimeForDate(whenWokeUp, toDate: NSDate())
         }
-        return NSDate()
+        return floorDate(NSDate(), granularity: granularity5Mins)
     }
     
     class func applyTimeForDate(fromDate: NSDate, toDate: NSDate) -> NSDate {

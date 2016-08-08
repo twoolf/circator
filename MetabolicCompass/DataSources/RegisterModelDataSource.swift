@@ -7,7 +7,7 @@
 //
 
 import UIKit
-
+import MetabolicCompassKit
 
 class RegisterModelDataSource: BaseDataSource {
 

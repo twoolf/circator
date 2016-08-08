@@ -215,9 +215,18 @@ public struct HMConstants
 {
     public static let sharedInstance = HMConstants()
 
+    // Default values if unavailable in user profile.
+    public let defaultToMetricUnits = NSLocale.currentLocale().objectForKey(NSLocaleUsesMetricSystem)!.boolValue
+
     // Metadata key for generated samples.
     public let generatedSampleKey : String = "MCLGen"
     public let generatedUploadSampleKey : String = "MCUGen"
+
+    public let healthKitTypesWithCustomMetrics: Set<String> = [
+        HKQuantityTypeIdentifierBodyMass,
+        HKQuantityTypeIdentifierHeight,
+        HKQuantityTypeIdentifierLeanBodyMass
+    ]
 
     // Note: these are in alphabetical order within each type.
     public let healthKitTypesToRead : Set<HKObjectType>? = [
@@ -238,8 +247,8 @@ public struct HMConstants
         HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierBodyMassIndex)!,
         HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierBodyTemperature)!,
         HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierDietaryBiotin)!,
-        HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierDietaryCalcium)!,
         HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierDietaryCaffeine)!,
+        HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierDietaryCalcium)!,
         HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierDietaryCarbohydrates)!,
         HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierDietaryCholesterol)!,
         HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierDietaryChloride)!,

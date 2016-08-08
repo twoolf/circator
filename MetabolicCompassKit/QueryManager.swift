@@ -49,6 +49,8 @@ public typealias Queries = [(String, Query)]
 private let QMQueriesKey  = DefaultsKey<[AnyObject]?>("QMQueriesKey")
 private let QMSelectedKey = DefaultsKey<Int>("QMSelectedKey")
 
+public let noQuerySelected = -1
+
 /**
  This class manages queries to enable more meaningful comparisons against population data.  For example, to limit the population column on the first page or the densities shown on the radar plot to individuals within a particular weight range or to a particular gender, this query filter would be used.
 
@@ -57,8 +59,9 @@ private let QMSelectedKey = DefaultsKey<Int>("QMSelectedKey")
 public class QueryManager {
     public static let sharedManager = QueryManager()
 
+    var querySelected : Int = noQuerySelected
     var queries: Queries = []
-    var querySelected : Int = -1
+    var queriedTypes: [HKObjectType]? = nil
 
     init() { load() }
 
@@ -66,7 +69,8 @@ public class QueryManager {
         let qs = Defaults[QMQueriesKey] as? [[String:AnyObject]] ?? []
         let dsQueries = deserializeQueries(qs)
         queries = dsQueries.isEmpty ? [] : dsQueries
-        querySelected = dsQueries.isEmpty ? -1 : Defaults[QMSelectedKey]
+        querySelected = dsQueries.isEmpty ? noQuerySelected : Defaults[QMSelectedKey]
+        refreshQueriedTypes()
     }
 
     func save() {
@@ -93,16 +97,29 @@ public class QueryManager {
     }
 
     public func removeQuery(index: Int) {
-        queries.removeAtIndex(index)
-        if querySelected >= index {
-            querySelected = querySelected == index ? 0 : querySelected - 1
+        if 0 <= index && index < queries.count {
+            queries.removeAtIndex(index)
+            if querySelected >= index {
+                querySelected = querySelected == index ? 0 : querySelected - 1
+            }
+            save()
+            refreshQueriedTypes()
         }
-        save()
     }
 
     public func updateQuery(index: Int, name: String, query: Query) {
-        queries[index] = (name, query)
-        saveQueries()
+        if 0 <= index && index < queries.count {
+            queries[index] = (name, query)
+            saveQueries()
+            refreshQueriedTypes()
+        }
+    }
+
+    public func clearQueries() {
+        queries.removeAll()
+        querySelected = noQuerySelected
+        save()
+        refreshQueriedTypes()
     }
 
     public func getSelectedQuery() -> Int {
@@ -110,13 +127,47 @@ public class QueryManager {
     }
 
     public func selectQuery(index: Int) {
-        querySelected = index
-        saveIndex()
+        if 0 <= index && index < queries.count {
+            querySelected = index
+            saveIndex()
+            refreshQueriedTypes()
+        }
     }
 
     public func deselectQuery() {
-        querySelected = -1
+        querySelected = noQuerySelected
         saveIndex()
+        refreshQueriedTypes()
+    }
+
+    public func getQueriedTypes() -> [HKObjectType]? {
+        return queriedTypes
+    }
+
+    public func isQueriedType(sample: HKObjectType) -> Bool {
+        return queriedTypes?.contains(sample) ?? false
+    }
+
+    private func refreshQueriedTypes() {
+        log.info("Refreshing queried types")
+        if 0 <= querySelected && querySelected < queries.count {
+            switch queries[querySelected].1 {
+            case .ConjunctiveQuery(_, _, _, let predicates):
+
+                let initial : ([HKObjectType], Set<HKObjectType>) = ([], Set())
+
+                let types = predicates.map({ $0.1.0 }).reduce(initial, combine: { (acc, elem) in
+                    if acc.1.contains(elem) { return acc }
+                    return (acc.0 + [elem], acc.1.union([elem]))
+                }).0
+
+                queriedTypes = types.isEmpty ? nil : types
+                log.info("New queried types \(queriedTypes)")
+            }
+        } else {
+            queriedTypes = nil
+            log.info("Empty queried types \(queriedTypes)")
+        }
     }
 }
 

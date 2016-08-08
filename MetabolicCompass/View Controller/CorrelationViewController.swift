@@ -280,6 +280,9 @@ class CorrelationViewController: UIViewController, ChartViewDelegate {
     }
 
     func getSampleDescriptor() -> String {
+        if sampleTypes == nil {
+            return ""
+        }
         return sampleTypes.reduce("", combine: { (acc, t) in acc + ":" + t.identifier })
     }
 

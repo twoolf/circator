@@ -6,6 +6,7 @@
 //  Copyright © 2015 Yanif Ahmad, Tom Woolf. All rights reserved.
 //
 
+import Darwin
 import HealthKit
 import WatchConnectivity
 import Async
@@ -60,6 +61,7 @@ public class HealthManager: NSObject, WCSessionDelegate {
 
     lazy var healthKitStore: HKHealthStore = HKHealthStore()
     var aggregateCache: HMAggregateCache
+    var observerQueries: [HKQuery] = []
 
     public var mostRecentSamples = [HKSampleType: [MCSample]]() {
         didSet {
@@ -92,6 +94,28 @@ public class HealthManager: NSObject, WCSessionDelegate {
         }
 
         healthKitStore.requestAuthorizationToShareTypes(HMConstants.sharedInstance.healthKitTypesToWrite, readTypes: HMConstants.sharedInstance.healthKitTypesToRead, completion: completion)
+    }
+
+    // MARK: - Helpers
+    func durationOfCalendarUnitInSeconds(aggUnit: NSCalendarUnit) -> Double {
+        switch aggUnit {
+        case NSCalendarUnit.Second:
+            return 1.0
+        case NSCalendarUnit.Minute:
+            return 60.0
+        case NSCalendarUnit.Hour:
+            return 60.0*60.0
+        case NSCalendarUnit.Day:
+            return 24.0*60.0*60.0
+        case NSCalendarUnit.WeekOfYear, NSCalendarUnit.WeekOfMonth:
+            return 7*24.0*60.0*60.0
+        case NSCalendarUnit.Month:
+            return 31*24.0*60.0*60.0
+        case NSCalendarUnit.Year:
+            return 365*24.0*60.0*60.0
+        default:
+            return DBL_MAX
+        }
     }
 
     // MARK: - Predicate construction
@@ -162,21 +186,10 @@ public class HealthManager: NSObject, WCSessionDelegate {
     }
 
 
-    // Fetches HealthKit samples of the given type for the last day, ordered by their collection date.
+    // Fetches the latest HealthKit sample of the given type.
     public func fetchMostRecentSample(sampleType: HKSampleType, completion: HMSampleBlock)
     {
-        let mostRecentPredicate: NSPredicate
-        let limit: Int
-
-        if sampleType.identifier == HKCategoryTypeIdentifierSleepAnalysis {
-            mostRecentPredicate = HKQuery.predicateForSamplesWithStartDate(1.days.ago, endDate: NSDate(), options: .None)
-            limit = noLimit
-        } else {
-            mostRecentPredicate = HKQuery.predicateForSamplesWithStartDate(NSDate.distantPast(), endDate: NSDate(), options: .None)
-            limit = 1
-        }
-
-        fetchSamplesOfType(sampleType, predicate: mostRecentPredicate, limit: limit, sortDescriptors: [dateDesc], completion: completion)
+        fetchSamplesOfType(sampleType, predicate: nil, limit: 1, sortDescriptors: [dateDesc], completion: completion)
     }
 
     // Fetches HealthKit samples for multiple types, using GCD to retrieve each type asynchronously and concurrently.
@@ -221,17 +234,14 @@ public class HealthManager: NSObject, WCSessionDelegate {
 
         types.forEach { (type) -> () in
             dispatch_group_enter(group)
-            if ( (type.identifier != HKCategoryTypeIdentifierSleepAnalysis)
-                && (type.identifier != HKCorrelationTypeIdentifierBloodPressure)
-                && (type.identifier != HKWorkoutTypeIdentifier))
-            {
-                onStatistic(type)
-            } else if (type.identifier == HKCategoryTypeIdentifierSleepAnalysis) {
+            if (type.identifier == HKCategoryTypeIdentifierSleepAnalysis) {
                 onCatOrCorr(type)
             } else if (type.identifier == HKCorrelationTypeIdentifierBloodPressure) {
                 onCatOrCorr(type)
             } else if (type.identifier == HKWorkoutTypeIdentifier) {
                 onWorkout(type)
+            } else {
+                onStatistic(type)
             }
         }
 
@@ -364,7 +374,6 @@ public class HealthManager: NSObject, WCSessionDelegate {
             completion(samples: byPeriod.sort({ (a,b) in return a.0 < b.0 }).map { $0.1 }, error: nil)
         }
     }
-
 
     // Completion handler is on main queue
     public func correlateStatisticsOfType(type: HKSampleType, withType type2: HKSampleType,
@@ -624,9 +633,21 @@ public class HealthManager: NSObject, WCSessionDelegate {
                     anchorQueryCallback(added: added, deleted: deleted, newAnchor: newAnchor, error: error, completion: completion)
                 }
             }
+            self.observerQueries.append(obsQuery)
             self.healthKitStore.executeQuery(obsQuery)
         }
         healthKitStore.enableBackgroundDeliveryForType(type, frequency: HKUpdateFrequency.Immediate, withCompletion: onBackgroundStarted)
+    }
+
+    public func stopAllBackgroundObservers(completion: (Bool, NSError?) -> Void) {
+        healthKitStore.disableAllBackgroundDeliveryWithCompletion { (success, error) in
+            if !(success && error == nil) { log.error(error) }
+            else {
+                self.observerQueries.forEach { self.healthKitStore.stopQuery($0) }
+                self.observerQueries.removeAll()
+            }
+            completion(success, error)
+        }
     }
 
     // MARK: - Chart queries

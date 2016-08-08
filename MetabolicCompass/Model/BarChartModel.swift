@@ -212,57 +212,159 @@ class BarChartModel : NSObject {
         let chartData = ScatterChartData(xVals: xVals, dataSets: [dataSet1, dataSet2])
         return chartData
     }
+    
+    func scatterChartDataWithMultipleEntries(xVals: [String], yVals:[[ChartDataEntry]], types: [DataSetType?]) -> ScatterChartData {
+        
+        assert(xVals.count != yVals.count, "Data input is invalid, x and y value arrays count should be equal")
 
-    // MARK :- Get all data for type
+        var dataSets = [MCScatterChartDataSet]()
+        
+        var i = 0
+        while i <= yVals.count {
+            let dataSet1 = MCScatterChartDataSet(yVals: yVals[i], label: "")
+            dataSet1.colors = i % 2 == 0 ? [UIColor.whiteColor()] : [UIColor.redColor()]
+            if types[i] != nil { dataSet1.dataSetType = types[i]! }
+            dataSet1.drawValuesEnabled = false
+            dataSets.append(dataSet1)
+            i += 1
+        }
+        
+        let chartData = ScatterChartData(xVals: xVals, dataSets: dataSets)
+        return chartData
+    }
+    //TODO: Rost remove first empayt x value + round x values
+    func scatterChartDataWithMultipleDataSets(xVals: [String?], dataSets:[IChartDataSet]) -> ScatterChartData? {
+        
+        var xValues : [String] = Array()
+        
+        let finalDataSet = dataSets[0]
 
-    func getAllDataForCurrentPeriod(completion: () -> Void) {
-        let log = SwiftyBeaver.self
-        let group = dispatch_group_create()
-        for qType in PreviewManager.chartsSampleTypes {
-            dispatch_group_enter(group)
-
-            if #available(iOS 9.3, *) {
-                if qType.identifier == HKQuantityTypeIdentifierAppleExerciseTime {
-                    dispatch_group_leave(group)
-                    continue
-                }
-            }
-
-            let type = qType.identifier == HKCorrelationTypeIdentifierBloodPressure ? HKQuantityTypeIdentifierBloodPressureSystolic : qType.identifier
-            let chartType = chartTypeForQuantityTypeIdentifier(type)
-            let key = type + "\(self.rangeType.rawValue)"
-
-            log.warning("Getting chart data for \(type)")
-
-            if type == HKQuantityTypeIdentifierHeartRate || type == HKQuantityTypeIdentifierUVExposure {
-                // We should get max and min values. because for this type we are using scatter chart
-                HealthManager.sharedManager.getChartDataForQuantity(qType, inPeriod: self.rangeType) { obj in
-                    let values = obj as! [[Double]]
-                    if values.count > 0 {
-                        self.typesChartData[key] = self.getChartDataForRange(self.rangeType, type: chartType, values: values[0], minValues: values[1])
-                    }
-                    dispatch_group_leave(group)
-                }
-            } else if type == HKQuantityTypeIdentifierBloodPressureSystolic {
-                // We should also get data for HKQuantityTypeIdentifierBloodPressureDiastolic
-                HealthManager.sharedManager.getChartDataForQuantity(HKObjectType.quantityTypeForIdentifier(type)!, inPeriod: self.rangeType) { obj in
-                    let values = obj as! [[Double]]
-                    if values.count > 0 {
-                        self.typesChartData[key] = self.getBloodPressureChartData(self.rangeType,
-                                                                                  systolicMax: values[0], systolicMin: values[1],
-                                                                                  diastolicMax: values[2], diastolicMin: values[3])
-                    }
-                    dispatch_group_leave(group)
-                }
-            } else {
-                HealthManager.sharedManager.getChartDataForQuantity(qType, inPeriod: self.rangeType) { obj in
-                    let values = obj as! [Double]
-                    self.typesChartData[key] = self.getChartDataForRange(self.rangeType, type: chartType, values: values, minValues: nil)
-                    dispatch_group_leave(group)
+        if let dSet = dataSets[1] as? ChartDataSet {
+            for yValye in dSet.yVals {
+                if (dataSets[0].yValForXIndex(yValye.xIndex) != Double.NaN){
+                    xValues.append("\(yValye.value)")
                 }
             }
         }
-        dispatch_group_notify(group, dispatch_get_main_queue()) {
+        
+        if let dSet = dataSets[0] as? ChartDataSet {
+            for yValye in dSet.yVals {
+                if (dataSets[1].yValForXIndex(yValye.xIndex) == Double.NaN){
+                    finalDataSet.removeEntry(dSet.entryForXIndex(yValye.xIndex)!)
+                }
+            }
+        }
+        
+        xValues = xValues.sort()
+        
+        var newValues : [String] = Array()
+        
+        if (xValues.count > 1) {
+            
+            let minValue = Double(xValues.first!)
+            let maxValue = Double(xValues.last!)
+            
+            let koef = (maxValue! - minValue!)/7
+            
+            var i = 0
+            while i < 7 {
+                var value = minValue! + Double(i) * koef
+                value = value > 1 ? abs(value) : value
+                if (value > 1) {
+                    newValues.append("\(Int(value))")
+                }
+                else {
+                    newValues.append("\(value)")
+                }
+                i += 1
+            }
+        }
+        
+        let chartData = ScatterChartData(xVals: newValues, dataSets: [finalDataSet])
+        
+        return chartData
+    }
+    
+    func lineChartWithMultipleDataSets(xVals: [String?], dataSets:[IChartDataSet]) -> LineChartData? {
+        
+        var i = 0
+        for dataSet1 in dataSets {
+            if let dSet = dataSet1 as? ChartBaseDataSet {
+                dSet.colors = i % 2 == 0 ? [UIColor.whiteColor()] : [UIColor.redColor()]
+            }
+            i += 1
+        }
+        
+        let chartData = LineChartData(xVals: xVals, dataSets: dataSets)
+        return chartData
+    }
+
+    // MARK :- Get all data for type
+    
+    var _getAllSamplesDispatchGroup : dispatch_group_t!
+    
+    func getAllDataForCurrentPeriodForSamlpe(qType : HKSampleType,  _chartType: ChartType?) {
+        
+        dispatch_group_enter(_getAllSamplesDispatchGroup)
+        
+        if #available(iOS 9.3, *) {
+            if qType.identifier == HKQuantityTypeIdentifierAppleExerciseTime {
+                dispatch_group_leave(_getAllSamplesDispatchGroup)
+                return
+            }
+        }
+        
+        let type = qType.identifier == HKCorrelationTypeIdentifierBloodPressure ? HKQuantityTypeIdentifierBloodPressureSystolic : qType.identifier
+        let chartType = _chartType == nil ? chartTypeForQuantityTypeIdentifier(type) : _chartType
+        let key = type + "\(self.rangeType.rawValue)"
+        
+        log.warning("Getting chart data for \(type)")
+        
+        if type == HKQuantityTypeIdentifierHeartRate || type == HKQuantityTypeIdentifierUVExposure {
+            // We should get max and min values. because for this type we are using scatter chart
+            HealthManager.sharedManager.getChartDataForQuantity(qType, inPeriod: self.rangeType) { obj in
+                let values = obj as! [[Double]]
+                if values.count > 0 {
+                    self.typesChartData[key] = self.getChartDataForRange(self.rangeType, type: chartType!, values: values[0], minValues: values[1])
+                }
+                dispatch_group_leave(self._getAllSamplesDispatchGroup)
+            }
+        } else if type == HKQuantityTypeIdentifierBloodPressureSystolic {
+            // We should also get data for HKQuantityTypeIdentifierBloodPressureDiastolic
+            HealthManager.sharedManager.getChartDataForQuantity(HKObjectType.quantityTypeForIdentifier(type)!, inPeriod: self.rangeType) { obj in
+                let values = obj as! [[Double]]
+                if values.count > 0 {
+                    self.typesChartData[key] = self.getBloodPressureChartData(self.rangeType,
+                                                                              systolicMax: values[0], systolicMin: values[1],
+                                                                              diastolicMax: values[2], diastolicMin: values[3])
+                }
+                dispatch_group_leave(self._getAllSamplesDispatchGroup)
+            }
+        } else {
+            HealthManager.sharedManager.getChartDataForQuantity(qType, inPeriod: self.rangeType) { obj in
+                let values = obj as! [Double]
+                self.typesChartData[key] = self.getChartDataForRange(self.rangeType, type: chartType!, values: values, minValues: nil)
+                dispatch_group_leave(self._getAllSamplesDispatchGroup)
+            }
+        }
+    }
+    
+    func gettAllDataForSpecifiedType(chartType: ChartType, completion: () -> Void) {
+        _getAllSamplesDispatchGroup = dispatch_group_create()
+        for qType in PreviewManager.chartsSampleTypes {
+            getAllDataForCurrentPeriodForSamlpe(qType, _chartType: chartType)
+        }
+        dispatch_group_notify(_getAllSamplesDispatchGroup, dispatch_get_main_queue()) {
+            completion()
+        }
+    }
+
+    func getAllDataForCurrentPeriod(completion: () -> Void) {
+        _getAllSamplesDispatchGroup = dispatch_group_create()
+        for qType in PreviewManager.chartsSampleTypes {
+            getAllDataForCurrentPeriodForSamlpe(qType, _chartType: nil)
+        }
+        dispatch_group_notify(_getAllSamplesDispatchGroup, dispatch_get_main_queue()) {
             completion()
         }
     }

@@ -107,7 +107,11 @@ public class FastingDataModel : NSObject {
                 return
             }
 
+<<<<<<< HEAD
             self.log.info("WF TYPE result: \(fSleep) \(fAwake)")
+=======
+            log.info("WF FS/FA TYPE result: \(fSleep) \(fAwake)")
+>>>>>>> ya/develop
             self.fastSleep = fSleep
             self.fastAwake = fAwake
             dispatch_group_leave(group)

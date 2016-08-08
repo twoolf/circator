@@ -12,18 +12,34 @@ import HealthKit
 import SwiftyUserDefaults
 import Async
 
-class DashboardFilterController: UIViewController, UITableViewDelegate, UITableViewDataSource {
+class DashboardFilterController: UIViewController, UITableViewDelegate, UITableViewDataSource, UIGestureRecognizerDelegate {
     
     @IBOutlet weak var tableView: UITableView!
-    private var delselectAll = false
-    private var selectedRows: [String: Int] = [:]
+    private let headerIdentifier = "DashboardFilterHeaderView"
+
+    private var deselectAll = false
+
     private let selectedRowsDefaultsKey = "\(UserManager.sharedManager.userId).selectedFilters"
-    
+    private let sectionVisibilityDefaultsKey = "\(UserManager.sharedManager.userId).sectionsVisible"
+
+    // A hashtable specifying which row is selected in each section.
+    private var selectedRows: [String:AnyObject] = [:]
+
+    private var sectionVisibility: [Bool] = []
+    private var sectionGestureRecognizers: [UITapGestureRecognizer?] = []
+
     var data: [DashboardFilterItem] = [] {
         didSet {
+            if sectionVisibility.count != self.data.count {
+                sectionVisibility = [Bool](count: self.data.count, repeatedValue: true)
+            }
+            if sectionGestureRecognizers.count != self.data.count {
+                sectionGestureRecognizers = [UITapGestureRecognizer?](count: self.data.count, repeatedValue: nil)
+            }
             self.tableView.reloadData()
         }
     }
+
     //MARK: View life circle
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -35,9 +51,8 @@ class DashboardFilterController: UIViewController, UITableViewDelegate, UITableV
         self.navigationItem.leftBarButtonItem = leftButton
         self.navigationItem.rightBarButtonItem = rightBarButtonItem
         
-        if let userSelectedRows = Defaults.objectForKey(selectedRowsDefaultsKey) as? NSDictionary {
-            selectedRows = userSelectedRows as! [String : Int]
-        }
+        loadSettings()
+        registerViews()
         self.tableView.delegate = self;
         self.tableView.dataSource = self;
         self.navigationController?.navigationBar.barStyle = .Black;
@@ -47,20 +62,44 @@ class DashboardFilterController: UIViewController, UITableViewDelegate, UITableV
     
     override func viewWillDisappear(animated: Bool) {
         super.viewWillDisappear(animated)
+        saveSettings()
+    }
+
+    func registerViews () {
+        let headerNib = UINib(nibName: "DashboardFilterHeaderView", bundle: nil)
+        tableView.registerNib(headerNib, forHeaderFooterViewReuseIdentifier:  headerIdentifier)
+    }
+
+    func loadSettings() {
+        if let userSelectedRows = Defaults.objectForKey(selectedRowsDefaultsKey) as? [String: AnyObject] {
+            selectedRows = userSelectedRows
+        } else {
+            log.warning("Clearing defaults for \(selectedRowsDefaultsKey)")
+            Defaults.remove(selectedRowsDefaultsKey)
+        }
+
+        if let userSectionsVisible = Defaults.objectForKey(sectionVisibilityDefaultsKey) as? [Bool] {
+            sectionVisibility = userSectionsVisible
+        } else {
+            log.warning("Clearing defaults for \(sectionVisibilityDefaultsKey)")
+            Defaults.remove(sectionVisibilityDefaultsKey)
+        }
+    }
+
+    func saveSettings() {
         Defaults.setObject(selectedRows, forKey: selectedRowsDefaultsKey)
+        Defaults.setObject(sectionVisibility, forKey: sectionVisibilityDefaultsKey)
         Defaults.synchronize()
     }
-    
+
     //MARK: Actions
     
     func clearAll () {
-        delselectAll = true
+        deselectAll = true
         selectedRows.removeAll()
         tableView.reloadData()
-        Async.main(after: 0.5) { 
-           self.delselectAll = false
-        }
-        //TODO: Remove all data from Query manager
+        refreshQuery()
+        Async.main(after: 2.0) { self.deselectAll = false }
     }
     
     func closeAction() {
@@ -75,22 +114,24 @@ class DashboardFilterController: UIViewController, UITableViewDelegate, UITableV
     }
 
     func tableView(tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return data[section].items.count
+        if sectionVisibility[section] {
+            return data[section].items.count
+        }
+        return 0
     }
 
     func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell {
-
         let cell  = tableView.dequeueReusableCellWithIdentifier(dashboardFilterCellIdentifier, forIndexPath: indexPath) as! DashboardFilterCell
         let item = self.data[indexPath.section].items[indexPath.row]
-        if delselectAll {
+        if deselectAll {
             item.selected = false
             if cell.checkBoxButton.selected {
                 cell.didPressButton(self)
             }
         }
         cell.data = item
-        if let _ = selectedRows["\(indexPath.section).\(indexPath.row)"] {
-            if !cell.checkBoxButton.selected {//pervent deselect
+        if let selectedRowForSection = selectedRows["\(indexPath.section)"] as? Int {
+            if selectedRowForSection == indexPath.row && !cell.checkBoxButton.selected { // prevent deselect
                 cell.didPressButton(self)
             }
         }
@@ -99,9 +140,24 @@ class DashboardFilterController: UIViewController, UITableViewDelegate, UITableV
     
     //MARK: UITableViewDelegate
     func tableView(tableView: UITableView, viewForHeaderInSection section: Int) -> UIView? {
-        let cell = tableView.dequeueReusableCellWithIdentifier("DashboardHeaderCell") as! DashboardFilterHeaderCell
-        cell.captionLabel.text = self.data[section].title
-        return cell;
+        let view = tableView.dequeueReusableHeaderFooterViewWithIdentifier(headerIdentifier) as! DashboardFilterHeaderView
+        view.captionLabel.text = self.data[section].title
+
+        if sectionGestureRecognizers[section] == nil {
+            let tapRecognizer = UITapGestureRecognizer(target: self, action: #selector(toggleSectionVisibility))
+            tapRecognizer.delegate = self
+            tapRecognizer.numberOfTouchesRequired = 1
+            tapRecognizer.numberOfTapsRequired = 2
+            sectionGestureRecognizers[section] = tapRecognizer
+            view.tag = section
+            view.addGestureRecognizer(tapRecognizer)
+        } else {
+            view.gestureRecognizers?.forEach { view.removeGestureRecognizer($0) }
+            view.tag = section
+            view.addGestureRecognizer(sectionGestureRecognizers[section]!)
+        }
+
+        return view;
     }
 
     func tableView(tableView: UITableView, estimatedHeightForHeaderInSection section: Int) -> CGFloat {
@@ -114,249 +170,148 @@ class DashboardFilterController: UIViewController, UITableViewDelegate, UITableV
 
     func tableView(tableView: UITableView, didSelectRowAtIndexPath indexPath: NSIndexPath) {
         let cell = tableView.cellForRowAtIndexPath(indexPath) as? DashboardFilterCell
-        let filterItem = self.data[indexPath.section]
         let filterItems = self.data[indexPath.section].items
         let selectedItem = filterItems[indexPath.row]//See DashboardFilterCellData
         
-        if selectedItem.selected {//item alerady selected so just remove it and deselect
+        if selectedItem.selected { // item already selected so just remove it and deselect
             cell?.didPressButton(self)
-            let selectedKey = String("\(indexPath.section).\(indexPath.row)")
-            removeItemForKey(selectedKey)
-            return
+            deselectRow(indexPath.section, row: indexPath.row, refresh: true)
         } else {
+            // Deselect all other items in this section. This enforces mutually exclusive filters.
             for (index, item) in filterItems.enumerate() {
                 if (item.selected && indexPath.row != index) {
                     let currentlySelectedCell = tableView.cellForRowAtIndexPath(NSIndexPath(forRow: index, inSection: indexPath.section)) as? DashboardFilterCell
                     currentlySelectedCell?.didPressButton(self)
-                    let selectedKey = String("\(indexPath.section).\(index)")
-                    removeItemForKey(selectedKey)
+                    deselectRow(indexPath.section, row: index)
                 }
             }
+
+            selectRow(indexPath.section, row: indexPath.row)
+            cell?.didPressButton(self)//set cell as selected
         }
-        if let predicate = selectedItem.predicate {//get predicate based of selected item
-            selectedRows["\(indexPath.section).\(indexPath.row)"] = QueryManager.sharedManager.getQueries().count//add item to selected rows and it's index
-            let query = Query.ConjunctiveQuery(nil, nil, nil, [predicate])//cereate query
-            QueryManager.sharedManager.addQuery("\(filterItem.title)", query: query)//add query to query manager
-        }
-        cell?.didPressButton(self)//set cell as selected
     }
     
-    //MARK: Help
-    func removeItemForKey(key: String) {
-        if let queryIndex = selectedRows[key] {//removing query at index
-            QueryManager.sharedManager.removeQuery(queryIndex)
+    // MARK: Helpers
+    func toggleSectionVisibility(sender: UITapGestureRecognizer) {
+        if let section = sender.view?.tag {
+            sectionVisibility[section] = !sectionVisibility[section]
+            self.tableView.reloadData()
         }
-        selectedRows.removeValueForKey(key)
     }
-    
+
+    func selectRow(section: Int, row: Int) {
+        selectedRows.updateValue(row, forKey: "\(section)")
+        refreshQuery()
+    }
+
+    func deselectRow(section: Int, row: Int, refresh: Bool = false) {
+        let key = "\(section)"
+        if let selectedRowForSection = selectedRows[key] as? Int {
+            if selectedRowForSection == row {
+                selectedRows.removeValueForKey(key)
+                if refresh { refreshQuery() }
+            }
+        }
+    }
+
+    func refreshQuery() {
+        var conjunctDescriptions: [String] = []
+        var currentConjuncts : [MCQueryPredicate] = []
+        for (key, value) in selectedRows {
+            if let section = Int(key), row = value as? Int {
+                if let predicate = self.data[section].items[row].predicate {
+                    let ctitle = self.data[section].items[row].title
+                    conjunctDescriptions.append(ctitle)
+                    currentConjuncts.append(predicate)
+                } else {
+                    log.error("No predicate found for filter at index: \(section) \(row)")
+                }
+            } else {
+                log.error("Invalid key/value pair as filter index: \(key) \(value)")
+            }
+        }
+
+        QueryManager.sharedManager.clearQueries()
+
+        if !currentConjuncts.isEmpty {
+            let title = conjunctDescriptions.joinWithSeparator(" and ")
+            let query = Query.ConjunctiveQuery(nil, nil, nil, currentConjuncts)
+            QueryManager.sharedManager.addQuery(title, query: query)
+            QueryManager.sharedManager.selectQuery(0)
+        }
+    }
+
     func addData () {
-        self.data = [DashboardFilterItem(title: "Weight",
-                        items: [DashboardFilterCellData(title: "under 90",
-                                                        hkType: HKQuantityTypeIdentifierBodyMass, aggrType: Aggregate.AggMax, lowerBound: 0, upperBound: 90),
-                                DashboardFilterCellData(title: "between 90-140",
-                                                        hkType: HKQuantityTypeIdentifierBodyMass, aggrType: Aggregate.AggAvg, lowerBound: 90, upperBound: 140),
-                                DashboardFilterCellData(title: "between 140-200",
-                                                        hkType: HKQuantityTypeIdentifierBodyMass, aggrType: Aggregate.AggAvg, lowerBound: 140, upperBound: 200),
-                                DashboardFilterCellData(title: "more than 200",
-                                                        hkType: HKQuantityTypeIdentifierBodyMass, aggrType: Aggregate.AggMin, lowerBound: 200, upperBound: Int.max)]),
-                     
-                     DashboardFilterItem(title: "Body Mass Index",
-                        items: [DashboardFilterCellData(title: "under 18 (underweight)",
-                            hkType: HKQuantityTypeIdentifierBodyMassIndex, aggrType: Aggregate.AggMax, lowerBound: 0, upperBound: 18),
-                            DashboardFilterCellData(title: "between 18-25 (standard)",
-                                hkType: HKQuantityTypeIdentifierBodyMassIndex, aggrType: Aggregate.AggAvg, lowerBound: 18, upperBound: 25),
-                            DashboardFilterCellData(title: "between 25-30 (overweight)",
-                                hkType: HKQuantityTypeIdentifierBodyMassIndex, aggrType: Aggregate.AggAvg, lowerBound: 25, upperBound: 30),
-                            DashboardFilterCellData(title: "more than 30 (obese)",
-                                hkType: HKQuantityTypeIdentifierBodyMassIndex, aggrType: Aggregate.AggMin, lowerBound: 30, upperBound: Int.max)]),
-                     
-                     DashboardFilterItem(title: "Dietary energy",
-                        items: [DashboardFilterCellData(title: "less than 1000",
-                            hkType: HKQuantityTypeIdentifierDietaryEnergyConsumed, aggrType: Aggregate.AggMax, lowerBound: 0, upperBound: 1000),
-                            DashboardFilterCellData(title: "between 1000-2000",
-                                hkType: HKQuantityTypeIdentifierDietaryEnergyConsumed, aggrType: Aggregate.AggAvg, lowerBound: 1000, upperBound: 2000),
-                            DashboardFilterCellData(title: "between 2000-3500",
-                                hkType: HKQuantityTypeIdentifierDietaryEnergyConsumed, aggrType: Aggregate.AggAvg, lowerBound: 2000, upperBound: 3500),
-                            DashboardFilterCellData(title: "more than 3500",
-                                hkType: HKQuantityTypeIdentifierDietaryEnergyConsumed, aggrType: Aggregate.AggMin, lowerBound: 3500, upperBound: Int.max)]),
-                     
-                     DashboardFilterItem(title: "Heartrate",
-                        items: [DashboardFilterCellData(title: "under 50",
-                            hkType: HKQuantityTypeIdentifierHeartRate, aggrType: Aggregate.AggMax, lowerBound: 0, upperBound: 50),
-                            DashboardFilterCellData(title: "between 50-65",
-                                hkType: HKQuantityTypeIdentifierHeartRate, aggrType: Aggregate.AggAvg, lowerBound: 50, upperBound: 65),
-                            DashboardFilterCellData(title: "between 65-80",
-                                hkType: HKQuantityTypeIdentifierHeartRate, aggrType: Aggregate.AggAvg, lowerBound: 65, upperBound: 80),
-                            DashboardFilterCellData(title: "greater than 80",
-                                hkType: HKQuantityTypeIdentifierHeartRate, aggrType: Aggregate.AggMin, lowerBound: 80, upperBound: Int.max)]),
-                     
-                     DashboardFilterItem(title: "Step Count",
-                        items: [DashboardFilterCellData(title: "less than 1000",
-                            hkType: HKQuantityTypeIdentifierStepCount, aggrType: Aggregate.AggMax, lowerBound: 0, upperBound: 1000),
-                            DashboardFilterCellData(title: "between 1000-5000",
-                                hkType: HKQuantityTypeIdentifierStepCount, aggrType: Aggregate.AggAvg, lowerBound: 1000, upperBound: 5000),
-                            DashboardFilterCellData(title: "between 5000-10000",
-                                hkType: HKQuantityTypeIdentifierStepCount, aggrType: Aggregate.AggAvg, lowerBound: 5000, upperBound: 10000),
-                            DashboardFilterCellData(title: "more than 10000",
-                                hkType: HKQuantityTypeIdentifierStepCount, aggrType: Aggregate.AggMax, lowerBound: 10000, upperBound: Int.max)]),
-                     
-                     DashboardFilterItem(title: "Active Energy",
-                        items: [DashboardFilterCellData(title: "less than 500",
-                            hkType: HKQuantityTypeIdentifierActiveEnergyBurned, aggrType: Aggregate.AggMax, lowerBound: 0, upperBound: 500),
-                            DashboardFilterCellData(title: "between 500-1500",
-                                hkType: HKQuantityTypeIdentifierActiveEnergyBurned, aggrType: Aggregate.AggAvg, lowerBound: 500, upperBound: 1500),
-                            DashboardFilterCellData(title: "between 1500-3500",
-                                hkType: HKQuantityTypeIdentifierActiveEnergyBurned, aggrType: Aggregate.AggAvg, lowerBound: 1500, upperBound: 3500),
-                            DashboardFilterCellData(title: "more than 3500",
-                                hkType: HKQuantityTypeIdentifierActiveEnergyBurned, aggrType: Aggregate.AggMin, lowerBound: 3500, upperBound: Int.max)]),
-                     
-                     DashboardFilterItem(title: "Resting Energy",
-                        items: [DashboardFilterCellData(title: "less than 1000",
-                            hkType: HKQuantityTypeIdentifierBasalEnergyBurned, aggrType: Aggregate.AggMax, lowerBound: 0, upperBound: 1000),
-                            DashboardFilterCellData(title: "between 1000-2000",
-                                hkType: HKQuantityTypeIdentifierBasalEnergyBurned, aggrType: Aggregate.AggAvg, lowerBound: 1000, upperBound: 2000),
-                            DashboardFilterCellData(title: "between 2000-3000",
-                                hkType: HKQuantityTypeIdentifierBasalEnergyBurned, aggrType: Aggregate.AggMax, lowerBound: 2000, upperBound: 3000),
-                            DashboardFilterCellData(title: "more than 3000",
-                                hkType: HKQuantityTypeIdentifierBasalEnergyBurned, aggrType: Aggregate.AggMin, lowerBound: 3000, upperBound: Int.max)]),
-                     
-                     DashboardFilterItem(title: "Sleep",
-                        items: [DashboardFilterCellData(title: "less than 5",
-                            hkType: HKCategoryTypeIdentifierSleepAnalysis, aggrType: Aggregate.AggMax, lowerBound: 0, upperBound: 5),
-                            DashboardFilterCellData(title: "between 5-7",
-                                hkType: HKCategoryTypeIdentifierSleepAnalysis, aggrType: Aggregate.AggAvg, lowerBound: 5, upperBound: 7),
-                            DashboardFilterCellData(title: "between 7-9",
-                                hkType: HKCategoryTypeIdentifierSleepAnalysis, aggrType: Aggregate.AggAvg, lowerBound: 7, upperBound: 9),
-                            DashboardFilterCellData(title: "more than 9",
-                                hkType: HKCategoryTypeIdentifierSleepAnalysis, aggrType: Aggregate.AggMin, lowerBound: 9, upperBound: Int.max)]),
-                     
-                     DashboardFilterItem(title: "Protein",
-                        items: [DashboardFilterCellData(title: "less than 40",
-                            hkType: HKQuantityTypeIdentifierDietaryProtein, aggrType: Aggregate.AggMax, lowerBound: 0, upperBound: 40),
-                            DashboardFilterCellData(title: "between 40-80",
-                                hkType: HKQuantityTypeIdentifierDietaryProtein, aggrType: Aggregate.AggAvg, lowerBound: 40, upperBound: 80),
-                            DashboardFilterCellData(title: "between 80-120",
-                                hkType: HKQuantityTypeIdentifierDietaryProtein, aggrType: Aggregate.AggAvg, lowerBound: 80, upperBound: 120),
-                            DashboardFilterCellData(title: "more than 120",
-                                hkType: HKQuantityTypeIdentifierDietaryProtein, aggrType: Aggregate.AggMin, lowerBound: 120, upperBound: Int.max)]),
-                     
-                     DashboardFilterItem(title: "Fat",
-                        items: [DashboardFilterCellData(title: "under 50",
-                            hkType: HKQuantityTypeIdentifierDietaryFatTotal, aggrType: Aggregate.AggMax, lowerBound: 0, upperBound: 50),
-                            DashboardFilterCellData(title: "between 50-75",
-                                hkType: HKQuantityTypeIdentifierDietaryFatTotal, aggrType: Aggregate.AggAvg, lowerBound: 50, upperBound: 75),
-                            DashboardFilterCellData(title: "between 75-100",
-                                hkType: HKQuantityTypeIdentifierDietaryFatTotal, aggrType: Aggregate.AggAvg, lowerBound: 75, upperBound: 100),
-                            DashboardFilterCellData(title: "more than 100",
-                                hkType: HKQuantityTypeIdentifierDietaryFatTotal, aggrType: Aggregate.AggMin, lowerBound: 100, upperBound: Int.max)]),
-                     
-                     DashboardFilterItem(title: "Carbohydrates",
-                        items: [DashboardFilterCellData(title: "less than 200",
-                            hkType: HKQuantityTypeIdentifierDietaryCarbohydrates, aggrType: Aggregate.AggMax, lowerBound: 0, upperBound: 200),
-                            DashboardFilterCellData(title: "between 200-300",
-                                hkType: HKQuantityTypeIdentifierDietaryCarbohydrates, aggrType: Aggregate.AggMax, lowerBound: 200, upperBound: 300),
-                            DashboardFilterCellData(title: "between 300-400",
-                                hkType: HKQuantityTypeIdentifierDietaryCarbohydrates, aggrType: Aggregate.AggMax, lowerBound: 300, upperBound: 400),
-                            DashboardFilterCellData(title: "more than 400",
-                                hkType: HKQuantityTypeIdentifierDietaryCarbohydrates, aggrType: Aggregate.AggMin, lowerBound: 400, upperBound: Int.max)]),
-                     
-                     DashboardFilterItem(title: "Fiber",
-                        items: [DashboardFilterCellData(title: "under 10",
-                            hkType: HKQuantityTypeIdentifierDietaryFiber, aggrType: Aggregate.AggMax, lowerBound: 0, upperBound: 10),
-                            DashboardFilterCellData(title: "between 10-15",
-                                hkType: HKQuantityTypeIdentifierDietaryFiber, aggrType: Aggregate.AggAvg, lowerBound: 10, upperBound: 15),
-                            DashboardFilterCellData(title: "between 15-20",
-                                hkType: HKQuantityTypeIdentifierDietaryFiber, aggrType: Aggregate.AggAvg, lowerBound: 15, upperBound: 20),
-                            DashboardFilterCellData(title: "more than 20",
-                                hkType: HKQuantityTypeIdentifierDietaryFiber, aggrType: Aggregate.AggMin, lowerBound: 20, upperBound: Int.max)]),
-                     
-                     DashboardFilterItem(title: "Sugar",
-                        items: [DashboardFilterCellData(title: "less than 50",
-                            hkType: HKQuantityTypeIdentifierDietarySugar, aggrType: Aggregate.AggMax, lowerBound: 0, upperBound: 50),
-                            DashboardFilterCellData(title: "between 50-110",
-                                hkType: HKQuantityTypeIdentifierDietarySugar, aggrType: Aggregate.AggAvg, lowerBound: 50, upperBound: 110),
-                            DashboardFilterCellData(title: "between 110-180",
-                                hkType: HKQuantityTypeIdentifierDietarySugar, aggrType: Aggregate.AggAvg, lowerBound: 110, upperBound: 180),
-                            DashboardFilterCellData(title: "more than 180",
-                                hkType: HKQuantityTypeIdentifierDietarySugar, aggrType: Aggregate.AggMin, lowerBound: 180, upperBound: Int.max)]),
-                     
-                     DashboardFilterItem(title: "Salt",
-                        items: [DashboardFilterCellData(title: "less than 1000",
-                            hkType: HKQuantityTypeIdentifierDietarySodium, aggrType: Aggregate.AggMax, lowerBound: 0, upperBound: 1000),
-                            DashboardFilterCellData(title: "between 1000-3000",
-                                hkType: HKQuantityTypeIdentifierDietarySodium, aggrType: Aggregate.AggAvg, lowerBound: 1000, upperBound: 3000),
-                            DashboardFilterCellData(title: "between 3000-5000",
-                                hkType: HKQuantityTypeIdentifierDietarySodium, aggrType: Aggregate.AggAvg, lowerBound: 3000, upperBound: 5000),
-                            DashboardFilterCellData(title: "more than 5000",
-                                hkType: HKQuantityTypeIdentifierDietarySodium, aggrType: Aggregate.AggMax, lowerBound: 5000, upperBound: Int.max)]),
-                     
-                     DashboardFilterItem(title: "Caffeine",
-                        items: [DashboardFilterCellData(title: "less than 50",
-                            hkType: HKQuantityTypeIdentifierDietaryCaffeine, aggrType: Aggregate.AggMax, lowerBound: 0, upperBound: 50),
-                            DashboardFilterCellData(title: "between 50-150",
-                                hkType: HKQuantityTypeIdentifierDietaryCaffeine, aggrType: Aggregate.AggAvg, lowerBound: 50, upperBound: 150),
-                            DashboardFilterCellData(title: "between 150-300",
-                                hkType: HKQuantityTypeIdentifierDietaryCaffeine, aggrType: Aggregate.AggAvg, lowerBound: 150, upperBound: 300),
-                            DashboardFilterCellData(title: "more than 300",
-                                hkType: HKQuantityTypeIdentifierDietaryCaffeine, aggrType: Aggregate.AggMin, lowerBound: 300, upperBound: Int.max)]),
-                     
-                     DashboardFilterItem(title: "Cholesterol",
-                        items: [DashboardFilterCellData(title: "less than 150",
-                            hkType: HKQuantityTypeIdentifierDietaryCholesterol, aggrType: Aggregate.AggMax, lowerBound: 0, upperBound: 150),
-                            DashboardFilterCellData(title: "between 150-300",
-                                hkType: HKQuantityTypeIdentifierDietaryCholesterol, aggrType: Aggregate.AggAvg, lowerBound: 150, upperBound: 300),
-                            DashboardFilterCellData(title: "between 300-450",
-                                hkType: HKQuantityTypeIdentifierDietaryCholesterol, aggrType: Aggregate.AggAvg, lowerBound: 300, upperBound: 450),
-                            DashboardFilterCellData(title: "more than 450",
-                                hkType: HKQuantityTypeIdentifierDietaryCholesterol, aggrType: Aggregate.AggMin, lowerBound: 450, upperBound: Int.max)]),
-                     
-                     DashboardFilterItem(title: "Polyunsaturated Fat",
-                        items: [DashboardFilterCellData(title: "less than 10", hkType: HKQuantityTypeIdentifierDietaryFatPolyunsaturated, aggrType: Aggregate.AggMax, lowerBound: 0, upperBound: 10),
-                            DashboardFilterCellData(title: "between 10-20", hkType: HKQuantityTypeIdentifierDietaryFatPolyunsaturated, aggrType: Aggregate.AggAvg, lowerBound: 10, upperBound: 20),
-                            DashboardFilterCellData(title: "between 20-30", hkType: HKQuantityTypeIdentifierDietaryFatPolyunsaturated, aggrType: Aggregate.AggAvg, lowerBound: 20, upperBound: 30),
-                            DashboardFilterCellData(title: "greater than 30", hkType: HKQuantityTypeIdentifierDietaryFatPolyunsaturated, aggrType: Aggregate.AggMax, lowerBound: 30, upperBound: Int.max)]),
-                     
-                     DashboardFilterItem(title: "Saturated Fat",
-                        items: [DashboardFilterCellData(title: "less than 15", hkType: HKQuantityTypeIdentifierDietaryFatSaturated, aggrType: Aggregate.AggMax, lowerBound: 0, upperBound: 15),
-                            DashboardFilterCellData(title: "between 15-25", hkType: HKQuantityTypeIdentifierDietaryFatSaturated, aggrType: Aggregate.AggAvg, lowerBound: 15, upperBound: 25),
-                            DashboardFilterCellData(title: "between 25-35", hkType: HKQuantityTypeIdentifierDietaryFatSaturated, aggrType: Aggregate.AggAvg, lowerBound: 25, upperBound: 35),
-                            DashboardFilterCellData(title: "more than 35", hkType: HKQuantityTypeIdentifierDietaryFatSaturated, aggrType: Aggregate.AggMin, lowerBound: 35, upperBound: Int.max)]),
-                     
-                     DashboardFilterItem(title: "Monounsaturated Fat",
-                        items: [DashboardFilterCellData(title: "less than 20", hkType: HKQuantityTypeIdentifierDietaryFatMonounsaturated, aggrType: Aggregate.AggMax, lowerBound: 0, upperBound: 20),
-                            DashboardFilterCellData(title: "between 20-30", hkType: HKQuantityTypeIdentifierDietaryFatMonounsaturated, aggrType: Aggregate.AggAvg, lowerBound: 20, upperBound: 30),
-                            DashboardFilterCellData(title: "between 30-40", hkType: HKQuantityTypeIdentifierDietaryFatMonounsaturated, aggrType: Aggregate.AggAvg, lowerBound: 30, upperBound: 40),
-                            DashboardFilterCellData(title: "greater than 40", hkType: HKQuantityTypeIdentifierDietaryFatMonounsaturated, aggrType: Aggregate.AggMin, lowerBound: 40, upperBound: Int.max)]),
-                     
-                     DashboardFilterItem(title: "Water",
-                        items: [DashboardFilterCellData(title: "less than 500", hkType: HKQuantityTypeIdentifierDietaryWater, aggrType: Aggregate.AggMax, lowerBound: 0, upperBound: 500),
-                            DashboardFilterCellData(title: "between 500-1500", hkType: HKQuantityTypeIdentifierDietaryWater, aggrType: Aggregate.AggAvg, lowerBound: 500, upperBound: 1500),
-                            DashboardFilterCellData(title: "between 1500-3000", hkType: HKQuantityTypeIdentifierDietaryWater, aggrType: Aggregate.AggAvg, lowerBound: 1500, upperBound: 3000),
-                            DashboardFilterCellData(title: "more than 3000", hkType: HKQuantityTypeIdentifierDietaryWater, aggrType: Aggregate.AggMin, lowerBound: 3000, upperBound: Int.max)]),
-                     
-                     DashboardFilterItem(title: "Blood pressure Systolic",
-                        items: [DashboardFilterCellData(title: "less than 110", hkType: HKQuantityTypeIdentifierBloodPressureSystolic, aggrType: Aggregate.AggMax, lowerBound: 0, upperBound: 110),
-                            DashboardFilterCellData(title: "between 110-120", hkType: HKQuantityTypeIdentifierBloodPressureSystolic, aggrType: Aggregate.AggAvg, lowerBound: 110, upperBound: 120),
-                            DashboardFilterCellData(title: "between 120-130", hkType: HKQuantityTypeIdentifierBloodPressureSystolic, aggrType: Aggregate.AggAvg, lowerBound: 120, upperBound: 130),
-                            DashboardFilterCellData(title: "greater than 130", hkType: HKQuantityTypeIdentifierBloodPressureSystolic, aggrType: Aggregate.AggMin, lowerBound: 130, upperBound: Int.max)]),
-                     
-                     DashboardFilterItem(title: "Blood pressure Diastolic",
-                        items: [DashboardFilterCellData(title: "less than 60", hkType: HKQuantityTypeIdentifierBloodPressureDiastolic, aggrType: Aggregate.AggMax, lowerBound: 0, upperBound: 60),
-                            DashboardFilterCellData(title: "between 60-70", hkType: HKQuantityTypeIdentifierBloodPressureDiastolic, aggrType: Aggregate.AggAvg, lowerBound: 60, upperBound: 70),
-                            DashboardFilterCellData(title: "between 70-80", hkType: HKQuantityTypeIdentifierBloodPressureDiastolic, aggrType: Aggregate.AggAvg, lowerBound: 70, upperBound: 80),
-                            DashboardFilterCellData(title: "greater than 80", hkType: HKQuantityTypeIdentifierBloodPressureDiastolic, aggrType: Aggregate.AggMin, lowerBound: 80, upperBound: Int.max)])
-        ]
-        
+        let specs = (UserManager.sharedManager.useMetricUnits() ? metricFilterSpecs : imperialFilterSpecs) + commonFilterSpecs
+
+        self.data = filterSpecsToItems(specs)
+
         if #available(iOS 9.3, *) {
+            sectionVisibility.append(true)
+            sectionGestureRecognizers.append(nil)
+
             self.data.append(DashboardFilterItem(title: "Exercise",
                 items: [DashboardFilterCellData(title: "under 20 minutes",
-                    hkType: HKQuantityTypeIdentifierAppleExerciseTime, aggrType: Aggregate.AggMax, lowerBound: 0, upperBound: 20),
+                    hkType: HKQuantityTypeIdentifierAppleExerciseTime, aggrType: Aggregate.AggAvg, lowerBound: 0, upperBound: 20),
                     DashboardFilterCellData(title: "between 20-minutes and 1-hour",
                         hkType: HKQuantityTypeIdentifierAppleExerciseTime, aggrType: Aggregate.AggAvg, lowerBound: 20, upperBound: 60),
                     DashboardFilterCellData(title: "between 1-hour and 3-hours",
                         hkType: HKQuantityTypeIdentifierAppleExerciseTime, aggrType: Aggregate.AggAvg, lowerBound: 60, upperBound: 180),
                     DashboardFilterCellData(title: "more than 3-hours",
-                        hkType: HKQuantityTypeIdentifierAppleExerciseTime, aggrType: Aggregate.AggMin, lowerBound: 180, upperBound: Int.max)]))
+                        hkType: HKQuantityTypeIdentifierAppleExerciseTime, aggrType: Aggregate.AggAvg, lowerBound: 180, upperBound: Int.max)]))
+        }
+    }
+
+
+    // Section title, type identifier, ranges
+    typealias FilterSpecs = [(String, String, [(Int, Int, String?)])]
+
+    let commonFilterSpecs: FilterSpecs = [
+        ("Body Mass Index",          HKQuantityTypeIdentifierBodyMassIndex,              [(0, 18, "(underweight)"), (18, 25, "(standard)"), (25, 30, "(overweight)"), (30, Int.max, "(obese)")]),
+        ("Dietary Energy",           HKQuantityTypeIdentifierDietaryEnergyConsumed,      [(0, 1000, nil), (1000, 2000, nil), (2000, 3500, nil), (3500, Int.max, nil)]),
+        ("Heart Rate",               HKQuantityTypeIdentifierHeartRate,                  [(0, 50, nil), (50, 65, nil), (65, 80, nil), (80, Int.max, nil)]),
+        ("Step Count",               HKQuantityTypeIdentifierStepCount,                  [(0, 1000, nil), (1000, 5000, nil), (5000, 10000, nil), (10000, Int.max, nil)]),
+        ("Active Energy",            HKQuantityTypeIdentifierActiveEnergyBurned,         [(0, 500, nil), (500, 1500, nil), (1500, 3500, nil), (3500, Int.max, nil)]),
+        ("Resting Energy",           HKQuantityTypeIdentifierBasalEnergyBurned,          [(0, 1000, nil), (1000, 2000, nil), (2000, 3000, nil), (3000, Int.max, nil)]),
+        ("Sleep",                    HKCategoryTypeIdentifierSleepAnalysis,              [(0, 5, nil), (5, 7, nil), (7, 9, nil), (9, Int.max, nil)]),
+        ("Protein",                  HKQuantityTypeIdentifierDietaryProtein,             [(0, 40, nil), (40, 80, nil), (80, 120, nil), (120, Int.max, nil)]),
+        ("Fat",                      HKQuantityTypeIdentifierDietaryFatTotal,            [(0, 50, nil), (50, 75, nil), (75, 100, nil), (100, Int.max, nil)]),
+        ("Carbohydrates",            HKQuantityTypeIdentifierDietaryCarbohydrates,       [(0, 200, nil), (200, 300, nil), (300, 400, nil), (400, Int.max, nil)]),
+        ("Fiber",                    HKQuantityTypeIdentifierDietaryFiber,               [(0, 10, nil), (10, 15, nil), (15, 20, nil), (20, Int.max, nil)]),
+        ("Sugar",                    HKQuantityTypeIdentifierDietarySugar,               [(0, 50, nil), (50, 110, nil), (110, 180, nil), (180, Int.max, nil)]),
+        ("Salt",                     HKQuantityTypeIdentifierDietarySodium,              [(0, 1000, nil), (1000, 3000, nil), (3000, 5000, nil), (5000, Int.max, nil)]),
+        ("Caffeine",                 HKQuantityTypeIdentifierDietaryCaffeine,            [(0, 50, nil), (50, 150, nil), (150, 300, nil), (300, Int.max, nil)]),
+        ("Cholesterol",              HKQuantityTypeIdentifierDietaryCholesterol,         [(0, 150, nil), (150, 300, nil), (300, 450, nil), (450, Int.max, nil)]),
+        ("Polyunsaturated Fat",      HKQuantityTypeIdentifierDietaryFatPolyunsaturated,  [(0, 10, nil), (10, 20, nil), (20, 30, nil), (30, Int.max, nil)]),
+        ("Saturated Fat",            HKQuantityTypeIdentifierDietaryFatSaturated,        [(0, 15, nil), (15, 25, nil), (25, 35, nil), (35, Int.max, nil)]),
+        ("Monounsaturated Fat",      HKQuantityTypeIdentifierDietaryFatMonounsaturated,  [(0, 20, nil), (20, 30, nil), (30, 40, nil), (40, Int.max, nil)]),
+        ("Water",                    HKQuantityTypeIdentifierDietaryWater,               [(0, 500, nil), (500, 1500, nil), (1500, 3000, nil), (3000, Int.max, nil)]),
+        ("Blood Pressure Systolic",  HKQuantityTypeIdentifierBloodPressureSystolic,      [(0, 110, nil), (110, 120, nil), (120, 130, nil), (130, Int.max, nil)]),
+        ("Blood Pressure Diastolic", HKQuantityTypeIdentifierBloodPressureDiastolic,     [(0, 60, nil), (60, 70, nil), (70, 80, nil), (80, Int.max, nil)])
+    ]
+
+    let metricFilterSpecs: FilterSpecs = [
+        ("Weight", HKQuantityTypeIdentifierBodyMass, [(0, 40, nil), (40, 65, nil), (65, 90, nil), (90, Int.max, nil)]),
+    ]
+
+    let imperialFilterSpecs: FilterSpecs = [
+        ("Weight", HKQuantityTypeIdentifierBodyMass, [(0, 90, nil), (90, 140, nil), (140, 200, nil), (200, Int.max, nil)]),
+    ]
+
+    func filterSpecsToItems(specs: FilterSpecs) -> [DashboardFilterItem] {
+        return specs.map { (title, typeIdentifier, itemSpecs) in
+            return DashboardFilterItem(title: title, items: itemSpecs.map { (lower, upper, label) in
+                var itemTitle = ""
+                if lower == 0 {
+                    itemTitle = "less than \(upper)" + (label == nil ? "" : " \(label!)")
+                } else if upper == Int.max {
+                    itemTitle = "more than \(lower)" + (label == nil ? "" : " \(label!)")
+                } else {
+                    itemTitle = "between \(lower)-\(upper)" + (label == nil ? "" : " \(label!)")
+                }
+
+                return DashboardFilterCellData(title: itemTitle, hkType: typeIdentifier, aggrType: Aggregate.AggAvg, lowerBound: lower, upperBound: upper)
+            })
         }
     }
 }

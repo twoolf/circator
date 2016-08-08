@@ -12,7 +12,7 @@ def shared_pods
     pod 'SwiftyJSON', :git => 'https://github.com/SwiftyJSON/SwiftyJSON.git'
     pod 'SwiftDate'
     pod 'SwiftyUserDefaults'
-    pod 'SwiftyBeaver'
+    pod 'SwiftyBeaver', ‘= 0.5.4'
     pod 'Dodo', '~> 2.0'
     pod 'CryptoSwift'
     pod 'AsyncSwift'
@@ -31,6 +31,9 @@ def shared_pods
     pod 'AsyncKit'
     pod 'AwesomeCache'
     pod 'EasyTipView'
+    pod 'HealthKitSampleGenerator'
+    pod 'ReachabilitySwift'
+    pod 'Navajo-Swift'
 end
 
 target 'MetabolicCompassKit' do

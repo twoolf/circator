@@ -29,6 +29,9 @@ class ProfileModel: UserInfoModel {
 
     func setupValues() {
         let profileInfo = UserManager.sharedManager.getProfileCache()
+
+        let units: UnitsSystem! = UserManager.sharedManager.useMetricUnits() ? UnitsSystem.Metric : UnitsSystem.Imperial
+
         for item in items {
             if item.type == .FirstName {
                 item.setNewValue(AccountManager.shared.userInfo?.firstName)
@@ -39,10 +42,6 @@ class ProfileModel: UserInfoModel {
             else if item.type == .Photo {
                 item.setNewValue(UserManager.sharedManager.userProfilePhoto())
             }
-            else if item.type == .Units {
-                // TODO: get REAL user units value
-                item.setNewValue(UnitsSystem.Metric.rawValue)
-            }
             else if item.type == .Email {
                 item.setNewValue(UserManager.sharedManager.getUserId())
             } else {
@@ -51,9 +50,23 @@ class ProfileModel: UserInfoModel {
                         let gender = Gender.valueByTitle(profileItemInfo as! String)
                         item.setNewValue(gender.rawValue)
                     }
+                    else if item.type == .Weight || item.type == .Height {
+                        item.setNewValue(profileItemInfo)
+                        if let value = item.floatValue() {
+                            if item.type == .Weight {
+                                // Convert from kg to lb as needed
+                                item.setNewValue(UnitsUtils.weightValue(valueInDefaultSystem: value, withUnits: units))
+                            } else {
+                                // Convert from cm to ft/in as needed
+                                item.setNewValue(UnitsUtils.heightValue(valueInDefaultSystem: value, withUnits: units))
+                            }
+                        }
+                    }
                     else {
                         item.setNewValue(profileItemInfo)
                     }
+                } else {
+                    log.warning("Could not find profile field for \(item.name)")
                 }
             }
 

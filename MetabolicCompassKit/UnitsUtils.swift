@@ -9,10 +9,10 @@
 import UIKit
 
 
-enum UnitsSystem: Int {
+public enum UnitsSystem: Int {
     case Imperial = 0, Metric
     
-    var title: String {
+    public var title: String {
         switch self {
         case .Imperial:
             return "Lbs/Ft in"
@@ -21,7 +21,7 @@ enum UnitsSystem: Int {
         }
     }
     
-    var weightTitle: String {
+    public var weightTitle: String {
         switch self {
         case .Imperial:
             return "lbs"
@@ -30,7 +30,7 @@ enum UnitsSystem: Int {
         }
     }
     
-    var heightTitle: String {
+    public var heightTitle: String {
         switch self {
         case .Imperial:
             return "ft"
@@ -40,12 +40,12 @@ enum UnitsSystem: Int {
     }
 }
 
-class UnitsUtils: NSObject {
+public class UnitsUtils: NSObject {
     
     // MARK: - Weight
     
     // from Kg to Kg or Lbs
-    class func weightValue(valueInDefaultSystem value: Float, withUnits units: UnitsSystem) -> Float {
+    public class func weightValue(valueInDefaultSystem value: Float, withUnits units: UnitsSystem) -> Float {
         if units == UnitsSystem.Metric {
             return value
         }
@@ -54,7 +54,7 @@ class UnitsUtils: NSObject {
     }
  
     // from Kg or Lbs to Kg
-    class func weightValueInDefaultSystem(fromValue value: Float, inUnitsSystem units: UnitsSystem) -> Float {
+    public class func weightValueInDefaultSystem(fromValue value: Float, inUnitsSystem units: UnitsSystem) -> Float {
         if units == UnitsSystem.Metric {
             return value
         }
@@ -65,7 +65,7 @@ class UnitsUtils: NSObject {
     // MARK: - Height
     
     // from Cm to Cm or Ft
-    class func heightValue(valueInDefaultSystem value: Float, withUnits units: UnitsSystem) -> Float {
+    public class func heightValue(valueInDefaultSystem value: Float, withUnits units: UnitsSystem) -> Float {
         if units == UnitsSystem.Metric {
             return value
         }
@@ -74,8 +74,7 @@ class UnitsUtils: NSObject {
     }
     
     // from Cm or Ft to Cm
-    
-    class func heightValueInDefaultSystem(fromValue value: Float, inUnitsSystem units: UnitsSystem) -> Float {
+    public class func heightValueInDefaultSystem(fromValue value: Float, inUnitsSystem units: UnitsSystem) -> Float {
         if units == UnitsSystem.Metric {
             return value
         }

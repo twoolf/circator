@@ -37,7 +37,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate, WCSessionDelegate {
         Fabric.with([Crashlytics.self,Answers.self])
         
         if ((Defaults.objectForKey(firstRunKey) == nil)) {
-            ConsentManager.sharedManager.resetConsentFilePath()
             UserManager.sharedManager.resetFull()
             Defaults.setObject("firstrun", forKey: firstRunKey)
             Defaults.synchronize()
@@ -79,8 +78,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, WCSessionDelegate {
 
         window?.rootViewController = navController
         window?.makeKeyAndVisible()
-        
-//        LoggerUtil.initLogger()
+                
         return true
     }
 
@@ -137,8 +135,8 @@ class AppDelegate: UIResponder, UIApplicationDelegate, WCSessionDelegate {
         let paths : [String : SwiftyBeaver.Level] = ["ServiceAPI":.Verbose, "HealthManager":.Debug]
         let pathfuns : [String : SwiftyBeaver.Level] = [:]
 
-        for (p,l) in paths { console.addFilter(Filters.Path.contains(p, minLevel: l)) }
-        for (f,l) in pathfuns { console.addFilter(Filters.Function.contains(f, minLevel: l)) }
+//        for (p,l) in paths { console.addFilter(Filters.Path.contains(p, minLevel: l)) }
+//        for (f,l) in pathfuns { console.addFilter(Filters.Function.contains(f, minLevel: l)) }
 
         log.addDestination(console)
     }
@@ -166,5 +164,3 @@ class AppDelegate: UIResponder, UIApplicationDelegate, WCSessionDelegate {
         }
     }
 }
-
-

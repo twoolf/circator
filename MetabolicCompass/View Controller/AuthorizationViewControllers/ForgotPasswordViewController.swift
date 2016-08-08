@@ -30,9 +30,9 @@ class ForgotPasswordViewController: BaseViewController, UITextFieldDelegate {
 
     private let resetPasswordEmailEmptyMessage = "Please, enter your email".localized
     private let resetPasswordEmailInvalidMessage = "Please, provide valid email".localized
-    private let resetPasswordTitle = "Reset Password".localized
+    private let resetPasswordTitle = "Password Reset".localized
     private let resetPasswordErrorGeneralMessage = "Reset Password error occurs. Please, try later.".localized
-    private let resetPasswordSuccessMessage = "Reset Password request was done succesfully. Please, check your email to reset password.".localized
+    private let resetPasswordSuccessMessage = "If an account exists for the email provided, you will receive a reset email soon.".localized
 
     @IBAction func resetAction(sender: UIButton) {
 

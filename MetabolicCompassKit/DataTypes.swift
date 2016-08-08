@@ -411,10 +411,15 @@ public extension HKStatistics {
 extension HKSample: MCSample { }
 
 public extension HKSampleType {
+
     public var defaultUnit: HKUnit? {
-        let isMetric: Bool = NSLocale.currentLocale().objectForKey(NSLocaleUsesMetricSystem)!.boolValue
+        let isMetric: Bool = UserManager.sharedManager.useMetricUnits()
+
         switch identifier {
         case HKCategoryTypeIdentifierSleepAnalysis:
+            return HKUnit.hourUnit()
+
+        case HKCategoryTypeIdentifierAppleStandHour:
             return HKUnit.hourUnit()
 
         case HKCorrelationTypeIdentifierBloodPressure:
@@ -423,8 +428,14 @@ public extension HKSampleType {
         case HKQuantityTypeIdentifierActiveEnergyBurned:
             return HKUnit.kilocalorieUnit()
 
+        case HKQuantityTypeIdentifierBasalBodyTemperature:
+            return HKUnit.degreeFahrenheitUnit()
+
         case HKQuantityTypeIdentifierBasalEnergyBurned:
             return HKUnit.kilocalorieUnit()
+
+        case HKQuantityTypeIdentifierBloodAlcoholContent:
+            return HKUnit.percentUnit()
 
         case HKQuantityTypeIdentifierBloodGlucose:
             return HKUnit.gramUnitWithMetricPrefix(.Milli).unitDividedByUnit(HKUnit.literUnitWithMetricPrefix(.Deci))
@@ -435,19 +446,40 @@ public extension HKSampleType {
         case HKQuantityTypeIdentifierBloodPressureSystolic:
             return HKUnit.millimeterOfMercuryUnit()
 
+        case HKQuantityTypeIdentifierBodyFatPercentage:
+            return HKUnit.percentUnit()
+
         case HKQuantityTypeIdentifierBodyMass:
             return isMetric ? HKUnit.gramUnitWithMetricPrefix(.Kilo) : HKUnit.poundUnit()
 
         case HKQuantityTypeIdentifierBodyMassIndex:
             return HKUnit.countUnit()
 
+        case HKQuantityTypeIdentifierBodyTemperature:
+            return HKUnit.degreeFahrenheitUnit()
+
+        case HKQuantityTypeIdentifierDietaryBiotin:
+            return HKUnit.gramUnitWithMetricPrefix(HKMetricPrefix.Micro)
+
         case HKQuantityTypeIdentifierDietaryCaffeine:
+            return HKUnit.gramUnitWithMetricPrefix(HKMetricPrefix.Milli)
+
+        case HKQuantityTypeIdentifierDietaryCalcium:
             return HKUnit.gramUnitWithMetricPrefix(HKMetricPrefix.Milli)
 
         case HKQuantityTypeIdentifierDietaryCarbohydrates:
             return HKUnit.gramUnit()
 
         case HKQuantityTypeIdentifierDietaryCholesterol:
+            return HKUnit.gramUnitWithMetricPrefix(HKMetricPrefix.Milli)
+
+        case HKQuantityTypeIdentifierDietaryChloride:
+            return HKUnit.gramUnitWithMetricPrefix(HKMetricPrefix.Milli)
+
+        case HKQuantityTypeIdentifierDietaryChromium:
+            return HKUnit.gramUnitWithMetricPrefix(HKMetricPrefix.Micro)
+
+        case HKQuantityTypeIdentifierDietaryCopper:
             return HKUnit.gramUnitWithMetricPrefix(HKMetricPrefix.Milli)
 
         case HKQuantityTypeIdentifierDietaryEnergyConsumed:
@@ -465,8 +497,47 @@ public extension HKSampleType {
         case HKQuantityTypeIdentifierDietaryFatTotal:
             return HKUnit.gramUnit()
 
+        case HKQuantityTypeIdentifierDietaryFiber:
+            return HKUnit.gramUnit()
+
+        case HKQuantityTypeIdentifierDietaryFolate:
+            return HKUnit.gramUnitWithMetricPrefix(HKMetricPrefix.Micro)
+
+        case HKQuantityTypeIdentifierDietaryIodine:
+            return HKUnit.gramUnitWithMetricPrefix(HKMetricPrefix.Micro)
+
+        case HKQuantityTypeIdentifierDietaryIron:
+            return HKUnit.gramUnitWithMetricPrefix(HKMetricPrefix.Milli)
+
+        case HKQuantityTypeIdentifierDietaryMagnesium:
+            return HKUnit.gramUnitWithMetricPrefix(HKMetricPrefix.Milli)
+
+        case HKQuantityTypeIdentifierDietaryManganese:
+            return HKUnit.gramUnitWithMetricPrefix(HKMetricPrefix.Milli)
+
+        case HKQuantityTypeIdentifierDietaryMolybdenum:
+            return HKUnit.gramUnitWithMetricPrefix(HKMetricPrefix.Micro)
+
+        case HKQuantityTypeIdentifierDietaryNiacin:
+            return HKUnit.gramUnitWithMetricPrefix(HKMetricPrefix.Milli)
+
+        case HKQuantityTypeIdentifierDietaryPantothenicAcid:
+            return HKUnit.gramUnitWithMetricPrefix(HKMetricPrefix.Milli)
+
+        case HKQuantityTypeIdentifierDietaryPhosphorus:
+            return HKUnit.gramUnitWithMetricPrefix(HKMetricPrefix.Milli)
+
+        case HKQuantityTypeIdentifierDietaryPotassium:
+            return HKUnit.gramUnitWithMetricPrefix(HKMetricPrefix.Milli)
+
         case HKQuantityTypeIdentifierDietaryProtein:
             return HKUnit.gramUnit()
+
+        case HKQuantityTypeIdentifierDietaryRiboflavin:
+            return HKUnit.gramUnitWithMetricPrefix(HKMetricPrefix.Milli)
+
+        case HKQuantityTypeIdentifierDietarySelenium:
+            return HKUnit.gramUnitWithMetricPrefix(HKMetricPrefix.Micro)
 
         case HKQuantityTypeIdentifierDietarySodium:
             return HKUnit.gramUnitWithMetricPrefix(HKMetricPrefix.Milli)
@@ -474,16 +545,79 @@ public extension HKSampleType {
         case HKQuantityTypeIdentifierDietarySugar:
             return HKUnit.gramUnit()
 
+        case HKQuantityTypeIdentifierDietaryThiamin:
+            return HKUnit.gramUnitWithMetricPrefix(HKMetricPrefix.Milli)
+
+        case HKQuantityTypeIdentifierDietaryVitaminA:
+            return HKUnit.gramUnitWithMetricPrefix(HKMetricPrefix.Micro)
+
+        case HKQuantityTypeIdentifierDietaryVitaminB12:
+            return HKUnit.gramUnitWithMetricPrefix(HKMetricPrefix.Micro)
+
+        case HKQuantityTypeIdentifierDietaryVitaminB6:
+            return HKUnit.gramUnitWithMetricPrefix(HKMetricPrefix.Milli)
+
+        case HKQuantityTypeIdentifierDietaryVitaminC:
+            return HKUnit.gramUnitWithMetricPrefix(HKMetricPrefix.Milli)
+
+        case HKQuantityTypeIdentifierDietaryVitaminD:
+            return HKUnit.gramUnitWithMetricPrefix(HKMetricPrefix.Micro)
+
+        case HKQuantityTypeIdentifierDietaryVitaminE:
+            return HKUnit.gramUnitWithMetricPrefix(HKMetricPrefix.Milli)
+
+        case HKQuantityTypeIdentifierDietaryVitaminK:
+            return HKUnit.gramUnitWithMetricPrefix(HKMetricPrefix.Micro)
+
         case HKQuantityTypeIdentifierDietaryWater:
             return HKUnit.literUnitWithMetricPrefix(HKMetricPrefix.Milli)
 
+        case HKQuantityTypeIdentifierDietaryZinc:
+            return HKUnit.gramUnitWithMetricPrefix(HKMetricPrefix.Milli)
+
         case HKQuantityTypeIdentifierDistanceWalkingRunning:
-            return HKUnit.mileUnit()
+            return isMetric ? HKUnit.meterUnitWithMetricPrefix(HKMetricPrefix.Kilo) : HKUnit.mileUnit()
+
+        case HKQuantityTypeIdentifierElectrodermalActivity:
+            return HKUnit.siemenUnitWithMetricPrefix(HKMetricPrefix.Micro)
 
         case HKQuantityTypeIdentifierFlightsClimbed:
             return HKUnit.countUnit()
 
+        case HKQuantityTypeIdentifierForcedExpiratoryVolume1:
+            return HKUnit.literUnit()
+
+        case HKQuantityTypeIdentifierForcedVitalCapacity:
+            return HKUnit.literUnit()
+
+        case HKQuantityTypeIdentifierHeight:
+            return isMetric ? HKUnit.meterUnitWithMetricPrefix(HKMetricPrefix.Centi) : HKUnit.footUnit()
+
+        case HKQuantityTypeIdentifierInhalerUsage:
+            return HKUnit.countUnit()
+
+        case HKQuantityTypeIdentifierLeanBodyMass:
+            return isMetric ? HKUnit.gramUnitWithMetricPrefix(.Kilo) : HKUnit.poundUnit()
+
         case HKQuantityTypeIdentifierHeartRate:
+            return HKUnit.countUnit().unitDividedByUnit(HKUnit.minuteUnit())
+
+        case HKQuantityTypeIdentifierNikeFuel:
+            return HKUnit.countUnit()
+
+        case HKQuantityTypeIdentifierNumberOfTimesFallen:
+            return HKUnit.countUnit()
+
+        case HKQuantityTypeIdentifierOxygenSaturation:
+            return HKUnit.percentUnit()
+
+        case HKQuantityTypeIdentifierPeakExpiratoryFlowRate:
+            return HKUnit.literUnit().unitDividedByUnit(HKUnit.minuteUnit())
+
+        case HKQuantityTypeIdentifierPeripheralPerfusionIndex:
+            return HKUnit.percentUnit()
+
+        case HKQuantityTypeIdentifierRespiratoryRate:
             return HKUnit.countUnit().unitDividedByUnit(HKUnit.minuteUnit())
 
         case HKQuantityTypeIdentifierStepCount:
@@ -495,8 +629,227 @@ public extension HKSampleType {
         case HKWorkoutTypeIdentifier:
             return HKUnit.hourUnit()
 
+        default:
+            return nil
+        }
+    }
+
+    // Units used by the MC webservice.
+    public var serviceUnit: HKUnit? {
+        switch identifier {
+        case HKCategoryTypeIdentifierSleepAnalysis:
+            return HKUnit.secondUnit()
+
+        case HKCategoryTypeIdentifierAppleStandHour:
+            return HKUnit.secondUnit()
+
+        case HKCorrelationTypeIdentifierBloodPressure:
+            return HKUnit.millimeterOfMercuryUnit()
+
+        case HKQuantityTypeIdentifierActiveEnergyBurned:
+            return HKUnit.kilocalorieUnit()
+
+        case HKQuantityTypeIdentifierBasalBodyTemperature:
+            return HKUnit.degreeFahrenheitUnit()
+
+        case HKQuantityTypeIdentifierBasalEnergyBurned:
+            return HKUnit.kilocalorieUnit()
+
+        case HKQuantityTypeIdentifierBloodAlcoholContent:
+            return HKUnit.percentUnit()
+
+        case HKQuantityTypeIdentifierBloodGlucose:
+            return HKUnit.gramUnitWithMetricPrefix(.Milli).unitDividedByUnit(HKUnit.literUnitWithMetricPrefix(.Deci))
+
+        case HKQuantityTypeIdentifierBloodPressureDiastolic:
+            return HKUnit.millimeterOfMercuryUnit()
+
+        case HKQuantityTypeIdentifierBloodPressureSystolic:
+            return HKUnit.millimeterOfMercuryUnit()
+
+        case HKQuantityTypeIdentifierBodyFatPercentage:
+            return HKUnit.percentUnit()
+
+        case HKQuantityTypeIdentifierBodyMass:
+            return HKUnit.gramUnitWithMetricPrefix(.Kilo)
+
+        case HKQuantityTypeIdentifierBodyMassIndex:
+            return HKUnit.countUnit()
+
+        case HKQuantityTypeIdentifierBodyTemperature:
+            return HKUnit.degreeFahrenheitUnit()
+
+        case HKQuantityTypeIdentifierDietaryBiotin:
+            return HKUnit.gramUnitWithMetricPrefix(HKMetricPrefix.Micro)
+
+        case HKQuantityTypeIdentifierDietaryCaffeine:
+            return HKUnit.gramUnitWithMetricPrefix(HKMetricPrefix.Milli)
+
+        case HKQuantityTypeIdentifierDietaryCalcium:
+            return HKUnit.gramUnitWithMetricPrefix(HKMetricPrefix.Milli)
+
+        case HKQuantityTypeIdentifierDietaryCarbohydrates:
+            return HKUnit.gramUnit()
+
+        case HKQuantityTypeIdentifierDietaryCholesterol:
+            return HKUnit.gramUnitWithMetricPrefix(HKMetricPrefix.Milli)
+
+        case HKQuantityTypeIdentifierDietaryChloride:
+            return HKUnit.gramUnitWithMetricPrefix(HKMetricPrefix.Milli)
+
+        case HKQuantityTypeIdentifierDietaryChromium:
+            return HKUnit.gramUnitWithMetricPrefix(HKMetricPrefix.Micro)
+
+        case HKQuantityTypeIdentifierDietaryCopper:
+            return HKUnit.gramUnitWithMetricPrefix(HKMetricPrefix.Milli)
+
+        case HKQuantityTypeIdentifierDietaryEnergyConsumed:
+            return HKUnit.kilocalorieUnit()
+
+        case HKQuantityTypeIdentifierDietaryFatMonounsaturated:
+            return HKUnit.gramUnit()
+
+        case HKQuantityTypeIdentifierDietaryFatPolyunsaturated:
+            return HKUnit.gramUnit()
+
+        case HKQuantityTypeIdentifierDietaryFatSaturated:
+            return HKUnit.gramUnit()
+
+        case HKQuantityTypeIdentifierDietaryFatTotal:
+            return HKUnit.gramUnit()
+
         case HKQuantityTypeIdentifierDietaryFiber:
             return HKUnit.gramUnit()
+
+        case HKQuantityTypeIdentifierDietaryFolate:
+            return HKUnit.gramUnitWithMetricPrefix(HKMetricPrefix.Micro)
+
+        case HKQuantityTypeIdentifierDietaryIodine:
+            return HKUnit.gramUnitWithMetricPrefix(HKMetricPrefix.Micro)
+
+        case HKQuantityTypeIdentifierDietaryIron:
+            return HKUnit.gramUnitWithMetricPrefix(HKMetricPrefix.Milli)
+
+        case HKQuantityTypeIdentifierDietaryMagnesium:
+            return HKUnit.gramUnitWithMetricPrefix(HKMetricPrefix.Milli)
+
+        case HKQuantityTypeIdentifierDietaryManganese:
+            return HKUnit.gramUnitWithMetricPrefix(HKMetricPrefix.Milli)
+
+        case HKQuantityTypeIdentifierDietaryMolybdenum:
+            return HKUnit.gramUnitWithMetricPrefix(HKMetricPrefix.Micro)
+
+        case HKQuantityTypeIdentifierDietaryNiacin:
+            return HKUnit.gramUnitWithMetricPrefix(HKMetricPrefix.Milli)
+
+        case HKQuantityTypeIdentifierDietaryPantothenicAcid:
+            return HKUnit.gramUnitWithMetricPrefix(HKMetricPrefix.Milli)
+
+        case HKQuantityTypeIdentifierDietaryPhosphorus:
+            return HKUnit.gramUnitWithMetricPrefix(HKMetricPrefix.Milli)
+
+        case HKQuantityTypeIdentifierDietaryPotassium:
+            return HKUnit.gramUnitWithMetricPrefix(HKMetricPrefix.Milli)
+
+        case HKQuantityTypeIdentifierDietaryProtein:
+            return HKUnit.gramUnit()
+
+        case HKQuantityTypeIdentifierDietaryRiboflavin:
+            return HKUnit.gramUnitWithMetricPrefix(HKMetricPrefix.Milli)
+
+        case HKQuantityTypeIdentifierDietarySelenium:
+            return HKUnit.gramUnitWithMetricPrefix(HKMetricPrefix.Micro)
+
+        case HKQuantityTypeIdentifierDietarySodium:
+            return HKUnit.gramUnitWithMetricPrefix(HKMetricPrefix.Milli)
+
+        case HKQuantityTypeIdentifierDietarySugar:
+            return HKUnit.gramUnit()
+
+        case HKQuantityTypeIdentifierDietaryThiamin:
+            return HKUnit.gramUnitWithMetricPrefix(HKMetricPrefix.Milli)
+
+        case HKQuantityTypeIdentifierDietaryVitaminA:
+            return HKUnit.gramUnitWithMetricPrefix(HKMetricPrefix.Micro)
+
+        case HKQuantityTypeIdentifierDietaryVitaminB12:
+            return HKUnit.gramUnitWithMetricPrefix(HKMetricPrefix.Micro)
+
+        case HKQuantityTypeIdentifierDietaryVitaminB6:
+            return HKUnit.gramUnitWithMetricPrefix(HKMetricPrefix.Milli)
+
+        case HKQuantityTypeIdentifierDietaryVitaminC:
+            return HKUnit.gramUnitWithMetricPrefix(HKMetricPrefix.Milli)
+
+        case HKQuantityTypeIdentifierDietaryVitaminD:
+            return HKUnit.gramUnitWithMetricPrefix(HKMetricPrefix.Micro)
+
+        case HKQuantityTypeIdentifierDietaryVitaminE:
+            return HKUnit.gramUnitWithMetricPrefix(HKMetricPrefix.Milli)
+
+        case HKQuantityTypeIdentifierDietaryVitaminK:
+            return HKUnit.gramUnitWithMetricPrefix(HKMetricPrefix.Micro)
+
+        case HKQuantityTypeIdentifierDietaryWater:
+            return HKUnit.literUnitWithMetricPrefix(HKMetricPrefix.Milli)
+
+        case HKQuantityTypeIdentifierDietaryZinc:
+            return HKUnit.gramUnitWithMetricPrefix(HKMetricPrefix.Milli)
+
+        case HKQuantityTypeIdentifierDistanceWalkingRunning:
+            return HKUnit.meterUnit()
+
+        case HKQuantityTypeIdentifierElectrodermalActivity:
+            return HKUnit.siemenUnitWithMetricPrefix(HKMetricPrefix.Micro)
+
+        case HKQuantityTypeIdentifierFlightsClimbed:
+            return HKUnit.countUnit()
+
+        case HKQuantityTypeIdentifierForcedExpiratoryVolume1:
+            return HKUnit.literUnitWithMetricPrefix(HKMetricPrefix.Milli)
+
+        case HKQuantityTypeIdentifierForcedVitalCapacity:
+            return HKUnit.literUnitWithMetricPrefix(HKMetricPrefix.Milli)
+
+        case HKQuantityTypeIdentifierHeight:
+            return HKUnit.meterUnitWithMetricPrefix(HKMetricPrefix.Centi)
+
+        case HKQuantityTypeIdentifierInhalerUsage:
+            return HKUnit.countUnit()
+
+        case HKQuantityTypeIdentifierLeanBodyMass:
+            return HKUnit.gramUnitWithMetricPrefix(.Kilo)
+
+        case HKQuantityTypeIdentifierHeartRate:
+            return HKUnit.countUnit().unitDividedByUnit(HKUnit.minuteUnit())
+
+        case HKQuantityTypeIdentifierNikeFuel:
+            return HKUnit.countUnit()
+
+        case HKQuantityTypeIdentifierNumberOfTimesFallen:
+            return HKUnit.countUnit()
+
+        case HKQuantityTypeIdentifierOxygenSaturation:
+            return HKUnit.percentUnit()
+            
+        case HKQuantityTypeIdentifierPeakExpiratoryFlowRate:
+            return HKUnit.literUnit().unitDividedByUnit(HKUnit.minuteUnit())
+            
+        case HKQuantityTypeIdentifierPeripheralPerfusionIndex:
+            return HKUnit.percentUnit()
+            
+        case HKQuantityTypeIdentifierRespiratoryRate:
+            return HKUnit.countUnit().unitDividedByUnit(HKUnit.minuteUnit())
+            
+        case HKQuantityTypeIdentifierStepCount:
+            return HKUnit.countUnit()
+            
+        case HKQuantityTypeIdentifierUVExposure:
+            return HKUnit.countUnit()
+            
+        case HKWorkoutTypeIdentifier:
+            return HKUnit.secondUnit()
+            
         default:
             return nil
         }

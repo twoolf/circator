@@ -50,17 +50,17 @@ class AccountManager: NSObject {
 
     func doLogin(animated: Bool = true, completion: (Void -> Void)?) {
         assert(NSThread.isMainThread(), "can be called from main thread only")
-        let registerLandingStroyboard = UIStoryboard(name: "RegisterLoginProcess", bundle: nil)
-        let registerLogingLandingController = registerLandingStroyboard.instantiateViewControllerWithIdentifier("landingLoginRegister") as! RegisterLoginLandingViewController
+        let registerLandingStoryboard = UIStoryboard(name: "RegisterLoginProcess", bundle: nil)
+        let registerLoginLandingController = registerLandingStoryboard.instantiateViewControllerWithIdentifier("landingLoginRegister") as! RegisterLoginLandingViewController
         
-        registerLogingLandingController.completion = completion
+        registerLoginLandingController.completion = completion
         
         Async.main(after: 1) {//select the first controller of the main tabbar contoller
             let mainTabbarController = self.rootViewController?.viewControllers[0] as! MainTabController
             mainTabbarController.selectedIndex = 0
         }
         
-        self.rootViewController?.pushViewController(registerLogingLandingController, animated: animated)
+        self.rootViewController?.pushViewController(registerLoginLandingController, animated: animated)
     }
 
     func doLogout(completion: (Void -> Void)?) {
@@ -122,7 +122,7 @@ class AccountManager: NSObject {
                     }
                     return
                 }
-                
+
                 // TODO: Yanif: handle partial failures when a subset of account components
                 // failures beyond the consent component.
                 UserManager.sharedManager.pullFullAccount { res in

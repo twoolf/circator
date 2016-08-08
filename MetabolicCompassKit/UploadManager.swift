@@ -697,9 +697,7 @@ public class UploadManager: NSObject {
     public func registerUploadObservers() {
         let log = SwiftyBeaver.self
         HealthManager.sharedManager.authorizeHealthKit { (success, _) -> Void in
-            guard success else {
-                return
-            }
+            guard success else { return }
 
             UploadManager.sharedManager.cleanPendingUploads()
             UploadManager.sharedManager.retryPendingUploads(true)
@@ -725,6 +723,20 @@ public class UploadManager: NSObject {
                     }
                     completion()
                 }
+            }
+        }
+    }
+
+    public func deregisterUploadObservers(completion: (Bool, NSError?) -> Void) {
+        HealthManager.sharedManager.authorizeHealthKit { (success, _) -> Void in
+            guard success else { return }
+            HealthManager.sharedManager.stopAllBackgroundObservers { (success, error) in
+                guard success && error == nil else {
+                    log.error(error)
+                    return
+                }
+                self.logEntryUploadAsync?.cancel()
+                completion(success, error)
             }
         }
     }

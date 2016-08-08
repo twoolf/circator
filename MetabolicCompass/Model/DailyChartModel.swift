@@ -46,7 +46,7 @@ class DailyProgressDayInfo: NSObject, NSCoding {
     }
 }
 
-typealias MCDaylyProgressCache = Cache<DailyProgressDayInfo>
+typealias MCDailyProgressCache = Cache<DailyProgressDayInfo>
 
 class DailyChartModel : NSObject, UITableViewDataSource {
 
@@ -60,7 +60,7 @@ class DailyChartModel : NSObject, UITableViewDataSource {
     private let dayCellIdentifier = "dayCellIdentifier"
     private let emptyValueString = "- h - m"
     
-    var cachedDailyProgress: MCDaylyProgressCache
+    var cachedDailyProgress: MCDailyProgressCache
     
     var delegate:DailyChartModelProtocol? = nil
     var chartDataArray: [[Double]] = []
@@ -74,47 +74,16 @@ class DailyChartModel : NSObject, UITableViewDataSource {
 
     override init() {
         do {
-            self.cachedDailyProgress = try MCDaylyProgressCache(name: "MCDaylyProgressCache")
+            self.cachedDailyProgress = try MCDailyProgressCache(name: "MCDaylyProgressCache")
         } catch _ {
             fatalError("Unable to create HealthManager aggregate cache.")
         }
         super.init()
     }
     
-    var daysArray: [NSDate] = {
-        var lastSevenDays: [NSDate] = []
-        let calendar = NSCalendar(calendarIdentifier: NSCalendarIdentifierGregorian)
-        let dateComponents = calendar!.components([.Day, .Month, .Year, .Hour, .Minute, .Second] , fromDate: NSDate())
-        dateComponents.timeZone = NSTimeZone(name: NSTimeZone.localTimeZone().abbreviation ?? "GMT")
-        dateComponents.hour = 0
-        dateComponents.minute = 0
-        dateComponents.second = 0
-        for _ in 0...6 {
-            let date = calendar!.dateFromComponents(dateComponents)
-            dateComponents.day -= 1;
-            if let date = date {
-                lastSevenDays.append(date)
-            }
-        }
-        return lastSevenDays.reverse()
-    }()
+    var daysArray: [NSDate] = { return DailyChartModel.getChartDateRange() }()
     
-    var daysStringArray: [String] = {
-        var lastSevenDays: [String] = []
-        let formatter = NSDateFormatter()
-        formatter.dateFormat = "MMM\ndd"
-        let calendar = NSCalendar.autoupdatingCurrentCalendar()
-        let dateComponents = calendar.components([.Day, .Month] , fromDate: NSDate())
-        for _ in 0...6 {
-            let date = calendar.dateFromComponents(dateComponents)
-            dateComponents.day -= 1;
-            if let date = date {
-                let dateString = formatter.stringFromDate(date)
-                lastSevenDays.append(dateString.stringByAppendingString(" th"))
-            }
-        }
-        return lastSevenDays
-    }()
+    var daysStringArray: [String] = { return DailyChartModel.getChartDateRangeStrings() }()
 
     func updateRowHeight (){
         self.daysTableView?.rowHeight = CGRectGetHeight(self.daysTableView!.frame)/7.0
@@ -162,25 +131,76 @@ class DailyChartModel : NSObject, UITableViewDataSource {
         self.chartColorsArray = []
         self.getDataForDay(nil, lastDay: false)
     }
-    
+
+    class func getChartDateRange(endDate: NSDate? = nil) -> [NSDate] {
+        var lastSevenDays: [NSDate] = []
+        let calendar = NSCalendar(calendarIdentifier: NSCalendarIdentifierGregorian)
+        let dateComponents = (endDate ?? NSDate()).startOf(.Day).components
+        for _ in 0...6 {
+            let date = calendar!.dateFromComponents(dateComponents)
+            dateComponents.day -= 1;
+            if let date = date {
+                lastSevenDays.append(date)
+            }
+        }
+        return lastSevenDays.reverse()
+    }
+
+    class func getChartDateRangeStrings(endDate: NSDate? = nil) -> [String] {
+        let formatter = NSDateFormatter()
+        formatter.dateFormat = "MMM\ndd"
+
+        // Note: we reverse the strings array since days are from recent (top) to oldest (bottom)
+        return getChartDateRange(endDate).map { date in
+            let dateString = formatter.stringFromDate(date)
+            if date.day % 10 == 1 {
+                if date.day == 11 {
+                    return dateString.stringByAppendingString(" th")
+                } else {
+                    return dateString.stringByAppendingString(" st")
+                }
+            } else if date.day % 10 == 2 {
+                if date.day == 12 {
+                    return dateString.stringByAppendingString(" th")
+                } else {
+                    return dateString.stringByAppendingString(" nd")
+                }
+            } else {
+                return dateString.stringByAppendingString(" th")
+            }
+        }.reverse()
+    }
+
+    func getStartDate() -> NSDate? { return self.daysArray.first }
+    func getEndDate() -> NSDate? { return self.daysArray.last }
+
+    func setEndDate(endDate: NSDate? = nil) {
+        self.daysArray = DailyChartModel.getChartDateRange(endDate)
+        self.daysStringArray = DailyChartModel.getChartDateRangeStrings(endDate)
+    }
+
     func getDataForDay(day: NSDate?, lastDay:Bool) {
         let startDay = day == nil ? self.daysArray.first! : day!
         let today = startDay.isInToday()
+
         let dateIndex = self.daysArray.indexOf(startDay)
         let cacheKey = "\(startDay.month)_\(startDay.day)_\(startDay.year)"
+        let cacheDuration = today ? 5.0 : 60.0 //if it's today we will add cache time for 10 seconds in other cases cache will be saved for 1 minute
+
         self.cachedDailyProgress.setObjectForKey(cacheKey, cacheBlock: { (success, error) in
-            self.getCircadianEventsForDay(startDay, comletion: { (dayInfo) in
-                success(dayInfo, .Seconds(today ? 5 : 60))//if it's today we will add cache time for 10 seconds in other cases cache will be saved for 1 minute
+            self.getCircadianEventsForDay(startDay, completion: { (dayInfo) in
+                success(dayInfo, .Seconds(cacheDuration))
             })
         }, completion: { (dayInfoFromCache, loadedFromCache, error) in
             if (dayInfoFromCache != nil) {
                 self.chartColorsArray.append((dayInfoFromCache?.dayColors)!)
                 self.chartDataArray.append((dayInfoFromCache?.dayValues)!)
             }
-            if !lastDay {//we still have data te retrive
-                let lastElement = dateIndex == (self.daysArray.indexOf(self.daysArray.last!)! - 1)
+            if !lastDay { //we still have data to retrieve
+                let nextIndex = dateIndex! + 1
+                let lastElement = nextIndex == (self.daysArray.count - 1)
                 Async.main {
-                    self.getDataForDay(self.daysArray[dateIndex!+1], lastDay: lastElement)
+                    self.getDataForDay(self.daysArray[nextIndex], lastDay: lastElement)
                 }
             } else {//end of recursion
                 self.chartColorsArray = self.chartColorsArray.map { return $0.map(self.selectColor) }
@@ -192,7 +212,7 @@ class DailyChartModel : NSObject, UITableViewDataSource {
         })
     }
     
-    func getCircadianEventsForDay(day: NSDate, comletion: (dayInfo: DailyProgressDayInfo) -> Void) {
+    func getCircadianEventsForDay(day: NSDate, completion: (dayInfo: DailyProgressDayInfo) -> Void) {
         
         let endOfDay = self.endOfDay(day)
         var dayEvents:[Double] = []
@@ -227,10 +247,10 @@ class DailyChartModel : NSObject, UITableViewDataSource {
                     previousEventType = eventType
                 }
                 let dayInfo = DailyProgressDayInfo(colors: dayColors, values: dayEvents)
-                comletion(dayInfo: dayInfo)
+                completion(dayInfo: dayInfo)
                 return
             }
-            comletion(dayInfo: DailyProgressDayInfo(colors: [UIColor.clearColor()], values: [24.0]))
+            completion(dayInfo: DailyProgressDayInfo(colors: [UIColor.clearColor()], values: [24.0]))
         })
     }
     
@@ -376,18 +396,30 @@ class DailyChartModel : NSObject, UITableViewDataSource {
                     
                     let today = NSDate().startOf(.Day, inRegion: Region())
                     let lastAte : NSDate? = stats.1 == 0 ? nil : ( startDate + Int(round(stats.1 * 3600.0)).seconds)
-                    let fastingHrs = Int(floor(stats.2))
-                    let fastingMins = (today + Int(round((stats.2 % 1.0) * 60.0)).minutes).toString(DateFormat.Custom("mm"))!
-    
-                    self.fastingText = "\(fastingHrs) h \(fastingMins) m"
-                    let eatingTime = (today + Int(stats.0 * 3600.0).seconds)
+
+                    let eatingTime = roundDate((today + Int(stats.0 * 3600.0).seconds), granularity: granularity1Min)
                     if eatingTime.hour == 0 && eatingTime.minute == 0 {
                         self.eatingText = self.emptyValueString
                     } else {
                         self.eatingText = eatingTime.toString(DateFormat.Custom("HH 'h' mm 'm'"))!
                     }
 
-                    self.lastAteText = lastAte == nil ? self.emptyValueString : lastAte!.toString(DateFormat.Custom("HH 'h' mm 'm'"))!
+                    let fastingHrs = Int(floor(stats.2))
+                    let fastingMins = (today + Int(round((stats.2 % 1.0) * 60.0)).minutes).toString(DateFormat.Custom("mm"))!
+                    self.fastingText = "\(fastingHrs) h \(fastingMins) m"
+
+                    if let lastAte = lastAte {
+                        let components = NSDate().components - lastAte.components
+                        if components.day > 0 {
+                            let mins = (today + components.minute.minutes).toString(DateFormat.Custom("mm 'm'"))!
+                            self.lastAteText = "\(components.day * 24 + components.hour) h \(mins)"
+                        } else {
+                            self.lastAteText = (today + components).toString(DateFormat.Custom("HH 'h' mm 'm'"))!
+                        }
+                    } else {
+                        self.lastAteText = self.emptyValueString
+                    }
+
                     self.delegate?.dailyProgressStatCollected?()
                 }
             }

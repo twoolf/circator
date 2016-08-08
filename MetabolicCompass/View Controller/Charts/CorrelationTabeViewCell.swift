@@ -1,17 +1,18 @@
 //
-//  DashboardFilterHeaderCell.swift
+//  CorrelationTabeViewCell.swift
 //  MetabolicCompass
 //
-//  Created by Inaiur on 5/6/16.
+//  Created by Rostislav Roginevich on 7/29/16.
 //  Copyright © 2016 Yanif Ahmad, Tom Woolf. All rights reserved.
 //
 
 import UIKit
 
-class DashboardFilterHeaderCell: UITableViewCell {
+class CorrelationTabeViewCell: UITableViewCell {
 
-    @IBOutlet weak var captionLabel: UILabel!
-
+    @IBOutlet weak var healthImageView: UIImageView!
+    @IBOutlet weak var titleLabel: UILabel!
+    
     override func awakeFromNib() {
         super.awakeFromNib()
         // Initialization code

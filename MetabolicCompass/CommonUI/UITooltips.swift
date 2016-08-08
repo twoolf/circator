@@ -29,6 +29,7 @@ public class UITooltips : NSObject {
         preferences.drawing.foregroundColor = .whiteColor()
         preferences.drawing.backgroundColor = .blueColor()
         preferences.drawing.arrowPosition = .Top
+        preferences.positioning.maxWidth = ScreenManager.sharedInstance.tooltipMaxWidth()
         return preferences
     }
 
@@ -37,6 +38,7 @@ public class UITooltips : NSObject {
         preferences.drawing.foregroundColor = .whiteColor()
         preferences.drawing.backgroundColor = .blueColor()
         preferences.drawing.arrowPosition = .Bottom
+        preferences.positioning.maxWidth = ScreenManager.sharedInstance.tooltipMaxWidth()
         return preferences
     }
 }
@@ -52,7 +54,9 @@ public class TapTip : NSObject, EasyTipViewDelegate {
         super.init()
 
         var preferences = asTop ? UITooltips.sharedInstance.tipAbove() : UITooltips.sharedInstance.tipBelow()
-        preferences.positioning.maxWidth = width ?? preferences.positioning.maxWidth
+        if let w = width {
+            preferences.positioning.maxWidth = min(w, ScreenManager.sharedInstance.tooltipMaxWidth())
+        }
         tipView = EasyTipView(text: text, preferences: preferences, delegate: self)
         tapRecognizer = UITapGestureRecognizer(target: self, action: #selector(showTip))
         tapRecognizer.numberOfTapsRequired = numTaps

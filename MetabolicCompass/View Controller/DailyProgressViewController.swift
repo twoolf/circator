@@ -10,6 +10,7 @@ import Foundation
 import UIKit
 import MetabolicCompassKit
 import Async
+import SwiftDate
 
 enum UIUserInterfaceIdiom : Int
 {
@@ -61,6 +62,9 @@ class DailyProgressViewController : UIViewController, DailyChartModelProtocol {
     @IBOutlet weak var maxDailyFastingContainer: UIView!
     @IBOutlet weak var lastAteContainer: UIView!
 
+    @IBOutlet weak var scrollRecentButton: UIButton!
+    @IBOutlet weak var scrollOlderButton: UIButton!
+
     private var dailyEatingTip: TapTip! = nil
     private var maxDailyFastingTip: TapTip! = nil
     private var lastAteTip: TapTip! = nil
@@ -98,8 +102,17 @@ class DailyProgressViewController : UIViewController, DailyChartModelProtocol {
         }
 
         self.dailyProgressChartView.prepareChart()
+
+        self.scrollRecentButton.setImage(UIImage(named: "icon-daily-progress-scroll-recent"), forState: .Normal)
+        self.scrollOlderButton.setImage(UIImage(named: "icon-daily-progress-scroll-older"), forState: .Normal)
+
+        self.scrollRecentButton.addTarget(self, action: #selector(scrollRecent), forControlEvents: .TouchUpInside)
+        self.scrollOlderButton.addTarget(self, action: #selector(scrollOlder), forControlEvents: .TouchUpInside)
+
+        self.scrollRecentButton.enabled = false
+        self.scrollOlderButton.enabled = true
     }
-    
+
     override func viewDidAppear(animated: Bool) {
         super.viewDidAppear(animated)
         let width = self.dailyProgressChartScrollView.contentSize.width
@@ -125,17 +138,19 @@ class DailyProgressViewController : UIViewController, DailyChartModelProtocol {
         maxDailyFastingContainer.addGestureRecognizer(maxDailyFastingTip.tapRecognizer)
         maxDailyFastingContainer.userInteractionEnabled = true
 
-        let lastAteMsg = "Time (in hours and minutes) since your last meal"
+        let lastAteMsg = "Time elapsed since your last meal (in hours and minutes)"
         lastAteTip = TapTip(forView: lastAteContainer, text: lastAteMsg, asTop: true)
         lastAteContainer.addGestureRecognizer(lastAteTip.tapRecognizer)
         lastAteContainer.userInteractionEnabled = true
     }
 
-    func contentDidUpdate() {
+    func contentDidUpdate(withDailyProgress dailyProgress: Bool = true) {
         Async.main {
-            self.activityIndicator.startAnimating()
+            if self.activityIndicator != nil {
+                self.activityIndicator.startAnimating()
+            }
             self.dailyChartModel.prepareChartData()
-            self.dailyChartModel.getDailyProgress()
+            if dailyProgress { self.dailyChartModel.getDailyProgress() }
         }
     }
     
@@ -172,6 +187,42 @@ class DailyProgressViewController : UIViewController, DailyChartModelProtocol {
             self.chartLegendHeight.constant -= 10
         } else if DeviceType.IS_IPHONE_5 {
             self.chartLegendHeight.constant -= 5
+        }
+    }
+
+    func scrollRecent() {
+        var newDate: NSDate? = nil
+        if let date = self.dailyChartModel.getEndDate() {
+            if !date.isInToday() {
+                let today = NSDate()
+                newDate = today < (date + 1.weeks) ? today : (date + 1.weeks)
+
+                self.scrollRecentButton.enabled = !(newDate?.isInSameDayAsDate(today) ?? false)
+                self.scrollOlderButton.enabled = true
+
+                log.info("SCROLL recent to \(newDate)")
+                self.dailyChartModel.setEndDate(newDate)
+                self.dailyProgressChartDaysTable.reloadData()
+                self.contentDidUpdate(withDailyProgress: false)
+            }
+        }
+    }
+
+    func scrollOlder() {
+        var newDate: NSDate? = nil
+        if let date = self.dailyChartModel.getEndDate() {
+            let oldest = 3.months.ago
+            if !date.isInSameDayAsDate(oldest) {
+                newDate = (date - 1.weeks) < oldest ? oldest : (date - 1.weeks)
+
+                self.scrollOlderButton.enabled = !(newDate?.isInSameDayAsDate(oldest) ?? false)
+                self.scrollRecentButton.enabled = true
+
+                log.info("SCROLL older to \(newDate)")
+                self.dailyChartModel.setEndDate(newDate)
+                self.dailyProgressChartDaysTable.reloadData()
+                self.contentDidUpdate(withDailyProgress: false)
+            }
         }
     }
 

@@ -14,7 +14,7 @@ class DashboardComparisonController: UIViewController, UITableViewDelegate, UITa
     private let dashboardComparisonCellIdentifier = "ComparisonCell"
     @IBOutlet weak var tableView: UITableView!
 
-    var comparisonTip: TapTip! = nil
+    var comparisonTips: [Int:TapTip] = [:]
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -57,6 +57,10 @@ class DashboardComparisonController: UIViewController, UITableViewDelegate, UITa
         let cell = tableView.dequeueReusableCellWithIdentifier(dashboardComparisonCellIdentifier, forIndexPath: indexPath) as! DashboardComparisonCell
         let sampleType = PreviewManager.previewSampleTypes[indexPath.row]
         cell.sampleType = sampleType
+
+        let active = QueryManager.sharedManager.isQueriedType(sampleType)
+        cell.setPopulationFiltering(active)
+
         let timeSinceRefresh = NSDate().timeIntervalSinceDate(PopulationHealthManager.sharedManager.aggregateRefreshDate)
         let refreshPeriod = UserManager.sharedManager.getRefreshFrequency() ?? Int.max
         let stale = timeSinceRefresh > Double(refreshPeriod)
@@ -65,12 +69,13 @@ class DashboardComparisonController: UIViewController, UITableViewDelegate, UITa
                          populationAverageData: PopulationHealthManager.sharedManager.mostRecentAggregates[sampleType] ?? [],
                          stalePopulation: stale)
 
-        if indexPath.section == 0 && indexPath.row == 0 && comparisonTip == nil {
+        if indexPath.section == 0 && indexPath.row < 3 && comparisonTips[indexPath.row] == nil {
             let targetView = cell
 
-            let desc = "This table helps you compare your personal health stats (left column) to the aggregate population stats (right column) in our study. You can pick which measures to display with the Manage button, and change the population compared with the Filter button."
-            comparisonTip = TapTip(forView: targetView, text: desc, width: 350, numTaps: 2, numTouches: 2, asTop: false)
-            targetView.addGestureRecognizer(comparisonTip.tapRecognizer)
+            let desc = "This table helps you compare your personal health stats (left column) to our study population's stats (right column). We show values older than 24 hours in yellow. You can pick which measures to display with the Manage button, and change the population compared with the Filter button."
+
+            comparisonTips[indexPath.row] = TapTip(forView: targetView, text: desc, width: 350, numTaps: 2, numTouches: 2, asTop: false)
+            targetView.addGestureRecognizer(comparisonTips[indexPath.row]!.tapRecognizer)
             targetView.userInteractionEnabled = true
         }
 
