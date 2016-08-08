@@ -17,7 +17,6 @@ import SwiftDate
 import SwiftyUserDefaults
 import SwiftyBeaver
 
-
 public let noAnchor = HKQueryAnchor(fromValue: Int(HKAnchoredObjectQueryNoAnchor))
 
 // Randomized, truncated exponential backoff constants
@@ -732,7 +731,7 @@ public class UploadManager: NSObject {
             guard success else { return }
             HealthManager.sharedManager.stopAllBackgroundObservers { (success, error) in
                 guard success && error == nil else {
-                    log.error(error)
+                    self.log.error(error)
                     return
                 }
                 self.logEntryUploadAsync?.cancel()

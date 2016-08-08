@@ -12,7 +12,7 @@ import Crashlytics
 import SwiftDate
 import Async
 import SwiftChart
-import MCcircadianQueries
+//import MCcircadianQueries
 import SwiftyBeaver
 
 /// initializations of these variables creates offsets so plots of event transitions are square waves

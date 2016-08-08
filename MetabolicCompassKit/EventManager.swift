@@ -11,7 +11,7 @@ import EventKit
 import HealthKit
 import WatchConnectivity
 import SwiftyUserDefaults
-import MCcircadianQueries
+//import MCcircadianQueries
 import SwiftyBeaver
 
 

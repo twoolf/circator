@@ -14,7 +14,7 @@ import Crashlytics
 import SwiftDate
 import Pages
 import Async
-import MCcircadianQueries
+//import MCcircadianQueries
 
 /**
  This class controls thedisplay of correlation plots (2nd button from left on bottom of the screen).  The type of correlation that is used will show two curves (with different y-values) moving along in a similar way if they are correlated (e.g. both increasing linearly).  If only one variable is increasing, while the other is seen to fluctuate throughout that time, then the two variables are most likely not correlated.

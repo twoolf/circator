@@ -10,7 +10,7 @@ import UIKit
 import SwiftDate
 import MetabolicCompassKit
 import HealthKit
-import MCcircadianQueries
+//import MCcircadianQueries
 import SwiftyBeaver
 
 enum MealType: String {

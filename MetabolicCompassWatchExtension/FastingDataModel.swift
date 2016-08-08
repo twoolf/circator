@@ -8,10 +8,10 @@
 
 import Foundation
 import HealthKit
-import MCcircadianQueries
+//import MCcircadianQueries
 import SwiftyBeaver
-import MCcircadianQueries
 
+/*
 public enum SamplesCollectedIndex {
     case HKType(HKSampleType)
     case Other
@@ -189,4 +189,4 @@ public class FastingDataModel : NSObject {
         log.info("sd: \(self.samplesCollected)")
         MetricsStore.sharedInstance.samplesCollected = String(self.samplesCollected)
     }
-}
+} */

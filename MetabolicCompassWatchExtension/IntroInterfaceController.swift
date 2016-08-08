@@ -12,7 +12,7 @@ import Foundation
 import HealthKit
 import SwiftDate
 import ClockKit
-import MCcircadianQueries
+//import MCcircadianQueries
 //import SwiftyBeaver
 //import CocoaLumberjack
 
@@ -42,7 +42,7 @@ class IntroInterfaceController: WKInterfaceController, WCSessionDelegate  {
             session.delegate = self
             session.activateSession()
         }
-        FastingDataModel()
+//        FastingDataModel()
     }
     
     func session(session: WCSession, didReceiveApplicationContext applicationContext: [String : AnyObject]) {
@@ -72,7 +72,7 @@ class IntroInterfaceController: WKInterfaceController, WCSessionDelegate  {
     override func didDeactivate() {
         super.didDeactivate()
         print("in didDeactivate of IntroInterfaceController")
-        FastingDataModel()
+//        FastingDataModel()
         func reloadComplications() {
             let server = CLKComplicationServer.sharedInstance()
             guard let complications = server.activeComplications where complications.count > 0 else {
@@ -86,7 +86,7 @@ class IntroInterfaceController: WKInterfaceController, WCSessionDelegate  {
         }
         
         reloadComplications()
-        func reloadDataTake2() {
+/*        func reloadDataTake2() {
             let stWorkout = 0.0
             let stSleep = 0.33
             let stFast = 0.66
@@ -209,9 +209,9 @@ class IntroInterfaceController: WKInterfaceController, WCSessionDelegate  {
                 })
             }
         }
-        
+ 
         reloadDataTake2()
-
+*/
  /*       func updateHealthInfo() {
             MCcircadianQueries.sharedManager.updateWeight();
             MCcircadianQueries.sharedManager.updateHeight();

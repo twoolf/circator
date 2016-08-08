@@ -33,7 +33,8 @@ extension HKQuantity {
 }
 
 public extension HKQuantityType {
-    override var aggregationOptions: HKStatisticsOptions {
+//    override var aggregationOptions: HKStatisticsOptions {
+        var aggregationOptions: HKStatisticsOptions {
         switch identifier {
         case HKCategoryTypeIdentifierSleepAnalysis:
             return .DiscreteAverage

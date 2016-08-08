@@ -16,7 +16,7 @@ import SwiftDate
 import Former
 import HTPressableButton
 import AKPickerView_Swift
-import MCcircadianQueries
+//import MCcircadianQueries
 import SwiftyBeaver
 
 public let MEMDidUpdateCircadianEvents = "MEMDidUpdateCircadianEvents"

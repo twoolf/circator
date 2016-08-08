@@ -12,13 +12,11 @@ import WatchConnectivity
 import Async
 import Alamofire
 import SwiftyJSON
-//import CocoaLumberjack
 import SwiftyUserDefaults
 import SwiftDate
 import AwesomeCache
-import MCcircadianQueries
+//import MCcircadianQueries
 import SwiftyBeaver
-
 
 // Constants.
 private let refDate  = NSDate(timeIntervalSinceReferenceDate: 0)
@@ -641,7 +639,7 @@ public class HealthManager: NSObject, WCSessionDelegate {
 
     public func stopAllBackgroundObservers(completion: (Bool, NSError?) -> Void) {
         healthKitStore.disableAllBackgroundDeliveryWithCompletion { (success, error) in
-            if !(success && error == nil) { log.error(error) }
+            if !(success && error == nil) { self.log.error(error) }
             else {
                 self.observerQueries.forEach { self.healthKitStore.stopQuery($0) }
                 self.observerQueries.removeAll()

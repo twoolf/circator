@@ -17,7 +17,7 @@ import ResearchKit
 import Pages
 import Charts
 import SwiftDate
-import MCcircadianQueries
+//import MCcircadianQueries
 import SwiftyBeaver
 
 let IntroViewTableViewCellIdentifier = "IntroViewTableViewCellIdentifier"

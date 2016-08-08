@@ -8,7 +8,7 @@ import Charts
 import SwiftDate
 import HealthKit
 import MetabolicCompassKit
-import MCcircadianQueries
+//import MCcircadianQueries
 import SwiftyBeaver
 
 enum ChartType {

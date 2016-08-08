@@ -9,7 +9,7 @@
 import UIKit
 import HealthKit
 import MetabolicCompassKit
-import MCcircadianQueries
+//import MCcircadianQueries
 
 /**
  This class supports our tables in the first view of dashboard.  The goals is to have properties set by the user and to keep a consistent theme.  The in-code constraints let us view immediately what has been defined.

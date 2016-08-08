@@ -8,6 +8,7 @@
 
 import SwiftyUserDefaults
 import HealthKit
+import SwiftyBeaver
 
 public enum Comparator : Int {
     case LT
@@ -57,6 +58,7 @@ public let noQuerySelected = -1
  - note: works with PopulationHealthManager, QueryBuilderViewController, QueryViewController
  */
 public class QueryManager {
+    private let log = SwiftyBeaver.self
     public static let sharedManager = QueryManager()
 
     var querySelected : Int = noQuerySelected
@@ -149,7 +151,7 @@ public class QueryManager {
     }
 
     private func refreshQueriedTypes() {
-        log.info("Refreshing queried types")
+        self.log.info("Refreshing queried types")
         if 0 <= querySelected && querySelected < queries.count {
             switch queries[querySelected].1 {
             case .ConjunctiveQuery(_, _, _, let predicates):
@@ -162,11 +164,11 @@ public class QueryManager {
                 }).0
 
                 queriedTypes = types.isEmpty ? nil : types
-                log.info("New queried types \(queriedTypes)")
+                self.log.info("New queried types \(queriedTypes)")
             }
         } else {
             queriedTypes = nil
-            log.info("Empty queried types \(queriedTypes)")
+            self.log.info("Empty queried types \(queriedTypes)")
         }
     }
 }

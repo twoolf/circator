@@ -13,7 +13,7 @@ import MetabolicCompassKit
 import SwiftDate
 import Async
 import AwesomeCache
-import MCcircadianQueries
+//import MCcircadianQueries
 import SwiftyBeaver
 
 @objc protocol DailyChartModelProtocol {

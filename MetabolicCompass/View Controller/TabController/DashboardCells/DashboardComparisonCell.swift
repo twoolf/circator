@@ -9,7 +9,7 @@
 import UIKit
 import HealthKit
 import MetabolicCompassKit
-import MCcircadianQueries  
+//import MCcircadianQueries
 
 class DashboardComparisonCell: UITableViewCell {
 
