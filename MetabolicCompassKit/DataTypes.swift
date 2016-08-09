@@ -6,6 +6,7 @@
 //  Copyright © 2016 Yanif Ahmad, Tom Woolf. All rights reserved.
 //
 
+/*
 import Foundation
 import HealthKit
 
@@ -1124,3 +1125,4 @@ public extension HKSampleType {
         }
     }
 }
+ */
