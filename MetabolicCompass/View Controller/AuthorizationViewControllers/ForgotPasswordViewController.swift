@@ -16,7 +16,7 @@ class ForgotPasswordViewController: BaseViewController, UITextFieldDelegate {
 
     override func viewDidLoad() {
         super.viewDidLoad()
-//        setupScroolViewForKeyboardsActions(containerScrollView)
+        self.setupScrollViewForKeyboardsActions(containerScrollView)
         emailTxtField.delegate = self
         emailTxtField.keyboardType = .EmailAddress
         emailTxtField.attributedPlaceholder = NSAttributedString(string: "E-mail".localized, attributes: [NSForegroundColorAttributeName : unselectedTextColor])
