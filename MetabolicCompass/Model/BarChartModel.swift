@@ -89,7 +89,7 @@ class BarChartModel : NSObject {
 
     //MARK: Prepate chart data
     func convertStatisticsValues(stisticsValues: [Double], forRange range: HealthManagerStatisticsRangeType) -> [ChartDataEntry] {
-        let indexIncrement = range == .Month ? 2 : 1;//For year and Month we add 2 for index because we ahve empty values on left and right to make a gap for xAxis
+        let indexIncrement = range == .Month || range == .Year ? 2 : 1;//For year and Month we add 2 for index because we ahve empty values on left and right to make a gap for xAxis
         //for week we have only one empty value left and right on xAxis
         var yVals: [ChartDataEntry] = []
 
@@ -438,7 +438,7 @@ class BarChartModel : NSObject {
     }
 
     func getYearTitles () -> [String]{
-        let numOfMonth = 12
+        let numOfMonth = 13
         let currentDate = NSDate()
         let dateYearAgo = currentDate - 1.years
         var prevYearMonthes: [NSDate] = []
