@@ -8,6 +8,7 @@
 
 import UIKit
 import HealthKit
+import MCcircadianQueries
 
 /**
  Controls the formatting and presentation style of all metrics.  Getting these units right and controlling their display is important for the user experience.  We use Apple's work with units in HealthKit to enable our population expressions to match up with those values from HealthKit

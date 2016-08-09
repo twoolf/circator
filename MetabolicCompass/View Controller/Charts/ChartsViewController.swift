@@ -10,6 +10,7 @@ import UIKit
 import Charts
 import HealthKit
 import MetabolicCompassKit
+import MCcircadianQueries
 
 enum DataRangeType : Int {
     case Week = 0

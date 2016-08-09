@@ -16,6 +16,7 @@ import SwiftDate
 import Former
 import HTPressableButton
 import AKPickerView_Swift
+import MCcircadianQueries
 
 public let MEMDidUpdateCircadianEvents = "MEMDidUpdateCircadianEvents"
 
@@ -348,7 +349,7 @@ public class AddEventTable: UITableView, UITableViewDelegate, UITableViewDataSou
         let typesAndPredicates = [sleepTy: datePredicate, workoutTy: datePredicate]
 
         // Aggregate sleep, exercise and meal events.
-        HealthManager.sharedManager.fetchSamples(typesAndPredicates) { (samples, error) -> Void in
+        MCcircadianQueries.sharedManager.fetchSamples(typesAndPredicates) { (samples, error) -> Void in
             guard error == nil else { log.error(error); return }
             let overlaps = samples.reduce(false, combine: { (acc, kv) in
                 guard !acc else { return acc }
@@ -378,7 +379,7 @@ public class AddEventTable: UITableView, UITableViewDelegate, UITableViewDataSou
                 return
             }
 
-            HealthManager.sharedManager.savePreparationAndRecoveryWorkout(
+            MCcircadianQueries.sharedManager.savePreparationAndRecoveryWorkout(
                 startTime, endDate: endTime, distance: 0.0, distanceUnit: HKUnit(fromString: "km"),
                 kiloCalories: 0.0, metadata: metadata)
             {
@@ -403,7 +404,7 @@ public class AddEventTable: UITableView, UITableViewDelegate, UITableViewDataSou
                 return
             }
 
-            HealthManager.sharedManager.saveWorkout(
+            MCcircadianQueries.sharedManager.saveWorkout(
                 startTime, endDate: endTime, activityType: workoutType,
                 distance: 0.0, distanceUnit: HKUnit(fromString: "km"), kiloCalories: 0.0, metadata: [:])
             {
@@ -796,7 +797,7 @@ public class DeleteEventTable: UITableView
             let endDate = NSDate()
             let startDate = endDate.dateByAddingTimeInterval(-(Double(mins) * 60.0))
             log.info("Delete circadian events between \(startDate) \(endDate)")
-            HealthManager.sharedManager.deleteCircadianEvents(startDate, endDate: endDate, completion: self.circadianOpCompletion)
+            MCcircadianQueries.sharedManager.deleteCircadianEvents(startDate, endDate: endDate, completion: self.circadianOpCompletion)
         }
     }
 
@@ -805,7 +806,7 @@ public class DeleteEventTable: UITableView
         let endDate = quickDelDates[1]
         if startDate < endDate {
             log.info("Delete circadian events between \(startDate) \(endDate)")
-            HealthManager.sharedManager.deleteCircadianEvents(startDate, endDate: endDate, completion: self.circadianOpCompletion)
+            MCcircadianQueries.sharedManager.deleteCircadianEvents(startDate, endDate: endDate, completion: self.circadianOpCompletion)
         } else {
             UINotifications.genericErrorOnView(self.notificationView ?? self.superview!, msg: "Start date must be before the end date")
         }

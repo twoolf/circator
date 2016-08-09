@@ -8,6 +8,7 @@ import Charts
 import SwiftDate
 import HealthKit
 import MetabolicCompassKit
+import MCcircadianQueries
 
 enum ChartType {
     case BarChart

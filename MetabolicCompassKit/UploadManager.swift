@@ -15,6 +15,7 @@ import Async
 import Granola
 import SwiftDate
 import SwiftyUserDefaults
+import MCcircadianQueries
 
 public let noAnchor = HKQueryAnchor(fromValue: Int(HKAnchoredObjectQueryNoAnchor))
 
@@ -637,7 +638,7 @@ public class UploadManager: NSObject {
             let dwend = NSDate(timeIntervalSinceReferenceDate: wend)
             let dwstart = UserManager.sharedManager.decrAnchorDate(dwend)
             let pred = HKQuery.predicateForSamplesWithStartDate(dwstart, endDate: dwend, options: .None)
-            HealthManager.sharedManager.fetchSamplesOfType(type, predicate: pred) { (samples, error) in
+            MCcircadianQueries.sharedManager.fetchSamplesOfType(type, predicate: pred) { (samples, error) in
                 guard error == nil else {
                     log.error("Could not get initial anchor samples for: \(tname) \(dwstart) \(dwend)")
                     return

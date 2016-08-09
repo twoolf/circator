@@ -12,6 +12,7 @@ import Crashlytics
 import SwiftDate
 import Async
 import SwiftChart
+import MCcircadianQueries
 
 /// initializations of these variables creates offsets so plots of event transitions are square waves
 private let stWorkout = 0.0
@@ -228,7 +229,7 @@ class EventTimeViewController : UIViewController {
         let yesterday = 1.days.ago
         let startDate = yesterday
 
-        HealthManager.sharedManager.fetchCircadianEventIntervals(startDate) { (intervals, error) -> Void in
+        MCcircadianQueries.sharedManager.fetchCircadianEventIntervals(startDate) { (intervals, error) -> Void in
             Async.main {
                 guard error == nil else {
                     log.error("Failed to fetch circadian events: \(error)")

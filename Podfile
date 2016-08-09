@@ -4,6 +4,7 @@ use_frameworks!
 
 def shared_pods
     pod 'ResearchKit', :git => 'https://github.com/twoolf/ResearchKit.git'
+    pod 'MCcircadianQueries', :git => 'https://github.com/twoolf/MCcircadianQueries.git'
     pod 'Charts', :git => 'https://github.com/danielgindi/ios-charts.git'
     pod 'Alamofire', '~> 2.0'
     pod 'Realm'
@@ -48,11 +49,17 @@ end
 target 'MetabolicCompassWatchExtension' do 
  platform :watchos, '2.0'
  pod 'SwiftDate'
+ pod 'SwiftyBeaver',  ‘= 0.5.4'
+ pod 'AwesomeCache'
+ pod 'MCcircadianQueries', :git => 'https://github.com/twoolf/MCcircadianQueries.git'
 end
 
 target 'MetabolicCompassWatch' do
  platform :watchos, '2.0'
  pod 'SwiftDate'
+ pod 'SwiftyBeaver',  ‘= 0.5.4'
+ pod 'AwesomeCache'
+ pod 'MCcircadianQueries', :git => 'https://github.com/twoolf/MCcircadianQueries.git'
 end
 
 post_install do |installer|
