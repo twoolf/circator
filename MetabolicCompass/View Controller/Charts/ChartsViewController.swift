@@ -55,13 +55,11 @@ class ChartsViewController: UIViewController {
 
     // MARK :- Base preparation
     func updateChartsData () {
-        if !activityIndicator.isAnimating() {
-            activityIndicator.startAnimating()
-            chartsModel.getAllDataForCurrentPeriod() {
-                self.activityIndicator.stopAnimating()
-                self.collectionView.reloadData()
-            }
-        }
+        activityIndicator.startAnimating()
+        chartsModel.getAllDataForCurrentPeriod({ 
+            self.activityIndicator.stopAnimating()
+            self.collectionView.reloadData()
+        })
     }
 
     func registerCells () {
@@ -92,7 +90,6 @@ class ChartsViewController: UIViewController {
         self.segmentControl = sender
         var showCorrelate = false
         let correlateSegment = sender.numberOfSegments-1
-
         switch sender.selectedSegmentIndex {
             case HealthManagerStatisticsRangeType.Month.rawValue:
                 chartsModel.rangeType = .Month
