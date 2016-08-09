@@ -34,29 +34,21 @@ class MealTimesInterfaceController: WKInterfaceController {
     
     @IBAction func onDinner() {
         mealTypebyButton.mealType = "Dinner"
-        print("Dinner selected")
-        print(mealTypebyButton.mealType)
         pushControllerWithName("MealInterfaceController", context: self)
     }
     
     @IBAction func onLunch() {
         mealTypebyButton.mealType = "Lunch"
-        print("Lunch selected")
-        print(mealTypebyButton.mealType)
         pushControllerWithName("MealInterfaceController", context: self)
     }
     
     @IBAction func onBreakfast() {
         mealTypebyButton.mealType = "Breakfast"
-        print("Breakfast selected:  and variable --")
-        print(mealTypebyButton.mealType)
         pushControllerWithName("MealInterfaceController", context: self)
     }
     
     @IBAction func onSnack() {
         mealTypebyButton.mealType = "Snack"
-        print("Snack selected:  and variable --")
-        print(mealTypebyButton.mealType)
         pushControllerWithName("MealInterfaceController", context: self)
     }
     

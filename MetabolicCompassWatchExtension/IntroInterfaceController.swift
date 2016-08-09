@@ -1018,7 +1018,12 @@ class IntroInterfaceController: WKInterfaceController, WCSessionDelegate  {
                     let today = NSDate().startOf(.Day, inRegion: Region())
                     let lastAte : NSDate? = stats.1 == 0 ? nil : ( startDate + Int(round(stats.1 * 3600.0)).seconds )
                     print("stored lastAteAsNSDate \(lastAte)")
-                    MetricsStore.sharedInstance.lastAteAsNSDate = lastAte!
+                    if (lastAte != nil) {
+                        MetricsStore.sharedInstance.lastAteAsNSDate = lastAte!
+                    }
+                    else {
+                        MetricsStore.sharedInstance.lastAteAsNSDate = NSDate()
+                    }
                     
                     let fastingHrs = Int(floor(stats.2))
                     let fastingMins = (today + Int(round((stats.2 % 1.0) * 60.0)).minutes).toString(DateFormat.Custom("mm"))!

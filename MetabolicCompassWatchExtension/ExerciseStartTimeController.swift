@@ -159,6 +159,10 @@ class ExerciseStartTimeController: WKInterfaceController {
     
     @IBAction func onExerciseStartSaveButton() {
         showButton()
+        dispatch_after(3,
+            dispatch_get_main_queue()){
+                self.popToRootController()
+        }
     }
     
 }

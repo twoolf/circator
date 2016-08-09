@@ -121,6 +121,10 @@ class SleepTimesInterfaceController: WKInterfaceController {
     
     @IBAction func onButtonSave() {
         showButton()
+        dispatch_after(3,
+            dispatch_get_main_queue()){
+                self.popToRootController()
+        }
     }
     
     @IBAction func onSleepTimePick(value: Int) {

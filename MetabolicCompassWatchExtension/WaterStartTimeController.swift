@@ -129,6 +129,10 @@ class WaterStartTimeController: WKInterfaceController {
     
     @IBAction func onWaterStartTimeButton() {
         showButton()
+        dispatch_after(3,
+                       dispatch_get_main_queue()){
+                        self.popToRootController()
+        }
     }
 
 }
