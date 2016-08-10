@@ -16,27 +16,21 @@ import SwiftyUserDefaults
 class CorrelationChartsViewController: UIViewController, UITableViewDelegate, UITableViewDataSource {
     //MARK: - IB VARS
     @IBOutlet weak var activityIndicator: UIActivityIndicatorView!
-    
-    @IBAction func segmentControlChanged(sender: UISegmentedControl) {
-        scatterChartContainer.hidden = sender.selectedSegmentIndex > 0
-        correlatoinChartContainer.hidden = !scatterChartContainer.hidden
-    }
-    
     @IBOutlet weak var tableView: UITableView!
     @IBOutlet weak var scatterChartContainer: UIView!
     @IBOutlet weak var correlatoinChartContainer: UIView!
-    
     @IBOutlet weak var scatterCh: ScatterCorrelcationCell!
     @IBOutlet weak var correlCh: TwoLineCorrelcationCell!
+    
     //MARK: - VARS
     internal var data: [HKSampleType] = PreviewManager.chartsSampleTypes
     private var rangeType = DataRangeType.Week
     private let scatterChartsModel = BarChartModel()
     private let lineChartsModel = BarChartModel()
-
     private let TopCorrelationType = DefaultsKey<Int?>("TopCorrelationType")
     private let BottomCorrelationType = DefaultsKey<Int?>("BottomCorrelationType")
-
+    var scatterChartMode: Bool = true
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         
@@ -44,32 +38,22 @@ class CorrelationChartsViewController: UIViewController, UITableViewDelegate, UI
         self.selectedPickerRows[1] = Defaults[BottomCorrelationType] != nil ? Defaults[BottomCorrelationType]! : -1
         
         self.pickerView.reloadAllComponents()
-       self.tableView.reloadData()
-        
+        self.tableView.reloadData()
         scatterCh = NSBundle.mainBundle().loadNibNamed("ScatterCorrelcationCell", owner: self, options: nil).last as? ScatterCorrelcationCell
         correlCh = NSBundle.mainBundle().loadNibNamed("TwoLineCorrelcationCell", owner: self, options: nil).last as? TwoLineCorrelcationCell
-        scatterCh?.frame = correlatoinChartContainer.bounds
-        correlCh?.frame = correlatoinChartContainer.bounds
-
         scatterChartContainer.addSubview(scatterCh!)
         correlatoinChartContainer.addSubview(correlCh!)
-        
-        scatterChartContainer.hidden = false
-        correlatoinChartContainer.hidden = true
+        scatterCh?.frame = correlatoinChartContainer.bounds
+        correlCh?.frame = correlatoinChartContainer.bounds
+        scatterChartContainer.hidden = !scatterChartMode
+        correlatoinChartContainer.hidden = scatterChartMode
         
         let px = 1 / UIScreen.mainScreen().scale
         let frame = CGRectMake(0, 0, self.tableView.frame.size.width, px)
         let line: UIView = UIView(frame: frame)
         self.tableView.tableHeaderView = line
         line.backgroundColor = self.tableView.separatorColor
-
     }
-
-    override func didReceiveMemoryWarning() {
-        super.didReceiveMemoryWarning()
-        // Dispose of any resources that can be recreated.
-    }
-    
 
 //MARK: VC Legacy methods: should be moved to super class
     func updateChartsData () {
@@ -80,7 +64,6 @@ class CorrelationChartsViewController: UIViewController, UITableViewDelegate, UI
                 self.updateChartData()
             }
         }
-
     }
     
     override func viewWillAppear(animated: Bool) {
@@ -118,8 +101,7 @@ class CorrelationChartsViewController: UIViewController, UITableViewDelegate, UI
         if (self.selectedIndexPath == indexPath) {
             self.selectedIndexPath = nil
             assistTextField.resignFirstResponder()
-        }
-        else {
+        } else {
             self.selectedIndexPath = indexPath
             assistTextField.becomeFirstResponder()
         }
@@ -251,6 +233,7 @@ class CorrelationChartsViewController: UIViewController, UITableViewDelegate, UI
     
     lazy var assistTextField : UITextField = {
         let tv = UITextField(frame: self.tableView.frame)
+        tv.tintColor = UIColor.clearColor()
         tv.inputView = self.pickerView
         tv.inputAccessoryView = {
             let view = UIToolbar()
@@ -265,10 +248,10 @@ class CorrelationChartsViewController: UIViewController, UITableViewDelegate, UI
                 UIBarButtonItem(barButtonSystemItem: .FlexibleSpace, target: nil, action: nil),
                 button
             ]
-            
             return view
-            }()
+        }()
         self.tableView.addSubview(tv)
+        self.tableView.sendSubviewToBack(tv)
         return tv
     }()
     

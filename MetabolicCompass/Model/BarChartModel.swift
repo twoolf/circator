@@ -20,7 +20,8 @@ class BarChartModel : NSObject {
 
     var rangeType: HealthManagerStatisticsRangeType = HealthManagerStatisticsRangeType.Week
     var typesChartData: [String: ChartData] = [:]
-
+    var _chartDataOperationQueue: NSOperationQueue = NSOperationQueue()
+    
     private var chartTypeToQuantityType: [String: ChartType] = [HKQuantityTypeIdentifierDietaryEnergyConsumed : .BarChart,
                                                                 HKQuantityTypeIdentifierBasalEnergyBurned : .BarChart,
                                                                 HKQuantityTypeIdentifierStepCount : .BarChart,
@@ -44,13 +45,6 @@ class BarChartModel : NSObject {
                                                                 HKQuantityTypeIdentifierBloodPressureSystolic : .ScatterChart,
                                                                 HKQuantityTypeIdentifierBloodPressureDiastolic : .ScatterChart,
                                                                 HKQuantityTypeIdentifierUVExposure : .ScatterChart]
-
-//    override init() {
-//        super.init()
-//        if #available(iOS 9.3, *) {//only for ios 9.3
-//            chartTypeToQuantityType [HKQuantityTypeIdentifierAppleExerciseTime] = .BarChart
-//        }
-//    }
 
     //MARK: Data for YEAR
     func getChartDataForYear(type: ChartType, values: [Double], minValues: [Double]?) -> ChartData {
@@ -90,7 +84,7 @@ class BarChartModel : NSObject {
 
     //MARK: Prepate chart data
     func convertStatisticsValues(stisticsValues: [Double], forRange range: HealthManagerStatisticsRangeType) -> [ChartDataEntry] {
-        let indexIncrement = range == .Month ? 2 : 1;//For year and Month we add 2 for index because we ahve empty values on left and right to make a gap for xAxis
+        let indexIncrement = range == .Month || range == .Year ? 2 : 1;//For year and Month we add 2 for index because we ahve empty values on left and right to make a gap for xAxis
         //for week we have only one empty value left and right on xAxis
         var yVals: [ChartDataEntry] = []
 
@@ -300,15 +294,10 @@ class BarChartModel : NSObject {
 
     // MARK :- Get all data for type
     
-    var _getAllSamplesDispatchGroup : dispatch_group_t!
-    
     func getAllDataForCurrentPeriodForSamlpe(qType : HKSampleType,  _chartType: ChartType?) {
-        
-        dispatch_group_enter(_getAllSamplesDispatchGroup)
-        
+
         if #available(iOS 9.3, *) {
             if qType.identifier == HKQuantityTypeIdentifierAppleExerciseTime {
-                dispatch_group_leave(_getAllSamplesDispatchGroup)
                 return
             }
         }
@@ -326,7 +315,6 @@ class BarChartModel : NSObject {
                 if values.count > 0 {
                     self.typesChartData[key] = self.getChartDataForRange(self.rangeType, type: chartType!, values: values[0], minValues: values[1])
                 }
-                dispatch_group_leave(self._getAllSamplesDispatchGroup)
             }
         } else if type == HKQuantityTypeIdentifierBloodPressureSystolic {
             // We should also get data for HKQuantityTypeIdentifierBloodPressureDiastolic
@@ -337,35 +325,34 @@ class BarChartModel : NSObject {
                                                                               systolicMax: values[0], systolicMin: values[1],
                                                                               diastolicMax: values[2], diastolicMin: values[3])
                 }
-                dispatch_group_leave(self._getAllSamplesDispatchGroup)
             }
         } else {
             HealthManager.sharedManager.getChartDataForQuantity(qType, inPeriod: self.rangeType) { obj in
                 let values = obj as! [Double]
                 self.typesChartData[key] = self.getChartDataForRange(self.rangeType, type: chartType!, values: values, minValues: nil)
-                dispatch_group_leave(self._getAllSamplesDispatchGroup)
             }
         }
     }
     
     func gettAllDataForSpecifiedType(chartType: ChartType, completion: () -> Void) {
-        _getAllSamplesDispatchGroup = dispatch_group_create()
+        resetOperation()
         for qType in PreviewManager.chartsSampleTypes {
-            getAllDataForCurrentPeriodForSamlpe(qType, _chartType: chartType)
+            _chartDataOperationQueue.addOperationWithBlock({
+                self.getAllDataForCurrentPeriodForSamlpe(qType, _chartType: chartType)
+            })
         }
-        dispatch_group_notify(_getAllSamplesDispatchGroup, dispatch_get_main_queue()) {
-            completion()
-        }
+        addCompletionForOperationQueue(completion)
     }
-
+    
     func getAllDataForCurrentPeriod(completion: () -> Void) {
-        _getAllSamplesDispatchGroup = dispatch_group_create()
+        //always reset current operation queue before start new one
+        resetOperation()
         for qType in PreviewManager.chartsSampleTypes {
-            getAllDataForCurrentPeriodForSamlpe(qType, _chartType: nil)
+            _chartDataOperationQueue.addOperationWithBlock({ 
+                self.getAllDataForCurrentPeriodForSamlpe(qType, _chartType: nil)
+            })
         }
-        dispatch_group_notify(_getAllSamplesDispatchGroup, dispatch_get_main_queue()) {
-            completion()
-        }
+        addCompletionForOperationQueue(completion)
     }
 
     // MARK :- Chart titles for X
@@ -439,7 +426,7 @@ class BarChartModel : NSObject {
     }
 
     func getYearTitles () -> [String]{
-        let numOfMonth = 12
+        let numOfMonth = 13
         let currentDate = NSDate()
         let dateYearAgo = currentDate - 1.years
         var prevYearMonthes: [NSDate] = []
@@ -494,5 +481,18 @@ class BarChartModel : NSObject {
             return monthName + " \(date.day)"
         }
         return "\(date.day)"
+    }
+    
+    func addCompletionForOperationQueue(completion: () -> Void) {
+        _chartDataOperationQueue.operations.onFinish({
+            NSOperationQueue.mainQueue().addOperationWithBlock({
+                completion()
+            })
+        })
+    }
+    
+    func resetOperation () {
+        _chartDataOperationQueue.cancelAllOperations()
+        _chartDataOperationQueue = NSOperationQueue()
     }
 }

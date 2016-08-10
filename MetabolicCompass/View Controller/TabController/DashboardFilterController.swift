@@ -291,11 +291,11 @@ class DashboardFilterController: UIViewController, UITableViewDelegate, UITableV
     ]
 
     let metricFilterSpecs: FilterSpecs = [
-        ("Weight", HKQuantityTypeIdentifierBodyMass, [(0, 40, nil), (40, 65, nil), (65, 90, nil), (90, Int.max, nil)]),
+        ("Weight", HKQuantityTypeIdentifierBodyMass, [(0, 40, nil), (40, 65, nil), (65, 90, nil), (90, 1000, nil)]),
     ]
 
     let imperialFilterSpecs: FilterSpecs = [
-        ("Weight", HKQuantityTypeIdentifierBodyMass, [(0, 90, nil), (90, 140, nil), (140, 200, nil), (200, Int.max, nil)]),
+        ("Weight", HKQuantityTypeIdentifierBodyMass, [(0, 90, nil), (90, 140, nil), (140, 200, nil), (200, 1000, nil)]),
     ]
 
     func filterSpecsToItems(specs: FilterSpecs) -> [DashboardFilterItem] {
