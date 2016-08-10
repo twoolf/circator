@@ -14,9 +14,6 @@ import SwiftDate
 import ClockKit
 import MCcircadianQueries
 //import SwiftyBeaver
-//import CocoaLumberjack
-
-//let log = SwiftyBeaver.self
 
 class IntroInterfaceController: WKInterfaceController, WCSessionDelegate  {
     
@@ -31,6 +28,8 @@ class IntroInterfaceController: WKInterfaceController, WCSessionDelegate  {
     var heightLocalizedString:String = "5 ft"
     var proteinLocalizedString:String = "50 gms"
     
+    var model: FastingDataModel = FastingDataModel()
+    
     typealias HMCircadianAggregateBlock = (aggregates: [(NSDate, Double)], error: NSError?) -> Void
     
     var session : WCSession!
@@ -42,7 +41,6 @@ class IntroInterfaceController: WKInterfaceController, WCSessionDelegate  {
             session.delegate = self
             session.activateSession()
         }
-        //        FastingDataModel()
     }
     
     func session(session: WCSession, didReceiveApplicationContext applicationContext: [String : AnyObject]) {
@@ -71,8 +69,8 @@ class IntroInterfaceController: WKInterfaceController, WCSessionDelegate  {
     
     override func didDeactivate() {
         super.didDeactivate()
-        print("in didDeactivate of IntroInterfaceController")
         FastingDataModel()
+        print("updated fasting data model")
 
         func reloadComplications() {
             let server = CLKComplicationServer.sharedInstance()

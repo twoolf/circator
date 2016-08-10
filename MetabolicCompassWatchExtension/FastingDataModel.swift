@@ -31,11 +31,14 @@ public class FastingDataModel : NSObject {
     public var maxEntries: Int = 10
     public var collectedAsOtherThreshold: Double = 0.01
     
+    public var collectError: NSError?
+    
     override public init() {
         super.init()
+        updateData()
     }
     
-    public func updateData(completion: NSError? -> Void) {
+    public func updateData() {
         var someError: [NSError?] = []
         let group = dispatch_group_create()
         
@@ -49,8 +52,9 @@ public class FastingDataModel : NSObject {
             
             self.cumulativeWeeklyFasting = cFast
             self.cumulativeWeeklyNonFast = cNonFast
-            MetricsStore.sharedInstance.cumulativeWeeklyFasting = String(self.cumulativeWeeklyFasting)
-            MetricsStore.sharedInstance.cumulativeWeeklyNonFast = String(self.cumulativeWeeklyNonFast)
+            MetricsStore.sharedInstance.cumulativeWeeklyFasting = String(format: "%.1f h", (self.cumulativeWeeklyFasting / 3600.0))
+            MetricsStore.sharedInstance.cumulativeWeeklyNonFast = String(format: "%.1f h", (self.cumulativeWeeklyNonFast / 3600.0))
+            
             dispatch_group_leave(group)
         }
         
@@ -63,7 +67,7 @@ public class FastingDataModel : NSObject {
             }
             
             self.weeklyFastingVariability = variability
-            MetricsStore.sharedInstance.weeklyFastingVariability = String(self.weeklyFastingVariability)
+            MetricsStore.sharedInstance.weeklyFastingVariability = String(format: "%.1f h", (self.weeklyFastingVariability / 3600.0))
             dispatch_group_leave(group)
         }
         
@@ -77,8 +81,9 @@ public class FastingDataModel : NSObject {
             
             self.fastSleep = fSleep
             self.fastAwake = fAwake
-            MetricsStore.sharedInstance.fastSleep = String(self.fastSleep)
-            MetricsStore.sharedInstance.fastAwake = String(self.fastAwake)
+            MetricsStore.sharedInstance.fastSleep = String(format: "%.1f h", (self.fastSleep / 3600.0))
+            MetricsStore.sharedInstance.fastAwake = String(format: "%.1f h", (self.fastSleep / 3600.0))
+
             dispatch_group_leave(group)
         }
         
@@ -92,19 +97,12 @@ public class FastingDataModel : NSObject {
             
             self.fastEat = tEat
             self.fastExercise = tExercise
-            MetricsStore.sharedInstance.fastEat = String(self.fastEat)
-            MetricsStore.sharedInstance.fastExercise = String(self.fastExercise)
+            MetricsStore.sharedInstance.fastEat = String(format: "%.1f h", (self.fastEat / 3600.0))
+            MetricsStore.sharedInstance.fastExercise = String(format: "%.1f h", (self.fastExercise / 3600.0))
+
             dispatch_group_leave(group)
         }
         
     }
 }
-
-
-
-
-
-
-
-
 

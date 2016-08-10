@@ -5,7 +5,6 @@
 //  Created by twoolf on 6/15/16.
 //  Copyright © 2016 Yanif Ahmad, Tom Woolf. All rights reserved.
 //
-// same logic as sleep: endTime is first, then startTime
 
 import Foundation
 import WatchKit
@@ -58,8 +57,6 @@ class WaterTimesInterfaceController: WKInterfaceController {
     
     @IBAction func onWaterTimePick(value: Int) {
         waterBegin = value
-//        print("in water picker for begin time")
-//        print(waterBegin)
     }
 
     @IBAction func onWaterTimesEnter() {

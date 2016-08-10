@@ -24,30 +24,9 @@ class ExtensionDelegate: NSObject, WKExtensionDelegate, WCSessionDelegate {
     
     func applicationDidFinishLaunching() {
         setupWatchConnectivity()
-        //        setupNotificationCenter()
     }
     
-    /*    private func setupNotificationCenter() {
-     notificationCenter.addObserverForName(NotificationPurchasedMovieOnWatch, object: nil, queue: nil) { (notification:NSNotification) -> Void in
-     self.sendCurrentLabelsToPhone(notification)
-     }
-     }
-     */
-    
-    /*
-     private func sendCurrentLabelsToPhone(notification:NSNotification) {
-     if WCSession.isSupported() {
-     if let labels = HealthManager.sharedManager.mostRecentSamples[sampleType] {
-     do {
-     let dictionary = ["label": currentLabels]
-     try WCSession.defaultSession().updateApplicationContext(dictionary)
-     } catch {
-     print("ERROR: \(error)")
-     }
-     }
-     }
-     }
-     */
+ 
     private func setupWatchConnectivity() {
         if WCSession.isSupported() {
             let session  = WCSession.defaultSession()
@@ -66,27 +45,7 @@ class ExtensionDelegate: NSObject, WKExtensionDelegate, WCSessionDelegate {
         }
     }
     
-    /*
-     func session(session: WCSession,
-     didReceiveApplicationContext
-     applicationContext:[String:AnyObject]) {
-     if let testDict = applicationContext["testDict"] as? [String] {
-     dispatch_async(dispatch_get_main_queue()) { () -> Void in
-     WKInterfaceController.reloadRootControllersWithNames(
-     ["testDict"], contexts: nil)
-     } }
-     }
-     */
-    /*
-     func session(session: WCSession, didReceiveApplicationContext applicationContext: [String : AnyObject]) {
-     print("Phone->Watch Receiving Context: \(applicationContext)")
-     if let currentLabels = applicationContext["labels"] as? [String] {
-     HealthManager.
-     dispatch_async(dispatch_get_main_queue()) { () -> Void in
-     WKInterfaceController.reloadRootControllersWithNames(["labels"], contexts: nil)
-     }
-     }
-     }
-     */
+ 
+
 }
 

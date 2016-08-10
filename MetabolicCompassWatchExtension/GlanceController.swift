@@ -66,14 +66,14 @@ class GlanceController: WKInterfaceController {
         fatString            = "     Fat:    " + MetricsStore.sharedInstance.Fat
         stepsString          = "     Steps:  " + MetricsStore.sharedInstance.StepCount
         
-        cumulativeWeeklyFastingString = "Wk Fast: " + MetricsStore.sharedInstance.cumulativeWeeklyFasting
-        cumulativeWeeklyNonFastString = "Wkly Non-Fasting: " + MetricsStore.sharedInstance.cumulativeWeeklyNonFast
+        cumulativeWeeklyFastingString = "WkF:" + MetricsStore.sharedInstance.cumulativeWeeklyFasting
+        cumulativeWeeklyNonFastString = "WklyNFst: " + MetricsStore.sharedInstance.cumulativeWeeklyNonFast
         weeklyFastingVariabilityString = "Fst Var: " + MetricsStore.sharedInstance.weeklyFastingVariability
         samplesCollectedString = "# Samples Collected: " + MetricsStore.sharedInstance.samplesCollected
         fastSleepString = "fast to Sleep: " + MetricsStore.sharedInstance.fastSleep
         fastAwakeString = "fast to Awake: " + MetricsStore.sharedInstance.fastAwake
-        fastEatString = "fast to Eating: " + MetricsStore.sharedInstance.fastEat
-        fastExerciseString = "fast to Exercise: " + MetricsStore.sharedInstance.fastExercise
+        fastEatString = "fast to Eat: " + MetricsStore.sharedInstance.fastEat
+        fastExerciseString = "fast to Exer: " + MetricsStore.sharedInstance.fastExercise
         
         secondRow.setText(cumulativeWeeklyFastingString)
         thirdRowString =
