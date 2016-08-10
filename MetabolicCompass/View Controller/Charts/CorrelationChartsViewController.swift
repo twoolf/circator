@@ -101,8 +101,7 @@ class CorrelationChartsViewController: UIViewController, UITableViewDelegate, UI
         if (self.selectedIndexPath == indexPath) {
             self.selectedIndexPath = nil
             assistTextField.resignFirstResponder()
-        }
-        else {
+        } else {
             self.selectedIndexPath = indexPath
             assistTextField.becomeFirstResponder()
         }
@@ -234,6 +233,7 @@ class CorrelationChartsViewController: UIViewController, UITableViewDelegate, UI
     
     lazy var assistTextField : UITextField = {
         let tv = UITextField(frame: self.tableView.frame)
+        tv.tintColor = UIColor.clearColor()
         tv.inputView = self.pickerView
         tv.inputAccessoryView = {
             let view = UIToolbar()
@@ -248,10 +248,10 @@ class CorrelationChartsViewController: UIViewController, UITableViewDelegate, UI
                 UIBarButtonItem(barButtonSystemItem: .FlexibleSpace, target: nil, action: nil),
                 button
             ]
-            
             return view
-            }()
+        }()
         self.tableView.addSubview(tv)
+        self.tableView.sendSubviewToBack(tv)
         return tv
     }()
     
