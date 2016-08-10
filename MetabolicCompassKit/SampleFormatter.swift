@@ -183,25 +183,23 @@ public class SampleFormatter: NSObject {
     private func numberFromMCSamples(samples: [MCSample]) -> Double {
         guard !samples.isEmpty else { return Double.quietNaN }
 
-        if let fst      = samples.first,
-               quantity = fst.numeralValue,
-               type     = fst.hkType
-        {
-            if let qtype = type as? HKQuantityType {
-                return numberFromMCSample(quantity, type: qtype)
-            }
+        if let fst = samples.first {
+            if let _ = fst.hkType as? HKQuantityType {
+                return numberFromMCSample(fst)
+            } else if let quantity = fst.numeralValue, type = fst.hkType {
+                switch type.identifier {
+                case HKWorkoutTypeIdentifier,
+                     HKCategoryTypeIdentifierSleepAnalysis,
+                     HKCategoryTypeIdentifierAppleStandHour:
 
-            switch type.identifier {
-            case HKWorkoutTypeIdentifier,
-                 HKCategoryTypeIdentifierSleepAnalysis,
-                 HKCategoryTypeIdentifierAppleStandHour:
+                    if let mcunit = type.defaultUnit, userUnit = UserManager.sharedManager.userUnitsForType(type) {
+                        return HKQuantity(unit: mcunit, doubleValue: quantity).doubleValueForUnit(userUnit)
+                    }
+                    return Double.quietNaN
 
-                return quantity
-                //let d = NSDate(timeIntervalSinceReferenceDate: quantity)
-                //return Double(d.hour) + (Double(d.minute) / 60.0)
-
-            default:
-                return Double.quietNaN
+                default:
+                    return Double.quietNaN
+                }
             }
         }
         return Double.quietNaN
@@ -210,55 +208,58 @@ public class SampleFormatter: NSObject {
     private func stringFromMCSamples(samples: [MCSample]) -> String {
         guard !samples.isEmpty else { return emptyString }
 
-        if let fst      = samples.first,
-               quantity = fst.numeralValue,
-               type     = fst.hkType
-        {
-            if let qtype = type as? HKQuantityType {
-                return stringFromMCSample(quantity, type: qtype)
-            }
+        if let fst = samples.first {
+            if let _ = fst.hkType as? HKQuantityType {
+                return stringFromMCSample(fst)
+            } else if let quantity = fst.numeralValue, type = fst.hkType {
+                switch type.identifier {
+                case HKWorkoutTypeIdentifier,
+                     HKCategoryTypeIdentifierSleepAnalysis,
+                     HKCategoryTypeIdentifierAppleStandHour:
 
-            switch type.identifier {
-            case HKWorkoutTypeIdentifier,
-                 HKCategoryTypeIdentifierSleepAnalysis,
-                 HKCategoryTypeIdentifierAppleStandHour:
+                    if let unit = type.defaultUnit {
+                        let secs = HKQuantity(unit: unit, doubleValue: quantity).doubleValueForUnit(HKUnit.secondUnit())
+                        return "\(SampleFormatter.timeIntervalFormatter.stringFromTimeInterval(secs)!)"
+                    }
+                    return emptyString
 
-                let secs = HKQuantity(unit: type.defaultUnit!, doubleValue: quantity).doubleValueForUnit(HKUnit.secondUnit())
-                return "\(SampleFormatter.timeIntervalFormatter.stringFromTimeInterval(secs)!)"
-
-            default:
-                return emptyString
+                default:
+                    return emptyString
+                }
             }
         }
         return emptyString
     }
 
     private func numberFromQuantity(quantity: HKQuantity, type: HKQuantityType) -> Double {
-        if let defaultUnit = type.defaultUnit {
-            return quantity.doubleValueForUnit(defaultUnit)
+        if let userUnit = UserManager.sharedManager.userUnitsForType(type) {
+            return quantity.doubleValueForUnit(userUnit)
         }
         return Double.quietNaN
     }
 
     private func stringFromQuantity(quantity: HKQuantity, type: HKQuantityType) -> String {
-        if let unit = type.defaultUnit {
-            let numericValue = quantity.doubleValueForUnit(unit)
+        if let userUnit = UserManager.sharedManager.userUnitsForType(type) {
+            let numericValue = quantity.doubleValueForUnit(userUnit)
             return stringFromNumberAndType(numericValue, type: type)
         }
         return emptyString
     }
 
-    private func numberFromMCSample(quantity: Double, type: HKSampleType) -> Double {
-        guard type.defaultUnit != nil else {
-            return Double.quietNaN
+    private func numberFromMCSample(sample: MCSample) -> Double {
+        if let type = sample.hkType, quantity = sample.numeralValue, userUnit = UserManager.sharedManager.userUnitsForType(type) {
+            return HKQuantity(unit: type.defaultUnit!, doubleValue: quantity).doubleValueForUnit(userUnit)
         }
-        return quantity
+        return Double.quietNaN
     }
 
-    private func stringFromMCSample(quantity: Double, type: HKSampleType) -> String {
-        return stringFromNumberAndType(quantity, type: type)
+    private func stringFromMCSample(sample: MCSample) -> String {
+        if let type = sample.hkType, quantity = sample.numeralValue, userUnit = UserManager.sharedManager.userUnitsForType(type) {
+            let convertedQuantity = HKQuantity(unit: type.defaultUnit!, doubleValue: quantity).doubleValueForUnit(userUnit)
+            return stringFromNumberAndType(convertedQuantity, type: type)
+        }
+        return emptyString
     }
-
 
     private func stringFromNumberAndType(numericValue: Double, type: HKSampleType) -> String {
         if let fmtnum = SampleFormatter.numberFormatter.stringFromNumber(numericValue) {
@@ -385,7 +386,10 @@ public class SampleFormatter: NSObject {
                  HKQuantityTypeIdentifierHeight,
                  HKQuantityTypeIdentifierDistanceWalkingRunning:
 
-                return fmtnum + " " + type.defaultUnit!.unitString
+                if let userUnit = UserManager.sharedManager.userUnitsForType(type) {
+                    return fmtnum + " " + userUnit.unitString
+                }
+                return emptyString
 
             default:
                 return emptyString

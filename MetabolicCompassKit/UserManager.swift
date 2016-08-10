@@ -7,6 +7,7 @@
 //
 
 import Foundation
+import HealthKit
 import Alamofire
 import Locksmith
 import Stormpath
@@ -1144,6 +1145,10 @@ public class UserManager {
             }
         }
         return HMConstants.sharedInstance.defaultToMetricUnits
+    }
+
+    public func userUnitsForType(type: HKSampleType) -> HKUnit? {
+        return type.unitForSystem(useMetricUnits())
     }
 
     // MARK: - Default meal & activity times
