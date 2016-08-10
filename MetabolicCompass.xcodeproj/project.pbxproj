@@ -104,6 +104,7 @@
 		842B7DD31D0960CB007F2126 /* ScatterChartCollectionCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 842B7DCF1D0960CB007F2126 /* ScatterChartCollectionCell.xib */; };
 		843B40941D364BCE0044691C /* PhysiologicalHeaderView.xib in Resources */ = {isa = PBXBuildFile; fileRef = 843B40931D364BCE0044691C /* PhysiologicalHeaderView.xib */; };
 		846E48891D59E1B7004CB794 /* Array+Extended.swift in Sources */ = {isa = PBXBuildFile; fileRef = 846E48881D59E1B7004CB794 /* Array+Extended.swift */; };
+		846E488C1D5AFF8E004CB794 /* AnalysisViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 846E488B1D5AFF8E004CB794 /* AnalysisViewController.swift */; };
 		84A16A601CE3630400D61935 /* UIImage+Extended.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84A16A5F1CE3630400D61935 /* UIImage+Extended.swift */; };
 		84AB38D01CEA0EFA00B7DB4E /* DailyProgressDayTableViewCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 84AB38CF1CEA0EFA00B7DB4E /* DailyProgressDayTableViewCell.xib */; };
 		84AB38D21CEA0F9900B7DB4E /* DailyProgressDayTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84AB38D11CEA0F9900B7DB4E /* DailyProgressDayTableViewCell.swift */; };
@@ -431,6 +432,7 @@
 		842B7DCF1D0960CB007F2126 /* ScatterChartCollectionCell.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = ScatterChartCollectionCell.xib; sourceTree = "<group>"; };
 		843B40931D364BCE0044691C /* PhysiologicalHeaderView.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = PhysiologicalHeaderView.xib; sourceTree = "<group>"; };
 		846E48881D59E1B7004CB794 /* Array+Extended.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "Array+Extended.swift"; sourceTree = "<group>"; };
+		846E488B1D5AFF8E004CB794 /* AnalysisViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AnalysisViewController.swift; sourceTree = "<group>"; };
 		84A16A5F1CE3630400D61935 /* UIImage+Extended.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "UIImage+Extended.swift"; sourceTree = "<group>"; };
 		84AB38CF1CEA0EFA00B7DB4E /* DailyProgressDayTableViewCell.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = DailyProgressDayTableViewCell.xib; sourceTree = "<group>"; };
 		84AB38D11CEA0F9900B7DB4E /* DailyProgressDayTableViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DailyProgressDayTableViewCell.swift; sourceTree = "<group>"; };
@@ -754,6 +756,14 @@
 				1C7107BF1D4B411C00C2B3D4 /* CorrelationTabeViewCell.swift */,
 			);
 			path = Charts;
+			sourceTree = "<group>";
+		};
+		846E488A1D5AFEB5004CB794 /* Analysis */ = {
+			isa = PBXGroup;
+			children = (
+				846E488B1D5AFF8E004CB794 /* AnalysisViewController.swift */,
+			);
+			path = Analysis;
 			sourceTree = "<group>";
 		};
 		84EF0EBE1D05767500A25760 /* AddEvents */ = {
@@ -1193,6 +1203,7 @@
 		F43A7C5F1BBDF43C00B6FA56 /* View Controller */ = {
 			isa = PBXGroup;
 			children = (
+				846E488A1D5AFEB5004CB794 /* Analysis */,
 				786818841D33040200CAE4ED /* Fasting */,
 				84EF0EBE1D05767500A25760 /* AddEvents */,
 				842B7DB51D095ED6007F2126 /* Charts */,
@@ -2007,6 +2018,7 @@
 				952470421CE9BC6C003E7EDF /* AppLogoLabel.swift in Sources */,
 				78B7342B1C90B87600693229 /* VariantViewController.swift in Sources */,
 				78B734271C90B86700693229 /* EventTimeViewController.swift in Sources */,
+				846E488C1D5AFF8E004CB794 /* AnalysisViewController.swift in Sources */,
 				786DEBB61D48FA7A00D6654E /* UITooltips.swift in Sources */,
 				84B727AD1D13E5B100839E54 /* RepeatedEventManagerViewController.swift in Sources */,
 				F42F5ADD1BDC85AF00195490 /* SampleDataAnalyzer.swift in Sources */,

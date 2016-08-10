@@ -65,7 +65,7 @@ func createNumberLabel(title: String, labelFontSize: CGFloat, value: Double, uni
 
 public class FastingViewController : UIViewController, ChartViewDelegate {
 
-    @IBOutlet weak var fastingView: UIView!
+//    @IBOutlet weak var fastingView: UIView!
 
     var activityIndicator: UIActivityIndicatorView! = nil
 
@@ -207,19 +207,19 @@ public class FastingViewController : UIViewController, ChartViewDelegate {
         }()
 
         stack.translatesAutoresizingMaskIntoConstraints = false
-        fastingView.addSubview(stack)
+        self.view.addSubview(stack)
 
         let constraints: [NSLayoutConstraint] = [
-            stack.topAnchor.constraintEqualToAnchor(fastingView.topAnchor),
-            stack.bottomAnchor.constraintEqualToAnchor(fastingView.bottomAnchor, constant: -10),
-            stack.leadingAnchor.constraintEqualToAnchor(fastingView.leadingAnchor),
-            stack.trailingAnchor.constraintEqualToAnchor(fastingView.trailingAnchor),
+            stack.topAnchor.constraintEqualToAnchor(self.view.topAnchor),
+            stack.bottomAnchor.constraintEqualToAnchor(self.view.bottomAnchor, constant: -10),
+            stack.leadingAnchor.constraintEqualToAnchor(self.view.leadingAnchor),
+            stack.trailingAnchor.constraintEqualToAnchor(self.view.trailingAnchor),
             //pieChartStack.heightAnchor.constraintEqualToConstant(300),
             sleepAwakeBalance.heightAnchor.constraintEqualToConstant(60),
             eatExerciseBalance.heightAnchor.constraintEqualToConstant(60),
             labelStack.heightAnchor.constraintEqualToConstant(80),
         ]
-        fastingView.addConstraints(constraints)
+        self.view.addConstraints(constraints)
     }
 
     func setupTooltips() {

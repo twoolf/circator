@@ -80,16 +80,16 @@ class ChartsViewController: UIViewController {
         self.navigationItem.leftBarButtonItem = manageBarButton
         self.navigationItem.title = NSLocalizedString("CHART", comment: "chart screen title")
         
-        let correlateButton = ScreenManager.sharedInstance.appNavButtonWithTitle("Correlate")
-        correlateButton.addTarget(self, action: #selector(correlateChart), forControlEvents: .TouchUpInside)
-        let corrButton = UIBarButtonItem(customView: correlateButton)
-        self.navigationItem.rightBarButtonItem = corrButton
+//        let correlateButton = ScreenManager.sharedInstance.appNavButtonWithTitle("Correlate")
+//        correlateButton.addTarget(self, action: #selector(correlateChart), forControlEvents: .TouchUpInside)
+//        let corrButton = UIBarButtonItem(customView: correlateButton)
+//        self.navigationItem.rightBarButtonItem = corrButton
     }
 
     @IBAction func rangeChanged(sender: UISegmentedControl) {
         self.segmentControl = sender
-        var showCorrelate = false
-        let correlateSegment = sender.numberOfSegments-1
+//        var showCorrelate = false
+//        let correlateSegment = sender.numberOfSegments-1
         switch sender.selectedSegmentIndex {
             case HealthManagerStatisticsRangeType.Month.rawValue:
                 chartsModel.rangeType = .Month
@@ -107,23 +107,23 @@ class ChartsViewController: UIViewController {
         self.presentViewController(manageController, animated: true) {}
     }
 
-    func correlateChart () {
-        if let correlateController = UIStoryboard(name: "TabScreens", bundle: nil).instantiateViewControllerWithIdentifier("correlatePlaceholder") as? UIViewController {
-            let leftButton = UIBarButtonItem(image: UIImage(named: "close-button"), style: .Plain, target: self, action: #selector(dismissCorrelateChart))
-
-            self.navigationItem.backBarButtonItem = UIBarButtonItem(title: "", style: .Plain, target: nil, action: nil)
-            self.navigationController?.pushViewController(correlateController, animated: true)
-            
-        }
-    }
-
-    func dismissCorrelateChart() {
-        dismissViewControllerAnimated(true) { _ in
-            if let sc = self.segmentControl {
-                sc.selectedSegmentIndex = 0
-                self.rangeChanged(sc)
-            }
-        }
-    }
+//    func correlateChart () {
+//        if let correlateController = UIStoryboard(name: "TabScreens", bundle: nil).instantiateViewControllerWithIdentifier("correlatePlaceholder") as? UIViewController {
+//            let leftButton = UIBarButtonItem(image: UIImage(named: "close-button"), style: .Plain, target: self, action: #selector(dismissCorrelateChart))
+//
+//            self.navigationItem.backBarButtonItem = UIBarButtonItem(title: "", style: .Plain, target: nil, action: nil)
+//            self.navigationController?.pushViewController(correlateController, animated: true)
+//            
+//        }
+//    }
+//
+//    func dismissCorrelateChart() {
+//        dismissViewControllerAnimated(true) { _ in
+//            if let sc = self.segmentControl {
+//                sc.selectedSegmentIndex = 0
+//                self.rangeChanged(sc)
+//            }
+//        }
+//    }
 
 }
