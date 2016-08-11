@@ -12,7 +12,7 @@ import Foundation
 import HealthKit
 import SwiftDate
 import ClockKit
-import MCcircadianQueries
+import MCCircadianQueries
 //import SwiftyBeaver
 
 class IntroInterfaceController: WKInterfaceController, WCSessionDelegate  {
@@ -116,7 +116,7 @@ class IntroInterfaceController: WKInterfaceController, WCSessionDelegate  {
          let yesterday = 1.days.ago
          let startDate = yesterday
          
-         MCcircadianQueries.sharedManager.fetchCircadianEventIntervals(startDate) { (intervals, error) -> Void in
+         MCCircadianQueries.sharedManager.fetchCircadianEventIntervals(startDate) { (intervals, error) -> Void in
          dispatch_async(dispatch_get_main_queue(), {
          guard error == nil else {
          print("Failed to fetch circadian events: \(error)")

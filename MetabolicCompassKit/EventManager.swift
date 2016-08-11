@@ -11,7 +11,7 @@ import EventKit
 import HealthKit
 import WatchConnectivity
 import SwiftyUserDefaults
-import MCcircadianQueries
+import MCCircadianQueries
 
 public let EKMStartSessionNotification = "EKMStartSessionNotification"
 
@@ -174,7 +174,7 @@ public class EventManager : NSObject, WCSessionDelegate {
                 }
             }
 
-            MCcircadianQueries.sharedManager.fetchPreparationAndRecoveryWorkout(false) { (results, error) in
+            MCCircadianQueries.sharedManager.fetchPreparationAndRecoveryWorkout(false) { (results, error) in
                 for workout in (results.map { $0 as! HKWorkout }) {
                     let dkey = DiningEventKey(start: workout.startDate, end: workout.endDate)
                     if let d = workout.metadata {
@@ -192,7 +192,7 @@ public class EventManager : NSObject, WCSessionDelegate {
                         log.debug("Writing food log " + sstr + "->" + estr + " " + eid.1)
 
                         let emeta = ["Source":"Calendar","EventId":String(eid.0), "Data":eid.1]
-                        MCcircadianQueries.sharedManager.savePreparationAndRecoveryWorkout(
+                        MCCircadianQueries.sharedManager.savePreparationAndRecoveryWorkout(
                             eitems.0.start, endDate: eitems.0.end,
                             distance: 0.0, distanceUnit: HKUnit.meterUnit(), kiloCalories: 0.0,
                             metadata: emeta,

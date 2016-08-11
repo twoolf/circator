@@ -11,7 +11,7 @@ import MetabolicCompassKit
 import HealthKit
 import Charts
 import SwiftDate
-import MCcircadianQueries
+import MCCircadianQueries
 
 enum PlotSpec {
     case PlotPredicate(String, NSPredicate!)

@@ -10,7 +10,7 @@ import UIKit
 import SwiftDate
 import MetabolicCompassKit
 import HealthKit
-import MCcircadianQueries
+import MCCircadianQueries
 
 enum MealType: String {
     case Empty = ""
@@ -186,7 +186,7 @@ class AddEventModel: NSObject {
                 completion(success: false, errorMessage: errorMessage)
                 return
             }
-            MCcircadianQueries.sharedManager.savePreparationAndRecoveryWorkout(
+            MCCircadianQueries.sharedManager.savePreparationAndRecoveryWorkout(
                 startTime, endDate: endTime, distance: 0.0, distanceUnit: HKUnit(fromString: "km"),
                 kiloCalories: 0.0, metadata: metaMeals) { (success, error ) -> Void in
                     guard error == nil else {
@@ -213,7 +213,7 @@ class AddEventModel: NSObject {
                 completion(success: false, errorMessage: errorMessage)
                 return
             }
-            MCcircadianQueries.sharedManager.saveRunningWorkout(
+            MCCircadianQueries.sharedManager.saveRunningWorkout(
                 startTime, endDate: endTime, distance: 0.0, distanceUnit: HKUnit(fromString: "km"),
                 kiloCalories: 0.0, metadata: [:]) {
                 (success, error ) -> Void in
@@ -246,7 +246,7 @@ class AddEventModel: NSObject {
                 completion(success: false, errorMessage: errorMessage)
                 return
             }
-            MCcircadianQueries.sharedManager.saveSleep(startTime, endDate: endTime, metadata: [:], completion: {
+            MCCircadianQueries.sharedManager.saveSleep(startTime, endDate: endTime, metadata: [:], completion: {
                     (success, error ) -> Void in
                     guard error == nil else {
                         completion(success: false, errorMessage: error.localizedDescription)
@@ -269,7 +269,7 @@ class AddEventModel: NSObject {
         let typesAndPredicates = [sleepTy: datePredicate, workoutTy: datePredicate]
         
         // Aggregate sleep, exercise and meal events.
-        MCcircadianQueries.sharedManager.fetchSamples(typesAndPredicates) { (samples, error) -> Void in
+        MCCircadianQueries.sharedManager.fetchSamples(typesAndPredicates) { (samples, error) -> Void in
             guard error == nil else { log.error(error); return }
             let overlaps = samples.reduce(false, combine: { (acc, kv) in
                 guard !acc else { return acc }

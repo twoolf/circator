@@ -8,7 +8,7 @@
 
 import UIKit
 import HealthKit
-import MCcircadianQueries
+import MCCircadianQueries
 
 public enum SamplesCollectedIndex {
     case HKType(HKSampleType)
@@ -43,7 +43,7 @@ public class FastingDataModel : NSObject {
         let group = dispatch_group_create()
         
         dispatch_group_enter(group)
-        MCcircadianQueries.sharedManager.fetchWeeklyFastState { (cFast, cNonFast, error) in
+        MCCircadianQueries.sharedManager.fetchWeeklyFastState { (cFast, cNonFast, error) in
             guard error == nil else {
                 someError.append(error)
                 dispatch_group_leave(group)
@@ -59,7 +59,7 @@ public class FastingDataModel : NSObject {
         }
         
         dispatch_group_enter(group)
-        MCcircadianQueries.sharedManager.fetchWeeklyFastingVariability { (variability, error) in
+        MCCircadianQueries.sharedManager.fetchWeeklyFastingVariability { (variability, error) in
             guard error == nil else {
                 someError.append(error)
                 dispatch_group_leave(group)
@@ -72,7 +72,7 @@ public class FastingDataModel : NSObject {
         }
         
         dispatch_group_enter(group)
-        MCcircadianQueries.sharedManager.fetchWeeklyFastType { (fSleep, fAwake, error) in
+        MCCircadianQueries.sharedManager.fetchWeeklyFastType { (fSleep, fAwake, error) in
             guard error == nil else {
                 someError.append(error)
                 dispatch_group_leave(group)
@@ -88,7 +88,7 @@ public class FastingDataModel : NSObject {
         }
         
         dispatch_group_enter(group)
-        MCcircadianQueries.sharedManager.fetchWeeklyEatAndExercise { (tEat, tExercise, error) in
+        MCCircadianQueries.sharedManager.fetchWeeklyEatAndExercise { (tEat, tExercise, error) in
             guard error == nil else {
                 someError.append(error)
                 dispatch_group_leave(group)

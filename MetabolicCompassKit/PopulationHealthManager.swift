@@ -9,7 +9,7 @@
 import Foundation
 import HealthKit
 import Async
-import MCcircadianQueries
+import MCCircadianQueries
 
 /**
  This is the manager of information for the comparison population.

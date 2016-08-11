@@ -17,7 +17,7 @@ import ResearchKit
 import Pages
 import Charts
 import SwiftDate
-import MCcircadianQueries
+import MCCircadianQueries
 
 let IntroViewTableViewCellIdentifier = "IntroViewTableViewCellIdentifier"
 private let mcControlButtonHeight = ScreenManager.sharedInstance.dashboardButtonHeight()
@@ -941,7 +941,7 @@ class IntroViewController: UIViewController,
         let typesAndPredicates = [sleepTy: datePredicate, workoutTy: datePredicate]
 
         // Aggregate sleep, exercise and meal events.
-        MCcircadianQueries.sharedManager.fetchSamples(typesAndPredicates) { (samples, error) -> Void in
+        MCCircadianQueries.sharedManager.fetchSamples(typesAndPredicates) { (samples, error) -> Void in
             guard error == nil else { log.error(error); return }
             let overlaps = samples.reduce(false, combine: { (acc, kv) in
                 guard !acc else { return acc }
@@ -985,7 +985,7 @@ class IntroViewController: UIViewController,
                     
                     log.info("Meal event \(startTime) \(endTime)")
                     validateTimedEvent(startTime, endTime: endTime) {
-                        MCcircadianQueries.sharedManager.savePreparationAndRecoveryWorkout(
+                        MCCircadianQueries.sharedManager.savePreparationAndRecoveryWorkout(
                             startTime, endDate: endTime, distance: 0.0, distanceUnit: HKUnit(fromString: "km"),
                             kiloCalories: 0.0, metadata: metaMeals)
                         {
@@ -1017,7 +1017,7 @@ class IntroViewController: UIViewController,
                 } else {
                     log.info("Sleep event \(startTime) \(endTime)")
                     validateTimedEvent(startTime, endTime: endTime) {
-                        MCcircadianQueries.sharedManager.saveSleep(startTime!, endDate: endTime!, metadata: [:], completion:
+                        MCCircadianQueries.sharedManager.saveSleep(startTime!, endDate: endTime!, metadata: [:], completion:
                         {
                             (success, error ) -> Void in
                             guard error == nil else { log.error(error); return }
@@ -1042,7 +1042,7 @@ class IntroViewController: UIViewController,
                     
                     log.info("Exercise event \(startTime) \(endTime)")
                     validateTimedEvent(startTime, endTime: endTime) {
-                        MCcircadianQueries.sharedManager.saveRunningWorkout(
+                        MCCircadianQueries.sharedManager.saveRunningWorkout(
                             startTime, endDate: endTime, distance: 0.0, distanceUnit: HKUnit(fromString: "km"),
                             kiloCalories: 0.0, metadata: [:])
                         {
@@ -1281,7 +1281,7 @@ class IntroViewController: UIViewController,
         let kmUnit = HKUnit(fromString: "km")
         let metaMeals = ["Source":"Timer"]
 
-        MCcircadianQueries.sharedManager.savePreparationAndRecoveryWorkout(timerStartDate, endDate: timerEndDate,
+        MCCircadianQueries.sharedManager.savePreparationAndRecoveryWorkout(timerStartDate, endDate: timerEndDate,
             distance: 0.0, distanceUnit:kmUnit, kiloCalories: 0.0, metadata: metaMeals,
             completion: { (success, error ) -> Void in
                 guard error == nil else {

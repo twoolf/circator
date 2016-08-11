@@ -13,7 +13,7 @@ import SORandom
 import SwiftDate
 import FileKit
 import SwiftyJSON
-import MCcircadianQueries
+import MCCircadianQueries
 
 public typealias MCSampler = (NSDate, Double, Double?) -> HKSample?
 public typealias DatasetCompletion = [String: [HKSample]] -> ()
@@ -764,7 +764,7 @@ public class DataGenerator : GeneratorType {
         generateInMemory(["<yourself>"], startDateDay: startDateDay, days: days) {
             $0.forEach { (_,block) in
                 if !block.isEmpty {
-                    MCcircadianQueries.sharedManager.saveSamples(block) {
+                    MCCircadianQueries.sharedManager.saveSamples(block) {
                         (success, error) -> Void in
                         guard error == nil else { log.error(error); return }
                     }
@@ -790,7 +790,7 @@ public class DataGenerator : GeneratorType {
         for type in coveringTypes {
             typesAndPredicates[type] = HKQuery.predicateForObjectsWithMetadataKey(tag)
         }
-        MCcircadianQueries.sharedManager.deleteSamples(typesAndPredicates: typesAndPredicates, completion: completion)
+        MCCircadianQueries.sharedManager.deleteSamples(typesAndPredicates: typesAndPredicates, completion: completion)
     }
 
     public func removeLocalInMemoryDataset(completion: (Int, NSError!) -> Void) {
