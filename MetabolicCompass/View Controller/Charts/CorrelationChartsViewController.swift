@@ -148,8 +148,8 @@ class CorrelationChartsViewController: UIViewController, UITableViewDelegate, UI
     
     func updateChartData() {
         if ((self.selectedPickerRows[0] >= 0) && (self.selectedPickerRows[1] >= 0)) {
-            scatterCh.chartView.noDataText = "No data available"
-            correlCh.chartView.noDataText = "No data available"
+            scatterCh.chartView.noDataText = "No data exists"
+            correlCh.chartView.noDataText = "No data exists"
             if scatterChartMode {
                 updateChartDataForChartsModel(scatterChartsModel)
             } else {
