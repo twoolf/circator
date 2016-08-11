@@ -70,7 +70,6 @@ class IntroInterfaceController: WKInterfaceController, WCSessionDelegate  {
     override func didDeactivate() {
         super.didDeactivate()
         FastingDataModel()
-        print("updated fasting data model")
 
         func reloadComplications() {
             let server = CLKComplicationServer.sharedInstance()
@@ -191,7 +190,6 @@ class IntroInterfaceController: WKInterfaceController, WCSessionDelegate  {
          
          let today = NSDate().startOf(.Day, inRegion: Region())
          let lastAte : NSDate? = stats.1 == 0 ? nil : ( startDate + Int(round(stats.1 * 3600.0)).seconds )
-         print("stored lastAteAsNSDate \(lastAte)")
          if (lastAte != nil) {
          MetricsStore.sharedInstance.lastAteAsNSDate = lastAte!
          }
@@ -201,49 +199,26 @@ class IntroInterfaceController: WKInterfaceController, WCSessionDelegate  {
          
          let fastingHrs = Int(floor(stats.2))
          let fastingMins = (today + Int(round((stats.2 % 1.0) * 60.0)).minutes).toString(DateFormat.Custom("mm"))!
-         //self.fastingLabel.text = "\(fastingHrs):\(fastingMins)"
-         print("in IntroInterfaceController, fasting hours: \(fastingHrs)")
-         print("   and fasting minutes: \(fastingMins)")
          MetricsStore.sharedInstance.fastingTime = "\(fastingHrs):\(fastingMins)"
          
          let currentFastingHrs = Int(floor(stats.5))
          let currentFastingMins = (today + Int(round((stats.5 % 1.0) * 60.0)).minutes).toString(DateFormat.Custom("mm"))!
          
-         print("current fasting hours: \(currentFastingHrs)")
-         print("   and current fasting minutes: \(currentFastingMins)")
          MetricsStore.sharedInstance.currentFastingTime = "\(currentFastingHrs):\(currentFastingMins)"
          
          let newLastEatingTimeHrs = Int(floor(stats.1))
          let newLastEatingTimeMins = (today + Int(round((stats.1 % 1.0) * 60.0)).minutes).toString(DateFormat.Custom("mm"))!
          
-         print("last eating time: \(newLastEatingTimeHrs)")
-         print("   and last eating time minutes: \(newLastEatingTimeMins)")
          MetricsStore.sharedInstance.lastEatingTime = "\(newLastEatingTimeHrs):\(newLastEatingTimeMins)"
          
-         
-         //self.eatingLabel.text  = (today + Int(stats.0 * 3600.0).seconds).toString(DateFormat.Custom("HH:mm"))!
-         //self.lastAteLabel.text = lastAte == nil ? "N/A" : lastAte!.toString(DateFormat.Custom("HH:mm"))!
          }
-         //self.mealChart.setNeedsDisplay()
          
          })
          }
          }
          
          reloadDataTake2()
-        
-        /*       func updateHealthInfo() {
-         MCcircadianQueries.sharedManager.updateWeight();
-         MCcircadianQueries.sharedManager.updateHeight();
-         MCcircadianQueries.sharedManager.updateBMI();
-         }
-         
-         updateHealthInfo()
-         MetricsStore.sharedInstance.weight = weightLocalizedString
-         MetricsStore.sharedInstance.BMI = HKBMIString
-         MetricsStore.sharedInstance.Fat = "90"
-         MetricsStore.sharedInstance.Carbohydrate = "190"
-         MetricsStore.sharedInstance.Protein = "290" */
+  
     }
 }
 

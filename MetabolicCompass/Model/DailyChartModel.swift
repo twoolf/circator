@@ -425,19 +425,19 @@ class DailyChartModel : NSObject, UITableViewDataSource {
     }
     
     func getColorForEventType(eventType: CircadianEvent) -> UIColor {
-        var eventColor: UIColor = MetabolicDailyPorgressChartView.fastingColor
+        var eventColor: UIColor = MetabolicDailyProgressChartView.fastingColor
         switch eventType {
         case .Exercise:
-            eventColor = highlightFasting ? MetabolicDailyPorgressChartView.mutedExerciseColor : MetabolicDailyPorgressChartView.exerciseColor
+            eventColor = highlightFasting ? MetabolicDailyProgressChartView.mutedExerciseColor : MetabolicDailyProgressChartView.exerciseColor
             break
         case .Sleep :
-            eventColor = highlightFasting ? MetabolicDailyPorgressChartView.mutedSleepColor : MetabolicDailyPorgressChartView.sleepColor
+            eventColor = highlightFasting ? MetabolicDailyProgressChartView.mutedSleepColor : MetabolicDailyProgressChartView.sleepColor
             break
         case .Meal :
-            eventColor = highlightFasting ? MetabolicDailyPorgressChartView.mutedEatingColor : MetabolicDailyPorgressChartView.eatingColor
+            eventColor = highlightFasting ? MetabolicDailyProgressChartView.mutedEatingColor : MetabolicDailyProgressChartView.eatingColor
             break
         default:
-            eventColor = highlightFasting ? MetabolicDailyPorgressChartView.highlightFastingColor : MetabolicDailyPorgressChartView.fastingColor
+            eventColor = highlightFasting ? MetabolicDailyProgressChartView.highlightFastingColor : MetabolicDailyProgressChartView.fastingColor
         }
         return eventColor
     }
@@ -476,25 +476,25 @@ class DailyChartModel : NSObject, UITableViewDataSource {
     }
 
     func selectColor(color: UIColor) -> UIColor {
-        if CGColorEqualToColor(color.CGColor, MetabolicDailyPorgressChartView.mutedExerciseColor.CGColor)
-            || CGColorEqualToColor(color.CGColor, MetabolicDailyPorgressChartView.exerciseColor.CGColor)
+        if CGColorEqualToColor(color.CGColor, MetabolicDailyProgressChartView.mutedExerciseColor.CGColor)
+            || CGColorEqualToColor(color.CGColor, MetabolicDailyProgressChartView.exerciseColor.CGColor)
         {
-            return highlightFasting ? MetabolicDailyPorgressChartView.mutedExerciseColor : MetabolicDailyPorgressChartView.exerciseColor
+            return highlightFasting ? MetabolicDailyProgressChartView.mutedExerciseColor : MetabolicDailyProgressChartView.exerciseColor
         }
-        if CGColorEqualToColor(color.CGColor, MetabolicDailyPorgressChartView.mutedSleepColor.CGColor)
-            || CGColorEqualToColor(color.CGColor, MetabolicDailyPorgressChartView.sleepColor.CGColor)
+        if CGColorEqualToColor(color.CGColor, MetabolicDailyProgressChartView.mutedSleepColor.CGColor)
+            || CGColorEqualToColor(color.CGColor, MetabolicDailyProgressChartView.sleepColor.CGColor)
         {
-            return highlightFasting ? MetabolicDailyPorgressChartView.mutedSleepColor : MetabolicDailyPorgressChartView.sleepColor
+            return highlightFasting ? MetabolicDailyProgressChartView.mutedSleepColor : MetabolicDailyProgressChartView.sleepColor
         }
-        if CGColorEqualToColor(color.CGColor, MetabolicDailyPorgressChartView.mutedEatingColor.CGColor)
-            || CGColorEqualToColor(color.CGColor, MetabolicDailyPorgressChartView.eatingColor.CGColor)
+        if CGColorEqualToColor(color.CGColor, MetabolicDailyProgressChartView.mutedEatingColor.CGColor)
+            || CGColorEqualToColor(color.CGColor, MetabolicDailyProgressChartView.eatingColor.CGColor)
         {
-            return highlightFasting ? MetabolicDailyPorgressChartView.mutedEatingColor : MetabolicDailyPorgressChartView.eatingColor
+            return highlightFasting ? MetabolicDailyProgressChartView.mutedEatingColor : MetabolicDailyProgressChartView.eatingColor
         }
-        if CGColorEqualToColor(color.CGColor, MetabolicDailyPorgressChartView.highlightFastingColor.CGColor)
-            || CGColorEqualToColor(color.CGColor, MetabolicDailyPorgressChartView.fastingColor.CGColor)
+        if CGColorEqualToColor(color.CGColor, MetabolicDailyProgressChartView.highlightFastingColor.CGColor)
+            || CGColorEqualToColor(color.CGColor, MetabolicDailyProgressChartView.fastingColor.CGColor)
         {
-            return highlightFasting ? MetabolicDailyPorgressChartView.highlightFastingColor : MetabolicDailyPorgressChartView.fastingColor
+            return highlightFasting ? MetabolicDailyProgressChartView.highlightFastingColor : MetabolicDailyProgressChartView.fastingColor
         }
         return color
     }
