@@ -22,7 +22,8 @@ class AnalysisViewController: UIViewController {
     @IBOutlet weak var containerView: UIView!
     
     override func viewDidLoad() {
-        let correlateController = UIStoryboard(name: "TabScreens", bundle: nil).instantiateViewControllerWithIdentifier("correlatePlaceholder")
+        let correlateController = UIStoryboard(name: "TabScreens", bundle: nil).instantiateViewControllerWithIdentifier("correlatePlaceholder") as! CorrelationChartsViewController
+        correlateController.scatterChartMode = true
         self.addChildViewController(correlateController)
         correlateController.view.translatesAutoresizingMaskIntoConstraints = false
         self.addSubview(correlateController.view, toView: self.containerView)
