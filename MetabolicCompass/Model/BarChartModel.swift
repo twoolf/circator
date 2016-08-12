@@ -231,20 +231,20 @@ class BarChartModel : NSObject {
         
         var xValues : [String] = Array()
         
-        let finalDataSet = dataSets[0]
+        let finalDataSet = dataSets[1]
 
-        if let dSet = dataSets[1] as? ChartDataSet {
+        if let dSet = dataSets[0] as? ChartDataSet {
             for yValye in dSet.yVals {
-                let currentYValue = dataSets[0].yValForXIndex(yValye.xIndex)
+                let currentYValue = dataSets[1].yValForXIndex(yValye.xIndex)
                 if (currentYValue != Double.NaN){
                     xValues.append("\(yValye.value)")
                 }
             }
         }
         
-        if let dSet = dataSets[0] as? ChartDataSet {
+        if let dSet = dataSets[1] as? ChartDataSet {
             for yValye in dSet.yVals {
-                let currentYValue = dataSets[1].yValForXIndex(yValye.xIndex)
+                let currentYValue = dataSets[0].yValForXIndex(yValye.xIndex)
                 if (currentYValue == Double.NaN){
                     finalDataSet.removeEntry(dSet.entryForXIndex(yValye.xIndex)!)
                 }
@@ -269,8 +269,7 @@ class BarChartModel : NSObject {
                 value = value > 1 ? abs(value) : value
                 if (value > 1) {
                     newValues.append("\(Int(value))")
-                }
-                else {
+                } else {
                     newValues.append("\(value)")
                 }
                 i += 1
