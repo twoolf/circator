@@ -205,7 +205,8 @@ class BarChartModel : NSObject {
         let chartData = ScatterChartData(xVals: xVals, dataSets: [dataSet1, dataSet2])
         return chartData
     }
-    
+    //TODO: Maybe we should remove this function
+    //Don't know for what this function exists. Can't find usage in the project.
     func scatterChartDataWithMultipleEntries(xVals: [String], yVals:[[ChartDataEntry]], types: [DataSetType?]) -> ScatterChartData {
         
         assert(xVals.count != yVals.count, "Data input is invalid, x and y value arrays count should be equal")
@@ -225,24 +226,27 @@ class BarChartModel : NSObject {
         let chartData = ScatterChartData(xVals: xVals, dataSets: dataSets)
         return chartData
     }
+    
     //TODO: Rost remove first empayt x value + round x values
     func scatterChartDataWithMultipleDataSets(xVals: [String?], dataSets:[IChartDataSet]) -> ScatterChartData? {
         
         var xValues : [String] = Array()
         
-        let finalDataSet = dataSets[0]
+        let finalDataSet = dataSets[1]
 
-        if let dSet = dataSets[1] as? ChartDataSet {
+        if let dSet = dataSets[0] as? ChartDataSet {
             for yValye in dSet.yVals {
-                if (dataSets[0].yValForXIndex(yValye.xIndex) != Double.NaN){
+                let currentYValue = dataSets[1].yValForXIndex(yValye.xIndex)
+                if (currentYValue != Double.NaN){
                     xValues.append("\(yValye.value)")
                 }
             }
         }
         
-        if let dSet = dataSets[0] as? ChartDataSet {
+        if let dSet = dataSets[1] as? ChartDataSet {
             for yValye in dSet.yVals {
-                if (dataSets[1].yValForXIndex(yValye.xIndex) == Double.NaN){
+                let currentYValue = dataSets[0].yValForXIndex(yValye.xIndex)
+                if (currentYValue == Double.NaN){
                     finalDataSet.removeEntry(dSet.entryForXIndex(yValye.xIndex)!)
                 }
             }
@@ -251,6 +255,7 @@ class BarChartModel : NSObject {
         xValues = xValues.sort()
         
         var newValues : [String] = Array()
+        newValues.append("")//gap from the left side
         
         if (xValues.count > 1) {
             
@@ -265,21 +270,20 @@ class BarChartModel : NSObject {
                 value = value > 1 ? abs(value) : value
                 if (value > 1) {
                     newValues.append("\(Int(value))")
-                }
-                else {
+                } else {
                     newValues.append("\(value)")
                 }
                 i += 1
             }
         }
         
-        let chartData = ScatterChartData(xVals: newValues, dataSets: [finalDataSet])
+        newValues.append("")//gap from the right side
         
+        let chartData = ScatterChartData(xVals: newValues, dataSets: [finalDataSet])
         return chartData
     }
     
     func lineChartWithMultipleDataSets(xVals: [String?], dataSets:[IChartDataSet]) -> LineChartData? {
-        
         var i = 0
         for dataSet1 in dataSets {
             if let dSet = dataSet1 as? ChartBaseDataSet {
@@ -287,7 +291,6 @@ class BarChartModel : NSObject {
             }
             i += 1
         }
-        
         let chartData = LineChartData(xVals: xVals, dataSets: dataSets)
         return chartData
     }
@@ -425,7 +428,7 @@ class BarChartModel : NSObject {
         return monthTitles
     }
 
-    func getYearTitles () -> [String]{
+    func getYearTitles () -> [String] {
         let numOfMonth = 13
         let currentDate = NSDate()
         let dateYearAgo = currentDate - 1.years

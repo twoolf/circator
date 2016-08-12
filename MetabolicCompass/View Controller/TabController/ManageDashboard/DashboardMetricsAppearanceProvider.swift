@@ -217,9 +217,74 @@ class DashboardMetricsAppearanceProvider: NSObject {
         }
     }
     
+    func stringForSampleTypeOfCorrelate(sampleType: String) -> String
+    {
+        switch sampleType {
+        case HKQuantityTypeIdentifierBodyMass:
+            return NSLocalizedString("Weight", comment: "user weight")
+        case HKQuantityTypeIdentifierHeartRate:
+            return NSLocalizedString("Heart rate", comment: "Heartrate")
+        case HKCategoryTypeIdentifierSleepAnalysis:
+            return NSLocalizedString("Sleep", comment: "Sleep")
+        case HKQuantityTypeIdentifierBodyMassIndex:
+            return NSLocalizedString("BMI", comment: "Body Mass Index")
+        case HKQuantityTypeIdentifierActiveEnergyBurned:
+            return NSLocalizedString("Active En.", comment: "energy burned")
+        case HKQuantityTypeIdentifierBasalEnergyBurned:
+            return NSLocalizedString("Resting En.", comment: "Basal Energy")
+        case HKQuantityTypeIdentifierDietaryCaffeine:
+            return NSLocalizedString("Caffeine", comment: "Caffeine")
+        case HKQuantityTypeIdentifierDietarySugar:
+            return NSLocalizedString("Sugar", comment: "Sugar")
+        case HKQuantityTypeIdentifierDietaryCholesterol:
+            return NSLocalizedString("Cholesterol", comment: "Cholesterol")
+        case HKQuantityTypeIdentifierDietarySodium:
+            return NSLocalizedString("Salt", comment: "Sodium")
+        case HKQuantityTypeIdentifierDietaryProtein:
+            return NSLocalizedString("Protein", comment: "Protein")
+        case HKQuantityTypeIdentifierDietaryFiber:
+            return NSLocalizedString("Fiber", comment: "Fiber")
+        case HKQuantityTypeIdentifierDietaryFatTotal:
+            return NSLocalizedString("Fat", comment: "Fat")
+        case HKQuantityTypeIdentifierDietaryCarbohydrates:
+            return NSLocalizedString("Carbohydrates", comment: "Carbohydrates")
+        case HKQuantityTypeIdentifierDietaryFatPolyunsaturated:
+            return NSLocalizedString("Polyunsat. Fat", comment: "Polyunsaturated Fat")
+        case HKQuantityTypeIdentifierDietaryFatSaturated:
+            return NSLocalizedString("Sat. Fat", comment: "Saturated Fat")
+        case HKQuantityTypeIdentifierDietaryFatMonounsaturated:
+            return NSLocalizedString("Monosat. Fat", comment: "Monosaturated Fat")
+        case HKQuantityTypeIdentifierDietaryWater:
+            return NSLocalizedString("Water", comment: "Water")
+        case HKQuantityTypeIdentifierDietaryEnergyConsumed:
+            return NSLocalizedString("Dietary En.", comment: "Dietary Energy")
+        case HKCorrelationTypeIdentifierBloodPressure:
+            return NSLocalizedString("Blood pressure", comment: "Blood pressure")
+        case HKQuantityTypeIdentifierStepCount:
+            return NSLocalizedString("Steps", comment: "Step count")
+        case HKQuantityTypeIdentifierUVExposure:
+            return NSLocalizedString("UV", comment: "UV Exposure")
+        case HKQuantityTypeIdentifierDietarySodium:
+            return NSLocalizedString("Salt", comment: "Salt")
+        default:
+            if #available(iOS 9.3, *) {
+                switch sampleType {
+                case HKQuantityTypeIdentifierAppleExerciseTime:
+                    return NSLocalizedString("Exercise", comment: "Exercise duration")
+                default:break
+                }
+            }
+            return ""
+        }
+    }
+    
     func titleForSampleType(sampleType: String, active: Bool) -> NSAttributedString
     {
         return self.attributedText(self.stringForSampleType(sampleType), forSampleType: sampleType, active: active)
+    }
+    
+    func titleForAnalysisChartOfType(sampleType: String) -> NSAttributedString {
+        return self.attributedText(self.stringForSampleTypeOfCorrelate(sampleType), forSampleType: sampleType, active: false)
     }
     
     private func imageNameWithState(baseName: String, active: Bool) -> String

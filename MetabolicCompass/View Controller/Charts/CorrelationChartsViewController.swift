@@ -58,7 +58,12 @@ class CorrelationChartsViewController: UIViewController, UITableViewDelegate, UI
 //MARK: VC Legacy methods: should be moved to super class
     func updateChartsData () {
         activityIndicator.startAnimating()
-        scatterChartsModel.gettAllDataForSpecifiedType(ChartType.ScatterChart) {
+        if scatterChartMode {
+            scatterChartsModel.gettAllDataForSpecifiedType(ChartType.ScatterChart) {
+                self.activityIndicator.stopAnimating()
+                self.updateChartData()
+            }
+        } else {
             self.lineChartsModel.gettAllDataForSpecifiedType(ChartType.LineChart) {
                 self.activityIndicator.stopAnimating()
                 self.updateChartData()
@@ -76,24 +81,22 @@ class CorrelationChartsViewController: UIViewController, UITableViewDelegate, UI
     //MARK: - TableView datasource + Delegate
     
     func numberOfSectionsInTableView(tableView: UITableView) -> Int { return 1 }
+    
     func tableView(tableView: UITableView, numberOfRowsInSection section: Int) -> Int { return 2 }
+    
     func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell {
-        let cell = self.tableView.dequeueReusableCellWithIdentifier(
-            "CorrelationCell" + "\(indexPath.row)", forIndexPath: indexPath) as! CorrelationTabeViewCell
+        
+        let cell = self.tableView.dequeueReusableCellWithIdentifier("CorrelationCell" + "\(indexPath.row)", forIndexPath: indexPath) as! CorrelationTabeViewCell
         
         if (self.selectedPickerRows[indexPath.row] >= 0) {
             let type = pickerData[indexPath.row][self.selectedPickerRows[indexPath.row]].identifier
-            
             let image = appearanceProvider.imageForSampleType(pickerData[indexPath.row][self.selectedPickerRows[indexPath.row]].identifier, active: true)
-            
             cell.healthImageView?.image = image
             cell.titleLabel.text = appearanceProvider.titleForSampleType(type, active: false).string
-        }
-        else {
+        } else {
             cell.titleLabel.text = "Choose metric"
             cell.healthImageView?.image = nil
         }
-
         return cell
     }
     
@@ -134,9 +137,9 @@ class CorrelationChartsViewController: UIViewController, UITableViewDelegate, UI
     
     func updateChartTitle() {
         var firstType = pickerData[0][selectedPickerRows[0]].identifier
-        firstType = appearanceProvider.titleForSampleType(firstType, active: false).string
+        firstType = appearanceProvider.titleForAnalysisChartOfType(firstType).string
         var secondType = pickerData[1][selectedPickerRows[1]].identifier
-        secondType = appearanceProvider.titleForSampleType(secondType, active: false).string
+        secondType = appearanceProvider.titleForAnalysisChartOfType(secondType).string
 
         let titleString = firstType
         (scatterCh.chartTitleLabel.text, correlCh.chartTitleLabel.text) = (titleString, titleString)
@@ -145,13 +148,15 @@ class CorrelationChartsViewController: UIViewController, UITableViewDelegate, UI
     
     func updateChartData() {
         if ((self.selectedPickerRows[0] >= 0) && (self.selectedPickerRows[1] >= 0)) {
-            scatterCh.chartView.noDataText = "No data available"
-            correlCh.chartView.noDataText = "No data available"
-            updateChartDataForChartsModel(scatterChartsModel)
-            updateChartDataForChartsModel(lineChartsModel)
+            scatterCh.chartView.noDataText = "No data exists"
+            correlCh.chartView.noDataText = "No data exists"
+            if scatterChartMode {
+                updateChartDataForChartsModel(scatterChartsModel)
+            } else {
+                updateChartDataForChartsModel(lineChartsModel)
+            }
             updateChartTitle()
-        }
-        else {
+        } else {
             scatterCh.chartView.noDataText = "Choose both metrics"
             correlCh.chartView.noDataText = "Choose both metrics"
             resetAllCharts()
@@ -192,7 +197,7 @@ class CorrelationChartsViewController: UIViewController, UITableViewDelegate, UI
         }
         
         for dSet in dataSets {
-            if dSet.entryCount < 1 {
+            if dSet.entryCount < 7 {//min 7 values should exits in 
                 resetAllCharts()
                 return
             }
@@ -200,35 +205,27 @@ class CorrelationChartsViewController: UIViewController, UITableViewDelegate, UI
         
         if (model == scatterChartsModel) {
             let chartData = model.scatterChartDataWithMultipleDataSets(xValues, dataSets: dataSets)
-            
             if let yMax = chartData?.yMax, yMin = chartData?.yMin where yMax > 0 || yMin > 0 {
                 scatterCh.chartView.data = nil
-
                 scatterCh.updateLeftAxisWith(chartData?.yMin, maxValue: chartData?.yMax)
                 scatterCh.chartView.data = chartData
                 scatterCh.drawLimitLine()
-            }
-            else {
+            } else {
                 resetAllCharts()
             }
-        }
-        else {
+        } else {
             let chartData = model.lineChartWithMultipleDataSets(xValues, dataSets: dataSets)
             let rightChartData = LineChartData(xVals: xValues, dataSets: [dataSets[1]])
-            
             if let yMax = chartData?.yMax, yMin = chartData?.yMin where yMax > 0 || yMin > 0 {
                 correlCh.chartView.data = nil
                 correlCh.updateLeftAxisWith(chartData?.yMin, maxValue: chartData?.yMax)
                 correlCh.updateMinMaxTitlesWithValues("\(rightChartData.yMin)", maxValue: "\(rightChartData.yMax)")
                 correlCh.drawLimitLine()
                 correlCh.chartView.data = chartData
-            }
-            else {
+            } else {
                 resetAllCharts()
             }
         }
-
-        
     }
     
     lazy var assistTextField : UITextField = {
@@ -276,8 +273,6 @@ class CorrelationChartsViewController: UIViewController, UITableViewDelegate, UI
         return picker
         
     }()
-    
-
 }
 
 //MARK: - PICKER VIEW datasource + Delegate
