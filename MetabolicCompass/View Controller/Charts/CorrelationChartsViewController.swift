@@ -137,9 +137,9 @@ class CorrelationChartsViewController: UIViewController, UITableViewDelegate, UI
     
     func updateChartTitle() {
         var firstType = pickerData[0][selectedPickerRows[0]].identifier
-        firstType = appearanceProvider.titleForSampleType(firstType, active: false).string
+        firstType = appearanceProvider.titleForAnalysisChartOfType(firstType).string
         var secondType = pickerData[1][selectedPickerRows[1]].identifier
-        secondType = appearanceProvider.titleForSampleType(secondType, active: false).string
+        secondType = appearanceProvider.titleForAnalysisChartOfType(secondType).string
 
         let titleString = firstType
         (scatterCh.chartTitleLabel.text, correlCh.chartTitleLabel.text) = (titleString, titleString)
