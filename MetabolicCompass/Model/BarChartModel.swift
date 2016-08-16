@@ -333,13 +333,15 @@ class BarChartModel : NSObject {
     }
     
     func lineChartWithMultipleDataSets(xVals: [String?], dataSets:[IChartDataSet]) -> LineChartData? {
-        var i = 0
-        for dataSet1 in dataSets {
-            if let dSet = dataSet1 as? ChartBaseDataSet {
-                dSet.colors = i % 2 == 0 ? [UIColor.whiteColor()] : [UIColor.redColor()]
-            }
-            i += 1
-        }
+        let firstDataSet = dataSets[0] as? LineChartDataSet
+        let secondDataSet = dataSets[1] as? LineChartDataSet
+        
+        firstDataSet?.axisDependency = .Left
+        firstDataSet?.colors = [UIColor.whiteColor()]
+        
+        secondDataSet?.axisDependency = .Right
+        secondDataSet?.colors = [UIColor.redColor()]
+
         let chartData = LineChartData(xVals: xVals, dataSets: dataSets)
         return chartData
     }
