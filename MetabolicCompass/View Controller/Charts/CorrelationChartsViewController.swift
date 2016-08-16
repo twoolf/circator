@@ -40,6 +40,7 @@ class CorrelationChartsViewController: UIViewController, UITableViewDelegate, UI
         self.pickerView.reloadAllComponents()
         self.tableView.reloadData()
         scatterCh = NSBundle.mainBundle().loadNibNamed("ScatterCorrelcationCell", owner: self, options: nil).last as? ScatterCorrelcationCell
+        //disable adding lines between dots. works only if values are repeated 
         (scatterCh.chartView.renderer as! MCScatterChartRenderer).shouldDrawConnectionLines = false
         correlCh = NSBundle.mainBundle().loadNibNamed("TwoLineCorrelcationCell", owner: self, options: nil).last as? TwoLineCorrelcationCell
         scatterChartContainer.addSubview(scatterCh!)
