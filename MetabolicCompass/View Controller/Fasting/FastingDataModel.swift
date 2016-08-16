@@ -55,7 +55,7 @@ public class FastingDataModel : NSObject {
         let group = dispatch_group_create()
 
         dispatch_group_enter(group)
-        MCCircadianQueries.sharedManager.fetchSampleCollectionDays(PreviewManager.manageChartsSampleTypes) { (table, error) in
+        MCHealthManager.sharedManager.fetchSampleCollectionDays(PreviewManager.manageChartsSampleTypes) { (table, error) in
             guard error == nil else {
                 log.error(error)
                 someError.append(error)
@@ -68,7 +68,7 @@ public class FastingDataModel : NSObject {
         }
 
         dispatch_group_enter(group)
-        MCCircadianQueries.sharedManager.fetchWeeklyFastState { (cFast, cNonFast, error) in
+        MCHealthManager.sharedManager.fetchWeeklyFastState { (cFast, cNonFast, error) in
             guard error == nil else {
                 log.error(error)
                 someError.append(error)
@@ -83,7 +83,7 @@ public class FastingDataModel : NSObject {
         }
 
         dispatch_group_enter(group)
-        MCCircadianQueries.sharedManager.fetchWeeklyFastingVariability { (variability, error) in
+        MCHealthManager.sharedManager.fetchWeeklyFastingVariability { (variability, error) in
             guard error == nil else {
                 log.error(error)
                 someError.append(error)
@@ -97,7 +97,7 @@ public class FastingDataModel : NSObject {
         }
 
         dispatch_group_enter(group)
-        MCCircadianQueries.sharedManager.fetchWeeklyFastType { (fSleep, fAwake, error) in
+        MCHealthManager.sharedManager.fetchWeeklyFastType { (fSleep, fAwake, error) in
             guard error == nil else {
                 log.error(error)
                 someError.append(error)
@@ -112,7 +112,7 @@ public class FastingDataModel : NSObject {
         }
 
         dispatch_group_enter(group)
-        MCCircadianQueries.sharedManager.fetchWeeklyEatAndExercise { (tEat, tExercise, error) in
+        MCHealthManager.sharedManager.fetchWeeklyEatAndExercise { (tEat, tExercise, error) in
             guard error == nil else {
                 log.error(error)
                 someError.append(error)

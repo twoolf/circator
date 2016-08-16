@@ -229,7 +229,7 @@ class EventTimeViewController : UIViewController {
         let yesterday = 1.days.ago
         let startDate = yesterday
 
-        MCCircadianQueries.sharedManager.fetchCircadianEventIntervals(startDate) { (intervals, error) -> Void in
+        MCHealthManager.sharedManager.fetchCircadianEventIntervals(startDate) { (intervals, error) -> Void in
             Async.main {
                 guard error == nil else {
                     log.error("Failed to fetch circadian events: \(error)")

@@ -87,7 +87,7 @@ class CorrelationViewController: UIViewController, ChartViewDelegate {
                 Async.background {
                     switch (lsp, rsp) {
                     case (.PlotFasting, .PlotFasting):
-                        MCCircadianQueries.sharedManager.fetchMaxFastingTimes { (aggregates, error) in
+                        MCHealthManager.sharedManager.fetchMaxFastingTimes { (aggregates, error) in
                             guard (error == nil) && !aggregates.isEmpty else {
                                 Async.main {
                                     if let idx = self.errorIndex, pv = self.parentViewController as? PagesController {
@@ -100,7 +100,7 @@ class CorrelationViewController: UIViewController, ChartViewDelegate {
                         }
 
                     case let (.PlotFasting, .PlotPredicate(_, predicate)):
-                        MCCircadianQueries.sharedManager.correlateWithFasting(true, type: self.sampleTypes[1], predicate: predicate) {
+                        MCHealthManager.sharedManager.correlateWithFasting(true, type: self.sampleTypes[1], predicate: predicate) {
                             (zipped, error) -> Void in
                             guard (error == nil) && !zipped.isEmpty else {
                                 Async.main {
@@ -114,7 +114,7 @@ class CorrelationViewController: UIViewController, ChartViewDelegate {
                         }
 
                     case let (.PlotPredicate(_, predicate), .PlotFasting):
-                        MCCircadianQueries.sharedManager.correlateWithFasting(false, type: self.sampleTypes[0], predicate: predicate) {
+                        MCHealthManager.sharedManager.correlateWithFasting(false, type: self.sampleTypes[0], predicate: predicate) {
                             (zipped, error) -> Void in
                             guard (error == nil) && !zipped.isEmpty else {
                                 Async.main {
@@ -128,7 +128,7 @@ class CorrelationViewController: UIViewController, ChartViewDelegate {
                         }
 
                     case let (.PlotPredicate(_, lpred), .PlotPredicate(_, rpred)):
-                        MCCircadianQueries.sharedManager.correlateStatisticsOfType(self.sampleTypes[0], withType: self.sampleTypes[1], pred1: lpred, pred2: rpred) {
+                        MCHealthManager.sharedManager.correlateStatisticsOfType(self.sampleTypes[0], withType: self.sampleTypes[1], pred1: lpred, pred2: rpred) {
                             (stat1, stat2, error) -> Void in
                             guard (error == nil) && !(stat1.isEmpty || stat2.isEmpty) else {
                                 Async.main {

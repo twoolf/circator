@@ -364,7 +364,7 @@ class BarChartModel : NSObject {
         
         if type == HKQuantityTypeIdentifierHeartRate || type == HKQuantityTypeIdentifierUVExposure {
             // We should get max and min values. because for this type we are using scatter chart
-            HealthManager.sharedManager.getChartDataForQuantity(qType, inPeriod: self.rangeType) { obj in
+            IOSHealthManager.sharedManager.getChartDataForQuantity(qType, inPeriod: self.rangeType) { obj in
                 let values = obj as! [[Double]]
                 if values.count > 0 {
                     self.typesChartData[key] = self.getChartDataForRange(self.rangeType, type: chartType!, values: values[0], minValues: values[1])
@@ -372,7 +372,7 @@ class BarChartModel : NSObject {
             }
         } else if type == HKQuantityTypeIdentifierBloodPressureSystolic {
             // We should also get data for HKQuantityTypeIdentifierBloodPressureDiastolic
-            HealthManager.sharedManager.getChartDataForQuantity(HKObjectType.quantityTypeForIdentifier(type)!, inPeriod: self.rangeType) { obj in
+            IOSHealthManager.sharedManager.getChartDataForQuantity(HKObjectType.quantityTypeForIdentifier(type)!, inPeriod: self.rangeType) { obj in
                 let values = obj as! [[Double]]
                 if values.count > 0 {
                     self.typesChartData[key] = self.getBloodPressureChartData(self.rangeType,
@@ -381,7 +381,7 @@ class BarChartModel : NSObject {
                 }
             }
         } else {
-            HealthManager.sharedManager.getChartDataForQuantity(qType, inPeriod: self.rangeType) { obj in
+            IOSHealthManager.sharedManager.getChartDataForQuantity(qType, inPeriod: self.rangeType) { obj in
                 let values = obj as! [Double]
                 self.typesChartData[key] = self.getChartDataForRange(self.rangeType, type: chartType!, values: values, minValues: nil)
             }

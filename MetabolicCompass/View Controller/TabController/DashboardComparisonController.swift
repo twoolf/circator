@@ -8,6 +8,7 @@
 
 import UIKit
 import HealthKit
+import MCCircadianQueries
 import MetabolicCompassKit
 
 class DashboardComparisonController: UIViewController, UITableViewDelegate, UITableViewDataSource {
@@ -65,7 +66,7 @@ class DashboardComparisonController: UIViewController, UITableViewDelegate, UITa
         let refreshPeriod = UserManager.sharedManager.getRefreshFrequency() ?? Int.max
         let stale = timeSinceRefresh > Double(refreshPeriod)
         
-        cell.setUserData(HealthManager.sharedManager.mostRecentSamples[sampleType] ?? [HKSample](),
+        cell.setUserData(MCHealthManager.sharedManager.mostRecentSamples[sampleType] ?? [HKSample](),
                          populationAverageData: PopulationHealthManager.sharedManager.mostRecentAggregates[sampleType] ?? [],
                          stalePopulation: stale)
 

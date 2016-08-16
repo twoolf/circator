@@ -6,8 +6,9 @@
 //  Copyright © 2015 Yanif Ahmad, Tom Woolf. All rights reserved.
 //
 
-import SwiftyUserDefaults
 import HealthKit
+import MCCircadianQueries
+import SwiftyUserDefaults
 
 public enum Comparator : Int {
     case LT

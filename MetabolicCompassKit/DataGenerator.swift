@@ -764,7 +764,7 @@ public class DataGenerator : GeneratorType {
         generateInMemory(["<yourself>"], startDateDay: startDateDay, days: days) {
             $0.forEach { (_,block) in
                 if !block.isEmpty {
-                    MCCircadianQueries.sharedManager.saveSamples(block) {
+                    MCHealthManager.sharedManager.saveSamples(block) {
                         (success, error) -> Void in
                         guard error == nil else { log.error(error); return }
                     }
@@ -790,7 +790,7 @@ public class DataGenerator : GeneratorType {
         for type in coveringTypes {
             typesAndPredicates[type] = HKQuery.predicateForObjectsWithMetadataKey(tag)
         }
-        MCCircadianQueries.sharedManager.deleteSamples(typesAndPredicates: typesAndPredicates, completion: completion)
+        MCHealthManager.sharedManager.deleteSamples(typesAndPredicates: typesAndPredicates, completion: completion)
     }
 
     public func removeLocalInMemoryDataset(completion: (Int, NSError!) -> Void) {

@@ -113,7 +113,7 @@ class PlotViewController: UIViewController, ChartViewDelegate {
                 Async.background {
                     switch spec {
                     case .PlotFasting:
-                        MCCircadianQueries.sharedManager.fetchMaxFastingTimes { (aggregates, error) -> Void in
+                        MCHealthManager.sharedManager.fetchMaxFastingTimes { (aggregates, error) -> Void in
                             guard error == nil else {
                                 self.showError()
                                 return
@@ -126,7 +126,7 @@ class PlotViewController: UIViewController, ChartViewDelegate {
                         }
 
                     case let .PlotPredicate(_, predicate):
-                        MCCircadianQueries.sharedManager.fetchStatisticsOfType(self.sampleType, predicate: predicate) { (results, error) -> Void in
+                        MCHealthManager.sharedManager.fetchStatisticsOfType(self.sampleType, predicate: predicate) { (results, error) -> Void in
                             guard error == nil else {
                                 self.showError()
                                 return

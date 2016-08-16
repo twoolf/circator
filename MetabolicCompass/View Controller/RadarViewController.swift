@@ -8,6 +8,7 @@
 
 import Foundation
 import HealthKit
+import MCCircadianQueries
 import MetabolicCompassKit
 import Charts
 import Crashlytics
@@ -208,7 +209,7 @@ class RadarViewController : UIViewController, ChartViewDelegate {
     // MARK: - Radar chart
 
     func normalizeType(type: HKSampleType, quantity: Double) -> Double {
-        if let sex = HealthManager.sharedManager.getBiologicalSex(),
+        if let sex = MCHealthManager.sharedManager.getBiologicalSex(),
                paramdict = logisticParametersByType[sex.biologicalSex == HKBiologicalSex.Male],
                (x0, k) = paramdict[type.identifier]
         {
@@ -221,7 +222,7 @@ class RadarViewController : UIViewController, ChartViewDelegate {
 
     func indEntry(i: Int) -> MetabolicDataEntry {
         let type = PreviewManager.balanceSampleTypes[i]
-        let samples = HealthManager.sharedManager.mostRecentSamples[type] ?? []
+        let samples = MCHealthManager.sharedManager.mostRecentSamples[type] ?? []
         let val = healthFormatter.numberFromSamples(samples)
         guard !val.isNaN else {
             return MetabolicDataEntry(value: 0.8, xIndex: i,

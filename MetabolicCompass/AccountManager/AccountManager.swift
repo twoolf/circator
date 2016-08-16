@@ -8,6 +8,7 @@
 
 import UIKit
 import HealthKit
+import MCCircadianQueries
 import MetabolicCompassKit
 import Async
 
@@ -65,14 +66,14 @@ class AccountManager: NSObject {
     func doLogout(completion: (Void -> Void)?) {
 //        self.isAuthorized = false
         UserManager.sharedManager.logoutWithCompletion(completion)
-        HealthManager.sharedManager.reset()
+        IOSHealthManager.sharedManager.reset()
         self.contentManager.stopBackgroundWork()
         PopulationHealthManager.sharedManager.resetAggregates()
     }
 
     func doWithdraw(keepData: Bool, completion: Bool -> Void) {
         UserManager.sharedManager.withdraw(keepData, completion: completion)
-        HealthManager.sharedManager.reset()
+        IOSHealthManager.sharedManager.reset()
         self.contentManager.stopBackgroundWork()
         PopulationHealthManager.sharedManager.resetAggregates()
     }
@@ -156,7 +157,7 @@ class AccountManager: NSObject {
     }
 
     func withHKCalAuth(completion: Void -> Void) {
-        HealthManager.sharedManager.authorizeHealthKit { (success, error) -> Void in
+        MCHealthManager.sharedManager.authorizeHealthKit { (success, error) -> Void in
             guard error == nil else {
                 self.isHealthKitAuthorized = false
                 log.error("no healthkit \(error)")

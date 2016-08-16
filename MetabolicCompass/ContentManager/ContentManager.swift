@@ -7,9 +7,10 @@
 //
 
 import UIKit
-import Async
 import HealthKit
+import MCCircadianQueries
 import MetabolicCompassKit
+import Async
 import ReachabilitySwift
 
 class ContentManager: NSObject {
@@ -63,7 +64,7 @@ class ContentManager: NSObject {
                 self.isObservationActive = true
             }
             AccountManager.shared.withHKCalAuth {
-                HealthManager.sharedManager.collectDataForCharts()
+                IOSHealthManager.sharedManager.collectDataForCharts()
             }
         }
     }
@@ -127,7 +128,7 @@ class ContentManager: NSObject {
 
     func fetchRecentSamples() {
         AccountManager.shared.withHKCalAuth {
-            HealthManager.sharedManager.fetchMostRecentSamples() { (samples, error) -> Void in
+            MCHealthManager.sharedManager.fetchMostRecentSamples(ofTypes: PreviewManager.previewSampleTypes) { (samples, error) -> Void in
                 guard error == nil else { return }
                 NSNotificationCenter.defaultCenter().postNotificationName(HMDidUpdateRecentSamplesNotification, object: self)
             }
