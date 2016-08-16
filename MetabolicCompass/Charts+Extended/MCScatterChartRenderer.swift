@@ -11,6 +11,9 @@ import UIKit
 import Charts
 
 class MCScatterChartRenderer: ScatterChartRenderer {
+    
+    var shouldDrawConnectionLines:Bool = true
+    
     override func drawDataSet(context context: CGContext, dataSet: IScatterChartDataSet) {
         guard let
             dataProvider = dataProvider,
@@ -96,7 +99,7 @@ class MCScatterChartRenderer: ScatterChartRenderer {
                                                         shapeHoleSizeHalf: shapeStrokeSizeHalf, shapeStrokeSize: shapeStrokeSize,
                                                         shapeStrokeSizeHalf: shapeStrokeSizeHalf, shapeHoleSize: shapeHoleSize, shapeHoleColor: shapeHoleColor)
                                 
-                                if (prevPoint.x > 0) {//driwing line that connects circle shapes
+                                if (prevPoint.x > 0 && shouldDrawConnectionLines) {//driwing line that connects circle shapes
                                     CGContextSetStrokeColorWithColor(context, UIColor.whiteColor().colorWithAlphaComponent(0.3).CGColor)
                                     CGContextSetLineWidth(context, shapeHoleSize + shapeStrokeSize)
                                     CGContextMoveToPoint(context, prevPoint.x + 0.5, prevPoint.y - 1.0)
