@@ -40,6 +40,7 @@ class CorrelationChartsViewController: UIViewController, UITableViewDelegate, UI
         self.pickerView.reloadAllComponents()
         self.tableView.reloadData()
         scatterCh = NSBundle.mainBundle().loadNibNamed("ScatterCorrelcationCell", owner: self, options: nil).last as? ScatterCorrelcationCell
+        (scatterCh.chartView.renderer as! MCScatterChartRenderer).shouldDrawConnectionLines = false
         correlCh = NSBundle.mainBundle().loadNibNamed("TwoLineCorrelcationCell", owner: self, options: nil).last as? TwoLineCorrelcationCell
         scatterChartContainer.addSubview(scatterCh!)
         correlatoinChartContainer.addSubview(correlCh!)
@@ -181,10 +182,13 @@ class CorrelationChartsViewController: UIViewController, UITableViewDelegate, UI
         
         var xValues = [String?]()
         
-        var selectedIndexCount = 0
-        for pickerDataArray in pickerData {
-            let type = pickerDataArray[self.selectedPickerRows[selectedIndexCount]]
-            selectedIndexCount += 1
+        for selectedRow in selectedPickerRows {
+            if selectedRow == -1 {
+                resetAllCharts()
+                return
+            }
+            let pickerDataArray = pickerData[0]
+            let type = pickerDataArray[selectedRow]
             let typeToShow = type.identifier == HKCorrelationTypeIdentifierBloodPressure ? HKQuantityTypeIdentifierBloodPressureSystolic : type.identifier
             let key = typeToShow + "\((model.rangeType.rawValue))"
             let chartData = model.typesChartData[key]
@@ -197,7 +201,7 @@ class CorrelationChartsViewController: UIViewController, UITableViewDelegate, UI
         }
         
         for dSet in dataSets {
-            if dSet.entryCount < 7 {//min 7 values should exits in 
+            if dSet.entryCount < 1 {//min 1 values should exits in
                 resetAllCharts()
                 return
             }
@@ -269,9 +273,7 @@ class CorrelationChartsViewController: UIViewController, UITableViewDelegate, UI
             self.pickerIdentifiers[0].append(type.identifier)
             self.pickerIdentifiers[1].append(type.identifier)
         }
-        
         return picker
-        
     }()
 }
 
@@ -297,11 +299,6 @@ extension CorrelationChartsViewController : UIPickerViewDataSource {
         let result = appearanceProvider.titleForSampleType(pickerData[0][row].identifier, active: false)
         return result
     }
-    
-//    func pickerView(pickerView: UIPickerView, viewForRow row: Int, forComponent component: Int, reusingView view: UIView?) -> UIView {
-//        <#code#>
-//    }
-
 }
 
 extension CorrelationChartsViewController : UIPickerViewDelegate {
