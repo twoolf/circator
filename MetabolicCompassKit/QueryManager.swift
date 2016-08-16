@@ -308,7 +308,8 @@ func serializeMCQueryPredicateREST(p: MCQueryPredicate) -> [String: AnyObject] {
         }
     }
     else if let (activity_type, quantity) = HMConstants.sharedInstance.hkQuantityToMCDBActivity[p.1.0.identifier] {
-        return ["activity_value": [activity_type: quantity]]
+        spec["quantity"] = quantity
+        return ["activity_value": [activity_type: spec]]
     }
 
     let mcAttrType = HMConstants.sharedInstance.hkToMCDB[p.1.0.identifier]!

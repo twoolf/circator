@@ -140,6 +140,8 @@ public class PopulationHealthManager {
             "userfilter"   : userfilter
         ]
 
+        // log.info("Running popquery \(params)")
+
         Service.json(MCRouter.AggregateMeasures(params), statusCode: 200..<300, tag: "AGGPOST") {
             _, response, result in
             guard !result.isSuccess else {
@@ -165,51 +167,63 @@ public class PopulationHealthManager {
             var failed = false
             for sample in aggregates {
                 for (column, val) in sample {
-                    log.verbose("Refreshing population aggregate for \(column)")
+                    if !failed {
+                        log.verbose("Refreshing population aggregate for \(column)")
 
-                    // Handle meal_duration/activity_duration/activity_value columns.
-                    // TODO: this only supports activity values that are HealthKit quantities for now (step count, flights climbed, distance/walking/running)
-                    // We should support all MCDB meals/activity categories.
-                    if HMConstants.sharedInstance.mcdbCategorized.contains(column) {
-                        let categoryQuantities: [String: (String, String)] = column == "activity_value" ? HMConstants.sharedInstance.mcdbActivityToHKQuantity : [:]
-                        if let categorizedVals = val as? [String:AnyObject] {
-                            for (category, catval) in categorizedVals {
-                                if let (mcdbQuantity, hkQuantity) = categoryQuantities[category],
-                                        categoryValues = catval as? [String: AnyObject],
-                                        sampleValue = categoryValues[mcdbQuantity] as? Double
-                                {
-                                    let sampleType = HKObjectType.quantityTypeForIdentifier(hkQuantity)!
-                                    populationAggregates[sampleType] = [doubleAsAggregate(sampleType, sampleValue: sampleValue)]
+                        // Handle meal_duration/activity_duration/activity_value columns.
+                        // TODO: this only supports activity values that are HealthKit quantities for now (step count, flights climbed, distance/walking/running)
+                        // We should support all MCDB meals/activity categories.
+                        if HMConstants.sharedInstance.mcdbCategorized.contains(column) {
+                            let categoryQuantities: [String: (String, String)] = column == "activity_value" ? HMConstants.sharedInstance.mcdbActivityToHKQuantity : [:]
+                            if let categorizedVals = val as? [String:AnyObject] {
+                                for (category, catval) in categorizedVals {
+                                    if let (mcdbQuantity, hkQuantity) = categoryQuantities[category],
+                                        sampleType = HKObjectType.quantityTypeForIdentifier(hkQuantity),
+                                        categoryValues = catval as? [String: AnyObject]
+                                    {
+                                        if let sampleValue = categoryValues[mcdbQuantity] as? Double {
+                                            populationAggregates[sampleType] = [doubleAsAggregate(sampleType, sampleValue: sampleValue)]
+                                        } else {
+                                            populationAggregates[sampleType] = []
+                                        }
+                                    }
+                                    else {
+                                        failed = true
+                                        log.error("Invalid MCDB categorized quantity in popquery response: \(category) \(catval)")
+                                    }
                                 }
-                                else {
-                                    log.error("Invalid MCDB categorized quantity in popquery response: \(category) \(catval)")
-                                }
+                            }
+                            else {
+                                failed = true
+                                log.error("Invalid MCDB categorized values in popquery response: \(val)")
+                            }
+                        }
+                        else if let typeIdentifier = HMConstants.sharedInstance.mcdbToHK[column]
+                        {
+                            var sampleType: HKSampleType! = nil
+                            switch typeIdentifier {
+                            case HKCategoryTypeIdentifierSleepAnalysis:
+                                sampleType = HKObjectType.categoryTypeForIdentifier(HKCategoryTypeIdentifierSleepAnalysis)!
+
+                            case HKCategoryTypeIdentifierAppleStandHour:
+                                sampleType = HKObjectType.categoryTypeForIdentifier(HKCategoryTypeIdentifierAppleStandHour)!
+
+                            default:
+                                sampleType = HKObjectType.quantityTypeForIdentifier(typeIdentifier)!
+                            }
+
+                            if let sampleValue = val as? Double {
+                                populationAggregates[sampleType] = [doubleAsAggregate(sampleType, sampleValue: sampleValue)]
+                            } else {
+                                populationAggregates[sampleType] = []
                             }
                         }
                         else {
-                            log.error("Invalid MCDB categorized values in popquery response: \(val)")
+                            failed = true
+                            // let err = NSError(domain: "App error", code: 0, userInfo: [NSLocalizedDescriptionKey:kvdict.description])
+                            // let dict = ["title":"population data error", "error":err]
+                            // NSNotificationCenter.defaultCenter().postNotificationName("ncAppLogNotification", object: nil, userInfo: dict)
                         }
-                    }
-                    else if let sampleValue = val as? Double, typeIdentifier = HMConstants.sharedInstance.mcdbToHK[column]
-                    {
-                        switch typeIdentifier {
-                        case HKCategoryTypeIdentifierSleepAnalysis:
-                            let sampleType = HKObjectType.categoryTypeForIdentifier(HKCategoryTypeIdentifierSleepAnalysis)!
-                            populationAggregates[sampleType] = [doubleAsAggregate(sampleType, sampleValue: sampleValue)]
-
-                        case HKCategoryTypeIdentifierAppleStandHour:
-                            let sampleType = HKObjectType.categoryTypeForIdentifier(HKCategoryTypeIdentifierAppleStandHour)!
-                            populationAggregates[sampleType] = [doubleAsAggregate(sampleType, sampleValue: sampleValue)]
-
-                        default:
-                            let sampleType = HKObjectType.quantityTypeForIdentifier(typeIdentifier)!
-                            populationAggregates[sampleType] = [doubleAsAggregate(sampleType, sampleValue: sampleValue)]
-                        }
-                    } else {
-                        failed = true
-                        // let err = NSError(domain: "App error", code: 0, userInfo: [NSLocalizedDescriptionKey:kvdict.description])
-                        // let dict = ["title":"population data error", "error":err]
-                        // NSNotificationCenter.defaultCenter().postNotificationName("ncAppLogNotification", object: nil, userInfo: dict)
                     }
                 }
             }
