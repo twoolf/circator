@@ -29,7 +29,6 @@ class CorrelationChartsViewController: UIViewController, UITableViewDelegate, UI
     private let lineChartsModel = BarChartModel()
     private let TopCorrelationType = DefaultsKey<Int?>("TopCorrelationType")
     private let BottomCorrelationType = DefaultsKey<Int?>("BottomCorrelationType")
-    var scatterChartMode: Bool = true
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -47,8 +46,6 @@ class CorrelationChartsViewController: UIViewController, UITableViewDelegate, UI
         correlatoinChartContainer.addSubview(correlCh!)
         scatterCh?.frame = correlatoinChartContainer.bounds
         correlCh?.frame = correlatoinChartContainer.bounds
-        scatterChartContainer.hidden = !scatterChartMode
-        correlatoinChartContainer.hidden = scatterChartMode
         
         let px = 1 / UIScreen.mainScreen().scale
         let frame = CGRectMake(0, 0, self.tableView.frame.size.width, px)
@@ -60,12 +57,7 @@ class CorrelationChartsViewController: UIViewController, UITableViewDelegate, UI
 //MARK: VC Legacy methods: should be moved to super class
     func updateChartsData () {
         activityIndicator.startAnimating()
-        if scatterChartMode {
-            scatterChartsModel.gettAllDataForSpecifiedType(ChartType.ScatterChart) {
-                self.activityIndicator.stopAnimating()
-                self.updateChartData()
-            }
-        } else {
+        scatterChartsModel.gettAllDataForSpecifiedType(ChartType.ScatterChart) {
             self.lineChartsModel.gettAllDataForSpecifiedType(ChartType.LineChart) {
                 self.activityIndicator.stopAnimating()
                 self.updateChartData()
@@ -152,11 +144,8 @@ class CorrelationChartsViewController: UIViewController, UITableViewDelegate, UI
         if ((self.selectedPickerRows[0] >= 0) && (self.selectedPickerRows[1] >= 0)) {
             scatterCh.chartView.noDataText = "No data exists"
             correlCh.chartView.noDataText = "No data exists"
-            if scatterChartMode {
-                updateChartDataForChartsModel(scatterChartsModel)
-            } else {
-                updateChartDataForChartsModel(lineChartsModel)
-            }
+            updateChartDataForChartsModel(scatterChartsModel)
+            updateChartDataForChartsModel(lineChartsModel)
             updateChartTitle()
         } else {
             scatterCh.chartView.noDataText = "Choose both metrics"

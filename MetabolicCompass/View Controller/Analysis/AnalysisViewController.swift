@@ -10,8 +10,7 @@ import UIKit
 
 // Enums
 enum AnalysisType : Int {
-    case ScatterPlot = 0
-    case TimeOrdered
+    case Correlate = 0
     case Fasting
 }
 
@@ -23,7 +22,6 @@ class AnalysisViewController: UIViewController {
     
     override func viewDidLoad() {
         let correlateController = UIStoryboard(name: "TabScreens", bundle: nil).instantiateViewControllerWithIdentifier("correlatePlaceholder") as! CorrelationChartsViewController
-        correlateController.scatterChartMode = true
         self.addChildViewController(correlateController)
         correlateController.view.translatesAutoresizingMaskIntoConstraints = false
         self.addSubview(correlateController.view, toView: self.containerView)
@@ -31,17 +29,8 @@ class AnalysisViewController: UIViewController {
         super.viewDidLoad()
     }
     
-    func switchToTwoTimeOrderedViewController() {
-        let newViewController = UIStoryboard(name: "TabScreens", bundle: nil).instantiateViewControllerWithIdentifier("correlatePlaceholder") as! CorrelationChartsViewController
-        newViewController.scatterChartMode = false
-        newViewController.view.translatesAutoresizingMaskIntoConstraints = false        
-        cycleFromViewController(self.currentViewController!, toViewController: newViewController)
-        self.currentViewController = newViewController;
-    }
-    
     func switchToScatterPlotViewController() {
         let newViewController = UIStoryboard(name: "TabScreens", bundle: nil).instantiateViewControllerWithIdentifier("correlatePlaceholder") as! CorrelationChartsViewController
-        newViewController.scatterChartMode = true
         newViewController.view.translatesAutoresizingMaskIntoConstraints = false
         cycleFromViewController(self.currentViewController!, toViewController: newViewController)
         self.currentViewController = newViewController;
@@ -56,10 +45,8 @@ class AnalysisViewController: UIViewController {
 
     @IBAction func segmentSelectedAction(segment: UISegmentedControl) {
         switch segment.selectedSegmentIndex {
-        case AnalysisType.ScatterPlot.rawValue:
+        case AnalysisType.Correlate.rawValue:
             switchToScatterPlotViewController()
-        case AnalysisType.TimeOrdered.rawValue:
-            switchToTwoTimeOrderedViewController()
         default://by default show fastings
             switchToFastingViewController()
         }
