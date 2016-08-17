@@ -85,6 +85,15 @@ public class PopulationHealthManager {
                             if let column = HMConstants.sharedInstance.hkToMCDB[hksType.identifier] {
                                 columns[String(columnIndex)] = column
                                 columnIndex += 1
+                            } else if hksType.identifier == HKCorrelationTypeIdentifierBloodPressure {
+                                // Issue queries for both systolic and diastolic.
+                                columns[String(columnIndex)] = HMConstants.sharedInstance.hkToMCDB[HKQuantityTypeIdentifierBloodPressureDiastolic]!
+                                columnIndex += 1
+
+                                columns[String(columnIndex)] = HMConstants.sharedInstance.hkToMCDB[HKQuantityTypeIdentifierBloodPressureSystolic]!
+                                columnIndex += 1
+                            } else {
+                                log.info("Cannot perform population query for \(hksType.identifier)")
                             }
                         }
                     }
@@ -125,6 +134,14 @@ public class PopulationHealthManager {
                 }
                 else if let (activity_category, quantity) = HMConstants.sharedInstance.hkQuantityToMCDBActivity[hksType.identifier] {
                     columns[String(columnIndex)] = ["activity_value": [activity_category:quantity]]
+                    columnIndex += 1
+                }
+                else if hksType.identifier == HKCorrelationTypeIdentifierBloodPressure {
+                    // Issue queries for both systolic and diastolic.
+                    columns[String(columnIndex)] = HMConstants.sharedInstance.hkToMCDB[HKQuantityTypeIdentifierBloodPressureDiastolic]!
+                    columnIndex += 1
+
+                    columns[String(columnIndex)] = HMConstants.sharedInstance.hkToMCDB[HKQuantityTypeIdentifierBloodPressureSystolic]!
                     columnIndex += 1
                 }
                 else {
@@ -213,7 +230,26 @@ public class PopulationHealthManager {
                             }
 
                             if let sampleValue = val as? Double {
-                                populationAggregates[sampleType] = [doubleAsAggregate(sampleType, sampleValue: sampleValue)]
+                                let agg = doubleAsAggregate(sampleType, sampleValue: sampleValue)
+                                populationAggregates[sampleType] = [agg]
+
+                                // Population correlation type entry for systolic/diastolic blood pressure sample.
+                                if typeIdentifier == HKQuantityTypeIdentifierBloodPressureSystolic
+                                    || typeIdentifier == HKQuantityTypeIdentifierBloodPressureDiastolic
+                                {
+                                    let bpType = HKObjectType.correlationTypeForIdentifier(HKCorrelationTypeIdentifierBloodPressure)!
+                                    let sType = HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierBloodPressureSystolic)!
+                                    let dType = HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierBloodPressureDiastolic)!
+
+                                    let bpIndex = typeIdentifier == HKQuantityTypeIdentifierBloodPressureSystolic ? 0 : 1
+                                    if populationAggregates[bpType] == nil {
+                                        populationAggregates[bpType] = [
+                                            MCAggregateSample(value: Double.quietNaN, sampleType: sType, op: sType.aggregationOptions),
+                                            MCAggregateSample(value: Double.quietNaN, sampleType: dType, op: dType.aggregationOptions),
+                                        ]
+                                    }
+                                    populationAggregates[bpType]![bpIndex] = agg
+                                }
                             } else {
                                 populationAggregates[sampleType] = []
                             }

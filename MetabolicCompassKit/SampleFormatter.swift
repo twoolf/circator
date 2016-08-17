@@ -209,7 +209,25 @@ public class SampleFormatter: NSObject {
         guard !samples.isEmpty else { return emptyString }
 
         if let fst = samples.first {
-            if let _ = fst.hkType as? HKQuantityType {
+            if let qType = fst.hkType as? HKQuantityType {
+                if qType.identifier == HKQuantityTypeIdentifierBloodPressureSystolic
+                    || qType.identifier == HKQuantityTypeIdentifierBloodPressureDiastolic
+                {
+                    // Check if we have the complementary blood pressure quantity in the array, and if so,
+                    // return the composite string.
+                    let checkId = qType.identifier == HKQuantityTypeIdentifierBloodPressureSystolic ?
+                        HKQuantityTypeIdentifierBloodPressureDiastolic : HKQuantityTypeIdentifierBloodPressureSystolic
+
+                    let matches = samples.filter { $0.hkType?.identifier == checkId }
+                    if !matches.isEmpty {
+                        let systolicFromMatches = checkId == HKQuantityTypeIdentifierBloodPressureSystolic
+                        let systolicValue = systolicFromMatches ? matches.first!.numeralValue! : fst.numeralValue!
+                        let diastolicValue = systolicFromMatches ? fst.numeralValue! : matches.first!.numeralValue!
+                        let systolicNumber = SampleFormatter.integerFormatter.stringFromNumber(systolicValue)!
+                        let diastolicNumber = SampleFormatter.integerFormatter.stringFromNumber(diastolicValue)!
+                        return "\(systolicNumber)/\(diastolicNumber)"
+                    }
+                }
                 return stringFromMCSample(fst)
             } else if let quantity = fst.numeralValue, type = fst.hkType {
                 switch type.identifier {
