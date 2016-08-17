@@ -94,14 +94,16 @@ public class FastingViewController : UIViewController, ChartViewDelegate {
     lazy var pieChartColors: [NSUIColor] = {
         // Populate 15 colors. Add more if needed.
         var colors : [NSUIColor] = []
-        colors.appendContentsOf(ChartColorTemplates.joyful())
-        colors.appendContentsOf(ChartColorTemplates.colorful())
-        colors.appendContentsOf(ChartColorTemplates.pastel())
-        //colors.appendContentsOf(ChartColorTemplates.vordiplom())
-        //colors.appendContentsOf(ChartColorTemplates.liberty())
-        //colors.appendContentsOf(ChartColorTemplates.material())
 
-        return GKRandomSource.sharedRandom().arrayByShufflingObjectsInArray(colors) as! [NSUIColor]
+        colors.appendContentsOf(ChartColorTemplates.material())
+        colors.appendContentsOf(ChartColorTemplates.colorful())
+        colors.appendContentsOf(ChartColorTemplates.liberty())
+        colors.appendContentsOf(ChartColorTemplates.pastel())
+        colors.appendContentsOf(ChartColorTemplates.joyful())
+        colors.appendContentsOf(ChartColorTemplates.vordiplom())
+
+        //return GKRandomSource.sharedRandom().arrayByShufflingObjectsInArray(colors) as! [NSUIColor]
+        return colors
     }()
 
     public static let orange = ChartColorTemplates.colorful()[1]
