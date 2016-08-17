@@ -223,8 +223,8 @@ class CorrelationChartsViewController: UIViewController, UITableViewDelegate, UI
             let rightChartData = LineChartData(xVals: xValues, dataSets: [dataSets[1]])
             if let yMax = chartData?.yMax, yMin = chartData?.yMin where yMax > 0 || yMin > 0 {
                 correlCh.chartView.data = nil
-                correlCh.updateLeftAxisWith(chartData?.yMin, maxValue: chartData?.yMax)
-                correlCh.updateMinMaxTitlesWithValues("\(rightChartData.yMin)", maxValue: "\(rightChartData.yMax)")
+                correlCh.updateLeftAxisWith(dataSets[0].yMin, maxValue: dataSets[0].yMax)
+                correlCh.updateMinMaxTitlesWithValues("\(Int(rightChartData.yMin))", maxValue: "\(Int(rightChartData.yMax))")
                 correlCh.drawLimitLine()
                 correlCh.chartView.data = chartData
             } else {

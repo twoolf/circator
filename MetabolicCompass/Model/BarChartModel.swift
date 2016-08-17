@@ -279,7 +279,8 @@ class BarChartModel : NSObject {
                     if !numberIsDecimal {
                         label = "\(Int(yValue.value))";
                     } else {
-                        label = "\(yValue.value)"
+                        let value = Double(round(10*yValue.value)/10)
+                        label = "\(value)"
                     }
                     if !xValues.contains(label) {//skip repeated values
                         //they shouldn't be added to the xAxis labels beaceuse they will be grouped into one BarChartEntry
@@ -332,14 +333,11 @@ class BarChartModel : NSObject {
     }
     
     func lineChartWithMultipleDataSets(xVals: [String?], dataSets:[IChartDataSet]) -> LineChartData? {
-        let firstDataSet = dataSets[0] as? LineChartDataSet
-        let secondDataSet = dataSets[1] as? LineChartDataSet
+        (dataSets[0] as! LineChartDataSet).axisDependency = .Left
+        (dataSets[0] as! LineChartDataSet).colors = [UIColor.whiteColor()]
         
-        firstDataSet?.axisDependency = .Left
-        firstDataSet?.colors = [UIColor.whiteColor()]
-        
-        secondDataSet?.axisDependency = .Right
-        secondDataSet?.colors = [UIColor.redColor()]
+        (dataSets[1] as! LineChartDataSet).axisDependency = .Right
+        (dataSets[1] as! LineChartDataSet).colors = [UIColor.redColor()]
 
         let chartData = LineChartData(xVals: xVals, dataSets: dataSets)
         return chartData
