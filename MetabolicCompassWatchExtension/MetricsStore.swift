@@ -40,5 +40,13 @@ class MetricsStore {
     var lastEatingTime = "no data"
     var lastAte = "no data"
     var lastAteAsNSDate: NSDate = NSDate()
+    var cumulativeWeeklyFasting = "7"
+    var cumulativeWeeklyNonFast = "14"
+    var weeklyFastingVariability = "2"
+    var samplesCollected = "100"
+    var fastSleep = "5"
+    var fastAwake = "6"
+    var fastEat = "7"
+    var fastExercise = "8"
 }
 

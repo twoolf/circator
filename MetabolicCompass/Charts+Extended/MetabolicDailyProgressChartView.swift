@@ -9,7 +9,7 @@
 import Foundation
 import Charts
 
-class MetabolicDailyPorgressChartView : HorizontalBarChartView, DailyChartModelProtocol {
+class MetabolicDailyProgressChartView : HorizontalBarChartView, DailyChartModelProtocol {
 
     var tip: TapTip! = nil
     var changeColorRecognizer: UITapGestureRecognizer! = nil

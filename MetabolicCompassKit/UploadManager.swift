@@ -9,14 +9,13 @@
 import Foundation
 import HealthKit
 import GameplayKit
+import MCCircadianQueries
 import Realm
 import RealmSwift
 import Async
 import Granola
 import SwiftDate
 import SwiftyUserDefaults
-
-public let noAnchor = HKQueryAnchor(fromValue: Int(HKAnchoredObjectQueryNoAnchor))
 
 // Randomized, truncated exponential backoff constants
 
@@ -409,7 +408,7 @@ public class UploadManager: NSObject {
 
                 log.info("Retry upload invoking fetchSamplesByUUID for \(entryKey)")
 
-                HealthManager.sharedManager.fetchSamplesByUUID(type, uuids: uuids) { (samples, error) in
+                MCHealthManager.sharedManager.fetchSamplesByUUID(type, uuids: uuids) { (samples, error) in
                     // We need a new Realm instance since this completion will execute in a different thread
                     // than the realm instance outside the above loop.
                     log.info("Retry upload in fetchSamplesByUUID completion for \(entryKey)")
@@ -637,7 +636,7 @@ public class UploadManager: NSObject {
             let dwend = NSDate(timeIntervalSinceReferenceDate: wend)
             let dwstart = UserManager.sharedManager.decrAnchorDate(dwend)
             let pred = HKQuery.predicateForSamplesWithStartDate(dwstart, endDate: dwend, options: .None)
-            HealthManager.sharedManager.fetchSamplesOfType(type, predicate: pred) { (samples, error) in
+            MCHealthManager.sharedManager.fetchSamplesOfType(type, predicate: pred) { (samples, error) in
                 guard error == nil else {
                     log.error("Could not get initial anchor samples for: \(tname) \(dwstart) \(dwend)")
                     return
@@ -680,14 +679,14 @@ public class UploadManager: NSObject {
     // MARK: - Observers
 
     public func registerUploadObservers() {
-        HealthManager.sharedManager.authorizeHealthKit { (success, _) -> Void in
+        MCHealthManager.sharedManager.authorizeHealthKit { (success, _) -> Void in
             guard success else { return }
 
             UploadManager.sharedManager.cleanPendingUploads()
             UploadManager.sharedManager.retryPendingUploads(true)
 
             HMConstants.sharedInstance.healthKitTypesToObserve.forEach { (type) in
-                HealthManager.sharedManager.startBackgroundObserverForType(type, getAnchorCallback: UploadManager.sharedManager.getNextAnchor)
+                IOSHealthManager.sharedManager.startBackgroundObserverForType(type, getAnchorCallback: UploadManager.sharedManager.getNextAnchor)
                 { (added, deleted, newAnchor, error, completion) -> Void in
                     guard error == nil else {
                         log.error("Failed to register observers: \(error)")
@@ -698,7 +697,7 @@ public class UploadManager: NSObject {
                     var typeId = type.displayText ?? type.identifier
                     typeId = typeId.isEmpty ? "X\(type.identifier)" : typeId
 
-                    let userAdded = added.filter { return !HealthManager.sharedManager.isGeneratedSample($0) }
+                    let userAdded = added.filter { return !MCHealthManager.sharedManager.isGeneratedSample($0) }
                     if ( userAdded.count > 0 || deleted.count > 0 ) {
                         UploadManager.sharedManager.uploadAnchorCallback(type, anchor: newAnchor, added: userAdded, deleted: deleted)
                     }
@@ -712,9 +711,9 @@ public class UploadManager: NSObject {
     }
 
     public func deregisterUploadObservers(completion: (Bool, NSError?) -> Void) {
-        HealthManager.sharedManager.authorizeHealthKit { (success, _) -> Void in
+        MCHealthManager.sharedManager.authorizeHealthKit { (success, _) -> Void in
             guard success else { return }
-            HealthManager.sharedManager.stopAllBackgroundObservers { (success, error) in
+            IOSHealthManager.sharedManager.stopAllBackgroundObservers { (success, error) in
                 guard success && error == nil else {
                     log.error(error)
                     return

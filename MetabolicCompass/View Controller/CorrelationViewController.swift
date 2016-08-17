@@ -14,6 +14,7 @@ import Crashlytics
 import SwiftDate
 import Pages
 import Async
+import MCCircadianQueries
 
 /**
  This class controls thedisplay of correlation plots (2nd button from left on bottom of the screen).  The type of correlation that is used will show two curves (with different y-values) moving along in a similar way if they are correlated (e.g. both increasing linearly).  If only one variable is increasing, while the other is seen to fluctuate throughout that time, then the two variables are most likely not correlated.
@@ -86,7 +87,7 @@ class CorrelationViewController: UIViewController, ChartViewDelegate {
                 Async.background {
                     switch (lsp, rsp) {
                     case (.PlotFasting, .PlotFasting):
-                        HealthManager.sharedManager.fetchMaxFastingTimes { (aggregates, error) in
+                        MCHealthManager.sharedManager.fetchMaxFastingTimes { (aggregates, error) in
                             guard (error == nil) && !aggregates.isEmpty else {
                                 Async.main {
                                     if let idx = self.errorIndex, pv = self.parentViewController as? PagesController {
@@ -99,7 +100,7 @@ class CorrelationViewController: UIViewController, ChartViewDelegate {
                         }
 
                     case let (.PlotFasting, .PlotPredicate(_, predicate)):
-                        HealthManager.sharedManager.correlateWithFasting(true, type: self.sampleTypes[1], predicate: predicate) {
+                        MCHealthManager.sharedManager.correlateWithFasting(true, type: self.sampleTypes[1], predicate: predicate) {
                             (zipped, error) -> Void in
                             guard (error == nil) && !zipped.isEmpty else {
                                 Async.main {
@@ -113,7 +114,7 @@ class CorrelationViewController: UIViewController, ChartViewDelegate {
                         }
 
                     case let (.PlotPredicate(_, predicate), .PlotFasting):
-                        HealthManager.sharedManager.correlateWithFasting(false, type: self.sampleTypes[0], predicate: predicate) {
+                        MCHealthManager.sharedManager.correlateWithFasting(false, type: self.sampleTypes[0], predicate: predicate) {
                             (zipped, error) -> Void in
                             guard (error == nil) && !zipped.isEmpty else {
                                 Async.main {
@@ -127,7 +128,7 @@ class CorrelationViewController: UIViewController, ChartViewDelegate {
                         }
 
                     case let (.PlotPredicate(_, lpred), .PlotPredicate(_, rpred)):
-                        HealthManager.sharedManager.correlateStatisticsOfType(self.sampleTypes[0], withType: self.sampleTypes[1], pred1: lpred, pred2: rpred) {
+                        MCHealthManager.sharedManager.correlateStatisticsOfType(self.sampleTypes[0], withType: self.sampleTypes[1], pred1: lpred, pred2: rpred) {
                             (stat1, stat2, error) -> Void in
                             guard (error == nil) && !(stat1.isEmpty || stat2.isEmpty) else {
                                 Async.main {

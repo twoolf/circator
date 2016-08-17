@@ -9,6 +9,7 @@
 import UIKit
 import GameKit
 import HealthKit
+import MCCircadianQueries
 import MetabolicCompassKit
 import Async
 import Charts

@@ -41,7 +41,7 @@ class DailyProgressViewController : UIViewController, DailyChartModelProtocol {
     var dailyChartModel = DailyChartModel()
 
     @IBOutlet weak var daysTableView: UITableView!
-    @IBOutlet weak var dailyProgressChartView: MetabolicDailyPorgressChartView!
+    @IBOutlet weak var dailyProgressChartView: MetabolicDailyProgressChartView!
     @IBOutlet weak var dailyProgressChartScrollView: UIScrollView!
     @IBOutlet weak var dailyProgressChartDaysTable: UITableView!
     @IBOutlet weak var mainScrollView: UIScrollView!
@@ -87,15 +87,15 @@ class DailyProgressViewController : UIViewController, DailyChartModelProtocol {
                 self.updateContentWithAnimation = false
                 self.dailyChartModel.toggleHighlightFasting()
                 if self.dailyChartModel.highlightFasting {
-                    self.fastingSquare.backgroundColor  = MetabolicDailyPorgressChartView.highlightFastingColor
-                    self.sleepSquare.backgroundColor    = MetabolicDailyPorgressChartView.mutedSleepColor
-                    self.eatingSquare.backgroundColor   = MetabolicDailyPorgressChartView.mutedEatingColor
-                    self.exerciseSquare.backgroundColor = MetabolicDailyPorgressChartView.mutedExerciseColor
+                    self.fastingSquare.backgroundColor  = MetabolicDailyProgressChartView.highlightFastingColor
+                    self.sleepSquare.backgroundColor    = MetabolicDailyProgressChartView.mutedSleepColor
+                    self.eatingSquare.backgroundColor   = MetabolicDailyProgressChartView.mutedEatingColor
+                    self.exerciseSquare.backgroundColor = MetabolicDailyProgressChartView.mutedExerciseColor
                 } else {
-                    self.fastingSquare.backgroundColor  = MetabolicDailyPorgressChartView.fastingColor
-                    self.sleepSquare.backgroundColor    = MetabolicDailyPorgressChartView.sleepColor
-                    self.eatingSquare.backgroundColor   = MetabolicDailyPorgressChartView.eatingColor
-                    self.exerciseSquare.backgroundColor = MetabolicDailyPorgressChartView.exerciseColor
+                    self.fastingSquare.backgroundColor  = MetabolicDailyProgressChartView.fastingColor
+                    self.sleepSquare.backgroundColor    = MetabolicDailyProgressChartView.sleepColor
+                    self.eatingSquare.backgroundColor   = MetabolicDailyProgressChartView.eatingColor
+                    self.exerciseSquare.backgroundColor = MetabolicDailyProgressChartView.exerciseColor
                 }
                 self.contentDidUpdate()
             }

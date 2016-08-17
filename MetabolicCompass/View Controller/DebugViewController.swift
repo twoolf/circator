@@ -7,9 +7,10 @@
 //
 
 import Foundation
-import HealthKit
-import MetabolicCompassKit
 import UIKit
+import HealthKit
+import MCCircadianQueries
+import MetabolicCompassKit
 import Async
 import Former
 import HTPressableButton
@@ -297,7 +298,7 @@ class DebugViewController : FormViewController {
                                     let jsonObjs = try block.map(UploadManager.sharedManager.jsonifySample)
                                     UploadManager.sharedManager.putBlockSample(jsonObjs)
                                 } catch  {
-                                    log.info("problems with: (\(HealthManager.description())")
+                                    log.info("problems with: (\(IOSHealthManager.description())")
                                 }
                             }
                         } else {

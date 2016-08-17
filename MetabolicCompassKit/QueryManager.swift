@@ -6,8 +6,9 @@
 //  Copyright © 2015 Yanif Ahmad, Tom Woolf. All rights reserved.
 //
 
-import SwiftyUserDefaults
 import HealthKit
+import MCCircadianQueries
+import SwiftyUserDefaults
 
 public enum Comparator : Int {
     case LT
@@ -306,6 +307,10 @@ func serializeMCQueryPredicateREST(p: MCQueryPredicate) -> [String: AnyObject] {
                 }
             }
         }
+    }
+    else if let (activity_type, quantity) = HMConstants.sharedInstance.hkQuantityToMCDBActivity[p.1.0.identifier] {
+        spec["quantity"] = quantity
+        return ["activity_value": [activity_type: spec]]
     }
 
     let mcAttrType = HMConstants.sharedInstance.hkToMCDB[p.1.0.identifier]!

@@ -17,6 +17,7 @@ import ResearchKit
 import Pages
 import Charts
 import SwiftDate
+import MCCircadianQueries
 
 let IntroViewTableViewCellIdentifier = "IntroViewTableViewCellIdentifier"
 private let mcControlButtonHeight = ScreenManager.sharedInstance.dashboardButtonHeight()
@@ -502,7 +503,7 @@ class IntroViewController: UIViewController,
     func withHKCalAuth(completion: Void -> Void) {
         hkAccessTime = NSDate()
         hkAccessNotifyLoop()
-        HealthManager.sharedManager.authorizeHealthKit { (success, error) -> Void in
+        MCHealthManager.sharedManager.authorizeHealthKit { (success, error) -> Void in
             guard error == nil else {
                 UINotifications.noHealthKit(self)
                 return
@@ -528,7 +529,7 @@ class IntroViewController: UIViewController,
 
     func fetchRecentSamples() {
         withHKCalAuth {
-            HealthManager.sharedManager.fetchMostRecentSamples() { (samples, error) -> Void in
+            MCHealthManager.sharedManager.fetchMostRecentSamples(ofTypes: PreviewManager.previewSampleTypes) { (samples, error) -> Void in
                 guard error == nil else { return }
                 NSNotificationCenter.defaultCenter().postNotificationName(HMDidUpdateRecentSamplesNotification, object: self)
             }
@@ -940,7 +941,7 @@ class IntroViewController: UIViewController,
         let typesAndPredicates = [sleepTy: datePredicate, workoutTy: datePredicate]
 
         // Aggregate sleep, exercise and meal events.
-        HealthManager.sharedManager.fetchSamples(typesAndPredicates) { (samples, error) -> Void in
+        MCHealthManager.sharedManager.fetchSamples(typesAndPredicates) { (samples, error) -> Void in
             guard error == nil else { log.error(error); return }
             let overlaps = samples.reduce(false, combine: { (acc, kv) in
                 guard !acc else { return acc }
@@ -984,7 +985,7 @@ class IntroViewController: UIViewController,
                     
                     log.info("Meal event \(startTime) \(endTime)")
                     validateTimedEvent(startTime, endTime: endTime) {
-                        HealthManager.sharedManager.savePreparationAndRecoveryWorkout(
+                        MCHealthManager.sharedManager.savePreparationAndRecoveryWorkout(
                             startTime, endDate: endTime, distance: 0.0, distanceUnit: HKUnit(fromString: "km"),
                             kiloCalories: 0.0, metadata: metaMeals)
                         {
@@ -1016,7 +1017,7 @@ class IntroViewController: UIViewController,
                 } else {
                     log.info("Sleep event \(startTime) \(endTime)")
                     validateTimedEvent(startTime, endTime: endTime) {
-                        HealthManager.sharedManager.saveSleep(startTime!, endDate: endTime!, metadata: [:], completion:
+                        MCHealthManager.sharedManager.saveSleep(startTime!, endDate: endTime!, metadata: [:], completion:
                         {
                             (success, error ) -> Void in
                             guard error == nil else { log.error(error); return }
@@ -1041,7 +1042,7 @@ class IntroViewController: UIViewController,
                     
                     log.info("Exercise event \(startTime) \(endTime)")
                     validateTimedEvent(startTime, endTime: endTime) {
-                        HealthManager.sharedManager.saveRunningWorkout(
+                        MCHealthManager.sharedManager.saveRunningWorkout(
                             startTime, endDate: endTime, distance: 0.0, distanceUnit: HKUnit(fromString: "km"),
                             kiloCalories: 0.0, metadata: [:])
                         {
@@ -1132,7 +1133,7 @@ class IntroViewController: UIViewController,
         let refreshPeriod = UserManager.sharedManager.getRefreshFrequency() ?? Int.max
         let stale = timeSinceRefresh > Double(refreshPeriod)
 
-        cell.setUserData(HealthManager.sharedManager.mostRecentSamples[sampleType] ?? [HKSample](),
+        cell.setUserData(MCHealthManager.sharedManager.mostRecentSamples[sampleType] ?? [HKSample](),
                          populationAverageData: PopulationHealthManager.sharedManager.mostRecentAggregates[sampleType] ?? [],
                          stalePopulation: stale)
         return cell
@@ -1280,7 +1281,7 @@ class IntroViewController: UIViewController,
         let kmUnit = HKUnit(fromString: "km")
         let metaMeals = ["Source":"Timer"]
 
-        HealthManager.sharedManager.savePreparationAndRecoveryWorkout(timerStartDate, endDate: timerEndDate,
+        MCHealthManager.sharedManager.savePreparationAndRecoveryWorkout(timerStartDate, endDate: timerEndDate,
             distance: 0.0, distanceUnit:kmUnit, kiloCalories: 0.0, metadata: metaMeals,
             completion: { (success, error ) -> Void in
                 guard error == nil else {

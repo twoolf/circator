@@ -11,12 +11,12 @@ import Foundation
 import WatchConnectivity
 
 class GlanceController: WKInterfaceController {
- 
+    
     @IBOutlet var firstRow: WKInterfaceLabel!
     @IBOutlet var secondRow: WKInterfaceLabel!
     @IBOutlet var thirdRow: WKInterfaceLabel!
     @IBOutlet var fourthRow: WKInterfaceLabel!
-
+    
     var weightString:String = "150"
     var BMIString:String = "23.4"
     var maxDailyFastingString:String = "need data"
@@ -32,6 +32,14 @@ class GlanceController: WKInterfaceController {
     var thirdRowString:String = "3rd row long"
     var wokeFromSleep:String = "data needed"
     var finishedExerciseLast:String = "no data"
+    var cumulativeWeeklyFastingString:String = "CWF"
+    var cumulativeWeeklyNonFastString:String = "CWNF"
+    var weeklyFastingVariabilityString:String = "wFV"
+    var samplesCollectedString:String = "sampled"
+    var fastSleepString:String = "fastSleep"
+    var fastAwakeString:String = "fastAwake"
+    var fastEatString:String = "fastEat"
+    var fastExerciseString:String = "fastExercise"
     
     override func awakeWithContext(context: AnyObject?) {
         super.awakeWithContext(context)
@@ -39,14 +47,13 @@ class GlanceController: WKInterfaceController {
     
     override func willActivate() {
         super.willActivate()
-        print("new glance conditions")
+        print("glance updated")
         firstRow.setText("M-Compass Stats:")
         firstRow.setTextColor(UIColor.greenColor())
         maxDailyFastingString = "Fast: \(MetricsStore.sharedInstance.fastingTime)"
         secondRow.setText(maxDailyFastingString)
         currentFastingTimeString = "Current Fast: \(MetricsStore.sharedInstance.currentFastingTime)"
         lastAteAsString = "Last Ate: \(MetricsStore.sharedInstance.lastAte)"
-        secondRow.setText(maxDailyFastingString)
         
         let dateFormatter = NSDateFormatter()
         dateFormatter.dateFormat = "HH:mm"
@@ -58,12 +65,27 @@ class GlanceController: WKInterfaceController {
         carbohydrateString   = "     Carb:   " + MetricsStore.sharedInstance.Carbohydrate
         fatString            = "     Fat:    " + MetricsStore.sharedInstance.Fat
         stepsString          = "     Steps:  " + MetricsStore.sharedInstance.StepCount
+        
+        cumulativeWeeklyFastingString = "WkF:" + MetricsStore.sharedInstance.cumulativeWeeklyFasting
+        cumulativeWeeklyNonFastString = "WklyNFst: " + MetricsStore.sharedInstance.cumulativeWeeklyNonFast
+        weeklyFastingVariabilityString = "Fst Var: " + MetricsStore.sharedInstance.weeklyFastingVariability
+        samplesCollectedString = "# Samples Collected: " + MetricsStore.sharedInstance.samplesCollected
+        fastSleepString = "fast to Sleep: " + MetricsStore.sharedInstance.fastSleep
+        fastAwakeString = "fast to Awake: " + MetricsStore.sharedInstance.fastAwake
+        fastEatString = "fast to Eat: " + MetricsStore.sharedInstance.fastEat
+        fastExerciseString = "fast to Exer: " + MetricsStore.sharedInstance.fastExercise
+        
+        secondRow.setText(cumulativeWeeklyFastingString)
         thirdRowString =
-            currentFastingTimeString + "\n" +
-            wokeFromSleep + "\n" +
-            finishedExerciseLast
+            cumulativeWeeklyNonFastString + "\n" +
+            weeklyFastingVariabilityString + "\n" +
+            fastAwakeString + "\n" +
+            fastSleepString + "\n" +
+            fastEatString + "\n" +
+        fastExerciseString
         thirdRow.setText(thirdRowString)
         thirdRow.setTextColor(UIColor.blueColor())
+//        fourthRow.setText(samplesCollectedString)
         fourthRow.setText("")
         fourthRow.setTextColor(UIColor.yellowColor())
     }

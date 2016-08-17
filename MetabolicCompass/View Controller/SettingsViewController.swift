@@ -6,8 +6,9 @@
 //  Copyright © 2015 Yanif Ahmad, Tom Woolf. All rights reserved.
 //
 
-import MetabolicCompassKit
 import UIKit
+import MCCircadianQueries
+import MetabolicCompassKit
 import Async
 import Former
 import HTPressableButton

@@ -252,54 +252,97 @@ class DashboardFilterController: UIViewController, UITableViewDelegate, UITableV
 
             self.data.append(DashboardFilterItem(title: "Exercise",
                 items: [DashboardFilterCellData(title: "under 20 minutes",
-                    hkType: HKQuantityTypeIdentifierAppleExerciseTime, aggrType: Aggregate.AggAvg, lowerBound: 0, upperBound: 20),
+                    hkType: HKQuantityTypeIdentifierAppleExerciseTime, hkUnit: HKUnit.minuteUnit(), aggrType: Aggregate.AggAvg, lowerBound: 0, upperBound: 20),
                     DashboardFilterCellData(title: "between 20-minutes and 1-hour",
-                        hkType: HKQuantityTypeIdentifierAppleExerciseTime, aggrType: Aggregate.AggAvg, lowerBound: 20, upperBound: 60),
+                        hkType: HKQuantityTypeIdentifierAppleExerciseTime, hkUnit: HKUnit.minuteUnit(), aggrType: Aggregate.AggAvg, lowerBound: 20, upperBound: 60),
                     DashboardFilterCellData(title: "between 1-hour and 3-hours",
-                        hkType: HKQuantityTypeIdentifierAppleExerciseTime, aggrType: Aggregate.AggAvg, lowerBound: 60, upperBound: 180),
+                        hkType: HKQuantityTypeIdentifierAppleExerciseTime, hkUnit: HKUnit.minuteUnit(), aggrType: Aggregate.AggAvg, lowerBound: 60, upperBound: 180),
                     DashboardFilterCellData(title: "more than 3-hours",
-                        hkType: HKQuantityTypeIdentifierAppleExerciseTime, aggrType: Aggregate.AggAvg, lowerBound: 180, upperBound: Int.max)]))
+                        hkType: HKQuantityTypeIdentifierAppleExerciseTime, hkUnit: HKUnit.minuteUnit(), aggrType: Aggregate.AggAvg, lowerBound: 180, upperBound: Int.max)]))
         }
     }
 
 
     // Section title, type identifier, ranges
-    typealias FilterSpecs = [(String, String, [(Int, Int, String?)])]
+    typealias FilterSpecs = [(String, String, HKUnit?, [(Int, Int, String?)])]
 
     let commonFilterSpecs: FilterSpecs = [
-        ("Body Mass Index",          HKQuantityTypeIdentifierBodyMassIndex,              [(0, 18, "(underweight)"), (18, 25, "(standard)"), (25, 30, "(overweight)"), (30, Int.max, "(obese)")]),
-        ("Dietary Energy",           HKQuantityTypeIdentifierDietaryEnergyConsumed,      [(0, 1000, nil), (1000, 2000, nil), (2000, 3500, nil), (3500, Int.max, nil)]),
-        ("Heart Rate",               HKQuantityTypeIdentifierHeartRate,                  [(0, 50, nil), (50, 65, nil), (65, 80, nil), (80, Int.max, nil)]),
-        ("Step Count",               HKQuantityTypeIdentifierStepCount,                  [(0, 1000, nil), (1000, 5000, nil), (5000, 10000, nil), (10000, Int.max, nil)]),
-        ("Active Energy",            HKQuantityTypeIdentifierActiveEnergyBurned,         [(0, 500, nil), (500, 1500, nil), (1500, 3500, nil), (3500, Int.max, nil)]),
-        ("Resting Energy",           HKQuantityTypeIdentifierBasalEnergyBurned,          [(0, 1000, nil), (1000, 2000, nil), (2000, 3000, nil), (3000, Int.max, nil)]),
-        ("Sleep",                    HKCategoryTypeIdentifierSleepAnalysis,              [(0, 5, nil), (5, 7, nil), (7, 9, nil), (9, Int.max, nil)]),
-        ("Protein",                  HKQuantityTypeIdentifierDietaryProtein,             [(0, 40, nil), (40, 80, nil), (80, 120, nil), (120, Int.max, nil)]),
-        ("Fat",                      HKQuantityTypeIdentifierDietaryFatTotal,            [(0, 50, nil), (50, 75, nil), (75, 100, nil), (100, Int.max, nil)]),
-        ("Carbohydrates",            HKQuantityTypeIdentifierDietaryCarbohydrates,       [(0, 200, nil), (200, 300, nil), (300, 400, nil), (400, Int.max, nil)]),
-        ("Fiber",                    HKQuantityTypeIdentifierDietaryFiber,               [(0, 10, nil), (10, 15, nil), (15, 20, nil), (20, Int.max, nil)]),
-        ("Sugar",                    HKQuantityTypeIdentifierDietarySugar,               [(0, 50, nil), (50, 110, nil), (110, 180, nil), (180, Int.max, nil)]),
-        ("Salt",                     HKQuantityTypeIdentifierDietarySodium,              [(0, 1000, nil), (1000, 3000, nil), (3000, 5000, nil), (5000, Int.max, nil)]),
-        ("Caffeine",                 HKQuantityTypeIdentifierDietaryCaffeine,            [(0, 50, nil), (50, 150, nil), (150, 300, nil), (300, Int.max, nil)]),
-        ("Cholesterol",              HKQuantityTypeIdentifierDietaryCholesterol,         [(0, 150, nil), (150, 300, nil), (300, 450, nil), (450, Int.max, nil)]),
-        ("Polyunsaturated Fat",      HKQuantityTypeIdentifierDietaryFatPolyunsaturated,  [(0, 10, nil), (10, 20, nil), (20, 30, nil), (30, Int.max, nil)]),
-        ("Saturated Fat",            HKQuantityTypeIdentifierDietaryFatSaturated,        [(0, 15, nil), (15, 25, nil), (25, 35, nil), (35, Int.max, nil)]),
-        ("Monounsaturated Fat",      HKQuantityTypeIdentifierDietaryFatMonounsaturated,  [(0, 20, nil), (20, 30, nil), (30, 40, nil), (40, Int.max, nil)]),
-        ("Water",                    HKQuantityTypeIdentifierDietaryWater,               [(0, 500, nil), (500, 1500, nil), (1500, 3000, nil), (3000, Int.max, nil)]),
-        ("Blood Pressure Systolic",  HKQuantityTypeIdentifierBloodPressureSystolic,      [(0, 110, nil), (110, 120, nil), (120, 130, nil), (130, Int.max, nil)]),
-        ("Blood Pressure Diastolic", HKQuantityTypeIdentifierBloodPressureDiastolic,     [(0, 60, nil), (60, 70, nil), (70, 80, nil), (80, Int.max, nil)])
+        ("Body Mass Index", HKQuantityTypeIdentifierBodyMassIndex, nil,
+            [(0, 18, "(underweight)"), (18, 25, "(standard)"), (25, 30, "(overweight)"), (30, Int.max, "(obese)")]),
+
+        ("Dietary Energy", HKQuantityTypeIdentifierDietaryEnergyConsumed, nil,
+            [(0, 1000, nil), (1000, 2000, nil), (2000, 3500, nil), (3500, Int.max, nil)]),
+
+        ("Heart Rate", HKQuantityTypeIdentifierHeartRate, nil,
+            [(0, 50, nil), (50, 65, nil), (65, 80, nil), (80, Int.max, nil)]),
+
+        ("Step Count", HKQuantityTypeIdentifierStepCount, nil,
+            [(0, 1000, nil), (1000, 5000, nil), (5000, 10000, nil), (10000, Int.max, nil)]),
+
+        ("Active Energy", HKQuantityTypeIdentifierActiveEnergyBurned, nil,
+            [(0, 500, nil), (500, 1500, nil), (1500, 3500, nil), (3500, Int.max, nil)]),
+
+        ("Resting Energy", HKQuantityTypeIdentifierBasalEnergyBurned, nil,
+            [(0, 1000, nil), (1000, 2000, nil), (2000, 3000, nil), (3000, Int.max, nil)]),
+
+        ("Sleep", HKCategoryTypeIdentifierSleepAnalysis, HKUnit.hourUnit(),
+            [(0, 5, nil), (5, 7, nil), (7, 9, nil), (9, Int.max, nil)]),
+
+        ("Protein", HKQuantityTypeIdentifierDietaryProtein, nil,
+            [(0, 40, nil), (40, 80, nil), (80, 120, nil), (120, Int.max, nil)]),
+
+        ("Fat", HKQuantityTypeIdentifierDietaryFatTotal, nil,
+            [(0, 50, nil), (50, 75, nil), (75, 100, nil), (100, Int.max, nil)]),
+
+        ("Carbohydrates", HKQuantityTypeIdentifierDietaryCarbohydrates, nil,
+            [(0, 200, nil), (200, 300, nil), (300, 400, nil), (400, Int.max, nil)]),
+
+        ("Fiber", HKQuantityTypeIdentifierDietaryFiber, nil,
+            [(0, 10, nil), (10, 15, nil), (15, 20, nil), (20, Int.max, nil)]),
+
+        ("Sugar", HKQuantityTypeIdentifierDietarySugar, nil,
+            [(0, 50, nil), (50, 110, nil), (110, 180, nil), (180, Int.max, nil)]),
+
+        ("Salt", HKQuantityTypeIdentifierDietarySodium, nil,
+            [(0, 1000, nil), (1000, 3000, nil), (3000, 5000, nil), (5000, Int.max, nil)]),
+
+        ("Caffeine", HKQuantityTypeIdentifierDietaryCaffeine, nil,
+            [(0, 50, nil), (50, 150, nil), (150, 300, nil), (300, Int.max, nil)]),
+
+        ("Cholesterol", HKQuantityTypeIdentifierDietaryCholesterol, nil,
+            [(0, 150, nil), (150, 300, nil), (300, 450, nil), (450, Int.max, nil)]),
+
+        ("Polyunsaturated Fat", HKQuantityTypeIdentifierDietaryFatPolyunsaturated, nil,
+            [(0, 10, nil), (10, 20, nil), (20, 30, nil), (30, Int.max, nil)]),
+
+        ("Saturated Fat", HKQuantityTypeIdentifierDietaryFatSaturated, nil,
+            [(0, 15, nil), (15, 25, nil), (25, 35, nil), (35, Int.max, nil)]),
+
+        ("Monounsaturated Fat", HKQuantityTypeIdentifierDietaryFatMonounsaturated, nil,
+            [(0, 20, nil), (20, 30, nil), (30, 40, nil), (40, Int.max, nil)]),
+
+        ("Water", HKQuantityTypeIdentifierDietaryWater, nil,
+            [(0, 500, nil), (500, 1500, nil), (1500, 3000, nil), (3000, Int.max, nil)]),
+
+        ("Blood Pressure Systolic",  HKQuantityTypeIdentifierBloodPressureSystolic, nil,
+            [(0, 110, nil), (110, 120, nil), (120, 130, nil), (130, Int.max, nil)]),
+
+        ("Blood Pressure Diastolic", HKQuantityTypeIdentifierBloodPressureDiastolic, nil,
+            [(0, 60, nil), (60, 70, nil), (70, 80, nil), (80, Int.max, nil)])
     ]
 
     let metricFilterSpecs: FilterSpecs = [
-        ("Weight", HKQuantityTypeIdentifierBodyMass, [(0, 40, nil), (40, 65, nil), (65, 90, nil), (90, 1000, nil)]),
+        ("Weight", HKQuantityTypeIdentifierBodyMass, HKUnit.gramUnitWithMetricPrefix(.Kilo),
+            [(0, 40, nil), (40, 65, nil), (65, 90, nil), (90, 1000, nil)]),
     ]
 
     let imperialFilterSpecs: FilterSpecs = [
-        ("Weight", HKQuantityTypeIdentifierBodyMass, [(0, 90, nil), (90, 140, nil), (140, 200, nil), (200, 1000, nil)]),
+        ("Weight", HKQuantityTypeIdentifierBodyMass, HKUnit.poundUnit(),
+            [(0, 90, nil), (90, 140, nil), (140, 200, nil), (200, 1000, nil)]),
     ]
 
     func filterSpecsToItems(specs: FilterSpecs) -> [DashboardFilterItem] {
-        return specs.map { (title, typeIdentifier, itemSpecs) in
+        return specs.map { (title, typeIdentifier, unit, itemSpecs) in
             return DashboardFilterItem(title: title, items: itemSpecs.map { (lower, upper, label) in
                 var itemTitle = ""
                 if lower == 0 {
@@ -310,7 +353,8 @@ class DashboardFilterController: UIViewController, UITableViewDelegate, UITableV
                     itemTitle = "between \(lower)-\(upper)" + (label == nil ? "" : " \(label!)")
                 }
 
-                return DashboardFilterCellData(title: itemTitle, hkType: typeIdentifier, aggrType: Aggregate.AggAvg, lowerBound: lower, upperBound: upper)
+                return DashboardFilterCellData(title: itemTitle, hkType: typeIdentifier, hkUnit: unit,
+                                               aggrType: Aggregate.AggAvg, lowerBound: lower, upperBound: upper)
             })
         }
     }

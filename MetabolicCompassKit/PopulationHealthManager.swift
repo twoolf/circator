@@ -9,6 +9,7 @@
 import Foundation
 import HealthKit
 import Async
+import MCCircadianQueries
 
 /**
  This is the manager of information for the comparison population.
@@ -84,6 +85,15 @@ public class PopulationHealthManager {
                             if let column = HMConstants.sharedInstance.hkToMCDB[hksType.identifier] {
                                 columns[String(columnIndex)] = column
                                 columnIndex += 1
+                            } else if hksType.identifier == HKCorrelationTypeIdentifierBloodPressure {
+                                // Issue queries for both systolic and diastolic.
+                                columns[String(columnIndex)] = HMConstants.sharedInstance.hkToMCDB[HKQuantityTypeIdentifierBloodPressureDiastolic]!
+                                columnIndex += 1
+
+                                columns[String(columnIndex)] = HMConstants.sharedInstance.hkToMCDB[HKQuantityTypeIdentifierBloodPressureSystolic]!
+                                columnIndex += 1
+                            } else {
+                                log.info("Cannot perform population query for \(hksType.identifier)")
                             }
                         }
                     }
@@ -126,6 +136,14 @@ public class PopulationHealthManager {
                     columns[String(columnIndex)] = ["activity_value": [activity_category:quantity]]
                     columnIndex += 1
                 }
+                else if hksType.identifier == HKCorrelationTypeIdentifierBloodPressure {
+                    // Issue queries for both systolic and diastolic.
+                    columns[String(columnIndex)] = HMConstants.sharedInstance.hkToMCDB[HKQuantityTypeIdentifierBloodPressureDiastolic]!
+                    columnIndex += 1
+
+                    columns[String(columnIndex)] = HMConstants.sharedInstance.hkToMCDB[HKQuantityTypeIdentifierBloodPressureSystolic]!
+                    columnIndex += 1
+                }
                 else {
                     log.warning("No population query column available for \(hksType.identifier)")
                 }
@@ -138,6 +156,8 @@ public class PopulationHealthManager {
             "columns"      : columns,
             "userfilter"   : userfilter
         ]
+
+        // log.info("Running popquery \(params)")
 
         Service.json(MCRouter.AggregateMeasures(params), statusCode: 200..<300, tag: "AGGPOST") {
             _, response, result in
@@ -164,51 +184,82 @@ public class PopulationHealthManager {
             var failed = false
             for sample in aggregates {
                 for (column, val) in sample {
-                    log.verbose("Refreshing population aggregate for \(column)")
+                    if !failed {
+                        log.verbose("Refreshing population aggregate for \(column)")
 
-                    // Handle meal_duration/activity_duration/activity_value columns.
-                    // TODO: this only supports activity values that are HealthKit quantities for now (step count, flights climbed, distance/walking/running)
-                    // We should support all MCDB meals/activity categories.
-                    if HMConstants.sharedInstance.mcdbCategorized.contains(column) {
-                        let categoryQuantities: [String: (String, String)] = column == "activity_value" ? HMConstants.sharedInstance.mcdbActivityToHKQuantity : [:]
-                        if let categorizedVals = val as? [String:AnyObject] {
-                            for (category, catval) in categorizedVals {
-                                if let (mcdbQuantity, hkQuantity) = categoryQuantities[category],
-                                        categoryValues = catval as? [String: AnyObject],
-                                        sampleValue = categoryValues[mcdbQuantity] as? Double
+                        // Handle meal_duration/activity_duration/activity_value columns.
+                        // TODO: this only supports activity values that are HealthKit quantities for now (step count, flights climbed, distance/walking/running)
+                        // We should support all MCDB meals/activity categories.
+                        if HMConstants.sharedInstance.mcdbCategorized.contains(column) {
+                            let categoryQuantities: [String: (String, String)] = column == "activity_value" ? HMConstants.sharedInstance.mcdbActivityToHKQuantity : [:]
+                            if let categorizedVals = val as? [String:AnyObject] {
+                                for (category, catval) in categorizedVals {
+                                    if let (mcdbQuantity, hkQuantity) = categoryQuantities[category],
+                                        sampleType = HKObjectType.quantityTypeForIdentifier(hkQuantity),
+                                        categoryValues = catval as? [String: AnyObject]
+                                    {
+                                        if let sampleValue = categoryValues[mcdbQuantity] as? Double {
+                                            populationAggregates[sampleType] = [doubleAsAggregate(sampleType, sampleValue: sampleValue)]
+                                        } else {
+                                            populationAggregates[sampleType] = []
+                                        }
+                                    }
+                                    else {
+                                        failed = true
+                                        log.error("Invalid MCDB categorized quantity in popquery response: \(category) \(catval)")
+                                    }
+                                }
+                            }
+                            else {
+                                failed = true
+                                log.error("Invalid MCDB categorized values in popquery response: \(val)")
+                            }
+                        }
+                        else if let typeIdentifier = HMConstants.sharedInstance.mcdbToHK[column]
+                        {
+                            var sampleType: HKSampleType! = nil
+                            switch typeIdentifier {
+                            case HKCategoryTypeIdentifierSleepAnalysis:
+                                sampleType = HKObjectType.categoryTypeForIdentifier(HKCategoryTypeIdentifierSleepAnalysis)!
+
+                            case HKCategoryTypeIdentifierAppleStandHour:
+                                sampleType = HKObjectType.categoryTypeForIdentifier(HKCategoryTypeIdentifierAppleStandHour)!
+
+                            default:
+                                sampleType = HKObjectType.quantityTypeForIdentifier(typeIdentifier)!
+                            }
+
+                            if let sampleValue = val as? Double {
+                                let agg = doubleAsAggregate(sampleType, sampleValue: sampleValue)
+                                populationAggregates[sampleType] = [agg]
+
+                                // Population correlation type entry for systolic/diastolic blood pressure sample.
+                                if typeIdentifier == HKQuantityTypeIdentifierBloodPressureSystolic
+                                    || typeIdentifier == HKQuantityTypeIdentifierBloodPressureDiastolic
                                 {
-                                    let sampleType = HKObjectType.quantityTypeForIdentifier(hkQuantity)!
-                                    populationAggregates[sampleType] = [doubleAsAggregate(sampleType, sampleValue: sampleValue)]
+                                    let bpType = HKObjectType.correlationTypeForIdentifier(HKCorrelationTypeIdentifierBloodPressure)!
+                                    let sType = HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierBloodPressureSystolic)!
+                                    let dType = HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierBloodPressureDiastolic)!
+
+                                    let bpIndex = typeIdentifier == HKQuantityTypeIdentifierBloodPressureSystolic ? 0 : 1
+                                    if populationAggregates[bpType] == nil {
+                                        populationAggregates[bpType] = [
+                                            MCAggregateSample(value: Double.quietNaN, sampleType: sType, op: sType.aggregationOptions),
+                                            MCAggregateSample(value: Double.quietNaN, sampleType: dType, op: dType.aggregationOptions),
+                                        ]
+                                    }
+                                    populationAggregates[bpType]![bpIndex] = agg
                                 }
-                                else {
-                                    log.error("Invalid MCDB categorized quantity in popquery response: \(category) \(catval)")
-                                }
+                            } else {
+                                populationAggregates[sampleType] = []
                             }
                         }
                         else {
-                            log.error("Invalid MCDB categorized values in popquery response: \(val)")
+                            failed = true
+                            // let err = NSError(domain: "App error", code: 0, userInfo: [NSLocalizedDescriptionKey:kvdict.description])
+                            // let dict = ["title":"population data error", "error":err]
+                            // NSNotificationCenter.defaultCenter().postNotificationName("ncAppLogNotification", object: nil, userInfo: dict)
                         }
-                    }
-                    else if let sampleValue = val as? Double, typeIdentifier = HMConstants.sharedInstance.mcdbToHK[column]
-                    {
-                        switch typeIdentifier {
-                        case HKCategoryTypeIdentifierSleepAnalysis:
-                            let sampleType = HKObjectType.categoryTypeForIdentifier(HKCategoryTypeIdentifierSleepAnalysis)!
-                            populationAggregates[sampleType] = [doubleAsAggregate(sampleType, sampleValue: sampleValue)]
-
-                        case HKCategoryTypeIdentifierAppleStandHour:
-                            let sampleType = HKObjectType.categoryTypeForIdentifier(HKCategoryTypeIdentifierAppleStandHour)!
-                            populationAggregates[sampleType] = [doubleAsAggregate(sampleType, sampleValue: sampleValue)]
-
-                        default:
-                            let sampleType = HKObjectType.quantityTypeForIdentifier(typeIdentifier)!
-                            populationAggregates[sampleType] = [doubleAsAggregate(sampleType, sampleValue: sampleValue)]
-                        }
-                    } else {
-                        failed = true
-                        // let err = NSError(domain: "App error", code: 0, userInfo: [NSLocalizedDescriptionKey:kvdict.description])
-                        // let dict = ["title":"population data error", "error":err]
-                        // NSNotificationCenter.defaultCenter().postNotificationName("ncAppLogNotification", object: nil, userInfo: dict)
                     }
                 }
             }

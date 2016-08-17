@@ -7,6 +7,8 @@
 //
 
 import Foundation
+import HealthKit
+import MCCircadianQueries
 import Alamofire
 import Locksmith
 import Stormpath
@@ -268,7 +270,7 @@ public class UserManager {
                 try account.deleteFromSecureStore()
                 Stormpath.sharedSession.logout()
                 ConsentManager.sharedManager.resetConsentFilePath()
-                HealthManager.sharedManager.reset()
+                IOSHealthManager.sharedManager.reset()
                 PopulationHealthManager.sharedManager.resetAggregates()
             } catch {
                 log.warning("resetAccount: \(error)")
@@ -1144,6 +1146,10 @@ public class UserManager {
             }
         }
         return HMConstants.sharedInstance.defaultToMetricUnits
+    }
+
+    public func userUnitsForType(type: HKSampleType) -> HKUnit? {
+        return type.unitForSystem(useMetricUnits())
     }
 
     // MARK: - Default meal & activity times

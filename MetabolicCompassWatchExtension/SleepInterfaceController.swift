@@ -6,9 +6,6 @@
 //  Copyright © 2016 Yanif Ahmad, Tom Woolf. All rights reserved.
 //
 
-// note: logic is to have first entry be the 'end' time (sleep wake) and
-//          then second screen is the 'start' of sleep (sleep began)
-
 import WatchKit
 import Foundation
 import HealthKit
@@ -61,8 +58,6 @@ class SleepInterfaceController: WKInterfaceController {
     }
     @IBAction func sleepSaveButton() {
         sleepTimesStruc.sleepBegin = sleep
-        print("Begin from Sleep: and variable --")
-        print(sleepTimesStruc.sleepBegin)
         pushControllerWithName("SleepTimesInterfaceController", context: self)
     }
     }

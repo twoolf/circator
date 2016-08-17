@@ -191,9 +191,12 @@ platform :ios do
     type  = options.key?(:type) ? options[:type] : 'development'
     ro    = options.key?(:readonly) ? options[:readonly] : true
     force = options.key?(:force) ? options[:force] : false
+    withcerts = options.key?(:withcerts) ? options[:withcerts] : true
 
     cocoapods
-    certs(type: type, readonly: ro, force: force)
+    if withcerts
+      certs(type: type, readonly: ro, force: force)
+    end
   end
 
   desc "Build a development archive"
