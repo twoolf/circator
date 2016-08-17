@@ -136,8 +136,8 @@ class CorrelationChartsViewController: UIViewController, UITableViewDelegate, UI
         secondType = appearanceProvider.titleForAnalysisChartOfType(secondType).string
 
         let titleString = firstType
-        (scatterCh.chartTitleLabel.text, correlCh.chartTitleLabel.text) = (titleString, titleString)
-        (scatterCh.subtitleLabel.text, correlCh.subtitleLabel.text) = (secondType, secondType)
+        (scatterCh.chartTitleLabel.text, correlCh.chartTitleLabel.text) = (secondType, secondType)
+        (scatterCh.subtitleLabel.text, correlCh.subtitleLabel.text) = (titleString, titleString)
     }
     
     func updateChartData() {
