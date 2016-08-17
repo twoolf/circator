@@ -244,7 +244,7 @@ class BarChartModel : NSObject {
         if let dSet1 = dataSets[0] as? ChartDataSet, let dSet2 = dataSets[1] as? ChartDataSet {
             //cleanup data sets if one of the dataset has empty values
             let iterateDataSet = dSet2.yVals.count > dSet1.yVals.count ? dSet2 : dSet1
-            //interate over dataSet that has beggest count of values
+            //interate over dataSet that has biggest count of values
             //if they are equal no metter on which dataset we will make iteration
             for yVal in iterateDataSet.yVals {
                 //first we should get values for current index of yVal
@@ -267,12 +267,12 @@ class BarChartModel : NSObject {
                 }
             }
             //sort values in the right way
-            dSet2.yVals.sortInPlace({ (firstEntry, secondEntry) -> Bool in
+            dSet1.yVals.sortInPlace({ (firstEntry, secondEntry) -> Bool in
                 firstEntry.value < secondEntry.value
             })
             //prepare xAxis labels
-            for yValue in dSet2.yVals {
-                let currentYValue = dataSets[0].yValForXIndex(yValue.xIndex)
+            for yValue in dSet1.yVals {
+                let currentYValue = dSet2.yValForXIndex(yValue.xIndex)
                 if (currentYValue != Double.NaN) {
                     //chek is number decimal or not
                     let numberIsDecimal = yValue.value - floor(yValue.value) > 0.001
@@ -291,7 +291,7 @@ class BarChartModel : NSObject {
             }
             var repeadetValuesIndexes: [Int] = []
             var countOfrepeatedValues: Int = 0
-            for (index, yValue) in dSet2.yVals.enumerate() {//iterate over second dataset and find repeated values
+            for (index, yValue) in dSet1.yVals.enumerate() {//iterate over second dataset and find repeated values
                 let newIndex = index + 1 - countOfrepeatedValues
                 let chartEntryAlreadyAdded = repeadetValuesIndexes.contains(yValue.xIndex)
                 if chartEntryAlreadyAdded {//check if we already added this value
@@ -301,13 +301,13 @@ class BarChartModel : NSObject {
                 var entriesArray: [Double] = []
                 var finalChartEntry: BarChartDataEntry?
                 //try to find values that are repeated
-                let filteredYValues = dSet2.yVals.filter({ (entry) -> Bool in
+                let filteredYValues = dSet1.yVals.filter({ (entry) -> Bool in
                     return entry.value == yValue.value
                 })
                 if filteredYValues.count > 1 {//we found values that are repeated
                     for chartEntry in filteredYValues {
                         repeadetValuesIndexes.append(chartEntry.xIndex)
-                        let currentYValue = dataSets[0].yValForXIndex(chartEntry.xIndex)
+                        let currentYValue = dSet2.yValForXIndex(chartEntry.xIndex)
                         entriesArray.append(currentYValue)
                     }
                     //we need this hack because of calculating x indexes
@@ -318,7 +318,7 @@ class BarChartModel : NSObject {
                     countOfrepeatedValues = Int (ceil(Double(entriesArray.count)/2))
                     finalChartEntry = BarChartDataEntry(values: entriesArray, xIndex: newIndex)
                 } else {//we didn't find any repeated values
-                    let currentYValue = dataSets[0].yValForXIndex(yValue.xIndex)
+                    let currentYValue = dSet2.yValForXIndex(yValue.xIndex)
                     finalChartEntry = BarChartDataEntry(values: [currentYValue], xIndex: newIndex)
                 }
                 finalDataSet.addEntry(finalChartEntry!)
