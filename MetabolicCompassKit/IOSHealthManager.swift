@@ -142,7 +142,7 @@ public class IOSHealthManager: NSObject, WCSessionDelegate {
         }
     }
 
-
+    
     // MARK: - Chart data access
 
     public func collectDataForCharts() {
@@ -306,6 +306,12 @@ public class IOSHealthManager: NSObject, WCSessionDelegate {
                 }
             }
         }
+    }
+    
+    //MARK: Working with cache
+    public func cleanCache() {
+        log.verbose("Clearing HMAggregateCache")
+        MCHealthManager.sharedManager.aggregateCache.removeAllObjects()
     }
 }
 
