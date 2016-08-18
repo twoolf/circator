@@ -43,20 +43,29 @@ class ChartsViewController: UIViewController {
 
     override func viewWillAppear(animated: Bool) {
         super.viewWillAppear(animated)
-        NSNotificationCenter.defaultCenter().addObserver(self, selector: #selector(updateChartsData), name: UIApplicationWillEnterForegroundNotification, object: nil)
+        NSNotificationCenter.defaultCenter().addObserver(self, selector: #selector(updateChartDataWithClean), name: UIApplicationWillEnterForegroundNotification, object: nil)
         NSNotificationCenter.defaultCenter().addObserver(self, selector: #selector(updateChartsData), name: HMDidUpdatedChartsData, object: nil)
         chartCollectionDataSource.updateData()
         updateChartsData()
     }
 
-    override func viewWillDisappear(animated: Bool) {
-        super.viewWillDisappear(animated)
+    override func viewDidDisappear(animated: Bool) {
+        super.viewDidDisappear(animated)
         NSNotificationCenter.defaultCenter().removeObserver(self)
     }
 
     // MARK :- Base preparation
-    func updateChartsData () {
+    func updateChartDataWithClean() {
+        chartsModel.typesChartData = [:]
+        IOSHealthManager.sharedManager.cleanCache()
+        IOSHealthManager.sharedManager.collectDataForCharts()
         activityIndicator.startAnimating()
+    }
+    
+    func updateChartsData () {
+        if !activityIndicator.isAnimating() {
+            activityIndicator.startAnimating()
+        }
         chartsModel.getAllDataForCurrentPeriod({ 
             self.activityIndicator.stopAnimating()
             self.collectionView.reloadData()
