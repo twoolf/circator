@@ -110,7 +110,7 @@ class UserInfoModel: NSObject {
                  continue
             } else {
                 if item.type == .HeightInches {
-                    heightInchesComponent = item.value as? String
+                    heightInchesComponent = item.stringValue()
                 }
 
                 else if item.type == .Gender {
@@ -125,32 +125,26 @@ class UserInfoModel: NSObject {
                         profile[item.name] = value == 1 ? "true" : "false"
                     }
                 }
-                
-                else if let value = item.value as? String {
+
+                else if let value = item.stringValue() {
                     profile[item.name] = value
                 }
             }
         }
 
-        // Conversions.
-        if let unitsAsMetric = profile[unitsSystemField.name] {
-            if unitsAsMetric == "false" {
-                // Convert weight.
-                if let w = profile[weightField.name], weightInLbs = Float(w) {
-                    let convertedValue = UnitsUtils.weightValueInDefaultSystem(fromValue: weightInLbs, inUnitsSystem: .Imperial)
-                    profile[weightField.name] = String(format: "%.5f", convertedValue)
-                }
-
-                // Convert height.
-                if let h = profile[heightField.name], var heightInFtIn = Float(h) {
-                    if let i = heightInchesComponent, inches = Float(i) {
-                        heightInFtIn += (inches / 12.0)
-                    }
-                    let convertedValue = UnitsUtils.heightValueInDefaultSystem(fromValue: heightInFtIn, inUnitsSystem: .Imperial)
-                    profile[heightField.name] = String(format: "%.4f", convertedValue)
-                }
+        // Standardize to metric units.
+        if units == .Imperial {
+            if profile[weightField.name] != nil {
+                let w = UnitsUtils.weightValueInDefaultSystem(fromValue: (weight ?? 0.0), inUnitsSystem: units)
+                profile[weightField.name] = String(format: "%.5g", w)
+            }
+            if profile[heightField.name] != nil {
+                let h = UnitsUtils.heightValueInDefaultSystem(fromValue: (height ?? 0.0) + (Float(heightInches ?? 0) / 12.0), inUnitsSystem: units)
+                profile[heightField.name] = String(format: "%.4g", h)
             }
         }
+
+        log.info("PROFILE ITEMS \(heightInchesComponent) \(profile[heightField.name]) \(profile[weightField.name])")
 
         return profile
     }

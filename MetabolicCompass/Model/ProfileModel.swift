@@ -37,7 +37,10 @@ class ProfileModel: UserInfoModel {
         let units: UnitsSystem! = UserManager.sharedManager.useMetricUnits() ? UnitsSystem.Metric : UnitsSystem.Imperial
 
         for item in items {
-            if item.type == .FirstName {
+            if item.type == .Units {
+                item.setNewValue(units.rawValue)
+            }
+            else if item.type == .FirstName {
                 item.setNewValue(AccountManager.shared.userInfo?.firstName)
             }
             else if item.type == .LastName {

@@ -11,6 +11,9 @@ import HealthKit
 import MCCircadianQueries
 import MetabolicCompassKit
 import Async
+import SwiftyUserDefaults
+
+internal let AMNotificationsKey = "AMNotificationsKey"
 
 class UserInfo : NSObject {
     var firstName: String?
@@ -165,7 +168,21 @@ class AccountManager: NSObject {
             }
 
             self.isHealthKitAuthorized = true
+            self.checkNotifications()
             EventManager.sharedManager.checkCalendarAuthorizationStatus(completion)
+        }
+    }
+
+    func checkNotifications() {
+        let withNotifications = Defaults.objectForKey(AMNotificationsKey)
+        if let notificationsState = withNotifications as? Bool {
+            log.verbose("Local notifications are \(notificationsState ? "on" : "off")")
+        } else {
+            log.verbose("Registering for local notifications")
+            Defaults.remove(AMNotificationsKey)
+            let notificationType: UIUserNotificationType = [.Alert, .Badge, .Sound]
+            let notificationSettings = UIUserNotificationSettings(forTypes: notificationType, categories: nil)
+            UIApplication.sharedApplication().registerUserNotificationSettings(notificationSettings)
         }
     }
 

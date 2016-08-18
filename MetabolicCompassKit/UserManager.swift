@@ -1098,9 +1098,6 @@ public class UserManager {
                 }
             }
         }
-
-        print("Set user profile. Result \(result)")
-
         return result
     }
 

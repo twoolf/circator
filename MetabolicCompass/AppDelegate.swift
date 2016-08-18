@@ -37,21 +37,28 @@ class AppDelegate: UIResponder, UIApplicationDelegate, WCSessionDelegate {
             Defaults.setObject("firstrun", forKey: firstRunKey)
             Defaults.synchronize()
         }
-        
+
+        recycleNotification()
+
         window = UIWindow(frame: UIScreen.mainScreen().bounds)
         window?.backgroundColor = UIColor.whiteColor()
 
         // Override point for customization after application launch.
         // Sets background to a blank/empty image
         UINavigationBar.appearance().setBackgroundImage(UIImage(), forBarMetrics: .Default)
+
         // Sets shadow (line below the bar) to a blank image
         UINavigationBar.appearance().shadowImage = UIImage()
+
         // Sets the translucent background color
         UINavigationBar.appearance().backgroundColor = UIColor(red: 0.0, green: 0.0, blue: 0.0, alpha: 0.0)
+
         // Set translucent. (Default value is already true, so this can be removed if desired.)
         UINavigationBar.appearance().translucent = true
-        UINavigationBar.appearance().titleTextAttributes = [NSForegroundColorAttributeName: ScreenManager.appTitleTextColor(), NSFontAttributeName: ScreenManager.appNavBarFont()]
-//        UINavigationBar.appearance().tintColor = ScreenManager.appNavigationBackColor()
+        UINavigationBar.appearance().titleTextAttributes = [
+            NSForegroundColorAttributeName: ScreenManager.appTitleTextColor(),
+            NSFontAttributeName: ScreenManager.appNavBarFont()
+        ]
 
 
         //set custom back button image
@@ -65,7 +72,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate, WCSessionDelegate {
         let tabBarScreen = tabBarStoryboard.instantiateViewControllerWithIdentifier("TabBarController")
         mainViewController = tabBarScreen
 
-//        mainViewController = IntroViewController(nibName: nil, bundle: nil)
         let navController  = UINavigationController(rootViewController: mainViewController)
         AccountManager.shared.rootViewController = navController
         
@@ -110,7 +116,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, WCSessionDelegate {
     }
 
     func applicationWillEnterForeground(application: UIApplication) {
-//        mainViewController.fetchRecentSamples()
+        recycleNotification()
     }
 
     func applicationDidBecomeActive(application: UIApplication) {
@@ -119,6 +125,13 @@ class AppDelegate: UIResponder, UIApplicationDelegate, WCSessionDelegate {
 
     func applicationWillTerminate(application: UIApplication) {
         // Called when the application is about to terminate. Save data if appropriate. See also applicationDidEnterBackground:.
+    }
+
+    func application(application: UIApplication, didRegisterUserNotificationSettings: UIUserNotificationSettings) {
+        let enabled = didRegisterUserNotificationSettings.types != .None
+        log.verbose("Enabling user notifications: \(enabled)")
+        Defaults.setObject(enabled, forKey: AMNotificationsKey)
+        Defaults.synchronize()
     }
 
     func configureLogging() {
@@ -136,27 +149,29 @@ class AppDelegate: UIResponder, UIApplicationDelegate, WCSessionDelegate {
 
         log.addDestination(console)
     }
+
+    private func recycleNotification() {
+        // Recycle the local notification for another day.
+        // TODO: we should set the delivery time of the notification to a user-specified value from the Settings view.
+        if let settings = UIApplication.sharedApplication().currentUserNotificationSettings() {
+            if settings.types != .None {
+                UIApplication.sharedApplication().cancelAllLocalNotifications()
+                let notification = UILocalNotification()
+                notification.fireDate = 2.hours.fromNow
+                notification.alertBody = "We greatly value your input in Metabolic Compass. Would you like to contribute to medical research now?"
+                notification.alertAction = "enter your circadian events"
+                notification.soundName = UILocalNotificationDefaultSoundName
+                UIApplication.sharedApplication().scheduleLocalNotification(notification)
+                log.info("Scheduled local notification for \(notification.fireDate?.toString())")
+            }
+        }
+    }
     
     private func setupWatchConnectivity() {
         if WCSession.isSupported() {
             let session = WCSession.defaultSession()
             session.delegate = self
             session.activateSession()
-        }
-    }
-    
-    private func sendDictValuesToWatch() {
-        var testDict:[String:String] = ["str1": "1.0"]
-        if WCSession.isSupported() {
-            let session = WCSession.defaultSession()
-            if session.watchAppInstalled {
-                do {
-                    //                        let dictionary = ["movies": movies]
-                    try session.updateApplicationContext(testDict)
-                } catch {
-                    print("ERROR: \(error)")
-                }
-            }
         }
     }
 }
