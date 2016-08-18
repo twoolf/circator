@@ -24,6 +24,10 @@ class ProfileModel: UserInfoModel {
         fields.append(self.weightField)
         fields.append(self.heightField)
 
+        if self.units == .Imperial {
+            fields.append(self.heightInchesField)
+        }
+
         return fields
     }
 
@@ -45,10 +49,41 @@ class ProfileModel: UserInfoModel {
             else if item.type == .Email {
                 item.setNewValue(UserManager.sharedManager.getUserId())
             } else {
-                if let profileItemInfo = profileInfo[item.name]{
+                if item.type == .HeightInches {
+                    var cmHeightAsDouble = 0.0
+                    if let heightInfo = profileInfo[heightField.name] as? String, heightAsDouble = Double(heightInfo) {
+                        cmHeightAsDouble = heightAsDouble
+                    }
+                    else if let heightAsDouble = profileInfo[heightField.name] as? Double {
+                        cmHeightAsDouble = heightAsDouble
+                    }
+                    else if let heightAsInt = profileInfo[heightField.name] as? Int {
+                        cmHeightAsDouble = Double(heightAsInt)
+                    }
+
+                    let heightFtIn = UnitsUtils.heightValue(valueInDefaultSystem: Float(cmHeightAsDouble), withUnits: units)
+                    item.setNewValue(Int(floor((heightFtIn % 1.0) * 12.0)))
+                }
+                else if let profileItemInfo = profileInfo[item.name]{
                     if item.type == .Gender {
                         let gender = Gender.valueByTitle(profileItemInfo as! String)
                         item.setNewValue(gender.rawValue)
+                    }
+                    else if item.type == .Weight {
+                        item.setNewValue(profileItemInfo)
+                        if let value = item.floatValue() {
+                            // Convert from kg to lb as needed
+                            item.setNewValue(UnitsUtils.weightValue(valueInDefaultSystem: value, withUnits: units))
+                        }
+                    }
+                    else if item.type == .Height {
+                        item.setNewValue(profileItemInfo)
+                        if let value = item.floatValue() {
+                            // Convert from cm to ft/in as needed
+                            var convertedValue = UnitsUtils.heightValue(valueInDefaultSystem: value, withUnits: units)
+                            if units == .Imperial { convertedValue = floor(convertedValue) }
+                            item.setNewValue(convertedValue)
+                        }
                     }
                     else if item.type == .Weight || item.type == .Height {
                         item.setNewValue(profileItemInfo)
@@ -73,7 +108,7 @@ class ProfileModel: UserInfoModel {
         }
     }
 
-    private let uneditableFields:[UserInfoFiledType] = [.Email, .FirstName, .LastName]
+    private let uneditableFields:[UserInfoFieldType] = [.Email, .FirstName, .LastName]
 
     func isItemEditable(item: ModelItem) -> Bool {
         return !uneditableFields.contains(item.type)
@@ -91,6 +126,7 @@ class ProfileModel: UserInfoModel {
     
     override func isModelValid() -> Bool {
         resetValidationResults()
-        return isPhotoValid() && /* isEmailValid() && isPasswordValid() && isFirstNameValid() && isLastNameValid() && */ isAgeValid()  && isWeightValid() && isHeightValid()
+        return isPhotoValid() && /* isEmailValid() && isPasswordValid() && isFirstNameValid() && isLastNameValid() && */ isAgeValid()
+                    && isWeightValid() && isHeightValid() && (self.units == .Metric ? true : isHeightInchesValid())
     }
 }

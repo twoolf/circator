@@ -30,26 +30,13 @@ class ProfileViewController: BaseViewController {
     }
 
     private func setupNavBar() {
-//        rightBarBtn = UIBarButtonItem(title: NSLocalizedString("", comment: "edit profile button"),
-//                                         style: .Done,
-//                                         target: self,
-//                                         action: #selector(rightAction))
-//
-//        cancelBarBtn = UIBarButtonItem(title: "Cancel".localized,
-//                                         style: .Done,
-//                                         target: self,
-//                                         action: #selector(cancelAction))
-
         rightBarBtn = createBarButtonItem("", action: #selector(rightAction))
-        cancelBarBtn = createBarButtonItem("Cancel".localized, action: #selector(rightAction))
-        
+        cancelBarBtn = createBarButtonItem("Cancel".localized, action: #selector(cancelAction))
         self.navigationItem.rightBarButtonItem = rightBarBtn
-
         configureNavBar()
     }
 
     func cancelAction(sender: UIBarButtonItem) {
-
         let confirmTitle = "Confirm cancel".localized
         let confirmMessage = "Your changes have not been saved yet. Exit without saving?".localized
 
@@ -77,7 +64,7 @@ class ProfileViewController: BaseViewController {
         // Validate
 
         if !dataSource.model.isModelValid() {
-            self.showAlert(withMessage: dataSource.model.validationMessage!, title: "Profile saving Error".localized)
+            self.showAlert(withMessage: dataSource.model.validationMessage!, title: "Profile saving error".localized)
             return
         }
 
@@ -95,7 +82,7 @@ class ProfileViewController: BaseViewController {
                 self.changeMode()
             }
             else {
-                let message = res.info.hasContent ? res.info : "Your profile is not saving. Please, try later".localized
+                let message = res.info.hasContent ? res.info : "Unable to sync your profile remotely. Please, try later".localized
                 self.showAlert(withMessage: message)
             }
 
@@ -105,7 +92,7 @@ class ProfileViewController: BaseViewController {
     }
 
     private func changeMode() {
-        self.dataSource.swithMode()
+        self.dataSource.switchMode()
         self.configureNavBar()
     }
 

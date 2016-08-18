@@ -38,6 +38,15 @@ public enum UnitsSystem: Int {
             return "cm"
         }
     }
+
+    public var heightInchesTitle: String? {
+        switch self {
+        case .Imperial:
+            return "in"
+        default:
+            return nil
+        }
+    }
 }
 
 public class UnitsUtils: NSObject {

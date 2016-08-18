@@ -16,15 +16,17 @@ class InfoCollectionViewCell: BaseCollectionViewCell {
     
     @IBOutlet weak var commentLabelXConstraint: NSLayoutConstraint!
     @IBOutlet weak var titleLeftOffsetConstraint: NSLayoutConstraint!
+
+    @IBOutlet weak var imageWidthConstraint: NSLayoutConstraint!
+    @IBOutlet weak var imageLeadingConstraint: NSLayoutConstraint!
+    @IBOutlet weak var labelCellSpacing: NSLayoutConstraint!
     
-    private var textOffsetIsSamll = false
+    private var textOffsetIsSmall = false
     
     private var cellIconImage: UIImage? {
         didSet {
             cellImage?.image = cellIconImage
-            
-            let titleLeftOffset : CGFloat = cellIconImage == nil ? 0 : (textOffsetIsSamll ? 46 : 60)
-            
+            let titleLeftOffset : CGFloat = cellIconImage == nil ? 0 : (textOffsetIsSmall ? 46 : 60)
             titleLeftOffsetConstraint.constant = titleLeftOffset
         }
     }
@@ -51,13 +53,11 @@ class InfoCollectionViewCell: BaseCollectionViewCell {
         
         inputTxtField.secureTextEntry = false
         inputTxtField.keyboardType = UIKeyboardType.Default
-        
-        
     }
     
     func setImageWithName(imageName: String?, smallTextOffset: Bool = false) {
         
-        textOffsetIsSamll = smallTextOffset
+        textOffsetIsSmall = smallTextOffset
         
         var image: UIImage?
         if let imgName = imageName {

@@ -32,8 +32,7 @@ class RegisterModelDataSource: BaseDataSource {
     // MARK: - CollectionView Delegate & DataSource
 
     override func collectionView(collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        let count = model.items.count
-        return count
+        return model.items.count
     }
 
     override func collectionView(collectionView: UICollectionView, cellForItemAtIndexPath indexPath: NSIndexPath) -> UICollectionViewCell {
@@ -43,7 +42,7 @@ class RegisterModelDataSource: BaseDataSource {
         let cellType = field.type
 
         switch (cellType) {
-        case .Email, .Password, .FirstName, .LastName, .Weight, .Height, .Age, .Other:
+        case .Email, .Password, .FirstName, .LastName, .Weight, .Height, .HeightInches, .Age, .Other:
             cell = inputCellForIndex(indexPath, forField: field)
         case  .Gender, .Units:
             cell = checkSelectionCellForIndex(indexPath, forField: field)
@@ -57,9 +56,13 @@ class RegisterModelDataSource: BaseDataSource {
 
                 let field = self.model.itemAtIndexPath(indexPath)
                 if field.type == .Units {
+                    /*
                     let needsUpdateIndexPathes = self.model.unitsDependedItemsIndexes()
-
                     collectionView.reloadItemsAtIndexPaths(needsUpdateIndexPathes)
+                    */
+                    self.model.switchItemUnits()
+                    self.model.reloadItems()
+                    collectionView.reloadData()
                 }
             }
         }
@@ -70,6 +73,10 @@ class RegisterModelDataSource: BaseDataSource {
 
     func collectionView(collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAtIndexPath indexPath: NSIndexPath) -> CGSize {
         let field = model.itemAtIndexPath(indexPath)
+
+        if model.units == .Imperial && (field.type == .Weight || field.type == .Height || field.type == .HeightInches) {
+            return field.type == .HeightInches ? smallHeightInchesCellSize() : smallWHCellSize()
+        }
 
         if field.type == .Weight || field.type == .Height {
             return smallCellSize()
@@ -101,8 +108,9 @@ class RegisterModelDataSource: BaseDataSource {
         let cell = collectionView!.dequeueReusableCellWithReuseIdentifier(inputTextCellIdentifier, forIndexPath: indexPath) as! InputCollectionViewCell
 
         cell.inputTxtField.textColor = selectedTextColor
-        cell.inputTxtField.attributedPlaceholder = NSAttributedString(string: field.title, attributes: [NSForegroundColorAttributeName : unselectedTextColor])
-        cell.inputTxtField.text = field.value as? String
+        cell.inputTxtField.attributedPlaceholder = NSAttributedString(string: (field.type == .HeightInches ? "0-11 " : field.title), attributes: [NSForegroundColorAttributeName : unselectedTextColor])
+
+        cell.inputTxtField.text = field.stringValue()
 
         if field.type == .Password {
             cell.inputTxtField.secureTextEntry = true
@@ -116,6 +124,27 @@ class RegisterModelDataSource: BaseDataSource {
 
         if let iconImageName = field.iconImageName {
             cell.cellImage?.image = UIImage(named: iconImageName)
+            cell.imageLeadingConstraint?.constant = 16
+            cell.imageWidthConstraint?.constant = 21
+            cell.imageTxtSpacing?.constant = 16
+            cell.labelCellSpacing?.constant = 16
+        }
+
+        if model.units == .Imperial {
+            if field.type == .HeightInches {
+                cell.imageLeadingConstraint?.constant = 0
+                cell.imageWidthConstraint?.constant = 0
+                cell.imageTxtSpacing?.constant = 0
+            }
+            else if field.type == .Height {
+                cell.imageLeadingConstraint?.constant = 0
+                cell.imageTxtSpacing?.constant = 8
+                cell.labelCellSpacing?.constant = 8
+            }
+            else if field.type == .Weight {
+                cell.imageTxtSpacing?.constant = 8
+                cell.labelCellSpacing?.constant = 8
+            }
         }
 
         if field.type == .Weight {
@@ -126,6 +155,11 @@ class RegisterModelDataSource: BaseDataSource {
             cell.nameLbl.text = model.units.heightTitle
             cell.inputTxtField.keyboardType = UIKeyboardType.NumberPad
         }
+        else if field.type == .HeightInches {
+            cell.nameLbl.text = model.units.heightInchesTitle ?? ""
+            cell.inputTxtField.keyboardType = UIKeyboardType.NumberPad
+        }
+
 
         cell.nameLbl.textColor = selectedTextColor
         return cell
@@ -158,7 +192,7 @@ class RegisterModelDataSource: BaseDataSource {
     }
 
     // MARK: - Cells sizes
-    private let spaceBetweenCellsInOneRow: CGFloat = 26
+    private let spaceBetweenCellsInOneRow: CGFloat = 0 // 26
     private let cellHeight: CGFloat = 45
     private let cellHighHeight: CGFloat = 160
 
@@ -174,6 +208,16 @@ class RegisterModelDataSource: BaseDataSource {
 
     private func smallCellSize() -> CGSize {
         let size = CGSizeMake((self.collectionView!.bounds.width - spaceBetweenCellsInOneRow) / 2.0, cellHeight)
+        return size
+    }
+
+    private func smallWHCellSize() -> CGSize {
+        let size = CGSizeMake(4*(self.collectionView!.bounds.width - spaceBetweenCellsInOneRow) / 10.0, cellHeight)
+        return size
+    }
+
+    private func smallHeightInchesCellSize() -> CGSize {
+        let size = CGSizeMake(2*(self.collectionView!.bounds.width - spaceBetweenCellsInOneRow) / 10.0, cellHeight)
         return size
     }
 

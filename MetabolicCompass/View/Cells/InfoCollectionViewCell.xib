@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="10116" systemVersion="15E65" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="10117" systemVersion="15G31" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES">
     <dependencies>
         <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="10085"/>
         <capability name="Constraints with non-1.0 multipliers" minToolsVersion="5.1"/>
@@ -27,7 +27,7 @@
                         <textInputTraits key="textInputTraits"/>
                     </textField>
                     <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="Trs-0U-Zhv" customClass="AppLabel" customModule="MetabolicCompass" customModuleProvider="target">
-                        <rect key="frame" x="89" y="46" width="223" height="0.0"/>
+                        <rect key="frame" x="92" y="46" width="228" height="0.0"/>
                         <fontDescription key="fontDescription" type="system" pointSize="14"/>
                         <color key="textColor" red="0.0" green="0.0" blue="0.0" alpha="1" colorSpace="calibratedRGB"/>
                         <nil key="highlightedColor"/>
@@ -68,17 +68,17 @@
                 <constraint firstItem="x52-wn-VZm" firstAttribute="leading" secondItem="gTV-IL-0wX" secondAttribute="leading" constant="62" id="8Dt-Wm-W1P"/>
                 <constraint firstItem="p5G-3l-vdL" firstAttribute="leading" secondItem="NGj-zL-9wl" secondAttribute="leading" id="Bb3-h5-o7U"/>
                 <constraint firstItem="0ZM-xt-yar" firstAttribute="top" secondItem="x52-wn-VZm" secondAttribute="bottom" id="Dzt-zJ-kyu"/>
+                <constraint firstAttribute="trailing" secondItem="Trs-0U-Zhv" secondAttribute="trailing" id="KiS-qQ-jQz"/>
                 <constraint firstItem="a16-i2-TzB" firstAttribute="leading" secondItem="gTV-IL-0wX" secondAttribute="leading" constant="16" id="LGw-o6-km4"/>
                 <constraint firstItem="x52-wn-VZm" firstAttribute="top" secondItem="gTV-IL-0wX" secondAttribute="top" constant="15" id="P13-1I-PL4"/>
                 <constraint firstItem="Trs-0U-Zhv" firstAttribute="centerY" secondItem="p5G-3l-vdL" secondAttribute="centerY" id="PUC-uS-ean"/>
                 <constraint firstAttribute="trailing" secondItem="x52-wn-VZm" secondAttribute="trailing" id="Ruq-En-YAh"/>
-                <constraint firstItem="x52-wn-VZm" firstAttribute="trailing" secondItem="Trs-0U-Zhv" secondAttribute="trailing" constant="8" id="UwZ-MY-EBo"/>
                 <constraint firstItem="p5G-3l-vdL" firstAttribute="leading" secondItem="x52-wn-VZm" secondAttribute="leading" id="VSX-rq-NJU"/>
                 <constraint firstItem="x52-wn-VZm" firstAttribute="top" secondItem="a16-i2-TzB" secondAttribute="top" id="WmP-Tf-DbC"/>
                 <constraint firstAttribute="trailing" secondItem="p5G-3l-vdL" secondAttribute="trailing" constant="8" id="ayq-r1-c2D"/>
                 <constraint firstItem="0ZM-xt-yar" firstAttribute="height" secondItem="gTV-IL-0wX" secondAttribute="height" multiplier="0.15" id="e0t-ho-UhD"/>
                 <constraint firstAttribute="bottom" secondItem="p5G-3l-vdL" secondAttribute="bottom" constant="15" id="lgm-kB-Pbb"/>
-                <constraint firstItem="Trs-0U-Zhv" firstAttribute="leading" secondItem="p5G-3l-vdL" secondAttribute="leading" constant="27" id="qkr-Qd-ZNl"/>
+                <constraint firstItem="Trs-0U-Zhv" firstAttribute="leading" secondItem="p5G-3l-vdL" secondAttribute="leading" constant="30" id="qkr-Qd-ZNl"/>
                 <constraint firstItem="0ZM-xt-yar" firstAttribute="centerY" secondItem="gTV-IL-0wX" secondAttribute="centerY" id="t5E-Fh-iHS"/>
                 <constraint firstItem="p5G-3l-vdL" firstAttribute="top" secondItem="0ZM-xt-yar" secondAttribute="bottom" id="vkL-SV-nOC"/>
                 <constraint firstAttribute="trailing" secondItem="0ZM-xt-yar" secondAttribute="trailing" id="wB6-vy-XyB"/>
@@ -93,7 +93,10 @@
             <connections>
                 <outlet property="cellImage" destination="a16-i2-TzB" id="kJu-Sk-VLW"/>
                 <outlet property="commentLabelXConstraint" destination="qkr-Qd-ZNl" id="byO-6E-q7M"/>
+                <outlet property="imageLeadingConstraint" destination="LGw-o6-km4" id="tP9-0g-g0W"/>
+                <outlet property="imageWidthConstraint" destination="b5f-9S-wrR" id="CMa-4V-HGu"/>
                 <outlet property="inputTxtField" destination="p5G-3l-vdL" id="qA4-cr-ZiG"/>
+                <outlet property="labelCellSpacing" destination="ayq-r1-c2D" id="SKM-ua-FqZ"/>
                 <outlet property="separatorLineHeightConstraint" destination="bPb-pg-Mpq" id="dl1-ze-rsR"/>
                 <outlet property="separatorView" destination="NGj-zL-9wl" id="PH0-vp-Wkh"/>
                 <outlet property="textValueCommentLbl" destination="Trs-0U-Zhv" id="a0a-8C-Jyy"/>

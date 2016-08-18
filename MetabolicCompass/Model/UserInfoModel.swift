@@ -12,14 +12,15 @@ import Navajo_Swift
 
 class UserInfoModel: NSObject {
 
-    let emailIndex = 0
-    let passwordIndex = 1
-    let firstNameIndex = 2
-    let lastNameIndex = 3
-    let genderIndex = 4
-    let ageIndex = 5
-    let weightIndex = 6
-    let heightIndex = 7
+    let emailIndex        = 0
+    let passwordIndex     = 1
+    let firstNameIndex    = 2
+    let lastNameIndex     = 3
+    let genderIndex       = 4
+    let ageIndex          = 5
+    let weightIndex       = 6
+    let heightIndex       = 7
+    let heightInchesIndex = 8
 
     lazy private(set) var loadPhotoField : ModelItem = {
         return ModelItem(name: "Load photo".localized, title: "Load photo", type: .Photo, iconImageName: nil, value: nil)
@@ -57,20 +58,27 @@ class UserInfoModel: NSObject {
         return self.modelItem(withIndex: self.heightIndex, iconImageName: "icon-height", value: nil, type: .Height)
     }()
 
+    lazy private(set) var heightInchesField : ModelItem = {
+        return ModelItem(name: "", title: "", type: .HeightInches, iconImageName: nil, value: nil)
+    }()
+
     lazy private(set) var unitsSystemField : ModelItem = {
          return ModelItem(name: "metric", title: "Units", type: .Units, iconImageName: "icon-measure", value: UnitsSystem.Imperial.rawValue)
     }()
 
 
-    func modelItem(withIndex index: Int, iconImageName: String?, value: AnyObject?, type: UserInfoFiledType = .Other) -> ModelItem {
+    func modelItem(withIndex index: Int, iconImageName: String?, value: AnyObject?, type: UserInfoFieldType = .Other) -> ModelItem {
         let fieldItem = UserProfile.sharedInstance.fields[index]
-
         return ModelItem(name: fieldItem.profileFieldName, title: fieldItem.fieldName, type: type, iconImageName: iconImageName, value: value)
     }
 
     private(set) lazy var items:[ModelItem] = {
         return self.modelItems()
     }()
+
+    func reloadItems() {
+        items = self.modelItems()
+    }
 
     func modelItems() -> [ModelItem] {
         // Override this
@@ -91,32 +99,97 @@ class UserInfoModel: NSObject {
         return profileItems(items)
     }
 
+    // Note, this returns a profile in the standard units of the MC webservice (i.e., metric).
+    // This allows us to directly push the results of this function to the webservice.
     func profileItems(newItems: [ModelItem]) -> [String : String]  {
         var profile = [String : String]()
+        var heightInchesComponent: String! = nil
         for item in newItems {            
-            if item.type == .FirstName || item.type == .LastName || item.type == .Email || item.type == .Password || item.type == .Photo {
+            if item.type == .FirstName || item.type == .LastName || item.type == .Email || item.type == .Password || item.type == .Photo
+            {
                  continue
             } else {
-                print(item.type)
-                if item.type == .Gender {
+                if item.type == .HeightInches {
+                    heightInchesComponent = item.value as? String
+                }
+
+                else if item.type == .Gender {
                     if let value = item.intValue() {
                         let gender = Gender(rawValue: value)!.title
                         profile[item.name] = gender
                     }
                 }
                 
-                if item.type == .Units {
+                else if item.type == .Units {
                     if let value = item.intValue() {
                         profile[item.name] = value == 1 ? "true" : "false"
                     }
                 }
                 
-                if let value = item.value as? String {
+                else if let value = item.value as? String {
                     profile[item.name] = value
                 }
             }
         }
+
+        // Conversions.
+        if let unitsAsMetric = profile[unitsSystemField.name] {
+            if unitsAsMetric == "false" {
+                // Convert weight.
+                if let w = profile[weightField.name], weightInLbs = Float(w) {
+                    let convertedValue = UnitsUtils.weightValueInDefaultSystem(fromValue: weightInLbs, inUnitsSystem: .Imperial)
+                    profile[weightField.name] = String(format: "%.5f", convertedValue)
+                }
+
+                // Convert height.
+                if let h = profile[heightField.name], var heightInFtIn = Float(h) {
+                    if let i = heightInchesComponent, inches = Float(i) {
+                        heightInFtIn += (inches / 12.0)
+                    }
+                    let convertedValue = UnitsUtils.heightValueInDefaultSystem(fromValue: heightInFtIn, inUnitsSystem: .Imperial)
+                    profile[heightField.name] = String(format: "%.4f", convertedValue)
+                }
+            }
+        }
+
         return profile
+    }
+
+    func switchItemUnits() {
+        if var value = heightField.floatValue() {
+            var convertedValue: Float = 0.0
+            if units == .Imperial {
+                // Units were in metric before we switched
+                convertedValue = UnitsUtils.heightValue(valueInDefaultSystem: value, withUnits: units)
+            } else {
+                // Units were in imperial before we switched
+                if let inches = heightInchesField.floatValue() {
+                    value += inches / 12.0
+                }
+                convertedValue = UnitsUtils.heightValueInDefaultSystem(fromValue: value, inUnitsSystem: .Imperial)
+            }
+
+            // Set to whole number of feet, and save remainder in inches field.
+            if units == .Imperial {
+                heightField.setNewValue(floor(convertedValue))
+                heightInchesField.setNewValue(Int(floor((convertedValue % 1.0) * 12.0)))
+            } else {
+                heightField.setNewValue(round(1000.0*convertedValue)/1000.0)
+            }
+        }
+
+        if let value = weightField.floatValue() {
+            var convertedValue: Float = 0.0
+            if units == .Imperial {
+                // Units were in metric before we switched
+                convertedValue = UnitsUtils.weightValue(valueInDefaultSystem: value, withUnits: units)
+            } else {
+                // Units were in imperial before we switched
+                convertedValue = UnitsUtils.weightValueInDefaultSystem(fromValue: value, inUnitsSystem: .Imperial)
+            }
+
+            weightField.setNewValue(round(1000.0*convertedValue)/1000.0)
+        }
     }
 
     func unitsDependedItemsIndexes() -> [NSIndexPath] {
@@ -162,6 +235,10 @@ class UserInfoModel: NSObject {
         return heightField.floatValue()
     }
 
+    var heightInches: Int? {
+        return heightInchesField.intValue()
+    }
+
     var units: UnitsSystem {
         return UnitsSystem(rawValue: unitsSystemField.intValue()!)!
     }
@@ -183,9 +260,15 @@ class UserInfoModel: NSObject {
     private let firstNameInvalidFormat = "Please enter a valid first name (must be at least 2 characters)".localized
     private let lastNameInvalidFormat  = "Please enter a valid surname (must be at least 2 characters)".localized
     private let ageInvalidFormat       = "Please enter a valid age (must be between 18 and 100 years)".localized
-    private let weightInvalidFormat    = "Please enter a valid weight (must be from 40kg to 350 kg)".localized
-    private let heightInvalidFormat    = "Please enter a valid height (must be from 75cm to 250 cm)".localized
-    
+
+    private let metricWeightInvalidFormat    = "Please enter a valid weight (must be from 40kg to 350 kg)".localized
+    private let metricHeightInvalidFormat    = "Please enter a valid height (must be from 75cm to 250 cm)".localized
+
+    private let imperialWeightInvalidFormat    = "Please enter a valid weight (must be from 88 lb to 770 lb)".localized
+    private let imperialHeightInvalidFormat    = "Please enter a valid height (must be from 2 ft 6in to 8 ft 3 in)".localized
+
+    private let heightInchesInvalidFormat     = "Please enter a valid inches value (must be from 0 to 12)".localized
+
     private(set) var validationMessage: String?
 
     func resetValidationResults() {
@@ -286,13 +369,14 @@ class UserInfoModel: NSObject {
     private let maxWeight:Float = 350 // kg
 
     func isWeightValid() -> Bool {
-        let minWidthInUserUnits = UnitsUtils.weightValue(valueInDefaultSystem: minWeight, withUnits: self.units)
-        let maxWidthInUserUnits = UnitsUtils.weightValue(valueInDefaultSystem: maxWeight, withUnits: self.units)
+        let minWeightInUserUnits = UnitsUtils.weightValue(valueInDefaultSystem: minWeight, withUnits: self.units)
+        let maxWeightInUserUnits = UnitsUtils.weightValue(valueInDefaultSystem: maxWeight, withUnits: self.units)
 
-        let isValid = isRequiredFloatValidInRange(weight, minValue: minWidthInUserUnits, maxValue: maxWidthInUserUnits)
+        log.info("VALIDATING WEIGHT \(weight) \(minWeightInUserUnits) \(maxWeightInUserUnits)")
+        let isValid = isRequiredFloatValidInRange(weight, minValue: minWeightInUserUnits, maxValue: maxWeightInUserUnits)
 
         if !isValid {
-            validationMessage = weight == nil ? emptyFieldMessage : weightInvalidFormat
+            validationMessage = weight == nil ? emptyFieldMessage : (self.units == .Metric ? metricWeightInvalidFormat : imperialWeightInvalidFormat)
         }
 
         return isValid
@@ -303,13 +387,26 @@ class UserInfoModel: NSObject {
     private let maxHeight:Float = 250 // cm
 
     func isHeightValid() -> Bool {
-        let minHeightInUserUnits = UnitsUtils.weightValue(valueInDefaultSystem: minHeight, withUnits: self.units)
-        let maxHeightInUserUnits = UnitsUtils.weightValue(valueInDefaultSystem: maxHeight, withUnits: self.units)
+        let minHeightInUserUnits = UnitsUtils.heightValue(valueInDefaultSystem: minHeight, withUnits: self.units)
+        let maxHeightInUserUnits = UnitsUtils.heightValue(valueInDefaultSystem: maxHeight, withUnits: self.units)
 
-        let isValid = isRequiredFloatValidInRange(height, minValue: minHeightInUserUnits, maxValue: maxHeightInUserUnits)
+        var heightWithInches = height ?? 0.0
+        if units == .Imperial { heightWithInches += Float(heightInches ?? 0) / 12.0 }
+
+        log.info("VALIDATING HEIGHT \(heightWithInches) \(minHeightInUserUnits) \(maxHeightInUserUnits)")
+        let isValid = isRequiredFloatValidInRange(heightWithInches, minValue: minHeightInUserUnits, maxValue: maxHeightInUserUnits)
 
         if !isValid {
-            validationMessage = height == nil ? emptyFieldMessage : heightInvalidFormat
+            validationMessage = height == nil ? emptyFieldMessage : (self.units == .Metric ? metricHeightInvalidFormat : imperialHeightInvalidFormat)
+        }
+        return isValid
+    }
+
+    func isHeightInchesValid() -> Bool {
+        let isValid = isRequiredIntValidInRange(heightInches, minValue: 0, maxValue: 11)
+
+        if !isValid {
+            validationMessage = heightInches == nil ? emptyFieldMessage : heightInchesInvalidFormat
         }
         return isValid
     }

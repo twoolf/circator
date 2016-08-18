@@ -60,6 +60,14 @@ class ProfileDataSource: BaseDataSource {
             } else {
                 cell = infoCellForIndex(indexPath, forField: field)
             }
+
+            // Adjust label spacing of weight and height cells.
+            if cellType == .Weight || cellType == .Height || cellType == .HeightInches {
+                if let infoCell = cell as? InfoCollectionViewCell{
+                    let w = infoCell.inputTxtField.text?.sizeWithAttributes(infoCell.inputTxtField.typingAttributes).width
+                    infoCell.commentLabelXConstraint.constant = 8.0 + (w ?? 0.0)
+                }
+            }
         }
 
         cell!.changesHandler = { (cell: UICollectionViewCell, newValue: AnyObject?) -> () in
@@ -69,12 +77,17 @@ class ProfileDataSource: BaseDataSource {
 
                 let field = self.model.itemAtIndexPath(indexPath)
                 if field.type == .Units {
+                    /*
                     let needsUpdateIndexPathes = self.model.unitsDependedItemsIndexes()
                     collectionView.reloadItemsAtIndexPaths(needsUpdateIndexPathes)
+                    */
+                    self.model.switchItemUnits()
+                    self.model.reloadItems()
+                    collectionView.reloadData()
                 }
                 if let infoCell = cell as? InfoCollectionViewCell{
                     let w = infoCell.inputTxtField.text?.sizeWithAttributes(infoCell.inputTxtField.typingAttributes).width
-                    infoCell.commentLabelXConstraint.constant = 4.0 + (w ?? 0.0)
+                    infoCell.commentLabelXConstraint.constant = 8.0 + (w ?? 0.0)
                 }
             }
         }
@@ -83,6 +96,10 @@ class ProfileDataSource: BaseDataSource {
 
     func collectionView(collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAtIndexPath indexPath: NSIndexPath) -> CGSize {
         let field = model.itemAtIndexPath(indexPath)
+
+        if model.units == .Imperial && (field.type == .Weight || field.type == .Height || field.type == .HeightInches) {
+            return field.type == .HeightInches ? smallHeightInchesCellSize() : smallWHCellSize()
+        }
 
         if field.type == .Weight || field.type == .Height {
             return smallCellSize()
@@ -116,7 +133,7 @@ class ProfileDataSource: BaseDataSource {
 
         cell.inputTxtField.text = field.stringValue()
 
-        if field.type == .Weight || field.type == .Height {
+        if field.type == .Weight || field.type == .Height || field.type == .HeightInches {
             cell.separatorVisible = false
         }
 
@@ -124,10 +141,28 @@ class ProfileDataSource: BaseDataSource {
             cell.textValueCommentLbl.text = model.units.weightTitle
         }
         else if field.type == .Height {
-            cell.textValueCommentLbl.text =  model.units.heightTitle
+            cell.textValueCommentLbl.text = model.units.heightTitle
+        }
+        else if field.type == .HeightInches {
+            cell.textValueCommentLbl.text = model.units.heightInchesTitle ?? ""
         }
 
-        cell.setImageWithName(field.iconImageName, smallTextOffset: field.type == .Height)
+        if let _ = field.iconImageName {
+            cell.imageLeadingConstraint?.constant = 16
+            cell.imageWidthConstraint?.constant = 21
+        }
+
+        cell.setImageWithName(field.iconImageName, smallTextOffset: field.type == .Height || field.type == .HeightInches)
+
+        if model.units == .Imperial {
+            if field.type == .HeightInches {
+                cell.imageLeadingConstraint?.constant = 0
+                cell.imageWidthConstraint?.constant = 0
+            }
+            else if field.type == .Height {
+                cell.imageLeadingConstraint?.constant = 0
+            }
+        }
 
         cell.inputTxtField.enabled = isEdiatble
         cell.inputTxtField.keyboardType = keyboardType
@@ -139,7 +174,7 @@ class ProfileDataSource: BaseDataSource {
         let field = model.itemAtIndexPath(indexPath)
         let cellType = field.type
 
-        if cellType == .Age || cellType == .Weight || cellType == .Height {
+        if cellType == .Age || cellType == .Weight || cellType == .Height || cellType == .HeightInches {
             return infoCellForIndex(indexPath, forField: field, isEdiatble: true, keyboardType: .NumberPad)
         }
 
@@ -217,7 +252,7 @@ class ProfileDataSource: BaseDataSource {
         return size
     }
 
-    private func smallCellSize(type: UserInfoFiledType) -> CGSize {
+    private func smallCellSize(type: UserInfoFieldType) -> CGSize {
         var size = CGSizeMake((self.collectionView!.bounds.width - spaceBetweenCellsInOneRow) / 2.0, cellHeight)
 
         if type == .FirstName {
@@ -236,9 +271,19 @@ class ProfileDataSource: BaseDataSource {
         return size
     }
 
+    private func smallWHCellSize() -> CGSize {
+        let size = CGSizeMake(4 * (self.collectionView!.bounds.width - spaceBetweenCellsInOneRow) / 10.0, cellHeight)
+        return size
+    }
+
+    private func smallHeightInchesCellSize() -> CGSize {
+        let size = CGSizeMake(2 * (self.collectionView!.bounds.width - spaceBetweenCellsInOneRow) / 10.0, cellHeight)
+        return size
+    }
+
     // MARK: - Mode chnages
 
-    func swithMode() {
+    func switchMode() {
         editMode = !editMode
         collectionView?.reloadData()
     }

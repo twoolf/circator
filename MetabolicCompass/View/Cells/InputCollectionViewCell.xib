@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="10116" systemVersion="15E65" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="10117" systemVersion="15G31" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES">
     <dependencies>
         <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="10085"/>
     </dependencies>
@@ -12,27 +12,27 @@
             <view key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center">
                 <rect key="frame" x="0.0" y="0.0" width="588" height="45"/>
                 <subviews>
-                    <imageView userInteractionEnabled="NO" contentMode="center" horizontalHuggingPriority="251" verticalHuggingPriority="251" misplaced="YES" translatesAutoresizingMaskIntoConstraints="NO" id="0GL-yr-1ZF">
-                        <rect key="frame" x="16" y="-1" width="21" height="40"/>
+                    <imageView userInteractionEnabled="NO" contentMode="center" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="0GL-yr-1ZF">
+                        <rect key="frame" x="16" y="3" width="21" height="40"/>
                         <constraints>
                             <constraint firstAttribute="height" constant="40" id="dBb-ug-s0D"/>
                             <constraint firstAttribute="width" constant="21" id="gTL-eu-Klk"/>
                         </constraints>
                     </imageView>
-                    <textField opaque="NO" clipsSubviews="YES" contentMode="scaleToFill" misplaced="YES" contentHorizontalAlignment="left" contentVerticalAlignment="center" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="9VI-MN-qxB" customClass="AppTextField" customModule="MetabolicCompass" customModuleProvider="target">
-                        <rect key="frame" x="53" y="10" width="250" height="17"/>
+                    <textField opaque="NO" clipsSubviews="YES" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="9VI-MN-qxB" customClass="AppTextField" customModule="MetabolicCompass" customModuleProvider="target">
+                        <rect key="frame" x="53" y="14" width="518" height="17"/>
                         <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
                         <fontDescription key="fontDescription" type="system" pointSize="14"/>
                         <textInputTraits key="textInputTraits"/>
                     </textField>
-                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" misplaced="YES" text="" textAlignment="right" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="qU5-Lh-793" customClass="AppLabel" customModule="MetabolicCompass" customModuleProvider="target">
-                        <rect key="frame" x="304" y="19" width="0.0" height="0.0"/>
+                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="" textAlignment="right" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="qU5-Lh-793" customClass="AppLabel" customModule="MetabolicCompass" customModuleProvider="target">
+                        <rect key="frame" x="572" y="23" width="0.0" height="0.0"/>
                         <fontDescription key="fontDescription" type="system" pointSize="14"/>
                         <color key="textColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                         <nil key="highlightedColor"/>
                     </label>
-                    <view contentMode="scaleToFill" misplaced="YES" translatesAutoresizingMaskIntoConstraints="NO" id="Qbn-7l-O7e">
-                        <rect key="frame" x="53" y="43" width="251" height="1"/>
+                    <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="Qbn-7l-O7e">
+                        <rect key="frame" x="53" y="44" width="519" height="1"/>
                         <color key="backgroundColor" red="1" green="0.0" blue="1" alpha="1" colorSpace="calibratedRGB"/>
                         <constraints>
                             <constraint firstAttribute="height" constant="1" id="z6U-Rb-nsf"/>
@@ -56,7 +56,11 @@
             <size key="customSize" width="588" height="45"/>
             <connections>
                 <outlet property="cellImage" destination="0GL-yr-1ZF" id="sg0-76-qOD"/>
+                <outlet property="imageLeadingConstraint" destination="3ne-Gy-nbi" id="0Te-P0-Pu2"/>
+                <outlet property="imageTxtSpacing" destination="dPq-Jr-bTp" id="lFU-me-3Yg"/>
+                <outlet property="imageWidthConstraint" destination="gTL-eu-Klk" id="px7-OE-HjA"/>
                 <outlet property="inputTxtField" destination="9VI-MN-qxB" id="QVs-TH-1zy"/>
+                <outlet property="labelCellSpacing" destination="OYF-Ay-9Cz" id="SwB-AJ-5Dg"/>
                 <outlet property="nameLbl" destination="qU5-Lh-793" id="Fjp-Gq-Rff"/>
                 <outlet property="separatorLineHeightConstraint" destination="z6U-Rb-nsf" id="kuB-9b-zcC"/>
                 <outlet property="separatorView" destination="Qbn-7l-O7e" id="4M1-QX-KkP"/>

@@ -12,7 +12,12 @@ class InputCollectionViewCell: BaseCollectionViewCell {
     
     @IBOutlet weak var inputTxtField: UITextField!
     @IBOutlet weak var nameLbl: UILabel!
-    
+
+    @IBOutlet weak var imageLeadingConstraint: NSLayoutConstraint!
+    @IBOutlet weak var imageWidthConstraint: NSLayoutConstraint!
+    @IBOutlet weak var imageTxtSpacing: NSLayoutConstraint!
+    @IBOutlet weak var labelCellSpacing: NSLayoutConstraint!
+
     var inputFilter:TextInputFilter?
     
     override func awakeFromNib() {

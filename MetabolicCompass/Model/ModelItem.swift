@@ -10,8 +10,8 @@ import UIKit
 import MetabolicCompassKit
 
 
-enum UserInfoFiledType: Int {
-    case Photo = 0, Email, Password, FirstName, LastName, Gender, Age, Units, Weight, Height, Other
+enum UserInfoFieldType: Int {
+    case Photo = 0, Email, Password, FirstName, LastName, Gender, Age, Units, Weight, Height, HeightInches, Other
 }
 
 
@@ -47,7 +47,7 @@ class ModelItem: NSObject {
 
     private(set) var name: String
     private(set) var title: String;
-    private(set) var type: UserInfoFiledType
+    private(set) var type: UserInfoFieldType
     private(set) var iconImageName: String?
 
     var value: AnyObject?
@@ -60,7 +60,7 @@ class ModelItem: NSObject {
         }
     }
 
-    init(name itemName: String, title itemTitle: String, type itemType: UserInfoFiledType, iconImageName itemIconImageName: String?, value itemValue: AnyObject?, unitsTitle itemUnitsTitle: String? = nil) {
+    init(name itemName: String, title itemTitle: String, type itemType: UserInfoFieldType, iconImageName itemIconImageName: String?, value itemValue: AnyObject?, unitsTitle itemUnitsTitle: String? = nil) {
 
         type = itemType
         name = itemName

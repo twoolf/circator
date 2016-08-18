@@ -36,7 +36,11 @@ class RegistrationModel: UserInfoModel {
         fields.append(self.unitsSystemField)
         fields.append(self.weightField)
         fields.append(self.heightField)
-        
+
+        if self.units == .Imperial {
+            fields.append(self.heightInchesField)
+        }
+
         return fields
     }
     
@@ -44,7 +48,8 @@ class RegistrationModel: UserInfoModel {
         
         resetValidationResults()
         
-        return isPhotoValid() && isEmailValid() && isPasswordValid() && isFirstNameValid() && isLastNameValid() && isAgeValid() && isWeightValid() && isHeightValid()
+        return isPhotoValid() && isEmailValid() && isPasswordValid() && isFirstNameValid() && isLastNameValid()
+                && isAgeValid() && isWeightValid() && isHeightValid() && (self.units == .Metric ? true : isHeightInchesValid())
     }
 
 }
