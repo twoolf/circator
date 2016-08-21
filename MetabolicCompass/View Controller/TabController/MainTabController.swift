@@ -101,14 +101,14 @@ class MainTabController: UITabBarController, UITabBarControllerDelegate, ManageE
     //MARK: Working with ManageEventMenu
     
     func addMenuToView () {
-        let addExercisesImage = UIImage(named:"add-exercises-button")!
-        let addExercisesItem = PathMenuItem(image: addExercisesImage, highlightedImage: nil, contentImage: nil)
+        let addExercisesImage = UIImage(named:"icon-add-exercises")!
+        let addExercisesItem = PathMenuItem(image: addExercisesImage, highlightedImage: nil, contentImage: nil, contentText: "Exercise")
 
-        let addMealImage = UIImage(named:"add-meal-button")!
-        let addMealItem = PathMenuItem(image: addMealImage, highlightedImage: nil, contentImage: nil)
+        let addMealImage = UIImage(named:"icon-add-food")!
+        let addMealItem = PathMenuItem(image: addMealImage, highlightedImage: nil, contentImage: nil, contentText: "Meals")
 
-        let addSleepImage = UIImage(named:"add-sleep-button")!
-        let addSleepItem = PathMenuItem(image: addSleepImage, highlightedImage: nil, contentImage: nil)
+        let addSleepImage = UIImage(named:"icon-add-sleep")!
+        let addSleepItem = PathMenuItem(image: addSleepImage, highlightedImage: nil, contentImage: nil, contentText: "Sleep")
 
 
         let items = [addMealItem, addExercisesItem, addSleepItem]

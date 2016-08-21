@@ -17,6 +17,7 @@ public protocol PathMenuItemDelegate: class {
 public class PathMenuItem: UIImageView {
     
     public var contentImageView: UIImageView?
+    public var contentLabel: UILabel!
 
     public var startPoint: CGPoint?
     public var endPoint: CGPoint?
@@ -42,15 +43,35 @@ public class PathMenuItem: UIImageView {
     convenience public init(image: UIImage,
             highlightedImage himg: UIImage? = nil,
                 contentImage cimg: UIImage? = nil,
-    highlightedContentImage hcimg: UIImage? = nil) {
+    highlightedContentImage hcimg: UIImage? = nil,
+                 contentText text: String?  = nil)
+    {
 
         self.init(frame: CGRectZero)
         self.image = image
         self.highlightedImage = himg
+
         self.contentImageView = UIImageView(image: cimg)
         self.contentImageView?.highlightedImage = hcimg
+
+        self.contentLabel = UILabel(frame: CGRect.zero)
+        self.contentLabel.text = text
+        self.contentLabel.font = UIFont(name: "GothamBook", size: 14.0)
+        self.contentLabel.textColor = .lightGrayColor()
+
         self.userInteractionEnabled = true
         self.addSubview(contentImageView!)
+
+        self.contentLabel.translatesAutoresizingMaskIntoConstraints = false
+        self.addSubview(contentLabel)
+        let constraints: [NSLayoutConstraint] = [
+            contentLabel.topAnchor.constraintEqualToAnchor(bottomAnchor, constant: 10.0),
+            //contentLabel.heightAnchor.constraintEqualToConstant(25.0),
+            contentLabel.leadingAnchor.constraintEqualToAnchor(leadingAnchor),
+            contentLabel.trailingAnchor.constraintEqualToAnchor(trailingAnchor)
+        ]
+
+        self.addConstraints(constraints)
     }
 
     private func ScaleRect(rect: CGRect, n: CGFloat) -> CGRect {
