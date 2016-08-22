@@ -253,6 +253,10 @@ public class SlideButtonArray: UIView, SlideButtonArrayDelegate {
         }
     }
 
+    var firstLayout = true
+    var buttonLeadingConstraints: [NSLayoutConstraint] = []
+    var pickerLeadingConstraints: [NSLayoutConstraint] = []
+
     public init(frame: CGRect, buttonsTag: Int, arrayRowIndex: Int) {
         self.buttonsTagBase = buttonsTag
         self.arrayRowIndex = arrayRowIndex
@@ -350,61 +354,111 @@ public class SlideButtonArray: UIView, SlideButtonArrayDelegate {
             managers.append(manager)
             pickers.append(picker)
         }
-        layoutDefault()
+
+        initializeLayout()
     }
 
-    public func layoutDefault() {
-        for sv in subviews { sv.removeFromSuperview() }
-
+    func initializeLayout() {
         let numButtons = buttons.count
         activeButtonIndex = -1
 
         buttons.enumerate().forEach { (index, button) in
+            let picker = self.pickers[index]
+            picker.layer.opacity = 0.0
+
             button.translatesAutoresizingMaskIntoConstraints = false
+            picker.translatesAutoresizingMaskIntoConstraints = false
             addSubview(button)
+            addSubview(picker)
 
             var constraints: [NSLayoutConstraint] = [
+                button.topAnchor.constraintEqualToAnchor(topAnchor),
                 button.heightAnchor.constraintEqualToAnchor(heightAnchor),
+                picker.topAnchor.constraintEqualToAnchor(button.topAnchor),
+                picker.heightAnchor.constraintEqualToAnchor(heightAnchor),
                 button.leadingAnchor.constraintEqualToAnchor(index == 0 ? leadingAnchor : buttons[index-1].trailingAnchor),
+                button.widthAnchor.constraintEqualToAnchor(widthAnchor, multiplier: 1.0 / CGFloat(numButtons), constant: 0.0),
+                picker.leadingAnchor.constraintEqualToAnchor(button.trailingAnchor, constant: -3000),
+                picker.widthAnchor.constraintEqualToAnchor(widthAnchor, multiplier: (CGFloat(numButtons) - 1.0) / CGFloat(numButtons), constant: 0.0)
             ]
 
-            if index == numButtons - 1 {
-                constraints.append(button.trailingAnchor.constraintEqualToAnchor(trailingAnchor))
-            } else {
-                constraints.append(button.widthAnchor.constraintEqualToAnchor(widthAnchor, multiplier: 1.0 / CGFloat(numButtons), constant: 0.0))
-            }
+            buttonLeadingConstraints.append(constraints[4])
+            pickerLeadingConstraints.append(constraints[6])
 
             addConstraints(constraints)
         }
+
+        self.layoutIfNeeded()
+    }
+
+    func fixLayout() {
+        let numButtons = buttons.count
+        removeConstraints(buttonLeadingConstraints)
+        buttonLeadingConstraints.removeAll()
+
+        buttons.enumerate().forEach { (index, button) in
+            let o = (CGFloat(index) * self.frame.width) / CGFloat(numButtons)
+            let c = button.leadingAnchor.constraintEqualToAnchor(leadingAnchor, constant: o)
+            self.addConstraint(c)
+            buttonLeadingConstraints.append(c)
+        }
+        self.layoutIfNeeded()
+    }
+
+    public func layoutDefault() {
+        let numButtons = buttons.count
+        let prevActiveButtonIndex = activeButtonIndex
+        activeButtonIndex = -1
+
+        if firstLayout {
+            firstLayout = false
+            fixLayout()
+        }
+
+        buttonLeadingConstraints.enumerate().forEach { (index, constraint) in
+            constraint.constant = ( (CGFloat(index) * self.frame.width) / CGFloat(numButtons) )
+        }
+
+        pickerLeadingConstraints.forEach { $0.constant = -3000.0 }
+
+        UIView.animateWithDuration(0.4, animations: {
+            self.buttons.forEach { $0.layer.opacity = 1.0 }
+            if prevActiveButtonIndex >= 0 {
+                self.pickers[prevActiveButtonIndex].layer.opacity = 0.0
+            }
+            self.layoutIfNeeded()
+        })
     }
 
     func layoutFocused(buttonTag: Int) {
         let index = buttonTag - self.buttonsTagBase
         let numButtons = buttons.count
 
+        if firstLayout {
+            firstLayout = false
+            fixLayout()
+        }
+
         if 0 <= index && index < numButtons {
-            for sv in subviews { sv.removeFromSuperview() }
-
             activeButtonIndex = index
-            let buttonToFocus = buttons[activeButtonIndex]
-            let pickerToFocus = pickers[activeButtonIndex]
 
-            buttonToFocus.translatesAutoresizingMaskIntoConstraints = false
-            pickerToFocus.translatesAutoresizingMaskIntoConstraints = false
-            addSubview(buttonToFocus)
-            addSubview(pickerToFocus)
+            buttonLeadingConstraints.enumerate().forEach { (index, constraint) in
+                if index == activeButtonIndex {
+                    // Set the constraint's offset relative to the button's original anchor.
+                    constraint.constant = 0
+                } else {
+                    // Move all other buttons offscreen.
+                    constraint.constant += self.frame.width * (CGFloat(numButtons+1) / CGFloat(numButtons))
+                }
+            }
 
-            let constraints: [NSLayoutConstraint] = [
-                buttonToFocus.heightAnchor.constraintEqualToAnchor(heightAnchor),
-                pickerToFocus.heightAnchor.constraintEqualToAnchor(heightAnchor),
-                pickerToFocus.topAnchor.constraintEqualToAnchor(buttonToFocus.topAnchor),
-                buttonToFocus.leadingAnchor.constraintEqualToAnchor(leadingAnchor),
-                buttonToFocus.widthAnchor.constraintEqualToAnchor(widthAnchor, multiplier: 1.0 / CGFloat(numButtons), constant: 0.0),
-                pickerToFocus.leadingAnchor.constraintEqualToAnchor(buttonToFocus.trailingAnchor),
-                pickerToFocus.trailingAnchor.constraintEqualToAnchor(trailingAnchor)
-            ]
-            
-            addConstraints(constraints)
+            pickerLeadingConstraints[activeButtonIndex].constant = 0.0
+
+            UIView.animateWithDuration(0.4, animations: {
+                self.buttons.enumerate().forEach { if $0.0 != self.activeButtonIndex { $0.1.layer.opacity = 0.0 } }
+                self.pickers[self.activeButtonIndex].layer.opacity = 1.0
+                self.layoutIfNeeded()
+            })
         }
 
         exclusiveArrays.forEach { array in

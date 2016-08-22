@@ -1,7 +1,8 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="10116" systemVersion="15E65" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" initialViewController="Qy7-Sp-vSZ">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="10117" systemVersion="15G31" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" initialViewController="Qy7-Sp-vSZ">
     <dependencies>
         <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="10085"/>
+        <capability name="Constraints to layout margins" minToolsVersion="6.0"/>
     </dependencies>
     <scenes>
         <!--Settings-->
@@ -55,6 +56,7 @@
                         <segue destination="JBd-Oq-cRO" kind="show" identifier="physiologicalSegue" id="2he-8M-9XD"/>
                         <segue destination="IvS-kn-nZB" kind="show" identifier="notificationsSegue" id="Qip-2y-lGS"/>
                         <segue destination="3gb-fF-nvS" kind="show" identifier="healthAccessSegue" id="OPk-ew-52O"/>
+                        <segue destination="RwW-U8-2fd" kind="show" identifier="consentViewerSegue" id="v18-sZ-AP9"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="ypl-bg-BDg" userLabel="First Responder" sceneMemberID="firstResponder"/>
@@ -78,7 +80,7 @@
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="9em-0O-2ay" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="2087.5" y="1157.5"/>
+            <point key="canvasLocation" x="1563.5" y="1121.5"/>
         </scene>
         <!--Notifications View Controller-->
         <scene sceneID="53m-9w-5SF">
@@ -96,7 +98,42 @@
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="PBM-BI-Y9P" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="2826.5" y="1163.5"/>
+            <point key="canvasLocation" x="2087.5" y="1141.5"/>
+        </scene>
+        <!--CONSENT VIEWER-->
+        <scene sceneID="ElE-BQ-rMH">
+            <objects>
+                <viewController title="CONSENT VIEWER" id="RwW-U8-2fd" customClass="ConsentViewController" customModule="MetabolicCompass" customModuleProvider="target" sceneMemberID="viewController">
+                    <layoutGuides>
+                        <viewControllerLayoutGuide type="top" id="GzL-0k-V7y"/>
+                        <viewControllerLayoutGuide type="bottom" id="2NH-LG-qn4"/>
+                    </layoutGuides>
+                    <view key="view" contentMode="scaleToFill" id="BQR-0F-Zh2">
+                        <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <subviews>
+                            <webView contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="SdR-uu-EOc">
+                                <rect key="frame" x="0.0" y="64" width="375" height="554"/>
+                                <color key="backgroundColor" red="0.36078431370000003" green="0.38823529410000002" blue="0.4039215686" alpha="1" colorSpace="deviceRGB"/>
+                            </webView>
+                        </subviews>
+                        <color key="backgroundColor" red="0.0078431372550000003" green="0.1176470588" blue="0.27058823529999998" alpha="1" colorSpace="calibratedRGB"/>
+                        <constraints>
+                            <constraint firstItem="SdR-uu-EOc" firstAttribute="leading" secondItem="BQR-0F-Zh2" secondAttribute="leadingMargin" constant="-16" id="0WO-Fh-JMR"/>
+                            <constraint firstItem="SdR-uu-EOc" firstAttribute="top" secondItem="GzL-0k-V7y" secondAttribute="bottom" id="ZTK-sa-Mjd"/>
+                            <constraint firstItem="2NH-LG-qn4" firstAttribute="top" secondItem="SdR-uu-EOc" secondAttribute="bottom" id="qIZ-fd-leA"/>
+                            <constraint firstAttribute="trailingMargin" secondItem="SdR-uu-EOc" secondAttribute="trailing" constant="-16" id="wDp-6q-AT5"/>
+                        </constraints>
+                    </view>
+                    <navigationItem key="navigationItem" title="CONSENT VIEWER" id="cIz-1S-2BF"/>
+                    <simulatedScreenMetrics key="simulatedDestinationMetrics" type="retina47"/>
+                    <connections>
+                        <outlet property="webView" destination="SdR-uu-EOc" id="y80-sh-Xz2"/>
+                    </connections>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="QyP-qr-M6a" userLabel="First Responder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="2683.5" y="1107.5"/>
         </scene>
         <!--PROFILE-->
         <scene sceneID="EIJ-ks-ea5">

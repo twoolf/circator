@@ -416,3 +416,44 @@ public class SampleFormatter: NSObject {
         return emptyString
     }
 }
+
+public class MetricSuffixFormatter: NSObject {
+    public static let sharedInstance = MetricSuffixFormatter()
+
+    let buckets: [(Double, String)] = [
+        (1e3,  "k"),
+        (1e6,  "M"),
+        (1e9,  "G"),
+        (1e12, "T"),
+        (1e15, "P"),
+        (1e18, "E")
+    ]
+
+    public func formatDouble(i: Double) -> String {
+        var entry: (Double, String)! = nil
+        for j in 0..<buckets.count {
+            if i < buckets[j].0 {
+                break
+            }
+            entry = buckets[j]
+        }
+
+        if entry == nil {
+            return String(format: "%.3g", i)
+        } else {
+            return "\(String(format: "%.3g", i / entry.0))\(entry.1)"
+        }
+    }
+
+    public func formatCGFloat(i: CGFloat) -> String {
+        return self.formatDouble(Double(i))
+    }
+
+    public func formatFloat(i: Float) -> String {
+        return self.formatDouble(Double(i))
+    }
+
+    public func formatInt(i: Int) -> String {
+        return self.formatDouble(Double(i))
+    }
+}

@@ -18,51 +18,6 @@ import EasyTipView
 private let fastingViewLabelSize: CGFloat = 12.0
 private let fastingViewTextSize: CGFloat = 24.0
 
-func createLabelledComponent<T>(title: String, labelFontSize: CGFloat, value: T, constructor: T -> UIView) -> UIStackView {
-    let desc : UILabel = {
-        let label = UILabel()
-        label.font = UIFont.systemFontOfSize(labelFontSize, weight: UIFontWeightRegular)
-        label.textColor = .lightGrayColor()
-        label.textAlignment = .Center
-        label.text = title
-        return label
-    }()
-
-    let component : UIView = constructor(value)
-
-    let stack: UIStackView = {
-        let stack = UIStackView(arrangedSubviews: [desc, component])
-        stack.axis = .Vertical
-        stack.distribution = UIStackViewDistribution.Fill
-        stack.alignment = UIStackViewAlignment.Fill
-        stack.spacing = 8.0
-        return stack
-    }()
-
-    desc.translatesAutoresizingMaskIntoConstraints = false
-    let constraints : [NSLayoutConstraint] = [
-        desc.heightAnchor.constraintEqualToConstant(labelFontSize+4)
-    ]
-
-    stack.addConstraints(constraints)
-    return stack
-}
-
-func createNumberLabel(title: String, labelFontSize: CGFloat, value: Double, unit: String) -> UIStackView {
-    return createLabelledComponent(title, labelFontSize: labelFontSize, value: value, constructor: { value in
-        let label = UILabel()
-        label.font = UIFont.systemFontOfSize(44, weight: UIFontWeightRegular)
-        label.textColor = .whiteColor()
-        label.textAlignment = .Center
-
-        let vString = String(format: "%.1f", value)
-        let aString = NSMutableAttributedString(string: vString + " " + unit)
-        let unitFont = UIFont.systemFontOfSize(20, weight: UIFontWeightRegular)
-        aString.addAttribute(NSFontAttributeName, value: unitFont, range: NSRange(location:vString.characters.count+1, length: 3))
-        label.attributedText = aString
-        return label
-    })
-}
 
 public class FastingViewController : UIViewController, ChartViewDelegate {
 
@@ -149,8 +104,8 @@ public class FastingViewController : UIViewController, ChartViewDelegate {
         return bar
     }()
 
-    lazy var cwfLabel: UIStackView = createNumberLabel("Cumulative Weekly Fasting", labelFontSize: fastingViewLabelSize, value: 0.0, unit: "hrs")
-    lazy var wfvLabel: UIStackView = createNumberLabel("Weekly Fasting Variability", labelFontSize: fastingViewLabelSize, value: 0.0, unit: "hrs")
+    lazy var cwfLabel: UIStackView = UIComponents.createNumberLabel("Cumulative Weekly Fasting", labelFontSize: fastingViewLabelSize, value: 0.0, unit: "hrs")
+    lazy var wfvLabel: UIStackView = UIComponents.createNumberLabel("Weekly Fasting Variability", labelFontSize: fastingViewLabelSize, value: 0.0, unit: "hrs")
 
     private let cwfTipMsg = "Your cumulative weekly fasting is the total number of hours that you've spent fasting over the last 7 days"
     private let wfvTipMsg = "Your weekly fasting variability shows you how much your fasting hours varies day-by-day. We calculate this over the last week."
@@ -186,7 +141,7 @@ public class FastingViewController : UIViewController, ChartViewDelegate {
     func setupView() {
         refreshPieChart()
 
-        let pieChartStack: UIStackView = createLabelledComponent("Data Collected This Year", labelFontSize: fastingViewLabelSize, value: (), constructor: {
+        let pieChartStack: UIStackView = UIComponents.createLabelledComponent("Data Collected This Year", labelFontSize: fastingViewLabelSize, value: (), constructor: {
             _ in return self.pieChart
         })
 

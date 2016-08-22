@@ -12,6 +12,7 @@ import UIKit
 enum AnalysisType : Int {
     case Correlate = 0
     case Fasting
+    case OurStudy
 }
 
 class AnalysisViewController: UIViewController {
@@ -43,10 +44,19 @@ class AnalysisViewController: UIViewController {
         self.currentViewController = fastingViewController;
     }
 
+    func switchToOurStudyViewController() {
+        let ourStudyViewController = UIStoryboard(name: "TabScreens", bundle: nil).instantiateViewControllerWithIdentifier("ourStudyController");
+        ourStudyViewController.view.translatesAutoresizingMaskIntoConstraints = false
+        cycleFromViewController(self.currentViewController!, toViewController: ourStudyViewController);
+        self.currentViewController = ourStudyViewController;
+    }
+
     @IBAction func segmentSelectedAction(segment: UISegmentedControl) {
         switch segment.selectedSegmentIndex {
         case AnalysisType.Correlate.rawValue:
             switchToScatterPlotViewController()
+        case AnalysisType.OurStudy.rawValue:
+            switchToOurStudyViewController()
         default://by default show fastings
             switchToFastingViewController()
         }

@@ -4,6 +4,7 @@ def shared_pods
     pod 'ResearchKit', :git => 'https://github.com/twoolf/ResearchKit.git'
     pod 'MCCircadianQueries', :git => 'https://github.com/twoolf/MCCircadianQueries.git'
     pod 'Charts', :git => 'https://github.com/danielgindi/ios-charts.git', :commit => '098b961b4c'
+    pod 'EasyAnimation'
     pod 'Alamofire', '~> 2.0'
     pod 'Realm'
     pod 'RealmSwift'

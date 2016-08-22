@@ -102,19 +102,25 @@ class MainSettingsViewController: BaseViewController, UICollectionViewDataSource
     private let seguePhysiologicalIdentifier = "physiologicalSegue"
     private let segueNotificationsIdentifier = "notificationsSegue"
     private let segueHealthAccessIdentifier = "healthAccessSegue"
+    private let segueConsentViewerIdentifier = "consentViewerSegue"
 
-    private var aboutItemIndex: Int = 0
-    private var privacyPolicyItemIndex: Int = 0
-    private var logoutItemIndex : Int = 0
-    private var withdrawItemIndex: Int = 0
+    private var consentPDFItemIndex    : Int = 0
+    private var aboutItemIndex         : Int = 0
+    private var privacyPolicyItemIndex : Int = 0
+    private var logoutItemIndex        : Int = 0
+    private var withdrawItemIndex      : Int = 0
 
     private lazy var items : [SettingsItem] = {
        var settingsItems = [SettingsItem]()
         
         settingsItems.append(SettingsItem(title: "Profile".localized, iconImageName: "icon-settings-profile", segueIdentifier: self.segueProfileIdentifier))
         settingsItems.append(SettingsItem(title: "Physiological Profile".localized, iconImageName: "icon-settings-physiological", segueIdentifier: self.seguePhysiologicalIdentifier))
+
         // settingsItems.append(SettingsItem(title: "Notifications".localized, iconImageName: "icon-settings-notifications", segueIdentifier: self.segueNotificationsIdentifier))
+
         // settingsItems.append(SettingsItem(title: "Health Access".localized, iconImageName: "icon-settings-health", segueIdentifier: self.segueHealthAccessIdentifier))
+
+        settingsItems.append(SettingsItem(title: "Consent PDF".localized, iconImageName: "icon-consent-document", segueIdentifier: self.segueConsentViewerIdentifier))
 
         settingsItems.append(SettingsItem(title: "About Us".localized, iconImageName: "icon-settings-health"))
         self.aboutItemIndex = settingsItems.count - 1
