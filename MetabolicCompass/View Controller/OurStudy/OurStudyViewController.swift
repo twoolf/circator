@@ -12,6 +12,10 @@ import MetabolicCompassKit
 import Async
 import Charts
 
+let studyBodyFontSize: CGFloat = 36.0
+let studyContributionFontSize: CGFloat = 48.0
+let studyLabelFontSize: CGFloat = 14.0
+
 public class OurStudyViewController: UIViewController, ChartViewDelegate {
 
     public static let grey   = UIColor.ht_concreteColor()
@@ -24,7 +28,7 @@ public class OurStudyViewController: UIViewController, ChartViewDelegate {
     public static let clouds  = UIColor.ht_cloudsColor()
 
     lazy var phaseProgress: BalanceBarView = {
-        let attrs1 = [NSFontAttributeName: UIFont(name: "GothamBook", size: 16.0)!]
+        let attrs1 = [NSFontAttributeName: UIFont(name: "GothamBook", size: studyLabelFontSize)!]
         var title = NSMutableAttributedString(string: "Study Progress: Phase 1 (100 users)", attributes: attrs1)
 
         let tooltip = "This progress bar indicates our near-term study deployment status and goals"
@@ -69,14 +73,18 @@ public class OurStudyViewController: UIViewController, ChartViewDelegate {
 
     var ring2TopConstraint: NSLayoutConstraint! = nil
 
-    lazy var fullDaysLabel: UIStackView = UIComponents.createNumberLabel("Full days tracked", labelFontSize: 16.0, value: 8.0, unit: "days")
-    lazy var partialDaysLabel: UIStackView = UIComponents.createNumberLabel("Partial days tracked", labelFontSize: 16.0, value: 11.0, unit: "days")
+    lazy var fullDaysLabel: UIStackView =
+        UIComponents.createNumberLabel(
+            "Full days tracked", bodyFontSize: studyBodyFontSize, labelFontSize: studyLabelFontSize, value: 8.0, unit: "days")
+
+    lazy var partialDaysLabel: UIStackView =
+        UIComponents.createNumberLabel(
+            "Partial days tracked", bodyFontSize: studyBodyFontSize, labelFontSize: studyLabelFontSize, value: 11.0, unit: "days")
 
     lazy var userRankingBadge: UIStackView =
         UIComponents.createNumberWithImageAndLabel(
-            "Your Contribution Rank",
-            imageName: "icon-gold-medal",
-            labelFontSize: 16.0, labelSpacing: 0.0, value: 1.0, unit: "% of all users")
+            "Your Contributions Rank", imageName: "icon-gold-medal", bodyFontSize: studyContributionFontSize,
+            labelFontSize: 14.0, labelSpacing: 0.0, value: 1.0, unit: "%", prefix: "Top", suffix: "of all users")
 
     override public func viewWillAppear(animated: Bool) {
         super.viewWillAppear(animated)
@@ -124,7 +132,7 @@ public class OurStudyViewController: UIViewController, ChartViewDelegate {
         rings.enumerate().forEach { (index, pieChart) in
             let chart: UIStackView =
                 UIComponents.createLabelledComponent(
-                    OurStudyViewController.ringNames[index], labelOnTop: index != 2, labelFontSize: 16.0, labelSpacing: 0.0, value: (), constructor: {
+                    OurStudyViewController.ringNames[index], labelOnTop: index != 2, labelFontSize: studyLabelFontSize, labelSpacing: 0.0, value: (), constructor: {
                         _ in return pieChart
                 })
 
@@ -199,7 +207,7 @@ public class OurStudyViewController: UIViewController, ChartViewDelegate {
             let pieChartData = PieChartData(xVals: labels, dataSet: pieChartDataSet)
             self.rings[index].data = pieChartData
 
-            let attrs = [NSFontAttributeName: UIFont(name: "GothamBook", size: 16.0)!,
+            let attrs = [NSFontAttributeName: UIFont(name: "GothamBook", size: studyLabelFontSize)!,
                          NSForegroundColorAttributeName: UIColor.whiteColor(),
                          NSBackgroundColorAttributeName: UIColor.clearColor()]
 

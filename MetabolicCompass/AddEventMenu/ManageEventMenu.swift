@@ -174,6 +174,8 @@ public class AKPickerCell: FormCell, AKPickerFormableRow {
     }
 
     public override func setup() {
+        selectionStyle = .None
+
         imageview = UIImageView(frame: CGRect.zero)
         imageview.contentMode = .ScaleAspectFit
 
@@ -519,6 +521,7 @@ public class AddManager: UITableView, UITableViewDelegate, UITableViewDataSource
 
     private func setupTable() {
         self.hidden = true
+        self.allowsSelection = false
         self.separatorStyle = .None
         self.layer.opacity = 0.0
 

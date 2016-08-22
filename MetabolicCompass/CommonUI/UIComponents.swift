@@ -16,7 +16,6 @@ public class UIComponents {
                                                   value: T, constructor: T -> UIView) -> UIStackView {
         let desc : UILabel = {
             let label = UILabel()
-            // label.font = UIFont.systemFontOfSize(labelFontSize, weight: UIFontWeightRegular)
             label.font = UIFont(name: "GothamBook", size: labelFontSize)!
             label.textColor = .lightGrayColor()
             label.textAlignment = .Center
@@ -44,50 +43,58 @@ public class UIComponents {
         return stack
     }
 
-    static public func createNumberLabel(title: String,
+    static public func createNumberLabel(title: String, bodyFontSize: CGFloat = 44.0, unitsFontSize: CGFloat = 20.0,
                                          labelOnTop: Bool = true, labelFontSize: CGFloat, labelSpacing: CGFloat = 8.0,
                                          value: Double, unit: String) -> UIStackView
     {
         return UIComponents.createLabelledComponent(title, labelOnTop: labelOnTop, labelFontSize: labelFontSize,
                                                     labelSpacing: labelSpacing, value: value, constructor: { value in
             let label = UILabel()
-            //label.font = UIFont.systemFontOfSize(44, weight: UIFontWeightRegular)
-            label.font = UIFont(name: "GothamBook", size: 44)!
+            label.font = UIFont(name: "GothamBook", size: bodyFontSize)!
             label.textColor = .whiteColor()
             label.textAlignment = .Center
 
             let vString = String(format: "%.1f", value)
             let aString = NSMutableAttributedString(string: vString + " " + unit)
-            //let unitFont = UIFont.systemFontOfSize(20, weight: UIFontWeightRegular)
-            let unitFont = UIFont(name: "GothamBook", size: 20)!
+            let unitFont = UIFont(name: "GothamBook", size: unitsFontSize)!
             aString.addAttribute(NSFontAttributeName, value: unitFont, range: NSRange(location:vString.characters.count+1, length: unit.characters.count))
             label.attributedText = aString
             return label
         })
     }
 
-    static public func createNumberWithImageAndLabel(title: String, imageName: String,
+    static public func createNumberWithImageAndLabel(title: String, imageName: String, bodyFontSize: CGFloat = 66.0, unitsFontSize: CGFloat = 20.0,
                                                      labelOnTop: Bool = true, labelFontSize: CGFloat, labelSpacing: CGFloat = 8.0,
-                                                     value: Double, unit: String) -> UIStackView
+                                                     value: Double, unit: String, prefix: String? = nil, suffix: String? = nil) -> UIStackView
     {
-        return UIComponents.createLabelledComponent(title, labelOnTop: labelOnTop, labelFontSize: labelFontSize,
-                                                    labelSpacing: labelSpacing, value: value, constructor: { value in
+        return UIComponents.createLabelledComponent(title,
+                                                    labelOnTop: labelOnTop, labelFontSize: labelFontSize, labelSpacing: labelSpacing,
+                                                    value: value, constructor:
+        { value in
             let label = UILabel()
-            //label.font = UIFont.systemFontOfSize(66, weight: UIFontWeightRegular)
-            label.font = UIFont(name: "GothamBook", size: 66)!
+            label.font = UIFont(name: "GothamBook", size: bodyFontSize)!
             label.textColor = .whiteColor()
             label.textAlignment = .Center
 
-            let vString = String(format: "%.1f", value)
-            let aString = NSMutableAttributedString(string: vString + " " + unit)
-            //let unitFont = UIFont.systemFontOfSize(20, weight: UIFontWeightRegular)
-            let unitFont = UIFont(name: "GothamBook", size: 20)!
-            aString.addAttribute(NSFontAttributeName, value: unitFont, range: NSRange(location:vString.characters.count+1, length: unit.characters.count))
-            label.attributedText = aString
+            let prefixStr = prefix ?? ""
+            let suffixStr = suffix ?? ""
+            let vStr = String(format: "%.1f", value)
+            let aStr = NSMutableAttributedString(string: prefixStr + " " + vStr + " " + unit + " " + suffixStr)
+            let unitFont = UIFont(name: "GothamBook", size: unitsFontSize)!
+
+            if prefixStr.characters.count > 0 {
+                let headRange = NSRange(location:0, length: prefixStr.characters.count + 1)
+                aStr.addAttribute(NSFontAttributeName, value: unitFont, range: headRange)
+            }
+
+            let tailRange = NSRange(location:prefixStr.characters.count + vStr.characters.count + 1, length: unit.characters.count + suffixStr.characters.count + 2)
+            aStr.addAttribute(NSFontAttributeName, value: unitFont, range: tailRange)
+
+            label.attributedText = aStr
 
             let imageView = UIImageView(frame: CGRectMake(0, 0, 110, 110))
             imageView.image = UIImage(named: imageName)
-            imageView.contentMode = .ScaleAspectFill
+            imageView.contentMode = .ScaleAspectFit
 
             let stack = UIStackView(arrangedSubviews: [imageView, label])
             stack.axis = .Horizontal
