@@ -24,6 +24,13 @@ let studyLabelAttrs: [String: AnyObject] = [
 
 public class OurStudyViewController: UIViewController, ChartViewDelegate {
 
+    // Data model.
+    var userRank: Int = 1
+    var ringValues: [(Double, Double)] = []
+    var fullDays: Int = 0
+    var partialDays: Int = 0
+
+    // UI Components.
     public static let grey   = UIColor.ht_concreteColor()
     public static let red    = UIColor.ht_pomegranateColor()
     public static let orange = ChartColorTemplates.colorful()[1]
@@ -49,7 +56,9 @@ public class OurStudyViewController: UIViewController, ChartViewDelegate {
 
     static let ringNames = ["Total Study\nData Entries", "Week-over-Week\nData Growth", "Mean Daily\nUser Entries"]
     static let ringUnits = ["", "%", ""]
-    static let ringValues = [(1100, 10000), (20.0, 100.0), (5, 20)]
+    static let ringValueDefaults = [(1100, 10000), (20.0, 100.0), (5, 20)]
+
+    let ringIndexKeys = ["total_samples", "wow_growth", "mean_daily_entries"]
 
     static let ringDescriptions = [
         "This ring shows the total number of data entries uploaded by all users in our study relative to our next target.",
@@ -103,22 +112,58 @@ public class OurStudyViewController: UIViewController, ChartViewDelegate {
         UIComponents.createNumberWithImageAndLabel(
             "Your Contributions Rank", imageName: "icon-gold-medal",
             titleAttrs: studyLabelAttrs, bodyFontSize: studyContributionFontSize,
-            labelFontSize: 14.0, labelSpacing: 0.0, value: 1.0, unit: "%", prefix: "Top", suffix: "of all users")
+            labelFontSize: studyLabelFontSize, labelSpacing: 0.0, value: 1.0, unit: "%", prefix: "Top", suffix: "of all users")
+
+
+    static let badgeIconBuckets: [(Double, String)] = [
+        (1.0,  "icon-badge-"),
+        (2.0,  "icon-badge-"),
+        (5.0,  "icon-badge-"),
+        (10.0, "icon-badge-"),
+        (20.0, "icon-badge-"),
+        (30.0, "icon-badge-"),
+        (40.0, "icon-badge-"),
+        (50.0, "icon-badge-"),
+        (60.0, "icon-badge-"),
+        (70.0, "icon-badge-"),
+        (80.0, "icon-badge-"),
+        (90.0, "icon-badge-")
+    ]
 
     var phaseProgressTip: TapTip! = nil
     var fullDaysTip: TapTip! = nil
     var partialDaysTip: TapTip! = nil
     var userRankingTip: TapTip! = nil
 
+    var activityIndicator: UIActivityIndicatorView! = nil
+
     override public func viewWillAppear(animated: Bool) {
         super.viewWillAppear(animated)
+        self.activityIndicator.startAnimating()
+        self.refreshData()
     }
 
     override public func viewDidLoad() {
         super.viewDidLoad()
 
+        setupActivityIndicator()
         setupView()
         refreshData()
+    }
+
+    func setupActivityIndicator() {
+        activityIndicator = UIActivityIndicatorView()
+
+        activityIndicator.translatesAutoresizingMaskIntoConstraints = false
+        view.addSubview(activityIndicator)
+
+        let constraints: [NSLayoutConstraint] = [
+            activityIndicator.topAnchor.constraintEqualToAnchor(view.topAnchor),
+            activityIndicator.bottomAnchor.constraintEqualToAnchor(view.bottomAnchor),
+            activityIndicator.leadingAnchor.constraintEqualToAnchor(view.leadingAnchor),
+            activityIndicator.trailingAnchor.constraintEqualToAnchor(view.trailingAnchor)
+        ]
+        view.addConstraints(constraints)
     }
 
     func setupView() {
@@ -250,16 +295,79 @@ public class OurStudyViewController: UIViewController, ChartViewDelegate {
     }
 
 
+    // TODO: cache results for 1-5 mins
     func refreshData() {
-        self.phaseProgress.ratio = 0.1
-        self.phaseProgress.refreshData()
-        refreshStudyRings()
+        PopulationHealthManager.sharedManager.fetchStudyStats { (success, payload) in
+            if success && payload != nil { self.refreshStudyStats(payload) }
+            self.activityIndicator.stopAnimating()
+        }
     }
 
-    func refreshStudyRings() {
+    // TODO: refresh full and partial days
+    func refreshStudyStats(payload: AnyObject?) {
+        if let response = payload as? [String:AnyObject],
+            studystats = response["result"] as? [String:AnyObject]
+        {
+            if let r = studystats["user_rank"] as? Int {
+                refreshUserRanking(r)
+            } else if let s = studystats["user_rank"] as? String, r = Int(s) {
+                refreshUserRanking(r)
+            }
+
+            if let u = studystats["active_users"] as? Int {
+                refreshUserGrowth(u)
+            } else if let s = studystats["active_users"] as? String, u = Int(s) {
+                refreshUserGrowth(u)
+            }
+
+            refreshStudyRings(studystats)
+        } else {
+            log.error("Failed to refresh study stats from \(payload)")
+        }
+    }
+
+    // TODO: refresh badge icon
+    func refreshUserRanking(rank: Int) {
+        userRank = rank
+        if let imageLabelStack = userRankingBadge.subviews[1] as? UIStackView,
+               badge = imageLabelStack.subviews[0] as? UIImageView,
+               label = imageLabelStack.subviews[1] as? UILabel
+        {
+            label.attributedText = OurStudyViewController.userRankingLabelText(userRank)
+            label.setNeedsDisplay()
+        } else {
+            log.error("OUR STUDY could not get ranking badge/label")
+        }
+    }
+
+    func refreshUserGrowth(activeUsers: Int) {
+        let userCount = Double(activeUsers)
+        let userTarget = OurStudyViewController.userGrowthTarget(userCount)
+        self.phaseProgress.ratio = CGFloat(userCount / userTarget)
+        self.phaseProgress.refreshData()
+        self.phaseProgress.refreshTitle(OurStudyViewController.userGrowthBarTitle(userTarget))
+    }
+
+    func refreshStudyRings(studystats: [String:AnyObject]) {
+        ringValues = OurStudyViewController.ringValueDefaults.enumerate().map { (index, defaultValue) in
+            var value: Double! = nil
+            if let v = studystats[ringIndexKeys[index]] as? Double {
+                value = v
+            } else if let s = studystats[ringIndexKeys[index]] as? String, v = Double(s) {
+                value = v
+            }
+
+            if value == nil {
+                return defaultValue
+            } else {
+                let target = pow(10, ceil(log10(value)))
+                return (value, target)
+            }
+        }
+
         OurStudyViewController.ringNames.enumerate().forEach { (index, _) in
-            let (value, maxValue) = OurStudyViewController.ringValues[index]
-            let labels = ["A", "B"]
+            let (value, maxValue) = ringValues[index]
+            let labels = ["Value", "Target"]
             let entries = [value, maxValue - value].enumerate().map { return ChartDataEntry(value: $0.1, xIndex: $0.0) }
 
             let pieChartDataSet = PieChartDataSet(yVals: entries, label: "Samples per type")
@@ -278,5 +386,48 @@ public class OurStudyViewController: UIViewController, ChartViewDelegate {
             self.rings[index].centerTextRadiusPercent = 100.0
             self.rings[index].setNeedsDisplay()
         }
+    }
+
+    class func userGrowthTarget(activeUsers: Double) -> Double {
+        if activeUsers < 100.0 { return 100.0 }
+        return pow(10, ceil(log10(activeUsers)))
+    }
+
+    class func userGrowthBarTitle(target: Double) -> NSAttributedString {
+        let phase = max(1, Int(log10(target)) - 1)
+        let attrs = [NSForegroundColorAttributeName: UIColor.whiteColor(),
+                     NSUnderlineStyleAttributeName: NSNumber(integer: NSUnderlineStyle.StyleSingle.rawValue),
+                     NSFontAttributeName: UIFont(name: "GothamBook", size: studyLabelFontSize)!]
+
+        return NSMutableAttributedString(string: "Study Progress: Phase \(phase): \(Int(ceil(target))) users", attributes: attrs)
+    }
+
+    class func userRankingClassAndIcon(rank: Int) -> (Double, String) {
+        let doubleRank = Double(rank)
+        var rankIndex = OurStudyViewController.badgeIconBuckets.indexOf { $0.0 >= doubleRank }
+        if rankIndex == nil { rankIndex = OurStudyViewController.badgeIconBuckets.count - 1 }
+        log.info("OUR STUDY rank class \(rank) \(rankIndex!)")
+        return OurStudyViewController.badgeIconBuckets[rankIndex!]
+    }
+
+    class func userRankingLabelText(rank: Int, unitsFontSize: CGFloat = 20.0) -> NSAttributedString {
+        let prefixStr = "Top"
+        let suffixStr = "% of all users"
+
+        let (rankClass, _) = OurStudyViewController.userRankingClassAndIcon(rank)
+        let vStr = String(format: "%.2g", rankClass)
+        let aStr = NSMutableAttributedString(string: prefixStr + " " + vStr + " " + suffixStr)
+
+        let unitFont = UIFont(name: "GothamBook", size: unitsFontSize)!
+
+        if prefixStr.characters.count > 0 {
+            let headRange = NSRange(location:0, length: prefixStr.characters.count + 1)
+            aStr.addAttribute(NSFontAttributeName, value: unitFont, range: headRange)
+        }
+
+        let tailRange = NSRange(location:prefixStr.characters.count + vStr.characters.count + 1, length: suffixStr.characters.count + 1)
+        aStr.addAttribute(NSFontAttributeName, value: unitFont, range: tailRange)
+
+        return aStr
     }
 }

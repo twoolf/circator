@@ -285,4 +285,13 @@ public class PopulationHealthManager {
         log.info("Popquery \(sampleType.displayText ?? sampleType.identifier) \(sampleValue) \(convertedSampleValue)")
         return MCAggregateSample(value: convertedSampleValue, sampleType: sampleType, op: sampleType.aggregationOptions)
     }
+
+
+    // MARK : - Study stats queries
+    public func fetchStudyStats(completion: (Bool, AnyObject?) -> Void) {
+        Service.json(MCRouter.StudyStats, statusCode: 200..<300, tag: "GETSTUDYSTATS") {
+            _, response, result in
+            completion(result.isSuccess, result.value)
+        }
+    }
 }

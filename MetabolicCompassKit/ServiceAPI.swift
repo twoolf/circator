@@ -137,6 +137,8 @@ enum MCRouter : URLRequestConvertible {
     case RemoveMeasures([String: AnyObject])
     case AggregateMeasures([String: AnyObject])
 
+    case StudyStats
+
     // User and profile management API
     case GetUserAccountData([AccountComponent])
 
@@ -161,6 +163,9 @@ enum MCRouter : URLRequestConvertible {
             return .POST
 
         case .AggregateMeasures:
+            return .GET
+
+        case .StudyStats:
             return .GET
 
         case .DeleteAccount:
@@ -190,6 +195,9 @@ enum MCRouter : URLRequestConvertible {
 
         case .AggregateMeasures:
             return "/measures/mc/dbavg"
+
+        case .StudyStats:
+            return "/user/studystats"
 
         case .DeleteAccount:
             return "/user/withdraw"
@@ -224,6 +232,9 @@ enum MCRouter : URLRequestConvertible {
 
         case .AggregateMeasures(let parameters):
             return Alamofire.ParameterEncoding.URL.encode(mutableURLRequest, parameters: parameters).0
+
+        case .StudyStats:
+            return mutableURLRequest
 
         case .DeleteAccount(let parameters):
             return Alamofire.ParameterEncoding.JSON.encode(mutableURLRequest, parameters: parameters).0

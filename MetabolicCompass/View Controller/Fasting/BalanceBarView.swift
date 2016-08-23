@@ -74,6 +74,11 @@ public class BalanceBarView : UIView {
         self.userInteractionEnabled = true
     }
 
+    public func refreshTitle(title: NSAttributedString) {
+        barTitle.attributedText = title
+        barTitle.setNeedsDisplay()
+    }
+
     public func refreshData() {
         if 0.0 <= ratio && ratio <= 1.0 {
             label1.backgroundColor = color1

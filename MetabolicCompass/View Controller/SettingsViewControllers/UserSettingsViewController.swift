@@ -15,6 +15,9 @@ import SwiftyUserDefaults
 
 let USNBlackoutTimesKey = "USNBlackoutTimes"
 
+let userSettingsHeaderFontSize: CGFloat = 20.0
+let userSettingsFontSize: CGFloat = 16.0
+
 // Default blackout times: 10pm - 6am
 func defaultNotificationBlackoutTimes() -> [NSDate] {
     let today = NSDate().startOf(.Day)
@@ -153,9 +156,9 @@ class UserSettingsViewController: BaseViewController {
                 $0.backgroundColor = .clearColor()
                 $0.titleLabel.text = rowSpec.0
                 $0.titleLabel.textColor = .whiteColor()
-                $0.titleLabel.font = UIFont(name: "GothamBook", size: 14.0)!
+                $0.titleLabel.font = UIFont(name: "GothamBook", size: userSettingsFontSize)!
                 $0.textField.textColor = .whiteColor()
-                $0.textField.font = UIFont(name: "GothamBook", size: 14.0)!
+                $0.textField.font = UIFont(name: "GothamBook", size: userSettingsFontSize)!
                 $0.textField.returnKeyType = .Next
                 $0.textField.textAlignment = .Right
                 }.configure {
@@ -184,9 +187,9 @@ class UserSettingsViewController: BaseViewController {
                 $0.backgroundColor = .clearColor()
                 $0.titleLabel.text = rowName
                 $0.titleLabel.textColor = .whiteColor()
-                $0.titleLabel.font = UIFont(name: "GothamBook", size: 14.0)!
+                $0.titleLabel.font = UIFont(name: "GothamBook", size: userSettingsFontSize)!
                 $0.displayLabel.textColor = .lightGrayColor()
-                $0.displayLabel.font = UIFont(name: "GothamBook", size: 14.0)!
+                $0.displayLabel.font = UIFont(name: "GothamBook", size: userSettingsFontSize)!
                 }.inlineCellSetup {
                     $0.datePicker.datePickerMode = .Time
                     $0.datePicker.minuteInterval = 15
@@ -205,7 +208,7 @@ class UserSettingsViewController: BaseViewController {
                 $0.contentView.backgroundColor = .clearColor()
                 $0.titleLabel.backgroundColor = .clearColor()
                 $0.titleLabel.textColor = .lightGrayColor()
-                $0.titleLabel.font = UIFont(name: "GothamBook", size: 18.0)!
+                $0.titleLabel.font = UIFont(name: "GothamBook", size: userSettingsHeaderFontSize)!
 
                 }.configure { view in
                     view.viewHeight = 66
