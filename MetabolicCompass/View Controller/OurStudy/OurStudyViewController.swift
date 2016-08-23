@@ -116,18 +116,18 @@ public class OurStudyViewController: UIViewController, ChartViewDelegate {
 
 
     static let badgeIconBuckets: [(Double, String)] = [
-        (1.0,  "icon-badge-"),
-        (2.0,  "icon-badge-"),
-        (5.0,  "icon-badge-"),
-        (10.0, "icon-badge-"),
-        (20.0, "icon-badge-"),
-        (30.0, "icon-badge-"),
-        (40.0, "icon-badge-"),
-        (50.0, "icon-badge-"),
-        (60.0, "icon-badge-"),
-        (70.0, "icon-badge-"),
-        (80.0, "icon-badge-"),
-        (90.0, "icon-badge-")
+        (1.0,  "icon-trophy-cup-gold"),
+        (2.0,  "icon-trophy-cup-silver"),
+        (5.0,  "icon-trophy-cup-bronze"),
+        (10.0, "icon-medallion-gold"),
+        (20.0, "icon-medallion-silver"),
+        (30.0, "icon-medallion-bronze"),
+        (40.0, "icon-star-gold"),
+        (50.0, "icon-star-silver"),
+        (60.0, "icon-thumbs-up-gold"),
+        (70.0, "icon-thumbs-up-silver"),
+        (80.0, "icon-arms-raised-gold"),
+        (90.0, "icon-arms-raised-silver")
     ]
 
     var phaseProgressTip: TapTip! = nil
@@ -344,7 +344,6 @@ public class OurStudyViewController: UIViewController, ChartViewDelegate {
         }
     }
 
-    // TODO: refresh badge icon
     func refreshUserRanking(rank: Int) {
         userRank = rank
         if let imageLabelStack = userRankingBadge.subviews[1] as? UIStackView,
@@ -353,6 +352,9 @@ public class OurStudyViewController: UIViewController, ChartViewDelegate {
         {
             label.attributedText = OurStudyViewController.userRankingLabelText(userRank)
             label.setNeedsDisplay()
+            let (_, icon) = OurStudyViewController.userRankingClassAndIcon(userRank)
+            badge.image = UIImage(named: icon)
+            badge.setNeedsDisplay()
         } else {
             log.error("OUR STUDY could not get ranking badge/label")
         }
