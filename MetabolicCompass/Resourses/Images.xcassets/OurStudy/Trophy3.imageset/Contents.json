@@ -2,16 +2,17 @@
   "images" : [
     {
       "idiom" : "universal",
+      "filename" : "trophy3@1x.png",
       "scale" : "1x"
     },
     {
       "idiom" : "universal",
-      "filename" : "icon-consent-document@2x.png",
+      "filename" : "trophy3@2x.png",
       "scale" : "2x"
     },
     {
       "idiom" : "universal",
-      "filename" : "icon-consent-document@3x.png",
+      "filename" : "trophy3@3x.png",
       "scale" : "3x"
     }
   ],
