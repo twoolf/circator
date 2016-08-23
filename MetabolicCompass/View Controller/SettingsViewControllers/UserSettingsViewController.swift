@@ -138,6 +138,10 @@ class UserSettingsViewController: BaseViewController {
     }
 
     func setupFormer() {
+        tableView.backgroundView = UIImageView(image: UIImage(named: "university_logo"))
+        tableView.backgroundView?.contentMode = .Center
+        tableView.backgroundView?.layer.opacity = 0.03
+
         former = Former(tableView: tableView)
 
         let mediumTimeNoDate: NSDate -> String = { date in
@@ -150,7 +154,7 @@ class UserSettingsViewController: BaseViewController {
 
         let appRows = [
             ("Siri Hotword", hotword),
-            ("Cloud Refresh Period", "\(refresh)")
+            ("Cloud Sync Rate (secs)", "\(refresh)")
             ].enumerate().map { (index: Int, rowSpec: (String, String)) in
             return TextFieldRowFormer<FormTextFieldCell>() {
                 $0.backgroundColor = .clearColor()

@@ -960,6 +960,8 @@ public class DeleteManager: UITableView, PickerManagerSelectionDelegate {
         */
 
 
+        let datePickerFontSize: CGFloat = 16.0
+
         let mediumDateShortTime: NSDate -> String = { date in
             let dateFormatter = NSDateFormatter()
             dateFormatter.locale = .currentLocale()
@@ -989,9 +991,9 @@ public class DeleteManager: UITableView, PickerManagerSelectionDelegate {
                 $0.backgroundColor = .clearColor()
                 $0.titleLabel.text = rowName
                 $0.titleLabel.textColor = .whiteColor()
-                $0.titleLabel.font = UIFont(name: "GothamBook", size: 14.0)!
+                $0.titleLabel.font = UIFont(name: "GothamBook", size: datePickerFontSize)!
                 $0.displayLabel.textColor = .lightGrayColor()
-                $0.displayLabel.font = UIFont(name: "GothamBook", size: 14.0)!
+                $0.displayLabel.font = UIFont(name: "GothamBook", size: datePickerFontSize)!
                 }.inlineCellSetup {
                     $0.datePicker.datePickerMode = .DateAndTime
                     $0.datePicker.minuteInterval = 15
@@ -1053,7 +1055,6 @@ public class DeleteManager: UITableView, PickerManagerSelectionDelegate {
         let deleteRecentSection = SectionFormer(rowFormer: deleteRecentRow).set(headerViewFormer: headers[0])
         let deleteByDateSection = SectionFormer(rowFormers: deleteByDateRows).set(headerViewFormer: headers[1])
         delFormer.append(sectionFormer: deleteRecentSection, deleteByDateSection)
-
     }
 
     func circadianOpCompletion(sender: UIButton?, pickerManager: PickerManager?, error: NSError?) {

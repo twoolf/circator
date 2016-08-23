@@ -138,7 +138,24 @@ public class FastingViewController : UIViewController, ChartViewDelegate {
         setupView()
     }
 
+    func setupBackground() {
+        let backgroundImage = UIImageView(image: UIImage(named: "university_logo"))
+        backgroundImage.contentMode = .Center
+        backgroundImage.layer.opacity = 0.03
+        backgroundImage.translatesAutoresizingMaskIntoConstraints = false
+        self.view.insertSubview(backgroundImage, atIndex: 0)
+
+        let bgConstraints: [NSLayoutConstraint] = [
+            backgroundImage.centerXAnchor.constraintEqualToAnchor(self.view.centerXAnchor),
+            backgroundImage.centerYAnchor.constraintEqualToAnchor(self.view.centerYAnchor)
+        ]
+
+        self.view.addConstraints(bgConstraints)
+    }
+
     func setupView() {
+        setupBackground()
+
         refreshPieChart()
 
         let pieChartStack: UIStackView = UIComponents.createLabelledComponent("Data Collected This Year", labelFontSize: fastingViewLabelSize, value: (), constructor: {

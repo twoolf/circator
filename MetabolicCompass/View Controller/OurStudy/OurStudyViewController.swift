@@ -166,7 +166,24 @@ public class OurStudyViewController: UIViewController, ChartViewDelegate {
         view.addConstraints(constraints)
     }
 
+    func setupBackground() {
+        let backgroundImage = UIImageView(image: UIImage(named: "university_logo"))
+        backgroundImage.contentMode = .Center
+        backgroundImage.layer.opacity = 0.03
+        backgroundImage.translatesAutoresizingMaskIntoConstraints = false
+        self.view.insertSubview(backgroundImage, atIndex: 0)
+
+        let bgConstraints: [NSLayoutConstraint] = [
+            backgroundImage.centerXAnchor.constraintEqualToAnchor(self.view.centerXAnchor),
+            backgroundImage.centerYAnchor.constraintEqualToAnchor(self.view.centerYAnchor)
+        ]
+
+        self.view.addConstraints(bgConstraints)
+    }
+
     func setupView() {
+
+        setupBackground()
 
         let labelStack: UIStackView = {
             let stack = UIStackView(arrangedSubviews: [fullDaysLabel, partialDaysLabel])
@@ -214,9 +231,10 @@ public class OurStudyViewController: UIViewController, ChartViewDelegate {
             compositeView.addSubview(chart)
 
             let desc = OurStudyViewController.ringDescriptions[index]
-            let tip = TapTip(forView: chart, text: desc, width: 350, numTaps: 1, numTouches: 1, asTop: index == 2)
+            let tipView = chart.subviews[index == 2 ? 0 : 1]
+            let tip = TapTip(forView: tipView, text: desc, width: 350, numTaps: 1, numTouches: 1, asTop: index == 2)
             self.ringTips.append(tip)
-            chart.addGestureRecognizer(tip.tapRecognizer)
+            tipView.addGestureRecognizer(tip.tapRecognizer)
 
             var constraints: [NSLayoutConstraint] = []
             if index == 0 {
@@ -406,7 +424,6 @@ public class OurStudyViewController: UIViewController, ChartViewDelegate {
         let doubleRank = Double(rank)
         var rankIndex = OurStudyViewController.badgeIconBuckets.indexOf { $0.0 >= doubleRank }
         if rankIndex == nil { rankIndex = OurStudyViewController.badgeIconBuckets.count - 1 }
-        log.info("OUR STUDY rank class \(rank) \(rankIndex!)")
         return OurStudyViewController.badgeIconBuckets[rankIndex!]
     }
 
