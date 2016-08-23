@@ -155,20 +155,13 @@ class AppDelegate: UIResponder, UIApplicationDelegate, WCSessionDelegate {
         // Recycle the local notification for another day.
         if let settings = UIApplication.sharedApplication().currentUserNotificationSettings() {
             if settings.types != .None {
-                var blackoutTimes : [NSDate] = []
-
-                if let t = Defaults.objectForKey(USNBlackoutTimesKey) as? [NSDate] {
-                    blackoutTimes = t
-                } else {
-                    blackoutTimes = defaultNotificationBlackoutTimes()
-                    Defaults.setObject(blackoutTimes, forKey: USNBlackoutTimesKey)
-                    Defaults.synchronize()
-                }
+                let reminderFreq = getNotificationReminderFrequency()
+                let blackoutTimes = getNotificationBlackoutTimes()
 
                 let blackoutStartToday = NSDate().startOf(.Day).add(hours: blackoutTimes[0].hour, minutes: blackoutTimes[0].minute)
                 let blackoutEndToday = NSDate().startOf(.Day).add(hours: blackoutTimes[1].hour, minutes: blackoutTimes[1].minute)
 
-                let noteDate = 2.hours.fromNow
+                let noteDate = reminderFreq.hours.fromNow
 
                 if noteDate < blackoutStartToday || noteDate > blackoutEndToday {
                     UIApplication.sharedApplication().cancelAllLocalNotifications()

@@ -13,6 +13,7 @@ import Former
 import SwiftDate
 import SwiftyUserDefaults
 
+let USNReminderFrequencyKey = "USNReminderFrequency"
 let USNBlackoutTimesKey = "USNBlackoutTimes"
 
 let userSettingsHeaderFontSize: CGFloat = 20.0
@@ -22,6 +23,35 @@ let userSettingsFontSize: CGFloat = 16.0
 func defaultNotificationBlackoutTimes() -> [NSDate] {
     let today = NSDate().startOf(.Day)
     return [today + 22.hours - 1.days, today + 6.hours]
+}
+
+// Default reminder frequency in hours.
+func defaultNotificationReminderFrequency() -> Int {
+    return 2
+}
+
+func getNotificationReminderFrequency() -> Int {
+    var reminder: Int! = nil
+    if let r = Defaults.objectForKey(USNReminderFrequencyKey) as? Int {
+        reminder = r
+    } else {
+        reminder = defaultNotificationReminderFrequency()
+        Defaults.setObject(reminder, forKey: USNReminderFrequencyKey)
+        Defaults.synchronize()
+    }
+    return reminder!
+}
+
+func getNotificationBlackoutTimes() -> [NSDate] {
+    var blackoutTimes: [NSDate] = []
+    if let t = Defaults.objectForKey(USNBlackoutTimesKey) as? [NSDate] {
+        blackoutTimes = t
+    } else {
+        blackoutTimes = defaultNotificationBlackoutTimes()
+        Defaults.setObject(blackoutTimes, forKey: USNBlackoutTimesKey)
+        Defaults.synchronize()
+    }
+    return blackoutTimes
 }
 
 class UserSettingsViewController: BaseViewController {
@@ -41,7 +71,10 @@ class UserSettingsViewController: BaseViewController {
     var hotword: String! = nil
     var refresh: Int! = nil
 
+    var reminder: Int! = nil
     var blackoutTimes: [NSDate] = []
+
+    static let reminderOptions = [ 2, 4, 6, 8, 12, 24, 48, 72, -1 ]
 
     override func viewWillAppear(animated: Bool) {
         super.viewWillAppear(animated)
@@ -63,13 +96,9 @@ class UserSettingsViewController: BaseViewController {
     func setupSettings() {
         hotword = UserManager.sharedManager.getHotWords()
         refresh = UserManager.sharedManager.getRefreshFrequency()
-        if let t = Defaults.objectForKey(USNBlackoutTimesKey) as? [NSDate] {
-            blackoutTimes = t
-        } else {
-            blackoutTimes = defaultNotificationBlackoutTimes()
-            Defaults.setObject(blackoutTimes, forKey: USNBlackoutTimesKey)
-            Defaults.synchronize()
-        }
+
+        reminder = getNotificationReminderFrequency()
+        blackoutTimes = getNotificationBlackoutTimes()
     }
 
     func dataChanged() -> Bool {
@@ -95,15 +124,26 @@ class UserSettingsViewController: BaseViewController {
 
     func doSave() {
         // Validate
-        if hotword.isEmpty || refresh < 0 {
+        if hotword.isEmpty {
             let emptyHotword = "Empty Siri hotword, please enter a valid phrase"
-            let subzeroRefresh = "The cloud refresh value must be greater than 0"
-            let message = hotword.isEmpty ? emptyHotword : subzeroRefresh
-            self.showAlert(withMessage: message, title: "Failed to save settings".localized)
+            self.showAlert(withMessage: emptyHotword, title: "Failed to save settings".localized)
+            return
+        }
+
+        if refresh < 30 {
+            let tooLowRefresh = "The cloud refresh value must be at least 30 seconds"
+            self.showAlert(withMessage: tooLowRefresh, title: "Failed to save settings".localized)
+            return
+        }
+
+        if reminder < 2 {
+            let tooLowReminder = "The notification reminder must be at least 2 hours"
+            self.showAlert(withMessage: tooLowReminder, title: "Failed to save settings".localized)
             return
         }
 
         // Saving
+        if reminder != nil { Defaults.setObject(reminder!, forKey: USNReminderFrequencyKey) }
         Defaults.setObject(blackoutTimes, forKey: USNBlackoutTimesKey)
         Defaults.synchronize()
 
@@ -140,7 +180,7 @@ class UserSettingsViewController: BaseViewController {
     func setupFormer() {
         tableView.backgroundView = UIImageView(image: UIImage(named: "university_logo"))
         tableView.backgroundView?.contentMode = .Center
-        tableView.backgroundView?.layer.opacity = 0.03
+        tableView.backgroundView?.layer.opacity = 0.02
 
         former = Former(tableView: tableView)
 
@@ -185,8 +225,24 @@ class UserSettingsViewController: BaseViewController {
             }
         }
 
+        let reminderRow =
+            InlinePickerRowFormer<FormInlinePickerCell, Int!>() {
+                $0.titleLabel.text = "Inline Picker"
+                $0.titleLabel.textColor = .whiteColor()
+                $0.titleLabel.font = UIFont(name: "GothamBook", size: userSettingsFontSize)!
+                $0.displayLabel.textColor = .lightGrayColor()
+                $0.displayLabel.font = UIFont(name: "GothamBook", size: userSettingsFontSize)!
+                }.configure {
+                    $0.pickerItems = UserSettingsViewController.reminderOptions.map {
+                        let label = $0 > 24 ? "\($0/24) days" : "\($0) hours"
+                        return InlinePickerItem(title: label, value: $0)
+                    }
+                    $0.displayEditingColor = .whiteColor()
+            }
 
-        let notificationsRows = ["Blackout Start Time", "Blackout End Time"].enumerate().map { (index, rowName) in
+        reminderRow.onValueChanged { self.toggleEditing(); self.reminder = $0.value }
+
+        let blackoutTimesRows = ["Blackout Start Time", "Blackout End Time"].enumerate().map { (index, rowName) in
             return InlineDatePickerRowFormer<FormInlineDatePickerCell>() {
                 $0.backgroundColor = .clearColor()
                 $0.titleLabel.text = rowName
@@ -204,8 +260,11 @@ class UserSettingsViewController: BaseViewController {
                 }.displayTextFromDate(mediumTimeNoDate)
         }
 
-        notificationsRows[0].onDateChanged { self.toggleEditing(); self.blackoutTimes[0] = $0 }
-        notificationsRows[1].onDateChanged { self.toggleEditing(); self.blackoutTimes[1] = $0 }
+        blackoutTimesRows[0].onDateChanged { self.toggleEditing(); self.blackoutTimes[0] = $0 }
+        blackoutTimesRows[1].onDateChanged { self.toggleEditing(); self.blackoutTimes[1] = $0 }
+
+        var notificationsRows: [RowFormer] = [reminderRow]
+        blackoutTimesRows.forEach { notificationsRows.append($0) }
 
         let headers = ["Application", "Notifications"].map { sectionName in
             return LabelViewFormer<FormLabelHeaderView> {

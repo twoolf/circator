@@ -34,7 +34,9 @@ class MainSettingsViewController: BaseViewController, UICollectionViewDataSource
     
     override func viewDidLoad() {
         super.viewDidLoad()
- 
+
+        setupBackground()
+
         collectionView?.delegate = self
         collectionView?.dataSource = self
         
@@ -56,6 +58,21 @@ class MainSettingsViewController: BaseViewController, UICollectionViewDataSource
         alertController.addAction(cancelAction)
         alertController.addAction(okAction)
         self.presentViewController(alertController, animated: true, completion: nil)
+    }
+
+    func setupBackground() {
+        let backgroundImage = UIImageView(image: UIImage(named: "university_logo"))
+        backgroundImage.contentMode = .Center
+        backgroundImage.layer.opacity = 0.02
+        backgroundImage.translatesAutoresizingMaskIntoConstraints = false
+        self.view.insertSubview(backgroundImage, atIndex: 0)
+
+        let bgConstraints: [NSLayoutConstraint] = [
+            backgroundImage.centerXAnchor.constraintEqualToAnchor(self.view.centerXAnchor),
+            backgroundImage.centerYAnchor.constraintEqualToAnchor(self.view.centerYAnchor)
+        ]
+
+        self.view.addConstraints(bgConstraints)
     }
 
     func webAction(asPrivacyPolicy: Bool) {
