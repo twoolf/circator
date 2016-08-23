@@ -98,11 +98,12 @@ class MainSettingsViewController: BaseViewController, UICollectionViewDataSource
 
     // MARK: - Data source
     
-    private let segueProfileIdentifier = "profileSegue"
+    private let segueProfileIdentifier       = "profileSegue"
     private let seguePhysiologicalIdentifier = "physiologicalSegue"
     private let segueNotificationsIdentifier = "notificationsSegue"
-    private let segueHealthAccessIdentifier = "healthAccessSegue"
+    private let segueHealthAccessIdentifier  = "healthAccessSegue"
     private let segueConsentViewerIdentifier = "consentViewerSegue"
+    private let segueUserSettingsIdentifier  = "userSettingsSegue"
 
     private var consentPDFItemIndex    : Int = 0
     private var aboutItemIndex         : Int = 0
@@ -114,11 +115,14 @@ class MainSettingsViewController: BaseViewController, UICollectionViewDataSource
        var settingsItems = [SettingsItem]()
         
         settingsItems.append(SettingsItem(title: "Profile".localized, iconImageName: "icon-settings-profile", segueIdentifier: self.segueProfileIdentifier))
+
         settingsItems.append(SettingsItem(title: "Physiological Profile".localized, iconImageName: "icon-settings-physiological", segueIdentifier: self.seguePhysiologicalIdentifier))
 
         // settingsItems.append(SettingsItem(title: "Notifications".localized, iconImageName: "icon-settings-notifications", segueIdentifier: self.segueNotificationsIdentifier))
 
         // settingsItems.append(SettingsItem(title: "Health Access".localized, iconImageName: "icon-settings-health", segueIdentifier: self.segueHealthAccessIdentifier))
+
+        settingsItems.append(SettingsItem(title: "User Settings".localized, iconImageName: "icon-settings-active", segueIdentifier: self.segueUserSettingsIdentifier))
 
         settingsItems.append(SettingsItem(title: "Consent PDF".localized, iconImageName: "icon-consent-document", segueIdentifier: self.segueConsentViewerIdentifier))
 

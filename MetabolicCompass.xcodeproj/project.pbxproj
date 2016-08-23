@@ -24,6 +24,7 @@
 		4FD8401A67B80B5437070EF0 /* Pods_MetabolicCompassKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1B27E7BB046EF9D8A0333437 /* Pods_MetabolicCompassKit.framework */; };
 		561F88056F30A84EF334C68F /* Pods_MetabolicCompass.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = ED7548FB765E421B2FCFDB84 /* Pods_MetabolicCompass.framework */; };
 		7816FFBB1C1E45D3002E2ED8 /* UserManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7816FFBA1C1E45D3002E2ED8 /* UserManager.swift */; };
+		78191B801D6BC8CF00C0454B /* UserSettingsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 78191B7F1D6BC8CF00C0454B /* UserSettingsViewController.swift */; };
 		783E53D21C75856200BEBF33 /* DataGenerator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 783E53D11C75856200BEBF33 /* DataGenerator.swift */; };
 		7843F9121C1FAD9900AB8978 /* ServiceAPI.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7843F9111C1FAD9900AB8978 /* ServiceAPI.swift */; };
 		784409901D569E9500E6C560 /* UnitsUtils.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9585680B1CD0EDBD00EDD385 /* UnitsUtils.swift */; };
@@ -343,6 +344,7 @@
 		1C7107BF1D4B411C00C2B3D4 /* CorrelationTabeViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CorrelationTabeViewCell.swift; sourceTree = "<group>"; };
 		5654299CF0E2227E45CBE039 /* Pods_MetabolicCompassWatch.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_MetabolicCompassWatch.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		7816FFBA1C1E45D3002E2ED8 /* UserManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = UserManager.swift; sourceTree = "<group>"; };
+		78191B7F1D6BC8CF00C0454B /* UserSettingsViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = UserSettingsViewController.swift; sourceTree = "<group>"; };
 		781CF2C01C6A6A36001DF3B2 /* EventTimeViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = EventTimeViewController.swift; sourceTree = "<group>"; };
 		781EE1231BAF3F6B00E6DDA1 /* Podfile */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = Podfile; path = ../Podfile; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.ruby; };
 		781EE1241BAF3F6B00E6DDA1 /* README.md */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = net.daringfireball.markdown; name = README.md; path = ../README.md; sourceTree = "<group>"; };
@@ -934,6 +936,7 @@
 				95769B881CE49E5C00F26668 /* NotificationsViewController.swift */,
 				95769B8A1CE49E7300F26668 /* HealthAccessViewController.swift */,
 				78969D971D6A81D300E867C3 /* ConsentViewController.swift */,
+				78191B7F1D6BC8CF00C0454B /* UserSettingsViewController.swift */,
 			);
 			path = SettingsViewControllers;
 			sourceTree = "<group>";
@@ -1993,6 +1996,7 @@
 				958568011CD0AFA400EDD385 /* CheckBox.swift in Sources */,
 				E7592DBC1CDC7BBE00E313BB /* DashboardComparisonController.swift in Sources */,
 				78B734261C90B86200693229 /* RadarViewController.swift in Sources */,
+				78191B801D6BC8CF00C0454B /* UserSettingsViewController.swift in Sources */,
 				95C0B99D1CD23EBA006E523F /* RegistrationComplitionViewController.swift in Sources */,
 				842B7DBB1D095F5A007F2126 /* ChartCollectionDelegate.swift in Sources */,
 				E74A89761CE308800056A2D2 /* UIColor+Extended.swift in Sources */,

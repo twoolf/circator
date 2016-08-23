@@ -11,15 +11,28 @@ import UIKit
 
 public class UIComponents {
 
-    static public func createLabelledComponent<T>(title: String, labelOnTop: Bool = true,
-                                                  labelFontSize: CGFloat, labelSpacing: CGFloat = 8.0,
+    static public func createLabelledComponent<T>(title: String, attrs: [String: AnyObject]? = nil,
+                                                  labelOnTop: Bool = true, labelFontSize: CGFloat, labelSpacing: CGFloat = 8.0,
                                                   value: T, constructor: T -> UIView) -> UIStackView {
         let desc : UILabel = {
             let label = UILabel()
             label.font = UIFont(name: "GothamBook", size: labelFontSize)!
             label.textColor = .lightGrayColor()
+
+            let aString = NSMutableAttributedString(string: title, attributes: attrs)
+
+            let paragraphStyle = NSMutableParagraphStyle()
+            paragraphStyle.lineSpacing = 5.0
+            paragraphStyle.alignment = .Center
+            aString.addAttribute(NSParagraphStyleAttributeName, value: paragraphStyle, range: NSMakeRange(0, aString.length))
+
+            label.attributedText = aString
+
+            label.lineBreakMode = .ByWordWrapping
+            label.numberOfLines = 0
+            label.sizeToFit()
             label.textAlignment = .Center
-            label.text = title
+
             return label
         }()
 
@@ -34,20 +47,23 @@ public class UIComponents {
             return stack
         }()
 
+        /*
         desc.translatesAutoresizingMaskIntoConstraints = false
         let constraints : [NSLayoutConstraint] = [
             desc.heightAnchor.constraintEqualToConstant(labelFontSize+4)
         ]
 
         stack.addConstraints(constraints)
+        */
         return stack
     }
 
-    static public func createNumberLabel(title: String, bodyFontSize: CGFloat = 44.0, unitsFontSize: CGFloat = 20.0,
+    static public func createNumberLabel(title: String, titleAttrs: [String: AnyObject]? = nil,
+                                         bodyFontSize: CGFloat = 44.0, unitsFontSize: CGFloat = 20.0,
                                          labelOnTop: Bool = true, labelFontSize: CGFloat, labelSpacing: CGFloat = 8.0,
                                          value: Double, unit: String) -> UIStackView
     {
-        return UIComponents.createLabelledComponent(title, labelOnTop: labelOnTop, labelFontSize: labelFontSize,
+        return UIComponents.createLabelledComponent(title, attrs: titleAttrs, labelOnTop: labelOnTop, labelFontSize: labelFontSize,
                                                     labelSpacing: labelSpacing, value: value, constructor: { value in
             let label = UILabel()
             label.font = UIFont(name: "GothamBook", size: bodyFontSize)!
@@ -63,11 +79,12 @@ public class UIComponents {
         })
     }
 
-    static public func createNumberWithImageAndLabel(title: String, imageName: String, bodyFontSize: CGFloat = 66.0, unitsFontSize: CGFloat = 20.0,
+    static public func createNumberWithImageAndLabel(title: String, imageName: String,
+                                                     titleAttrs: [String: AnyObject]? = nil, bodyFontSize: CGFloat = 66.0, unitsFontSize: CGFloat = 20.0,
                                                      labelOnTop: Bool = true, labelFontSize: CGFloat, labelSpacing: CGFloat = 8.0,
                                                      value: Double, unit: String, prefix: String? = nil, suffix: String? = nil) -> UIStackView
     {
-        return UIComponents.createLabelledComponent(title,
+        return UIComponents.createLabelledComponent(title, attrs: titleAttrs,
                                                     labelOnTop: labelOnTop, labelFontSize: labelFontSize, labelSpacing: labelSpacing,
                                                     value: value, constructor:
         { value in
