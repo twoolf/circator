@@ -280,7 +280,7 @@ platform :ios do
       ENV[metadata[1]] = uuid
     }
 
-    gym(scheme: "MetabolicCompass")
+    gym(scheme: "MetabolicCompass", use_legacy_build_api: false, include_bitcode: false, include_symbols: false)
   end
 
   desc "Resign a development archive"
