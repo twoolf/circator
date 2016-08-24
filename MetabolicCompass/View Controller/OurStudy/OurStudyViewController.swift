@@ -341,20 +341,16 @@ public class OurStudyViewController: UIViewController, ChartViewDelegate {
 
             if let label = fullDaysLabel.subviews[1] as? UILabel {
                 if let f = studystats["full_days"] as? Int  {
-                    log.info("STUDY fulls \(f)")
                     label.attributedText = OurStudyViewController.collectedDaysLabelText(f, unit: "days")
                 } else if let s = studystats["full_days"] as? String, f = Int(s) {
-                    log.info("STUDY fulls \(f)")
                     label.attributedText = OurStudyViewController.collectedDaysLabelText(f, unit: "days")
                 }
             }
 
             if let label = partialDaysLabel.subviews[1] as? UILabel {
                 if let p = studystats["partial_days"] as? Int {
-                    log.info("STUDY partials \(p)")
                     label.attributedText = OurStudyViewController.collectedDaysLabelText(p, unit: "days")
                 } else if let s = studystats["partial_days"] as? String, p = Int(s) {
-                    log.info("STUDY partials \(p)")
                     label.attributedText = OurStudyViewController.collectedDaysLabelText(p, unit: "days")
                 }
             }
@@ -400,6 +396,7 @@ public class OurStudyViewController: UIViewController, ChartViewDelegate {
             if value == nil {
                 return defaultValue
             } else {
+                if index == 1 { value = value * 100.0 }
                 let target = pow(10, ceil(log10(value)))
                 return (value, target)
             }
