@@ -101,12 +101,12 @@ public class OurStudyViewController: UIViewController, ChartViewDelegate {
     lazy var fullDaysLabel: UIStackView =
         UIComponents.createNumberLabel(
             "Your Full Days Tracked", titleAttrs: studyLabelAttrs,
-            bodyFontSize: studyBodyFontSize, labelFontSize: studyLabelFontSize-2.0, value: 8.0, unit: "days")
+            bodyFontSize: studyBodyFontSize, labelFontSize: studyLabelFontSize-2.0, value: 0.0, unit: "days")
 
     lazy var partialDaysLabel: UIStackView =
         UIComponents.createNumberLabel(
             "Your Partial Days Tracked", titleAttrs: studyLabelAttrs,
-            bodyFontSize: studyBodyFontSize, labelFontSize: studyLabelFontSize-2.0, value: 11.0, unit: "days")
+            bodyFontSize: studyBodyFontSize, labelFontSize: studyLabelFontSize-2.0, value: 0.0, unit: "days")
 
     lazy var userRankingBadge: UIStackView =
         UIComponents.createNumberWithImageAndLabel(
@@ -321,7 +321,6 @@ public class OurStudyViewController: UIViewController, ChartViewDelegate {
         }
     }
 
-    // TODO: refresh full and partial days
     func refreshStudyStats(payload: AnyObject?) {
         if let response = payload as? [String:AnyObject],
             studystats = response["result"] as? [String:AnyObject]
@@ -339,6 +338,27 @@ public class OurStudyViewController: UIViewController, ChartViewDelegate {
             }
 
             refreshStudyRings(studystats)
+
+            if let label = fullDaysLabel.subviews[1] as? UILabel {
+                if let f = studystats["full_days"] as? Int  {
+                    log.info("STUDY fulls \(f)")
+                    label.attributedText = OurStudyViewController.collectedDaysLabelText(f, unit: "days")
+                } else if let s = studystats["full_days"] as? String, f = Int(s) {
+                    log.info("STUDY fulls \(f)")
+                    label.attributedText = OurStudyViewController.collectedDaysLabelText(f, unit: "days")
+                }
+            }
+
+            if let label = partialDaysLabel.subviews[1] as? UILabel {
+                if let p = studystats["partial_days"] as? Int {
+                    log.info("STUDY partials \(p)")
+                    label.attributedText = OurStudyViewController.collectedDaysLabelText(p, unit: "days")
+                } else if let s = studystats["partial_days"] as? String, p = Int(s) {
+                    log.info("STUDY partials \(p)")
+                    label.attributedText = OurStudyViewController.collectedDaysLabelText(p, unit: "days")
+                }
+            }
+
         } else {
             log.error("Failed to refresh study stats from \(payload)")
         }
@@ -448,5 +468,13 @@ public class OurStudyViewController: UIViewController, ChartViewDelegate {
         aStr.addAttribute(NSFontAttributeName, value: unitFont, range: tailRange)
 
         return aStr
+    }
+
+    class func collectedDaysLabelText(value: Int, unit: String, unitsFontSize: CGFloat = 20.0) -> NSAttributedString {
+        let vString = "\(value)"
+        let aString = NSMutableAttributedString(string: vString + " " + unit)
+        let unitFont = UIFont(name: "GothamBook", size: unitsFontSize)!
+        aString.addAttribute(NSFontAttributeName, value: unitFont, range: NSRange(location:vString.characters.count+1, length: unit.characters.count))
+        return aString
     }
 }

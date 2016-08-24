@@ -163,6 +163,12 @@ class DailyChartModel : NSObject, UITableViewDataSource {
                 } else {
                     return dateString.stringByAppendingString(" nd")
                 }
+            } else if date.day % 10 == 3 {
+                if date.day == 13 {
+                    return dateString.stringByAppendingString(" th")
+                } else {
+                    return dateString.stringByAppendingString(" rd")
+                }
             } else {
                 return dateString.stringByAppendingString(" th")
             }

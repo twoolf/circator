@@ -76,6 +76,13 @@ class UserSettingsViewController: BaseViewController {
 
     static let reminderOptions = [ 2, 4, 6, 8, 12, 24, 48, 72, -1 ]
 
+    // UI Components
+    var hotwordInput: TextFieldRowFormer<FormTextFieldCell>! = nil
+    var syncInput: TextFieldRowFormer<FormTextFieldCell>! = nil
+    var reminderInput: InlinePickerRowFormer<FormInlinePickerCell, Int>! = nil
+    var blackoutStartInput: InlineDatePickerRowFormer<FormInlineDatePickerCell>! = nil
+    var blackoutEndInput: InlineDatePickerRowFormer<FormInlineDatePickerCell>! = nil
+
     override func viewWillAppear(animated: Bool) {
         super.viewWillAppear(animated)
         setupSettings()
@@ -101,14 +108,42 @@ class UserSettingsViewController: BaseViewController {
         blackoutTimes = getNotificationBlackoutTimes()
     }
 
+    func reloadData() {
+        let paragraphStyle = NSMutableParagraphStyle()
+        paragraphStyle.alignment = .Right
+
+        let placeholderAttrs: [String: AnyObject] = [
+            NSForegroundColorAttributeName: UIColor.lightGrayColor(),
+            NSParagraphStyleAttributeName: paragraphStyle
+        ]
+
+        hotwordInput.attributedPlaceholder = NSAttributedString(string: hotword, attributes: placeholderAttrs)
+        syncInput.attributedPlaceholder = NSAttributedString(string: "\(refresh)", attributes: placeholderAttrs)
+
+        if reminder != nil {
+            let index = UserSettingsViewController.reminderOptions.indexOf(reminder)!
+            reminderInput.selectedRow = index
+        }
+
+        blackoutStartInput.date = blackoutTimes[0]
+        blackoutEndInput.date = blackoutTimes[1]
+
+        hotwordInput.update()
+        syncInput.update()
+        reminderInput.update()
+        blackoutStartInput.update()
+        blackoutEndInput.update()
+    }
+
     func dataChanged() -> Bool {
         let partial = hotword == UserManager.sharedManager.getHotWords()
                         && refresh == UserManager.sharedManager.getRefreshFrequency()
 
-        if let times = Defaults.objectForKey(USNBlackoutTimesKey) as? [NSDate] {
-            return !(partial && times == blackoutTimes)
-        }
-        return !partial
+        let savedReminder = Defaults.objectForKey(USNReminderFrequencyKey) as? Int
+        let savedTimes = Defaults.objectForKey(USNBlackoutTimesKey) as? [NSDate]
+
+        return !(partial && (savedReminder == nil ? true : (savedReminder! == reminder))
+                         && (savedTimes == nil ? true : (savedTimes! == blackoutTimes)) )
     }
 
     private func setupNavBar() {
@@ -120,6 +155,7 @@ class UserSettingsViewController: BaseViewController {
 
     func doReset() {
         setupSettings()
+        reloadData()
     }
 
     func doSave() {
@@ -133,12 +169,6 @@ class UserSettingsViewController: BaseViewController {
         if refresh < 30 {
             let tooLowRefresh = "The cloud refresh value must be at least 30 seconds"
             self.showAlert(withMessage: tooLowRefresh, title: "Failed to save settings".localized)
-            return
-        }
-
-        if reminder < 2 {
-            let tooLowReminder = "The notification reminder must be at least 2 hours"
-            self.showAlert(withMessage: tooLowReminder, title: "Failed to save settings".localized)
             return
         }
 
@@ -167,13 +197,16 @@ class UserSettingsViewController: BaseViewController {
     func leftAction(sender: UIBarButtonItem) {
         if dataChanged() {
             let lsConfirmTitle = "Confirm cancel".localized
-            let lsConfirmMessage = "Your changes have not been saved yet. Exit without saving?".localized
+            let lsConfirmMessage = "Your changes have not been saved yet. Continue without saving?".localized
             let confirmAlert = UIAlertController(title: lsConfirmTitle, message: lsConfirmMessage, preferredStyle: UIAlertControllerStyle.Alert)
             confirmAlert.addAction(UIAlertAction(title: "Yes".localized, style: .Default, handler: { (action: UIAlertAction!) in
                 self.doReset()
+                self.toggleEditing(false)
             }))
             confirmAlert.addAction(UIAlertAction(title: "No".localized, style: .Cancel, handler: nil))
             presentViewController(confirmAlert, animated: true, completion: nil)
+        } else {
+            self.toggleEditing(false)
         }
     }
 
@@ -225,22 +258,35 @@ class UserSettingsViewController: BaseViewController {
             }
         }
 
+        hotwordInput = appRows[0]
+        syncInput = appRows[1]
+
         let reminderRow =
-            InlinePickerRowFormer<FormInlinePickerCell, Int!>() {
-                $0.titleLabel.text = "Inline Picker"
+            InlinePickerRowFormer<FormInlinePickerCell, Int>() {
+                $0.backgroundColor = .clearColor()
+                $0.titleLabel.text = "Data Entry Reminder"
                 $0.titleLabel.textColor = .whiteColor()
                 $0.titleLabel.font = UIFont(name: "GothamBook", size: userSettingsFontSize)!
                 $0.displayLabel.textColor = .lightGrayColor()
                 $0.displayLabel.font = UIFont(name: "GothamBook", size: userSettingsFontSize)!
                 }.configure {
                     $0.pickerItems = UserSettingsViewController.reminderOptions.map {
-                        let label = $0 > 24 ? "\($0/24) days" : "\($0) hours"
+                        let label = $0 < 0 ? "Never" : ($0 > 24 ? "\($0/24) days" : "\($0) hours")
                         return InlinePickerItem(title: label, value: $0)
                     }
                     $0.displayEditingColor = .whiteColor()
             }
 
-        reminderRow.onValueChanged { self.toggleEditing(); self.reminder = $0.value }
+        let reminderIndex = self.reminder == nil ? 0 : (UserSettingsViewController.reminderOptions.indexOf(self.reminder) ?? 0)
+        reminderRow.selectedRow = reminderIndex
+        reminderRow.update()
+
+        reminderRow.onValueChanged {
+            self.toggleEditing()
+            self.reminder = $0.value
+        }
+
+        reminderInput = reminderRow
 
         let blackoutTimesRows = ["Blackout Start Time", "Blackout End Time"].enumerate().map { (index, rowName) in
             return InlineDatePickerRowFormer<FormInlineDatePickerCell>() {
@@ -262,6 +308,9 @@ class UserSettingsViewController: BaseViewController {
 
         blackoutTimesRows[0].onDateChanged { self.toggleEditing(); self.blackoutTimes[0] = $0 }
         blackoutTimesRows[1].onDateChanged { self.toggleEditing(); self.blackoutTimes[1] = $0 }
+
+        blackoutStartInput = blackoutTimesRows[0]
+        blackoutEndInput = blackoutTimesRows[1]
 
         var notificationsRows: [RowFormer] = [reminderRow]
         blackoutTimesRows.forEach { notificationsRows.append($0) }

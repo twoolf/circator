@@ -18,6 +18,7 @@ import HTPressableButton
 import AKPickerView_Swift
 import MCCircadianQueries
 
+let EventPickerPressDuration = 0.2
 public let MEMDidUpdateCircadianEvents = "MEMDidUpdateCircadianEvents"
 
 public protocol ManageEventMenuDelegate: class {
@@ -109,7 +110,7 @@ class PickerManager: NSObject, AKPickerViewDelegate, AKPickerViewDataSource, UIG
 
             labels[item].userInteractionEnabled = true
             let press = UILongPressGestureRecognizer(target: self, action: #selector(itemSelected(_:)))
-            press.minimumPressDuration = 0.1
+            press.minimumPressDuration = EventPickerPressDuration
             press.delegate = self
             labels[item].addGestureRecognizer(press)
         }
@@ -1107,7 +1108,8 @@ public class DeleteManager: UITableView, PickerManagerSelectionDelegate {
             log.info("Delete circadian events between \(startDate) \(endDate)")
 
             if let rootVC = UIApplication.sharedApplication().delegate?.window??.rootViewController {
-                let msg = "Are you sure you wish to delete all events in the last \(mins) minutes?"
+                let interval = mins == 60 ? "1 hour" : (mins > 60 ? "\(mins/60) hours" : "\(mins) minutes")
+                let msg = "Are you sure you wish to delete all events in the last \(interval)?"
                 let alertController = UIAlertController(title: "", message: msg, preferredStyle: .Alert)
 
                 let cancelAction = UIAlertAction(title: "Cancel", style: .Cancel) { (alertAction: UIAlertAction!) in

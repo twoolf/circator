@@ -156,24 +156,28 @@ class AppDelegate: UIResponder, UIApplicationDelegate, WCSessionDelegate {
         if let settings = UIApplication.sharedApplication().currentUserNotificationSettings() {
             if settings.types != .None {
                 let reminderFreq = getNotificationReminderFrequency()
-                let blackoutTimes = getNotificationBlackoutTimes()
+                if reminderFreq > 0 {
+                    let blackoutTimes = getNotificationBlackoutTimes()
 
-                let blackoutStartToday = NSDate().startOf(.Day).add(hours: blackoutTimes[0].hour, minutes: blackoutTimes[0].minute)
-                let blackoutEndToday = NSDate().startOf(.Day).add(hours: blackoutTimes[1].hour, minutes: blackoutTimes[1].minute)
+                    let blackoutStartToday = NSDate().startOf(.Day).add(hours: blackoutTimes[0].hour, minutes: blackoutTimes[0].minute)
+                    let blackoutEndToday = NSDate().startOf(.Day).add(hours: blackoutTimes[1].hour, minutes: blackoutTimes[1].minute)
 
-                let noteDate = reminderFreq.hours.fromNow
+                    let noteDate = reminderFreq.hours.fromNow
 
-                if noteDate < blackoutStartToday || noteDate > blackoutEndToday {
-                    UIApplication.sharedApplication().cancelAllLocalNotifications()
-                    let notification = UILocalNotification()
-                    notification.fireDate = noteDate
-                    notification.alertBody = "We greatly value your input in Metabolic Compass. Would you like to contribute to medical research now?"
-                    notification.alertAction = "enter your circadian events"
-                    notification.soundName = UILocalNotificationDefaultSoundName
-                    UIApplication.sharedApplication().scheduleLocalNotification(notification)
-                    log.info("Scheduled local notification for \(notification.fireDate?.toString())")
+                    if noteDate < blackoutStartToday || noteDate > blackoutEndToday {
+                        UIApplication.sharedApplication().cancelAllLocalNotifications()
+                        let notification = UILocalNotification()
+                        notification.fireDate = noteDate
+                        notification.alertBody = "We greatly value your input in Metabolic Compass. Would you like to contribute to medical research now?"
+                        notification.alertAction = "enter your circadian events"
+                        notification.soundName = UILocalNotificationDefaultSoundName
+                        UIApplication.sharedApplication().scheduleLocalNotification(notification)
+                        log.info("Scheduled local notification for \(notification.fireDate?.toString())")
+                    } else {
+                        log.info("Dropping notification for \(noteDate) (in blackout \(blackoutStartToday) \(blackoutEndToday))")
+                    }
                 } else {
-                    log.info("Dropping notification for \(noteDate) (in blackout \(blackoutStartToday) \(blackoutEndToday))")
+                    log.info("Skipping notification, user requested silence")
                 }
             }
         }

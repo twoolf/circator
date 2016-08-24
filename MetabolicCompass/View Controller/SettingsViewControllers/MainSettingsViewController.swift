@@ -139,7 +139,7 @@ class MainSettingsViewController: BaseViewController, UICollectionViewDataSource
 
         // settingsItems.append(SettingsItem(title: "Health Access".localized, iconImageName: "icon-settings-health", segueIdentifier: self.segueHealthAccessIdentifier))
 
-        settingsItems.append(SettingsItem(title: "User Settings".localized, iconImageName: "icon-settings-active", segueIdentifier: self.segueUserSettingsIdentifier))
+        settingsItems.append(SettingsItem(title: "User Settings".localized, iconImageName: "icon-settings-gear", segueIdentifier: self.segueUserSettingsIdentifier))
 
         settingsItems.append(SettingsItem(title: "Consent PDF".localized, iconImageName: "icon-consent-document", segueIdentifier: self.segueConsentViewerIdentifier))
 
