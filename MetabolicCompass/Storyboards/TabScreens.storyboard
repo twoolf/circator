@@ -245,7 +245,7 @@
                                 <segments>
                                     <segment title="Comparison"/>
                                     <segment title="Balance"/>
-                                    <segment title="Daily Progress"/>
+                                    <segment title="Body Clock"/>
                                 </segments>
                                 <color key="tintColor" red="0.16078431372549021" green="0.44313725490196076" blue="1" alpha="1" colorSpace="calibratedRGB"/>
                                 <connections>
