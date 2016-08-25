@@ -12,6 +12,7 @@ import HealthKit
 import MetabolicCompassKit
 import AKPickerView_Swift
 import SwiftyUserDefaults
+import Async
 
 class CorrelationChartsViewController: UIViewController, UITableViewDelegate, UITableViewDataSource {
     //MARK: - IB VARS
@@ -151,17 +152,20 @@ class CorrelationChartsViewController: UIViewController, UITableViewDelegate, UI
         secondType = appearanceProvider.titleForAnalysisChartOfType(secondType).string
 
         let titleString = firstType
-        (scatterCh.chartTitleLabel.text, correlCh.chartTitleLabel.text) = (secondType, secondType)
-        (scatterCh.subtitleLabel.text, correlCh.subtitleLabel.text) = (titleString, titleString)
+        (scatterCh.chartTitleLabel.text, correlCh.chartTitleLabel.text) = (secondType, titleString)
+        (scatterCh.subtitleLabel.text, correlCh.subtitleLabel.text) = (titleString, secondType)
     }
     
     func updateChartData() {
         if ((self.selectedPickerRows[0] >= 0) && (self.selectedPickerRows[1] >= 0)) {
-            scatterCh.chartView.noDataText = "No data exists"
-            correlCh.chartView.noDataText = "No data exists"
+            scatterCh.chartView.noDataText = "No data available"
+            correlCh.chartView.noDataText = "No data available"
+            //loopUpdateChartDataForChartsModel(scatterChartsModel)
             updateChartDataForChartsModel(scatterChartsModel)
+            //loopUpdateChartDataForChartsModel(lineChartsModel)
             updateChartDataForChartsModel(lineChartsModel)
             updateChartTitle()
+            log.info("CORRELATE NEEDS DISPLAY")
         } else {
             scatterCh.chartView.noDataText = "Choose both metrics"
             correlCh.chartView.noDataText = "Choose both metrics"
@@ -180,8 +184,15 @@ class CorrelationChartsViewController: UIViewController, UITableViewDelegate, UI
         scatterCh.chartMinValueLabel.text = ""
         scatterCh.chartMaxValueLabel.text = ""
     }
+
+    func loopUpdateChartDataForChartsModel(model: BarChartModel) {
+        Async.main(after: 0.2) {
+            let retry = self.updateChartDataForChartsModel(model)
+            if retry { self.loopUpdateChartDataForChartsModel(model) }
+        }
+    }
     
-    func updateChartDataForChartsModel(model: BarChartModel) {
+    func updateChartDataForChartsModel(model: BarChartModel) -> Bool {
         
         var dataSets = [IChartDataSet]()
         
@@ -190,7 +201,7 @@ class CorrelationChartsViewController: UIViewController, UITableViewDelegate, UI
         for selectedRow in selectedPickerRows {
             if selectedRow == -1 {
                 resetAllCharts()
-                return
+                return false
             }
             let pickerDataArray = pickerData[0]
             let type = pickerDataArray[selectedRow]
@@ -198,17 +209,19 @@ class CorrelationChartsViewController: UIViewController, UITableViewDelegate, UI
             let key = typeToShow + "\((model.rangeType.rawValue))"
             let chartData = model.typesChartData[key]
             if (chartData == nil) {
+                log.info("CORRELATE no dataset found for \(key)")
                 resetAllCharts()
-                return
+                return true
             }
             xValues = (chartData?.xVals)!
             dataSets.append((chartData?.dataSets[0])!)
+            log.info("CORRELATE found dataset for \(key)")
         }
         
         for dSet in dataSets {
             if dSet.entryCount < 1 {//min 1 values should exits in
                 resetAllCharts()
-                return
+                return false
             }
         }
         
@@ -219,7 +232,9 @@ class CorrelationChartsViewController: UIViewController, UITableViewDelegate, UI
                 scatterCh.updateLeftAxisWith(chartData?.yMin, maxValue: chartData?.yMax)
                 scatterCh.chartView.data = chartData
                 scatterCh.drawLimitLine()
+                log.info("CORRELATE SCATTER set to \(chartData?.dataSetCount) datasets")
             } else {
+                log.info("CORRELATE SCATTER resetting \(chartData?.yMax) \(chartData?.yMin)")
                 resetAllCharts()
             }
         } else {
@@ -231,10 +246,13 @@ class CorrelationChartsViewController: UIViewController, UITableViewDelegate, UI
                 correlCh.updateMinMaxTitlesWithValues("\(Int(rightChartData.yMin))", maxValue: "\(Int(rightChartData.yMax))")
                 correlCh.drawLimitLine()
                 correlCh.chartView.data = chartData
+                log.info("CORRELATE SERIES set to \(chartData?.dataSetCount) datasets")
             } else {
+                log.info("CORRELATE SERIES resetting \(chartData?.yMax) \(chartData?.yMin)")
                 resetAllCharts()
             }
         }
+        return false
     }
     
     lazy var assistTextField : UITextField = {

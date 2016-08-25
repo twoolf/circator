@@ -141,7 +141,7 @@ class MainTabController: UITabBarController, UITabBarControllerDelegate, ManageE
             self.overlayView = overlay
             //add title for overlay
             let titleLabel = UILabel(frame:CGRectZero)
-            titleLabel.text = "MANAGE EVENTS"
+            titleLabel.text = "YOUR CIRCADIAN RHYTHM"
             titleLabel.font = ScreenManager.appFontOfSize(16)
             titleLabel.textColor = UIColor.colorWithHexString("#ffffff", alpha: 0.6)
             titleLabel.textAlignment = .Center

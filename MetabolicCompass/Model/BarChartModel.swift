@@ -241,90 +241,63 @@ class BarChartModel : NSObject {
         finalDataSet.drawVerticalHighlightIndicatorEnabled = false
         
         //create xAxis labels
-        if let dSet1 = dataSets[0] as? ChartDataSet, let dSet2 = dataSets[1] as? ChartDataSet {
-            //cleanup data sets if one of the dataset has empty values
-            let iterateDataSet = dSet2.yVals.count > dSet1.yVals.count ? dSet2 : dSet1
-            //interate over dataSet that has biggest count of values
-            //if they are equal no metter on which dataset we will make iteration
-            for yVal in iterateDataSet.yVals {
-                //first we should get values for current index of yVal
-                let currentYValueFirstDataSet = dSet1.yValForXIndex(yVal.xIndex)
-                let currentYValueSecondDataSet = dSet2.yValForXIndex(yVal.xIndex)
-                //then we check if any of these values are NaN (so the values for given index doesn't exists)
-                if currentYValueFirstDataSet.isNaN || currentYValueSecondDataSet.isNaN {
-                    //get entries for indexes
-                    //we should check that index of the entry is equal to the yVal index
-                    //see entryForXIndex for explaantion
-                    //finaly we removing entry from dataset that has no pair
-                    let firstSetEntry = dSet1.entryForXIndex(yVal.xIndex)!
-                    if firstSetEntry.xIndex == yVal.xIndex {
-                        dSet1.removeEntry(firstSetEntry)
-                    }
-                    let secondSetEntry = dSet2.entryForXIndex(yVal.xIndex)!
-                    if secondSetEntry.xIndex == yVal.xIndex {
-                        dSet2.removeEntry(secondSetEntry)
-                    }
-                }
+        if var dSet1 = dataSets[0] as? ChartDataSet, var dSet2 = dataSets[1] as? ChartDataSet {
+            let cleanDSet1 = dSet1.yVals.map({ $0.xIndex }).filter({ !dSet1.yValForXIndex($0).isNaN })
+            let cleanDSet2 = dSet2.yVals.map({ $0.xIndex }).filter({ !dSet2.yValForXIndex($0).isNaN })
+            let sortedIndices = Set<Int>(cleanDSet1).intersect(cleanDSet2).sort { $0.0 < $0.1 }
+
+            let lookupXIndex : (ChartDataSet, Int) -> ChartDataEntry? = { (dset, idx) in
+                let entry = dset.entryForXIndex(idx)
+                //log.info("SCATTER MODEL lookup \(idx) \(dset.yVals.map { $0.xIndex}) \(entry)")
+                return entry == nil ? entry : (entry!.xIndex == idx ? entry : nil)
             }
+
+            dSet1 = ChartDataSet(yVals: sortedIndices.flatMap { lookupXIndex(dSet1, $0) })
+            dSet2 = ChartDataSet(yVals: sortedIndices.flatMap { lookupXIndex(dSet2, $0) })
+
+            //log.info("SCATTER MODEL common dataset sizes: \(dSet1.yVals.count) \(dSet2.yVals.count)")
+            //log.info("SCATTER MODEL common datasets: \(dSet1.yVals) \(dSet2.yVals)")
+
             //sort values in the right way
-            dSet1.yVals.sortInPlace({ (firstEntry, secondEntry) -> Bool in
-                firstEntry.value < secondEntry.value
-            })
+            dSet1.yVals.sortInPlace({ $0.0.value < $0.1.value })
+
             //prepare xAxis labels
-            for yValue in dSet1.yVals {
+            xValues = Set<String>(dSet1.yVals.flatMap { yValue in
                 let currentYValue = dSet2.yValForXIndex(yValue.xIndex)
                 if (currentYValue != Double.NaN) {
-                    //chek is number decimal or not
                     let numberIsDecimal = yValue.value - floor(yValue.value) > 0.001
-                    let label: String
-                    if !numberIsDecimal {
-                        label = "\(Int(yValue.value))";
-                    } else {
-                        let value = Double(round(10*yValue.value)/10)
-                        label = "\(value)"
-                    }
-                    if !xValues.contains(label) {//skip repeated values
-                        //they shouldn't be added to the xAxis labels beaceuse they will be grouped into one BarChartEntry
-                        xValues.append(label)
-                    }
+                    return numberIsDecimal ? "\(Double(round(10*yValue.value)/10))" : "\(Int(yValue.value))"
                 }
-            }
-            var repeadetValuesIndexes: [Int] = []
-            var countOfrepeatedValues: Int = 0
-            for (index, yValue) in dSet1.yVals.enumerate() {//iterate over second dataset and find repeated values
-                let newIndex = index + 1 - countOfrepeatedValues
-                let chartEntryAlreadyAdded = repeadetValuesIndexes.contains(yValue.xIndex)
-                if chartEntryAlreadyAdded {//check if we already added this value
-                    //works only for repeated values
-                    continue
+                //log.info("SCATTER MODEL found nan for labelling \(yValue) \(dSet2.yVals)")
+                return nil
+            }).sort { $0.0 < $0.1 }
+
+            let groupByYValue: [Double: [Double]] = dSet1.yVals.reduce([:], combine: { (acc, entry1) in
+                var nacc = acc
+                let entry2 = dSet2.yValForXIndex(entry1.xIndex)
+                if !entry2.isNaN {
+                    nacc.updateValue(((nacc[entry1.value] ?? []) + [entry2]), forKey: entry1.value)
+                } else {
+                    //log.info("SCATTER MODEL found nan for \(entry1) \(dSet2.yVals)")
                 }
-                var entriesArray: [Double] = []
-                var finalChartEntry: BarChartDataEntry?
-                //try to find values that are repeated
-                let filteredYValues = dSet1.yVals.filter({ (entry) -> Bool in
-                    return entry.value == yValue.value
-                })
-                if filteredYValues.count > 1 {//we found values that are repeated
-                    for chartEntry in filteredYValues {
-                        repeadetValuesIndexes.append(chartEntry.xIndex)
-                        let currentYValue = dSet2.yValForXIndex(chartEntry.xIndex)
-                        entriesArray.append(currentYValue)
-                    }
-                    //we need this hack because of calculating x indexes
-                    /*
-                     For example we have three repeated values. So we should skip two indexes
-                     That's why we rounding number of repated values to the closest Int value
-                     */
-                    countOfrepeatedValues = Int (ceil(Double(entriesArray.count)/2))
-                    finalChartEntry = BarChartDataEntry(values: entriesArray, xIndex: newIndex)
-                } else {//we didn't find any repeated values
-                    let currentYValue = dSet2.yValForXIndex(yValue.xIndex)
-                    finalChartEntry = BarChartDataEntry(values: [currentYValue], xIndex: newIndex)
+                return nacc
+            })
+            let sortedByYValue = groupByYValue.sort { $0.0.0 < $0.1.0 }
+
+            //log.info("SCATTER MODEL corr entries \(sortedByYValue)")
+
+            sortedByYValue.enumerate().forEach { (index, yAndXVals) in
+                let values = yAndXVals.1
+                if values.count > 0 {
+                    finalDataSet.addEntry(BarChartDataEntry(values: values, xIndex: index + 1))
+                } else {
+                    //log.info("SCATTER MODEL no entries for \(yAndXVals)")
                 }
-                finalDataSet.addEntry(finalChartEntry!)
             }
         }
-        
+
+        //log.info("SCATTER MODEL final dataset \(xValues.count) \(finalDataSet.entryCount)")
+
         var newValues : [String] = Array()
         newValues.append("")//gap from the left side
         newValues += xValues
@@ -346,7 +319,7 @@ class BarChartModel : NSObject {
 
     // MARK :- Get all data for type
     
-    func getAllDataForCurrentPeriodForSamlpe(qType : HKSampleType,  _chartType: ChartType?) {
+    func getAllDataForCurrentPeriodForSample(qType : HKSampleType,  _chartType: ChartType?, completion: Bool -> Void) {
 
         if #available(iOS 9.3, *) {
             if qType.identifier == HKQuantityTypeIdentifierAppleExerciseTime {
@@ -367,6 +340,7 @@ class BarChartModel : NSObject {
                 if values.count > 0 {
                     self.typesChartData[key] = self.getChartDataForRange(self.rangeType, type: chartType!, values: values[0], minValues: values[1])
                 }
+                completion(values.count > 0)
             }
         } else if type == HKQuantityTypeIdentifierBloodPressureSystolic {
             // We should also get data for HKQuantityTypeIdentifierBloodPressureDiastolic
@@ -377,34 +351,48 @@ class BarChartModel : NSObject {
                                                                               systolicMax: values[0], systolicMin: values[1],
                                                                               diastolicMax: values[2], diastolicMin: values[3])
                 }
+                completion(values.count > 0)
             }
         } else {
             IOSHealthManager.sharedManager.getChartDataForQuantity(qType, inPeriod: self.rangeType) { obj in
                 let values = obj as! [Double]
                 self.typesChartData[key] = self.getChartDataForRange(self.rangeType, type: chartType!, values: values, minValues: nil)
+                completion(values.count > 0)
             }
         }
     }
     
     func gettAllDataForSpecifiedType(chartType: ChartType, completion: () -> Void) {
         resetOperation()
+        let chartGroup = dispatch_group_create()
         for qType in PreviewManager.chartsSampleTypes {
+            dispatch_group_enter(chartGroup)
             _chartDataOperationQueue.addOperationWithBlock({
-                self.getAllDataForCurrentPeriodForSamlpe(qType, _chartType: chartType)
+                self.getAllDataForCurrentPeriodForSample(qType, _chartType: chartType) { _ in
+                    dispatch_group_leave(chartGroup)
+                }
             })
         }
-        addCompletionForOperationQueue(completion)
+        dispatch_group_notify(chartGroup, dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_BACKGROUND, 0)) {
+            self.addCompletionForOperationQueue(completion)
+        }
     }
     
     func getAllDataForCurrentPeriod(completion: () -> Void) {
         //always reset current operation queue before start new one
         resetOperation()
+        let chartGroup = dispatch_group_create()
         for qType in PreviewManager.chartsSampleTypes {
+            dispatch_group_enter(chartGroup)
             _chartDataOperationQueue.addOperationWithBlock({ 
-                self.getAllDataForCurrentPeriodForSamlpe(qType, _chartType: nil)
+                self.getAllDataForCurrentPeriodForSample(qType, _chartType: nil) { _ in
+                    dispatch_group_leave(chartGroup)
+                }
             })
         }
-        addCompletionForOperationQueue(completion)
+        dispatch_group_notify(chartGroup, dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_BACKGROUND, 0)) {
+            self.addCompletionForOperationQueue(completion)
+        }
     }
 
     // MARK :- Chart titles for X

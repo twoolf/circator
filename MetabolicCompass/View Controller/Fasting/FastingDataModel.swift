@@ -28,7 +28,7 @@ public class FastingDataModel : NSObject {
     public var fastExercise: Double = 0.0
 
     public var cumulativeWeeklyFasting: Double = 0.0
-    public var cumulativeWeeklyNonFast: Double = 0.0
+    //public var cumulativeWeeklyNonFast: Double = 0.0
     public var weeklyFastingVariability: Double = 0.0
 
     // Max number of entries to display in the pie chart
@@ -67,6 +67,7 @@ public class FastingDataModel : NSObject {
             dispatch_group_leave(group)
         }
 
+        /*
         dispatch_group_enter(group)
         MCHealthManager.sharedManager.fetchWeeklyFastState { (cFast, cNonFast, error) in
             guard error == nil else {
@@ -79,6 +80,21 @@ public class FastingDataModel : NSObject {
             log.info("WF F/NF STATE result: \(cFast) \(cNonFast)")
             self.cumulativeWeeklyFasting = cFast
             self.cumulativeWeeklyNonFast = cNonFast
+            dispatch_group_leave(group)
+        }
+        */
+
+        dispatch_group_enter(group)
+        MCHealthManager.sharedManager.fetchMaxFastingTimes(1.weeks.ago) { (dailyMax, error) in
+            guard error == nil else {
+                log.error(error)
+                someError.append(error)
+                dispatch_group_leave(group)
+                return
+            }
+
+            self.cumulativeWeeklyFasting = dailyMax.reduce(0.0, combine: { $0 + $1.1 })
+            log.info("WF MAXF result: \(dailyMax) \(self.cumulativeWeeklyFasting)")
             dispatch_group_leave(group)
         }
 
@@ -175,7 +191,7 @@ public class FastingDataModel : NSObject {
         log.info("fastEat: \(self.fastEat)")
         log.info("fastExc: \(self.fastExercise)")
         log.info("cwf: \(self.cumulativeWeeklyFasting)")
-        log.info("cwnf: \(self.cumulativeWeeklyNonFast)")
+        //log.info("cwnf: \(self.cumulativeWeeklyNonFast)")
         log.info("wvf: \(self.weeklyFastingVariability)")
         log.info("sd: \(self.samplesCollected)")
     }
