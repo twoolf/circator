@@ -493,7 +493,7 @@ public class AddManager: UITableView, UITableViewDelegate, UITableViewDataSource
 
     private var quickAddButtons: [SlideButtonArray] = []
 
-    private let addSectionTitles = ["Quick Add Event", "Detailed Event"]
+    private let addSectionTitles = ["Quick Add Activity", "Detailed Activity"]
 
     private let addEventCellIdentifier = "addEventCell"
     private let addEventSectionHeaderCellIdentifier = "addEventSectionHeaderCell"
@@ -903,7 +903,7 @@ public class DeleteManager: UITableView, PickerManagerSelectionDelegate {
     //private var byDateStartButton: MCButton! = nil
     //private var byDateEndButton: MCButton! = nil
 
-    private let delPickerSections = ["Delete All Recent Events", "Delete Events By Date"]
+    private let delPickerSections = ["Delete Recent Activities", "Delete Activities By Date"]
 
     private var notificationView: UIView! = nil
 
@@ -1245,7 +1245,7 @@ public class ManageEventMenu: UIView, PathMenuItemDelegate {
         self.addSubview(startButton!)
 
         let attrs = [NSFontAttributeName: UIFont.systemFontOfSize(17, weight: UIFontWeightRegular)]
-        self.segmenter = UISegmentedControl(items: ["Add events", "Delete events"])
+        self.segmenter = UISegmentedControl(items: ["Add Activity", "Delete Activity"])
         self.segmenter.selectedSegmentIndex = 0
         self.segmenter.setTitleTextAttributes(attrs, forState: .Normal)
         self.segmenter.addTarget(self, action: #selector(segmentChanged(_:)), forControlEvents: .ValueChanged)
