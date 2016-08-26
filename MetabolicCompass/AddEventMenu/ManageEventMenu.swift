@@ -1108,7 +1108,10 @@ public class DeleteManager: UITableView, PickerManagerSelectionDelegate {
             log.info("Delete circadian events between \(startDate) \(endDate)")
 
             if let rootVC = UIApplication.sharedApplication().delegate?.window??.rootViewController {
-                let interval = mins == 60 ? "1 hour" : (mins > 60 ? "\(mins/60) hours" : "\(mins) minutes")
+                var interval = "\(mins) minutes"
+                if mins == 60 { interval = "1 hour" }
+                else if mins % 60 == 0 { interval = "\(mins/60) hours" }
+
                 let msg = "Are you sure you wish to delete all events in the last \(interval)?"
                 let alertController = UIAlertController(title: "", message: msg, preferredStyle: .Alert)
 
