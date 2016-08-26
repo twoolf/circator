@@ -59,12 +59,12 @@ class ContentManager: NSObject {
             self.fetchInitialAggregates()
             self.fetchRecentSamples()
             self.isBackgroundWorkActive = true
+            AccountManager.shared.withHKCalAuth {
+                IOSHealthManager.sharedManager.collectDataForCharts()
+            }
             if !self.isObservationActive {
                 UploadManager.sharedManager.registerUploadObservers()
                 self.isObservationActive = true
-            }
-            AccountManager.shared.withHKCalAuth {
-                IOSHealthManager.sharedManager.collectDataForCharts()
             }
         }
     }

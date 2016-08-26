@@ -106,14 +106,22 @@ private let inputFontSize = ScreenManager.sharedInstance.profileInputFontSize()
     func doConsent() {
         stashedUserId = UserManager.sharedManager.getUserId()
         UserManager.sharedManager.resetFull()
-        ConsentManager.sharedManager.checkConsentWithBaseViewController(self.navigationController!) { [weak self] (consented) -> Void in
-            guard consented else {
+        ConsentManager.sharedManager.checkConsentWithBaseViewController(self.navigationController!) { [weak self] consentAndNames -> Void in
+            guard consentAndNames.0 else {
                 UserManager.sharedManager.resetFull()
                 if let user = self!.stashedUserId {
                     UserManager.sharedManager.setUserId(user)
                 }
                 self!.navigationController?.popViewControllerAnimated(true)
                 return
+            }
+
+            // Note: add 1 to index, due to photo field.
+            if let s = self {
+                let updatedData = consentAndNames.1 != nil || consentAndNames.2 != nil
+                if consentAndNames.1 != nil { s.dataSource.model.setAtItem(itemIndex: s.dataSource.model.firstNameIndex+1, newValue: consentAndNames.1!) }
+                if consentAndNames.2 != nil { s.dataSource.model.setAtItem(itemIndex: s.dataSource.model.lastNameIndex+1, newValue: consentAndNames.2!) }
+                if updatedData { s.collectionView.reloadData() }
             }
         }
     }

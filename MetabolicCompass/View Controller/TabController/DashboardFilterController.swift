@@ -243,23 +243,7 @@ class DashboardFilterController: UIViewController, UITableViewDelegate, UITableV
 
     func addData () {
         let specs = (UserManager.sharedManager.useMetricUnits() ? metricFilterSpecs : imperialFilterSpecs) + commonFilterSpecs
-
         self.data = filterSpecsToItems(specs)
-
-        if #available(iOS 9.3, *) {
-            sectionVisibility.append(true)
-            sectionGestureRecognizers.append(nil)
-
-            self.data.append(DashboardFilterItem(title: "Exercise",
-                items: [DashboardFilterCellData(title: "under 20 minutes",
-                    hkType: HKQuantityTypeIdentifierAppleExerciseTime, hkUnit: HKUnit.minuteUnit(), aggrType: Aggregate.AggAvg, lowerBound: 0, upperBound: 20),
-                    DashboardFilterCellData(title: "between 20-minutes and 1-hour",
-                        hkType: HKQuantityTypeIdentifierAppleExerciseTime, hkUnit: HKUnit.minuteUnit(), aggrType: Aggregate.AggAvg, lowerBound: 20, upperBound: 60),
-                    DashboardFilterCellData(title: "between 1-hour and 3-hours",
-                        hkType: HKQuantityTypeIdentifierAppleExerciseTime, hkUnit: HKUnit.minuteUnit(), aggrType: Aggregate.AggAvg, lowerBound: 60, upperBound: 180),
-                    DashboardFilterCellData(title: "more than 3-hours",
-                        hkType: HKQuantityTypeIdentifierAppleExerciseTime, hkUnit: HKUnit.minuteUnit(), aggrType: Aggregate.AggAvg, lowerBound: 180, upperBound: Int.max)]))
-        }
     }
 
 

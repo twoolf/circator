@@ -320,12 +320,6 @@ class BarChartModel : NSObject {
     // MARK :- Get all data for type
     
     func getAllDataForCurrentPeriodForSample(qType : HKSampleType,  _chartType: ChartType?, completion: Bool -> Void) {
-
-        if #available(iOS 9.3, *) {
-            if qType.identifier == HKQuantityTypeIdentifierAppleExerciseTime {
-                return
-            }
-        }
         
         let type = qType.identifier == HKCorrelationTypeIdentifierBloodPressure ? HKQuantityTypeIdentifierBloodPressureSystolic : qType.identifier
         let chartType = _chartType == nil ? chartTypeForQuantityTypeIdentifier(type) : _chartType

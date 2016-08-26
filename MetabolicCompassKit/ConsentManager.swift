@@ -10,7 +10,7 @@ import ResearchKit
 import Locksmith
 import Async
 
-public typealias ConsentBlock = ((consented: Bool) -> Void)?
+public typealias ConsentBlock = ((consented: Bool, givenName: String?, familyName: String?) -> Void)?
 
 private let ConsentFilePathKey = "CMConsentFileKey"
 private let unnamedAccount = "default"
@@ -46,7 +46,7 @@ public class ConsentManager: NSObject, ORKTaskViewControllerDelegate {
     
     public static let sharedManager = ConsentManager()
     
-    private var consentHandler: ((consented: Bool) -> Void)?
+    private var consentHandler: ((consented: Bool, givenName: String?, familyName: String?) -> Void)?
     
     public func resetConsentFilePath () {
         do {
@@ -397,16 +397,22 @@ public class ConsentManager: NSObject, ORKTaskViewControllerDelegate {
             viewController.presentViewController(taskViewController, animated: true, completion: nil)
             return
         }
-        self.consentHandler?(consented: true)
+        self.consentHandler?(consented: true, givenName: nil, familyName: nil)
     }
    
     // MARK: - Task view controller delegate
     
     public func taskViewController(taskViewController: ORKTaskViewController, didFinishWithReason reason: ORKTaskViewControllerFinishReason, error: NSError?) {
+        var givenName: String? = nil
+        var familyName: String? = nil
         switch reason {
         case .Completed:
             let document = consentDocument.copy() as! ORKConsentDocument
             let signatureResult = taskViewController.result.stepResultForStepIdentifier(String(Identifier.ConsentReviewStep))?.firstResult as! ORKConsentSignatureResult
+
+            givenName = signatureResult.signature?.givenName
+            familyName = signatureResult.signature?.familyName
+
             signatureResult.applyToDocument(document)
             document.makePDFWithCompletionHandler { (data, error) -> Void in
                 guard error == nil else {
@@ -424,7 +430,7 @@ public class ConsentManager: NSObject, ORKTaskViewControllerDelegate {
             break
         }
         taskViewController.dismissViewControllerAnimated(true) {
-            self.consentHandler?(consented: reason == .Completed)
+            self.consentHandler?(consented: reason == .Completed, givenName: givenName, familyName: familyName)
         }
     }
 }
