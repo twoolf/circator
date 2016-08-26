@@ -160,12 +160,9 @@ class CorrelationChartsViewController: UIViewController, UITableViewDelegate, UI
         if ((self.selectedPickerRows[0] >= 0) && (self.selectedPickerRows[1] >= 0)) {
             scatterCh.chartView.noDataText = "No data available"
             correlCh.chartView.noDataText = "No data available"
-            //loopUpdateChartDataForChartsModel(scatterChartsModel)
             updateChartDataForChartsModel(scatterChartsModel)
-            //loopUpdateChartDataForChartsModel(lineChartsModel)
             updateChartDataForChartsModel(lineChartsModel)
             updateChartTitle()
-            log.info("CORRELATE NEEDS DISPLAY")
         } else {
             scatterCh.chartView.noDataText = "Choose both metrics"
             correlCh.chartView.noDataText = "Choose both metrics"
@@ -185,17 +182,11 @@ class CorrelationChartsViewController: UIViewController, UITableViewDelegate, UI
         scatterCh.chartMaxValueLabel.text = ""
     }
 
-    func loopUpdateChartDataForChartsModel(model: BarChartModel) {
-        Async.main(after: 0.2) {
-            let retry = self.updateChartDataForChartsModel(model)
-            if retry { self.loopUpdateChartDataForChartsModel(model) }
-        }
-    }
-    
     func updateChartDataForChartsModel(model: BarChartModel) -> Bool {
-        
+
         var dataSets = [IChartDataSet]()
-        
+        var calcAvg = [Bool]()
+
         var xValues = [String?]()
         
         for selectedRow in selectedPickerRows {
@@ -209,13 +200,18 @@ class CorrelationChartsViewController: UIViewController, UITableViewDelegate, UI
             let key = typeToShow + "\((model.rangeType.rawValue))"
             let chartData = model.typesChartData[key]
             if (chartData == nil) {
-                log.info("CORRELATE no dataset found for \(key)")
                 resetAllCharts()
                 return true
             }
             xValues = (chartData?.xVals)!
             dataSets.append((chartData?.dataSets[0])!)
-            log.info("CORRELATE found dataset for \(key)")
+
+            let asAvg =
+                typeToShow == HKQuantityTypeIdentifierHeartRate ||
+                typeToShow == HKQuantityTypeIdentifierUVExposure ||
+                typeToShow == HKQuantityTypeIdentifierBloodPressureSystolic
+
+            calcAvg.append(asAvg)
         }
         
         for dSet in dataSets {
@@ -226,29 +222,26 @@ class CorrelationChartsViewController: UIViewController, UITableViewDelegate, UI
         }
         
         if (model == scatterChartsModel) {
-            let chartData = model.scatterChartDataWithMultipleDataSets(xValues, dataSets: dataSets)
+            let chartData = model.scatterChartDataWithMultipleDataSets(xValues, dataSets: dataSets, calcAvg: calcAvg)
             if let yMax = chartData?.yMax, yMin = chartData?.yMin where yMax > 0 || yMin > 0 {
                 scatterCh.chartView.data = nil
-                scatterCh.updateLeftAxisWith(chartData?.yMin, maxValue: chartData?.yMax)
+                scatterCh.updateLeftAxisWith(chartData?.yMin, maxValue: chartData?.yMax, minOffsetFactor: 0.05, maxOffsetFactor: 0.05)
                 scatterCh.chartView.data = chartData
                 scatterCh.drawLimitLine()
-                log.info("CORRELATE SCATTER set to \(chartData?.dataSetCount) datasets")
             } else {
-                log.info("CORRELATE SCATTER resetting \(chartData?.yMax) \(chartData?.yMin)")
                 resetAllCharts()
             }
         } else {
-            let chartData = model.lineChartWithMultipleDataSets(xValues, dataSets: dataSets)
-            let rightChartData = LineChartData(xVals: xValues, dataSets: [dataSets[1]])
-            if let yMax = chartData?.yMax, yMin = chartData?.yMin where yMax > 0 || yMin > 0 {
+            let chartData = model.lineChartWithMultipleDataSets(xValues, dataSets: dataSets, calcAvg: calcAvg)
+            if let ds0 = chartData?.dataSets[0], ds1 = chartData?.dataSets[1],
+                   yMax = chartData?.yMax, yMin = chartData?.yMin where yMax > 0 || yMin > 0
+            {
                 correlCh.chartView.data = nil
-                correlCh.updateLeftAxisWith(dataSets[0].yMin, maxValue: dataSets[0].yMax)
-                correlCh.updateMinMaxTitlesWithValues("\(Int(rightChartData.yMin))", maxValue: "\(Int(rightChartData.yMax))")
+                correlCh.updateLeftAxisWith(ds0.yMin, maxValue: ds0.yMax, minOffsetFactor: 0.03, maxOffsetFactor: 0.03)
+                correlCh.updateRightAxisWith(ds1.yMin, maxValue: ds1.yMax, minOffsetFactor: 0.03, maxOffsetFactor: 0.03)
                 correlCh.drawLimitLine()
                 correlCh.chartView.data = chartData
-                log.info("CORRELATE SERIES set to \(chartData?.dataSetCount) datasets")
             } else {
-                log.info("CORRELATE SERIES resetting \(chartData?.yMax) \(chartData?.yMin)")
                 resetAllCharts()
             }
         }

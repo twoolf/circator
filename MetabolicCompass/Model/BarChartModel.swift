@@ -227,9 +227,12 @@ class BarChartModel : NSObject {
         return chartData
     }
     
-    
-    func scatterChartDataWithMultipleDataSets(xVals: [String?], dataSets:[IChartDataSet]) -> ScatterChartData? {
-        
+    // Parameters:
+    // - calcAvg1/2 indicates that for a dataset, we should compute an average for any stacked BarChartDataEntry prior to
+    //   processing for the scatter chart. By default, a BarChartEntry computes a sum for stacked chart entries.
+    func scatterChartDataWithMultipleDataSets(xVals: [String?], dataSets:[IChartDataSet], calcAvg: [Bool])
+        -> ScatterChartData?
+    {
         var xValues : [String] = Array()
         //dataSets[0] yAxis
         //dataSets[1] xAxis
@@ -252,8 +255,27 @@ class BarChartModel : NSObject {
                 return entry == nil ? entry : (entry!.xIndex == idx ? entry : nil)
             }
 
-            dSet1 = ChartDataSet(yVals: sortedIndices.flatMap { lookupXIndex(dSet1, $0) })
-            dSet2 = ChartDataSet(yVals: sortedIndices.flatMap { lookupXIndex(dSet2, $0) })
+            let averageEntry : ChartDataEntry -> ChartDataEntry = { entry in
+                switch entry {
+                case is BarChartDataEntry:
+                    let e = entry as! BarChartDataEntry
+                    if (e.values?.count ?? 0) > 0 {
+                        let sumCount = e.values!.reduce((0.0, 0.0), combine: { (acc, x) in (acc.0 + x, acc.1 + 1) })
+                        let avg = sumCount.1 > 0 ? (sumCount.0 / sumCount.1) : 0
+                        return BarChartDataEntry(values: [avg], xIndex: e.xIndex)
+                    } else {
+                        return entry
+                    }
+
+                default:
+                    return entry
+                }
+            }
+
+            let yVals1 = sortedIndices.flatMap { lookupXIndex(dSet1, $0) }
+            let yVals2 = sortedIndices.flatMap { lookupXIndex(dSet2, $0) }
+            dSet1 = ChartDataSet(yVals: calcAvg[0] ? yVals1.map(averageEntry) : yVals1)
+            dSet2 = ChartDataSet(yVals: calcAvg[1] ? yVals2.map(averageEntry) : yVals2)
 
             //log.info("SCATTER MODEL common dataset sizes: \(dSet1.yVals.count) \(dSet2.yVals.count)")
             //log.info("SCATTER MODEL common datasets: \(dSet1.yVals) \(dSet2.yVals)")
@@ -264,7 +286,7 @@ class BarChartModel : NSObject {
             //prepare xAxis labels
             xValues = Set<String>(dSet1.yVals.flatMap { yValue in
                 let currentYValue = dSet2.yValForXIndex(yValue.xIndex)
-                if (currentYValue != Double.NaN) {
+                if !currentYValue.isNaN {
                     let numberIsDecimal = yValue.value - floor(yValue.value) > 0.001
                     return numberIsDecimal ? "\(Double(round(10*yValue.value)/10))" : "\(Int(yValue.value))"
                 }
@@ -306,14 +328,49 @@ class BarChartModel : NSObject {
         return chartData
     }
     
-    func lineChartWithMultipleDataSets(xVals: [String?], dataSets:[IChartDataSet]) -> LineChartData? {
-        (dataSets[0] as! LineChartDataSet).axisDependency = .Left
-        (dataSets[0] as! LineChartDataSet).colors = [UIColor.whiteColor()]
-        
-        (dataSets[1] as! LineChartDataSet).axisDependency = .Right
-        (dataSets[1] as! LineChartDataSet).colors = [UIColor.redColor()]
+    func lineChartWithMultipleDataSets(xVals: [String?], dataSets:[IChartDataSet], calcAvg: [Bool]) -> LineChartData? {
+        let averageEntry : ChartDataEntry -> ChartDataEntry = { entry in
+            switch entry {
+            case is BarChartDataEntry:
+                let e = entry as! BarChartDataEntry
+                if (e.values?.count ?? 0) > 0 {
+                    let sumCount = e.values!.reduce((0.0, 0.0), combine: { (acc, x) in (acc.0 + x, acc.1 + 1) })
+                    let avg = sumCount.1 > 0 ? (sumCount.0 / sumCount.1) : 0
+                    return BarChartDataEntry(values: [avg], xIndex: e.xIndex)
+                } else {
+                    return entry
+                }
 
-        let chartData = LineChartData(xVals: xVals, dataSets: dataSets)
+            default:
+                return entry
+            }
+        }
+
+        let lineChartDataSetWith : [ChartDataEntry] -> LineChartDataSet = { yVals in
+            let lineChartDataSet = LineChartDataSet(yVals: yVals, label: "")
+            lineChartDataSet.colors = [UIColor.whiteColor().colorWithAlphaComponent(0.3)]
+            lineChartDataSet.circleRadius = 3.0
+            lineChartDataSet.drawValuesEnabled = false
+            lineChartDataSet.circleHoleRadius = 1.5
+            lineChartDataSet.circleHoleColor = UIColor(colorLiteralRed: 51.0/255.0, green: 138.0/255.0, blue: 255.0/255.0, alpha: 1.0)
+            lineChartDataSet.circleColors = [UIColor.whiteColor()]
+            lineChartDataSet.drawHorizontalHighlightIndicatorEnabled = false
+            lineChartDataSet.drawVerticalHighlightIndicatorEnabled = false
+            return lineChartDataSet
+        }
+
+        var ds0: LineChartDataSet = dataSets[0] as! LineChartDataSet
+        var ds1: LineChartDataSet = dataSets[1] as! LineChartDataSet
+
+        if calcAvg[0] { ds0 = lineChartDataSetWith(ds0.yVals.map(averageEntry)) }
+        ds0.axisDependency = .Left
+        ds0.colors = [UIColor.whiteColor()]
+
+        if calcAvg[1] { ds1 = lineChartDataSetWith(ds1.yVals.map(averageEntry)) }
+        ds1.axisDependency = .Right
+        ds1.colors = [UIColor.redColor()]
+
+        let chartData = LineChartData(xVals: xVals, dataSets: [ds0, ds1])
         return chartData
     }
 
