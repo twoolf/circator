@@ -493,7 +493,7 @@ public class AddManager: UITableView, UITableViewDelegate, UITableViewDataSource
 
     private var quickAddButtons: [SlideButtonArray] = []
 
-    private let addSectionTitles = ["Quick Add Event", "Detailed Event"]
+    private let addSectionTitles = ["Quick Add Activity", "Detailed Activity"]
 
     private let addEventCellIdentifier = "addEventCell"
     private let addEventSectionHeaderCellIdentifier = "addEventSectionHeaderCell"
@@ -903,7 +903,7 @@ public class DeleteManager: UITableView, PickerManagerSelectionDelegate {
     //private var byDateStartButton: MCButton! = nil
     //private var byDateEndButton: MCButton! = nil
 
-    private let delPickerSections = ["Delete All Recent Events", "Delete Events By Date"]
+    private let delPickerSections = ["Delete Recent Activities", "Delete Activities By Date"]
 
     private var notificationView: UIView! = nil
 
@@ -1108,7 +1108,10 @@ public class DeleteManager: UITableView, PickerManagerSelectionDelegate {
             log.info("Delete circadian events between \(startDate) \(endDate)")
 
             if let rootVC = UIApplication.sharedApplication().delegate?.window??.rootViewController {
-                let interval = mins == 60 ? "1 hour" : (mins > 60 ? "\(mins/60) hours" : "\(mins) minutes")
+                var interval = "\(mins) minutes"
+                if mins == 60 { interval = "1 hour" }
+                else if mins % 60 == 0 { interval = "\(mins/60) hours" }
+
                 let msg = "Are you sure you wish to delete all events in the last \(interval)?"
                 let alertController = UIAlertController(title: "", message: msg, preferredStyle: .Alert)
 
@@ -1242,7 +1245,7 @@ public class ManageEventMenu: UIView, PathMenuItemDelegate {
         self.addSubview(startButton!)
 
         let attrs = [NSFontAttributeName: UIFont.systemFontOfSize(17, weight: UIFontWeightRegular)]
-        self.segmenter = UISegmentedControl(items: ["Add events", "Delete events"])
+        self.segmenter = UISegmentedControl(items: ["Add Activity", "Delete Activity"])
         self.segmenter.selectedSegmentIndex = 0
         self.segmenter.setTitleTextAttributes(attrs, forState: .Normal)
         self.segmenter.addTarget(self, action: #selector(segmentChanged(_:)), forControlEvents: .ValueChanged)

@@ -200,7 +200,6 @@ class DailyProgressViewController : UIViewController, DailyChartModelProtocol {
                 self.scrollRecentButton.enabled = !(newDate?.isInSameDayAsDate(today) ?? false)
                 self.scrollOlderButton.enabled = true
 
-                log.info("SCROLL recent to \(newDate)")
                 self.dailyChartModel.setEndDate(newDate)
                 self.dailyProgressChartDaysTable.reloadData()
                 self.contentDidUpdate(withDailyProgress: false)
@@ -218,7 +217,6 @@ class DailyProgressViewController : UIViewController, DailyChartModelProtocol {
                 self.scrollOlderButton.enabled = !(newDate?.isInSameDayAsDate(oldest) ?? false)
                 self.scrollRecentButton.enabled = true
 
-                log.info("SCROLL older to \(newDate)")
                 self.dailyChartModel.setEndDate(newDate)
                 self.dailyProgressChartDaysTable.reloadData()
                 self.contentDidUpdate(withDailyProgress: false)

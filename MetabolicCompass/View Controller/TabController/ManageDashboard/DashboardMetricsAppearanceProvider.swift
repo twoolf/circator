@@ -74,14 +74,6 @@ class DashboardMetricsAppearanceProvider: NSObject {
             return UIColor.colorWithHexString("#BA1075")
 
         default:
-            if #available(iOS 9.3, *) {
-                switch sampleType {
-                    case HKQuantityTypeIdentifierAppleExerciseTime:
-                        return UIColor.colorWithHex(SampleGroupColor.sgYelow.rawValue)
-                    default:break
-                }
-
-            }
             return UIColor.whiteColor()
             
         }
@@ -141,13 +133,6 @@ class DashboardMetricsAppearanceProvider: NSObject {
         case NSLocalizedString("Active Energy Burned", comment: " Active Energy Burned") :
             return HKQuantityTypeIdentifierActiveEnergyBurned
         default:
-            if #available(iOS 9.3, *) {
-                switch string {
-                case NSLocalizedString("Exercise", comment: "Exercise duration") :
-                    return HKQuantityTypeIdentifierAppleExerciseTime
-                default:break
-                }
-            }
             return ""
         }
     }
@@ -206,13 +191,6 @@ class DashboardMetricsAppearanceProvider: NSObject {
         case HKQuantityTypeIdentifierActiveEnergyBurned:
             return NSLocalizedString("Active Energy Burned", comment: " Active Energy Burned")
         default:
-            if #available(iOS 9.3, *) {
-                switch sampleType {
-                    case HKQuantityTypeIdentifierAppleExerciseTime:
-                        return NSLocalizedString("Exercise", comment: "Exercise duration")
-                    default:break
-                }
-            }
             return ""
         }
     }
@@ -267,13 +245,6 @@ class DashboardMetricsAppearanceProvider: NSObject {
         case HKQuantityTypeIdentifierDietarySodium:
             return NSLocalizedString("Salt", comment: "Salt")
         default:
-            if #available(iOS 9.3, *) {
-                switch sampleType {
-                case HKQuantityTypeIdentifierAppleExerciseTime:
-                    return NSLocalizedString("Exercise", comment: "Exercise duration")
-                default:break
-                }
-            }
             return ""
         }
     }
@@ -344,13 +315,6 @@ class DashboardMetricsAppearanceProvider: NSObject {
         case HKQuantityTypeIdentifierDietarySodium:
             return "icon-salt"
         default:
-            if #available(iOS 9.3, *) {
-                switch sampleType {
-                    case HKQuantityTypeIdentifierAppleExerciseTime:
-                        return "icon-exercices"
-                    default:break
-                }
-            }
             return ""
         }
     }

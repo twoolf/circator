@@ -685,26 +685,39 @@ public class UploadManager: NSObject {
             UploadManager.sharedManager.cleanPendingUploads()
             UploadManager.sharedManager.retryPendingUploads(true)
 
-            HMConstants.sharedInstance.healthKitTypesToObserve.forEach { (type) in
-                IOSHealthManager.sharedManager.startBackgroundObserverForType(type, getAnchorCallback: UploadManager.sharedManager.getNextAnchor)
-                { (added, deleted, newAnchor, error, completion) -> Void in
-                    guard error == nil else {
-                        log.error("Failed to register observers: \(error)")
-                        completion()
-                        return
-                    }
+            let splitArray: (Int, [HKSampleType]) -> [[HKSampleType]] = { (chunkSize, arr) in
+                0.stride(to: arr.count, by: 5).map { startIndex in
+                    let endIndex = startIndex.advancedBy(5, limit: arr.count)
+                    return Array(arr[startIndex ..< endIndex])
+                }
+            }
 
-                    var typeId = type.displayText ?? type.identifier
-                    typeId = typeId.isEmpty ? "X\(type.identifier)" : typeId
+            let typeChunks = splitArray(5, HMConstants.sharedInstance.healthKitTypesToObserve)
 
-                    let userAdded = added.filter { return !MCHealthManager.sharedManager.isGeneratedSample($0) }
-                    if ( userAdded.count > 0 || deleted.count > 0 ) {
-                        UploadManager.sharedManager.uploadAnchorCallback(type, anchor: newAnchor, added: userAdded, deleted: deleted)
+            typeChunks.enumerate().forEach { (index, types) in
+                Async.background(after: 0.5 + (Double(index) * 0.2)) {
+                    types.forEach { type in
+                        IOSHealthManager.sharedManager.startBackgroundObserverForType(type, getAnchorCallback: UploadManager.sharedManager.getNextAnchor)
+                        { (added, deleted, newAnchor, error, completion) -> Void in
+                            guard error == nil else {
+                                log.error("Failed to register observers: \(error)")
+                                completion()
+                                return
+                            }
+
+                            var typeId = type.displayText ?? type.identifier
+                            typeId = typeId.isEmpty ? "X\(type.identifier)" : typeId
+
+                            let userAdded = added.filter { return !MCHealthManager.sharedManager.isGeneratedSample($0) }
+                            if ( userAdded.count > 0 || deleted.count > 0 ) {
+                                UploadManager.sharedManager.uploadAnchorCallback(type, anchor: newAnchor, added: userAdded, deleted: deleted)
+                            }
+                            else {
+                                log.info("Skipping upload for \(typeId): \(userAdded.count) insertions \(deleted.count) deletions")
+                            }
+                            completion()
+                        }
                     }
-                    else {
-                        log.info("Skipping upload for \(typeId): \(userAdded.count) insertions \(deleted.count) deletions")
-                    }
-                    completion()
                 }
             }
         }

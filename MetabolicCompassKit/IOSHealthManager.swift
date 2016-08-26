@@ -160,12 +160,6 @@ public class IOSHealthManager: NSObject, WCSessionDelegate {
         for sampleType in PreviewManager.manageChartsSampleTypes {
             let type = sampleType.identifier == HKCorrelationTypeIdentifierBloodPressure ? HKQuantityTypeIdentifierBloodPressureSystolic : sampleType.identifier
 
-            if #available(iOS 9.3, *) {
-                if type == HKQuantityTypeIdentifierAppleExerciseTime {
-                    continue
-                }
-            }
-
             let keyPrefix = type
 
             for period in periods {

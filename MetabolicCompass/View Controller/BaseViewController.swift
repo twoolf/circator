@@ -131,6 +131,11 @@ class BaseViewController: UIViewController, UIGestureRecognizerDelegate {
             var keyboardFrame:CGRect = (userInfo[UIKeyboardFrameBeginUserInfoKey] as! NSValue).CGRectValue()
             keyboardFrame = view.convertRect(keyboardFrame, fromView: nil)
 
+            if keyboardFrame.size.height == 0 {
+                keyboardFrame = (userInfo[UIKeyboardFrameEndUserInfoKey] as! NSValue).CGRectValue()
+                keyboardFrame = view.convertRect(keyboardFrame, fromView: nil)
+            }
+
             var contentInset:UIEdgeInsets = _scrollView.contentInset
             contentInset.bottom = keyboardFrame.size.height
             _scrollView.contentInset = contentInset
@@ -138,6 +143,13 @@ class BaseViewController: UIViewController, UIGestureRecognizerDelegate {
     }
 
     func keyboardWillHide(notification:NSNotification) {
+        switch scrollView {
+        case is UICollectionView:
+            log.info("CollectionView hiding keyboard")
+        default:
+            ()
+        }
+
         if let _scrollView = scrollView {
             let contentInset:UIEdgeInsets = UIEdgeInsetsZero
             _scrollView.contentInset = contentInset

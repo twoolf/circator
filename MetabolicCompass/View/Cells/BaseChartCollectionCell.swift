@@ -91,24 +91,26 @@ class BaseChartCollectionCell: UICollectionViewCell {
         chart.scaleYEnabled = false
     }
     
-    func updateLeftAxisWith(minValue: Double?, maxValue: Double?) {        
+    func updateLeftAxisWith(minValue: Double?, maxValue: Double?, minOffsetFactor: Double? = nil, maxOffsetFactor: Double? = nil) {
         let leftAxis = chartView.leftAxis
         leftAxis.removeAllLimitLines()
         if let maxValue = maxValue, let minValue = minValue {
-            let topLimitMax = maxValue + (maxValue/3)
+            let maxMultiplier = maxOffsetFactor ?? 1/3
+            let topLimitMax = maxValue + (maxMultiplier == 0 ? 0.0 : maxValue * maxMultiplier)
             let topLimit = ChartLimitLine(limit:topLimitMax)
             topLimit.lineWidth = 1
             topLimit.lineDashLengths = [3.0, 3.0]
             topLimit.lineColor = UIColor.colorWithHexString("#338aff", alpha: 0.4)!
             leftAxis.axisMaxValue = topLimitMax
-            leftAxis.axisMinValue = minValue - (minValue/3)
+            let minMultiplier = minOffsetFactor ?? 1.3
+            leftAxis.axisMinValue = minValue - (minMultiplier == 0 ? 0.0 : minValue * minMultiplier)
             leftAxis.addLimitLine(topLimit)
             
             chartMinValueLabel.text = String(format:"%.0f", leftAxis.axisMinValue)
             chartMaxValueLabel.text = String(format:"%.0f", leftAxis.axisMaxValue)
         }
     }
-    
+
     func updateXAxisWith(xValues:[String?]) {
         let xAxis = chartView.xAxis
         xAxis.removeAllLimitLines()

@@ -15,25 +15,27 @@ class TwoLineCorrelcationCell: LineChartCollectionCell {
     
     @IBOutlet weak var secondaryChartMinValueLabel: UILabel!
     @IBOutlet weak var secondaryChartMaxValueLabel: UILabel!
-    
-    func updateRightAxisWith(minValue: Double?, maxValue: Double?) {
-        let leftAxis = chartView.leftAxis
-        leftAxis.removeAllLimitLines()
+
+    func updateRightAxisWith(minValue: Double?, maxValue: Double?, minOffsetFactor: Double? = nil, maxOffsetFactor: Double? = nil) {
+        let rightAxis = chartView.rightAxis
+        rightAxis.removeAllLimitLines()
         if let maxValue = maxValue, let minValue = minValue {
-            let topLimitMax = maxValue + (maxValue/3)
+            let maxMultiplier = maxOffsetFactor ?? 1/3
+            let topLimitMax = maxValue + (maxMultiplier == 0 ? 0.0 : maxValue * maxMultiplier)
             let topLimit = ChartLimitLine(limit:topLimitMax)
             topLimit.lineWidth = 1
             topLimit.lineDashLengths = [3.0, 3.0]
             topLimit.lineColor = UIColor.colorWithHexString("#338aff", alpha: 0.4)!
-            leftAxis.axisMaxValue = topLimitMax
-            leftAxis.axisMinValue = minValue - (minValue/3)
-            leftAxis.addLimitLine(topLimit)
-            
-            secondaryChartMinValueLabel.text = String(format:"%.0f", leftAxis.axisMinValue)
-            secondaryChartMaxValueLabel.text = String(format:"%.0f", leftAxis.axisMaxValue)
+            rightAxis.axisMaxValue = topLimitMax
+            let minMultiplier = minOffsetFactor ?? 1.3
+            rightAxis.axisMinValue = minValue - (minMultiplier == 0 ? 0.0 : minValue * minMultiplier)
+            rightAxis.addLimitLine(topLimit)
+
+            secondaryChartMinValueLabel.text = String(format:"%.0f", rightAxis.axisMinValue)
+            secondaryChartMaxValueLabel.text = String(format:"%.0f", rightAxis.axisMaxValue)
         }
     }
-    
+
     func updateMinMaxTitlesWithValues(minValue:String, maxValue:String) {
         secondaryChartMinValueLabel.text = minValue
         secondaryChartMaxValueLabel.text = maxValue

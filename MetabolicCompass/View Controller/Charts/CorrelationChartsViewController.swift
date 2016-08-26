@@ -12,6 +12,7 @@ import HealthKit
 import MetabolicCompassKit
 import AKPickerView_Swift
 import SwiftyUserDefaults
+import Async
 
 class CorrelationChartsViewController: UIViewController, UITableViewDelegate, UITableViewDataSource {
     //MARK: - IB VARS
@@ -151,14 +152,14 @@ class CorrelationChartsViewController: UIViewController, UITableViewDelegate, UI
         secondType = appearanceProvider.titleForAnalysisChartOfType(secondType).string
 
         let titleString = firstType
-        (scatterCh.chartTitleLabel.text, correlCh.chartTitleLabel.text) = (secondType, secondType)
-        (scatterCh.subtitleLabel.text, correlCh.subtitleLabel.text) = (titleString, titleString)
+        (scatterCh.chartTitleLabel.text, correlCh.chartTitleLabel.text) = (secondType, titleString)
+        (scatterCh.subtitleLabel.text, correlCh.subtitleLabel.text) = (titleString, secondType)
     }
     
     func updateChartData() {
         if ((self.selectedPickerRows[0] >= 0) && (self.selectedPickerRows[1] >= 0)) {
-            scatterCh.chartView.noDataText = "No data exists"
-            correlCh.chartView.noDataText = "No data exists"
+            scatterCh.chartView.noDataText = "No data available"
+            correlCh.chartView.noDataText = "No data available"
             updateChartDataForChartsModel(scatterChartsModel)
             updateChartDataForChartsModel(lineChartsModel)
             updateChartTitle()
@@ -180,17 +181,18 @@ class CorrelationChartsViewController: UIViewController, UITableViewDelegate, UI
         scatterCh.chartMinValueLabel.text = ""
         scatterCh.chartMaxValueLabel.text = ""
     }
-    
-    func updateChartDataForChartsModel(model: BarChartModel) {
-        
+
+    func updateChartDataForChartsModel(model: BarChartModel) -> Bool {
+
         var dataSets = [IChartDataSet]()
-        
+        var calcAvg = [Bool]()
+
         var xValues = [String?]()
         
         for selectedRow in selectedPickerRows {
             if selectedRow == -1 {
                 resetAllCharts()
-                return
+                return false
             }
             let pickerDataArray = pickerData[0]
             let type = pickerDataArray[selectedRow]
@@ -199,42 +201,51 @@ class CorrelationChartsViewController: UIViewController, UITableViewDelegate, UI
             let chartData = model.typesChartData[key]
             if (chartData == nil) {
                 resetAllCharts()
-                return
+                return true
             }
             xValues = (chartData?.xVals)!
             dataSets.append((chartData?.dataSets[0])!)
+
+            let asAvg =
+                typeToShow == HKQuantityTypeIdentifierHeartRate ||
+                typeToShow == HKQuantityTypeIdentifierUVExposure ||
+                typeToShow == HKQuantityTypeIdentifierBloodPressureSystolic
+
+            calcAvg.append(asAvg)
         }
         
         for dSet in dataSets {
             if dSet.entryCount < 1 {//min 1 values should exits in
                 resetAllCharts()
-                return
+                return false
             }
         }
         
         if (model == scatterChartsModel) {
-            let chartData = model.scatterChartDataWithMultipleDataSets(xValues, dataSets: dataSets)
+            let chartData = model.scatterChartDataWithMultipleDataSets(xValues, dataSets: dataSets, calcAvg: calcAvg)
             if let yMax = chartData?.yMax, yMin = chartData?.yMin where yMax > 0 || yMin > 0 {
                 scatterCh.chartView.data = nil
-                scatterCh.updateLeftAxisWith(chartData?.yMin, maxValue: chartData?.yMax)
+                scatterCh.updateLeftAxisWith(chartData?.yMin, maxValue: chartData?.yMax, minOffsetFactor: 0.05, maxOffsetFactor: 0.05)
                 scatterCh.chartView.data = chartData
                 scatterCh.drawLimitLine()
             } else {
                 resetAllCharts()
             }
         } else {
-            let chartData = model.lineChartWithMultipleDataSets(xValues, dataSets: dataSets)
-            let rightChartData = LineChartData(xVals: xValues, dataSets: [dataSets[1]])
-            if let yMax = chartData?.yMax, yMin = chartData?.yMin where yMax > 0 || yMin > 0 {
+            let chartData = model.lineChartWithMultipleDataSets(xValues, dataSets: dataSets, calcAvg: calcAvg)
+            if let ds0 = chartData?.dataSets[0], ds1 = chartData?.dataSets[1],
+                   yMax = chartData?.yMax, yMin = chartData?.yMin where yMax > 0 || yMin > 0
+            {
                 correlCh.chartView.data = nil
-                correlCh.updateLeftAxisWith(dataSets[0].yMin, maxValue: dataSets[0].yMax)
-                correlCh.updateMinMaxTitlesWithValues("\(Int(rightChartData.yMin))", maxValue: "\(Int(rightChartData.yMax))")
+                correlCh.updateLeftAxisWith(ds0.yMin, maxValue: ds0.yMax, minOffsetFactor: 0.03, maxOffsetFactor: 0.03)
+                correlCh.updateRightAxisWith(ds1.yMin, maxValue: ds1.yMax, minOffsetFactor: 0.03, maxOffsetFactor: 0.03)
                 correlCh.drawLimitLine()
                 correlCh.chartView.data = chartData
             } else {
                 resetAllCharts()
             }
         }
+        return false
     }
     
     lazy var assistTextField : UITextField = {
