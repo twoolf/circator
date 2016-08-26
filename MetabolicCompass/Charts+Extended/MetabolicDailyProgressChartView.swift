@@ -52,6 +52,10 @@ class MetabolicDailyProgressChartView : HorizontalBarChartView, DailyChartModelP
         self.drawValueAboveBarEnabled = true
         self.drawBarShadowEnabled = false
         self.maxVisibleValueCount = 24
+        self.setScaleEnabled(false)
+        self.highlightPerTapEnabled = false
+        self.highlightPerDragEnabled = false
+        self.highlightFullBarEnabled = false
         let xAxis = self.xAxis;
         xAxis.labelPosition = .Bottom;
         xAxis.labelTextColor = UIColor.colorWithHexString("#ffffff", alpha: 0.3)!
