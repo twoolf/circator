@@ -208,7 +208,8 @@ class MainSettingsViewController: BaseViewController, UICollectionViewDataSource
             cell.hasAccessoryView = false
         }
         
-        cell.titleLbl.textColor = ScreenManager.sharedInstance.appUnBrightTextColor()
+        cell.titleLbl.textColor = ScreenManager.sharedInstance.appBrightTextColor()
+        cell.titleLbl.font = cell.titleLbl.font.fontWithSize(16.0)
         
         return cell
     }

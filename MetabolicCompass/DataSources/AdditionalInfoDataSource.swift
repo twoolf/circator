@@ -110,8 +110,7 @@ public class AdditionalInfoDataSource: BaseDataSource {
 
         cell.titleLbl.textColor = selectedTextColor
         cell.inputTxtField.textColor = selectedTextColor
-
-        //cell.smallDescriptionLbl.textColor = selectedTextColor
+        cell.smallDescriptionLbl.textColor = unselectedTextColor
 
         cell.changesHandler = { (cell: UICollectionViewCell, newValue: AnyObject?) -> () in
             if let indexPath = self.collectionView!.indexPathForCell(cell) {

@@ -128,7 +128,7 @@ class LoginViewController: BaseViewController {
                     return
                 }
                 if UserManager.sharedManager.isItFirstLogin() {//if it's first login
-                    if let additionalInfo = UserManager.sharedManager.getAdditoinalProfileData() {//and user has an additional data. we will push it to the server
+                    if let additionalInfo = UserManager.sharedManager.getAdditionalProfileData() {//and user has an additional data. we will push it to the server
                         UserManager.sharedManager.pushProfile(additionalInfo , completion: { _ in
                             UserManager.sharedManager.removeFirstLogin()
                         })
