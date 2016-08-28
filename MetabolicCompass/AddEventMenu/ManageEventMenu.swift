@@ -1201,16 +1201,10 @@ public class ManageEventMenu: UIView, PathMenuItemDelegate {
     }
     
 
-    //MARK: Quick add event table.
-    // public var addTableView: AddEventTable! = nil
-
-    //MARK: Quick delete event table.
-    // public var delTableView: DeleteEventTable! = nil
-
-    //MARK: Add event view.
+    //MARK: Quick add event.
     public var addView: AddManager! = nil
 
-    //MARK: Delete event view.
+    //MARK: Quick delete event.
     public var delView: DeleteManager! = nil
 
     //MARK: Segmented control for add/delete interation
@@ -1285,24 +1279,6 @@ public class ManageEventMenu: UIView, PathMenuItemDelegate {
             return addView
         }
     }
-
-    /*
-    public func getCurrentTable() -> UITableView? {
-        if segmenter.selectedSegmentIndex == 0 {
-            return addTableView
-        } else {
-            return delTableView
-        }
-    }
-
-    public func getOtherTable() -> UITableView! {
-        if segmenter.selectedSegmentIndex == 0 {
-            return delTableView
-        } else {
-            return addTableView
-        }
-    }
-    */
 
     public func hideView(hide: Bool = false) {
         self.segmenter.hidden = hide
@@ -1476,14 +1452,6 @@ public class ManageEventMenu: UIView, PathMenuItemDelegate {
 
     func removeManagersFromSuperview() {
         for sv in subviews {
-            /*
-            if let _ = sv as? AddEventTable {
-                sv.removeFromSuperview()
-            }
-            else if let _ = sv as? DeleteEventTable {
-                sv.removeFromSuperview()
-            }
-            */
             if let _ = sv as? AddManager {
                 sv.removeFromSuperview()
             }

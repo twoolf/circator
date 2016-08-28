@@ -119,7 +119,8 @@ public class IOSHealthManager: NSObject, WCSessionDelegate {
                     (added, deleted, newAnchor, error) -> Void in
 
                     if added.count > 0 || deleted.count > 0 {
-                        MCHealthManager.sharedManager.invalidateCache(type)
+                        let asCircadian = type.identifier == HKWorkoutTypeIdentifier || type.identifier == HKCategoryTypeIdentifierSleepAnalysis
+                        MCHealthManager.sharedManager.invalidateCacheForUpdates(type, added: asCircadian ? added : nil)
                     }
 
                     anchorQueryCallback(added: added, deleted: deleted, newAnchor: newAnchor, error: error, completion: completion)
@@ -148,6 +149,7 @@ public class IOSHealthManager: NSObject, WCSessionDelegate {
     public func collectDataForCharts() {
         log.verbose("Clearing HMAggregateCache expired objects")
         MCHealthManager.sharedManager.aggregateCache.removeExpiredObjects()
+        MCHealthManager.sharedManager.circadianCache.removeExpiredObjects()
 
         let periods: [HealthManagerStatisticsRangeType] = [
             HealthManagerStatisticsRangeType.Week

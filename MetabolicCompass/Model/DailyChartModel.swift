@@ -77,11 +77,25 @@ class DailyChartModel : NSObject, UITableViewDataSource {
             fatalError("Unable to create HealthManager aggregate cache.")
         }
         super.init()
+        NSNotificationCenter.defaultCenter().addObserver(self, selector: #selector(invalidateCache), name: HMDidUpdateCircadianEvents, object: nil)
     }
     
     var daysArray: [NSDate] = { return DailyChartModel.getChartDateRange() }()
     
     var daysStringArray: [String] = { return DailyChartModel.getChartDateRangeStrings() }()
+
+    func invalidateCache(note: NSNotification) {
+        if let info = note.userInfo, dates = info[HMCircadianEventsDateUpdateKey] as? Set<NSDate> {
+            if dates.count > 0 {
+                for date in dates {
+                    let cacheKey = "\(date.month)_\(date.day)_\(date.year)"
+                    log.info("Invalidating daily progress cache for \(cacheKey)")
+                    cachedDailyProgress.removeObjectForKey(cacheKey)
+                }
+                prepareChartData()
+            }
+        }
+    }
 
     func updateRowHeight (){
         self.daysTableView?.rowHeight = CGRectGetHeight(self.daysTableView!.frame)/7.0
@@ -507,5 +521,10 @@ class DailyChartModel : NSObject, UITableViewDataSource {
 
     func toggleHighlightFasting() {
         self.highlightFasting = !self.highlightFasting
+    }
+
+    //MARK: Deinit
+    deinit {
+        NSNotificationCenter.defaultCenter().removeObserver(self)
     }
 }

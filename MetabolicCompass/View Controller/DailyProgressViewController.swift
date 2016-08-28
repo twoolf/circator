@@ -71,6 +71,8 @@ class DailyProgressViewController : UIViewController, DailyChartModelProtocol {
 
     private var updateContentWithAnimation = true
 
+    private var loadStart: NSDate! = nil
+
     //MARK: View life circle
     
     override func viewDidLoad() {
@@ -148,6 +150,7 @@ class DailyProgressViewController : UIViewController, DailyChartModelProtocol {
         Async.main {
             if self.activityIndicator != nil {
                 self.activityIndicator.startAnimating()
+                self.loadStart = NSDate()
             }
             self.dailyChartModel.prepareChartData()
             if dailyProgress { self.dailyChartModel.getDailyProgress() }
@@ -159,6 +162,11 @@ class DailyProgressViewController : UIViewController, DailyChartModelProtocol {
     func dataCollectingFinished() {
         Async.main {
             self.activityIndicator.stopAnimating()
+
+            if self.loadStart != nil {
+                log.info("BODY CLOCK query time: \((NSDate().timeIntervalSinceReferenceDate - self.loadStart.timeIntervalSinceReferenceDate))")
+            }
+
             self.dailyProgressChartView.updateChartData(self.updateContentWithAnimation,
                                                         valuesArr: self.dailyChartModel.chartDataArray,
                                                         chartColorsArray: self.dailyChartModel.chartColorsArray)
@@ -224,8 +232,4 @@ class DailyProgressViewController : UIViewController, DailyChartModelProtocol {
         }
     }
 
-    //MARK: Deinit
-    deinit {
-        NSNotificationCenter.defaultCenter().removeObserver(self)
-    }
 }
