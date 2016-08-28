@@ -101,29 +101,33 @@ public class IOSHealthManager: NSObject, WCSessionDelegate {
                     return
                 }
 
-                let tname = type.displayText ?? type.identifier
-                let (needsOldestSamples, anchor, predicate) = getAnchorCallback(type)
-                if needsOldestSamples {
-                    Async.background(after: 0.5) {
-                        log.verbose("Registering bulk ingestion availability for: \(tname)")
-                        MCHealthManager.sharedManager.getOldestSampleDateForType(type) { date in
-                            if let minDate = date {
-                                log.info("Lower bound date for \(type.displayText ?? type.identifier): \(minDate)")
-                                UserManager.sharedManager.setHistoricalRangeMinForType(type.identifier, min: minDate, sync: true)
+                // Run the anchor query as a background task, to support interactive queries for UI
+                // components that run at higher priority.
+                Async.background {
+                    let tname = type.displayText ?? type.identifier
+                    let (needsOldestSamples, anchor, predicate) = getAnchorCallback(type)
+                    if needsOldestSamples {
+                        Async.background(after: 0.5) {
+                            log.verbose("Registering bulk ingestion availability for: \(tname)")
+                            MCHealthManager.sharedManager.getOldestSampleDateForType(type) { date in
+                                if let minDate = date {
+                                    log.info("Lower bound date for \(type.displayText ?? type.identifier): \(minDate)")
+                                    UserManager.sharedManager.setHistoricalRangeMinForType(type.identifier, min: minDate, sync: true)
+                                }
                             }
                         }
                     }
-                }
 
-                self.fetchAnchoredSamplesOfType(type, predicate: predicate, anchor: anchor, maxResults: maxResultsPerQuery, callContinuously: false) {
-                    (added, deleted, newAnchor, error) -> Void in
+                    self.fetchAnchoredSamplesOfType(type, predicate: predicate, anchor: anchor, maxResults: maxResultsPerQuery, callContinuously: false) {
+                        (added, deleted, newAnchor, error) -> Void in
 
-                    if added.count > 0 || deleted.count > 0 {
-                        let asCircadian = type.identifier == HKWorkoutTypeIdentifier || type.identifier == HKCategoryTypeIdentifierSleepAnalysis
-                        MCHealthManager.sharedManager.invalidateCacheForUpdates(type, added: asCircadian ? added : nil)
+                        if added.count > 0 || deleted.count > 0 {
+                            let asCircadian = type.identifier == HKWorkoutTypeIdentifier || type.identifier == HKCategoryTypeIdentifierSleepAnalysis
+                            MCHealthManager.sharedManager.invalidateCacheForUpdates(type, added: asCircadian ? added : nil)
+                        }
+
+                        anchorQueryCallback(added: added, deleted: deleted, newAnchor: newAnchor, error: error, completion: completion)
                     }
-
-                    anchorQueryCallback(added: added, deleted: deleted, newAnchor: newAnchor, error: error, completion: completion)
                 }
             }
             self.observerQueries.append(obsQuery)
