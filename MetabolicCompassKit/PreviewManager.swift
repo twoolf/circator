@@ -130,6 +130,14 @@ public class PreviewManager: NSObject {
         return Dictionary(pairs: previewIcons.map { (k,v) in return (k, UIImage(named: v)!) })
     }()
 
+    public static func resetPreviewTypes() {
+        Defaults.remove(PMSampleTypesKey)
+        Defaults.remove(PMManageSampleTypesKey)
+        Defaults.remove(PMChartsSampleTypesKey)
+        Defaults.remove(PMManageChartsSampleTypesKey)
+        Defaults.remove(PMBalanceSampleTypesKey)
+    }
+
     //MARK: Preview Sample Types
     public static var previewSampleTypes: [HKSampleType] {
         if let rawTypes = Defaults[PMSampleTypesKey] {

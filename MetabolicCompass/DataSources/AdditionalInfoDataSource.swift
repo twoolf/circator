@@ -9,6 +9,8 @@
 import UIKit
 import MetabolicCompassKit
 
+let AdditionalInfoFont = UIFont(name: "GothamBook", size: 16.0)!
+let AdditionalInfoUnitsFont = UIFont(name: "GothamBook", size: 12.0)!
 
 class HeaderView: UICollectionReusableView {
     @IBOutlet weak var titleLbl: UILabel!
@@ -67,6 +69,10 @@ public class AdditionalInfoDataSource: BaseDataSource {
             cell.smallDescriptionLbl.text = item.unitsTitle
             cell.pickerShown = editMode
 
+            cell.titleLbl.font = AdditionalInfoFont
+            cell.smallDescriptionLbl.font = AdditionalInfoUnitsFont
+            cell.valueLbl.font = AdditionalInfoFont
+
             if let value = item.intValue() where value > 0 {
                 cell.setSelectedValue(value)
             } else {
@@ -87,15 +93,15 @@ public class AdditionalInfoDataSource: BaseDataSource {
         cell.titleLbl.text = item.name
         if let strValue = item.stringValue() {
             cell.inputTxtField.text = strValue
-            cell.inputTxtField.font = ScreenManager.appFontOfSize(15.0)
+            //cell.inputTxtField.font = ScreenManager.appFontOfSize(15.0)
         }
         else {
             cell.inputTxtField.text = nil
-            cell.inputTxtField.font = ScreenManager.appFontOfSize(13.0)
+            //cell.inputTxtField.font = ScreenManager.appFontOfSize(13.0)
         }
 
         cell.smallDescriptionLbl.text = item.unitsTitle
-        let attr = [NSForegroundColorAttributeName : unselectedTextColor]
+        let attr = [NSForegroundColorAttributeName : unselectedTextColor, NSFontAttributeName: AdditionalInfoFont]
         cell.inputTxtField.attributedPlaceholder = NSAttributedString(string: item.title, attributes: attr)
 
         var keypadType = UIKeyboardType.Default
@@ -110,8 +116,20 @@ public class AdditionalInfoDataSource: BaseDataSource {
 
         cell.titleLbl.textColor = selectedTextColor
         cell.inputTxtField.textColor = selectedTextColor
+        cell.smallDescriptionLbl.textColor = unselectedTextColor
 
-        //cell.smallDescriptionLbl.textColor = selectedTextColor
+        cell.titleLbl.font = AdditionalInfoFont
+        cell.inputTxtField.font = AdditionalInfoFont
+        cell.smallDescriptionLbl.font = AdditionalInfoUnitsFont
+
+        cell.titleLbl.adjustsFontSizeToFitWidth = true
+        cell.titleLbl.numberOfLines = 0
+
+        cell.inputTxtField.adjustsFontSizeToFitWidth = true
+        cell.inputTxtField.minimumFontSize = 10.0
+
+        cell.smallDescriptionLbl.adjustsFontSizeToFitWidth = true
+        cell.smallDescriptionLbl.numberOfLines = 1
 
         cell.changesHandler = { (cell: UICollectionViewCell, newValue: AnyObject?) -> () in
             if let indexPath = self.collectionView!.indexPathForCell(cell) {

@@ -50,7 +50,7 @@ class BaseCollectionViewCell: UICollectionViewCell, UITextFieldDelegate {
     func addDoneToolbar(toTextField textField: UITextField) {
         let toolbar = UIToolbar()
         toolbar.sizeToFit()
-        let doneBtn = UIBarButtonItem(title: "Done".localized, style: UIBarButtonItemStyle.Plain, target: self, action:  #selector(TitledInputCollectionViewCell.doneAction(_:)))
+        let doneBtn = UIBarButtonItem(title: "Done".localized, style: UIBarButtonItemStyle.Plain, target: self, action:  #selector(BaseCollectionViewCell.doneAction(_:)))
         
         toolbar.setItems([doneBtn], animated: false)
         textField.inputAccessoryView = toolbar

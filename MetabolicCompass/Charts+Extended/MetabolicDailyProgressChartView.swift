@@ -51,7 +51,10 @@ class MetabolicDailyProgressChartView : HorizontalBarChartView, DailyChartModelP
         self.descriptionText = ""
         self.drawValueAboveBarEnabled = true
         self.drawBarShadowEnabled = false
-        self.maxVisibleValueCount = 24
+        self.scaleYEnabled = false
+        self.highlightPerTapEnabled = false
+        self.highlightPerDragEnabled = false
+        self.highlightFullBarEnabled = false
         let xAxis = self.xAxis;
         xAxis.labelPosition = .Bottom;
         xAxis.labelTextColor = UIColor.colorWithHexString("#ffffff", alpha: 0.3)!
@@ -80,6 +83,8 @@ class MetabolicDailyProgressChartView : HorizontalBarChartView, DailyChartModelP
         rightAxis.gridLineWidth = 1
         rightAxis.gridLineDashPhase = 1
         rightAxis.gridLineDashLengths = [3.0]
+        rightAxis.granularityEnabled = true
+        rightAxis.granularity = 1.0
         
         self.legend.formSize = 0;
         self.legend.font = UIFont.systemFontOfSize(0)
@@ -110,12 +115,18 @@ class MetabolicDailyProgressChartView : HorizontalBarChartView, DailyChartModelP
         let data = BarChartData.init(xVals: days, dataSets: dataSetArray)
         data.groupSpace = 75
         self.data = data
-        
+
+        let labelsInHours: Int = 2
+        let maxZoomWidthInHours: CGFloat = 2.0
+        let zoomFactor: CGFloat = 24.0 / maxZoomWidthInHours
+
         let rightAxis = self.rightAxis
         rightAxis.axisMinValue = max(0.0, self.data!.yMin - 1.0)
         rightAxis.axisMaxValue = min(24.0, self.data!.yMax + 1.0)
-        rightAxis.labelCount = Int(rightAxis.axisMaxValue - rightAxis.axisMinValue)
+        rightAxis.labelCount = Int(rightAxis.axisMaxValue - rightAxis.axisMinValue) / labelsInHours
         if animate { self.animate(yAxisDuration: 1.0) }
+
+        self.setVisibleXRange(minXRange: CGFloat(self.xAxis.axisRange) / zoomFactor, maxXRange: CGFloat(self.xAxis.axisRange))
     }
 
     func toggleColors() {

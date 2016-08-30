@@ -32,7 +32,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, WCSessionDelegate {
     {
         configureLogging()
         Fabric.with([Crashlytics.self,Answers.self])
-        
+
         if ((Defaults.objectForKey(firstRunKey) == nil)) {
             UserManager.sharedManager.resetFull()
             Defaults.setObject("firstrun", forKey: firstRunKey)
@@ -40,6 +40,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, WCSessionDelegate {
         }
 
         recycleNotification()
+        UINotifications.configureNotifications()
 
         window = UIWindow(frame: UIScreen.mainScreen().bounds)
         window?.backgroundColor = UIColor.whiteColor()

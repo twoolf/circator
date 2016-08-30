@@ -207,7 +207,7 @@ public class UserManager {
         Defaults.synchronize()
     }
     
-    public func getAdditoinalProfileData () -> [String: AnyObject]? {
+    public func getAdditionalProfileData () -> [String: AnyObject]? {
         return Defaults.objectForKey(UserManager.additionalInfoDataKey + "." + userId!) as? [String: AnyObject]
     }
     

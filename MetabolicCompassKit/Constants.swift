@@ -25,11 +25,13 @@ public struct ProfileFieldData {
     public let unitsTitle: String?
 }
 
+private let unitsTitleBMI = "kg/m2"
+private let unitsTitleBP = "mmHg"
 private let unitsTitleHours = "hrs"
-private let unitsTitleCalories = "cal"
+private let unitsTitleKiloCalories = "kcal"
 private let unitsTitleSteps = "steps"
-private let unitsTitleHeartrate = "bpm"
-private let unitsTitleIntake = "g"
+private let unitsTitleBPM = "bpm"
+private let unitsTitleGrams = "g"
 private let unitsTitleMG = "mg"
 private let unitsTitleML = "ml"
 
@@ -46,8 +48,8 @@ public struct UserProfile {
     public let requiredRange      : Range = 0..<8
     public let updateableReqRange : Range = 4..<8
     public let recommendedRange   : Range = 8..<14
-    public let optionalRange      : Range = 14..<31
-    public let updateableRange    : Range = 4..<31
+    public let optionalRange      : Range = 14..<29
+    public let updateableRange    : Range = 4..<29
 
     public let profileFields : [String]! = [
         "Email",
@@ -58,29 +60,27 @@ public struct UserProfile {
         "Age",
         "Weight",
         "Height",
-        "Usual sleep",
-        "Estimated bmi",
-        "Resting heartrate",
-        "Systolic blood pressure",
-        "Diastolic blood pressure",
-        "Step count",
-        "Active energy",
-        "Awake time w/light",
-        "Fasting",
-        "Eating",
-        "Calorie intake",
-        "Protein intake",
-        "Carbohydrate intake",
-        "Sugar intake",
-        "Fiber intake",
-        "Fat intake",
-        "Saturated fat",
-        "Monounsaturated fat",
-        "Polyunsaturated fat",
-        "Cholesterol",
-        "Salt",
-        "Caffeine",
-        "Water"]
+        "Usual Sleep",
+        "Estimated BMI",
+        "Resting Heart Rate",
+        "Systolic BP",
+        "Diastolic BP",
+        "Step Count",
+        "Energy Expenditure",
+        "Daily Sunlight",
+        "Daily Calorie",
+        "Daily Protein",
+        "Daily Carbohydrates",
+        "Daily Sugar",
+        "Daily Fiber",
+        "Daily Total Fat",
+        "Saturated Fat",
+        "Monounsaturated Fat",
+        "Polyunsaturated Fat",
+        "Daily Cholesterol",
+        "Daily Salt",
+        "Daily Caffeine",
+        "Daily Water"]
 
     public let profilePlaceholders : [String]! = [
         "example@gmail.com",
@@ -98,8 +98,6 @@ public struct UserProfile {
         "80",
         "6000 steps",
         "2750 calories",
-        "12 hours",
-        "12 hours",
         "12 hours",
         "2757(m) or 1957(f)",
         "88.3(m) or 71.3(f)",
@@ -125,29 +123,27 @@ public struct UserProfile {
         "Age"                      : "age",
         "Weight"                   : "body_weight",
         "Height"                   : "body_height",
-        "Usual sleep"              : "sleep_duration",
-        "Estimated bmi"            : "body_mass_index",
-        "Resting heartrate"        : "heart_rate",
-        "Systolic blood pressure"  : "systolic_blood_pressure",
-        "Diastolic blood pressure" : "diastolic_blood_pressure",
-        "Step count"               : "steps",
-        "Active energy"            : "active_energy_burned",
-        "Awake time w/light"       : "uv_exposure",
-        "Fasting"                  : "fasting_duration",
-        "Eating"                   : "meal_duration",
-        "Calorie intake"           : "dietary_energy_consumed",
-        "Caffeine"                 : "dietary_caffeine",
-        "Carbohydrate intake"      : "dietary_carbohydrates",
-        "Cholesterol"              : "dietary_cholesterol",
-        "Monounsaturated fat"      : "dietary_fat_monounsaturated",
-        "Polyunsaturated fat"      : "dietary_fat_polyunsaturated",
-        "Saturated fat"            : "dietary_fat_saturated",
-        "Fat intake"               : "dietary_fat_total",
-        "Fiber intake"             : "dietary_fiber",
-        "Protein intake"           : "dietary_protein",
-        "Salt"                     : "dietary_salt",
-        "Sugar intake"             : "dietary_sugar",
-        "Water"                    : "dietary_water"
+        "Usual Sleep"              : "sleep_duration",
+        "Estimated BMI"            : "body_mass_index",
+        "Resting Heart Rate"       : "heart_rate",
+        "Systolic BP"              : "systolic_blood_pressure",
+        "Diastolic BP"             : "diastolic_blood_pressure",
+        "Step Count"               : "step_count",
+        "Energy Expenditure"       : "active_energy_burned",
+        "Daily Sunlight"           : "uv_exposure",
+        "Daily Calories"           : "dietary_energy_consumed",
+        "Daily Caffeine"           : "dietary_caffeine",
+        "Daily Carbohydrates"      : "dietary_carbohydrates",
+        "Daily Cholesterol"        : "dietary_cholesterol",
+        "Daily Total Fat"          : "dietary_fat_total",
+        "Saturated Fat"            : "dietary_fat_saturated",
+        "Monounsaturated Fat"      : "dietary_fat_monounsaturated",
+        "Polyunsaturated Fat"      : "dietary_fat_polyunsaturated",
+        "Daily Fiber"              : "dietary_fiber",
+        "Daily Protein"            : "dietary_protein",
+        "Daily Salt"               : "dietary_sodium",
+        "Daily Sugar"              : "dietary_sugar",
+        "Daily Water"              : "dietary_water"
     ]
 
     public var updateableMapping : [String: String]! {
@@ -170,33 +166,47 @@ public struct UserProfile {
         fields.append(ProfileFieldData(fieldName: "Weight",                   profileFieldName: "body_weight",                 type: .Int, unitsTitle: nil))
         fields.append(ProfileFieldData(fieldName: "Height",                   profileFieldName: "body_height",                 type: .Int, unitsTitle: nil))
 
-        fields.append(ProfileFieldData(fieldName: "Usual sleep",              profileFieldName: "sleep_duration",              type: .Int, unitsTitle: unitsTitleHours))
-        fields.append(ProfileFieldData(fieldName: "Estimated bmi",            profileFieldName: "body_mass_index",             type: .Int, unitsTitle: nil))
-        fields.append(ProfileFieldData(fieldName: "Resting heartrate",        profileFieldName: "heart_rate",                  type: .Int, unitsTitle: unitsTitleHeartrate))
-        fields.append(ProfileFieldData(fieldName: "Systolic blood pressure",  profileFieldName: "systolic_blood_pressure",     type: .Int, unitsTitle: nil))
-        fields.append(ProfileFieldData(fieldName: "Diastolic blood pressure", profileFieldName: "diastolic_blood_pressure",    type: .Int, unitsTitle: nil))
-        fields.append(ProfileFieldData(fieldName: "Step count",               profileFieldName: "steps",                       type: .Int, unitsTitle: unitsTitleSteps))
+        fields.append(ProfileFieldData(fieldName: "Usual Sleep",              profileFieldName: "sleep_duration",              type: .Int, unitsTitle: unitsTitleHours))
+        fields.append(ProfileFieldData(fieldName: "Estimated BMI",            profileFieldName: "body_mass_index",             type: .Int, unitsTitle: unitsTitleBMI))
+        fields.append(ProfileFieldData(fieldName: "Resting Heart Rate",       profileFieldName: "heart_rate",                  type: .Int, unitsTitle: unitsTitleBPM))
+        fields.append(ProfileFieldData(fieldName: "Systolic BP",              profileFieldName: "systolic_blood_pressure",     type: .Int, unitsTitle: unitsTitleBP))
+        fields.append(ProfileFieldData(fieldName: "Diastolic BP",             profileFieldName: "diastolic_blood_pressure",    type: .Int, unitsTitle: unitsTitleBP))
+        fields.append(ProfileFieldData(fieldName: "Step Count",               profileFieldName: "step_count",                  type: .Int, unitsTitle: unitsTitleSteps))
 
-        fields.append(ProfileFieldData(fieldName: "Active energy",            profileFieldName: "active_energy_burned",        type: .Int, unitsTitle: unitsTitleCalories))
-        fields.append(ProfileFieldData(fieldName: "Awake time w/light",       profileFieldName: "uv_exposure",                 type: .Int, unitsTitle: unitsTitleHours))
-        fields.append(ProfileFieldData(fieldName: "Fasting",                  profileFieldName: "fasting_duration",            type: .Int, unitsTitle: unitsTitleHours))
-        fields.append(ProfileFieldData(fieldName: "Eating",                   profileFieldName: "meal_duration",               type: .Int, unitsTitle: unitsTitleHours))
-        fields.append(ProfileFieldData(fieldName: "Calorie intake",           profileFieldName: "dietary_energy_consumed",     type: .Decimal, unitsTitle: unitsTitleCalories))
-        fields.append(ProfileFieldData(fieldName: "Protein intake",           profileFieldName: "dietary_protein",             type: .Decimal, unitsTitle: unitsTitleIntake))
-        fields.append(ProfileFieldData(fieldName: "Carbohydrate intake",      profileFieldName: "dietary_carbohydrates",       type: .Decimal, unitsTitle: unitsTitleIntake))
-        fields.append(ProfileFieldData(fieldName: "Sugar intake",             profileFieldName: "dietary_sugar",               type: .Decimal, unitsTitle: unitsTitleIntake))
-        fields.append(ProfileFieldData(fieldName: "Fiber intake",             profileFieldName: "dietary_fiber",               type: .Decimal, unitsTitle: unitsTitleIntake))
-        fields.append(ProfileFieldData(fieldName: "Fat intake",               profileFieldName: "dietary_fat_total",           type: .Decimal, unitsTitle: unitsTitleIntake))
-        fields.append(ProfileFieldData(fieldName: "Saturated fat",            profileFieldName: "dietary_fat_saturated",       type: .Decimal, unitsTitle: unitsTitleIntake))
-        fields.append(ProfileFieldData(fieldName: "Monounsaturated fat",      profileFieldName: "dietary_fat_monounsaturated", type: .Decimal, unitsTitle: unitsTitleIntake))
-        fields.append(ProfileFieldData(fieldName: "Polyunsaturated fat",      profileFieldName: "dietary_fat_polyunsaturated", type: .Decimal, unitsTitle: unitsTitleIntake))
-        fields.append(ProfileFieldData(fieldName: "Cholesterol",              profileFieldName: "dietary_cholesterol",         type: .Decimal, unitsTitle: unitsTitleMG))
-        fields.append(ProfileFieldData(fieldName: "Salt",                     profileFieldName: "dietary_salt",                type: .Decimal, unitsTitle: unitsTitleMG))
-        fields.append(ProfileFieldData(fieldName: "Caffeine",                 profileFieldName: "dietary_caffeine",            type: .Decimal, unitsTitle: unitsTitleMG))
-        fields.append(ProfileFieldData(fieldName: "Water",                    profileFieldName: "dietary_water",               type: .Decimal, unitsTitle: unitsTitleML))
+        fields.append(ProfileFieldData(fieldName: "Energy Expenditure",       profileFieldName: "active_energy_burned",        type: .Int, unitsTitle: unitsTitleKiloCalories))
+        fields.append(ProfileFieldData(fieldName: "Daily Sunlight",           profileFieldName: "uv_exposure",                 type: .Int, unitsTitle: unitsTitleHours))
+        fields.append(ProfileFieldData(fieldName: "Daily Calories",           profileFieldName: "dietary_energy_consumed",     type: .Decimal, unitsTitle: unitsTitleKiloCalories))
+        fields.append(ProfileFieldData(fieldName: "Daily Protein",            profileFieldName: "dietary_protein",             type: .Decimal, unitsTitle: unitsTitleGrams))
+        fields.append(ProfileFieldData(fieldName: "Daily Carbohydrates",      profileFieldName: "dietary_carbohydrates",       type: .Decimal, unitsTitle: unitsTitleGrams))
+        fields.append(ProfileFieldData(fieldName: "Daily Sugar",              profileFieldName: "dietary_sugar",               type: .Decimal, unitsTitle: unitsTitleGrams))
+        fields.append(ProfileFieldData(fieldName: "Daily Fiber",              profileFieldName: "dietary_fiber",               type: .Decimal, unitsTitle: unitsTitleGrams))
+        fields.append(ProfileFieldData(fieldName: "Daily Total Fat",          profileFieldName: "dietary_fat_total",           type: .Decimal, unitsTitle: unitsTitleGrams))
+        fields.append(ProfileFieldData(fieldName: "Saturated Fat",            profileFieldName: "dietary_fat_saturated",       type: .Decimal, unitsTitle: unitsTitleGrams))
+        fields.append(ProfileFieldData(fieldName: "Monounsaturated Fat",      profileFieldName: "dietary_fat_monounsaturated", type: .Decimal, unitsTitle: unitsTitleGrams))
+        fields.append(ProfileFieldData(fieldName: "Polyunsaturated Fat",      profileFieldName: "dietary_fat_polyunsaturated", type: .Decimal, unitsTitle: unitsTitleGrams))
+        fields.append(ProfileFieldData(fieldName: "Daily Cholesterol",        profileFieldName: "dietary_cholesterol",         type: .Decimal, unitsTitle: unitsTitleMG))
+        fields.append(ProfileFieldData(fieldName: "Daily Salt",               profileFieldName: "dietary_sodium",              type: .Decimal, unitsTitle: unitsTitleMG))
+        fields.append(ProfileFieldData(fieldName: "Daily Caffeine",           profileFieldName: "dietary_caffeine",            type: .Decimal, unitsTitle: unitsTitleMG))
+        fields.append(ProfileFieldData(fieldName: "Daily Water",              profileFieldName: "dietary_water",               type: .Decimal, unitsTitle: unitsTitleML))
 
         return fields
     }()
+
+    public var customFieldUnits: [String: HKUnit] = [
+        "uv_exposure": HKUnit.countUnit()
+    ]
+
+    public var profileUnitsMapping: [String: HKUnit] = [
+        unitsTitleBMI          : HKUnit.countUnit(),
+        unitsTitleBP           : HKUnit.millimeterOfMercuryUnit(),
+        unitsTitleHours        : HKUnit.hourUnit(),
+        unitsTitleKiloCalories : HKUnit.kilocalorieUnit(),
+        unitsTitleSteps        : HKUnit.countUnit(),
+        unitsTitleBPM          : HKUnit.countUnit().unitDividedByUnit(HKUnit.minuteUnit()),
+        unitsTitleGrams        : HKUnit.gramUnit(),
+        unitsTitleMG           : HKUnit.gramUnitWithMetricPrefix(.Milli),
+        unitsTitleML           : HKUnit.literUnitWithMetricPrefix(.Milli)
+    ]
 }
 
 

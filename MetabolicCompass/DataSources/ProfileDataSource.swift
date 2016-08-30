@@ -9,6 +9,8 @@
 import UIKit
 import MetabolicCompassKit
 
+let ProfileFont = UIFont(name: "GothamBook", size: 16.0)!
+
 class ProfileDataSource: BaseDataSource {
 
     private(set) var editMode = false
@@ -130,8 +132,10 @@ class ProfileDataSource: BaseDataSource {
 
         cell.titleLbl.textColor = unselectedTextColor
         cell.titleLbl.text = field.title
+        cell.titleLbl.font = ProfileFont
 
         cell.inputTxtField.text = field.stringValue()
+        cell.inputTxtField.font = ProfileFont
 
         if field.type == .Weight || field.type == .Height || field.type == .HeightInches {
             cell.separatorVisible = false
@@ -146,6 +150,8 @@ class ProfileDataSource: BaseDataSource {
         else if field.type == .HeightInches {
             cell.textValueCommentLbl.text = model.units.heightInchesTitle ?? ""
         }
+
+        cell.textValueCommentLbl.font = ProfileFont
 
         if let _ = field.iconImageName {
             cell.imageLeadingConstraint?.constant = 16

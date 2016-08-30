@@ -146,7 +146,7 @@ class MainSettingsViewController: BaseViewController, UICollectionViewDataSource
         settingsItems.append(SettingsItem(title: "About Us".localized, iconImageName: "icon-settings-health"))
         self.aboutItemIndex = settingsItems.count - 1
 
-        settingsItems.append(SettingsItem(title: "Privacy Policy".localized, iconImageName: "icon-settings-health"))
+        settingsItems.append(SettingsItem(title: "Privacy Policy".localized, iconImageName: "icon-privacy-shield"))
         self.privacyPolicyItemIndex = settingsItems.count - 1
 
         settingsItems.append(SettingsItem(title: "Log Out".localized, iconImageName: "icon-settings-logout"))
@@ -208,7 +208,8 @@ class MainSettingsViewController: BaseViewController, UICollectionViewDataSource
             cell.hasAccessoryView = false
         }
         
-        cell.titleLbl.textColor = ScreenManager.sharedInstance.appUnBrightTextColor()
+        cell.titleLbl.textColor = ScreenManager.sharedInstance.appBrightTextColor()
+        cell.titleLbl.font = cell.titleLbl.font.fontWithSize(16.0)
         
         return cell
     }

@@ -21,7 +21,7 @@ private let fastingViewTextSize: CGFloat = 24.0
 
 public class FastingViewController : UIViewController, ChartViewDelegate {
 
-//    @IBOutlet weak var fastingView: UIView!
+    var scrollView: UIScrollView!
 
     var activityIndicator: UIActivityIndicatorView! = nil
 
@@ -122,6 +122,13 @@ public class FastingViewController : UIViewController, ChartViewDelegate {
     override public func viewDidLoad() {
         super.viewDidLoad()
 
+        setupView()
+
+        log.warning("OUR STUDY contentSize \(scrollView.contentSize)")
+        log.warning("OUR STUDY view bounds \(view.bounds) \(view.frame) \(scrollView.bounds) \(scrollView.frame)")
+    }
+
+    func setupActivityIndicator() {
         activityIndicator = UIActivityIndicatorView()
 
         activityIndicator.translatesAutoresizingMaskIntoConstraints = false
@@ -134,8 +141,6 @@ public class FastingViewController : UIViewController, ChartViewDelegate {
             activityIndicator.trailingAnchor.constraintEqualToAnchor(view.trailingAnchor)
         ]
         view.addConstraints(constraints)
-
-        setupView()
     }
 
     func setupBackground() {
@@ -153,8 +158,27 @@ public class FastingViewController : UIViewController, ChartViewDelegate {
         self.view.addConstraints(bgConstraints)
     }
 
+    func setupScrollView() {
+        scrollView = UIScrollView()
+        scrollView.userInteractionEnabled = true
+
+        view.addSubview(scrollView)
+
+        scrollView.translatesAutoresizingMaskIntoConstraints = false
+
+        let scrollConstraints: [NSLayoutConstraint] = [
+            view.leadingAnchor.constraintEqualToAnchor(scrollView.leadingAnchor),
+            view.trailingAnchor.constraintEqualToAnchor(scrollView.trailingAnchor),
+            view.topAnchor.constraintEqualToAnchor(scrollView.topAnchor),
+            view.bottomAnchor.constraintEqualToAnchor(scrollView.bottomAnchor)
+        ]
+        view.addConstraints(scrollConstraints)
+    }
+
     func setupView() {
         setupBackground()
+
+        setupScrollView()
 
         refreshPieChart()
 
@@ -182,19 +206,24 @@ public class FastingViewController : UIViewController, ChartViewDelegate {
         }()
 
         stack.translatesAutoresizingMaskIntoConstraints = false
-        self.view.addSubview(stack)
+        scrollView.addSubview(stack)
 
         let constraints: [NSLayoutConstraint] = [
-            stack.topAnchor.constraintEqualToAnchor(self.view.topAnchor),
-            stack.bottomAnchor.constraintEqualToAnchor(self.view.bottomAnchor, constant: -10),
-            stack.leadingAnchor.constraintEqualToAnchor(self.view.leadingAnchor),
-            stack.trailingAnchor.constraintEqualToAnchor(self.view.trailingAnchor),
-            //pieChartStack.heightAnchor.constraintEqualToConstant(300),
+            stack.topAnchor.constraintEqualToAnchor(scrollView.topAnchor),
+            stack.leadingAnchor.constraintEqualToAnchor(view.leadingAnchor),
+            stack.trailingAnchor.constraintEqualToAnchor(view.trailingAnchor),
+            stack.bottomAnchor.constraintEqualToAnchor(scrollView.bottomAnchor),
+            pieChartStack.heightAnchor.constraintEqualToAnchor(pieChartStack.widthAnchor, multiplier: 0.8),
             sleepAwakeBalance.heightAnchor.constraintEqualToConstant(60),
             eatExerciseBalance.heightAnchor.constraintEqualToConstant(60),
             labelStack.heightAnchor.constraintEqualToConstant(80),
         ]
-        self.view.addConstraints(constraints)
+        view.addConstraints(constraints)
+
+        setupActivityIndicator()
+
+        view.setNeedsLayout()
+        view.layoutIfNeeded()
     }
 
     func setupTooltips() {
