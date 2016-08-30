@@ -312,13 +312,15 @@ public class SlideButtonArray: UIView, SlideButtonArrayDelegate {
             ]
         }
 
+        let screenSize = UIScreen.mainScreen().bounds.size
+
         buttonSpecs.enumerate().forEach { (index, spec) in
-            let button = UIButton(frame: CGRectMake(0, 0, 90, 90))
+            let button = UIButton(frame: CGRectMake(0, 0, 60, 60))
             button.tag = self.buttonsTagBase + index
             button.backgroundColor = .clearColor()
 
             button.setImage(UIImage(named: spec.1), forState: .Normal)
-            button.imageView?.contentMode = .Center
+            button.imageView?.contentMode = .ScaleAspectFit
 
             button.setTitle(spec.0, forState: .Normal)
             button.setTitleColor(UIColor.ht_midnightBlueColor(), forState: .Normal)
@@ -326,11 +328,13 @@ public class SlideButtonArray: UIView, SlideButtonArrayDelegate {
             button.titleLabel?.font = UIFont.systemFontOfSize(12.0, weight: UIFontWeightBold)
 
             let imageSize: CGSize = button.imageView!.image!.size
-            button.titleEdgeInsets = UIEdgeInsetsMake(0.0, -imageSize.width, -(0.7 * imageSize.height), 0.0)
+            button.titleEdgeInsets = UIEdgeInsetsMake(0.0, -imageSize.width, -((screenSize.height < 569 ? 0.62 : 0.7) * imageSize.height), 0.0)
 
+            /*
             let labelString = NSString(string: button.titleLabel!.text!)
             let titleSize = labelString.sizeWithAttributes([NSFontAttributeName: button.titleLabel!.font])
             button.imageEdgeInsets = UIEdgeInsetsMake(0.0, 0.0, 0.0, -titleSize.width)
+            */
 
             button.addTarget(self, action: #selector(self.handleTap(_:)), forControlEvents: .TouchUpInside)
 
@@ -377,15 +381,15 @@ public class SlideButtonArray: UIView, SlideButtonArrayDelegate {
             var constraints: [NSLayoutConstraint] = [
                 button.topAnchor.constraintEqualToAnchor(topAnchor),
                 button.heightAnchor.constraintEqualToAnchor(heightAnchor),
+                button.leadingAnchor.constraintEqualToAnchor(index == 0 ? leadingAnchor : buttons[index-1].trailingAnchor, constant: 5.0),
+                button.widthAnchor.constraintEqualToAnchor(widthAnchor, multiplier: 1.0 / CGFloat(numButtons), constant: -5),
                 picker.topAnchor.constraintEqualToAnchor(button.topAnchor),
                 picker.heightAnchor.constraintEqualToAnchor(heightAnchor),
-                button.leadingAnchor.constraintEqualToAnchor(index == 0 ? leadingAnchor : buttons[index-1].trailingAnchor),
-                button.widthAnchor.constraintEqualToAnchor(widthAnchor, multiplier: 1.0 / CGFloat(numButtons), constant: 0.0),
                 picker.leadingAnchor.constraintEqualToAnchor(button.trailingAnchor, constant: -3000),
                 picker.widthAnchor.constraintEqualToAnchor(widthAnchor, multiplier: (CGFloat(numButtons) - 1.0) / CGFloat(numButtons), constant: 0.0)
             ]
 
-            buttonLeadingConstraints.append(constraints[4])
+            buttonLeadingConstraints.append(constraints[2])
             pickerLeadingConstraints.append(constraints[6])
 
             addConstraints(constraints)
@@ -400,7 +404,7 @@ public class SlideButtonArray: UIView, SlideButtonArrayDelegate {
         buttonLeadingConstraints.removeAll()
 
         buttons.enumerate().forEach { (index, button) in
-            let o = (CGFloat(index) * self.frame.width) / CGFloat(numButtons)
+            let o = 5 + (CGFloat(index) * self.frame.width) / CGFloat(numButtons)
             let c = button.leadingAnchor.constraintEqualToAnchor(leadingAnchor, constant: o)
             self.addConstraint(c)
             buttonLeadingConstraints.append(c)
@@ -419,7 +423,7 @@ public class SlideButtonArray: UIView, SlideButtonArrayDelegate {
         }
 
         buttonLeadingConstraints.enumerate().forEach { (index, constraint) in
-            constraint.constant = ( (CGFloat(index) * self.frame.width) / CGFloat(numButtons) )
+            constraint.constant = 5 + ( (CGFloat(index) * self.frame.width) / CGFloat(numButtons) )
         }
 
         pickerLeadingConstraints.forEach { $0.constant = -3000.0 }
@@ -448,7 +452,7 @@ public class SlideButtonArray: UIView, SlideButtonArrayDelegate {
             buttonLeadingConstraints.enumerate().forEach { (index, constraint) in
                 if index == activeButtonIndex {
                     // Set the constraint's offset relative to the button's original anchor.
-                    constraint.constant = 0
+                    constraint.constant = 5.0
                 } else {
                     // Move all other buttons offscreen.
                     constraint.constant += self.frame.width * (CGFloat(numButtons+1) / CGFloat(numButtons))
@@ -1469,8 +1473,11 @@ public class ManageEventMenu: UIView, PathMenuItemDelegate {
             manager.translatesAutoresizingMaskIntoConstraints = false
             insertSubview(manager, belowSubview: startButton!)
 
+            let screenSize = UIScreen.mainScreen().bounds.size
+            let topAnchorOffset: CGFloat = screenSize.height < 569 ? 0.0: 20.0
+
             let managerConstraints: [NSLayoutConstraint] = [
-                manager.topAnchor.constraintEqualToAnchor(segmenter.bottomAnchor, constant: 20),
+                manager.topAnchor.constraintEqualToAnchor(segmenter.bottomAnchor, constant: topAnchorOffset),
                 manager.bottomAnchor.constraintEqualToAnchor(bottomAnchor),
                 manager.leadingAnchor.constraintEqualToAnchor(leadingAnchor),
                 manager.trailingAnchor.constraintEqualToAnchor(trailingAnchor)

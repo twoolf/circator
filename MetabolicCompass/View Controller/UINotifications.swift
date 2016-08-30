@@ -10,6 +10,7 @@ import Foundation
 import MetabolicCompassKit
 import UIKit
 import Async
+import Dodo
 
 let positiveNotificationDelay = 3.0
 let negativeNotificationDelay = 5.0
@@ -20,6 +21,12 @@ let negativeNotificationDelay = 5.0
 - note: used broadly in code-base to report interactions
 */
 public class UINotifications {
+
+    public static func configureNotifications() {
+        let screenSize = UIScreen.mainScreen().bounds.size
+        log.warning("UINOTIFICATIONS screen height \(screenSize.height) \(screenSize.width)")
+        DodoLabelDefaultStyles.font = UIFont(name: "GothamBook", size: ScreenManager.sharedInstance.dodoFontSize())!
+    }
 
     public static func doWelcome(vc: UIViewController, pop: Bool = false, asNav: Bool = false, user: String = "") {
         withPop(vc, pop: pop, asNav: asNav) {

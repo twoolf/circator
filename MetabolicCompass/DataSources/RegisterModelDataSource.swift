@@ -9,6 +9,9 @@
 import UIKit
 import MetabolicCompassKit
 
+let RegisterFont = UIFont(name: "GothamBook", size: 15.0)!
+let RegisterUnitsFont = UIFont(name: "GothamBook", size: 13.0)!
+
 class RegisterModelDataSource: BaseDataSource {
 
     let model = RegistrationModel()
@@ -75,7 +78,7 @@ class RegisterModelDataSource: BaseDataSource {
         let field = model.itemAtIndexPath(indexPath)
 
         if model.units == .Imperial && (field.type == .Weight || field.type == .Height || field.type == .HeightInches) {
-            return field.type == .HeightInches ? smallHeightInchesCellSize() : smallWHCellSize()
+            return field.type == .HeightInches ? smallHeightInchesCellSize() : (field.type == .Height ? smallHeightCellSize() : smallWeightCellSize())
         }
 
         if field.type == .Weight || field.type == .Height {
@@ -108,9 +111,12 @@ class RegisterModelDataSource: BaseDataSource {
         let cell = collectionView!.dequeueReusableCellWithReuseIdentifier(inputTextCellIdentifier, forIndexPath: indexPath) as! InputCollectionViewCell
 
         cell.inputTxtField.textColor = selectedTextColor
-        cell.inputTxtField.attributedPlaceholder = NSAttributedString(string: (field.type == .HeightInches ? "0-11 " : field.title), attributes: [NSForegroundColorAttributeName : unselectedTextColor])
+        cell.inputTxtField.attributedPlaceholder = NSAttributedString(string: (field.type == .HeightInches ? "0-11 " : field.title), attributes: [NSForegroundColorAttributeName : unselectedTextColor, NSFontAttributeName: RegisterFont])
 
         cell.inputTxtField.text = field.stringValue()
+        cell.inputTxtField.font = ProfileFont
+
+        cell.nameLbl.font = RegisterFont
 
         if field.type == .Password {
             cell.inputTxtField.secureTextEntry = true
@@ -135,15 +141,22 @@ class RegisterModelDataSource: BaseDataSource {
                 cell.imageLeadingConstraint?.constant = 0
                 cell.imageWidthConstraint?.constant = 0
                 cell.imageTxtSpacing?.constant = 0
+                cell.nameLbl.font = RegisterUnitsFont
             }
             else if field.type == .Height {
                 cell.imageLeadingConstraint?.constant = 0
                 cell.imageTxtSpacing?.constant = 8
                 cell.labelCellSpacing?.constant = 8
+                cell.nameLbl.font = RegisterUnitsFont
+                cell.inputTxtField.attributedPlaceholder = NSAttributedString(string: field.title, attributes: [NSForegroundColorAttributeName : unselectedTextColor, NSFontAttributeName: RegisterUnitsFont])
+
             }
             else if field.type == .Weight {
-                cell.imageTxtSpacing?.constant = 8
+                //cell.imageTxtSpacing?.constant = 8
                 cell.labelCellSpacing?.constant = 8
+                cell.nameLbl.font = RegisterUnitsFont
+                cell.inputTxtField.attributedPlaceholder = NSAttributedString(string: field.title, attributes: [NSForegroundColorAttributeName : unselectedTextColor, NSFontAttributeName: RegisterUnitsFont])
+
             }
         }
 
@@ -211,8 +224,13 @@ class RegisterModelDataSource: BaseDataSource {
         return size
     }
 
-    private func smallWHCellSize() -> CGSize {
-        let size = CGSizeMake(4*(self.collectionView!.bounds.width - spaceBetweenCellsInOneRow) / 10.0, cellHeight)
+    private func smallWeightCellSize() -> CGSize {
+        let size = CGSizeMake(4.5*(self.collectionView!.bounds.width - spaceBetweenCellsInOneRow) / 10.0, cellHeight)
+        return size
+    }
+
+    private func smallHeightCellSize() -> CGSize {
+        let size = CGSizeMake(3.5*(self.collectionView!.bounds.width - spaceBetweenCellsInOneRow) / 10.0, cellHeight)
         return size
     }
 

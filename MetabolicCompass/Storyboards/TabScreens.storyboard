@@ -900,10 +900,27 @@
             </objects>
             <point key="canvasLocation" x="-473" y="951"/>
         </scene>
-        <!--Our Study View Controller-->
+        <!--Navigation Controller-->
+        <scene sceneID="A7A-a7-OIf">
+            <objects>
+                <navigationController id="Rfs-Yw-xXC" sceneMemberID="viewController">
+                    <simulatedScreenMetrics key="simulatedDestinationMetrics" type="retina4"/>
+                    <navigationBar key="navigationBar" contentMode="scaleToFill" id="vb5-Sl-FwI">
+                        <rect key="frame" x="0.0" y="0.0" width="320" height="44"/>
+                        <autoresizingMask key="autoresizingMask"/>
+                    </navigationBar>
+                    <connections>
+                        <segue destination="1mR-Ww-FLa" kind="relationship" relationship="rootViewController" id="7wr-Zu-cFy"/>
+                    </connections>
+                </navigationController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="GZe-wi-oS0" userLabel="First Responder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="2006" y="2937"/>
+        </scene>
+        <!--OUR STUDY-->
         <scene sceneID="xIc-SM-Zhq">
             <objects>
-                <viewController storyboardIdentifier="ourStudyController" id="1mR-Ww-FLa" customClass="OurStudyViewController" customModule="MetabolicCompass" customModuleProvider="target" sceneMemberID="viewController">
+                <viewController storyboardIdentifier="ourStudyController" automaticallyAdjustsScrollViewInsets="NO" id="1mR-Ww-FLa" customClass="OurStudyViewController" customModule="MetabolicCompass" customModuleProvider="target" sceneMemberID="viewController">
                     <layoutGuides>
                         <viewControllerLayoutGuide type="top" id="JY0-cX-Dju"/>
                         <viewControllerLayoutGuide type="bottom" id="4vK-qA-In8"/>
@@ -913,16 +930,34 @@
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <color key="backgroundColor" red="0.015686274510000001" green="0.1529411765" blue="0.32549019610000002" alpha="1" colorSpace="calibratedRGB"/>
                     </view>
-                    <simulatedScreenMetrics key="simulatedDestinationMetrics" type="retina4"/>
+                    <navigationItem key="navigationItem" title="OUR STUDY" id="hFy-f6-gO8"/>
+                    <simulatedToolbarMetrics key="simulatedBottomBarMetrics"/>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="ytS-Sn-B02" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="1171" y="1647"/>
+            <point key="canvasLocation" x="2400" y="2937"/>
         </scene>
-        <!--Fasting View Controller-->
+        <!--Navigation Controller-->
+        <scene sceneID="KJb-Po-0Uu">
+            <objects>
+                <navigationController id="c6j-bt-kJA" sceneMemberID="viewController">
+                    <simulatedScreenMetrics key="simulatedDestinationMetrics" type="retina4"/>
+                    <navigationBar key="navigationBar" contentMode="scaleToFill" id="Ifq-GS-DVb">
+                        <rect key="frame" x="0.0" y="0.0" width="320" height="44"/>
+                        <autoresizingMask key="autoresizingMask"/>
+                    </navigationBar>
+                    <connections>
+                        <segue destination="OOt-Yz-xLv" kind="relationship" relationship="rootViewController" id="44w-Ua-yMs"/>
+                    </connections>
+                </navigationController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="XAb-Kv-gtj" userLabel="First Responder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="2006" y="2305"/>
+        </scene>
+        <!--FASTING-->
         <scene sceneID="ntx-qv-n4A">
             <objects>
-                <viewController storyboardIdentifier="fastingController" id="OOt-Yz-xLv" customClass="FastingViewController" customModule="MetabolicCompass" customModuleProvider="target" sceneMemberID="viewController">
+                <viewController storyboardIdentifier="fastingController" automaticallyAdjustsScrollViewInsets="NO" id="OOt-Yz-xLv" customClass="FastingViewController" customModule="MetabolicCompass" customModuleProvider="target" sceneMemberID="viewController">
                     <layoutGuides>
                         <viewControllerLayoutGuide type="top" id="UUG-kT-t2J"/>
                         <viewControllerLayoutGuide type="bottom" id="Waf-Zk-DBY"/>
@@ -932,11 +967,12 @@
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <color key="backgroundColor" red="0.015686274509803921" green="0.15294117647058825" blue="0.32549019607843138" alpha="1" colorSpace="calibratedRGB"/>
                     </view>
-                    <simulatedScreenMetrics key="simulatedDestinationMetrics" type="retina4"/>
+                    <navigationItem key="navigationItem" title="FASTING" id="iFG-Xa-XXY"/>
+                    <simulatedToolbarMetrics key="simulatedBottomBarMetrics"/>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="3sS-Tg-d98" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="1609" y="1647"/>
+            <point key="canvasLocation" x="2400" y="2305"/>
         </scene>
         <!--Navigation Controller-->
         <scene sceneID="hEk-hJ-qL1">
@@ -970,7 +1006,7 @@
                             <scrollView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" showsHorizontalScrollIndicator="NO" showsVerticalScrollIndicator="NO" translatesAutoresizingMaskIntoConstraints="NO" id="re9-ut-4Zc">
                                 <rect key="frame" x="6" y="66" width="308" height="458"/>
                                 <subviews>
-                                    <tableView clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" scrollEnabled="NO" dataMode="prototypes" style="plain" rowHeight="50" sectionHeaderHeight="1" sectionFooterHeight="1" translatesAutoresizingMaskIntoConstraints="NO" id="T5m-AF-9w4">
+                                    <tableView clipsSubviews="YES" contentMode="scaleToFill" misplaced="YES" alwaysBounceVertical="YES" scrollEnabled="NO" dataMode="prototypes" style="plain" rowHeight="50" sectionHeaderHeight="1" sectionFooterHeight="1" translatesAutoresizingMaskIntoConstraints="NO" id="T5m-AF-9w4">
                                         <rect key="frame" x="0.0" y="0.0" width="308" height="105"/>
                                         <color key="backgroundColor" red="0.0039215686274509803" green="0.14901960784313725" blue="0.31764705882352939" alpha="1" colorSpace="calibratedRGB"/>
                                         <constraints>

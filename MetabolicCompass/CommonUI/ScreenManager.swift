@@ -31,6 +31,17 @@ public class ScreenManager {
         return _scaleFactor!
     }
 
+    func dodoFontSize() -> CGFloat {
+        let screenSize = UIScreen.mainScreen().bounds.size
+        let screenHeight = screenSize.height
+
+        if (screenHeight < 569) {
+            return 14
+        } else {
+            return 16
+        }
+    }
+
     func labelFontSize() -> CGFloat {
         let screenSize = UIScreen.mainScreen().bounds.size
         let screenHeight = screenSize.height

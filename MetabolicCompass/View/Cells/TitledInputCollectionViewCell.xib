@@ -2,6 +2,7 @@
 <document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="10117" systemVersion="15G31" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES">
     <dependencies>
         <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="10085"/>
+        <capability name="Constraints with non-1.0 multipliers" minToolsVersion="5.1"/>
     </dependencies>
     <customFonts key="customFonts">
         <mutableArray key="gotham-book.ttf">
@@ -30,18 +31,18 @@
                         </state>
                     </button>
                     <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="title" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="li8-sT-6Pn" customClass="AppLabel" customModule="MetabolicCompass" customModuleProvider="target">
-                        <rect key="frame" x="42" y="18" width="29" height="14"/>
+                        <rect key="frame" x="42" y="18" width="145" height="14"/>
                         <fontDescription key="fontDescription" name="GothamBook" family="Gotham Book" pointSize="15"/>
                         <nil key="highlightedColor"/>
                     </label>
-                    <textField opaque="NO" clipsSubviews="YES" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="fill" textAlignment="right" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="SJy-ZB-Y0F" customClass="AppTextField" customModule="MetabolicCompass" customModuleProvider="target">
-                        <rect key="frame" x="75" y="18" width="188" height="14"/>
+                    <textField opaque="NO" clipsSubviews="YES" contentMode="scaleAspectFit" contentHorizontalAlignment="left" contentVerticalAlignment="fill" textAlignment="right" minimumFontSize="10" translatesAutoresizingMaskIntoConstraints="NO" id="SJy-ZB-Y0F" customClass="AppTextField" customModule="MetabolicCompass" customModuleProvider="target">
+                        <rect key="frame" x="191" y="18" width="72" height="14"/>
                         <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
                         <color key="textColor" white="0.33333333333333331" alpha="1" colorSpace="calibratedWhite"/>
                         <fontDescription key="fontDescription" name="GothamBook" family="Gotham Book" pointSize="15"/>
                         <textInputTraits key="textInputTraits"/>
                     </textField>
-                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="units" textAlignment="right" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="I4a-Iw-AWD" customClass="AppLabel" customModule="MetabolicCompass" customModuleProvider="target">
+                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="units" textAlignment="right" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" minimumFontSize="10" adjustsLetterSpacingToFitWidth="YES" translatesAutoresizingMaskIntoConstraints="NO" id="I4a-Iw-AWD" customClass="AppLabel" customModule="MetabolicCompass" customModuleProvider="target">
                         <rect key="frame" x="267" y="18" width="36" height="14"/>
                         <fontDescription key="fontDescription" name="GothamBook" family="Gotham Book" pointSize="15"/>
                         <color key="textColor" white="0.66666666666666663" alpha="1" colorSpace="calibratedWhite"/>
@@ -56,6 +57,7 @@
                 <constraint firstAttribute="trailing" secondItem="I4a-Iw-AWD" secondAttribute="trailing" constant="16" id="8yI-4c-4Cn"/>
                 <constraint firstItem="I4a-Iw-AWD" firstAttribute="centerY" secondItem="Y7Q-Pu-EbM" secondAttribute="centerY" id="L5C-9u-pXO"/>
                 <constraint firstItem="li8-sT-6Pn" firstAttribute="leading" secondItem="Y7Q-Pu-EbM" secondAttribute="trailing" constant="8" id="TCo-UF-hCX"/>
+                <constraint firstItem="SJy-ZB-Y0F" firstAttribute="width" secondItem="li8-sT-6Pn" secondAttribute="width" multiplier="0.5" id="ZAs-gc-zpm"/>
                 <constraint firstItem="Y7Q-Pu-EbM" firstAttribute="leading" secondItem="gTV-IL-0wX" secondAttribute="leading" constant="10" id="bqp-9l-XKz"/>
                 <constraint firstItem="I4a-Iw-AWD" firstAttribute="leading" secondItem="SJy-ZB-Y0F" secondAttribute="trailing" constant="4" id="k0N-g9-bK7"/>
                 <constraint firstItem="Y7Q-Pu-EbM" firstAttribute="centerY" secondItem="gTV-IL-0wX" secondAttribute="centerY" id="o3s-gr-CbB"/>

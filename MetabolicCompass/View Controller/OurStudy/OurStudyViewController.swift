@@ -24,6 +24,8 @@ let studyLabelAttrs: [String: AnyObject] = [
 
 public class OurStudyViewController: UIViewController, ChartViewDelegate {
 
+    var scrollView: UIScrollView!
+
     // Data model.
     var userRank: Int = 1
     var ringValues: [(Double, Double)] = []
@@ -100,12 +102,12 @@ public class OurStudyViewController: UIViewController, ChartViewDelegate {
 
     lazy var fullDaysLabel: UIStackView =
         UIComponents.createNumberLabel(
-            "Your Full Days Tracked", titleAttrs: studyLabelAttrs,
+            "Full Days Tracked", titleAttrs: studyLabelAttrs,
             bodyFontSize: studyBodyFontSize, labelFontSize: studyLabelFontSize-2.0, value: 0.0, unit: "days")
 
     lazy var partialDaysLabel: UIStackView =
         UIComponents.createNumberLabel(
-            "Your Partial Days Tracked", titleAttrs: studyLabelAttrs,
+            "Partial Days Tracked", titleAttrs: studyLabelAttrs,
             bodyFontSize: studyBodyFontSize, labelFontSize: studyLabelFontSize-2.0, value: 0.0, unit: "days")
 
     lazy var userRankingBadge: UIStackView =
@@ -146,9 +148,13 @@ public class OurStudyViewController: UIViewController, ChartViewDelegate {
     override public func viewDidLoad() {
         super.viewDidLoad()
 
-        setupActivityIndicator()
         setupView()
+        setupActivityIndicator()
+
         refreshData()
+
+        log.warning("OUR STUDY contentSize \(scrollView.contentSize)")
+        log.warning("OUR STUDY view bounds \(view.bounds) \(view.frame) \(scrollView.bounds) \(scrollView.frame)")
     }
 
     func setupActivityIndicator() {
@@ -181,9 +187,27 @@ public class OurStudyViewController: UIViewController, ChartViewDelegate {
         self.view.addConstraints(bgConstraints)
     }
 
+    func setupScrollView() {
+        scrollView = UIScrollView()
+        scrollView.userInteractionEnabled = true
+
+        scrollView.translatesAutoresizingMaskIntoConstraints = false
+        view.addSubview(scrollView)
+
+        let scrollConstraints: [NSLayoutConstraint] = [
+            view.leadingAnchor.constraintEqualToAnchor(scrollView.leadingAnchor),
+            view.trailingAnchor.constraintEqualToAnchor(scrollView.trailingAnchor),
+            view.topAnchor.constraintEqualToAnchor(scrollView.topAnchor),
+            view.bottomAnchor.constraintEqualToAnchor(scrollView.bottomAnchor)
+        ]
+        view.addConstraints(scrollConstraints)
+    }
+
     func setupView() {
 
         setupBackground()
+
+        setupScrollView()
 
         let labelStack: UIStackView = {
             let stack = UIStackView(arrangedSubviews: [fullDaysLabel, partialDaysLabel])
@@ -196,22 +220,22 @@ public class OurStudyViewController: UIViewController, ChartViewDelegate {
         phaseProgress.translatesAutoresizingMaskIntoConstraints = false
         userRankingBadge.translatesAutoresizingMaskIntoConstraints = false
         labelStack.translatesAutoresizingMaskIntoConstraints = false
-        self.view.addSubview(phaseProgress)
-        self.view.addSubview(userRankingBadge)
-        self.view.addSubview(labelStack)
+
+        scrollView.addSubview(phaseProgress)
+        scrollView.addSubview(userRankingBadge)
+        scrollView.addSubview(labelStack)
 
         let phaseConstraints: [NSLayoutConstraint] = [
-            phaseProgress.topAnchor.constraintEqualToAnchor(self.view.topAnchor, constant: 10),
-            phaseProgress.leadingAnchor.constraintEqualToAnchor(self.view.leadingAnchor),
-            phaseProgress.trailingAnchor.constraintEqualToAnchor(self.view.trailingAnchor),
-            phaseProgress.heightAnchor.constraintLessThanOrEqualToAnchor(self.view.heightAnchor, multiplier: 0.1),
+            phaseProgress.topAnchor.constraintEqualToAnchor(scrollView.topAnchor, constant: 10),
+            phaseProgress.leadingAnchor.constraintEqualToAnchor(view.leadingAnchor),
+            phaseProgress.trailingAnchor.constraintEqualToAnchor(view.trailingAnchor),
+            phaseProgress.heightAnchor.constraintEqualToAnchor(view.widthAnchor, multiplier: 0.2),
             userRankingBadge.topAnchor.constraintEqualToAnchor(phaseProgress.bottomAnchor, constant: 10),
-            userRankingBadge.leadingAnchor.constraintEqualToAnchor(self.view.leadingAnchor, constant: 10),
-            userRankingBadge.trailingAnchor.constraintEqualToAnchor(self.view.trailingAnchor, constant: -10),
-            userRankingBadge.heightAnchor.constraintEqualToAnchor(self.view.heightAnchor, multiplier: 0.2),
-
+            userRankingBadge.leadingAnchor.constraintEqualToAnchor(view.leadingAnchor, constant: 10),
+            userRankingBadge.trailingAnchor.constraintEqualToAnchor(view.trailingAnchor, constant: -10),
+            userRankingBadge.heightAnchor.constraintEqualToAnchor(view.widthAnchor, multiplier: 0.33)
         ]
-        self.view.addConstraints(phaseConstraints)
+        view.addConstraints(phaseConstraints)
 
         let compositeView = UIView()
         compositeView.translatesAutoresizingMaskIntoConstraints = false
@@ -270,20 +294,22 @@ public class OurStudyViewController: UIViewController, ChartViewDelegate {
             labelFontSize: studyLabelFontSize, labelSpacing: 8.0, value: (), constructor: { _ in return compositeView })
 
         labelledRings.translatesAutoresizingMaskIntoConstraints = false
-        self.view.addSubview(labelledRings)
+        scrollView.addSubview(labelledRings)
 
+        let ringHeightMultiplier: CGFloat = UIScreen.mainScreen().bounds.size.height < 569 ? 1.0 : 0.7
 
         let constraints: [NSLayoutConstraint] = [
             labelledRings.topAnchor.constraintEqualToAnchor(userRankingBadge.bottomAnchor, constant: 20),
-            labelledRings.heightAnchor.constraintGreaterThanOrEqualToAnchor(self.view.heightAnchor, multiplier: 0.2),
-            labelledRings.leadingAnchor.constraintEqualToAnchor(self.view.leadingAnchor),
-            labelledRings.trailingAnchor.constraintEqualToAnchor(self.view.trailingAnchor),
-            labelStack.topAnchor.constraintEqualToAnchor(labelledRings.bottomAnchor, constant: 10),
-            labelStack.bottomAnchor.constraintEqualToAnchor(self.view.bottomAnchor),
-            labelStack.leadingAnchor.constraintEqualToAnchor(self.view.leadingAnchor),
-            labelStack.trailingAnchor.constraintEqualToAnchor(self.view.trailingAnchor),
+            labelledRings.leadingAnchor.constraintEqualToAnchor(view.leadingAnchor),
+            labelledRings.widthAnchor.constraintEqualToAnchor(view.widthAnchor),
+            labelledRings.heightAnchor.constraintEqualToAnchor(view.widthAnchor, multiplier: ringHeightMultiplier),
+            labelStack.topAnchor.constraintEqualToAnchor(labelledRings.bottomAnchor, constant: 40.0),
+            labelStack.bottomAnchor.constraintEqualToAnchor(scrollView.bottomAnchor),
+            labelStack.leadingAnchor.constraintEqualToAnchor(view.leadingAnchor),
+            labelStack.trailingAnchor.constraintEqualToAnchor(view.trailingAnchor),
         ]
-        self.view.addConstraints(constraints)
+
+        view.addConstraints(constraints)
 
         // Tooltips
         let phaseProgressDesc = "This bar shows our progress in meeting its active user goals for the current phase of the study"
@@ -303,13 +329,13 @@ public class OurStudyViewController: UIViewController, ChartViewDelegate {
         userRankingBadge.addGestureRecognizer(userRankingTip.tapRecognizer)
 
         // Adjust middle ring vertical placement.
-        self.view.setNeedsLayout()
-        self.view.layoutIfNeeded()
+        view.setNeedsLayout()
+        view.layoutIfNeeded()
 
         if ring2TopConstraint != nil && rings.count > 0 {
             ring2TopConstraint.constant = -(rings[0].frame.height / 2.5)
         }
-        self.view.layoutIfNeeded()
+        view.layoutIfNeeded()
     }
 
 
