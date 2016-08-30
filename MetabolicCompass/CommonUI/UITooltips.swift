@@ -46,11 +46,13 @@ public class UITooltips : NSObject {
 public class TapTip : NSObject, EasyTipViewDelegate {
     public var visible: Bool = false
     public var tipView: EasyTipView! = nil
-    public var targetView: UIView
+    public var forView: UIView
+    public var withinView: UIView? = nil
     public var tapRecognizer: UITapGestureRecognizer! = nil
 
-    public init(forView view: UIView, text: String, width: CGFloat? = nil, numTaps: Int = 2, numTouches: Int = 1, asTop: Bool = false) {
-        self.targetView = view
+    public init(forView view: UIView, withinView: UIView? = nil, text: String, width: CGFloat? = nil, numTaps: Int = 2, numTouches: Int = 1, asTop: Bool = false) {
+        self.forView = view
+        self.withinView = withinView
         super.init()
 
         var preferences = asTop ? UITooltips.sharedInstance.tipAbove() : UITooltips.sharedInstance.tipBelow()
@@ -66,7 +68,7 @@ public class TapTip : NSObject, EasyTipViewDelegate {
     public func showTip() {
         if !visible {
             visible = true
-            tipView.show(forView: targetView)
+            tipView.show(forView: forView, withinSuperview: withinView)
         }
     }
 

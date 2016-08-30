@@ -227,17 +227,20 @@ public class FastingViewController : UIViewController, ChartViewDelegate {
     }
 
     func setupTooltips() {
-        pieTip = TapTip(forView: pieChart, text: pieTipMsg, numTouches: 2, asTop: false)
+        pieTip = TapTip(forView: pieChart, withinView: scrollView, text: pieTipMsg, numTouches: 2, asTop: false)
         pieChart.addGestureRecognizer(pieTip.tapRecognizer)
 
-        cwfTip = TapTip(forView: cwfLabel, text: cwfTipMsg, asTop: true)
-        wfvTip = TapTip(forView: wfvLabel, text: wfvTipMsg, asTop: true)
+        cwfTip = TapTip(forView: cwfLabel, withinView: scrollView, text: cwfTipMsg, asTop: true)
+        wfvTip = TapTip(forView: wfvLabel, withinView: scrollView, text: wfvTipMsg, asTop: true)
 
         cwfLabel.addGestureRecognizer(cwfTip.tapRecognizer)
         cwfLabel.userInteractionEnabled = true
 
         wfvLabel.addGestureRecognizer(wfvTip.tapRecognizer)
         wfvLabel.userInteractionEnabled = true
+
+        sleepAwakeBalance.tip.withinView = scrollView
+        eatExerciseBalance.tip.withinView = scrollView
     }
 
     func refreshPieChart() {

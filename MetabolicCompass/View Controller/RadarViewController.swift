@@ -101,6 +101,7 @@ class RadarViewController : UIViewController, ChartViewDelegate {
     }()
 
     var radarTip: TapTip! = nil
+    var radarTipDummyLabel: UILabel! = nil
 
     var initialImage : UIImage! = nil
     var initialMsg : String! = "HealthKit not authorized"
@@ -169,8 +170,20 @@ class RadarViewController : UIViewController, ChartViewDelegate {
         ]
         view.addConstraints(rcConstraints)
 
-        let desc = "This chart shows how balanced your measures are relative to the population. A person with perfectly average measures across the board would show a uniform shape."
-        radarTip = TapTip(forView: radarChart, text: desc, width: 350, numTaps: 2, numTouches: 2, asTop: false)
+        radarTipDummyLabel = UILabel()
+        radarTipDummyLabel.userInteractionEnabled = false
+        radarTipDummyLabel.enabled = false
+        radarTipDummyLabel.translatesAutoresizingMaskIntoConstraints = false
+        view.addSubview(radarTipDummyLabel)
+        view.addConstraints([
+            view.centerXAnchor.constraintEqualToAnchor(radarTipDummyLabel.centerXAnchor),
+            view.centerYAnchor.constraintEqualToAnchor(radarTipDummyLabel.centerYAnchor),
+            radarTipDummyLabel.widthAnchor.constraintEqualToConstant(1),
+            radarTipDummyLabel.heightAnchor.constraintEqualToConstant(1),
+            ])
+
+        let desc = "Your Balance chart compares your health metrics relative to each other, and to our study population. A person with average measures across the board would show a uniform shape."
+        radarTip = TapTip(forView: radarTipDummyLabel, withinView: view, text: desc, width: 350, numTaps: 2, numTouches: 2, asTop: false)
         radarChart.addGestureRecognizer(radarTip.tapRecognizer)
         radarChart.userInteractionEnabled = true
     }

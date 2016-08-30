@@ -625,8 +625,10 @@ public class AddManager: UITableView, UITableViewDelegate, UITableViewDataSource
     public func tableView(tableView: UITableView, viewForHeaderInSection section: Int) -> UIView? {
         let cell = tableView.dequeueReusableCellWithIdentifier(addEventSectionHeaderCellIdentifier)!
 
+        let sectionHeaderSize = ScreenManager.sharedInstance.quickAddSectionHeaderFontSize()
+
         cell.textLabel?.text = self.addSectionTitles[section]
-        cell.textLabel?.font = UIFont(name: "GothamBook", size: 18.0)
+        cell.textLabel?.font = UIFont(name: "GothamBook", size: sectionHeaderSize)
         cell.textLabel?.textColor = .lightGrayColor()
         cell.textLabel?.numberOfLines = 0
 
@@ -1012,12 +1014,14 @@ public class DeleteManager: UITableView, PickerManagerSelectionDelegate {
         deleteByDateRows[0].onDateChanged { self.delDates[0] = $0 }
         deleteByDateRows[1].onDateChanged { self.delDates[1] = $0 }
 
+        let sectionHeaderSize = ScreenManager.sharedInstance.quickAddSectionHeaderFontSize()
+
         let headers = delPickerSections.map { sectionName in
             return LabelViewFormer<FormLabelHeaderView> {
                 $0.contentView.backgroundColor = .clearColor()
                 $0.titleLabel.backgroundColor = .clearColor()
                 $0.titleLabel.textColor = .lightGrayColor()
-                $0.titleLabel.font = UIFont(name: "GothamBook", size: 18.0)!
+                $0.titleLabel.font = UIFont(name: "GothamBook", size: sectionHeaderSize)!
 
                 let button: MCButton = {
                     let button = MCButton(frame: CGRectMake(0, 0, 66, 66), buttonStyle: .Rounded)

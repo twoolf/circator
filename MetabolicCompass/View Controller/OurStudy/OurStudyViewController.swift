@@ -46,13 +46,9 @@ public class OurStudyViewController: UIViewController, ChartViewDelegate {
         let attrs1 = [NSForegroundColorAttributeName: UIColor.whiteColor(),
                       NSUnderlineStyleAttributeName: NSNumber(integer: NSUnderlineStyle.StyleSingle.rawValue),
                       NSFontAttributeName: UIFont(name: "GothamBook", size: studyLabelFontSize)!]
-        var title = NSMutableAttributedString(string: "Study Progress: Phase 1: 100 users", attributes: attrs1)
 
-        let tooltip = "This progress bar indicates our near-term study deployment status and goals"
-        let bar = BalanceBarView(title: title,
-                                 color1: OurStudyViewController.red,
-                                 color2: OurStudyViewController.grey,
-                                 tooltipText: tooltip)
+        var title = NSMutableAttributedString(string: "Study Progress: Phase 1: 100 users", attributes: attrs1)
+        let bar = BalanceBarView(title: title, color1: OurStudyViewController.red, color2: OurStudyViewController.grey)
         return bar
     }()
 
@@ -152,9 +148,6 @@ public class OurStudyViewController: UIViewController, ChartViewDelegate {
         setupActivityIndicator()
 
         refreshData()
-
-        log.warning("OUR STUDY contentSize \(scrollView.contentSize)")
-        log.warning("OUR STUDY view bounds \(view.bounds) \(view.frame) \(scrollView.bounds) \(scrollView.frame)")
     }
 
     func setupActivityIndicator() {
@@ -256,7 +249,7 @@ public class OurStudyViewController: UIViewController, ChartViewDelegate {
 
             let desc = OurStudyViewController.ringDescriptions[index]
             let tipView = chart.subviews[index == 2 ? 0 : 1]
-            let tip = TapTip(forView: tipView, text: desc, width: 350, numTaps: 1, numTouches: 1, asTop: index == 2)
+            let tip = TapTip(forView: tipView, withinView: scrollView, text: desc, width: 350, numTaps: 1, numTouches: 1, asTop: index == 2)
             self.ringTips.append(tip)
             tipView.addGestureRecognizer(tip.tapRecognizer)
 
@@ -312,20 +305,20 @@ public class OurStudyViewController: UIViewController, ChartViewDelegate {
         view.addConstraints(constraints)
 
         // Tooltips
-        let phaseProgressDesc = "This bar shows our progress in meeting its active user goals for the current phase of the study"
-        phaseProgressTip = TapTip(forView: phaseProgress, text: phaseProgressDesc, width: 350, numTaps: 1, numTouches: 1, asTop: false)
+        let phaseProgressDesc = "This bar shows the number of users actively contributing data in our study, relative to our participation goals for the current phase of the study"
+        phaseProgressTip = TapTip(forView: phaseProgress, withinView: scrollView, text: phaseProgressDesc, width: 350, numTaps: 1, numTouches: 1, asTop: false)
         phaseProgress.addGestureRecognizer(phaseProgressTip.tapRecognizer)
 
         let fullDayDesc = "This label shows the number of days where you have contributed a sleep event and at least one meal or exercise event. We call this a Full Data day."
-        fullDaysTip = TapTip(forView: fullDaysLabel, text: fullDayDesc, width: 350, numTaps: 1, numTouches: 1, asTop: true)
+        fullDaysTip = TapTip(forView: fullDaysLabel, withinView: scrollView, text: fullDayDesc, width: 350, numTaps: 1, numTouches: 1, asTop: true)
         fullDaysLabel.addGestureRecognizer(fullDaysTip.tapRecognizer)
 
         let partialDayDesc = "This label shows the number of days where you have contributed any sleep, meal or exercise event. We call this a Partial Data day."
-        partialDaysTip = TapTip(forView: partialDaysLabel, text: partialDayDesc, width: 350, numTaps: 1, numTouches: 1, asTop: true)
+        partialDaysTip = TapTip(forView: partialDaysLabel, withinView: scrollView, text: partialDayDesc, width: 350, numTaps: 1, numTouches: 1, asTop: true)
         partialDaysLabel.addGestureRecognizer(partialDaysTip.tapRecognizer)
 
         let userRankingDesc = "This label shows your ranking relative to other study users, based on the number of circadian events you have tracked."
-        userRankingTip = TapTip(forView: userRankingBadge, text: userRankingDesc, width: 350, numTaps: 1, numTouches: 1, asTop: false)
+        userRankingTip = TapTip(forView: userRankingBadge, withinView: scrollView, text: userRankingDesc, width: 350, numTaps: 1, numTouches: 1, asTop: false)
         userRankingBadge.addGestureRecognizer(userRankingTip.tapRecognizer)
 
         // Adjust middle ring vertical placement.
