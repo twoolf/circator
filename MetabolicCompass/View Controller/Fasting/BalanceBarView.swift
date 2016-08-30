@@ -24,7 +24,7 @@ public class BalanceBarView : UIView {
 
     private var barConstraints: [NSLayoutConstraint] = []
 
-    private var tip: TapTip! = nil
+    public var tip: TapTip! = nil
 
     public override init(frame: CGRect) {
         super.init(frame: frame)

@@ -36,9 +36,9 @@ public class ScreenManager {
         let screenHeight = screenSize.height
 
         if (screenHeight < 569) {
-            return 14
-        } else {
             return 16
+        } else {
+            return 18
         }
     }
 
@@ -66,7 +66,7 @@ public class ScreenManager {
 
     public func tooltipMaxWidth() -> CGFloat {
         let screensize = UIScreen.mainScreen().bounds.size
-        return 0.9 * screensize.width
+        return 0.66 * screensize.width
     }
 
     public func dashboardRows() -> Int {
@@ -196,6 +196,17 @@ public class ScreenManager {
 
     public func queryBuilderInputFontSize() -> CGFloat {
         return inputFontSize()
+    }
+
+    public func quickAddSectionHeaderFontSize() -> CGFloat {
+        let screenSize = UIScreen.mainScreen().bounds.size
+        let screenHeight = screenSize.height
+
+        if (screenHeight < 569) {
+            return 16.0
+        } else {
+            return 18.0
+        }
     }
 
 

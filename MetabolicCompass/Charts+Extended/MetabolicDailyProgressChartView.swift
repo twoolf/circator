@@ -12,6 +12,8 @@ import Charts
 class MetabolicDailyProgressChartView : HorizontalBarChartView, DailyChartModelProtocol {
 
     var tip: TapTip! = nil
+    var tipDummyLabel: UILabel! = nil
+
     var changeColorRecognizer: UITapGestureRecognizer! = nil
     var changeColorCompletion: (Void -> Void)? = nil
 
@@ -89,8 +91,21 @@ class MetabolicDailyProgressChartView : HorizontalBarChartView, DailyChartModelP
         self.legend.formSize = 0;
         self.legend.font = UIFont.systemFontOfSize(0)
 
-        let desc = "This Daily Progress chart shows the time intervals during which you slept, ate, exercised and fasted over the last week. Scroll right to see the full 24 hour period for each day. You can also double-tap to highlight fasting periods."
-        self.tip = TapTip(forView: self, text: desc, width: 350, numTaps: 2, numTouches: 2, asTop: false)
+        // Tip setup.
+        tipDummyLabel = UILabel()
+        tipDummyLabel.userInteractionEnabled = false
+        tipDummyLabel.enabled = false
+        tipDummyLabel.translatesAutoresizingMaskIntoConstraints = false
+        addSubview(tipDummyLabel)
+        addConstraints([
+            centerXAnchor.constraintEqualToAnchor(tipDummyLabel.centerXAnchor),
+            centerYAnchor.constraintEqualToAnchor(tipDummyLabel.centerYAnchor),
+            tipDummyLabel.widthAnchor.constraintEqualToConstant(1),
+            tipDummyLabel.heightAnchor.constraintEqualToConstant(1),
+        ])
+
+        let desc = "Your Body Clock shows the times you slept, ate, exercised and fasted over the last week. You can pinch to zoom in on your activities, or double-tap to highlight fasting periods."
+        self.tip = TapTip(forView: tipDummyLabel, withinView: self, text: desc, width: 350, numTaps: 2, numTouches: 2, asTop: false)
         self.addGestureRecognizer(tip.tapRecognizer)
 
         changeColorRecognizer = UITapGestureRecognizer(target: self, action: #selector(toggleColors))

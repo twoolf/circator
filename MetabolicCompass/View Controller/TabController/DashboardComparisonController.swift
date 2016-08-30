@@ -70,12 +70,13 @@ class DashboardComparisonController: UIViewController, UITableViewDelegate, UITa
                          populationAverageData: PopulationHealthManager.sharedManager.mostRecentAggregates[sampleType] ?? [],
                          stalePopulation: stale)
 
-        if indexPath.section == 0 && indexPath.row < 3 && comparisonTips[indexPath.row] == nil {
+        if indexPath.section == 0 && comparisonTips[indexPath.row] == nil {
             let targetView = cell
 
-            let desc = "This table helps you compare your personal health stats (left column) to our study population's stats (right column). We show values older than 24 hours in yellow. You can pick which measures to display with the Manage button, and change the population compared with the Filter button."
+            let desc = "This table helps you compare your personal health stats (left column) to our study population's stats (right column). We show values older than 24 hours in yellow. You can pick measures to display with the Manage button."
 
-            comparisonTips[indexPath.row] = TapTip(forView: targetView, text: desc, width: 350, numTaps: 2, numTouches: 2, asTop: false)
+            let tipAsTop = PreviewManager.previewSampleTypes.count > 6 && indexPath.row > PreviewManager.previewSampleTypes.count - 4
+            comparisonTips[indexPath.row] = TapTip(forView: targetView, withinView: tableView, text: desc, width: 350, numTaps: 2, numTouches: 2, asTop: tipAsTop)
             targetView.addGestureRecognizer(comparisonTips[indexPath.row]!.tapRecognizer)
             targetView.userInteractionEnabled = true
         }
