@@ -67,7 +67,9 @@ class ProfileDataSource: BaseDataSource {
             if cellType == .Weight || cellType == .Height || cellType == .HeightInches {
                 if let infoCell = cell as? InfoCollectionViewCell{
                     let w = infoCell.inputTxtField.text?.sizeWithAttributes(infoCell.inputTxtField.typingAttributes).width
-                    infoCell.commentLabelXConstraint.constant = 8.0 + (w ?? 0.0)
+                    let tw = (cellType == .Weight ? 16.0 : 8.0) + (w ?? 0.0)
+                    infoCell.commentLabelXConstraint.constant = tw
+                    log.warning("PROFILE CLX A \(tw)")
                 }
             }
         }
@@ -89,7 +91,9 @@ class ProfileDataSource: BaseDataSource {
                 }
                 if let infoCell = cell as? InfoCollectionViewCell{
                     let w = infoCell.inputTxtField.text?.sizeWithAttributes(infoCell.inputTxtField.typingAttributes).width
-                    infoCell.commentLabelXConstraint.constant = 8.0 + (w ?? 0.0)
+                    let tw = (cellType == .Weight ? 16.0 : 8.0) + (w ?? 0.0)
+                    infoCell.commentLabelXConstraint.constant = tw
+                    log.warning("PROFILE CLX B \(tw)")
                 }
             }
         }
