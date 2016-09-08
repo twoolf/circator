@@ -692,7 +692,6 @@ public class UserManager {
     // Retrieves an account component from the backend service.
     private func pullAccountComponent(component: AccountComponent, completion: SvcResultCompletion)
     {
-        print("!!! pullAccountComponent \(component)")
         Service.json(MCRouter.GetUserAccountData([component]), statusCode: 200..<300, tag: "GACC\(component)") {
             _, _, result in
             var pullSuccess = result.isSuccess
@@ -719,7 +718,6 @@ public class UserManager {
         if isAccountComponentOutdated(component) {
             pullAccountComponent(component, completion: completion)
         } else {
-            print("pull component \(component) skipped")
             completion(RequestResult())
         }
     }

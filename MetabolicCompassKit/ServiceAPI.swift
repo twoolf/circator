@@ -19,10 +19,10 @@ public typealias SvcResultCompletion = (RequestResult) -> Void
 
 private let apiPathComponent = "/api/v1"
 
-private let asDevService   = true
-private let devServiceURL  = NSURL(string: "https://dev.metaboliccompass.com")!
+private let asDevService   = false
+private let devServiceURL  = NSURL(string: "https://api-dev.metaboliccompass.com")!
 private let devApiURL      = devServiceURL.URLByAppendingPathComponent(apiPathComponent)
-private let prodServiceURL = NSURL(string: "https://app.metaboliccompass.com")!
+private let prodServiceURL = NSURL(string: "https://api.metaboliccompass.com")!
 private let prodApiURL     = prodServiceURL.URLByAppendingPathComponent(apiPathComponent)
 
 
@@ -303,7 +303,6 @@ extension Alamofire.Request {
             if !result.isSuccess {
                 log.debug("\n***response:\(resp)")
                 log.debug("\n***error:\(result.error)")
-                debugPrint(resp)
             }
             completion(req, resp, result)
         }
