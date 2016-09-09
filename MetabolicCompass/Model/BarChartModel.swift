@@ -284,15 +284,17 @@ class BarChartModel : NSObject {
             dSet1.yVals.sortInPlace({ $0.0.value < $0.1.value })
 
             //prepare xAxis labels
-            xValues = Set<String>(dSet1.yVals.flatMap { yValue in
+            let xDoubleVals: Set<Double> = Set<Double>(dSet1.yVals.flatMap({ yValue in
                 let currentYValue = dSet2.yValForXIndex(yValue.xIndex)
                 if !currentYValue.isNaN {
                     let numberIsDecimal = yValue.value - floor(yValue.value) > 0.001
-                    return numberIsDecimal ? "\(Double(round(10*yValue.value)/10))" : "\(Int(yValue.value))"
+                    return numberIsDecimal ? Double(round(10*yValue.value)/10) : Double(Int(yValue.value))
                 }
                 //log.info("SCATTER MODEL found nan for labelling \(yValue) \(dSet2.yVals)")
                 return nil
-            }).sort { $0.0 < $0.1 }
+            }))
+
+            xValues = xDoubleVals.sort({ $0.0 < $0.1 }).map({ "\($0)" })
 
             let groupByYValue: [Double: [Double]] = dSet1.yVals.reduce([:], combine: { (acc, entry1) in
                 var nacc = acc

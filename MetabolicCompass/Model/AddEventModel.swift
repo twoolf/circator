@@ -147,15 +147,16 @@ class AddEventModel: NSObject {
 
         }
 
-        // If we have no date for usual sleep then just use current date
-        return floorDate(NSDate(), granularity: granularity5Mins)
+        // If we have no date for usual sleep, use a constant.
+        return NSDate().startOf(.Day) - 1.hours
     }
     
     class func getDefaultWokeUpDate() -> NSDate {
         if let whenWokeUp = UserManager.sharedManager.getUsualWokeUpTime() {
             return AddEventModel.applyTimeForDate(whenWokeUp, toDate: NSDate())
         }
-        return floorDate(NSDate(), granularity: granularity5Mins)
+        // If we have no date for usual sleep, use a constant.
+        return getDefaultStartSleepDate() + 7.hours
     }
     
     class func applyTimeForDate(fromDate: NSDate, toDate: NSDate) -> NSDate {

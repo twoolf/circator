@@ -33,6 +33,8 @@ public class UINotifications {
             Async.main {
                 vc.view.dodo.style.bar.hideAfterDelaySeconds = positiveNotificationDelay
                 vc.view.dodo.style.bar.hideOnTap = true
+                vc.view.dodo.topLayoutGuide = vc.topLayoutGuide
+                vc.view.dodo.bottomLayoutGuide = vc.bottomLayoutGuide
                 vc.view.dodo.success("Welcome \(user)")
             }
         }
@@ -43,6 +45,8 @@ public class UINotifications {
             Async.main {
                 vc.view.dodo.style.bar.hideAfterDelaySeconds = negativeNotificationDelay
                 vc.view.dodo.style.bar.hideOnTap = true
+                vc.view.dodo.topLayoutGuide = vc.topLayoutGuide
+                vc.view.dodo.bottomLayoutGuide = vc.bottomLayoutGuide
                 vc.view.dodo.error("Please fill in all required fields.")
             }
         }
@@ -53,6 +57,8 @@ public class UINotifications {
             Async.main {
                 vc.view.dodo.style.bar.hideAfterDelaySeconds = negativeNotificationDelay
                 vc.view.dodo.style.bar.hideOnTap = true
+                vc.view.dodo.topLayoutGuide = vc.topLayoutGuide
+                vc.view.dodo.bottomLayoutGuide = vc.bottomLayoutGuide
                 vc.view.dodo.error("Invalid username/password")
             }
         }
@@ -63,6 +69,8 @@ public class UINotifications {
             Async.main {
                 vc.view.dodo.style.bar.hideAfterDelaySeconds = positiveNotificationDelay
                 vc.view.dodo.style.bar.hideOnTap = true
+                vc.view.dodo.topLayoutGuide = vc.topLayoutGuide
+                vc.view.dodo.bottomLayoutGuide = vc.bottomLayoutGuide
                 vc.view.dodo.error("Goodbye \(user)")
             }
         }
@@ -73,6 +81,8 @@ public class UINotifications {
             Async.main {
                 vc.view.dodo.style.bar.hideAfterDelaySeconds = negativeNotificationDelay
                 vc.view.dodo.style.bar.hideOnTap = true
+                vc.view.dodo.topLayoutGuide = vc.topLayoutGuide
+                vc.view.dodo.bottomLayoutGuide = vc.bottomLayoutGuide
                 vc.view.dodo.error("Login failed: " + (reason ?? ""))
             }
         }
@@ -83,6 +93,8 @@ public class UINotifications {
             Async.main {
                 vc.view.dodo.style.bar.hideAfterDelaySeconds = negativeNotificationDelay
                 vc.view.dodo.style.bar.hideOnTap = true
+                vc.view.dodo.topLayoutGuide = vc.topLayoutGuide
+                vc.view.dodo.bottomLayoutGuide = vc.bottomLayoutGuide
                 vc.view.dodo.error("Please log in")
             }
         }
@@ -93,6 +105,8 @@ public class UINotifications {
             Async.main {
                 vc.view.dodo.style.bar.hideAfterDelaySeconds = negativeNotificationDelay
                 vc.view.dodo.style.bar.hideOnTap = true
+                vc.view.dodo.topLayoutGuide = vc.topLayoutGuide
+                vc.view.dodo.bottomLayoutGuide = vc.bottomLayoutGuide
                 vc.view.dodo.error("ResearchKit study not consented!")
             }
         }
@@ -103,6 +117,8 @@ public class UINotifications {
             Async.main {
                 vc.view.dodo.style.bar.hideAfterDelaySeconds = negativeNotificationDelay
                 vc.view.dodo.style.bar.hideOnTap = true
+                vc.view.dodo.topLayoutGuide = vc.topLayoutGuide
+                vc.view.dodo.bottomLayoutGuide = vc.bottomLayoutGuide
                 vc.view.dodo.error("HealthKit not authorized!")
             }
         }
@@ -113,6 +129,8 @@ public class UINotifications {
             Async.main {
                 vc.view.dodo.style.bar.hideAfterDelaySeconds = negativeNotificationDelay
                 vc.view.dodo.style.bar.hideOnTap = true
+                vc.view.dodo.topLayoutGuide = vc.topLayoutGuide
+                vc.view.dodo.bottomLayoutGuide = vc.bottomLayoutGuide
                 vc.view.dodo.error("Could not fetch your profile")
             }
         }
@@ -123,6 +141,8 @@ public class UINotifications {
             Async.main {
                 vc.view.dodo.style.bar.hideAfterDelaySeconds = positiveNotificationDelay
                 vc.view.dodo.style.bar.hideOnTap = true
+                vc.view.dodo.topLayoutGuide = vc.topLayoutGuide
+                vc.view.dodo.bottomLayoutGuide = vc.bottomLayoutGuide
                 vc.view.dodo.success("Profile updated")
             }
         }
@@ -133,6 +153,8 @@ public class UINotifications {
             Async.main {
                 vc.view.dodo.style.bar.hideAfterDelaySeconds = negativeNotificationDelay
                 vc.view.dodo.style.bar.hideOnTap = true
+                vc.view.dodo.topLayoutGuide = vc.topLayoutGuide
+                vc.view.dodo.bottomLayoutGuide = vc.bottomLayoutGuide
                 let vmsg = msg ?? "Please try again"
                 vc.view.dodo.error("Registration failed (\(vmsg))")
             }
@@ -144,6 +166,8 @@ public class UINotifications {
             Async.main {
                 vc.view.dodo.style.bar.hideAfterDelaySeconds = negativeNotificationDelay
                 vc.view.dodo.style.bar.hideOnTap = true
+                vc.view.dodo.topLayoutGuide = vc.topLayoutGuide
+                vc.view.dodo.bottomLayoutGuide = vc.bottomLayoutGuide
                 vc.view.dodo.warning("Waiting to access HealthKit...")
             }
         }
@@ -154,16 +178,20 @@ public class UINotifications {
             Async.main {
                 vc.view.dodo.style.bar.hideAfterDelaySeconds = positiveNotificationDelay
                 vc.view.dodo.style.bar.hideOnTap = true
+                vc.view.dodo.topLayoutGuide = vc.topLayoutGuide
+                vc.view.dodo.bottomLayoutGuide = vc.bottomLayoutGuide
                 vc.view.dodo.info("Count: \(count)")
             }
         }
     }
 
-    public static func genericMsg(vc: UIViewController, msg: String, pop: Bool = false, asNav: Bool = false) {
+    public static func genericMsg(vc: UIViewController, msg: String, pop: Bool = false, asNav: Bool = false, nohide: Bool = false) {
         withPop(vc, pop: pop, asNav: asNav) {
             Async.main {
-                vc.view.dodo.style.bar.hideAfterDelaySeconds = positiveNotificationDelay
+                if !nohide { vc.view.dodo.style.bar.hideAfterDelaySeconds = positiveNotificationDelay }
                 vc.view.dodo.style.bar.hideOnTap = true
+                vc.view.dodo.topLayoutGuide = vc.topLayoutGuide
+                vc.view.dodo.bottomLayoutGuide = vc.bottomLayoutGuide
                 vc.view.dodo.info(msg)
             }
         }
@@ -174,6 +202,8 @@ public class UINotifications {
             Async.main {
                 if !nohide { vc.view.dodo.style.bar.hideAfterDelaySeconds = negativeNotificationDelay }
                 vc.view.dodo.style.bar.hideOnTap = true
+                vc.view.dodo.topLayoutGuide = vc.topLayoutGuide
+                vc.view.dodo.bottomLayoutGuide = vc.bottomLayoutGuide
                 vc.view.dodo.error(msg)
             }
         }

@@ -19,7 +19,7 @@ public typealias SvcResultCompletion = (RequestResult) -> Void
 
 private let apiPathComponent = "/api/v1"
 
-private let asDevService   = false
+private let asDevService   = true
 private let devServiceURL  = NSURL(string: "https://api-dev.metaboliccompass.com")!
 private let devApiURL      = devServiceURL.URLByAppendingPathComponent(apiPathComponent)
 private let prodServiceURL = NSURL(string: "https://api.metaboliccompass.com")!

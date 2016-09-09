@@ -41,16 +41,22 @@ class AdditionalInfoViewController: BaseViewController {
     
     func cancelAction () {
         self.dismissViewControllerAnimated(true, completion: { [weak controller = self.registerViewController] in
-            controller?.registartionComplete()
+            controller?.registrationComplete()
         });
     }
     
     func nextAction() {
         startAction()
-        let additionalInfo = dataSource.model.additionalInfoDict()
-        UserManager.sharedManager.saveAdditionalProfileData(additionalInfo)
-        self.dismissViewControllerAnimated(true, completion: { [weak controller = self.registerViewController] in
-            controller?.registartionComplete()
-        });
+        dataSource.model.additionalInfoDict { (error, additionalInfo) in
+            guard error == nil else {
+                UINotifications.genericError(self, msg: error!)
+                return
+            }
+
+            UserManager.sharedManager.saveAdditionalProfileData(additionalInfo)
+            self.dismissViewControllerAnimated(true, completion: { [weak controller = self.registerViewController] in
+                controller?.registrationComplete()
+            })
+        }
     }
 }

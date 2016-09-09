@@ -21,7 +21,7 @@ class RegistrationComplitionViewController: BaseViewController {
     
     override func viewDidAppear(animated: Bool) {
         super.viewDidAppear(animated)
-        UINotifications.genericMsg(self, msg: "We just sent you an email. Please verify your account", pop: false, asNav: true)
+        UINotifications.genericMsg(self, msg: "We've emailed you an account verification link. Please check your inbox.", pop: false, asNav: true, nohide: true)
     }
     
     override func preferredStatusBarStyle() -> UIStatusBarStyle {
@@ -32,14 +32,14 @@ class RegistrationComplitionViewController: BaseViewController {
         // back
         self.dismissViewControllerAnimated(true, completion: nil)
         if let regVC = registerViewController {
-            regVC.registartionComplete()
+            regVC.registrationComplete()
         }
     }
     
-    private let segueRegistrationCompletionIndentifier = "AdditionInfoController"
+    private let segueRegistrationCompletionIdentifier = "AdditionInfoController"
     
     override func prepareForSegue(segue: UIStoryboardSegue, sender: AnyObject?) {
-        if segue.identifier == segueRegistrationCompletionIndentifier {
+        if segue.identifier == segueRegistrationCompletionIdentifier {
             if let vc = segue.destinationViewController as? AdditionalInfoViewController {
                 vc.registerViewController = self.registerViewController
             }

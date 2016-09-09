@@ -61,10 +61,15 @@ class PhysiologicalDataViewController: BaseViewController {
 
     func rightAction(sender: UIBarButtonItem) {
         if dataSource.editMode {
-            let additionalInfo = dataSource.model.additionalInfoDict()
-            UserManager.sharedManager.pushProfile(additionalInfo, completion: { _ in
-                self.editMode = false
-            })
+            dataSource.model.additionalInfoDict { (error, additionalInfo) in
+                guard error == nil else {
+                    UINotifications.genericError(self, msg: error!)
+                    return
+                }
+                UserManager.sharedManager.pushProfile(additionalInfo, completion: { _ in
+                    self.editMode = false
+                })
+            }
         } else{
             editMode = true
         }

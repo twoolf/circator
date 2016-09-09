@@ -99,7 +99,7 @@ private let inputFontSize = ScreenManager.sharedInstance.profileInputFontSize()
             UserManager.sharedManager.setAsFirstLogin()
             // save user profile image
             UserManager.sharedManager.setUserProfilePhoto(userRegistrationModel.photo)
-            self.performSegueWithIdentifier(self.segueRegistrationCompletionIndentifier, sender: nil)
+            self.performSegueWithIdentifier(self.segueRegistrationCompletionIdentifier, sender: nil)
         }
     }
 
@@ -126,16 +126,17 @@ private let inputFontSize = ScreenManager.sharedInstance.profileInputFontSize()
         }
     }
 
-    func registartionComplete() {
+    func registrationComplete() {
         self.navigationController?.popViewControllerAnimated(true)
+        self.registerCompletion?()
     }
 
     // MARK: - Navigation
 
-    private let segueRegistrationCompletionIndentifier = "completionRegistrationSeque"
+    private let segueRegistrationCompletionIdentifier = "completionRegistrationSeque"
 
     override func prepareForSegue(segue: UIStoryboardSegue, sender: AnyObject?) {
-        if segue.identifier == segueRegistrationCompletionIndentifier {
+        if segue.identifier == segueRegistrationCompletionIdentifier {
             segue.destinationViewController.modalPresentationStyle = .OverCurrentContext
             if let vc = segue.destinationViewController as? RegistrationComplitionViewController {
                 vc.registerViewController = self

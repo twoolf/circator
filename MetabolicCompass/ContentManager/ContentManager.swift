@@ -36,7 +36,6 @@ class ContentManager: NSObject {
             log.error(msg)
             fatalError(msg)
         }
-
     }
 
     internal func initializeBackgroundWork() {

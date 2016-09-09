@@ -85,6 +85,7 @@ class MainSettingsViewController: BaseViewController, UICollectionViewDataSource
 
         let doWithdraw = { keepData in
             AccountManager.shared.doWithdraw(keepData) { success in
+                NSNotificationCenter.defaultCenter().postNotificationName(UMDidLogoutNotification, object: nil)
                 AccountManager.shared.loginOrRegister()
                 if success {
                     let msg = "Thanks for using Metabolic Compass!"

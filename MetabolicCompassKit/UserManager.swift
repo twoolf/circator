@@ -203,6 +203,19 @@ public class UserManager {
     }
     
     public func saveAdditionalProfileData (data: [String: AnyObject]) {
+        // Initialize constants for adding events.
+        let defaultSleepStart = NSDate().startOf(.Day) - 1.hours
+        if let i = data["sleep_duration"] as? Int {
+            let defaultSleepEnd = defaultSleepStart + i.seconds
+            setUsualWhenToSleepTime(defaultSleepStart)
+            setUsualWokeUpTime(defaultSleepEnd)
+        }
+        else if let s = data["sleep_duration"] as? String, i = Int(s) {
+            let defaultSleepEnd = defaultSleepStart + i.seconds
+            setUsualWhenToSleepTime(defaultSleepStart)
+            setUsualWokeUpTime(defaultSleepEnd)
+        }
+
         Defaults.setObject(data, forKey: UserManager.additionalInfoDataKey + "." + userId!)
         Defaults.synchronize()
     }
@@ -335,7 +348,7 @@ public class UserManager {
                     return
                 }
 
-                log.verbose("Access token: \(Stormpath.sharedSession.accessToken)")
+                log.info("Access token: \(Stormpath.sharedSession.accessToken)")
                 MCRouter.updateAuthToken(Stormpath.sharedSession.accessToken)
                 completion(RequestResult())
             }
@@ -755,7 +768,7 @@ public class UserManager {
     // Retrieves multiple account components in a single request.
     private func pullMultipleAccountComponents(components: [AccountComponent], requiredComponents: [AccountComponent], completion: SvcResultCompletion) {
         Service.json(MCRouter.GetUserAccountData(components), statusCode: 200..<300, tag: "GALLACC") {
-            _, _, result in
+            _, response, result in
             var pullSuccess = result.isSuccess
             var failedComponents : [String] = []
             if pullSuccess {

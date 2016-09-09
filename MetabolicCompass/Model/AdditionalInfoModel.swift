@@ -159,7 +159,8 @@ class AdditionalInfoModel: NSObject {
         item.setNewValue(newValue)
     }
 
-    func additionalInfoDict(standardizeUnits: Bool = true) -> [String: AnyObject] {
+    func additionalInfoDict(standardizeUnits: Bool = true, completion: (String?, [String: AnyObject]) -> Void) -> Void {
+        var error: String? = nil
         let profileCache = UserManager.sharedManager.getProfileCache()
 
         var items = [ModelItem]()
@@ -169,30 +170,62 @@ class AdditionalInfoModel: NSObject {
 
         var infoDict = [String : AnyObject]()
 
-        items.forEach {
-            let fieldName = $0.name
-            let profileFieldSpec = UserProfile.sharedInstance.fields.filter{($0.fieldName == fieldName)}.first!
-            let profileFieldName = profileFieldSpec.profileFieldName
+        for item in items {
+            let fieldName = item.name
+            if let profileFieldSpec = UserProfile.sharedInstance.fields.filter({ $0.fieldName == fieldName }).first {
+                let profileFieldName = profileFieldSpec.profileFieldName
 
-            if let value = $0.value {
-                if let (categoryType, _) = HMConstants.sharedInstance.mcdbActivityToHKQuantity[profileFieldName]
-                {
-                    // Note for categorized types, we must manually do a merge with any existing profile values ourselves.
-                    if var profileCategories = profileCache["activity_value"] as? [String: AnyObject],
-                       var profileQuantities = profileCategories[categoryType] as? [String: AnyObject]
+                if let value = item.value {
+                    if !validateItem(value) {
+                        error = "Please enter a valid number for \(fieldName)"
+                        break
+                    }
+
+                    if let (categoryType, _) = HMConstants.sharedInstance.mcdbActivityToHKQuantity[profileFieldName]
                     {
-                        profileQuantities.updateValue(self.convertFieldValue(fieldName, value: value), forKey: categoryType)
-                        profileCategories.updateValue(profileQuantities, forKey: categoryType)
-                        infoDict["activity_value"] = profileCategories
-                    } else {
-                        infoDict["activity_value"] = [categoryType: [categoryType: self.convertFieldValue(fieldName, value: value)]]
+                        // Note for categorized types, we must manually do a merge with any existing profile values ourselves.
+                        if var profileCategories = profileCache["activity_value"] as? [String: AnyObject],
+                            var profileQuantities = profileCategories[categoryType] as? [String: AnyObject]
+                        {
+                            profileQuantities.updateValue(self.convertFieldValue(fieldName, value: value), forKey: categoryType)
+                            profileCategories.updateValue(profileQuantities, forKey: categoryType)
+                            infoDict["activity_value"] = profileCategories
+                        } else {
+                            infoDict["activity_value"] = [categoryType: [categoryType: self.convertFieldValue(fieldName, value: value)]]
+                        }
+                    }
+                    else if let _ = HMConstants.sharedInstance.mcdbToHK[profileFieldName] {
+                        infoDict[profileFieldName] = self.convertFieldValue(item.name, value: value)
+                    }
+                    else {
+                        error = "No schema mapping found for \(fieldName) in additional info model"
+                        break
                     }
                 }
-                else if let _ = HMConstants.sharedInstance.mcdbToHK[profileFieldName] {
-                    infoDict[profileFieldName] = self.convertFieldValue($0.name, value: value)
-                }
+            } else {
+                error = "No profile field found for \(fieldName) in additional info model"
+                break
             }
         }
-        return infoDict
+
+        if error != nil {
+            completion(error, [:])
+        } else {
+            log.info("ADID result \(infoDict)")
+            completion(nil, infoDict)
+        }
+    }
+
+    func validateItem(value: AnyObject) -> Bool {
+        if let d = value as? Double where d >= 0.0 {
+            return true
+        }
+        else if let i = value as? Int where i >= 0 {
+            return true
+        }
+        else if let s = value as? String, d = Double(s) where d >= 0.0 {
+            return true
+        }
+        return false
     }
 }
