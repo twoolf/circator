@@ -251,6 +251,8 @@ public class UINotifications {
             Async.main {
                 vc.view.dodo.style.bar.hideAfterDelaySeconds = negativeNotificationDelay
                 vc.view.dodo.style.bar.hideOnTap = true
+                vc.view.dodo.topLayoutGuide = vc.topLayoutGuide
+                vc.view.dodo.bottomLayoutGuide = vc.bottomLayoutGuide
                 var vmsg = msg ?? "Please try again"
                 if let alertTitle = title {
                     vmsg = alertTitle + ": " + vmsg

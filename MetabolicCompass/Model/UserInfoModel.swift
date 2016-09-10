@@ -258,10 +258,10 @@ class UserInfoModel: NSObject {
     private let metricWeightInvalidFormat    = "Please enter a valid weight (must be from 40kg to 350 kg)".localized
     private let metricHeightInvalidFormat    = "Please enter a valid height (must be from 75cm to 250 cm)".localized
 
-    private let imperialWeightInvalidFormat    = "Please enter a valid weight (must be from 88 lb to 770 lb)".localized
-    private let imperialHeightInvalidFormat    = "Please enter a valid height (must be from 2 ft 6in to 8 ft 3 in)".localized
+    private let imperialWeightInvalidFormat    = "Please enter a valid weight (must be from 80 lb to 800 lb)".localized
+    private let imperialHeightInvalidFormat    = "Please enter a valid height (must be from 2 ft 6in to 8 ft 6 in)".localized
 
-    private let heightInchesInvalidFormat     = "Please enter a valid inches value (must be from 0 to 12)".localized
+    private let heightInchesInvalidFormat     = "Please enter a valid inches value (must be from 0 to 11)".localized
 
     private(set) var validationMessage: String?
 
@@ -359,12 +359,14 @@ class UserInfoModel: NSObject {
     }
 
 
-    private let minWeight:Float = 40 // kg
-    private let maxWeight:Float = 350 // kg
+    private let minWeight:Float = 40     // kg
+    private let maxWeight:Float = 350    // kg
+    private let minWeightImp:Float = 80  // lbs
+    private let maxWeightImp:Float = 800 // lbs
 
     func isWeightValid() -> Bool {
-        let minWeightInUserUnits = UnitsUtils.weightValue(valueInDefaultSystem: minWeight, withUnits: self.units)
-        let maxWeightInUserUnits = UnitsUtils.weightValue(valueInDefaultSystem: maxWeight, withUnits: self.units)
+        let minWeightInUserUnits = self.units == .Metric ? minWeight : minWeightImp
+        let maxWeightInUserUnits = self.units == .Metric ? maxWeight : maxWeightImp
 
         log.info("VALIDATING WEIGHT \(weight) \(minWeightInUserUnits) \(maxWeightInUserUnits)")
         let isValid = isRequiredFloatValidInRange(weight, minValue: minWeightInUserUnits, maxValue: maxWeightInUserUnits)
@@ -377,12 +379,14 @@ class UserInfoModel: NSObject {
     }
 
 
-    private let minHeight:Float = 75 // cm
-    private let maxHeight:Float = 250 // cm
+    private let minHeight:Float = 75      // cm
+    private let maxHeight:Float = 250     // cm
+    private let minHeightImp: Float = 2.5 // ft w/ inches
+    private let maxHeightImp: Float = 8.5 // ft w/ inches
 
     func isHeightValid() -> Bool {
-        let minHeightInUserUnits = UnitsUtils.heightValue(valueInDefaultSystem: minHeight, withUnits: self.units)
-        let maxHeightInUserUnits = UnitsUtils.heightValue(valueInDefaultSystem: maxHeight, withUnits: self.units)
+        let minHeightInUserUnits = self.units == .Metric ? minHeight : minHeightImp
+        let maxHeightInUserUnits = self.units == .Metric ? maxHeight : maxHeightImp
 
         var heightWithInches = height ?? 0.0
         if units == .Imperial { heightWithInches += Float(heightInches ?? 0) / 12.0 }
