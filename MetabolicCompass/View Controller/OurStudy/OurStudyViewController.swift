@@ -161,7 +161,7 @@ public class OurStudyViewController: UIViewController, ChartViewDelegate {
     func logContentView(asAppear: Bool = true) {
         Answers.logContentViewWithName("Our Study",
                                        contentType: asAppear ? "Appear" : "Disappear",
-                                       contentId: NSDate().toString(DateFormat.Custom("YYYY-MM-dd:HH:mm:ss")),
+                                       contentId: NSDate().toString(DateFormat.Custom("YYYY-MM-dd:HH")),
                                        customAttributes: nil)
     }
 

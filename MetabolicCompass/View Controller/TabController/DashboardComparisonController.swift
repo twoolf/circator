@@ -52,7 +52,7 @@ class DashboardComparisonController: UIViewController, UITableViewDelegate, UITa
     func logContentView(asAppear: Bool = true) {
         Answers.logContentViewWithName("Population",
                                        contentType: asAppear ? "Appear" : "Disappear",
-                                       contentId: NSDate().toString(DateFormat.Custom("YYYY-MM-dd:HH:mm:ss")),
+                                       contentId: NSDate().toString(DateFormat.Custom("YYYY-MM-dd:HH")),
                                        customAttributes: nil)
     }
 

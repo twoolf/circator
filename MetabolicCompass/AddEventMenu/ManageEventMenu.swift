@@ -1276,7 +1276,7 @@ public class ManageEventMenu: UIView, PathMenuItemDelegate {
     public func logContentView(asAppear: Bool = true) {
         Answers.logContentViewWithName("Quick Add Activity",
                                        contentType: asAppear ? "Appear" : "Disappear",
-                                       contentId: NSDate().toString(DateFormat.Custom("YYYY-MM-dd:HH:mm:ss")),
+                                       contentId: NSDate().toString(DateFormat.Custom("YYYY-MM-dd:HH")),
                                        customAttributes: ["action": (segmenter?.selectedSegmentIndex) ?? 0])
     }
 

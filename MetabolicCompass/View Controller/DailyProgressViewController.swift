@@ -142,7 +142,7 @@ class DailyProgressViewController : UIViewController, DailyChartModelProtocol {
     func logContentView(asAppear: Bool = true) {
         Answers.logContentViewWithName("Body Clock",
                                        contentType: asAppear ? "Appear" : "Disappear",
-                                       contentId: NSDate().toString(DateFormat.Custom("YYYY-MM-dd:HH:mm:ss")),
+                                       contentId: NSDate().toString(DateFormat.Custom("YYYY-MM-dd:HH")),
                                        customAttributes: nil)
     }
 
