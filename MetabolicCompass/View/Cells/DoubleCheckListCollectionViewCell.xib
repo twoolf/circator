@@ -1,0 +1,120 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="10116" systemVersion="15E65" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES">
+    <dependencies>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="10085"/>
+        <capability name="Constraints with non-1.0 multipliers" minToolsVersion="5.1"/>
+    </dependencies>
+    <objects>
+        <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner"/>
+        <placeholder placeholderIdentifier="IBFirstResponder" id="-2" customClass="UIResponder"/>
+        <collectionViewCell opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" id="gTV-IL-0wX" customClass="DoubleCheckListCollectionViewCell" customModule="MetabolicCompass" customModuleProvider="target">
+            <rect key="frame" x="0.0" y="0.0" width="505" height="50"/>
+            <autoresizingMask key="autoresizingMask"/>
+            <view key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center">
+                <rect key="frame" x="0.0" y="0.0" width="505" height="50"/>
+                <subviews>
+                    <imageView userInteractionEnabled="NO" contentMode="center" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="UPw-1U-K2R">
+                        <rect key="frame" x="16" y="5" width="21" height="40"/>
+                        <constraints>
+                            <constraint firstAttribute="width" constant="21" id="EcZ-gn-Ep9"/>
+                            <constraint firstAttribute="height" constant="40" id="TaB-q4-6pf"/>
+                        </constraints>
+                    </imageView>
+                    <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="2ZY-iS-YI9" userLabel="first check">
+                        <rect key="frame" x="53" y="0.0" width="220" height="50"/>
+                        <subviews>
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Label" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="u76-Pd-O9c" customClass="AppLabel" customModule="MetabolicCompass" customModuleProvider="target">
+                                <rect key="frame" x="0.0" y="17" width="36" height="17"/>
+                                <fontDescription key="fontDescription" type="system" pointSize="14"/>
+                                <color key="textColor" red="0.0" green="0.0" blue="0.0" alpha="1" colorSpace="calibratedRGB"/>
+                                <nil key="highlightedColor"/>
+                            </label>
+                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="ywh-ch-zgU" customClass="CheckBox" customModule="MetabolicCompass" customModuleProvider="target">
+                                <rect key="frame" x="36" y="3" width="44" height="44"/>
+                                <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
+                                <constraints>
+                                    <constraint firstAttribute="width" constant="44" id="iEv-mA-wh1"/>
+                                    <constraint firstAttribute="height" constant="44" id="mp3-eM-Yms"/>
+                                </constraints>
+                                <state key="normal" image="checkbox-unchecked-register"/>
+                            </button>
+                        </subviews>
+                        <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
+                        <constraints>
+                            <constraint firstItem="u76-Pd-O9c" firstAttribute="centerY" secondItem="2ZY-iS-YI9" secondAttribute="centerY" id="3KR-at-TX8"/>
+                            <constraint firstItem="ywh-ch-zgU" firstAttribute="centerY" secondItem="2ZY-iS-YI9" secondAttribute="centerY" id="8kF-l0-auz"/>
+                            <constraint firstItem="ywh-ch-zgU" firstAttribute="leading" secondItem="u76-Pd-O9c" secondAttribute="trailing" id="Ah6-XW-CSd"/>
+                            <constraint firstItem="u76-Pd-O9c" firstAttribute="leading" secondItem="2ZY-iS-YI9" secondAttribute="leading" id="WNi-BR-Qhf"/>
+                            <constraint firstItem="u76-Pd-O9c" firstAttribute="centerY" secondItem="2ZY-iS-YI9" secondAttribute="centerY" id="mJk-AH-neB"/>
+                        </constraints>
+                    </view>
+                    <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="k0f-fX-QZM" userLabel="second check">
+                        <rect key="frame" x="273" y="0.0" width="216" height="50"/>
+                        <subviews>
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Label" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="GXN-ey-O98" customClass="AppLabel" customModule="MetabolicCompass" customModuleProvider="target">
+                                <rect key="frame" x="0.0" y="17" width="36" height="17"/>
+                                <fontDescription key="fontDescription" type="system" pointSize="14"/>
+                                <color key="textColor" red="0.0" green="0.0" blue="0.0" alpha="1" colorSpace="calibratedRGB"/>
+                                <nil key="highlightedColor"/>
+                            </label>
+                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="gYo-Hs-Eu5" customClass="CheckBox" customModule="MetabolicCompass" customModuleProvider="target">
+                                <rect key="frame" x="36" y="3" width="44" height="44"/>
+                                <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
+                                <constraints>
+                                    <constraint firstAttribute="width" constant="44" id="CFs-Nv-QR1"/>
+                                    <constraint firstAttribute="height" constant="44" id="lmb-cg-vHU"/>
+                                </constraints>
+                                <state key="normal" image="checkbox-checked-register"/>
+                            </button>
+                        </subviews>
+                        <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
+                        <constraints>
+                            <constraint firstItem="GXN-ey-O98" firstAttribute="centerY" secondItem="k0f-fX-QZM" secondAttribute="centerY" id="GKM-Gn-WP5"/>
+                            <constraint firstItem="gYo-Hs-Eu5" firstAttribute="centerY" secondItem="k0f-fX-QZM" secondAttribute="centerY" id="JtU-xn-Pub"/>
+                            <constraint firstItem="gYo-Hs-Eu5" firstAttribute="leading" secondItem="GXN-ey-O98" secondAttribute="trailing" id="ah5-OE-YCk"/>
+                            <constraint firstItem="GXN-ey-O98" firstAttribute="leading" secondItem="k0f-fX-QZM" secondAttribute="leading" id="ccQ-5w-bPH"/>
+                        </constraints>
+                    </view>
+                    <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="sOS-dc-9kf">
+                        <rect key="frame" x="53" y="49" width="436" height="1"/>
+                        <color key="backgroundColor" red="0.0" green="1" blue="1" alpha="1" colorSpace="calibratedRGB"/>
+                        <constraints>
+                            <constraint firstAttribute="height" constant="1" id="jA3-OG-vKu"/>
+                        </constraints>
+                    </view>
+                </subviews>
+                <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
+            </view>
+            <constraints>
+                <constraint firstItem="k0f-fX-QZM" firstAttribute="leading" secondItem="2ZY-iS-YI9" secondAttribute="trailing" id="2C8-LE-zJa"/>
+                <constraint firstItem="k0f-fX-QZM" firstAttribute="centerY" secondItem="2ZY-iS-YI9" secondAttribute="centerY" id="6be-iC-9ir"/>
+                <constraint firstItem="sOS-dc-9kf" firstAttribute="leading" secondItem="2ZY-iS-YI9" secondAttribute="leading" id="Ia0-Rm-gsl"/>
+                <constraint firstItem="k0f-fX-QZM" firstAttribute="trailing" secondItem="sOS-dc-9kf" secondAttribute="trailing" id="JqN-Mm-Zfp"/>
+                <constraint firstItem="2ZY-iS-YI9" firstAttribute="leading" secondItem="UPw-1U-K2R" secondAttribute="trailing" constant="16" id="Km1-1s-Cl9"/>
+                <constraint firstAttribute="trailing" secondItem="k0f-fX-QZM" secondAttribute="trailing" constant="16" id="QlU-lL-7gc"/>
+                <constraint firstItem="UPw-1U-K2R" firstAttribute="leading" secondItem="gTV-IL-0wX" secondAttribute="leading" constant="16" id="QnG-Xv-DqB"/>
+                <constraint firstAttribute="bottom" secondItem="sOS-dc-9kf" secondAttribute="bottom" id="Sh4-3S-pF6"/>
+                <constraint firstItem="k0f-fX-QZM" firstAttribute="height" secondItem="2ZY-iS-YI9" secondAttribute="height" id="Tzu-rC-UpX"/>
+                <constraint firstItem="2ZY-iS-YI9" firstAttribute="width" secondItem="gTV-IL-0wX" secondAttribute="width" multiplier="0.5" constant="-33" id="Whe-6m-Pj8"/>
+                <constraint firstItem="UPw-1U-K2R" firstAttribute="centerY" secondItem="gTV-IL-0wX" secondAttribute="centerY" id="dtH-IW-UAk"/>
+                <constraint firstAttribute="bottom" secondItem="2ZY-iS-YI9" secondAttribute="bottom" id="j0C-Jp-ZK4"/>
+                <constraint firstItem="2ZY-iS-YI9" firstAttribute="top" secondItem="gTV-IL-0wX" secondAttribute="top" id="zdU-af-3mj"/>
+            </constraints>
+            <size key="customSize" width="505" height="274"/>
+            <connections>
+                <outlet property="cellImage" destination="UPw-1U-K2R" id="Xqa-3t-LG4"/>
+                <outlet property="firstCheckBox" destination="ywh-ch-zgU" id="dun-x5-qNf"/>
+                <outlet property="firstLbl" destination="u76-Pd-O9c" id="v0W-p1-QyT"/>
+                <outlet property="secondCheckBox" destination="gYo-Hs-Eu5" id="HqL-B5-H5s"/>
+                <outlet property="secondLbl" destination="GXN-ey-O98" id="AjJ-Is-Pum"/>
+                <outlet property="separatorLineHeightConstraint" destination="jA3-OG-vKu" id="Rvh-6I-62a"/>
+                <outlet property="separatorView" destination="sOS-dc-9kf" id="F2O-gL-0q9"/>
+            </connections>
+            <point key="canvasLocation" x="407.5" y="346.5"/>
+        </collectionViewCell>
+    </objects>
+    <resources>
+        <image name="checkbox-checked-register" width="16" height="16"/>
+        <image name="checkbox-unchecked-register" width="16" height="16"/>
+    </resources>
+</document>

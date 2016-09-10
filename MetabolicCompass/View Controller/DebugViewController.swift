@@ -7,9 +7,10 @@
 //
 
 import Foundation
-import HealthKit
-import MetabolicCompassKit
 import UIKit
+import HealthKit
+import MCCircadianQueries
+import MetabolicCompassKit
 import Async
 import Former
 import HTPressableButton
@@ -59,12 +60,12 @@ class DebugViewController : FormViewController {
             let tname = type.displayText ?? type.identifier
             return LabelRowFormer<FormLabelCell>() {
                     $0.textLabel?.textColor = .grayColor()
-                    $0.textLabel?.text = "\(tname) \(self.getTimestamp(type))"
+                    $0.textLabel?.text = "\(tname) \(UploadManager.sharedManager.getRemoteAnchorForType(type))"
                 }.configure {
                     $0.enabled = true
                 }.onSelected { row in
-                    log.info("\(tname) \(self.getTimestamp(type))")
-                    row.text = "\(tname) \(self.getTimestamp(type))"
+                    log.info("\(tname) \(UploadManager.sharedManager.getRemoteAnchorForType(type))")
+                    row.text = "\(tname) \(UploadManager.sharedManager.getRemoteAnchorForType(type))"
             }
         }
 
@@ -75,28 +76,8 @@ class DebugViewController : FormViewController {
                             }.configure {
                                 $0.enabled = true
                             }.onSelected { row in
-                                HealthManager.sharedManager.resetAnchors()
+                                UploadManager.sharedManager.resetAnchors()
                         })
-
-        labelRows.append(LabelRowFormer<FormLabelCell>() {
-                            $0.textLabel?.text = "Sync anchors (local)"
-                            $0.textLabel?.textColor = .redColor()
-                            $0.textLabel?.font = .boldSystemFontOfSize(22)
-                            }.configure {
-                                $0.enabled = true
-                            }.onSelected { row in
-                                HealthManager.sharedManager.syncAnchorTS()
-            })
-
-        labelRows.append(LabelRowFormer<FormLabelCell>() {
-                            $0.textLabel?.text = "Sync anchors (remote)"
-                            $0.textLabel?.textColor = .redColor()
-                            $0.textLabel?.font = .boldSystemFontOfSize(22)
-                            }.configure {
-                                $0.enabled = true
-                            }.onSelected { row in
-                                HealthManager.sharedManager.syncAnchorTS(true)
-            })
 
         labelRows.append(LabelRowFormer<FormLabelCell>() {
             $0.textLabel?.text = "Force a crash"
@@ -141,7 +122,7 @@ class DebugViewController : FormViewController {
                 button.shadowHeight = 4
                 button.setTitle("Generate Samples", forState: .Normal)
                 button.titleLabel?.font = UIFont.systemFontOfSize(18, weight: UIFontWeightRegular)
-                button.addTarget(self, action: "doGenRandom", forControlEvents: .TouchUpInside)
+                button.addTarget(self, action: #selector(self.doGenRandom), forControlEvents: .TouchUpInside)
                 button.enabled = true
                 $0.contentView.addSubview(button)
             }.configure {
@@ -180,7 +161,7 @@ class DebugViewController : FormViewController {
                 button.shadowHeight = 4
                 button.setTitle("Generate Covering Data", forState: .Normal)
                 button.titleLabel?.font = UIFont.systemFontOfSize(18, weight: UIFontWeightRegular)
-                button.addTarget(self, action: "doGenCover", forControlEvents: .TouchUpInside)
+                button.addTarget(self, action: #selector(self.doGenCover), forControlEvents: .TouchUpInside)
                 button.enabled = true
                 $0.contentView.addSubview(button)
             }.configure {
@@ -220,7 +201,7 @@ class DebugViewController : FormViewController {
                 button.shadowHeight = 4
                 button.setTitle("Generate Local Data", forState: .Normal)
                 button.titleLabel?.font = UIFont.systemFontOfSize(18, weight: UIFontWeightRegular)
-                button.addTarget(self, action: "doGenLocal", forControlEvents: .TouchUpInside)
+                button.addTarget(self, action: #selector(self.doGenLocal), forControlEvents: .TouchUpInside)
                 button.enabled = true
                 $0.contentView.addSubview(button)
             }.configure {
@@ -235,7 +216,7 @@ class DebugViewController : FormViewController {
             button.shadowHeight = 4
             button.setTitle("Generate Local Data w/ Upload", forState: .Normal)
             button.titleLabel?.font = UIFont.systemFontOfSize(18, weight: UIFontWeightRegular)
-            button.addTarget(self, action: "doGenLocalWithUpload", forControlEvents: .TouchUpInside)
+            button.addTarget(self, action: #selector(self.doGenLocalWithUpload), forControlEvents: .TouchUpInside)
             button.enabled = true
             $0.contentView.addSubview(button)
             }.configure {
@@ -251,7 +232,7 @@ class DebugViewController : FormViewController {
                 button.shadowHeight = 4
                 button.setTitle("Cleanup Local Data", forState: .Normal)
                 button.titleLabel?.font = UIFont.systemFontOfSize(18, weight: UIFontWeightRegular)
-                button.addTarget(self, action: "doCleanupLocal", forControlEvents: .TouchUpInside)
+                button.addTarget(self, action: #selector(self.doCleanupLocal), forControlEvents: .TouchUpInside)
                 button.enabled = true
                 $0.contentView.addSubview(button)
             }.configure {
@@ -267,14 +248,6 @@ class DebugViewController : FormViewController {
         let generateLocalSection = SectionFormer(rowFormers: Array(generateLocalRows)).set(headerViewFormer: generateLocalHeader)
 
         former.append(sectionFormer: generateRandSection, generateCoverSection, generateLocalSection, debugAnchorsSection)
-    }
-
-    // TODO: use the cached profile rather than directly accessing the HealthManager.
-    // The HealthManager will itself push to the profile.
-    // Returns the anchor timestamp (i.e., the timestamp of the last sample accessed by an anchor query)
-    func getTimestamp(type: HKSampleType) -> NSTimeInterval {
-        let (_, ts) = HealthManager.sharedManager.getAnchorAndTSForType(type)
-        return ts
     }
 
     func doGenRandom() {
@@ -322,10 +295,10 @@ class DebugViewController : FormViewController {
                             autoreleasepool { _ in
                                 log.info("Uploading block of size \(block.count)")
                                 do {
-                                    let jsonObjs = try block.map(HealthManager.sharedManager.jsonifySample)
-                                    HealthManager.sharedManager.uploadSampleBlock(jsonObjs)
+                                    let jsonObjs = try block.map(UploadManager.sharedManager.jsonifySample)
+                                    UploadManager.sharedManager.putBlockSample(jsonObjs)
                                 } catch  {
-                                    log.info("problems with: (\(HealthManager.description())")
+                                    log.info("problems with: (\(IOSHealthManager.description())")
                                 }
                             }
                         } else {

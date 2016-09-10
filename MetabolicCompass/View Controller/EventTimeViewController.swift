@@ -12,6 +12,7 @@ import Crashlytics
 import SwiftDate
 import Async
 import SwiftChart
+import MCCircadianQueries
 
 /// initializations of these variables creates offsets so plots of event transitions are square waves
 private let stWorkout = 0.0
@@ -228,7 +229,7 @@ class EventTimeViewController : UIViewController {
         let yesterday = 1.days.ago
         let startDate = yesterday
 
-        HealthManager.sharedManager.fetchCircadianEventIntervals(startDate) { (intervals, error) -> Void in
+        MCHealthManager.sharedManager.fetchCircadianEventIntervals(startDate) { (intervals, error) -> Void in
             Async.main {
                 guard error == nil else {
                     log.error("Failed to fetch circadian events: \(error)")
@@ -378,6 +379,10 @@ class EventTimeViewController : UIViewController {
                     let fastingHrs = Int(floor(stats.2))
                     let fastingMins = (today + Int(round((stats.2 % 1.0) * 60.0)).minutes).toString(DateFormat.Custom("mm"))!
                     self.fastingLabel.text = "\(fastingHrs):\(fastingMins)"
+                    print("in EventTimeViewController, fasting hours: \(fastingHrs)")
+                    print("   and fasting minutes: \(fastingMins)")
+//                    MetricsStore.sharedInstance.fastingTime = fastingHrs
+                    
 
                     self.eatingLabel.text  = (today + Int(stats.0 * 3600.0).seconds).toString(DateFormat.Custom("HH:mm"))!
                     self.lastAteLabel.text = lastAte == nil ? "N/A" : lastAte!.toString(DateFormat.Custom("HH:mm"))!

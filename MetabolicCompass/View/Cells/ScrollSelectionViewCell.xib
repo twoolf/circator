@@ -1,0 +1,100 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="10117" systemVersion="15G31" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES">
+    <dependencies>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="10085"/>
+    </dependencies>
+    <customFonts key="customFonts">
+        <mutableArray key="gotham-book.ttf">
+            <string>GothamBook</string>
+            <string>GothamBook</string>
+            <string>GothamBook</string>
+        </mutableArray>
+    </customFonts>
+    <objects>
+        <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner"/>
+        <placeholder placeholderIdentifier="IBFirstResponder" id="-2" customClass="UIResponder"/>
+        <collectionViewCell opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" id="gTV-IL-0wX" customClass="ScrollSelectionViewCell" customModule="MetabolicCompass" customModuleProvider="target">
+            <rect key="frame" x="0.0" y="0.0" width="320" height="110"/>
+            <autoresizingMask key="autoresizingMask"/>
+            <view key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center">
+                <rect key="frame" x="0.0" y="0.0" width="320" height="110"/>
+                <subviews>
+                    <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="OYa-O9-zDa">
+                        <rect key="frame" x="0.0" y="0.0" width="320" height="60"/>
+                        <subviews>
+                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="qWh-W1-ICm" customClass="AppButton" customModule="MetabolicCompass" customModuleProvider="target">
+                                <rect key="frame" x="10" y="18" width="24" height="24"/>
+                                <constraints>
+                                    <constraint firstAttribute="height" constant="24" id="L36-Pq-n24"/>
+                                    <constraint firstAttribute="width" constant="24" id="leD-X6-wsz"/>
+                                </constraints>
+                                <state key="normal" image="icon-info">
+                                    <color key="titleColor" red="0.97790304309999998" green="1" blue="0.96725687689999995" alpha="1" colorSpace="calibratedRGB"/>
+                                </state>
+                            </button>
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="kg" textAlignment="right" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="0od-kb-uSJ" customClass="AppLabel" customModule="MetabolicCompass" customModuleProvider="target">
+                                <rect key="frame" x="285" y="23" width="19" height="14"/>
+                                <fontDescription key="fontDescription" name="GothamBook" family="Gotham Book" pointSize="15"/>
+                                <color key="textColor" white="1" alpha="0.40049619932432434" colorSpace="calibratedWhite"/>
+                                <nil key="highlightedColor"/>
+                            </label>
+                            <textField opaque="NO" clipsSubviews="YES" contentMode="scaleToFill" enabled="NO" contentHorizontalAlignment="left" contentVerticalAlignment="center" textAlignment="right" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="qgd-Wp-CfQ" customClass="AppTextField" customModule="MetabolicCompass" customModuleProvider="target">
+                                <rect key="frame" x="75" y="23" width="206" height="14"/>
+                                <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
+                                <color key="textColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                                <fontDescription key="fontDescription" name="GothamBook" family="Gotham Book" pointSize="15"/>
+                                <textInputTraits key="textInputTraits"/>
+                            </textField>
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="title" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="AKc-nd-vRg" customClass="AppLabel" customModule="MetabolicCompass" customModuleProvider="target">
+                                <rect key="frame" x="42" y="23" width="29" height="14"/>
+                                <fontDescription key="fontDescription" name="GothamBook" family="Gotham Book" pointSize="15"/>
+                                <color key="textColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                                <nil key="highlightedColor"/>
+                            </label>
+                        </subviews>
+                        <constraints>
+                            <constraint firstAttribute="trailing" secondItem="0od-kb-uSJ" secondAttribute="trailing" constant="16" id="5S8-vh-omS"/>
+                            <constraint firstItem="AKc-nd-vRg" firstAttribute="centerY" secondItem="qWh-W1-ICm" secondAttribute="centerY" id="7Iv-wa-ZEh"/>
+                            <constraint firstItem="0od-kb-uSJ" firstAttribute="leading" secondItem="qgd-Wp-CfQ" secondAttribute="trailing" constant="4" id="E63-Kd-P6N"/>
+                            <constraint firstItem="qWh-W1-ICm" firstAttribute="centerY" secondItem="OYa-O9-zDa" secondAttribute="centerY" id="Qed-Mf-k4K"/>
+                            <constraint firstItem="0od-kb-uSJ" firstAttribute="centerY" secondItem="qWh-W1-ICm" secondAttribute="centerY" id="Wlz-CC-hdd"/>
+                            <constraint firstItem="qgd-Wp-CfQ" firstAttribute="leading" secondItem="AKc-nd-vRg" secondAttribute="trailing" constant="4" id="hC9-sv-yT4"/>
+                            <constraint firstItem="AKc-nd-vRg" firstAttribute="leading" secondItem="qWh-W1-ICm" secondAttribute="trailing" constant="8" id="rFP-XF-jOy"/>
+                            <constraint firstItem="qWh-W1-ICm" firstAttribute="leading" secondItem="OYa-O9-zDa" secondAttribute="leading" constant="10" id="zUL-bl-um8"/>
+                            <constraint firstItem="qgd-Wp-CfQ" firstAttribute="centerY" secondItem="qWh-W1-ICm" secondAttribute="centerY" id="zpG-0N-NXO"/>
+                        </constraints>
+                    </view>
+                    <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="hGb-fY-Fz7">
+                        <rect key="frame" x="0.0" y="60" width="320" height="50"/>
+                        <color key="backgroundColor" red="0.29803921568627451" green="0.53333333333333333" blue="0.96862745098039216" alpha="1" colorSpace="calibratedRGB"/>
+                        <constraints>
+                            <constraint firstAttribute="height" constant="50" id="clj-TI-bAd"/>
+                        </constraints>
+                    </view>
+                </subviews>
+                <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
+            </view>
+            <color key="backgroundColor" red="0.047058823530000002" green="0.14117647059999999" blue="0.31764705879999999" alpha="1" colorSpace="calibratedRGB"/>
+            <constraints>
+                <constraint firstItem="hGb-fY-Fz7" firstAttribute="leading" secondItem="gTV-IL-0wX" secondAttribute="leading" id="6zi-HB-nmz"/>
+                <constraint firstItem="hGb-fY-Fz7" firstAttribute="top" secondItem="OYa-O9-zDa" secondAttribute="bottom" id="F4i-Om-sap"/>
+                <constraint firstAttribute="bottom" secondItem="hGb-fY-Fz7" secondAttribute="bottom" id="HgQ-dL-OVk"/>
+                <constraint firstItem="OYa-O9-zDa" firstAttribute="top" secondItem="gTV-IL-0wX" secondAttribute="top" id="Vqb-Pu-vTt"/>
+                <constraint firstAttribute="trailing" secondItem="hGb-fY-Fz7" secondAttribute="trailing" id="glg-hz-JGf"/>
+                <constraint firstItem="OYa-O9-zDa" firstAttribute="leading" secondItem="gTV-IL-0wX" secondAttribute="leading" id="lrx-80-Kp0"/>
+                <constraint firstAttribute="trailing" secondItem="OYa-O9-zDa" secondAttribute="trailing" id="zg1-TT-vta"/>
+            </constraints>
+            <connections>
+                <outlet property="scrollContainerHeight" destination="clj-TI-bAd" id="fNm-aF-bbG"/>
+                <outlet property="scrollContainerView" destination="hGb-fY-Fz7" id="DNQ-j0-OOV"/>
+                <outlet property="smallDescriptionLbl" destination="0od-kb-uSJ" id="2EW-bm-uCC"/>
+                <outlet property="titleLbl" destination="AKc-nd-vRg" id="EDu-vb-awj"/>
+                <outlet property="valueLbl" destination="qgd-Wp-CfQ" id="8Uy-nS-huY"/>
+            </connections>
+            <point key="canvasLocation" x="266" y="468"/>
+        </collectionViewCell>
+    </objects>
+    <resources>
+        <image name="icon-info" width="18" height="18"/>
+    </resources>
+</document>

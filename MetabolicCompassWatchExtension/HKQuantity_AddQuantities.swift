@@ -31,3 +31,93 @@ extension HKQuantity {
     }
     
 }
+
+public extension HKQuantityType {
+    override var aggregationOptions: HKStatisticsOptions {
+        switch identifier {
+        case HKCategoryTypeIdentifierSleepAnalysis:
+            return .DiscreteAverage
+            
+        case HKCorrelationTypeIdentifierBloodPressure:
+            return .DiscreteAverage
+            
+        case HKQuantityTypeIdentifierActiveEnergyBurned:
+            return .CumulativeSum
+            
+        case HKQuantityTypeIdentifierBasalEnergyBurned:
+            return .DiscreteAverage
+            
+        case HKQuantityTypeIdentifierBloodGlucose:
+            return .DiscreteAverage
+            
+        case HKQuantityTypeIdentifierBloodPressureSystolic:
+            return .DiscreteAverage
+            
+        case HKQuantityTypeIdentifierBloodPressureDiastolic:
+            return .DiscreteAverage
+            
+        case HKQuantityTypeIdentifierBodyMass:
+            return .DiscreteAverage
+            
+        case HKQuantityTypeIdentifierBodyMassIndex:
+            return .DiscreteAverage
+            
+        case HKQuantityTypeIdentifierDietaryCaffeine:
+            return .CumulativeSum
+            
+        case HKQuantityTypeIdentifierDietaryCarbohydrates:
+            return .CumulativeSum
+            
+        case HKQuantityTypeIdentifierDietaryCholesterol:
+            return .CumulativeSum
+            
+        case HKQuantityTypeIdentifierDietaryEnergyConsumed:
+            return .CumulativeSum
+            
+        case HKQuantityTypeIdentifierDietaryFatMonounsaturated:
+            return .CumulativeSum
+            
+        case HKQuantityTypeIdentifierDietaryFatPolyunsaturated:
+            return .CumulativeSum
+            
+        case HKQuantityTypeIdentifierDietaryFatSaturated:
+            return .CumulativeSum
+            
+        case HKQuantityTypeIdentifierDietaryFatTotal:
+            return .CumulativeSum
+            
+        case HKQuantityTypeIdentifierDietaryProtein:
+            return .CumulativeSum
+            
+        case HKQuantityTypeIdentifierDietarySodium:
+            return .CumulativeSum
+            
+        case HKQuantityTypeIdentifierDietarySugar:
+            return .CumulativeSum
+            
+        case HKQuantityTypeIdentifierDietaryWater:
+            return .CumulativeSum
+            
+        case HKQuantityTypeIdentifierDistanceWalkingRunning:
+            return .CumulativeSum
+            
+        case HKQuantityTypeIdentifierFlightsClimbed:
+            return .CumulativeSum
+            
+        case HKQuantityTypeIdentifierHeartRate:
+            return .DiscreteAverage
+            
+        case HKQuantityTypeIdentifierStepCount:
+            return .CumulativeSum
+            
+        case HKQuantityTypeIdentifierUVExposure:
+            return .DiscreteAverage
+            
+        case HKWorkoutTypeIdentifier:
+            return .CumulativeSum
+            
+        default:
+            return .None
+        }
+    }
+}

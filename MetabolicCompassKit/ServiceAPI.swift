@@ -13,58 +13,160 @@ import SwiftyBeaver
 
 let log = SwiftyBeaver.self
 
-public typealias SvcStringCompletion = (Bool, String?) -> Void
-public typealias SvcObjectCompletion = (Bool, AnyObject?) -> Void
 
-private let devServiceURL = "https://dev.metaboliccompass.com"
-private let prodServiceURL = "https://app.metaboliccompass.com"
-private let asDevService = true
+public typealias SvcResultCompletion = (RequestResult) -> Void
 
-private let resetPassDevURL = devServiceURL + "/forgot"
-private let resetPassProdURL = prodServiceURL + "/forgot"
-public  let resetPassURL = asDevService ? resetPassDevURL : resetPassProdURL
+
+private let apiPathComponent = "/api/v1"
+
+private let asDevService   = true
+private let devServiceURL  = NSURL(string: "https://api-dev.metaboliccompass.com")!
+private let devApiURL      = devServiceURL.URLByAppendingPathComponent(apiPathComponent)
+private let prodServiceURL = NSURL(string: "https://api.metaboliccompass.com")!
+private let prodApiURL     = prodServiceURL.URLByAppendingPathComponent(apiPathComponent)
+
+
+private let resetPassDevURL  = devServiceURL.URLByAppendingPathComponent("/forgot")
+private let resetPassProdURL = prodServiceURL.URLByAppendingPathComponent("/forgot")
+public  let resetPassURL     = asDevService ? resetPassDevURL : resetPassProdURL
+
+public let aboutURL         = (asDevService ? devServiceURL : prodServiceURL).URLByAppendingPathComponent("about")
+public let privacyPolicyURL = (asDevService ? devServiceURL : prodServiceURL).URLByAppendingPathComponent("privacy")
+
+public class  RequestResult{
+    private var _obj:Any? = nil
+    //private var infoMsg:String? = nil
+    private var _ok:Bool?
+    
+    enum ResultType{
+        case BoolWithMessage
+        case Error
+        case AFObject
+        case AFString
+    }
+    private var resType:ResultType
+    
+    public var error:NSError? = nil
+    public var ok:Bool {
+        switch resType {
+        case .BoolWithMessage:
+            return _ok ?? false
+        case .AFObject:
+            let afObjRes = _obj as? Alamofire.Result<AnyObject>
+            return afObjRes?.isSuccess ?? false
+        case .AFString:
+            let afStrRes = _obj as? Alamofire.Result<String>
+            return afStrRes?.isSuccess ?? false
+        case .Error:
+            let err = _obj as? NSError
+            return (err == nil)
+        }
+    }
+    
+    public var fail:Bool {
+        return !ok
+    }
+    
+    public var info:String {
+        switch resType {
+        case .BoolWithMessage:
+            return _obj as? String ?? ""
+        case .AFObject:
+            let afRes = _obj as? Alamofire.Result<AnyObject>
+            return (afRes?.error as? NSError)?.localizedDescription ?? ""
+        case .AFString:
+            let afRes = _obj as? Alamofire.Result<String>
+            return (afRes?.error as? NSError)?.localizedDescription ?? ""
+        case .Error:
+            let err = _obj as? NSError
+            return err?.localizedDescription ?? ""
+        }
+    }
+    
+    init() {
+        resType = .BoolWithMessage
+        _ok = true
+    }
+    init(ok:Bool, message:String) {
+        resType = .BoolWithMessage
+        _ok = ok
+        _obj = message
+    }
+    init(errorMessage: String) {
+        resType = .BoolWithMessage
+        _ok = false
+        _obj = errorMessage
+    }
+    init(afObjectResult: Alamofire.Result<AnyObject>) {
+        resType = .AFObject
+        _obj = afObjectResult
+    }
+    init(afStringResult: Alamofire.Result<String>) {
+        resType = .AFString
+        _obj = afStringResult
+    }
+    init(error: NSError) {
+        resType = .Error
+        _obj = error
+    }
+    
+
+}
+
 
 /**
  This class sets up the needed API for all of the reads/writes to our cloud data store.  This is needed to support our ability to add new aggregate information into the data store and to update the display on our participants screens as new information is deposited into the store.
- 
+
  - note: uses Alamofire/JSON
  - remark: authentication using OAuthToken
  */
 enum MCRouter : URLRequestConvertible {
-    static let baseURLString = asDevService ? devServiceURL : prodServiceURL
+    static let baseURL = asDevService ? devServiceURL : prodServiceURL
+    static let apiURL  = asDevService ? devApiURL : prodApiURL
     static var OAuthToken: String?
+    static var tokenExpireTime: NSTimeInterval = 0
+
+    static func updateAuthToken (token: String?) {
+        OAuthToken = token
+        tokenExpireTime = token != nil ? NSDate().timeIntervalSince1970 + 3600: 0
+    }
 
     // Data API
-    case UploadHKMeasures([String: AnyObject])
-    case AggMeasures([String: AnyObject])
-    case MealMeasures([String: AnyObject])
+    case AddMeasures([String: AnyObject])
+    case AddSeqMeasures([String: AnyObject])
+    case RemoveMeasures([String: AnyObject])
+    case AggregateMeasures([String: AnyObject])
 
-    // Timestamps API
-    case UploadHKTSAcquired([String: AnyObject])
+    case StudyStats
 
     // User and profile management API
-    case GetUserAccountData
+    case GetUserAccountData([AccountComponent])
+
     case SetUserAccountData([String: AnyObject])
-    case DeleteAccount
+        // For SetUserAccountData, the caller is responsible for constructing
+        // the component-specific nesting (e.g, ["consent": "<base64 string>"])
 
-    case GetConsent
-    case SetConsent([String: AnyObject])
+    case DeleteAccount([String: AnyObject])
 
-    case TokenExpiry([String: AnyObject])
+    // Token management API
+    case TokenExpiry
 
     var method: Alamofire.Method {
         switch self {
-        case .UploadHKMeasures:
+        case .AddMeasures:
             return .POST
 
-        case .AggMeasures:
+        case .AddSeqMeasures:
             return .POST
 
-        case .MealMeasures:
+        case .RemoveMeasures:
+            return .POST
+
+        case .AggregateMeasures:
             return .GET
 
-        case .UploadHKTSAcquired:
-            return .POST
+        case .StudyStats:
+            return .GET
 
         case .DeleteAccount:
             return .POST
@@ -75,12 +177,6 @@ enum MCRouter : URLRequestConvertible {
         case .SetUserAccountData:
             return .POST
 
-        case GetConsent:
-            return .GET
-
-        case SetConsent:
-            return .POST
-
         case .TokenExpiry:
             return .GET
         }
@@ -88,26 +184,26 @@ enum MCRouter : URLRequestConvertible {
 
     var path: String {
         switch self {
-        case .UploadHKMeasures:
+        case .AddMeasures:
             return "/measures"
 
-        case .AggMeasures:
-            return "/measures/aggregates"
+        case .AddSeqMeasures:
+            return "/measures/granolalog"
 
-        case .MealMeasures:
-            return "/measures/meals"
+        case .RemoveMeasures:
+            return "/measures/mc/delete"
 
-        case .UploadHKTSAcquired:
-            return "/timestamps/acquired"
+        case .AggregateMeasures:
+            return "/measures/mc/dbavg"
+
+        case .StudyStats:
+            return "/user/studystats"
 
         case .DeleteAccount:
             return "/user/withdraw"
 
-        case .GetUserAccountData, .SetUserAccountData:
-            return "/user/profile"
-
-        case .GetConsent, .SetConsent:
-            return "/user/consent"
+        case .GetUserAccountData(_), .SetUserAccountData(_):
+            return "/user/account"
 
         case .TokenExpiry:
             return "/user/expiry"
@@ -117,8 +213,7 @@ enum MCRouter : URLRequestConvertible {
     // MARK: URLRequestConvertible
 
     var URLRequest: NSMutableURLRequest {
-        let URL = NSURL(string: MCRouter.baseURLString)!
-        let mutableURLRequest = NSMutableURLRequest(URL: URL.URLByAppendingPathComponent(path))
+        let mutableURLRequest = NSMutableURLRequest(URL: MCRouter.apiURL.URLByAppendingPathComponent(path))
         mutableURLRequest.HTTPMethod = method.rawValue
 
         if let token = MCRouter.OAuthToken {
@@ -126,42 +221,45 @@ enum MCRouter : URLRequestConvertible {
         }
 
         switch self {
-        case .UploadHKMeasures(var parameters):
-            parameters["userid"] = UserManager.sharedManager.getUserIdHash() ?? ""
+        case .AddMeasures(let parameters):
             return Alamofire.ParameterEncoding.JSON.encode(mutableURLRequest, parameters: parameters).0
 
-        case .AggMeasures(let parameters):
+        case .AddSeqMeasures(let parameters):
             return Alamofire.ParameterEncoding.JSON.encode(mutableURLRequest, parameters: parameters).0
 
-        case .MealMeasures(let parameters):
+        case .RemoveMeasures(let parameters):
             return Alamofire.ParameterEncoding.JSON.encode(mutableURLRequest, parameters: parameters).0
 
-        case .UploadHKTSAcquired(let parameters):
-            return Alamofire.ParameterEncoding.JSON.encode(mutableURLRequest, parameters: parameters).0
+        case .AggregateMeasures(let parameters):
+            return Alamofire.ParameterEncoding.URL.encode(mutableURLRequest, parameters: parameters).0
 
-        case .DeleteAccount:
+        case .StudyStats:
             return mutableURLRequest
 
-        case .GetUserAccountData:
-            return mutableURLRequest
+        case .DeleteAccount(let parameters):
+            return Alamofire.ParameterEncoding.JSON.encode(mutableURLRequest, parameters: parameters).0
+
+        case .GetUserAccountData(let components):
+            let parameters = ["components": components.map(getComponentName)]
+            return Alamofire.ParameterEncoding.URL.encode(mutableURLRequest, parameters: parameters).0
 
         case .SetUserAccountData(let parameters):
             return Alamofire.ParameterEncoding.JSON.encode(mutableURLRequest, parameters: parameters).0
 
-        case .GetConsent:
+        case .TokenExpiry:
             return mutableURLRequest
-
-        case .SetConsent(let parameters):
-            return Alamofire.ParameterEncoding.JSON.encode(mutableURLRequest, parameters: parameters).0
-
-        case .TokenExpiry(let parameters):
-            return Alamofire.ParameterEncoding.JSON.encode(mutableURLRequest, parameters: parameters).0
         }
     }
 
 }
 
+public protocol ServiceRequestResultDelegate {
+    func didFinishJSONRequest(request:NSURLRequest?, response:NSHTTPURLResponse?, result:Alamofire.Result<AnyObject>)
+    func didFinishStringRequest(request:NSURLRequest?, response:NSHTTPURLResponse?, result:Alamofire.Result<String>)
+}
+
 public class Service {
+    public static var delegate:ServiceRequestResultDelegate?
     internal static func string<S: SequenceType where S.Generator.Element == Int>
         (route: MCRouter, statusCode: S, tag: String,
         completion: (NSURLRequest?, NSHTTPURLResponse?, Alamofire.Result<String>) -> Void)
@@ -185,6 +283,10 @@ extension Alamofire.Request {
     {
         return self.responseString() { req, resp, result in
             log.debug("\(tag): " + (result.isSuccess ? "SUCCESS" : "FAILED"))
+            if Service.delegate != nil{
+                Service.delegate!.didFinishStringRequest(req, response:resp, result:result)
+            }
+            log.debug("\n***result:\(result)")
             completion(req, resp, result)
         }
     }
@@ -194,6 +296,14 @@ extension Alamofire.Request {
     {
         return self.responseJSON() { req, resp, result in
             log.debug("\(tag): " + (result.isSuccess ? "SUCCESS" : "FAILED"))
+            if Service.delegate != nil{
+                Service.delegate!.didFinishJSONRequest(req, response:resp, result:result)
+            }
+            log.debug("\n***result:\(result)")
+            if !result.isSuccess {
+                log.debug("\n***response:\(resp)")
+                log.debug("\n***error:\(result.error)")
+            }
             completion(req, resp, result)
         }
     }

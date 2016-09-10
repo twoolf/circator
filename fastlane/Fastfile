@@ -50,24 +50,11 @@ app_dist_profiles = { 'edu.jhu.cs.damsl.MetabolicCompass.app' => "",
                     }
 
 platform :ios do
-  before_all do
-    # 
-  end
-
-  lane :testrb do
-    app_ids.map {|n| puts "#{n}" }
-  end
-
   desc "Install FixCode for c&p management"
   lane :setupxcode do
     install_xcode_plugin(
       url: "https://github.com/fastlane/FixCode/releases/download/0.2.0/FixCode.xcplugin.zip"
     )
-  end
-
-  desc "Install Blackbox for secure git files"
-  lane :setupbb do
-    sh "cd .. && ./../scripts/install_blackbox.sh"
   end
 
   desc "Clean DerivedData"
@@ -83,6 +70,10 @@ platform :ios do
   #######################################
   ## Development sessions
   ##
+  desc "Install Blackbox for secure git files"
+  lane :setupbb do
+    sh "cd .. && ./../scripts/install_blackbox.sh"
+  end
 
   desc "Start a Metabolic Compass development session"
   lane :start_coding do
@@ -137,51 +128,45 @@ platform :ios do
     )
   end
 
-  ########################################
-  ## Cert and provisioning profile prep
+  #############################################
+  ## Cert and provisioning profile management 
   ##
 
   desc "Fastlane/match execution"
-  lane :prepcerts do |options|
-    type  = options[:type]
-    ro    = options[:readonly]
-    frc   = options[:force]
+  lane :certs do |options|
+    type  = options.key?(:type) ? options[:type] : 'development'
+    ro    = options.key?(:readonly) ? options[:readonly] : true
+    frc   = options.key?(:force) ? options[:force] : false
 
     app_ids.each {|appid,_| match(type: type, force: frc, readonly: ro, app_identifier: appid) }
   end
 
+  ##
+  ## Certificate lane synonyms.
+
+  desc "Get Ad Hoc distribution certs"
+  lane :adhoc_certs do
+    certs(type: 'adhoc')
+  end
+
+  desc "Get App Store distribution certs"
+  lane :app_certs do
+    certs(type: 'appstore')
+  end
+
   desc "Force new development certificates"
   lane :new_dev_certs do
-    prepcerts(type: 'development', readonly: false, force: true)
+    certs(type: 'development', readonly: false, force: true)
   end
 
   desc "Force new adhoc certificates"
   lane :new_adhoc_certs do
-    prepcerts(type: 'adhoc', readonly: false, force: true)
+    certs(type: 'adhoc', readonly: false, force: true)
   end
 
   desc "Force new app certificates"
   lane :new_app_certs do
-    prepcerts(type: 'appstore', readonly: false, force: true)
-  end
-
-  desc "Private lane for command line build preparation"
-  private_lane :prepbuild do |options|
-    type = options[:type]
-    ro   = options[:readonly]
-
-    cocoapods
-    prepcerts(type: type, readonly: ro, force: false)
-  end
-
-  desc "Prepare for command line build"
-  lane :preparebuild do
-    prepbuild(type: 'development', readonly: true)
-  end
-
-  desc "Prepare for command line deployment to the App Store"
-  lane :preparedeploy do
-    prepcerts(type: 'appstore', readonly: true)
+    certs(type: 'appstore', readonly: false, force: true)
   end
 
 
@@ -201,12 +186,29 @@ platform :ios do
     increment_build_number(build_number: options[:build_number])
   end
 
+  desc "Command line build preparation"
+  lane :preparebuild do |options|
+    type  = options.key?(:type) ? options[:type] : 'development'
+    ro    = options.key?(:readonly) ? options[:readonly] : true
+    force = options.key?(:force) ? options[:force] : false
+    withcerts = options.key?(:withcerts) ? options[:withcerts] : true
+
+    cocoapods
+    if withcerts
+      certs(type: type, readonly: ro, force: force)
+    end
+  end
+
   desc "Build a development archive"
   lane :build_dev do |options|
-    cocoapods
+    if options[:pods]
+      cocoapods
+    end
 
     if options[:force_certs]
       new_dev_certs
+    else
+      certs
     end
 
     if options[:build_number]
@@ -222,15 +224,19 @@ platform :ios do
       ENV[metadata[1]] = uuid
     }
 
-    gym(scheme: "MetabolicCompass", use_legacy_build_api: true)
+    gym(scheme: "MetabolicCompass")
   end
 
   desc "Build an adhoc archive"
   lane :build_adhoc do |options|
-    cocoapods
+    if options[:pods]
+      cocoapods
+    end
 
     if options[:force_certs]
       new_adhoc_certs
+    else
+      adhoc_certs
     end
 
     if options[:build_number]
@@ -246,15 +252,19 @@ platform :ios do
       ENV[metadata[1]] = uuid
     }
 
-    gym(scheme: "MetabolicCompass", use_legacy_build_api: true)
+    gym(scheme: "MetabolicCompass")
   end
 
   desc "Build a release archive"
   lane :build_app do |options|
-    cocoapods
+    if options[:pods]
+      cocoapods
+    end
 
     if options[:force_certs]
       new_app_certs
+    else
+      app_certs
     end
 
     if options[:build_number]
@@ -270,13 +280,12 @@ platform :ios do
       ENV[metadata[1]] = uuid
     }
 
-    gym(scheme: "MetabolicCompass", use_legacy_build_api: true)
+    gym(scheme: "MetabolicCompass", use_legacy_build_api: false, include_bitcode: false, include_symbols: false)
   end
 
   desc "Resign a development archive"
   lane :resign_dev do
-    prepcerts(type: 'development', readonly: false, force: true)
-
+    new_dev_certs
     app_ids.each {|appid, metadata|
       uuid = ENV["sigh_#{appid}_development"]
       homedir = ENV["HOME"]
@@ -288,8 +297,7 @@ platform :ios do
 
   desc "Resign a development archive"
   lane :resign_dev_as_dist do
-    prepcerts(type: 'appstore', readonly: false, force: true)
-
+    new_app_certs
     app_ids.each {|appid, metadata|
       uuid = ENV["sigh_#{appid}_appstore"]
       homedir = ENV["HOME"]
@@ -350,6 +358,12 @@ platform :ios do
   #  deliver(force: true)
   #  frameit
   #end
+  
+  desc "Build and submit a beta build to Fabric/Crashlytics"
+  lane :beta_srost_fabric do
+    build_dev
+    crashlytics(ipa_path: "./MetabolicCompass.ipa", notifications: true)
+  end
 
 
   ###############################

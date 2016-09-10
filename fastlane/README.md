@@ -6,21 +6,11 @@ sudo gem install fastlane
 ```
 # Available Actions
 ## iOS
-### ios testrb
-```
-fastlane ios testrb
-```
-
 ### ios setupxcode
 ```
 fastlane ios setupxcode
 ```
 Install FixCode for c&p management
-### ios setupbb
-```
-fastlane ios setupbb
-```
-Install Blackbox for secure git files
 ### ios cleanderived
 ```
 fastlane ios cleanderived
@@ -31,6 +21,11 @@ Clean DerivedData
 fastlane ios test
 ```
 Runs all the tests
+### ios setupbb
+```
+fastlane ios setupbb
+```
+Install Blackbox for secure git files
 ### ios start_coding
 ```
 fastlane ios start_coding
@@ -56,11 +51,21 @@ Create bundle identifiers on the Developer Portal
 fastlane ios create_itc_appids
 ```
 Create bundle identifiers on iTunes Connect
-### ios prepcerts
+### ios certs
 ```
-fastlane ios prepcerts
+fastlane ios certs
 ```
 Fastlane/match execution
+### ios adhoc_certs
+```
+fastlane ios adhoc_certs
+```
+Get Ad Hoc distribution certs
+### ios app_certs
+```
+fastlane ios app_certs
+```
+Get App Store distribution certs
 ### ios new_dev_certs
 ```
 fastlane ios new_dev_certs
@@ -76,16 +81,6 @@ Force new adhoc certificates
 fastlane ios new_app_certs
 ```
 Force new app certificates
-### ios preparebuild
-```
-fastlane ios preparebuild
-```
-Prepare for command line build
-### ios preparedeploy
-```
-fastlane ios preparedeploy
-```
-Prepare for command line deployment to the App Store
 ### ios set_codesigning
 ```
 fastlane ios set_codesigning
@@ -96,6 +91,11 @@ Set XCode project code signing and provisioning
 fastlane ios build_version
 ```
 Set a specific build number
+### ios preparebuild
+```
+fastlane ios preparebuild
+```
+Command line build preparation
 ### ios build_dev
 ```
 fastlane ios build_dev
@@ -146,9 +146,14 @@ Build and submit a beta build to Fabric/Crashlytics
 fastlane ios beta
 ```
 Build and submit a beta build to Apple TestFlight and Fabric/Crashlytics
+### ios beta_srost_fabric
+```
+fastlane ios beta_srost_fabric
+```
+Build and submit a beta build to Fabric/Crashlytics
 
 ----
 
-This README.md is auto-generated and will be re-generated every time to run [fastlane](https://fastlane.tools).  
-More information about fastlane can be found on [https://fastlane.tools](https://fastlane.tools).  
-The documentation of fastlane can be found on [GitHub](https://github.com/fastlane/fastlane).
+This README.md is auto-generated and will be re-generated every time to run [fastlane](https://fastlane.tools).
+More information about fastlane can be found on [https://fastlane.tools](https://fastlane.tools).
+The documentation of fastlane can be found on [GitHub](https://github.com/fastlane/fastlane/tree/master/fastlane).

@@ -8,20 +8,20 @@
         <!--IntroInterfaceController-->
         <scene sceneID="aou-V4-d1y">
             <objects>
-                <controller identifier="IntroInterfaecController" id="AgC-eL-Hgc" userLabel="IntroInterfaceController" customClass="IntroInterfaceController" customModule="MetabolicCompassWatchExtension">
+                <controller identifier="IntroInterfaecController" title="M-Compass" id="AgC-eL-Hgc" userLabel="IntroInterfaceController" customClass="IntroInterfaceController" customModule="MetabolicCompassWatchExtension">
                     <items>
                         <group width="1" height="1" alignment="left" layout="vertical" spacing="0.0" id="7YB-7w-psE">
                             <items>
                                 <group width="1" height="0.5" alignment="left" spacing="5" id="tjv-Ck-gEV">
                                     <items>
                                         <button width="0.5" height="1" alignment="left" title="Meal" id="efV-eP-frF">
-                                            <color key="backgroundColor" red="0.0" green="0.82511861909999995" blue="0.04371081919" alpha="1" colorSpace="calibratedRGB"/>
+                                            <color key="backgroundColor" red="0.1803921568627451" green="0.80000000000000004" blue="0.44313725490196076" alpha="1" colorSpace="calibratedRGB"/>
                                             <connections>
                                                 <segue destination="bN8-zq-f9S" kind="push" id="l3F-GC-lti"/>
                                             </connections>
                                         </button>
                                         <button width="0.5" height="1" alignment="right" title="Sleep" id="edE-qc-9uN">
-                                            <color key="backgroundColor" red="0.1537957553" green="0.0" blue="1" alpha="1" colorSpace="calibratedRGB"/>
+                                            <color key="backgroundColor" red="0.94509803921568625" green="0.76862745098039209" blue="0.058823529411764705" alpha="1" colorSpace="calibratedRGB"/>
                                             <connections>
                                                 <segue destination="Sk5-u4-eDK" kind="push" id="zdD-wQ-UVz"/>
                                             </connections>
@@ -32,14 +32,14 @@
                                 <group width="1" height="0.5" alignment="left" spacing="5" id="biC-ez-bx2">
                                     <items>
                                         <button width="0.5" height="1" alignment="left" title="Water" id="hCU-mZ-gCF">
-                                            <color key="backgroundColor" red="0.0" green="0.47843137250000001" blue="1" alpha="1" colorSpace="calibratedRGB"/>
+                                            <color key="backgroundColor" red="0.20392156862745098" green="0.59607843137254901" blue="0.85882352941176465" alpha="1" colorSpace="calibratedRGB"/>
                                             <connections>
                                                 <segue destination="YiA-fx-NQl" kind="push" id="ZYI-dh-tJB"/>
                                             </connections>
                                         </button>
-                                        <button width="0.5" height="1" alignment="right" title="Exercise" id="30E-7d-sfh">
-                                            <color key="backgroundColor" red="1" green="0.0" blue="0.2685569706" alpha="1" colorSpace="calibratedRGB"/>
-                                            <fontDescription key="font" type="system" pointSize="11"/>
+                                        <button width="0.5" height="1" alignment="right" title="Sport" id="30E-7d-sfh">
+                                            <color key="backgroundColor" red="0.90588235294117647" green="0.29803921568627451" blue="0.23529411764705882" alpha="1" colorSpace="calibratedRGB"/>
+                                            <fontDescription key="font" type="system" pointSize="15"/>
                                             <connections>
                                                 <segue destination="uYH-JB-1gX" kind="push" id="rPe-6a-tgs"/>
                                             </connections>
@@ -55,31 +55,35 @@
             </objects>
             <point key="canvasLocation" x="-288" y="313"/>
         </scene>
-        <!--Meal Times Interface Controller-->
+        <!--M-Compass-->
         <scene sceneID="eCA-eR-aXu">
             <objects>
-                <controller id="bN8-zq-f9S" customClass="MealTimesInterfaceController" customModule="MetabolicCompassWatchExtension">
+                <controller identifier="MealTimesInterfaceController" title="M-Compass" id="bN8-zq-f9S" customClass="MealTimesInterfaceController" customModule="MetabolicCompassWatchExtension">
                     <items>
                         <group width="1" height="1" alignment="left" layout="vertical" spacing="9" id="wIp-Ym-8he">
                             <items>
-                                <button width="1" height="0.29999999999999999" heightAdjustment="2" alignment="left" title="Breakfast" id="hrl-jx-kIl">
-                                    <color key="backgroundColor" red="0.0" green="0.82511861909999995" blue="0.04371081919" alpha="1" colorSpace="calibratedRGB"/>
+                                <button width="1" height="0.20000000000000001" heightAdjustment="6" alignment="left" title="Breakfast" id="hrl-jx-kIl">
+                                    <color key="backgroundColor" red="0.1803921568627451" green="0.80000000000000004" blue="0.44313725490196076" alpha="1" colorSpace="calibratedRGB"/>
                                     <connections>
                                         <action selector="onBreakfast" destination="bN8-zq-f9S" id="F5G-JR-zIS"/>
                                     </connections>
                                 </button>
-                                <button width="1" height="0.29999999999999999" heightAdjustment="2" alignment="left" title="Lunch" id="TQ8-Uo-ecZ">
-                                    <color key="backgroundColor" red="0.0" green="0.82511861909999995" blue="0.04371081919" alpha="1" colorSpace="calibratedRGB"/>
+                                <button width="1" height="0.20000000000000001" heightAdjustment="6" alignment="left" title="Lunch" id="TQ8-Uo-ecZ">
+                                    <color key="backgroundColor" red="0.1803921568627451" green="0.80000000000000004" blue="0.44313725490196076" alpha="1" colorSpace="calibratedRGB"/>
                                     <connections>
                                         <action selector="onLunch" destination="bN8-zq-f9S" id="h4L-8E-8Gh"/>
-                                        <segue destination="dUL-SX-553" kind="push" id="1GW-6V-lG7"/>
                                     </connections>
                                 </button>
-                                <button width="1" height="0.29999999999999999" heightAdjustment="2" alignment="left" title="Dinner" id="d5x-dy-9u2">
-                                    <color key="backgroundColor" red="0.0" green="0.82511861909999995" blue="0.04371081919" alpha="1" colorSpace="calibratedRGB"/>
+                                <button width="1" height="0.20000000000000001" heightAdjustment="6" alignment="left" title="Dinner" id="d5x-dy-9u2">
+                                    <color key="backgroundColor" red="0.1803921568627451" green="0.80000000000000004" blue="0.44313725490196076" alpha="1" colorSpace="calibratedRGB"/>
                                     <connections>
                                         <action selector="onDinner" destination="bN8-zq-f9S" id="wAI-EZ-OIO"/>
-                                        <segue destination="dUL-SX-553" kind="push" id="BJh-Wl-OoF"/>
+                                    </connections>
+                                </button>
+                                <button width="1" height="0.20000000000000001" heightAdjustment="6" alignment="left" title="Snack" id="5FK-hS-gEJ">
+                                    <color key="backgroundColor" red="0.1803921568627451" green="0.80000000000000004" blue="0.44313725490196076" alpha="1" colorSpace="calibratedRGB"/>
+                                    <connections>
+                                        <action selector="onSnack" destination="bN8-zq-f9S" id="9By-43-VcX"/>
                                     </connections>
                                 </button>
                             </items>
@@ -90,33 +94,29 @@
                         <outlet property="breakfastButton" destination="hrl-jx-kIl" id="xni-ip-TWE"/>
                         <outlet property="dinnerButton" destination="d5x-dy-9u2" id="qoM-HP-Sdl"/>
                         <outlet property="lunchButton" destination="TQ8-Uo-ecZ" id="HIi-Gd-7vL"/>
+                        <outlet property="snackButton" destination="5FK-hS-gEJ" id="md7-cq-8lc"/>
                     </connections>
                 </controller>
             </objects>
             <point key="canvasLocation" x="-33" y="-215"/>
         </scene>
-        <!--Meal Interface Controller-->
+        <!--M-Compass-->
         <scene sceneID="pMY-eT-Nzc">
             <objects>
-                <controller id="dUL-SX-553" customClass="MealInterfaceController" customModule="MetabolicCompassWatchExtension">
+                <controller identifier="MealInterfaceController" title="M-Compass" id="dUL-SX-553" customClass="MealInterfaceController" customModule="MetabolicCompassWatchExtension">
                     <items>
-                        <group width="1" height="1" alignment="left" layout="vertical" id="kvR-Vw-Rsu">
-                            <items>
-                                <button width="0.80000000000000004" height="0.20000000000000001" alignment="center" verticalAlignment="bottom" title="Enter" id="ykV-3c-2BM">
-                                    <color key="titleColor" red="0.93725490199999995" green="0.93725490199999995" blue="0.95686274510000002" alpha="1" colorSpace="calibratedRGB"/>
-                                    <color key="backgroundColor" red="0.0" green="0.82511861910994766" blue="0.043710819187050338" alpha="1" colorSpace="calibratedRGB"/>
-                                    <connections>
-                                        <action selector="mealSaveButton" destination="dUL-SX-553" id="AQq-j0-qCS"/>
-                                    </connections>
-                                </button>
-                                <picker height="0.80000000000000004" alignment="left" style="sequence" id="1sl-PH-VyX">
-                                    <connections>
-                                        <action selector="onMealEntry:" destination="dUL-SX-553" id="g3O-CA-Kt5"/>
-                                    </connections>
-                                </picker>
-                            </items>
-                            <edgeInsets key="margins" left="10" right="10" top="0.0" bottom="5"/>
-                        </group>
+                        <button width="0.80000000000000004" height="0.20000000000000001" alignment="center" verticalAlignment="bottom" title="Meal Started" id="ykV-3c-2BM">
+                            <color key="titleColor" red="0.93725490199999995" green="0.93725490199999995" blue="0.95686274510000002" alpha="1" colorSpace="calibratedRGB"/>
+                            <color key="backgroundColor" red="0.1803921568627451" green="0.80000000000000004" blue="0.44313725490196076" alpha="1" colorSpace="calibratedRGB"/>
+                            <connections>
+                                <action selector="mealSaveButton" destination="dUL-SX-553" id="AQq-j0-qCS"/>
+                            </connections>
+                        </button>
+                        <picker height="0.80000000000000004" alignment="left" style="sequence" id="1sl-PH-VyX">
+                            <connections>
+                                <action selector="onMealEntry:" destination="dUL-SX-553" id="g3O-CA-Kt5"/>
+                            </connections>
+                        </picker>
                     </items>
                     <connections>
                         <outlet property="enterButton" destination="ykV-3c-2BM" id="Nrk-1W-Kgs"/>
@@ -124,60 +124,101 @@
                     </connections>
                 </controller>
             </objects>
-            <point key="canvasLocation" x="256" y="-215"/>
+            <point key="canvasLocation" x="209" y="-215"/>
         </scene>
-        <!--Sleep Interface Controller-->
-        <scene sceneID="0rq-CP-qZy">
+        <!--M-Compass-->
+        <scene sceneID="OEn-Jy-QbD">
             <objects>
-                <controller id="Sk5-u4-eDK" customClass="SleepInterfaceController" customModule="MetabolicCompassWatchExtension">
+                <controller identifier="MealStartTimeController" title="M-Compass" id="uRt-F4-FMq" customClass="MealStartTimeController" customModule="MetabolicCompassWatchExtension">
                     <items>
-                        <group width="1" height="1" alignment="left" layout="vertical" id="vgm-K0-MJq">
-                            <items>
-                                <picker height="0.80000000000000004" alignment="left" style="sequence" id="jNS-ju-jML">
-                                    <connections>
-                                        <action selector="onSleepEntry:" destination="Sk5-u4-eDK" id="fVJ-4u-bON"/>
-                                    </connections>
-                                </picker>
-                                <button width="0.80000000000000004" height="0.20000000000000001" alignment="center" title="Enter" id="Xg7-hg-unT">
-                                    <color key="titleColor" red="0.93725490199999995" green="0.93725490199999995" blue="0.95686274510000002" alpha="1" colorSpace="calibratedRGB"/>
-                                    <color key="backgroundColor" red="0.15379575529923706" green="0.0" blue="1" alpha="1" colorSpace="calibratedRGB"/>
-                                    <connections>
-                                        <action selector="sleepSaveButton" destination="Sk5-u4-eDK" id="WBm-JX-VwH"/>
-                                    </connections>
-                                </button>
-                            </items>
-                            <edgeInsets key="margins" left="10" right="10" top="0.0" bottom="5"/>
-                        </group>
+                        <button width="0.80000000000000004" height="0.20000000000000001" alignment="center" verticalAlignment="bottom" title="Meal Ended" id="Tf0-ui-XmJ">
+                            <color key="backgroundColor" red="0.1803921568627451" green="0.80000000000000004" blue="0.44313725490196076" alpha="1" colorSpace="calibratedRGB"/>
+                            <connections>
+                                <action selector="mealSaveButton" destination="uRt-F4-FMq" id="kaG-l6-dAC"/>
+                            </connections>
+                        </button>
+                        <picker height="0.80000000000000004" alignment="left" style="sequence" id="Jm7-cO-4q1">
+                            <connections>
+                                <action selector="onMealEntry:" destination="uRt-F4-FMq" id="NWV-94-jTX"/>
+                            </connections>
+                        </picker>
                     </items>
                     <connections>
-                        <outlet property="enterButton" destination="Xg7-hg-unT" id="hh8-dm-iHr"/>
-                        <outlet property="sleepPicker" destination="jNS-ju-jML" id="lqe-Il-NJp"/>
+                        <outlet property="mealStartTimeButton" destination="Tf0-ui-XmJ" id="rRW-Hj-X2k"/>
+                        <outlet property="mealStartTimePicker" destination="Jm7-cO-4q1" id="LR6-QW-kfW"/>
+                    </connections>
+                </controller>
+            </objects>
+            <point key="canvasLocation" x="452" y="-213"/>
+        </scene>
+        <!--M-Compass-->
+        <scene sceneID="0rq-CP-qZy">
+            <objects>
+                <controller identifier="SleepInterfaceController" title="M-Compass" id="Sk5-u4-eDK" customClass="SleepInterfaceController" customModule="MetabolicCompassWatchExtension">
+                    <items>
+                        <picker height="0.80000000000000004" alignment="left" style="sequence" id="jNS-ju-jML">
+                            <connections>
+                                <action selector="onSleepEntry:" destination="Sk5-u4-eDK" id="1Zk-3S-F0m"/>
+                            </connections>
+                        </picker>
+                        <button width="1" height="0.20000000000000001" alignment="center" title="Went to Sleep" id="Xg7-hg-unT">
+                            <color key="titleColor" red="0.93725490199999995" green="0.93725490199999995" blue="0.95686274510000002" alpha="1" colorSpace="calibratedRGB"/>
+                            <color key="backgroundColor" red="0.94509803921568625" green="0.76862745098039209" blue="0.058823529411764705" alpha="1" colorSpace="calibratedRGB"/>
+                            <connections>
+                                <action selector="sleepSaveButton" destination="Sk5-u4-eDK" id="SGt-wX-9xi"/>
+                            </connections>
+                        </button>
+                    </items>
+                    <connections>
+                        <outlet property="enterButton" destination="Xg7-hg-unT" id="wi5-MK-a5F"/>
+                        <outlet property="sleepPicker" destination="jNS-ju-jML" id="494-P3-59f"/>
                     </connections>
                 </controller>
             </objects>
             <point key="canvasLocation" x="-33" y="98"/>
         </scene>
-        <!--WaterInterfaceController-->
+        <!--M-Compass-->
+        <scene sceneID="Igg-p8-0k0">
+            <objects>
+                <controller identifier="SleepTimesInterfaceController" title="M-Compass" id="4kd-6r-qyL" customClass="SleepTimesInterfaceController" customModule="MetabolicCompassWatchExtension">
+                    <items>
+                        <picker height="0.80000000000000004" alignment="left" style="sequence" id="BXT-YD-1v7">
+                            <connections>
+                                <action selector="onSleepTimePick:" destination="4kd-6r-qyL" id="BLM-oF-kRZ"/>
+                            </connections>
+                        </picker>
+                        <button width="1" height="0.20000000000000001" alignment="center" title="Woke from Sleep" id="VbU-zH-pMy">
+                            <color key="titleColor" red="1" green="1" blue="1" alpha="1" colorSpace="calibratedRGB"/>
+                            <color key="backgroundColor" red="0.94509803921568625" green="0.76862745098039209" blue="0.058823529411764705" alpha="1" colorSpace="calibratedRGB"/>
+                            <connections>
+                                <action selector="onButtonSave" destination="4kd-6r-qyL" id="psW-nV-n2H"/>
+                            </connections>
+                        </button>
+                    </items>
+                    <connections>
+                        <outlet property="sleepTimesButton" destination="VbU-zH-pMy" id="FPs-oh-BiO"/>
+                        <outlet property="sleepTimesPicker" destination="BXT-YD-1v7" id="LnD-mX-EI6"/>
+                    </connections>
+                </controller>
+            </objects>
+            <point key="canvasLocation" x="203" y="101"/>
+        </scene>
+        <!--M-Compass-->
         <scene sceneID="jir-tl-faX">
             <objects>
-                <controller title="WaterInterfaceController" id="YiA-fx-NQl" customClass="WaterInterfaceController" customModule="MetabolicCompassWatchExtension">
+                <controller identifier="WaterInterfaceController" title="M-Compass" id="YiA-fx-NQl" customClass="WaterInterfaceController" customModule="MetabolicCompassWatchExtension">
                     <items>
-                        <group width="1" height="1" alignment="left" layout="vertical" id="3Te-R5-a3J">
-                            <items>
-                                <picker height="0.80000000000000004" alignment="left" style="sequence" id="oZJ-jU-Zf2">
-                                    <connections>
-                                        <action selector="onWaterEntry:" destination="YiA-fx-NQl" id="90T-0y-i3P"/>
-                                    </connections>
-                                </picker>
-                                <button width="0.80000000000000004" height="0.20000000000000001" alignment="center" title="Enter" id="TGU-lM-ujj">
-                                    <color key="backgroundColor" red="0.0" green="0.66749548197629005" blue="0.75204515706806285" alpha="1" colorSpace="calibratedRGB"/>
-                                    <connections>
-                                        <action selector="waterSaveButton" destination="YiA-fx-NQl" id="R8c-L2-Jc6"/>
-                                    </connections>
-                                </button>
-                            </items>
-                            <edgeInsets key="margins" left="10" right="10" top="0.0" bottom="5"/>
-                        </group>
+                        <picker height="0.80000000000000004" alignment="left" style="sequence" id="oZJ-jU-Zf2">
+                            <connections>
+                                <action selector="onWaterEntry:" destination="YiA-fx-NQl" id="90T-0y-i3P"/>
+                            </connections>
+                        </picker>
+                        <button width="1" height="0.20000000000000001" alignment="center" title="Water Volume" id="TGU-lM-ujj">
+                            <color key="backgroundColor" red="0.20392156862745098" green="0.59607843137254901" blue="0.85882352941176465" alpha="1" colorSpace="calibratedRGB"/>
+                            <connections>
+                                <action selector="waterSaveButton" destination="YiA-fx-NQl" id="R8c-L2-Jc6"/>
+                            </connections>
+                        </button>
                     </items>
                     <edgeInsets key="margins" left="1" right="1" top="0.0" bottom="0.0"/>
                     <connections>
@@ -188,48 +229,144 @@
             </objects>
             <point key="canvasLocation" x="-33" y="714"/>
         </scene>
-        <!--Exercise Interface Controller-->
+        <!--M-Compass-->
         <scene sceneID="rav-D0-NpW">
             <objects>
-                <controller id="uYH-JB-1gX" customClass="ExerciseInterfaceController" customModule="MetabolicCompassWatchExtension">
+                <controller identifier="ExerciseInterfaceController" title="M-Compass" id="uYH-JB-1gX" customClass="ExerciseInterfaceController" customModule="MetabolicCompassWatchExtension">
                     <items>
-                        <group width="1" height="1" alignment="left" layout="vertical" id="k5N-Me-jim">
-                            <items>
-                                <picker height="0.80000000000000004" alignment="left" style="sequence" id="AKC-gG-UVM">
-                                    <connections>
-                                        <action selector="onExercise:" destination="uYH-JB-1gX" id="8C5-fI-NWa"/>
-                                    </connections>
-                                </picker>
-                                <button width="0.80000000000000004" height="0.20000000000000001" alignment="center" title="Enter" id="7vb-oW-NcY">
-                                    <color key="backgroundColor" red="1" green="0.0" blue="0.2685569706" alpha="1" colorSpace="calibratedRGB"/>
-                                    <connections>
-                                        <action selector="onSave" destination="uYH-JB-1gX" id="mPA-qz-JdY"/>
-                                    </connections>
-                                </button>
-                            </items>
-                            <edgeInsets key="margins" left="10" right="10" top="0.0" bottom="5"/>
-                        </group>
+                        <button width="1" height="0.20000000000000001" heightAdjustment="6" alignment="left" title="Running" id="8pr-71-C42">
+                            <color key="backgroundColor" red="0.90588235294117647" green="0.29803921568627451" blue="0.23529411764705882" alpha="1" colorSpace="calibratedRGB"/>
+                            <connections>
+                                <action selector="onRun" destination="uYH-JB-1gX" id="utk-xQ-uad"/>
+                            </connections>
+                        </button>
+                        <button width="1" height="0.20000000000000001" heightAdjustment="6" alignment="left" title="Cycling" id="Edo-DM-6fg">
+                            <color key="backgroundColor" red="0.90588235294117647" green="0.29803921568627451" blue="0.23529411764705882" alpha="1" colorSpace="calibratedRGB"/>
+                            <connections>
+                                <action selector="onCycle" destination="uYH-JB-1gX" id="GcJ-8X-KjT"/>
+                            </connections>
+                        </button>
+                        <button width="1" height="0.20000000000000001" heightAdjustment="6" alignment="left" title="Swimming" id="aee-M7-2d0">
+                            <color key="backgroundColor" red="0.90588235294117647" green="0.29803921568627451" blue="0.23529411764705882" alpha="1" colorSpace="calibratedRGB"/>
+                            <connections>
+                                <action selector="onSwim" destination="uYH-JB-1gX" id="6Mc-wb-y3Y"/>
+                            </connections>
+                        </button>
+                        <button width="1" height="0.20000000000000001" heightAdjustment="6" alignment="left" title="Walking" id="QWY-u2-Y05">
+                            <color key="backgroundColor" red="0.90588235294117647" green="0.29803921568627451" blue="0.23529411764705882" alpha="1" colorSpace="calibratedRGB"/>
+                            <connections>
+                                <action selector="onWalk" destination="uYH-JB-1gX" id="nVr-7o-FpZ"/>
+                            </connections>
+                        </button>
                     </items>
                     <connections>
-                        <outlet property="enterButton" destination="7vb-oW-NcY" id="NUP-hg-i8j"/>
-                        <outlet property="exerPicker" destination="AKC-gG-UVM" id="4LL-HW-aJ2"/>
+                        <outlet property="cycleButton" destination="Edo-DM-6fg" id="KMe-20-gNN"/>
+                        <outlet property="runButton" destination="8pr-71-C42" id="l3y-y0-9xH"/>
+                        <outlet property="swimButton" destination="aee-M7-2d0" id="RXK-w1-zHy"/>
+                        <outlet property="walkButton" destination="QWY-u2-Y05" id="yy8-5R-dam"/>
                     </connections>
                 </controller>
             </objects>
             <point key="canvasLocation" x="-33" y="375"/>
         </scene>
-        <!--Glance Interface Controller-->
+        <!--M-Compass-->
+        <scene sceneID="8MO-dw-R00">
+            <objects>
+                <controller identifier="ExerciseEndTimeController" title="M-Compass" id="wDG-ji-Wah" customClass="ExerciseEndTimeController" customModule="MetabolicCompassWatchExtension">
+                    <items>
+                        <picker height="0.80000000000000004" alignment="left" style="sequence" id="V3f-6x-gu1">
+                            <connections>
+                                <action selector="onExerciseStartTime:" destination="wDG-ji-Wah" id="Owp-g7-ZO8"/>
+                            </connections>
+                        </picker>
+                        <button width="1" height="0.20000000000000001" alignment="left" title="Started Exercise" id="JN4-PW-LBe">
+                            <color key="backgroundColor" red="0.90588235294117647" green="0.29803921568627451" blue="0.23529411764705882" alpha="1" colorSpace="calibratedRGB"/>
+                            <connections>
+                                <action selector="onExerciseStartTimeSave" destination="wDG-ji-Wah" id="6xq-QK-Tx5"/>
+                            </connections>
+                        </button>
+                    </items>
+                    <connections>
+                        <outlet property="exerciseEndTimeButton" destination="JN4-PW-LBe" id="Rbp-0g-0bI"/>
+                        <outlet property="exerciseEndTimePicker" destination="V3f-6x-gu1" id="nVN-09-XL6"/>
+                    </connections>
+                </controller>
+            </objects>
+            <point key="canvasLocation" x="201" y="375"/>
+        </scene>
+        <!--M-Compass-->
+        <scene sceneID="Oz9-S1-5I5">
+            <objects>
+                <controller identifier="ExerciseStartTimeController" title="M-Compass" id="Kk7-9z-hth" customClass="ExerciseStartTimeController" customModule="MetabolicCompassWatchExtension">
+                    <items>
+                        <picker height="0.80000000000000004" alignment="left" style="sequence" id="dib-I6-Wrw">
+                            <connections>
+                                <action selector="onExerciseStartPicker:" destination="Kk7-9z-hth" id="l11-Wm-Gd8"/>
+                            </connections>
+                        </picker>
+                        <button width="1" height="0.20000000000000001" alignment="left" title="Stopped Exercise" id="cQr-1P-gO7">
+                            <color key="backgroundColor" red="0.90588235294117647" green="0.29803921568627451" blue="0.23529411764705882" alpha="1" colorSpace="calibratedRGB"/>
+                            <connections>
+                                <action selector="onExerciseStartSaveButton" destination="Kk7-9z-hth" id="bX6-B0-awY"/>
+                            </connections>
+                        </button>
+                    </items>
+                    <connections>
+                        <outlet property="exerciseStartTimeButton" destination="cQr-1P-gO7" id="GcZ-dN-gUg"/>
+                        <outlet property="exerciseStartTimePicker" destination="dib-I6-Wrw" id="7RF-9w-ye6"/>
+                    </connections>
+                </controller>
+            </objects>
+            <point key="canvasLocation" x="431" y="376"/>
+        </scene>
+        <!--GlanceController-->
         <scene sceneID="BOz-TT-tkC">
             <objects>
-                <glanceController spacing="0.0" id="0uZ-2p-rRc" customClass="GlanceController" customModule="MetabolicCompassWatch" customModuleProvider="target">
+                <glanceController identifier="GlanceController" spacing="0.0" topTemplateType="body1Medium" bottomTemplateType="body6Footer" id="0uZ-2p-rRc" customClass="GlanceController" customModule="MetabolicCompassWatchExtension">
                     <items>
-                        <group alignment="left" id="t8f-Gd-c4y"/>
-                        <group alignment="left" id="uCw-4Q-Ouw"/>
+                        <label alignment="left" text="Label" id="pFl-1P-iRK"/>
+                        <label alignment="left" text="1234" id="OIk-US-Teh"/>
+                        <label alignment="left" id="pH9-bS-fdG">
+                            <string key="text">Label∙∙∙∙∙∙∙∙∙∙∙∙∙∙∙∙∙∙∙∙∙∙∙∙∙∙∙∙∙∙∙∙∙∙∙∙∙∙∙∙∙∙∙∙∙∙∙∙∙∙∙∙∙∙∙∙∙∙∙∙∙∙∙∙∙∙∙∙∙∙∙∙∙∙∙∙∙∙∙∙∙∙∙∙∙∙∙∙∙∙∙∙∙∙∙∙∙∙∙∙∙∙∙∙∙∙∙∙∙∙∙∙∙∙∙∙∙∙∙∙∙∙∙∙∙∙∙∙∙∙∙∙∙∙∙∙∙∙∙∙∙∙∙∙∙∙∙∙∙∙∙∙∙∙</string>
+                        </label>
+                        <label alignment="left" text="Footer" id="0Rt-DK-HZ4"/>
                     </items>
                     <edgeInsets key="margins" left="0.0" right="0.0" top="0.0" bottom="14"/>
+                    <connections>
+                        <outlet property="firstRow" destination="pFl-1P-iRK" id="bni-zt-Rma"/>
+                        <outlet property="fourthRow" destination="0Rt-DK-HZ4" id="7gW-k4-3t6"/>
+                        <outlet property="secondRow" destination="OIk-US-Teh" id="LJC-Cj-neJ"/>
+                        <outlet property="thirdRow" destination="pH9-bS-fdG" id="WS7-21-ygn"/>
+                    </connections>
                 </glanceController>
             </objects>
             <point key="canvasLocation" x="-203" y="1008"/>
+        </scene>
+        <!--M-Compass-->
+        <scene sceneID="emA-xW-5ap">
+            <objects>
+                <controller identifier="WaterTimesInterfaceController" title="M-Compass" id="7yX-Li-sdf" customClass="WaterTimesInterfaceController" customModule="MetabolicCompassWatchExtension">
+                    <items>
+                        <button width="1" height="0.20000000000000001" alignment="center" verticalAlignment="bottom" title="Started Drinking" id="8Sm-H9-yge">
+                            <color key="backgroundColor" red="0.20392156862745098" green="0.59607843137254901" blue="0.85882352941176465" alpha="1" colorSpace="calibratedRGB"/>
+                            <fontDescription key="font" type="system" pointSize="14"/>
+                            <connections>
+                                <action selector="onWaterTimesEnter" destination="7yX-Li-sdf" id="1vy-P7-ssT"/>
+                            </connections>
+                        </button>
+                        <picker height="0.80000000000000004" alignment="left" style="sequence" id="4F8-Da-3So">
+                            <connections>
+                                <action selector="onWaterTimePick:" destination="7yX-Li-sdf" id="t1S-4D-A24"/>
+                            </connections>
+                        </picker>
+                    </items>
+                    <connections>
+                        <outlet property="waterTimes" destination="4F8-Da-3So" id="QoG-rO-a1u"/>
+                        <outlet property="waterTimesEnter" destination="8Sm-H9-yge" id="4oN-pm-uT0"/>
+                    </connections>
+                </controller>
+            </objects>
+            <point key="canvasLocation" x="218" y="718"/>
         </scene>
         <!--Static Notification Interface Controller-->
         <scene sceneID="AEw-b0-oYE">
@@ -254,8 +391,31 @@
             </objects>
             <point key="canvasLocation" x="553" y="1001"/>
         </scene>
+        <!--M-Compass-->
+        <scene sceneID="SBZ-0X-1Sa">
+            <objects>
+                <controller identifier="WaterStartTimeController" title="M-Compass" id="TxF-Mq-DhK" customClass="WaterStartTimeController" customModule="MetabolicCompassWatchExtension">
+                    <items>
+                        <picker height="0.80000000000000004" alignment="left" style="sequence" id="3sP-nz-pgd">
+                            <connections>
+                                <action selector="onWaterStartTimePicker:" destination="TxF-Mq-DhK" id="ogS-Do-G4D"/>
+                            </connections>
+                        </picker>
+                        <button width="1" height="29.5" alignment="center" verticalAlignment="bottom" title="Finished Drinking" id="H7P-O2-Te0">
+                            <color key="backgroundColor" red="0.20392156862745098" green="0.59607843137254901" blue="0.85882352941176465" alpha="1" colorSpace="calibratedRGB"/>
+                            <fontDescription key="font" type="system" pointSize="14"/>
+                            <connections>
+                                <action selector="onWaterStartTimeButton" destination="TxF-Mq-DhK" id="Pt1-jV-XRI"/>
+                            </connections>
+                        </button>
+                    </items>
+                    <connections>
+                        <outlet property="waterTimeStart" destination="3sP-nz-pgd" id="Mwh-yc-dvU"/>
+                        <outlet property="waterTimesEnterStart" destination="H7P-O2-Te0" id="yS8-AS-oJR"/>
+                    </connections>
+                </controller>
+            </objects>
+            <point key="canvasLocation" x="474" y="718"/>
+        </scene>
     </scenes>
-    <inferredMetricsTieBreakers>
-        <segue reference="1GW-6V-lG7"/>
-    </inferredMetricsTieBreakers>
 </document>

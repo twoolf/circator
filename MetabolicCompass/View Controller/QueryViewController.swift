@@ -14,7 +14,7 @@ import SwiftDate
 
 /**
  This class, along with the Builder and the Writer all together, support queries for filtering displayed metrics on 1st and 2nd dashboard screens.  By the use of these queries we enable users to view their comparisons with individuals sharing similar weights or the same genders.
- 
+
  - note: used in IntroViewController
  */
 class QueryViewController: UITableViewController {
@@ -33,7 +33,7 @@ class QueryViewController: UITableViewController {
             contentId: NSDate().toString(DateFormat.Custom("YYYY-MM-dd:HH:mm:ss")),
             customAttributes: nil)
     }
-    
+
     override func viewDidLoad() {
         super.viewDidLoad()
 
@@ -53,14 +53,14 @@ class QueryViewController: UITableViewController {
     override func numberOfSectionsInTableView(tableView: UITableView) -> Int {
         return 1
     }
-    
+
     override func tableView(tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         return QueryManager.sharedManager.getQueries().count
     }
-    
+
     override func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCellWithIdentifier("queryCell", forIndexPath: indexPath) as! MGSwipeTableCell
-        
+
         let deleteButton = MGSwipeButton(title: "Delete", backgroundColor: .ht_pomegranateColor(), callback: {
             (sender: MGSwipeTableCell!) -> Bool in
             if let idx = tableView.indexPathForCell(sender) {
@@ -76,15 +76,9 @@ class QueryViewController: UITableViewController {
             (sender: MGSwipeTableCell!) -> Bool in
             if let idx = tableView.indexPathForCell(sender) {
                 switch QueryManager.sharedManager.getQueries()[idx.row].1 {
-                case Query.ConjunctiveQuery(_):
+                case Query.ConjunctiveQuery(_, _, _, _):
                     let builder = QueryBuilderViewController()
                     builder.buildMode = BuilderMode.Editing(idx.row)
-                    self.navigationController?.pushViewController(builder, animated: true)
-
-                case Query.UserDefinedQuery(_):
-                    let builder = QueryWriterViewController()
-                    builder.buildMode = BuilderMode.Editing(idx.row)
-                    builder.fromPredicateBuilder = false
                     self.navigationController?.pushViewController(builder, animated: true)
                 }
                 return false
@@ -93,7 +87,7 @@ class QueryViewController: UITableViewController {
         })
         editButton.titleLabel?.font = .boldSystemFontOfSize(14)
 
-        
+
         cell.rightButtons = [deleteButton, editButton]
         cell.leftSwipeSettings.transition = MGSwipeTransition.Static
 

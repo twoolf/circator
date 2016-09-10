@@ -8,10 +8,12 @@
 
 import Foundation
 import HealthKit
+import MCCircadianQueries
 import MetabolicCompassKit
 import Charts
 import Crashlytics
 import SwiftDate
+import Async
 
 /**
  This class controls the display of the Radar screen (2nd view of dashboard). The radar screen gives a spider like view of how the users data compares to the population data. Our user input, to this date, suggests that many users prefer this to the numbers on the first view of the dashboard.
@@ -72,27 +74,34 @@ class RadarViewController : UIViewController, ChartViewDelegate {
 
     lazy var healthFormatter : SampleFormatter = { return SampleFormatter() }()
 
-    lazy var radarChart: RadarChartView = {
-        let chart = RadarChartView()
+    lazy var radarChart: MetabolicRadarChartView = {
+        let chart = MetabolicRadarChartView()
+        chart.renderer = MetabolicChartRender(chart: chart, animator: chart.chartAnimator, viewPortHandler: chart.viewPortHandler)
         chart.animate(xAxisDuration: 1.0, yAxisDuration: 1.0)
         chart.delegate = self
         chart.descriptionText = ""
         chart.rotationEnabled = false
-        chart.yAxis.axisMinValue = 0.2
-        chart.yAxis.axisMaxValue = 1.0
+        chart.highlightPerTapEnabled = false
+
+        chart.yAxis.axisMinValue = 0.1
         chart.yAxis.axisRange = 1.0
-        //chart.yAxis.customAxisMax = 1.0
-        //chart.yAxis.customAxisMin = 0.2
+        chart.yAxis.drawLabelsEnabled = false
+        chart.xAxis.drawLabelsEnabled = false
+        chart.webColor = UIColor.colorWithHexString("#042652")!
+        chart.webAlpha = 1.0
 
         let legend = chart.legend
         legend.enabled = true
         legend.position = ScreenManager.sharedInstance.radarLegendPosition()
-        legend.font = UIFont.systemFontOfSize(12, weight: UIFontWeightRegular)
-        legend.textColor = .whiteColor()
-        legend.xEntrySpace = 7.0
+        legend.font = ScreenManager.appFontOfSize(12)
+        legend.textColor = UIColor.colorWithHexString("#ffffff", alpha: 0.3)!
+        legend.xEntrySpace = 50.0
         legend.yEntrySpace = 5.0
         return chart
     }()
+
+    var radarTip: TapTip! = nil
+    var radarTipDummyLabel: UILabel! = nil
 
     var initialImage : UIImage! = nil
     var initialMsg : String! = "HealthKit not authorized"
@@ -107,39 +116,79 @@ class RadarViewController : UIViewController, ChartViewDelegate {
 
     override func viewWillAppear(animated: Bool) {
         super.viewWillAppear(animated)
-        navigationController?.setNavigationBarHidden(true, animated: false)
+        NSNotificationCenter.defaultCenter().addObserver(self, selector: #selector(contentDidChange), name: PMDidUpdateBalanceSampleTypesNotification, object: nil)
+        logContentView()
+    }
+
+    override func viewWillDisappear(animated: Bool) {
+        super.viewWillDisappear(animated)
+        NSNotificationCenter.defaultCenter().removeObserver(self)
+        logContentView(false)
     }
 
     override func viewDidAppear(animated: Bool) {
         super.viewDidAppear(animated)
-        Answers.logContentViewWithName("Radar",
-            contentType: "",
-            contentId: NSDate().toString(DateFormat.Custom("YYYY-MM-dd:HH:mm:ss")),
-            customAttributes: nil)
+        self.authorized = AccountManager.shared.isHealthKitAuthorized
     }
 
     override func viewDidLoad() {
         super.viewDidLoad()
+
         configureViews()
         radarChart.layoutIfNeeded()
         reloadData()
     }
 
+    func logContentView(asAppear: Bool = true) {
+        Answers.logContentViewWithName("Balance",
+                                       contentType: asAppear ? "Appear" : "Disappear",
+                                       contentId: NSDate().toString(DateFormat.Custom("YYYY-MM-dd:HH")),
+                                       customAttributes: nil)
+    }
+
+    func contentDidChange() {
+        Async.main {
+            self.reloadData()
+        }
+    }
+
     func configureViews() {
         if authorized {
-            view.subviews.forEach { $0.removeFromSuperview() }
-            radarChart.translatesAutoresizingMaskIntoConstraints = false
-            view.addSubview(radarChart)
-            let rcConstraints: [NSLayoutConstraint] = [
-                radarChart.topAnchor.constraintEqualToAnchor(view.topAnchor),
-                radarChart.leadingAnchor.constraintEqualToAnchor(view.layoutMarginsGuide.leadingAnchor),
-                radarChart.trailingAnchor.constraintEqualToAnchor(view.layoutMarginsGuide.trailingAnchor),
-                radarChart.bottomAnchor.constraintEqualToAnchor(view.bottomAnchor)
-            ]
-            view.addConstraints(rcConstraints)
+            configureAuthorizedView()
         } else {
             configureUnauthorizedView()
         }
+    }
+
+    func configureAuthorizedView() {
+        view.subviews.forEach { $0.removeFromSuperview() }
+        radarChart.translatesAutoresizingMaskIntoConstraints = false
+        view.addSubview(radarChart)
+        let rcConstraints: [NSLayoutConstraint] = [
+            radarChart.topAnchor.constraintEqualToAnchor(view.topAnchor),
+            radarChart.leftAnchor.constraintEqualToAnchor(view.leftAnchor),
+            radarChart.rightAnchor.constraintEqualToAnchor(view.rightAnchor),
+            //radarChart.bottomAnchor.constraintEqualToAnchor(view.bottomAnchor),
+            radarChart.bottomAnchor.constraintGreaterThanOrEqualToAnchor(view.bottomAnchor, constant: -ScreenManager.sharedInstance.radarChartBottomIndent())
+        ]
+        view.addConstraints(rcConstraints)
+
+        radarTipDummyLabel = UILabel()
+        radarTipDummyLabel.userInteractionEnabled = false
+        radarTipDummyLabel.enabled = false
+        radarTipDummyLabel.translatesAutoresizingMaskIntoConstraints = false
+        view.addSubview(radarTipDummyLabel)
+        view.addConstraints([
+            view.centerXAnchor.constraintEqualToAnchor(radarTipDummyLabel.centerXAnchor),
+            view.centerYAnchor.constraintEqualToAnchor(radarTipDummyLabel.centerYAnchor),
+            radarTipDummyLabel.widthAnchor.constraintEqualToConstant(1),
+            radarTipDummyLabel.heightAnchor.constraintEqualToConstant(1),
+            ])
+
+        let desc = "Your Balance chart compares your health metrics relative to each other, and to our study population. A person with average measures across the board would show a uniform shape."
+        radarTip = TapTip(forView: radarTipDummyLabel, withinView: view, text: desc, width: 350, numTaps: 2, numTouches: 2, asTop: false)
+        radarChart.addGestureRecognizer(radarTip.tapRecognizer)
+        radarChart.userInteractionEnabled = true
     }
 
     func configureUnauthorizedView() {
@@ -176,66 +225,90 @@ class RadarViewController : UIViewController, ChartViewDelegate {
     // MARK: - Radar chart
 
     func normalizeType(type: HKSampleType, quantity: Double) -> Double {
-        if let sex = HealthManager.sharedManager.getBiologicalSex(),
+        if let sex = MCHealthManager.sharedManager.getBiologicalSex(),
                paramdict = logisticParametersByType[sex.biologicalSex == HKBiologicalSex.Male],
                (x0, k) = paramdict[type.identifier]
         {
-//            print ("quantity \(quantity) and value: to check \(1 / (1 + exp(-k * (quantity - x0))))  ")
             return min(1.0,(1 / (1 + exp(-k * (quantity - x0)))) + 0.2)
         }
         return 1 / (1 + exp(-quantity))
     }
+    
+    private let appearanceProvider = DashboardMetricsAppearanceProvider()
 
-    func indEntry(i: Int) -> ChartDataEntry {
-        let type = PreviewManager.previewSampleTypes[i]
-        let samples = HealthManager.sharedManager.mostRecentSamples[type] ?? []
+    func indEntry(i: Int) -> MetabolicDataEntry {
+        let type = PreviewManager.balanceSampleTypes[i]
+        let samples = MCHealthManager.sharedManager.mostRecentSamples[type] ?? []
         let val = healthFormatter.numberFromSamples(samples)
         guard !val.isNaN else {
-            return ChartDataEntry(value: 0.8, xIndex: i)
+            return MetabolicDataEntry(value: 0.8, xIndex: i,
+                                      pointColor: appearanceProvider.colorForSampleType(type.identifier, active: true),
+                                      image: appearanceProvider.imageForSampleType(type.identifier, active: true))
         }
         let nval = normalizeType(type, quantity: val)
-        print("type \(type), i \(i)")
-        return ChartDataEntry(value: nval, xIndex: i)
+        return MetabolicDataEntry(value: nval, xIndex: i,
+                                  pointColor: appearanceProvider.colorForSampleType(type.identifier, active: true),
+                                  image: appearanceProvider.imageForSampleType(type.identifier, active: true))
     }
 
-    func popEntry(i: Int) -> ChartDataEntry {
-        let type = PreviewManager.previewSampleTypes[i]
+    func popEntry(i: Int) -> MetabolicDataEntry {
+        let type = PreviewManager.balanceSampleTypes[i]
         let samples = PopulationHealthManager.sharedManager.mostRecentAggregates[type] ?? []
         let val = healthFormatter.numberFromSamples(samples)
         guard !val.isNaN else {
-            return ChartDataEntry(value: 0.8, xIndex: i)
+            return MetabolicDataEntry(value: 0.8, xIndex: i,
+                                      pointColor: appearanceProvider.colorForSampleType(type.identifier, active: true),
+                                      image: appearanceProvider.imageForSampleType(type.identifier, active: true))
         }
         let nval = normalizeType(type, quantity: val)
-        return ChartDataEntry(value: nval, xIndex: i)
+        return MetabolicDataEntry(value: nval, xIndex: i,
+                                  pointColor: appearanceProvider.colorForSampleType(type.identifier, active: true),
+                                  image: appearanceProvider.imageForSampleType(type.identifier, active: true))
     }
 
     func reloadData() {
-        let indData = (0..<PreviewManager.previewSampleTypes.count).map(indEntry)
-        let popData = (0..<PreviewManager.previewSampleTypes.count).map(popEntry)
+        let sampleTypeRange = 0..<(min(PreviewManager.balanceSampleTypes.count, 8))
+        let sampleTypes = sampleTypeRange.map { PreviewManager.balanceSampleTypes[$0] }
 
-        let indDataSet = RadarChartDataSet(yVals: indData, label: "Individual")
-        indDataSet.fillColor = .redColor()
-        indDataSet.setColor(.redColor())
+        let indData = sampleTypeRange.map(indEntry)
+        let popData = sampleTypeRange.map(popEntry)
+
+        let indDataSet = MetabolicChartDataSet(yVals: indData, label: NSLocalizedString("Individual value", comment: "Individual"))
+        indDataSet.fillColor = UIColor.colorWithHexString("#427DC9", alpha: 1.0)!
+        indDataSet.setColor(indDataSet.fillColor)
         indDataSet.drawFilledEnabled = true
-        indDataSet.lineWidth = 2.0
-
-        let popDataSet = RadarChartDataSet(yVals: popData, label: "Population")
-        popDataSet.fillColor = .greenColor()
-        popDataSet.setColor(.greenColor())
+        indDataSet.lineWidth = 1.0
+        indDataSet.fillAlpha = 0.5
+        indDataSet.showPoints = true
+        indDataSet.highlightColor = UIColor.clearColor()
+        indDataSet.highlightCircleFillColor = UIColor.redColor()
+        indDataSet.highlightCircleStrokeColor = UIColor.whiteColor()
+        indDataSet.highlightCircleStrokeWidth = 1
+        indDataSet.highlightCircleInnerRadius = 0
+        indDataSet.highlightCircleOuterRadius = 5
+        indDataSet.drawHighlightCircleEnabled = false
+        
+        let popDataSet = MetabolicChartDataSet(yVals: popData, label: NSLocalizedString("Population value", comment: "Population"))
+        popDataSet.fillColor = UIColor.lightGrayColor()
+        popDataSet.setColor(popDataSet.fillColor.colorWithAlphaComponent(0.75))
         popDataSet.drawFilledEnabled = true
-        popDataSet.lineWidth = 2.0
-
-        let xVals = PreviewManager.previewSampleTypes.map { type in
-                        return HMConstants.sharedInstance.healthKitShortNames[type.identifier]! }
+        popDataSet.lineWidth = 1.0
+        popDataSet.fillAlpha = 0.5
+        popDataSet.drawHighlightCircleEnabled = false
+        
+        
+        let xVals = sampleTypes.map { type in return HMConstants.sharedInstance.healthKitShortNames[type.identifier]! }
 
         let data = RadarChartData(xVals: xVals, dataSets: [indDataSet, popDataSet])
         data.setDrawValues(false)
         radarChart.data = data
 
+        radarChart.highlightValue(xIndex: 0, dataSetIndex: 0, callDelegate: false)
         radarChart.xAxis.labelTextColor = .whiteColor()
         radarChart.xAxis.labelFont = UIFont.systemFontOfSize(12, weight: UIFontWeightRegular)
         radarChart.yAxis.drawLabelsEnabled = false
         radarChart.notifyDataSetChanged()
+        radarChart.valuesToHighlight()
     }
 
 }

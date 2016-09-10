@@ -6,8 +6,9 @@
 //  Copyright © 2015 Yanif Ahmad, Tom Woolf. All rights reserved.
 //
 
-import MetabolicCompassKit
 import UIKit
+import MCCircadianQueries
+import MetabolicCompassKit
 import Async
 import Former
 import HTPressableButton
@@ -24,12 +25,12 @@ private let debugSectionTitles    : [String] = ["Login", "Settings", "Preview Ro
 private let releaseSectionTitles  : [String] = ["Login", "Settings", "Preview Rows", "Profile", "Bulk Upload", "Account Management"]
 
 class MCButton : HTPressableButton {
-    
+
 }
 
 /**
  This class enables the settings view (top right corner of the App) by letting the user choose between different metrics, different default options, different ways to interact with Siri, and even whether to remain within the study.
- 
+
  - note: this view controls bulk upload from HealthKit history
  */
 class SettingsViewController: UITableViewController, UITextFieldDelegate, SFSafariViewControllerDelegate {
@@ -132,14 +133,14 @@ class SettingsViewController: UITableViewController, UITextFieldDelegate, SFSafa
     func formInput() -> FormTextFieldCell {
         let formCell = FormTextFieldCell()
         let cellInput = formCell.formTextField()
-        
+
         cellInput.textColor = UIColor.blackColor()
         cellInput.backgroundColor = UIColor.whiteColor()
-        
+
         cellInput.textAlignment = NSTextAlignment.Right
         cellInput.autocorrectionType = UITextAutocorrectionType.No // no auto correction support
         cellInput.autocapitalizationType = UITextAutocapitalizationType.None // no auto capitalization support
-        
+
         return formCell
     }
 
@@ -545,9 +546,9 @@ class SettingsViewController: UITableViewController, UITextFieldDelegate, SFSafa
                         UINotifications.invalidUserPass(self.navigationController!)
                         return
                     }
-                    UserManager.sharedManager.login(txt) { (error, reason) in
-                        guard !error else {
-                            UINotifications.loginFailed(self.navigationController!, reason: reason)
+                    UserManager.sharedManager.login(txt) { res in
+                        guard res.ok else {
+                            UINotifications.loginFailed(self.navigationController!, reason: res.info)
                             return
                         }
                     }
@@ -563,7 +564,7 @@ class SettingsViewController: UITableViewController, UITextFieldDelegate, SFSafa
                     UserManager.sharedManager.setRefreshFrequency(freq)
                     UINotifications.profileUpdated(self.navigationController!)
                 }
-                
+
             case 4...7:
                 let key = profile[textField.tag - 4].1
                 UserManager.sharedManager.pushProfile([key:txt], completion: {_ in return})
@@ -622,7 +623,7 @@ class SettingsViewController: UITableViewController, UITextFieldDelegate, SFSafa
     func doDeleteAccount(sender: UIButton) {
         let sheet = UIAlertController(title: "Withdraw from Metabolic Compass", message: "Are you sure you want to delete your account?", preferredStyle: .Alert)
         let yes = UIAlertAction(title: "Yes", style: .Default) { action -> Void in
-            UserManager.sharedManager.withdraw { success in
+            UserManager.sharedManager.withdraw(false) { success in
                 if success {
                     PopulationHealthManager.sharedManager.resetAggregates()
                     if let iv = self.introView {
@@ -644,58 +645,12 @@ class SettingsViewController: UITableViewController, UITextFieldDelegate, SFSafa
     }
 
     func doResetPassword(sender: UIButton) {
-        if let url = NSURL(string: resetPassURL) {
-            let vc = SFSafariViewController(URL: url, entersReaderIfAvailable: true)
-            vc.delegate = self
-            presentViewController(vc, animated: true, completion: nil)
-        } else {
-            log.error("Failed to reset password (URL creation)")
-        }
+        let vc = SFSafariViewController(URL: resetPassURL, entersReaderIfAvailable: true)
+        vc.delegate = self
+        presentViewController(vc, animated: true, completion: nil)
     }
 
     func safariViewControllerDidFinish(controller: SFSafariViewController) {
         dismissViewControllerAnimated(true, completion: nil)
-    }
-}
-
-class ConsentViewController : UIViewController {
-    override func viewWillAppear(animated: Bool) {
-        navigationController?.setNavigationBarHidden(false, animated: false)
-        navigationItem.title = "Consent Form"
-    }
-
-    override func viewDidLoad() {
-        super.viewDidLoad()
-
-        let doneButton = UIBarButtonItem(barButtonSystemItem: .Done, target: self, action: "consentViewDone")
-        navigationItem.rightBarButtonItem = doneButton
-
-        let accountCache = UserManager.sharedManager.getProfileCache()
-        if let pdfstr = accountCache["consent"] as? String,
-               pdfdata = NSData(base64EncodedString: pdfstr, options: NSDataBase64DecodingOptions())
-        {
-            let webView = UIWebView(frame: CGRectMake(0,0,self.view.frame.size.width,self.view.frame.size.height))
-            let url = NSURL.fileURLWithPath(NSBundle.mainBundle().bundlePath)
-            webView.loadData(pdfdata, MIMEType: "application/pdf", textEncodingName: "UTF-8", baseURL: url)
-            self.view.addSubview(webView)
-        } else {
-            let label = UILabel()
-            label.font = UIFont.systemFontOfSize(16, weight: UIFontWeightRegular)
-            label.textColor = .blackColor()
-            label.textAlignment = .Center
-            label.text = "Unable to show consent PDF"
-            
-            label.translatesAutoresizingMaskIntoConstraints = false
-            self.view.addSubview(label)
-            self.view.addConstraints([
-                label.centerXAnchor.constraintEqualToAnchor(view.layoutMarginsGuide.centerXAnchor),
-                label.centerYAnchor.constraintEqualToAnchor(view.layoutMarginsGuide.centerYAnchor),
-                label.heightAnchor.constraintEqualToConstant(100)
-            ])
-        }
-    }
-    
-    func consentViewDone() {
-        navigationController?.popViewControllerAnimated(true)
     }
 }

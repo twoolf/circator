@@ -1,0 +1,2334 @@
+{
+    "HealthData": {
+        "-locale": "en_BE",
+        "ExportDate": { "-value": "2016-07-26 16:40:38 +0300" },
+        "Me": {
+            "-HKCharacteristicTypeIdentifierBiologicalSex": "HKBiologicalSexNotSet",
+            "-HKCharacteristicTypeIdentifierBloodType": "HKBloodTypeNotSet",
+            "-HKCharacteristicTypeIdentifierFitzpatrickSkinType": "HKFitzpatrickSkinTypeNotSet"
+        },
+        "Record": [
+                   {
+                   "-type": "HKQuantityTypeIdentifierDietaryWater",
+                   "-sourceName": "Health",
+                   "-sourceVersion": "9.1",
+                   "-unit": "mL",
+                   "-creationDate": "2016-06-16 13:52:21 +0300",
+                   "-startDate": "2016-06-16 13:52:00 +0300",
+                   "-endDate": "2016-06-16 13:52:00 +0300",
+                   "-value": "1000",
+                   "MetadataEntry": {
+                   "-key": "HKWasUserEntered",
+                   "-value": "1"
+                   }
+                   },
+                   {
+                   "-type": "HKQuantityTypeIdentifierDietaryWater",
+                   "-sourceName": "Health",
+                   "-sourceVersion": "9.3.2",
+                   "-unit": "mL",
+                   "-creationDate": "2016-07-18 13:45:41 +0300",
+                   "-startDate": "2016-07-08 13:45:00 +0300",
+                   "-endDate": "2016-07-08 13:45:00 +0300",
+                   "-value": "300",
+                   "MetadataEntry": {
+                   "-key": "HKWasUserEntered",
+                   "-value": "1"
+                   }
+                   },
+                   {
+                   "-type": "HKQuantityTypeIdentifierDietaryWater",
+                   "-sourceName": "Health",
+                   "-sourceVersion": "9.3.2",
+                   "-unit": "mL",
+                   "-creationDate": "2016-07-18 13:45:52 +0300",
+                   "-startDate": "2016-07-14 13:45:00 +0300",
+                   "-endDate": "2016-07-14 13:45:00 +0300",
+                   "-value": "100",
+                   "MetadataEntry": {
+                   "-key": "HKWasUserEntered",
+                   "-value": "1"
+                   }
+                   },
+                   {
+                   "-type": "HKQuantityTypeIdentifierDietaryWater",
+                   "-sourceName": "Health",
+                   "-sourceVersion": "9.3.2",
+                   "-unit": "mL",
+                   "-creationDate": "2016-07-18 13:45:58 +0300",
+                   "-startDate": "2016-07-15 13:45:00 +0300",
+                   "-endDate": "2016-07-15 13:45:00 +0300",
+                   "-value": "50",
+                   "MetadataEntry": {
+                   "-key": "HKWasUserEntered",
+                   "-value": "1"
+                   }
+                   },
+                   {
+                   "-type": "HKQuantityTypeIdentifierDietaryWater",
+                   "-sourceName": "Health",
+                   "-sourceVersion": "9.3.2",
+                   "-unit": "mL",
+                   "-creationDate": "2016-07-18 13:45:46 +0300",
+                   "-startDate": "2016-07-17 13:45:00 +0300",
+                   "-endDate": "2016-07-17 13:45:00 +0300",
+                   "-value": "200",
+                   "MetadataEntry": {
+                   "-key": "HKWasUserEntered",
+                   "-value": "1"
+                   }
+                   },
+                   {
+                   "-type": "HKQuantityTypeIdentifierDietaryWater",
+                   "-sourceName": "Health",
+                   "-sourceVersion": "9.3.2",
+                   "-unit": "mL",
+                   "-creationDate": "2016-07-18 13:45:35 +0300",
+                   "-startDate": "2016-07-18 13:45:00 +0300",
+                   "-endDate": "2016-07-18 13:45:00 +0300",
+                   "-value": "300",
+                   "MetadataEntry": {
+                   "-key": "HKWasUserEntered",
+                   "-value": "1"
+                   }
+                   },
+                   {
+                   "-type": "HKQuantityTypeIdentifierDietaryWater",
+                   "-sourceName": "Health",
+                   "-sourceVersion": "9.3.2",
+                   "-unit": "mL",
+                   "-creationDate": "2016-07-25 16:32:32 +0300",
+                   "-startDate": "2016-07-25 16:32:00 +0300",
+                   "-endDate": "2016-07-25 16:32:00 +0300",
+                   "-value": "600",
+                   "MetadataEntry": {
+                   "-key": "HKWasUserEntered",
+                   "-value": "1"
+                   }
+                   },
+                   {
+                   "-type": "HKQuantityTypeIdentifierBodyMassIndex",
+                   "-sourceName": "Health",
+                   "-sourceVersion": "9.1",
+                   "-unit": "count",
+                   "-creationDate": "2016-06-17 14:43:57 +0300",
+                   "-startDate": "2016-02-17 15:43:00 +0300",
+                   "-endDate": "2016-02-17 15:43:00 +0300",
+                   "-value": "20",
+                   "MetadataEntry": {
+                   "-key": "HKWasUserEntered",
+                   "-value": "1"
+                   }
+                   },
+                   {
+                   "-type": "HKQuantityTypeIdentifierBodyMassIndex",
+                   "-sourceName": "Health",
+                   "-sourceVersion": "9.1",
+                   "-unit": "count",
+                   "-creationDate": "2016-06-17 14:44:04 +0300",
+                   "-startDate": "2016-03-17 15:43:00 +0300",
+                   "-endDate": "2016-03-17 15:43:00 +0300",
+                   "-value": "40",
+                   "MetadataEntry": {
+                   "-key": "HKWasUserEntered",
+                   "-value": "1"
+                   }
+                   },
+                   {
+                   "-type": "HKQuantityTypeIdentifierBodyMassIndex",
+                   "-sourceName": "Health",
+                   "-sourceVersion": "9.1",
+                   "-unit": "count",
+                   "-creationDate": "2016-06-17 14:28:59 +0300",
+                   "-startDate": "2016-04-17 14:28:00 +0300",
+                   "-endDate": "2016-04-17 14:28:00 +0300",
+                   "-value": "28",
+                   "MetadataEntry": {
+                   "-key": "HKWasUserEntered",
+                   "-value": "1"
+                   }
+                   },
+                   {
+                   "-type": "HKQuantityTypeIdentifierBodyMassIndex",
+                   "-sourceName": "Health",
+                   "-sourceVersion": "9.1",
+                   "-unit": "count",
+                   "-creationDate": "2016-05-20 16:29:28 +0300",
+                   "-startDate": "2016-05-20 16:29:00 +0300",
+                   "-endDate": "2016-05-20 16:29:00 +0300",
+                   "-value": "20",
+                   "MetadataEntry": {
+                   "-key": "HKWasUserEntered",
+                   "-value": "1"
+                   }
+                   },
+                   {
+                   "-type": "HKQuantityTypeIdentifierBodyMassIndex",
+                   "-sourceName": "Health",
+                   "-sourceVersion": "9.1",
+                   "-unit": "count",
+                   "-creationDate": "2016-05-20 17:51:34 +0300",
+                   "-startDate": "2016-05-20 17:51:00 +0300",
+                   "-endDate": "2016-05-20 17:51:00 +0300",
+                   "-value": "25",
+                   "MetadataEntry": {
+                   "-key": "HKWasUserEntered",
+                   "-value": "1"
+                   }
+                   },
+                   {
+                   "-type": "HKQuantityTypeIdentifierBodyMassIndex",
+                   "-sourceName": "Health",
+                   "-sourceVersion": "9.1",
+                   "-unit": "count",
+                   "-creationDate": "2016-05-25 17:47:00 +0300",
+                   "-startDate": "2016-05-25 17:46:00 +0300",
+                   "-endDate": "2016-05-25 17:46:00 +0300",
+                   "-value": "25",
+                   "MetadataEntry": {
+                   "-key": "HKWasUserEntered",
+                   "-value": "1"
+                   }
+                   },
+                   {
+                   "-type": "HKQuantityTypeIdentifierBodyMassIndex",
+                   "-sourceName": "Health",
+                   "-sourceVersion": "9.1",
+                   "-unit": "count",
+                   "-creationDate": "2016-05-26 12:51:05 +0300",
+                   "-startDate": "2016-05-26 12:51:00 +0300",
+                   "-endDate": "2016-05-26 12:51:00 +0300",
+                   "-value": "25",
+                   "MetadataEntry": {
+                   "-key": "HKWasUserEntered",
+                   "-value": "1"
+                   }
+                   },
+                   {
+                   "-type": "HKQuantityTypeIdentifierBodyMassIndex",
+                   "-sourceName": "Health",
+                   "-sourceVersion": "9.1",
+                   "-unit": "count",
+                   "-creationDate": "2016-05-26 12:51:10 +0300",
+                   "-startDate": "2016-05-26 12:51:00 +0300",
+                   "-endDate": "2016-05-26 12:51:00 +0300",
+                   "-value": "35",
+                   "MetadataEntry": {
+                   "-key": "HKWasUserEntered",
+                   "-value": "1"
+                   }
+                   },
+                   {
+                   "-type": "HKQuantityTypeIdentifierBodyMassIndex",
+                   "-sourceName": "Health",
+                   "-sourceVersion": "9.1",
+                   "-unit": "count",
+                   "-creationDate": "2016-05-26 12:51:15 +0300",
+                   "-startDate": "2016-05-26 12:51:00 +0300",
+                   "-endDate": "2016-05-26 12:51:00 +0300",
+                   "-value": "15",
+                   "MetadataEntry": {
+                   "-key": "HKWasUserEntered",
+                   "-value": "1"
+                   }
+                   },
+                   {
+                   "-type": "HKQuantityTypeIdentifierBodyMassIndex",
+                   "-sourceName": "Health",
+                   "-sourceVersion": "9.1",
+                   "-unit": "count",
+                   "-creationDate": "2016-05-26 12:51:21 +0300",
+                   "-startDate": "2016-05-26 12:51:00 +0300",
+                   "-endDate": "2016-05-26 12:51:00 +0300",
+                   "-value": "1",
+                   "MetadataEntry": {
+                   "-key": "HKWasUserEntered",
+                   "-value": "1"
+                   }
+                   },
+                   {
+                   "-type": "HKQuantityTypeIdentifierBodyMassIndex",
+                   "-sourceName": "Health",
+                   "-sourceVersion": "9.1",
+                   "-unit": "count",
+                   "-creationDate": "2016-05-26 12:51:27 +0300",
+                   "-startDate": "2016-05-26 12:51:00 +0300",
+                   "-endDate": "2016-05-26 12:51:00 +0300",
+                   "-value": "26",
+                   "MetadataEntry": {
+                   "-key": "HKWasUserEntered",
+                   "-value": "1"
+                   }
+                   },
+                   {
+                   "-type": "HKQuantityTypeIdentifierBodyMassIndex",
+                   "-sourceName": "Health",
+                   "-sourceVersion": "9.1",
+                   "-unit": "count",
+                   "-creationDate": "2016-06-17 14:29:12 +0300",
+                   "-startDate": "2016-06-14 14:29:00 +0300",
+                   "-endDate": "2016-06-14 14:29:00 +0300",
+                   "-value": "40",
+                   "MetadataEntry": {
+                   "-key": "HKWasUserEntered",
+                   "-value": "1"
+                   }
+                   },
+                   {
+                   "-type": "HKQuantityTypeIdentifierBodyMassIndex",
+                   "-sourceName": "Health",
+                   "-sourceVersion": "9.1",
+                   "-unit": "count",
+                   "-creationDate": "2016-06-16 13:46:23 +0300",
+                   "-startDate": "2016-06-16 13:46:00 +0300",
+                   "-endDate": "2016-06-16 13:46:00 +0300",
+                   "-value": "18",
+                   "MetadataEntry": {
+                   "-key": "HKWasUserEntered",
+                   "-value": "1"
+                   }
+                   },
+                   {
+                   "-type": "HKQuantityTypeIdentifierBodyMassIndex",
+                   "-sourceName": "Health",
+                   "-sourceVersion": "9.1",
+                   "-unit": "count",
+                   "-creationDate": "2016-06-17 14:28:38 +0300",
+                   "-startDate": "2016-06-17 14:28:00 +0300",
+                   "-endDate": "2016-06-17 14:28:00 +0300",
+                   "-value": "15",
+                   "MetadataEntry": {
+                   "-key": "HKWasUserEntered",
+                   "-value": "1"
+                   }
+                   },
+                   {
+                   "-type": "HKQuantityTypeIdentifierBodyMassIndex",
+                   "-sourceName": "Health",
+                   "-sourceVersion": "9.3.2",
+                   "-unit": "count",
+                   "-creationDate": "2016-07-18 14:01:21 +0300",
+                   "-startDate": "2016-07-14 14:01:00 +0300",
+                   "-endDate": "2016-07-14 14:01:00 +0300",
+                   "-value": "18.03",
+                   "MetadataEntry": {
+                   "-key": "HKWasUserEntered",
+                   "-value": "1"
+                   }
+                   },
+                   {
+                   "-type": "HKQuantityTypeIdentifierBodyMassIndex",
+                   "-sourceName": "Health",
+                   "-sourceVersion": "9.3.2",
+                   "-unit": "count",
+                   "-creationDate": "2016-07-18 14:01:11 +0300",
+                   "-startDate": "2016-07-16 14:01:00 +0300",
+                   "-endDate": "2016-07-16 14:01:00 +0300",
+                   "-value": "18.03",
+                   "MetadataEntry": {
+                   "-key": "HKWasUserEntered",
+                   "-value": "1"
+                   }
+                   },
+                   {
+                   "-type": "HKQuantityTypeIdentifierBodyMassIndex",
+                   "-sourceName": "Health",
+                   "-sourceVersion": "9.3.2",
+                   "-unit": "count",
+                   "-creationDate": "2016-07-18 14:01:16 +0300",
+                   "-startDate": "2016-07-17 14:01:00 +0300",
+                   "-endDate": "2016-07-17 14:01:00 +0300",
+                   "-value": "18.03",
+                   "MetadataEntry": {
+                   "-key": "HKWasUserEntered",
+                   "-value": "1"
+                   }
+                   },
+                   {
+                   "-type": "HKQuantityTypeIdentifierBodyMassIndex",
+                   "-sourceName": "Health",
+                   "-sourceVersion": "9.3.2",
+                   "-unit": "count",
+                   "-creationDate": "2016-07-18 12:29:06 +0300",
+                   "-startDate": "2016-07-18 12:29:00 +0300",
+                   "-endDate": "2016-07-18 12:29:00 +0300",
+                   "-value": "20",
+                   "MetadataEntry": {
+                   "-key": "HKWasUserEntered",
+                   "-value": "1"
+                   }
+                   },
+                   {
+                   "-type": "HKQuantityTypeIdentifierBodyMassIndex",
+                   "-sourceName": "Health",
+                   "-sourceVersion": "9.3.2",
+                   "-unit": "count",
+                   "-creationDate": "2016-07-18 14:01:07 +0300",
+                   "-startDate": "2016-07-18 14:01:00 +0300",
+                   "-endDate": "2016-07-18 14:01:00 +0300",
+                   "-value": "18.03",
+                   "MetadataEntry": {
+                   "-key": "HKWasUserEntered",
+                   "-value": "1"
+                   }
+                   },
+                   {
+                   "-type": "HKQuantityTypeIdentifierBodyMassIndex",
+                   "-sourceName": "Health",
+                   "-sourceVersion": "9.3.2",
+                   "-unit": "count",
+                   "-creationDate": "2016-07-25 16:30:03 +0300",
+                   "-startDate": "2016-07-25 16:30:00 +0300",
+                   "-endDate": "2016-07-25 16:30:00 +0300",
+                   "-value": "32.05",
+                   "MetadataEntry": {
+                   "-key": "HKWasUserEntered",
+                   "-value": "1"
+                   }
+                   },
+                   {
+                   "-type": "HKQuantityTypeIdentifierHeight",
+                   "-sourceName": "Health",
+                   "-sourceVersion": "9.3.2",
+                   "-unit": "cm",
+                   "-creationDate": "2016-07-18 13:33:16 +0300",
+                   "-startDate": "2016-07-18 13:33:00 +0300",
+                   "-endDate": "2016-07-18 13:33:00 +0300",
+                   "-value": "158",
+                   "MetadataEntry": {
+                   "-key": "HKWasUserEntered",
+                   "-value": "1"
+                   }
+                   },
+                   {
+                   "-type": "HKQuantityTypeIdentifierBodyMass",
+                   "-sourceName": "Health",
+                   "-sourceVersion": "9.1",
+                   "-unit": "kg",
+                   "-creationDate": "2016-06-17 13:59:48 +0300",
+                   "-startDate": "2016-01-17 14:59:00 +0300",
+                   "-endDate": "2016-01-17 14:59:00 +0300",
+                   "-value": "58",
+                   "MetadataEntry": {
+                   "-key": "HKWasUserEntered",
+                   "-value": "1"
+                   }
+                   },
+                   {
+                   "-type": "HKQuantityTypeIdentifierBodyMass",
+                   "-sourceName": "Health",
+                   "-sourceVersion": "9.1",
+                   "-unit": "kg",
+                   "-creationDate": "2016-06-17 14:00:08 +0300",
+                   "-startDate": "2016-01-17 14:59:00 +0300",
+                   "-endDate": "2016-01-17 14:59:00 +0300",
+                   "-value": "49",
+                   "MetadataEntry": {
+                   "-key": "HKWasUserEntered",
+                   "-value": "1"
+                   }
+                   },
+                   {
+                   "-type": "HKQuantityTypeIdentifierBodyMass",
+                   "-sourceName": "Health",
+                   "-sourceVersion": "9.1",
+                   "-unit": "kg",
+                   "-creationDate": "2016-06-17 14:14:54 +0300",
+                   "-startDate": "2016-01-20 15:14:00 +0300",
+                   "-endDate": "2016-01-20 15:14:00 +0300",
+                   "-value": "27",
+                   "MetadataEntry": {
+                   "-key": "HKWasUserEntered",
+                   "-value": "1"
+                   }
+                   },
+                   {
+                   "-type": "HKQuantityTypeIdentifierBodyMass",
+                   "-sourceName": "Health",
+                   "-sourceVersion": "9.1",
+                   "-unit": "kg",
+                   "-creationDate": "2016-06-17 13:59:25 +0300",
+                   "-startDate": "2016-02-17 14:59:00 +0300",
+                   "-endDate": "2016-02-17 14:59:00 +0300",
+                   "-value": "40",
+                   "MetadataEntry": {
+                   "-key": "HKWasUserEntered",
+                   "-value": "1"
+                   }
+                   },
+                   {
+                   "-type": "HKQuantityTypeIdentifierBodyMass",
+                   "-sourceName": "Health",
+                   "-sourceVersion": "9.1",
+                   "-unit": "kg",
+                   "-creationDate": "2016-06-17 13:59:31 +0300",
+                   "-startDate": "2016-03-17 14:59:00 +0300",
+                   "-endDate": "2016-03-17 14:59:00 +0300",
+                   "-value": "45",
+                   "MetadataEntry": {
+                   "-key": "HKWasUserEntered",
+                   "-value": "1"
+                   }
+                   },
+                   {
+                   "-type": "HKQuantityTypeIdentifierBodyMass",
+                   "-sourceName": "Health",
+                   "-sourceVersion": "9.1",
+                   "-unit": "kg",
+                   "-creationDate": "2016-06-17 13:59:39 +0300",
+                   "-startDate": "2016-04-17 13:59:00 +0300",
+                   "-endDate": "2016-04-17 13:59:00 +0300",
+                   "-value": "50",
+                   "MetadataEntry": {
+                   "-key": "HKWasUserEntered",
+                   "-value": "1"
+                   }
+                   },
+                   {
+                   "-type": "HKQuantityTypeIdentifierBodyMass",
+                   "-sourceName": "Health",
+                   "-sourceVersion": "9.1",
+                   "-unit": "kg",
+                   "-creationDate": "2016-06-17 13:55:44 +0300",
+                   "-startDate": "2016-05-26 13:55:00 +0300",
+                   "-endDate": "2016-05-26 13:55:00 +0300",
+                   "-value": "45",
+                   "MetadataEntry": {
+                   "-key": "HKWasUserEntered",
+                   "-value": "1"
+                   }
+                   },
+                   {
+                   "-type": "HKQuantityTypeIdentifierBodyMass",
+                   "-sourceName": "Health",
+                   "-sourceVersion": "9.1",
+                   "-unit": "kg",
+                   "-creationDate": "2016-06-17 13:55:35 +0300",
+                   "-startDate": "2016-05-31 13:55:00 +0300",
+                   "-endDate": "2016-05-31 13:55:00 +0300",
+                   "-value": "60",
+                   "MetadataEntry": {
+                   "-key": "HKWasUserEntered",
+                   "-value": "1"
+                   }
+                   },
+                   {
+                   "-type": "HKQuantityTypeIdentifierBodyMass",
+                   "-sourceName": "Health",
+                   "-sourceVersion": "9.1",
+                   "-unit": "kg",
+                   "-creationDate": "2016-06-17 13:50:50 +0300",
+                   "-startDate": "2016-06-10 13:50:00 +0300",
+                   "-endDate": "2016-06-10 13:50:00 +0300",
+                   "-value": "70",
+                   "MetadataEntry": {
+                   "-key": "HKWasUserEntered",
+                   "-value": "1"
+                   }
+                   },
+                   {
+                   "-type": "HKQuantityTypeIdentifierBodyMass",
+                   "-sourceName": "Health",
+                   "-sourceVersion": "9.1",
+                   "-unit": "kg",
+                   "-creationDate": "2016-06-17 13:49:17 +0300",
+                   "-startDate": "2016-06-12 13:49:00 +0300",
+                   "-endDate": "2016-06-12 13:49:00 +0300",
+                   "-value": "40",
+                   "MetadataEntry": {
+                   "-key": "HKWasUserEntered",
+                   "-value": "1"
+                   }
+                   },
+                   {
+                   "-type": "HKQuantityTypeIdentifierBodyMass",
+                   "-sourceName": "Health",
+                   "-sourceVersion": "9.1",
+                   "-unit": "kg",
+                   "-creationDate": "2016-06-16 13:46:36 +0300",
+                   "-startDate": "2016-06-16 13:46:00 +0300",
+                   "-endDate": "2016-06-16 13:46:00 +0300",
+                   "-value": "45",
+                   "MetadataEntry": {
+                   "-key": "HKWasUserEntered",
+                   "-value": "1"
+                   }
+                   },
+                   {
+                   "-type": "HKQuantityTypeIdentifierBodyMass",
+                   "-sourceName": "Health",
+                   "-sourceVersion": "9.1",
+                   "-unit": "kg",
+                   "-creationDate": "2016-06-16 13:52:12 +0300",
+                   "-startDate": "2016-06-16 13:52:00 +0300",
+                   "-endDate": "2016-06-16 13:52:00 +0300",
+                   "-value": "45",
+                   "MetadataEntry": {
+                   "-key": "HKWasUserEntered",
+                   "-value": "1"
+                   }
+                   },
+                   {
+                   "-type": "HKQuantityTypeIdentifierBodyMass",
+                   "-sourceName": "Health",
+                   "-sourceVersion": "9.1",
+                   "-unit": "kg",
+                   "-creationDate": "2016-06-17 13:41:39 +0300",
+                   "-startDate": "2016-06-17 13:41:00 +0300",
+                   "-endDate": "2016-06-17 13:41:00 +0300",
+                   "-value": "60",
+                   "MetadataEntry": {
+                   "-key": "HKWasUserEntered",
+                   "-value": "1"
+                   }
+                   },
+                   {
+                   "-type": "HKQuantityTypeIdentifierBodyMass",
+                   "-sourceName": "Health",
+                   "-sourceVersion": "9.1",
+                   "-unit": "kg",
+                   "-creationDate": "2016-06-17 13:42:06 +0300",
+                   "-startDate": "2016-06-17 13:42:00 +0300",
+                   "-endDate": "2016-06-17 13:42:00 +0300",
+                   "-value": "40",
+                   "MetadataEntry": {
+                   "-key": "HKWasUserEntered",
+                   "-value": "1"
+                   }
+                   },
+                   {
+                   "-type": "HKQuantityTypeIdentifierBodyMass",
+                   "-sourceName": "Health",
+                   "-sourceVersion": "9.3.2",
+                   "-unit": "kg",
+                   "-creationDate": "2016-07-18 13:35:41 +0300",
+                   "-startDate": "2016-07-16 13:35:00 +0300",
+                   "-endDate": "2016-07-16 13:35:00 +0300",
+                   "-value": "42",
+                   "MetadataEntry": {
+                   "-key": "HKWasUserEntered",
+                   "-value": "1"
+                   }
+                   },
+                   {
+                   "-type": "HKQuantityTypeIdentifierBodyMass",
+                   "-sourceName": "Health",
+                   "-sourceVersion": "9.3.2",
+                   "-unit": "kg",
+                   "-creationDate": "2016-07-18 13:35:35 +0300",
+                   "-startDate": "2016-07-18 13:35:00 +0300",
+                   "-endDate": "2016-07-18 13:35:00 +0300",
+                   "-value": "45",
+                   "MetadataEntry": {
+                   "-key": "HKWasUserEntered",
+                   "-value": "1"
+                   }
+                   },
+                   {
+                   "-type": "HKQuantityTypeIdentifierBodyMass",
+                   "-sourceName": "Health",
+                   "-sourceVersion": "9.3.2",
+                   "-unit": "kg",
+                   "-creationDate": "2016-07-18 16:33:45 +0300",
+                   "-startDate": "2016-07-18 16:33:00 +0300",
+                   "-endDate": "2016-07-18 16:33:00 +0300",
+                   "-value": "80",
+                   "MetadataEntry": {
+                   "-key": "HKWasUserEntered",
+                   "-value": "1"
+                   }
+                   },
+                   {
+                   "-type": "HKQuantityTypeIdentifierBodyMass",
+                   "-sourceName": "Health",
+                   "-sourceVersion": "9.3.2",
+                   "-unit": "kg",
+                   "-creationDate": "2016-07-25 16:32:39 +0300",
+                   "-startDate": "2016-07-25 16:32:00 +0300",
+                   "-endDate": "2016-07-25 16:32:00 +0300",
+                   "-value": "60",
+                   "MetadataEntry": {
+                   "-key": "HKWasUserEntered",
+                   "-value": "1"
+                   }
+                   },
+                   {
+                   "-type": "HKQuantityTypeIdentifierHeartRate",
+                   "-sourceName": "Health",
+                   "-sourceVersion": "9.3.2",
+                   "-unit": "count/min",
+                   "-creationDate": "2016-07-25 16:30:53 +0300",
+                   "-startDate": "2016-07-25 16:30:00 +0300",
+                   "-endDate": "2016-07-25 16:30:00 +0300",
+                   "-value": "60",
+                   "MetadataEntry": {
+                   "-key": "HKWasUserEntered",
+                   "-value": "1"
+                   }
+                   },
+                   {
+                   "-type": "HKQuantityTypeIdentifierBloodPressureSystolic",
+                   "-sourceName": "Health",
+                   "-sourceVersion": "9.1",
+                   "-unit": "mmHg",
+                   "-creationDate": "2016-06-16 15:46:01 +0300",
+                   "-startDate": "2016-06-16 15:45:00 +0300",
+                   "-endDate": "2016-06-16 15:45:00 +0300",
+                   "-value": "200",
+                   "MetadataEntry": {
+                   "-key": "HKWasUserEntered",
+                   "-value": "1"
+                   }
+                   },
+                   {
+                   "-type": "HKQuantityTypeIdentifierBloodPressureSystolic",
+                   "-sourceName": "Health",
+                   "-sourceVersion": "9.3.2",
+                   "-unit": "mmHg",
+                   "-creationDate": "2016-07-25 16:29:58 +0300",
+                   "-startDate": "2016-07-25 16:29:00 +0300",
+                   "-endDate": "2016-07-25 16:29:00 +0300",
+                   "-value": "200",
+                   "MetadataEntry": {
+                   "-key": "HKWasUserEntered",
+                   "-value": "1"
+                   }
+                   },
+                   {
+                   "-type": "HKQuantityTypeIdentifierBloodPressureDiastolic",
+                   "-sourceName": "Health",
+                   "-sourceVersion": "9.1",
+                   "-unit": "mmHg",
+                   "-creationDate": "2016-06-16 15:46:01 +0300",
+                   "-startDate": "2016-06-16 15:45:00 +0300",
+                   "-endDate": "2016-06-16 15:45:00 +0300",
+                   "-value": "120",
+                   "MetadataEntry": {
+                   "-key": "HKWasUserEntered",
+                   "-value": "1"
+                   }
+                   },
+                   {
+                   "-type": "HKQuantityTypeIdentifierBloodPressureDiastolic",
+                   "-sourceName": "Health",
+                   "-sourceVersion": "9.3.2",
+                   "-unit": "mmHg",
+                   "-creationDate": "2016-07-25 16:29:58 +0300",
+                   "-startDate": "2016-07-25 16:29:00 +0300",
+                   "-endDate": "2016-07-25 16:29:00 +0300",
+                   "-value": "130",
+                   "MetadataEntry": {
+                   "-key": "HKWasUserEntered",
+                   "-value": "1"
+                   }
+                   },
+                   {
+                   "-type": "HKQuantityTypeIdentifierBodyFatPercentage",
+                   "-sourceName": "Health",
+                   "-sourceVersion": "9.1",
+                   "-unit": "%",
+                   "-creationDate": "2016-05-26 12:52:22 +0300",
+                   "-startDate": "2016-05-26 12:52:00 +0300",
+                   "-endDate": "2016-05-26 12:52:00 +0300",
+                   "-value": "0.2",
+                   "MetadataEntry": {
+                   "-key": "HKWasUserEntered",
+                   "-value": "1"
+                   }
+                   },
+                   {
+                   "-type": "HKQuantityTypeIdentifierStepCount",
+                   "-sourceName": "Health",
+                   "-sourceVersion": "9.1",
+                   "-unit": "count",
+                   "-creationDate": "2016-05-20 17:52:07 +0300",
+                   "-startDate": "2016-05-20 17:52:00 +0300",
+                   "-endDate": "2016-05-20 17:52:00 +0300",
+                   "-value": "2500",
+                   "MetadataEntry": {
+                   "-key": "HKWasUserEntered",
+                   "-value": "1"
+                   }
+                   },
+                   {
+                   "-type": "HKQuantityTypeIdentifierStepCount",
+                   "-sourceName": "Health",
+                   "-sourceVersion": "9.1",
+                   "-unit": "count",
+                   "-creationDate": "2016-06-16 13:52:45 +0300",
+                   "-startDate": "2016-06-16 13:52:00 +0300",
+                   "-endDate": "2016-06-16 13:52:00 +0300",
+                   "-value": "2000",
+                   "MetadataEntry": {
+                   "-key": "HKWasUserEntered",
+                   "-value": "1"
+                   }
+                   },
+                   {
+                   "-type": "HKQuantityTypeIdentifierStepCount",
+                   "-sourceName": "Health",
+                   "-sourceVersion": "9.3.2",
+                   "-unit": "count",
+                   "-creationDate": "2016-07-18 13:35:12 +0300",
+                   "-startDate": "2016-07-17 13:35:00 +0300",
+                   "-endDate": "2016-07-17 13:35:00 +0300",
+                   "-value": "1500",
+                   "MetadataEntry": {
+                   "-key": "HKWasUserEntered",
+                   "-value": "1"
+                   }
+                   },
+                   {
+                   "-type": "HKQuantityTypeIdentifierStepCount",
+                   "-sourceName": "Health",
+                   "-sourceVersion": "9.3.2",
+                   "-unit": "count",
+                   "-creationDate": "2016-07-18 13:35:06 +0300",
+                   "-startDate": "2016-07-18 13:35:00 +0300",
+                   "-endDate": "2016-07-18 13:35:00 +0300",
+                   "-value": "2000",
+                   "MetadataEntry": {
+                   "-key": "HKWasUserEntered",
+                   "-value": "1"
+                   }
+                   },
+                   {
+                   "-type": "HKQuantityTypeIdentifierStepCount",
+                   "-sourceName": "Health",
+                   "-sourceVersion": "9.3.2",
+                   "-unit": "count",
+                   "-creationDate": "2016-07-25 16:32:08 +0300",
+                   "-startDate": "2016-07-25 16:32:00 +0300",
+                   "-endDate": "2016-07-25 16:32:00 +0300",
+                   "-value": "3000",
+                   "MetadataEntry": {
+                   "-key": "HKWasUserEntered",
+                   "-value": "1"
+                   }
+                   },
+                   {
+                   "-type": "HKQuantityTypeIdentifierDistanceWalkingRunning",
+                   "-sourceName": "Health",
+                   "-sourceVersion": "9.3.2",
+                   "-unit": "km",
+                   "-creationDate": "2016-07-21 13:29:07 +0300",
+                   "-startDate": "2016-07-21 13:28:00 +0300",
+                   "-endDate": "2016-07-21 13:31:00 +0300",
+                   "-value": "20"
+                   },
+                   {
+                   "-type": "HKQuantityTypeIdentifierDistanceWalkingRunning",
+                   "-sourceName": "Health",
+                   "-sourceVersion": "9.3.2",
+                   "-unit": "km",
+                   "-creationDate": "2016-07-25 12:36:07 +0300",
+                   "-startDate": "2016-07-25 11:35:00 +0300",
+                   "-endDate": "2016-07-25 12:35:00 +0300",
+                   "-value": "2"
+                   },
+                   {
+                   "-type": "HKQuantityTypeIdentifierBasalEnergyBurned",
+                   "-sourceName": "Health",
+                   "-sourceVersion": "9.1",
+                   "-unit": "kcal",
+                   "-creationDate": "2016-06-16 13:53:56 +0300",
+                   "-startDate": "2016-06-16 13:53:00 +0300",
+                   "-endDate": "2016-06-16 13:53:00 +0300",
+                   "-value": "4.78011",
+                   "MetadataEntry": {
+                   "-key": "HKWasUserEntered",
+                   "-value": "1"
+                   }
+                   },
+                   {
+                   "-type": "HKQuantityTypeIdentifierBasalEnergyBurned",
+                   "-sourceName": "Health",
+                   "-sourceVersion": "9.1",
+                   "-unit": "kcal",
+                   "-creationDate": "2016-06-16 15:39:35 +0300",
+                   "-startDate": "2016-06-16 15:39:00 +0300",
+                   "-endDate": "2016-06-16 15:39:00 +0300",
+                   "-value": "478.011",
+                   "MetadataEntry": {
+                   "-key": "HKWasUserEntered",
+                   "-value": "1"
+                   }
+                   },
+                   {
+                   "-type": "HKQuantityTypeIdentifierBasalEnergyBurned",
+                   "-sourceName": "Health",
+                   "-sourceVersion": "9.3.2",
+                   "-unit": "kcal",
+                   "-creationDate": "2016-07-18 13:33:56 +0300",
+                   "-startDate": "2016-07-17 13:33:00 +0300",
+                   "-endDate": "2016-07-17 13:33:00 +0300",
+                   "-value": "300",
+                   "MetadataEntry": {
+                   "-key": "HKWasUserEntered",
+                   "-value": "1"
+                   }
+                   },
+                   {
+                   "-type": "HKQuantityTypeIdentifierBasalEnergyBurned",
+                   "-sourceName": "Health",
+                   "-sourceVersion": "9.3.2",
+                   "-unit": "kcal",
+                   "-creationDate": "2016-07-18 13:33:50 +0300",
+                   "-startDate": "2016-07-18 13:33:00 +0300",
+                   "-endDate": "2016-07-18 13:33:00 +0300",
+                   "-value": "200",
+                   "MetadataEntry": {
+                   "-key": "HKWasUserEntered",
+                   "-value": "1"
+                   }
+                   },
+                   {
+                   "-type": "HKQuantityTypeIdentifierBasalEnergyBurned",
+                   "-sourceName": "Health",
+                   "-sourceVersion": "9.3.2",
+                   "-unit": "kcal",
+                   "-creationDate": "2016-07-25 16:40:25 +0300",
+                   "-startDate": "2016-07-25 16:40:00 +0300",
+                   "-endDate": "2016-07-25 16:40:00 +0300",
+                   "-value": "300",
+                   "MetadataEntry": {
+                   "-key": "HKWasUserEntered",
+                   "-value": "1"
+                   }
+                   },
+                   {
+                   "-type": "HKQuantityTypeIdentifierActiveEnergyBurned",
+                   "-sourceName": "Health",
+                   "-sourceVersion": "9.1",
+                   "-unit": "kcal",
+                   "-creationDate": "2016-06-16 15:39:22 +0300",
+                   "-startDate": "2016-06-16 15:39:00 +0300",
+                   "-endDate": "2016-06-16 15:39:00 +0300",
+                   "-value": "478.011",
+                   "MetadataEntry": {
+                   "-key": "HKWasUserEntered",
+                   "-value": "1"
+                   }
+                   },
+                   {
+                   "-type": "HKQuantityTypeIdentifierActiveEnergyBurned",
+                   "-sourceName": "Health",
+                   "-sourceVersion": "9.3.2",
+                   "-unit": "kcal",
+                   "-creationDate": "2016-07-18 13:46:22 +0300",
+                   "-startDate": "2016-07-15 13:46:00 +0300",
+                   "-endDate": "2016-07-15 13:46:00 +0300",
+                   "-value": "300",
+                   "MetadataEntry": {
+                   "-key": "HKWasUserEntered",
+                   "-value": "1"
+                   }
+                   },
+                   {
+                   "-type": "HKQuantityTypeIdentifierActiveEnergyBurned",
+                   "-sourceName": "Health",
+                   "-sourceVersion": "9.3.2",
+                   "-unit": "kcal",
+                   "-creationDate": "2016-07-18 13:46:17 +0300",
+                   "-startDate": "2016-07-17 13:46:00 +0300",
+                   "-endDate": "2016-07-17 13:46:00 +0300",
+                   "-value": "200",
+                   "MetadataEntry": {
+                   "-key": "HKWasUserEntered",
+                   "-value": "1"
+                   }
+                   },
+                   {
+                   "-type": "HKQuantityTypeIdentifierActiveEnergyBurned",
+                   "-sourceName": "Health",
+                   "-sourceVersion": "9.3.2",
+                   "-unit": "kcal",
+                   "-creationDate": "2016-07-18 13:46:09 +0300",
+                   "-startDate": "2016-07-18 13:46:00 +0300",
+                   "-endDate": "2016-07-18 13:46:00 +0300",
+                   "-value": "2000",
+                   "MetadataEntry": {
+                   "-key": "HKWasUserEntered",
+                   "-value": "1"
+                   }
+                   },
+                   {
+                   "-type": "HKQuantityTypeIdentifierActiveEnergyBurned",
+                   "-sourceName": "Health",
+                   "-sourceVersion": "9.3.2",
+                   "-unit": "kcal",
+                   "-creationDate": "2016-07-18 13:46:28 +0300",
+                   "-startDate": "2016-07-18 13:46:00 +0300",
+                   "-endDate": "2016-07-18 13:46:00 +0300",
+                   "-value": "2000",
+                   "MetadataEntry": {
+                   "-key": "HKWasUserEntered",
+                   "-value": "1"
+                   }
+                   },
+                   {
+                   "-type": "HKQuantityTypeIdentifierActiveEnergyBurned",
+                   "-sourceName": "Health",
+                   "-sourceVersion": "9.3.2",
+                   "-unit": "kcal",
+                   "-creationDate": "2016-07-25 12:31:23 +0300",
+                   "-startDate": "2016-07-25 12:31:00 +0300",
+                   "-endDate": "2016-07-25 12:31:00 +0300",
+                   "-value": "3000",
+                   "MetadataEntry": {
+                   "-key": "HKWasUserEntered",
+                   "-value": "1"
+                   }
+                   },
+                   {
+                   "-type": "HKQuantityTypeIdentifierActiveEnergyBurned",
+                   "-sourceName": "Health",
+                   "-sourceVersion": "9.3.2",
+                   "-unit": "kcal",
+                   "-creationDate": "2016-07-25 12:36:07 +0300",
+                   "-startDate": "2016-07-25 11:35:00 +0300",
+                   "-endDate": "2016-07-25 12:35:00 +0300",
+                   "-value": "400"
+                   },
+                   {
+                   "-type": "HKQuantityTypeIdentifierDietaryFatTotal",
+                   "-sourceName": "Health",
+                   "-sourceVersion": "9.1",
+                   "-unit": "g",
+                   "-creationDate": "2016-05-20 17:52:16 +0300",
+                   "-startDate": "2016-05-20 17:52:00 +0300",
+                   "-endDate": "2016-05-20 17:52:00 +0300",
+                   "-value": "35",
+                   "MetadataEntry": {
+                   "-key": "HKWasUserEntered",
+                   "-value": "1"
+                   }
+                   },
+                   {
+                   "-type": "HKQuantityTypeIdentifierDietaryFatTotal",
+                   "-sourceName": "Health",
+                   "-sourceVersion": "9.1",
+                   "-unit": "g",
+                   "-creationDate": "2016-06-16 15:43:37 +0300",
+                   "-startDate": "2016-06-16 15:43:00 +0300",
+                   "-endDate": "2016-06-16 15:43:00 +0300",
+                   "-value": "20",
+                   "MetadataEntry": {
+                   "-key": "HKWasUserEntered",
+                   "-value": "1"
+                   }
+                   },
+                   {
+                   "-type": "HKQuantityTypeIdentifierDietaryFatTotal",
+                   "-sourceName": "Health",
+                   "-sourceVersion": "9.3.2",
+                   "-unit": "g",
+                   "-creationDate": "2016-07-19 13:11:36 +0300",
+                   "-startDate": "2016-07-19 13:11:00 +0300",
+                   "-endDate": "2016-07-19 13:11:00 +0300",
+                   "-value": "50",
+                   "MetadataEntry": {
+                   "-key": "HKWasUserEntered",
+                   "-value": "1"
+                   }
+                   },
+                   {
+                   "-type": "HKQuantityTypeIdentifierDietaryFatTotal",
+                   "-sourceName": "Health",
+                   "-sourceVersion": "9.3.2",
+                   "-unit": "g",
+                   "-creationDate": "2016-07-19 13:15:50 +0300",
+                   "-startDate": "2016-07-19 13:15:00 +0300",
+                   "-endDate": "2016-07-19 13:15:00 +0300",
+                   "-value": "50",
+                   "MetadataEntry": {
+                   "-key": "HKWasUserEntered",
+                   "-value": "1"
+                   }
+                   },
+                   {
+                   "-type": "HKQuantityTypeIdentifierDietaryFatTotal",
+                   "-sourceName": "Health",
+                   "-sourceVersion": "9.3.2",
+                   "-unit": "g",
+                   "-creationDate": "2016-07-25 16:32:16 +0300",
+                   "-startDate": "2016-07-25 16:32:00 +0300",
+                   "-endDate": "2016-07-25 16:32:00 +0300",
+                   "-value": "50",
+                   "MetadataEntry": {
+                   "-key": "HKWasUserEntered",
+                   "-value": "1"
+                   }
+                   },
+                   {
+                   "-type": "HKQuantityTypeIdentifierDietaryFatPolyunsaturated",
+                   "-sourceName": "Health",
+                   "-sourceVersion": "9.1",
+                   "-unit": "g",
+                   "-creationDate": "2016-05-20 17:51:50 +0300",
+                   "-startDate": "2016-05-20 17:51:00 +0300",
+                   "-endDate": "2016-05-20 17:51:00 +0300",
+                   "-value": "25",
+                   "MetadataEntry": {
+                   "-key": "HKWasUserEntered",
+                   "-value": "1"
+                   }
+                   },
+                   {
+                   "-type": "HKQuantityTypeIdentifierDietaryFatPolyunsaturated",
+                   "-sourceName": "Health",
+                   "-sourceVersion": "9.1",
+                   "-unit": "g",
+                   "-creationDate": "2016-06-16 14:40:26 +0300",
+                   "-startDate": "2016-06-16 14:40:00 +0300",
+                   "-endDate": "2016-06-16 14:40:00 +0300",
+                   "-value": "20",
+                   "MetadataEntry": {
+                   "-key": "HKWasUserEntered",
+                   "-value": "1"
+                   }
+                   },
+                   {
+                   "-type": "HKQuantityTypeIdentifierDietaryFatPolyunsaturated",
+                   "-sourceName": "Health",
+                   "-sourceVersion": "9.3.2",
+                   "-unit": "g",
+                   "-creationDate": "2016-07-18 13:33:40 +0300",
+                   "-startDate": "2016-07-17 13:33:00 +0300",
+                   "-endDate": "2016-07-17 13:33:00 +0300",
+                   "-value": "20",
+                   "MetadataEntry": {
+                   "-key": "HKWasUserEntered",
+                   "-value": "1"
+                   }
+                   },
+                   {
+                   "-type": "HKQuantityTypeIdentifierDietaryFatPolyunsaturated",
+                   "-sourceName": "Health",
+                   "-sourceVersion": "9.3.2",
+                   "-unit": "g",
+                   "-creationDate": "2016-07-18 13:33:43 +0300",
+                   "-startDate": "2016-07-18 13:33:00 +0300",
+                   "-endDate": "2016-07-18 13:33:00 +0300",
+                   "-value": "20",
+                   "MetadataEntry": {
+                   "-key": "HKWasUserEntered",
+                   "-value": "1"
+                   }
+                   },
+                   {
+                   "-type": "HKQuantityTypeIdentifierDietaryFatPolyunsaturated",
+                   "-sourceName": "Health",
+                   "-sourceVersion": "9.3.2",
+                   "-unit": "g",
+                   "-creationDate": "2016-07-25 16:31:40 +0300",
+                   "-startDate": "2016-07-25 16:31:00 +0300",
+                   "-endDate": "2016-07-25 16:31:00 +0300",
+                   "-value": "30",
+                   "MetadataEntry": {
+                   "-key": "HKWasUserEntered",
+                   "-value": "1"
+                   }
+                   },
+                   {
+                   "-type": "HKQuantityTypeIdentifierDietaryFatMonounsaturated",
+                   "-sourceName": "Health",
+                   "-sourceVersion": "9.1",
+                   "-unit": "g",
+                   "-creationDate": "2016-05-20 17:51:43 +0300",
+                   "-startDate": "2016-05-20 17:51:00 +0300",
+                   "-endDate": "2016-05-20 17:51:00 +0300",
+                   "-value": "25",
+                   "MetadataEntry": {
+                   "-key": "HKWasUserEntered",
+                   "-value": "1"
+                   }
+                   },
+                   {
+                   "-type": "HKQuantityTypeIdentifierDietaryFatMonounsaturated",
+                   "-sourceName": "Health",
+                   "-sourceVersion": "9.1",
+                   "-unit": "g",
+                   "-creationDate": "2016-06-16 14:40:35 +0300",
+                   "-startDate": "2016-06-16 14:40:00 +0300",
+                   "-endDate": "2016-06-16 14:40:00 +0300",
+                   "-value": "20",
+                   "MetadataEntry": {
+                   "-key": "HKWasUserEntered",
+                   "-value": "1"
+                   }
+                   },
+                   {
+                   "-type": "HKQuantityTypeIdentifierDietaryFatMonounsaturated",
+                   "-sourceName": "Health",
+                   "-sourceVersion": "9.1",
+                   "-unit": "g",
+                   "-creationDate": "2016-06-16 14:42:39 +0300",
+                   "-startDate": "2016-06-16 14:42:00 +0300",
+                   "-endDate": "2016-06-16 14:42:00 +0300",
+                   "-value": "20",
+                   "MetadataEntry": {
+                   "-key": "HKWasUserEntered",
+                   "-value": "1"
+                   }
+                   },
+                   {
+                   "-type": "HKQuantityTypeIdentifierDietaryFatMonounsaturated",
+                   "-sourceName": "Health",
+                   "-sourceVersion": "9.3.2",
+                   "-unit": "g",
+                   "-creationDate": "2016-07-18 13:33:30 +0300",
+                   "-startDate": "2016-07-17 13:33:00 +0300",
+                   "-endDate": "2016-07-17 13:33:00 +0300",
+                   "-value": "25",
+                   "MetadataEntry": {
+                   "-key": "HKWasUserEntered",
+                   "-value": "1"
+                   }
+                   },
+                   {
+                   "-type": "HKQuantityTypeIdentifierDietaryFatMonounsaturated",
+                   "-sourceName": "Health",
+                   "-sourceVersion": "9.3.2",
+                   "-unit": "g",
+                   "-creationDate": "2016-07-18 13:33:23 +0300",
+                   "-startDate": "2016-07-18 13:33:00 +0300",
+                   "-endDate": "2016-07-18 13:33:00 +0300",
+                   "-value": "20",
+                   "MetadataEntry": {
+                   "-key": "HKWasUserEntered",
+                   "-value": "1"
+                   }
+                   },
+                   {
+                   "-type": "HKQuantityTypeIdentifierDietaryFatMonounsaturated",
+                   "-sourceName": "Health",
+                   "-sourceVersion": "9.3.2",
+                   "-unit": "g",
+                   "-creationDate": "2016-07-18 15:31:55 +0300",
+                   "-startDate": "2016-07-18 15:31:00 +0300",
+                   "-endDate": "2016-07-18 15:31:00 +0300",
+                   "-value": "20",
+                   "MetadataEntry": {
+                   "-key": "HKWasUserEntered",
+                   "-value": "1"
+                   }
+                   },
+                   {
+                   "-type": "HKQuantityTypeIdentifierDietaryFatMonounsaturated",
+                   "-sourceName": "Health",
+                   "-sourceVersion": "9.3.2",
+                   "-unit": "g",
+                   "-creationDate": "2016-07-25 16:31:04 +0300",
+                   "-startDate": "2016-07-25 16:31:00 +0300",
+                   "-endDate": "2016-07-25 16:31:00 +0300",
+                   "-value": "20",
+                   "MetadataEntry": {
+                   "-key": "HKWasUserEntered",
+                   "-value": "1"
+                   }
+                   },
+                   {
+                   "-type": "HKQuantityTypeIdentifierDietaryFatSaturated",
+                   "-sourceName": "Health",
+                   "-sourceVersion": "9.1",
+                   "-unit": "g",
+                   "-creationDate": "2016-05-20 17:51:58 +0300",
+                   "-startDate": "2016-05-20 17:51:00 +0300",
+                   "-endDate": "2016-05-20 17:51:00 +0300",
+                   "-value": "25",
+                   "MetadataEntry": {
+                   "-key": "HKWasUserEntered",
+                   "-value": "1"
+                   }
+                   },
+                   {
+                   "-type": "HKQuantityTypeIdentifierDietaryFatSaturated",
+                   "-sourceName": "Health",
+                   "-sourceVersion": "9.1",
+                   "-unit": "g",
+                   "-creationDate": "2016-06-16 13:53:42 +0300",
+                   "-startDate": "2016-06-16 13:53:00 +0300",
+                   "-endDate": "2016-06-16 13:53:00 +0300",
+                   "-value": "20",
+                   "MetadataEntry": {
+                   "-key": "HKWasUserEntered",
+                   "-value": "1"
+                   }
+                   },
+                   {
+                   "-type": "HKQuantityTypeIdentifierDietaryFatSaturated",
+                   "-sourceName": "Health",
+                   "-sourceVersion": "9.3.2",
+                   "-unit": "g",
+                   "-creationDate": "2016-07-18 13:34:32 +0300",
+                   "-startDate": "2016-07-18 13:34:00 +0300",
+                   "-endDate": "2016-07-18 13:34:00 +0300",
+                   "-value": "20",
+                   "MetadataEntry": {
+                   "-key": "HKWasUserEntered",
+                   "-value": "1"
+                   }
+                   },
+                   {
+                   "-type": "HKQuantityTypeIdentifierDietaryFatSaturated",
+                   "-sourceName": "Health",
+                   "-sourceVersion": "9.3.2",
+                   "-unit": "g",
+                   "-creationDate": "2016-07-25 16:31:52 +0300",
+                   "-startDate": "2016-07-25 16:31:00 +0300",
+                   "-endDate": "2016-07-25 16:31:00 +0300",
+                   "-value": "5",
+                   "MetadataEntry": {
+                   "-key": "HKWasUserEntered",
+                   "-value": "1"
+                   }
+                   },
+                   {
+                   "-type": "HKQuantityTypeIdentifierDietaryCholesterol",
+                   "-sourceName": "Health",
+                   "-sourceVersion": "9.1",
+                   "-unit": "mg",
+                   "-creationDate": "2016-06-16 13:55:23 +0300",
+                   "-startDate": "2016-06-16 13:55:00 +0300",
+                   "-endDate": "2016-06-16 13:55:00 +0300",
+                   "-value": "30",
+                   "MetadataEntry": {
+                   "-key": "HKWasUserEntered",
+                   "-value": "1"
+                   }
+                   },
+                   {
+                   "-type": "HKQuantityTypeIdentifierDietaryCholesterol",
+                   "-sourceName": "Health",
+                   "-sourceVersion": "9.3.2",
+                   "-unit": "mg",
+                   "-creationDate": "2016-07-19 13:26:10 +0300",
+                   "-startDate": "2016-07-19 13:26:00 +0300",
+                   "-endDate": "2016-07-19 13:26:00 +0300",
+                   "-value": "30",
+                   "MetadataEntry": {
+                   "-key": "HKWasUserEntered",
+                   "-value": "1"
+                   }
+                   },
+                   {
+                   "-type": "HKQuantityTypeIdentifierDietaryCholesterol",
+                   "-sourceName": "Health",
+                   "-sourceVersion": "9.3.2",
+                   "-unit": "mg",
+                   "-creationDate": "2016-07-19 13:26:25 +0300",
+                   "-startDate": "2016-07-19 13:26:00 +0300",
+                   "-endDate": "2016-07-19 13:26:00 +0300",
+                   "-value": "30",
+                   "MetadataEntry": {
+                   "-key": "HKWasUserEntered",
+                   "-value": "1"
+                   }
+                   },
+                   {
+                   "-type": "HKQuantityTypeIdentifierDietaryCholesterol",
+                   "-sourceName": "Health",
+                   "-sourceVersion": "9.3.2",
+                   "-unit": "mg",
+                   "-creationDate": "2016-07-25 16:30:25 +0300",
+                   "-startDate": "2016-07-25 16:30:00 +0300",
+                   "-endDate": "2016-07-25 16:30:00 +0300",
+                   "-value": "20",
+                   "MetadataEntry": {
+                   "-key": "HKWasUserEntered",
+                   "-value": "1"
+                   }
+                   },
+                   {
+                   "-type": "HKQuantityTypeIdentifierDietarySodium",
+                   "-sourceName": "Health",
+                   "-sourceVersion": "9.3.2",
+                   "-unit": "mg",
+                   "-creationDate": "2016-07-19 13:23:19 +0300",
+                   "-startDate": "2016-07-19 13:23:00 +0300",
+                   "-endDate": "2016-07-19 13:23:00 +0300",
+                   "-value": "50",
+                   "MetadataEntry": {
+                   "-key": "HKWasUserEntered",
+                   "-value": "1"
+                   }
+                   },
+                   {
+                   "-type": "HKQuantityTypeIdentifierDietarySodium",
+                   "-sourceName": "Health",
+                   "-sourceVersion": "9.3.2",
+                   "-unit": "mg",
+                   "-creationDate": "2016-07-19 13:23:25 +0300",
+                   "-startDate": "2016-07-19 13:23:00 +0300",
+                   "-endDate": "2016-07-19 13:23:00 +0300",
+                   "-value": "50",
+                   "MetadataEntry": {
+                   "-key": "HKWasUserEntered",
+                   "-value": "1"
+                   }
+                   },
+                   {
+                   "-type": "HKQuantityTypeIdentifierDietarySodium",
+                   "-sourceName": "Health",
+                   "-sourceVersion": "9.3.2",
+                   "-unit": "mg",
+                   "-creationDate": "2016-07-25 17:10:52 +0300",
+                   "-startDate": "2016-07-25 17:10:00 +0300",
+                   "-endDate": "2016-07-25 17:10:00 +0300",
+                   "-value": "2",
+                   "MetadataEntry": {
+                   "-key": "HKWasUserEntered",
+                   "-value": "1"
+                   }
+                   },
+                   {
+                   "-type": "HKQuantityTypeIdentifierDietaryCarbohydrates",
+                   "-sourceName": "Health",
+                   "-sourceVersion": "9.1",
+                   "-unit": "g",
+                   "-creationDate": "2016-06-16 13:54:40 +0300",
+                   "-startDate": "2016-06-16 13:54:00 +0300",
+                   "-endDate": "2016-06-16 13:54:00 +0300",
+                   "-value": "30",
+                   "MetadataEntry": {
+                   "-key": "HKWasUserEntered",
+                   "-value": "1"
+                   }
+                   },
+                   {
+                   "-type": "HKQuantityTypeIdentifierDietaryCarbohydrates",
+                   "-sourceName": "Health",
+                   "-sourceVersion": "9.3.2",
+                   "-unit": "g",
+                   "-creationDate": "2016-07-18 14:01:45 +0300",
+                   "-startDate": "2016-07-12 14:01:00 +0300",
+                   "-endDate": "2016-07-12 14:01:00 +0300",
+                   "-value": "25",
+                   "MetadataEntry": {
+                   "-key": "HKWasUserEntered",
+                   "-value": "1"
+                   }
+                   },
+                   {
+                   "-type": "HKQuantityTypeIdentifierDietaryCarbohydrates",
+                   "-sourceName": "Health",
+                   "-sourceVersion": "9.3.2",
+                   "-unit": "g",
+                   "-creationDate": "2016-07-18 14:05:16 +0300",
+                   "-startDate": "2016-07-14 14:02:00 +0300",
+                   "-endDate": "2016-07-14 14:02:00 +0300",
+                   "-value": "20",
+                   "MetadataEntry": {
+                   "-key": "HKWasUserEntered",
+                   "-value": "1"
+                   }
+                   },
+                   {
+                   "-type": "HKQuantityTypeIdentifierDietaryCarbohydrates",
+                   "-sourceName": "Health",
+                   "-sourceVersion": "9.3.2",
+                   "-unit": "g",
+                   "-creationDate": "2016-07-18 14:01:56 +0300",
+                   "-startDate": "2016-07-15 14:01:00 +0300",
+                   "-endDate": "2016-07-15 14:01:00 +0300",
+                   "-value": "20",
+                   "MetadataEntry": {
+                   "-key": "HKWasUserEntered",
+                   "-value": "1"
+                   }
+                   },
+                   {
+                   "-type": "HKQuantityTypeIdentifierDietaryCarbohydrates",
+                   "-sourceName": "Health",
+                   "-sourceVersion": "9.3.2",
+                   "-unit": "g",
+                   "-creationDate": "2016-07-18 14:05:09 +0300",
+                   "-startDate": "2016-07-15 14:05:00 +0300",
+                   "-endDate": "2016-07-15 14:05:00 +0300",
+                   "-value": "15",
+                   "MetadataEntry": {
+                   "-key": "HKWasUserEntered",
+                   "-value": "1"
+                   }
+                   },
+                   {
+                   "-type": "HKQuantityTypeIdentifierDietaryCarbohydrates",
+                   "-sourceName": "Health",
+                   "-sourceVersion": "9.3.2",
+                   "-unit": "g",
+                   "-creationDate": "2016-07-18 14:01:39 +0300",
+                   "-startDate": "2016-07-16 14:01:00 +0300",
+                   "-endDate": "2016-07-16 14:01:00 +0300",
+                   "-value": "10",
+                   "MetadataEntry": {
+                   "-key": "HKWasUserEntered",
+                   "-value": "1"
+                   }
+                   },
+                   {
+                   "-type": "HKQuantityTypeIdentifierDietaryCarbohydrates",
+                   "-sourceName": "Health",
+                   "-sourceVersion": "9.3.2",
+                   "-unit": "g",
+                   "-creationDate": "2016-07-18 14:01:50 +0300",
+                   "-startDate": "2016-07-16 14:01:00 +0300",
+                   "-endDate": "2016-07-16 14:01:00 +0300",
+                   "-value": "15",
+                   "MetadataEntry": {
+                   "-key": "HKWasUserEntered",
+                   "-value": "1"
+                   }
+                   },
+                   {
+                   "-type": "HKQuantityTypeIdentifierDietaryCarbohydrates",
+                   "-sourceName": "Health",
+                   "-sourceVersion": "9.3.2",
+                   "-unit": "g",
+                   "-creationDate": "2016-07-18 14:05:04 +0300",
+                   "-startDate": "2016-07-16 14:05:00 +0300",
+                   "-endDate": "2016-07-16 14:05:00 +0300",
+                   "-value": "20",
+                   "MetadataEntry": {
+                   "-key": "HKWasUserEntered",
+                   "-value": "1"
+                   }
+                   },
+                   {
+                   "-type": "HKQuantityTypeIdentifierDietaryCarbohydrates",
+                   "-sourceName": "Health",
+                   "-sourceVersion": "9.3.2",
+                   "-unit": "g",
+                   "-creationDate": "2016-07-18 14:01:33 +0300",
+                   "-startDate": "2016-07-17 14:01:00 +0300",
+                   "-endDate": "2016-07-17 14:01:00 +0300",
+                   "-value": "2",
+                   "MetadataEntry": {
+                   "-key": "HKWasUserEntered",
+                   "-value": "1"
+                   }
+                   },
+                   {
+                   "-type": "HKQuantityTypeIdentifierDietaryCarbohydrates",
+                   "-sourceName": "Health",
+                   "-sourceVersion": "9.3.2",
+                   "-unit": "g",
+                   "-creationDate": "2016-07-18 14:01:29 +0300",
+                   "-startDate": "2016-07-18 14:01:00 +0300",
+                   "-endDate": "2016-07-18 14:01:00 +0300",
+                   "-value": "20",
+                   "MetadataEntry": {
+                   "-key": "HKWasUserEntered",
+                   "-value": "1"
+                   }
+                   },
+                   {
+                   "-type": "HKQuantityTypeIdentifierDietaryCarbohydrates",
+                   "-sourceName": "Health",
+                   "-sourceVersion": "9.3.2",
+                   "-unit": "g",
+                   "-creationDate": "2016-07-25 17:11:03 +0300",
+                   "-startDate": "2016-07-25 17:11:00 +0300",
+                   "-endDate": "2016-07-25 17:11:00 +0300",
+                   "-value": "20",
+                   "MetadataEntry": {
+                   "-key": "HKWasUserEntered",
+                   "-value": "1"
+                   }
+                   },
+                   {
+                   "-type": "HKQuantityTypeIdentifierDietaryFiber",
+                   "-sourceName": "Health",
+                   "-sourceVersion": "9.1",
+                   "-unit": "g",
+                   "-creationDate": "2016-06-16 15:43:58 +0300",
+                   "-startDate": "2016-06-16 03:46:00 +0300",
+                   "-endDate": "2016-06-16 03:46:00 +0300",
+                   "-value": "30",
+                   "MetadataEntry": {
+                   "-key": "HKWasUserEntered",
+                   "-value": "1"
+                   }
+                   },
+                   {
+                   "-type": "HKQuantityTypeIdentifierDietaryFiber",
+                   "-sourceName": "Health",
+                   "-sourceVersion": "9.3.2",
+                   "-unit": "g",
+                   "-creationDate": "2016-07-18 13:33:09 +0300",
+                   "-startDate": "2016-07-16 13:33:00 +0300",
+                   "-endDate": "2016-07-16 13:33:00 +0300",
+                   "-value": "20",
+                   "MetadataEntry": {
+                   "-key": "HKWasUserEntered",
+                   "-value": "1"
+                   }
+                   },
+                   {
+                   "-type": "HKQuantityTypeIdentifierDietaryFiber",
+                   "-sourceName": "Health",
+                   "-sourceVersion": "9.3.2",
+                   "-unit": "g",
+                   "-creationDate": "2016-07-18 13:33:02 +0300",
+                   "-startDate": "2016-07-18 13:32:00 +0300",
+                   "-endDate": "2016-07-18 13:32:00 +0300",
+                   "-value": "30",
+                   "MetadataEntry": {
+                   "-key": "HKWasUserEntered",
+                   "-value": "1"
+                   }
+                   },
+                   {
+                   "-type": "HKQuantityTypeIdentifierDietaryFiber",
+                   "-sourceName": "Health",
+                   "-sourceVersion": "9.3.2",
+                   "-unit": "g",
+                   "-creationDate": "2016-07-25 16:30:47 +0300",
+                   "-startDate": "2016-07-25 16:30:00 +0300",
+                   "-endDate": "2016-07-25 16:30:00 +0300",
+                   "-value": "20",
+                   "MetadataEntry": {
+                   "-key": "HKWasUserEntered",
+                   "-value": "1"
+                   }
+                   },
+                   {
+                   "-type": "HKQuantityTypeIdentifierDietarySugar",
+                   "-sourceName": "Health",
+                   "-sourceVersion": "9.1",
+                   "-unit": "g",
+                   "-creationDate": "2016-05-24 16:16:53 +0300",
+                   "-startDate": "2016-05-24 16:16:00 +0300",
+                   "-endDate": "2016-05-24 16:16:00 +0300",
+                   "-value": "2",
+                   "MetadataEntry": {
+                   "-key": "HKWasUserEntered",
+                   "-value": "1"
+                   }
+                   },
+                   {
+                   "-type": "HKQuantityTypeIdentifierDietarySugar",
+                   "-sourceName": "Health",
+                   "-sourceVersion": "9.1",
+                   "-unit": "g",
+                   "-creationDate": "2016-06-16 15:44:47 +0300",
+                   "-startDate": "2016-06-16 15:44:00 +0300",
+                   "-endDate": "2016-06-16 15:44:00 +0300",
+                   "-value": "30",
+                   "MetadataEntry": {
+                   "-key": "HKWasUserEntered",
+                   "-value": "1"
+                   }
+                   },
+                   {
+                   "-type": "HKQuantityTypeIdentifierDietarySugar",
+                   "-sourceName": "Health",
+                   "-sourceVersion": "9.3.2",
+                   "-unit": "g",
+                   "-creationDate": "2016-07-25 16:30:31 +0300",
+                   "-startDate": "2016-07-25 16:30:00 +0300",
+                   "-endDate": "2016-07-25 16:30:00 +0300",
+                   "-value": "30",
+                   "MetadataEntry": {
+                   "-key": "HKWasUserEntered",
+                   "-value": "1"
+                   }
+                   },
+                   {
+                   "-type": "HKQuantityTypeIdentifierDietaryEnergyConsumed",
+                   "-sourceName": "Health",
+                   "-sourceVersion": "9.1",
+                   "-unit": "kcal",
+                   "-creationDate": "2016-05-24 16:13:51 +0300",
+                   "-startDate": "2016-05-24 16:13:00 +0300",
+                   "-endDate": "2016-05-24 16:13:00 +0300",
+                   "-value": "4500",
+                   "MetadataEntry": {
+                   "-key": "HKWasUserEntered",
+                   "-value": "1"
+                   }
+                   },
+                   {
+                   "-type": "HKQuantityTypeIdentifierDietaryEnergyConsumed",
+                   "-sourceName": "Health",
+                   "-sourceVersion": "9.1",
+                   "-unit": "kcal",
+                   "-creationDate": "2016-06-17 15:21:17 +0300",
+                   "-startDate": "2016-06-12 15:18:00 +0300",
+                   "-endDate": "2016-06-12 15:18:00 +0300",
+                   "-value": "4000",
+                   "MetadataEntry": {
+                   "-key": "HKWasUserEntered",
+                   "-value": "1"
+                   }
+                   },
+                   {
+                   "-type": "HKQuantityTypeIdentifierDietaryEnergyConsumed",
+                   "-sourceName": "Health",
+                   "-sourceVersion": "9.1",
+                   "-unit": "kcal",
+                   "-creationDate": "2016-06-17 15:21:25 +0300",
+                   "-startDate": "2016-06-14 15:21:00 +0300",
+                   "-endDate": "2016-06-14 15:21:00 +0300",
+                   "-value": "5000",
+                   "MetadataEntry": {
+                   "-key": "HKWasUserEntered",
+                   "-value": "1"
+                   }
+                   },
+                   {
+                   "-type": "HKQuantityTypeIdentifierDietaryEnergyConsumed",
+                   "-sourceName": "Health",
+                   "-sourceVersion": "9.1",
+                   "-unit": "kcal",
+                   "-creationDate": "2016-06-17 14:59:09 +0300",
+                   "-startDate": "2016-06-17 14:59:00 +0300",
+                   "-endDate": "2016-06-17 14:59:00 +0300",
+                   "-value": "2000",
+                   "MetadataEntry": {
+                   "-key": "HKWasUserEntered",
+                   "-value": "1"
+                   }
+                   },
+                   {
+                   "-type": "HKQuantityTypeIdentifierDietaryEnergyConsumed",
+                   "-sourceName": "Health",
+                   "-sourceVersion": "9.1",
+                   "-unit": "kcal",
+                   "-creationDate": "2016-06-17 15:26:05 +0300",
+                   "-startDate": "2016-06-17 15:26:00 +0300",
+                   "-endDate": "2016-06-17 15:26:00 +0300",
+                   "-value": "4000",
+                   "MetadataEntry": {
+                   "-key": "HKWasUserEntered",
+                   "-value": "1"
+                   }
+                   },
+                   {
+                   "-type": "HKQuantityTypeIdentifierDietaryEnergyConsumed",
+                   "-sourceName": "Health",
+                   "-sourceVersion": "9.3.2",
+                   "-unit": "kcal",
+                   "-creationDate": "2016-07-18 13:32:40 +0300",
+                   "-startDate": "2016-07-17 13:32:00 +0300",
+                   "-endDate": "2016-07-17 13:32:00 +0300",
+                   "-value": "2000",
+                   "MetadataEntry": {
+                   "-key": "HKWasUserEntered",
+                   "-value": "1"
+                   }
+                   },
+                   {
+                   "-type": "HKQuantityTypeIdentifierDietaryEnergyConsumed",
+                   "-sourceName": "Health",
+                   "-sourceVersion": "9.3.2",
+                   "-unit": "kcal",
+                   "-creationDate": "2016-07-18 13:32:29 +0300",
+                   "-startDate": "2016-07-18 13:32:00 +0300",
+                   "-endDate": "2016-07-18 13:32:00 +0300",
+                   "-value": "5000",
+                   "MetadataEntry": {
+                   "-key": "HKWasUserEntered",
+                   "-value": "1"
+                   }
+                   },
+                   {
+                   "-type": "HKQuantityTypeIdentifierDietaryEnergyConsumed",
+                   "-sourceName": "Health",
+                   "-sourceVersion": "9.3.2",
+                   "-unit": "kcal",
+                   "-creationDate": "2016-07-18 13:32:33 +0300",
+                   "-startDate": "2016-07-18 13:32:00 +0300",
+                   "-endDate": "2016-07-18 13:32:00 +0300",
+                   "-value": "3000",
+                   "MetadataEntry": {
+                   "-key": "HKWasUserEntered",
+                   "-value": "1"
+                   }
+                   },
+                   {
+                   "-type": "HKQuantityTypeIdentifierDietaryEnergyConsumed",
+                   "-sourceName": "Health",
+                   "-sourceVersion": "9.3.2",
+                   "-unit": "kcal",
+                   "-creationDate": "2016-07-18 15:45:08 +0300",
+                   "-startDate": "2016-07-18 15:45:00 +0300",
+                   "-endDate": "2016-07-18 15:45:00 +0300",
+                   "-value": "2000",
+                   "MetadataEntry": {
+                   "-key": "HKWasUserEntered",
+                   "-value": "1"
+                   }
+                   },
+                   {
+                   "-type": "HKQuantityTypeIdentifierDietaryEnergyConsumed",
+                   "-sourceName": "Health",
+                   "-sourceVersion": "9.3.2",
+                   "-unit": "kcal",
+                   "-creationDate": "2016-07-25 16:30:40 +0300",
+                   "-startDate": "2016-07-25 16:30:00 +0300",
+                   "-endDate": "2016-07-25 16:30:00 +0300",
+                   "-value": "2000",
+                   "MetadataEntry": {
+                   "-key": "HKWasUserEntered",
+                   "-value": "1"
+                   }
+                   },
+                   {
+                   "-type": "HKQuantityTypeIdentifierDietaryProtein",
+                   "-sourceName": "Health",
+                   "-sourceVersion": "9.3.2",
+                   "-unit": "g",
+                   "-creationDate": "2016-07-19 12:55:54 +0300",
+                   "-startDate": "2016-06-08 12:55:00 +0300",
+                   "-endDate": "2016-06-08 12:55:00 +0300",
+                   "-value": "40",
+                   "MetadataEntry": {
+                   "-key": "HKWasUserEntered",
+                   "-value": "1"
+                   }
+                   },
+                   {
+                   "-type": "HKQuantityTypeIdentifierDietaryProtein",
+                   "-sourceName": "Health",
+                   "-sourceVersion": "9.1",
+                   "-unit": "g",
+                   "-creationDate": "2016-06-16 13:54:03 +0300",
+                   "-startDate": "2016-06-16 13:54:00 +0300",
+                   "-endDate": "2016-06-16 13:54:00 +0300",
+                   "-value": "20",
+                   "MetadataEntry": {
+                   "-key": "HKWasUserEntered",
+                   "-value": "1"
+                   }
+                   },
+                   {
+                   "-type": "HKQuantityTypeIdentifierDietaryProtein",
+                   "-sourceName": "Health",
+                   "-sourceVersion": "9.3.2",
+                   "-unit": "g",
+                   "-creationDate": "2016-07-19 12:56:00 +0300",
+                   "-startDate": "2016-06-19 12:55:00 +0300",
+                   "-endDate": "2016-06-19 12:55:00 +0300",
+                   "-value": "100",
+                   "MetadataEntry": {
+                   "-key": "HKWasUserEntered",
+                   "-value": "1"
+                   }
+                   },
+                   {
+                   "-type": "HKQuantityTypeIdentifierDietaryProtein",
+                   "-sourceName": "Health",
+                   "-sourceVersion": "9.3.2",
+                   "-unit": "g",
+                   "-creationDate": "2016-07-19 12:57:03 +0300",
+                   "-startDate": "2016-06-19 12:56:00 +0300",
+                   "-endDate": "2016-06-19 12:56:00 +0300",
+                   "-value": "200",
+                   "MetadataEntry": {
+                   "-key": "HKWasUserEntered",
+                   "-value": "1"
+                   }
+                   },
+                   {
+                   "-type": "HKQuantityTypeIdentifierDietaryProtein",
+                   "-sourceName": "Health",
+                   "-sourceVersion": "9.3.2",
+                   "-unit": "g",
+                   "-creationDate": "2016-07-18 16:49:03 +0300",
+                   "-startDate": "2016-07-18 16:49:00 +0300",
+                   "-endDate": "2016-07-18 16:49:00 +0300",
+                   "-value": "80",
+                   "MetadataEntry": {
+                   "-key": "HKWasUserEntered",
+                   "-value": "1"
+                   }
+                   },
+                   {
+                   "-type": "HKQuantityTypeIdentifierDietaryProtein",
+                   "-sourceName": "Health",
+                   "-sourceVersion": "9.3.2",
+                   "-unit": "g",
+                   "-creationDate": "2016-07-19 12:54:49 +0300",
+                   "-startDate": "2016-07-19 12:54:00 +0300",
+                   "-endDate": "2016-07-19 12:54:00 +0300",
+                   "-value": "80",
+                   "MetadataEntry": {
+                   "-key": "HKWasUserEntered",
+                   "-value": "1"
+                   }
+                   },
+                   {
+                   "-type": "HKQuantityTypeIdentifierDietaryProtein",
+                   "-sourceName": "Health",
+                   "-sourceVersion": "9.3.2",
+                   "-unit": "g",
+                   "-creationDate": "2016-07-25 16:31:47 +0300",
+                   "-startDate": "2016-07-25 16:31:00 +0300",
+                   "-endDate": "2016-07-25 16:31:00 +0300",
+                   "-value": "120",
+                   "MetadataEntry": {
+                   "-key": "HKWasUserEntered",
+                   "-value": "1"
+                   }
+                   },
+                   {
+                   "-type": "HKQuantityTypeIdentifierDietaryCalcium",
+                   "-sourceName": "Health",
+                   "-sourceVersion": "9.1",
+                   "-unit": "mg",
+                   "-creationDate": "2016-05-26 12:52:32 +0300",
+                   "-startDate": "2016-05-26 12:52:00 +0300",
+                   "-endDate": "2016-05-26 12:52:00 +0300",
+                   "-value": "20",
+                   "MetadataEntry": {
+                   "-key": "HKWasUserEntered",
+                   "-value": "1"
+                   }
+                   },
+                   {
+                   "-type": "HKQuantityTypeIdentifierDietaryCalcium",
+                   "-sourceName": "Health",
+                   "-sourceVersion": "9.1",
+                   "-unit": "mg",
+                   "-creationDate": "2016-05-26 12:52:36 +0300",
+                   "-startDate": "2016-05-26 12:52:00 +0300",
+                   "-endDate": "2016-05-26 12:52:00 +0300",
+                   "-value": "30",
+                   "MetadataEntry": {
+                   "-key": "HKWasUserEntered",
+                   "-value": "1"
+                   }
+                   },
+                   {
+                   "-type": "HKQuantityTypeIdentifierDietaryCalcium",
+                   "-sourceName": "Health",
+                   "-sourceVersion": "9.3.2",
+                   "-unit": "mg",
+                   "-creationDate": "2016-07-25 16:30:15 +0300",
+                   "-startDate": "2016-07-25 16:30:00 +0300",
+                   "-endDate": "2016-07-25 16:30:00 +0300",
+                   "-value": "5",
+                   "MetadataEntry": {
+                   "-key": "HKWasUserEntered",
+                   "-value": "1"
+                   }
+                   },
+                   {
+                   "-type": "HKQuantityTypeIdentifierDietaryCaffeine",
+                   "-sourceName": "Health",
+                   "-sourceVersion": "9.3.2",
+                   "-unit": "mg",
+                   "-creationDate": "2016-07-19 13:24:29 +0300",
+                   "-startDate": "2016-07-19 13:24:00 +0300",
+                   "-endDate": "2016-07-19 13:24:00 +0300",
+                   "-value": "50",
+                   "MetadataEntry": {
+                   "-key": "HKWasUserEntered",
+                   "-value": "1"
+                   }
+                   },
+                   {
+                   "-type": "HKQuantityTypeIdentifierDietaryCaffeine",
+                   "-sourceName": "Health",
+                   "-sourceVersion": "9.3.2",
+                   "-unit": "mg",
+                   "-creationDate": "2016-07-19 13:24:32 +0300",
+                   "-startDate": "2016-07-19 13:24:00 +0300",
+                   "-endDate": "2016-07-19 13:24:00 +0300",
+                   "-value": "50",
+                   "MetadataEntry": {
+                   "-key": "HKWasUserEntered",
+                   "-value": "1"
+                   }
+                   },
+                   {
+                   "-type": "HKQuantityTypeIdentifierDietaryCaffeine",
+                   "-sourceName": "Health",
+                   "-sourceVersion": "9.3.2",
+                   "-unit": "mg",
+                   "-creationDate": "2016-07-25 16:30:09 +0300",
+                   "-startDate": "2016-07-25 16:30:00 +0300",
+                   "-endDate": "2016-07-25 16:30:00 +0300",
+                   "-value": "5",
+                   "MetadataEntry": {
+                   "-key": "HKWasUserEntered",
+                   "-value": "1"
+                   }
+                   },
+                   {
+                   "-type": "HKQuantityTypeIdentifierUVExposure",
+                   "-sourceName": "Health",
+                   "-sourceVersion": "9.1",
+                   "-unit": "count",
+                   "-creationDate": "2016-06-16 17:21:03 +0300",
+                   "-startDate": "2016-06-16 17:21:00 +0300",
+                   "-endDate": "2016-06-16 17:21:00 +0300",
+                   "-value": "20"
+                   },
+                   {
+                   "-type": "HKQuantityTypeIdentifierUVExposure",
+                   "-sourceName": "Health",
+                   "-sourceVersion": "9.3.2",
+                   "-unit": "count",
+                   "-creationDate": "2016-07-18 13:35:27 +0300",
+                   "-startDate": "2016-07-18 13:35:00 +0300",
+                   "-endDate": "2016-07-18 13:35:00 +0300",
+                   "-value": "20",
+                   "MetadataEntry": {
+                   "-key": "HKWasUserEntered",
+                   "-value": "1"
+                   }
+                   },
+                   {
+                   "-type": "HKQuantityTypeIdentifierUVExposure",
+                   "-sourceName": "Health",
+                   "-sourceVersion": "9.3.2",
+                   "-unit": "count",
+                   "-creationDate": "2016-07-25 16:32:25 +0300",
+                   "-startDate": "2016-07-25 15:32:00 +0300",
+                   "-endDate": "2016-07-25 16:32:00 +0300",
+                   "-value": "5",
+                   "MetadataEntry": {
+                   "-key": "HKWasUserEntered",
+                   "-value": "1"
+                   }
+                   },
+                   {
+                   "-type": "HKCategoryTypeIdentifierSleepAnalysis",
+                   "-sourceName": "Health",
+                   "-sourceVersion": "9.1",
+                   "-creationDate": "2016-05-20 16:39:10 +0300",
+                   "-startDate": "2016-05-18 16:39:00 +0300",
+                   "-endDate": "2016-05-20 16:39:00 +0300",
+                   "-value": "HKCategoryValueSleepAnalysisInBed",
+                   "MetadataEntry": {
+                   "-key": "HKWasUserEntered",
+                   "-value": "1"
+                   }
+                   },
+                   {
+                   "-type": "HKCategoryTypeIdentifierSleepAnalysis",
+                   "-sourceName": "Health",
+                   "-sourceVersion": "9.1",
+                   "-creationDate": "2016-06-16 13:53:32 +0300",
+                   "-startDate": "2016-06-15 13:53:00 +0300",
+                   "-endDate": "2016-06-16 13:53:00 +0300",
+                   "-value": "HKCategoryValueSleepAnalysisAsleep",
+                   "MetadataEntry": {
+                   "-key": "HKWasUserEntered",
+                   "-value": "1"
+                   }
+                   },
+                   {
+                   "-type": "HKCategoryTypeIdentifierSleepAnalysis",
+                   "-sourceName": "M-Compass",
+                   "-sourceVersion": "21",
+                   "-creationDate": "2016-07-18 16:40:39 +0300",
+                   "-startDate": "2016-07-16 14:54:00 +0300",
+                   "-endDate": "2016-07-17 15:56:00 +0300",
+                   "-value": "HKCategoryValueSleepAnalysisAsleep"
+                   },
+                   {
+                   "-type": "HKCategoryTypeIdentifierSleepAnalysis",
+                   "-sourceName": "Health",
+                   "-sourceVersion": "9.3.2",
+                   "-creationDate": "2016-07-18 16:36:38 +0300",
+                   "-startDate": "2016-07-17 16:36:00 +0300",
+                   "-endDate": "2016-07-18 16:36:00 +0300",
+                   "-value": "HKCategoryValueSleepAnalysisInBed",
+                   "MetadataEntry": {
+                   "-key": "HKWasUserEntered",
+                   "-value": "1"
+                   }
+                   },
+                   {
+                   "-type": "HKCategoryTypeIdentifierSleepAnalysis",
+                   "-sourceName": "Health",
+                   "-sourceVersion": "9.3.2",
+                   "-creationDate": "2016-07-18 16:36:48 +0300",
+                   "-startDate": "2016-07-17 16:36:00 +0300",
+                   "-endDate": "2016-07-18 16:36:00 +0300",
+                   "-value": "HKCategoryValueSleepAnalysisAsleep",
+                   "MetadataEntry": {
+                   "-key": "HKWasUserEntered",
+                   "-value": "1"
+                   }
+                   },
+                   {
+                   "-type": "HKCategoryTypeIdentifierSleepAnalysis",
+                   "-sourceName": "M-Compass",
+                   "-sourceVersion": "21",
+                   "-creationDate": "2016-07-18 15:54:38 +0300",
+                   "-startDate": "2016-07-19 14:54:03 +0300",
+                   "-endDate": "2016-07-19 15:56:03 +0300",
+                   "-value": "HKCategoryValueSleepAnalysisAsleep"
+                   },
+                   {
+                   "-type": "HKCategoryTypeIdentifierSleepAnalysis",
+                   "-sourceName": "Health",
+                   "-sourceVersion": "9.3.2",
+                   "-creationDate": "2016-07-25 16:32:01 +0300",
+                   "-startDate": "2016-07-24 16:31:00 +0300",
+                   "-endDate": "2016-07-25 16:31:00 +0300",
+                   "-value": "HKCategoryValueSleepAnalysisAsleep",
+                   "MetadataEntry": {
+                   "-key": "HKWasUserEntered",
+                   "-value": "1"
+                   }
+                   }
+                   ],
+        "Correlation": [
+                        {
+                        "-type": "HKCorrelationTypeIdentifierBloodPressure",
+                        "-sourceName": "Health",
+                        "-sourceVersion": "9.1",
+                        "-creationDate": "2016-06-16 15:46:01 +0300",
+                        "-startDate": "2016-06-16 15:45:00 +0300",
+                        "-endDate": "2016-06-16 15:45:00 +0300",
+                        "MetadataEntry": {
+                        "-key": "HKWasUserEntered",
+                        "-value": "1"
+                        },
+                        "Record": [
+                                   {
+                                   "-type": "HKQuantityTypeIdentifierBloodPressureSystolic",
+                                   "-sourceName": "Health",
+                                   "-sourceVersion": "9.1",
+                                   "-unit": "mmHg",
+                                   "-creationDate": "2016-06-16 15:46:01 +0300",
+                                   "-startDate": "2016-06-16 15:45:00 +0300",
+                                   "-endDate": "2016-06-16 15:45:00 +0300",
+                                   "-value": "200",
+                                   "MetadataEntry": {
+                                   "-key": "HKWasUserEntered",
+                                   "-value": "1"
+                                   }
+                                   },
+                                   {
+                                   "-type": "HKQuantityTypeIdentifierBloodPressureDiastolic",
+                                   "-sourceName": "Health",
+                                   "-sourceVersion": "9.1",
+                                   "-unit": "mmHg",
+                                   "-creationDate": "2016-06-16 15:46:01 +0300",
+                                   "-startDate": "2016-06-16 15:45:00 +0300",
+                                   "-endDate": "2016-06-16 15:45:00 +0300",
+                                   "-value": "120",
+                                   "MetadataEntry": {
+                                   "-key": "HKWasUserEntered",
+                                   "-value": "1"
+                                   }
+                                   }
+                                   ]
+                        },
+                        {
+                        "-type": "HKCorrelationTypeIdentifierBloodPressure",
+                        "-sourceName": "Health",
+                        "-sourceVersion": "9.3.2",
+                        "-creationDate": "2016-07-25 16:29:58 +0300",
+                        "-startDate": "2016-07-25 16:29:00 +0300",
+                        "-endDate": "2016-07-25 16:29:00 +0300",
+                        "MetadataEntry": {
+                        "-key": "HKWasUserEntered",
+                        "-value": "1"
+                        },
+                        "Record": [
+                                   {
+                                   "-type": "HKQuantityTypeIdentifierBloodPressureDiastolic",
+                                   "-sourceName": "Health",
+                                   "-sourceVersion": "9.3.2",
+                                   "-unit": "mmHg",
+                                   "-creationDate": "2016-07-25 16:29:58 +0300",
+                                   "-startDate": "2016-07-25 16:29:00 +0300",
+                                   "-endDate": "2016-07-25 16:29:00 +0300",
+                                   "-value": "130",
+                                   "MetadataEntry": {
+                                   "-key": "HKWasUserEntered",
+                                   "-value": "1"
+                                   }
+                                   },
+                                   {
+                                   "-type": "HKQuantityTypeIdentifierBloodPressureSystolic",
+                                   "-sourceName": "Health",
+                                   "-sourceVersion": "9.3.2",
+                                   "-unit": "mmHg",
+                                   "-creationDate": "2016-07-25 16:29:58 +0300",
+                                   "-startDate": "2016-07-25 16:29:00 +0300",
+                                   "-endDate": "2016-07-25 16:29:00 +0300",
+                                   "-value": "200",
+                                   "MetadataEntry": {
+                                   "-key": "HKWasUserEntered",
+                                   "-value": "1"
+                                   }
+                                   }
+                                   ]
+                        }
+                        ],
+        "Workout": [
+                    {
+                    "-workoutActivityType": "HKWorkoutActivityTypeRunning",
+                    "-duration": "30",
+                    "-durationUnit": "min",
+                    "-totalDistance": "0",
+                    "-totalDistanceUnit": "km",
+                    "-totalEnergyBurned": "0",
+                    "-totalEnergyBurnedUnit": "kcal",
+                    "-sourceName": "M-Compass",
+                    "-sourceVersion": "21",
+                    "-creationDate": "2016-07-19 15:33:02 +0300",
+                    "-startDate": "2016-07-13 15:32:58 +0300",
+                    "-endDate": "2016-07-13 16:02:58 +0300"
+                    },
+                    {
+                    "-workoutActivityType": "HKWorkoutActivityTypeRunning",
+                    "-duration": "30",
+                    "-durationUnit": "min",
+                    "-totalDistance": "0",
+                    "-totalDistanceUnit": "km",
+                    "-totalEnergyBurned": "0",
+                    "-totalEnergyBurnedUnit": "kcal",
+                    "-sourceName": "M-Compass",
+                    "-sourceVersion": "21",
+                    "-creationDate": "2016-07-19 15:33:17 +0300",
+                    "-startDate": "2016-07-13 18:33:12 +0300",
+                    "-endDate": "2016-07-13 19:03:12 +0300"
+                    },
+                    {
+                    "-workoutActivityType": "HKWorkoutActivityTypeRunning",
+                    "-duration": "30",
+                    "-durationUnit": "min",
+                    "-totalDistance": "0",
+                    "-totalDistanceUnit": "km",
+                    "-totalEnergyBurned": "0",
+                    "-totalEnergyBurnedUnit": "kcal",
+                    "-sourceName": "M-Compass",
+                    "-sourceVersion": "21",
+                    "-creationDate": "2016-07-19 15:27:33 +0300",
+                    "-startDate": "2016-07-16 00:27:16 +0300",
+                    "-endDate": "2016-07-16 00:57:16 +0300"
+                    },
+                    {
+                    "-workoutActivityType": "HKWorkoutActivityTypeRunning",
+                    "-duration": "30",
+                    "-durationUnit": "min",
+                    "-totalDistance": "0",
+                    "-totalDistanceUnit": "km",
+                    "-totalEnergyBurned": "0",
+                    "-totalEnergyBurnedUnit": "kcal",
+                    "-sourceName": "M-Compass",
+                    "-sourceVersion": "21",
+                    "-creationDate": "2016-07-18 13:42:25 +0300",
+                    "-startDate": "2016-07-18 13:42:21 +0300",
+                    "-endDate": "2016-07-18 14:12:21 +0300"
+                    },
+                    {
+                    "-workoutActivityType": "HKWorkoutActivityTypePreparationAndRecovery",
+                    "-duration": "30",
+                    "-durationUnit": "min",
+                    "-totalDistance": "0",
+                    "-totalDistanceUnit": "km",
+                    "-totalEnergyBurned": "0",
+                    "-totalEnergyBurnedUnit": "kcal",
+                    "-sourceName": "M-Compass",
+                    "-sourceVersion": "21",
+                    "-creationDate": "2016-07-18 16:40:18 +0300",
+                    "-startDate": "2016-07-18 16:40:15 +0300",
+                    "-endDate": "2016-07-18 17:10:15 +0300",
+                    "MetadataEntry": {
+                    "-key": "Meal Type",
+                    "-value": "Lunch"
+                    }
+                    },
+                    {
+                    "-workoutActivityType": "HKWorkoutActivityTypeRunning",
+                    "-duration": "3",
+                    "-durationUnit": "min",
+                    "-totalDistance": "20",
+                    "-totalDistanceUnit": "km",
+                    "-totalEnergyBurned": "0",
+                    "-totalEnergyBurnedUnit": "kcal",
+                    "-sourceName": "Health",
+                    "-sourceVersion": "9.3.2",
+                    "-creationDate": "2016-07-21 13:29:07 +0300",
+                    "-startDate": "2016-07-21 13:28:00 +0300",
+                    "-endDate": "2016-07-21 13:31:00 +0300",
+                    "MetadataEntry": {
+                    "-key": "HKWasUserEntered",
+                    "-value": "1"
+                    }
+                    },
+                    {
+                    "-workoutActivityType": "HKWorkoutActivityTypeRunning",
+                    "-duration": "60",
+                    "-durationUnit": "min",
+                    "-totalDistance": "2",
+                    "-totalDistanceUnit": "km",
+                    "-totalEnergyBurned": "400",
+                    "-totalEnergyBurnedUnit": "kcal",
+                    "-sourceName": "Health",
+                    "-sourceVersion": "9.3.2",
+                    "-creationDate": "2016-07-25 12:36:07 +0300",
+                    "-startDate": "2016-07-25 11:35:00 +0300",
+                    "-endDate": "2016-07-25 12:35:00 +0300",
+                    "MetadataEntry": {
+                    "-key": "HKWasUserEntered",
+                    "-value": "1"
+                    }
+                    },
+                    {
+                    "-workoutActivityType": "HKWorkoutActivityTypePreparationAndRecovery",
+                    "-duration": "30",
+                    "-durationUnit": "min",
+                    "-totalDistance": "0",
+                    "-totalDistanceUnit": "km",
+                    "-totalEnergyBurned": "0",
+                    "-totalEnergyBurnedUnit": "kcal",
+                    "-sourceName": "M-Compass",
+                    "-sourceVersion": "21",
+                    "-creationDate": "2016-07-26 15:33:21 +0300",
+                    "-startDate": "2016-07-26 08:23:00 +0300",
+                    "-endDate": "2016-07-26 08:53:00 +0300",
+                    "MetadataEntry": {
+                    "-key": "Meal Type",
+                    "-value": "Breakfast"
+                    }
+                    },
+                    {
+                    "-workoutActivityType": "HKWorkoutActivityTypePreparationAndRecovery",
+                    "-duration": "30",
+                    "-durationUnit": "min",
+                    "-totalDistance": "0",
+                    "-totalDistanceUnit": "km",
+                    "-totalEnergyBurned": "0",
+                    "-totalEnergyBurnedUnit": "kcal",
+                    "-sourceName": "M-Compass",
+                    "-sourceVersion": "21",
+                    "-creationDate": "2016-07-26 15:23:47 +0300",
+                    "-startDate": "2016-07-26 15:23:45 +0300",
+                    "-endDate": "2016-07-26 15:53:45 +0300",
+                    "MetadataEntry": {
+                    "-key": "Meal Type",
+                    "-value": "Breakfast"
+                    }
+                    },
+                    {
+                    "-workoutActivityType": "HKWorkoutActivityTypePreparationAndRecovery",
+                    "-duration": "30",
+                    "-durationUnit": "min",
+                    "-totalDistance": "0",
+                    "-totalDistanceUnit": "km",
+                    "-totalEnergyBurned": "0",
+                    "-totalEnergyBurnedUnit": "kcal",
+                    "-sourceName": "M-Compass",
+                    "-sourceVersion": "21",
+                    "-creationDate": "2016-07-26 15:35:10 +0300",
+                    "-startDate": "2016-07-26 15:54:02 +0300",
+                    "-endDate": "2016-07-26 16:24:02 +0300",
+                    "MetadataEntry": {
+                    "-key": "Meal Type",
+                    "-value": "Dinner"
+                    }
+                    }
+                    ]
+    }
+}

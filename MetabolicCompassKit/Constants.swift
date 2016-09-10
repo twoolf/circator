@@ -9,17 +9,32 @@
 import Foundation
 import HealthKit
 
-// Controls the features compiled into the app.
-public struct Deployment {
-    public static let sharedInstance = Deployment()
-
-    public let withDebugView : Bool = true
-}
-
 /**
  This maintains the constants and strings needed for Metabolic Compass. We tie this into the options and recommendations settings in the control panel.
- 
+
  */
+
+public enum FieldDataType: Int {
+    case String = 0, Int, Decimal
+}
+
+public struct ProfileFieldData {
+    public let fieldName: String!
+    public let profileFieldName: String!
+    public let type: FieldDataType!
+    public let unitsTitle: String?
+}
+
+private let unitsTitleBMI = "kg/m2"
+private let unitsTitleBP = "mmHg"
+private let unitsTitleHours = "hrs"
+private let unitsTitleKiloCalories = "kcal"
+private let unitsTitleSteps = "steps"
+private let unitsTitleBPM = "bpm"
+private let unitsTitleGrams = "g"
+private let unitsTitleMG = "mg"
+private let unitsTitleML = "ml"
+
 public struct UserProfile {
 
     public static let sharedInstance = UserProfile()
@@ -32,9 +47,9 @@ public struct UserProfile {
 
     public let requiredRange      : Range = 0..<8
     public let updateableReqRange : Range = 4..<8
-    public let recommendedRange   : Range = 8..<13
-    public let optionalRange      : Range = 13..<30
-    public let updateableRange    : Range = 4..<30
+    public let recommendedRange   : Range = 8..<14
+    public let optionalRange      : Range = 14..<29
+    public let updateableRange    : Range = 4..<29
 
     public let profileFields : [String]! = [
         "Email",
@@ -45,28 +60,27 @@ public struct UserProfile {
         "Age",
         "Weight",
         "Height",
-        "Usual sleep",
-        "Estimated bmi",
-        "Resting heartrate",
-        "Systolic blood pressure",
-        "Step count",
-        "Active energy",
-        "Awake time w/light",
-        "Fasting",
-        "Eating",
-        "Calorie intake",
-        "Protein intake",
-        "Carbohydrate intake",
-        "Sugar intake",
-        "Fiber intake",
-        "Fat intake",
-        "Saturated fat",
-        "Monounsaturated fat",
-        "Polyunsaturated fat",
-        "Cholesterol",
-        "Salt",
-        "Caffeine",
-        "Water"]
+        "Usual Sleep",
+        "Estimated BMI",
+        "Resting Heart Rate",
+        "Systolic BP",
+        "Diastolic BP",
+        "Step Count",
+        "Energy Expenditure",
+        "Daily Sunlight",
+        "Daily Calorie",
+        "Daily Protein",
+        "Daily Carbohydrates",
+        "Daily Sugar",
+        "Daily Fiber",
+        "Daily Total Fat",
+        "Saturated Fat",
+        "Monounsaturated Fat",
+        "Polyunsaturated Fat",
+        "Daily Cholesterol",
+        "Daily Salt",
+        "Daily Caffeine",
+        "Daily Water"]
 
     public let profilePlaceholders : [String]! = [
         "example@gmail.com",
@@ -81,10 +95,9 @@ public struct UserProfile {
         "25",
         "60 bpm",
         "120",
+        "80",
         "6000 steps",
         "2750 calories",
-        "12 hours",
-        "12 hours",
         "12 hours",
         "2757(m) or 1957(f)",
         "88.3(m) or 71.3(f)",
@@ -104,436 +117,98 @@ public struct UserProfile {
     public let profileMapping : [String: String]! = [
         "Email"                    : "email",
         "Password"                 : "password",
-        "First name"               : "firstname",
-        "Last name"                : "lastname",
+        "First name"               : "first_name",
+        "Last name"                : "last_name",
         "Sex"                      : "sex",
         "Age"                      : "age",
-        "Weight"                   : "weight",
-        "Height"                   : "height",
-        "Usual sleep"              : "sleep",
-        "Estimated bmi"            : "bmi",
-        "Resting heartrate"        : "heartrate",
-        "Systolic blood pressure"  : "systolic",
-        "Step count"               : "steps",
-        "Active energy"            : "energy",
-        "Awake time w/light"       : "awake",
-        "Fasting"                  : "fasting",
-        "Eating"                   : "eating",
-        "Calorie intake"           : "calories",
-        "Protein intake"           : "protein",
-        "Carbohydrate intake"      : "carbs",
-        "Sugar intake"             : "sugar",
-        "Fiber intake"             : "fiber",
-        "Fat intake"               : "fat",
-        "Saturated fat"            : "satfat",
-        "Monounsaturated fat"      : "monfat",
-        "Polyunsaturated fat"      : "polyfat",
-        "Cholesterol"              : "cholesterol",
-        "Salt"                     : "salt",
-        "Caffeine"                 : "caffeine",
-        "Water"                    : "water"
+        "Weight"                   : "body_weight",
+        "Height"                   : "body_height",
+        "Usual Sleep"              : "sleep_duration",
+        "Estimated BMI"            : "body_mass_index",
+        "Resting Heart Rate"       : "heart_rate",
+        "Systolic BP"              : "systolic_blood_pressure",
+        "Diastolic BP"             : "diastolic_blood_pressure",
+        "Step Count"               : "step_count",
+        "Energy Expenditure"       : "active_energy_burned",
+        "Daily Sunlight"           : "uv_exposure",
+        "Daily Calories"           : "dietary_energy_consumed",
+        "Daily Caffeine"           : "dietary_caffeine",
+        "Daily Carbohydrates"      : "dietary_carbohydrates",
+        "Daily Cholesterol"        : "dietary_cholesterol",
+        "Daily Total Fat"          : "dietary_fat_total",
+        "Saturated Fat"            : "dietary_fat_saturated",
+        "Monounsaturated Fat"      : "dietary_fat_monounsaturated",
+        "Polyunsaturated Fat"      : "dietary_fat_polyunsaturated",
+        "Daily Fiber"              : "dietary_fiber",
+        "Daily Protein"            : "dietary_protein",
+        "Daily Salt"               : "dietary_sodium",
+        "Daily Sugar"              : "dietary_sugar",
+        "Daily Water"              : "dietary_water"
     ]
 
     public var updateableMapping : [String: String]! {
-        return Dictionary(pairs: profileFields[4..<29].map { k in return (k, profileMapping[k]!) })
+        return Dictionary(pairs: profileFields[updateableRange].map { k in return (k, profileMapping[k]!) })
     }
 
-}
+    public static func keyForItemName(itemName: String) -> String?{
+        return sharedInstance.profileMapping[itemName]
+    }
 
-/*
- * HealthKit constants
- */
+    public var fields: [ProfileFieldData] = {
+        var fields = [ProfileFieldData]()
 
-public struct HMConstants
-{
-    public static let sharedInstance = HMConstants()
+        fields.append(ProfileFieldData(fieldName: "Email",                    profileFieldName: "email",                       type: .String, unitsTitle: nil))
+        fields.append(ProfileFieldData(fieldName: "Password",                 profileFieldName: "password",                    type: .String, unitsTitle: nil))
+        fields.append(ProfileFieldData(fieldName: "First name",               profileFieldName: "first_name",                  type: .String, unitsTitle: nil))
+        fields.append(ProfileFieldData(fieldName: "Last name",                profileFieldName: "last_name",                   type: .String, unitsTitle: nil))
+        fields.append(ProfileFieldData(fieldName: "Sex",                      profileFieldName: "sex",                         type: .Int, unitsTitle: nil))
+        fields.append(ProfileFieldData(fieldName: "Age",                      profileFieldName: "age",                         type: .Int, unitsTitle: nil))
+        fields.append(ProfileFieldData(fieldName: "Weight",                   profileFieldName: "body_weight",                 type: .Int, unitsTitle: nil))
+        fields.append(ProfileFieldData(fieldName: "Height",                   profileFieldName: "body_height",                 type: .Int, unitsTitle: nil))
 
-    // Metadata key for generated samples.
-    public let generatedSampleKey : String = "MCLGen"
-    public let generatedUploadSampleKey : String = "MCUGen"
+        fields.append(ProfileFieldData(fieldName: "Usual Sleep",              profileFieldName: "sleep_duration",              type: .Int, unitsTitle: unitsTitleHours))
+        fields.append(ProfileFieldData(fieldName: "Estimated BMI",            profileFieldName: "body_mass_index",             type: .Int, unitsTitle: unitsTitleBMI))
+        fields.append(ProfileFieldData(fieldName: "Resting Heart Rate",       profileFieldName: "heart_rate",                  type: .Int, unitsTitle: unitsTitleBPM))
+        fields.append(ProfileFieldData(fieldName: "Systolic BP",              profileFieldName: "systolic_blood_pressure",     type: .Int, unitsTitle: unitsTitleBP))
+        fields.append(ProfileFieldData(fieldName: "Diastolic BP",             profileFieldName: "diastolic_blood_pressure",    type: .Int, unitsTitle: unitsTitleBP))
+        fields.append(ProfileFieldData(fieldName: "Step Count",               profileFieldName: "step_count",                  type: .Int, unitsTitle: unitsTitleSteps))
 
-    // Note: these are in alphabetical order within each type.
-    public let healthKitTypesToRead : Set<HKObjectType>? = [
-        HKObjectType.categoryTypeForIdentifier(HKCategoryTypeIdentifierSleepAnalysis)!,
-        HKObjectType.categoryTypeForIdentifier(HKCategoryTypeIdentifierAppleStandHour)!,
-        HKObjectType.characteristicTypeForIdentifier(HKCharacteristicTypeIdentifierBloodType)!,
-        HKObjectType.characteristicTypeForIdentifier(HKCharacteristicTypeIdentifierBiologicalSex)!,
-        HKObjectType.characteristicTypeForIdentifier(HKCharacteristicTypeIdentifierFitzpatrickSkinType)!,
-        HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierActiveEnergyBurned)!,
-        HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierBasalBodyTemperature)!,
-        HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierBasalEnergyBurned)!,
-        HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierBloodAlcoholContent)!,
-        HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierBloodGlucose)!,
-        HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierBloodPressureDiastolic)!,
-        HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierBloodPressureSystolic)!,
-        HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierBodyFatPercentage)!,
-        HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierBodyMass)!,
-        HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierBodyMassIndex)!,
-        HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierBodyTemperature)!,
-        HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierDietaryBiotin)!,
-        HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierDietaryCalcium)!,
-        HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierDietaryCaffeine)!,
-        HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierDietaryCarbohydrates)!,
-        HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierDietaryCholesterol)!,
-        HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierDietaryChloride)!,
-        HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierDietaryChromium)!,
-        HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierDietaryCopper)!,
-        HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierDietaryEnergyConsumed)!,
-        HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierDietaryFatMonounsaturated)!,
-        HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierDietaryFatPolyunsaturated)!,
-        HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierDietaryFatSaturated)!,
-        HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierDietaryFatTotal)!,
-        HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierDietaryFiber)!,
-        HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierDietaryFolate)!,
-        HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierDietaryIodine)!,
-        HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierDietaryIron)!,
-        HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierDietaryMagnesium)!,
-        HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierDietaryManganese)!,
-        HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierDietaryMolybdenum)!,
-        HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierDietaryNiacin)!,
-        HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierDietaryPantothenicAcid)!,
-        HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierDietaryPhosphorus)!,
-        HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierDietaryPotassium)!,
-        HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierDietaryProtein)!,
-        HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierDietaryRiboflavin)!,
-        HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierDietarySelenium)!,
-        HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierDietarySodium)!,
-        HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierDietarySugar)!,
-        HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierDietaryThiamin)!,
-        HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierDietaryVitaminA)!,
-        HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierDietaryVitaminB12)!,
-        HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierDietaryVitaminB6)!,
-        HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierDietaryVitaminC)!,
-        HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierDietaryVitaminD)!,
-        HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierDietaryVitaminE)!,
-        HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierDietaryVitaminK)!,
-        HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierDietaryWater)!,
-        HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierDietaryZinc)!,
-        HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierDistanceWalkingRunning)!,
-        HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierElectrodermalActivity)!,
-        HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierFlightsClimbed)!,
-        HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierForcedExpiratoryVolume1)!,
-        HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierForcedVitalCapacity)!,
-        HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierHeartRate)!,
-        HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierHeight)!,
-        HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierInhalerUsage)!,
-        HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierLeanBodyMass)!,
-        HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierNikeFuel)!,
-        HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierNumberOfTimesFallen)!,
-        HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierOxygenSaturation)!,
-        HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierPeakExpiratoryFlowRate)!,
-        HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierPeripheralPerfusionIndex)!,
-        HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierRespiratoryRate)!,
-        HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierStepCount)!,
-        HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierUVExposure)!,
-        HKObjectType.workoutType()
+        fields.append(ProfileFieldData(fieldName: "Energy Expenditure",       profileFieldName: "active_energy_burned",        type: .Int, unitsTitle: unitsTitleKiloCalories))
+        fields.append(ProfileFieldData(fieldName: "Daily Sunlight",           profileFieldName: "uv_exposure",                 type: .Int, unitsTitle: unitsTitleHours))
+        fields.append(ProfileFieldData(fieldName: "Daily Calories",           profileFieldName: "dietary_energy_consumed",     type: .Decimal, unitsTitle: unitsTitleKiloCalories))
+        fields.append(ProfileFieldData(fieldName: "Daily Protein",            profileFieldName: "dietary_protein",             type: .Decimal, unitsTitle: unitsTitleGrams))
+        fields.append(ProfileFieldData(fieldName: "Daily Carbohydrates",      profileFieldName: "dietary_carbohydrates",       type: .Decimal, unitsTitle: unitsTitleGrams))
+        fields.append(ProfileFieldData(fieldName: "Daily Sugar",              profileFieldName: "dietary_sugar",               type: .Decimal, unitsTitle: unitsTitleGrams))
+        fields.append(ProfileFieldData(fieldName: "Daily Fiber",              profileFieldName: "dietary_fiber",               type: .Decimal, unitsTitle: unitsTitleGrams))
+        fields.append(ProfileFieldData(fieldName: "Daily Total Fat",          profileFieldName: "dietary_fat_total",           type: .Decimal, unitsTitle: unitsTitleGrams))
+        fields.append(ProfileFieldData(fieldName: "Saturated Fat",            profileFieldName: "dietary_fat_saturated",       type: .Decimal, unitsTitle: unitsTitleGrams))
+        fields.append(ProfileFieldData(fieldName: "Monounsaturated Fat",      profileFieldName: "dietary_fat_monounsaturated", type: .Decimal, unitsTitle: unitsTitleGrams))
+        fields.append(ProfileFieldData(fieldName: "Polyunsaturated Fat",      profileFieldName: "dietary_fat_polyunsaturated", type: .Decimal, unitsTitle: unitsTitleGrams))
+        fields.append(ProfileFieldData(fieldName: "Daily Cholesterol",        profileFieldName: "dietary_cholesterol",         type: .Decimal, unitsTitle: unitsTitleMG))
+        fields.append(ProfileFieldData(fieldName: "Daily Salt",               profileFieldName: "dietary_sodium",              type: .Decimal, unitsTitle: unitsTitleMG))
+        fields.append(ProfileFieldData(fieldName: "Daily Caffeine",           profileFieldName: "dietary_caffeine",            type: .Decimal, unitsTitle: unitsTitleMG))
+        fields.append(ProfileFieldData(fieldName: "Daily Water",              profileFieldName: "dietary_water",               type: .Decimal, unitsTitle: unitsTitleML))
+
+        return fields
+    }()
+
+    public var customFieldUnits: [String: HKUnit] = [
+        "uv_exposure": HKUnit.countUnit()
     ]
 
-    public let healthKitTypesToWrite : Set<HKSampleType>? =
-        Deployment.sharedInstance.withDebugView ?
-            // Cannot write apple stand hour, nike fuel.
-            [
-                HKObjectType.categoryTypeForIdentifier(HKCategoryTypeIdentifierSleepAnalysis)!,
-                HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierActiveEnergyBurned)!,
-                HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierBasalBodyTemperature)!,
-                HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierBasalEnergyBurned)!,
-                HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierBloodAlcoholContent)!,
-                HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierBloodGlucose)!,
-                HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierBloodPressureDiastolic)!,
-                HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierBloodPressureSystolic)!,
-                HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierBodyFatPercentage)!,
-                HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierBodyMass)!,
-                HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierBodyMassIndex)!,
-                HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierBodyTemperature)!,
-                HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierDietaryBiotin)!,
-                HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierDietaryCalcium)!,
-                HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierDietaryCaffeine)!,
-                HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierDietaryCarbohydrates)!,
-                HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierDietaryCholesterol)!,
-                HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierDietaryChloride)!,
-                HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierDietaryChromium)!,
-                HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierDietaryCopper)!,
-                HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierDietaryEnergyConsumed)!,
-                HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierDietaryFatMonounsaturated)!,
-                HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierDietaryFatPolyunsaturated)!,
-                HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierDietaryFatSaturated)!,
-                HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierDietaryFatTotal)!,
-                HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierDietaryFiber)!,
-                HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierDietaryFolate)!,
-                HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierDietaryIodine)!,
-                HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierDietaryIron)!,
-                HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierDietaryMagnesium)!,
-                HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierDietaryManganese)!,
-                HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierDietaryMolybdenum)!,
-                HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierDietaryNiacin)!,
-                HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierDietaryPantothenicAcid)!,
-                HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierDietaryPhosphorus)!,
-                HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierDietaryPotassium)!,
-                HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierDietaryProtein)!,
-                HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierDietaryRiboflavin)!,
-                HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierDietarySelenium)!,
-                HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierDietarySodium)!,
-                HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierDietarySugar)!,
-                HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierDietaryThiamin)!,
-                HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierDietaryVitaminA)!,
-                HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierDietaryVitaminB12)!,
-                HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierDietaryVitaminB6)!,
-                HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierDietaryVitaminC)!,
-                HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierDietaryVitaminD)!,
-                HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierDietaryVitaminE)!,
-                HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierDietaryVitaminK)!,
-                HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierDietaryWater)!,
-                HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierDietaryZinc)!,
-                HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierDistanceWalkingRunning)!,
-                HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierElectrodermalActivity)!,
-                HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierFlightsClimbed)!,
-                HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierForcedExpiratoryVolume1)!,
-                HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierForcedVitalCapacity)!,
-                HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierHeartRate)!,
-                HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierHeight)!,
-                HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierInhalerUsage)!,
-                HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierLeanBodyMass)!,
-                HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierNumberOfTimesFallen)!,
-                HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierOxygenSaturation)!,
-                HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierPeakExpiratoryFlowRate)!,
-                HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierPeripheralPerfusionIndex)!,
-                HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierRespiratoryRate)!,
-                HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierStepCount)!,
-                HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierUVExposure)!,
-                HKObjectType.workoutType()
-            ]
-            :
-            [
-                HKObjectType.categoryTypeForIdentifier(HKCategoryTypeIdentifierSleepAnalysis)!,
-                HKQuantityType.workoutType()
-            ]
-
-    // Note: these are in alphabetical order within each type.
-    public let healthKitTypesToObserve : [HKSampleType] = [
-        HKObjectType.categoryTypeForIdentifier(HKCategoryTypeIdentifierSleepAnalysis)!,
-        HKObjectType.categoryTypeForIdentifier(HKCategoryTypeIdentifierAppleStandHour)!,
-        HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierActiveEnergyBurned)!,
-        HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierBasalBodyTemperature)!,
-        HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierBasalEnergyBurned)!,
-        HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierBloodAlcoholContent)!,
-        HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierBloodGlucose)!,
-        HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierBloodPressureDiastolic)!,
-        HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierBloodPressureSystolic)!,
-        HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierBodyFatPercentage)!,
-        HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierBodyMass)!,
-        HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierBodyMassIndex)!,
-        HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierBodyTemperature)!,
-        HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierDietaryBiotin)!,
-        HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierDietaryCalcium)!,
-        HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierDietaryCaffeine)!,
-        HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierDietaryCarbohydrates)!,
-        HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierDietaryCholesterol)!,
-        HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierDietaryChloride)!,
-        HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierDietaryChromium)!,
-        HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierDietaryCopper)!,
-        HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierDietaryEnergyConsumed)!,
-        HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierDietaryFatMonounsaturated)!,
-        HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierDietaryFatPolyunsaturated)!,
-        HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierDietaryFatSaturated)!,
-        HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierDietaryFatTotal)!,
-        HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierDietaryFiber)!,
-        HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierDietaryFolate)!,
-        HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierDietaryIodine)!,
-        HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierDietaryIron)!,
-        HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierDietaryMagnesium)!,
-        HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierDietaryManganese)!,
-        HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierDietaryMolybdenum)!,
-        HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierDietaryNiacin)!,
-        HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierDietaryPantothenicAcid)!,
-        HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierDietaryPhosphorus)!,
-        HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierDietaryPotassium)!,
-        HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierDietaryProtein)!,
-        HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierDietaryRiboflavin)!,
-        HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierDietarySelenium)!,
-        HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierDietarySodium)!,
-        HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierDietarySugar)!,
-        HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierDietaryThiamin)!,
-        HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierDietaryVitaminA)!,
-        HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierDietaryVitaminB12)!,
-        HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierDietaryVitaminB6)!,
-        HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierDietaryVitaminC)!,
-        HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierDietaryVitaminD)!,
-        HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierDietaryVitaminE)!,
-        HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierDietaryVitaminK)!,
-        HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierDietaryWater)!,
-        HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierDietaryZinc)!,
-        HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierDistanceWalkingRunning)!,
-        HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierElectrodermalActivity)!,
-        HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierFlightsClimbed)!,
-        HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierForcedExpiratoryVolume1)!,
-        HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierForcedVitalCapacity)!,
-        HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierHeartRate)!,
-        HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierHeight)!,
-        HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierInhalerUsage)!,
-        HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierLeanBodyMass)!,
-        HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierNikeFuel)!,
-        HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierNumberOfTimesFallen)!,
-        HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierOxygenSaturation)!,
-        HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierPeakExpiratoryFlowRate)!,
-        HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierPeripheralPerfusionIndex)!,
-        HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierRespiratoryRate)!,
-        HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierStepCount)!,
-        HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierUVExposure)!,
-        HKObjectType.workoutType()
-    ]
-
-    // Note: these are in alphabetical order within each type.
-    public let healthKitShortNames : [String: String] = [
-        HKCategoryTypeIdentifierAppleStandHour            : "Stood",
-        HKCategoryTypeIdentifierSleepAnalysis             : "Sleep",
-        HKCharacteristicTypeIdentifierBloodType           : "Blood type",
-        HKCharacteristicTypeIdentifierBiologicalSex       : "Sex",
-        HKCharacteristicTypeIdentifierFitzpatrickSkinType : "Skin type",
-        HKCorrelationTypeIdentifierBloodPressure          : "BP",
-        HKQuantityTypeIdentifierActiveEnergyBurned        : "Cal burned",
-        HKQuantityTypeIdentifierBasalBodyTemperature      : "Temperature(B)",
-        HKQuantityTypeIdentifierBasalEnergyBurned         : "Cal burned(B)",
-        HKQuantityTypeIdentifierBloodAlcoholContent       : "BAC",
-        HKQuantityTypeIdentifierBloodGlucose              : "Glucose",
-        HKQuantityTypeIdentifierBloodPressureDiastolic    : "BP Diastolic",
-        HKQuantityTypeIdentifierBloodPressureSystolic     : "BP Systolic",
-        HKQuantityTypeIdentifierBodyFatPercentage         : "Body Fat",
-        HKQuantityTypeIdentifierBodyMass                  : "Weight",
-        HKQuantityTypeIdentifierBodyMassIndex             : "BMI",
-        HKQuantityTypeIdentifierBodyTemperature           : "Temperature",
-        HKQuantityTypeIdentifierDietaryBiotin             : "Biotin",
-        HKQuantityTypeIdentifierDietaryCalcium            : "Calcium",
-        HKQuantityTypeIdentifierDietaryCaffeine           : "Caffeine",
-        HKQuantityTypeIdentifierDietaryCarbohydrates      : "Carbs",
-        HKQuantityTypeIdentifierDietaryCholesterol        : "Cholesterol",
-        HKQuantityTypeIdentifierDietaryChloride           : "Chloride",
-        HKQuantityTypeIdentifierDietaryChromium           : "Chromium",
-        HKQuantityTypeIdentifierDietaryCopper             : "Copper",
-        HKQuantityTypeIdentifierDietaryEnergyConsumed     : "Net Calories",
-        HKQuantityTypeIdentifierDietaryFatMonounsaturated : "Fat(MS)",
-        HKQuantityTypeIdentifierDietaryFatPolyunsaturated : "Fat(PS)",
-        HKQuantityTypeIdentifierDietaryFatSaturated       : "Fat(S)",
-        HKQuantityTypeIdentifierDietaryFatTotal           : "Fat",
-        HKQuantityTypeIdentifierDietaryFiber              : "Fiber",
-        HKQuantityTypeIdentifierDietaryFolate             : "Folate",
-        HKQuantityTypeIdentifierDietaryIodine             : "Iodine",
-        HKQuantityTypeIdentifierDietaryIron               : "Iron",
-        HKQuantityTypeIdentifierDietaryMagnesium          : "Magnesium",
-        HKQuantityTypeIdentifierDietaryManganese          : "Manganese",
-        HKQuantityTypeIdentifierDietaryMolybdenum         : "Molybdenum",
-        HKQuantityTypeIdentifierDietaryNiacin             : "Niacin",
-        HKQuantityTypeIdentifierDietaryPantothenicAcid    : "Pant. Acid",
-        HKQuantityTypeIdentifierDietaryPhosphorus         : "Phosphorus",
-        HKQuantityTypeIdentifierDietaryPotassium          : "Potassium",
-        HKQuantityTypeIdentifierDietaryProtein            : "Protein",
-        HKQuantityTypeIdentifierDietaryRiboflavin         : "Riboflavin",
-        HKQuantityTypeIdentifierDietarySelenium           : "Selenium",
-        HKQuantityTypeIdentifierDietarySodium             : "Salt",
-        HKQuantityTypeIdentifierDietarySugar              : "Sugar",
-        HKQuantityTypeIdentifierDietaryThiamin            : "Thiamin",
-        HKQuantityTypeIdentifierDietaryVitaminA           : "Vit. A",
-        HKQuantityTypeIdentifierDietaryVitaminB12         : "Vit. B12",
-        HKQuantityTypeIdentifierDietaryVitaminB6          : "Vit. B6",
-        HKQuantityTypeIdentifierDietaryVitaminC           : "Vit. C",
-        HKQuantityTypeIdentifierDietaryVitaminD           : "Vit. D",
-        HKQuantityTypeIdentifierDietaryVitaminE           : "Vit. E",
-        HKQuantityTypeIdentifierDietaryVitaminK           : "Vit. K",
-        HKQuantityTypeIdentifierDietaryWater              : "Water",
-        HKQuantityTypeIdentifierDietaryZinc               : "Zinc",
-        HKQuantityTypeIdentifierDistanceWalkingRunning    : "Distance",
-        HKQuantityTypeIdentifierElectrodermalActivity     : "Electrodermal",
-        HKQuantityTypeIdentifierFlightsClimbed            : "Climbed",
-        HKQuantityTypeIdentifierForcedExpiratoryVolume1   : "Exp. Volume",
-        HKQuantityTypeIdentifierForcedVitalCapacity       : "Vital Capacity",
-        HKQuantityTypeIdentifierHeartRate                 : "Heart rate",
-        HKQuantityTypeIdentifierHeight                    : "Height",
-        HKQuantityTypeIdentifierInhalerUsage              : "Inhaler",
-        HKQuantityTypeIdentifierLeanBodyMass              : "Lean Weight",
-        HKQuantityTypeIdentifierNikeFuel                  : "Nike Fuel",
-        HKQuantityTypeIdentifierNumberOfTimesFallen       : "Fallen",
-        HKQuantityTypeIdentifierOxygenSaturation          : "Oxygen",
-        HKQuantityTypeIdentifierPeakExpiratoryFlowRate    : "Exp. Flow",
-        HKQuantityTypeIdentifierPeripheralPerfusionIndex  : "Perfusion",
-        HKQuantityTypeIdentifierRespiratoryRate           : "Respiratory",
-        HKQuantityTypeIdentifierStepCount                 : "Steps",
-        HKQuantityTypeIdentifierUVExposure                : "Light",
-        HKObjectType.workoutType().identifier             : "Workouts/Meals"
-    ]
-
-    // Note: We use strings as short ids to be compatible with JSON dictionary keys.
-    public let healthKitShortIds : [String: String] = [
-        HKCategoryTypeIdentifierSleepAnalysis             : "0",
-        HKCategoryTypeIdentifierAppleStandHour            : "1",
-        HKQuantityTypeIdentifierActiveEnergyBurned        : "2",
-        HKQuantityTypeIdentifierBasalBodyTemperature      : "3",
-        HKQuantityTypeIdentifierBasalEnergyBurned         : "4",
-        HKQuantityTypeIdentifierBloodAlcoholContent       : "5",
-        HKQuantityTypeIdentifierBloodGlucose              : "6",
-        HKQuantityTypeIdentifierBloodPressureDiastolic    : "7",
-        HKQuantityTypeIdentifierBloodPressureSystolic     : "8",
-        HKQuantityTypeIdentifierBodyFatPercentage         : "9",
-        HKQuantityTypeIdentifierBodyMass                  : "10",
-        HKQuantityTypeIdentifierBodyMassIndex             : "11",
-        HKQuantityTypeIdentifierBodyTemperature           : "12",
-        HKQuantityTypeIdentifierDietaryBiotin             : "13",
-        HKQuantityTypeIdentifierDietaryCalcium            : "14",
-        HKQuantityTypeIdentifierDietaryCaffeine           : "15",
-        HKQuantityTypeIdentifierDietaryCarbohydrates      : "16",
-        HKQuantityTypeIdentifierDietaryCholesterol        : "17",
-        HKQuantityTypeIdentifierDietaryChloride           : "18",
-        HKQuantityTypeIdentifierDietaryChromium           : "19",
-        HKQuantityTypeIdentifierDietaryCopper             : "20",
-        HKQuantityTypeIdentifierDietaryEnergyConsumed     : "21",
-        HKQuantityTypeIdentifierDietaryFatMonounsaturated : "22",
-        HKQuantityTypeIdentifierDietaryFatPolyunsaturated : "23",
-        HKQuantityTypeIdentifierDietaryFatSaturated       : "24",
-        HKQuantityTypeIdentifierDietaryFatTotal           : "25",
-        HKQuantityTypeIdentifierDietaryFiber              : "26",
-        HKQuantityTypeIdentifierDietaryFolate             : "27",
-        HKQuantityTypeIdentifierDietaryIodine             : "28",
-        HKQuantityTypeIdentifierDietaryIron               : "29",
-        HKQuantityTypeIdentifierDietaryMagnesium          : "30",
-        HKQuantityTypeIdentifierDietaryManganese          : "31",
-        HKQuantityTypeIdentifierDietaryMolybdenum         : "32",
-        HKQuantityTypeIdentifierDietaryNiacin             : "33",
-        HKQuantityTypeIdentifierDietaryPantothenicAcid    : "34",
-        HKQuantityTypeIdentifierDietaryPhosphorus         : "35",
-        HKQuantityTypeIdentifierDietaryPotassium          : "36",
-        HKQuantityTypeIdentifierDietaryProtein            : "37",
-        HKQuantityTypeIdentifierDietaryRiboflavin         : "38",
-        HKQuantityTypeIdentifierDietarySelenium           : "39",
-        HKQuantityTypeIdentifierDietarySodium             : "40",
-        HKQuantityTypeIdentifierDietarySugar              : "41",
-        HKQuantityTypeIdentifierDietaryThiamin            : "42",
-        HKQuantityTypeIdentifierDietaryVitaminA           : "43",
-        HKQuantityTypeIdentifierDietaryVitaminB12         : "44",
-        HKQuantityTypeIdentifierDietaryVitaminB6          : "45",
-        HKQuantityTypeIdentifierDietaryVitaminC           : "46",
-        HKQuantityTypeIdentifierDietaryVitaminD           : "47",
-        HKQuantityTypeIdentifierDietaryVitaminE           : "48",
-        HKQuantityTypeIdentifierDietaryVitaminK           : "49",
-        HKQuantityTypeIdentifierDietaryWater              : "50",
-        HKQuantityTypeIdentifierDietaryZinc               : "51",
-        HKQuantityTypeIdentifierDistanceWalkingRunning    : "52",
-        HKQuantityTypeIdentifierElectrodermalActivity     : "53",
-        HKQuantityTypeIdentifierFlightsClimbed            : "54",
-        HKQuantityTypeIdentifierForcedExpiratoryVolume1   : "55",
-        HKQuantityTypeIdentifierForcedVitalCapacity       : "56",
-        HKQuantityTypeIdentifierHeartRate                 : "57",
-        HKQuantityTypeIdentifierHeight                    : "58",
-        HKQuantityTypeIdentifierInhalerUsage              : "59",
-        HKQuantityTypeIdentifierLeanBodyMass              : "60",
-        HKQuantityTypeIdentifierNikeFuel                  : "61",
-        HKQuantityTypeIdentifierNumberOfTimesFallen       : "62",
-        HKQuantityTypeIdentifierOxygenSaturation          : "63",
-        HKQuantityTypeIdentifierPeakExpiratoryFlowRate    : "64",
-        HKQuantityTypeIdentifierPeripheralPerfusionIndex  : "65",
-        HKQuantityTypeIdentifierRespiratoryRate           : "66",
-        HKQuantityTypeIdentifierStepCount                 : "67",
-        HKQuantityTypeIdentifierUVExposure                : "68",
-        HKObjectType.workoutType().identifier             : "69",
+    public var profileUnitsMapping: [String: HKUnit] = [
+        unitsTitleBMI          : HKUnit.countUnit(),
+        unitsTitleBP           : HKUnit.millimeterOfMercuryUnit(),
+        unitsTitleHours        : HKUnit.hourUnit(),
+        unitsTitleKiloCalories : HKUnit.kilocalorieUnit(),
+        unitsTitleSteps        : HKUnit.countUnit(),
+        unitsTitleBPM          : HKUnit.countUnit().unitDividedByUnit(HKUnit.minuteUnit()),
+        unitsTitleGrams        : HKUnit.gramUnit(),
+        unitsTitleMG           : HKUnit.gramUnitWithMetricPrefix(.Milli),
+        unitsTitleML           : HKUnit.literUnitWithMetricPrefix(.Milli)
     ]
 }
+
 
 /*
  * HealthKit predicates

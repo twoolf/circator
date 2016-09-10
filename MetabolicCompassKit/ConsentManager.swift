@@ -10,7 +10,7 @@ import ResearchKit
 import Locksmith
 import Async
 
-public typealias ConsentBlock = ((consented: Bool) -> Void)?
+public typealias ConsentBlock = ((consented: Bool, givenName: String?, familyName: String?) -> Void)?
 
 private let ConsentFilePathKey = "CMConsentFileKey"
 private let unnamedAccount = "default"
@@ -46,7 +46,15 @@ public class ConsentManager: NSObject, ORKTaskViewControllerDelegate {
     
     public static let sharedManager = ConsentManager()
     
-    private var consentHandler: ((consented: Bool) -> Void)?
+    private var consentHandler: ((consented: Bool, givenName: String?, familyName: String?) -> Void)?
+    
+    public func resetConsentFilePath () {
+        do {
+            try Locksmith.deleteDataForUserAccount(unnamedAccount)
+        } catch {
+            print ("Can't delete default user data")
+        }
+    }
     
     public func getConsentFilePath() -> String? {
         if let dictionary = Locksmith.loadDataForUserAccount(unnamedAccount),
@@ -297,15 +305,6 @@ public class ConsentManager: NSObject, ORKTaskViewControllerDelegate {
             return consentSection
         }
         
-        /*
-        This is an example of a section that is only in the review document
-        or only in the generated PDF, and is not displayed in `ORKVisualConsentStep`.
-        */
-        let consentSection = ORKConsentSection(type: .OnlyInDocument)
-        consentSection.summary = NSLocalizedString(".OnlyInDocument Scene Summary", comment: "")
-        
-        consentSections += [consentSection]
-        
         // Set the sections on the document after they've been created.
         consentDocument.sections = consentSections
         
@@ -347,7 +346,7 @@ public class ConsentManager: NSObject, ORKTaskViewControllerDelegate {
         // In a real application, you would supply your own localized text.
         reviewConsentStep.text = ConsiderLongText
         reviewConsentStep.reasonForConsent = welcomeSectionText
-        
+
         return [
             visualConsentStep,
             sharingConsentStep,
@@ -386,28 +385,39 @@ public class ConsentManager: NSObject, ORKTaskViewControllerDelegate {
             let taskViewController = ORKTaskViewController(task: consentTaskWithEligibilitySection(), taskRunUUID: nil)
             taskViewController.delegate = self
             taskViewController.view.tintColor = Theme.universityDarkTheme.backgroundColor
-            viewController.view.window?.rootViewController!.presentViewController(taskViewController, animated: true, completion: nil)
+            viewController.presentViewController(taskViewController, animated: true, completion: nil)
             return
         }
-        self.consentHandler?(consented: true)
+        self.consentHandler?(consented: true, givenName: nil, familyName: nil)
     }
    
     // MARK: - Task view controller delegate
     
     public func taskViewController(taskViewController: ORKTaskViewController, didFinishWithReason reason: ORKTaskViewControllerFinishReason, error: NSError?) {
+        var completedToDocument = false
+        var givenName: String? = nil
+        var familyName: String? = nil
         switch reason {
         case .Completed:
             let document = consentDocument.copy() as! ORKConsentDocument
-            let signatureResult = taskViewController.result.stepResultForStepIdentifier(String(Identifier.ConsentReviewStep))?.firstResult as! ORKConsentSignatureResult
-            signatureResult.applyToDocument(document)
-            document.makePDFWithCompletionHandler { (data, error) -> Void in
-                guard error == nil else {
-                    return
+            if let consentStep = taskViewController.result.stepResultForStepIdentifier(String(Identifier.ConsentReviewStep)),
+                   signatureResult = consentStep.firstResult as? ORKConsentSignatureResult
+            {
+                completedToDocument = signatureResult.consented
+                givenName = signatureResult.signature?.givenName
+                familyName = signatureResult.signature?.familyName
+
+                signatureResult.applyToDocument(document)
+                document.makePDFWithCompletionHandler { (data, error) -> Void in
+                    guard error == nil else {
+                        return
+                    }
+                    let path = (NSTemporaryDirectory() as NSString).stringByAppendingPathComponent("consent.pdf")
+                    self.setConsentFilePath(path)
+                    data!.writeToFile(path, atomically: true)
                 }
-                let path = (NSTemporaryDirectory() as NSString).stringByAppendingPathComponent("consent.pdf")
-                self.setConsentFilePath(path)
-                data!.writeToFile(path, atomically: true)
             }
+
         case .Discarded:
             break
         case .Failed:
@@ -416,7 +426,7 @@ public class ConsentManager: NSObject, ORKTaskViewControllerDelegate {
             break
         }
         taskViewController.dismissViewControllerAnimated(true) {
-            self.consentHandler?(consented: reason == .Completed)
+            self.consentHandler?(consented: completedToDocument, givenName: givenName, familyName: familyName)
         }
     }
 }

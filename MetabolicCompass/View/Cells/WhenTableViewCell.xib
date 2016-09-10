@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="10116" systemVersion="15E65" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES">
+    <dependencies>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="10085"/>
+    </dependencies>
+    <customFonts key="customFonts">
+        <mutableArray key="gotham-book.ttf">
+            <string>GothamBook</string>
+            <string>GothamBook</string>
+            <string>GothamBook</string>
+        </mutableArray>
+    </customFonts>
+    <objects>
+        <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner"/>
+        <placeholder placeholderIdentifier="IBFirstResponder" id="-2" customClass="UIResponder"/>
+        <view contentMode="scaleToFill" id="iN0-l3-epB" customClass="WhenTableViewCell" customModule="MetabolicCompass" customModuleProvider="target">
+            <rect key="frame" x="0.0" y="0.0" width="375" height="60"/>
+            <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+            <subviews>
+                <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="JUX-cI-0Z2">
+                    <rect key="frame" x="0.0" y="0.0" width="375" height="1"/>
+                    <color key="backgroundColor" red="1" green="1" blue="1" alpha="0.29999999999999999" colorSpace="calibratedRGB"/>
+                    <constraints>
+                        <constraint firstAttribute="height" constant="1" id="DgK-Rk-eyU"/>
+                    </constraints>
+                </view>
+                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" misplaced="YES" text="Label" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="1Ib-zf-nbz">
+                    <rect key="frame" x="271" y="22" width="49" height="16"/>
+                    <fontDescription key="fontDescription" name="GothamBook" family="Gotham Book" pointSize="18"/>
+                    <color key="textColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                    <nil key="highlightedColor"/>
+                </label>
+                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" misplaced="YES" text="15 May" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="oft-oG-YnH">
+                    <rect key="frame" x="210" y="24" width="46" height="12"/>
+                    <fontDescription key="fontDescription" name="GothamBook" family="Gotham Book" pointSize="14"/>
+                    <color key="textColor" white="1" alpha="0.5" colorSpace="calibratedWhite"/>
+                    <nil key="highlightedColor"/>
+                </label>
+                <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="dropdown-button-white" translatesAutoresizingMaskIntoConstraints="NO" id="a80-nd-dQg">
+                    <rect key="frame" x="338" y="26" width="17" height="8"/>
+                    <constraints>
+                        <constraint firstAttribute="height" constant="8" id="Hpd-nZ-Xyq"/>
+                        <constraint firstAttribute="width" constant="17" id="M5r-Hq-42t"/>
+                    </constraints>
+                </imageView>
+                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" misplaced="YES" text="When" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="xuI-Sj-cZr">
+                    <rect key="frame" x="20" y="23" width="44" height="14"/>
+                    <fontDescription key="fontDescription" name="GothamBook" family="Gotham Book" pointSize="15"/>
+                    <color key="textColor" white="1" alpha="0.5" colorSpace="calibratedWhite"/>
+                    <nil key="highlightedColor"/>
+                </label>
+            </subviews>
+            <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="calibratedWhite"/>
+            <constraints>
+                <constraint firstItem="xuI-Sj-cZr" firstAttribute="centerY" secondItem="iN0-l3-epB" secondAttribute="centerY" id="16k-vN-FFH"/>
+                <constraint firstItem="JUX-cI-0Z2" firstAttribute="top" secondItem="iN0-l3-epB" secondAttribute="top" id="8bP-YG-MTA"/>
+                <constraint firstAttribute="trailing" secondItem="oft-oG-YnH" secondAttribute="trailing" constant="119" id="8tq-55-HWB"/>
+                <constraint firstItem="xuI-Sj-cZr" firstAttribute="leading" secondItem="iN0-l3-epB" secondAttribute="leading" constant="20" id="F73-eP-9bd"/>
+                <constraint firstAttribute="trailing" secondItem="a80-nd-dQg" secondAttribute="trailing" constant="20" id="Hib-lf-LhK"/>
+                <constraint firstAttribute="trailing" secondItem="JUX-cI-0Z2" secondAttribute="trailing" id="K8e-M6-5Yu"/>
+                <constraint firstItem="JUX-cI-0Z2" firstAttribute="leading" secondItem="iN0-l3-epB" secondAttribute="leading" id="U6f-jx-AmA"/>
+                <constraint firstItem="1Ib-zf-nbz" firstAttribute="centerY" secondItem="iN0-l3-epB" secondAttribute="centerY" id="a3q-lV-WmB"/>
+                <constraint firstItem="a80-nd-dQg" firstAttribute="leading" secondItem="1Ib-zf-nbz" secondAttribute="trailing" constant="18" id="gZW-Ut-uMy"/>
+                <constraint firstItem="oft-oG-YnH" firstAttribute="centerY" secondItem="iN0-l3-epB" secondAttribute="centerY" id="ikb-Mo-YsC"/>
+                <constraint firstItem="a80-nd-dQg" firstAttribute="centerY" secondItem="iN0-l3-epB" secondAttribute="centerY" id="jgl-T5-sqc"/>
+            </constraints>
+            <nil key="simulatedStatusBarMetrics"/>
+            <freeformSimulatedSizeMetrics key="simulatedDestinationMetrics"/>
+            <connections>
+                <outlet property="dayLabel" destination="oft-oG-YnH" id="MfQ-ys-MoR"/>
+                <outlet property="dropdownImage" destination="a80-nd-dQg" id="hEH-vR-Jzh"/>
+                <outlet property="timeLabel" destination="1Ib-zf-nbz" id="Zuz-ol-5Ms"/>
+            </connections>
+            <point key="canvasLocation" x="256.5" y="336"/>
+        </view>
+    </objects>
+    <resources>
+        <image name="dropdown-button-white" width="17" height="8"/>
+    </resources>
+</document>

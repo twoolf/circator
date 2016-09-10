@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="10117" systemVersion="15G31" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES">
+    <dependencies>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="10085"/>
+    </dependencies>
+    <customFonts key="customFonts">
+        <mutableArray key="gotham-book.ttf">
+            <string>GothamBook</string>
+            <string>GothamBook</string>
+            <string>GothamBook</string>
+        </mutableArray>
+    </customFonts>
+    <objects>
+        <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner"/>
+        <placeholder placeholderIdentifier="IBFirstResponder" id="-2" customClass="UIResponder"/>
+        <view contentMode="scaleToFill" id="NGI-BS-Fid" customClass="EndSleepTableViewCell" customModule="MetabolicCompass" customModuleProvider="target">
+            <rect key="frame" x="0.0" y="0.0" width="375" height="60"/>
+            <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+            <subviews>
+                <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="cJ5-GF-hBJ">
+                    <rect key="frame" x="0.0" y="0.0" width="375" height="1"/>
+                    <color key="backgroundColor" red="1" green="1" blue="1" alpha="0.29999999999999999" colorSpace="calibratedRGB"/>
+                    <constraints>
+                        <constraint firstAttribute="height" constant="1" id="X34-lH-Bhe"/>
+                    </constraints>
+                </view>
+                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Label" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="qDa-ID-80C">
+                    <rect key="frame" x="271" y="22" width="49" height="16.5"/>
+                    <fontDescription key="fontDescription" name="GothamBook" family="Gotham Book" pointSize="18"/>
+                    <color key="textColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                    <nil key="highlightedColor"/>
+                </label>
+                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" misplaced="YES" text="15 May" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="sgG-WC-Zhu">
+                    <rect key="frame" x="209.5" y="23" width="46.5" height="12.5"/>
+                    <fontDescription key="fontDescription" name="GothamBook" family="Gotham Book" pointSize="14"/>
+                    <color key="textColor" white="1" alpha="0.5" colorSpace="calibratedWhite"/>
+                    <nil key="highlightedColor"/>
+                </label>
+                <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="dropdown-button-white" translatesAutoresizingMaskIntoConstraints="NO" id="poU-Xn-66t">
+                    <rect key="frame" x="338" y="26" width="17" height="8"/>
+                    <constraints>
+                        <constraint firstAttribute="height" constant="8" id="bt7-fi-bf0"/>
+                        <constraint firstAttribute="width" constant="17" id="eI7-lz-1ou"/>
+                    </constraints>
+                </imageView>
+                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Woke up" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="Jwl-qN-shs">
+                    <rect key="frame" x="20" y="23" width="67.5" height="13.5"/>
+                    <fontDescription key="fontDescription" name="GothamBook" family="Gotham Book" pointSize="15"/>
+                    <color key="textColor" white="1" alpha="0.5" colorSpace="calibratedWhite"/>
+                    <nil key="highlightedColor"/>
+                </label>
+                <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="rqf-EU-C2v">
+                    <rect key="frame" x="0.0" y="59" width="375" height="1"/>
+                    <color key="backgroundColor" white="1" alpha="0.29999999999999999" colorSpace="custom" customColorSpace="calibratedWhite"/>
+                    <constraints>
+                        <constraint firstAttribute="height" constant="1" id="yrX-9a-bDQ"/>
+                    </constraints>
+                </view>
+            </subviews>
+            <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="calibratedWhite"/>
+            <constraints>
+                <constraint firstItem="Jwl-qN-shs" firstAttribute="centerY" secondItem="NGI-BS-Fid" secondAttribute="centerY" id="1vj-gC-FaH"/>
+                <constraint firstItem="Jwl-qN-shs" firstAttribute="leading" secondItem="NGI-BS-Fid" secondAttribute="leading" constant="20" id="5Tc-7I-ck5"/>
+                <constraint firstAttribute="trailing" secondItem="poU-Xn-66t" secondAttribute="trailing" constant="20" id="8Oc-92-5Um"/>
+                <constraint firstAttribute="trailing" secondItem="cJ5-GF-hBJ" secondAttribute="trailing" id="JfR-Sl-Sro"/>
+                <constraint firstItem="sgG-WC-Zhu" firstAttribute="centerY" secondItem="NGI-BS-Fid" secondAttribute="centerY" id="OiX-vv-fB1"/>
+                <constraint firstItem="rqf-EU-C2v" firstAttribute="leading" secondItem="NGI-BS-Fid" secondAttribute="leading" id="ch9-2E-77Q"/>
+                <constraint firstItem="cJ5-GF-hBJ" firstAttribute="top" secondItem="NGI-BS-Fid" secondAttribute="top" id="f8k-of-laM"/>
+                <constraint firstItem="cJ5-GF-hBJ" firstAttribute="leading" secondItem="NGI-BS-Fid" secondAttribute="leading" id="fd2-pw-ou2"/>
+                <constraint firstItem="poU-Xn-66t" firstAttribute="leading" secondItem="qDa-ID-80C" secondAttribute="trailing" constant="18" id="ggF-4J-C2o"/>
+                <constraint firstAttribute="bottom" secondItem="rqf-EU-C2v" secondAttribute="bottom" id="hEe-0i-P0H"/>
+                <constraint firstAttribute="trailing" secondItem="rqf-EU-C2v" secondAttribute="trailing" id="mgX-zJ-ZMK"/>
+                <constraint firstItem="qDa-ID-80C" firstAttribute="centerY" secondItem="NGI-BS-Fid" secondAttribute="centerY" id="sxD-rf-eyi"/>
+                <constraint firstAttribute="trailing" secondItem="sgG-WC-Zhu" secondAttribute="trailing" constant="119" id="vk5-0c-Zfh"/>
+                <constraint firstItem="poU-Xn-66t" firstAttribute="centerY" secondItem="NGI-BS-Fid" secondAttribute="centerY" id="vvR-rI-8bt"/>
+            </constraints>
+            <nil key="simulatedStatusBarMetrics"/>
+            <freeformSimulatedSizeMetrics key="simulatedDestinationMetrics"/>
+            <connections>
+                <outlet property="dayLabel" destination="sgG-WC-Zhu" id="jIn-Fk-Ild"/>
+                <outlet property="dropdownImage" destination="poU-Xn-66t" id="TpB-hO-nA7"/>
+                <outlet property="timeLabel" destination="qDa-ID-80C" id="f1O-qu-yZR"/>
+            </connections>
+            <point key="canvasLocation" x="364.5" y="333"/>
+        </view>
+    </objects>
+    <resources>
+        <image name="dropdown-button-white" width="17" height="8"/>
+    </resources>
+</document>

@@ -9,6 +9,7 @@
 import UIKit
 import HealthKit
 import MetabolicCompassKit
+import WatchConnectivity
 import Async
 import Dodo
 import HTPressableButton
@@ -16,6 +17,7 @@ import ResearchKit
 import Pages
 import Charts
 import SwiftDate
+import MCCircadianQueries
 
 let IntroViewTableViewCellIdentifier = "IntroViewTableViewCellIdentifier"
 private let mcControlButtonHeight = ScreenManager.sharedInstance.dashboardButtonHeight()
@@ -28,7 +30,7 @@ private let hkAccessTimeout = 60.seconds
  
  */
 class IntroViewController: UIViewController,
-                           UITableViewDataSource,
+                           UITableViewDataSource, WCSessionDelegate,
                            UITableViewDelegate, UIPickerViewDelegate, UIPickerViewDataSource
 {
     lazy var dashboardRows : Int = {
@@ -39,6 +41,7 @@ class IntroViewController: UIViewController,
     private var hkAccessAsync : Async? = nil         // Background task to notify if HealthKit is slow to access.
     private var aggregateFetchTask : Async? = nil    // Background task to fetch population aggregates.
 
+    var session : WCSession!
     private var pagesController: PagesController!
     private var timeEventPagesController: PagesController!
 
@@ -113,7 +116,7 @@ class IntroViewController: UIViewController,
         button.buttonColor = UIColor.ht_emeraldColor()
         button.shadowColor = UIColor.ht_nephritisColor()
         button.shadowHeight = 6
-        button.addTarget(self, action: "showAttributes:", forControlEvents: .TouchUpInside)
+        button.addTarget(self, action: #selector(IntroViewController.showAttributes(_:)), forControlEvents: .TouchUpInside)
         return button
     }()
 
@@ -152,7 +155,7 @@ class IntroViewController: UIViewController,
         button.buttonColor = IntroViewController.subTEBColor
         button.shadowColor = IntroViewController.subTEBSColor
         button.shadowHeight = 6
-        button.addTarget(self, action: "showAttributes:", forControlEvents: .TouchUpInside)
+        button.addTarget(self, action: #selector(IntroViewController.showAttributes(_:)), forControlEvents: .TouchUpInside)
         return button
     }()
 
@@ -168,7 +171,7 @@ class IntroViewController: UIViewController,
         button.buttonColor = IntroViewController.subTEBColor
         button.shadowColor = IntroViewController.subTEBSColor
         button.shadowHeight = 6
-        button.addTarget(self, action: "showAttributes:", forControlEvents: .TouchUpInside)
+        button.addTarget(self, action: #selector(IntroViewController.showAttributes(_:)), forControlEvents: .TouchUpInside)
         return button
     }()
 
@@ -184,7 +187,7 @@ class IntroViewController: UIViewController,
         button.buttonColor = IntroViewController.subTEBColor
         button.shadowColor = IntroViewController.subTEBSColor
         button.shadowHeight = 6
-        button.addTarget(self, action: "showAttributes:", forControlEvents: .TouchUpInside)
+        button.addTarget(self, action: #selector(IntroViewController.showAttributes(_:)), forControlEvents: .TouchUpInside)
         return button
     }()
 
@@ -208,7 +211,7 @@ class IntroViewController: UIViewController,
         button.buttonColor = UIColor.ht_sunflowerColor()
         button.shadowColor = UIColor.ht_citrusColor()
         button.shadowHeight = 6
-        button.addTarget(self, action: "toggleTimedEvent", forControlEvents: .TouchUpInside)
+        button.addTarget(self, action: #selector(IntroViewController.toggleTimedEvent), forControlEvents: .TouchUpInside)
         return button
     }()
 
@@ -238,7 +241,7 @@ class IntroViewController: UIViewController,
         button.buttonColor = UIColor.ht_peterRiverColor()
         button.shadowColor = UIColor.ht_belizeHoleColor()
         button.shadowHeight = 6
-        button.addTarget(self, action: "showAttributes:", forControlEvents: .TouchUpInside)
+        button.addTarget(self, action: #selector(IntroViewController.showAttributes(_:)), forControlEvents: .TouchUpInside)
         return button
     }()
 
@@ -262,7 +265,7 @@ class IntroViewController: UIViewController,
         let image = UIImage(named: "icon_logout") as UIImage?
         let button = UIButton(type: .Custom)
         button.setImage(image, forState: .Normal)
-        button.addTarget(self, action: "toggleLogin:", forControlEvents: .TouchUpInside)
+        button.addTarget(self, action: #selector(IntroViewController.toggleLogin(_:)), forControlEvents: .TouchUpInside)
         button.backgroundColor = Theme.universityDarkTheme.backgroundColor
         return button
     }()
@@ -271,7 +274,7 @@ class IntroViewController: UIViewController,
         let image = UIImage(named: "icon_query") as UIImage?
         let button = UIButton(type: .Custom)
         button.setImage(image, forState: .Normal)
-        button.addTarget(self, action: "showQuery:", forControlEvents: .TouchUpInside)
+        button.addTarget(self, action: #selector(IntroViewController.showQuery(_:)), forControlEvents: .TouchUpInside)
         button.backgroundColor = Theme.universityDarkTheme.backgroundColor
         return button
     }()
@@ -280,7 +283,7 @@ class IntroViewController: UIViewController,
         let image = UIImage(named: "icon_settings") as UIImage?
         let button = UIButton(type: .Custom)
         button.setImage(image, forState: .Normal)
-        button.addTarget(self, action: "showSettings:", forControlEvents: .TouchUpInside)
+        button.addTarget(self, action: #selector(IntroViewController.showSettings(_:)), forControlEvents: .TouchUpInside)
         button.backgroundColor = Theme.universityDarkTheme.backgroundColor
         return button
     }()
@@ -330,7 +333,7 @@ class IntroViewController: UIViewController,
         button.buttonColor = UIColor.ht_mediumColor()
         button.shadowColor = UIColor.ht_mediumDarkColor()
         button.shadowHeight = 6
-        button.addTarget(self, action: "toggleTimer:", forControlEvents: .TouchUpInside)
+        button.addTarget(self, action: #selector(IntroViewController.toggleTimer(_:)), forControlEvents: .TouchUpInside)
         return button
     }()
 
@@ -469,9 +472,9 @@ class IntroViewController: UIViewController,
             let view = UIToolbar()
             view.frame = CGRectMake(0, 0, 0, 44)
             view.items = [
-                UIBarButtonItem(barButtonSystemItem: .Cancel, target: self, action: "dismissPopup:"),
-                UIBarButtonItem(barButtonSystemItem: .FlexibleSpace, target: nil, action: ""),
-                UIBarButtonItem(barButtonSystemItem: .Done, target: self, action: "selectAttribute:")
+                UIBarButtonItem(barButtonSystemItem: .Cancel, target: self, action: #selector(IntroViewController.dismissPopup(_:))),
+                UIBarButtonItem(barButtonSystemItem: .FlexibleSpace, target: nil, action: Selector("")),
+                UIBarButtonItem(barButtonSystemItem: .Done, target: self, action: #selector(IntroViewController.selectAttribute(_:)))
             ]
 
             return view
@@ -500,7 +503,7 @@ class IntroViewController: UIViewController,
     func withHKCalAuth(completion: Void -> Void) {
         hkAccessTime = NSDate()
         hkAccessNotifyLoop()
-        HealthManager.sharedManager.authorizeHealthKit { (success, error) -> Void in
+        MCHealthManager.sharedManager.authorizeHealthKit { (success, error) -> Void in
             guard error == nil else {
                 UINotifications.noHealthKit(self)
                 return
@@ -526,7 +529,7 @@ class IntroViewController: UIViewController,
 
     func fetchRecentSamples() {
         withHKCalAuth {
-            HealthManager.sharedManager.fetchMostRecentSamples() { (samples, error) -> Void in
+            MCHealthManager.sharedManager.fetchMostRecentSamples(ofTypes: PreviewManager.previewSampleTypes) { (samples, error) -> Void in
                 guard error == nil else { return }
                 NSNotificationCenter.defaultCenter().postNotificationName(HMDidUpdateRecentSamplesNotification, object: self)
             }
@@ -538,7 +541,7 @@ class IntroViewController: UIViewController,
             self.radarController.authorized = true
             self.fetchInitialAggregates()
             self.fetchRecentSamples()
-            HealthManager.sharedManager.registerObservers()
+            UploadManager.sharedManager.registerUploadObservers()
         }
     }
 
@@ -553,10 +556,14 @@ class IntroViewController: UIViewController,
     }
 
     func doLogin(completion: (Void -> Void)?) {
-        let loginVC = LoginViewController()
-        loginVC.parentView = self
-        loginVC.completion = completion
-        navigationController?.pushViewController(loginVC, animated: true)
+        let registerLandingStroyboard = UIStoryboard(name: "RegisterLoginProcess", bundle: nil)
+        let registerLogingLandingController = registerLandingStroyboard.instantiateViewControllerWithIdentifier("landingLoginRegister")
+        
+//        let loginVC = LoginViewController()
+//        loginVC.parentView = self
+//        loginVC.completion = completion
+        
+        navigationController?.pushViewController(registerLogingLandingController, animated: true)
     }
 
     func doLogout(completion: (Void -> Void)?) {
@@ -580,7 +587,8 @@ class IntroViewController: UIViewController,
     }
 
     func registerParticipant() {
-        let registerVC = RegisterViewController()
+        
+        let registerVC = RegisterViewController.viewControllerFromStoryboard() as! RegisterViewController
         registerVC.parentView = self
         registerVC.consentOnLoad = true
         registerVC.registerCompletion = { self.initializeBackgroundWork() }
@@ -601,12 +609,12 @@ class IntroViewController: UIViewController,
                     return
                 }
 
-                UserManager.sharedManager.pullProfileWithConsent { (error, msg) in
-                    if !error {
+                UserManager.sharedManager.pullFullAccount { res in
+                    if res.ok {
                         self.initializeBackgroundWork()
                         Async.main(after: 2) { UINotifications.doWelcome(self, user: UserManager.sharedManager.getUserId() ?? "") }
                     } else {
-                        log.error("Failed to retrieve initial profile and consent: \(msg)")
+                        log.error(res.info)
                         UINotifications.profileFetchFailed(self)
                     }
                 }
@@ -624,6 +632,11 @@ class IntroViewController: UIViewController,
         NSNotificationCenter.defaultCenter().addObserverForName(HMDidUpdateRecentSamplesNotification, object: nil, queue: NSOperationQueue.mainQueue()) { (_) -> Void in
             self.tableView.reloadData()
             self.radarController.reloadData()
+        }
+        if (WCSession.isSupported()) {
+            session = WCSession.defaultSession()
+            session.delegate = self;
+            session.activateSession()
         }
     }
 
@@ -928,7 +941,7 @@ class IntroViewController: UIViewController,
         let typesAndPredicates = [sleepTy: datePredicate, workoutTy: datePredicate]
 
         // Aggregate sleep, exercise and meal events.
-        HealthManager.sharedManager.fetchSamples(typesAndPredicates) { (samples, error) -> Void in
+        MCHealthManager.sharedManager.fetchSamples(typesAndPredicates) { (samples, error) -> Void in
             guard error == nil else { log.error(error); return }
             let overlaps = samples.reduce(false, combine: { (acc, kv) in
                 guard !acc else { return acc }
@@ -972,7 +985,7 @@ class IntroViewController: UIViewController,
                     
                     log.info("Meal event \(startTime) \(endTime)")
                     validateTimedEvent(startTime, endTime: endTime) {
-                        HealthManager.sharedManager.savePreparationAndRecoveryWorkout(
+                        MCHealthManager.sharedManager.savePreparationAndRecoveryWorkout(
                             startTime, endDate: endTime, distance: 0.0, distanceUnit: HKUnit(fromString: "km"),
                             kiloCalories: 0.0, metadata: metaMeals)
                         {
@@ -1004,7 +1017,7 @@ class IntroViewController: UIViewController,
                 } else {
                     log.info("Sleep event \(startTime) \(endTime)")
                     validateTimedEvent(startTime, endTime: endTime) {
-                        HealthManager.sharedManager.saveSleep(startTime!, endDate: endTime!, metadata: [:], completion:
+                        MCHealthManager.sharedManager.saveSleep(startTime!, endDate: endTime!, metadata: [:], completion:
                         {
                             (success, error ) -> Void in
                             guard error == nil else { log.error(error); return }
@@ -1029,7 +1042,7 @@ class IntroViewController: UIViewController,
                     
                     log.info("Exercise event \(startTime) \(endTime)")
                     validateTimedEvent(startTime, endTime: endTime) {
-                        HealthManager.sharedManager.saveRunningWorkout(
+                        MCHealthManager.sharedManager.saveRunningWorkout(
                             startTime, endDate: endTime, distance: 0.0, distanceUnit: HKUnit(fromString: "km"),
                             kiloCalories: 0.0, metadata: [:])
                         {
@@ -1120,7 +1133,7 @@ class IntroViewController: UIViewController,
         let refreshPeriod = UserManager.sharedManager.getRefreshFrequency() ?? Int.max
         let stale = timeSinceRefresh > Double(refreshPeriod)
 
-        cell.setUserData(HealthManager.sharedManager.mostRecentSamples[sampleType] ?? [HKSample](),
+        cell.setUserData(MCHealthManager.sharedManager.mostRecentSamples[sampleType] ?? [HKSample](),
                          populationAverageData: PopulationHealthManager.sharedManager.mostRecentAggregates[sampleType] ?? [],
                          stalePopulation: stale)
         return cell
@@ -1268,7 +1281,7 @@ class IntroViewController: UIViewController,
         let kmUnit = HKUnit(fromString: "km")
         let metaMeals = ["Source":"Timer"]
 
-        HealthManager.sharedManager.savePreparationAndRecoveryWorkout(timerStartDate, endDate: timerEndDate,
+        MCHealthManager.sharedManager.savePreparationAndRecoveryWorkout(timerStartDate, endDate: timerEndDate,
             distance: 0.0, distanceUnit:kmUnit, kiloCalories: 0.0, metadata: metaMeals,
             completion: { (success, error ) -> Void in
                 guard error == nil else {

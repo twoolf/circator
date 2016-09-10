@@ -7,57 +7,233 @@
 //
 
 import ClockKit
+import SwiftDate
 
+extension NSDate {
+    func isAfterDate(dateToCompare: NSDate) -> Bool {
+        var isGreater = false
+        if self.compare(dateToCompare) == NSComparisonResult.OrderedDescending {
+            isGreater = true
+        }
+        return isGreater
+    }
+    
+    func isBeforeDate(dateToCompare: NSDate) -> Bool {
+        var isLess = false
+        if self.compare(dateToCompare) == NSComparisonResult.OrderedAscending {
+            isLess = true
+        }
+        
+        return isLess
+    }
+    
+    func equalToDate(dateToCompare: NSDate) -> Bool {
+        var isEqualTo = false
+        
+        if self.compare(dateToCompare) == NSComparisonResult.OrderedSame {
+            isEqualTo = true
+        }
+        
+        return isEqualTo
+    }
+    
+    func addMinutes(minutesToAdd: Int) -> NSDate {
+        let secondsInMinutes: NSTimeInterval = Double(minutesToAdd) * 60
+        let dateWithMinutesAdded: NSDate = self.dateByAddingTimeInterval(secondsInMinutes)
+        return dateWithMinutesAdded
+    }
+}
 
 class ComplicationController: NSObject, CLKComplicationDataSource {
-
-    // MARK: - Timeline Configuration
-
+    
+    let userCalendar = NSCalendar.currentCalendar()
+    let dateFormatter = NSDateFormatter()
+    
     func getSupportedTimeTravelDirectionsForComplication(complication: CLKComplication, withHandler handler: (CLKComplicationTimeTravelDirections) -> Void) {
-        handler([.Forward, .Backward])
+        handler([.Forward])
     }
-
+    
     func getTimelineStartDateForComplication(complication: CLKComplication, withHandler handler: (NSDate?) -> Void) {
-        handler(nil)
+        handler(NSDate())
     }
-
+    
     func getTimelineEndDateForComplication(complication: CLKComplication, withHandler handler: (NSDate?) -> Void) {
-        handler(nil)
+        let end = NSDate.distantFuture()
+        handler(end)
+        return
     }
-
+    
     func getPrivacyBehaviorForComplication(complication: CLKComplication, withHandler handler: (CLKComplicationPrivacyBehavior) -> Void) {
         handler(.ShowOnLockScreen)
     }
-
-    // MARK: - Timeline Population
-
+    
     func getCurrentTimelineEntryForComplication(complication: CLKComplication, withHandler handler: ((CLKComplicationTimelineEntry?) -> Void)) {
-        // Call the handler with the current timeline entry
-        handler(nil)
+        var template: CLKComplicationTemplate? = nil
+        
+        switch complication.family {
+            
+        case .ModularSmall:
+            let endTime = MetricsStore.sharedInstance.lastAteAsNSDate
+            let newTemplate = CLKComplicationTemplateModularSmallStackText()
+            newTemplate.line1TextProvider = CLKSimpleTextProvider(text: "fast")
+            newTemplate.line2TextProvider = CLKRelativeDateTextProvider(date: endTime, style: .Timer, units: [.Hour, .Minute])
+            newTemplate.tintColor = UIColor(red:0, green:0.85, blue:0.76, alpha:1)
+            template = newTemplate
+            
+        case .ModularLarge:
+            let endTime = MetricsStore.sharedInstance.lastAteAsNSDate
+            let newTemplate = CLKComplicationTemplateModularLargeStandardBody()
+            newTemplate.headerImageProvider = CLKImageProvider(onePieceImage: UIImage(named: "Complication/Utilitarian")!)
+            newTemplate.headerTextProvider = CLKSimpleTextProvider(text: "Fasting Duration : ")
+            newTemplate.body1TextProvider = CLKRelativeDateTextProvider(date: endTime, style: .Timer, units: [.Hour, .Minute])
+            newTemplate.body2TextProvider = CLKSimpleTextProvider(text: "max daily: " + MetricsStore.sharedInstance.fastingTime)
+            newTemplate.body1TextProvider.tintColor = UIColor(red:0.58, green:0.93, blue:0, alpha:1)
+            newTemplate.body2TextProvider?.tintColor = UIColor(red:0, green:0.85, blue:0.76, alpha:1)
+            template = newTemplate
+            
+        case .UtilitarianSmall:
+            let endTime = MetricsStore.sharedInstance.lastAteAsNSDate
+            let newTemplate = CLKComplicationTemplateUtilitarianSmallFlat()
+            newTemplate.imageProvider = CLKImageProvider(onePieceImage: UIImage(named: "Complication/Utilitarian")!)
+            newTemplate.textProvider = CLKRelativeDateTextProvider(date: endTime, style: .Timer, units: [.Hour, .Minute])
+            newTemplate.imageProvider?.tintColor = UIColor(red:0.58, green:0.93, blue:0, alpha:1)
+            newTemplate.textProvider.tintColor = UIColor(red:0, green:0.85, blue:0.76, alpha:1)
+            template = newTemplate
+            
+        case .UtilitarianLarge:
+            let endTime = MetricsStore.sharedInstance.lastAteAsNSDate
+            let newTemplate = CLKComplicationTemplateUtilitarianLargeFlat()
+            newTemplate.imageProvider = CLKImageProvider(onePieceImage: UIImage(named: "Complication/Utilitarian")!)
+            newTemplate.textProvider = CLKRelativeDateTextProvider(date: endTime, style: .Timer, units: [.Hour, .Minute])
+            newTemplate.imageProvider?.tintColor = UIColor(red:0.58, green:0.93, blue:0, alpha:1)
+            newTemplate.textProvider.tintColor = UIColor(red:0, green:0.85, blue:0.76, alpha:1)
+            template = newTemplate
+            
+        case .CircularSmall:
+            let endTime = MetricsStore.sharedInstance.lastAteAsNSDate
+            let newTemplate = CLKComplicationTemplateCircularSmallSimpleText()
+            newTemplate.textProvider = CLKRelativeDateTextProvider(date: endTime, style: .Timer, units: [.Hour, .Minute])
+            newTemplate.tintColor = UIColor(red:0, green:0.85, blue:0.76, alpha:1)
+            template = newTemplate
+        }
+        
+        handler(CLKComplicationTimelineEntry(date: NSDate(), complicationTemplate: template!))
     }
 
     func getTimelineEntriesForComplication(complication: CLKComplication, beforeDate date: NSDate, limit: Int, withHandler handler: (([CLKComplicationTimelineEntry]?) -> Void)) {
-        // Call the handler with the timeline entries prior to the given date
         handler(nil)
     }
-
+    
     func getTimelineEntriesForComplication(complication: CLKComplication, afterDate date: NSDate, limit: Int, withHandler handler: (([CLKComplicationTimelineEntry]?) -> Void)) {
-        // Call the handler with the timeline entries after to the given date
-        handler(nil)
+        var entries = [CLKComplicationTimelineEntry]()
+        
+        switch complication.family {
+            
+        case .ModularSmall:
+            let endTime = MetricsStore.sharedInstance.lastAteAsNSDate
+            let endingTime = endTime + 24.hours
+            let newTemplate = CLKComplicationTemplateModularSmallStackText()
+            newTemplate.line1TextProvider = CLKSimpleTextProvider(text: "fast")
+            newTemplate.line2TextProvider = CLKRelativeDateTextProvider(date: endTime, style: .Timer, units: [.Hour, .Minute])
+                        
+            entries.append(CLKComplicationTimelineEntry(date: endingTime, complicationTemplate: newTemplate))
+
+        case .ModularLarge:
+            let start = MetricsStore.sharedInstance.lastAteAsNSDate
+            let endingTime = start + 24.hours
+            let template = CLKComplicationTemplateModularLargeStandardBody()
+            template.headerImageProvider = CLKImageProvider(onePieceImage: UIImage(named: "Complication/Utilitarian")!)
+            template.headerTextProvider = CLKSimpleTextProvider(text: "Fasting ... : ")
+            template.body1TextProvider = CLKRelativeDateTextProvider(date: start, style: .Timer, units: [.Hour, .Minute])
+            template.body2TextProvider = CLKSimpleTextProvider(text: "max daily fasting: " + MetricsStore.sharedInstance.fastingTime)
+
+                        
+            template.body1TextProvider.tintColor = UIColor(red:0.58, green:0.93, blue:0, alpha:1)
+            template.body2TextProvider?.tintColor = UIColor(red:0, green:0.85, blue:0.76, alpha:1)
+                        
+            entries.append(CLKComplicationTimelineEntry(date: endingTime, complicationTemplate: template))
+
+        case .UtilitarianSmall:
+            let start = MetricsStore.sharedInstance.lastAteAsNSDate
+            let template = CLKComplicationTemplateUtilitarianSmallFlat()
+            template.imageProvider = CLKImageProvider(onePieceImage: UIImage(named: "Complication/Utilitarian")!)
+            template.textProvider = CLKRelativeDateTextProvider(date: start, style: .Timer, units: [.Hour, .Minute])
+            template.imageProvider?.tintColor = UIColor(red:0.58, green:0.93, blue:0, alpha:1)
+            template.textProvider.tintColor = UIColor(red:0, green:0.85, blue:0.76, alpha:1)
+                    
+            entries.append(CLKComplicationTimelineEntry(date: start, complicationTemplate: template))
+            
+        case .UtilitarianLarge:
+            let start = MetricsStore.sharedInstance.lastAteAsNSDate
+            let template = CLKComplicationTemplateUtilitarianLargeFlat()
+            template.imageProvider = CLKImageProvider(onePieceImage: UIImage(named: "Complication/Utilitarian")!)
+            template.textProvider = CLKRelativeDateTextProvider(date: start, style: .Timer, units: [.Hour, .Minute])
+                    template.imageProvider?.tintColor = UIColor(red:0.58, green:0.93, blue:0, alpha:1)
+            template.textProvider.tintColor = UIColor(red:0, green:0.85, blue:0.76, alpha:1)
+                    
+            entries.append(CLKComplicationTimelineEntry(date: start, complicationTemplate: template))
+
+        case .CircularSmall:
+            let start = MetricsStore.sharedInstance.lastAteAsNSDate
+            let newTemplate = CLKComplicationTemplateCircularSmallSimpleText()
+            newTemplate.textProvider = CLKRelativeDateTextProvider(date: start, style: .Timer, units: [.Hour, .Minute])
+            newTemplate.tintColor = UIColor(red:0, green:0.85, blue:0.76, alpha:1)
+            entries.append(CLKComplicationTimelineEntry(date: start, complicationTemplate: newTemplate))
+  
+            handler(entries)
+        }
     }
 
-    // MARK: - Update Scheduling
-
+    
     func getNextRequestedUpdateDateWithHandler(handler: (NSDate?) -> Void) {
-        // Call the handler with the date when you would next like to be given the opportunity to update your complication content
-        handler(nil);
+        let nextUpdate = NSDate() + 10.minutes
+        handler(nextUpdate)
     }
-
-    // MARK: - Placeholder Templates
-
+    
+    func requestedUpdateBudgetExhausted() {
+        print("Budget exhausted")
+    }
+    
     func getPlaceholderTemplateForComplication(complication: CLKComplication, withHandler handler: (CLKComplicationTemplate?) -> Void) {
-        // This method will be called once per supported complication, and the results will be cached
-        handler(nil)
+        var template: CLKComplicationTemplate? = nil
+        switch complication.family {
+        case .ModularSmall:
+            let newTemplate = CLKComplicationTemplateModularSmallStackText()
+            newTemplate.line1TextProvider = CLKSimpleTextProvider(text: "fast")
+            newTemplate.line2TextProvider = CLKSimpleTextProvider(text: "line2")
+            newTemplate.tintColor = UIColor(red:0, green:0.85, blue:0.76, alpha:1)
+            template = newTemplate
+        case .ModularLarge:
+            let newTemplate = CLKComplicationTemplateModularLargeStandardBody()
+            newTemplate.headerImageProvider = CLKImageProvider(onePieceImage: UIImage(named: "Complication/Utilitarian")!)
+            newTemplate.headerTextProvider = CLKSimpleTextProvider(text: "MCompass")
+            newTemplate.body1TextProvider = CLKSimpleTextProvider(text: "Fast Time")
+            newTemplate.body2TextProvider = CLKSimpleTextProvider(text: "Eating Time")
+            newTemplate.body1TextProvider.tintColor = UIColor(red:0.58, green:0.93, blue:0, alpha:1)
+            newTemplate.body2TextProvider?.tintColor = UIColor(red:0, green:0.85, blue:0.76, alpha:1)
+            template = newTemplate
+        case .UtilitarianSmall:
+            let newTemplate = CLKComplicationTemplateUtilitarianSmallFlat()
+            newTemplate.imageProvider = CLKImageProvider(onePieceImage: UIImage(named: "Complication/Utilitarian")!)
+            newTemplate.textProvider = CLKSimpleTextProvider(text: "00:00:00")
+            newTemplate.imageProvider?.tintColor = UIColor(red:0.58, green:0.93, blue:0, alpha:1)
+            newTemplate.textProvider.tintColor = UIColor(red:0, green:0.85, blue:0.76, alpha:1)
+            template = newTemplate
+        case .UtilitarianLarge:
+            let newTemplate = CLKComplicationTemplateUtilitarianLargeFlat()
+            newTemplate.imageProvider = CLKImageProvider(onePieceImage: UIImage(named: "Complication/Utilitarian")!)
+            newTemplate.textProvider = CLKSimpleTextProvider(text: "00:00")
+            newTemplate.imageProvider?.tintColor = UIColor(red:0.58, green:0.93, blue:0, alpha:1)
+            newTemplate.textProvider.tintColor = UIColor(red:0, green:0.85, blue:0.76, alpha:1)
+            template = newTemplate
+        case .CircularSmall:
+            let newTemplate = CLKComplicationTemplateCircularSmallSimpleText()
+            newTemplate.textProvider = CLKSimpleTextProvider(text: "00:00")
+            newTemplate.tintColor = UIColor(red:0, green:0.85, blue:0.76, alpha:1)
+            template = newTemplate
+        }
+        handler(template)
     }
-
 }
+
+

@@ -42,11 +42,11 @@ public enum Weekday : Int {
     }
 }
 
-public enum EventType {
-    case Meal
-    case Exercise
-    case Sleep
-}
+//public enum EventType {
+//    case Meal
+//    case Exercise
+//    case Sleep
+//}
 
 public struct Event : Equatable {
     var name : String
