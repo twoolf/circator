@@ -10,6 +10,8 @@ import UIKit
 import HealthKit
 import MCCircadianQueries
 import MetabolicCompassKit
+import SwiftDate
+import Crashlytics
 
 class DashboardComparisonController: UIViewController, UITableViewDelegate, UITableViewDataSource {
     private let dashboardComparisonCellIdentifier = "ComparisonCell"
@@ -37,18 +39,27 @@ class DashboardComparisonController: UIViewController, UITableViewDelegate, UITa
         self.tableView.reloadData()
         NSNotificationCenter.defaultCenter().addObserver(self, selector: #selector(contentDidUpdate), name: HMDidUpdateRecentSamplesNotification, object: nil)
         NSNotificationCenter.defaultCenter().addObserver(self, selector: #selector(updateContent), name: UIApplicationDidBecomeActiveNotification, object: nil)
-    }
-    
-    func updateContent() {
-        AccountManager.shared.contentManager.resetBackgroundWork()
+        logContentView()
     }
     
     override func viewWillDisappear(animated: Bool) {
         super.viewWillDisappear(animated)
         AccountManager.shared.contentManager.stopBackgroundWork()
         NSNotificationCenter.defaultCenter().removeObserver(self)
+        logContentView(false)
     }
-    
+
+    func logContentView(asAppear: Bool = true) {
+        Answers.logContentViewWithName("Population",
+                                       contentType: asAppear ? "Appear" : "Disappear",
+                                       contentId: NSDate().toString(DateFormat.Custom("YYYY-MM-dd:HH:mm:ss")),
+                                       customAttributes: nil)
+    }
+
+    func updateContent() {
+        AccountManager.shared.contentManager.resetBackgroundWork()
+    }
+
     //MARK: UITableViewDataSource
     func tableView(tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         return PreviewManager.previewSampleTypes.count

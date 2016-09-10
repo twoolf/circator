@@ -10,6 +10,8 @@ import UIKit
 import Charts
 import HealthKit
 import MetabolicCompassKit
+import Crashlytics
+import SwiftDate
 import AKPickerView_Swift
 import SwiftyUserDefaults
 import Async
@@ -80,12 +82,30 @@ class CorrelationChartsViewController: UIViewController, UITableViewDelegate, UI
         super.viewWillAppear(animated)
         NSNotificationCenter.defaultCenter().addObserver(self, selector: #selector(updateChartDataWithClean), name: UIApplicationWillEnterForegroundNotification, object: nil)
         NSNotificationCenter.defaultCenter().addObserver(self, selector: #selector(updateChartsData), name: HMDidUpdatedChartsData, object: nil)
+
+        logContentView()
         updateChartsData()
     }
     
     override func viewDidDisappear(animated: Bool) {
         super.viewDidDisappear(animated)
+        self.logContentView(false)
         NSNotificationCenter.defaultCenter().removeObserver(self)
+    }
+
+    //MARK: - Answers tracking
+
+    func logContentView(asAppear: Bool = true) {
+        var firstType = pickerData[0][selectedPickerRows[0]].identifier
+        var secondType = pickerData[1][selectedPickerRows[1]].identifier
+
+        firstType = appearanceProvider.titleForAnalysisChartOfType(firstType).string
+        secondType = appearanceProvider.titleForAnalysisChartOfType(secondType).string
+
+        Answers.logContentViewWithName("Correlate",
+                                       contentType: "\(asAppear ? "Appear" : "Disappear") \(firstType) vs \(secondType)",
+                                       contentId: NSDate().toString(DateFormat.Custom("YYYY-MM-dd:HH:mm:ss")),
+                                       customAttributes: nil)
     }
 
     //MARK: - TableView datasource + Delegate

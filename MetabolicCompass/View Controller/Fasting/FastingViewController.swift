@@ -12,6 +12,8 @@ import HealthKit
 import MCCircadianQueries
 import MetabolicCompassKit
 import Async
+import SwiftDate
+import Crashlytics
 import Charts
 import EasyTipView
 
@@ -116,7 +118,13 @@ public class FastingViewController : UIViewController, ChartViewDelegate {
     override public func viewWillAppear(animated: Bool) {
         super.viewWillAppear(animated)
         self.activityIndicator.startAnimating()
+        self.logContentView()
         self.refreshData()
+    }
+
+    override public func viewWillDisappear(animated: Bool) {
+        super.viewWillDisappear(animated)
+        self.logContentView(false)
     }
 
     override public func viewDidLoad() {
@@ -126,6 +134,13 @@ public class FastingViewController : UIViewController, ChartViewDelegate {
 
         log.warning("OUR STUDY contentSize \(scrollView.contentSize)")
         log.warning("OUR STUDY view bounds \(view.bounds) \(view.frame) \(scrollView.bounds) \(scrollView.frame)")
+    }
+
+    func logContentView(asAppear: Bool = true) {
+        Answers.logContentViewWithName("Fasting",
+                                       contentType: asAppear ? "Appear" : "Disappear",
+                                       contentId: NSDate().toString(DateFormat.Custom("YYYY-MM-dd:HH:mm:ss")),
+                                       customAttributes: nil)
     }
 
     func setupActivityIndicator() {

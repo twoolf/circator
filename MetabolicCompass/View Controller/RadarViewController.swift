@@ -117,28 +117,18 @@ class RadarViewController : UIViewController, ChartViewDelegate {
     override func viewWillAppear(animated: Bool) {
         super.viewWillAppear(animated)
         NSNotificationCenter.defaultCenter().addObserver(self, selector: #selector(contentDidChange), name: PMDidUpdateBalanceSampleTypesNotification, object: nil)
+        logContentView()
     }
-    
-    func contentDidChange() {
-        Async.main {
-            self.reloadData()
-        }
-    }
-    
+
     override func viewWillDisappear(animated: Bool) {
         super.viewWillDisappear(animated)
         NSNotificationCenter.defaultCenter().removeObserver(self)
+        logContentView(false)
     }
 
     override func viewDidAppear(animated: Bool) {
         super.viewDidAppear(animated)
-        
         self.authorized = AccountManager.shared.isHealthKitAuthorized
-        
-        Answers.logContentViewWithName("Radar",
-            contentType: "",
-            contentId: NSDate().toString(DateFormat.Custom("YYYY-MM-dd:HH:mm:ss")),
-            customAttributes: nil)
     }
 
     override func viewDidLoad() {
@@ -147,6 +137,19 @@ class RadarViewController : UIViewController, ChartViewDelegate {
         configureViews()
         radarChart.layoutIfNeeded()
         reloadData()
+    }
+
+    func logContentView(asAppear: Bool = true) {
+        Answers.logContentViewWithName("Balance",
+                                       contentType: asAppear ? "Appear" : "Disappear",
+                                       contentId: NSDate().toString(DateFormat.Custom("YYYY-MM-dd:HH:mm:ss")),
+                                       customAttributes: nil)
+    }
+
+    func contentDidChange() {
+        Async.main {
+            self.reloadData()
+        }
     }
 
     func configureViews() {

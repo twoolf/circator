@@ -11,6 +11,7 @@ import UIKit
 import MetabolicCompassKit
 import Async
 import SwiftDate
+import Crashlytics
 
 enum UIUserInterfaceIdiom : Int
 {
@@ -126,6 +127,23 @@ class DailyProgressViewController : UIViewController, DailyChartModelProtocol {
         self.mainScrollView.contentSize = CGSizeMake(mainScrollViewContentWidth, mainScrollViewContentHeight)
         //updating chart data
         self.contentDidUpdate()
+    }
+
+    override func viewWillAppear(animated: Bool) {
+        super.viewWillAppear(animated)
+        logContentView()
+    }
+
+    override func viewWillDisappear(animated: Bool) {
+        super.viewWillDisappear(animated)
+        logContentView(false)
+    }
+
+    func logContentView(asAppear: Bool = true) {
+        Answers.logContentViewWithName("Body Clock",
+                                       contentType: asAppear ? "Appear" : "Disappear",
+                                       contentId: NSDate().toString(DateFormat.Custom("YYYY-MM-dd:HH:mm:ss")),
+                                       customAttributes: nil)
     }
 
     func setupTooltips() {

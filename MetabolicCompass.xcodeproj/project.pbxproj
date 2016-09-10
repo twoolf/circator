@@ -170,7 +170,7 @@
 		958568121CD12B5200EDD385 /* RegisterModelDataSource.swift in Sources */ = {isa = PBXBuildFile; fileRef = 958568111CD12B5200EDD385 /* RegisterModelDataSource.swift */; };
 		95C0B99A1CD23E90006E523F /* LoginViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 95C0B9981CD23E90006E523F /* LoginViewController.swift */; };
 		95C0B99B1CD23E90006E523F /* RegisterViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 95C0B9991CD23E90006E523F /* RegisterViewController.swift */; };
-		95C0B99D1CD23EBA006E523F /* RegistrationComplitionViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 95C0B99C1CD23EBA006E523F /* RegistrationComplitionViewController.swift */; };
+		95C0B99D1CD23EBA006E523F /* RegistrationCompletionViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 95C0B99C1CD23EBA006E523F /* RegistrationCompletionViewController.swift */; };
 		95C0B9A31CD2563B006E523F /* TitledInputCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 95C0B9A11CD2563B006E523F /* TitledInputCollectionViewCell.swift */; };
 		95C0B9A41CD2563B006E523F /* TitledInputCollectionViewCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 95C0B9A21CD2563B006E523F /* TitledInputCollectionViewCell.xib */; };
 		95C0B9A61CD25814006E523F /* AdditionalInfoDataSource.swift in Sources */ = {isa = PBXBuildFile; fileRef = 95C0B9A51CD25814006E523F /* AdditionalInfoDataSource.swift */; };
@@ -503,7 +503,7 @@
 		958568111CD12B5200EDD385 /* RegisterModelDataSource.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RegisterModelDataSource.swift; sourceTree = "<group>"; };
 		95C0B9981CD23E90006E523F /* LoginViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LoginViewController.swift; sourceTree = "<group>"; };
 		95C0B9991CD23E90006E523F /* RegisterViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RegisterViewController.swift; sourceTree = "<group>"; };
-		95C0B99C1CD23EBA006E523F /* RegistrationComplitionViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RegistrationComplitionViewController.swift; sourceTree = "<group>"; };
+		95C0B99C1CD23EBA006E523F /* RegistrationCompletionViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RegistrationCompletionViewController.swift; sourceTree = "<group>"; };
 		95C0B9A11CD2563B006E523F /* TitledInputCollectionViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TitledInputCollectionViewCell.swift; sourceTree = "<group>"; };
 		95C0B9A21CD2563B006E523F /* TitledInputCollectionViewCell.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = TitledInputCollectionViewCell.xib; sourceTree = "<group>"; };
 		95C0B9A51CD25814006E523F /* AdditionalInfoDataSource.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AdditionalInfoDataSource.swift; sourceTree = "<group>"; };
@@ -920,7 +920,7 @@
 			children = (
 				95C0B9981CD23E90006E523F /* LoginViewController.swift */,
 				95C0B9991CD23E90006E523F /* RegisterViewController.swift */,
-				95C0B99C1CD23EBA006E523F /* RegistrationComplitionViewController.swift */,
+				95C0B99C1CD23EBA006E523F /* RegistrationCompletionViewController.swift */,
 				95C0B9A91CD25AAC006E523F /* AdditionalInfoViewController.swift */,
 				95635AA51CD3C11600BCC467 /* ForgotPasswordViewController.swift */,
 			);
@@ -1997,7 +1997,7 @@
 				E7592DBC1CDC7BBE00E313BB /* DashboardComparisonController.swift in Sources */,
 				78B734261C90B86200693229 /* RadarViewController.swift in Sources */,
 				78191B801D6BC8CF00C0454B /* UserSettingsViewController.swift in Sources */,
-				95C0B99D1CD23EBA006E523F /* RegistrationComplitionViewController.swift in Sources */,
+				95C0B99D1CD23EBA006E523F /* RegistrationCompletionViewController.swift in Sources */,
 				842B7DBB1D095F5A007F2126 /* ChartCollectionDelegate.swift in Sources */,
 				E74A89761CE308800056A2D2 /* UIColor+Extended.swift in Sources */,
 				842B7DC81D0960A7007F2126 /* BarChartCollectionCell.swift in Sources */,

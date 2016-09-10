@@ -13,6 +13,7 @@ import HealthKit
 import MetabolicCompassKit
 import Async
 import SwiftDate
+import Crashlytics
 import Former
 import HTPressableButton
 import AKPickerView_Swift
@@ -1272,6 +1273,13 @@ public class ManageEventMenu: UIView, PathMenuItemDelegate {
         self.delView = DeleteManager(frame: CGRect.zero, style: .Grouped, notificationView: self.segmenter)
     }
 
+    public func logContentView(asAppear: Bool = true) {
+        Answers.logContentViewWithName("Quick Add Activity",
+                                       contentType: asAppear ? "Appear" : "Disappear",
+                                       contentId: NSDate().toString(DateFormat.Custom("YYYY-MM-dd:HH:mm:ss")),
+                                       customAttributes: ["action": (segmenter?.selectedSegmentIndex) ?? 0])
+    }
+
     public func getCurrentManagerView() -> UIView? {
         if segmenter.selectedSegmentIndex == 0 {
             return addView
@@ -1487,6 +1495,7 @@ public class ManageEventMenu: UIView, PathMenuItemDelegate {
                 manager.trailingAnchor.constraintEqualToAnchor(trailingAnchor)
             ]
             self.addConstraints(managerConstraints)
+            logContentView()
         }
     }
 }

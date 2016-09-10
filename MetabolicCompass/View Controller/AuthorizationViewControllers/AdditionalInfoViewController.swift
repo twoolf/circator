@@ -9,6 +9,7 @@
 import UIKit
 import MetabolicCompassKit
 import SwiftyUserDefaults
+import Crashlytics
 
 class AdditionalInfoViewController: BaseViewController {
 
@@ -41,6 +42,7 @@ class AdditionalInfoViewController: BaseViewController {
     
     func cancelAction () {
         self.dismissViewControllerAnimated(true, completion: { [weak controller = self.registerViewController] in
+            Answers.logCustomEventWithName("Register Additional", customAttributes: ["WithAdditional": false])
             controller?.registrationComplete()
         });
     }
@@ -55,6 +57,7 @@ class AdditionalInfoViewController: BaseViewController {
 
             UserManager.sharedManager.saveAdditionalProfileData(additionalInfo)
             self.dismissViewControllerAnimated(true, completion: { [weak controller = self.registerViewController] in
+                Answers.logCustomEventWithName("Register Additional", customAttributes: ["WithAdditional": true])
                 controller?.registrationComplete()
             })
         }

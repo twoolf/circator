@@ -7,7 +7,9 @@
 //
 
 import UIKit
+import GameKit
 import MetabolicCompassKit
+import MCCircadianQueries
 import SwiftyBeaver
 import Fabric
 import Crashlytics
@@ -82,7 +84,10 @@ class AppDelegate: UIResponder, UIApplicationDelegate, WCSessionDelegate {
 
         window?.rootViewController = navController
         window?.makeKeyAndVisible()
-                
+
+        // Add a recycling observer.
+        NSNotificationCenter.defaultCenter().addObserver(self, selector: #selector(recycleNotification), name: USNDidUpdateBlackoutNotification, object: nil)
+
         return true
     }
 
@@ -115,6 +120,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, WCSessionDelegate {
     func applicationDidEnterBackground(application: UIApplication) {
         // Use this method to release shared resources, save user data, invalidate timers, and store enough application state information to restore your application to its current state in case it is terminated later.
         // If your application supports background execution, this method is called instead of applicationWillTerminate: when the user quits.
+        recycleNotification()
     }
 
     func applicationWillEnterForeground(application: UIApplication) {
@@ -152,35 +158,80 @@ class AppDelegate: UIResponder, UIApplicationDelegate, WCSessionDelegate {
         log.addDestination(console)
     }
 
-    private func recycleNotification() {
+    func recycleNotification() {
         // Recycle the local notification for another day.
+        let mkNotification: (NSDate, NSCalendarUnit) -> Void = { (date, freq) in
+            let notification = UILocalNotification()
+            notification.fireDate = date
+            notification.alertBody = "We greatly value your input in Metabolic Compass. Would you like to contribute to medical research now?"
+            notification.alertAction = "enter your circadian events"
+            notification.soundName = UILocalNotificationDefaultSoundName
+            notification.repeatInterval = freq
+            UIApplication.sharedApplication().scheduleLocalNotification(notification)
+            log.info("Scheduled local notification for \(notification.fireDate?.toString()) repeating at \(freq)")
+        }
+
+        let overlaps: (NSDate, Bool, (NSDate, NSDate)) -> Bool = { (date, acc, rng) in
+            acc || (rng.0 < date && date < rng.1)
+        }
+
         if let settings = UIApplication.sharedApplication().currentUserNotificationSettings() {
             if settings.types != .None {
                 let reminderFreq = getNotificationReminderFrequency()
                 if reminderFreq > 0 {
                     let blackoutTimes = getNotificationBlackoutTimes()
 
-                    let blackoutStartToday = NSDate().startOf(.Day).add(hours: blackoutTimes[0].hour, minutes: blackoutTimes[0].minute)
-                    let blackoutEndToday = NSDate().startOf(.Day).add(hours: blackoutTimes[1].hour, minutes: blackoutTimes[1].minute)
+                    let now = NSDate()
+                    let todayStart = now.startOf(.Day)
+                    let todayEnd = now.endOf(.Day)
 
-                    let noteDate = reminderFreq.hours.fromNow
+                    let blackoutStartToday = todayStart.add(hours: blackoutTimes[0].hour, minutes: blackoutTimes[0].minute)
+                    let blackoutEndToday = todayStart.add(hours: blackoutTimes[1].hour, minutes: blackoutTimes[1].minute)
 
-                    if noteDate < blackoutStartToday || noteDate > blackoutEndToday {
-                        UIApplication.sharedApplication().cancelAllLocalNotifications()
-                        let notification = UILocalNotification()
-                        notification.fireDate = noteDate
-                        notification.alertBody = "We greatly value your input in Metabolic Compass. Would you like to contribute to medical research now?"
-                        notification.alertAction = "enter your circadian events"
-                        notification.soundName = UILocalNotificationDefaultSoundName
-                        UIApplication.sharedApplication().scheduleLocalNotification(notification)
-                        log.info("Scheduled local notification for \(notification.fireDate?.toString())")
-                    } else {
-                        log.info("Dropping notification for \(noteDate) (in blackout \(blackoutStartToday) \(blackoutEndToday))")
+                    let validToday = blackoutStartToday < blackoutEndToday ?
+                        [(todayStart, blackoutStartToday), (blackoutEndToday, todayEnd)]
+                        : [(blackoutEndToday, blackoutStartToday)]
+
+                    let validTmw = validToday.map { ($0.0 + 1.days, $0.1 + 1.days) }
+
+                    UIApplication.sharedApplication().cancelAllLocalNotifications()
+                    if reminderFreq < 24 {
+                        var noteDate = now + Int(reminderFreq).hours
+                        let noteEnd = noteDate + 1.days
+                        while noteDate < noteEnd {
+                            if (noteDate < todayEnd && validToday.reduce(false, combine: { (acc, rng) in overlaps(noteDate, acc, rng) }) )
+                                || (noteDate > todayEnd && validTmw.reduce(false, combine: { (acc, rng) in overlaps(noteDate, acc, rng) }) )
+                            {
+                                mkNotification(noteDate, .Day)
+                            }
+                            noteDate = noteDate + Int(reminderFreq).hours
+                        }
+                    }
+                    else {
+                        var noteDate = now
+                        let noteEnd = noteDate + 1.weeks
+                        if !validToday.reduce(false, combine: { (acc, rng) in overlaps(noteDate, acc, rng) }) {
+                            let idx = GKRandomSource.sharedRandom().nextIntWithUpperBound(validToday.count)
+                            let rangeSecs = validToday[idx].1.timeIntervalSinceReferenceDate - validToday[idx].0.timeIntervalSinceReferenceDate
+                            noteDate = validToday[idx].0 + Int(drand48() * rangeSecs).seconds
+                        }
+
+                        noteDate = noteDate + Int(reminderFreq/24).days
+                        while noteDate < noteEnd {
+                            mkNotification(noteDate, .Day)
+                            noteDate = noteDate + Int(reminderFreq/24).days
+                        }
                     }
                 } else {
                     log.info("Skipping notification, user requested silence")
                 }
             }
+            else {
+                log.info("User has disabled notifications")
+            }
+        }
+        else {
+            log.info("Unable to retrieve notifications settings.")
         }
     }
     

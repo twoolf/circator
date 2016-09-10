@@ -11,6 +11,8 @@ import Charts
 import HealthKit
 import MetabolicCompassKit
 import MCCircadianQueries
+import SwiftDate
+import Crashlytics
 
 enum DataRangeType : Int {
     case Week = 0
@@ -47,11 +49,24 @@ class ChartsViewController: UIViewController {
         NSNotificationCenter.defaultCenter().addObserver(self, selector: #selector(updateChartsData), name: HMDidUpdatedChartsData, object: nil)
         chartCollectionDataSource.updateData()
         updateChartsData()
+        logContentView()
+    }
+
+    override func viewWillDisappear(animated: Bool) {
+        super.viewWillDisappear(animated)
+        logContentView(false)
     }
 
     override func viewDidDisappear(animated: Bool) {
         super.viewDidDisappear(animated)
         NSNotificationCenter.defaultCenter().removeObserver(self)
+    }
+
+    func logContentView(asAppear: Bool = true) {
+        Answers.logContentViewWithName("Charts",
+                                       contentType: asAppear ? "Appear" : "Disappear",
+                                       contentId: NSDate().toString(DateFormat.Custom("YYYY-MM-dd:HH:mm:ss")),
+                                       customAttributes: ["range": rangeType.rawValue])
     }
 
     // MARK :- Base preparation
@@ -109,6 +124,7 @@ class ChartsViewController: UIViewController {
             default:
                 chartsModel.rangeType = .Week
         }
+        logContentView()
         updateChartsData()
     }
 

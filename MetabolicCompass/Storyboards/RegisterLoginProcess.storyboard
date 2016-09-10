@@ -545,10 +545,10 @@
             </objects>
             <point key="canvasLocation" x="236" y="1180"/>
         </scene>
-        <!--Registration Complition View Controller-->
+        <!--Registration Completion View Controller-->
         <scene sceneID="OhR-m3-yA2">
             <objects>
-                <viewController id="U3H-df-Nd1" customClass="RegistrationComplitionViewController" customModule="MetabolicCompass" customModuleProvider="target" sceneMemberID="viewController">
+                <viewController id="U3H-df-Nd1" userLabel="Registration Completion View Controller" customClass="RegistrationCompletionViewController" customModule="MetabolicCompass" customModuleProvider="target" sceneMemberID="viewController">
                     <layoutGuides>
                         <viewControllerLayoutGuide type="top" id="2Kd-gZ-2s7"/>
                         <viewControllerLayoutGuide type="bottom" id="rXk-ZC-h1u"/>
@@ -596,7 +596,7 @@
                                             </userDefinedRuntimeAttribute>
                                         </userDefinedRuntimeAttributes>
                                         <connections>
-                                            <action selector="noThacksAction:" destination="U3H-df-Nd1" eventType="touchUpInside" id="DW5-pz-IUd"/>
+                                            <action selector="noThanksAction:" destination="U3H-df-Nd1" eventType="touchUpInside" id="2rM-tH-fq5"/>
                                             <action selector="registerAction:" destination="Wq1-CV-Iw6" eventType="touchUpInside" id="ueZ-26-mTW"/>
                                         </connections>
                                     </button>

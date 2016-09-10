@@ -193,7 +193,7 @@ class MainTabController: UITabBarController, UITabBarControllerDelegate, ManageE
     }
 
     func manageEventMenuDidFinishAnimationOpen(menu: ManageEventMenu) {
-
+        self.menu?.logContentView()
     }
 
     func manageEventMenuDidFinishAnimationClose(menu: ManageEventMenu) {
@@ -210,6 +210,7 @@ class MainTabController: UITabBarController, UITabBarControllerDelegate, ManageE
                 log.warning("No DailyProgressViewController available")
             }
         }
+        self.menu?.logContentView(false)
     }
 
     func initializeDailyProgressVC() {

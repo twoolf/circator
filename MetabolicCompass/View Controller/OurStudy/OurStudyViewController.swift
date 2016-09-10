@@ -10,6 +10,8 @@ import Foundation
 import UIKit
 import MetabolicCompassKit
 import Async
+import Crashlytics
+import SwiftDate
 import Charts
 
 let studyBodyFontSize: CGFloat = 30.0
@@ -138,7 +140,13 @@ public class OurStudyViewController: UIViewController, ChartViewDelegate {
     override public func viewWillAppear(animated: Bool) {
         super.viewWillAppear(animated)
         self.activityIndicator.startAnimating()
+        self.logContentView()
         self.refreshData()
+    }
+
+    override public func viewWillDisappear(animated: Bool) {
+        super.viewWillDisappear(animated)
+        self.logContentView(false)
     }
 
     override public func viewDidLoad() {
@@ -148,6 +156,13 @@ public class OurStudyViewController: UIViewController, ChartViewDelegate {
         setupActivityIndicator()
 
         refreshData()
+    }
+
+    func logContentView(asAppear: Bool = true) {
+        Answers.logContentViewWithName("Our Study",
+                                       contentType: asAppear ? "Appear" : "Disappear",
+                                       contentId: NSDate().toString(DateFormat.Custom("YYYY-MM-dd:HH:mm:ss")),
+                                       customAttributes: nil)
     }
 
     func setupActivityIndicator() {

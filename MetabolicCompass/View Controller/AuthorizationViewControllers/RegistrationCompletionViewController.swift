@@ -7,8 +7,9 @@
 //
 
 import UIKit
+import Crashlytics
 
-class RegistrationComplitionViewController: BaseViewController {
+class RegistrationCompletionViewController: BaseViewController {
 
     weak var registerViewController: RegisterViewController?
     
@@ -28,10 +29,11 @@ class RegistrationComplitionViewController: BaseViewController {
         return .LightContent;
     }
     
-    @IBAction func noThacksAction(sender: UIButton) {
+    @IBAction func noThanksAction(sender: UIButton) {
         // back
         self.dismissViewControllerAnimated(true, completion: nil)
         if let regVC = registerViewController {
+            Answers.logCustomEventWithName("Register Additional", customAttributes: ["WithAdditional": false])
             regVC.registrationComplete()
         }
     }

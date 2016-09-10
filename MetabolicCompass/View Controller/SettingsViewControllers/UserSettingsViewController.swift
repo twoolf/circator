@@ -16,6 +16,8 @@ import SwiftyUserDefaults
 let USNReminderFrequencyKey = "USNReminderFrequency"
 let USNBlackoutTimesKey = "USNBlackoutTimes"
 
+let USNDidUpdateBlackoutNotification = "USNDidUpdateBlackoutNotification"
+
 let userSettingsHeaderFontSize: CGFloat = 20.0
 let userSettingsFontSize: CGFloat = 16.0
 
@@ -27,7 +29,7 @@ func defaultNotificationBlackoutTimes() -> [NSDate] {
 
 // Default reminder frequency in hours.
 func defaultNotificationReminderFrequency() -> Int {
-    return 2
+    return 24
 }
 
 func getNotificationReminderFrequency() -> Int {
@@ -74,7 +76,7 @@ class UserSettingsViewController: BaseViewController {
     var reminder: Int! = nil
     var blackoutTimes: [NSDate] = []
 
-    static let reminderOptions = [ 2, 4, 6, 8, 12, 24, 48, 72, -1 ]
+    static let reminderOptions: [Int] = [ 2, 4, 6, 8, 12, 24, 48, 72, -1 ]
 
     // UI Components
     var hotwordInput: TextFieldRowFormer<FormTextFieldCell>! = nil
@@ -188,6 +190,9 @@ class UserSettingsViewController: BaseViewController {
             }
             self.toggleEditing(false)
         }
+
+        // Post to recalculate local notification firing times.
+        NSNotificationCenter.defaultCenter().postNotificationName(USNDidUpdateBlackoutNotification, object: nil)
     }
 
     func rightAction(sender: UIBarButtonItem) {
@@ -271,7 +276,7 @@ class UserSettingsViewController: BaseViewController {
                 $0.displayLabel.font = UIFont(name: "GothamBook", size: userSettingsFontSize)!
                 }.configure {
                     $0.pickerItems = UserSettingsViewController.reminderOptions.map {
-                        let label = $0 < 0 ? "Never" : ($0 > 24 ? "\($0/24) days" : "\($0) hours")
+                        let label = $0 < 0 ? "Never" : ($0 > 24 ? "\($0/24) days" : ($0 == 24 ? "Every day" : "\($0) hours"))
                         return InlinePickerItem(title: label, value: $0)
                     }
                     $0.displayEditingColor = .whiteColor()
@@ -298,7 +303,7 @@ class UserSettingsViewController: BaseViewController {
                 $0.displayLabel.font = UIFont(name: "GothamBook", size: userSettingsFontSize)!
                 }.inlineCellSetup {
                     $0.datePicker.datePickerMode = .Time
-                    $0.datePicker.minuteInterval = 15
+                    $0.datePicker.minuteInterval = 5
                     $0.datePicker.date = self.blackoutTimes[index]
                 }.configure {
                     $0.displayEditingColor = .whiteColor()
