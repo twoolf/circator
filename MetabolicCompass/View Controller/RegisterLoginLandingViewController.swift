@@ -71,7 +71,7 @@ class RegisterLoginLandingViewController: BaseViewController {
     }
     
     @IBAction func privacyPolicy() {
-        let svc = SFSafariViewController(URL: NSURL(string: "https://app.metaboliccompass.com/privacy_policy")!)
+        let svc = SFSafariViewController(URL: MCRouter.privacyPolicyURL)
         self.presentViewController(svc, animated: true, completion: nil)
     }
 

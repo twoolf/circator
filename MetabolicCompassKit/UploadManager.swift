@@ -415,7 +415,12 @@ public class UploadManager: NSObject {
                     let realm = try! Realm()
                     if error != nil {
                         log.error(error)
-                        realm.delete(logEntry)
+                        // Refetch the obejct since we are in a background thread from the health manager.
+                        if let logEntry = realm.objectForPrimaryKey(UMLogEntry.self, key: entryKey) {
+                            realm.delete(logEntry)
+                        } else {
+                            log.warning("No realm object found for deleting \(entryKey)")
+                        }
                     } else {
                         if let logEntry = realm.objectForPrimaryKey(UMLogEntry.self, key: entryKey) {
                             log.info("Enqueueing retried upload \(logEntry.id) \(logEntry.compoundKey) with \(samples.count) inserts, \(deleted.count) deletions")

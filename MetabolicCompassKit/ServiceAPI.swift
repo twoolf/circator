@@ -19,19 +19,14 @@ public typealias SvcResultCompletion = (RequestResult) -> Void
 
 private let apiPathComponent = "/api/v1"
 
-private let asDevService   = false
-private let devServiceURL  = NSURL(string: "https://api-dev.metaboliccompass.com")!
-private let devApiURL      = devServiceURL.URLByAppendingPathComponent(apiPathComponent)
-private let prodServiceURL = NSURL(string: "https://api.metaboliccompass.com")!
-private let prodApiURL     = prodServiceURL.URLByAppendingPathComponent(apiPathComponent)
+#if DEVSERVICE
+private let srvURL = NSURL(string: "https://api-dev.metaboliccompass.com")!
+private let wwwURL = NSURL(string: "https://www-dev.metaboliccompass.com")!
+#else
+private let srvURL = NSURL(string: "https://api.metaboliccompass.com")!
+private let wwwURL = NSURL(string: "https://www.metaboliccompass.com")!
+#endif
 
-
-private let resetPassDevURL  = devServiceURL.URLByAppendingPathComponent("/forgot")
-private let resetPassProdURL = prodServiceURL.URLByAppendingPathComponent("/forgot")
-public  let resetPassURL     = asDevService ? resetPassDevURL : resetPassProdURL
-
-public let aboutURL         = (asDevService ? devServiceURL : prodServiceURL).URLByAppendingPathComponent("about")
-public let privacyPolicyURL = (asDevService ? devServiceURL : prodServiceURL).URLByAppendingPathComponent("privacy")
 
 public class  RequestResult{
     private var _obj:Any? = nil
@@ -120,9 +115,13 @@ public class  RequestResult{
  - note: uses Alamofire/JSON
  - remark: authentication using OAuthToken
  */
-enum MCRouter : URLRequestConvertible {
-    static let baseURL = asDevService ? devServiceURL : prodServiceURL
-    static let apiURL  = asDevService ? devApiURL : prodApiURL
+public enum MCRouter : URLRequestConvertible {
+    public static let baseURL          = srvURL
+    public static let apiURL           = srvURL.URLByAppendingPathComponent(apiPathComponent)
+    public static let resetPassURL     = srvURL.URLByAppendingPathComponent("forgot")
+    public static let aboutURL         = wwwURL.URLByAppendingPathComponent("about")
+    public static let privacyPolicyURL = wwwURL.URLByAppendingPathComponent("privacy")
+
     static var OAuthToken: String?
     static var tokenExpireTime: NSTimeInterval = 0
 
@@ -212,7 +211,7 @@ enum MCRouter : URLRequestConvertible {
 
     // MARK: URLRequestConvertible
 
-    var URLRequest: NSMutableURLRequest {
+    public var URLRequest: NSMutableURLRequest {
         let mutableURLRequest = NSMutableURLRequest(URL: MCRouter.apiURL.URLByAppendingPathComponent(path))
         mutableURLRequest.HTTPMethod = method.rawValue
 

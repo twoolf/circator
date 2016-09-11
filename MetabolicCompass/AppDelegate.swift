@@ -35,6 +35,8 @@ class AppDelegate: UIResponder, UIApplicationDelegate, WCSessionDelegate {
         configureLogging()
         Fabric.with([Crashlytics.self,Answers.self])
 
+        log.info("Using service URL: \(MCRouter.baseURL)")
+
         if ((Defaults.objectForKey(firstRunKey) == nil)) {
             UserManager.sharedManager.resetFull()
             Defaults.setObject("firstrun", forKey: firstRunKey)
