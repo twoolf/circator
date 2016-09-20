@@ -96,14 +96,24 @@ class CorrelationChartsViewController: UIViewController, UITableViewDelegate, UI
     //MARK: - Answers tracking
 
     func logContentView(asAppear: Bool = true) {
-        var firstType = pickerData[0][selectedPickerRows[0]].identifier
-        var secondType = pickerData[1][selectedPickerRows[1]].identifier
+        var contentType: String = asAppear ? "Appear" : "Disappear"
 
-        firstType = appearanceProvider.titleForAnalysisChartOfType(firstType).string
-        secondType = appearanceProvider.titleForAnalysisChartOfType(secondType).string
+        if selectedPickerRows.count > 0 && pickerData.count > 0 {
+            if selectedPickerRows[0] >= 0 && pickerData[0].count > selectedPickerRows[0] {
+                let typ = appearanceProvider.titleForAnalysisChartOfType(pickerData[0][selectedPickerRows[0]].identifier).string
+                contentType += " \(typ)"
+            }
+        }
+
+        if selectedPickerRows.count > 1 && pickerData.count > 1 {
+            if selectedPickerRows[1] >= 0 && pickerData[1].count > selectedPickerRows[1] {
+                let typ = appearanceProvider.titleForAnalysisChartOfType(pickerData[1][selectedPickerRows[1]].identifier).string
+                contentType += " vs \(typ)"
+            }
+        }
 
         Answers.logContentViewWithName("Correlate",
-                                       contentType: "\(asAppear ? "Appear" : "Disappear") \(firstType) vs \(secondType)",
+                                       contentType: "\(contentType)",
                                        contentId: NSDate().toString(DateFormat.Custom("YYYY-MM-dd:HH")),
                                        customAttributes: nil)
     }
