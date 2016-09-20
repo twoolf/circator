@@ -417,7 +417,9 @@ public class UploadManager: NSObject {
                         log.error(error)
                         // Refetch the obejct since we are in a background thread from the health manager.
                         if let logEntry = realm.objectForPrimaryKey(UMLogEntry.self, key: entryKey) {
-                            realm.delete(logEntry)
+                            try! realm.write {
+                                realm.delete(logEntry)
+                            }
                         } else {
                             log.warning("No realm object found for deleting \(entryKey)")
                         }
