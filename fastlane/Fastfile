@@ -316,7 +316,7 @@ platform :ios do
   lane :beta_upload_testflight do
     ENV["DELIVER_ITMSTRANSPORTER_ADDITIONAL_UPLOAD_PARAMETERS"] = "-t DAV"
 
-    pilot(skip_submission: true)
+    pilot(skip_submission: true, skip_waiting_for_build_processing: true)
     post_to_slack(scheme: "MetabolicCompass", destination: "TestFlight")
   end
 
