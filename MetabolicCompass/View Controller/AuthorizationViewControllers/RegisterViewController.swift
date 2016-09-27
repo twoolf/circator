@@ -30,7 +30,6 @@ private let inputFontSize = ScreenManager.sharedInstance.profileInputFontSize()
 
     internal var consentOnLoad : Bool = false
     internal var registerCompletion : (Void -> Void)?
-    internal var parentView: IntroViewController?
     private var stashedUserId : String?
     
     //MARK: View life circle

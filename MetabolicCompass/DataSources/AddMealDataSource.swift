@@ -7,6 +7,7 @@
 //
 
 import UIKit
+import MCCircadianQueries
 
 public let typeCellIdentifier = "typeCellIdentifier"
 public let whenCellIdentifier = "whenCellIdentifier"

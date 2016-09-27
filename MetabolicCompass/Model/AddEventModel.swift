@@ -12,14 +12,6 @@ import MetabolicCompassKit
 import HealthKit
 import MCCircadianQueries
 
-enum MealType: String {
-    case Empty = ""
-    case Breakfast = "Breakfast"
-    case Lunch = "Lunch"
-    case Dinner = "Dinner"
-    case Snack = "Snack"
-}
-
 let defaultDuration = 1800 // Default event duration is 30 min
 
 class AddEventModel: NSObject {

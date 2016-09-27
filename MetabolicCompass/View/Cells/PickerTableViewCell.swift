@@ -7,6 +7,7 @@
 //
 
 import UIKit
+import MCCircadianQueries
 
 class PickerTableViewCell: UITableViewCell, UIPickerViewDataSource, UIPickerViewDelegate {
 

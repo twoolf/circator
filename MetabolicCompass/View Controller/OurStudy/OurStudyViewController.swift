@@ -98,24 +98,9 @@ public class OurStudyViewController: UIViewController, ChartViewDelegate {
 
     var ring2TopConstraint: NSLayoutConstraint! = nil
 
-    lazy var fullDaysLabel: UIStackView =
-        UIComponents.createNumberLabel(
-            "Full Days Tracked", titleAttrs: studyLabelAttrs,
-            bodyFontSize: studyBodyFontSize, labelFontSize: studyLabelFontSize-2.0, value: 0.0, unit: "days")
+    // Badges.
 
-    lazy var partialDaysLabel: UIStackView =
-        UIComponents.createNumberLabel(
-            "Partial Days Tracked", titleAttrs: studyLabelAttrs,
-            bodyFontSize: studyBodyFontSize, labelFontSize: studyLabelFontSize-2.0, value: 0.0, unit: "days")
-
-    lazy var userRankingBadge: UIStackView =
-        UIComponents.createNumberWithImageAndLabel(
-            "Your Contributions Rank", imageName: "icon-gold-medal",
-            titleAttrs: studyLabelAttrs, bodyFontSize: studyContributionFontSize,
-            labelFontSize: studyLabelFontSize, labelSpacing: 0.0, value: 1.0, unit: "%", prefix: "Top", suffix: "of all users")
-
-
-    static let badgeIconBuckets: [(Double, String)] = [
+    static let userRankingBadgeBuckets: [(Double, String)] = [
         (1.0,  "icon-trophy-cup-gold"),
         (2.0,  "icon-trophy-cup-silver"),
         (5.0,  "icon-trophy-cup-bronze"),
@@ -130,10 +115,50 @@ public class OurStudyViewController: UIViewController, ChartViewDelegate {
         (90.0, "icon-arms-raised-silver")
     ]
 
+    static let contributionStreakBadgeBuckets: [(Double, String)] = [
+        (3,    "icon-rock"),
+        (5,    "icon-quill"),
+        (7,    "icon-typewriter"),
+        (10,   "icon-polaroid"),
+        (14,   "icon-vidcam"),
+        (21,   "icon-laptop"),
+        (30,   "icon-sherlock"),
+        (60,   "icon-robot"),
+        (90,   "icon-satellite"),
+        (180,  "icon-neo"),
+        (360,  "icon-eye"),
+    ]
+
+    lazy var userRankingBadge: UIStackView =
+        UIComponents.createNumberWithImageAndLabel(
+            "Your Contributions Rank", imageName: "icon-gold-medal",
+            titleAttrs: studyLabelAttrs, bodyFontSize: studyContributionFontSize,
+            labelFontSize: studyLabelFontSize, labelSpacing: 0.0, value: 1.0, unit: "%", prefix: "Top", suffix: "of all users")
+
+    lazy var contributionStreakBadge: UIStackView =
+        UIComponents.createNumberWithImageAndLabel(
+            "Your Contributions Streak", imageName: "icon-gold-medal", titleAttrs: studyLabelAttrs,
+            bodyFontSize: studyLabelFontSize, unitsFontSize: studyLabelFontSize, labelFontSize: studyLabelFontSize,
+            labelSpacing: 0.0, value: 1.0, unit: "straight days", prefix: "You've logged", suffix: "")
+
+    // Metrics.
+
+    lazy var fullDaysLabel: UIStackView =
+        UIComponents.createNumberLabel(
+            "Full Days Tracked", titleAttrs: studyLabelAttrs,
+            bodyFontSize: studyBodyFontSize, labelFontSize: studyLabelFontSize-2.0, value: 0.0, unit: "days")
+
+    lazy var partialDaysLabel: UIStackView =
+        UIComponents.createNumberLabel(
+            "Partial Days Tracked", titleAttrs: studyLabelAttrs,
+            bodyFontSize: studyBodyFontSize, labelFontSize: studyLabelFontSize-2.0, value: 0.0, unit: "days")
+
+
     var phaseProgressTip: TapTip! = nil
     var fullDaysTip: TapTip! = nil
     var partialDaysTip: TapTip! = nil
     var userRankingTip: TapTip! = nil
+    var contributionStreakTip: TapTip! = nil
 
     var activityIndicator: UIActivityIndicatorView! = nil
 
@@ -227,13 +252,15 @@ public class OurStudyViewController: UIViewController, ChartViewDelegate {
 
         phaseProgress.translatesAutoresizingMaskIntoConstraints = false
         userRankingBadge.translatesAutoresizingMaskIntoConstraints = false
+        contributionStreakBadge.translatesAutoresizingMaskIntoConstraints = false
         labelStack.translatesAutoresizingMaskIntoConstraints = false
 
         scrollView.addSubview(phaseProgress)
         scrollView.addSubview(userRankingBadge)
+        scrollView.addSubview(contributionStreakBadge)
         scrollView.addSubview(labelStack)
 
-        let phaseConstraints: [NSLayoutConstraint] = [
+        var phaseConstraints: [NSLayoutConstraint] = [
             phaseProgress.topAnchor.constraintEqualToAnchor(scrollView.topAnchor, constant: 10),
             phaseProgress.leadingAnchor.constraintEqualToAnchor(view.leadingAnchor),
             phaseProgress.trailingAnchor.constraintEqualToAnchor(view.trailingAnchor),
@@ -241,8 +268,27 @@ public class OurStudyViewController: UIViewController, ChartViewDelegate {
             userRankingBadge.topAnchor.constraintEqualToAnchor(phaseProgress.bottomAnchor, constant: 10),
             userRankingBadge.leadingAnchor.constraintEqualToAnchor(view.leadingAnchor, constant: 10),
             userRankingBadge.trailingAnchor.constraintEqualToAnchor(view.trailingAnchor, constant: -10),
-            userRankingBadge.heightAnchor.constraintEqualToAnchor(view.widthAnchor, multiplier: 0.33)
+            userRankingBadge.heightAnchor.constraintEqualToAnchor(view.widthAnchor, multiplier: 0.3),
+            contributionStreakBadge.topAnchor.constraintEqualToAnchor(userRankingBadge.bottomAnchor, constant: 10),
+            contributionStreakBadge.leadingAnchor.constraintEqualToAnchor(view.leadingAnchor, constant: 10),
+            contributionStreakBadge.trailingAnchor.constraintEqualToAnchor(view.trailingAnchor, constant: -10),
+            contributionStreakBadge.heightAnchor.constraintEqualToAnchor(view.widthAnchor, multiplier: 0.3)
         ]
+
+        if let imageLabelStack = userRankingBadge.subviews[1] as? UIStackView,
+            badge = imageLabelStack.subviews[0] as? UIImageView
+        {
+            phaseConstraints.append(badge.widthAnchor.constraintEqualToConstant(44.0))
+            phaseConstraints.append(badge.heightAnchor.constraintEqualToAnchor(badge.widthAnchor))
+        }
+
+        if let imageLabelStack = contributionStreakBadge.subviews[1] as? UIStackView,
+            badge = imageLabelStack.subviews[0] as? UIImageView
+        {
+            phaseConstraints.append(badge.widthAnchor.constraintEqualToConstant(44.0))
+            phaseConstraints.append(badge.heightAnchor.constraintEqualToAnchor(badge.widthAnchor))
+        }
+
         view.addConstraints(phaseConstraints)
 
         let compositeView = UIView()
@@ -307,7 +353,7 @@ public class OurStudyViewController: UIViewController, ChartViewDelegate {
         let ringHeightMultiplier: CGFloat = UIScreen.mainScreen().bounds.size.height < 569 ? 1.0 : 0.7
 
         let constraints: [NSLayoutConstraint] = [
-            labelledRings.topAnchor.constraintEqualToAnchor(userRankingBadge.bottomAnchor, constant: 20),
+            labelledRings.topAnchor.constraintEqualToAnchor(contributionStreakBadge.bottomAnchor, constant: 20),
             labelledRings.leadingAnchor.constraintEqualToAnchor(view.leadingAnchor),
             labelledRings.widthAnchor.constraintEqualToAnchor(view.widthAnchor),
             labelledRings.heightAnchor.constraintEqualToAnchor(view.widthAnchor, multiplier: ringHeightMultiplier),
@@ -319,7 +365,20 @@ public class OurStudyViewController: UIViewController, ChartViewDelegate {
 
         view.addConstraints(constraints)
 
-        // Tooltips
+        setupToolTips()
+
+        // Adjust middle ring vertical placement.
+        view.setNeedsLayout()
+        view.layoutIfNeeded()
+
+        if ring2TopConstraint != nil && rings.count > 0 {
+            ring2TopConstraint.constant = -(rings[0].frame.height / 2.5)
+        }
+        view.layoutIfNeeded()
+    }
+
+    // Tooltips
+    func setupToolTips() {
         let phaseProgressDesc = "This bar shows the number of users actively contributing data in our study, relative to our participation goals for the current phase of the study"
         phaseProgressTip = TapTip(forView: phaseProgress, withinView: scrollView, text: phaseProgressDesc, width: 350, numTaps: 1, numTouches: 1, asTop: false)
         phaseProgress.addGestureRecognizer(phaseProgressTip.tapRecognizer)
@@ -336,14 +395,9 @@ public class OurStudyViewController: UIViewController, ChartViewDelegate {
         userRankingTip = TapTip(forView: userRankingBadge, withinView: scrollView, text: userRankingDesc, width: 350, numTaps: 1, numTouches: 1, asTop: false)
         userRankingBadge.addGestureRecognizer(userRankingTip.tapRecognizer)
 
-        // Adjust middle ring vertical placement.
-        view.setNeedsLayout()
-        view.layoutIfNeeded()
-
-        if ring2TopConstraint != nil && rings.count > 0 {
-            ring2TopConstraint.constant = -(rings[0].frame.height / 2.5)
-        }
-        view.layoutIfNeeded()
+        let contributionStreakDesc = "This label shows how many straight days you've tracked at least one meal and a sleep activitiy."
+        contributionStreakTip = TapTip(forView: contributionStreakBadge, withinView: scrollView, text: contributionStreakDesc, width: 350, numTaps: 1, numTouches: 1, asTop: false)
+        contributionStreakBadge.addGestureRecognizer(contributionStreakTip.tapRecognizer)
     }
 
 
@@ -363,6 +417,16 @@ public class OurStudyViewController: UIViewController, ChartViewDelegate {
                 refreshUserRanking(r)
             } else if let s = studystats["user_rank"] as? String, r = Int(s) {
                 refreshUserRanking(r)
+            }
+
+            if let r = studystats["contribution_streak"] as? Int {
+                log.info("OUR STUDY contribution streak \(r)")
+                refreshContributionStreak(r)
+            } else if let s = studystats["contribution_streak"] as? String, r = Int(s) {
+                log.info("OUR STUDY contribution streak \(r)")
+                refreshContributionStreak(r)
+            } else {
+                log.info("OUR STUDY no contribution streak found")
             }
 
             if let u = studystats["active_users"] as? Int {
@@ -407,6 +471,21 @@ public class OurStudyViewController: UIViewController, ChartViewDelegate {
             badge.setNeedsDisplay()
         } else {
             log.error("OUR STUDY could not get ranking badge/label")
+        }
+    }
+
+    func refreshContributionStreak(days: Int) {
+        if let imageLabelStack = contributionStreakBadge.subviews[1] as? UIStackView,
+            badge = imageLabelStack.subviews[0] as? UIImageView,
+            label = imageLabelStack.subviews[1] as? UILabel
+        {
+            label.attributedText = OurStudyViewController.contributionStreakLabelText(days, unitsFontSize: studyLabelFontSize)
+            label.setNeedsDisplay()
+            let (_, icon) = OurStudyViewController.contributionStreakClassAndIcon(days)
+            badge.image = UIImage(named: icon)
+            badge.setNeedsDisplay()
+        } else {
+            log.error("OUR STUDY could not get contribution streak badge/label")
         }
     }
 
@@ -475,9 +554,16 @@ public class OurStudyViewController: UIViewController, ChartViewDelegate {
 
     class func userRankingClassAndIcon(rank: Int) -> (Double, String) {
         let doubleRank = Double(rank)
-        var rankIndex = OurStudyViewController.badgeIconBuckets.indexOf { $0.0 >= doubleRank }
-        if rankIndex == nil { rankIndex = OurStudyViewController.badgeIconBuckets.count - 1 }
-        return OurStudyViewController.badgeIconBuckets[rankIndex!]
+        var rankIndex = OurStudyViewController.userRankingBadgeBuckets.indexOf { $0.0 >= doubleRank }
+        if rankIndex == nil { rankIndex = OurStudyViewController.userRankingBadgeBuckets.count - 1 }
+        return OurStudyViewController.userRankingBadgeBuckets[rankIndex!]
+    }
+
+    class func contributionStreakClassAndIcon(days: Int) -> (Double, String) {
+        let doubleDays = Double(days)
+        var rankIndex = OurStudyViewController.contributionStreakBadgeBuckets.indexOf { $0.0 >= doubleDays }
+        if rankIndex == nil { rankIndex = OurStudyViewController.contributionStreakBadgeBuckets.count - 1 }
+        return OurStudyViewController.contributionStreakBadgeBuckets[rankIndex!]
     }
 
     class func userRankingLabelText(rank: Int, unitsFontSize: CGFloat = 20.0) -> NSAttributedString {
@@ -497,6 +583,36 @@ public class OurStudyViewController: UIViewController, ChartViewDelegate {
 
         let tailRange = NSRange(location:prefixStr.characters.count + vStr.characters.count + 1, length: suffixStr.characters.count + 1)
         aStr.addAttribute(NSFontAttributeName, value: unitFont, range: tailRange)
+
+        let paragraphStyle = NSMutableParagraphStyle()
+        paragraphStyle.lineSpacing = 2.0
+        paragraphStyle.alignment = .Center
+        aStr.addAttribute(NSParagraphStyleAttributeName, value: paragraphStyle, range: NSMakeRange(0, aStr.length))
+
+        return aStr
+    }
+
+    class func contributionStreakLabelText(days: Int, unitsFontSize: CGFloat = 20.0) -> NSAttributedString {
+        let prefixStr = "You've logged for"
+        let suffixStr = "straight days"
+
+        let vStr = "\(days)"
+        let aStr = NSMutableAttributedString(string: prefixStr + " " + vStr + " " + suffixStr)
+
+        let unitFont = UIFont(name: "GothamBook", size: unitsFontSize)!
+
+        if prefixStr.characters.count > 0 {
+            let headRange = NSRange(location:0, length: prefixStr.characters.count + 1)
+            aStr.addAttribute(NSFontAttributeName, value: unitFont, range: headRange)
+        }
+
+        let tailRange = NSRange(location:prefixStr.characters.count + vStr.characters.count + 1, length: suffixStr.characters.count + 1)
+        aStr.addAttribute(NSFontAttributeName, value: unitFont, range: tailRange)
+
+        let paragraphStyle = NSMutableParagraphStyle()
+        paragraphStyle.lineSpacing = 2.0
+        paragraphStyle.alignment = .Center
+        aStr.addAttribute(NSParagraphStyleAttributeName, value: paragraphStyle, range: NSMakeRange(0, aStr.length))
 
         return aStr
     }

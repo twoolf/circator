@@ -8,7 +8,7 @@ def shared_pods
     pod 'Alamofire', '~> 2.0'
     pod 'Realm'
     pod 'RealmSwift'
-    pod 'SwiftyJSON', :git => 'https://github.com/SwiftyJSON/SwiftyJSON.git'
+    pod 'SwiftyJSON', :git => 'https://github.com/SwiftyJSON/SwiftyJSON.git', :branch => 'swift2'
     pod 'SwiftDate'
     pod 'SwiftyUserDefaults'
     pod 'SwiftyBeaver', ‘= 0.5.4'

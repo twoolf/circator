@@ -29,7 +29,6 @@ class LoginViewController: BaseViewController {
 
     @IBOutlet weak var loginTable: UITableView!
 
-    var parentView: IntroViewController?
     var completion: (Void -> Void)?
 
     override func viewWillAppear(animated: Bool) {
@@ -73,13 +72,10 @@ class LoginViewController: BaseViewController {
 
     func loginComplete() {
         if let comp = self.completion { comp() }
-        //UINotifications.doWelcome(self.parentView!, pop: true, user: UserManager.sharedManager.getUserId() ?? "")
-
         self.navigationController?.popToRootViewControllerAnimated(true)
         
         Async.main {
             Answers.logLoginWithMethod("SPL", success: true, customAttributes: nil)
-            self.parentView?.initializeBackgroundWork()
             NSNotificationCenter.defaultCenter().postNotificationName(UMDidLoginNotifiaction, object: nil)
         }
     }
@@ -144,7 +140,6 @@ class LoginViewController: BaseViewController {
 
     func doSignup(sender: UIButton) {
         let registerVC = RegisterViewController()
-        registerVC.parentView = parentView
         registerVC.consentOnLoad = true
         self.navigationController?.pushViewController(registerVC, animated: true)
     }

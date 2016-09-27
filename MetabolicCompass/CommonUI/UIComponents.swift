@@ -8,6 +8,9 @@
 
 import Foundation
 import UIKit
+import HTPressableButton
+
+class MCButton: HTPressableButton {}
 
 public class UIComponents {
 
@@ -69,11 +72,19 @@ public class UIComponents {
             label.font = UIFont(name: "GothamBook", size: bodyFontSize)!
             label.textColor = .whiteColor()
             label.textAlignment = .Center
+            label.numberOfLines = 0
 
             let vString = String(format: "%.1f", value)
             let aString = NSMutableAttributedString(string: vString + " " + unit)
             let unitFont = UIFont(name: "GothamBook", size: unitsFontSize)!
+
             aString.addAttribute(NSFontAttributeName, value: unitFont, range: NSRange(location:vString.characters.count+1, length: unit.characters.count))
+
+            let paragraphStyle = NSMutableParagraphStyle()
+            paragraphStyle.lineSpacing = 2.0
+            paragraphStyle.alignment = .Center
+            aString.addAttribute(NSParagraphStyleAttributeName, value: paragraphStyle, range: NSMakeRange(0, aString.length))
+
             label.attributedText = aString
             return label
         })
@@ -91,7 +102,7 @@ public class UIComponents {
             let label = UILabel()
             label.font = UIFont(name: "GothamBook", size: bodyFontSize)!
             label.textColor = .whiteColor()
-            label.textAlignment = .Center
+            label.numberOfLines = 0
 
             let prefixStr = prefix ?? ""
             let suffixStr = suffix ?? ""
@@ -107,6 +118,11 @@ public class UIComponents {
             let tailRange = NSRange(location:prefixStr.characters.count + vStr.characters.count + 1, length: unit.characters.count + suffixStr.characters.count + 2)
             aStr.addAttribute(NSFontAttributeName, value: unitFont, range: tailRange)
 
+            let paragraphStyle = NSMutableParagraphStyle()
+            paragraphStyle.lineSpacing = 2.0
+            paragraphStyle.alignment = .Center
+            aStr.addAttribute(NSParagraphStyleAttributeName, value: paragraphStyle, range: NSMakeRange(0, aStr.length))
+
             label.attributedText = aStr
 
             let imageView = UIImageView(frame: CGRectMake(0, 0, 110, 110))
@@ -115,9 +131,9 @@ public class UIComponents {
 
             let stack = UIStackView(arrangedSubviews: [imageView, label])
             stack.axis = .Horizontal
-            stack.distribution = UIStackViewDistribution.FillProportionally
+            stack.distribution = UIStackViewDistribution.Fill
             stack.alignment = UIStackViewAlignment.Fill
-            stack.spacing = 2.0
+            stack.spacing = 10.0
             return stack
         })
     }

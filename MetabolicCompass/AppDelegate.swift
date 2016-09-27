@@ -101,8 +101,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate, WCSessionDelegate {
     func checkOrientation(viewController: UIViewController?) -> UIInterfaceOrientationMask {
         if viewController == nil {
             return .All
-        } else if viewController is IntroViewController {
-            return .Portrait
         } else if viewController is QueryViewController {
             return .Portrait
         } else if viewController is QueryBuilderViewController {

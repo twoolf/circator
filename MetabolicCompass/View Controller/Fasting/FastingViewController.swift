@@ -68,6 +68,8 @@ public class FastingViewController : UIViewController, ChartViewDelegate {
     public static let yellow = ChartColorTemplates.colorful()[2]
     public static let green  = ChartColorTemplates.colorful()[3]
 
+    // Balance bars.
+
     lazy var sleepAwakeBalance: BalanceBarView = {
         let attrs1 = [NSForegroundColorAttributeName: FastingViewController.orange,
                       NSBackgroundColorAttributeName: FastingViewController.orange]
@@ -106,14 +108,42 @@ public class FastingViewController : UIViewController, ChartViewDelegate {
         return bar
     }()
 
+    // Badges.
+
+    static let fastingStreakBadgeBuckets: [(Double, String, String)] = [
+        (0,   "icon-matchstick", "your fasting levels are about to be snuffed out!"),
+        (50,  "icon-candle",     "you're in a slow, steady burn."),
+        (70,  "icon-lantern",    "now you're moving, keep going with your fasting levels!"),
+        (90,  "icon-torch",      "you're ready to light the next big fast."),
+        (100, "icon-fireplace",  "you're basking in a warm comforting fasting level."),
+        (110, "icon-bonfire",    "it's a party, you're really having fun with fasting!"),
+        (120, "icon-wildfire",   "you're catching on, remember to keep track to hit the next level!"),
+        (130, "icon-magma",      "you're smoldering, we can see your glow!"),
+        (140, "icon-volcano",    "careful, you might cause others' fasting levels around you to erupt!"),
+        (150, "icon-sun",        "you're a fasting champion, we rise and set to your fasting levels!"),
+        (160, "icon-supernova",  "you've done it, you can't burn brighter than this!"),
+    ]
+
+    lazy var fastingStreakBadge: UIStackView =
+        UIComponents.createNumberWithImageAndLabel(
+            "Your Fasting Streak", imageName: "icon-gold-medal", titleAttrs: studyLabelAttrs,
+            bodyFontSize: studyLabelFontSize, unitsFontSize: studyLabelFontSize, labelFontSize: studyLabelFontSize,
+            labelSpacing: 0.0, value: 1.0, unit: "hours this week", prefix: "You've fasted", suffix: "")
+
+
+    // Metrics.
+
     lazy var cwfLabel: UIStackView = UIComponents.createNumberLabel("Cumulative Weekly Fasting", labelFontSize: fastingViewLabelSize, value: 0.0, unit: "hrs")
     lazy var wfvLabel: UIStackView = UIComponents.createNumberLabel("Weekly Fasting Variability", labelFontSize: fastingViewLabelSize, value: 0.0, unit: "hrs")
 
     private let cwfTipMsg = "Your cumulative weekly fasting is the total number of hours that you've spent fasting over the last 7 days"
     private let wfvTipMsg = "Your weekly fasting variability shows you how much your fasting hours varies day-by-day. We calculate this over the last week."
 
+    private let fastingStreakTipMsg = "This badge shows the level of fasting you've achieved for the last week."
+
     private var cwfTip: TapTip! = nil
     private var wfvTip: TapTip! = nil
+    private var fastingStreakTip: TapTip! = nil
 
     override public func viewWillAppear(animated: Bool) {
         super.viewWillAppear(animated)
@@ -212,27 +242,36 @@ public class FastingViewController : UIViewController, ChartViewDelegate {
         }()
 
         let stack: UIStackView = {
-            let stack = UIStackView(arrangedSubviews: [pieChartStack, sleepAwakeBalance, eatExerciseBalance, labelStack])
+            let stack = UIStackView(arrangedSubviews: [pieChartStack, fastingStreakBadge, sleepAwakeBalance, eatExerciseBalance, labelStack])
             stack.axis = .Vertical
             stack.distribution = UIStackViewDistribution.Fill
             stack.alignment = UIStackViewAlignment.Fill
-            stack.spacing = 15
+            stack.spacing = 20
             return stack
         }()
 
         stack.translatesAutoresizingMaskIntoConstraints = false
         scrollView.addSubview(stack)
 
-        let constraints: [NSLayoutConstraint] = [
+        var constraints: [NSLayoutConstraint] = [
             stack.topAnchor.constraintEqualToAnchor(scrollView.topAnchor),
             stack.leadingAnchor.constraintEqualToAnchor(view.leadingAnchor),
             stack.trailingAnchor.constraintEqualToAnchor(view.trailingAnchor),
             stack.bottomAnchor.constraintEqualToAnchor(scrollView.bottomAnchor),
             pieChartStack.heightAnchor.constraintEqualToAnchor(pieChartStack.widthAnchor, multiplier: 0.8),
+            fastingStreakBadge.heightAnchor.constraintEqualToAnchor(view.widthAnchor, multiplier: 0.33),
             sleepAwakeBalance.heightAnchor.constraintEqualToConstant(60),
             eatExerciseBalance.heightAnchor.constraintEqualToConstant(60),
             labelStack.heightAnchor.constraintEqualToConstant(80),
         ]
+
+        if let imageLabelStack = fastingStreakBadge.subviews[1] as? UIStackView,
+            badge = imageLabelStack.subviews[0] as? UIImageView
+        {
+            constraints.append(badge.widthAnchor.constraintEqualToConstant(60.0))
+            constraints.append(badge.heightAnchor.constraintEqualToAnchor(badge.widthAnchor))
+        }
+
         view.addConstraints(constraints)
 
         setupActivityIndicator()
@@ -247,12 +286,16 @@ public class FastingViewController : UIViewController, ChartViewDelegate {
 
         cwfTip = TapTip(forView: cwfLabel, withinView: scrollView, text: cwfTipMsg, asTop: true)
         wfvTip = TapTip(forView: wfvLabel, withinView: scrollView, text: wfvTipMsg, asTop: true)
+        fastingStreakTip = TapTip(forView: fastingStreakBadge, withinView: scrollView, text: fastingStreakTipMsg, asTop: true)
 
         cwfLabel.addGestureRecognizer(cwfTip.tapRecognizer)
         cwfLabel.userInteractionEnabled = true
 
         wfvLabel.addGestureRecognizer(wfvTip.tapRecognizer)
         wfvLabel.userInteractionEnabled = true
+
+        fastingStreakBadge.addGestureRecognizer(fastingStreakTip.tapRecognizer)
+        fastingStreakBadge.userInteractionEnabled = true
 
         sleepAwakeBalance.tip.withinView = scrollView
         eatExerciseBalance.tip.withinView = scrollView
@@ -277,6 +320,21 @@ public class FastingViewController : UIViewController, ChartViewDelegate {
         self.pieChart.setNeedsDisplay()
     }
 
+    func refreshFastingStreak(fastingLevel: Double) {
+        if let imageLabelStack = fastingStreakBadge.subviews[1] as? UIStackView,
+            badge = imageLabelStack.subviews[0] as? UIImageView,
+            label = imageLabelStack.subviews[1] as? UILabel
+        {
+            let (_, icon, desc) = FastingViewController.fastingStreakClassAndIcon(fastingLevel)
+            label.attributedText = FastingViewController.fastingStreakLabelText(fastingLevel, description: desc, unitsFontSize: studyLabelFontSize)
+            label.setNeedsDisplay()
+            badge.image = UIImage(named: icon)
+            badge.setNeedsDisplay()
+        } else {
+            log.error("FASTING could not get streak badge/label")
+        }
+    }
+
     public func refreshData() {
         log.info("FastingViewController refreshing data")
         let refreshStartDate = NSDate()
@@ -293,8 +351,13 @@ public class FastingViewController : UIViewController, ChartViewDelegate {
                 self.activityIndicator.stopAnimating()
                 self.refreshPieChart()
 
+                let cwfHours = self.model.cumulativeWeeklyFasting / 3600.0
+                let wfvHours = self.model.weeklyFastingVariability / 3600.0
+
                 let saTotal = self.model.fastSleep + self.model.fastAwake
                 let eeTotal = self.model.fastEat + self.model.fastExercise
+
+                self.refreshFastingStreak(cwfHours)
 
                 self.sleepAwakeBalance.ratio = saTotal == 0.0 ? -1.0 : CGFloat( self.model.fastSleep / saTotal )
                 self.sleepAwakeBalance.refreshData()
@@ -306,7 +369,7 @@ public class FastingViewController : UIViewController, ChartViewDelegate {
                     if saTotal == 0.0 {
                         cwfSubLabel.text = "N/A"
                     } else {
-                        cwfSubLabel.text = String(format: "%.1f h", (self.model.cumulativeWeeklyFasting / 3600.0))
+                        cwfSubLabel.text = String(format: "%.1f h", cwfHours)
                     }
                     cwfSubLabel.setNeedsDisplay()
                 }
@@ -315,7 +378,7 @@ public class FastingViewController : UIViewController, ChartViewDelegate {
                     if saTotal == 0.0 {
                         wfvSubLabel.text = "N/A"
                     } else {
-                        wfvSubLabel.text = String(format: "%.1f h", (self.model.weeklyFastingVariability / 3600.0))
+                        wfvSubLabel.text = String(format: "%.1f h", wfvHours)
                     }
                     wfvSubLabel.setNeedsDisplay()
                 }
@@ -353,6 +416,38 @@ public class FastingViewController : UIViewController, ChartViewDelegate {
         pieChart.centerText = ""
         pieChart.drawCenterTextEnabled = false
     }
+
+    class func fastingStreakClassAndIcon(fastingLevel: Double) -> (Double, String, String) {
+        var rankIndex = FastingViewController.fastingStreakBadgeBuckets.indexOf { $0.0 >= fastingLevel }
+        if rankIndex == nil { rankIndex = FastingViewController.fastingStreakBadgeBuckets.count - 1 }
+        return FastingViewController.fastingStreakBadgeBuckets[rankIndex!]
+    }
+
+    class func fastingStreakLabelText(fastingLevel: Double, description: String, unitsFontSize: CGFloat = 20.0) -> NSAttributedString {
+        let prefixStr = "You have fasted for"
+        let suffixStr = "hours this week, \(description)"
+
+        let vStr = String(format: "%.3g", fastingLevel)
+        let aStr = NSMutableAttributedString(string: prefixStr + " " + vStr + " " + suffixStr)
+
+        let unitFont = UIFont(name: "GothamBook", size: unitsFontSize)!
+
+        if prefixStr.characters.count > 0 {
+            let headRange = NSRange(location:0, length: prefixStr.characters.count + 1)
+            aStr.addAttribute(NSFontAttributeName, value: unitFont, range: headRange)
+        }
+
+        let tailRange = NSRange(location:prefixStr.characters.count + vStr.characters.count + 1, length: suffixStr.characters.count + 1)
+        aStr.addAttribute(NSFontAttributeName, value: unitFont, range: tailRange)
+
+        let paragraphStyle = NSMutableParagraphStyle()
+        paragraphStyle.lineSpacing = 4.0
+        paragraphStyle.alignment = .Center
+        aStr.addAttribute(NSParagraphStyleAttributeName, value: paragraphStyle, range: NSMakeRange(0, aStr.length))
+
+        return aStr
+    }
+
 
 }
 

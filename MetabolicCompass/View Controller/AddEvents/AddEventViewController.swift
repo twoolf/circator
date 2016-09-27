@@ -8,6 +8,7 @@
 
 import UIKit
 import Async
+import MCCircadianQueries
 
 enum EventType: Int {
     case Meal
