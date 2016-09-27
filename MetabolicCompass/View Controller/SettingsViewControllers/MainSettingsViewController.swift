@@ -9,6 +9,7 @@
 import UIKit
 import SafariServices
 import MetabolicCompassKit
+import Social
 
 class SettingsItem : NSObject {
     
@@ -75,6 +76,39 @@ class MainSettingsViewController: BaseViewController, UICollectionViewDataSource
         self.view.addConstraints(bgConstraints)
     }
 
+    func socialAction() {
+        let alertController = UIAlertController(title: nil, message: "Tell your friends about us!", preferredStyle: .ActionSheet)
+
+        let doShare : String -> Void = { serviceType in
+            if let vc = SLComposeViewController(forServiceType: serviceType) {
+                let msg = "Hi there, I'm using the Metabolic Compass app to track my body clock and to contribute to medical research from Johns Hopkins. You should check it out!"
+                vc.setInitialText(msg)
+                vc.addURL(NSURL(string: "https://www.metaboliccompass.com"))
+                self.presentViewController(vc, animated: true, completion: nil)
+            } else {
+                let service = serviceType == SLServiceTypeTwitter ? "Twitter" : "Facebook"
+                self.showAlert(withMessage: "Please log into your \(service) account from your iOS Settings")
+            }
+        }
+
+        let withKeepAction = UIAlertAction(title: "Share on Twitter", style: .Default) {
+            (alertAction: UIAlertAction!) in
+            doShare(SLServiceTypeTwitter)
+        }
+
+        let withDeleteAction = UIAlertAction(title: "Share on Facebook", style: .Default) {
+            (alertAction: UIAlertAction!) in
+            doShare(SLServiceTypeFacebook)
+        }
+
+        let cancelAction = UIAlertAction(title: "Cancel", style: .Cancel, handler: nil)
+        alertController.addAction(withKeepAction)
+        alertController.addAction(withDeleteAction)
+        alertController.addAction(cancelAction)
+        self.presentViewController(alertController, animated: true, completion: nil)
+
+    }
+
     func webAction(asPrivacyPolicy: Bool) {
         let vc = SFSafariViewController(URL: asPrivacyPolicy ? MCRouter.privacyPolicyURL : MCRouter.aboutURL, entersReaderIfAvailable: false)
         presentViewController(vc, animated: true, completion: nil)
@@ -124,6 +158,7 @@ class MainSettingsViewController: BaseViewController, UICollectionViewDataSource
     private let segueUserSettingsIdentifier  = "userSettingsSegue"
 
     private var consentPDFItemIndex    : Int = 0
+    private var shareOurStoryIndex     : Int = 0
     private var aboutItemIndex         : Int = 0
     private var privacyPolicyItemIndex : Int = 0
     private var logoutItemIndex        : Int = 0
@@ -143,6 +178,9 @@ class MainSettingsViewController: BaseViewController, UICollectionViewDataSource
         settingsItems.append(SettingsItem(title: "User Settings".localized, iconImageName: "icon-settings-gear", segueIdentifier: self.segueUserSettingsIdentifier))
 
         settingsItems.append(SettingsItem(title: "Consent PDF".localized, iconImageName: "icon-consent-document", segueIdentifier: self.segueConsentViewerIdentifier))
+
+        settingsItems.append(SettingsItem(title: "Share Our Story".localized, iconImageName: "icon-settings-health"))
+        self.shareOurStoryIndex = settingsItems.count - 1
 
         settingsItems.append(SettingsItem(title: "About Us".localized, iconImageName: "icon-settings-health"))
         self.aboutItemIndex = settingsItems.count - 1
@@ -164,10 +202,15 @@ class MainSettingsViewController: BaseViewController, UICollectionViewDataSource
     }
 
     private func cellHasSubviewAtIndexPath(indexPath: NSIndexPath) -> Bool {
-        return !( isCellAboutAtIndexPath(indexPath)
+        return !( isCellShareOurStoryAtIndexPath(indexPath)
+                    || isCellAboutAtIndexPath(indexPath)
                     || isCellPrivacyPolicyAtIndexPath(indexPath)
                     || isCellLogoutAtIndexPath(indexPath)
                     || isCellWithdrawAtIndexPath(indexPath) )
+    }
+
+    private func isCellShareOurStoryAtIndexPath(indexPath: NSIndexPath) -> Bool {
+        return indexPath.row == shareOurStoryIndex
     }
 
     private func isCellAboutAtIndexPath(indexPath: NSIndexPath) -> Bool {
@@ -217,10 +260,14 @@ class MainSettingsViewController: BaseViewController, UICollectionViewDataSource
 
     func collectionView(collectionView: UICollectionView, didSelectItemAtIndexPath indexPath: NSIndexPath) {
 
+        let shareOurStoryCell = isCellShareOurStoryAtIndexPath(indexPath)
         let asAboutCell = isCellAboutAtIndexPath(indexPath)
         let asPrivacyPolicyCell = isCellPrivacyPolicyAtIndexPath(indexPath)
 
-        if asAboutCell || asPrivacyPolicyCell  {
+        if shareOurStoryCell {
+            socialAction()
+        }
+        else if asAboutCell || asPrivacyPolicyCell  {
             webAction(asPrivacyPolicyCell)
         }
         else if isCellLogoutAtIndexPath(indexPath) {
