@@ -276,6 +276,13 @@ public class AddActivityManager: UITableView, UITableViewDelegate, UITableViewDa
                 // Create a cell's content for each frequent activity.
                 if let aInfos = activityInfoFromCache?.activities {
                     self.shadowActivities = aInfos
+                    if aInfos.isEmpty {
+                        // Advance the refresh guard if we have no cached activities
+                        self.nextActivityRowExpiry = now + 1.hours
+                    }
+                } else {
+                    // Advance the refresh guard if we have no cached activities
+                    self.nextActivityRowExpiry = now + 1.hours
                 }
 
                 // Refresh the table.
@@ -300,37 +307,38 @@ public class AddActivityManager: UITableView, UITableViewDelegate, UITableViewDa
                 shadowActivities = []
             }
 
-            // Refresh cache as needed.
-            let cacheKey = frequentActivityCacheKey(nowStart)
-
-            if frequentActivities.isEmpty || frequentActivitiesCache.objectForKey(cacheKey) == nil {
-                //log.info("FAQ refreshing cache")
-                frequentActivitiesCache.removeExpiredObjects()
-                refreshFrequentActivities()
-                return frequentActivityCells.isEmpty ? 1 : frequentActivityCells.count
-            }
-
-            // Filter activities to within the last 24 hours and create the row mapping.
             if nextActivityRowExpiry <= now {
-                //log.info("FAQ creating cells \(nextActivityRowExpiry) (now: \(now))")
-                //log.info("FAQ \(frequentActivities)")
+                // Refresh cache as needed.
+                let cacheKey = frequentActivityCacheKey(nowStart)
 
-                frequentActivityByRow.removeAll()
-                frequentActivityCells.removeAll()
-
-                let reorderedActivities: [FrequentActivity] = frequentActivities.map({ aInfo in
-                    if aInfo.start > now {
-                        return FrequentActivity(desc: aInfo.desc, start: aInfo.start - 1.days, duration: aInfo.duration)
-                    }
-                    return aInfo
-                }).sort({ $0.0.start < $0.1.start })
-
-                reorderedActivities.enumerate().forEach { (index, aInfo) in
-                    self.frequentActivityByRow[index] = aInfo
-                    self.frequentActivityCells[index] = self.frequentActivityCellView(index, aInfo: aInfo)
+                if frequentActivities.isEmpty || frequentActivitiesCache.objectForKey(cacheKey) == nil {
+                    //log.info("FAQ refreshing cache")
+                    frequentActivitiesCache.removeExpiredObjects()
+                    refreshFrequentActivities()
+                    return frequentActivityCells.isEmpty ? 1 : frequentActivityCells.count
                 }
+                else {
+                    //log.info("FAQ creating cells \(nextActivityRowExpiry) (now: \(now))")
+                    //log.info("FAQ \(frequentActivities)")
 
-                nextActivityRowExpiry = now + 1.hours
+                    // Filter activities to within the last 24 hours and create the row mapping.
+                    frequentActivityByRow.removeAll()
+                    frequentActivityCells.removeAll()
+
+                    let reorderedActivities: [FrequentActivity] = frequentActivities.map({ aInfo in
+                        if aInfo.start > now {
+                            return FrequentActivity(desc: aInfo.desc, start: aInfo.start - 1.days, duration: aInfo.duration)
+                        }
+                        return aInfo
+                    }).sort({ $0.0.start < $0.1.start })
+
+                    reorderedActivities.enumerate().forEach { (index, aInfo) in
+                        self.frequentActivityByRow[index] = aInfo
+                        self.frequentActivityCells[index] = self.frequentActivityCellView(index, aInfo: aInfo)
+                    }
+                    
+                    nextActivityRowExpiry = now + 1.hours
+                }
             } else {
                 //log.info("FAQ rows will expire at \(nextActivityRowExpiry) (now: \(now))")
             }

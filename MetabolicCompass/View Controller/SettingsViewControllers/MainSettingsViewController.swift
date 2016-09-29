@@ -81,7 +81,7 @@ class MainSettingsViewController: BaseViewController, UICollectionViewDataSource
 
         let doShare : String -> Void = { serviceType in
             if let vc = SLComposeViewController(forServiceType: serviceType) {
-                let msg = "Hi there, I'm using the Metabolic Compass app to track my body clock and to contribute to medical research from Johns Hopkins. You should check it out!"
+                let msg = "Check out Metabolic Compass -- tracks your body clock for medical research on metabolic syndrome at Johns Hopkins."
                 vc.setInitialText(msg)
                 vc.addURL(NSURL(string: "https://www.metaboliccompass.com"))
                 self.presentViewController(vc, animated: true, completion: nil)
