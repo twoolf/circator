@@ -115,16 +115,16 @@ class MetabolicDailyProgressChartView : HorizontalBarChartView, DailyChartModelP
         self.userInteractionEnabled = true
     }
 
-    func updateChartData (animate: Bool = true, valuesArr: [[Double]], chartColorsArray: [[UIColor]]) {
+    func updateChartData (animate: Bool = true, valuesAndColors: [NSDate: [(Double, UIColor)]]) {
         //days
         let days = ["", "", "", "", "", "", ""]
         var dataSetArray: [BarChartDataSet] = []
-        for (index, values) in valuesArr.enumerate() {
-            let entry = BarChartDataEntry.init(values: values, xIndex: index)
+        for (index, daysData) in valuesAndColors.sort({ $0.0.0 < $0.1.0 }).enumerate() {
+            let entry = BarChartDataEntry.init(values: daysData.1.map { $0.0 }, xIndex: index)
             let set = BarChartDataSet.init(yVals: [entry], label: nil)
             set.barSpace = 55
             set.drawValuesEnabled = false
-            set.colors = chartColorsArray[index]
+            set.colors = daysData.1.map { $0.1 }
             dataSetArray.append(set)
         }
         let data = BarChartData.init(xVals: days, dataSets: dataSetArray)

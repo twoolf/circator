@@ -61,8 +61,7 @@ class DailyChartModel : NSObject, UITableViewDataSource {
     var cachedDailyProgress: MCDailyProgressCache
     
     var delegate:DailyChartModelProtocol? = nil
-    var chartDataArray: [[Double]] = []
-    var chartColorsArray: [[UIColor]] = []
+    var chartDataAndColors: [NSDate: [(Double, UIColor)]] = [:]
     var fastingText: String = ""
     var lastAteText: String = ""
     var eatingText: String = ""
@@ -139,8 +138,8 @@ class DailyChartModel : NSObject, UITableViewDataSource {
     }
     
     func prepareChartData () {
-        self.chartDataArray = []
-        self.chartColorsArray = []
+        log.info("DCM resetting chart data with \(self.chartDataAndColors.count) values")
+        self.chartDataAndColors = [:]
         self.getDataForDay(nil, lastDay: false)
     }
 
@@ -211,8 +210,8 @@ class DailyChartModel : NSObject, UITableViewDataSource {
             })
         }, completion: { (dayInfoFromCache, loadedFromCache, error) in
             if (dayInfoFromCache != nil) {
-                self.chartColorsArray.append((dayInfoFromCache?.dayColors)!)
-                self.chartDataArray.append((dayInfoFromCache?.dayValues)!)
+                let dataAndColors = zip((dayInfoFromCache?.dayValues)!, (dayInfoFromCache?.dayColors)!).map { $0 }
+                self.chartDataAndColors[startDay] = dataAndColors
             }
             if !lastDay { //we still have data to retrieve
                 let nextIndex = dateIndex! + 1
@@ -221,7 +220,9 @@ class DailyChartModel : NSObject, UITableViewDataSource {
                     self.getDataForDay(self.daysArray[nextIndex], lastDay: lastElement)
                 }
             } else {//end of recursion
-                self.chartColorsArray = self.chartColorsArray.map { return $0.map(self.selectColor) }
+                for (key, daysData) in self.chartDataAndColors {
+                    self.chartDataAndColors[key] = daysData.map { valAndColor in (valAndColor.0, self.selectColor(valAndColor.1)) }
+                }
 
                 Async.main {
                     self.delegate?.dataCollectingFinished?()

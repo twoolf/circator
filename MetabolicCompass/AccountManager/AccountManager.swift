@@ -67,7 +67,6 @@ class AccountManager: NSObject {
     }
 
     func doLogout(completion: (Void -> Void)?) {
-//        self.isAuthorized = false
         UserManager.sharedManager.logoutWithCompletion(completion)
         IOSHealthManager.sharedManager.reset()
         self.contentManager.stopBackgroundWork()
@@ -97,7 +96,6 @@ class AccountManager: NSObject {
             }
 
             Async.main() {
-//                self.isAuthorized = true
                 self.contentManager.initializeBackgroundWork();
                 NSNotificationCenter.defaultCenter().postNotificationName(self.didCompleteLoginNotification, object: nil)
             }

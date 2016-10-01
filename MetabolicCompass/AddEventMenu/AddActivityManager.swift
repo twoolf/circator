@@ -37,6 +37,7 @@ public class AddActivityManager: UITableView, UITableViewDelegate, UITableViewDa
     // Row to activity date
     private var frequentActivityByRow: [Int: FrequentActivity] = [:]
     private var nextActivityRowExpiry: NSDate = NSDate().startOf(.Day)
+    private let nextActivityExpiryIncrement: NSDateComponents = 1.minutes // 10.minutes
 
     // Activity date to cell contents.
     private var frequentActivityCells: [Int: [UIView]] = [:]
@@ -172,10 +173,12 @@ public class AddActivityManager: UITableView, UITableViewDelegate, UITableViewDa
     }
 
     private func refreshFrequentActivities() {
-        let now = NSDate().startOf(.Hour)
+        let now = NSDate()
         let nowStart = now.startOf(.Day)
 
         let cacheKey = frequentActivityCacheKey(nowStart)
+
+        log.info("Refreshing activities \(self.nextActivityRowExpiry)")
 
         frequentActivitiesCache.setObjectForKey(cacheKey, cacheBlock: { (success, failure) in
             // if weekday populate from previous day and same day last week
@@ -271,18 +274,18 @@ public class AddActivityManager: UITableView, UITableViewDelegate, UITableViewDa
                     return
                 }
 
-                //log.info("FAQ refresh completion from cache: \(loadedFromCache)")
+                log.info("FAQ refresh completion from cache: \(loadedFromCache) \(activityInfoFromCache)")
 
                 // Create a cell's content for each frequent activity.
                 if let aInfos = activityInfoFromCache?.activities {
                     self.shadowActivities = aInfos
                     if aInfos.isEmpty {
                         // Advance the refresh guard if we have no cached activities
-                        self.nextActivityRowExpiry = now + 1.hours
+                        self.nextActivityRowExpiry = now + self.nextActivityExpiryIncrement
                     }
                 } else {
                     // Advance the refresh guard if we have no cached activities
-                    self.nextActivityRowExpiry = now + 1.hours
+                    self.nextActivityRowExpiry = now + self.nextActivityExpiryIncrement
                 }
 
                 // Refresh the table.
@@ -296,7 +299,7 @@ public class AddActivityManager: UITableView, UITableViewDelegate, UITableViewDa
 
     public func tableView(tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         if section == frequentActivitySectionIdx {
-            //log.info("FAQ retrieving #rows")
+            log.info("FAQ retrieving #rows \(shadowActivities.count) \(frequentActivities.count)")
 
             let now = NSDate()
             let nowStart = now.startOf(.Day)
@@ -337,7 +340,7 @@ public class AddActivityManager: UITableView, UITableViewDelegate, UITableViewDa
                         self.frequentActivityCells[index] = self.frequentActivityCellView(index, aInfo: aInfo)
                     }
                     
-                    nextActivityRowExpiry = now + 1.hours
+                    nextActivityRowExpiry = now + nextActivityExpiryIncrement
                 }
             } else {
                 //log.info("FAQ rows will expire at \(nextActivityRowExpiry) (now: \(now))")

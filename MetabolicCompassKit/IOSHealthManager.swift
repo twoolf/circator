@@ -112,7 +112,7 @@ public class IOSHealthManager: NSObject, WCSessionDelegate {
                             MCHealthManager.sharedManager.getOldestSampleDateForType(type) { date in
                                 if let minDate = date {
                                     log.info("Lower bound date for \(type.displayText ?? type.identifier): \(minDate)")
-                                    UserManager.sharedManager.setHistoricalRangeMinForType(type.identifier, min: minDate, sync: true)
+                                    UserManager.sharedManager.setHistoricalRangeMinForType(type, min: minDate, sync: true)
                                 }
                             }
                         }

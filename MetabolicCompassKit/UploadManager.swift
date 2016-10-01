@@ -17,6 +17,29 @@ import Granola
 import SwiftDate
 import SwiftyUserDefaults
 
+// Sorted array helpers.
+// From http://stackoverflow.com/questions/31904396/swift-binary-search-for-standard-array/33674192#33674192
+
+extension CollectionType where Index: RandomAccessIndexType {
+    /// Finds such index N that predicate is true for all elements up to
+    /// but not including the index N, and is false for all elements
+    /// starting with index N.
+    /// Behavior is undefined if there is no such N.
+    func binarySearch(predicate: Generator.Element -> Bool) -> Index {
+        var low = startIndex
+        var high = endIndex
+        while low != high {
+            let mid = low.advancedBy(low.distanceTo(high) / 2)
+            if predicate(self[mid]) {
+                low = mid.advancedBy(1)
+            } else {
+                high = mid
+            }
+        }
+        return low
+    }
+}
+
 // Randomized, truncated exponential backoff constants
 
 public let retryPeriodBase = 300
@@ -38,6 +61,12 @@ public class UMLogSequenceNumber: Object {
         self.init()
         self.msid = type.identifier
         self.seqid = 0
+    }
+
+    public convenience init(type: HKSampleType, seqNumber: Int) {
+        self.init()
+        self.msid = type.identifier
+        self.seqid = seqNumber
     }
 
     public override static func primaryKey() -> String? {
@@ -85,13 +114,8 @@ public class UMLogEntry: Object {
     // Note: because we may add a LSN for this type, this initializer must be called in a write block.
     public convenience init(realm: Realm!, sampleType: HKSampleType, ts: NSDate = NSDate(), anchor: HKQueryAnchor, added: [HKSample], deleted: [HKDeletedObject]) {
         self.init()
-        if let seq = realm.objectForPrimaryKey(UMLogSequenceNumber.self, key: sampleType.identifier) {
-            self.id = seq.incr()
-        } else {
-            let seq = UMLogSequenceNumber(type: sampleType)
-            realm.add(seq)
-            self.id = seq.incr()
-        }
+
+        self.id = self.incrSequenceNumberForType(realm, sampleType: sampleType)
         self.msid = sampleType.identifier
         self.ts = ts
         self.anchor = UploadManager.sharedManager.encodeRemoteAnchorAsData(anchor)
@@ -101,6 +125,25 @@ public class UMLogEntry: Object {
         self.compoundKey = compoundKeyValue()
         log.info("Created UMLogEntry")
         self.logEntry()
+    }
+
+    public static func initSequenceNumberForType(realm: Realm!, sampleType: HKSampleType, seqNumber: Int) {
+        let seq = UMLogSequenceNumber(type: sampleType, seqNumber: seqNumber)
+        realm.add(seq, update: true)
+    }
+
+    public static func sequenceNumberForType(realm: Realm!, sampleType: HKSampleType) -> UMLogSequenceNumber? {
+        return realm.objectForPrimaryKey(UMLogSequenceNumber.self, key: sampleType.identifier)
+    }
+
+    public func incrSequenceNumberForType(realm: Realm!, sampleType: HKSampleType) -> Int {
+        if let seq = UMLogEntry.sequenceNumberForType(realm, sampleType: sampleType) {
+            return seq.incr()
+        } else {
+            let seq = UMLogSequenceNumber(type: sampleType)
+            realm.add(seq)
+            return seq.incr()
+        }
     }
 
     public func setMSID(sampleType: HKSampleType) {
@@ -116,7 +159,7 @@ public class UMLogEntry: Object {
     public dynamic var compoundKey: String = ""
 
     public func compoundKeyValue() -> String {
-        return "\(msid)\(ts.timeIntervalSince1970)"
+        return "\(ts.timeIntervalSince1970)\(msid)"
     }
 
     public override static func primaryKey() -> String? {
@@ -126,18 +169,18 @@ public class UMLogEntry: Object {
     public func logEntry() {
         log.info("id:\(self.id)")
         log.info("msid:\(self.msid)")
-        log.info("ts:\(self.ts)")
-        log.info("anchor:\(self.anchor.base64EncodedStringWithOptions(NSDataBase64EncodingOptions(rawValue: 0)))")
+        log.info("ts:\(self.ts.timeIntervalSince1970)")
+        //log.info("anchor:\(self.anchor.base64EncodedStringWithOptions(NSDataBase64EncodingOptions(rawValue: 0)))")
         log.info("insert_uuids:\(self.insert_uuids.count)")
         log.info("delete_uuids:\(self.delete_uuids.count)")
-        log.info("retry_ts:\(self.retry_ts)")
-        log.info("retry_count:\(self.retry_count)")
+        //log.info("retry_ts:\(self.retry_ts)")
+        //log.info("retry_count:\(self.retry_count)")
     }
 
     public func logEntryCompact() {
         log.info("id:\(self.id)")
         log.info("msid:\(self.msid)")
-        log.info("ts:\(self.ts)")
+        log.info("ts:\(self.ts.timeIntervalSince1970)")
         log.info("retry_count:\(self.retry_count)")
     }
 
@@ -158,6 +201,7 @@ public class UploadManager: NSObject {
 
     // A buffer for creating batches of log entries prior to transmission.
     // Each element is a UMLogEntry primary key, an array of samples added, and an array of sample uuids deleted.
+    // This is maintained as a sorted array on the UMLogEntry primary key.
     var logEntryBatchBuffer: [(String, [HKSample], [NSUUID])] = []
 
     // Log entry upload configuration.
@@ -170,23 +214,85 @@ public class UploadManager: NSObject {
         super.init()
     }
 
+    // MARK: - initialize uploads.
+
+    public func resetUploadManager() {
+        log.info("Upload Manager state before reset")
+        logMetadata()
+
+        let realm = try! Realm()
+        try! realm.write {
+            // Initialize sequence numbers based on remote values.
+            let seqs = UserManager.sharedManager.getAcquisitionSeq()
+
+            if seqs.isEmpty {
+                log.warning("Skipping initsync, no remote seqnos found")
+            }
+
+            for (type, seqData) in seqs {
+                if let seqInfo = seqData as? [String:AnyObject], dataForIOS = seqInfo["ios"] as? Bool, remoteSeqNum = seqInfo["id"] as? Int
+                {
+                    if dataForIOS {
+                        var doInit = false
+                        var onDeviceSeq = 0
+                        let nextSeqNum = remoteSeqNum + 1
+
+                        if let seq = UMLogEntry.sequenceNumberForType(realm, sampleType: type) {
+                            doInit = seq.seqid < nextSeqNum
+                            onDeviceSeq = seq.seqid
+                        } else {
+                            doInit = true
+                        }
+
+                        if doInit {
+                            log.warning("Initsync seq for \(type.identifier): \(nextSeqNum)")
+                            UMLogEntry.initSequenceNumberForType(realm, sampleType: type, seqNumber: nextSeqNum)
+                        } else {
+                            log.warning("Skipping initsync seq for \(type.identifier) (found \(onDeviceSeq) on device vs \(remoteSeqNum) remotely)")
+                        }
+                    } else {
+                        log.warning("Skipping initsync seq for \(type.identifier) (not for iOS)")
+                    }
+                } else {
+                    log.warning("Skipping initsync seq for \(type.identifier) (no remote seq found)")
+                }
+            }
+
+            // Clean log entries.
+            for logEntry in realm.objects(UMLogEntry.self) {
+                if logEntry.insert_uuids.count > uploadBlockSize || logEntry.delete_uuids.count > uploadBlockSize {
+                    log.warning("Clearing log entry")
+                    logEntry.logEntry()
+                    realm.delete(logEntry)
+                }
+            }
+        }
+
+        log.info("Upload Manager state after reset")
+        logMetadata()
+    }
+
+    public func logMetadata() {
+        let realm = try! Realm()
+
+        realm.objects(UMLogSequenceNumber.self).forEach { seqno in
+            log.info("SEQ msid: \(seqno.msid) id: \(seqno.seqid)")
+        }
+
+
+        realm.objects(UMLogEntry.self).forEach { logEntry in
+            logEntry.logEntry()
+        }
+    }
+
     // MARK: - Remote encoding helpers.
+
     public func encodeRemoteAnchorAsData(anchor: HKQueryAnchor) -> NSData {
         return NSKeyedArchiver.archivedDataWithRootObject(anchor)
     }
 
     public func encodeRemoteAnchor(anchor: HKQueryAnchor) -> String {
         return encodeRemoteAnchorAsData(anchor).base64EncodedStringWithOptions(NSDataBase64EncodingOptions(rawValue: 0))
-    }
-
-    public func encodeLocalAnchorAsRemote(type: String, localAnchor: AnyObject) -> (String, String)? {
-        if let encodedKey = HMConstants.sharedInstance.hkToMCDB[type], data = localAnchor as? NSData {
-            return (encodedKey, data.base64EncodedStringWithOptions(NSDataBase64EncodingOptions(rawValue: 0)))
-        }
-        else {
-            log.error("Error encoding anchor for \(type)")
-            return nil
-        }
     }
 
     public func decodeRemoteAnchorFromData(remoteAnchor: NSData) -> HKQueryAnchor? {
@@ -223,12 +329,22 @@ public class UploadManager: NSObject {
     }
 
     public func getRemoteAnchorForType(type: HKSampleType) -> HKQueryAnchor? {
-        if let key = HMConstants.sharedInstance.hkToMCDB[type.identifier],
-               seqInfo = UserManager.sharedManager.getAcquisitionSeq(key) as? [String:AnyObject],
-               dataForIOS = seqInfo["ios"] as? Bool,
-               remoteAnchor = seqInfo["data"] as? String
+        if let seqInfo = UserManager.sharedManager.getAcquisitionSeq(type) as? [String:AnyObject]
         {
-            if dataForIOS { return decodeRemoteAnchor(remoteAnchor) }
+            log.warning("ULM retrieving remote anchor for \(type.identifier) from \(seqInfo)")
+            if let dataForIOS = seqInfo["ios"] as? Bool, remoteAnchor = seqInfo["data"] as? String {
+                if dataForIOS {
+                    let result = decodeRemoteAnchor(remoteAnchor)
+                    log.warning("ULM decoding remote anchor for \(type.identifier) \(result)")
+                    return result
+                } else {
+                    log.warning("ULM skipping remote anchor decode for \(type.identifier), not iOS")
+                }
+            } else {
+                log.warning("ULM Invalid seq fields for remote anchor decode on \(type.identifier)")
+            }
+        } else {
+            log.warning("ULM Invalid seq dict for remote anchor decode on \(type.identifier)")
         }
         return nil
     }
@@ -251,34 +367,34 @@ public class UploadManager: NSObject {
         // If we already have a historical range, we filter samples to the current timestamp.
         if anchor == noAnchor
         {
-            if let (_, hend) = UserManager.sharedManager.getHistoricalRangeForType(type.identifier) {
-                // We use acquisition seqids stored in the remote profile if available,
-                // to grab all data since the last acquisition seqid uploaded to the server.
-                if let anchorForType = getRemoteAnchorForType(type)
-                {
-                    // We have a remote anchor available, and do not use a temporal predicate.
-                    anchor = anchorForType
-                    remoteAnchor = true
-                    log.info("Data import from anchor \(anchor): \(tname)")
-                } else {
-                    // We have no server acquisition time available.
-                    // Here, we upload all samples between the end of the historical range (i.e., when the
-                    // app was first run on the device), to a point in the near future.
-                    let nearFuture = 1.minutes.fromNow
-                    let pstart = NSDate(timeIntervalSinceReferenceDate: hend)
-                    predicate = HKQuery.predicateForSamplesWithStartDate(pstart, endDate: nearFuture, options: .None)
-                    log.info("Data import from \(pstart) \(nearFuture): \(tname)")
-
-                }
-            } else {
-                // We have no anchor available.
+            // We use anchors stored in the remote profile if available,
+            // to grab all data since the last anchor uploaded to the server.
+            if let anchorForType = getRemoteAnchorForType(type) {
+                // We have a remote anchor available, and do not use a temporal predicate.
+                anchor = anchorForType
+                remoteAnchor = true
+                log.info("Data import from anchor \(anchor): \(tname)")
+            }
+            else if let (_, hend) = UserManager.sharedManager.getHistoricalRangeForType(type) {
+                // We have no server anchor available.
+                // Here, we upload all samples between the end of the historical range (i.e., when the
+                // app was first run on the device), to a point in the near future.
+                let nearFuture = 1.minutes.fromNow
+                let pstart = NSDate(timeIntervalSinceReferenceDate: hend)
+                predicate = HKQuery.predicateForSamplesWithStartDate(pstart, endDate: nearFuture, options: .None)
+                log.info("Data import from \(pstart) \(nearFuture): \(tname)")
+            }
+            else {
+                // We have no anchor or archive span available.
                 // We consider this the first run of the app on this device, and initialize the historical range
                 // (i.e., the archive span).
                 // This captures how much data is available on the device prior to using our app.
-                let (start, end) = UserManager.sharedManager.initializeHistoricalRangeForType(type.identifier, sync: true)
+                let (start, end) = UserManager.sharedManager.initializeHistoricalRangeForType(type, sync: true)
                 let (dstart, dend) = (NSDate(timeIntervalSinceReferenceDate: start), NSDate(timeIntervalSinceReferenceDate: end))
                 predicate = HKQuery.predicateForSamplesWithStartDate(dstart, endDate: dend, options: .None)
                 needOldestSamples = true
+                log.info("Initialized historical range for \(tname): \(dstart) \(dend)")
+
             }
         }
 
@@ -313,19 +429,28 @@ public class UploadManager: NSObject {
         ]
 
         var measures: [String] = []
+        if let measureSeqId = seqIdOfSampleTypeId(logEntry.msid) {
+            measures = [measureSeqId]
+        } else {
+            log.error("ULM No MCDB seq id found for \(logEntry.msid)")
+            return nil
+        }
+
+        /*
         if let measureid = HMConstants.sharedInstance.hkToMCDB[logEntry.msid] {
             measures = [measureid]
         }
         else if logEntry.msid == HKWorkoutType.workoutType().identifier {
-            measures = ["meal_duration", "food_type", "activity_duration", "activity_type", "activity_value"]
+            measures = ["activity"]
         }
-        else if let _ = HMConstants.sharedInstance.hkQuantityToMCDBActivity[logEntry.msid] {
-            measures = ["activity_duration", "activity_type", "activity_value"]
+        else if let (category,_) = HMConstants.sharedInstance.hkQuantityToMCDBActivity[logEntry.msid] {
+            measures = ["activity"]
         }
         else {
             log.warning("No MCDB identifier found for \(logEntry.msid)")
             return nil
         }
+        */
 
         return [
             "seq": seqInfo,
@@ -432,7 +557,7 @@ public class UploadManager: NSObject {
 
                             try! realm.write {
                                 if logEntry.retry_count < maxRetries {
-                                    // Plan for the next retry regardless of wehther the above log entry upload request fails.
+                                    // Plan for the next retry regardless of whether the above log entry upload request fails.
                                     let backoff = max(maxBackoff, self.rngSource.nextIntWithUpperBound(logEntry.retry_count) * retryPeriodBase)
                                     logEntry.retry_ts = now + backoff.seconds
                                     logEntry.retry_count += 1
@@ -472,6 +597,7 @@ public class UploadManager: NSObject {
 
     func syncLogEntryBuffer() {
         if !logEntryBatchBuffer.isEmpty {
+            log.warning("ULM SYNC")
             autoreleasepool { _ in
                 let batchSize = min(logEntryBatchBuffer.count, logEntryUploadBatchSize)
                 let uploadSlice = logEntryBatchBuffer[0..<batchSize]
@@ -481,21 +607,26 @@ public class UploadManager: NSObject {
 
                 let realm = try! Realm()
 
-                uploadSlice.forEach {
-                    if let logEntry = realm.objectForPrimaryKey(UMLogEntry.self, key: $0.0) {
-                        if let params = self.jsonifyLogEntry(logEntry, added: $0.1, deleted: $0.2) {
-                            log.info("Syncing UMLogEntry")
-                            logEntry.logEntryCompact()
-                            block.append(params)
-                            blockKeys.append($0.0)
+                let blockBuildStart = NSDate()
+                uploadSlice.forEach { batch in
+                    autoreleasepool { _ in
+                        if let logEntry = realm.objectForPrimaryKey(UMLogEntry.self, key: batch.0) {
+                            if let params = self.jsonifyLogEntry(logEntry, added: batch.1, deleted: batch.2) {
+                                log.info("Serialized UMLogEntry \(batch.1.count) \(batch.2.count)")
+                                logEntry.logEntryCompact()
+                                block.append(params)
+                                blockKeys.append(batch.0)
+                            } else {
+                                log.warning("Unable to JSONify log entry")
+                                logEntry.logEntry()
+                            }
                         } else {
-                            log.warning("Unable to JSONify log entry")
-                            logEntry.logEntry()
+                            log.warning("No log entry found for key: \(batch.0)")
                         }
-                    } else {
-                        log.warning("No log entry found for key: \($0.0)")
                     }
                 }
+
+                log.warning("ULM blockbuild: \(NSDate().timeIntervalSinceDate(blockBuildStart))")
 
                 if block.count > 0 {
                     log.info("Syncing \(block.count) log entries with keys \(blockKeys.joinWithSeparator(", "))")
@@ -513,6 +644,7 @@ public class UploadManager: NSObject {
                 // Recur as an upload loop while we still have elements in the upload queue.
                 logEntryBatchBuffer.removeFirst(batchSize)
                 if !logEntryBatchBuffer.isEmpty {
+                    log.warning("ULM BBSR \(logEntryBatchBuffer.count)")
                     logEntryUploadAsync?.cancel()
                     logEntryUploadAsync = Async.customQueue(self.uploadQueue, after: logEntryUploadDelay) {
                         self.syncLogEntryBuffer()
@@ -525,7 +657,32 @@ public class UploadManager: NSObject {
     }
 
     func batchLogEntryUpload(logEntryKey: String, added: [HKSample], deleted: [NSUUID]) {
-        logEntryBatchBuffer.append((logEntryKey, added, deleted))
+        if logEntryBatchBuffer.isEmpty {
+            logEntryBatchBuffer.append((logEntryKey, added, deleted))
+        }
+        else if logEntryKey < logEntryBatchBuffer[0].0 {
+            logEntryBatchBuffer.insert((logEntryKey, added, deleted), atIndex: 0)
+        }
+        else {
+            var inserted = false
+            if let lst = logEntryBatchBuffer.last {
+                if logEntryKey > lst.0 {
+                    inserted = true
+                    logEntryBatchBuffer.append((logEntryKey, added, deleted))
+                }
+            }
+
+            if !inserted {
+                let index = logEntryBatchBuffer.binarySearch { $0.0 < logEntryKey }
+                if logEntryBatchBuffer[index].0 != logEntryKey {
+                    logEntryBatchBuffer.insert((logEntryKey, added, deleted), atIndex: index)
+                } else {
+                    log.warning("ULM skipping duplicate pending for \(logEntryKey)")
+                }
+            }
+        }
+
+
         logEntryUploadAsync?.cancel()
         logEntryUploadAsync = Async.customQueue(self.uploadQueue, after: logEntryUploadDelay) {
             self.syncLogEntryBuffer()
@@ -535,6 +692,8 @@ public class UploadManager: NSObject {
         if logEntryBatchBuffer.count > uploadBufferThrottleLimit && !NSThread.isMainThread() {
             log.warning("Throttling upload enqueueing for \(logEntryUploadDelay * 3) secs")
             NSThread.sleepForTimeInterval(logEntryUploadDelay * 3)
+        } else {
+            log.warning("ULM BBSA \(logEntryBatchBuffer.count)")
         }
     }
 
@@ -560,19 +719,19 @@ public class UploadManager: NSObject {
 
                     (0..<totalBlocks).forEach { _ in
                         autoreleasepool { _ in
-                            let lAdded = addedIndex < added.count ? added[addedIndex..<min(addedIndex + uploadBlockSize, added.count)] : []
+                            let lAdded = (addedIndex < added.count ? added[addedIndex..<min(addedIndex + uploadBlockSize, added.count)] : []).map { $0 }
 
                             let numDeleted = uploadBlockSize - lAdded.count
-                            let lDeleted = numDeleted > 0 && deletedIndex < deleted.count ? deleted[deletedIndex..<min(deletedIndex + numDeleted, deleted.count)] : []
+                            let lDeleted = (numDeleted > 0 && deletedIndex < deleted.count ? deleted[deletedIndex..<min(deletedIndex + numDeleted, deleted.count)] : []).map { $0 }
 
-                            let logEntry = UMLogEntry(realm: realm, sampleType: type, anchor: anchor, added: lAdded.map { $0 } , deleted: lDeleted.map { $0 })
+                            let logEntry = UMLogEntry(realm: realm, sampleType: type, anchor: anchor, added: lAdded, deleted: lDeleted)
                             realm.add(logEntry)
 
                             addedIndex += lAdded.count
                             deletedIndex += lDeleted.count
 
                             // Add to upload queue
-                            batchLogEntryUpload(logEntry.compoundKey, added: added, deleted: deleted.map { $0.UUID })
+                            batchLogEntryUpload(logEntry.compoundKey, added: lAdded, deleted: lDeleted.map { $0.UUID })
                         }
                     }
                 }
@@ -603,43 +762,11 @@ public class UploadManager: NSObject {
         }
     }
 
-    public func cleanPendingUploads() {
-        log.info("Upload Manager state before reset")
-        logMetadata()
-
-        let realm = try! Realm()
-        try! realm.write {
-            for logEntry in realm.objects(UMLogEntry.self) {
-                if logEntry.insert_uuids.count > uploadBlockSize || logEntry.delete_uuids.count > uploadBlockSize {
-                    log.warning("Clearing log entry")
-                    logEntry.logEntry()
-                    realm.delete(logEntry)
-                }
-            }
-        }
-
-        log.info("Upload Manager state after reset")
-        logMetadata()
-    }
-
-    public func logMetadata() {
-        let realm = try! Realm()
-
-        realm.objects(UMLogSequenceNumber.self).forEach { seqno in
-            log.info("SEQ msid: \(seqno.msid) id: \(seqno.seqid)")
-        }
-
-
-        realm.objects(UMLogEntry.self).forEach { logEntry in
-            logEntry.logEntry()
-        }
-    }
-
     // MARK: - Upload helpers.
 
     private func uploadInitialAnchorForType(type: HKSampleType, completion: (Bool, (Bool, NSDate)?) -> Void) {
         let tname = type.displayText ?? type.identifier
-        if let wend = UserManager.sharedManager.getHistoricalRangeStartForType(type.identifier) {
+        if let wend = UserManager.sharedManager.getHistoricalRangeStartForType(type) {
             let dwend = NSDate(timeIntervalSinceReferenceDate: wend)
             let dwstart = UserManager.sharedManager.decrAnchorDate(dwend)
             let pred = HKQuery.predicateForSamplesWithStartDate(dwstart, endDate: dwend, options: .None)
@@ -651,10 +778,10 @@ public class UploadManager: NSObject {
 
                 let hksamples = samples as! [HKSample]
                 UploadManager.sharedManager.putSample(type, added: hksamples)
-                UserManager.sharedManager.decrHistoricalRangeStartForType(type.identifier)
+                UserManager.sharedManager.decrHistoricalRangeStartForType(type)
 
                 log.info("Uploaded \(tname) to \(dwstart)")
-                if let min = UserManager.sharedManager.getHistoricalRangeMinForType(type.identifier) {
+                if let min = UserManager.sharedManager.getHistoricalRangeMinForType(type) {
                     let dmin = NSDate(timeIntervalSinceReferenceDate: min)
                     if dwstart > dmin {
                         completion(false, (false, dwstart))
@@ -673,8 +800,8 @@ public class UploadManager: NSObject {
 
     private func backgroundUploadForType(type: HKSampleType, completion: (Bool, (Bool, NSDate)?) -> Void) {
         let tname = type.displayText ?? type.identifier
-        if let _ = UserManager.sharedManager.getHistoricalRangeForType(type.identifier),
-            _ = UserManager.sharedManager.getHistoricalRangeMinForType(type.identifier)
+        if let _ = UserManager.sharedManager.getHistoricalRangeForType(type),
+            _ = UserManager.sharedManager.getHistoricalRangeMinForType(type)
         {
             self.uploadInitialAnchorForType(type, completion: completion)
         } else {
@@ -689,7 +816,7 @@ public class UploadManager: NSObject {
         MCHealthManager.sharedManager.authorizeHealthKit { (success, _) -> Void in
             guard success else { return }
 
-            UploadManager.sharedManager.cleanPendingUploads()
+            UploadManager.sharedManager.resetUploadManager()
             UploadManager.sharedManager.retryPendingUploads(true)
 
             let splitArray: (Int, [HKSampleType]) -> [[HKSampleType]] = { (chunkSize, arr) in

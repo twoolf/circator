@@ -186,13 +186,12 @@ class DailyProgressViewController : UIViewController, DailyChartModelProtocol {
             }
 
             self.dailyProgressChartView.updateChartData(self.updateContentWithAnimation,
-                                                        valuesArr: self.dailyChartModel.chartDataArray,
-                                                        chartColorsArray: self.dailyChartModel.chartColorsArray)
+                valuesAndColors: self.dailyChartModel.chartDataAndColors)
             self.updateContentWithAnimation = true
             self.dailyProgressChartView.setNeedsDisplay()
         }
     }
-    
+
     func dailyProgressStatCollected() {
         self.dailyEatingLabel.attributedText = self.dailyChartModel.eatingText.formatTextWithRegex("[-+]?(\\d*[.,])?\\d+",
                                                                                                     format: [NSForegroundColorAttributeName: UIColor.whiteColor()],

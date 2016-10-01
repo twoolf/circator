@@ -90,6 +90,55 @@ extension Dictionary {
     }
 }
 
+// Namespace helpers.
+internal func seqIdOfSampleTypeId(typeIdentifier: String) -> String? {
+    if let key = HMConstants.sharedInstance.hkToMCDB[typeIdentifier] {
+        return key
+    }
+    else if let (category,_) = HMConstants.sharedInstance.hkQuantityToMCDBActivity[typeIdentifier] {
+        return category
+    }
+    else if typeIdentifier == HKWorkoutType.workoutType().identifier {
+        return "activity"
+    }
+    return nil
+}
+
+internal func sampleTypeIdOfSeqId(anchorIdentifier: String) -> String? {
+    if anchorIdentifier == "activity" {
+        return HKWorkoutType.workoutType().identifier
+    }
+    else if let (_,typeIdentifier) = HMConstants.sharedInstance.mcdbActivityToHKQuantity[anchorIdentifier] {
+        return typeIdentifier
+    }
+    else if let typeIdentifier = HMConstants.sharedInstance.mcdbToHK[anchorIdentifier] {
+        return typeIdentifier
+    }
+    return nil
+}
+
+internal func sampleTypeOfTypeId(typeIdentifier: String) -> HKSampleType? {
+    if typeIdentifier == HKWorkoutType.workoutType().identifier {
+        return HKWorkoutType.workoutType()
+    }
+    else if typeIdentifier == HKCategoryTypeIdentifierAppleStandHour
+                || typeIdentifier == HKCategoryTypeIdentifierSleepAnalysis
+    {
+        return HKSampleType.categoryTypeForIdentifier(typeIdentifier)
+    } else {
+        return HKSampleType.quantityTypeForIdentifier(typeIdentifier)
+    }
+
+}
+
+internal func sampleTypeOfSeqId(anchorIdentifier: String) -> HKSampleType? {
+    if let typeId = sampleTypeIdOfSeqId(anchorIdentifier) {
+        return sampleTypeOfTypeId(typeId)
+    }
+    return nil
+}
+
+
 /**
  This manages the users for Metabolic Compass. We need to enable users to maintain access to their data and to delete themselves from the study if they so desire. In addition we maintain, in this class, the ability to do this securely, using OAuth and our third party authenticator (Stormpath)
 
@@ -106,6 +155,7 @@ public class UserManager {
     public static let initialProfileDataKey = "initialProfileData"
     public static let additionalInfoDataKey = "additionalInfoData"
     private static let firstLoginKey = "firstLoginKey"
+
     // Primary user
     public var userId: String? {
         get {
@@ -145,7 +195,7 @@ public class UserManager {
         .Photo        : [:],
         .Profile      : [:],
         .Settings     : [:],
-        .ArchiveSpan  : [:],
+        .ArchiveSpan  : [HMHRangeMinKey: [String:AnyObject](), HMHRangeStartKey: [String:AnyObject](), HMHRangeEndKey: [String:AnyObject]()],
         .LastAcquired : [:]
     ]
 
@@ -170,8 +220,12 @@ public class UserManager {
         .LastAcquired : (nil, 1.0)
     ]
 
+    // Custom component update task queue
+    let componentUpdateQueue: dispatch_queue_t!
+
     init() {
         StormpathConfiguration.defaultConfiguration.APIURL = MCRouter.baseURL
+        self.componentUpdateQueue = dispatch_queue_create("UserManangerUpdateQueue", DISPATCH_QUEUE_SERIAL)
     }
 
     // MARK: - Account status, and authentication
@@ -566,6 +620,10 @@ public class UserManager {
         return Dictionary(pairs: data.map { kv in return (lastAcquiredServerId(kv.0)!, kv.1) })
     }
 
+    public func downloadLastAcquiredExtractor(data: [String:AnyObject]) -> [String:AnyObject] {
+        return Dictionary(pairs: data.map { kv in return (lastAcquiredClientId(kv.0)!, kv.1) })
+    }
+
 
     // MARK: - Account component accessors
 
@@ -588,9 +646,7 @@ public class UserManager {
             case .ArchiveSpan:
                 return [componentName: self.uploadArchiveSpanExtractor(componentData)]
             case .LastAcquired:
-                fallthrough
-            default: break
-//                return [componentName: self.uploadLastAcquiredExtractor(componentData)]
+                return [componentName: self.uploadLastAcquiredExtractor(componentData)]
             }
         }
         return nil
@@ -631,7 +687,7 @@ public class UserManager {
 
         case .LastAcquired:
             if let componentData = response[componentName] as? [String:AnyObject] {
-                return componentData
+                return self.downloadLastAcquiredExtractor(componentData)
             }
             return nil
         }
@@ -744,11 +800,8 @@ public class UserManager {
     }
 
     private func refreshComponentCache(component: AccountComponent, componentData: [String:AnyObject]) {
-        if var cache = componentCache[component] {
-            for (k,v) in componentData {
-                cache.updateValue(v, forKey: k)
-            }
-            componentCache[component] = cache
+        for (k,v) in componentData {
+            componentCache[component]?.updateValue(v, forKey: k)
         }
     }
 
@@ -915,9 +968,10 @@ public class UserManager {
         return nil
     }
 
-    public func getHistoricalRangeForType(key: String) -> (NSTimeInterval, NSTimeInterval)? {
+    public func getHistoricalRangeForType(type: HKSampleType) -> (NSTimeInterval, NSTimeInterval)? {
+
         let cache = getArchiveSpanCache()
-        if let k = hkToMCDB(key),
+        if let k = seqIdOfSampleTypeId(type.identifier),
                s = cache[HMHRangeStartKey]?[k] as? NSTimeInterval,
                e = cache[HMHRangeEndKey]?[k] as? NSTimeInterval
         {
@@ -926,61 +980,68 @@ public class UserManager {
         return nil
     }
 
-    public func initializeHistoricalRangeForType(key: String, sync: Bool = false) -> (NSTimeInterval, NSTimeInterval) {
-        var cache = getArchiveSpanCache()
+    public func initializeHistoricalRangeForType(type: HKSampleType, sync: Bool = false) -> (NSTimeInterval, NSTimeInterval) {
         let (start, end) = (decrAnchorDate(NSDate()).timeIntervalSinceReferenceDate, NSDate().timeIntervalSinceReferenceDate)
-        if cache[HMHRangeStartKey] == nil { cache[HMHRangeStartKey] = [:] }
-        if cache[HMHRangeEndKey]   == nil { cache[HMHRangeEndKey]   = [:] }
 
-        if let k = hkToMCDB(key),
-           var sdict = cache[HMHRangeStartKey] as? [String: AnyObject],
-           var edict = cache[HMHRangeEndKey] as? [String: AnyObject]
-        {
-            sdict.updateValue(start, forKey: k)
-            edict.updateValue(end, forKey: k)
-            let newSpan = [HMHRangeStartKey: sdict, HMHRangeEndKey: edict]
-            deferredPushOnAccountComponent(.ArchiveSpan, refresh: true, sync: sync, componentData: newSpan)
+        Async.customQueue(self.componentUpdateQueue) {
+            var cache = self.getArchiveSpanCache()
+            if let k = seqIdOfSampleTypeId(type.identifier),
+               var sdict = cache[HMHRangeStartKey] as? [String: AnyObject],
+               var edict = cache[HMHRangeEndKey] as? [String: AnyObject]
+            {
+                sdict.updateValue(start, forKey: k)
+                edict.updateValue(end, forKey: k)
+                let newSpan = [HMHRangeStartKey: sdict, HMHRangeEndKey: edict]
+                self.deferredPushOnAccountComponent(.ArchiveSpan, refresh: true, sync: sync, componentData: newSpan)
+            }
         }
 
         return (start, end)
     }
 
-    public func getHistoricalRangeStartForType(key: String) -> NSTimeInterval? {
+    public func getHistoricalRangeStartForType(type: HKSampleType) -> NSTimeInterval? {
         let cache = getArchiveSpanCache()
-        if let k = hkToMCDB(key) { return cache[HMHRangeStartKey]?[k] as? NSTimeInterval }
+        if let k = seqIdOfSampleTypeId(type.identifier) {
+            return cache[HMHRangeStartKey]?[k] as? NSTimeInterval
+        }
         return nil
     }
 
-    public func decrHistoricalRangeStartForType(key: String, sync: Bool = false) {
-        let cache = getArchiveSpanCache()
-        if let k = hkToMCDB(key),
-           var sdict = cache[HMHRangeStartKey] as? [String: AnyObject],
-           let start = sdict[k] as? NSTimeInterval
-        {
-            let newDate = decrAnchorDate(NSDate(timeIntervalSinceReferenceDate: start)).timeIntervalSinceReferenceDate
-            sdict.updateValue(newDate, forKey: k)
-            let newSpan = [HMHRangeStartKey: sdict]
-            deferredPushOnAccountComponent(.ArchiveSpan, refresh: true, sync: sync, componentData: newSpan)
-        } else {
-            log.error("Could not find historical sample range for \(key)")
+    public func decrHistoricalRangeStartForType(type: HKSampleType, sync: Bool = false) {
+        Async.customQueue(self.componentUpdateQueue) {
+            let cache = self.getArchiveSpanCache()
+            if let k = seqIdOfSampleTypeId(type.identifier),
+                var sdict = cache[HMHRangeStartKey] as? [String: AnyObject],
+                let start = sdict[k] as? NSTimeInterval
+            {
+                let newDate = self.decrAnchorDate(NSDate(timeIntervalSinceReferenceDate: start)).timeIntervalSinceReferenceDate
+                sdict.updateValue(newDate, forKey: k)
+                let newSpan = [HMHRangeStartKey: sdict]
+                self.deferredPushOnAccountComponent(.ArchiveSpan, refresh: true, sync: sync, componentData: newSpan)
+            } else {
+                log.error("Could not find historical sample range for \(type.identifier)")
+            }
         }
     }
 
-    public func getHistoricalRangeMinForType(key: String) -> NSTimeInterval? {
+    public func getHistoricalRangeMinForType(type: HKSampleType) -> NSTimeInterval? {
         let cache = getArchiveSpanCache()
-        if let k = hkToMCDB(key) { return cache[HMHRangeMinKey]?[k] as? NSTimeInterval }
+        if let k = seqIdOfSampleTypeId(type.identifier) {
+            return cache[HMHRangeMinKey]?[k] as? NSTimeInterval
+        }
         return nil
     }
 
-    public func setHistoricalRangeMinForType(key: String, min: NSDate, sync: Bool = false) {
-        var cache = getArchiveSpanCache()
-        if cache[HMHRangeMinKey] == nil { cache[HMHRangeMinKey] = [:] }
-        if let k = hkToMCDB(key),
-           var mdict = cache[HMHRangeMinKey] as? [String: AnyObject]
-        {
-            mdict.updateValue(min.timeIntervalSinceReferenceDate, forKey: k)
-            let newSpan = [HMHRangeMinKey: mdict]
-            deferredPushOnAccountComponent(.ArchiveSpan, refresh: true, sync: sync, componentData: newSpan)
+    public func setHistoricalRangeMinForType(type: HKSampleType, min: NSDate, sync: Bool = false) {
+        Async.customQueue(self.componentUpdateQueue) {
+            var cache = self.getArchiveSpanCache()
+            if cache[HMHRangeMinKey] == nil { cache[HMHRangeMinKey] = [:] }
+            if let k = seqIdOfSampleTypeId(type.identifier), var mdict = cache[HMHRangeMinKey] as? [String: AnyObject]
+            {
+                mdict.updateValue(min.timeIntervalSinceReferenceDate, forKey: k)
+                let newSpan = [HMHRangeMinKey: mdict]
+                self.deferredPushOnAccountComponent(.ArchiveSpan, refresh: true, sync: sync, componentData: newSpan)
+            }
         }
     }
 
@@ -992,18 +1053,40 @@ public class UserManager {
 
     // MARK : - Last acquisition times.
 
-    public func getAcquisitionSeq() -> [String: AnyObject] { return getCachedComponent(.LastAcquired) }
+    public func getAcquisitionSeq() -> [HKSampleType: AnyObject] {
+        let mcdbSeqs = getCachedComponent(.LastAcquired)
+        var typedSeqs: [HKSampleType: AnyObject] = [:]
+        for (typeId, seqData) in mcdbSeqs {
+            if let type = sampleTypeOfTypeId(typeId) {
+                typedSeqs.updateValue(seqData, forKey: type)
+            }
+            else {
+                log.error("UserManager could not retrieve seq for: \(typeId)")
+            }
+        }
+        return typedSeqs
+    }
 
-    public func getAcquisitionSeq(key: String) -> AnyObject? { return getCachedComponent(.LastAcquired)[key] }
+    public func getAcquisitionSeq(type: HKSampleType) -> AnyObject? {
+        return getCachedComponent(.LastAcquired)[type.identifier]
+    }
 
     public func resetAcquisitionSeq() { resetCachedComponent(.LastAcquired) }
 
-    public func setAcquisitionSeq(seqids: [String: AnyObject], sync: Bool = false) {
-        deferredPushOnAccountComponent(.LastAcquired, refresh: true, sync: sync, componentData: seqids)
-    }
-
     public func syncAcquisitionSeq(completion: SvcResultCompletion) {
         syncAccountComponent(.LastAcquired, completion: completion)
+    }
+
+    public func setAcquisitionSeq(seqs: [String: AnyObject], sync: Bool = false) {
+        deferredPushOnAccountComponent(.LastAcquired, refresh: true, sync: sync, componentData: seqs)
+    }
+
+    public func setAcquisitionSeq(typedSeqs: [HKSampleType: AnyObject], sync: Bool = false) {
+        var seqs: [String: AnyObject] = [:]
+        for (type, seqData) in typedSeqs {
+            seqs.updateValue(seqData, forKey: type.identifier)
+        }
+        setAcquisitionSeq(seqs, sync: sync)
     }
 
 
@@ -1039,8 +1122,8 @@ public class UserManager {
     func archiveSpanClientId(key: String) -> String { return UserManager.archiveSpanClient[key]! }
     func archiveSpanServerId(key: String) -> String { return UserManager.archiveSpanServer[key]! }
 
-    func lastAcquiredClientId(key: String) -> String? { return hkToMCDB(key) }
-    func lastAcquiredServerId(key: String) -> String? { return mcdbToHK(key) }
+    func lastAcquiredClientId(key: String) -> String? { return sampleTypeIdOfSeqId(key) }
+    func lastAcquiredServerId(key: String) -> String? { return seqIdOfSampleTypeId(key) }
 
 
     // MARK : - Utility functions
