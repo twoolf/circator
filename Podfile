@@ -30,7 +30,7 @@ def shared_pods
     pod 'RealmSwift', '~> 1.0'
     pod 'SORandom'
     pod 'Stormpath', '~> 1.2'
-    pod 'SwiftChart', '~> 0.2'
+    pod 'SwiftChart', '= 0.2.1'
     pod 'SwiftDate', '~> 3.0'
     pod 'SwiftyBeaver', ‘= 0.5.4'
     pod 'SwiftyJSON', '~> 2.0'
