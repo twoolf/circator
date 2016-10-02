@@ -49,7 +49,7 @@ end
 
 target 'MetabolicCompassWatchExtension' do 
  platform :watchos, '2.0'
- pod 'SwiftDate'
+ pod 'SwiftDate', '~> 3.0'
  pod 'SwiftyBeaver',  ‘= 0.5.4'
  pod 'AwesomeCache'
  pod 'MCCircadianQueries', :git => 'https://github.com/twoolf/MCCircadianQueries.git'
@@ -57,7 +57,7 @@ end
 
 target 'MetabolicCompassWatch' do
  platform :watchos, '2.0'
- pod 'SwiftDate'
+ pod 'SwiftDate', '~> 3.0'
  pod 'SwiftyBeaver',  ‘= 0.5.4'
  pod 'AwesomeCache'
  pod 'MCCircadianQueries', :git => 'https://github.com/twoolf/MCCircadianQueries.git'
