@@ -2,7 +2,8 @@ use_frameworks!
 
 def shared_pods
     pod 'ResearchKit', :git => 'https://github.com/twoolf/ResearchKit.git'
-    pod 'MCCircadianQueries', :git => 'https://github.com/twoolf/MCCircadianQueries.git'
+    #pod 'MCCircadianQueries', :git => 'https://github.com/twoolf/MCCircadianQueries.git'
+    pod 'MCCircadianQueries', :path => '/Users/yanif/Desktop/circator/circator-queries'
     pod 'Charts', :git => 'https://github.com/danielgindi/ios-charts.git', :commit => '098b961b4c'
     pod 'EasyAnimation'
     pod 'Alamofire', '~> 2.0'
@@ -33,6 +34,8 @@ def shared_pods
     pod 'HealthKitSampleGenerator'
     pod 'ReachabilitySwift'
     pod 'Navajo-Swift'
+    pod 'ARSLineProgress', '~> 1.0'
+    pod 'NVActivityIndicatorView', '~> 2.12'
 end
 
 target 'MetabolicCompassKit' do
@@ -50,7 +53,8 @@ target 'MetabolicCompassWatchExtension' do
  pod 'SwiftDate'
  pod 'SwiftyBeaver',  ‘= 0.5.4'
  pod 'AwesomeCache'
- pod 'MCCircadianQueries', :git => 'https://github.com/twoolf/MCCircadianQueries.git'
+ #pod 'MCCircadianQueries', :git => 'https://github.com/twoolf/MCCircadianQueries.git'
+ pod 'MCCircadianQueries', :path => '/Users/yanif/Desktop/circator/circator-queries'
 end
 
 target 'MetabolicCompassWatch' do
@@ -58,7 +62,8 @@ target 'MetabolicCompassWatch' do
  pod 'SwiftDate'
  pod 'SwiftyBeaver',  ‘= 0.5.4'
  pod 'AwesomeCache'
- pod 'MCCircadianQueries', :git => 'https://github.com/twoolf/MCCircadianQueries.git'
+ #pod 'MCCircadianQueries', :git => 'https://github.com/twoolf/MCCircadianQueries.git'
+ pod 'MCCircadianQueries', :path => '/Users/yanif/Desktop/circator/circator-queries'
 end
 
 post_install do |installer|

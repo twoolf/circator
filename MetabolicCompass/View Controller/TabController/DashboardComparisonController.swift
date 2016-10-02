@@ -10,12 +10,17 @@ import UIKit
 import HealthKit
 import MCCircadianQueries
 import MetabolicCompassKit
+import Async
 import SwiftDate
 import Crashlytics
+import NVActivityIndicatorView
 
 class DashboardComparisonController: UIViewController, UITableViewDelegate, UITableViewDataSource {
     private let dashboardComparisonCellIdentifier = "ComparisonCell"
     @IBOutlet weak var tableView: UITableView!
+
+    var activityIndicator: NVActivityIndicatorView! = nil
+    var activityCnt: Int = 0
 
     var comparisonTips: [Int:TapTip] = [:]
 
@@ -26,16 +31,34 @@ class DashboardComparisonController: UIViewController, UITableViewDelegate, UITa
         self.tableView.delegate        = self
         self.tableView.allowsSelection = false
 
+        let sz: CGFloat = 25
+        let screenSize = UIScreen.mainScreen().bounds.size
+        let hOffset: CGFloat = screenSize.height < 569 ? 40.0 : 75.0
+
+        let activityFrame = CGRectMake((screenSize.width - sz) / 2, (screenSize.height - (hOffset+sz)) / 2, sz, sz)
+        self.activityIndicator = NVActivityIndicatorView(frame: activityFrame, type: .LineScale, color: UIColor.lightGrayColor())
+        self.view.addSubview(self.activityIndicator)
+
         AccountManager.shared.loginAndInitialize(false)
     }
     
     func contentDidUpdate (notification: NSNotification) {
         self.tableView.reloadData()
+        activityCnt = max(activityCnt - 1, 0)
+        if activityCnt == 0 && activityIndicator.animating { activityIndicator.stopAnimating() }
     }
     
     override func viewWillAppear(animated: Bool) {
         super.viewWillAppear(animated)
         AccountManager.shared.contentManager.initializeBackgroundWork()
+
+        activityIndicator.startAnimating()
+        activityCnt += 2
+        Async.main(after: 15.0) {
+            self.activityCnt = 0
+            if self.activityCnt == 0 && self.activityIndicator.animating { self.activityIndicator.stopAnimating() }
+        }
+
         self.tableView.reloadData()
         NSNotificationCenter.defaultCenter().addObserver(self, selector: #selector(contentDidUpdate), name: HMDidUpdateRecentSamplesNotification, object: nil)
         NSNotificationCenter.defaultCenter().addObserver(self, selector: #selector(updateContent), name: UIApplicationDidBecomeActiveNotification, object: nil)
@@ -87,7 +110,7 @@ class DashboardComparisonController: UIViewController, UITableViewDelegate, UITa
             let desc = "This table helps you compare your personal health stats (left column) to our study population's stats (right column). We show values older than 24 hours in yellow. You can pick measures to display with the Manage button."
 
             let tipAsTop = PreviewManager.previewSampleTypes.count > 6 && indexPath.row > PreviewManager.previewSampleTypes.count - 4
-            comparisonTips[indexPath.row] = TapTip(forView: targetView, withinView: tableView, text: desc, width: 350, numTaps: 2, numTouches: 2, asTop: tipAsTop)
+            comparisonTips[indexPath.row] = TapTip(forView: targetView, withinView: tableView, text: desc, width: 350, numTaps: 2, numTouches: 1, asTop: tipAsTop)
             targetView.addGestureRecognizer(comparisonTips[indexPath.row]!.tapRecognizer)
             targetView.userInteractionEnabled = true
         }

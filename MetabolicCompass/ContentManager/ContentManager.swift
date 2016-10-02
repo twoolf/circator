@@ -127,10 +127,19 @@ class ContentManager: NSObject {
 
     func fetchRecentSamples() {
         AccountManager.shared.withHKCalAuth {
-            MCHealthManager.sharedManager.fetchMostRecentSamples(ofTypes: PreviewManager.previewSampleTypes) { (samples, error) -> Void in
+            MCHealthManager.sharedManager.fetchMostRecentSamples(ofTypes: PreviewManager.previewSampleTypes) { (_, error) -> Void in
                 guard error == nil else { return }
                 NSNotificationCenter.defaultCenter().postNotificationName(HMDidUpdateRecentSamplesNotification, object: self)
             }
+            /*
+            let typeChunks = PreviewManager.previewSampleTypes.splitBy(5)
+            typeChunks.forEach { types in
+                MCHealthManager.sharedManager.fetchMostRecentSamples(ofTypes: types) { (_, error) -> Void in
+                    guard error == nil else { return }
+                    NSNotificationCenter.defaultCenter().postNotificationName(HMDidUpdateRecentSamplesNotification, object: self)
+                }
+            }
+            */
         }
     }
 

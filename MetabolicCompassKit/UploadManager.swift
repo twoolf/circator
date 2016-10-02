@@ -20,7 +20,7 @@ import SwiftyUserDefaults
 // Sorted array helpers.
 // From http://stackoverflow.com/questions/31904396/swift-binary-search-for-standard-array/33674192#33674192
 
-extension CollectionType where Index: RandomAccessIndexType {
+public extension CollectionType where Index: RandomAccessIndexType {
     /// Finds such index N that predicate is true for all elements up to
     /// but not including the index N, and is false for all elements
     /// starting with index N.
@@ -40,6 +40,15 @@ extension CollectionType where Index: RandomAccessIndexType {
     }
 }
 
+public extension Array {
+    func splitBy(size: Int) -> [[Element]] {
+        return 0.stride(to: self.count, by: size).map { startIndex in
+            let endIndex = startIndex.advancedBy(size, limit: self.count)
+            return Array(self[startIndex ..< endIndex])
+        }
+    }
+}
+
 // Randomized, truncated exponential backoff constants
 
 public let retryPeriodBase = 300
@@ -52,6 +61,11 @@ public let uploadBufferThrottleLimit = 1000
 
 private let HMAnchorKey      = DefaultsKey<[String: AnyObject]?>("HKClientAnchorKey")
 private let HMAnchorTSKey    = DefaultsKey<[String: AnyObject]?>("HKAnchorTSKey")
+
+public let syncNotificationLimit = 100
+public let SyncBeganNotification = "SyncBeganNotification"
+public let SyncEndedNotification = "SyncEndedNotification"
+public let SyncProgressNotification = "SyncProgressNotification"
 
 public class UMLogSequenceNumber: Object {
     public dynamic var msid = String()
@@ -208,6 +222,9 @@ public class UploadManager: NSObject {
     var logEntryUploadBatchSize: Int = 10
     var logEntryUploadAsync: Async? = nil
     var logEntryUploadDelay: Double = 0.5
+
+    // Sync notification state.
+    var syncMode: Bool = false
 
     public override init() {
         self.uploadQueue = dispatch_queue_create("UploadQueue", DISPATCH_QUEUE_SERIAL)
@@ -592,6 +609,16 @@ public class UploadManager: NSObject {
 
             // Dispatch pending upload retries
             self.retryPendingUploads()
+
+            if syncMode{
+                if logEntryBatchBuffer.isEmpty {
+                    syncMode = false
+                    NSNotificationCenter.defaultCenter().postNotificationName(SyncEndedNotification, object: nil)
+                } else {
+                    let info = ["count": logEntryBatchBuffer.count]
+                    NSNotificationCenter.defaultCenter().postNotificationName(SyncProgressNotification, object: nil, userInfo: info)
+                }
+            }
         }
     }
 
@@ -686,6 +713,13 @@ public class UploadManager: NSObject {
         logEntryUploadAsync?.cancel()
         logEntryUploadAsync = Async.customQueue(self.uploadQueue, after: logEntryUploadDelay) {
             self.syncLogEntryBuffer()
+        }
+
+        // Post notifications if we have a substantial amount of work.
+        if !syncMode && logEntryBatchBuffer.count > syncNotificationLimit {
+            syncMode = true
+            let info = ["count": logEntryBatchBuffer.count]
+            NSNotificationCenter.defaultCenter().postNotificationName(SyncBeganNotification, object: nil, userInfo: info)
         }
 
         // Throttle if upload buffer is large.
@@ -819,14 +853,7 @@ public class UploadManager: NSObject {
             UploadManager.sharedManager.resetUploadManager()
             UploadManager.sharedManager.retryPendingUploads(true)
 
-            let splitArray: (Int, [HKSampleType]) -> [[HKSampleType]] = { (chunkSize, arr) in
-                0.stride(to: arr.count, by: 5).map { startIndex in
-                    let endIndex = startIndex.advancedBy(5, limit: arr.count)
-                    return Array(arr[startIndex ..< endIndex])
-                }
-            }
-
-            let typeChunks = splitArray(5, HMConstants.sharedInstance.healthKitTypesToObserve)
+            let typeChunks = HMConstants.sharedInstance.healthKitTypesToObserve.splitBy(5)
 
             typeChunks.enumerate().forEach { (index, types) in
                 Async.background(after: 0.5 + (Double(index) * 0.2)) {

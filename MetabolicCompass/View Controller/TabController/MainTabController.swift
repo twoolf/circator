@@ -9,16 +9,25 @@
 import UIKit
 import Async
 import MetabolicCompassKit
+import ARSLineProgress
 
 class MainTabController: UITabBarController, UITabBarControllerDelegate, ManageEventMenuDelegate {
 
-    private var overlayView: UIVisualEffectView? = nil
-    private var menu: ManageEventMenu? = nil
+    private var manageEventOverlayView: UIVisualEffectView? = nil
+    private var manageEventMenu: ManageEventMenu? = nil
+
+    private var syncOverlayView: UIVisualEffectView? = nil
+    private var syncMode: Bool = false
+    private var syncInitial: CGFloat = 0
+    private var syncCounter: CGFloat = 0
+
+    private var syncCheckpoint: CGFloat = 0
+    private var syncTerminator: Async? = nil
 
     private var lastMenuUseAddedEvents = false
     private var dailyProgressVC: DailyProgressViewController? = nil
 
-    //MARK: View life circle
+    //MARK: View life cycle
     override func viewDidLoad() {
         super.viewDidLoad()
         self.configureTabBar()
@@ -33,11 +42,14 @@ class MainTabController: UITabBarController, UITabBarControllerDelegate, ManageE
         NSNotificationCenter.defaultCenter().addObserver(self, selector: #selector(userDidLogin), name: UMDidLoginNotifiaction, object: nil)
         NSNotificationCenter.defaultCenter().addObserver(self, selector: #selector(userDidLogout), name: UMDidLogoutNotification, object: nil)
         NSNotificationCenter.defaultCenter().addObserver(self, selector: #selector(userAddedCircadianEvents), name: MEMDidUpdateCircadianEvents, object: nil)
+        NSNotificationCenter.defaultCenter().addObserver(self, selector: #selector(syncBegan(_:)), name: SyncBeganNotification, object: nil)
+        NSNotificationCenter.defaultCenter().addObserver(self, selector: #selector(syncEnded), name: SyncEndedNotification, object: nil)
     }
     
     override func viewDidAppear(animated: Bool) {
         super.viewDidAppear(animated)
-        self.addOverlay()
+        self.addSyncOverlay()
+        self.addManageEventOverlay()
     }
 
     override func viewWillAppear(animated: Bool) {
@@ -78,11 +90,11 @@ class MainTabController: UITabBarController, UITabBarControllerDelegate, ManageE
         return true
     }
     
-    //MARK: Notifications
+    // MARK :- Notifications
     func userDidLogin() {
         Async.main(after: 0.5) {
-            if self.menu != nil {
-                self.menu!.hidden = false
+            if self.manageEventMenu != nil {
+                self.manageEventMenu!.hidden = false
             } else {
                 self.userDidLogin()
             }
@@ -90,16 +102,157 @@ class MainTabController: UITabBarController, UITabBarControllerDelegate, ManageE
     }
 
     func userDidLogout() {
-        self.menu!.hidden = true
+        self.manageEventMenu!.hidden = true
     }
 
     func userAddedCircadianEvents() {
         lastMenuUseAddedEvents = true
     }
-    
 
-    //MARK: Working with ManageEventMenu
+    // MARK :- Remote sync overlay
+
+    func addSyncOverlay () {
+        if self.syncOverlayView == nil {
+            let overlay = UIVisualEffectView(effect: UIBlurEffect(style: .Dark))
+            overlay.frame = (self.view.window?.rootViewController?.view.bounds)!
+            overlay.alpha = 0.9
+            overlay.userInteractionEnabled = true
+            overlay.hidden = true
+            self.view.window?.rootViewController?.view.addSubview(overlay)
+            self.syncOverlayView = overlay
+
+            // Add overlay title
+            let titleLabel = UILabel()
+            titleLabel.text = "DATA SYNC"
+            titleLabel.font = ScreenManager.appFontOfSize(16)
+            titleLabel.textColor = UIColor.colorWithHexString("#ffffff", alpha: 0.6)
+            titleLabel.textAlignment = .Center
+            titleLabel.sizeToFit()
+            titleLabel.frame = CGRectMake(0, 35, CGRectGetWidth(overlay.frame), CGRectGetHeight(titleLabel.frame))
+            overlay.contentView.addSubview(titleLabel)
+
+            let descLabel = UILabel()
+            descLabel.text = "Please wait while we upload your health data"
+            descLabel.font = ScreenManager.appFontOfSize(14)
+            descLabel.textColor = UIColor.colorWithHexString("#ffffff", alpha: 0.6)
+            descLabel.textAlignment = .Center
+            descLabel.sizeToFit()
+            descLabel.frame = CGRectMake(0, 50 + CGRectGetHeight(titleLabel.frame), CGRectGetWidth(overlay.frame), CGRectGetHeight(descLabel.frame))
+            overlay.contentView.addSubview(descLabel)
+        }
+    }
+
+    func syncBegan(notification: NSNotification) {
+        if let dict = notification.userInfo, initial = dict["count"] as? Int {
+            if !syncMode {
+                NSNotificationCenter.defaultCenter().addObserver(self, selector: #selector(syncProgress(_:)), name: SyncProgressNotification, object: nil)
+            }
+            syncMode = true
+            syncInitial = CGFloat(initial)
+            syncCounter = syncInitial
+
+            syncCheckpoint = syncCounter
+            syncTerminator = Async.background(after: 60.0) {
+                let progress = (self.syncCheckpoint - self.syncCounter) / self.syncCheckpoint
+                if progress < 0.001 { self.syncCancel() }
+            }
+
+            Async.main {
+                if let hidden = self.syncOverlayView?.hidden where hidden {
+                    self.syncOverlayView!.hidden = false
+                    self.syncOverlayView!.setNeedsDisplay()
+                    ARSLineProgress.showWithProgress(initialValue: 0.01, onView: self.syncOverlayView!.contentView)
+                }
+            }
+            log.verbose("DATA SYNC starting")
+        }
+        else {
+            log.error("DATA SYNC No initial upload size found")
+        }
+    }
+
+    func syncCancel() {
+        Async.main(after: 3.0) {
+            if let hidden = self.syncOverlayView?.hidden where !hidden {
+                self.syncOverlayView!.hidden = true
+                self.syncOverlayView!.setNeedsDisplay()
+            }
+        }
+        UINotifications.genericError(self, msg: "Data syncing was too slow, we will continue it in the background.")
+    }
+
+    func syncEnded() {
+        if syncMode {
+            NSNotificationCenter.defaultCenter().removeObserver(self, name: SyncProgressNotification, object: nil)
+        }
+        syncMode = false
+        syncInitial = 0.0
+        syncCounter = 0.0
+        ARSLineProgress.showSuccess()
+        Async.main(after: 3.0) {
+            if let hidden = self.syncOverlayView?.hidden where !hidden {
+                self.syncOverlayView!.hidden = true
+                self.syncOverlayView!.setNeedsDisplay()
+            }
+        }
+        log.verbose("DATA SYNC finished")
+    }
+
+    func syncProgress(notification: NSNotification) {
+        if let dict = notification.userInfo, c = dict["count"] as? Int {
+            let counter = CGFloat(c)
+            if counter > syncInitial {
+                syncInitial = counter
+            }
+            syncCounter = counter
+
+            let progress = max(0.01, 100.0 * (syncInitial - syncCounter) / syncInitial)
+            ARSLineProgress.updateWithProgress(progress)
+            log.verbose("DATA SYNC progress \(progress)")
+
+            syncCheckpoint = syncCounter
+            syncTerminator?.cancel()
+            syncTerminator = Async.background(after: 60.0) {
+                let progress = (self.syncCheckpoint - self.syncCounter) / self.syncCheckpoint
+                if progress < 0.001 { self.syncCancel() }
+            }
+        }
+    }
+
+    // MARK :- Manage event overlay
     
+    func addManageEventOverlay () {
+        if self.manageEventOverlayView == nil {
+            let overlay = UIVisualEffectView(effect: UIBlurEffect(style: .Dark))
+            overlay.frame = (self.view.window?.rootViewController?.view.bounds)!
+            overlay.alpha = 0.9
+            overlay.userInteractionEnabled = true
+            overlay.hidden = true
+            self.view.window?.rootViewController?.view.addSubview(overlay)
+            self.manageEventOverlayView = overlay
+            //add title for overlay
+            let titleLabel = UILabel(frame:CGRectZero)
+            titleLabel.text = "YOUR CIRCADIAN RHYTHM"
+            titleLabel.font = ScreenManager.appFontOfSize(16)
+            titleLabel.textColor = UIColor.colorWithHexString("#ffffff", alpha: 0.6)
+            titleLabel.textAlignment = .Center
+            titleLabel.sizeToFit()
+            titleLabel.frame = CGRectMake(0, 35, CGRectGetWidth(overlay.frame), CGRectGetHeight(titleLabel.frame))
+            overlay.contentView.addSubview(titleLabel)
+            self.addMenuToView()
+        }
+    }
+    
+    func hideManageEventOverlay() {
+        self.manageEventOverlayView?.hidden = true
+    }
+
+    func hideManageEventIcons(hide: Bool) {
+        self.manageEventMenu?.hideView(hide)
+    }
+
+    // MARK:- ManageEventMenu construction
+
     func addMenuToView () {
         let addExercisesImage = UIImage(named:"icon-add-exercises")!
         let addExercisesItem = PathMenuItem(image: addExercisesImage, highlightedImage: nil, contentImage: nil, contentText: "Exercise")
@@ -117,55 +270,23 @@ class MainTabController: UITabBarController, UITabBarControllerDelegate, ManageE
                                      highlightedImage: UIImage(named: "button-dashboard-add-data"),
                                      contentImage: UIImage(named: "button-dashboard-add-data"),
                                      highlightedContentImage: UIImage(named: "button-dashboard-add-data"))
-        
-        self.menu = ManageEventMenu(frame: view.bounds, startItem: startItem, items: items)
 
-        self.menu!.delegate = self
-        self.menu!.startPoint = CGPointMake(view.frame.width/2, view.frame.size.height - 26.0)
-        self.menu!.timeOffset = 0.0
-        self.menu!.animationDuration = 0.15
-        self.menu!.hidden = !UserManager.sharedManager.hasAccount()
-        self.view.window?.rootViewController?.view.addSubview(self.menu!)
-    }
-    
-    // MARK :- Add event blur overlay
-    
-    func addOverlay () {
-        if self.overlayView == nil {
-            let overlay = UIVisualEffectView(effect: UIBlurEffect(style: .Dark))
-            overlay.frame = (self.view.window?.rootViewController?.view.bounds)!
-            overlay.alpha = 0.9
-            overlay.userInteractionEnabled = true
-            overlay.hidden = true
-            self.view.window?.rootViewController?.view.addSubview(overlay)
-            self.overlayView = overlay
-            //add title for overlay
-            let titleLabel = UILabel(frame:CGRectZero)
-            titleLabel.text = "YOUR CIRCADIAN RHYTHM"
-            titleLabel.font = ScreenManager.appFontOfSize(16)
-            titleLabel.textColor = UIColor.colorWithHexString("#ffffff", alpha: 0.6)
-            titleLabel.textAlignment = .Center
-            titleLabel.sizeToFit()
-            titleLabel.frame = CGRectMake(0, 35, CGRectGetWidth(overlay.frame), CGRectGetHeight(titleLabel.frame))
-            overlay.contentView.addSubview(titleLabel)
-            self.addMenuToView()
-        }
-    }
-    
-    func hideOverlay() {
-        self.overlayView?.hidden = true
-    }
+        self.manageEventMenu = ManageEventMenu(frame: view.bounds, startItem: startItem, items: items)
 
-    func hideIcons(hide: Bool) {
-        self.menu?.hideView(hide)
+        self.manageEventMenu!.delegate = self
+        self.manageEventMenu!.startPoint = CGPointMake(view.frame.width/2, view.frame.size.height - 26.0)
+        self.manageEventMenu!.timeOffset = 0.0
+        self.manageEventMenu!.animationDuration = 0.15
+        self.manageEventMenu!.hidden = !UserManager.sharedManager.hasAccount()
+        self.view.window?.rootViewController?.view.addSubview(self.manageEventMenu!)
     }
 
     // MARK :- ManageEventMenuDelegate implementation
     
     func manageEventMenu(menu: ManageEventMenu, didSelectIndex idx: Int) {
         Async.main(after: 0.4) {
-            self.hideIcons(true)
-            self.hideOverlay()
+            self.hideManageEventIcons(true)
+            self.hideManageEventOverlay()
             let controller = UIStoryboard(name: "AddEvents", bundle: nil).instantiateViewControllerWithIdentifier("AddMealNavViewController") as! UINavigationController
             let rootController = controller.viewControllers[0] as! AddEventViewController
             switch idx {
@@ -184,8 +305,8 @@ class MainTabController: UITabBarController, UITabBarControllerDelegate, ManageE
     
     func manageEventMenuWillAnimateOpen(menu: ManageEventMenu) {
         lastMenuUseAddedEvents = false
-        self.overlayView?.hidden = false
-        hideIcons(false)
+        self.manageEventOverlayView?.hidden = false
+        hideManageEventIcons(false)
     }
     
     func manageEventMenuWillAnimateClose(menu: ManageEventMenu) {
@@ -193,12 +314,12 @@ class MainTabController: UITabBarController, UITabBarControllerDelegate, ManageE
     }
 
     func manageEventMenuDidFinishAnimationOpen(menu: ManageEventMenu) {
-        self.menu?.logContentView()
+        self.manageEventMenu?.logContentView()
     }
 
     func manageEventMenuDidFinishAnimationClose(menu: ManageEventMenu) {
-        self.hideOverlay()
-        hideIcons(true)
+        self.hideManageEventOverlay()
+        hideManageEventIcons(true)
 
         if lastMenuUseAddedEvents {
             initializeDailyProgressVC()
@@ -210,7 +331,7 @@ class MainTabController: UITabBarController, UITabBarControllerDelegate, ManageE
                 log.warning("No DailyProgressViewController available")
             }
         }
-        self.menu?.logContentView(false)
+        self.manageEventMenu?.logContentView(false)
     }
 
     func initializeDailyProgressVC() {
