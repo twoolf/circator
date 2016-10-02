@@ -11,7 +11,7 @@ def shared_pods
     pod 'CryptoSwift', '~> 0.5.2'
     pod 'Dodo', '~> 2.0'
     pod 'EasyAnimation', '~> 1.0.5'
-    pod 'EasyTipView', '~> 1.0.0'
+    pod 'EasyTipView', '= 1.0.0'
     pod 'FileKit', '~> 2.0.0'
     pod 'Former', '~> 1.4.0'
     pod 'Granola', :git => 'https://github.com/yanif/Granola.git'
