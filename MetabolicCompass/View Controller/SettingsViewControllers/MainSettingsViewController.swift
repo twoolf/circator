@@ -179,7 +179,7 @@ class MainSettingsViewController: BaseViewController, UICollectionViewDataSource
 
         settingsItems.append(SettingsItem(title: "Consent PDF".localized, iconImageName: "icon-consent-document", segueIdentifier: self.segueConsentViewerIdentifier))
 
-        settingsItems.append(SettingsItem(title: "Share Our Story".localized, iconImageName: "icon-settings-health"))
+        settingsItems.append(SettingsItem(title: "Share Our Story".localized, iconImageName: "icon-bullhorn"))
         self.shareOurStoryIndex = settingsItems.count - 1
 
         settingsItems.append(SettingsItem(title: "About Us".localized, iconImageName: "icon-settings-health"))
