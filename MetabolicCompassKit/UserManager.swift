@@ -1047,7 +1047,7 @@ public class UserManager {
 
     public func decrAnchorDate(d: NSDate) -> NSDate {
         let region = Region()
-        return (d - 1.months).startOf(.Day, inRegion: region).startOf(.Month, inRegion: region)
+        return (d - 2.weeks).startOf(.Day, inRegion: region)
     }
 
 
