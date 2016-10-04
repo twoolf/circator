@@ -125,9 +125,9 @@ public class OurStudyViewController: UIViewController, ChartViewDelegate {
         (21,   "icon-grandfather-clock", "You're chiming loudly and melodically, keep sharing your beat!"),
         (30,   "icon-sherlock",          "You've contributed clues that will solve real mysteries"),
         (60,   "icon-robot",             "You're powering an artificial intelligence, unless you already are one?"),
-        (90,   "icon-satellite",         "You're a health satellite, and your high-intensity laser beam is heating up our database"),
-        (180,  "icon-neo",               "You're a shape shifting, time-warping soul, and your multidimensional contributions are appreciated!"),
-        (360,  "icon-eye",               "You're a master of tracking, part of an elite group that shapes our understanding of human health"),
+        (90,   "icon-satellite",         "You're a health satellite, and your intense laser beam is heating up our database!"),
+        (180,  "icon-neo",               "You're a shape-shifting, time-warping tracker, with a multidimensional mastery of your body clock!"),
+        (360,  "icon-eye",               "You're a master of tracking, part of an elite group that shapes our understanding of human health!"),
     ]
 
     lazy var userRankingBadge: UIStackView =
@@ -286,7 +286,7 @@ public class OurStudyViewController: UIViewController, ChartViewDelegate {
         if let imageLabelStack = contributionStreakBadge.subviews[1] as? UIStackView,
             badge = imageLabelStack.subviews[0] as? UIImageView
         {
-            phaseConstraints.append(badge.widthAnchor.constraintEqualToConstant(72.0))
+            phaseConstraints.append(badge.widthAnchor.constraintEqualToConstant(66.0))
             phaseConstraints.append(badge.heightAnchor.constraintEqualToAnchor(badge.widthAnchor))
         }
 
