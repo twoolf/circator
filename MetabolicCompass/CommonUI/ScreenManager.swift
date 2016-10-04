@@ -18,7 +18,7 @@ public class ScreenManager {
     public static let sharedInstance = ScreenManager()
 
 
-// MARK: - scaling
+    // MARK: - scaling
 
     public static let baseScreenWidth = CGFloat(375.0)
         
@@ -281,6 +281,19 @@ public class ScreenManager {
 
     public class func appNavBarFont() -> UIFont {
         return UIFont(name: defaulytFontName, size: 16.0)!
+    }
+
+    // MARK :- badge icons
+    public func badgeIconSize() -> CGFloat {
+        let screenSize = UIScreen.mainScreen().bounds.size
+        let screenHeight = screenSize.height
+
+        if (screenHeight < 569) {
+            return 48.0
+        } else {
+            return 64.0
+        }
+
     }
 
 }

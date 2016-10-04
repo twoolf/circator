@@ -116,7 +116,7 @@ public class OurStudyViewController: UIViewController, ChartViewDelegate {
     ]
 
     static let contributionStreakBadgeBuckets: [(Double, String, String)] = [
-        (2,    "icon-rock",              "You're chipping away at becoming a contributor, stay steady to grow your awareness"),
+        (2,    "icon-rock",              "You're chipping away your contributions, stay steady to grow your awareness."),
         (3,    "icon-quill",             "Your penmanship is improving and you're writing more and more activities!"),
         (5,    "icon-typewriter",        "You're keeping a steady log, well worth continuing your story"),
         (7,    "icon-polaroid",          "You've made an instant flash and your tracking is adding up"),
@@ -276,17 +276,19 @@ public class OurStudyViewController: UIViewController, ChartViewDelegate {
             contributionStreakBadge.heightAnchor.constraintEqualToAnchor(view.widthAnchor, multiplier: 0.4)
         ]
 
+        let badgeSize = ScreenManager.sharedInstance.badgeIconSize()
+
         if let imageLabelStack = userRankingBadge.subviews[1] as? UIStackView,
             badge = imageLabelStack.subviews[0] as? UIImageView
         {
-            phaseConstraints.append(badge.widthAnchor.constraintEqualToConstant(64.0))
+            phaseConstraints.append(badge.widthAnchor.constraintEqualToConstant(badgeSize))
             phaseConstraints.append(badge.heightAnchor.constraintEqualToAnchor(badge.widthAnchor))
         }
 
         if let imageLabelStack = contributionStreakBadge.subviews[1] as? UIStackView,
             badge = imageLabelStack.subviews[0] as? UIImageView
         {
-            phaseConstraints.append(badge.widthAnchor.constraintEqualToConstant(64.0))
+            phaseConstraints.append(badge.widthAnchor.constraintEqualToConstant(badgeSize))
             phaseConstraints.append(badge.heightAnchor.constraintEqualToAnchor(badge.widthAnchor))
         }
 
@@ -420,14 +422,11 @@ public class OurStudyViewController: UIViewController, ChartViewDelegate {
                 refreshUserRanking(r)
             }
 
-            /*
             if let r = studystats["contribution_streak"] as? Int {
                 refreshContributionStreak(r)
             } else if let s = studystats["contribution_streak"] as? String, r = Int(s) {
                 refreshContributionStreak(r)
             }
-            */
-            refreshContributionStreak(91)
 
             if let u = studystats["active_users"] as? Int {
                 refreshUserGrowth(u)
@@ -475,13 +474,21 @@ public class OurStudyViewController: UIViewController, ChartViewDelegate {
     }
 
     func refreshContributionStreak(days: Int) {
-        if let imageLabelStack = contributionStreakBadge.subviews[1] as? UIStackView,
+        if let descLabel = contributionStreakBadge.subviews[0] as? UILabel,
+            imageLabelStack = contributionStreakBadge.subviews[1] as? UIStackView,
             badge = imageLabelStack.subviews[0] as? UIImageView,
             label = imageLabelStack.subviews[1] as? UILabel
         {
+            let compact = UIScreen.mainScreen().bounds.size.height < 569
             let (_, icon, desc) = OurStudyViewController.contributionStreakClassAndIcon(days)
-            label.attributedText = OurStudyViewController.contributionStreakLabelText(days, description: desc, unitsFontSize: studyLabelFontSize)
+            let (descAttrText, labelAttrText) = OurStudyViewController.contributionStreakLabelText(days, description: desc, compact: compact, descFontSize: studyLabelFontSize, labelFontSize: studyLabelFontSize)
+
+            descLabel.attributedText = descAttrText
+            descLabel.setNeedsDisplay()
+
+            label.attributedText = labelAttrText
             label.setNeedsDisplay()
+
             badge.image = UIImage(named: icon)
             badge.setNeedsDisplay()
         } else {
@@ -594,29 +601,35 @@ public class OurStudyViewController: UIViewController, ChartViewDelegate {
         return aStr
     }
 
-    class func contributionStreakLabelText(days: Int, description: String, unitsFontSize: CGFloat = 20.0) -> NSAttributedString {
-        let prefixStr = "You've logged"
-        let suffixStr = "straight days. \(description)"
+    class func contributionStreakLabelText(days: Int, description: String, compact: Bool,
+                                           descFontSize: CGFloat = 20.0, labelFontSize: CGFloat = 20.0)
+                    -> (NSAttributedString, NSAttributedString)
+    {
+        let descFont = UIFont(name: "GothamBook", size: descFontSize)!
+        let labelFont = UIFont(name: "GothamBook", size: labelFontSize)!
 
-        let vStr = "\(days)"
-        let aStr = NSMutableAttributedString(string: prefixStr + " " + vStr + " " + suffixStr)
+        var descStr =  NSMutableAttributedString(string: "You've Logged \(days) Straight Days!", attributes: studyLabelAttrs)
+        descStr.addAttribute(NSFontAttributeName, value: descFont, range: NSMakeRange(0, descStr.length))
 
-        let unitFont = UIFont(name: "GothamBook", size: unitsFontSize)!
+        var lblStr = NSMutableAttributedString(string: description)
+        lblStr.addAttribute(NSFontAttributeName, value: labelFont, range: NSMakeRange(0, lblStr.length))
 
-        if prefixStr.characters.count > 0 {
-            let headRange = NSRange(location:0, length: prefixStr.characters.count + 1)
-            aStr.addAttribute(NSFontAttributeName, value: unitFont, range: headRange)
+        if !compact {
+            descStr = NSMutableAttributedString(string: "Your Contributions Streak", attributes: studyLabelAttrs)
+            descStr.addAttribute(NSFontAttributeName, value: descFont, range: NSMakeRange(0, descStr.length))
+
+            lblStr = NSMutableAttributedString(string: "You've logged \(days) straight days. \(description)")
+            lblStr.addAttribute(NSFontAttributeName, value: labelFont, range: NSMakeRange(0, lblStr.length))
         }
-
-        let tailRange = NSRange(location:prefixStr.characters.count + vStr.characters.count + 1, length: suffixStr.characters.count + 1)
-        aStr.addAttribute(NSFontAttributeName, value: unitFont, range: tailRange)
 
         let paragraphStyle = NSMutableParagraphStyle()
         paragraphStyle.lineSpacing = 4.0
         paragraphStyle.alignment = .Center
-        aStr.addAttribute(NSParagraphStyleAttributeName, value: paragraphStyle, range: NSMakeRange(0, aStr.length))
 
-        return aStr
+        descStr.addAttribute(NSParagraphStyleAttributeName, value: paragraphStyle, range: NSMakeRange(0, descStr.length))
+        lblStr.addAttribute(NSParagraphStyleAttributeName, value: paragraphStyle, range: NSMakeRange(0, lblStr.length))
+
+        return (descStr, lblStr)
     }
 
     class func collectedDaysLabelText(value: Int, unit: String, unitsFontSize: CGFloat = 20.0) -> NSAttributedString {

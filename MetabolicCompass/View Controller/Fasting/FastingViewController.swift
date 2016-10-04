@@ -111,17 +111,17 @@ public class FastingViewController : UIViewController, ChartViewDelegate {
     // Badges.
 
     static let fastingStreakBadgeBuckets: [(Double, String, String)] = [
-        (0,   "icon-matchstick", "your fasting levels are about to be snuffed out!"),
-        (50,  "icon-candle",     "you're in a slow, steady burn."),
-        (70,  "icon-lantern",    "now you're moving, keep going with your fasting levels!"),
-        (90,  "icon-torch",      "you're ready to light the next big fast."),
-        (100, "icon-fireplace",  "you're basking in a warm comforting fasting level."),
-        (110, "icon-bonfire",    "it's a party, you're really having fun with fasting!"),
-        (120, "icon-wildfire",   "you're catching on, remember to keep track to hit the next level!"),
-        (130, "icon-magma",      "you're smoldering, we can see your glow!"),
-        (140, "icon-volcano",    "careful, you might cause others' fasting levels around you to erupt!"),
-        (150, "icon-sun",        "you're a fasting champion, we rise and set to your fasting levels!"),
-        (160, "icon-supernova",  "you've done it, you can't burn brighter than this!"),
+        (0,   "icon-matchstick", "Your fasting levels are about to be snuffed out!"),
+        (50,  "icon-candle",     "You're in a slow, steady burn."),
+        (70,  "icon-lantern",    "Now you're moving, keep going with your fasting levels!"),
+        (90,  "icon-torch",      "You're ready to light the next big fast."),
+        (100, "icon-fireplace",  "You're basking in a warm comforting fasting level."),
+        (110, "icon-bonfire",    "It's a party, you're really having fun with fasting!"),
+        (120, "icon-wildfire",   "You're catching on, remember to keep track to hit the next level!"),
+        (130, "icon-magma",      "You're smoldering, we can see your glow!"),
+        (140, "icon-volcano",    "Careful, you might cause others' fasting levels around you to erupt!"),
+        (150, "icon-sun",        "You're a fasting champion, we rise and set to your fasting levels!"),
+        (160, "icon-supernova",  "You've done it, you can't burn brighter than this!"),
     ]
 
     lazy var fastingStreakBadge: UIStackView =
@@ -265,10 +265,12 @@ public class FastingViewController : UIViewController, ChartViewDelegate {
             labelStack.heightAnchor.constraintEqualToConstant(80),
         ]
 
+        let badgeSize = ScreenManager.sharedInstance.badgeIconSize()
+
         if let imageLabelStack = fastingStreakBadge.subviews[1] as? UIStackView,
             badge = imageLabelStack.subviews[0] as? UIImageView
         {
-            constraints.append(badge.widthAnchor.constraintEqualToConstant(60.0))
+            constraints.append(badge.widthAnchor.constraintEqualToConstant(badgeSize))
             constraints.append(badge.heightAnchor.constraintEqualToAnchor(badge.widthAnchor))
         }
 
@@ -321,13 +323,21 @@ public class FastingViewController : UIViewController, ChartViewDelegate {
     }
 
     func refreshFastingStreak(fastingLevel: Double) {
-        if let imageLabelStack = fastingStreakBadge.subviews[1] as? UIStackView,
+        if let descLabel = fastingStreakBadge.subviews[0] as? UILabel,
+            imageLabelStack = fastingStreakBadge.subviews[1] as? UIStackView,
             badge = imageLabelStack.subviews[0] as? UIImageView,
             label = imageLabelStack.subviews[1] as? UILabel
         {
+            let compact = UIScreen.mainScreen().bounds.size.height < 569
             let (_, icon, desc) = FastingViewController.fastingStreakClassAndIcon(fastingLevel)
-            label.attributedText = FastingViewController.fastingStreakLabelText(fastingLevel, description: desc, unitsFontSize: studyLabelFontSize)
+            let (descAttrText, lblAttrText) = FastingViewController.fastingStreakLabelText(fastingLevel, description: desc, compact: compact, descFontSize: studyLabelFontSize, labelFontSize: studyLabelFontSize)
+
+            descLabel.attributedText = descAttrText
+            descLabel.setNeedsDisplay()
+
+            label.attributedText = lblAttrText
             label.setNeedsDisplay()
+
             badge.image = UIImage(named: icon)
             badge.setNeedsDisplay()
         } else {
@@ -424,31 +434,37 @@ public class FastingViewController : UIViewController, ChartViewDelegate {
         return FastingViewController.fastingStreakBadgeBuckets[rankIndex!]
     }
 
-    class func fastingStreakLabelText(fastingLevel: Double, description: String, unitsFontSize: CGFloat = 20.0) -> NSAttributedString {
-        let prefixStr = "You have fasted for"
-        let suffixStr = "hours this week, \(description)"
+    class func fastingStreakLabelText(fastingLevel: Double, description: String, compact: Bool,
+                                      descFontSize: CGFloat = 20.0, labelFontSize: CGFloat = 20.0)
+        -> (NSAttributedString, NSAttributedString)
+    {
+        let descFont = UIFont(name: "GothamBook", size: descFontSize)!
+        let labelFont = UIFont(name: "GothamBook", size: labelFontSize)!
 
         let vStr = String(format: "%.3g", fastingLevel)
-        let aStr = NSMutableAttributedString(string: prefixStr + " " + vStr + " " + suffixStr)
 
-        let unitFont = UIFont(name: "GothamBook", size: unitsFontSize)!
+        var descStr =  NSMutableAttributedString(string: "You've Fasted \(vStr) Hours This Week!", attributes: studyLabelAttrs)
+        descStr.addAttribute(NSFontAttributeName, value: descFont, range: NSMakeRange(0, descStr.length))
 
-        if prefixStr.characters.count > 0 {
-            let headRange = NSRange(location:0, length: prefixStr.characters.count + 1)
-            aStr.addAttribute(NSFontAttributeName, value: unitFont, range: headRange)
+        var lblStr = NSMutableAttributedString(string: description)
+        lblStr.addAttribute(NSFontAttributeName, value: labelFont, range: NSMakeRange(0, lblStr.length))
+
+        if !compact {
+            descStr = NSMutableAttributedString(string: "Your Contributions Streak", attributes: studyLabelAttrs)
+            descStr.addAttribute(NSFontAttributeName, value: descFont, range: NSMakeRange(0, descStr.length))
+
+            lblStr = NSMutableAttributedString(string: "You've fasted \(vStr) hours this week. \(description)")
+            lblStr.addAttribute(NSFontAttributeName, value: labelFont, range: NSMakeRange(0, lblStr.length))
         }
-
-        let tailRange = NSRange(location:prefixStr.characters.count + vStr.characters.count + 1, length: suffixStr.characters.count + 1)
-        aStr.addAttribute(NSFontAttributeName, value: unitFont, range: tailRange)
 
         let paragraphStyle = NSMutableParagraphStyle()
         paragraphStyle.lineSpacing = 4.0
         paragraphStyle.alignment = .Center
-        aStr.addAttribute(NSParagraphStyleAttributeName, value: paragraphStyle, range: NSMakeRange(0, aStr.length))
 
-        return aStr
+        descStr.addAttribute(NSParagraphStyleAttributeName, value: paragraphStyle, range: NSMakeRange(0, descStr.length))
+        lblStr.addAttribute(NSParagraphStyleAttributeName, value: paragraphStyle, range: NSMakeRange(0, lblStr.length))
+        
+        return (descStr, lblStr)
     }
-
-
 }
 
