@@ -126,8 +126,8 @@ public class OurStudyViewController: UIViewController, ChartViewDelegate {
         (30,   "icon-sherlock",          "You've contributed clues that will solve real mysteries"),
         (60,   "icon-robot",             "You're powering an artificial intelligence, unless you already are one?"),
         (90,   "icon-satellite",         "You're a health satellite, and your intense laser beam is heating up our database!"),
-        (180,  "icon-neo",               "You're a shape-shifting, time-warping tracker, with a multidimensional mastery of your body clock!"),
-        (360,  "icon-eye",               "You're a master of tracking, part of an elite group that shapes our understanding of human health!"),
+        (180,  "icon-neo",               "You're a time-warping tracker, with a multidimensional mastery of your body clock!"),
+        (360,  "icon-eye",               "You're a tracking master, part of an elite group that shapes our human health knowledge!"),
     ]
 
     lazy var userRankingBadge: UIStackView =
@@ -270,7 +270,7 @@ public class OurStudyViewController: UIViewController, ChartViewDelegate {
             userRankingBadge.leadingAnchor.constraintEqualToAnchor(view.leadingAnchor, constant: 10),
             userRankingBadge.trailingAnchor.constraintEqualToAnchor(view.trailingAnchor, constant: -10),
             userRankingBadge.heightAnchor.constraintEqualToAnchor(view.widthAnchor, multiplier: 0.3),
-            contributionStreakBadge.topAnchor.constraintEqualToAnchor(userRankingBadge.bottomAnchor, constant: 10),
+            contributionStreakBadge.topAnchor.constraintEqualToAnchor(userRankingBadge.bottomAnchor),
             contributionStreakBadge.leadingAnchor.constraintEqualToAnchor(view.leadingAnchor, constant: 10),
             contributionStreakBadge.trailingAnchor.constraintEqualToAnchor(view.trailingAnchor, constant: -10),
             contributionStreakBadge.heightAnchor.constraintEqualToAnchor(view.widthAnchor, multiplier: 0.4)
@@ -279,14 +279,14 @@ public class OurStudyViewController: UIViewController, ChartViewDelegate {
         if let imageLabelStack = userRankingBadge.subviews[1] as? UIStackView,
             badge = imageLabelStack.subviews[0] as? UIImageView
         {
-            phaseConstraints.append(badge.widthAnchor.constraintEqualToConstant(44.0))
+            phaseConstraints.append(badge.widthAnchor.constraintEqualToConstant(64.0))
             phaseConstraints.append(badge.heightAnchor.constraintEqualToAnchor(badge.widthAnchor))
         }
 
         if let imageLabelStack = contributionStreakBadge.subviews[1] as? UIStackView,
             badge = imageLabelStack.subviews[0] as? UIImageView
         {
-            phaseConstraints.append(badge.widthAnchor.constraintEqualToConstant(66.0))
+            phaseConstraints.append(badge.widthAnchor.constraintEqualToConstant(64.0))
             phaseConstraints.append(badge.heightAnchor.constraintEqualToAnchor(badge.widthAnchor))
         }
 
@@ -427,7 +427,7 @@ public class OurStudyViewController: UIViewController, ChartViewDelegate {
                 refreshContributionStreak(r)
             }
             */
-            refreshContributionStreak(185)
+            refreshContributionStreak(91)
 
             if let u = studystats["active_users"] as? Int {
                 refreshUserGrowth(u)
@@ -555,14 +555,16 @@ public class OurStudyViewController: UIViewController, ChartViewDelegate {
     class func userRankingClassAndIcon(rank: Int) -> (Double, String) {
         let doubleRank = Double(rank)
         var rankIndex = OurStudyViewController.userRankingBadgeBuckets.indexOf { $0.0 >= doubleRank }
-        if rankIndex == nil { rankIndex = OurStudyViewController.userRankingBadgeBuckets.count - 1 }
+        if rankIndex == nil { rankIndex = OurStudyViewController.userRankingBadgeBuckets.count }
+        rankIndex = max(0, rankIndex! - 1)
         return OurStudyViewController.userRankingBadgeBuckets[rankIndex!]
     }
 
     class func contributionStreakClassAndIcon(days: Int) -> (Double, String, String) {
         let doubleDays = Double(days)
         var rankIndex = OurStudyViewController.contributionStreakBadgeBuckets.indexOf { $0.0 >= doubleDays }
-        if rankIndex == nil { rankIndex = OurStudyViewController.contributionStreakBadgeBuckets.count - 1 }
+        if rankIndex == nil { rankIndex = OurStudyViewController.contributionStreakBadgeBuckets.count }
+        rankIndex = max(0, rankIndex! - 1)
         return OurStudyViewController.contributionStreakBadgeBuckets[rankIndex!]
     }
 
@@ -593,7 +595,7 @@ public class OurStudyViewController: UIViewController, ChartViewDelegate {
     }
 
     class func contributionStreakLabelText(days: Int, description: String, unitsFontSize: CGFloat = 20.0) -> NSAttributedString {
-        let prefixStr = "You've logged for"
+        let prefixStr = "You've logged"
         let suffixStr = "straight days. \(description)"
 
         let vStr = "\(days)"

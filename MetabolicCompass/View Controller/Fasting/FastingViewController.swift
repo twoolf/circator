@@ -419,7 +419,8 @@ public class FastingViewController : UIViewController, ChartViewDelegate {
 
     class func fastingStreakClassAndIcon(fastingLevel: Double) -> (Double, String, String) {
         var rankIndex = FastingViewController.fastingStreakBadgeBuckets.indexOf { $0.0 >= fastingLevel }
-        if rankIndex == nil { rankIndex = FastingViewController.fastingStreakBadgeBuckets.count - 1 }
+        if rankIndex == nil { rankIndex = FastingViewController.fastingStreakBadgeBuckets.count }
+        rankIndex = max(0, rankIndex! - 1)
         return FastingViewController.fastingStreakBadgeBuckets[rankIndex!]
     }
 
