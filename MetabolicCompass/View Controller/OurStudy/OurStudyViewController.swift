@@ -115,18 +115,19 @@ public class OurStudyViewController: UIViewController, ChartViewDelegate {
         (90.0, "icon-arms-raised-silver")
     ]
 
-    static let contributionStreakBadgeBuckets: [(Double, String)] = [
-        (3,    "icon-rock"),
-        (5,    "icon-quill"),
-        (7,    "icon-typewriter"),
-        (10,   "icon-polaroid"),
-        (14,   "icon-vidcam"),
-        (21,   "icon-laptop"),
-        (30,   "icon-sherlock"),
-        (60,   "icon-robot"),
-        (90,   "icon-satellite"),
-        (180,  "icon-neo"),
-        (360,  "icon-eye"),
+    static let contributionStreakBadgeBuckets: [(Double, String, String)] = [
+        (2,    "icon-rock",              "You're chipping away at becoming a contributor, stay steady to grow your awareness"),
+        (3,    "icon-quill",             "Your penmanship is improving and you're writing more and more activities!"),
+        (5,    "icon-typewriter",        "You're keeping a steady log, well worth continuing your story"),
+        (7,    "icon-polaroid",          "You've made an instant flash and your tracking is adding up"),
+        (10,   "icon-pendulum",          "Tick-tock, you've hit your stride in sustaining your tracking momentum"),
+        (14,   "icon-metronome",         "You're a metronome, the epitomy of timeliness in your tracking"),
+        (21,   "icon-grandfather-clock", "You're chiming loudly and melodically, keep sharing your beat!"),
+        (30,   "icon-sherlock",          "You've contributed clues that will solve real mysteries"),
+        (60,   "icon-robot",             "You're powering an artificial intelligence, unless you already are one?"),
+        (90,   "icon-satellite",         "You're a health satellite, and your intense laser beam is heating up our database!"),
+        (180,  "icon-neo",               "You're a time-warping tracker, with a multidimensional mastery of your body clock!"),
+        (360,  "icon-eye",               "You're a tracking master, part of an elite group that shapes our human health knowledge!"),
     ]
 
     lazy var userRankingBadge: UIStackView =
@@ -269,23 +270,23 @@ public class OurStudyViewController: UIViewController, ChartViewDelegate {
             userRankingBadge.leadingAnchor.constraintEqualToAnchor(view.leadingAnchor, constant: 10),
             userRankingBadge.trailingAnchor.constraintEqualToAnchor(view.trailingAnchor, constant: -10),
             userRankingBadge.heightAnchor.constraintEqualToAnchor(view.widthAnchor, multiplier: 0.3),
-            contributionStreakBadge.topAnchor.constraintEqualToAnchor(userRankingBadge.bottomAnchor, constant: 10),
+            contributionStreakBadge.topAnchor.constraintEqualToAnchor(userRankingBadge.bottomAnchor),
             contributionStreakBadge.leadingAnchor.constraintEqualToAnchor(view.leadingAnchor, constant: 10),
             contributionStreakBadge.trailingAnchor.constraintEqualToAnchor(view.trailingAnchor, constant: -10),
-            contributionStreakBadge.heightAnchor.constraintEqualToAnchor(view.widthAnchor, multiplier: 0.3)
+            contributionStreakBadge.heightAnchor.constraintEqualToAnchor(view.widthAnchor, multiplier: 0.4)
         ]
 
         if let imageLabelStack = userRankingBadge.subviews[1] as? UIStackView,
             badge = imageLabelStack.subviews[0] as? UIImageView
         {
-            phaseConstraints.append(badge.widthAnchor.constraintEqualToConstant(44.0))
+            phaseConstraints.append(badge.widthAnchor.constraintEqualToConstant(64.0))
             phaseConstraints.append(badge.heightAnchor.constraintEqualToAnchor(badge.widthAnchor))
         }
 
         if let imageLabelStack = contributionStreakBadge.subviews[1] as? UIStackView,
             badge = imageLabelStack.subviews[0] as? UIImageView
         {
-            phaseConstraints.append(badge.widthAnchor.constraintEqualToConstant(44.0))
+            phaseConstraints.append(badge.widthAnchor.constraintEqualToConstant(64.0))
             phaseConstraints.append(badge.heightAnchor.constraintEqualToAnchor(badge.widthAnchor))
         }
 
@@ -419,15 +420,14 @@ public class OurStudyViewController: UIViewController, ChartViewDelegate {
                 refreshUserRanking(r)
             }
 
+            /*
             if let r = studystats["contribution_streak"] as? Int {
-                log.info("OUR STUDY contribution streak \(r)")
                 refreshContributionStreak(r)
             } else if let s = studystats["contribution_streak"] as? String, r = Int(s) {
-                log.info("OUR STUDY contribution streak \(r)")
                 refreshContributionStreak(r)
-            } else {
-                log.info("OUR STUDY no contribution streak found")
             }
+            */
+            refreshContributionStreak(91)
 
             if let u = studystats["active_users"] as? Int {
                 refreshUserGrowth(u)
@@ -479,9 +479,9 @@ public class OurStudyViewController: UIViewController, ChartViewDelegate {
             badge = imageLabelStack.subviews[0] as? UIImageView,
             label = imageLabelStack.subviews[1] as? UILabel
         {
-            label.attributedText = OurStudyViewController.contributionStreakLabelText(days, unitsFontSize: studyLabelFontSize)
+            let (_, icon, desc) = OurStudyViewController.contributionStreakClassAndIcon(days)
+            label.attributedText = OurStudyViewController.contributionStreakLabelText(days, description: desc, unitsFontSize: studyLabelFontSize)
             label.setNeedsDisplay()
-            let (_, icon) = OurStudyViewController.contributionStreakClassAndIcon(days)
             badge.image = UIImage(named: icon)
             badge.setNeedsDisplay()
         } else {
@@ -555,14 +555,16 @@ public class OurStudyViewController: UIViewController, ChartViewDelegate {
     class func userRankingClassAndIcon(rank: Int) -> (Double, String) {
         let doubleRank = Double(rank)
         var rankIndex = OurStudyViewController.userRankingBadgeBuckets.indexOf { $0.0 >= doubleRank }
-        if rankIndex == nil { rankIndex = OurStudyViewController.userRankingBadgeBuckets.count - 1 }
+        if rankIndex == nil { rankIndex = OurStudyViewController.userRankingBadgeBuckets.count }
+        rankIndex = max(0, rankIndex! - 1)
         return OurStudyViewController.userRankingBadgeBuckets[rankIndex!]
     }
 
-    class func contributionStreakClassAndIcon(days: Int) -> (Double, String) {
+    class func contributionStreakClassAndIcon(days: Int) -> (Double, String, String) {
         let doubleDays = Double(days)
         var rankIndex = OurStudyViewController.contributionStreakBadgeBuckets.indexOf { $0.0 >= doubleDays }
-        if rankIndex == nil { rankIndex = OurStudyViewController.contributionStreakBadgeBuckets.count - 1 }
+        if rankIndex == nil { rankIndex = OurStudyViewController.contributionStreakBadgeBuckets.count }
+        rankIndex = max(0, rankIndex! - 1)
         return OurStudyViewController.contributionStreakBadgeBuckets[rankIndex!]
     }
 
@@ -592,9 +594,9 @@ public class OurStudyViewController: UIViewController, ChartViewDelegate {
         return aStr
     }
 
-    class func contributionStreakLabelText(days: Int, unitsFontSize: CGFloat = 20.0) -> NSAttributedString {
-        let prefixStr = "You've logged for"
-        let suffixStr = "straight days"
+    class func contributionStreakLabelText(days: Int, description: String, unitsFontSize: CGFloat = 20.0) -> NSAttributedString {
+        let prefixStr = "You've logged"
+        let suffixStr = "straight days. \(description)"
 
         let vStr = "\(days)"
         let aStr = NSMutableAttributedString(string: prefixStr + " " + vStr + " " + suffixStr)
@@ -610,7 +612,7 @@ public class OurStudyViewController: UIViewController, ChartViewDelegate {
         aStr.addAttribute(NSFontAttributeName, value: unitFont, range: tailRange)
 
         let paragraphStyle = NSMutableParagraphStyle()
-        paragraphStyle.lineSpacing = 2.0
+        paragraphStyle.lineSpacing = 4.0
         paragraphStyle.alignment = .Center
         aStr.addAttribute(NSParagraphStyleAttributeName, value: paragraphStyle, range: NSMakeRange(0, aStr.length))
 
