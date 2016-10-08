@@ -537,7 +537,6 @@ public class OurStudyViewController: UIViewController, ChartViewDelegate {
             }
         }
 
-
         if let label = partialDaysLabel.subviews[1] as? UILabel {
             if partialDays >= 0 {
                 label.attributedText = OurStudyViewController.collectedDaysLabelText(partialDays, unit: "days")
