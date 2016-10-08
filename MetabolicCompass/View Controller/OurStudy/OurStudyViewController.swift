@@ -116,8 +116,8 @@ public class OurStudyViewController: UIViewController, ChartViewDelegate {
     ]
 
     static let contributionStreakBadgeBuckets: [(Double, String, String)] = [
-        (2,    "icon-rock",              "You're chipping away your contributions, stay steady to grow your awareness."),
-        (3,    "icon-quill",             "Your penmanship is improving and you're writing more and more activities!"),
+        (2,    "icon-rock",              "You're chipping away at your contributions, stay steady to grow your awareness."),
+        (3,    "icon-quill",             "Your penmanship is improving, you're writing more and more activities!"),
         (5,    "icon-typewriter",        "You're keeping a steady log, well worth continuing your story"),
         (7,    "icon-polaroid",          "You've made an instant flash and your tracking is adding up"),
         (10,   "icon-pendulum",          "Tick-tock, you've hit your stride in sustaining your tracking momentum"),
