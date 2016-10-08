@@ -28,12 +28,6 @@ public class OurStudyViewController: UIViewController, ChartViewDelegate {
 
     var scrollView: UIScrollView!
 
-    // Data model.
-    var userRank: Int = 1
-    var ringValues: [(Double, Double)] = []
-    var fullDays: Int = 0
-    var partialDays: Int = 0
-
     // UI Components.
     public static let grey   = UIColor.ht_concreteColor()
     public static let red    = UIColor.ht_pomegranateColor()
@@ -45,12 +39,18 @@ public class OurStudyViewController: UIViewController, ChartViewDelegate {
     public static let clouds  = UIColor.ht_cloudsColor()
 
     lazy var phaseProgress: BalanceBarView = {
-        let attrs1 = [NSForegroundColorAttributeName: UIColor.whiteColor(),
+        let attrs = [NSForegroundColorAttributeName: UIColor.whiteColor(),
                       NSUnderlineStyleAttributeName: NSNumber(integer: NSUnderlineStyle.StyleSingle.rawValue),
                       NSFontAttributeName: UIFont(name: "GothamBook", size: studyLabelFontSize)!]
 
-        var title = NSMutableAttributedString(string: "Study Progress: Phase 1: 100 users", attributes: attrs1)
-        let bar = BalanceBarView(title: title, color1: OurStudyViewController.red, color2: OurStudyViewController.grey)
+        let userCount = Double(AnalysisDataModel.sharedInstance.studyStatsModel.activeUsers)
+        let userTarget = OurStudyViewController.userGrowthTarget(userCount)
+        let ratio = userCount >= 0 ? CGFloat(userCount / userTarget) : 0.0
+
+        let title = userCount >= 0 ? OurStudyViewController.userGrowthBarTitle(userTarget)
+                        : NSMutableAttributedString(string: "Study Progress: N/A, please try later", attributes: attrs)
+
+        let bar = BalanceBarView(ratio: ratio, title: title, color1: OurStudyViewController.red, color2: OurStudyViewController.grey)
         return bar
     }()
 
@@ -130,29 +130,97 @@ public class OurStudyViewController: UIViewController, ChartViewDelegate {
         (360,  "icon-eye",               "You're a tracking master, part of an elite group that shapes our human health knowledge!"),
     ]
 
-    lazy var userRankingBadge: UIStackView =
-        UIComponents.createNumberWithImageAndLabel(
+    lazy var userRankingBadge: UIStackView = {
+        var rank = AnalysisDataModel.sharedInstance.studyStatsModel.userRank
+        if rank < 0 { rank = 1 }
+
+        let stack = UIComponents.createNumberWithImageAndLabel(
             "Your Contributions Rank", imageName: "icon-gold-medal",
             titleAttrs: studyLabelAttrs, bodyFontSize: studyContributionFontSize,
-            labelFontSize: studyLabelFontSize, labelSpacing: 0.0, value: 1.0, unit: "%", prefix: "Top", suffix: "of all users")
+            labelFontSize: studyLabelFontSize, labelSpacing: 0.0, value: Double(rank), unit: "%", prefix: "Top", suffix: "of all users")
 
-    lazy var contributionStreakBadge: UIStackView =
-        UIComponents.createNumberWithImageAndLabel(
+        if let imageLabelStack = stack.subviews[1] as? UIStackView,
+            badge = imageLabelStack.subviews[0] as? UIImageView,
+            label = imageLabelStack.subviews[1] as? UILabel
+        {
+            label.attributedText = OurStudyViewController.userRankingLabelText(rank)
+            label.setNeedsDisplay()
+            let (_, icon) = OurStudyViewController.userRankingClassAndIcon(rank)
+            badge.image = UIImage(named: icon)
+            badge.setNeedsDisplay()
+        }
+
+        return stack
+    }()
+
+    lazy var contributionStreakBadge: UIStackView = {
+        var streak = AnalysisDataModel.sharedInstance.studyStatsModel.contributionStreak
+        if streak < 0 { streak = 0 }
+
+        let stack = UIComponents.createNumberWithImageAndLabel(
             "Your Contributions Streak", imageName: "icon-gold-medal", titleAttrs: studyLabelAttrs,
             bodyFontSize: studyLabelFontSize, unitsFontSize: studyLabelFontSize, labelFontSize: studyLabelFontSize,
             labelSpacing: 0.0, value: 1.0, unit: "straight days", prefix: "You've logged", suffix: "")
 
+        if let descLabel = stack.subviews[0] as? UILabel,
+            imageLabelStack = stack.subviews[1] as? UIStackView,
+            badge = imageLabelStack.subviews[0] as? UIImageView,
+            label = imageLabelStack.subviews[1] as? UILabel
+        {
+            let compact = UIScreen.mainScreen().bounds.size.height < 569
+            let (_, icon, desc) = OurStudyViewController.contributionStreakClassAndIcon(streak)
+            let (descAttrText, labelAttrText) = OurStudyViewController.contributionStreakLabelText(streak, description: desc, compact: compact, descFontSize: studyLabelFontSize, labelFontSize: studyLabelFontSize)
+
+            descLabel.attributedText = descAttrText
+            descLabel.setNeedsDisplay()
+
+            label.attributedText = labelAttrText
+            label.setNeedsDisplay()
+
+            badge.image = UIImage(named: icon)
+            badge.setNeedsDisplay()
+        }
+
+        return stack
+    }()
+
     // Metrics.
 
-    lazy var fullDaysLabel: UIStackView =
-        UIComponents.createNumberLabel(
+    lazy var fullDaysLabel: UIStackView = {
+        var fullDays = AnalysisDataModel.sharedInstance.studyStatsModel.fullDays
+
+        let stack = UIComponents.createNumberLabel(
             "Full Days Tracked", titleAttrs: studyLabelAttrs,
             bodyFontSize: studyBodyFontSize, labelFontSize: studyLabelFontSize-2.0, value: 0.0, unit: "days")
 
-    lazy var partialDaysLabel: UIStackView =
-        UIComponents.createNumberLabel(
+        if let label = stack.subviews[1] as? UILabel {
+            if fullDays >= 0 {
+                label.attributedText = OurStudyViewController.collectedDaysLabelText(fullDays, unit: "days")
+            } else {
+                label.attributedText = NSAttributedString(string: "N/A")
+            }
+        }
+
+        return stack
+    }()
+
+    lazy var partialDaysLabel: UIStackView = {
+        var partialDays = AnalysisDataModel.sharedInstance.studyStatsModel.partialDays
+
+        let stack = UIComponents.createNumberLabel(
             "Partial Days Tracked", titleAttrs: studyLabelAttrs,
             bodyFontSize: studyBodyFontSize, labelFontSize: studyLabelFontSize-2.0, value: 0.0, unit: "days")
+
+        if let label = stack.subviews[1] as? UILabel {
+            if partialDays >= 0 {
+                label.attributedText = OurStudyViewController.collectedDaysLabelText(partialDays, unit: "days")
+            } else {
+                label.attributedText = NSAttributedString(string: "N/A")
+            }
+        }
+
+        return stack
+    }()
 
 
     var phaseProgressTip: TapTip! = nil
@@ -404,68 +472,32 @@ public class OurStudyViewController: UIViewController, ChartViewDelegate {
     }
 
 
-    // TODO: cache results for 1-5 mins
     func refreshData() {
-        PopulationHealthManager.sharedManager.fetchStudyStats { (success, payload) in
-            if success && payload != nil { self.refreshStudyStats(payload) }
+        AnalysisDataModel.sharedInstance.refreshStudyStats(ringIndexKeys) { success in
+            if success {
+                let studystats = AnalysisDataModel.sharedInstance.studyStatsModel
+                self.refreshUserGrowth(studystats.activeUsers)
+                self.refreshUserRanking(studystats.userRank)
+                self.refreshContributionStreak(studystats.contributionStreak)
+                self.refreshDaysCollected(studystats.fullDays, partialDays: studystats.partialDays)
+                self.refreshStudyRings(studystats.ringValues)
+            }
+            else {
+                log.error("STUDYSTATS Failed to refresh from server")
+            }
+
             self.activityIndicator.stopAnimating()
         }
     }
 
-    func refreshStudyStats(payload: AnyObject?) {
-        if let response = payload as? [String:AnyObject],
-            studystats = response["result"] as? [String:AnyObject]
-        {
-            if let r = studystats["user_rank"] as? Int {
-                refreshUserRanking(r)
-            } else if let s = studystats["user_rank"] as? String, r = Int(s) {
-                refreshUserRanking(r)
-            }
-
-            if let r = studystats["contribution_streak"] as? Int {
-                refreshContributionStreak(r)
-            } else if let s = studystats["contribution_streak"] as? String, r = Int(s) {
-                refreshContributionStreak(r)
-            }
-
-            if let u = studystats["active_users"] as? Int {
-                refreshUserGrowth(u)
-            } else if let s = studystats["active_users"] as? String, u = Int(s) {
-                refreshUserGrowth(u)
-            }
-
-            refreshStudyRings(studystats)
-
-            if let label = fullDaysLabel.subviews[1] as? UILabel {
-                if let f = studystats["full_days"] as? Int  {
-                    label.attributedText = OurStudyViewController.collectedDaysLabelText(f, unit: "days")
-                } else if let s = studystats["full_days"] as? String, f = Int(s) {
-                    label.attributedText = OurStudyViewController.collectedDaysLabelText(f, unit: "days")
-                }
-            }
-
-            if let label = partialDaysLabel.subviews[1] as? UILabel {
-                if let p = studystats["partial_days"] as? Int {
-                    label.attributedText = OurStudyViewController.collectedDaysLabelText(p, unit: "days")
-                } else if let s = studystats["partial_days"] as? String, p = Int(s) {
-                    label.attributedText = OurStudyViewController.collectedDaysLabelText(p, unit: "days")
-                }
-            }
-
-        } else {
-            log.error("Failed to refresh study stats from \(payload)")
-        }
-    }
-
     func refreshUserRanking(rank: Int) {
-        userRank = rank
         if let imageLabelStack = userRankingBadge.subviews[1] as? UIStackView,
                badge = imageLabelStack.subviews[0] as? UIImageView,
                label = imageLabelStack.subviews[1] as? UILabel
         {
-            label.attributedText = OurStudyViewController.userRankingLabelText(userRank)
+            label.attributedText = OurStudyViewController.userRankingLabelText(rank)
             label.setNeedsDisplay()
-            let (_, icon) = OurStudyViewController.userRankingClassAndIcon(userRank)
+            let (_, icon) = OurStudyViewController.userRankingClassAndIcon(rank)
             badge.image = UIImage(named: icon)
             badge.setNeedsDisplay()
         } else {
@@ -496,49 +528,73 @@ public class OurStudyViewController: UIViewController, ChartViewDelegate {
         }
     }
 
-    func refreshUserGrowth(activeUsers: Int) {
-        let userCount = Double(activeUsers)
-        let userTarget = OurStudyViewController.userGrowthTarget(userCount)
-        self.phaseProgress.ratio = CGFloat(userCount / userTarget)
-        self.phaseProgress.refreshData()
-        self.phaseProgress.refreshTitle(OurStudyViewController.userGrowthBarTitle(userTarget))
-    }
-
-    func refreshStudyRings(studystats: [String:AnyObject]) {
-        ringValues = OurStudyViewController.ringValueDefaults.enumerate().map { (index, defaultValue) in
-            var value: Double! = nil
-            if let v = studystats[ringIndexKeys[index]] as? Double {
-                value = v
-            } else if let s = studystats[ringIndexKeys[index]] as? String, v = Double(s) {
-                value = v
-            }
-
-            if value == nil {
-                return defaultValue
+    func refreshDaysCollected(fullDays: Int, partialDays: Int) {
+        if let label = fullDaysLabel.subviews[1] as? UILabel {
+            if fullDays >= 0 {
+                label.attributedText = OurStudyViewController.collectedDaysLabelText(fullDays, unit: "days")
             } else {
-                if index == 1 { value = value * 100.0 }
-                let target = pow(10, ceil(log10(value)))
-                return (value, target)
+                label.attributedText = NSAttributedString(string: "N/A")
             }
         }
 
+
+        if let label = partialDaysLabel.subviews[1] as? UILabel {
+            if partialDays >= 0 {
+                label.attributedText = OurStudyViewController.collectedDaysLabelText(partialDays, unit: "days")
+            } else {
+                label.attributedText = NSAttributedString(string: "N/A")
+            }
+        }
+    }
+    
+    func refreshUserGrowth(activeUsers: Int) {
+        if activeUsers < 0 {
+            self.phaseProgress.ratio = 0.0
+            self.phaseProgress.refreshData()
+
+            let attrs = [NSForegroundColorAttributeName: UIColor.whiteColor(),
+                         NSUnderlineStyleAttributeName: NSNumber(integer: NSUnderlineStyle.StyleSingle.rawValue),
+                         NSFontAttributeName: UIFont(name: "GothamBook", size: studyLabelFontSize)!]
+
+            let aStr = NSMutableAttributedString(string: "Study Progress: N/A, please try later", attributes: attrs)
+            self.phaseProgress.refreshTitle(aStr)
+        }
+        else {
+            let userCount = Double(activeUsers)
+            let userTarget = OurStudyViewController.userGrowthTarget(userCount)
+            self.phaseProgress.ratio = CGFloat(userCount / userTarget)
+            self.phaseProgress.refreshData()
+            self.phaseProgress.refreshTitle(OurStudyViewController.userGrowthBarTitle(userTarget))
+        }
+    }
+
+    func refreshStudyRings(ringValues: [(Double, Double)]) {
+        let attrs = [NSFontAttributeName: UIFont(name: "GothamBook", size: studyLabelFontSize)!,
+                     NSForegroundColorAttributeName: UIColor.whiteColor(),
+                     NSBackgroundColorAttributeName: UIColor.clearColor()]
+        
         OurStudyViewController.ringNames.enumerate().forEach { (index, _) in
             let (value, maxValue) = ringValues[index]
-            let labels = ["Value", "Target"]
-            let entries = [value, maxValue - value].enumerate().map { return ChartDataEntry(value: $0.1, xIndex: $0.0) }
 
-            let pieChartDataSet = PieChartDataSet(yVals: entries, label: "Samples per type")
+            var ringText: String = "N/A"
+            var pieChartDataSet = PieChartDataSet(yVals: [], label: "")
+            var pieChartLabels: [String] = []
+
+            if value >= 0 || maxValue >= 0 {
+                let entries = [value, maxValue - value].enumerate().map { return ChartDataEntry(value: $0.1, xIndex: $0.0) }
+
+                ringText = MetricSuffixFormatter.sharedInstance.formatDouble(value) + OurStudyViewController.ringUnits[index]
+
+                pieChartDataSet = PieChartDataSet(yVals: entries, label: "")
+                pieChartLabels = ["Value", "Target"]
+            }
+
             pieChartDataSet.colors = pieChartColors[index]
             pieChartDataSet.drawValuesEnabled = false
 
-            let pieChartData = PieChartData(xVals: labels, dataSet: pieChartDataSet)
+            let pieChartData = PieChartData(xVals: pieChartLabels, dataSet: pieChartDataSet)
             self.rings[index].data = pieChartData
 
-            let attrs = [NSFontAttributeName: UIFont(name: "GothamBook", size: studyLabelFontSize)!,
-                         NSForegroundColorAttributeName: UIColor.whiteColor(),
-                         NSBackgroundColorAttributeName: UIColor.clearColor()]
-
-            let ringText = MetricSuffixFormatter.sharedInstance.formatDouble(value) + OurStudyViewController.ringUnits[index]
             self.rings[index].centerAttributedText = NSMutableAttributedString(string: ringText, attributes: attrs)
             self.rings[index].centerTextRadiusPercent = 100.0
             self.rings[index].setNeedsDisplay()
@@ -576,22 +632,29 @@ public class OurStudyViewController: UIViewController, ChartViewDelegate {
     }
 
     class func userRankingLabelText(rank: Int, unitsFontSize: CGFloat = 20.0) -> NSAttributedString {
-        let prefixStr = "Top"
-        let suffixStr = "% of all users"
+        var aStr = NSMutableAttributedString(string: "")
 
-        let (rankClass, _) = OurStudyViewController.userRankingClassAndIcon(rank)
-        let vStr = String(format: "%.2g", rankClass)
-        let aStr = NSMutableAttributedString(string: prefixStr + " " + vStr + " " + suffixStr)
+        if rank >= 0 {
+            let prefixStr = "Top"
+            let suffixStr = "% of all users"
 
-        let unitFont = UIFont(name: "GothamBook", size: unitsFontSize)!
+            let (rankClass, _) = OurStudyViewController.userRankingClassAndIcon(rank)
+            let vStr = String(format: "%.2g", rankClass)
+            aStr = NSMutableAttributedString(string: prefixStr + " " + vStr + " " + suffixStr)
 
-        if prefixStr.characters.count > 0 {
-            let headRange = NSRange(location:0, length: prefixStr.characters.count + 1)
-            aStr.addAttribute(NSFontAttributeName, value: unitFont, range: headRange)
+            let unitFont = UIFont(name: "GothamBook", size: unitsFontSize)!
+
+            if prefixStr.characters.count > 0 {
+                let headRange = NSRange(location:0, length: prefixStr.characters.count + 1)
+                aStr.addAttribute(NSFontAttributeName, value: unitFont, range: headRange)
+            }
+
+            let tailRange = NSRange(location: prefixStr.characters.count + vStr.characters.count + 1, length: suffixStr.characters.count + 1)
+            aStr.addAttribute(NSFontAttributeName, value: unitFont, range: tailRange)
         }
-
-        let tailRange = NSRange(location:prefixStr.characters.count + vStr.characters.count + 1, length: suffixStr.characters.count + 1)
-        aStr.addAttribute(NSFontAttributeName, value: unitFont, range: tailRange)
+        else {
+            aStr = NSMutableAttributedString(string: "Not available, please try later")
+        }
 
         let paragraphStyle = NSMutableParagraphStyle()
         paragraphStyle.lineSpacing = 2.0
@@ -614,7 +677,14 @@ public class OurStudyViewController: UIViewController, ChartViewDelegate {
         var lblStr = NSMutableAttributedString(string: description)
         lblStr.addAttribute(NSFontAttributeName, value: labelFont, range: NSMakeRange(0, lblStr.length))
 
-        if !compact {
+        if days < 0 {
+            descStr = NSMutableAttributedString(string: "Your Contributions Streak", attributes: studyLabelAttrs)
+            descStr.addAttribute(NSFontAttributeName, value: descFont, range: NSMakeRange(0, descStr.length))
+
+            lblStr = NSMutableAttributedString(string: "Not available, please try later")
+            lblStr.addAttribute(NSFontAttributeName, value: labelFont, range: NSMakeRange(0, lblStr.length))
+        }
+        else if !compact {
             descStr = NSMutableAttributedString(string: "Your Contributions Streak", attributes: studyLabelAttrs)
             descStr.addAttribute(NSFontAttributeName, value: descFont, range: NSMakeRange(0, descStr.length))
 

@@ -27,8 +27,6 @@ public class FastingViewController : UIViewController, ChartViewDelegate {
 
     var activityIndicator: UIActivityIndicatorView! = nil
 
-    private var model: FastingDataModel = FastingDataModel()
-
     lazy var pieChart: PieChartView = {
         let chart = PieChartView()
         chart.animate(xAxisDuration: 1.0, yAxisDuration: 1.0)
@@ -304,11 +302,12 @@ public class FastingViewController : UIViewController, ChartViewDelegate {
     }
 
     func refreshPieChart() {
-        let pieChartDataSet = PieChartDataSet(yVals: self.model.samplesCollectedDataEntries.map { $0.1 }, label: "Samples per type")
+        let model = AnalysisDataModel.sharedInstance.fastingModel
+        let pieChartDataSet = PieChartDataSet(yVals: model.samplesCollectedDataEntries.map { $0.1 }, label: "Samples per type")
         pieChartDataSet.colors = pieChartColors
         pieChartDataSet.drawValuesEnabled = false
 
-        let xVals : [String] = self.model.samplesCollectedDataEntries.map {
+        let xVals : [String] = model.samplesCollectedDataEntries.map {
             switch $0.0 {
             case .HKType(let sampleType):
                 return sampleType.displayText!
@@ -346,33 +345,33 @@ public class FastingViewController : UIViewController, ChartViewDelegate {
     }
 
     public func refreshData() {
-        log.info("FastingViewController refreshing data")
-        let refreshStartDate = NSDate()
+        //log.info("FastingViewController refreshing data")
+        //let refreshStartDate = NSDate()
 
-        model.updateData { error in
+        AnalysisDataModel.sharedInstance.fastingModel.updateData { error in
             guard error == nil else {
                 log.error(error)
                 return
             }
 
-            log.info("FastingViewController refreshing charts (\(NSDate().timeIntervalSinceDate(refreshStartDate)))")
+            //log.info("FastingViewController refreshing charts (\(NSDate().timeIntervalSinceDate(refreshStartDate)))")
 
             Async.main {
                 self.activityIndicator.stopAnimating()
                 self.refreshPieChart()
 
-                let cwfHours = self.model.cumulativeWeeklyFasting / 3600.0
-                let wfvHours = self.model.weeklyFastingVariability / 3600.0
+                let cwfHours = AnalysisDataModel.sharedInstance.fastingModel.cumulativeWeeklyFasting / 3600.0
+                let wfvHours = AnalysisDataModel.sharedInstance.fastingModel.weeklyFastingVariability / 3600.0
 
-                let saTotal = self.model.fastSleep + self.model.fastAwake
-                let eeTotal = self.model.fastEat + self.model.fastExercise
+                let saTotal = AnalysisDataModel.sharedInstance.fastingModel.fastSleep + AnalysisDataModel.sharedInstance.fastingModel.fastAwake
+                let eeTotal = AnalysisDataModel.sharedInstance.fastingModel.fastEat + AnalysisDataModel.sharedInstance.fastingModel.fastExercise
 
                 self.refreshFastingStreak(cwfHours)
 
-                self.sleepAwakeBalance.ratio = saTotal == 0.0 ? -1.0 : CGFloat( self.model.fastSleep / saTotal )
+                self.sleepAwakeBalance.ratio = saTotal == 0.0 ? -1.0 : CGFloat( AnalysisDataModel.sharedInstance.fastingModel.fastSleep / saTotal )
                 self.sleepAwakeBalance.refreshData()
 
-                self.eatExerciseBalance.ratio = eeTotal == 0.0 ? -1.0 : CGFloat( self.model.fastEat / eeTotal )
+                self.eatExerciseBalance.ratio = eeTotal == 0.0 ? -1.0 : CGFloat( AnalysisDataModel.sharedInstance.fastingModel.fastEat / eeTotal )
                 self.eatExerciseBalance.refreshData()
 
                 if let cwfSubLabel = self.cwfLabel.arrangedSubviews[1] as? UILabel {
@@ -399,7 +398,7 @@ public class FastingViewController : UIViewController, ChartViewDelegate {
     //MARK: ChartViewDelegate
     public func chartValueSelected(chartView: ChartViewBase, entry: ChartDataEntry, dataSetIndex: Int, highlight: ChartHighlight) {
         var typeIdentifier : String = ""
-        switch model.samplesCollectedDataEntries[entry.xIndex].0 {
+        switch AnalysisDataModel.sharedInstance.fastingModel.samplesCollectedDataEntries[entry.xIndex].0 {
         case .HKType(let sampleType):
             typeIdentifier = HMConstants.sharedInstance.healthKitShortNames[sampleType.identifier]!
         case .Other:
