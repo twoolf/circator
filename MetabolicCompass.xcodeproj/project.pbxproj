@@ -50,6 +50,8 @@
 		78969D941D69891C00E867C3 /* OurStudyViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 78969D931D69891C00E867C3 /* OurStudyViewController.swift */; };
 		78969D961D6A22A200E867C3 /* UIComponents.swift in Sources */ = {isa = PBXBuildFile; fileRef = 78969D951D6A22A200E867C3 /* UIComponents.swift */; };
 		78969D981D6A81D300E867C3 /* ConsentViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 78969D971D6A81D300E867C3 /* ConsentViewController.swift */; };
+		789BFFFD1DA94D5200396D7A /* AnalysisDataModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 789BFFFC1DA94D5200396D7A /* AnalysisDataModel.swift */; };
+		789BFFFF1DA94E3300396D7A /* StudyStatsModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 789BFFFE1DA94E3300396D7A /* StudyStatsModel.swift */; };
 		78AC90CC1C1E859F008C931B /* UserAccount.swift in Sources */ = {isa = PBXBuildFile; fileRef = 78AC90CB1C1E859F008C931B /* UserAccount.swift */; };
 		78B45B261CE3B6210010AC4C /* ExerciseInterfaceController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 78B45B201CE3B6200010AC4C /* ExerciseInterfaceController.swift */; };
 		78B45B271CE3B6210010AC4C /* IntroInterfaceController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 78B45B211CE3B6200010AC4C /* IntroInterfaceController.swift */; };
@@ -390,6 +392,8 @@
 		78969D931D69891C00E867C3 /* OurStudyViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = OurStudyViewController.swift; sourceTree = "<group>"; };
 		78969D951D6A22A200E867C3 /* UIComponents.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = UIComponents.swift; sourceTree = "<group>"; };
 		78969D971D6A81D300E867C3 /* ConsentViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ConsentViewController.swift; sourceTree = "<group>"; };
+		789BFFFC1DA94D5200396D7A /* AnalysisDataModel.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AnalysisDataModel.swift; sourceTree = "<group>"; };
+		789BFFFE1DA94E3300396D7A /* StudyStatsModel.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = StudyStatsModel.swift; sourceTree = "<group>"; };
 		78AC90CB1C1E859F008C931B /* UserAccount.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = UserAccount.swift; sourceTree = "<group>"; };
 		78B279C21C80FFE5005A6249 /* MetabolicCompassWatchExtension.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.xml; path = MetabolicCompassWatchExtension.entitlements; sourceTree = "<group>"; };
 		78B279C31C80FFEA005A6249 /* MetabolicCompassWatch.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.xml; path = MetabolicCompassWatch.entitlements; sourceTree = "<group>"; };
@@ -747,6 +751,7 @@
 			isa = PBXGroup;
 			children = (
 				78969D931D69891C00E867C3 /* OurStudyViewController.swift */,
+				789BFFFE1DA94E3300396D7A /* StudyStatsModel.swift */,
 			);
 			name = "Our Study";
 			path = OurStudy;
@@ -788,6 +793,7 @@
 			isa = PBXGroup;
 			children = (
 				846E488B1D5AFF8E004CB794 /* AnalysisViewController.swift */,
+				789BFFFC1DA94D5200396D7A /* AnalysisDataModel.swift */,
 			);
 			path = Analysis;
 			sourceTree = "<group>";
@@ -1992,6 +1998,7 @@
 				84C9CB491CE9BB76005ED875 /* MetabolicDailyProgressChartView.swift in Sources */,
 				84B727AC1D13E5B100839E54 /* EventInboxViewController.swift in Sources */,
 				78B7341E1C90B84600693229 /* ProfileSubviewController.swift in Sources */,
+				789BFFFF1DA94E3300396D7A /* StudyStatsModel.swift in Sources */,
 				958568051CD0BF6300EDD385 /* BaseViewController.swift in Sources */,
 				84B727B11D13FB5A00839E54 /* ManageChartsViewController.swift in Sources */,
 				95C0B9A31CD2563B006E523F /* TitledInputCollectionViewCell.swift in Sources */,
@@ -2014,6 +2021,7 @@
 				E74A89761CE308800056A2D2 /* UIColor+Extended.swift in Sources */,
 				842B7DC81D0960A7007F2126 /* BarChartCollectionCell.swift in Sources */,
 				95748C501CCFC7D90002F6A3 /* DoubleCheckListCollectionViewCell.swift in Sources */,
+				789BFFFD1DA94D5200396D7A /* AnalysisDataModel.swift in Sources */,
 				78B7342A1C90B87300693229 /* UINotifications.swift in Sources */,
 				78B734241C90B85B00693229 /* QueryBuilderViewController.swift in Sources */,
 				1C2DA13F1D479CD500C738DF /* MetabolicChart.swift in Sources */,
@@ -2250,6 +2258,7 @@
 				COPY_PHASE_STRIP = NO;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				DEFINES_MODULE = YES;
+				EMBEDDED_CONTENT_CONTAINS_SWIFT = NO;
 				ENABLE_NS_ASSERTIONS = NO;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
 				ENABLE_TESTABILITY = YES;
@@ -2379,7 +2388,7 @@
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "iPhone Developer";
-				EMBEDDED_CONTENT_CONTAINS_SWIFT = NO;
+				EMBEDDED_CONTENT_CONTAINS_SWIFT = "$(inherited)";
 				GCC_OPTIMIZATION_LEVEL = 0;
 				IBSC_MODULE = MetabolicCompassWatch_Extension;
 				INFOPLIST_FILE = MetabolicCompassWatch/Info.plist;
@@ -2438,6 +2447,7 @@
 				COPY_PHASE_STRIP = NO;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				DEFINES_MODULE = YES;
+				EMBEDDED_CONTENT_CONTAINS_SWIFT = NO;
 				ENABLE_NS_ASSERTIONS = NO;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
 				GCC_C_LANGUAGE_STANDARD = gnu99;
@@ -2538,6 +2548,7 @@
 				COPY_PHASE_STRIP = NO;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				DEFINES_MODULE = YES;
+				EMBEDDED_CONTENT_CONTAINS_SWIFT = NO;
 				ENABLE_NS_ASSERTIONS = NO;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
 				ENABLE_TESTABILITY = YES;
@@ -2668,7 +2679,7 @@
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "iPhone Developer";
-				EMBEDDED_CONTENT_CONTAINS_SWIFT = NO;
+				EMBEDDED_CONTENT_CONTAINS_SWIFT = "$(inherited)";
 				GCC_OPTIMIZATION_LEVEL = 0;
 				IBSC_MODULE = MetabolicCompassWatch_Extension;
 				INFOPLIST_FILE = MetabolicCompassWatch/Info.plist;
@@ -2767,7 +2778,7 @@
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "iPhone Developer";
-				EMBEDDED_CONTENT_CONTAINS_SWIFT = NO;
+				EMBEDDED_CONTENT_CONTAINS_SWIFT = "$(inherited)";
 				IBSC_MODULE = MetabolicCompassWatch_Extension;
 				INFOPLIST_FILE = MetabolicCompassWatch/Info.plist;
 				PRODUCT_BUNDLE_IDENTIFIER = edu.jhu.cs.damsl.MetabolicCompass.app.watch;
