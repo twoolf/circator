@@ -196,6 +196,14 @@ class DailyChartModel : NSObject, UITableViewDataSource {
         self.daysStringArray = DailyChartModel.getChartDateRangeStrings(endDate)
     }
 
+    func refreshChartDateRange(lastViewDate: NSDate?) {
+        let now = NSDate()
+        if let last = lastViewDate, end = getEndDate() where last.isInSameDayAsDate(end) && !last.isInSameDayAsDate(now) {
+            self.daysArray = DailyChartModel.getChartDateRange()
+            self.daysStringArray = DailyChartModel.getChartDateRangeStrings()
+        }
+    }
+
     func getDataForDay(day: NSDate?, lastDay:Bool) {
         let startDay = day == nil ? self.daysArray.first! : day!
         let today = startDay.isInToday()

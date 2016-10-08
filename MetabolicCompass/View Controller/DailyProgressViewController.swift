@@ -72,6 +72,7 @@ class DailyProgressViewController : UIViewController, DailyChartModelProtocol {
 
     private var updateContentWithAnimation = true
 
+    private var lastViewDate: NSDate! = nil
     private var loadStart: NSDate! = nil
 
     //MARK: View life circle
@@ -125,17 +126,20 @@ class DailyProgressViewController : UIViewController, DailyChartModelProtocol {
         let mainScrollViewContentWidth = CGRectGetWidth(self.mainScrollView.frame)
         let mainScrollViewContentHeight = self.mainScrollView.contentSize.height
         self.mainScrollView.contentSize = CGSizeMake(mainScrollViewContentWidth, mainScrollViewContentHeight)
-        //updating chart data
+
+        // Update chart data
         self.contentDidUpdate()
     }
 
     override func viewWillAppear(animated: Bool) {
         super.viewWillAppear(animated)
+        self.dailyChartModel.refreshChartDateRange(lastViewDate)
         logContentView()
     }
 
     override func viewWillDisappear(animated: Bool) {
         super.viewWillDisappear(animated)
+        self.lastViewDate = NSDate()
         logContentView(false)
     }
 
