@@ -49,6 +49,13 @@ public extension Array {
     }
 }
 
+// Constants
+let remoteLogSeqKey = "ios_log"
+let remoteLogSeqIdKey = "seq_id"
+let remoteLogSeqDataKey = "seq_data"
+
+let remoteSyncSeqIdKey = "seq_id"
+
 // Randomized, truncated exponential backoff constants
 
 public let retryPeriodBase = 300
@@ -66,7 +73,6 @@ public let syncNotificationLimit = 100
 public let SyncBeganNotification = "SyncBeganNotification"
 public let SyncEndedNotification = "SyncEndedNotification"
 public let SyncProgressNotification = "SyncProgressNotification"
-
 
 public class UMLogSequenceNumber: Object {
     public dynamic var msid = String()
@@ -252,9 +258,9 @@ public class UploadManager: NSObject {
 
             for (type, deviceData) in seqs {
                 if let deviceInfo = deviceData as? [String:AnyObject],
-                       dataForIOS = deviceInfo["ios"] as? [String: AnyObject],
-                       seqInfo = dataForIOS["0"] as? [String: AnyObject],
-                       remoteSeqNum = seqInfo["seq_id"] as? Int
+                       seqForIOS = deviceInfo[remoteLogSeqKey] as? [String: AnyObject],
+                       seqInfo = seqForIOS["0"] as? [String: AnyObject],
+                       remoteSeqNum = seqInfo[remoteLogSeqIdKey] as? Int
                 {
                     var doInit = false
                     var onDeviceSeq = 0
@@ -351,9 +357,9 @@ public class UploadManager: NSObject {
     public func getRemoteAnchorForType(type: HKSampleType) -> HKQueryAnchor? {
         if let deviceInfo = UserManager.sharedManager.getAcquisitionSeq(type) as? [String:AnyObject]
         {
-            if let dataForIOS = deviceInfo["ios"] as? [String: AnyObject],
-                   seqInfo = dataForIOS["0"] as? [String: AnyObject],
-                   remoteAnchor = seqInfo["seq_data"] as? String
+            if let seqForIOS = deviceInfo[remoteLogSeqKey] as? [String: AnyObject],
+                   seqInfo = seqForIOS["0"] as? [String: AnyObject],
+                   remoteAnchor = seqInfo[remoteLogSeqDataKey] as? String
             {
                 return decodeRemoteAnchor(remoteAnchor)
             } else {
@@ -434,12 +440,12 @@ public class UploadManager: NSObject {
         }
 
         let seqInfo: [String: AnyObject] = [
-            "seq_id": logEntry.id,
-            "seq_data": logEntry.anchor.base64EncodedStringWithOptions(NSDataBase64EncodingOptions(rawValue: 0))
+            remoteLogSeqIdKey   : logEntry.id,
+            remoteLogSeqDataKey : logEntry.anchor.base64EncodedStringWithOptions(NSDataBase64EncodingOptions(rawValue: 0))
         ]
 
         let deviceInfo: [String: AnyObject] = [
-            "ios": (["0": seqInfo] as AnyObject)
+            remoteLogSeqKey: (["0": seqInfo] as AnyObject)
         ]
 
         let commands: [String:AnyObject] = [
@@ -1059,7 +1065,7 @@ public class UploadManager: NSObject {
             log.warning("ULM RSYNC retrieving remote seq for \(type.identifier), \(deviceClass), \(deviceId) from \(classInfo)")
             if let dataForClass = classInfo[deviceClass] as? [String: AnyObject],
                 seqInfo = dataForClass[deviceId] as? [String: AnyObject],
-                seq_id = seqInfo["seq_id"] as? Int
+                syncSeqId = seqInfo[remoteSyncSeqIdKey] as? Int
             {
                 // Retrieve all remote samples between max local seq, and max known remote seq
                 //  -- where do we store the max local seq?
@@ -1072,7 +1078,7 @@ public class UploadManager: NSObject {
                 // Fetch best known local sample from UserDefaults if available, otherwise HealthKit.
 
                 var localSeq: Int! = nil
-                let remoteSeq = seq_id
+                let remoteSeq = syncSeqId
 
                 let columns = columnDictOfType(type)
 
