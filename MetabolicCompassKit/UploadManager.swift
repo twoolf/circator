@@ -67,6 +67,7 @@ public let SyncBeganNotification = "SyncBeganNotification"
 public let SyncEndedNotification = "SyncEndedNotification"
 public let SyncProgressNotification = "SyncProgressNotification"
 
+
 public class UMLogSequenceNumber: Object {
     public dynamic var msid = String()
     public dynamic var seqid: Int = 0
@@ -226,6 +227,9 @@ public class UploadManager: NSObject {
     // Sync notification state.
     var syncMode: Bool = false
 
+    // Device sync.
+    var deviceSync: Async? = nil
+
     public override init() {
         self.uploadQueue = dispatch_queue_create("UploadQueue", DISPATCH_QUEUE_SERIAL)
         super.init()
@@ -246,29 +250,28 @@ public class UploadManager: NSObject {
                 log.warning("Skipping initsync, no remote seqnos found")
             }
 
-            for (type, seqData) in seqs {
-                if let seqInfo = seqData as? [String:AnyObject], dataForIOS = seqInfo["ios"] as? Bool, remoteSeqNum = seqInfo["id"] as? Int
+            for (type, deviceData) in seqs {
+                if let deviceInfo = deviceData as? [String:AnyObject],
+                       dataForIOS = deviceInfo["ios"] as? [String: AnyObject],
+                       seqInfo = dataForIOS["0"] as? [String: AnyObject],
+                       remoteSeqNum = seqInfo["seq_id"] as? Int
                 {
-                    if dataForIOS {
-                        var doInit = false
-                        var onDeviceSeq = 0
-                        let nextSeqNum = remoteSeqNum + 1
+                    var doInit = false
+                    var onDeviceSeq = 0
+                    let nextSeqNum = remoteSeqNum + 1
 
-                        if let seq = UMLogEntry.sequenceNumberForType(realm, sampleType: type) {
-                            doInit = seq.seqid < nextSeqNum
-                            onDeviceSeq = seq.seqid
-                        } else {
-                            doInit = true
-                        }
-
-                        if doInit {
-                            log.warning("Initsync seq for \(type.identifier): \(nextSeqNum)")
-                            UMLogEntry.initSequenceNumberForType(realm, sampleType: type, seqNumber: nextSeqNum)
-                        } else {
-                            log.warning("Skipping initsync seq for \(type.identifier) (found \(onDeviceSeq) on device vs \(remoteSeqNum) remotely)")
-                        }
+                    if let seq = UMLogEntry.sequenceNumberForType(realm, sampleType: type) {
+                        doInit = seq.seqid < nextSeqNum
+                        onDeviceSeq = seq.seqid
                     } else {
-                        log.warning("Skipping initsync seq for \(type.identifier) (not for iOS)")
+                        doInit = true
+                    }
+
+                    if doInit {
+                        log.warning("Initsync seq for \(type.identifier): \(nextSeqNum)")
+                        UMLogEntry.initSequenceNumberForType(realm, sampleType: type, seqNumber: nextSeqNum)
+                    } else {
+                        log.warning("Skipping initsync seq for \(type.identifier) (found \(onDeviceSeq) on device vs \(remoteSeqNum) remotely)")
                     }
                 } else {
                     log.warning("Skipping initsync seq for \(type.identifier) (no remote seq found)")
@@ -346,17 +349,13 @@ public class UploadManager: NSObject {
     }
 
     public func getRemoteAnchorForType(type: HKSampleType) -> HKQueryAnchor? {
-        if let seqInfo = UserManager.sharedManager.getAcquisitionSeq(type) as? [String:AnyObject]
+        if let deviceInfo = UserManager.sharedManager.getAcquisitionSeq(type) as? [String:AnyObject]
         {
-            log.warning("ULM retrieving remote anchor for \(type.identifier) from \(seqInfo)")
-            if let dataForIOS = seqInfo["ios"] as? Bool, remoteAnchor = seqInfo["data"] as? String {
-                if dataForIOS {
-                    let result = decodeRemoteAnchor(remoteAnchor)
-                    log.warning("ULM decoding remote anchor for \(type.identifier) \(result)")
-                    return result
-                } else {
-                    log.warning("ULM skipping remote anchor decode for \(type.identifier), not iOS")
-                }
+            if let dataForIOS = deviceInfo["ios"] as? [String: AnyObject],
+                   seqInfo = dataForIOS["0"] as? [String: AnyObject],
+                   remoteAnchor = seqInfo["seq_data"] as? String
+            {
+                return decodeRemoteAnchor(remoteAnchor)
             } else {
                 log.warning("ULM Invalid seq fields for remote anchor decode on \(type.identifier)")
             }
@@ -435,9 +434,12 @@ public class UploadManager: NSObject {
         }
 
         let seqInfo: [String: AnyObject] = [
-            "id": logEntry.id,
-            "data": logEntry.anchor.base64EncodedStringWithOptions(NSDataBase64EncodingOptions(rawValue: 0)),
-            "ios": true
+            "seq_id": logEntry.id,
+            "seq_data": logEntry.anchor.base64EncodedStringWithOptions(NSDataBase64EncodingOptions(rawValue: 0))
+        ]
+
+        let deviceInfo: [String: AnyObject] = [
+            "ios": (["0": seqInfo] as AnyObject)
         ]
 
         let commands: [String:AnyObject] = [
@@ -470,7 +472,7 @@ public class UploadManager: NSObject {
         */
 
         return [
-            "seq": seqInfo,
+            "seq": deviceInfo,
             "measures": measures,
             "commands": commands
         ]
@@ -895,6 +897,483 @@ public class UploadManager: NSObject {
                 self.logEntryUploadAsync?.cancel()
                 completion(success, error)
             }
+        }
+    }
+
+    // MARK : - Alexa and other device synchronization
+
+    func seqCacheKey(type: HKSampleType, deviceClass: String, deviceId: String) -> String {
+        return "\(type.identifier)_\(deviceClass)_\(deviceId)"
+    }
+
+    func deviceClassParam(deviceClass: String) -> String {
+        if deviceClass == "alexa" { return "Alexa" }
+        return deviceClass
+    }
+
+    // What about meal_duration, activity_duration, etc?
+    func columnGroupsOfType(type: HKSampleType) -> [[String]] {
+        var columnGroups : [[String]] = []
+
+        if let column = HMConstants.sharedInstance.hkToMCDB[type.identifier] {
+            columnGroups.append([column])
+        }
+        else if let (activity_category, quantity) = HMConstants.sharedInstance.hkQuantityToMCDBActivity[type.identifier] {
+            columnGroups.append(["activity_duration", "activity_type", "activity_value"])
+        }
+        else if type.identifier == HKCorrelationTypeIdentifierBloodPressure {
+            // Issue queries for both systolic and diastolic.
+            columnGroups.append([HMConstants.sharedInstance.hkToMCDB[HKQuantityTypeIdentifierBloodPressureDiastolic]!,
+                                 HMConstants.sharedInstance.hkToMCDB[HKQuantityTypeIdentifierBloodPressureSystolic]!])
+        }
+        else if type.identifier == HKWorkoutType.workoutType().identifier {
+            columnGroups.append(["meal_duration", "food_type", "activity_duration", "activity_type", "activity_value"])
+        }
+        else {
+            log.warning("No device query column available for \(type.identifier)")
+        }
+
+        return columnGroups
+    }
+
+    // What about meal_duration, activity_duration, etc?
+    // TODO: category filter for activities.
+    func columnDictOfType(type: HKSampleType) -> [String:AnyObject] {
+        var columnIndex = 0
+        var columns : [String:AnyObject] = [:]
+
+        if let column = HMConstants.sharedInstance.hkToMCDB[type.identifier] {
+            columns[String(columnIndex)] = column
+            columnIndex += 1
+        }
+        else if let (activity_category, quantity) = HMConstants.sharedInstance.hkQuantityToMCDBActivity[type.identifier] {
+            columns[String(columnIndex)]   = ["activity_duration"]
+            columns[String(columnIndex+1)] = ["activity_type"]
+            columns[String(columnIndex+2)] = ["activity_value"]
+            columnIndex += 3
+        }
+        else if type.identifier == HKCorrelationTypeIdentifierBloodPressure {
+            // Issue queries for both systolic and diastolic.
+            columns[String(columnIndex)]   = HMConstants.sharedInstance.hkToMCDB[HKQuantityTypeIdentifierBloodPressureDiastolic]!
+            columns[String(columnIndex+1)] = HMConstants.sharedInstance.hkToMCDB[HKQuantityTypeIdentifierBloodPressureSystolic]!
+            columnIndex += 2
+        }
+        else if type.identifier == HKWorkoutType.workoutType().identifier {
+            columns[String(columnIndex)]   = ["meal_duration"]
+            columns[String(columnIndex+1)] = ["food_type"]
+            columns[String(columnIndex+2)] = ["activity_duration"]
+            columns[String(columnIndex+3)] = ["activity_type"]
+            columns[String(columnIndex+4)] = ["activity_value"]
+            columnIndex += 5
+        }
+        else {
+            log.warning("No device query column available for \(type.identifier)")
+        }
+
+        return columns
+    }
+
+    public func syncDeviceMeasuresPeriodically() {
+        deviceSync = Async.background(after: 30.0) {
+            // Refresh last acquired
+            UserManager.sharedManager.pullAcquisitionSeq { result in
+                guard result.error == nil else {
+
+                    // TODO: exponential backoff.
+                    log.warning("Failed to get acquisition state")
+                    self.syncDeviceMeasuresPeriodically()
+                    return
+                }
+
+                // Invoke sync
+                self.syncDeviceMeasures(HKWorkoutType.workoutType(), deviceClass: "alexa", deviceId: "0")
+
+                // Tail call
+                self.syncDeviceMeasuresPeriodically()
+            }
+        }
+    }
+
+    func syncToSeqId(type: HKSampleType, deviceClass: String, deviceId: String,
+                     queryOffset: Int, localSeq: Int, remoteSeq: Int, columns: [String: AnyObject])
+    {
+        let limit: Int = 100
+
+        let params: [String: AnyObject] = [
+            "with_ids": true,
+            "sstart": localSeq,
+            "send": remoteSeq,
+            "device_class": deviceClassParam(deviceClass),
+            "device_id": deviceId,
+            "columns": columns,
+            "offset": queryOffset,
+            "limit": limit
+        ]
+
+        log.info("ULM RSYNC \(type.identifier) \(deviceClass) \(deviceId) from \(localSeq) to \(remoteSeq) with params \(params)")
+
+        Service.json(MCRouter.GetMeasures(params), statusCode: 200..<300, tag: "GETMEAS") {
+            _, response, result in
+
+            guard result.isSuccess else {
+                // TODO: retry w/ backoff.
+                log.error("Failed to sync server samples, server may potentially diverge from device.")
+                return
+            }
+
+            log.info("ULM RSYNC response on \(queryOffset) \(localSeq) \(remoteSeq) for \(type.identifier) \(deviceClass) \(deviceId)")
+
+            // Write retrieved data into HealthKit, ensuring that we add metadata tags for sample ids.
+            self.writeDeviceMeasures(type, deviceClass: deviceClass, deviceId: deviceId, payload: result.value) {
+                (success, completedSeq, payloadSize, err) in
+                guard success && err == nil else {
+                    log.error("Sync failed to parse and write measures: \(completedSeq) \(payloadSize)")
+                    log.error(err)
+                    return
+                }
+
+                // Recur while we got a non-empty set of measures, and we have not yet reached our target remote seq.
+                // TODO: throttling.
+
+                log.info("ULM RSYNC recur on \(queryOffset) \(completedSeq) \(localSeq) \(remoteSeq) \(payloadSize) for \(type.identifier) \(deviceClass) \(deviceId)")
+
+                if let numMeasures = payloadSize, seq = completedSeq where numMeasures == limit && seq < remoteSeq {
+                    let nextOffset = queryOffset + numMeasures
+                    self.syncToSeqId(type, deviceClass: deviceClass, deviceId: deviceId, queryOffset: nextOffset, localSeq: seq, remoteSeq: remoteSeq, columns: columns)
+                }
+                else if let numMeasures = payloadSize, seq = completedSeq {
+                    log.warning("ULM RSYNC stopped sync for \(type.identifier) \(deviceClass) \(deviceId) at \(seq), offset \(queryOffset), #results \(numMeasures)")
+                }
+                else {
+                    log.error("ULM RSYNC stopped sync for \(type.identifier) \(deviceClass) \(deviceId) with \(completedSeq) \(payloadSize), offset \(queryOffset)")
+                }
+            }
+        }
+    }
+
+    // Note: we should make sure that when we add the events to the local HealthKit store,
+    // we include metadata to ensure it will not be processed for uploads by our anchor query.
+    public func syncDeviceMeasures(type: HKSampleType, deviceClass: String, deviceId: String) {
+        if let classInfo = UserManager.sharedManager.getAcquisitionSeq(type) as? [String:AnyObject]
+        {
+            log.warning("ULM RSYNC retrieving remote seq for \(type.identifier), \(deviceClass), \(deviceId) from \(classInfo)")
+            if let dataForClass = classInfo[deviceClass] as? [String: AnyObject],
+                seqInfo = dataForClass[deviceId] as? [String: AnyObject],
+                seq_id = seqInfo["seq_id"] as? Int
+            {
+                // Retrieve all remote samples between max local seq, and max known remote seq
+                //  -- where do we store the max local seq?
+                //  -- this is a remote sample id, and can be stored as sample metadata.
+                //  -- we can then query for sample only with this metadata key.
+                //  -- we can accelerate by keeping the last retrieved seq id in UserDefaults.
+                //
+                // We need to extend our getMeasures backend route to support seq ranges not just timestamp ranges
+
+                // Fetch best known local sample from UserDefaults if available, otherwise HealthKit.
+
+                var localSeq: Int! = nil
+                let remoteSeq = seq_id
+
+                let columns = columnDictOfType(type)
+
+                let key = seqCacheKey(type, deviceClass: deviceClass, deviceId: deviceId)
+
+                if Defaults.hasKey(key) {
+
+                    log.info("ULM RSYNC get local seq from cache for key \(key)")
+
+                    localSeq = Defaults.integerForKey(key)
+                    if let localSeq = localSeq where localSeq < remoteSeq {
+                        syncToSeqId(type, deviceClass: deviceClass, deviceId: deviceId, queryOffset: 0, localSeq: localSeq, remoteSeq: remoteSeq, columns: columns)
+                    }
+                    else {
+                        log.info("ULM RSYNC fresh (from cache) for key \(key) \(localSeq)")
+                    }
+                }
+                else {
+
+                    log.info("ULM RSYNC get local seq from DB for key \(key)")
+
+                    let conjuncts = [
+                        HKQuery.predicateForObjectsWithMetadataKey("DeviceClass", operatorType: NSPredicateOperatorType.EqualToPredicateOperatorType, value: deviceClass),
+                        HKQuery.predicateForObjectsWithMetadataKey("DeviceId", operatorType: NSPredicateOperatorType.EqualToPredicateOperatorType, value: deviceId),
+                        HKQuery.predicateForObjectsWithMetadataKey("SeqId")
+                    ]
+
+                    let devicePredicate = NSCompoundPredicate(andPredicateWithSubpredicates: conjuncts)
+
+                    MCHealthManager.sharedManager.fetchSamplesOfType(type, predicate: devicePredicate, limit: 1, sortDescriptors: [dateDesc]) { (samples, error) in
+                        guard error == nil else {
+                            log.error(error)
+                            return
+                        }
+
+                        let rmin = samples.reduce(Int.min, combine: { (acc, sample) in
+                            if let s = sample as? HKObject, m = s.metadata {
+                                if let seq = m["SeqId"] as? Int {
+                                    return min(acc, seq)
+                                }
+                                else if let s = m["SeqId"] as? String, seq = Int(s) {
+                                    return min(acc, seq)
+                                }
+                            }
+                            return acc
+                        })
+
+                        if rmin != Int.min { localSeq = rmin }
+                        else if localSeq == nil { localSeq = 0 }
+
+                        if let localSeq = localSeq where localSeq < remoteSeq {
+                            self.syncToSeqId(type, deviceClass: deviceClass, deviceId: deviceId, queryOffset: 0, localSeq: localSeq, remoteSeq: remoteSeq, columns: columns)
+                        }
+                        else {
+                            log.info("ULM RSYNC fresh (from HK) for key \(key) \(localSeq)")
+                        }
+
+                    }
+                }
+            }
+            else {
+                log.warning("ULM Invalid seq for \(type.identifier), \(deviceClass), \(deviceId)")
+            }
+        }
+        else {
+            log.warning("ULM Invalid seq for \(type.identifier), \(deviceClass), \(deviceId)")
+        }
+    }
+
+    private func processSyncMeasure(type: HKSampleType, deviceClass: String, deviceId: String,
+                                    sample: [String: AnyObject], columnGroups: [[String]]) -> (Bool, Int?, [HKSample])
+    {
+        log.info("ULM RSYNC PSM \(sample)")
+
+        var id: Int! = nil
+        var ts: NSDate! = nil
+
+        if let s = sample["id"] as? String, i = Int(s) { id = i }
+        else if let i = sample["id"] as? Int { id = i }
+
+        if let s = sample["ts"] as? String, t = s.toDate(.ISO8601Format(.Full)) { ts = t }
+
+        let values: [[AnyObject]] = columnGroups.flatMap { cgroup in
+            var vgroup: [AnyObject] = []
+
+            if cgroup.contains("meal_duration") {
+                if let m = sample["meal_duration"], f = sample["food_type"] {
+                    vgroup = [m, f]
+                }
+                else if let d = sample["activity_duration"], t = sample["activity_type"], v = sample["activity_value"] {
+                    vgroup = [d,t,v]
+                }
+                return vgroup.count > 0 ? vgroup : nil
+            }
+
+            vgroup = cgroup.flatMap { sample[$0] }
+            return vgroup.count == cgroup.count ? vgroup : nil
+        }
+
+        guard !(id == nil || ts == nil || values.count != columnGroups.count) else {
+            log.warning("Failed to sync \(type.identifier) \(deviceClass) \(deviceId) for \(id) \(ts) \(values.count) \(columnGroups.count) \(sample)")
+            return (false, nil, [])
+        }
+
+        var samples: [HKSample] = []
+        let metadata: [String: AnyObject] = ["DeviceClass": deviceClass, "DeviceID": deviceId, "SeqId": id]
+
+        columnGroups.enumerate().forEach { (index, cgroup) in
+            let vgroup = values[index]
+
+            var meal: [String: AnyObject] = [:]
+            var activity: [String: AnyObject] = [:]
+
+            cgroup.enumerate().forEach { (index, column) in
+                if index < vgroup.count {
+                    if column == "meal_duration" || column == "food_type" {
+                        meal[column] = vgroup[index]
+                    }
+                    else if column == "activity_duration" || column == "activity_type" || column == "activity_value" {
+                        activity[column] = vgroup[index]
+                    }
+                    else {
+                        var dvalue: Double! = nil
+                        if let d = vgroup[index] as? Double { dvalue = d }
+                        if let s = vgroup[index] as? String, d = Double(s) { dvalue = d }
+
+                        if let value = dvalue, typeIdentifier = HMConstants.sharedInstance.mcdbToHK[column] {
+                            switch typeIdentifier {
+                            case HKCategoryTypeIdentifierSleepAnalysis:
+                                let sampleType = HKObjectType.categoryTypeForIdentifier(HKCategoryTypeIdentifierSleepAnalysis)!
+                                let ts_end = ts.dateByAddingTimeInterval(value)
+
+                                let catval = HKCategoryValueSleepAnalysis.Asleep.rawValue
+                                let hkSample = HKCategorySample(type: sampleType, value: catval, startDate: ts, endDate: ts_end, metadata: metadata)
+
+                                samples.append(hkSample)
+
+                            case HKCategoryTypeIdentifierAppleStandHour:
+                                let sampleType = HKObjectType.categoryTypeForIdentifier(HKCategoryTypeIdentifierAppleStandHour)!
+                                let ts_end = ts.dateByAddingTimeInterval(value)
+
+                                let catval = HKCategoryValueAppleStandHour.Stood.rawValue
+                                let hkSample = HKCategorySample(type: sampleType, value: catval, startDate: ts, endDate: ts_end, metadata: metadata)
+
+                                samples.append(hkSample)
+
+                            default:
+                                let sampleType = HKObjectType.quantityTypeForIdentifier(typeIdentifier)!
+                                let hkQuantity = HKQuantity(unit: sampleType.serviceUnit!, doubleValue: value)
+                                let hkSample = HKQuantitySample(type: sampleType, quantity: hkQuantity, startDate: ts, endDate: ts, metadata: metadata)
+                                
+                                samples.append(hkSample)
+                            }
+                        }
+                    }
+                }
+            }
+
+            if meal.count > 0 {
+                // Add meal object
+                var duration: Double! = nil
+                if let s = meal["meal_duration"] as? String, d = Double(s) { duration = d }
+                else if let d = meal["meal_duration"] as? Double { duration = d }
+
+                log.info("ULM RSYNC found meal \(meal) \(duration)")
+
+                if let duration = duration,
+                    food_type = meal["food_type"] as? [[String: AnyObject]],
+                    meal_type = food_type[0]["value"] as? String
+                {
+                    let ts_end = ts.dateByAddingTimeInterval(duration)
+                    let energy = HKQuantity(unit: HKUnit.kilocalorieUnit(), doubleValue: 0.0)
+                    let distance = HKQuantity(unit: HKUnit.meterUnit(), doubleValue: 0.0)
+                    let wMetadata: [String: AnyObject] = ["Meal Type": meal_type, "DeviceClass": deviceClass, "DeviceId": deviceId, "SeqId": id]
+
+                    let hkSample = HKWorkout(activityType: HKWorkoutActivityType.PreparationAndRecovery, startDate: ts, endDate: ts_end, duration: duration, totalEnergyBurned: energy, totalDistance: distance, metadata: wMetadata)
+
+                    samples.append(hkSample)
+                } else {
+
+                }
+            }
+
+            if activity.count > 0 {
+                // Add activity object
+                var duration: Double! = nil
+                var activity_type: Int! = nil
+
+                log.info("ULM RSYNC found activity \(activity)")
+
+                if let s = activity["activity_duration"] as? String, d = Double(s) { duration = d }
+                else if let d = activity["activity_duration"] as? Double { duration = d }
+
+                if let s = activity["activity_type"] as? String, i = Int(s) { activity_type = i }
+                else if let i = activity["activity_type"] as? Int { activity_type = i }
+
+                if let duration = duration, activity_type = activity_type {
+                    let ts_end = ts.dateByAddingTimeInterval(duration)
+
+                    if let typeIdentifier = HMConstants.sharedInstance.mcActivityToHKQuantity[activity_type] {
+                        let sampleType = HKObjectType.quantityTypeForIdentifier(typeIdentifier)!
+
+                        var qKey = ""
+                        switch typeIdentifier {
+                        case HKQuantityTypeIdentifierStepCount:
+                            qKey = "step_count"
+
+                        case HKQuantityTypeIdentifierDistanceWalkingRunning:
+                            qKey = "flights_climbed"
+
+
+                        case HKQuantityTypeIdentifierFlightsClimbed:
+                            qKey = "distance_walking_running"
+
+                        default:
+                            qKey = ""
+                        }
+
+                        if !qKey.isEmpty {
+                            var hkQuantity: HKQuantity! = nil
+                            if let quantities = activity["activity_value"] as? [String: AnyObject], s = quantities["step_count"] as? String, i = Int(s)
+                            {
+                                hkQuantity = HKQuantity(unit: sampleType.serviceUnit!, doubleValue: Double(i))
+                            }
+                            else if let quantities = activity["activity_value"] as? [String: AnyObject], i = quantities["step_count"] as? Int
+                            {
+                                hkQuantity = HKQuantity(unit: sampleType.serviceUnit!, doubleValue: Double(i))
+
+                            }
+                            let hkSample = HKQuantitySample(type: sampleType, quantity: hkQuantity, startDate: ts, endDate: ts, metadata: metadata)
+
+                            samples.append(hkSample)
+                        }
+                    }
+                    else if let hkActivityType = HMConstants.sharedInstance.mcActivityToHKActivity[activity_type] {
+                        var energy: Double! = nil
+                        var distance: Double! = nil
+
+                        if let v = activity["activity_value"] as? [String: AnyObject], e = v["kcal_burned"] as? Double { energy = e }
+                        else if let v = activity["activity_value"] as? [String: AnyObject], s = v["kcal_burned"] as? String, e = Double(s) { energy = e }
+
+                        if let v = activity["activity_value"] as? [String: AnyObject], d = v["distance"] as? Double { distance = d }
+                        else if let v = activity["activity_value"] as? [String: AnyObject], s = v["distance"] as? String, d = Double(s) { distance = d }
+
+                        let energyQ = HKQuantity(unit: HKUnit.kilocalorieUnit(), doubleValue: energy == nil ? 0.0 : energy!)
+                        let distanceQ = HKQuantity(unit: HKUnit.meterUnit(), doubleValue: distance == nil ? 0.0 : distance!)
+
+                        let hkSample = HKWorkout(activityType: hkActivityType, startDate: ts, endDate: ts_end, duration: duration, totalEnergyBurned: energyQ, totalDistance: distanceQ, metadata: metadata)
+
+                        samples.append(hkSample)
+                    }
+                }
+            }
+        }
+
+        return (true, id, samples)
+    }
+
+    private func writeDeviceMeasures(type: HKSampleType, deviceClass: String, deviceId: String, payload: AnyObject?,
+                                     completion: (Bool, Int?, Int?, NSError?) -> Void)
+    {
+        var failed = false
+
+        var maxSampleId: Int! = nil
+        var samples: [HKSample] = []
+
+        let columnGroups = columnGroupsOfType(type)
+
+        if let response = payload as? [String:AnyObject], measures = response["items"] as? [[String:AnyObject]] {
+            for sample in measures {
+                let (success, sampleId, newSamples) = processSyncMeasure(type, deviceClass: deviceClass, deviceId: deviceId, sample: sample, columnGroups: columnGroups)
+
+                failed = !success
+                if failed { break }
+                if let cmax = sampleId { maxSampleId = maxSampleId == nil ? cmax : max(maxSampleId, cmax) }
+                samples.appendContentsOf(newSamples)
+            }
+
+            log.info("ULM RSYNC parsed \(samples.count) samples")
+
+            // Only add samples if there were no parsing errors.
+            if let maxId = maxSampleId where !failed {
+                MCHealthManager.sharedManager.saveSamples(samples) { (success, err) in
+                    guard success && err == nil else {
+                        log.error("Failed to sync \(type.identifier) \(deviceClass) \(deviceId) to \(maxId)")
+                        return completion(!failed, nil, measures.count, err)
+                    }
+
+                    log.info("ULM RSYNC \(type.identifier) \(deviceClass) \(deviceId) advance pptr to \(maxId)")
+
+                    let key = self.seqCacheKey(type, deviceClass: deviceClass, deviceId: deviceId)
+                    Defaults.setInteger(maxId, forKey: key)
+                    completion(!failed, maxId, measures.count, nil)
+                }
+            }
+            else {
+                completion(!failed, maxSampleId, measures.count, nil)
+            }
+        }
+        else {
+            completion(false, nil, nil, nil)
         }
     }
 

@@ -20,6 +20,7 @@ class ContentManager: NSObject {
     private var aggregateFetchTask : Async? = nil    // Background task to fetch population aggregates.
     var isBackgroundWorkActive = false
     var isObservationActive = false
+    //var isDeviceSyncActive = false
 
     private var reachability: Reachability! = nil
 
@@ -65,6 +66,12 @@ class ContentManager: NSObject {
                 UploadManager.sharedManager.registerUploadObservers()
                 self.isObservationActive = true
             }
+            /*
+            if !self.isDeviceSyncActive {
+                UploadManager.sharedManager.syncDeviceMeasuresPeriodically()
+                self.isDeviceSyncActive = true
+            }
+            */
         }
     }
 

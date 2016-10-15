@@ -21,6 +21,7 @@ class DashboardComparisonController: UIViewController, UITableViewDelegate, UITa
 
     var activityIndicator: NVActivityIndicatorView! = nil
     var activityCnt: Int = 0
+    var activityAsync: Async! = nil
 
     var comparisonTips: [Int:TapTip] = [:]
 
@@ -44,20 +45,14 @@ class DashboardComparisonController: UIViewController, UITableViewDelegate, UITa
     
     func contentDidUpdate (notification: NSNotification) {
         self.tableView.reloadData()
-        activityCnt = max(activityCnt - 1, 0)
-        if activityCnt == 0 && activityIndicator.animating { activityIndicator.stopAnimating() }
+        self.stopActivityIndicator()
     }
     
     override func viewWillAppear(animated: Bool) {
         super.viewWillAppear(animated)
-        AccountManager.shared.contentManager.initializeBackgroundWork()
 
-        activityIndicator.startAnimating()
-        activityCnt += 2
-        Async.main(after: 15.0) {
-            self.activityCnt = 0
-            if self.activityCnt == 0 && self.activityIndicator.animating { self.activityIndicator.stopAnimating() }
-        }
+        self.startActivityIndicator()
+        AccountManager.shared.contentManager.initializeBackgroundWork()
 
         self.tableView.reloadData()
         NSNotificationCenter.defaultCenter().addObserver(self, selector: #selector(contentDidUpdate), name: HMDidUpdateRecentSamplesNotification, object: nil)
@@ -67,9 +62,26 @@ class DashboardComparisonController: UIViewController, UITableViewDelegate, UITa
     
     override func viewWillDisappear(animated: Bool) {
         super.viewWillDisappear(animated)
+        self.stopActivityIndicator(true)
         AccountManager.shared.contentManager.stopBackgroundWork()
         NSNotificationCenter.defaultCenter().removeObserver(self)
         logContentView(false)
+    }
+
+    func startActivityIndicator() {
+        activityIndicator.startAnimating()
+        activityCnt += 2
+
+        if activityAsync != nil { activityAsync.cancel() }
+        activityAsync = Async.main(after: 20.0) {
+            self.activityCnt = 0
+            if self.activityCnt == 0 && self.activityIndicator.animating { self.activityIndicator.stopAnimating() }
+        }
+    }
+
+    func stopActivityIndicator(force: Bool = false) {
+        activityCnt = force ? 0 : max(activityCnt - 1, 0)
+        if (force || activityCnt == 0) && activityIndicator.animating { activityIndicator.stopAnimating() }
     }
 
     func logContentView(asAppear: Bool = true) {
@@ -80,6 +92,7 @@ class DashboardComparisonController: UIViewController, UITableViewDelegate, UITa
     }
 
     func updateContent() {
+        self.startActivityIndicator()
         AccountManager.shared.contentManager.resetBackgroundWork()
     }
 
