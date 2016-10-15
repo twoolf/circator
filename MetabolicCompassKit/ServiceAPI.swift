@@ -131,6 +131,7 @@ public enum MCRouter : URLRequestConvertible {
     }
 
     // Data API
+    case GetMeasures([String: AnyObject])
     case AddMeasures([String: AnyObject])
     case AddSeqMeasures([String: AnyObject])
     case RemoveMeasures([String: AnyObject])
@@ -152,6 +153,9 @@ public enum MCRouter : URLRequestConvertible {
 
     var method: Alamofire.Method {
         switch self {
+        case .GetMeasures:
+            return .GET
+
         case .AddMeasures:
             return .POST
 
@@ -183,6 +187,9 @@ public enum MCRouter : URLRequestConvertible {
 
     var path: String {
         switch self {
+        case .GetMeasures:
+            return "/measures/mc"
+
         case .AddMeasures:
             return "/measures"
 
@@ -220,6 +227,9 @@ public enum MCRouter : URLRequestConvertible {
         }
 
         switch self {
+        case .GetMeasures(let parameters):
+            return Alamofire.ParameterEncoding.URL.encode(mutableURLRequest, parameters: parameters).0
+
         case .AddMeasures(let parameters):
             return Alamofire.ParameterEncoding.JSON.encode(mutableURLRequest, parameters: parameters).0
 

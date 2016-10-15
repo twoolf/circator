@@ -1073,6 +1073,10 @@ public class UserManager {
 
     public func resetAcquisitionSeq() { resetCachedComponent(.LastAcquired) }
 
+    public func pullAcquisitionSeq(completion: SvcResultCompletion) {
+        pullAccountComponent(.LastAcquired, completion: completion)
+    }
+
     public func syncAcquisitionSeq(completion: SvcResultCompletion) {
         syncAccountComponent(.LastAcquired, completion: completion)
     }
