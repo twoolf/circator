@@ -241,7 +241,11 @@ class DailyChartModel : NSObject, UITableViewDataSource {
     
     func getCircadianEventsForDay(day: NSDate, completion: (dayInfo: DailyProgressDayInfo) -> Void) {
         
-        let endOfDay = self.endOfDay(day)
+        var endOfDay = self.endOfDay(day)
+        let dayPlus24 = (day.startOf(.Day) + 24.hours) - 1.seconds
+
+        if dayPlus24 != endOfDay { endOfDay = dayPlus24 }
+
         var dayEvents:[Double] = []
         var dayColors:[UIColor] = []
         var previousEventType: CircadianEvent?
@@ -259,12 +263,15 @@ class DailyChartModel : NSObject, UITableViewDataSource {
                     for event in intervals {
                         let (eventDate, eventType) = event //assign tuple values to vars
                         if endOfDay.day < eventDate.day {
-                            print(previousEventDate)
-                            let endEventDate = self.endOfDay(previousEventDate!)
-                            let eventDuration = self.getDifferenceForEvents(previousEventDate, currentEventDate: endEventDate)
+                            if let prev = previousEventDate {
+                                let endEventDate = self.endOfDay(prev)
+                                let eventDuration = self.getDifferenceForEvents(prev, currentEventDate: endEventDate)
 
-                            dayEvents.append(eventDuration)
-                            dayColors.append(self.getColorForEventType(eventType))
+                                dayEvents.append(eventDuration)
+                                dayColors.append(self.getColorForEventType(eventType))
+                            } else {
+                                log.warning("DCM NO PREV on \(intervals)")
+                            }
                             break
                         }
                         if previousEventDate != nil && eventType == previousEventType {//we alredy have a prev event and can calculate how match time it took

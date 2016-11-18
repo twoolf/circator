@@ -94,9 +94,7 @@ public class IOSHealthManager: NSObject, WCSessionDelegate {
                 return
             }
 
-            //let nonSyncPredicate = NSCompoundPredicate(notPredicateWithSubpredicate: HKQuery.predicateForObjectsWithMetadataKey("SeqId"))
-
-            let obsQuery = HKObserverQuery(sampleType: type, predicate: nil /*nonSyncPredicate*/) {
+            let obsQuery = HKObserverQuery(sampleType: type, predicate: nil) {
                 query, completion, obsError in
                 guard obsError == nil else {
                     log.error(obsError)

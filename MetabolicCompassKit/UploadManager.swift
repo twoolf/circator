@@ -461,22 +461,6 @@ public class UploadManager: NSObject {
             return nil
         }
 
-        /*
-        if let measureid = HMConstants.sharedInstance.hkToMCDB[logEntry.msid] {
-            measures = [measureid]
-        }
-        else if logEntry.msid == HKWorkoutType.workoutType().identifier {
-            measures = ["activity"]
-        }
-        else if let (category,_) = HMConstants.sharedInstance.hkQuantityToMCDBActivity[logEntry.msid] {
-            measures = ["activity"]
-        }
-        else {
-            log.warning("No MCDB identifier found for \(logEntry.msid)")
-            return nil
-        }
-        */
-
         return [
             "seq": deviceInfo,
             "measures": measures,
@@ -877,11 +861,29 @@ public class UploadManager: NSObject {
                             var typeId = type.displayText ?? type.identifier
                             typeId = typeId.isEmpty ? "X\(type.identifier)" : typeId
 
-                            let userAdded = added.filter { return !MCHealthManager.sharedManager.isGeneratedSample($0) }
+                            var withSyncInfo = false
+                            let userAdded = added.filter {
+                                var withSeq = false
+                                if let meta = $0.metadata { withSeq = meta["SeqId"] != nil }
+                                withSyncInfo = withSyncInfo || withSeq
+                                let skip = MCHealthManager.sharedManager.isGeneratedSample($0) || withSeq
+                                return !skip
+                            }
+
+                            if withSyncInfo {
+                                log.warning("Found sync info in \(added.map { $0.metadata })")
+                                NSNotificationCenter.defaultCenter().postNotificationName(SyncDidUpdateCircadianEvents, object: nil)
+                            }
+
                             if ( userAdded.count > 0 || deleted.count > 0 ) {
                                 UploadManager.sharedManager.uploadAnchorCallback(type, anchor: newAnchor, added: userAdded, deleted: deleted)
                             }
                             else {
+                                // Advance the anchor for this type so that we don't see the synchronized entries again.
+                                if let anchor = newAnchor where withSyncInfo {
+                                    self.setAnchorForType(anchor, forType: type)
+                                }
+
                                 log.info("Skipping upload for \(typeId): \(userAdded.count) insertions \(deleted.count) deletions")
                             }
                             completion()
@@ -1090,7 +1092,7 @@ public class UploadManager: NSObject {
 
                     localSeq = Defaults.integerForKey(key)
                     if let localSeq = localSeq where localSeq < remoteSeq {
-                        syncToSeqId(type, deviceClass: deviceClass, deviceId: deviceId, queryOffset: 0, localSeq: localSeq, remoteSeq: remoteSeq, columns: columns)
+                        syncToSeqId(type, deviceClass: deviceClass, deviceId: deviceId, queryOffset: 0, localSeq: localSeq + 1, remoteSeq: remoteSeq, columns: columns)
                     }
                     else {
                         log.info("ULM RSYNC fresh (from cache) for key \(key) \(localSeq)")
@@ -1126,7 +1128,7 @@ public class UploadManager: NSObject {
                             return acc
                         })
 
-                        if rmin != Int.min { localSeq = rmin }
+                        if rmin != Int.min { localSeq = rmin + 1 }
                         else if localSeq == nil { localSeq = 0 }
 
                         if let localSeq = localSeq where localSeq < remoteSeq {

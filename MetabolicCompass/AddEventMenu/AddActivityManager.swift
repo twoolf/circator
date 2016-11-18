@@ -18,8 +18,6 @@ import HTPressableButton
 import AKPickerView_Swift
 import MCCircadianQueries
 
-public let MEMDidUpdateCircadianEvents = "MEMDidUpdateCircadianEvents"
-
 typealias FrequentActivityCache = Cache<FrequentActivityInfo>
 
 public class AddActivityManager: UITableView, UITableViewDelegate, UITableViewDataSource, PickerManagerSelectionDelegate {

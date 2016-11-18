@@ -90,6 +90,9 @@ class AppDelegate: UIResponder, UIApplicationDelegate, WCSessionDelegate {
         // Add a recycling observer.
         NSNotificationCenter.defaultCenter().addObserver(self, selector: #selector(recycleNotification), name: USNDidUpdateBlackoutNotification, object: nil)
 
+        // Add a debugging observer.
+        NSNotificationCenter.defaultCenter().addObserver(self, selector: #selector(errorNotification(_:)), name: MCRemoteErrorNotification, object: nil)
+
         return true
     }
 
@@ -234,7 +237,14 @@ class AppDelegate: UIResponder, UIApplicationDelegate, WCSessionDelegate {
             log.info("Unable to retrieve notifications settings.")
         }
     }
-    
+
+    func errorNotification(notification: NSNotification) {
+        if let info = notification.userInfo, event = info["event"] as? String, attrs = info["attrs"] as? [String: AnyObject]
+        {
+            Answers.logCustomEventWithName(event, customAttributes: attrs)
+        }
+    }
+
     private func setupWatchConnectivity() {
         if WCSession.isSupported() {
             let session = WCSession.defaultSession()

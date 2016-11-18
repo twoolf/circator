@@ -14,6 +14,12 @@ import HealthKit
 
  */
 
+// Shared notifications.
+public let MCRemoteErrorNotification = "MCRemoteError"
+public let MEMDidUpdateCircadianEvents = "MEMDidUpdateCircadianEvents"
+public let SyncDidUpdateCircadianEvents = "SyncDidUpdateCircadianEvents"
+
+
 public enum FieldDataType: Int {
     case String = 0, Int, Decimal
 }
@@ -281,3 +287,4 @@ public let exercisePredicate = NSCompoundPredicate(orPredicateWithSubpredicates:
 
 
 public let asleepPredicate = HKQuery.predicateForCategorySamplesWithOperatorType(.EqualToPredicateOperatorType, value: HKCategoryValueSleepAnalysis.Asleep.rawValue)
+

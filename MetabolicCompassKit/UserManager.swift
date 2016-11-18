@@ -617,11 +617,27 @@ public class UserManager {
     }
 
     public func uploadLastAcquiredExtractor(data: [String:AnyObject]) -> [String:AnyObject] {
-        return Dictionary(pairs: data.map { kv in return (lastAcquiredServerId(kv.0)!, kv.1) })
+        let pairs: [(String, AnyObject)] = data.flatMap { kv in
+            if let serverKey = lastAcquiredServerId(kv.0) { return (serverKey, kv.1) }
+            log.error("USM no server key found for last acquired extractor on \(kv.0)")
+            let attrs: [String: AnyObject] = ["Type": "Upload", "Key": kv.0]
+            let info: [NSObject: AnyObject] = ["event": "LastAcquiredExtractor", "attrs": attrs]
+            NSNotificationCenter.defaultCenter().postNotificationName(MCRemoteErrorNotification, object: nil, userInfo: info)
+            return nil
+        }
+        return Dictionary(pairs: pairs)
     }
 
     public func downloadLastAcquiredExtractor(data: [String:AnyObject]) -> [String:AnyObject] {
-        return Dictionary(pairs: data.map { kv in return (lastAcquiredClientId(kv.0)!, kv.1) })
+        let pairs: [(String, AnyObject)] = data.flatMap { kv in
+            if let clientKey = lastAcquiredClientId(kv.0) { return (clientKey, kv.1) }
+            log.error("USM no client key found for last acquired extractor on \(kv.0)")
+            let attrs: [String: AnyObject] = ["Type": "Download", "Key": kv.0]
+            let info: [NSObject: AnyObject] = ["event": "LastAcquiredExtractor", "attrs": attrs]
+            NSNotificationCenter.defaultCenter().postNotificationName(MCRemoteErrorNotification, object: nil, userInfo: info)
+            return nil
+        }
+        return Dictionary(pairs: pairs)
     }
 
 
