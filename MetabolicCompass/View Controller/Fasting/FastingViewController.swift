@@ -157,11 +157,7 @@ public class FastingViewController : UIViewController, ChartViewDelegate {
 
     override public func viewDidLoad() {
         super.viewDidLoad()
-
         setupView()
-
-        log.warning("OUR STUDY contentSize \(scrollView.contentSize)")
-        log.warning("OUR STUDY view bounds \(view.bounds) \(view.frame) \(scrollView.bounds) \(scrollView.frame)")
     }
 
     func logContentView(asAppear: Bool = true) {

@@ -244,6 +244,7 @@ class DailyChartModel : NSObject, UITableViewDataSource {
         var endOfDay = self.endOfDay(day)
         let dayPlus24 = (day.startOf(.Day) + 24.hours) - 1.seconds
 
+        // Force to 24 hours to handle time zone changes that result in a non-24hr day.
         if dayPlus24 != endOfDay { endOfDay = dayPlus24 }
 
         var dayEvents:[Double] = []

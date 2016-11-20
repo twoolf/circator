@@ -71,6 +71,7 @@ public let UMPullComponentErrorAsArray : String -> [AccountComponent] = { errorM
 public let granularity1Min = 60.0
 public let granularity5Mins = 300.0
 public let granularity10Mins = 600.0
+public let granularity15Mins = 900.0
 
 public func floorDate(date: NSDate, granularity: Double) -> NSDate {
     return NSDate(timeIntervalSinceReferenceDate:

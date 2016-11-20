@@ -240,11 +240,12 @@
                         <rect key="frame" x="0.0" y="0.0" width="320" height="568"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
-                            <segmentedControl opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="top" segmentControlStyle="plain" selectedSegmentIndex="0" translatesAutoresizingMaskIntoConstraints="NO" id="iFC-7K-4FG">
+                            <segmentedControl opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="top" apportionsSegmentWidthsByContent="YES" segmentControlStyle="plain" selectedSegmentIndex="0" translatesAutoresizingMaskIntoConstraints="NO" id="iFC-7K-4FG" userLabel="Segmented Control">
                                 <rect key="frame" x="16" y="74" width="288" height="29"/>
                                 <segments>
-                                    <segment title="Comparison"/>
+                                    <segment title="Compare"/>
                                     <segment title="Balance"/>
+                                    <segment title="Cycle"/>
                                     <segment title="Body Clock"/>
                                 </segments>
                                 <color key="tintColor" red="0.16078431372549021" green="0.44313725490196076" blue="1" alpha="1" colorSpace="calibratedRGB"/>
@@ -308,6 +309,26 @@
                 <placeholder placeholderIdentifier="IBFirstResponder" id="sYY-4E-PWP" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
             <point key="canvasLocation" x="4174" y="119"/>
+        </scene>
+        <!--Dial-->
+        <scene sceneID="R1e-hh-X9p">
+            <objects>
+                <viewController id="ZCO-W8-pDJ" userLabel="Dial" customClass="DialViewController" customModule="MetabolicCompass" customModuleProvider="target" sceneMemberID="viewController">
+                    <layoutGuides>
+                        <viewControllerLayoutGuide type="top" id="AV4-17-3i0"/>
+                        <viewControllerLayoutGuide type="bottom" id="ROB-Ya-BjW"/>
+                    </layoutGuides>
+                    <view key="view" contentMode="scaleToFill" id="OBx-RU-N2z">
+                        <rect key="frame" x="0.0" y="0.0" width="320" height="409"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <color key="backgroundColor" red="0.047058823530000002" green="0.14117647059999999" blue="0.31764705879999999" alpha="1" colorSpace="calibratedRGB"/>
+                    </view>
+                    <tabBarItem key="tabBarItem" title="Dial" id="1ru-oO-oBN"/>
+                    <simulatedTabBarMetrics key="simulatedBottomBarMetrics"/>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="RaL-Pk-Lwa" userLabel="First Responder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="4226" y="826"/>
         </scene>
         <!--Daily Progress-->
         <scene sceneID="9d8-Cp-5DV">
@@ -713,7 +734,7 @@
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="4fJ-Ba-2vo" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="4357" y="824.5"/>
+            <point key="canvasLocation" x="4146.5" y="1597.5"/>
         </scene>
         <!--Comparison-->
         <scene sceneID="5jw-sW-n5k">
@@ -839,7 +860,8 @@
                     <connections>
                         <segue destination="WK5-jq-Go8" kind="relationship" relationship="viewControllers" id="vQA-m9-vqB"/>
                         <segue destination="PnT-Aa-ZfP" kind="relationship" relationship="viewControllers" id="6si-UE-h4w"/>
-                        <segue destination="lHL-aR-coa" kind="relationship" relationship="viewControllers" id="QHz-eC-4PQ"/>
+                        <segue destination="ZCO-W8-pDJ" kind="relationship" relationship="viewControllers" id="iSF-LU-4Vx"/>
+                        <segue destination="lHL-aR-coa" kind="relationship" relationship="viewControllers" id="xRa-cB-92U"/>
                     </connections>
                 </tabBarController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="wK6-Cn-zHm" userLabel="First Responder" sceneMemberID="firstResponder"/>
