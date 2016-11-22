@@ -35,6 +35,7 @@ def shared_pods
     pod 'SwiftyBeaver', ‘= 0.5.4'
     pod 'SwiftyJSON', '~> 2.0'
     pod 'SwiftyUserDefaults', '~> 2.0'
+    pod 'SwiftMessages', '~> 1.1.4'
 end
 
 target 'MetabolicCompassKit' do

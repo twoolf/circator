@@ -105,6 +105,8 @@ public class IOSHealthManager: NSObject, WCSessionDelegate {
                 // components that run at higher priority.
                 Async.background {
                     let tname = type.displayText ?? type.identifier
+                    let asCircadian = type.identifier == HKWorkoutTypeIdentifier || type.identifier == HKCategoryTypeIdentifierSleepAnalysis
+
                     let (needsOldestSamples, anchor, predicate) = getAnchorCallback(type)
                     if needsOldestSamples {
                         Async.background(after: 0.5) {
@@ -122,10 +124,15 @@ public class IOSHealthManager: NSObject, WCSessionDelegate {
                         (added, deleted, newAnchor, error) -> Void in
 
                         if added.count > 0 || deleted.count > 0 {
-                            let asCircadian = type.identifier == HKWorkoutTypeIdentifier || type.identifier == HKCategoryTypeIdentifierSleepAnalysis
                             MCHealthManager.sharedManager.invalidateCacheForUpdates(type, added: asCircadian ? added : nil)
                         }
 
+                        // Data-driven notifications.
+                        if asCircadian {
+                            NotificationManager.sharedManager.onCircadianEvents(added)
+                        }
+
+                        // Callback invocation.
                         anchorQueryCallback(added: added, deleted: deleted, newAnchor: newAnchor, error: error, completion: completion)
                     }
                 }

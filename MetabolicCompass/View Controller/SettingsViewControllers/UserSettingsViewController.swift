@@ -13,48 +13,10 @@ import Former
 import SwiftDate
 import SwiftyUserDefaults
 
-let USNReminderFrequencyKey = "USNReminderFrequency"
-let USNBlackoutTimesKey = "USNBlackoutTimes"
-
 let USNDidUpdateBlackoutNotification = "USNDidUpdateBlackoutNotification"
 
 let userSettingsHeaderFontSize: CGFloat = 20.0
 let userSettingsFontSize: CGFloat = 16.0
-
-// Default blackout times: 10pm - 6am
-func defaultNotificationBlackoutTimes() -> [NSDate] {
-    let today = NSDate().startOf(.Day)
-    return [today + 22.hours - 1.days, today + 6.hours]
-}
-
-// Default reminder frequency in hours.
-func defaultNotificationReminderFrequency() -> Int {
-    return 24
-}
-
-func getNotificationReminderFrequency() -> Int {
-    var reminder: Int! = nil
-    if let r = Defaults.objectForKey(USNReminderFrequencyKey) as? Int {
-        reminder = r
-    } else {
-        reminder = defaultNotificationReminderFrequency()
-        Defaults.setObject(reminder, forKey: USNReminderFrequencyKey)
-        Defaults.synchronize()
-    }
-    return reminder!
-}
-
-func getNotificationBlackoutTimes() -> [NSDate] {
-    var blackoutTimes: [NSDate] = []
-    if let t = Defaults.objectForKey(USNBlackoutTimesKey) as? [NSDate] {
-        blackoutTimes = t
-    } else {
-        blackoutTimes = defaultNotificationBlackoutTimes()
-        Defaults.setObject(blackoutTimes, forKey: USNBlackoutTimesKey)
-        Defaults.synchronize()
-    }
-    return blackoutTimes
-}
 
 class UserSettingsViewController: BaseViewController {
 

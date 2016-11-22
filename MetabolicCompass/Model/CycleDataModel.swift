@@ -249,8 +249,6 @@ public class CycleDataModel : NSObject {
         minMeasure = min(minMeasure, maxMeasure)
         let measureRange = maxMeasure - minMeasure
 
-        log.info("CYC \(sampleType.identifier) \(minMeasure) \(maxMeasure)")
-
         var i = 0
         var j = 0
         var t = startDate

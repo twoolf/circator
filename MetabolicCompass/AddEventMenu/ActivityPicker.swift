@@ -78,16 +78,17 @@ class PickerManager: NSObject, AKPickerViewDelegate, AKPickerViewDataSource, UIG
                 if item == index { continue }
                 else {
                     labels[index].superview?.layer.borderWidth = 0.0
-                    labels[index].userInteractionEnabled = false
+                    labels[index].superview?.userInteractionEnabled = false
                 }
             }
         }
 
         Async.main(after: 0.2) {
             self.labels[item].tag = item
+            self.labels[item].superview?.tag = item
             self.labels[item].superview?.layer.borderWidth = 2.0
             if !self.selectionProcessing {
-                self.labels[item].userInteractionEnabled = true
+                self.labels[item].superview?.userInteractionEnabled = true
             }
         }
     }
@@ -100,11 +101,12 @@ class PickerManager: NSObject, AKPickerViewDelegate, AKPickerViewDataSource, UIG
             labels[item].superview?.layer.cornerRadius = 8
             labels[item].superview?.layer.masksToBounds = true
 
-            labels[item].userInteractionEnabled = true
             let press = UILongPressGestureRecognizer(target: self, action: #selector(itemSelected(_:)))
             press.minimumPressDuration = EventPickerPressDuration
             press.delegate = self
-            labels[item].addGestureRecognizer(press)
+            labels[item].superview?.tag = item
+            labels[item].superview?.userInteractionEnabled = true
+            labels[item].superview?.addGestureRecognizer(press)
         }
 
     }
@@ -118,12 +120,17 @@ class PickerManager: NSObject, AKPickerViewDelegate, AKPickerViewDataSource, UIG
                 selectionProcessing = true
                 labels.forEach {
                     if let lbl = $0 {
-                        lbl.userInteractionEnabled = false
-                        lbl.gestureRecognizers?.forEach { g in g.enabled = false }
+                        lbl.superview?.userInteractionEnabled = false
+                        lbl.superview?.gestureRecognizers?.forEach { g in g.enabled = false }
                     }
                 }
                 delegate.pickerItemSelected(self, itemType: itemType, index: selected, item: getSelectedItem(), data: getSelectedValue())
             }
+            else {
+                log.error("PickerManager: Selected non-current index \(current) \(selected)")
+            }
+        } else {
+            log.warning("PickerManager: No delegate found")
         }
     }
 
@@ -131,8 +138,8 @@ class PickerManager: NSObject, AKPickerViewDelegate, AKPickerViewDataSource, UIG
         selectionProcessing = false
         labels.enumerate().forEach {
             if let lbl = $0.1 {
-                lbl.gestureRecognizers?.forEach { g in g.enabled = true }
-                if $0.0 == current { lbl.userInteractionEnabled = true }
+                lbl.superview?.gestureRecognizers?.forEach { g in g.enabled = true }
+                if $0.0 == current { lbl.superview?.userInteractionEnabled = true }
             }
         }
     }

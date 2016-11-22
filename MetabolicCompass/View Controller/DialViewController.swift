@@ -15,15 +15,17 @@ import Async
 import Charts
 import Crashlytics
 import SwiftDate
+import NVActivityIndicatorView
 
 private let dialLegendLabelSize: CGFloat = 14.0
 
 class DialViewController : UIViewController, ChartViewDelegate {
 
-    var activityIndicator: UIActivityIndicatorView! = nil
+    var activityIndicator: NVActivityIndicatorView! = nil
 
     lazy var pieChart: PieChartView = {
         let chart = PieChartView()
+        chart.renderer = CycleChartRender(chart: chart, animator: chart.chartAnimator, viewPortHandler: chart.viewPortHandler)
         chart.animate(xAxisDuration: 1.0, yAxisDuration: 1.0)
         chart.delegate = self
         chart.descriptionText = ""
@@ -31,7 +33,7 @@ class DialViewController : UIViewController, ChartViewDelegate {
         chart.holeColor = .clearColor()
         chart.drawMarkers = true
         chart.drawHoleEnabled = true
-        chart.drawSliceTextEnabled = false
+        chart.drawSliceTextEnabled = true
         chart.usePercentValuesEnabled = false
         chart.rotationEnabled = true
         chart.rotationWithTwoFingers = true
@@ -104,16 +106,19 @@ class DialViewController : UIViewController, ChartViewDelegate {
     }
 
     func setupActivityIndicator() {
-        activityIndicator = UIActivityIndicatorView()
+        let sz: CGFloat = 100
+        let screenSize = UIScreen.mainScreen().bounds.size
+        let activityFrame = CGRectMake((screenSize.width - sz) / 2, (screenSize.height - sz) / 2, sz, sz)
+        self.activityIndicator = NVActivityIndicatorView(frame: activityFrame, type: .Orbit, color: UIColor.yellowColor())
 
         activityIndicator.translatesAutoresizingMaskIntoConstraints = false
         view.addSubview(activityIndicator)
 
         let constraints: [NSLayoutConstraint] = [
-            activityIndicator.topAnchor.constraintEqualToAnchor(view.topAnchor),
-            activityIndicator.bottomAnchor.constraintEqualToAnchor(view.bottomAnchor),
-            activityIndicator.leadingAnchor.constraintEqualToAnchor(view.leadingAnchor),
-            activityIndicator.trailingAnchor.constraintEqualToAnchor(view.trailingAnchor)
+            activityIndicator.centerXAnchor.constraintEqualToAnchor(pieChart.centerXAnchor),
+            activityIndicator.centerYAnchor.constraintEqualToAnchor(pieChart.centerYAnchor),
+            activityIndicator.widthAnchor.constraintEqualToConstant(sz),
+            activityIndicator.heightAnchor.constraintEqualToConstant(sz)
         ]
         view.addConstraints(constraints)
     }
@@ -177,8 +182,15 @@ class DialViewController : UIViewController, ChartViewDelegate {
         let pieChartDataSet = PieChartDataSet(yVals: segments.map { $0.1 }, label: "Circadian segments")
         pieChartDataSet.colors = colors
         pieChartDataSet.drawValuesEnabled = false
+        pieChartDataSet.xValuePosition = .OutsideSlice
+        pieChartDataSet.valueLineColor = UIColor.lightGrayColor()
 
-        let xVals : [String] = segments.map { $0.0.toString(DateFormat.Custom("HH:mm")) ?? "" }
+        let xVals : [String?] = segments.enumerate().map {
+            if ($0.0 % (segments.count / 4)) == 0 {
+                return Optional($0.1.0.toString(DateFormat.Custom("HH:mm")) ?? "")
+            }
+            return nil
+        }
 
         let pieChartData = PieChartData(xVals: xVals, dataSet: pieChartDataSet)
         self.pieChart.data = pieChartData

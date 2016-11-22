@@ -25,6 +25,7 @@
 		49BE7B53D1D87CF25424421B /* Pods_MetabolicCompassKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 2F627F8020D8AF9C6FBBF993 /* Pods_MetabolicCompassKit.framework */; };
 		78076E0B1DDE973700B6FB50 /* DialViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 78076E0A1DDE973700B6FB50 /* DialViewController.swift */; };
 		78076E0D1DDF4F6900B6FB50 /* CycleDataModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 78076E0C1DDF4F6900B6FB50 /* CycleDataModel.swift */; };
+		78076E0F1DE269BE00B6FB50 /* NotificationManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 78076E0E1DE269BD00B6FB50 /* NotificationManager.swift */; };
 		7816FFBB1C1E45D3002E2ED8 /* UserManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7816FFBA1C1E45D3002E2ED8 /* UserManager.swift */; };
 		78191B801D6BC8CF00C0454B /* UserSettingsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 78191B7F1D6BC8CF00C0454B /* UserSettingsViewController.swift */; };
 		781DA9021D9827F90004B4A1 /* ActivityPicker.swift in Sources */ = {isa = PBXBuildFile; fileRef = 781DA9011D9827F90004B4A1 /* ActivityPicker.swift */; };
@@ -75,6 +76,7 @@
 		78BEAC9E1C5E7EE800F0B541 /* PopulationHealthManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 78BEAC9D1C5E7EE800F0B541 /* PopulationHealthManager.swift */; };
 		78D47DD31D57BE2700F432D1 /* DashboardFilterHeaderView.xib in Resources */ = {isa = PBXBuildFile; fileRef = 78D47DD21D57BE2700F432D1 /* DashboardFilterHeaderView.xib */; };
 		78E455D11D5B9342007A852D /* FastingDataModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 78E455D01D5B9342007A852D /* FastingDataModel.swift */; };
+		78E62B601DE4F55500AAEF7D /* CycleChartRenderer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 78E62B5F1DE4F55400AAEF7D /* CycleChartRenderer.swift */; };
 		78E7C2101D32F83200DE0495 /* ExerciseEndTimeController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 78E7C1FE1D32F83200DE0495 /* ExerciseEndTimeController.swift */; };
 		78E7C2111D32F83200DE0495 /* ExerciseStartTimeController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 78E7C1FF1D32F83200DE0495 /* ExerciseStartTimeController.swift */; };
 		78E7C2121D32F83200DE0495 /* ExerciseType_Watch.swift in Sources */ = {isa = PBXBuildFile; fileRef = 78E7C2001D32F83200DE0495 /* ExerciseType_Watch.swift */; };
@@ -359,6 +361,7 @@
 		774AE36AA555EE6DC0F80E16 /* Pods_MetabolicCompassWatchExtension.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_MetabolicCompassWatchExtension.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		78076E0A1DDE973700B6FB50 /* DialViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DialViewController.swift; sourceTree = "<group>"; };
 		78076E0C1DDF4F6900B6FB50 /* CycleDataModel.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CycleDataModel.swift; sourceTree = "<group>"; };
+		78076E0E1DE269BD00B6FB50 /* NotificationManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NotificationManager.swift; sourceTree = "<group>"; };
 		7816FFBA1C1E45D3002E2ED8 /* UserManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = UserManager.swift; sourceTree = "<group>"; };
 		78191B7F1D6BC8CF00C0454B /* UserSettingsViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = UserSettingsViewController.swift; sourceTree = "<group>"; };
 		781DA9011D9827F90004B4A1 /* ActivityPicker.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = ActivityPicker.swift; path = AddEventMenu/ActivityPicker.swift; sourceTree = "<group>"; };
@@ -416,6 +419,7 @@
 		78D47DD21D57BE2700F432D1 /* DashboardFilterHeaderView.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = DashboardFilterHeaderView.xib; sourceTree = "<group>"; };
 		78E455D01D5B9342007A852D /* FastingDataModel.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FastingDataModel.swift; sourceTree = "<group>"; };
 		78E5219F1C25687900FAE56A /* Pods.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Pods.framework; path = "Pods/../build/Debug-iphoneos/Pods.framework"; sourceTree = "<group>"; };
+		78E62B5F1DE4F55400AAEF7D /* CycleChartRenderer.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CycleChartRenderer.swift; sourceTree = "<group>"; };
 		78E7C1FE1D32F83200DE0495 /* ExerciseEndTimeController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ExerciseEndTimeController.swift; sourceTree = "<group>"; };
 		78E7C1FF1D32F83200DE0495 /* ExerciseStartTimeController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ExerciseStartTimeController.swift; sourceTree = "<group>"; };
 		78E7C2001D32F83200DE0495 /* ExerciseType_Watch.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ExerciseType_Watch.swift; sourceTree = "<group>"; };
@@ -1069,6 +1073,7 @@
 				E7E48DE41CE4A12900DB020F /* MetabolicChartRender.swift */,
 				E7E48DE61CE4BCAB00DB020F /* MetabolicChartDataSet.swift */,
 				E7E48DE81CE4C2DC00DB020F /* MetabolicDataEntry.swift */,
+				78E62B5F1DE4F55400AAEF7D /* CycleChartRenderer.swift */,
 			);
 			name = MetabolicCharts;
 			path = "Charts+Extended";
@@ -1115,6 +1120,7 @@
 				783E53D11C75856200BEBF33 /* DataGenerator.swift */,
 				785978401C1BD4F1008377F9 /* EventManager.swift */,
 				F42F5B421BE2048400195490 /* IOSHealthManager.swift */,
+				78076E0E1DE269BD00B6FB50 /* NotificationManager.swift */,
 				78BEAC9D1C5E7EE800F0B541 /* PopulationHealthManager.swift */,
 				F4F4DA591C025BE30073E9EE /* PreviewManager.swift */,
 				7861300E1C25F42B00F50DB3 /* QueryManager.swift */,
@@ -1957,6 +1963,7 @@
 				95F400A31CE385D50060F28C /* ProfileModel.swift in Sources */,
 				95635AA01CD3782200BCC467 /* AdditionalInfoModel.swift in Sources */,
 				95635AA61CD3C11600BCC467 /* ForgotPasswordViewController.swift in Sources */,
+				78E62B601DE4F55500AAEF7D /* CycleChartRenderer.swift in Sources */,
 				95F400A41CE385D50060F28C /* UserInfoModel.swift in Sources */,
 				F43A7C681BBE508D00B6FA56 /* IntroCompareDataTableViewCell.swift in Sources */,
 				E7E48DE71CE4BCAB00DB020F /* MetabolicChartDataSet.swift in Sources */,
@@ -1994,6 +2001,7 @@
 				F4F4DA5A1C025BE30073E9EE /* PreviewManager.swift in Sources */,
 				F42F5B471BE2048400195490 /* Theme.swift in Sources */,
 				F42F5B461BE2048400195490 /* SampleFormatter.swift in Sources */,
+				78076E0F1DE269BE00B6FB50 /* NotificationManager.swift in Sources */,
 				7861300F1C25F42B00F50DB3 /* QueryManager.swift in Sources */,
 				786DEBB41D48F9DC00D6654E /* UploadManager.swift in Sources */,
 				F42F5B451BE2048400195490 /* IOSHealthManager.swift in Sources */,
