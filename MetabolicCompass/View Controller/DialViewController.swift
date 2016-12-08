@@ -106,8 +106,8 @@ class DialViewController : UIViewController, ChartViewDelegate {
     }
 
     func setupActivityIndicator() {
-        let sz: CGFloat = 100
         let screenSize = UIScreen.mainScreen().bounds.size
+        let sz: CGFloat = screenSize.height < 569 ? 75 : 100
         let activityFrame = CGRectMake((screenSize.width - sz) / 2, (screenSize.height - sz) / 2, sz, sz)
         self.activityIndicator = NVActivityIndicatorView(frame: activityFrame, type: .Orbit, color: UIColor.yellowColor())
 

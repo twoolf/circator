@@ -194,18 +194,14 @@ public class NotificationManager {
     // Data collection message cycling
     var notificationGroups: [String: [UILocalNotification]] = [:]
 
-    var collectionMsgs = [
-       "We greatly value your input in Metabolic Compass. Would you like to contribute to medical research now?",
-       "Help us study metabolic patterns by tracking your sleeping, eating and exercise timings in Metabolic Compass!",
-       "We haven't seen you in a while, take a moment to pitch in on our Metabolic Compass research study."
-    ]
-
-    var initStartOffset = 0
-    var initEndOffset = 0
-    var initEndDeltaSecs = 0
+    var initStartOffset = 5
+    var initEndOffset = 1
+    var initEndDeltaSecs = 120
     var maxDelta = 0.0
 
     init() {
+        inAppMsgMapping = Dictionary(pairs: zip(collectionMsgs, inAppCollectionMsgs).map { $0 })
+
         SwiftMessages.pauseBetweenMessages = Double(delayBetweenInAppNotificationsSecs)
 
         if let ss = Defaults.objectForKey(NMStreakStartKey) as? [StreakType: NSDate] {
@@ -276,10 +272,15 @@ public class NotificationManager {
     }
 
 
-    public func show(notification: UILocalNotification) {
+    public func showInApp(notification: UILocalNotification) {
+        var msg = notification.alertBody ?? ""
+        if let inAppMsg = inAppMsgMapping[msg] {
+            msg = inAppMsg
+        }
+
         let view = MessageView.viewFromNib(layout: .CardView)
         view.configureTheme(.Info)
-        view.configureContent(title: notification.alertTitle ?? "Metabolic Compass", body: notification.alertBody ?? "")
+        view.configureContent(title: notification.alertTitle ?? "Metabolic Compass", body: msg)
         view.button?.hidden = true
 
         var viewConfig = SwiftMessages.Config()
@@ -534,7 +535,7 @@ public class NotificationManager {
 
     // Periodic notifications.
     // This cancels all notifications scheduled for the notification id before reissuing.
-    func repeatedNotification(notificationId: String, frequencyInHours: Int, messages: [String], action: String? = nil) {
+    func repeatedNotification(notificationId: String, frequencyInMinutes: Int, messages: [String], action: String? = nil) {
         let now = NSDate()
         let todayEnd = now.endOf(.Day)
 
@@ -553,45 +554,52 @@ public class NotificationManager {
             notificationGroups[notificationId] = []
         }
 
-        if frequencyInHours < 24 {
-            var noteDate = now + Int(frequencyInHours).hours
-            let noteEnd = noteDate + 1.days
-            while noteDate < noteEnd {
-                if (noteDate < todayEnd && validToday.reduce(false, combine: { (acc, rng) in overlaps(noteDate, acc, rng) }) )
-                    || (noteDate > todayEnd && validTmw.reduce(false, combine: { (acc, rng) in overlaps(noteDate, acc, rng) }) )
-                {
-                    let idx = GKRandomSource.sharedRandom().nextIntWithUpperBound(messages.count)
-                    let body = messages[idx]
-                    let notification = mkNotification(noteDate, freq: .Day, body: body)
+        // For debugging.
+        //logCurrentNotifications("1")
 
-                    if var group = notificationGroups[notificationId] {
-                        group.append(notification)
-                        notificationGroups.updateValue(group, forKey: notificationId)
-                    } else {
-                        notificationGroups[notificationId] = [notification]
-                    }
+        let frequencyInHours = frequencyInMinutes / 60
 
-                    UIApplication.sharedApplication().scheduleLocalNotification(notification)
-                    //log.info("NTMGR Scheduled local notification for \(notification.fireDate?.toString()) repeating daily")
-                }
-                noteDate = noteDate + Int(frequencyInHours).hours
-            }
+        var noteDate   : NSDate! = nil
+        var noteEnd    : NSDate! = nil
+        var repeatUnit : NSCalendarUnit! = nil
+        var dateStep   : NSDateComponents! = nil
+        var skipBlackoutCheck = false
+
+        if frequencyInMinutes < 60 {
+            dateStep = Int(frequencyInMinutes).minutes
+            noteDate = now + dateStep
+            noteEnd = noteDate + 1.hours
+            repeatUnit = .Hour
+        }
+        else if frequencyInMinutes < 1440 {
+            dateStep = Int(frequencyInHours).hours
+            noteDate = now + dateStep
+            noteEnd = noteDate + 1.days
+            repeatUnit = .Day
         }
         else {
-            var noteDate = now
-            let noteEnd = noteDate + 1.weeks
+            dateStep = Int(frequencyInHours/24).days
+            noteDate = now
+            noteEnd = noteDate + 1.weeks
             if !validToday.reduce(false, combine: { (acc, rng) in overlaps(noteDate, acc, rng) }) {
                 let idx = GKRandomSource.sharedRandom().nextIntWithUpperBound(validToday.count)
                 let rangeSecs = validToday[idx].1.timeIntervalSinceReferenceDate - validToday[idx].0.timeIntervalSinceReferenceDate
                 noteDate = validToday[idx].0 + Int(drand48() * rangeSecs).seconds
             }
 
-            noteDate = noteDate + Int(frequencyInHours/24).days
+            noteDate = noteDate + dateStep
+            repeatUnit = .WeekOfYear
+            skipBlackoutCheck = true
+        }
 
-            while noteDate < noteEnd {
+        while noteDate < noteEnd {
+            if skipBlackoutCheck ||
+                (( noteDate < todayEnd && validToday.reduce(false, combine: { (acc, rng) in overlaps(noteDate, acc, rng) }) )
+                    || (noteDate > todayEnd && validTmw.reduce(false, combine: { (acc, rng) in overlaps(noteDate, acc, rng) }) ))
+            {
                 let idx = GKRandomSource.sharedRandom().nextIntWithUpperBound(messages.count)
                 let body = messages[idx]
-                let notification = mkNotification(noteDate, freq: .WeekOfYear, body: body)
+                let notification = mkNotification(noteDate, freq: repeatUnit, body: body)
 
                 if var group = notificationGroups[notificationId] {
                     group.append(notification)
@@ -601,25 +609,28 @@ public class NotificationManager {
                 }
 
                 UIApplication.sharedApplication().scheduleLocalNotification(notification)
-                //log.info("NTMGR Scheduled local notification for \(notification.fireDate?.toString()) repeating weekly")
-                noteDate = noteDate + Int(frequencyInHours/24).days
+                //log.info("NTMGR Scheduled local notification for \(notification.fireDate?.toString()) repeating \(repeatUnit)")
             }
+            noteDate = noteDate + dateStep
         }
+
+        // For debugging.
+        //logCurrentNotifications("2")
     }
 
     func enqueueNotification(notificationId: String, messages: [String], action: String? = nil, immediate: Bool = false) {
         if let settings = UIApplication.sharedApplication().currentUserNotificationSettings() {
             if settings.types != .None {
-                let frequencyInHours = getNotificationReminderFrequency()
-                if frequencyInHours > 0 {
-                    if immediate {
-                        immediateNotification(messages, action: action)
+                if immediate {
+                    immediateNotification(messages, action: action)
+                }
+                else {
+                    let frequencyInMinutes = getNotificationReminderFrequency()
+                    if frequencyInMinutes > 0 {
+                        repeatedNotification(notificationId, frequencyInMinutes: frequencyInMinutes, messages: messages, action: action)
+                    } else {
+                        log.info("NTMGR Skipping notification, user requested silence")
                     }
-                    else {
-                        repeatedNotification(notificationId, frequencyInHours: frequencyInHours, messages: messages, action: action)
-                    }
-                } else {
-                    log.info("NTMGR Skipping notification, user requested silence")
                 }
             } else {
                 log.warning("NTMGR User has disabled notifications")
@@ -628,6 +639,15 @@ public class NotificationManager {
             log.error("NTMGR Unable to retrieve notifications settings.")
         }
     }
+
+    func logCurrentNotifications(tag: String) {
+        if let ns = UIApplication.sharedApplication().scheduledLocalNotifications {
+            ns.forEach { n in
+                log.info("NTMGR notify \(tag) \(n.fireDate?.toString() ?? "<none>") repeating \(n.repeatInterval)")
+            }
+        }
+    }
+
 
     // Fasting streak levels.
     let fastingStreakBuckets: [(Double, String, String)] = [
@@ -697,4 +717,17 @@ public class NotificationManager {
         }
     }
 
+    var collectionMsgs = [
+        "We greatly value your input in Metabolic Compass. Would you like to contribute to medical research now?",
+        "Help us study metabolic patterns by tracking your sleeping, eating and exercise timings in Metabolic Compass!",
+        "We haven't seen you in a while, take a moment to pitch in on our Metabolic Compass research study."
+    ]
+
+    var inAppCollectionMsgs = [
+        "We greatly value your input in Metabolic Compass. Would you like to contribute to medical research now?",
+        "Help us study metabolic patterns by tracking your sleeping, eating and exercise timings in Metabolic Compass!",
+        "We're pleased to see you using Metabolic Compass! Take a moment to log your activites for our research study."
+    ]
+
+    var inAppMsgMapping: [String: String] = [:]
 }

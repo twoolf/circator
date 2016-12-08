@@ -38,7 +38,9 @@ class UserSettingsViewController: BaseViewController {
     var reminder: Int! = nil
     var blackoutTimes: [NSDate] = []
 
-    static let reminderOptions: [Int] = [ 2, 4, 6, 8, 12, 24, 48, 72, -1 ]
+    // Reminder period in minutes
+    static let reminderOptions: [Int] = [ 1, 2, 5, 10, 120, 240, 360, 480, 720, 1440, 2880, 4320, -1 ]
+    //static let reminderOptions: [Int] = [ 120, 240, 360, 480, 720, 1440, 2880, 4320, -1 ]
 
     // UI Components
     var hotwordInput: TextFieldRowFormer<FormTextFieldCell>! = nil
@@ -238,7 +240,13 @@ class UserSettingsViewController: BaseViewController {
                 $0.displayLabel.font = UIFont(name: "GothamBook", size: userSettingsFontSize)!
                 }.configure {
                     $0.pickerItems = UserSettingsViewController.reminderOptions.map {
-                        let label = $0 < 0 ? "Never" : ($0 > 24 ? "\($0/24) days" : ($0 == 24 ? "Every day" : "\($0) hours"))
+                        var label = ""
+                        if $0 < 0          { label = "Never" }
+                        else if $0 == 1440 { label = "Every day" }
+                        else if $0 == 60   { label = "Every hour" }
+                        else if $0 > 1440  { label = "\($0/1440) days" }
+                        else if $0 > 60    { label = "\($0/60) hours" }
+                        else               { label = "\($0) minutes" }
                         return InlinePickerItem(title: label, value: $0)
                     }
                     $0.displayEditingColor = .whiteColor()

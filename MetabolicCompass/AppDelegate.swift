@@ -45,6 +45,8 @@ class AppDelegate: UIResponder, UIApplicationDelegate, WCSessionDelegate
             Defaults.synchronize()
         }
 
+        // Set up notifications after launching the app.
+        UIApplication.sharedApplication().cancelAllLocalNotifications()
         AccountManager.shared.resetLocalNotifications()
         recycleNotification()
         UINotifications.configureNotifications()
@@ -150,7 +152,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, WCSessionDelegate
 
     func application(application: UIApplication, didReceiveLocalNotification notification: UILocalNotification) {
         log.info("APPDEL received \(notification)")
-        NotificationManager.sharedManager.show(notification)
+        NotificationManager.sharedManager.showInApp(notification)
     }
 
     func configureLogging() {
