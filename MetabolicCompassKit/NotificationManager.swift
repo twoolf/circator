@@ -194,9 +194,9 @@ public class NotificationManager {
     // Data collection message cycling
     var notificationGroups: [String: [UILocalNotification]] = [:]
 
-    var initStartOffset = 5
-    var initEndOffset = 1
-    var initEndDeltaSecs = 120
+    var initStartOffset = 0
+    var initEndOffset = 0
+    var initEndDeltaSecs = 0
     var maxDelta = 0.0
 
     init() {
