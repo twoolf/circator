@@ -70,14 +70,14 @@ class AccountManager: NSObject {
         UserManager.sharedManager.logoutWithCompletion(completion)
         IOSHealthManager.sharedManager.reset()
         self.contentManager.stopBackgroundWork()
-        PopulationHealthManager.sharedManager.resetAggregates()
+        PopulationHealthManager.sharedManager.reset()
     }
 
     func doWithdraw(keepData: Bool, completion: Bool -> Void) {
         UserManager.sharedManager.withdraw(keepData, completion: completion)
         IOSHealthManager.sharedManager.reset()
         self.contentManager.stopBackgroundWork()
-        PopulationHealthManager.sharedManager.resetAggregates()
+        PopulationHealthManager.sharedManager.reset()
     }
 
     private func loginComplete () {
@@ -166,22 +166,32 @@ class AccountManager: NSObject {
             }
 
             self.isHealthKitAuthorized = true
-            self.checkNotifications()
+            self.checkLocalNotifications()
             EventManager.sharedManager.checkCalendarAuthorizationStatus(completion)
         }
     }
 
-    func checkNotifications() {
-        let withNotifications = Defaults.objectForKey(AMNotificationsKey)
-        if let notificationsState = withNotifications as? Bool {
-            log.verbose("Local notifications are \(notificationsState ? "on" : "off")")
-        } else {
-            log.verbose("Registering for local notifications")
-            Defaults.remove(AMNotificationsKey)
-            let notificationType: UIUserNotificationType = [.Alert, .Badge, .Sound]
-            let notificationSettings = UIUserNotificationSettings(forTypes: notificationType, categories: nil)
-            UIApplication.sharedApplication().registerUserNotificationSettings(notificationSettings)
+    func registerLocalNotifications() {
+        log.verbose("ACCMGR Registering for local notifications")
+        resetLocalNotifications()
+        let notificationType: UIUserNotificationType = [.Alert, .Badge, .Sound]
+        let notificationSettings = UIUserNotificationSettings(forTypes: notificationType, categories: nil)
+        UIApplication.sharedApplication().registerUserNotificationSettings(notificationSettings)
+    }
+
+    func resetLocalNotifications() {
+        log.verbose("ACCMGR Resetting local notifications")
+        Defaults.remove(AMNotificationsKey)
+        Defaults.synchronize()
+    }
+
+    func checkLocalNotifications() {
+        log.verbose("ACCMGR Local notifications: \(Defaults.objectForKey(AMNotificationsKey))")
+        if let notificationsOn = Defaults.objectForKey(AMNotificationsKey) as? Bool where notificationsOn {
+            return
         }
+
+        registerLocalNotifications()
     }
 
     func uploadLostConsentFile() {

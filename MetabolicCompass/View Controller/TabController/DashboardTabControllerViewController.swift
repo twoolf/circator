@@ -13,6 +13,7 @@ class DashboardTabControllerViewController: UIViewController {
     enum DashboardType: Int {
         case Comparison = 0
         case Balance
+        case Dial
         case DailyProgress
     }
     
@@ -89,9 +90,11 @@ class DashboardTabControllerViewController: UIViewController {
             return
         }
         
-        let hideRightButton = segmentedControl.selectedSegmentIndex == DashboardType.DailyProgress.rawValue || segmentedControl.selectedSegmentIndex == DashboardType.Balance.rawValue
+        let hideRightButton = segmentedControl.selectedSegmentIndex == DashboardType.DailyProgress.rawValue
+                                || segmentedControl.selectedSegmentIndex == DashboardType.Balance.rawValue
+                                || segmentedControl.selectedSegmentIndex == DashboardType.Dial.rawValue
         
-        navigationItem.leftBarButtonItem = segmentedControl.selectedSegmentIndex == DashboardType.DailyProgress.rawValue ? nil : self.leftNavButton
+        navigationItem.leftBarButtonItem = (segmentedControl.selectedSegmentIndex == DashboardType.DailyProgress.rawValue || segmentedControl.selectedSegmentIndex == DashboardType.Dial.rawValue) ? nil : self.leftNavButton
         navigationItem.rightBarButtonItem = hideRightButton ? nil : self.rightNavButton
         containerController?.selectedIndex = segmentedControl.selectedSegmentIndex
     }

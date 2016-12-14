@@ -25,11 +25,13 @@ let log = SwiftyBeaver.self
 An overview of the Circator files and their connections follows. First, a reader should realize that MC="Metabolic Compass" and that the abbreviation is common in the code.  Also, Circator was the working name for Metabolic Compass, so the two names are present frequently and refer to this same application. Lastly, to orient those looking at the code, the CircatorKit provides the core functionality needed for the Circator code.  Highlights of that functionality are that all of the HealthKit calls and all of the formatting/unit conversions are done with CircatorKit code, and that the consent flow through ResearchKit along with the account set-up and API calls are in the CircatorKit code.
 
 */
-class AppDelegate: UIResponder, UIApplicationDelegate, WCSessionDelegate {
+class AppDelegate: UIResponder, UIApplicationDelegate, WCSessionDelegate
+{
 
     var window: UIWindow?
     var mainViewController: UIViewController!
     private let firstRunKey = "FirstRun"
+
     func application(application: UIApplication, didFinishLaunchingWithOptions launchOptions: [NSObject: AnyObject]?) -> Bool
     {
         configureLogging()
@@ -43,6 +45,9 @@ class AppDelegate: UIResponder, UIApplicationDelegate, WCSessionDelegate {
             Defaults.synchronize()
         }
 
+        // Set up notifications after launching the app.
+        UIApplication.sharedApplication().cancelAllLocalNotifications()
+        AccountManager.shared.resetLocalNotifications()
         recycleNotification()
         UINotifications.configureNotifications()
 
@@ -89,6 +94,9 @@ class AppDelegate: UIResponder, UIApplicationDelegate, WCSessionDelegate {
 
         // Add a recycling observer.
         NSNotificationCenter.defaultCenter().addObserver(self, selector: #selector(recycleNotification), name: USNDidUpdateBlackoutNotification, object: nil)
+
+        // Add a debugging observer.
+        NSNotificationCenter.defaultCenter().addObserver(self, selector: #selector(errorNotification(_:)), name: MCRemoteErrorNotification, object: nil)
 
         return true
     }
@@ -137,9 +145,14 @@ class AppDelegate: UIResponder, UIApplicationDelegate, WCSessionDelegate {
 
     func application(application: UIApplication, didRegisterUserNotificationSettings: UIUserNotificationSettings) {
         let enabled = didRegisterUserNotificationSettings.types != .None
-        log.verbose("Enabling user notifications: \(enabled)")
+        log.info("APPDEL Enabling user notifications: \(enabled)")
         Defaults.setObject(enabled, forKey: AMNotificationsKey)
         Defaults.synchronize()
+    }
+
+    func application(application: UIApplication, didReceiveLocalNotification notification: UILocalNotification) {
+        log.info("APPDEL received \(notification)")
+        NotificationManager.sharedManager.showInApp(notification)
     }
 
     func configureLogging() {
@@ -159,82 +172,16 @@ class AppDelegate: UIResponder, UIApplicationDelegate, WCSessionDelegate {
     }
 
     func recycleNotification() {
-        // Recycle the local notification for another day.
-        let mkNotification: (NSDate, NSCalendarUnit) -> Void = { (date, freq) in
-            let notification = UILocalNotification()
-            notification.fireDate = date
-            notification.alertBody = "We greatly value your input in Metabolic Compass. Would you like to contribute to medical research now?"
-            notification.alertAction = "enter your circadian events"
-            notification.soundName = UILocalNotificationDefaultSoundName
-            notification.repeatInterval = freq
-            UIApplication.sharedApplication().scheduleLocalNotification(notification)
-            log.info("Scheduled local notification for \(notification.fireDate?.toString()) repeating at \(freq)")
-        }
+        NotificationManager.sharedManager.onRecycleEvent()
+    }
 
-        let overlaps: (NSDate, Bool, (NSDate, NSDate)) -> Bool = { (date, acc, rng) in
-            acc || (rng.0 < date && date < rng.1)
-        }
-
-        if let settings = UIApplication.sharedApplication().currentUserNotificationSettings() {
-            if settings.types != .None {
-                let reminderFreq = getNotificationReminderFrequency()
-                if reminderFreq > 0 {
-                    let blackoutTimes = getNotificationBlackoutTimes()
-
-                    let now = NSDate()
-                    let todayStart = now.startOf(.Day)
-                    let todayEnd = now.endOf(.Day)
-
-                    let blackoutStartToday = todayStart.add(hours: blackoutTimes[0].hour, minutes: blackoutTimes[0].minute)
-                    let blackoutEndToday = todayStart.add(hours: blackoutTimes[1].hour, minutes: blackoutTimes[1].minute)
-
-                    let validToday = blackoutStartToday < blackoutEndToday ?
-                        [(todayStart, blackoutStartToday), (blackoutEndToday, todayEnd)]
-                        : [(blackoutEndToday, blackoutStartToday)]
-
-                    let validTmw = validToday.map { ($0.0 + 1.days, $0.1 + 1.days) }
-
-                    UIApplication.sharedApplication().cancelAllLocalNotifications()
-                    if reminderFreq < 24 {
-                        var noteDate = now + Int(reminderFreq).hours
-                        let noteEnd = noteDate + 1.days
-                        while noteDate < noteEnd {
-                            if (noteDate < todayEnd && validToday.reduce(false, combine: { (acc, rng) in overlaps(noteDate, acc, rng) }) )
-                                || (noteDate > todayEnd && validTmw.reduce(false, combine: { (acc, rng) in overlaps(noteDate, acc, rng) }) )
-                            {
-                                mkNotification(noteDate, .Day)
-                            }
-                            noteDate = noteDate + Int(reminderFreq).hours
-                        }
-                    }
-                    else {
-                        var noteDate = now
-                        let noteEnd = noteDate + 1.weeks
-                        if !validToday.reduce(false, combine: { (acc, rng) in overlaps(noteDate, acc, rng) }) {
-                            let idx = GKRandomSource.sharedRandom().nextIntWithUpperBound(validToday.count)
-                            let rangeSecs = validToday[idx].1.timeIntervalSinceReferenceDate - validToday[idx].0.timeIntervalSinceReferenceDate
-                            noteDate = validToday[idx].0 + Int(drand48() * rangeSecs).seconds
-                        }
-
-                        noteDate = noteDate + Int(reminderFreq/24).days
-                        while noteDate < noteEnd {
-                            mkNotification(noteDate, .Day)
-                            noteDate = noteDate + Int(reminderFreq/24).days
-                        }
-                    }
-                } else {
-                    log.info("Skipping notification, user requested silence")
-                }
-            }
-            else {
-                log.info("User has disabled notifications")
-            }
-        }
-        else {
-            log.info("Unable to retrieve notifications settings.")
+    func errorNotification(notification: NSNotification) {
+        if let info = notification.userInfo, event = info["event"] as? String, attrs = info["attrs"] as? [String: AnyObject]
+        {
+            Answers.logCustomEventWithName(event, customAttributes: attrs)
         }
     }
-    
+
     private func setupWatchConnectivity() {
         if WCSession.isSupported() {
             let session = WCSession.defaultSession()

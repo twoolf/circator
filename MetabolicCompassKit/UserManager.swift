@@ -71,6 +71,7 @@ public let UMPullComponentErrorAsArray : String -> [AccountComponent] = { errorM
 public let granularity1Min = 60.0
 public let granularity5Mins = 300.0
 public let granularity10Mins = 600.0
+public let granularity15Mins = 900.0
 
 public func floorDate(date: NSDate, granularity: Double) -> NSDate {
     return NSDate(timeIntervalSinceReferenceDate:
@@ -338,7 +339,7 @@ public class UserManager {
                 Stormpath.sharedSession.logout()
                 ConsentManager.sharedManager.resetConsentFilePath()
                 IOSHealthManager.sharedManager.reset()
-                PopulationHealthManager.sharedManager.resetAggregates()
+                PopulationHealthManager.sharedManager.reset()
             } catch {
                 log.warning("resetAccount: \(error)")
             }
@@ -617,11 +618,27 @@ public class UserManager {
     }
 
     public func uploadLastAcquiredExtractor(data: [String:AnyObject]) -> [String:AnyObject] {
-        return Dictionary(pairs: data.map { kv in return (lastAcquiredServerId(kv.0)!, kv.1) })
+        let pairs: [(String, AnyObject)] = data.flatMap { kv in
+            if let serverKey = lastAcquiredServerId(kv.0) { return (serverKey, kv.1) }
+            log.error("USM no server key found for last acquired extractor on \(kv.0)")
+            let attrs: [String: AnyObject] = ["Type": "Upload", "Key": kv.0]
+            let info: [NSObject: AnyObject] = ["event": "LastAcquiredExtractor", "attrs": attrs]
+            NSNotificationCenter.defaultCenter().postNotificationName(MCRemoteErrorNotification, object: nil, userInfo: info)
+            return nil
+        }
+        return Dictionary(pairs: pairs)
     }
 
     public func downloadLastAcquiredExtractor(data: [String:AnyObject]) -> [String:AnyObject] {
-        return Dictionary(pairs: data.map { kv in return (lastAcquiredClientId(kv.0)!, kv.1) })
+        let pairs: [(String, AnyObject)] = data.flatMap { kv in
+            if let clientKey = lastAcquiredClientId(kv.0) { return (clientKey, kv.1) }
+            log.error("USM no client key found for last acquired extractor on \(kv.0)")
+            let attrs: [String: AnyObject] = ["Type": "Download", "Key": kv.0]
+            let info: [NSObject: AnyObject] = ["event": "LastAcquiredExtractor", "attrs": attrs]
+            NSNotificationCenter.defaultCenter().postNotificationName(MCRemoteErrorNotification, object: nil, userInfo: info)
+            return nil
+        }
+        return Dictionary(pairs: pairs)
     }
 
 

@@ -157,11 +157,7 @@ public class FastingViewController : UIViewController, ChartViewDelegate {
 
     override public func viewDidLoad() {
         super.viewDidLoad()
-
         setupView()
-
-        log.warning("OUR STUDY contentSize \(scrollView.contentSize)")
-        log.warning("OUR STUDY view bounds \(view.bounds) \(view.frame) \(scrollView.bounds) \(scrollView.frame)")
     }
 
     func logContentView(asAppear: Bool = true) {
@@ -449,7 +445,7 @@ public class FastingViewController : UIViewController, ChartViewDelegate {
         lblStr.addAttribute(NSFontAttributeName, value: labelFont, range: NSMakeRange(0, lblStr.length))
 
         if !compact {
-            descStr = NSMutableAttributedString(string: "Your Contributions Streak", attributes: studyLabelAttrs)
+            descStr = NSMutableAttributedString(string: "Your Fasting Streak", attributes: studyLabelAttrs)
             descStr.addAttribute(NSFontAttributeName, value: descFont, range: NSMakeRange(0, descStr.length))
 
             lblStr = NSMutableAttributedString(string: "You've fasted \(vStr) hours this week. \(description)")

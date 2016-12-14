@@ -18,9 +18,177 @@ import HTPressableButton
 import AKPickerView_Swift
 import MCCircadianQueries
 
-public let MEMDidUpdateCircadianEvents = "MEMDidUpdateCircadianEvents"
-
 typealias FrequentActivityCache = Cache<FrequentActivityInfo>
+
+class AppPickerManager: PickerManager, PickerManagerSelectionDelegate {
+
+    var apps: [UIStackView]
+
+    private var notificationView: UIView! = nil
+
+    static let activityApps: [String: AnyObject] = [
+        "Health"          : "x-apple-health:",
+        "Cardiograph"     : "cardiograph:",
+        "Epic Haiku"      : "epicHaiku:",
+        "Epic MyChart"    : "epicMyChart:",
+        "Sleep Cycle"     : "fb162575247235:", /* Sleep Cycle */
+        "Runkeeper"       : "fb62572192129:", /* Runkeeper */
+        "FitBit"          : "fitbit:",
+        "Garmin"          : "garmin:",
+        "LoseIt"          : "loseit:",
+        "MyFitnessPal"    : "mfp:",
+        "MyFitnessPal HD" : "mfphd:",
+        "MyPlate"         : "myplate:",
+        "Nike+ Run Club"  : "nikeplus:",
+        "Strava"          : "strava:",
+        "HealthMate"      : "withings-bd2:"
+    ]
+
+    static let appIcons: [String: AnyObject] = [
+        "Health"          : "icon-AppleHealthKit",
+        "Cardiograph"     : "icon-Cardiograph",
+        "Epic Haiku"      : "icon-EpicHaiku",
+        "Epic MyChart"    : "icon-EpicMyChart",
+        "Sleep Cycle"     : "icon-SleepCycle",
+        "Runkeeper"       : "icon-runkeeper",
+        "FitBit"          : "icon-fitbit",
+        "Garmin"          : "icon-Garmin",
+        "LoseIt"          : "icon-LoseIt",
+        "MyFitnessPal"    : "icon-myfitnesspal",
+        "MyFitnessPal HD" : "icon-myfitnesspal",
+        "MyPlate"         : "icon-MyPlate",
+        "Nike+ Run Club"  : "icon-Nike+RunClub",
+        "Strava"          : "icon-Strava",
+        "HealthMate"      : "icon-WithingsHealthMate"
+    ]
+
+    var availableActivityApps: [String: AnyObject] = [:]
+
+    init(notificationView: UIView!) {
+        self.notificationView = notificationView
+
+        self.availableActivityApps = Dictionary(pairs: AppPickerManager.activityApps.filter { (name, scheme) in
+            if let scheme = scheme as? String, url = NSURL(string: "\(scheme)//") {
+                return UIApplication.sharedApplication().canOpenURL(url)
+            }
+            log.warning("APMGR: \(name) not available with scheme: \(scheme)")
+            return false
+        })
+
+        let ctor : String -> UIImageView = { name in
+            let image = UIImage(named: AppPickerManager.appIcons[name]! as! String)!
+            let view = UIImageView(image: image)
+            view.backgroundColor = UIColor.clearColor()
+            view.contentMode = .ScaleAspectFit
+            view.autoresizingMask = [.FlexibleWidth, .FlexibleHeight]
+            view.layer.cornerRadius = 8
+            view.layer.masksToBounds = true
+            view.layer.shadowColor = UIColor.lightGrayColor().CGColor
+            view.layer.shadowOffset = CGSize(width: 3, height: 3)
+            view.layer.shadowOpacity = 0.7
+            view.layer.shadowRadius = 4.0
+            return view
+        }
+
+        self.apps = availableActivityApps.map { (name, _) in
+            let stack = UIComponents.createLabelledComponent(name, labelOnTop: false, labelFontSize: 12.0, stackAlignment: .Center, value: name, constructor: ctor)
+            stack.autoresizingMask = [.FlexibleWidth, .FlexibleHeight]
+            return stack
+        }
+
+        let appNames = availableActivityApps.map { $0.0 }
+        super.init(itemType: "Apps", items: appNames, data: availableActivityApps)
+    }
+
+    func cellHeight() -> CGFloat {
+        let screenSize = UIScreen.mainScreen().bounds.size
+        return (screenSize.width / 5) + 28.0
+    }
+
+    func cellWidth(label: UILabel, image: UIImageView, item: Int) -> CGFloat {
+        let height = cellHeight()
+
+        let txt = label.text ?? ""
+        let size = txt.sizeWithAttributes([NSFontAttributeName: label.font])
+        return max(max(size.width, image.image!.size.width), height)
+    }
+
+    // MARK: - AKPickerViewDataSource View-centric interface
+    func pickerView(pickerView: AKPickerView, viewForItem item: Int) -> UIView {
+        return self.apps[item]
+    }
+
+    func pickerView(pickerView: AKPickerView, cellForItem: AKCollectionViewCell, constraintsForItem item: Int) -> [NSLayoutConstraint] {
+        let height = cellHeight()
+
+        let image = apps[item].subviews[0] as! UIImageView
+        let label = apps[item].subviews[1] as! UILabel
+
+        image.translatesAutoresizingMaskIntoConstraints = false
+        label.translatesAutoresizingMaskIntoConstraints = false
+
+        let width = cellWidth(label, image: image, item: item)
+
+        let constraints: [NSLayoutConstraint] = [
+            image.widthAnchor.constraintEqualToAnchor(image.heightAnchor),
+            cellForItem.contentView.heightAnchor.constraintEqualToConstant(height),
+            cellForItem.contentView.topAnchor.constraintEqualToAnchor(apps[item].topAnchor, constant: -10.0),
+            cellForItem.contentView.bottomAnchor.constraintEqualToAnchor(apps[item].bottomAnchor, constant: 10.0),
+            cellForItem.contentView.centerXAnchor.constraintEqualToAnchor(apps[item].centerXAnchor),
+            apps[item].heightAnchor.constraintEqualToConstant(height - 20.0),
+            apps[item].centerXAnchor.constraintEqualToAnchor(image.centerXAnchor),
+            apps[item].centerXAnchor.constraintEqualToAnchor(label.centerXAnchor),
+            image.heightAnchor.constraintEqualToConstant(height - (label.font.lineHeight + 28.0)),
+            label.widthAnchor.constraintEqualToConstant(width)
+        ]
+
+        constraints[0].priority = 1000
+        return constraints
+    }
+
+    func pickerView(pickerView: AKPickerView, configureView view: UIView, forItem item: Int) {
+        configureItemContentView(view, item: item)
+    }
+
+    func pickerView(pickerView: AKPickerView, contentHeightForItem item: Int) -> CGFloat {
+        return cellHeight()
+    }
+
+    func pickerView(pickerView: AKPickerView, contentWidthForItem item: Int) -> CGFloat {
+        let height = cellHeight()
+
+        if let label = apps[item].subviews[1] as? UILabel, image = apps[item].subviews[0] as? UIImageView {
+            return cellWidth(label, image: image, item: item)
+        }
+        return height
+    }
+
+    // MARK : - PickerManagerSelectionDelegate
+    func pickerItemSelected(pickerManager: PickerManager, itemType: String?, index: Int, item: String, data: AnyObject?) {
+        if let scheme = data as? String, url = NSURL(string: "\(scheme)//") {
+            if UIApplication.sharedApplication().canOpenURL(url) {
+                UIApplication.sharedApplication().openURL(url)
+            }
+            else {
+                Async.main {
+                    log.error("APMGR: could not find \(url)")
+                    let msg = "We could not find your \(item) app, please restart Metabolic Compass if you've uninstalled it."
+                    UINotifications.genericErrorOnView(self.notificationView, msg: msg)
+                }
+            }
+        }
+        else {
+            Async.main {
+                log.error("APMGR: Invalid URL scheme for \(data)")
+                let msg = "Failed to open your \(item) app!"
+                UINotifications.genericErrorOnView(self.notificationView, msg: msg)
+            }
+        }
+
+        self.finishProcessingSelection()
+    }
+}
+
 
 public class AddActivityManager: UITableView, UITableViewDelegate, UITableViewDataSource, PickerManagerSelectionDelegate {
 
@@ -44,15 +212,30 @@ public class AddActivityManager: UITableView, UITableViewDelegate, UITableViewDa
 
     private let cacheDuration: Double = 60 * 60
 
-    private let addSectionTitles = ["Quick Add Activity", "Detailed Activity", "Frequent Activities"]
-    private var sectionRows = [2, 1, 0]
-
-    private let frequentActivitySectionIdx = 2
-
     private let addEventCellIdentifier = "addEventCell"
     private let addEventSectionHeaderCellIdentifier = "addEventSectionHeaderCell"
 
     private var notificationView: UIView! = nil
+
+    private var appManager: AppPickerManager! = nil
+    private var appPicker: AKPickerView! = nil
+
+    // Section and title configuration
+    private var addSectionTitles = [String]()
+    private var sectionRows = [Int]()
+
+    private var frequentActivitySectionIdx = 3
+
+    // Section title and index constants.
+    private let sectionTitlesWithApps = ["Just-In-Time Activity", "Retrospective Activity", "Your Apps", "Frequent Activities"]
+    private let sectionTitlesNoApps = ["Just-In-Time Activity", "Retrospective Activity", "Frequent Activities"]
+
+    private let sectionRowsWithApps = [2, 1, 1, 0]
+    private let sectionRowsNoApps = [2, 1, 0]
+
+    private var frequentActivitySectionIdxWithApps = 3
+    private var frequentActivitySectionIdxNoApps = 2
+
 
     public init(frame: CGRect, style: UITableViewStyle, menuItems: [PathMenuItem], notificationView: UIView!) {
         do {
@@ -121,6 +304,36 @@ public class AddActivityManager: UITableView, UITableViewDelegate, UITableViewDa
         // Configure exclusive selection.
         quickAddButtons[0].exclusiveArrays.append(quickAddButtons[1])
         quickAddButtons[1].exclusiveArrays.append(quickAddButtons[0])
+
+        // Configure app picker.
+        let manager = AppPickerManager(notificationView: self.notificationView ?? self.superview)
+        if manager.availableActivityApps.isEmpty {
+            addSectionTitles = sectionTitlesNoApps
+            sectionRows = sectionRowsNoApps
+            frequentActivitySectionIdx = frequentActivitySectionIdxNoApps
+
+        } else {
+            addSectionTitles = sectionTitlesWithApps
+            sectionRows = sectionRowsWithApps
+            frequentActivitySectionIdx = frequentActivitySectionIdxWithApps
+
+            appManager = manager
+            appManager.delegate = appManager
+
+            appPicker = AKPickerView()
+            appPicker.delegate = appManager
+            appPicker.dataSource = appManager
+            appPicker.interitemSpacing = 10
+
+            let pickerFont = UIFont(name: "GothamBook", size: 18.0)!
+            appPicker.font = pickerFont
+            appPicker.highlightedFont = pickerFont
+
+            appPicker.backgroundColor = UIColor.clearColor().colorWithAlphaComponent(0.0)
+            appPicker.highlightedTextColor = UIColor.whiteColor()
+            appPicker.textColor = UIColor.whiteColor().colorWithAlphaComponent(0.7)
+            appPicker.reloadData()
+        }
     }
 
     private func descOfCircadianEvent(event: CircadianEvent) -> String {
@@ -289,7 +502,7 @@ public class AddActivityManager: UITableView, UITableViewDelegate, UITableViewDa
                 }
 
                 // Refresh the table.
-                self.reloadData()
+                Async.main { self.reloadData() }
         })
     }
 
@@ -402,6 +615,19 @@ public class AddActivityManager: UITableView, UITableViewDelegate, UITableViewDa
             ]
 
             cell.contentView.addConstraints(stackConstraints)
+        }
+        else if indexPath.section == 2 && appPicker != nil {
+            appPicker.translatesAutoresizingMaskIntoConstraints = false
+            cell.contentView.addSubview(appPicker)
+
+            let constraints : [NSLayoutConstraint] = [
+                cell.contentView.topAnchor.constraintEqualToAnchor(appPicker.topAnchor),
+                cell.contentView.bottomAnchor.constraintEqualToAnchor(appPicker.bottomAnchor),
+                cell.contentView.leadingAnchor.constraintEqualToAnchor(appPicker.leadingAnchor, constant: -10),
+                cell.contentView.trailingAnchor.constraintEqualToAnchor(appPicker.trailingAnchor, constant: 10)
+            ]
+
+            cell.contentView.addConstraints(constraints)
         }
         else {
             var activityCells: [UIView] = []
@@ -735,7 +961,8 @@ public class AddActivityManager: UITableView, UITableViewDelegate, UITableViewDa
             }
         }
     }
-    
+
+    // MARK : - PickerManagerSelectionDelegate
     func pickerItemSelected(pickerManager: PickerManager, itemType: String?, index: Int, item: String, data: AnyObject?) {
         log.info("Quick add picker selected \(itemType) \(item) \(data)")
         processSelection(nil, pickerManager: pickerManager, itemType: itemType, index: index, item: item, data: data)

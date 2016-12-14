@@ -20,7 +20,7 @@ class ContentManager: NSObject {
     private var aggregateFetchTask : Async? = nil    // Background task to fetch population aggregates.
     var isBackgroundWorkActive = false
     var isObservationActive = false
-    //var isDeviceSyncActive = false
+    var isDeviceSyncActive = false
 
     private var reachability: Reachability! = nil
 
@@ -57,21 +57,22 @@ class ContentManager: NSObject {
 
             log.warning("Starting background work")
             self.fetchInitialAggregates()
-            self.fetchRecentSamples()
+            ComparisonDataModel.sharedManager.updateIndividualData(PreviewManager.previewSampleTypes) { _ in () }
             self.isBackgroundWorkActive = true
+
             AccountManager.shared.withHKCalAuth {
                 IOSHealthManager.sharedManager.collectDataForCharts()
             }
+
             if !self.isObservationActive {
                 UploadManager.sharedManager.registerUploadObservers()
                 self.isObservationActive = true
             }
-            /*
+
             if !self.isDeviceSyncActive {
                 UploadManager.sharedManager.syncDeviceMeasuresPeriodically()
                 self.isDeviceSyncActive = true
             }
-            */
         }
     }
 
@@ -123,30 +124,16 @@ class ContentManager: NSObject {
             if error {
                 log.warning("Could not ensure an access token while fetching aggregates, trying later...")
             } else {
-                PopulationHealthManager.sharedManager.fetchAggregates()
+                let populationTypes = PreviewManager.previewSampleTypes
+                PopulationHealthManager.sharedManager.fetchAggregates(populationTypes) { error in
+                    guard error == nil else { return }
+                    ComparisonDataModel.sharedManager.updatePopulationData(populationTypes)
+                }
             }
             let freq = UserManager.sharedManager.getRefreshFrequency()
             self.aggregateFetchTask = Async.background(after: Double(freq)) {
                 self.fetchAggregatesPeriodically()
             }
-        }
-    }
-
-    func fetchRecentSamples() {
-        AccountManager.shared.withHKCalAuth {
-            MCHealthManager.sharedManager.fetchMostRecentSamples(ofTypes: PreviewManager.previewSampleTypes) { (_, error) -> Void in
-                guard error == nil else { return }
-                NSNotificationCenter.defaultCenter().postNotificationName(HMDidUpdateRecentSamplesNotification, object: self)
-            }
-            /*
-            let typeChunks = PreviewManager.previewSampleTypes.splitBy(5)
-            typeChunks.forEach { types in
-                MCHealthManager.sharedManager.fetchMostRecentSamples(ofTypes: types) { (_, error) -> Void in
-                    guard error == nil else { return }
-                    NSNotificationCenter.defaultCenter().postNotificationName(HMDidUpdateRecentSamplesNotification, object: self)
-                }
-            }
-            */
         }
     }
 

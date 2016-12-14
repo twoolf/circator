@@ -19,6 +19,8 @@ public class AnalysisDataModel {
 
     public var fastingModel: FastingDataModel = FastingDataModel()
 
+    public var cycleModel: CycleDataModel = CycleDataModel()
+
     public func refreshStudyStats(ringIndexKeys: [String], completion: Bool -> Void) {
         PopulationHealthManager.sharedManager.fetchStudyStats { (success, payload) in
             if success && payload != nil {

@@ -145,6 +145,8 @@ public class SlideButtonArray: UIView, SlideButtonArrayDelegate {
         let numButtons = buttons.count
         activeButtonIndex = -1
 
+        self.translatesAutoresizingMaskIntoConstraints = false
+
         buttons.enumerate().forEach { (index, button) in
             let picker = self.pickers[index]
             picker.layer.opacity = 0.0

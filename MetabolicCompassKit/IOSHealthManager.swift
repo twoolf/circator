@@ -51,6 +51,8 @@ public class IOSHealthManager: NSObject, WCSessionDelegate {
             return
         }
         do {
+            let applicationContext = [:]
+            /*
             let sampleFormatter = SampleFormatter()
             let applicationContext = MCHealthManager.sharedManager.mostRecentSamples.map {
                 (sampleType, results) -> [String: String] in
@@ -60,6 +62,7 @@ public class IOSHealthManager: NSObject, WCSessionDelegate {
                     "value": sampleFormatter.stringFromSamples(results)
                 ]
             }
+            */
             try WCSession.defaultSession().updateApplicationContext(["context": applicationContext])
         } catch {
             log.error(error)
@@ -94,9 +97,7 @@ public class IOSHealthManager: NSObject, WCSessionDelegate {
                 return
             }
 
-            //let nonSyncPredicate = NSCompoundPredicate(notPredicateWithSubpredicate: HKQuery.predicateForObjectsWithMetadataKey("SeqId"))
-
-            let obsQuery = HKObserverQuery(sampleType: type, predicate: nil /*nonSyncPredicate*/) {
+            let obsQuery = HKObserverQuery(sampleType: type, predicate: nil) {
                 query, completion, obsError in
                 guard obsError == nil else {
                     log.error(obsError)
@@ -107,6 +108,8 @@ public class IOSHealthManager: NSObject, WCSessionDelegate {
                 // components that run at higher priority.
                 Async.background {
                     let tname = type.displayText ?? type.identifier
+                    let asCircadian = type.identifier == HKWorkoutTypeIdentifier || type.identifier == HKCategoryTypeIdentifierSleepAnalysis
+
                     let (needsOldestSamples, anchor, predicate) = getAnchorCallback(type)
                     if needsOldestSamples {
                         Async.background(after: 0.5) {
@@ -124,10 +127,15 @@ public class IOSHealthManager: NSObject, WCSessionDelegate {
                         (added, deleted, newAnchor, error) -> Void in
 
                         if added.count > 0 || deleted.count > 0 {
-                            let asCircadian = type.identifier == HKWorkoutTypeIdentifier || type.identifier == HKCategoryTypeIdentifierSleepAnalysis
                             MCHealthManager.sharedManager.invalidateCacheForUpdates(type, added: asCircadian ? added : nil)
                         }
 
+                        // Data-driven notifications.
+                        if asCircadian {
+                            NotificationManager.sharedManager.onCircadianEvents(added)
+                        }
+
+                        // Callback invocation.
                         anchorQueryCallback(added: added, deleted: deleted, newAnchor: newAnchor, error: error, completion: completion)
                     }
                 }

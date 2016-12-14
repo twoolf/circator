@@ -2,6 +2,24 @@
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 <dict>
+	<key>LSApplicationQueriesSchemes</key>
+	<array>
+		<string>x-apple-health</string>
+		<string>mfp</string>
+		<string>mfphd</string>
+		<string>fitbit</string>
+		<string>strava</string>
+		<string>loseit</string>
+		<string>fb162575247235</string>
+		<string>fb62572192129</string>
+		<string>cardiograph</string>
+		<string>withings-bd2</string>
+		<string>nikeplus</string>
+		<string>myplate</string>
+		<string>garmin</string>
+		<string>epicHaiku</string>
+		<string>epicMyChart</string>
+	</array>
 	<key>CFBundleDevelopmentRegion</key>
 	<string>en</string>
 	<key>CFBundleDisplayName</key>

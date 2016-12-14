@@ -115,6 +115,9 @@ class DailyProgressViewController : UIViewController, DailyChartModelProtocol {
 
         self.scrollRecentButton.enabled = false
         self.scrollOlderButton.enabled = true
+
+        NSNotificationCenter.defaultCenter().addObserver(self, selector: #selector(syncAddedCircadianEvents), name: SyncDidUpdateCircadianEvents, object: nil)
+
     }
 
     override func viewDidAppear(animated: Bool) {
@@ -251,6 +254,17 @@ class DailyProgressViewController : UIViewController, DailyChartModelProtocol {
                 self.contentDidUpdate(withDailyProgress: false)
             }
         }
+    }
+
+    func syncAddedCircadianEvents() {
+        Async.background(after: 1.0) {
+            self.contentDidUpdate()
+        }
+    }
+
+    // MARK :- Deinit
+    deinit {
+        NSNotificationCenter.defaultCenter().removeObserver(self)
     }
 
 }

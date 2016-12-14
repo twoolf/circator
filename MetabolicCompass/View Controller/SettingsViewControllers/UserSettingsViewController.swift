@@ -13,48 +13,10 @@ import Former
 import SwiftDate
 import SwiftyUserDefaults
 
-let USNReminderFrequencyKey = "USNReminderFrequency"
-let USNBlackoutTimesKey = "USNBlackoutTimes"
-
 let USNDidUpdateBlackoutNotification = "USNDidUpdateBlackoutNotification"
 
 let userSettingsHeaderFontSize: CGFloat = 20.0
 let userSettingsFontSize: CGFloat = 16.0
-
-// Default blackout times: 10pm - 6am
-func defaultNotificationBlackoutTimes() -> [NSDate] {
-    let today = NSDate().startOf(.Day)
-    return [today + 22.hours - 1.days, today + 6.hours]
-}
-
-// Default reminder frequency in hours.
-func defaultNotificationReminderFrequency() -> Int {
-    return 24
-}
-
-func getNotificationReminderFrequency() -> Int {
-    var reminder: Int! = nil
-    if let r = Defaults.objectForKey(USNReminderFrequencyKey) as? Int {
-        reminder = r
-    } else {
-        reminder = defaultNotificationReminderFrequency()
-        Defaults.setObject(reminder, forKey: USNReminderFrequencyKey)
-        Defaults.synchronize()
-    }
-    return reminder!
-}
-
-func getNotificationBlackoutTimes() -> [NSDate] {
-    var blackoutTimes: [NSDate] = []
-    if let t = Defaults.objectForKey(USNBlackoutTimesKey) as? [NSDate] {
-        blackoutTimes = t
-    } else {
-        blackoutTimes = defaultNotificationBlackoutTimes()
-        Defaults.setObject(blackoutTimes, forKey: USNBlackoutTimesKey)
-        Defaults.synchronize()
-    }
-    return blackoutTimes
-}
 
 class UserSettingsViewController: BaseViewController {
 
@@ -76,7 +38,8 @@ class UserSettingsViewController: BaseViewController {
     var reminder: Int! = nil
     var blackoutTimes: [NSDate] = []
 
-    static let reminderOptions: [Int] = [ 2, 4, 6, 8, 12, 24, 48, 72, -1 ]
+    // Reminder period in minutes
+    static let reminderOptions: [Int] = [ /*1, 2, 5, 10,*/ 120, 240, 360, 480, 720, 1440, 2880, 4320, -1 ]
 
     // UI Components
     var hotwordInput: TextFieldRowFormer<FormTextFieldCell>! = nil
@@ -276,7 +239,13 @@ class UserSettingsViewController: BaseViewController {
                 $0.displayLabel.font = UIFont(name: "GothamBook", size: userSettingsFontSize)!
                 }.configure {
                     $0.pickerItems = UserSettingsViewController.reminderOptions.map {
-                        let label = $0 < 0 ? "Never" : ($0 > 24 ? "\($0/24) days" : ($0 == 24 ? "Every day" : "\($0) hours"))
+                        var label = ""
+                        if $0 < 0          { label = "Never" }
+                        else if $0 == 1440 { label = "Every day" }
+                        else if $0 == 60   { label = "Every hour" }
+                        else if $0 > 1440  { label = "\($0/1440) days" }
+                        else if $0 > 60    { label = "\($0/60) hours" }
+                        else               { label = "\($0) minutes" }
                         return InlinePickerItem(title: label, value: $0)
                     }
                     $0.displayEditingColor = .whiteColor()
