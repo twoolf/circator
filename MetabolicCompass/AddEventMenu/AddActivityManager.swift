@@ -27,10 +27,7 @@ class AppPickerManager: PickerManager, PickerManagerSelectionDelegate {
     private var notificationView: UIView! = nil
 
     static let activityApps: [String: AnyObject] = [
-        "Health"          : "x-apple-health:",
         "Cardiograph"     : "cardiograph:",
-        "Epic Haiku"      : "epicHaiku:",
-        "Epic MyChart"    : "epicMyChart:",
         "Sleep Cycle"     : "fb162575247235:", /* Sleep Cycle */
         "Runkeeper"       : "fb62572192129:", /* Runkeeper */
         "FitBit"          : "fitbit:",
@@ -45,10 +42,7 @@ class AppPickerManager: PickerManager, PickerManagerSelectionDelegate {
     ]
 
     static let appIcons: [String: AnyObject] = [
-        "Health"          : "icon-AppleHealthKit",
         "Cardiograph"     : "icon-Cardiograph",
-        "Epic Haiku"      : "icon-EpicHaiku",
-        "Epic MyChart"    : "icon-EpicMyChart",
         "Sleep Cycle"     : "icon-SleepCycle",
         "Runkeeper"       : "icon-runkeeper",
         "FitBit"          : "icon-fitbit",
