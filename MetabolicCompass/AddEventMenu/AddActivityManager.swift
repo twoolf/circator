@@ -90,13 +90,14 @@ class AppPickerManager: PickerManager, PickerManagerSelectionDelegate {
             return view
         }
 
-        self.apps = availableActivityApps.map { (name, _) in
+        let appNames = availableActivityApps.map({ $0.0 }).sort()
+
+        self.apps = appNames.map { name in
             let stack = UIComponents.createLabelledComponent(name, labelOnTop: false, labelFontSize: 12.0, stackAlignment: .Center, value: name, constructor: ctor)
             stack.autoresizingMask = [.FlexibleWidth, .FlexibleHeight]
             return stack
         }
 
-        let appNames = availableActivityApps.map { $0.0 }
         super.init(itemType: "Apps", items: appNames, data: availableActivityApps)
     }
 
