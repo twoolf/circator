@@ -42,7 +42,7 @@ class DashboardComparisonController: UIViewController, UITableViewDelegate, UITa
 
         AccountManager.shared.loginAndInitialize(false)
     }
-    
+
     func contentDidUpdate (notification: NSNotification) {
         self.tableView.reloadData()
         self.stopActivityIndicator()
@@ -109,13 +109,13 @@ class DashboardComparisonController: UIViewController, UITableViewDelegate, UITa
         let active = QueryManager.sharedManager.isQueriedType(sampleType)
         cell.setPopulationFiltering(active)
 
-        let timeSinceRefresh = NSDate().timeIntervalSinceDate(PopulationHealthManager.sharedManager.aggregateRefreshDate)
+        let timeSinceRefresh = NSDate().timeIntervalSinceDate(PopulationHealthManager.sharedManager.aggregateRefreshDate ?? NSDate.distantPast())
         let refreshPeriod = UserManager.sharedManager.getRefreshFrequency() ?? Int.max
         let stale = timeSinceRefresh > Double(refreshPeriod)
-        
-        cell.setUserData(MCHealthManager.sharedManager.mostRecentSamples[sampleType] ?? [HKSample](),
-                         populationAverageData: PopulationHealthManager.sharedManager.mostRecentAggregates[sampleType] ?? [],
-                         stalePopulation: stale)
+
+        let individualSamples = ComparisonDataModel.sharedManager.recentSamples[sampleType] ?? [HKSample]()
+        let populationSamples = ComparisonDataModel.sharedManager.recentAggregates[sampleType] ?? []
+        cell.setUserData(individualSamples, populationAverageData: populationSamples, stalePopulation: stale)
 
         if indexPath.section == 0 && comparisonTips[indexPath.row] == nil {
             let targetView = cell

@@ -70,14 +70,14 @@ class AccountManager: NSObject {
         UserManager.sharedManager.logoutWithCompletion(completion)
         IOSHealthManager.sharedManager.reset()
         self.contentManager.stopBackgroundWork()
-        PopulationHealthManager.sharedManager.resetAggregates()
+        PopulationHealthManager.sharedManager.reset()
     }
 
     func doWithdraw(keepData: Bool, completion: Bool -> Void) {
         UserManager.sharedManager.withdraw(keepData, completion: completion)
         IOSHealthManager.sharedManager.reset()
         self.contentManager.stopBackgroundWork()
-        PopulationHealthManager.sharedManager.resetAggregates()
+        PopulationHealthManager.sharedManager.reset()
     }
 
     private func loginComplete () {

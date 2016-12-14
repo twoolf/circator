@@ -445,7 +445,7 @@ public class FastingViewController : UIViewController, ChartViewDelegate {
         lblStr.addAttribute(NSFontAttributeName, value: labelFont, range: NSMakeRange(0, lblStr.length))
 
         if !compact {
-            descStr = NSMutableAttributedString(string: "Your Contributions Streak", attributes: studyLabelAttrs)
+            descStr = NSMutableAttributedString(string: "Your Fasting Streak", attributes: studyLabelAttrs)
             descStr.addAttribute(NSFontAttributeName, value: descFont, range: NSMakeRange(0, descStr.length))
 
             lblStr = NSMutableAttributedString(string: "You've fasted \(vStr) hours this week. \(description)")

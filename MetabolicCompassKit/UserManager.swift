@@ -339,7 +339,7 @@ public class UserManager {
                 Stormpath.sharedSession.logout()
                 ConsentManager.sharedManager.resetConsentFilePath()
                 IOSHealthManager.sharedManager.reset()
-                PopulationHealthManager.sharedManager.resetAggregates()
+                PopulationHealthManager.sharedManager.reset()
             } catch {
                 log.warning("resetAccount: \(error)")
             }

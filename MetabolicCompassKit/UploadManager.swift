@@ -395,7 +395,7 @@ public class UploadManager: NSObject {
                 // We have a remote anchor available, and do not use a temporal predicate.
                 anchor = anchorForType
                 remoteAnchor = true
-                log.info("Data import from anchor \(anchor): \(tname)")
+                log.verbose("Data import from anchor \(anchor): \(tname)")
             }
             else if let (_, hend) = UserManager.sharedManager.getHistoricalRangeForType(type) {
                 // We have no server anchor available.
@@ -404,7 +404,7 @@ public class UploadManager: NSObject {
                 let nearFuture = 1.minutes.fromNow
                 let pstart = NSDate(timeIntervalSinceReferenceDate: hend)
                 predicate = HKQuery.predicateForSamplesWithStartDate(pstart, endDate: nearFuture, options: .None)
-                log.info("Data import from \(pstart) \(nearFuture): \(tname)")
+                log.verbose("Data import from \(pstart) \(nearFuture): \(tname)")
             }
             else {
                 // We have no anchor or archive span available.
@@ -415,12 +415,12 @@ public class UploadManager: NSObject {
                 let (dstart, dend) = (NSDate(timeIntervalSinceReferenceDate: start), NSDate(timeIntervalSinceReferenceDate: end))
                 predicate = HKQuery.predicateForSamplesWithStartDate(dstart, endDate: dend, options: .None)
                 needOldestSamples = true
-                log.info("Initialized historical range for \(tname): \(dstart) \(dend)")
+                log.verbose("Initialized historical range for \(tname): \(dstart) \(dend)")
 
             }
         }
 
-        log.info("Anchor for \(tname)(\(remoteAnchor)): \(anchor)")
+        log.verbose("Anchor for \(tname)(\(remoteAnchor)): \(anchor)")
         return (needOldestSamples, anchor, predicate)
     }
 
@@ -871,7 +871,6 @@ public class UploadManager: NSObject {
                             }
 
                             if withSyncInfo {
-                                log.warning("Found sync info in \(added.map { $0.metadata })")
                                 NSNotificationCenter.defaultCenter().postNotificationName(SyncDidUpdateCircadianEvents, object: nil)
                             }
 
@@ -884,7 +883,7 @@ public class UploadManager: NSObject {
                                     self.setAnchorForType(anchor, forType: type)
                                 }
 
-                                log.info("Skipping upload for \(typeId): \(userAdded.count) insertions \(deleted.count) deletions")
+                                log.verbose("Skipping upload for \(typeId): \(userAdded.count) insertions \(deleted.count) deletions")
                             }
                             completion()
                         }

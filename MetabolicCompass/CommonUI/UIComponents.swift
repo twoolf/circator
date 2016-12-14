@@ -16,7 +16,8 @@ public class UIComponents {
 
     static public func createLabelledComponent<T>(title: String, attrs: [String: AnyObject]? = nil,
                                                   labelOnTop: Bool = true, labelFontSize: CGFloat, labelSpacing: CGFloat = 8.0,
-                                                  value: T, constructor: T -> UIView) -> UIStackView {
+                                                  stackAlignment: UIStackViewAlignment = .Fill, value: T, constructor: T -> UIView) -> UIStackView
+    {
         let desc : UILabel = {
             let label = UILabel()
             label.font = UIFont(name: "GothamBook", size: labelFontSize)!
@@ -45,7 +46,7 @@ public class UIComponents {
             let stack = UIStackView(arrangedSubviews: labelOnTop ? [desc, component] : [component, desc])
             stack.axis = .Vertical
             stack.distribution = UIStackViewDistribution.Fill
-            stack.alignment = UIStackViewAlignment.Fill
+            stack.alignment = stackAlignment
             stack.spacing = labelSpacing
             return stack
         }()

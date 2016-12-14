@@ -1,7 +1,7 @@
 use_frameworks!
 
 def shared_pods
-    pod 'AKPickerView-Swift'
+    pod 'AKPickerView-Swift', :git => 'https://github.com/yanif/AKPickerView-Swift', :branch => 'view-items'
     pod 'Alamofire', '~> 2.0'
     pod 'ARSLineProgress', '~> 1.0'
     pod 'AsyncKit', '~> 1.2'

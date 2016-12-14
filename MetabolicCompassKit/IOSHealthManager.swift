@@ -51,6 +51,8 @@ public class IOSHealthManager: NSObject, WCSessionDelegate {
             return
         }
         do {
+            let applicationContext = [:]
+            /*
             let sampleFormatter = SampleFormatter()
             let applicationContext = MCHealthManager.sharedManager.mostRecentSamples.map {
                 (sampleType, results) -> [String: String] in
@@ -60,6 +62,7 @@ public class IOSHealthManager: NSObject, WCSessionDelegate {
                     "value": sampleFormatter.stringFromSamples(results)
                 ]
             }
+            */
             try WCSession.defaultSession().updateApplicationContext(["context": applicationContext])
         } catch {
             log.error(error)

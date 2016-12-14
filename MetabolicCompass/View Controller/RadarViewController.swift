@@ -238,7 +238,7 @@ class RadarViewController : UIViewController, ChartViewDelegate {
 
     func indEntry(i: Int) -> MetabolicDataEntry {
         let type = PreviewManager.balanceSampleTypes[i]
-        let samples = MCHealthManager.sharedManager.mostRecentSamples[type] ?? []
+        let samples = ComparisonDataModel.sharedManager.recentSamples[type] ?? []
         let val = healthFormatter.numberFromSamples(samples)
         guard !val.isNaN else {
             return MetabolicDataEntry(value: 0.8, xIndex: i,
@@ -253,7 +253,7 @@ class RadarViewController : UIViewController, ChartViewDelegate {
 
     func popEntry(i: Int) -> MetabolicDataEntry {
         let type = PreviewManager.balanceSampleTypes[i]
-        let samples = PopulationHealthManager.sharedManager.mostRecentAggregates[type] ?? []
+        let samples = ComparisonDataModel.sharedManager.recentAggregates[type] ?? []
         let val = healthFormatter.numberFromSamples(samples)
         guard !val.isNaN else {
             return MetabolicDataEntry(value: 0.8, xIndex: i,

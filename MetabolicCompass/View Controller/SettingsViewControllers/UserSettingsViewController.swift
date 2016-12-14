@@ -39,8 +39,7 @@ class UserSettingsViewController: BaseViewController {
     var blackoutTimes: [NSDate] = []
 
     // Reminder period in minutes
-    static let reminderOptions: [Int] = [ 1, 2, 5, 10, 120, 240, 360, 480, 720, 1440, 2880, 4320, -1 ]
-    //static let reminderOptions: [Int] = [ 120, 240, 360, 480, 720, 1440, 2880, 4320, -1 ]
+    static let reminderOptions: [Int] = [ /*1, 2, 5, 10,*/ 120, 240, 360, 480, 720, 1440, 2880, 4320, -1 ]
 
     // UI Components
     var hotwordInput: TextFieldRowFormer<FormTextFieldCell>! = nil

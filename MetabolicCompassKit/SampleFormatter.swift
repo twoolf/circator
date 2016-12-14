@@ -183,7 +183,7 @@ public class SampleFormatter: NSObject {
     private func numberFromMCSamples(samples: [MCSample]) -> Double {
         guard !samples.isEmpty else { return Double.quietNaN }
 
-        if let fst = samples.first {
+        if let fst = samples.last {
             if let _ = fst.hkType as? HKQuantityType {
                 return numberFromMCSample(fst)
             } else if let quantity = fst.numeralValue, type = fst.hkType {
@@ -208,7 +208,7 @@ public class SampleFormatter: NSObject {
     private func stringFromMCSamples(samples: [MCSample]) -> String {
         guard !samples.isEmpty else { return emptyString }
 
-        if let fst = samples.first {
+        if let fst = samples.last {
             if let qType = fst.hkType as? HKQuantityType {
                 if qType.identifier == HKQuantityTypeIdentifierBloodPressureSystolic
                     || qType.identifier == HKQuantityTypeIdentifierBloodPressureDiastolic
@@ -221,8 +221,8 @@ public class SampleFormatter: NSObject {
                     let matches = samples.filter { $0.hkType?.identifier == checkId }
                     if !matches.isEmpty {
                         let systolicFromMatches = checkId == HKQuantityTypeIdentifierBloodPressureSystolic
-                        let systolicValue = systolicFromMatches ? matches.first!.numeralValue! : fst.numeralValue!
-                        let diastolicValue = systolicFromMatches ? fst.numeralValue! : matches.first!.numeralValue!
+                        let systolicValue = systolicFromMatches ? matches.last!.numeralValue! : fst.numeralValue!
+                        let diastolicValue = systolicFromMatches ? fst.numeralValue! : matches.last!.numeralValue!
                         let systolicNumber = SampleFormatter.integerFormatter.stringFromNumber(systolicValue)!
                         let diastolicNumber = SampleFormatter.integerFormatter.stringFromNumber(diastolicValue)!
                         return "\(systolicNumber)/\(diastolicNumber)"

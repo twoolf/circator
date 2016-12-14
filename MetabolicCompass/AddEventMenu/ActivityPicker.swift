@@ -13,6 +13,7 @@ import AKPickerView_Swift
 
 let EventPickerPressDuration = 0.2
 
+
 public protocol ManageEventMenuDelegate: class {
     func manageEventMenu(menu: ManageEventMenu, didSelectIndex idx: Int)
     func manageEventMenuDidFinishAnimationClose(menu: ManageEventMenu)
@@ -35,14 +36,14 @@ class PickerManager: NSObject, AKPickerViewDelegate, AKPickerViewDataSource, UIG
     var data : [String:AnyObject]
     var current: Int
 
-    var labels: [UILabel!]
+    var itemContentViews: [UIView!]
 
     override init() {
         self.itemType = nil
         self.items = []
         self.data = [:]
         self.current = -1
-        self.labels = []
+        self.itemContentViews = []
     }
 
     init(itemType: String? = nil, items: [String], data: [String:AnyObject]) {
@@ -50,7 +51,7 @@ class PickerManager: NSObject, AKPickerViewDelegate, AKPickerViewDataSource, UIG
         self.items = items
         self.data = data
         self.current = -1
-        self.labels = [UILabel!](count: self.items.count, repeatedValue: nil)
+        self.itemContentViews = [UIView!](count: self.items.count, repeatedValue: nil)
     }
 
     func refreshData(itemType: String? = nil, items: [String], data: [String:AnyObject]) {
@@ -58,7 +59,7 @@ class PickerManager: NSObject, AKPickerViewDelegate, AKPickerViewDataSource, UIG
         self.items = items
         self.data = data
         self.current = -1
-        self.labels = [UILabel!](count: self.items.count, repeatedValue: nil)
+        self.itemContentViews = [UIView!](count: self.items.count, repeatedValue: nil)
     }
 
     // MARK: - AKPickerViewDataSource
@@ -74,41 +75,44 @@ class PickerManager: NSObject, AKPickerViewDelegate, AKPickerViewDataSource, UIG
         current = item
 
         for index in (0..<items.count) {
-            if labels[index] != nil {
+            if itemContentViews[index] != nil {
                 if item == index { continue }
                 else {
-                    labels[index].superview?.layer.borderWidth = 0.0
-                    labels[index].superview?.userInteractionEnabled = false
+                    itemContentViews[index].superview?.layer.borderWidth = 0.0
+                    itemContentViews[index].superview?.userInteractionEnabled = false
                 }
             }
         }
 
         Async.main(after: 0.2) {
-            self.labels[item].tag = item
-            self.labels[item].superview?.tag = item
-            self.labels[item].superview?.layer.borderWidth = 2.0
+            self.itemContentViews[item].tag = item
+            self.itemContentViews[item].superview?.tag = item
+            self.itemContentViews[item].superview?.layer.borderWidth = 2.0
             if !self.selectionProcessing {
-                self.labels[item].superview?.userInteractionEnabled = true
+                self.itemContentViews[item].superview?.userInteractionEnabled = true
             }
         }
     }
 
-    func pickerView(pickerView: AKPickerView, configureLabel label: UILabel, forItem item: Int) {
-        if labels[item] == nil || labels[item] != label {
-            labels[item] = label
-            labels[item].tag = item
-            labels[item].superview?.layer.borderColor = UIColor.ht_carrotColor().CGColor
-            labels[item].superview?.layer.cornerRadius = 8
-            labels[item].superview?.layer.masksToBounds = true
+    func configureItemContentView(view: UIView, item: Int) {
+        if itemContentViews[item] == nil || itemContentViews[item] != view {
+            itemContentViews[item] = view
+            itemContentViews[item].tag = item
+            itemContentViews[item].superview?.layer.borderColor = UIColor.ht_carrotColor().CGColor
+            itemContentViews[item].superview?.layer.cornerRadius = 8
+            itemContentViews[item].superview?.layer.masksToBounds = true
 
             let press = UILongPressGestureRecognizer(target: self, action: #selector(itemSelected(_:)))
             press.minimumPressDuration = EventPickerPressDuration
             press.delegate = self
-            labels[item].superview?.tag = item
-            labels[item].superview?.userInteractionEnabled = true
-            labels[item].superview?.addGestureRecognizer(press)
+            itemContentViews[item].superview?.tag = item
+            itemContentViews[item].superview?.userInteractionEnabled = true
+            itemContentViews[item].superview?.addGestureRecognizer(press)
         }
+    }
 
+    func pickerView(pickerView: AKPickerView, configureLabel label: UILabel, forItem item: Int) {
+        configureItemContentView(label, item: item)
     }
 
     func startProcessingSelection(selected: Int) {
@@ -118,10 +122,10 @@ class PickerManager: NSObject, AKPickerViewDelegate, AKPickerViewDataSource, UIG
                 // Disable all recognizers and mark the selection as processing to prevent further interaction.
                 log.info("Processing selection \(selected) disabling and invoking delegate")
                 selectionProcessing = true
-                labels.forEach {
-                    if let lbl = $0 {
-                        lbl.superview?.userInteractionEnabled = false
-                        lbl.superview?.gestureRecognizers?.forEach { g in g.enabled = false }
+                itemContentViews.forEach {
+                    if let view = $0 {
+                        view.superview?.userInteractionEnabled = false
+                        view.superview?.gestureRecognizers?.forEach { g in g.enabled = false }
                     }
                 }
                 delegate.pickerItemSelected(self, itemType: itemType, index: selected, item: getSelectedItem(), data: getSelectedValue())
@@ -136,10 +140,10 @@ class PickerManager: NSObject, AKPickerViewDelegate, AKPickerViewDataSource, UIG
 
     func finishProcessingSelection() {
         selectionProcessing = false
-        labels.enumerate().forEach {
-            if let lbl = $0.1 {
-                lbl.superview?.gestureRecognizers?.forEach { g in g.enabled = true }
-                if $0.0 == current { lbl.superview?.userInteractionEnabled = true }
+        itemContentViews.enumerate().forEach {
+            if let view = $0.1 {
+                view.superview?.gestureRecognizers?.forEach { g in g.enabled = true }
+                if $0.0 == current { view.superview?.userInteractionEnabled = true }
             }
         }
     }
@@ -147,12 +151,12 @@ class PickerManager: NSObject, AKPickerViewDelegate, AKPickerViewDataSource, UIG
     func itemSelected(sender: UILongPressGestureRecognizer) {
         if sender.state == .Began {
             if let index = sender.view?.tag {
-                labels[index].superview?.layer.borderColor = UIColor.ht_jayColor().CGColor
+                itemContentViews[index].superview?.layer.borderColor = UIColor.ht_jayColor().CGColor
             }
         }
         if sender.state == .Ended {
             if let index = sender.view?.tag {
-                labels[index].superview?.layer.borderColor = UIColor.ht_carrotColor().CGColor
+                itemContentViews[index].superview?.layer.borderColor = UIColor.ht_carrotColor().CGColor
                 startProcessingSelection(index)
             }
         }
@@ -161,6 +165,7 @@ class PickerManager: NSObject, AKPickerViewDelegate, AKPickerViewDataSource, UIG
     func getSelectedItem() -> String { return current < 0 && items.count > 0 ? items[0] : "" }
     func getSelectedValue() -> AnyObject? { return current < 0 && items.count > 0 ? data[items[0]] : data[items[current]] }
 }
+
 
 /// AKPickerViews as Former cells/rows.
 public class AKPickerCell: FormCell, AKPickerFormableRow {

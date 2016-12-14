@@ -11,6 +11,9 @@ import HealthKit
 import Async
 import MCCircadianQueries
 
+
+public let PMErrorDomain = "PMErrorDomain"
+
 /**
  This is the manager of information for the comparison population.
  By providing this comparison we provide our study participants with a greater ability to view themselves in context.
@@ -20,26 +23,58 @@ import MCCircadianQueries
 
  - remark: pulls from PostgreSQL store (AWS RDS) -- see MCRouter --
  */
-public class PopulationHealthManager {
+public class PopulationHealthManager: NSObject {
 
     public static let sharedManager = PopulationHealthManager()
 
-    public var aggregateRefreshDate : NSDate = NSDate()
+    public var aggregateCache: HMSampleCache
 
-    public var mostRecentAggregates = [HKSampleType: [MCSample]]() {
-        didSet {
-            aggregateRefreshDate = NSDate()
+    public var aggregateRefreshDate : NSDate! = nil
+
+    public var mostRecentAggregates = [HKSampleType: [MCSample]]()
+
+    public override init() {
+        do {
+            self.aggregateCache = try HMSampleCache(name: "MCPopulationCache")
+        } catch _ {
+            fatalError("Unable to create PopulationHealthManager cache.")
+        }
+        super.init()
+
+        // Initialize in-memory aggregates from cache.
+        PreviewManager.previewSampleTypes.forEach { type in
+            if let key = self.cacheKeyForType(type), codedSamples = self.aggregateCache.objectForKey(key) {
+                mostRecentAggregates[type] = codedSamples.samples
+            }
         }
     }
 
     // MARK: - Population query execution.
 
     // Clear all aggregates.
-    public func resetAggregates() { mostRecentAggregates = [:] }
+    public func reset() {
+        aggregateCache.removeAllObjects()
+        aggregateRefreshDate = NSDate()
+        mostRecentAggregates = [:]
+    }
+
+    private func cacheKeyForType(type: HKSampleType) -> String? {
+        if let column = HMConstants.sharedInstance.hkToMCDB[type.identifier] {
+            return column
+        }
+        else if let _ = HMConstants.sharedInstance.hkQuantityToMCDBActivity[type.identifier] {
+            return nil
+        }
+        else if type.identifier == HKCorrelationTypeIdentifierBloodPressure {
+            return nil
+        }
+        log.warning("PHMGR: No population query column available for \(type.identifier)")
+        return nil
+    }
 
     // Retrieve aggregates for all previewed rows.
     // TODO: enable input of start time, end time and columns retrieved in the query view controllers.
-    public func fetchAggregates() {
+    public func fetchAggregates(previewTypes: [HKSampleType], completion: NSError? -> Void) {
         var columnIndex = 0
         var columns : [String:AnyObject] = [:]
 
@@ -127,7 +162,7 @@ public class PopulationHealthManager {
         }
 
         if columns.isEmpty {
-            for hksType in PreviewManager.supportedTypes {
+            for hksType in previewTypes {
                 if let column = HMConstants.sharedInstance.hkToMCDB[hksType.identifier] {
                     columns[String(columnIndex)] = column
                     columnIndex += 1
@@ -150,7 +185,7 @@ public class PopulationHealthManager {
             }
         }
 
-        let params : [String:AnyObject] = [
+        var params : [String:AnyObject] = [
             "tstart"       : Int(floor(tstart.timeIntervalSince1970)),
             "tend"         : Int(ceil(tend.timeIntervalSince1970)),
             "columns"      : columns,
@@ -159,11 +194,40 @@ public class PopulationHealthManager {
 
         // log.info("Running popquery \(params)")
 
-        Service.json(MCRouter.AggregateMeasures(params), statusCode: 200..<300, tag: "AGGPOST") {
-            _, response, result in
-            guard !result.isSuccess else {
-                self.refreshAggregatesFromMsg(result.value)
-                return
+        if userfilter.isEmpty {
+            let queryColumns = Dictionary(pairs: columns.filter { (idx, val) in
+                switch val {
+                case is String:
+                    return aggregateCache.objectForKey(val as! String) == nil
+
+                default:
+                    return true
+                }
+            })
+
+            if !queryColumns.isEmpty {
+                params.updateValue(queryColumns, forKey: "columns")
+                Service.json(MCRouter.AggregateMeasures(params), statusCode: 200..<300, tag: "AGGPOST") {
+                    _, response, result in
+                    guard !result.isSuccess else {
+                        self.refreshAggregatesFromMsg(result.value, completion: completion)
+                        return
+                    }
+                }
+            }
+            else {
+                NSNotificationCenter.defaultCenter().postNotificationName(HMDidUpdateRecentSamplesNotification, object: self)
+                completion(nil)
+            }
+        }
+        else {
+            // No caching for filtered queries.
+            Service.json(MCRouter.AggregateMeasures(params), statusCode: 200..<300, tag: "AGGPOST") {
+                _, response, result in
+                guard !result.isSuccess else {
+                    self.refreshAggregatesFromMsg(result.value, completion: completion)
+                    return
+                }
             }
         }
     }
@@ -176,8 +240,10 @@ public class PopulationHealthManager {
     // where MCDBType is a union type, MCDBType = HKWorkoutActivityType | String (e.g., for meals)
     // and   Quantity is a String (e.g., distance, kcal_burned, step_count, flights)
     //
-    func refreshAggregatesFromMsg(payload: AnyObject?) {
+    func refreshAggregatesFromMsg(payload: AnyObject?, completion: NSError? -> Void) {
         var populationAggregates : [HKSampleType: [MCSample]] = [:]
+        var columnsByType: [HKSampleType: AnyObject] = [:]
+
         if let response = payload as? [String:AnyObject],
                aggregates = response["items"] as? [[String:AnyObject]]
         {
@@ -200,8 +266,10 @@ public class PopulationHealthManager {
                                     {
                                         if let sampleValue = categoryValues[mcdbQuantity] as? Double {
                                             populationAggregates[sampleType] = [doubleAsAggregate(sampleType, sampleValue: sampleValue)]
+                                            columnsByType[sampleType] = column
                                         } else {
                                             populationAggregates[sampleType] = []
+                                            columnsByType[sampleType] = column
                                         }
                                     }
                                     else {
@@ -232,6 +300,7 @@ public class PopulationHealthManager {
                             if let sampleValue = val as? Double {
                                 let agg = doubleAsAggregate(sampleType, sampleValue: sampleValue)
                                 populationAggregates[sampleType] = [agg]
+                                columnsByType[sampleType] = column
 
                                 // Population correlation type entry for systolic/diastolic blood pressure sample.
                                 if typeIdentifier == HKQuantityTypeIdentifierBloodPressureSystolic
@@ -249,9 +318,16 @@ public class PopulationHealthManager {
                                         ]
                                     }
                                     populationAggregates[bpType]![bpIndex] = agg
+                                    if var columns = columnsByType[bpType] as? [String] {
+                                        columns.append(column)
+                                        columnsByType.updateValue(columns, forKey: bpType)
+                                    } else {
+                                        columnsByType[bpType] = [column]
+                                    }
                                 }
                             } else {
                                 populationAggregates[sampleType] = []
+                                columnsByType[sampleType] = column
                             }
                         }
                         else {
@@ -267,22 +343,47 @@ public class PopulationHealthManager {
                 Async.main {
                     // let dict = ["title":"population data", "obj":populationAggregates.description ?? ""]
                     // NSNotificationCenter.defaultCenter().postNotificationName("ncAppLogNotification", object: nil, userInfo: dict)
-                    self.mostRecentAggregates = populationAggregates
+
+                    let expiry = Double(UserManager.sharedManager.getRefreshFrequency()) * 0.9
+                    populationAggregates.forEach { (key, samples) in
+                        if let column = columnsByType[key] as? String {
+                            log.verbose("PHMGR caching \(column) \(expiry)")
+                            self.aggregateCache.setObject(MCSampleArray(samples: samples), forKey: column, expires: .Seconds(expiry))
+                        }
+                        else if let columns = columnsByType[key] as? [String] {
+                            columns.forEach { column in
+                                log.verbose("PHMGR caching \(column) \(expiry)")
+                                self.aggregateCache.setObject(MCSampleArray(samples: samples), forKey: column, expires: .Seconds(expiry))
+                            }
+                        }
+                        self.mostRecentAggregates.updateValue(samples, forKey: key)
+                    }
+
+                    self.aggregateRefreshDate = NSDate()
                     NSNotificationCenter.defaultCenter().postNotificationName(HMDidUpdateRecentSamplesNotification, object: self)
+                    completion(nil)
                 }
             }
             else {
-                log.error("Failed to retrieve population aggregates from response: \(response)")
+                let msg = "Failed to retrieve population aggregates from response: \(response)"
+                let error = NSError(domain: PMErrorDomain, code: 0, userInfo: [NSLocalizedDescriptionKey: msg])
+                log.error(msg)
+                NSNotificationCenter.defaultCenter().postNotificationName(HMDidUpdateRecentSamplesNotification, object: self)
+                completion(error)
             }
         }
         else {
-            log.error("Failed to deserialize population query response")
+            let msg = "Failed to deserialize population query response"
+            let error = NSError(domain: PMErrorDomain, code: 1, userInfo: [NSLocalizedDescriptionKey: msg])
+            log.error(msg)
+            NSNotificationCenter.defaultCenter().postNotificationName(HMDidUpdateRecentSamplesNotification, object: self)
+            completion(error)
         }
     }
 
     func doubleAsAggregate(sampleType: HKSampleType, sampleValue: Double) -> MCAggregateSample {
         let convertedSampleValue = HKQuantity(unit: sampleType.serviceUnit!, doubleValue: sampleValue).doubleValueForUnit(sampleType.defaultUnit!)
-        log.info("Popquery \(sampleType.displayText ?? sampleType.identifier) \(sampleValue) \(convertedSampleValue)")
+        log.verbose("Popquery \(sampleType.displayText ?? sampleType.identifier) \(sampleValue) \(convertedSampleValue)")
         return MCAggregateSample(value: convertedSampleValue, sampleType: sampleType, op: sampleType.aggregationOptions)
     }
 
