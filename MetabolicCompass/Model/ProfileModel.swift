@@ -41,10 +41,10 @@ class ProfileModel: UserInfoModel {
                 item.setNewValue(units.rawValue)
             }
             else if item.type == .FirstName {
-                item.setNewValue(AccountManager.shared.userInfo?.firstName)
+                item.setNewValue(profileInfo[firstNameField.name] as? String ?? "<unknown>")
             }
             else if item.type == .LastName {
-                item.setNewValue(AccountManager.shared.userInfo?.lastName)
+                item.setNewValue(profileInfo[lastNameField.name] as? String ?? "<unknown>")
             }
             else if item.type == .Photo {
                 item.setNewValue(UserManager.sharedManager.userProfilePhoto())

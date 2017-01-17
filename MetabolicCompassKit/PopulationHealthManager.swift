@@ -128,7 +128,7 @@ public class PopulationHealthManager: NSObject {
                                 columns[String(columnIndex)] = HMConstants.sharedInstance.hkToMCDB[HKQuantityTypeIdentifierBloodPressureSystolic]!
                                 columnIndex += 1
                             } else {
-                                log.info("Cannot perform population query for \(hksType.identifier)")
+                                log.warning("Cannot perform population query for \(hksType.identifier)")
                             }
                         }
                     }
@@ -251,7 +251,7 @@ public class PopulationHealthManager: NSObject {
             for sample in aggregates {
                 for (column, val) in sample {
                     if !failed {
-                        log.verbose("Refreshing population aggregate for \(column)")
+                        log.debug("Refreshing population aggregate for \(column)", feature: "refreshPop")
 
                         // Handle meal_duration/activity_duration/activity_value columns.
                         // TODO: this only supports activity values that are HealthKit quantities for now (step count, flights climbed, distance/walking/running)
@@ -347,12 +347,12 @@ public class PopulationHealthManager: NSObject {
                     let expiry = Double(UserManager.sharedManager.getRefreshFrequency()) * 0.9
                     populationAggregates.forEach { (key, samples) in
                         if let column = columnsByType[key] as? String {
-                            log.verbose("PHMGR caching \(column) \(expiry)")
+                            log.debug("Caching \(column) \(expiry)", feature: "cachePop")
                             self.aggregateCache.setObject(MCSampleArray(samples: samples), forKey: column, expires: .Seconds(expiry))
                         }
                         else if let columns = columnsByType[key] as? [String] {
                             columns.forEach { column in
-                                log.verbose("PHMGR caching \(column) \(expiry)")
+                                log.debug("Caching \(column) \(expiry)", feature: "cachePop")
                                 self.aggregateCache.setObject(MCSampleArray(samples: samples), forKey: column, expires: .Seconds(expiry))
                             }
                         }
@@ -383,7 +383,7 @@ public class PopulationHealthManager: NSObject {
 
     func doubleAsAggregate(sampleType: HKSampleType, sampleValue: Double) -> MCAggregateSample {
         let convertedSampleValue = HKQuantity(unit: sampleType.serviceUnit!, doubleValue: sampleValue).doubleValueForUnit(sampleType.defaultUnit!)
-        log.verbose("Popquery \(sampleType.displayText ?? sampleType.identifier) \(sampleValue) \(convertedSampleValue)")
+        log.debug("Popquery \(sampleType.displayText ?? sampleType.identifier) \(sampleValue) \(convertedSampleValue)", feature: "execPop")
         return MCAggregateSample(value: convertedSampleValue, sampleType: sampleType, op: sampleType.aggregationOptions)
     }
 

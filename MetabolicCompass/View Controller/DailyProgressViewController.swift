@@ -189,7 +189,7 @@ class DailyProgressViewController : UIViewController, DailyChartModelProtocol {
             self.activityIndicator.stopAnimating()
 
             if self.loadStart != nil {
-                log.info("BODY CLOCK query time: \((NSDate().timeIntervalSinceReferenceDate - self.loadStart.timeIntervalSinceReferenceDate))")
+                log.debug("BODY CLOCK query time: \((NSDate().timeIntervalSinceReferenceDate - self.loadStart.timeIntervalSinceReferenceDate))", feature: "dataLoad")
             }
 
             self.dailyProgressChartView.updateChartData(self.updateContentWithAnimation,

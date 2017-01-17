@@ -57,7 +57,7 @@ public class FastingDataModel : NSObject {
         dispatch_group_enter(group)
         MCHealthManager.sharedManager.fetchSampleCollectionDays(PreviewManager.manageChartsSampleTypes) { (table, error) in
             guard error == nil else {
-                log.error(error)
+                log.error(error!.localizedDescription)
                 someError.append(error)
                 dispatch_group_leave(group)
                 return
@@ -87,7 +87,7 @@ public class FastingDataModel : NSObject {
         dispatch_group_enter(group)
         MCHealthManager.sharedManager.fetchMaxFastingTimes(1.weeks.ago) { (dailyMax, error) in
             guard error == nil else {
-                log.error(error)
+                log.error(error!.localizedDescription)
                 someError.append(error)
                 dispatch_group_leave(group)
                 return
@@ -101,7 +101,7 @@ public class FastingDataModel : NSObject {
         dispatch_group_enter(group)
         MCHealthManager.sharedManager.fetchWeeklyFastingVariability { (variability, error) in
             guard error == nil else {
-                log.error(error)
+                log.error(error!.localizedDescription)
                 someError.append(error)
                 dispatch_group_leave(group)
                 return
@@ -115,7 +115,7 @@ public class FastingDataModel : NSObject {
         dispatch_group_enter(group)
         MCHealthManager.sharedManager.fetchWeeklyFastType { (fSleep, fAwake, error) in
             guard error == nil else {
-                log.error(error)
+                log.error(error!.localizedDescription)
                 someError.append(error)
                 dispatch_group_leave(group)
                 return
@@ -130,7 +130,7 @@ public class FastingDataModel : NSObject {
         dispatch_group_enter(group)
         MCHealthManager.sharedManager.fetchWeeklyEatAndExercise { (tEat, tExercise, error) in
             guard error == nil else {
-                log.error(error)
+                log.error(error!.localizedDescription)
                 someError.append(error)
                 dispatch_group_leave(group)
                 return

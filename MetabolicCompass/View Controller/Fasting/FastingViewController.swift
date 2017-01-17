@@ -346,7 +346,7 @@ public class FastingViewController : UIViewController, ChartViewDelegate {
 
         AnalysisDataModel.sharedInstance.fastingModel.updateData { error in
             guard error == nil else {
-                log.error(error)
+                log.error(error!.localizedDescription)
                 return
             }
 

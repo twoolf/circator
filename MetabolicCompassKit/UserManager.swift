@@ -572,7 +572,7 @@ public class UserManager {
             }
 
             if let token = Stormpath.sharedSession.accessToken {
-                log.verbose("Refreshed token: \(token)")
+                log.debug("Refreshed token: \(token)")
                 MCRouter.updateAuthToken(Stormpath.sharedSession.accessToken)
                 self.ensureAccessToken(tried+1, completion: completion)
             } else {
@@ -1237,12 +1237,6 @@ public class UserManager {
         }
 
         return nil
-    }
-
-    // MARK: - User Info : first & last names
-
-    public func getUserInfo(completion: ((Account?, NSError?) -> Void)) {
-        Stormpath.sharedSession.me(completion)
     }
 
     // MARK: - User units preferences

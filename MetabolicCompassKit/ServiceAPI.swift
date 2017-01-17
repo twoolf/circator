@@ -9,13 +9,8 @@
 import Foundation
 import HealthKit
 import Alamofire
-import SwiftyBeaver
-
-let log = SwiftyBeaver.self
-
 
 public typealias SvcResultCompletion = (RequestResult) -> Void
-
 
 private let apiPathComponent = "/api/v1"
 
@@ -151,6 +146,9 @@ public enum MCRouter : URLRequestConvertible {
     // Token management API
     case TokenExpiry
 
+    // Remote logging API
+    case RLogConfig
+
     var method: Alamofire.Method {
         switch self {
         case .GetMeasures:
@@ -181,6 +179,9 @@ public enum MCRouter : URLRequestConvertible {
             return .POST
 
         case .TokenExpiry:
+            return .GET
+
+        case .RLogConfig:
             return .GET
         }
     }
@@ -213,6 +214,9 @@ public enum MCRouter : URLRequestConvertible {
 
         case .TokenExpiry:
             return "/user/expiry"
+
+        case .RLogConfig:
+            return "/user/rlogconfig"
         }
     }
 
@@ -256,6 +260,9 @@ public enum MCRouter : URLRequestConvertible {
             return Alamofire.ParameterEncoding.JSON.encode(mutableURLRequest, parameters: parameters).0
 
         case .TokenExpiry:
+            return mutableURLRequest
+
+        case .RLogConfig:
             return mutableURLRequest
         }
     }

@@ -10,7 +10,6 @@ import Darwin
 import HealthKit
 import WatchConnectivity
 import Async
-import SwiftyBeaver
 import SwiftDate
 import MCCircadianQueries
 
@@ -65,7 +64,7 @@ public class IOSHealthManager: NSObject, WCSessionDelegate {
             */
             try WCSession.defaultSession().updateApplicationContext(["context": applicationContext])
         } catch {
-            log.error(error)
+            log.error((error as NSError).localizedDescription)
         }
     }
 
@@ -93,14 +92,14 @@ public class IOSHealthManager: NSObject, WCSessionDelegate {
     {
         let onBackgroundStarted = {(success: Bool, nsError: NSError?) -> Void in
             guard success else {
-                log.error(nsError)
+                log.error(nsError!.localizedDescription)
                 return
             }
 
             let obsQuery = HKObserverQuery(sampleType: type, predicate: nil) {
                 query, completion, obsError in
                 guard obsError == nil else {
-                    log.error(obsError)
+                    log.error(obsError!.localizedDescription)
                     return
                 }
 
@@ -113,10 +112,10 @@ public class IOSHealthManager: NSObject, WCSessionDelegate {
                     let (needsOldestSamples, anchor, predicate) = getAnchorCallback(type)
                     if needsOldestSamples {
                         Async.background(after: 0.5) {
-                            log.verbose("Registering bulk ingestion availability for: \(tname)")
+                            log.debug("Registering bulk ingestion availability for: \(tname)", feature: "registerObservers")
                             MCHealthManager.sharedManager.getOldestSampleDateForType(type) { date in
                                 if let minDate = date {
-                                    log.info("Lower bound date for \(type.displayText ?? type.identifier): \(minDate)")
+                                    log.debug("Lower bound date for \(type.displayText ?? type.identifier): \(minDate)", feature: "registerObservers")
                                     UserManager.sharedManager.setHistoricalRangeMinForType(type, min: minDate, sync: true)
                                 }
                             }
@@ -127,7 +126,7 @@ public class IOSHealthManager: NSObject, WCSessionDelegate {
                         (added, deleted, newAnchor, error) -> Void in
 
                         if added.count > 0 || deleted.count > 0 {
-                            MCHealthManager.sharedManager.invalidateCacheForUpdates(type, added: asCircadian ? added : nil)
+                            MCHealthManager.sharedManager.invalidateCacheForUpdates(type, added: (asCircadian ? added : nil))
                         }
 
                         // Data-driven notifications.
@@ -148,7 +147,7 @@ public class IOSHealthManager: NSObject, WCSessionDelegate {
 
     public func stopAllBackgroundObservers(completion: (Bool, NSError?) -> Void) {
         MCHealthManager.sharedManager.healthKitStore.disableAllBackgroundDeliveryWithCompletion { (success, error) in
-            if !(success && error == nil) { log.error(error) }
+            if !(success && error == nil) { log.error(error!.localizedDescription) }
             else {
                 self.observerQueries.forEach { MCHealthManager.sharedManager.healthKitStore.stopQuery($0) }
                 self.observerQueries.removeAll()
@@ -161,7 +160,7 @@ public class IOSHealthManager: NSObject, WCSessionDelegate {
     // MARK: - Chart data access
 
     public func collectDataForCharts() {
-        log.verbose("Clearing HMAggregateCache expired objects")
+        log.debug("Clearing HMAggregateCache expired objects", feature: "clearCache")
         MCHealthManager.sharedManager.aggregateCache.removeExpiredObjects()
         MCHealthManager.sharedManager.circadianCache.removeExpiredObjects()
 
@@ -179,13 +178,13 @@ public class IOSHealthManager: NSObject, WCSessionDelegate {
             let keyPrefix = type
 
             for period in periods {
-                log.verbose("Collecting chart data for \(keyPrefix) \(period)")
+                log.debug("Collecting chart data for \(keyPrefix) \(period)", feature: "fetchCharts")
 
                 dispatch_group_enter(group)
                 // We should get max and min values. because for this type we are using scatter chart
                 if type == HKQuantityTypeIdentifierHeartRate || type == HKQuantityTypeIdentifierUVExposure {
                     MCHealthManager.sharedManager.getMinMaxOfTypeForPeriod(keyPrefix, sampleType: sampleType, period: period) {
-                        if $2 != nil { log.error($2) }
+                        if $2 != nil { log.error($2!.localizedDescription) }
                         dispatch_group_leave(group)
                     }
                 } else if type == HKQuantityTypeIdentifierBloodPressureSystolic {
@@ -195,14 +194,14 @@ public class IOSHealthManager: NSObject, WCSessionDelegate {
 
                     dispatch_group_enter(bloodPressureGroup)
                     MCHealthManager.sharedManager.getMinMaxOfTypeForPeriod(keyPrefix, sampleType: HKObjectType.quantityTypeForIdentifier(type)!, period: period) {
-                        if $2 != nil { log.error($2) }
+                        if $2 != nil { log.error($2!.localizedDescription) }
                         dispatch_group_leave(bloodPressureGroup)
                     }
 
                     let diastolicType = HKQuantityTypeIdentifierBloodPressureDiastolic
                     dispatch_group_enter(bloodPressureGroup)
                     MCHealthManager.sharedManager.getMinMaxOfTypeForPeriod(diastolicKeyPrefix, sampleType: HKObjectType.quantityTypeForIdentifier(diastolicType)!, period: period) {
-                        if $2 != nil { log.error($2) }
+                        if $2 != nil { log.error($2!.localizedDescription) }
                         dispatch_group_leave(bloodPressureGroup)
                     }
 
@@ -212,7 +211,7 @@ public class IOSHealthManager: NSObject, WCSessionDelegate {
 
                 } else {
                     MCHealthManager.sharedManager.getDailyStatisticsOfTypeForPeriod(keyPrefix, sampleType: sampleType, period: period, aggOp: .DiscreteAverage) {
-                        if $1 != nil { log.error($1) }
+                        if $1 != nil { log.error($1!.localizedDescription) }
                         dispatch_group_leave(group) //leave main group
                     }
                 }
@@ -253,9 +252,9 @@ public class IOSHealthManager: NSObject, WCSessionDelegate {
         }
 
         if let aggArray = MCHealthManager.sharedManager.aggregateCache[key] {
-            log.verbose("Cache hit for \(key) (size \(aggArray.aggregates.count))")
+            log.debug("Cache hit for \(key) (size \(aggArray.aggregates.count))", feature: "fetchCharts")
         } else {
-            log.verbose("Cache miss for \(key)")
+            log.debug("Cache miss for \(key)", feature: "fetchCharts")
         }
 
         if asMinMax {
@@ -266,13 +265,13 @@ public class IOSHealthManager: NSObject, WCSessionDelegate {
 
                 dispatch_group_enter(bloodPressureGroup)
                 MCHealthManager.sharedManager.getMinMaxOfTypeForPeriod(keyPrefix, sampleType: HKObjectType.quantityTypeForIdentifier(type)!, period: period) {
-                    if $2 != nil { log.error($2) }
+                    if $2 != nil { log.error($2!.localizedDescription) }
                     dispatch_group_leave(bloodPressureGroup)
                 }
 
                 dispatch_group_enter(bloodPressureGroup)
                 MCHealthManager.sharedManager.getMinMaxOfTypeForPeriod(diastolicKeyPrefix, sampleType: HKObjectType.quantityTypeForIdentifier(diastolicType)!, period: period) {
-                    if $2 != nil { log.error($2) }
+                    if $2 != nil { log.error($2!.localizedDescription) }
                     dispatch_group_leave(bloodPressureGroup)
                 }
 
@@ -320,7 +319,7 @@ public class IOSHealthManager: NSObject, WCSessionDelegate {
     
     //MARK: Working with cache
     public func cleanCache() {
-        log.verbose("Clearing HMAggregateCache")
+        log.debug("Clearing HMAggregateCache", feature: "clearCache")
         MCHealthManager.sharedManager.aggregateCache.removeAllObjects()
     }
 }

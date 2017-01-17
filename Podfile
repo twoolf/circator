@@ -19,6 +19,7 @@ def shared_pods
     pod 'HTPressableButton'
     pod 'JWTDecode', '~> 1.1.0'
     pod 'Locksmith', '~> 2.0.8'
+    pod 'LogKit', '~> 2.3'
     pod 'MCCircadianQueries', :git => 'https://github.com/twoolf/MCCircadianQueries.git'
     pod 'MGSwipeTableCell', '~> 1.5.5'
     pod 'Navajo-Swift', '~> 0.0.6'

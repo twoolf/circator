@@ -51,8 +51,7 @@ class DashboardComparisonController: UIViewController, UITableViewDelegate, UITa
     override func viewWillAppear(animated: Bool) {
         super.viewWillAppear(animated)
 
-        self.startActivityIndicator()
-        AccountManager.shared.contentManager.initializeBackgroundWork()
+        self.updateContent()
 
         self.tableView.reloadData()
         NSNotificationCenter.defaultCenter().addObserver(self, selector: #selector(contentDidUpdate), name: HMDidUpdateRecentSamplesNotification, object: nil)
@@ -93,7 +92,7 @@ class DashboardComparisonController: UIViewController, UITableViewDelegate, UITa
 
     func updateContent() {
         self.startActivityIndicator()
-        AccountManager.shared.contentManager.resetBackgroundWork()
+        AccountManager.shared.contentManager.initializeBackgroundWork()
     }
 
     //MARK: UITableViewDataSource

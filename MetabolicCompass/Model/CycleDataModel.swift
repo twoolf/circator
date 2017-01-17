@@ -11,7 +11,12 @@ import HealthKit
 import MCCircadianQueries
 import MetabolicCompassKit
 import Charts
+import AwesomeCache
 import SwiftDate
+
+private let WCActivityKey = "Circ"
+private let WCHeartRateKey = HKQuantityTypeIdentifierHeartRate
+private let WCStepCountKey = "HKQuantityTypeIdentifierStepCount"
 
 // Accumulator:
 // i. boolean indicating whether the current endpoint starts an interval.
@@ -19,6 +24,47 @@ import SwiftDate
 // iii. a disjoint window dictionary of the max count, the total AUC and the number of level changes.
 public typealias CycleWindows = [NSDate: [(Int, Double, Int)]]
 public typealias CycleAccum = (Bool, NSDate!, CycleWindows)
+
+class CycleWindowInfo : NSObject, NSCoding {
+    static var winValuesKey  = "winValues"
+    static var winMetaPKey   = "winMetaP"
+    static var winMetaVKey   = "winMetaV"
+    static var winColorsKey  = "winColors"
+
+    internal var winEntries: [Double] = []
+    internal var winMetadata: [AnyObject?] = []
+    internal var winColors: [NSUIColor] = []
+
+    init(entries: [Double], metadata: [AnyObject?], colors: [NSUIColor]) {
+        self.winEntries = entries
+        self.winMetadata = metadata
+        self.winColors = colors
+    }
+
+    required internal convenience init?(coder aDecoder: NSCoder) {
+        guard let entries = aDecoder.decodeObjectForKey(CycleWindowInfo.winValuesKey) as? [Double] else { return nil }
+        guard let colors = aDecoder.decodeObjectForKey(CycleWindowInfo.winColorsKey) as? [NSUIColor] else { return nil }
+        guard let mpos = aDecoder.decodeObjectForKey(CycleWindowInfo.winMetaPKey) as? [Bool] else { return nil }
+        guard let mval = aDecoder.decodeObjectForKey(CycleWindowInfo.winMetaVKey) as? [AnyObject] else { return nil }
+
+        var i: Int = 0
+        let metadata: [AnyObject?] = mpos.map { if $0 { return nil } else { i += 1; return mval[i-1] } }
+
+        self.init(entries: entries, metadata: metadata, colors: colors)
+    }
+
+    internal func encodeWithCoder(aCoder: NSCoder) {
+        let mpos : [Bool] = winMetadata.map { $0 == nil }
+        let mval : [AnyObject] = winMetadata.flatMap { $0 }
+
+        aCoder.encodeObject(winEntries, forKey: CycleWindowInfo.winValuesKey)
+        aCoder.encodeObject(winColors, forKey: CycleWindowInfo.winColorsKey)
+        aCoder.encodeObject(mpos, forKey: CycleWindowInfo.winMetaPKey)
+        aCoder.encodeObject(mval, forKey: CycleWindowInfo.winMetaVKey)
+    }
+}
+
+typealias MCCycleWindowCache = Cache<CycleWindowInfo>
 
 public class CycleDataModel : NSObject {
 
@@ -32,6 +78,20 @@ public class CycleDataModel : NSObject {
     public var measureColors: [HKSampleType: [NSUIColor]] = [:]
 
     public var segmentIndex = 0
+
+    var cachedWindows: MCCycleWindowCache
+    let cacheDuration: Double = 300.0
+
+    override init() {
+        do {
+            self.cachedWindows = try MCCycleWindowCache(name: "MCCycleWindowCache")
+        } catch _ {
+            fatalError("Unable to create CycleDataModel window cache.")
+        }
+        super.init()
+        NSNotificationCenter.defaultCenter().addObserver(self, selector: #selector(invalidateActivityEntries), name: HMDidUpdateCircadianEvents, object: nil)
+        NSNotificationCenter.defaultCenter().addObserver(self, selector: #selector(invalidateMeasureEntries), name: HMDidUpdateMeasures, object: nil)
+    }
 
     public func updateData(completion: NSError? -> Void) {
         let end = NSDate().endOf(.Day)
@@ -93,58 +153,80 @@ public class CycleDataModel : NSObject {
             return (!startOfInterval, e.0, windows)
         }
 
+        // Retrieve activity entries from the cache.
         dispatch_group_enter(group)
-        MCHealthManager.sharedManager.fetchAggregatedCircadianEvents(
-            start, endDate: end, aggregator: activityAggregator, initialAccum: initAcc, initialResult: [:], final: finalizer)
-        {
-            (result, error) in
-            guard error == nil else {
-                log.error(error)
-                someError.append(error)
-                dispatch_group_leave(group)
-                return
+        cachedWindows.setObjectForKey(WCActivityKey, cacheBlock: {
+            (success, failure) in
+            MCHealthManager.sharedManager.fetchAggregatedCircadianEvents(
+                start, endDate: end, aggregator: activityAggregator, initialAccum: initAcc, initialResult: [:], final: finalizer)
+            {
+                (result, error) in
+                guard error == nil else {
+                    failure(error)
+                    return
+                }
+                let (winEntries, winMeta, winColors) = self.getChartActivityEntries(start, endDate: end, windows: result)
+                success(CycleWindowInfo(entries: winEntries, metadata: winMeta, colors: winColors), .Seconds(self.cacheDuration))
             }
-            
-            self.refreshChartActivityEntries(start, endDate: end, windows: result)
-            dispatch_group_leave(group)
-        }
+            }, completion: { (cachedVal, cacheHit, error) in
+                guard error == nil else {
+                    log.error(error!.localizedDescription)
+                    someError.append(error)
+                    dispatch_group_leave(group)
+                    return
+                }
+                if let windows = cachedVal {
+                    self.cycleSegments = zip(windows.winEntries, windows.winMetadata).enumerate().map {
+                        let entry = ChartDataEntry(value: $0.1.0, xIndex: $0.0, data: $0.1.1)
+                        return (start + ($0.0 * self.cycleWindowSize).seconds, entry)
+                    }
+                    self.cycleColors = windows.winColors
+                }
+                dispatch_group_leave(group)
+        })
+
+        // Retrieve measure entries from the cache.
+        let hrType = HKSampleType.quantityTypeForIdentifier(HKQuantityTypeIdentifierHeartRate)!
+        let scType = HKSampleType.quantityTypeForIdentifier(HKQuantityTypeIdentifierStepCount)!
 
         let predicate = HKQuery.predicateForSamplesWithStartDate(start, endDate: end, options: .None)
         let interval = NSDateComponents()
         interval.minute = 15
 
-        dispatch_group_enter(group)
-        let hrType = HKSampleType.quantityTypeForIdentifier(HKQuantityTypeIdentifierHeartRate)!
-        let hrQuery = HKStatisticsCollectionQuery(quantityType: hrType, quantitySamplePredicate: predicate, options: .DiscreteAverage, anchorDate: start, intervalComponents: interval)
+        let measureQueries : [(HKQuantityType, HKStatisticsOptions, String)] = [(hrType, .DiscreteAverage, WCHeartRateKey), (scType, .CumulativeSum, WCStepCountKey)]
 
-        hrQuery.initialResultsHandler = { query, results, error in
-            guard error == nil else {
-                log.error(error)
-                someError.append(error)
-                dispatch_group_leave(group)
-                return
-            }
-            self.refreshChartMeasureEntries(start, endDate: end, sampleType: hrType, statistics: results?.statistics() ?? [])
-            dispatch_group_leave(group)
+        measureQueries.forEach { (sampleType, aggOp, cacheKey) in
+            dispatch_group_enter(group)
+
+            cachedWindows.setObjectForKey(cacheKey, cacheBlock: { (success, failure) in
+                let query = HKStatisticsCollectionQuery(quantityType: sampleType, quantitySamplePredicate: predicate, options: aggOp, anchorDate: start, intervalComponents: interval)
+
+                query.initialResultsHandler = { query, results, error in
+                    guard error == nil else {
+                        failure(error)
+                        return
+                    }
+                    let (winEntries, winMeta, winColors) = self.getChartMeasureEntries(start, endDate: end, sampleType: sampleType, statistics: results?.statistics() ?? [])
+                    success(CycleWindowInfo(entries: winEntries, metadata: winMeta, colors: winColors), .Seconds(self.cacheDuration))
+                }
+                MCHealthManager.sharedManager.healthKitStore.executeQuery(query)
+                }, completion: { (cachedVal, cacheHit, error) in
+                    guard error == nil else {
+                        log.error(error!.localizedDescription)
+                        someError.append(error)
+                        dispatch_group_leave(group)
+                        return
+                    }
+                    if let windows = cachedVal {
+                        self.measureSegments[sampleType] = zip(windows.winEntries, windows.winMetadata).enumerate().map {
+                            let entry = ChartDataEntry(value: $0.1.0, xIndex: $0.0, data: $0.1.1)
+                            return (start + ($0.0 * self.cycleWindowSize).seconds, entry)
+                        }
+                        self.measureColors[sampleType] = windows.winColors
+                    }
+                    dispatch_group_leave(group)
+            })
         }
-        MCHealthManager.sharedManager.healthKitStore.executeQuery(hrQuery)
-
-        dispatch_group_enter(group)
-        let scType = HKSampleType.quantityTypeForIdentifier(HKQuantityTypeIdentifierStepCount)!
-        let scQuery = HKStatisticsCollectionQuery(quantityType: scType, quantitySamplePredicate: predicate, options: .CumulativeSum, anchorDate: start, intervalComponents: interval)
-
-        scQuery.initialResultsHandler = { query, results, error in
-            guard error == nil else {
-                log.error(error)
-                someError.append(error)
-                dispatch_group_leave(group)
-                return
-            }
-            self.refreshChartMeasureEntries(start, endDate: end, sampleType: scType, statistics: results?.statistics() ?? [])
-            dispatch_group_leave(group)
-        }
-        MCHealthManager.sharedManager.healthKitStore.executeQuery(scQuery)
-        
 
         dispatch_group_notify(group, dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_BACKGROUND, 0)) {
             guard someError.count == 0 else {
@@ -153,11 +235,10 @@ public class CycleDataModel : NSObject {
             }
             completion(nil)
         }
-
     }
 
     // Create colors by composing each event type color component, normalized to window length * max count
-    func refreshChartActivityEntries(startDate: NSDate, endDate: NSDate, windows: CycleWindows) {
+    func getChartActivityEntries(startDate: NSDate, endDate: NSDate, windows: CycleWindows) -> ([Double], [AnyObject?], [NSUIColor]) {
         let secsPerDay = Double(24 * 60 * 60)
         let maxCounts = windows.reduce([1, 1, 1], combine: { acc in acc.0.enumerate().map { max($0.1, acc.1.1[$0.0].2) } }).map { CGFloat($0) }
 
@@ -165,8 +246,9 @@ public class CycleDataModel : NSObject {
         var t = startDate
         let end = startDate + 24.hours
 
-        cycleSegments = []
-        cycleColors = []
+        var resultEntries : [Double] = []
+        var resultMeta : [AnyObject?] = []
+        var resultColors : [NSUIColor] = []
 
         let colorComponents: UIColor -> [CGFloat] = { color in
             var red : CGFloat = 0.0
@@ -208,22 +290,24 @@ public class CycleDataModel : NSObject {
                 let b = scaleColors.reduce(0.0, combine: { max($0, $1.0 * $1.1[2]) })
 
                 let wColor = NSUIColor(red: r, green: g, blue: b, alpha: 1.0)
-                cycleColors.append(wColor)
+                resultColors.append(wColor)
 
                 entryData = [cb, cr, cg]
 
             } else {
-                cycleColors.append(MetabolicDailyProgressChartView.fastingColor)
+                resultColors.append(MetabolicDailyProgressChartView.fastingColor)
             }
 
-            cycleSegments.append((t, ChartDataEntry(value: Double(self.cycleWindowSize) / secsPerDay, xIndex: i, data: entryData)))
+            resultEntries.append(Double(self.cycleWindowSize) / secsPerDay)
+            resultMeta.append(entryData)
 
             i += 1
             t = t + self.cycleWindowSize.seconds
         }
+        return (resultEntries, resultMeta, resultColors)
     }
 
-    func refreshChartMeasureEntries(startDate: NSDate, endDate: NSDate, sampleType: HKSampleType, statistics: [HKStatistics]) {
+    func getChartMeasureEntries(startDate: NSDate, endDate: NSDate, sampleType: HKSampleType, statistics: [HKStatistics]) -> ([Double], [AnyObject?], [NSUIColor]) {
         let secsPerDay = Double(24 * 60 * 60)
         var windows: [NSDate: Double] = [:]
         var minMeasure: Double = 1000.0
@@ -254,8 +338,9 @@ public class CycleDataModel : NSObject {
         var t = startDate
         let end = startDate + 24.hours
 
-        measureSegments[sampleType] = []
-        measureColors[sampleType] = []
+        var resultEntries : [Double] = []
+        var resultMeta : [AnyObject?] = []
+        var resultColors : [NSUIColor] = []
 
         while t < end {
             var entryData: Double? = nil
@@ -265,16 +350,18 @@ public class CycleDataModel : NSObject {
                 entryData = windowAcc
 
                 let wColor = typeColor(sampleType)
-                measureColors[sampleType]!.append(wColor.colorWithAlphaComponent(alpha))
+                resultColors.append(wColor.colorWithAlphaComponent(alpha))
             } else {
-                measureColors[sampleType]!.append(MetabolicDailyProgressChartView.fastingColor)
+                resultColors.append(MetabolicDailyProgressChartView.fastingColor)
             }
 
-            measureSegments[sampleType]!.append((t, ChartDataEntry(value: Double(self.cycleWindowSize) / secsPerDay, xIndex: i, data: entryData)))
+            resultEntries.append(Double(self.cycleWindowSize) / secsPerDay)
+            resultMeta.append(entryData)
             
             i += 1
             t = t + self.cycleWindowSize.seconds
         }
+        return (resultEntries, resultMeta, resultColors)
     }
 
     func typeColor(sampleType: HKSampleType) -> UIColor {
@@ -292,6 +379,20 @@ public class CycleDataModel : NSObject {
 
         default:
             return MetabolicDailyProgressChartView.exerciseColor
+        }
+    }
+
+    // MARK :- cache invalidation
+
+    func invalidateActivityEntries(note: NSNotification) {
+        log.info("Invalidating cycle window cache for circadian activities")
+        cachedWindows.removeObjectForKey(WCActivityKey)
+    }
+
+    func invalidateMeasureEntries(note: NSNotification) {
+        if let info = note.userInfo, sampleTypeId = info["type"] as? String {
+            log.info("Invalidating cycle window cache for \(sampleTypeId)")
+            cachedWindows.removeObjectForKey(sampleTypeId)
         }
     }
 }

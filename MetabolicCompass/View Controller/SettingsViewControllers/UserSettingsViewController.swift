@@ -9,6 +9,7 @@
 import Foundation
 import UIKit
 import MetabolicCompassKit
+import Async
 import Former
 import SwiftDate
 import SwiftyUserDefaults
@@ -47,6 +48,8 @@ class UserSettingsViewController: BaseViewController {
     var reminderInput: InlinePickerRowFormer<FormInlinePickerCell, Int>! = nil
     var blackoutStartInput: InlineDatePickerRowFormer<FormInlineDatePickerCell>! = nil
     var blackoutEndInput: InlineDatePickerRowFormer<FormInlineDatePickerCell>! = nil
+    var remoteLogSwitchRow: SwitchRowFormer<FormSwitchCell>! = nil
+    var remoteLogConfigLabel: LabelRowFormer<FormLabelCell>! = nil
 
     override func viewWillAppear(animated: Bool) {
         super.viewWillAppear(animated)
@@ -289,12 +292,39 @@ class UserSettingsViewController: BaseViewController {
         var notificationsRows: [RowFormer] = [reminderRow]
         blackoutTimesRows.forEach { notificationsRows.append($0) }
 
-        let headers = ["Application", "Notifications"].map { sectionName in
+        let headers = ["Application", "Notifications", "Debug"].map { sectionName in
             return LabelViewFormer<FormLabelHeaderView> {
                 $0.contentView.backgroundColor = .clearColor()
                 $0.titleLabel.backgroundColor = .clearColor()
                 $0.titleLabel.textColor = .lightGrayColor()
                 $0.titleLabel.font = UIFont(name: "GothamBook", size: userSettingsHeaderFontSize)!
+
+                if sectionName == "Debug" {
+                    let button: MCButton = {
+                        let button = MCButton(frame: CGRectMake(0, 0, 66, 66), buttonStyle: .Rounded)
+                        button.buttonColor = .clearColor()
+                        button.shadowColor = .clearColor()
+                        button.shadowHeight = 0
+                        button.setImage(UIImage(named: "icon-debug-refresh"), forState: .Normal)
+                        button.imageView?.contentMode = .ScaleAspectFit
+                        button.addTarget(self, action: #selector(self.refreshRemoteLogConfig(_:)), forControlEvents: .TouchUpInside)
+                        return button
+                    }()
+
+                    button.translatesAutoresizingMaskIntoConstraints = false
+                    $0.contentView.addSubview(button)
+
+                    let buttonConstraints : [NSLayoutConstraint] = [
+                        $0.contentView.topAnchor.constraintEqualToAnchor(button.topAnchor),
+                        $0.contentView.bottomAnchor.constraintEqualToAnchor(button.bottomAnchor),
+                        $0.contentView.trailingAnchor.constraintEqualToAnchor(button.trailingAnchor, constant: 10),
+                        button.widthAnchor.constraintEqualToConstant(66),
+                        button.heightAnchor.constraintEqualToConstant(66),
+                        $0.titleLabel.heightAnchor.constraintEqualToAnchor(button.heightAnchor)
+                    ]
+                    
+                    $0.contentView.addConstraints(buttonConstraints)
+                }
 
                 }.configure { view in
                     view.viewHeight = 66
@@ -302,9 +332,70 @@ class UserSettingsViewController: BaseViewController {
             }
         }
 
+        remoteLogSwitchRow = SwitchRowFormer<FormSwitchCell>() {
+            $0.backgroundColor = .clearColor()
+            $0.titleLabel.text = "Remote Logging"
+            $0.titleLabel.textColor = .whiteColor()
+            $0.titleLabel.font = UIFont(name: "GothamBook", size: userSettingsFontSize)!
+            }.configure {
+                $0.switched = RemoteLogManager.sharedManager.log.remote()
+            }.onSwitchChanged { switched in ()
+                if switched { self.remoteLogAction(switched) }
+                else { RemoteLogManager.sharedManager.log.setRemote(switched) }
+        }
+
+        remoteLogConfigLabel = LabelRowFormer<FormLabelCell>() {
+            $0.backgroundColor = .clearColor()
+            $0.titleLabel.textColor = .whiteColor()
+            $0.titleLabel.font = UIFont(name: "GothamBook", size: userSettingsFontSize)!
+            $0.subTextLabel.textColor = .lightGrayColor()
+            $0.subTextLabel.font = UIFont(name: "GothamBook", size: userSettingsFontSize)!
+            }.configure { form in
+                form.text = "Log configuration"
+                form.subText = RemoteLogManager.sharedManager.log.configName
+        }
+
+        let debugRows: [RowFormer] = [remoteLogSwitchRow, remoteLogConfigLabel]
+
         let appSection = SectionFormer(rowFormers: appRows).set(headerViewFormer: headers[0])
         let notificationsSection = SectionFormer(rowFormers: notificationsRows).set(headerViewFormer: headers[1])
-        former.append(sectionFormer: appSection, notificationsSection)
+        let debugSection = SectionFormer(rowFormers: debugRows).set(headerViewFormer: headers[2])
+        former.append(sectionFormer: appSection, notificationsSection, debugSection)
+    }
 
+    func remoteLogAction(activate: Bool) {
+        let alertController = UIAlertController(title: nil, message: "Remote logging can use lots of data, we recommend you connect over WIFI first. Do you want to proceed?", preferredStyle: .Alert)
+
+        let proceedAction = UIAlertAction(title: "Yes", style: .Default) {
+            (alertAction: UIAlertAction!) in
+            RemoteLogManager.sharedManager.log.setRemote(activate)
+        }
+
+        let cancelAction = UIAlertAction(title: "No", style: .Cancel) {
+            (alertAction: UIAlertAction!) in
+            self.remoteLogSwitchRow.cell.formSwitch().setOn(false, animated: true)
+        }
+
+        alertController.addAction(proceedAction)
+        alertController.addAction(cancelAction)
+        self.presentViewController(alertController, animated: true, completion: nil)
+    }
+
+    func refreshRemoteLogConfig(sender: UIButton) {
+        if RemoteLogManager.sharedManager.log.remote() {
+            log.info("RemoteLogManager reconfiguring...")
+            RemoteLogManager.sharedManager.reconfigure { success in
+                log.info("RemoteLogManager reconfiguration \(success ? "successful" : "failed")!")
+                Async.main(after: 0.2) {
+                    log.info("RemoteLogManager config name \(RemoteLogManager.sharedManager.log.configName)")
+                    self.remoteLogConfigLabel.cellUpdate {
+                        $0.subTextLabel.text = RemoteLogManager.sharedManager.log.configName
+                        $0.subTextLabel.setNeedsDisplay()
+                    }
+                }
+            }
+        } else {
+            log.info("Skipping RemoteLogManager configuration refresh (not in remote mode)")
+        }
     }
 }

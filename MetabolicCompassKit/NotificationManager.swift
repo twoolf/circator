@@ -60,9 +60,9 @@ public func defaultNotificationBlackoutTimes() -> [NSDate] {
     return [today + 22.hours - 1.days, today + 6.hours]
 }
 
-// Default reminder frequency in hours.
+// Default reminder frequency in minutes.
 public func defaultNotificationReminderFrequency() -> Int {
-    return 24
+    return 1440
 }
 
 public func getNotificationReminderFrequency() -> Int {
@@ -239,13 +239,14 @@ public class NotificationManager {
             Defaults.synchronize()
         }
 
-        /*
-        log.info("NTMGR INIT sstart \(streakStarts)")
-        log.info("NTMGR INIT send \(streakEnds)")
-        log.info("NTMGR INIT sstate mfw \(streakState[.Fasting]!.dailyMFW)")
-        log.info("NTMGR INIT sstate dn \(streakState[.Fasting]!.daysNotified)")
-        log.info("NTMGR INIT smax \(streakMax)")
-        */
+        log.debug([
+            "sstart \(streakStarts)",
+            "send \(streakEnds)",
+            "sstate mfw \(streakState[.Fasting]!.dailyMFW)",
+            "sstate dn \(streakState[.Fasting]!.daysNotified)",
+            "smax \(streakMax)"
+            ].componentsJoinedByString("\n"), feature: "initManager")
+
     }
 
     public func reset() {
@@ -319,7 +320,7 @@ public class NotificationManager {
         // Maintain fasting streak.
         switch event {
         case .Meal(_):
-            //log.info("NTMGR FSTREAK1 \(startDate) \(streakEnds[.Fasting])")
+            log.debug("B1(a) \(startDate) \(streakEnds[.Fasting])", feature: "FStreak")
 
             if let fstStart = streakStarts[.Fasting],
                     fstEnd = streakEnds[.Fasting],
@@ -328,7 +329,7 @@ public class NotificationManager {
             {
                 let eventDayNotified = fstState.daysNotified[startDate.startOf(.Day)] ?? false
 
-                //log.info("NTMGR FSTREAK1 evdn \(eventDayNotified)")
+                log.debug("B1(b) evdn \(eventDayNotified)", feature: "FStreak")
 
                 if !eventDayNotified {
                     incrFastingStreak(startDate, endDate: endDate, streakStart: fstStart, streakEnd: fstEnd, fastingState: fstState, finalize: false)
@@ -339,7 +340,7 @@ public class NotificationManager {
             break
         }
 
-        //log.info("NTMGR FSTREAK2 \(startDate) \(streakEnds[.Fasting])")
+        log.debug("B2(a) \(startDate) \(streakEnds[.Fasting])", feature: "FCStreak")
 
         if let fstStart = streakStarts[.Fasting],
             fstEnd = streakEnds[.Fasting],
@@ -349,7 +350,7 @@ public class NotificationManager {
             let eventDayNotified = fstState.daysNotified[startDate.startOf(.Day)] ?? false
             let streakEndDayNotified = fstState.daysNotified[fstEnd.startOf(.Day)] ?? false
 
-            //log.info("NTMGR FSTREAK2 evsedn \(eventDayNotified) \(streakEndDayNotified)")
+            log.debug("B2(b) evsedn \(eventDayNotified) \(streakEndDayNotified)", feature: "FStreak")
 
             if !eventDayNotified && !streakEndDayNotified {
                 incrFastingStreak(startDate, endDate: endDate, streakStart: fstStart, streakEnd: fstEnd, fastingState: fstState, finalize: true)
@@ -373,8 +374,8 @@ public class NotificationManager {
         let rmaxFasting = max(fastingState.dailyMFW[eventDay] ?? 0.0, fastingLength)
         fastingState.dailyMFW[eventDay] = rmaxFasting
 
-        //log.info("NTMGR INCR \(finalize) FSTREAK \(eventDay) \(fastingLength) \(rmaxFasting) \(fastingThreshold)")
-        //log.info("NTMGR INCR \(finalize) FSTREAK \(eventDay.isInSameDayAsDate(streakEnd)) \(self.isDayAfter(streakEnd, b: startDate))")
+        log.debug("FIncr \(finalize) \(eventDay) \(fastingLength) \(rmaxFasting) \(fastingThreshold)", feature: "FStreak")
+        log.debug("FIncr \(finalize) \(eventDay.isInSameDayAsDate(streakEnd)) \(self.isDayAfter(streakEnd, b: startDate))", feature: "FStreak")
 
         if rmaxFasting > fastingThreshold {
             if eventDay.isInSameDayAsDate(streakEnd) || self.isDayAfter(streakEnd, b: startDate) {
@@ -402,7 +403,7 @@ public class NotificationManager {
     }
 
     func incrContributionStreak(startDate: NSDate, endDate: NSDate) {
-        //log.info("NTMGR CSTREAK \(startDate) \(streakEnds[.Contribution]) \(self.isDayAfter(streakEnds[.Contribution]!, b: startDate))")
+        log.debug("CIncr \(startDate) \(streakEnds[.Contribution]) \(self.isDayAfter(streakEnds[.Contribution]!, b: startDate))", feature: "CStreak")
 
         if let cstStart = streakStarts[.Contribution], cstEnd = streakEnds[.Contribution] where startDate >= cstEnd {
             if self.isDayAfter(cstEnd, b: startDate) {
@@ -488,7 +489,7 @@ public class NotificationManager {
         }
 
         let notificationId = streakType == .Fasting ? "FStreak" : "CStreak"
-        //log.info("NTMGR NOTIFY \(notificationId) \(notifyType) \(streakLength) \(rankIndex) \(buckets.indexOf { $0.0 >= streakLength }) \(msg)")
+        log.debug("Notify \(notificationId) \(notifyType) \(streakLength) \(rankIndex) \(buckets.indexOf { $0.0 >= streakLength }) \(msg)", feature: notificationId)
 
         enqueueNotification(notificationId, messages: [msg], immediate: true)
     }
@@ -526,10 +527,10 @@ public class NotificationManager {
         }
 
         if fire != nil {
-            //log.info("NTMGR presented local notification for \(notification.fireDate?.toString())")
+            log.debug("L-notify for \(notification.fireDate?.toString())", feature: "execNotify")
             UIApplication.sharedApplication().scheduleLocalNotification(notification)
         } else {
-            log.warning("NTMGR could not fire immediate notification during blackout period: \(body)")
+            log.warning("Skip immediate notification during blackout period: \(body)", feature: "execNotify")
         }
     }
 
@@ -549,13 +550,13 @@ public class NotificationManager {
         if let nGroup = notificationGroups[notificationId] {
             nGroup.forEach { notification in
                 UIApplication.sharedApplication().cancelLocalNotification(notification)
-                //log.info("NTMGR Cancelled local notification for \(notification.fireDate?.toString()) repeating \(notification.repeatInterval)")
+                log.info("Cancelled l-notify for \(notification.fireDate?.toString()) repeating \(notification.repeatInterval)", feature: "cancel:execNotify")
             }
             notificationGroups[notificationId] = []
         }
 
         // For debugging.
-        //logCurrentNotifications("1")
+        logCurrentNotifications("state:execNotify")
 
         let frequencyInHours = frequencyInMinutes / 60
 
@@ -609,13 +610,13 @@ public class NotificationManager {
                 }
 
                 UIApplication.sharedApplication().scheduleLocalNotification(notification)
-                //log.info("NTMGR Scheduled local notification for \(notification.fireDate?.toString()) repeating \(repeatUnit)")
+                log.debug("Scheduled l-notify for \(notification.fireDate?.toString()) repeating \(repeatUnit)", feature: "execNotify")
             }
             noteDate = noteDate + dateStep
         }
 
         // For debugging.
-        //logCurrentNotifications("2")
+        logCurrentNotifications("state:execNotify")
     }
 
     func enqueueNotification(notificationId: String, messages: [String], action: String? = nil, immediate: Bool = false) {
@@ -629,21 +630,21 @@ public class NotificationManager {
                     if frequencyInMinutes > 0 {
                         repeatedNotification(notificationId, frequencyInMinutes: frequencyInMinutes, messages: messages, action: action)
                     } else {
-                        log.info("NTMGR Skipping notification, user requested silence")
+                        log.debug("Skipping notification, user requested silence", feature: "execNotify")
                     }
                 }
             } else {
-                log.warning("NTMGR User has disabled notifications")
+                log.warning("User has disabled notifications", feature: "execNotify")
             }
         } else {
-            log.error("NTMGR Unable to retrieve notifications settings.")
+            log.error("Unable to retrieve notifications settings.", feature: "execNotify")
         }
     }
 
-    func logCurrentNotifications(tag: String) {
+    func logCurrentNotifications(feature: String) {
         if let ns = UIApplication.sharedApplication().scheduledLocalNotifications {
             ns.forEach { n in
-                log.info("NTMGR notify \(tag) \(n.fireDate?.toString() ?? "<none>") repeating \(n.repeatInterval)")
+                log.debug("CL-notify \(n.fireDate?.toString() ?? "<none>") repeating \(n.repeatInterval)", feature: feature)
             }
         }
     }
