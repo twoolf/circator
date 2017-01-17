@@ -120,7 +120,7 @@ class LoginViewController: BaseViewController {
 
                     // Explicitly logout on an error to clear the UserManager's userid.
                     // This way the user does not see the dashboard on app relaunch.
-                    log.info(res)
+                    log.info(res.info)
                     UserManager.sharedManager.logout()
                     return
                 }

@@ -244,7 +244,7 @@ class DialViewController : UIViewController, ChartViewDelegate {
     func refreshData() {
         AnalysisDataModel.sharedInstance.cycleModel.updateData { error in
             guard error == nil else {
-                log.error(error)
+                log.error(error!.localizedDescription)
                 return
             }
 

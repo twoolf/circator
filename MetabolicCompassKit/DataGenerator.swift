@@ -565,7 +565,7 @@ public class DataGenerator : GeneratorType {
                 samplesSkipped += 1
             }
         } catch {
-            log.error(error)
+            log.error((error as NSError).localizedDescription)
         }
     }
 
@@ -605,7 +605,7 @@ public class DataGenerator : GeneratorType {
                 log.error("Could not write dataset to \(output.path)")
             }
         } catch {
-            log.error(error)
+            log.error((error as NSError).localizedDescription)
         }
     }
 
@@ -766,7 +766,7 @@ public class DataGenerator : GeneratorType {
                 if !block.isEmpty {
                     MCHealthManager.sharedManager.saveSamples(block) {
                         (success, error) -> Void in
-                        guard error == nil else { log.error(error); return }
+                        guard error == nil else { log.error(error!.localizedDescription); return }
                     }
                 } else {
                     log.info("Empty block for covering data generator")

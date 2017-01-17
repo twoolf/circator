@@ -144,8 +144,8 @@ public class UMLogEntry: Object {
         self.delete_uuids.appendContentsOf(deleted.map { return UMSampleUUID(deletion: $0) })
         self.retry_ts = NSDate() + retryPeriodBase.seconds
         self.compoundKey = compoundKeyValue()
-        log.info("Created UMLogEntry")
-        self.logEntry()
+        log.debug("Created UMLogEntry", feature: "entryConstruction")
+        self.logEntry("entryConstruction")
     }
 
     public static func initSequenceNumberForType(realm: Realm!, sampleType: HKSampleType, seqNumber: Int) {
@@ -187,22 +187,26 @@ public class UMLogEntry: Object {
         return "compoundKey"
     }
 
-    public func logEntry() {
-        log.info("id:\(self.id)")
-        log.info("msid:\(self.msid)")
-        log.info("ts:\(self.ts.timeIntervalSince1970)")
-        //log.info("anchor:\(self.anchor.base64EncodedStringWithOptions(NSDataBase64EncodingOptions(rawValue: 0)))")
-        log.info("insert_uuids:\(self.insert_uuids.count)")
-        log.info("delete_uuids:\(self.delete_uuids.count)")
-        //log.info("retry_ts:\(self.retry_ts)")
-        //log.info("retry_count:\(self.retry_count)")
+    public func logEntry(feature: String = "logEntries") {
+        log.debug([
+            "id:\(self.id)",
+            "msid:\(self.msid)",
+            "ts:\(self.ts.timeIntervalSince1970)",
+            //"anchor:\(self.anchor.base64EncodedStringWithOptions(NSDataBase64EncodingOptions(rawValue: 0)))",
+            "insert_uuids:\(self.insert_uuids.count)",
+            "delete_uuids:\(self.delete_uuids.count)",
+            //"retry_ts:\(self.retry_ts)",
+            //"retry_count:\(self.retry_count)",
+        ].componentsJoinedByString("\n"), feature: feature)
     }
 
-    public func logEntryCompact() {
-        log.info("id:\(self.id)")
-        log.info("msid:\(self.msid)")
-        log.info("ts:\(self.ts.timeIntervalSince1970)")
-        log.info("retry_count:\(self.retry_count)")
+    public func logEntryCompact(feature: String = "logEntries") {
+        log.debug([
+            "id:\(self.id)",
+            "msid:\(self.msid)",
+            "ts:\(self.ts.timeIntervalSince1970)",
+            "retry_count:\(self.retry_count)"
+        ].componentsJoinedByString("\n"), feature: feature)
     }
 
 }
@@ -244,7 +248,7 @@ public class UploadManager: NSObject {
     // MARK: - initialize uploads.
 
     public func resetUploadManager() {
-        log.info("Upload Manager state before reset")
+        log.debug("Upload Manager state before reset", feature: "metadata:resetState")
         logMetadata()
 
         let realm = try! Realm()
@@ -253,7 +257,7 @@ public class UploadManager: NSObject {
             let seqs = UserManager.sharedManager.getAcquisitionSeq()
 
             if seqs.isEmpty {
-                log.warning("Skipping initsync, no remote seqnos found")
+                log.debug("Skipping initsync, no remote seqnos found", feature: "skip:resetState")
             }
 
             for (type, deviceData) in seqs {
@@ -274,27 +278,27 @@ public class UploadManager: NSObject {
                     }
 
                     if doInit {
-                        log.warning("Initsync seq for \(type.identifier): \(nextSeqNum)")
+                        log.debug("Initsync seq for \(type.identifier): \(nextSeqNum)", feature: "resetState")
                         UMLogEntry.initSequenceNumberForType(realm, sampleType: type, seqNumber: nextSeqNum)
                     } else {
-                        log.warning("Skipping initsync seq for \(type.identifier) (found \(onDeviceSeq) on device vs \(remoteSeqNum) remotely)")
+                        log.debug("Skipping initsync seq for \(type.identifier) (found \(onDeviceSeq) on device vs \(remoteSeqNum) remotely)", feature: "skip:resetState")
                     }
                 } else {
-                    log.warning("Skipping initsync seq for \(type.identifier) (no remote seq found)")
+                    log.debug("Skipping initsync seq for \(type.identifier) (no remote seq found)", feature: "skip:resetState")
                 }
             }
 
             // Clean log entries.
             for logEntry in realm.objects(UMLogEntry.self) {
                 if logEntry.insert_uuids.count > uploadBlockSize || logEntry.delete_uuids.count > uploadBlockSize {
-                    log.warning("Clearing log entry")
+                    log.debug("Clearing log entry", feature: "resetState")
                     logEntry.logEntry()
                     realm.delete(logEntry)
                 }
             }
         }
 
-        log.info("Upload Manager state after reset")
+        log.debug("Upload Manager state after reset", feature: "metadata:resetState")
         logMetadata()
     }
 
@@ -302,12 +306,12 @@ public class UploadManager: NSObject {
         let realm = try! Realm()
 
         realm.objects(UMLogSequenceNumber.self).forEach { seqno in
-            log.info("SEQ msid: \(seqno.msid) id: \(seqno.seqid)")
+            log.debug("SEQ msid: \(seqno.msid) id: \(seqno.seqid)", feature: "metadata:resetState")
         }
 
 
         realm.objects(UMLogEntry.self).forEach { logEntry in
-            logEntry.logEntry()
+            logEntry.logEntry("metadata:resetState")
         }
     }
 
@@ -363,10 +367,10 @@ public class UploadManager: NSObject {
             {
                 return decodeRemoteAnchor(remoteAnchor)
             } else {
-                log.warning("ULM Invalid seq fields for remote anchor decode on \(type.identifier)")
+                log.debug("Invalid seq fields for remote anchor decode on \(type.identifier)", feature: "remoteAnchor")
             }
         } else {
-            log.warning("ULM Invalid seq dict for remote anchor decode on \(type.identifier)")
+            log.debug("Invalid seq dict for remote anchor decode on \(type.identifier)", feature: "remoteAnchor")
         }
         return nil
     }
@@ -395,7 +399,7 @@ public class UploadManager: NSObject {
                 // We have a remote anchor available, and do not use a temporal predicate.
                 anchor = anchorForType
                 remoteAnchor = true
-                log.verbose("Data import from anchor \(anchor): \(tname)")
+                log.debug("Data import from anchor \(anchor): \(tname)", feature: "getNextAnchor")
             }
             else if let (_, hend) = UserManager.sharedManager.getHistoricalRangeForType(type) {
                 // We have no server anchor available.
@@ -404,7 +408,7 @@ public class UploadManager: NSObject {
                 let nearFuture = 1.minutes.fromNow
                 let pstart = NSDate(timeIntervalSinceReferenceDate: hend)
                 predicate = HKQuery.predicateForSamplesWithStartDate(pstart, endDate: nearFuture, options: .None)
-                log.verbose("Data import from \(pstart) \(nearFuture): \(tname)")
+                log.debug("Data import from \(pstart) \(nearFuture): \(tname)", feature: "getNextAnchor")
             }
             else {
                 // We have no anchor or archive span available.
@@ -415,12 +419,11 @@ public class UploadManager: NSObject {
                 let (dstart, dend) = (NSDate(timeIntervalSinceReferenceDate: start), NSDate(timeIntervalSinceReferenceDate: end))
                 predicate = HKQuery.predicateForSamplesWithStartDate(dstart, endDate: dend, options: .None)
                 needOldestSamples = true
-                log.verbose("Initialized historical range for \(tname): \(dstart) \(dend)")
-
+                log.debug("Initialized historical range for \(tname): \(dstart) \(dend)", feature: "getNextAnchor")
             }
         }
 
-        log.verbose("Anchor for \(tname)(\(remoteAnchor)): \(anchor)")
+        log.debug("Anchor for \(tname)(\(remoteAnchor)): \(anchor)", feature: "getNextAnchor")
         return (needOldestSamples, anchor, predicate)
     }
 
@@ -435,7 +438,7 @@ public class UploadManager: NSObject {
         do {
             addedJson = try added.map(self.jsonifySample)
         } catch let error {
-            log.error(error)
+            log.error((error as NSError).localizedDescription)
             return nil
         }
 
@@ -457,7 +460,7 @@ public class UploadManager: NSObject {
         if let measureSeqId = seqIdOfSampleTypeId(logEntry.msid) {
             measures = [measureSeqId]
         } else {
-            log.error("ULM No MCDB seq id found for \(logEntry.msid)")
+            log.error("No MCDB seq id found for \(logEntry.msid)")
             return nil
         }
 
@@ -471,21 +474,21 @@ public class UploadManager: NSObject {
     public func putSample(jsonObj: [String: AnyObject]) -> () {
         Service.string(MCRouter.AddMeasures(jsonObj), statusCode: 200..<300, tag: "UPLOAD") {
             _, response, result in
-            log.info("Upload: \(result.value)")
+            log.debug("Upload: \(result.value)", feature: "uploadStatus")
         }
     }
 
     public func putBlockSample(jsonObjBlock: [[String:AnyObject]]) -> () {
         Service.string(MCRouter.AddMeasures(["block":jsonObjBlock]), statusCode: 200..<300, tag: "UPLOAD") {
             _, response, result in
-            log.info("Upload: \(result.value)")
+            log.debug("Upload: \(result.value)", feature: "uploadStatus")
         }
     }
 
     public func putSample(type: HKSampleType, added: [HKSample]) {
         do {
             let tname = type.displayText ?? type.identifier
-            log.info("Uploading \(added.count) \(tname) samples")
+            log.debug("Uploading \(added.count) \(tname) samples", feature: "uploadProgress")
 
             let blockSize = 100
             let totalBlocks = ((added.count / blockSize)+1)
@@ -493,11 +496,11 @@ public class UploadManager: NSObject {
                 for i in 0..<totalBlocks {
                     autoreleasepool { _ in
                         do {
-                            log.info("Uploading block \(i) / \(totalBlocks)")
+                            log.debug("Uploading block \(i) / \(totalBlocks)", feature: "uploadProgress")
                             let jsonObjs = try added[(i*blockSize)..<(min((i+1)*blockSize, added.count))].map(self.jsonifySample)
                             self.putBlockSample(jsonObjs)
                         } catch {
-                            log.error(error)
+                            log.error((error as NSError).localizedDescription)
                         }
                     }
                 }
@@ -506,7 +509,7 @@ public class UploadManager: NSObject {
                 jsons.forEach(self.putSample)
             }
         } catch {
-            log.error(error)
+            log.error((error as NSError).localizedDescription)
         }
     }
 
@@ -516,8 +519,8 @@ public class UploadManager: NSObject {
         let realm = try! Realm()
 
         for logEntry in realm.objects(UMLogEntry.self).filter({ return (force || $0.retry_ts < now) }) {
-            log.info("Retrying pending upload")
-            logEntry.logEntryCompact()
+            log.debug("Retrying pending upload", feature: "uploadRetries")
+            logEntry.logEntryCompact("uploadRetries")
 
             let entryKey: String = logEntry.compoundKey
             var sampleType: HKSampleType! = nil
@@ -540,26 +543,27 @@ public class UploadManager: NSObject {
                 let uuids = Set(logEntry.insert_uuids.map { return UMSampleUUID.uuidOfNSData($0.uuid) })
                 let deleted: [NSUUID] = logEntry.delete_uuids.map { return UMSampleUUID.uuidOfNSData($0.uuid) }
 
-                log.info("Retry upload invoking fetchSamplesByUUID for \(entryKey)")
+                log.debug("Retry upload invoking fetchSamplesByUUID for \(entryKey)", feature: "uploadRetries")
 
                 MCHealthManager.sharedManager.fetchSamplesByUUID(type, uuids: uuids) { (samples, error) in
                     // We need a new Realm instance since this completion will execute in a different thread
                     // than the realm instance outside the above loop.
-                    log.info("Retry upload in fetchSamplesByUUID completion for \(entryKey)")
+                    log.debug("Retry upload in fetchSamplesByUUID completion for \(entryKey)", feature: "uploadRetries")
                     let realm = try! Realm()
                     if error != nil {
-                        log.error(error)
+                        log.error(error!.localizedDescription)
                         // Refetch the obejct since we are in a background thread from the health manager.
                         if let logEntry = realm.objectForPrimaryKey(UMLogEntry.self, key: entryKey) {
                             try! realm.write {
                                 realm.delete(logEntry)
                             }
                         } else {
-                            log.warning("No realm object found for deleting \(entryKey)")
+                            log.debug("No realm object found for deleting \(entryKey)", feature: "uploadRealmSync")
                         }
-                    } else {
+                    }
+                    else {
                         if let logEntry = realm.objectForPrimaryKey(UMLogEntry.self, key: entryKey) {
-                            log.info("Enqueueing retried upload \(logEntry.id) \(logEntry.compoundKey) with \(samples.count) inserts, \(deleted.count) deletions")
+                            log.debug("Enqueueing retried upload \(logEntry.id) \(logEntry.compoundKey) with \(samples.count) inserts, \(deleted.count) deletions", feature: "uploadRetries")
 
                             let added: [HKSample] = samples.map { $0 as! HKSample }
                             self.batchLogEntryUpload(logEntry.compoundKey, added: added, deleted: deleted)
@@ -570,21 +574,21 @@ public class UploadManager: NSObject {
                                     let backoff = max(maxBackoff, self.rngSource.nextIntWithUpperBound(logEntry.retry_count) * retryPeriodBase)
                                     logEntry.retry_ts = now + backoff.seconds
                                     logEntry.retry_count += 1
-                                    log.info("Backed off log entry \(logEntry.id) \(logEntry.compoundKey) to \(logEntry.retry_count) \(logEntry.retry_ts)")
+                                    log.debug("Backed off log entry \(logEntry.id) \(logEntry.compoundKey) to \(logEntry.retry_count) \(logEntry.retry_ts)", feature: "uploadRetries")
                                 } else {
-                                    log.info("Too many retries for \(logEntry.id) \(logEntry.compoundKey) \(logEntry.retry_count), deleting...")
+                                    log.debug("Too many retries for \(logEntry.id) \(logEntry.compoundKey) \(logEntry.retry_count), deleting...", feature: "uploadRetries")
                                     realm.delete(logEntry)
                                 }
                             }
                         } else {
-                            log.warning("No realm object found for \(entryKey)")
+                            log.debug("No realm object found for \(entryKey)", feature: "uploadRealmSync")
                         }
                     }
                 }
             }
             else {
-                log.warning("No sample type found for retried upload")
-                logEntry.logEntryCompact()
+                log.debug("No sample type found for retried upload", feature: "uploadRetries")
+                logEntry.logEntryCompact("uploadRetries")
             }
         }
     }
@@ -594,7 +598,7 @@ public class UploadManager: NSObject {
         let realm = try! Realm()
         try! realm.write {
             if success {
-                log.info("Completed pending uploads \(sampleKeys.joinWithSeparator(", "))")
+                log.debug("Completed pending uploads \(sampleKeys.joinWithSeparator(", "))", feature: "uploadProgress")
                 let objects = sampleKeys.flatMap { realm.objectForPrimaryKey(UMLogEntry.self, key: $0) }
                 realm.delete(objects)
             }
@@ -616,7 +620,7 @@ public class UploadManager: NSObject {
 
     func syncLogEntryBuffer() {
         if !logEntryBatchBuffer.isEmpty {
-            log.warning("ULM SYNC")
+            log.debug("Sync start", feature: "uploadExec")
             autoreleasepool { _ in
                 let batchSize = min(logEntryBatchBuffer.count, logEntryUploadBatchSize)
                 let uploadSlice = logEntryBatchBuffer[0..<batchSize]
@@ -631,39 +635,39 @@ public class UploadManager: NSObject {
                     autoreleasepool { _ in
                         if let logEntry = realm.objectForPrimaryKey(UMLogEntry.self, key: batch.0) {
                             if let params = self.jsonifyLogEntry(logEntry, added: batch.1, deleted: batch.2) {
-                                log.info("Serialized UMLogEntry \(batch.1.count) \(batch.2.count)")
-                                logEntry.logEntryCompact()
+                                log.debug("Serialized UMLogEntry \(batch.1.count) \(batch.2.count)", feature: "uploadExec")
+                                logEntry.logEntryCompact("uploadExec")
                                 block.append(params)
                                 blockKeys.append(batch.0)
                             } else {
-                                log.warning("Unable to JSONify log entry")
-                                logEntry.logEntry()
+                                log.warning("Unable to JSONify log entry", feature: "serialize:uploadExec")
+                                logEntry.logEntry("serialize:uploadExec")
                             }
                         } else {
-                            log.warning("No log entry found for key: \(batch.0)")
+                            log.debug("No log entry found for key: \(batch.0)", feature: "realm:uploadExec")
                         }
                     }
                 }
 
-                log.warning("ULM blockbuild: \(NSDate().timeIntervalSinceDate(blockBuildStart))")
+                log.debug("Blockbuild: \(NSDate().timeIntervalSinceDate(blockBuildStart))", feature: "uploadExec")
 
                 if block.count > 0 {
-                    log.info("Syncing \(block.count) log entries with keys \(blockKeys.joinWithSeparator(", "))")
+                    log.debug("Syncing \(block.count) log entries with keys \(blockKeys.joinWithSeparator(", "))", feature: "uploadExec")
 
                     Service.json(MCRouter.AddSeqMeasures(["block": block]), statusCode: 200..<300, tag: "UPLOADLOG") {
                         _, response, result in
-                        log.verbose("Upload log entries: \(result.value)")
+                        log.debug("Upload log entries: \(result.value)", feature: "uploadExec")
                         self.onCompletedUpload(result.isSuccess, sampleKeys: blockKeys)
                     }
                 }
                 else {
-                    log.info("Skipping log entry sync, no log entries to upload")
+                    log.debug("Skipping log entry sync, no log entries to upload", feature: "uploadExec")
                 }
 
                 // Recur as an upload loop while we still have elements in the upload queue.
                 logEntryBatchBuffer.removeFirst(batchSize)
                 if !logEntryBatchBuffer.isEmpty {
-                    log.warning("ULM BBSR \(logEntryBatchBuffer.count)")
+                    log.debug("Remaining batches: \(logEntryBatchBuffer.count)", feature: "uploadExec")
                     logEntryUploadAsync?.cancel()
                     logEntryUploadAsync = Async.customQueue(self.uploadQueue, after: logEntryUploadDelay) {
                         self.syncLogEntryBuffer()
@@ -671,7 +675,7 @@ public class UploadManager: NSObject {
                 }
             }
         } else {
-            log.info("Skipping syncLogEntryBuffer, empty upload buffer")
+            log.debug("Skipping syncLogEntryBuffer, empty upload buffer", feature: "uploadExec")
         }
     }
 
@@ -696,7 +700,7 @@ public class UploadManager: NSObject {
                 if logEntryBatchBuffer[index].0 != logEntryKey {
                     logEntryBatchBuffer.insert((logEntryKey, added, deleted), atIndex: index)
                 } else {
-                    log.warning("ULM skipping duplicate pending for \(logEntryKey)")
+                    log.debug("Skipping duplicate pending for \(logEntryKey)", feature: "uploadExec")
                 }
             }
         }
@@ -716,10 +720,10 @@ public class UploadManager: NSObject {
 
         // Throttle if upload buffer is large.
         if logEntryBatchBuffer.count > uploadBufferThrottleLimit && !NSThread.isMainThread() {
-            log.warning("Throttling upload enqueueing for \(logEntryUploadDelay * 3) secs")
+            log.debug("Throttling upload enqueueing for \(logEntryUploadDelay * 3) secs", feature: "perf:uploadExec")
             NSThread.sleepForTimeInterval(logEntryUploadDelay * 3)
         } else {
-            log.warning("ULM BBSA \(logEntryBatchBuffer.count)")
+            log.debug("Batched after UL: \(logEntryBatchBuffer.count)", feature: "uploadExec")
         }
     }
 
@@ -780,9 +784,9 @@ public class UploadManager: NSObject {
 
         Service.json(MCRouter.RemoveMeasures(params), statusCode: 200..<300, tag: "DELPOST") {
             _, response, result in
-            log.verbose("Deletions: \(result.value)")
+            log.debug("Deletions: \(result.value)", feature: "deleteSamples")
             if !result.isSuccess {
-                log.error("Failed to delete samples on the server, server may potentially diverge from device.")
+                log.error("Failed to delete samples on the server, server may potentially diverge from device.", feature: "deleteSamples")
             }
             completion(result.isSuccess)
         }
@@ -806,7 +810,7 @@ public class UploadManager: NSObject {
                 UploadManager.sharedManager.putSample(type, added: hksamples)
                 UserManager.sharedManager.decrHistoricalRangeStartForType(type)
 
-                log.info("Uploaded \(tname) to \(dwstart)")
+                log.debug("Uploaded \(tname) to \(dwstart)", feature: "uploadAcqRange")
                 if let min = UserManager.sharedManager.getHistoricalRangeMinForType(type) {
                     let dmin = NSDate(timeIntervalSinceReferenceDate: min)
                     if dwstart > dmin {
@@ -816,11 +820,11 @@ public class UploadManager: NSObject {
                         completion(false, (true, dmin))
                     }
                 } else {
-                    log.error("No earliest sample found for \(tname)")
+                    log.error("No earliest sample found for \(tname)", feature: "uploadAcqRange")
                 }
             }
         } else {
-            log.info("No bulk anchor date found for \(tname)")
+            log.debug("No bulk anchor date found for \(tname)", feature: "uploadAcqRange")
         }
     }
 
@@ -831,7 +835,7 @@ public class UploadManager: NSObject {
         {
             self.uploadInitialAnchorForType(type, completion: completion)
         } else {
-            log.warning("No historical range found for \(tname)")
+            log.warning("No historical range found for \(tname)", feature: "uploadAcqRange")
             completion(true, nil)
         }
     }
@@ -853,7 +857,7 @@ public class UploadManager: NSObject {
                         IOSHealthManager.sharedManager.startBackgroundObserverForType(type, getAnchorCallback: UploadManager.sharedManager.getNextAnchor)
                         { (added, deleted, newAnchor, error, completion) -> Void in
                             guard error == nil else {
-                                log.error("Failed to register observers: \(error)")
+                                log.error("Failed to register observers: \(error)", feature: "uploadObservers")
                                 completion()
                                 return
                             }
@@ -883,7 +887,7 @@ public class UploadManager: NSObject {
                                     self.setAnchorForType(anchor, forType: type)
                                 }
 
-                                log.verbose("Skipping upload for \(typeId): \(userAdded.count) insertions \(deleted.count) deletions")
+                                log.debug("Skipping upload for \(typeId): \(userAdded.count) insertions \(deleted.count) deletions", feature: "uploadObservers")
                             }
                             completion()
                         }
@@ -898,7 +902,7 @@ public class UploadManager: NSObject {
             guard success else { return }
             IOSHealthManager.sharedManager.stopAllBackgroundObservers { (success, error) in
                 guard success && error == nil else {
-                    log.error(error)
+                    log.error(error!.localizedDescription)
                     return
                 }
                 self.logEntryUploadAsync?.cancel()
@@ -987,7 +991,7 @@ public class UploadManager: NSObject {
                 guard result.error == nil else {
 
                     // TODO: exponential backoff.
-                    log.warning("Failed to get acquisition state")
+                    log.warning("Failed to get acquisition state", feature: "syncSeqIds")
                     self.syncDeviceMeasuresPeriodically()
                     return
                 }
@@ -1017,42 +1021,42 @@ public class UploadManager: NSObject {
             "limit": limit
         ]
 
-        log.info("ULM RSYNC \(type.identifier) \(deviceClass) \(deviceId) from \(localSeq) to \(remoteSeq) with params \(params)")
+        log.debug("Sync \(type.identifier) \(deviceClass) \(deviceId) from \(localSeq) to \(remoteSeq) with params \(params)", feature: "syncSeqIds")
 
         Service.json(MCRouter.GetMeasures(params), statusCode: 200..<300, tag: "GETMEAS") {
             _, response, result in
 
             guard result.isSuccess else {
                 // TODO: retry w/ backoff.
-                log.error("Failed to sync server samples, server may potentially diverge from device.")
+                log.error("Failed to sync server samples, server may potentially diverge from device.", feature: "syncSeqIds")
                 return
             }
 
-            log.info("ULM RSYNC response on \(queryOffset) \(localSeq) \(remoteSeq) for \(type.identifier) \(deviceClass) \(deviceId)")
+            log.info("Sync response on \(queryOffset) \(localSeq) \(remoteSeq) for \(type.identifier) \(deviceClass) \(deviceId)", feature: "syncSeqIds")
 
             // Write retrieved data into HealthKit, ensuring that we add metadata tags for sample ids.
             self.writeDeviceMeasures(type, deviceClass: deviceClass, deviceId: deviceId, payload: result.value) {
                 (success, completedSeq, payloadSize, err) in
                 guard success && err == nil else {
-                    log.error("Sync failed to parse and write measures: \(completedSeq) \(payloadSize)")
-                    log.error(err)
+                    log.error("Sync failed to parse and write measures: \(completedSeq) \(payloadSize)", feature: "syncSeqIds")
+                    log.error(err!.localizedDescription, feature: "syncSeqIds")
                     return
                 }
 
                 // Recur while we got a non-empty set of measures, and we have not yet reached our target remote seq.
                 // TODO: throttling.
 
-                log.info("ULM RSYNC recur on \(queryOffset) \(completedSeq) \(localSeq) \(remoteSeq) \(payloadSize) for \(type.identifier) \(deviceClass) \(deviceId)")
+                log.info("Sync recur on \(queryOffset) \(completedSeq) \(localSeq) \(remoteSeq) \(payloadSize) for \(type.identifier) \(deviceClass) \(deviceId)", feature: "syncSeqIds")
 
                 if let numMeasures = payloadSize, seq = completedSeq where numMeasures == limit && seq < remoteSeq {
                     let nextOffset = queryOffset + numMeasures
                     self.syncToSeqId(type, deviceClass: deviceClass, deviceId: deviceId, queryOffset: nextOffset, localSeq: seq, remoteSeq: remoteSeq, columns: columns)
                 }
                 else if let numMeasures = payloadSize, seq = completedSeq {
-                    log.warning("ULM RSYNC stopped sync for \(type.identifier) \(deviceClass) \(deviceId) at \(seq), offset \(queryOffset), #results \(numMeasures)")
+                    log.warning("Sync stopped for \(type.identifier) \(deviceClass) \(deviceId) at \(seq), offset \(queryOffset), #results \(numMeasures)", feature: "syncSeqIds")
                 }
                 else {
-                    log.error("ULM RSYNC stopped sync for \(type.identifier) \(deviceClass) \(deviceId) with \(completedSeq) \(payloadSize), offset \(queryOffset)")
+                    log.error("Sync stopped for \(type.identifier) \(deviceClass) \(deviceId) with \(completedSeq) \(payloadSize), offset \(queryOffset)", feature: "syncSeqIds")
                 }
             }
         }
@@ -1063,7 +1067,7 @@ public class UploadManager: NSObject {
     public func syncDeviceMeasures(type: HKSampleType, deviceClass: String, deviceId: String) {
         if let classInfo = UserManager.sharedManager.getAcquisitionSeq(type) as? [String:AnyObject]
         {
-            log.warning("ULM RSYNC retrieving remote seq for \(type.identifier), \(deviceClass), \(deviceId) from \(classInfo)")
+            log.warning("Retrieving remote seq for \(type.identifier), \(deviceClass), \(deviceId) from \(classInfo)", feature: "syncSeqIds")
             if let dataForClass = classInfo[deviceClass] as? [String: AnyObject],
                 seqInfo = dataForClass[deviceId] as? [String: AnyObject],
                 syncSeqId = seqInfo[remoteSyncSeqIdKey] as? Int
@@ -1087,19 +1091,19 @@ public class UploadManager: NSObject {
 
                 if Defaults.hasKey(key) {
 
-                    log.info("ULM RSYNC get local seq from cache for key \(key)")
+                    log.debug("Cache fetch local seq for key \(key)", feature: "syncSeqIds")
 
                     localSeq = Defaults.integerForKey(key)
                     if let localSeq = localSeq where localSeq < remoteSeq {
                         syncToSeqId(type, deviceClass: deviceClass, deviceId: deviceId, queryOffset: 0, localSeq: localSeq + 1, remoteSeq: remoteSeq, columns: columns)
                     }
                     else {
-                        log.info("ULM RSYNC fresh (from cache) for key \(key) \(localSeq)")
+                        log.debug("Cache hit result for key \(key) \(localSeq)", feature: "syncSeqIds")
                     }
                 }
                 else {
 
-                    log.info("ULM RSYNC get local seq from DB for key \(key)")
+                    log.debug("HK fetch local seq for key \(key)", feature: "syncSeqIds")
 
                     let conjuncts = [
                         HKQuery.predicateForObjectsWithMetadataKey("DeviceClass", operatorType: NSPredicateOperatorType.EqualToPredicateOperatorType, value: deviceClass),
@@ -1111,7 +1115,7 @@ public class UploadManager: NSObject {
 
                     MCHealthManager.sharedManager.fetchSamplesOfType(type, predicate: devicePredicate, limit: 1, sortDescriptors: [dateDesc]) { (samples, error) in
                         guard error == nil else {
-                            log.error(error)
+                            log.error(error!.localizedDescription)
                             return
                         }
 
@@ -1134,25 +1138,25 @@ public class UploadManager: NSObject {
                             self.syncToSeqId(type, deviceClass: deviceClass, deviceId: deviceId, queryOffset: 0, localSeq: localSeq, remoteSeq: remoteSeq, columns: columns)
                         }
                         else {
-                            log.info("ULM RSYNC fresh (from HK) for key \(key) \(localSeq)")
+                            log.debug("HK result for key \(key) \(localSeq)", feature: "syncSeqIds")
                         }
 
                     }
                 }
             }
             else {
-                log.warning("ULM Invalid seq for \(type.identifier), \(deviceClass), \(deviceId)")
+                log.warning("Invalid seq for \(type.identifier), \(deviceClass), \(deviceId)", feature: "status:syncSeqIds")
             }
         }
         else {
-            log.warning("ULM Invalid seq for \(type.identifier), \(deviceClass), \(deviceId)")
+            log.warning("Invalid seq for \(type.identifier), \(deviceClass), \(deviceId)", feature: "status:syncSeqIds")
         }
     }
 
     private func processSyncMeasure(type: HKSampleType, deviceClass: String, deviceId: String,
                                     sample: [String: AnyObject], columnGroups: [[String]]) -> (Bool, Int?, [HKSample])
     {
-        log.info("ULM RSYNC PSM \(sample)")
+        log.debug("Process sync for \(type.displayText ?? type.identifier): \(sample)", feature: "syncSeqIds")
 
         var id: Int! = nil
         var ts: NSDate! = nil
@@ -1180,7 +1184,7 @@ public class UploadManager: NSObject {
         }
 
         guard !(id == nil || ts == nil || values.count != columnGroups.count) else {
-            log.warning("Failed to sync \(type.identifier) \(deviceClass) \(deviceId) for \(id) \(ts) \(values.count) \(columnGroups.count) \(sample)")
+            log.warning("Failed to sync \(type.identifier) \(deviceClass) \(deviceId) for \(id) \(ts) \(values.count) \(columnGroups.count) \(sample)", feature: "syncSeqIds")
             return (false, nil, [])
         }
 
@@ -1244,8 +1248,6 @@ public class UploadManager: NSObject {
                 if let s = meal["meal_duration"] as? String, d = Double(s) { duration = d }
                 else if let d = meal["meal_duration"] as? Double { duration = d }
 
-                log.info("ULM RSYNC found meal \(meal) \(duration)")
-
                 if let duration = duration,
                     food_type = meal["food_type"] as? [[String: AnyObject]],
                     meal_type = food_type[0]["value"] as? String
@@ -1258,8 +1260,6 @@ public class UploadManager: NSObject {
                     let hkSample = HKWorkout(activityType: HKWorkoutActivityType.PreparationAndRecovery, startDate: ts, endDate: ts_end, duration: duration, totalEnergyBurned: energy, totalDistance: distance, metadata: wMetadata)
 
                     samples.append(hkSample)
-                } else {
-
                 }
             }
 
@@ -1267,8 +1267,6 @@ public class UploadManager: NSObject {
                 // Add activity object
                 var duration: Double! = nil
                 var activity_type: Int! = nil
-
-                log.info("ULM RSYNC found activity \(activity)")
 
                 if let s = activity["activity_duration"] as? String, d = Double(s) { duration = d }
                 else if let d = activity["activity_duration"] as? Double { duration = d }
@@ -1358,17 +1356,17 @@ public class UploadManager: NSObject {
                 samples.appendContentsOf(newSamples)
             }
 
-            log.info("ULM RSYNC parsed \(samples.count) samples")
+            log.info("Write parsed \(samples.count) samples", feature: "syncSeqIds")
 
             // Only add samples if there were no parsing errors.
             if let maxId = maxSampleId where !failed {
                 MCHealthManager.sharedManager.saveSamples(samples) { (success, err) in
                     guard success && err == nil else {
-                        log.error("Failed to sync \(type.identifier) \(deviceClass) \(deviceId) to \(maxId)")
+                        log.error("Failed to sync \(type.identifier) \(deviceClass) \(deviceId) to \(maxId)", feature: "syncSeqIds")
                         return completion(!failed, nil, measures.count, err)
                     }
 
-                    log.info("ULM RSYNC \(type.identifier) \(deviceClass) \(deviceId) advance pptr to \(maxId)")
+                    log.info("Advance pptr for \(type.identifier) \(deviceClass) \(deviceId) advance pptr to \(maxId)", feature: "syncSeqIds")
 
                     let key = self.seqCacheKey(type, deviceClass: deviceClass, deviceId: deviceId)
                     Defaults.setInteger(maxId, forKey: key)

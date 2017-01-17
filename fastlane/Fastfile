@@ -197,6 +197,10 @@ platform :ios do
     if withcerts
       certs(type: type, readonly: ro, force: force)
     end
+
+    if options[:build_number]
+      increment_build_number(build_number: options[:build_number])
+    end
   end
 
   desc "Build a development archive"

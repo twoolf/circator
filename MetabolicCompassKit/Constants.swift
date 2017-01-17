@@ -8,6 +8,9 @@
 
 import Foundation
 import HealthKit
+import MCCircadianQueries
+
+let log = RemoteLogManager.sharedManager.log
 
 /**
  This maintains the constants and strings needed for Metabolic Compass. We tie this into the options and recommendations settings in the control panel.

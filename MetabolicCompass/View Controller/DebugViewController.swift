@@ -344,7 +344,7 @@ class DebugViewController : FormViewController {
 
     func doCleanupLocal() {
         DataGenerator.sharedInstance.removeLocalInMemoryDataset { (deleted, error) in
-            guard error == nil else { log.error(error); return }
+            guard error == nil else { log.error(error!.localizedDescription); return }
             log.info("Deleted \(deleted) generated samples")
         }
     }

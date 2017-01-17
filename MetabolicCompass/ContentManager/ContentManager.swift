@@ -46,7 +46,7 @@ class ContentManager: NSObject {
         }
 
         if !reachability.isReachable() {
-            log.info("Skipping background work, network unreachable!")
+            log.debug("Skipping background work, network unreachable!", feature: "reachability")
             return
         }
 
@@ -55,21 +55,26 @@ class ContentManager: NSObject {
                 return
             }
 
-            log.warning("Starting background work")
-            self.fetchInitialAggregates()
-            ComparisonDataModel.sharedManager.updateIndividualData(PreviewManager.previewSampleTypes) { _ in () }
+            log.debug("Starting background work", feature: "accountExec")
             self.isBackgroundWorkActive = true
 
-            AccountManager.shared.withHKCalAuth {
-                IOSHealthManager.sharedManager.collectDataForCharts()
+            self.fetchInitialAggregates()
+
+            ComparisonDataModel.sharedManager.updateIndividualData(PreviewManager.previewSampleTypes) { _ in
+                AccountManager.shared.withHKCalAuth {
+                    log.debug("Prefetching charts", feature: "accountExec")
+                    IOSHealthManager.sharedManager.collectDataForCharts()
+                }
             }
 
             if !self.isObservationActive {
+                log.debug("Registering upload observers", feature: "accountExec")
                 UploadManager.sharedManager.registerUploadObservers()
                 self.isObservationActive = true
             }
 
             if !self.isDeviceSyncActive {
+                log.debug("Starting seqid sync loop", feature: "accountExec")
                 UploadManager.sharedManager.syncDeviceMeasuresPeriodically()
                 self.isDeviceSyncActive = true
             }
@@ -80,7 +85,7 @@ class ContentManager: NSObject {
         Async.main() {
             // Clean up aggregate data fetched via the prior account.
             if let task = self.aggregateFetchTask {
-                log.warning("Stopping background work")
+                log.debug("Stopping background work", feature: "accountExec")
                 task.cancel()
                 self.aggregateFetchTask = nil
                 self.isBackgroundWorkActive = false
@@ -88,29 +93,25 @@ class ContentManager: NSObject {
         }
     }
 
-    func resetBackgroundWork() {
-        self.stopBackgroundWork()
-        self.initializeBackgroundWork()
-    }
-
     func stopObservation() {
         Async.main() {
             if (!self.isObservationActive) {
                 return
             }
-            log.warning("Stopping background observers")
+            log.debug("Stopping background observers", feature: "accountExec")
             UploadManager.sharedManager.deregisterUploadObservers { (success, error) in
                 guard success && error == nil else {
-                    log.error(error)
+                    log.error(error!.localizedDescription)
                     return
                 }
-                log.warning("Stopped background observers")
+                log.debug("Stopped background observers", feature: "accountExec")
                 self.isObservationActive = false
             }
         }
     }
 
     func fetchInitialAggregates() {
+        if let task = aggregateFetchTask { task.cancel() }
         aggregateFetchTask = Async.background {
             self.fetchAggregatesPeriodically()
         }
@@ -122,7 +123,7 @@ class ContentManager: NSObject {
             // Regardless, we try to fetch the aggregates again, with the next request also
             // attempting to ensure a valid access token even if we did not get one this time.
             if error {
-                log.warning("Could not ensure an access token while fetching aggregates, trying later...")
+                log.warning("Could not ensure an access token while fetching aggregates, trying later...", feature: "popLoop")
             } else {
                 let populationTypes = PreviewManager.previewSampleTypes
                 PopulationHealthManager.sharedManager.fetchAggregates(populationTypes) { error in
@@ -138,12 +139,12 @@ class ContentManager: NSObject {
     }
 
     func handleReachable(reachability: Reachability) {
-        log.info("Reachable via \(reachability.isReachableViaWiFi() ? "Wi-fi" : "Cellular")")
+        log.debug("Reachable via \(reachability.isReachableViaWiFi() ? "Wi-fi" : "Cellular")", feature: "reachability")
         self.initializeBackgroundWork()
     }
 
     func handleUnreachable(reachability: Reachability) {
-        log.info("Network unreachable, disabling connectivity...")
+        log.debug("Network unreachable, disabling connectivity...", feature: "reachability")
         self.stopObservation()
         self.stopBackgroundWork()
     }

@@ -164,10 +164,10 @@ class MainTabController: UITabBarController, UITabBarControllerDelegate, ManageE
                     ARSLineProgress.showWithProgress(initialValue: 0.01, onView: self.syncOverlayView!.contentView)
                 }
             }
-            log.verbose("DATA SYNC starting")
+            log.debug("DATA SYNC starting", feature: "dataSync")
         }
         else {
-            log.error("DATA SYNC No initial upload size found")
+            log.error("DATA SYNC No initial upload size found", feature: "dataSync")
         }
     }
 
@@ -195,7 +195,7 @@ class MainTabController: UITabBarController, UITabBarControllerDelegate, ManageE
                 self.syncOverlayView!.setNeedsDisplay()
             }
         }
-        log.verbose("DATA SYNC finished")
+        log.debug("DATA SYNC finished", feature: "dataSync")
     }
 
     func syncProgress(notification: NSNotification) {
@@ -208,7 +208,7 @@ class MainTabController: UITabBarController, UITabBarControllerDelegate, ManageE
 
             let progress = max(0.01, 100.0 * (syncInitial - syncCounter) / syncInitial)
             ARSLineProgress.updateWithProgress(progress)
-            log.verbose("DATA SYNC progress \(progress)")
+            log.debug("DATA SYNC progress \(progress)", feature: "dataSync")
 
             syncCheckpoint = syncCounter
             syncTerminator?.cancel()
@@ -328,7 +328,7 @@ class MainTabController: UITabBarController, UITabBarControllerDelegate, ManageE
                     self.dailyProgressVC?.contentDidUpdate()
                 }
             } else {
-                log.warning("No DailyProgressViewController available")
+                log.warning("No DailyProgressViewController available", feature: "addActivityView")
             }
         }
         self.manageEventMenu?.logContentView(false)
@@ -352,7 +352,7 @@ class MainTabController: UITabBarController, UITabBarControllerDelegate, ManageE
                     break
                 }
             }
-            log.verbose("Daily progress view controller after init: \(dailyProgressVC)")
+            log.debug("Daily progress view controller after init: \(dailyProgressVC)", feature: "addActivityView")
         }
     }
 

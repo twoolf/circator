@@ -198,7 +198,7 @@ public class EventManager : NSObject, WCSessionDelegate {
                             metadata: emeta,
                             completion: { (success, error ) -> Void in
                                 guard error == nil else {
-                                    log.error(error)
+                                    log.error(error!.localizedDescription)
                                     return
                                 }
                                 log.debug("Food log event saved")

@@ -10,15 +10,15 @@ import UIKit
 import GameKit
 import MetabolicCompassKit
 import MCCircadianQueries
-import SwiftyBeaver
 import Fabric
 import Crashlytics
 import Locksmith
 import SwiftDate
 import SwiftyUserDefaults
 import WatchConnectivity
+import LogKit
 
-let log = SwiftyBeaver.self
+let log = RemoteLogManager.sharedManager.log
 
 @UIApplicationMain
 /**
@@ -34,7 +34,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate, WCSessionDelegate
 
     func application(application: UIApplication, didFinishLaunchingWithOptions launchOptions: [NSObject: AnyObject]?) -> Bool
     {
-        configureLogging()
         Fabric.with([Crashlytics.self,Answers.self])
 
         log.info("Using service URL: \(MCRouter.baseURL)")
@@ -153,22 +152,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate, WCSessionDelegate
     func application(application: UIApplication, didReceiveLocalNotification notification: UILocalNotification) {
         log.info("APPDEL received \(notification)")
         NotificationManager.sharedManager.showInApp(notification)
-    }
-
-    func configureLogging() {
-        // add log destinations. at least one is needed!
-        let console = ConsoleDestination()
-        console.detailOutput = true
-        console.colored = false
-        console.minLevel = .Info
-
-        let paths : [String : SwiftyBeaver.Level] = ["ServiceAPI":.Verbose, "HealthManager":.Debug]
-        let pathfuns : [String : SwiftyBeaver.Level] = [:]
-
-//        for (p,l) in paths { console.addFilter(Filters.Path.contains(p, minLevel: l)) }
-//        for (f,l) in pathfuns { console.addFilter(Filters.Function.contains(f, minLevel: l)) }
-
-        log.addDestination(console)
     }
 
     func recycleNotification() {

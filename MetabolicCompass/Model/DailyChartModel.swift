@@ -73,7 +73,7 @@ class DailyChartModel : NSObject, UITableViewDataSource {
         do {
             self.cachedDailyProgress = try MCDailyProgressCache(name: "MCDaylyProgressCache")
         } catch _ {
-            fatalError("Unable to create HealthManager aggregate cache.")
+            fatalError("Unable to create DailyChartModel circadian cache.")
         }
         super.init()
         NSNotificationCenter.defaultCenter().addObserver(self, selector: #selector(invalidateCache), name: HMDidUpdateCircadianEvents, object: nil)
@@ -88,7 +88,7 @@ class DailyChartModel : NSObject, UITableViewDataSource {
             if dates.count > 0 {
                 for date in dates {
                     let cacheKey = "\(date.month)_\(date.day)_\(date.year)"
-                    log.info("Invalidating daily progress cache for \(cacheKey)")
+                    log.debug("Invalidating daily progress cache for \(cacheKey)", feature: "invalidateCache")
                     cachedDailyProgress.removeObjectForKey(cacheKey)
                 }
                 prepareChartData()
@@ -138,7 +138,7 @@ class DailyChartModel : NSObject, UITableViewDataSource {
     }
     
     func prepareChartData () {
-        log.info("DCM resetting chart data with \(self.chartDataAndColors.count) values")
+        log.debug("Resetting chart data with \(self.chartDataAndColors.count) values", feature: "prepareChart")
         self.chartDataAndColors = [:]
         self.getDataForDay(nil, lastDay: false)
     }

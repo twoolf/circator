@@ -243,7 +243,7 @@ class AddEventModel: NSObject {
                     (success, error ) -> Void in
                     guard error == nil else {
                         completion(success: false, errorMessage: error.localizedDescription)
-                        log.error(error); return
+                        log.error(error!.localizedDescription); return
                     }
                     UserManager.sharedManager.setUsualWhenToSleepTime(startTime)
                     UserManager.sharedManager.setUsualWokeUpTime(endTime)
@@ -263,7 +263,7 @@ class AddEventModel: NSObject {
         
         // Aggregate sleep, exercise and meal events.
         MCHealthManager.sharedManager.fetchSamples(typesAndPredicates) { (samples, error) -> Void in
-            guard error == nil else { log.error(error); return }
+            guard error == nil else { log.error(error!.localizedDescription); return }
             let overlaps = samples.reduce(false, combine: { (acc, kv) in
                 guard !acc else { return acc }
                 return kv.1.reduce(acc, combine: { (acc, s) in return acc || !( startTime >= s.endDate || endTime <= s.startDate ) })

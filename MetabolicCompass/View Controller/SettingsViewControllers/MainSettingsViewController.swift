@@ -106,7 +106,6 @@ class MainSettingsViewController: BaseViewController, UICollectionViewDataSource
         alertController.addAction(withDeleteAction)
         alertController.addAction(cancelAction)
         self.presentViewController(alertController, animated: true, completion: nil)
-
     }
 
     func webAction(asPrivacyPolicy: Bool) {

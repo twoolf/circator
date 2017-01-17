@@ -15,11 +15,6 @@ import SwiftyUserDefaults
 
 internal let AMNotificationsKey = "AMNotificationsKey"
 
-class UserInfo : NSObject {
-    var firstName: String?
-    var lastName: String?
-}
-
 class AccountManager: NSObject {
 
     private let didCompleteLoginNotification = "registrationCompleteNotification"
@@ -35,8 +30,6 @@ class AccountManager: NSObject {
         }
     }
     var isHealthKitAuthorized = false
-
-    private(set) var userInfo: UserInfo?
 
     func loginOrRegister() {
         loginAndInitialize()
@@ -67,6 +60,7 @@ class AccountManager: NSObject {
     }
 
     func doLogout(completion: (Void -> Void)?) {
+        log.debug("User logging out", feature: "accountExec")
         UserManager.sharedManager.logoutWithCompletion(completion)
         IOSHealthManager.sharedManager.reset()
         self.contentManager.stopBackgroundWork()
@@ -74,6 +68,7 @@ class AccountManager: NSObject {
     }
 
     func doWithdraw(keepData: Bool, completion: Bool -> Void) {
+        log.debug("User withdrawing", feature: "accountExec")
         UserManager.sharedManager.withdraw(keepData, completion: completion)
         IOSHealthManager.sharedManager.reset()
         self.contentManager.stopBackgroundWork()
@@ -81,25 +76,11 @@ class AccountManager: NSObject {
     }
 
     private func loginComplete () {
-        // TODO: Yanif: this currently pulls from Stormpath, and is no longer needed.
-        // The profile will contain directly this information.
-        UserManager.sharedManager.getUserInfo({ accountOpt, error in
-            // try parse user info
-            self.userInfo = nil
+        log.debug("User login complete", feature: "loginExec")
 
-            if error == nil {
-                if let account = accountOpt {
-                    self.userInfo = UserInfo()
-                    self.userInfo?.firstName = account.givenName
-                    self.userInfo?.lastName = account.surname
-                }
-            }
-
-            Async.main() {
-                self.contentManager.initializeBackgroundWork();
-                NSNotificationCenter.defaultCenter().postNotificationName(self.didCompleteLoginNotification, object: nil)
-            }
-        })
+        Async.main() {
+            NSNotificationCenter.defaultCenter().postNotificationName(self.didCompleteLoginNotification, object: nil)
+        }
     }
 
     func isLogged() -> Bool {
@@ -110,27 +91,29 @@ class AccountManager: NSObject {
 
         assert(self.rootViewController != nil, "Please, specify root navigation controller")
         
+        log.debug("Login start", feature: "loginExec")
         guard isAuthorized else {
+            log.debug("Login: No token found, launching dialog", feature: "loginExec")
             self.doLogin (animated) { self.loginComplete() }
             return
         }
 
+        log.debug("Login: checking HK/Cal auth", feature: "loginExec")
         withHKCalAuth {
             UserManager.sharedManager.ensureAccessToken { error in
                 guard !error else {
-                    Async.main() {
-                        self.doLogin (animated) { self.loginComplete() }
-                    }
+                    log.debug("Login: HK/Cal auth failed, relaunching dialog", feature: "loginExec")
+                    Async.main() { self.doLogin (animated) { self.loginComplete() } }
                     return
                 }
 
                 // TODO: Yanif: handle partial failures when a subset of account components
                 // failures beyond the consent component.
+                log.debug("Login: pulling account", feature: "loginExec")
                 UserManager.sharedManager.pullFullAccount { res in
-                    if res.ok {
-                        self.loginComplete()
-                        return
-                    } else {
+                    log.debug("Login pull account result: \(res)", feature: "loginExec")
+                    if res.ok { self.loginComplete() }
+                    else {
                         if res.info.hasContent {
                             var components = UMPullComponentErrorAsArray(res.info)
 
@@ -145,10 +128,12 @@ class AccountManager: NSObject {
                                     components = components.filter { $0 != .Consent }
                                     log.error(UMPullMultipleComponentsError(components.map(getComponentName)))
                                 }
-                            } else {
+                            }
+                            else {
                                 log.error(res.info)
                             }
-                        } else {
+                        }
+                        else {
                             log.error("Failed to get initial user account")
                         }
                     }
@@ -161,7 +146,7 @@ class AccountManager: NSObject {
         MCHealthManager.sharedManager.authorizeHealthKit { (success, error) -> Void in
             guard error == nil else {
                 self.isHealthKitAuthorized = false
-                log.error("no healthkit \(error)")
+                log.error("HealthKit is not available: \(error!.localizedDescription)")
                 return
             }
 
@@ -172,7 +157,7 @@ class AccountManager: NSObject {
     }
 
     func registerLocalNotifications() {
-        log.verbose("ACCMGR Registering for local notifications")
+        log.debug("Registering for local notifications", feature: "notifications")
         resetLocalNotifications()
         let notificationType: UIUserNotificationType = [.Alert, .Badge, .Sound]
         let notificationSettings = UIUserNotificationSettings(forTypes: notificationType, categories: nil)
@@ -180,13 +165,13 @@ class AccountManager: NSObject {
     }
 
     func resetLocalNotifications() {
-        log.verbose("ACCMGR Resetting local notifications")
+        log.debug("Resetting local notifications", feature: "notifications")
         Defaults.remove(AMNotificationsKey)
         Defaults.synchronize()
     }
 
     func checkLocalNotifications() {
-        log.verbose("ACCMGR Local notifications: \(Defaults.objectForKey(AMNotificationsKey))")
+        log.debug("Notifications status: \(Defaults.objectForKey(AMNotificationsKey))", feature: "notifications")
         if let notificationsOn = Defaults.objectForKey(AMNotificationsKey) as? Bool where notificationsOn {
             return
         }
@@ -200,9 +185,11 @@ class AccountManager: NSObject {
         }
 
         if (self.uploadInProgress) {
+            log.debug("Skipping consent upload, already in progress", feature: "uploadConsent")
             return
         }
 
+        log.debug("Uploading consent file", feature: "uploadConsent")
         self.uploadInProgress = true
         UserManager.sharedManager.pushConsent(consentPath) { [weak self]res in
             if res.ok {
