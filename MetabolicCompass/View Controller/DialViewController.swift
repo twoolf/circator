@@ -181,11 +181,11 @@ class DialViewController : UIViewController, ChartViewDelegate {
             segments = model.cycleSegments
             colors = model.cycleColors
         case 1:
-            segments = model.measureSegments[hrType]!
-            colors = model.measureColors[hrType]!
+            segments = model.measureSegments[hrType] ?? []
+            colors = model.measureColors[hrType] ?? []
         default:
-            segments = model.measureSegments[scType]!
-            colors = model.measureColors[scType]!
+            segments = model.measureSegments[scType] ?? []
+            colors = model.measureColors[scType] ?? []
         }
 
         let pieChartDataSet = PieChartDataSet(yVals: segments.map { $0.1 }, label: "Circadian segments")

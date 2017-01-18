@@ -50,6 +50,8 @@ class AppDelegate: UIResponder, UIApplicationDelegate, WCSessionDelegate
         recycleNotification()
         UINotifications.configureNotifications()
 
+        createShortcutItems()
+
         window = UIWindow(frame: UIScreen.mainScreen().bounds)
         window?.backgroundColor = UIColor.whiteColor()
 
@@ -70,7 +72,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate, WCSessionDelegate
             NSFontAttributeName: ScreenManager.appNavBarFont()
         ]
 
-
         //set custom back button image
         let backBtnImg = UIImage(named: "back-button")
 
@@ -84,12 +85,17 @@ class AppDelegate: UIResponder, UIApplicationDelegate, WCSessionDelegate
 
         let navController  = UINavigationController(rootViewController: mainViewController)
         AccountManager.shared.rootViewController = navController
-        
+
         FontScaleLabel.scaleFactor = ScreenManager.scaleFactor
         FontScaleTextField.scaleFactor = ScreenManager.scaleFactor
 
         window?.rootViewController = navController
         window?.makeKeyAndVisible()
+
+        var launchSuccess = true
+        if let shortcutItem = launchOptions?[UIApplicationLaunchOptionsShortcutItemKey] as? UIApplicationShortcutItem {
+            launchSuccess = launchShortcutActivity(shortcutItem)
+        }
 
         // Add a recycling observer.
         NSNotificationCenter.defaultCenter().addObserver(self, selector: #selector(recycleNotification), name: USNDidUpdateBlackoutNotification, object: nil)
@@ -97,7 +103,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, WCSessionDelegate
         // Add a debugging observer.
         NSNotificationCenter.defaultCenter().addObserver(self, selector: #selector(errorNotification(_:)), name: MCRemoteErrorNotification, object: nil)
 
-        return true
+        return launchSuccess
     }
 
     func application(application: UIApplication, supportedInterfaceOrientationsForWindow window: UIWindow?) -> UIInterfaceOrientationMask {
@@ -152,6 +158,45 @@ class AppDelegate: UIResponder, UIApplicationDelegate, WCSessionDelegate
     func application(application: UIApplication, didReceiveLocalNotification notification: UILocalNotification) {
         log.info("APPDEL received \(notification)")
         NotificationManager.sharedManager.showInApp(notification)
+    }
+
+    func application(application: UIApplication, performActionForShortcutItem shortcutItem: UIApplicationShortcutItem, completionHandler: (Bool) -> Void) {
+        log.debug("Shortcut \"\(shortcutItem.localizedTitle)\" pressed")
+        completionHandler(self.launchShortcutActivity(shortcutItem))
+    }
+
+    func createShortcutItems() {
+        let itemSpecs = [
+            ("Add a Meal", "com.metaboliccompass.meal", "add-meal-button"),
+            ("Add your Sleep", "com.metaboliccompass.sleep", "add-sleep-button"),
+            ("Add Exercise", "com.metaboliccompass.exercise", "add-exercises-button")]
+
+        UIApplication.sharedApplication().shortcutItems =  itemSpecs.map { (title, type, iconName) in
+            let icon = UIApplicationShortcutIcon(templateImageName: iconName)
+            return UIMutableApplicationShortcutItem(type: type, localizedTitle: title, localizedSubtitle: nil, icon: icon, userInfo: nil)
+        }
+    }
+
+    func launchShortcutActivity(shortcutItem: UIApplicationShortcutItem) -> Bool {
+        let storyboard = UIStoryboard(name: "AddEvents", bundle: nil)
+        let controller = storyboard.instantiateViewControllerWithIdentifier("AddMealNavViewController") as! UINavigationController
+        let addController = controller.viewControllers[0] as! AddEventViewController
+
+        if shortcutItem.type == "com.metaboliccompass.meal" {
+            addController.type = .Meal
+        }
+        else if shortcutItem.type == "com.metaboliccompass.sleep" {
+            addController.type = .Sleep
+        }
+        else if shortcutItem.type == "com.metaboliccompass.exercise" {
+            addController.type = .Exercise
+        }
+        else {
+            return false
+        }
+
+        window?.rootViewController?.presentViewController(controller, animated: true, completion: nil)
+        return true
     }
 
     func recycleNotification() {
