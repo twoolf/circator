@@ -67,6 +67,15 @@ public class PreviewManager: NSObject {
 
     public static let supportedTypes:[HKSampleType] = PreviewManager.setupTypes()
 
+    public static let initialPreviewTypes: [HKSampleType] = [
+        HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierBodyMass)!,//
+        HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierHeartRate)!,//
+        HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierStepCount)!,//
+        HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierActiveEnergyBurned)!,//
+        HKObjectType.categoryTypeForIdentifier(HKCategoryTypeIdentifierSleepAnalysis)!,//
+        HKObjectType.correlationTypeForIdentifier(HKCorrelationTypeIdentifierBloodPressure)!,
+    ]
+
     public static let previewChoices: [[HKSampleType]] = [
         [
             HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierBodyMass)!,
@@ -145,7 +154,7 @@ public class PreviewManager: NSObject {
                 return NSKeyedUnarchiver.unarchiveObjectWithData(data) as! HKSampleType
             }
         } else {
-            let defaultTypes = self.supportedTypes
+            let defaultTypes = self.initialPreviewTypes
             self.updatePreviewSampleTypes(defaultTypes)
             return defaultTypes
         }
@@ -216,7 +225,7 @@ public class PreviewManager: NSObject {
                 return NSKeyedUnarchiver.unarchiveObjectWithData(data) as! HKSampleType
             }
         } else {
-            let defaultTypes = self.supportedTypes
+            let defaultTypes = self.initialPreviewTypes
             self.updateChartsSampleTypes(defaultTypes)
             return defaultTypes
         }

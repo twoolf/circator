@@ -50,9 +50,11 @@ public extension Array {
 }
 
 // Constants
-let remoteLogSeqKey = "ios_log"
-let remoteLogSeqIdKey = "seq_id"
-let remoteLogSeqDataKey = "seq_data"
+let remoteLogSeqKey             = "ios_log"
+let remoteLogSeqDeviceCnt       = "0"
+let remoteLogSeqIdKey           = "seq_id"
+let remoteLogSeqDataKey         = "seq_data"
+let remoteLogSeqDevKey          = "seq_dvc"
 
 let remoteSyncSeqIdKey = "seq_id"
 
@@ -263,7 +265,7 @@ public class UploadManager: NSObject {
             for (type, deviceData) in seqs {
                 if let deviceInfo = deviceData as? [String:AnyObject],
                        seqForIOS = deviceInfo[remoteLogSeqKey] as? [String: AnyObject],
-                       seqInfo = seqForIOS["0"] as? [String: AnyObject],
+                       seqInfo = seqForIOS[remoteLogSeqDeviceCnt] as? [String: AnyObject],
                        remoteSeqNum = seqInfo[remoteLogSeqIdKey] as? Int
                 {
                     var doInit = false
@@ -359,18 +361,28 @@ public class UploadManager: NSObject {
     }
 
     public func getRemoteAnchorForType(type: HKSampleType) -> HKQueryAnchor? {
+        let tname = type.displayText ?? type.identifier
         if let deviceInfo = UserManager.sharedManager.getAcquisitionSeq(type) as? [String:AnyObject]
         {
             if let seqForIOS = deviceInfo[remoteLogSeqKey] as? [String: AnyObject],
-                   seqInfo = seqForIOS["0"] as? [String: AnyObject],
+                   seqInfo = seqForIOS[remoteLogSeqDeviceCnt] as? [String: AnyObject],
                    remoteAnchor = seqInfo[remoteLogSeqDataKey] as? String
             {
-                return decodeRemoteAnchor(remoteAnchor)
+                if let remoteDevice = seqInfo[remoteLogSeqDevKey] as? String {
+                    let currentDevice = UIDevice.currentDevice().identifierForVendor?.UUIDString ?? "<no-id>"
+                    if currentDevice == remoteDevice {
+                        return decodeRemoteAnchor(remoteAnchor)
+                    } else {
+                        log.debug("Detected device mismatch, ignoring remote anchor for \(tname) (\(remoteDevice) vs \(currentDevice))", feature: "remoteAnchor")
+                    }
+                } else {
+                    log.debug("No remote device found for anchor, ignoring remote anchor for \(tname)", feature: "remoteAnchor")
+                }
             } else {
-                log.debug("Invalid seq fields for remote anchor decode on \(type.identifier)", feature: "remoteAnchor")
+                log.debug("Invalid seq fields for remote anchor decode on \(tname)", feature: "remoteAnchor")
             }
         } else {
-            log.debug("Invalid seq dict for remote anchor decode on \(type.identifier)", feature: "remoteAnchor")
+            log.debug("Invalid seq dict for remote anchor decode on \(tname)", feature: "remoteAnchor")
         }
         return nil
     }
@@ -444,11 +456,12 @@ public class UploadManager: NSObject {
 
         let seqInfo: [String: AnyObject] = [
             remoteLogSeqIdKey   : logEntry.id,
-            remoteLogSeqDataKey : logEntry.anchor.base64EncodedStringWithOptions(NSDataBase64EncodingOptions(rawValue: 0))
+            remoteLogSeqDataKey : logEntry.anchor.base64EncodedStringWithOptions(NSDataBase64EncodingOptions(rawValue: 0)),
+            remoteLogSeqDevKey  : UIDevice.currentDevice().identifierForVendor!.UUIDString
         ]
 
         let deviceInfo: [String: AnyObject] = [
-            remoteLogSeqKey: (["0": seqInfo] as AnyObject)
+            remoteLogSeqKey: ([remoteLogSeqDeviceCnt: seqInfo] as AnyObject)
         ]
 
         let commands: [String:AnyObject] = [

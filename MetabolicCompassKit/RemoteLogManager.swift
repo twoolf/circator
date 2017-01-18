@@ -1,6 +1,6 @@
 //
 //  RemoteLog.swift
-//  MetabolicCompass
+//  MCCircadianQueries
 //
 //  Created by Yanif Ahmad on 1/14/17.
 //  Copyright © 2017 Yanif Ahmad, Tom Woolf. All rights reserved.
@@ -11,6 +11,8 @@ import MCCircadianQueries
 import Alamofire
 import Async
 import LogKit
+import SwiftDate
+import SwiftyUserDefaults
 
 // Map of filenames to log modules.
 private let MCLogModules : [String: String] = [
@@ -21,6 +23,7 @@ private let MCLogModules : [String: String] = [
     "IOSHealthManager.swift"        : "HealthManager",
     "NotificationManager.swift"     : "NotificationManager",
     "PopulationHealthManager.swift" : "PopulationHealthManager",
+    "RemoteLogManager.swift"        : "RemoteLogManager",
     "ServiceAPI.swift"              : "API",
     "UploadManager.swift"           : "UploadManager",
     "UserManager.swift"             : "UserManager",
@@ -104,6 +107,7 @@ private let MCLogFeatures : [String: String] = [
     "fetchWeeklyFastType"                           : "HealthManager",
     "fetchWeeklyEatAndExercise"                     : "HealthManager",
 
+    "anchorQuery"                                   : "HealthManager",
     "clearCache"                                    : "HealthManager",
     "fetchCharts"                                   : "HealthManager",
     "invalidateCache"                               : "HealthManager",
@@ -191,6 +195,9 @@ private let MCLogFeatures : [String: String] = [
     // Settings
 ]
 
+public let RLogExpiryKey = "RLogExpiryKey"
+public let RLogDidExpire = "RLogDidExpire"
+
 public class RemoteLogManager {
 
     public let log = RemoteLog.sharedInstance
@@ -202,6 +209,7 @@ public class RemoteLogManager {
     private let defaultName = "Default"
     private let defaultConfig: [String: AnyObject] = [
         "API"               : LXPriorityLevel.Info.rawValue,
+        "RemoteLogManager"  : LXPriorityLevel.Debug.rawValue,
 
         "Login"             : [
             "default"                       : LXPriorityLevel.Info.rawValue,
@@ -211,10 +219,16 @@ public class RemoteLogManager {
 
         "HealthManager"     : [
             "default"                       : LXPriorityLevel.Info.rawValue,
+            //"anchorQuery"                   : LXPriorityLevel.Debug.rawValue,
+            //"invalidateCache"               : LXPriorityLevel.Debug.rawValue,
+            //"fetchMostRecentSamples"        : LXPriorityLevel.Debug.rawValue,
+            //"cache:fetchMostRecentSamples"  : LXPriorityLevel.Debug.rawValue,
         ],
 
         "UploadManager"     : [
             "default"                       : LXPriorityLevel.Info.rawValue,
+            //"remoteAnchor"                  : LXPriorityLevel.Debug.rawValue,
+            //"getNextAnchor"                 : LXPriorityLevel.Debug.rawValue,
             "syncSeqIds"                    : LXPriorityLevel.Debug.rawValue,
             "status:syncSeqIds"             : LXPriorityLevel.Debug.rawValue,
         ],
@@ -246,7 +260,13 @@ public class RemoteLogManager {
         Async.customQueue(log.configQueue) {
             self.log.setDeviceId(deviceId)
             if self.log.url == nil { self.log.setURL(token); self.log.loadRemote() }
-            if self.log.configName == MCInitLogConfigName { self.log.setLogConfig(self.defaultName, cfg: self.defaultConfig) }
+
+            // Set default config if we have an empty config, or if the config has expired.
+            let now = NSDate()
+            let expiry = Defaults.objectForKey(RLogExpiryKey) as? NSDate ?? now
+            if now > expiry { self.resetConfig() }
+            else if self.log.configName == MCInitLogConfigName { self.log.setLogConfig(self.defaultName, cfg: self.defaultConfig) }
+
             self.log.setLogModules(MCLogModules)
         }
     }
@@ -258,7 +278,7 @@ public class RemoteLogManager {
             if let nested = v as? [String:AnyObject] {
                 let nv: [(String, AnyObject)] = nested.flatMap({ k2,v2 in
                     if let l2 = v2 as? String, p2 = self.log.priority(l2) { return (k2, p2.rawValue) }
-                    log.warning("Skipping log config entry: \(k), \(k2) => \(v2)")
+                    log.debug("Skipping log config entry: \(k), \(k2) => \(v2)")
                     failed = true
                     return nil
                 })
@@ -267,7 +287,7 @@ public class RemoteLogManager {
             else if let flat = v as? String, p = self.log.priority(flat) {
                 return (k, p.rawValue)
             }
-            log.warning("Skipping log config entry: \(k) => \(v)")
+            log.debug("Skipping log config entry: \(k) => \(v)")
             failed = true
             return nil
         })
@@ -279,8 +299,17 @@ public class RemoteLogManager {
             _, _, result in
             let pullSuccess = result.isSuccess
             if let rv = result.value as? [String: AnyObject] where pullSuccess {
-                self.log.info("Log reconfiguration result: \(rv)")
-                if let n = rv["name"] as? String, c = rv["config"] as? [String: AnyObject], cfg = self.parseLogConfig(c) {
+                self.log.debug("Log reconfiguration result: \(rv)")
+                if let n = rv["name"] as? String,
+                       c = rv["config"] as? [String: AnyObject], cfg = self.parseLogConfig(c)
+                {
+                    if let ttl = rv["ttl"] as? Int {
+                        let ttlSecs = ttl * 60
+                        let expiry = NSDate() + ttlSecs.seconds
+                        self.log.debug("Reconfiguration TTL: \(ttl), date: \(expiry)")
+                        Defaults.setObject(expiry, forKey: RLogExpiryKey)
+                        NSTimer.scheduledTimerWithTimeInterval(Double(ttlSecs), target: self, selector: #selector(self.resetConfig), userInfo: nil, repeats: false)
+                    }
                     self.log.setLogConfig(n, cfg: cfg)
                 }
                 else {
@@ -289,5 +318,11 @@ public class RemoteLogManager {
             }
             completion(pullSuccess)
         }
+    }
+
+    @objc func resetConfig() {
+        self.log.debug("Resetting remote log to a default configuration")
+        self.log.setLogConfig(self.defaultName, cfg: self.defaultConfig)
+        NSNotificationCenter.defaultCenter().postNotificationName(RLogDidExpire, object: self)
     }
 }
