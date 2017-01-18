@@ -18,6 +18,8 @@ private let WCActivityKey = "Circ"
 private let WCHeartRateKey = HKQuantityTypeIdentifierHeartRate
 private let WCStepCountKey = "HKQuantityTypeIdentifierStepCount"
 
+public let CDMNeedsRefresh = "CDMNeedsRefresh"
+
 // Accumulator:
 // i. boolean indicating whether the current endpoint starts an interval.
 // ii. the previous event timestamp.
@@ -90,7 +92,9 @@ public class CycleDataModel : NSObject {
         }
         super.init()
         NSNotificationCenter.defaultCenter().addObserver(self, selector: #selector(invalidateActivityEntries), name: HMDidUpdateCircadianEvents, object: nil)
-        NSNotificationCenter.defaultCenter().addObserver(self, selector: #selector(invalidateMeasureEntries), name: HMDidUpdateMeasures, object: nil)
+        MCHealthManager.sharedManager.measureInvalidationsByType.forEach {
+            NSNotificationCenter.defaultCenter().addObserver(self, selector: #selector(invalidateMeasureEntries), name: HMDidUpdateMeasuresPfx + $0, object: nil)
+        }
     }
 
     public func updateData(completion: NSError? -> Void) {
@@ -387,12 +391,14 @@ public class CycleDataModel : NSObject {
     func invalidateActivityEntries(note: NSNotification) {
         log.info("Invalidating cycle window cache for circadian activities")
         cachedWindows.removeObjectForKey(WCActivityKey)
+        NSNotificationCenter.defaultCenter().postNotificationName(CDMNeedsRefresh, object: self, userInfo: ["type": WCActivityKey])
     }
 
     func invalidateMeasureEntries(note: NSNotification) {
         if let info = note.userInfo, sampleTypeId = info["type"] as? String {
             log.info("Invalidating cycle window cache for \(sampleTypeId)")
             cachedWindows.removeObjectForKey(sampleTypeId)
+            NSNotificationCenter.defaultCenter().postNotificationName(CDMNeedsRefresh, object: self, userInfo: ["type": sampleTypeId])
         }
     }
 }

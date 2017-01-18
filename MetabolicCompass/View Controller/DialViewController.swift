@@ -21,6 +21,8 @@ private let dialLegendLabelSize: CGFloat = 14.0
 
 class DialViewController : UIViewController, ChartViewDelegate {
 
+    var visible: Bool = false
+
     var activityIndicator: NVActivityIndicatorView! = nil
 
     lazy var pieChart: PieChartView = {
@@ -83,7 +85,7 @@ class DialViewController : UIViewController, ChartViewDelegate {
 
     override func viewWillAppear(animated: Bool) {
         super.viewWillAppear(animated)
-        self.activityIndicator?.startAnimating()
+        self.visible = true
         self.logContentView()
         self.refreshData()
     }
@@ -91,6 +93,11 @@ class DialViewController : UIViewController, ChartViewDelegate {
     override func viewWillDisappear(animated: Bool) {
         super.viewWillDisappear(animated)
         self.logContentView(false)
+    }
+
+    override func viewDidDisappear(animated: Bool) {
+        super.viewDidDisappear(animated)
+        self.visible = false
     }
 
     override func viewDidLoad() {
@@ -157,6 +164,8 @@ class DialViewController : UIViewController, ChartViewDelegate {
         view.addConstraints(constraints)
 
         setupActivityIndicator()
+
+        NSNotificationCenter.defaultCenter().addObserver(self, selector: #selector(self.invalidateView), name: CDMNeedsRefresh, object: nil)
     }
 
     func refreshPieChart() {
@@ -242,6 +251,7 @@ class DialViewController : UIViewController, ChartViewDelegate {
     }
 
     func refreshData() {
+        self.activityIndicator?.startAnimating()
         AnalysisDataModel.sharedInstance.cycleModel.updateData { error in
             guard error == nil else {
                 log.error(error!.localizedDescription)
@@ -263,6 +273,14 @@ class DialViewController : UIViewController, ChartViewDelegate {
         Async.main {
             self.refreshPieChart()
             self.refreshLegend()
+        }
+    }
+
+    func invalidateView(note: NSNotification) {
+        // Reload data if the view is currently visible.
+        if ( self.isViewLoaded() && (self.view.window != nil || self.visible) ) {
+            self.refreshData()
+            self.view.setNeedsDisplay()
         }
     }
 
@@ -298,7 +316,7 @@ class DialViewController : UIViewController, ChartViewDelegate {
 
         case 2:
             if let opt = entry.data as? Double?, steps = opt {
-                entryStr += "\n" + String(format: "%.4g", steps) + " steps"
+                entryStr += "\n" + String(format: "%.6g", steps) + " steps"
             }
 
         default:

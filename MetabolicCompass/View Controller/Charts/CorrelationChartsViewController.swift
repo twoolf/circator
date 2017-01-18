@@ -9,6 +9,7 @@
 import UIKit
 import Charts
 import HealthKit
+import MCCircadianQueries
 import MetabolicCompassKit
 import Crashlytics
 import SwiftDate

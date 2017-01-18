@@ -13,11 +13,6 @@ import Async
 import SwiftDate
 import MCCircadianQueries
 
-// Constants.
-public let HMDidUpdateRecentSamplesNotification = "HMDidUpdateRecentSamplesNotification"
-public let HMDidUpdatedChartsData = "HMDidUpdatedChartsData"
-
-
 public class IOSHealthManager: NSObject, WCSessionDelegate {
 
     public static let sharedManager = IOSHealthManager()
@@ -122,9 +117,11 @@ public class IOSHealthManager: NSObject, WCSessionDelegate {
                         }
                     }
 
+                    log.debug("Anchor query for \(tname)", feature: "anchorQuery")
                     self.fetchAnchoredSamplesOfType(type, predicate: predicate, anchor: anchor, maxResults: maxResultsPerQuery, callContinuously: false) {
                         (added, deleted, newAnchor, error) -> Void in
 
+                        log.debug("Anchor query completion for \(tname), size: +\(added.count) -\(deleted.count)", feature: "anchorQuery")
                         if added.count > 0 || deleted.count > 0 {
                             MCHealthManager.sharedManager.invalidateCacheForUpdates(type, added: (asCircadian ? added : nil))
                         }

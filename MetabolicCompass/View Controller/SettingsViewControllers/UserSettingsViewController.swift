@@ -61,6 +61,7 @@ class UserSettingsViewController: BaseViewController {
         super.viewDidLoad()
         setupSettings()
         self.setupFormer()
+        NSNotificationCenter.defaultCenter().addObserver(self, selector: #selector(self.refreshRemoteLogDisplay), name: RLogDidExpire, object: nil)
     }
 
     func toggleEditing(asEdited: Bool = true) {
@@ -381,18 +382,22 @@ class UserSettingsViewController: BaseViewController {
         self.presentViewController(alertController, animated: true, completion: nil)
     }
 
+    func refreshRemoteLogDisplay() {
+        Async.main(after: 0.2) {
+            log.info("RemoteLogManager config name \(RemoteLogManager.sharedManager.log.configName)")
+            self.remoteLogConfigLabel.cellUpdate {
+                $0.subTextLabel.text = RemoteLogManager.sharedManager.log.configName
+                $0.subTextLabel.setNeedsDisplay()
+            }
+        }
+    }
+
     func refreshRemoteLogConfig(sender: UIButton) {
         if RemoteLogManager.sharedManager.log.remote() {
             log.info("RemoteLogManager reconfiguring...")
             RemoteLogManager.sharedManager.reconfigure { success in
                 log.info("RemoteLogManager reconfiguration \(success ? "successful" : "failed")!")
-                Async.main(after: 0.2) {
-                    log.info("RemoteLogManager config name \(RemoteLogManager.sharedManager.log.configName)")
-                    self.remoteLogConfigLabel.cellUpdate {
-                        $0.subTextLabel.text = RemoteLogManager.sharedManager.log.configName
-                        $0.subTextLabel.setNeedsDisplay()
-                    }
-                }
+                self.refreshRemoteLogDisplay()
             }
         } else {
             log.info("Skipping RemoteLogManager configuration refresh (not in remote mode)")

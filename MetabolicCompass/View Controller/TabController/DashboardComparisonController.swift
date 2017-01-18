@@ -55,6 +55,7 @@ class DashboardComparisonController: UIViewController, UITableViewDelegate, UITa
 
         self.tableView.reloadData()
         NSNotificationCenter.defaultCenter().addObserver(self, selector: #selector(contentDidUpdate), name: HMDidUpdateRecentSamplesNotification, object: nil)
+        NSNotificationCenter.defaultCenter().addObserver(self, selector: #selector(refreshData), name: HMDidUpdateAnyMeasures, object: nil)
         NSNotificationCenter.defaultCenter().addObserver(self, selector: #selector(updateContent), name: UIApplicationDidBecomeActiveNotification, object: nil)
         logContentView()
     }
@@ -93,6 +94,10 @@ class DashboardComparisonController: UIViewController, UITableViewDelegate, UITa
     func updateContent() {
         self.startActivityIndicator()
         AccountManager.shared.contentManager.initializeBackgroundWork()
+    }
+
+    func refreshData() {
+        ComparisonDataModel.sharedManager.updateIndividualData(PreviewManager.previewSampleTypes) { _ in () }
     }
 
     //MARK: UITableViewDataSource
