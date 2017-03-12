@@ -56,7 +56,93 @@ class MainSettingsViewController: BaseViewController, UICollectionViewDataSource
         alertController.addAction(okAction)
         self.presentViewController(alertController, animated: true, completion: nil)
     }
-    
+
+    func setupBackground() {
+        let backgroundImage = UIImageView(image: UIImage(named: "university_logo"))
+        backgroundImage.contentMode = .Center
+        backgroundImage.layer.opacity = 0.02
+        backgroundImage.translatesAutoresizingMaskIntoConstraints = false
+        self.view.insertSubview(backgroundImage, atIndex: 0)
+
+        let bgConstraints: [NSLayoutConstraint] = [
+            backgroundImage.centerXAnchor.constraintEqualToAnchor(self.view.centerXAnchor),
+            backgroundImage.centerYAnchor.constraintEqualToAnchor(self.view.centerYAnchor)
+        ]
+
+        self.view.addConstraints(bgConstraints)
+    }
+
+    func socialAction() {
+        let alertController = UIAlertController(title: nil, message: "Tell your friends about us!", preferredStyle: .ActionSheet)
+
+        let doShare : String -> Void = { serviceType in
+            if let vc = SLComposeViewController(forServiceType: serviceType) {
+                let msg = "Check out Metabolic Compass -- tracks your body clock for medical research on metabolic syndrome at Johns Hopkins."
+                vc.setInitialText(msg)
+                vc.addURL(NSURL(string: "https://www.metaboliccompass.com"))
+                self.presentViewController(vc, animated: true, completion: nil)
+            } else {
+                let service = serviceType == SLServiceTypeTwitter ? "Twitter" : "Facebook"
+                self.showAlert(withMessage: "Please log into your \(service) account from your iOS Settings")
+            }
+        }
+
+        let withKeepAction = UIAlertAction(title: "Share on Twitter", style: .Default) {
+            (alertAction: UIAlertAction!) in
+            doShare(SLServiceTypeTwitter)
+        }
+
+        let withDeleteAction = UIAlertAction(title: "Share on Facebook", style: .Default) {
+            (alertAction: UIAlertAction!) in
+            doShare(SLServiceTypeFacebook)
+        }
+
+        let cancelAction = UIAlertAction(title: "Cancel", style: .Cancel, handler: nil)
+        alertController.addAction(withKeepAction)
+        alertController.addAction(withDeleteAction)
+        alertController.addAction(cancelAction)
+        self.presentViewController(alertController, animated: true, completion: nil)
+    }
+
+    func webAction(asPrivacyPolicy: Bool) {
+        let vc = SFSafariViewController(URL: (asPrivacyPolicy ? MCRouter.privacyPolicyURL : MCRouter.aboutURL)!, entersReaderIfAvailable: false)
+        presentViewController(vc, animated: true, completion: nil)
+    }
+
+    func withdrawAction() {
+        let alertController = UIAlertController(title: nil, message: "Are you sure you wish to withdraw?", preferredStyle: .ActionSheet)
+
+        let doWithdraw = { keepData in
+            AccountManager.shared.doWithdraw(keepData) { success in
+                NSNotificationCenter.defaultCenter().postNotificationName(UMDidLogoutNotification, object: nil)
+                AccountManager.shared.loginOrRegister()
+                if success {
+                    let msg = "Thanks for using Metabolic Compass!"
+                    UINotifications.genericMsg(self.navigationController!, msg: msg, pop: true, asNav: true)
+                } else {
+                    let msg = "Failed to withdraw, please try again later"
+                    UINotifications.genericError(self.navigationController!, msg: msg, pop: false, asNav: true)
+                }
+            }
+        }
+
+        let withKeepAction = UIAlertAction(title: "Yes, and keep my data for research", style: .Default) {
+            (alertAction: UIAlertAction!) in
+            doWithdraw(true)
+        }
+
+        let withDeleteAction = UIAlertAction(title: "Yes, but delete all of my data", style: .Destructive) {
+            (alertAction: UIAlertAction!) in
+            doWithdraw(false)
+        }
+
+        let cancelAction = UIAlertAction(title: "Cancel", style: .Cancel, handler: nil)
+        alertController.addAction(withKeepAction)
+        alertController.addAction(withDeleteAction)
+        alertController.addAction(cancelAction)
+        self.presentViewController(alertController, animated: true, completion: nil)
+    }
+
     // MARK: - Data source
     
     private let segueProfileIdentifier = "profileSegue"

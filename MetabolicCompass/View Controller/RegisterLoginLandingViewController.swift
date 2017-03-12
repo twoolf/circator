@@ -50,4 +50,10 @@ class RegisterLoginLandingViewController: BaseViewController {
             regViewController.registerCompletion = completion
         }        
     }
+    
+    @IBAction func privacyPolicy() {
+        let svc = SFSafariViewController(URL: MCRouter.privacyPolicyURL!)
+        self.presentViewController(svc, animated: true, completion: nil)
+    }
+
 }

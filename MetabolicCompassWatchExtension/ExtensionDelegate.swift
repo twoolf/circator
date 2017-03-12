@@ -14,6 +14,15 @@ let NotificationPurchasedMovieOnWatch = "PurchasedMovieOnWatch"
 
 class ExtensionDelegate: NSObject, WKExtensionDelegate, WCSessionDelegate {
     
+    func session(session: WCSession, activationDidCompleteWithState activationState: WCSessionActivationState, error: NSError?){
+    }
+    
+    func sessionDidBecomeInactive(session: WCSession) {
+    }
+    
+    func sessionDidDeactivate(session: WCSession) {
+    }
+    
     lazy var documentsDirectory: String = {
         return NSSearchPathForDirectoriesInDomains(NSSearchPathDirectory.DocumentDirectory, NSSearchPathDomainMask.UserDomainMask, true).first!
     }()
@@ -56,7 +65,7 @@ class ExtensionDelegate: NSObject, WKExtensionDelegate, WCSessionDelegate {
         }
     }
     
-    func session(session: WCSession,
+    @objc func session(session: WCSession,
                  didReceiveUserInfo userInfo: [String : AnyObject]) {
         dispatch_async(dispatch_get_main_queue()) { () -> Void in
             if let fastingHrs  = userInfo["fastingHrs"]  as? String,

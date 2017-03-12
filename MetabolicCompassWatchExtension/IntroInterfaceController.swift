@@ -5,7 +5,6 @@
 //  Created by Mariano on 3/2/16.
 //  Copyright © 2016 Yanif Ahmad, Tom Woolf. All rights reserved.
 //
-
 import WatchKit
 import WatchConnectivity
 //import Async
@@ -667,6 +666,14 @@ let stEat = 1.0
 
 class IntroInterfaceController: WKInterfaceController, WCSessionDelegate  {
     
+    func session(session: WCSession, activationDidCompleteWithState activationState: WCSessionActivationState, error: NSError?){
+    }
+    
+    func sessionDidBecomeInactive(session: WCSession) {
+    }
+    
+    func sessionDidDeactivate(session: WCSession) {
+    }
     var heightHK, weightHK:HKQuantitySample?
     var proteinHK, fatHK, carbHK:HKQuantitySample?
     var bmiHK:Double = 22.1
@@ -1308,6 +1315,265 @@ class IntroInterfaceController: WKInterfaceController, WCSessionDelegate  {
         IntroInterfaceController.fetchAggregatedCircadianEvents(predicate, aggregator: aggregator, initial: initial, final: final, completion: completion)
     }
     
+    }
+    
+    class func fetchCircadianEventIntervals(startDate: NSDate = 1.days.ago,
+                                      endDate: NSDate = NSDate(),
+                                      completion: HMCircadianBlock)
+    {
+        typealias Event = (NSDate, CircadianEvent)
+        typealias IEvent = (Double, CircadianEvent)
+        
+        let sleepTy = HKObjectType.categoryTypeForIdentifier(HKCategoryTypeIdentifierSleepAnalysis)!
+        let workoutTy = HKWorkoutType.workoutType()
+        let datePredicate = HKQuery.predicateForSamplesWithStartDate(startDate, endDate: endDate, options: .None)
+        let typesAndPredicates = [sleepTy: datePredicate, workoutTy: datePredicate]
+        
+        fetchSamples(typesAndPredicates) { (events, error) -> Void in
+            guard error == nil && !events.isEmpty else {
+                completion(intervals: [], error: error)
+                return
+            }
+            let extendedEvents = events.flatMap { (ty,vals) -> [Event]? in
+                switch ty {
+                case is HKWorkoutType:
+                    return vals.flatMap { s -> [Event] in
+                        let st = s.startDate < startDate ? startDate : s.startDate
+                        let en = s.endDate
+                        guard let v = s as? HKWorkout else { return [] }
+                        switch v.workoutActivityType {
+                        case HKWorkoutActivityType.PreparationAndRecovery:
+                            return [(st, .Meal), (en, .Meal)]
+                        default:
+                            return [(st, .Exercise), (en, .Exercise)]
+                            MetricsStore.sharedInstance.Exercise = en
+                        }
+                    }
+                    
+                case is HKCategoryType:
+                    guard ty.identifier == HKCategoryTypeIdentifierSleepAnalysis else {
+                        return nil
+                    }
+                    return vals.flatMap { s -> [Event] in
+                        let st = s.startDate < startDate ? startDate : s.startDate
+                        let en = s.endDate
+                        return [(st, .Sleep), (en, .Sleep)]
+                        MetricsStore.sharedInstance.Sleep = en
+                    }
+                    
+                default:
+                    print("Unexpected type \(ty.identifier) while fetching circadian event intervals")
+                    return nil
+                }
+            }
+            
+            let sortedEvents = extendedEvents.flatten().sort { (a,b) in return a.0 < b.0 }
+            let epsilon = 1.seconds
+            let lastev = sortedEvents.last ?? sortedEvents.first!
+            let lst = lastev.0 == endDate ? [] : [(lastev.0, CircadianEvent.Fast), (endDate, CircadianEvent.Fast)]
+            
+            
+            let initialAccumulator : ([Event], Bool, Event!) = ([], true, nil)
+            let endpointArray = sortedEvents.reduce(initialAccumulator, combine:
+                { (acc, event) in
+                    let eventEndpointDate = event.0
+                    let eventMetabolicState = event.1
+                    
+                    let resultArray = acc.0
+                    let eventIsIntervalStart = acc.1
+                    let prevEvent = acc.2
+                    
+                    let nextEventAsIntervalStart = !acc.1
+                    
+                    guard prevEvent != nil else {
+                        // Skip prefix indicates whether we should add a fasting interval before the first event.
+                        let skipPrefix = eventEndpointDate == startDate || startDate == NSDate.distantPast()
+                        let newResultArray = (skipPrefix ? [event] : [(startDate, CircadianEvent.Fast), (eventEndpointDate, CircadianEvent.Fast), event])
+                        return (newResultArray, nextEventAsIntervalStart, event)
+                    }
+                    
+                    let prevEventEndpointDate = prevEvent.0
+                    
+                    if (eventIsIntervalStart && prevEventEndpointDate == eventEndpointDate) {
+                        
+                        let newResult = resultArray + [(eventEndpointDate + epsilon, eventMetabolicState)]
+                        return (newResult, nextEventAsIntervalStart, event)
+                    } else if eventIsIntervalStart {
+                        
+                        let fastEventStart = prevEventEndpointDate + epsilon
+                        let modifiedEventEndpoint = eventEndpointDate - epsilon
+                        let fastEventEnd = modifiedEventEndpoint - 1.days > fastEventStart ? fastEventStart + 1.days : modifiedEventEndpoint
+                        let newResult = resultArray + [(fastEventStart, .Fast), (fastEventEnd, .Fast), event]
+                        return (newResult, nextEventAsIntervalStart, event)
+                    } else {
+                        
+                        return (resultArray + [event], nextEventAsIntervalStart, event)
+                    }
+            }).0 + lst  // Add the final fasting event to the event endpoint array.
+            
+            completion(intervals: endpointArray, error: error)
+        }
+    }
+    
+    class func fetchSamples(typesAndPredicates: [HKSampleType: NSPredicate?], completion: HMTypedSampleBlock)
+    {
+        let group = dispatch_group_create()
+        var samplesByType = [HKSampleType: [MCSample]]()
+        
+        typesAndPredicates.forEach { (type, predicate) -> () in
+            dispatch_group_enter(group)
+            IntroInterfaceController.fetchSamplesOfType(type, predicate: predicate, limit: noLimit) { (samples, error) in
+                guard error == nil else {
+                    //                        print("Could not fetch recent samples for \(type.displayText): \(error)")
+                    dispatch_group_leave(group)
+                    return
+                }
+                guard samples.isEmpty == false else {
+                    //                        print("No recent samples available for \(type.displayText)")
+                    dispatch_group_leave(group)
+                    return
+                }
+                samplesByType[type] = samples
+                dispatch_group_leave(group)
+            }
+        }
+        
+        dispatch_group_notify(group, dispatch_get_main_queue()) {
+            // TODO: partial error handling, i.e., when a subset of the desired types fail in their queries.
+            completion(samples: samplesByType, error: nil)
+        }
+    }
+    
+    class func valueOfCircadianEvent(e: CircadianEvent) -> Double {
+        switch e {
+        case .Meal:
+            return stEat
+            
+        case .Fast:
+            return stFast
+            
+        case .Exercise:
+            return stWorkout
+            
+        case .Sleep:
+            return stSleep
+        }
+    }
+    
+    
+    class func fetchSamplesOfType(sampleType: HKSampleType, predicate: NSPredicate? = nil, limit: Int = noLimit,
+                            sortDescriptors: [NSSortDescriptor]? = [dateAsc], completion: HMSampleBlock)
+    {
+        let query = HKSampleQuery(sampleType: sampleType, predicate: predicate, limit: limit, sortDescriptors: sortDescriptors) {
+            (query, samples, error) -> Void in
+            guard error == nil else {
+                completion(samples: [], error: error)
+                return
+            }
+            completion(samples: samples?.map { $0 as! MCSample } ?? [], error: nil)
+        }
+        HKHealthStore().executeQuery(query)
+    }
+    
+    // Query food diary events stored as prep and recovery workouts in HealthKit
+    public func fetchPreparationAndRecoveryWorkout(oldestFirst: Bool, beginDate: NSDate? = nil, completion: HMSampleBlock)
+    {
+        let predicate = IntroInterfaceController.mealsSincePredicate(beginDate)
+        let sortDescriptor = NSSortDescriptor(key:HKSampleSortIdentifierStartDate, ascending: oldestFirst)
+        IntroInterfaceController.fetchSamplesOfType(HKWorkoutType.workoutType(), predicate: predicate, limit: noLimit, sortDescriptors: [sortDescriptor], completion: completion)
+    }
+    
+    class func fetchAggregatedCircadianEvents<T>(predicate: ((NSDate, CircadianEvent) -> Bool)? = nil,
+                                               aggregator: ((T, (NSDate, CircadianEvent)) -> T), initial: T, final: (T -> [(NSDate, Double)]),
+                                               completion: HMCircadianAggregateBlock)
+    {
+        IntroInterfaceController.fetchCircadianEventIntervals(NSDate.distantPast()) { (intervals, error) in
+            guard error == nil else {
+                completion(aggregates: [], error: error)
+                return
+            }
+            
+            let filtered = predicate == nil ? intervals : intervals.filter(predicate!)
+            let accum = filtered.reduce(initial, combine: aggregator)
+            completion(aggregates: final(accum), error: nil)
+        }
+    }
+    
+    class func fetchEatingTimes(completion: HMCircadianAggregateBlock) {
+        typealias Accum = (Bool, NSDate!, [NSDate: Double])
+        let aggregator : (Accum, (NSDate, CircadianEvent)) -> Accum = { (acc, e) in
+            if !acc.0 && acc.1 != nil {
+                switch e.1 {
+                case .Meal:
+                    let day = acc.1.startOf(.Day, inRegion: Region())
+                    var nacc = acc.2
+                    nacc.updateValue((acc.2[day] ?? 0.0) + e.0.timeIntervalSinceDate(acc.1!), forKey: day)
+                    return (!acc.0, e.0, nacc)
+                default:
+                    return (!acc.0, e.0, acc.2)
+                }
+            }
+            return (!acc.0, e.0, acc.2)
+        }
+        let initial : Accum = (true, nil, [:])
+        let final : (Accum -> [(NSDate, Double)]) = { acc in
+            return acc.2.map { return ($0.0, $0.1 / 3600.0) }.sort { (a,b) in return a.0 < b.0 }
+        }
+        
+        IntroInterfaceController.fetchAggregatedCircadianEvents(nil, aggregator: aggregator, initial: initial, final: final, completion: completion)
+    }
+    
+    public func fetchMaxFastingTimes(completion: HMCircadianAggregateBlock)
+    {
+        // Accumulator:
+        // i. boolean indicating event start.
+        // ii. start of this fasting event.
+        // iii. the previous event.
+        // iv. a dictionary of accumulated fasting intervals.
+        typealias Accum = (Bool, NSDate!, NSDate!, [NSDate: Double])
+        
+        let predicate : (NSDate, CircadianEvent) -> Bool = {
+            switch $0.1 {
+            case .Exercise, .Fast, .Sleep:
+                return true
+            default:
+                return false
+            }
+        }
+        
+        let aggregator : (Accum, (NSDate, CircadianEvent)) -> Accum = { (acc, e) in
+            var byDay = acc.3
+            let (iStart, prevFast, prevEvt) = (acc.0, acc.1, acc.2)
+            var nextFast = prevFast
+            if iStart && prevFast != nil && prevEvt != nil && e.0 != prevEvt {
+                let fastStartDay = prevFast.startOf(.Day, inRegion: Region())
+                let duration = prevEvt.timeIntervalSinceDate(prevFast)
+                let currentMax = byDay[fastStartDay] ?? duration
+                byDay.updateValue(currentMax >= duration ? currentMax : duration, forKey: fastStartDay)
+                nextFast = e.0
+            } else if iStart && prevFast == nil {
+                nextFast = e.0
+            }
+            return (!acc.0, nextFast, e.0, byDay)
+        }
+        
+        let initial : Accum = (true, nil, nil, [:])
+        let final : Accum -> [(NSDate, Double)] = { acc in
+            var byDay = acc.3
+            if let finalFast = acc.1, finalEvt = acc.2 {
+                if finalFast != finalEvt {
+                    let fastStartDay = finalFast.startOf(.Day, inRegion: Region())
+                    let duration = finalEvt.timeIntervalSinceDate(finalFast)
+                    let currentMax = byDay[fastStartDay] ?? duration
+                    byDay.updateValue(currentMax >= duration ? currentMax : duration, forKey: fastStartDay)
+                }
+            }
+            return byDay.map { return ($0.0, $0.1 / 3600.0) }.sort { (a,b) in return a.0 < b.0 }
+        }
+        
+        IntroInterfaceController.fetchAggregatedCircadianEvents(predicate, aggregator: aggregator, initial: initial, final: final, completion: completion)
+    }
+    
     class func mealsSincePredicate(startDate: NSDate? = nil, endDate: NSDate = NSDate()) -> NSPredicate? {
         var predicate : NSPredicate? = nil
         if let st = startDate {
@@ -1450,6 +1716,8 @@ class IntroInterfaceController: WKInterfaceController, WCSessionDelegate  {
  
  
  
+ 
+ 
                                     } else {
                                         prevStateWasFasting = prevEvent == nil ? false : prevEvent.1 != self.stEat
 
@@ -1525,3 +1793,40 @@ class IntroInterfaceController: WKInterfaceController, WCSessionDelegate  {
  */
 
 
+/*
+        // This method is called when watch view controller is no longer visible
+        
+        updateHealthInfo()
+        MetricsStore.sharedInstance.weight = weightLocalizedString
+        MetricsStore.sharedInstance.BMI = HKBMIString
+        MetricsStore.sharedInstance.Fat = "90"
+        MetricsStore.sharedInstance.Carbohydrate = "190"
+        MetricsStore.sharedInstance.Protein = "290"
+        
+ 
+       
+        
+        //        HealthMetrics.saveConditions(self.healthMetrics)
+        //        print("should have written to file: \(weightLocalizedString)")
+        //            print("should have writtento file: \(bmiHK)")
+        //        print("should have written to file: \(HKBMIString)")
+        //    healthMetrics.BMI = "check"
+        //    HealthMetrics.updateBMI(healthMetrics)
+ //   }
+//}
+/*extension IntroInterfaceController {
+ func refresh() {
+ let yesterday = NSDate(timeIntervalSinceNow: -24 * 60 * 60)
+ let today = NSDate()
+ healthConditions.loadWeightMetrics(from: yesterday, to: today) { success in
+ dispatch_async(dispatch_get_main_queue()) {
+ if (success) {
+ HealthConditions.saveConditions(self.healthConditions)
+ }
+ else {
+ print("Failed to load data")
+ }
+ }
+ }
+ */
+ */

@@ -487,7 +487,7 @@ public class ManageEventMenu: UIView, PathMenuItemDelegate, UITableViewDelegate,
         return CGRectContainsPoint(startButton!.frame, point)
     }
 
-    override public func animationDidStop(anim: CAAnimation, finished flag: Bool) {
+    public func animationDidStop(anim: CAAnimation, finished flag: Bool) {
         if let animId = anim.valueForKey("id") {
             if animId.isEqual("lastAnimation") {
                 delegate?.manageEventMenuDidFinishAnimationClose(self)
@@ -580,7 +580,7 @@ public class ManageEventMenu: UIView, PathMenuItemDelegate, UITableViewDelegate,
         animationgroup.duration       = CFTimeInterval(animationDuration!)
         animationgroup.fillMode       = kCAFillModeForwards
         animationgroup.timingFunction = CAMediaTimingFunction(name: kCAMediaTimingFunctionEaseIn)
-        animationgroup.delegate = self
+//        animationgroup.delegate = self
 
         if flag == 10 {
             animationgroup.setValue("firstAnimation", forKey: "id")
@@ -612,7 +612,7 @@ public class ManageEventMenu: UIView, PathMenuItemDelegate, UITableViewDelegate,
         animationgroup.duration       = CFTimeInterval(animationDuration!)
         animationgroup.fillMode       = kCAFillModeForwards
         animationgroup.timingFunction = CAMediaTimingFunction(name: kCAMediaTimingFunctionEaseIn)
-        animationgroup.delegate = self
+//        animationgroup.delegate = self
 
         if flag == 0 {
             animationgroup.setValue("lastAnimation", forKey: "id")

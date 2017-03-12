@@ -26,6 +26,17 @@ class AppDelegate: UIResponder, UIApplicationDelegate, WCSessionDelegate {
 
     var window: UIWindow?
     var mainViewController: UIViewController!
+    var session: WCSession!
+    
+    func session(session: WCSession, activationDidCompleteWithState activationState: WCSessionActivationState, error: NSError?){
+    }
+    
+    func sessionDidBecomeInactive(session: WCSession) {
+    }
+    
+    func sessionDidDeactivate(session: WCSession) {
+    } 
+    
     private let firstRunKey = "FirstRun"
     func application(application: UIApplication, didFinishLaunchingWithOptions launchOptions: [NSObject: AnyObject]?) -> Bool
     {
@@ -138,12 +149,12 @@ class AppDelegate: UIResponder, UIApplicationDelegate, WCSessionDelegate {
         log.addDestination(console)
     }
     
-    private func setupWatchConnectivity() {
+/*    private func setupWatchConnectivity() {
         if WCSession.isSupported() {
-            let session = WCSession.defaultSession()
+            session = WCSession.defaultSession()
             session.delegate = self
             session.activateSession()
-        }
+            }
     }
     
     private func sendDictValuesToWatch() {
@@ -159,7 +170,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, WCSessionDelegate {
                 }
             }
         }
-    }
+    } */
 }
 
 

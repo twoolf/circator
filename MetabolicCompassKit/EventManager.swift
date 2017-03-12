@@ -37,7 +37,14 @@ func ==(lhs: DiningEventKey, rhs: DiningEventKey) -> Bool
  - remark: used with IntroViewController and RepeatedEventsController
  */
 public class EventManager : NSObject, WCSessionDelegate {
-
+    public func session(session: WCSession, activationDidCompleteWithState activationState: WCSessionActivationState, error: NSError?){
+    }
+    
+    public func sessionDidBecomeInactive(session: WCSession) {
+    }
+    
+    public func sessionDidDeactivate(session: WCSession) {
+    }
     public static let sharedManager = EventManager()
 
     lazy var eventKitStore: EKEventStore = EKEventStore()

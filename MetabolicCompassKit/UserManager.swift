@@ -1116,9 +1116,9 @@ public class UserManager {
 
                 let urlPathStr = url.absoluteString
 
-                if fileManager.fileExistsAtPath(urlPathStr) {
+                if fileManager.fileExistsAtPath(urlPathStr!) {
                     do {
-                        try fileManager.removeItemAtPath(urlPathStr)
+                        try fileManager.removeItemAtPath(urlPathStr!)
                         result = true
                     } catch {
                         print("File does not exists \(error)")
