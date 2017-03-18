@@ -71,7 +71,7 @@ class ProfileSubviewController : FormViewController {
                     let attrs = [NSForegroundColorAttributeName: plcColor]
                     $0.attributedPlaceholder = NSAttributedString(string:placeholder, attributes: attrs)
 
-                    if let k = UserProfile.sharedInstance.profileMapping[text], v = profile[k] as? String {
+                    if let k = UserProfile.sharedInstance.profileMapping[text], let v = profile[k] as? String {
                         $0.text = v
                     }
                 }.onTextChanged { [weak self] txt in

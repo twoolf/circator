@@ -23,16 +23,51 @@
 		1C7107C01D4B411C00C2B3D4 /* CorrelationTabeViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1C7107BF1D4B411C00C2B3D4 /* CorrelationTabeViewCell.swift */; };
 		40C3E15C8B3F2A20ABE773B6 /* Pods_MetabolicCompass.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 9D9206F4F2759A6ED168EC9B /* Pods_MetabolicCompass.framework */; };
 		49BE7B53D1D87CF25424421B /* Pods_MetabolicCompassKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 2F627F8020D8AF9C6FBBF993 /* Pods_MetabolicCompassKit.framework */; };
+		54205E661E76213B003E3EC4 /* ActivityPicker.swift in Sources */ = {isa = PBXBuildFile; fileRef = 54205E5F1E76213B003E3EC4 /* ActivityPicker.swift */; };
+		54205E671E76213B003E3EC4 /* AddActivityManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 54205E601E76213B003E3EC4 /* AddActivityManager.swift */; };
+		54205E681E76213B003E3EC4 /* DeleteActivityManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 54205E611E76213B003E3EC4 /* DeleteActivityManager.swift */; };
+		54205E691E76213B003E3EC4 /* FrequentActivity.swift in Sources */ = {isa = PBXBuildFile; fileRef = 54205E621E76213B003E3EC4 /* FrequentActivity.swift */; };
+		54205E6A1E76213B003E3EC4 /* ManageEventMenu.swift in Sources */ = {isa = PBXBuildFile; fileRef = 54205E631E76213B003E3EC4 /* ManageEventMenu.swift */; };
+		54205E6B1E76213B003E3EC4 /* PathMenuItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = 54205E641E76213B003E3EC4 /* PathMenuItem.swift */; };
+		54205E6C1E76213B003E3EC4 /* SlideButtonArray.swift in Sources */ = {isa = PBXBuildFile; fileRef = 54205E651E76213B003E3EC4 /* SlideButtonArray.swift */; };
+		54205E771E762162003E3EC4 /* CycleChartRenderer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 54205E6E1E762162003E3EC4 /* CycleChartRenderer.swift */; };
+		54205E781E762162003E3EC4 /* MCChartXAxisRenderer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 54205E6F1E762162003E3EC4 /* MCChartXAxisRenderer.swift */; };
+		54205E791E762162003E3EC4 /* MCScatterChartDataSet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 54205E701E762162003E3EC4 /* MCScatterChartDataSet.swift */; };
+		54205E7A1E762162003E3EC4 /* MCScatterChartRenderer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 54205E711E762162003E3EC4 /* MCScatterChartRenderer.swift */; };
+		54205E7B1E762162003E3EC4 /* MetabolicChartDataSet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 54205E721E762162003E3EC4 /* MetabolicChartDataSet.swift */; };
+		54205E7C1E762162003E3EC4 /* MetabolicChartRender.swift in Sources */ = {isa = PBXBuildFile; fileRef = 54205E731E762162003E3EC4 /* MetabolicChartRender.swift */; };
+		54205E7D1E762162003E3EC4 /* MetabolicDailyProgressChartView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 54205E741E762162003E3EC4 /* MetabolicDailyProgressChartView.swift */; };
+		54205E7E1E762162003E3EC4 /* MetabolicDataEntry.swift in Sources */ = {isa = PBXBuildFile; fileRef = 54205E751E762162003E3EC4 /* MetabolicDataEntry.swift */; };
+		54205E7F1E762162003E3EC4 /* MetabolicRadarChartView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 54205E761E762162003E3EC4 /* MetabolicRadarChartView.swift */; };
+		54205E811E762183003E3EC4 /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 54205E801E762183003E3EC4 /* Images.xcassets */; };
+		54205E831E762281003E3EC4 /* SecureConstants.swift.gpg in Resources */ = {isa = PBXBuildFile; fileRef = 54205E821E762281003E3EC4 /* SecureConstants.swift.gpg */; };
+		54205E851E76229F003E3EC4 /* AppLog.swift in Sources */ = {isa = PBXBuildFile; fileRef = 54205E841E76229F003E3EC4 /* AppLog.swift */; };
+		54205E9B1E762412003E3EC4 /* NSDate+Common.swift in Sources */ = {isa = PBXBuildFile; fileRef = 54205E991E762412003E3EC4 /* NSDate+Common.swift */; };
+		54205E9C1E762412003E3EC4 /* UIFont+Common.swift in Sources */ = {isa = PBXBuildFile; fileRef = 54205E9A1E762412003E3EC4 /* UIFont+Common.swift */; };
+		54205EA61E7624CB003E3EC4 /* Gotham Book.otf in Resources */ = {isa = PBXBuildFile; fileRef = 54205E9E1E7624CB003E3EC4 /* Gotham Book.otf */; };
+		54205EA71E7624CB003E3EC4 /* Gotham Medium.otf in Resources */ = {isa = PBXBuildFile; fileRef = 54205E9F1E7624CB003E3EC4 /* Gotham Medium.otf */; };
+		54205EA81E7624CB003E3EC4 /* Gotham XLight Italic.otf in Resources */ = {isa = PBXBuildFile; fileRef = 54205EA01E7624CB003E3EC4 /* Gotham XLight Italic.otf */; };
+		54205EA91E7624CB003E3EC4 /* gotham-book.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 54205EA11E7624CB003E3EC4 /* gotham-book.ttf */; };
+		54205EAA1E7624CB003E3EC4 /* GothamExLight Italic.otf in Resources */ = {isa = PBXBuildFile; fileRef = 54205EA21E7624CB003E3EC4 /* GothamExLight Italic.otf */; };
+		54205EAB1E7624CB003E3EC4 /* helvetica_neue_ce_55_roman-webfont.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 54205EA31E7624CB003E3EC4 /* helvetica_neue_ce_55_roman-webfont.ttf */; };
+		54205EAC1E7624CB003E3EC4 /* HelveticaLTStd-Blk.otf in Resources */ = {isa = PBXBuildFile; fileRef = 54205EA41E7624CB003E3EC4 /* HelveticaLTStd-Blk.otf */; };
+		54205EAD1E7624CB003E3EC4 /* HelveticaLTStd-Roman.otf in Resources */ = {isa = PBXBuildFile; fileRef = 54205EA51E7624CB003E3EC4 /* HelveticaLTStd-Roman.otf */; };
+		54205EB11E762507003E3EC4 /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 54205EB01E762507003E3EC4 /* Images.xcassets */; };
+		54205EB41E7625E4003E3EC4 /* PhysioParameterCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 54205EB21E7625E4003E3EC4 /* PhysioParameterCollectionViewCell.swift */; };
+		54205EB51E7625E4003E3EC4 /* PhysioParameterCollectionViewCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 54205EB31E7625E4003E3EC4 /* PhysioParameterCollectionViewCell.xib */; };
+		54205EB81E76265F003E3EC4 /* AddEventViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 54205EB71E76265F003E3EC4 /* AddEventViewController.swift */; };
+		54205EBF1E76266F003E3EC4 /* AdditionalInfoViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 54205EBA1E76266F003E3EC4 /* AdditionalInfoViewController.swift */; };
+		54205EC01E76266F003E3EC4 /* ForgotPasswordViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 54205EBB1E76266F003E3EC4 /* ForgotPasswordViewController.swift */; };
+		54205EC11E76266F003E3EC4 /* LoginViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 54205EBC1E76266F003E3EC4 /* LoginViewController.swift */; };
+		54205EC21E76266F003E3EC4 /* RegisterViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 54205EBD1E76266F003E3EC4 /* RegisterViewController.swift */; };
+		54205EC31E76266F003E3EC4 /* RegistrationCompletionViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 54205EBE1E76266F003E3EC4 /* RegistrationCompletionViewController.swift */; };
+		54205EC41E76F986003E3EC4 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7881A3E01BAF3B3E00ECB3C6 /* AppDelegate.swift */; };
+		54205EC61E772631003E3EC4 /* Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 54205EC51E772631003E3EC4 /* Info.plist */; };
 		78076E0B1DDE973700B6FB50 /* DialViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 78076E0A1DDE973700B6FB50 /* DialViewController.swift */; };
 		78076E0D1DDF4F6900B6FB50 /* CycleDataModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 78076E0C1DDF4F6900B6FB50 /* CycleDataModel.swift */; };
 		78076E0F1DE269BE00B6FB50 /* NotificationManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 78076E0E1DE269BD00B6FB50 /* NotificationManager.swift */; };
 		7816FFBB1C1E45D3002E2ED8 /* UserManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7816FFBA1C1E45D3002E2ED8 /* UserManager.swift */; };
 		78191B801D6BC8CF00C0454B /* UserSettingsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 78191B7F1D6BC8CF00C0454B /* UserSettingsViewController.swift */; };
-		781DA9021D9827F90004B4A1 /* ActivityPicker.swift in Sources */ = {isa = PBXBuildFile; fileRef = 781DA9011D9827F90004B4A1 /* ActivityPicker.swift */; };
-		781DA9041D9828E60004B4A1 /* SlideButtonArray.swift in Sources */ = {isa = PBXBuildFile; fileRef = 781DA9031D9828E60004B4A1 /* SlideButtonArray.swift */; };
-		781DA9061D98293F0004B4A1 /* AddActivityManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 781DA9051D98293F0004B4A1 /* AddActivityManager.swift */; };
-		781DA9081D9829580004B4A1 /* FrequentActivity.swift in Sources */ = {isa = PBXBuildFile; fileRef = 781DA9071D9829580004B4A1 /* FrequentActivity.swift */; };
-		781DA90A1D9829F70004B4A1 /* DeleteActivityManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 781DA9091D9829F70004B4A1 /* DeleteActivityManager.swift */; };
 		783E53D21C75856200BEBF33 /* DataGenerator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 783E53D11C75856200BEBF33 /* DataGenerator.swift */; };
 		7843F9121C1FAD9900AB8978 /* ServiceAPI.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7843F9111C1FAD9900AB8978 /* ServiceAPI.swift */; };
 		784409901D569E9500E6C560 /* UnitsUtils.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9585680B1CD0EDBD00EDD385 /* UnitsUtils.swift */; };
@@ -49,8 +84,6 @@
 		7881A3E11BAF3B3E00ECB3C6 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7881A3E01BAF3B3E00ECB3C6 /* AppDelegate.swift */; };
 		7881A3F61BAF3B3E00ECB3C6 /* MetabolicCompassTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7881A3F51BAF3B3E00ECB3C6 /* MetabolicCompassTests.swift */; };
 		7881A4011BAF3B3E00ECB3C6 /* MetabolicCompassUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7881A4001BAF3B3E00ECB3C6 /* MetabolicCompassUITests.swift */; };
-		788BA17E1D2DE6B50031C26B /* ManageEventMenu.swift in Sources */ = {isa = PBXBuildFile; fileRef = 788BA17D1D2DE6B50031C26B /* ManageEventMenu.swift */; };
-		788BA1801D2DE6C70031C26B /* PathMenuItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = 788BA17F1D2DE6C70031C26B /* PathMenuItem.swift */; };
 		78969D941D69891C00E867C3 /* OurStudyViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 78969D931D69891C00E867C3 /* OurStudyViewController.swift */; };
 		78969D961D6A22A200E867C3 /* UIComponents.swift in Sources */ = {isa = PBXBuildFile; fileRef = 78969D951D6A22A200E867C3 /* UIComponents.swift */; };
 		78969D981D6A81D300E867C3 /* ConsentViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 78969D971D6A81D300E867C3 /* ConsentViewController.swift */; };
@@ -78,7 +111,6 @@
 		78D46C311E2AD6DE00913639 /* RemoteLogManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 78D46C301E2AD6DE00913639 /* RemoteLogManager.swift */; };
 		78D47DD31D57BE2700F432D1 /* DashboardFilterHeaderView.xib in Resources */ = {isa = PBXBuildFile; fileRef = 78D47DD21D57BE2700F432D1 /* DashboardFilterHeaderView.xib */; };
 		78E455D11D5B9342007A852D /* FastingDataModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 78E455D01D5B9342007A852D /* FastingDataModel.swift */; };
-		78E62B601DE4F55500AAEF7D /* CycleChartRenderer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 78E62B5F1DE4F55400AAEF7D /* CycleChartRenderer.swift */; };
 		78E7C2101D32F83200DE0495 /* ExerciseEndTimeController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 78E7C1FE1D32F83200DE0495 /* ExerciseEndTimeController.swift */; };
 		78E7C2111D32F83200DE0495 /* ExerciseStartTimeController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 78E7C1FF1D32F83200DE0495 /* ExerciseStartTimeController.swift */; };
 		78E7C2121D32F83200DE0495 /* ExerciseType_Watch.swift in Sources */ = {isa = PBXBuildFile; fileRef = 78E7C2001D32F83200DE0495 /* ExerciseType_Watch.swift */; };
@@ -98,7 +130,6 @@
 		78E7C2201D32F83200DE0495 /* WorkoutSessionService_Queries.swift in Sources */ = {isa = PBXBuildFile; fileRef = 78E7C20E1D32F83200DE0495 /* WorkoutSessionService_Queries.swift */; };
 		78E7C2211D32F83200DE0495 /* WorkoutSessionService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 78E7C20F1D32F83200DE0495 /* WorkoutSessionService.swift */; };
 		84207D1F1CCA1FEC00776848 /* RegisterLoginProcess.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 84207D1E1CCA1FEC00776848 /* RegisterLoginProcess.storyboard */; };
-		84207D221CCA210000776848 /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 84207D211CCA210000776848 /* Images.xcassets */; };
 		84207D241CCA3C3600776848 /* RegisterLoginLandingViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84207D231CCA3C3600776848 /* RegisterLoginLandingViewController.swift */; };
 		84207D261CCA6A7E00776848 /* InputTableCellWithImage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84207D251CCA6A7E00776848 /* InputTableCellWithImage.swift */; };
 		84207D281CCE02A400776848 /* LoginModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84207D271CCE02A400776848 /* LoginModel.swift */; };
@@ -107,9 +138,6 @@
 		842B7DBB1D095F5A007F2126 /* ChartCollectionDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 842B7DB91D095F5A007F2126 /* ChartCollectionDelegate.swift */; };
 		842B7DBD1D095F71007F2126 /* BarChartModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 842B7DBC1D095F71007F2126 /* BarChartModel.swift */; };
 		842B7DBF1D09601B007F2126 /* BallonMarker.swift in Sources */ = {isa = PBXBuildFile; fileRef = 842B7DBE1D09601B007F2126 /* BallonMarker.swift */; };
-		842B7DC31D096062007F2126 /* MCChartXAxisRenderer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 842B7DC01D096062007F2126 /* MCChartXAxisRenderer.swift */; };
-		842B7DC41D096062007F2126 /* MCScatterChartDataSet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 842B7DC11D096062007F2126 /* MCScatterChartDataSet.swift */; };
-		842B7DC51D096062007F2126 /* MCScatterChartRenderer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 842B7DC21D096062007F2126 /* MCScatterChartRenderer.swift */; };
 		842B7DC81D0960A7007F2126 /* BarChartCollectionCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 842B7DC61D0960A7007F2126 /* BarChartCollectionCell.swift */; };
 		842B7DC91D0960A7007F2126 /* BarChartCollectionCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 842B7DC71D0960A7007F2126 /* BarChartCollectionCell.xib */; };
 		842B7DCB1D0960C0007F2126 /* BaseChartCollectionCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 842B7DCA1D0960C0007F2126 /* BaseChartCollectionCell.swift */; };
@@ -130,7 +158,6 @@
 		84B727AF1D13E62200839E54 /* LogEventViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84B727AE1D13E62200839E54 /* LogEventViewController.swift */; };
 		84B727B11D13FB5A00839E54 /* ManageChartsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84B727B01D13FB5A00839E54 /* ManageChartsViewController.swift */; };
 		84C9CB471CE9B3A4005ED875 /* DailyProgressViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84C9CB461CE9B3A4005ED875 /* DailyProgressViewController.swift */; };
-		84C9CB491CE9BB76005ED875 /* MetabolicDailyProgressChartView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84C9CB481CE9BB76005ED875 /* MetabolicDailyProgressChartView.swift */; };
 		84C9CB4E1CEA0018005ED875 /* DailyChartModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84C9CB4D1CEA0018005ED875 /* DailyChartModel.swift */; };
 		84DC44F41D06CCF00091900F /* AddEventModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84DC44F31D06CCF00091900F /* AddEventModel.swift */; };
 		84DC44F61D0704340091900F /* StartSleepTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84DC44F51D0704340091900F /* StartSleepTableViewCell.swift */; };
@@ -146,7 +173,6 @@
 		84EF0EB91D05711B00A25760 /* TypeTableViewCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 84EF0EB81D05711B00A25760 /* TypeTableViewCell.xib */; };
 		84EF0EBB1D05722700A25760 /* DurationTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84EF0EBA1D05722700A25760 /* DurationTableViewCell.swift */; };
 		84EF0EBD1D05723300A25760 /* DurationTableViewCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 84EF0EBC1D05723300A25760 /* DurationTableViewCell.xib */; };
-		84EF0EC01D0576B500A25760 /* AddEventViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84EF0EBF1D0576B500A25760 /* AddEventViewController.swift */; };
 		84EF0EC21D057F8F00A25760 /* AddMealDataSource.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84EF0EC11D057F8F00A25760 /* AddMealDataSource.swift */; };
 		84EF0EC61D0580B000A25760 /* WhenTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84EF0EC51D0580B000A25760 /* WhenTableViewCell.swift */; };
 		84EF0EC81D0580C500A25760 /* WhenTableViewCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 84EF0EC71D0580C500A25760 /* WhenTableViewCell.xib */; };
@@ -154,11 +180,9 @@
 		951BA49D1CE6295F0036600A /* BrightButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 951BA49C1CE6295F0036600A /* BrightButton.swift */; };
 		951BA49F1CE630A70036600A /* UnBrightButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 951BA49E1CE630A70036600A /* UnBrightButton.swift */; };
 		952470421CE9BC6C003E7EDF /* AppLogoLabel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 952470411CE9BC6C003E7EDF /* AppLogoLabel.swift */; };
-		952470481CE9DAEE003E7EDF /* gotham-book.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 952470471CE9DAEE003E7EDF /* gotham-book.ttf */; };
 		95635AA01CD3782200BCC467 /* AdditionalInfoModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 95635A9F1CD3782200BCC467 /* AdditionalInfoModel.swift */; };
 		95635AA31CD3ACF300BCC467 /* ScrollSelectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 95635AA11CD3ACF200BCC467 /* ScrollSelectionViewCell.swift */; };
 		95635AA41CD3ACF300BCC467 /* ScrollSelectionViewCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 95635AA21CD3ACF300BCC467 /* ScrollSelectionViewCell.xib */; };
-		95635AA61CD3C11600BCC467 /* ForgotPasswordViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 95635AA51CD3C11600BCC467 /* ForgotPasswordViewController.swift */; };
 		95748C461CCFC7AA0002F6A3 /* InputCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 95748C441CCFC7AA0002F6A3 /* InputCollectionViewCell.swift */; };
 		95748C471CCFC7AA0002F6A3 /* InputCollectionViewCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 95748C451CCFC7AA0002F6A3 /* InputCollectionViewCell.xib */; };
 		95748C501CCFC7D90002F6A3 /* DoubleCheckListCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 95748C4E1CCFC7D90002F6A3 /* DoubleCheckListCollectionViewCell.swift */; };
@@ -179,14 +203,10 @@
 		9585680F1CD1020600EDD385 /* LoadImageCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9585680D1CD1020600EDD385 /* LoadImageCollectionViewCell.swift */; };
 		958568101CD1020600EDD385 /* LoadImageCollectionViewCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 9585680E1CD1020600EDD385 /* LoadImageCollectionViewCell.xib */; };
 		958568121CD12B5200EDD385 /* RegisterModelDataSource.swift in Sources */ = {isa = PBXBuildFile; fileRef = 958568111CD12B5200EDD385 /* RegisterModelDataSource.swift */; };
-		95C0B99A1CD23E90006E523F /* LoginViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 95C0B9981CD23E90006E523F /* LoginViewController.swift */; };
-		95C0B99B1CD23E90006E523F /* RegisterViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 95C0B9991CD23E90006E523F /* RegisterViewController.swift */; };
-		95C0B99D1CD23EBA006E523F /* RegistrationCompletionViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 95C0B99C1CD23EBA006E523F /* RegistrationCompletionViewController.swift */; };
 		95C0B9A31CD2563B006E523F /* TitledInputCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 95C0B9A11CD2563B006E523F /* TitledInputCollectionViewCell.swift */; };
 		95C0B9A41CD2563B006E523F /* TitledInputCollectionViewCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 95C0B9A21CD2563B006E523F /* TitledInputCollectionViewCell.xib */; };
 		95C0B9A61CD25814006E523F /* AdditionalInfoDataSource.swift in Sources */ = {isa = PBXBuildFile; fileRef = 95C0B9A51CD25814006E523F /* AdditionalInfoDataSource.swift */; };
 		95C0B9A81CD25860006E523F /* BaseDataSource.swift in Sources */ = {isa = PBXBuildFile; fileRef = 95C0B9A71CD25860006E523F /* BaseDataSource.swift */; };
-		95C0B9AA1CD25AAC006E523F /* AdditionalInfoViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 95C0B9A91CD25AAC006E523F /* AdditionalInfoViewController.swift */; };
 		95D142BC1CE60312006A9118 /* DoubleCheckListTitledCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 95D142BA1CE60312006A9118 /* DoubleCheckListTitledCollectionViewCell.swift */; };
 		95D142BD1CE60312006A9118 /* DoubleCheckListTitledCollectionViewCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 95D142BB1CE60312006A9118 /* DoubleCheckListTitledCollectionViewCell.xib */; };
 		95F4008E1CE385B70060F28C /* UIView+Extended.swift in Sources */ = {isa = PBXBuildFile; fileRef = 95F4008D1CE385B70060F28C /* UIView+Extended.swift */; };
@@ -220,10 +240,6 @@
 		E75E95AE1CDCD5A700A18756 /* DashboardMetricsConfigItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = E75E95AD1CDCD5A700A18756 /* DashboardMetricsConfigItem.swift */; };
 		E75E95B21CDCD6CB00A18756 /* DashboardMetricsAppearanceProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = E75E95B11CDCD6CB00A18756 /* DashboardMetricsAppearanceProvider.swift */; };
 		E7AB666C1CDCDDBD00967316 /* ManageDashboardCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = E7AB666B1CDCDDBD00967316 /* ManageDashboardCell.swift */; };
-		E7E48DE51CE4A12900DB020F /* MetabolicChartRender.swift in Sources */ = {isa = PBXBuildFile; fileRef = E7E48DE41CE4A12900DB020F /* MetabolicChartRender.swift */; };
-		E7E48DE71CE4BCAB00DB020F /* MetabolicChartDataSet.swift in Sources */ = {isa = PBXBuildFile; fileRef = E7E48DE61CE4BCAB00DB020F /* MetabolicChartDataSet.swift */; };
-		E7E48DE91CE4C2DC00DB020F /* MetabolicDataEntry.swift in Sources */ = {isa = PBXBuildFile; fileRef = E7E48DE81CE4C2DC00DB020F /* MetabolicDataEntry.swift */; };
-		E7E48DEB1CE5CB2700DB020F /* MetabolicRadarChartView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E7E48DEA1CE5CB2700DB020F /* MetabolicRadarChartView.swift */; };
 		E7E48DEF1CE6028600DB020F /* DashboardManageBalanceController.swift in Sources */ = {isa = PBXBuildFile; fileRef = E7E48DEE1CE6028600DB020F /* DashboardManageBalanceController.swift */; };
 		E7E48DF11CE6033100DB020F /* ManageBalanceCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = E7E48DF01CE6033100DB020F /* ManageBalanceCell.swift */; };
 		E7E48DF51CE614E400DB020F /* BalanceSampleListController.swift in Sources */ = {isa = PBXBuildFile; fileRef = E7E48DF41CE614E400DB020F /* BalanceSampleListController.swift */; };
@@ -243,8 +259,6 @@
 		F42F5B681BE20CDD00195490 /* ComplicationController.swift in Sources */ = {isa = PBXBuildFile; fileRef = F42F5B671BE20CDD00195490 /* ComplicationController.swift */; };
 		F42F5B6A1BE20CDD00195490 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = F42F5B691BE20CDD00195490 /* Assets.xcassets */; };
 		F42F5B6E1BE20CDD00195490 /* MetabolicCompassWatch.app in Embed Watch Content */ = {isa = PBXBuildFile; fileRef = F42F5B4C1BE20CDD00195490 /* MetabolicCompassWatch.app */; };
-		F43A7C551BBDF25E00B6FA56 /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = F43A7C541BBDF25E00B6FA56 /* Images.xcassets */; };
-		F43A7C571BBDF29D00B6FA56 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = F43A7C561BBDF29D00B6FA56 /* LaunchScreen.storyboard */; };
 		F43A7C5E1BBDF43600B6FA56 /* PlotButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = F43A7C5C1BBDF43600B6FA56 /* PlotButton.swift */; };
 		F43A7C681BBE508D00B6FA56 /* IntroCompareDataTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = F43A7C671BBE508D00B6FA56 /* IntroCompareDataTableViewCell.swift */; };
 		F49B2B711C7A83BD005F2BFB /* EventPickerManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = F49B2B701C7A83BD005F2BFB /* EventPickerManager.swift */; };
@@ -358,6 +372,45 @@
 		4043F623AD2CAEFBBB99D4FA /* Pods-MetabolicCompass.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-MetabolicCompass.debug.xcconfig"; path = "Pods/Target Support Files/Pods-MetabolicCompass/Pods-MetabolicCompass.debug.xcconfig"; sourceTree = "<group>"; };
 		41794893B1F71861C9B559DE /* Pods-MetabolicCompassKit.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-MetabolicCompassKit.debug.xcconfig"; path = "Pods/Target Support Files/Pods-MetabolicCompassKit/Pods-MetabolicCompassKit.debug.xcconfig"; sourceTree = "<group>"; };
 		54024C61FD99E12902CC4E62 /* Pods-MetabolicCompassWatch.debug-dev.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-MetabolicCompassWatch.debug-dev.xcconfig"; path = "Pods/Target Support Files/Pods-MetabolicCompassWatch/Pods-MetabolicCompassWatch.debug-dev.xcconfig"; sourceTree = "<group>"; };
+		54205E5F1E76213B003E3EC4 /* ActivityPicker.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ActivityPicker.swift; sourceTree = "<group>"; };
+		54205E601E76213B003E3EC4 /* AddActivityManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AddActivityManager.swift; sourceTree = "<group>"; };
+		54205E611E76213B003E3EC4 /* DeleteActivityManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DeleteActivityManager.swift; sourceTree = "<group>"; };
+		54205E621E76213B003E3EC4 /* FrequentActivity.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FrequentActivity.swift; sourceTree = "<group>"; };
+		54205E631E76213B003E3EC4 /* ManageEventMenu.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ManageEventMenu.swift; sourceTree = "<group>"; };
+		54205E641E76213B003E3EC4 /* PathMenuItem.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PathMenuItem.swift; sourceTree = "<group>"; };
+		54205E651E76213B003E3EC4 /* SlideButtonArray.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SlideButtonArray.swift; sourceTree = "<group>"; };
+		54205E6E1E762162003E3EC4 /* CycleChartRenderer.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CycleChartRenderer.swift; sourceTree = "<group>"; };
+		54205E6F1E762162003E3EC4 /* MCChartXAxisRenderer.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MCChartXAxisRenderer.swift; sourceTree = "<group>"; };
+		54205E701E762162003E3EC4 /* MCScatterChartDataSet.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MCScatterChartDataSet.swift; sourceTree = "<group>"; };
+		54205E711E762162003E3EC4 /* MCScatterChartRenderer.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MCScatterChartRenderer.swift; sourceTree = "<group>"; };
+		54205E721E762162003E3EC4 /* MetabolicChartDataSet.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MetabolicChartDataSet.swift; sourceTree = "<group>"; };
+		54205E731E762162003E3EC4 /* MetabolicChartRender.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MetabolicChartRender.swift; sourceTree = "<group>"; };
+		54205E741E762162003E3EC4 /* MetabolicDailyProgressChartView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MetabolicDailyProgressChartView.swift; sourceTree = "<group>"; };
+		54205E751E762162003E3EC4 /* MetabolicDataEntry.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MetabolicDataEntry.swift; sourceTree = "<group>"; };
+		54205E761E762162003E3EC4 /* MetabolicRadarChartView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MetabolicRadarChartView.swift; sourceTree = "<group>"; };
+		54205E801E762183003E3EC4 /* Images.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Images.xcassets; sourceTree = "<group>"; };
+		54205E821E762281003E3EC4 /* SecureConstants.swift.gpg */ = {isa = PBXFileReference; lastKnownFileType = file; path = SecureConstants.swift.gpg; sourceTree = "<group>"; };
+		54205E841E76229F003E3EC4 /* AppLog.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AppLog.swift; sourceTree = "<group>"; };
+		54205E991E762412003E3EC4 /* NSDate+Common.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "NSDate+Common.swift"; sourceTree = "<group>"; };
+		54205E9A1E762412003E3EC4 /* UIFont+Common.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "UIFont+Common.swift"; sourceTree = "<group>"; };
+		54205E9E1E7624CB003E3EC4 /* Gotham Book.otf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Gotham Book.otf"; sourceTree = "<group>"; };
+		54205E9F1E7624CB003E3EC4 /* Gotham Medium.otf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Gotham Medium.otf"; sourceTree = "<group>"; };
+		54205EA01E7624CB003E3EC4 /* Gotham XLight Italic.otf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Gotham XLight Italic.otf"; sourceTree = "<group>"; };
+		54205EA11E7624CB003E3EC4 /* gotham-book.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "gotham-book.ttf"; sourceTree = "<group>"; };
+		54205EA21E7624CB003E3EC4 /* GothamExLight Italic.otf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "GothamExLight Italic.otf"; sourceTree = "<group>"; };
+		54205EA31E7624CB003E3EC4 /* helvetica_neue_ce_55_roman-webfont.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "helvetica_neue_ce_55_roman-webfont.ttf"; sourceTree = "<group>"; };
+		54205EA41E7624CB003E3EC4 /* HelveticaLTStd-Blk.otf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "HelveticaLTStd-Blk.otf"; sourceTree = "<group>"; };
+		54205EA51E7624CB003E3EC4 /* HelveticaLTStd-Roman.otf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "HelveticaLTStd-Roman.otf"; sourceTree = "<group>"; };
+		54205EB01E762507003E3EC4 /* Images.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Images.xcassets; sourceTree = "<group>"; };
+		54205EB21E7625E4003E3EC4 /* PhysioParameterCollectionViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PhysioParameterCollectionViewCell.swift; sourceTree = "<group>"; };
+		54205EB31E7625E4003E3EC4 /* PhysioParameterCollectionViewCell.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = PhysioParameterCollectionViewCell.xib; sourceTree = "<group>"; };
+		54205EB71E76265F003E3EC4 /* AddEventViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AddEventViewController.swift; sourceTree = "<group>"; };
+		54205EBA1E76266F003E3EC4 /* AdditionalInfoViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AdditionalInfoViewController.swift; sourceTree = "<group>"; };
+		54205EBB1E76266F003E3EC4 /* ForgotPasswordViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ForgotPasswordViewController.swift; sourceTree = "<group>"; };
+		54205EBC1E76266F003E3EC4 /* LoginViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LoginViewController.swift; sourceTree = "<group>"; };
+		54205EBD1E76266F003E3EC4 /* RegisterViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RegisterViewController.swift; sourceTree = "<group>"; };
+		54205EBE1E76266F003E3EC4 /* RegistrationCompletionViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RegistrationCompletionViewController.swift; sourceTree = "<group>"; };
+		54205EC51E772631003E3EC4 /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		69DAFDA8EC7BDEE80F78A27B /* Pods-MetabolicCompassWatch.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-MetabolicCompassWatch.release.xcconfig"; path = "Pods/Target Support Files/Pods-MetabolicCompassWatch/Pods-MetabolicCompassWatch.release.xcconfig"; sourceTree = "<group>"; };
 		6E31F6785F853C33FD3E9838 /* Pods-MetabolicCompassWatchExtension.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-MetabolicCompassWatchExtension.debug.xcconfig"; path = "Pods/Target Support Files/Pods-MetabolicCompassWatchExtension/Pods-MetabolicCompassWatchExtension.debug.xcconfig"; sourceTree = "<group>"; };
 		774AE36AA555EE6DC0F80E16 /* Pods_MetabolicCompassWatchExtension.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_MetabolicCompassWatchExtension.framework; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -366,13 +419,6 @@
 		78076E0E1DE269BD00B6FB50 /* NotificationManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NotificationManager.swift; sourceTree = "<group>"; };
 		7816FFBA1C1E45D3002E2ED8 /* UserManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = UserManager.swift; sourceTree = "<group>"; };
 		78191B7F1D6BC8CF00C0454B /* UserSettingsViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = UserSettingsViewController.swift; sourceTree = "<group>"; };
-		781DA9011D9827F90004B4A1 /* ActivityPicker.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = ActivityPicker.swift; path = AddEventMenu/ActivityPicker.swift; sourceTree = "<group>"; };
-		781DA9031D9828E60004B4A1 /* SlideButtonArray.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = SlideButtonArray.swift; path = AddEventMenu/SlideButtonArray.swift; sourceTree = "<group>"; };
-		781DA9051D98293F0004B4A1 /* AddActivityManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = AddActivityManager.swift; path = AddEventMenu/AddActivityManager.swift; sourceTree = "<group>"; };
-		781DA9071D9829580004B4A1 /* FrequentActivity.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = FrequentActivity.swift; path = AddEventMenu/FrequentActivity.swift; sourceTree = "<group>"; };
-		781DA9091D9829F70004B4A1 /* DeleteActivityManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = DeleteActivityManager.swift; path = AddEventMenu/DeleteActivityManager.swift; sourceTree = "<group>"; };
-		781EE1231BAF3F6B00E6DDA1 /* Podfile */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = Podfile; path = ../Podfile; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.ruby; };
-		781EE1241BAF3F6B00E6DDA1 /* README.md */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = net.daringfireball.markdown; name = README.md; path = ../README.md; sourceTree = "<group>"; };
 		783E53D11C75856200BEBF33 /* DataGenerator.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DataGenerator.swift; sourceTree = "<group>"; };
 		7840A4981C6E53A80005B66F /* VariantViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = VariantViewController.swift; sourceTree = "<group>"; };
 		7840A49A1C6E5A680005B66F /* ErrorViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ErrorViewController.swift; sourceTree = "<group>"; };
@@ -392,7 +438,6 @@
 		786DF10C1C72AFE0007C2D4C /* Constants.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Constants.swift; sourceTree = "<group>"; };
 		7881A3DD1BAF3B3E00ECB3C6 /* MetabolicCompass.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = MetabolicCompass.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		7881A3E01BAF3B3E00ECB3C6 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
-		7881A3EC1BAF3B3E00ECB3C6 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		7881A3F11BAF3B3E00ECB3C6 /* MetabolicCompassTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = MetabolicCompassTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		7881A3F51BAF3B3E00ECB3C6 /* MetabolicCompassTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MetabolicCompassTests.swift; sourceTree = "<group>"; };
 		7881A3F71BAF3B3E00ECB3C6 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
@@ -400,8 +445,6 @@
 		7881A4001BAF3B3E00ECB3C6 /* MetabolicCompassUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MetabolicCompassUITests.swift; sourceTree = "<group>"; };
 		7881A4021BAF3B3E00ECB3C6 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		7884E8E71C5F0804000261EE /* UINotifications.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = UINotifications.swift; path = "../View Controller/UINotifications.swift"; sourceTree = "<group>"; };
-		788BA17D1D2DE6B50031C26B /* ManageEventMenu.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = ManageEventMenu.swift; path = AddEventMenu/ManageEventMenu.swift; sourceTree = "<group>"; };
-		788BA17F1D2DE6C70031C26B /* PathMenuItem.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = PathMenuItem.swift; path = AddEventMenu/PathMenuItem.swift; sourceTree = "<group>"; };
 		78969D931D69891C00E867C3 /* OurStudyViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = OurStudyViewController.swift; sourceTree = "<group>"; };
 		78969D951D6A22A200E867C3 /* UIComponents.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = UIComponents.swift; sourceTree = "<group>"; };
 		78969D971D6A81D300E867C3 /* ConsentViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ConsentViewController.swift; sourceTree = "<group>"; };
@@ -423,7 +466,6 @@
 		78D47DD21D57BE2700F432D1 /* DashboardFilterHeaderView.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = DashboardFilterHeaderView.xib; sourceTree = "<group>"; };
 		78E455D01D5B9342007A852D /* FastingDataModel.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FastingDataModel.swift; sourceTree = "<group>"; };
 		78E5219F1C25687900FAE56A /* Pods.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Pods.framework; path = "Pods/../build/Debug-iphoneos/Pods.framework"; sourceTree = "<group>"; };
-		78E62B5F1DE4F55400AAEF7D /* CycleChartRenderer.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CycleChartRenderer.swift; sourceTree = "<group>"; };
 		78E7C1FE1D32F83200DE0495 /* ExerciseEndTimeController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ExerciseEndTimeController.swift; sourceTree = "<group>"; };
 		78E7C1FF1D32F83200DE0495 /* ExerciseStartTimeController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ExerciseStartTimeController.swift; sourceTree = "<group>"; };
 		78E7C2001D32F83200DE0495 /* ExerciseType_Watch.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ExerciseType_Watch.swift; sourceTree = "<group>"; };
@@ -446,7 +488,6 @@
 		7D46B9A6F6C56D4A4408323A /* Pods-MetabolicCompassWatchExtension.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-MetabolicCompassWatchExtension.release.xcconfig"; path = "Pods/Target Support Files/Pods-MetabolicCompassWatchExtension/Pods-MetabolicCompassWatchExtension.release.xcconfig"; sourceTree = "<group>"; };
 		7E49A42724BE86C3228C2A05 /* Pods_MetabolicCompassWatch.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_MetabolicCompassWatch.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		84207D1E1CCA1FEC00776848 /* RegisterLoginProcess.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; path = RegisterLoginProcess.storyboard; sourceTree = "<group>"; };
-		84207D211CCA210000776848 /* Images.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Images.xcassets; sourceTree = "<group>"; };
 		84207D231CCA3C3600776848 /* RegisterLoginLandingViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RegisterLoginLandingViewController.swift; sourceTree = "<group>"; };
 		84207D251CCA6A7E00776848 /* InputTableCellWithImage.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = InputTableCellWithImage.swift; sourceTree = "<group>"; };
 		84207D271CCE02A400776848 /* LoginModel.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LoginModel.swift; sourceTree = "<group>"; };
@@ -455,9 +496,6 @@
 		842B7DB91D095F5A007F2126 /* ChartCollectionDelegate.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ChartCollectionDelegate.swift; sourceTree = "<group>"; };
 		842B7DBC1D095F71007F2126 /* BarChartModel.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BarChartModel.swift; sourceTree = "<group>"; };
 		842B7DBE1D09601B007F2126 /* BallonMarker.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BallonMarker.swift; sourceTree = "<group>"; };
-		842B7DC01D096062007F2126 /* MCChartXAxisRenderer.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MCChartXAxisRenderer.swift; sourceTree = "<group>"; };
-		842B7DC11D096062007F2126 /* MCScatterChartDataSet.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MCScatterChartDataSet.swift; sourceTree = "<group>"; };
-		842B7DC21D096062007F2126 /* MCScatterChartRenderer.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MCScatterChartRenderer.swift; sourceTree = "<group>"; };
 		842B7DC61D0960A7007F2126 /* BarChartCollectionCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BarChartCollectionCell.swift; sourceTree = "<group>"; };
 		842B7DC71D0960A7007F2126 /* BarChartCollectionCell.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = BarChartCollectionCell.xib; sourceTree = "<group>"; };
 		842B7DCA1D0960C0007F2126 /* BaseChartCollectionCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BaseChartCollectionCell.swift; sourceTree = "<group>"; };
@@ -478,7 +516,6 @@
 		84B727AE1D13E62200839E54 /* LogEventViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LogEventViewController.swift; sourceTree = "<group>"; };
 		84B727B01D13FB5A00839E54 /* ManageChartsViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ManageChartsViewController.swift; sourceTree = "<group>"; };
 		84C9CB461CE9B3A4005ED875 /* DailyProgressViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DailyProgressViewController.swift; sourceTree = "<group>"; };
-		84C9CB481CE9BB76005ED875 /* MetabolicDailyProgressChartView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = MetabolicDailyProgressChartView.swift; path = "../Charts+Extended/MetabolicDailyProgressChartView.swift"; sourceTree = "<group>"; };
 		84C9CB4D1CEA0018005ED875 /* DailyChartModel.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DailyChartModel.swift; sourceTree = "<group>"; };
 		84DC44F31D06CCF00091900F /* AddEventModel.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AddEventModel.swift; sourceTree = "<group>"; };
 		84DC44F51D0704340091900F /* StartSleepTableViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = StartSleepTableViewCell.swift; sourceTree = "<group>"; };
@@ -494,7 +531,6 @@
 		84EF0EB81D05711B00A25760 /* TypeTableViewCell.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = TypeTableViewCell.xib; sourceTree = "<group>"; };
 		84EF0EBA1D05722700A25760 /* DurationTableViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DurationTableViewCell.swift; sourceTree = "<group>"; };
 		84EF0EBC1D05723300A25760 /* DurationTableViewCell.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = DurationTableViewCell.xib; sourceTree = "<group>"; };
-		84EF0EBF1D0576B500A25760 /* AddEventViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AddEventViewController.swift; sourceTree = "<group>"; };
 		84EF0EC11D057F8F00A25760 /* AddMealDataSource.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AddMealDataSource.swift; sourceTree = "<group>"; };
 		84EF0EC51D0580B000A25760 /* WhenTableViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = WhenTableViewCell.swift; sourceTree = "<group>"; };
 		84EF0EC71D0580C500A25760 /* WhenTableViewCell.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = WhenTableViewCell.xib; sourceTree = "<group>"; };
@@ -502,11 +538,9 @@
 		951BA49C1CE6295F0036600A /* BrightButton.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BrightButton.swift; sourceTree = "<group>"; };
 		951BA49E1CE630A70036600A /* UnBrightButton.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = UnBrightButton.swift; sourceTree = "<group>"; };
 		952470411CE9BC6C003E7EDF /* AppLogoLabel.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AppLogoLabel.swift; sourceTree = "<group>"; };
-		952470471CE9DAEE003E7EDF /* gotham-book.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "gotham-book.ttf"; sourceTree = "<group>"; };
 		95635A9F1CD3782200BCC467 /* AdditionalInfoModel.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AdditionalInfoModel.swift; sourceTree = "<group>"; };
 		95635AA11CD3ACF200BCC467 /* ScrollSelectionViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ScrollSelectionViewCell.swift; sourceTree = "<group>"; };
 		95635AA21CD3ACF300BCC467 /* ScrollSelectionViewCell.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = ScrollSelectionViewCell.xib; sourceTree = "<group>"; };
-		95635AA51CD3C11600BCC467 /* ForgotPasswordViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ForgotPasswordViewController.swift; sourceTree = "<group>"; };
 		95748C441CCFC7AA0002F6A3 /* InputCollectionViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = InputCollectionViewCell.swift; sourceTree = "<group>"; };
 		95748C451CCFC7AA0002F6A3 /* InputCollectionViewCell.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = InputCollectionViewCell.xib; sourceTree = "<group>"; };
 		95748C4E1CCFC7D90002F6A3 /* DoubleCheckListCollectionViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DoubleCheckListCollectionViewCell.swift; sourceTree = "<group>"; };
@@ -528,14 +562,10 @@
 		9585680D1CD1020600EDD385 /* LoadImageCollectionViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LoadImageCollectionViewCell.swift; sourceTree = "<group>"; };
 		9585680E1CD1020600EDD385 /* LoadImageCollectionViewCell.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = LoadImageCollectionViewCell.xib; sourceTree = "<group>"; };
 		958568111CD12B5200EDD385 /* RegisterModelDataSource.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RegisterModelDataSource.swift; sourceTree = "<group>"; };
-		95C0B9981CD23E90006E523F /* LoginViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LoginViewController.swift; sourceTree = "<group>"; };
-		95C0B9991CD23E90006E523F /* RegisterViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RegisterViewController.swift; sourceTree = "<group>"; };
-		95C0B99C1CD23EBA006E523F /* RegistrationCompletionViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RegistrationCompletionViewController.swift; sourceTree = "<group>"; };
 		95C0B9A11CD2563B006E523F /* TitledInputCollectionViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TitledInputCollectionViewCell.swift; sourceTree = "<group>"; };
 		95C0B9A21CD2563B006E523F /* TitledInputCollectionViewCell.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = TitledInputCollectionViewCell.xib; sourceTree = "<group>"; };
 		95C0B9A51CD25814006E523F /* AdditionalInfoDataSource.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AdditionalInfoDataSource.swift; sourceTree = "<group>"; };
 		95C0B9A71CD25860006E523F /* BaseDataSource.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BaseDataSource.swift; sourceTree = "<group>"; };
-		95C0B9A91CD25AAC006E523F /* AdditionalInfoViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AdditionalInfoViewController.swift; sourceTree = "<group>"; };
 		95D142BA1CE60312006A9118 /* DoubleCheckListTitledCollectionViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DoubleCheckListTitledCollectionViewCell.swift; sourceTree = "<group>"; };
 		95D142BB1CE60312006A9118 /* DoubleCheckListTitledCollectionViewCell.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = DoubleCheckListTitledCollectionViewCell.xib; sourceTree = "<group>"; };
 		95F4008D1CE385B70060F28C /* UIView+Extended.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "UIView+Extended.swift"; sourceTree = "<group>"; };
@@ -570,10 +600,6 @@
 		E75E95AD1CDCD5A700A18756 /* DashboardMetricsConfigItem.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DashboardMetricsConfigItem.swift; sourceTree = "<group>"; };
 		E75E95B11CDCD6CB00A18756 /* DashboardMetricsAppearanceProvider.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DashboardMetricsAppearanceProvider.swift; sourceTree = "<group>"; };
 		E7AB666B1CDCDDBD00967316 /* ManageDashboardCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ManageDashboardCell.swift; sourceTree = "<group>"; };
-		E7E48DE41CE4A12900DB020F /* MetabolicChartRender.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MetabolicChartRender.swift; sourceTree = "<group>"; };
-		E7E48DE61CE4BCAB00DB020F /* MetabolicChartDataSet.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MetabolicChartDataSet.swift; sourceTree = "<group>"; };
-		E7E48DE81CE4C2DC00DB020F /* MetabolicDataEntry.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MetabolicDataEntry.swift; sourceTree = "<group>"; };
-		E7E48DEA1CE5CB2700DB020F /* MetabolicRadarChartView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = MetabolicRadarChartView.swift; path = "../Charts+Extended/MetabolicRadarChartView.swift"; sourceTree = "<group>"; };
 		E7E48DEE1CE6028600DB020F /* DashboardManageBalanceController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DashboardManageBalanceController.swift; sourceTree = "<group>"; };
 		E7E48DF01CE6033100DB020F /* ManageBalanceCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ManageBalanceCell.swift; sourceTree = "<group>"; };
 		E7E48DF41CE614E400DB020F /* BalanceSampleListController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BalanceSampleListController.swift; sourceTree = "<group>"; };
@@ -598,10 +624,7 @@
 		F42F5B691BE20CDD00195490 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		F42F5B6B1BE20CDD00195490 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		F42F5B941BE2C89200195490 /* CorrelationViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CorrelationViewController.swift; sourceTree = "<group>"; };
-		F43A7C541BBDF25E00B6FA56 /* Images.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Images.xcassets; sourceTree = "<group>"; };
-		F43A7C561BBDF29D00B6FA56 /* LaunchScreen.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; path = LaunchScreen.storyboard; sourceTree = "<group>"; };
 		F43A7C5C1BBDF43600B6FA56 /* PlotButton.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PlotButton.swift; sourceTree = "<group>"; };
-		F43A7C601BBDF49D00B6FA56 /* MetabolicCompass.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.xml; path = MetabolicCompass.entitlements; sourceTree = "<group>"; };
 		F43A7C671BBE508D00B6FA56 /* IntroCompareDataTableViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = IntroCompareDataTableViewCell.swift; sourceTree = "<group>"; };
 		F44B1A2C1BDAC20D002238E6 /* PlotViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PlotViewController.swift; sourceTree = "<group>"; };
 		F49B2B701C7A83BD005F2BFB /* EventPickerManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = EventPickerManager.swift; sourceTree = "<group>"; };
@@ -609,7 +632,6 @@
 		F5057FE81CEE1BC200F66EB0 /* UITextField+Common.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "UITextField+Common.swift"; sourceTree = "<group>"; };
 		F5057FEA1CEF058900F66EB0 /* TextInputFilter.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TextInputFilter.swift; sourceTree = "<group>"; };
 		F515CFCA1CECC88000318CB6 /* ScreenManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ScreenManager.swift; sourceTree = "<group>"; };
-		F518F9DE1CEF452400E829AE /* MetabolicCompass-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "MetabolicCompass-Bridging-Header.h"; sourceTree = "<group>"; };
 		F56CC2B31CF6077000040604 /* FontScaleLabel.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FontScaleLabel.swift; sourceTree = "<group>"; };
 		F56CC2B51CF6078500040604 /* FontScaleTextField.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FontScaleTextField.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -666,6 +688,72 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		54205E5E1E76213B003E3EC4 /* AddEventMenu */ = {
+			isa = PBXGroup;
+			children = (
+				54205E5F1E76213B003E3EC4 /* ActivityPicker.swift */,
+				54205E601E76213B003E3EC4 /* AddActivityManager.swift */,
+				54205E611E76213B003E3EC4 /* DeleteActivityManager.swift */,
+				54205E621E76213B003E3EC4 /* FrequentActivity.swift */,
+				54205E631E76213B003E3EC4 /* ManageEventMenu.swift */,
+				54205E641E76213B003E3EC4 /* PathMenuItem.swift */,
+				54205E651E76213B003E3EC4 /* SlideButtonArray.swift */,
+			);
+			path = AddEventMenu;
+			sourceTree = "<group>";
+		};
+		54205E6D1E762162003E3EC4 /* Charts+Extended */ = {
+			isa = PBXGroup;
+			children = (
+				54205E6E1E762162003E3EC4 /* CycleChartRenderer.swift */,
+				54205E6F1E762162003E3EC4 /* MCChartXAxisRenderer.swift */,
+				54205E701E762162003E3EC4 /* MCScatterChartDataSet.swift */,
+				54205E711E762162003E3EC4 /* MCScatterChartRenderer.swift */,
+				54205E721E762162003E3EC4 /* MetabolicChartDataSet.swift */,
+				54205E731E762162003E3EC4 /* MetabolicChartRender.swift */,
+				54205E741E762162003E3EC4 /* MetabolicDailyProgressChartView.swift */,
+				54205E751E762162003E3EC4 /* MetabolicDataEntry.swift */,
+				54205E761E762162003E3EC4 /* MetabolicRadarChartView.swift */,
+			);
+			name = "Charts+Extended";
+			path = "AccountManager/Charts+Extended";
+			sourceTree = "<group>";
+		};
+		54205E9D1E7624CB003E3EC4 /* Fonts */ = {
+			isa = PBXGroup;
+			children = (
+				54205E9E1E7624CB003E3EC4 /* Gotham Book.otf */,
+				54205E9F1E7624CB003E3EC4 /* Gotham Medium.otf */,
+				54205EA01E7624CB003E3EC4 /* Gotham XLight Italic.otf */,
+				54205EA11E7624CB003E3EC4 /* gotham-book.ttf */,
+				54205EA21E7624CB003E3EC4 /* GothamExLight Italic.otf */,
+				54205EA31E7624CB003E3EC4 /* helvetica_neue_ce_55_roman-webfont.ttf */,
+				54205EA41E7624CB003E3EC4 /* HelveticaLTStd-Blk.otf */,
+				54205EA51E7624CB003E3EC4 /* HelveticaLTStd-Roman.otf */,
+			);
+			path = Fonts;
+			sourceTree = "<group>";
+		};
+		54205EB61E76265F003E3EC4 /* AddEvents */ = {
+			isa = PBXGroup;
+			children = (
+				54205EB71E76265F003E3EC4 /* AddEventViewController.swift */,
+			);
+			path = AddEvents;
+			sourceTree = "<group>";
+		};
+		54205EB91E76266F003E3EC4 /* AuthorizationViewControllers */ = {
+			isa = PBXGroup;
+			children = (
+				54205EBA1E76266F003E3EC4 /* AdditionalInfoViewController.swift */,
+				54205EBB1E76266F003E3EC4 /* ForgotPasswordViewController.swift */,
+				54205EBC1E76266F003E3EC4 /* LoginViewController.swift */,
+				54205EBD1E76266F003E3EC4 /* RegisterViewController.swift */,
+				54205EBE1E76266F003E3EC4 /* RegistrationCompletionViewController.swift */,
+			);
+			path = AuthorizationViewControllers;
+			sourceTree = "<group>";
+		};
 		786818841D33040200CAE4ED /* Fasting */ = {
 			isa = PBXGroup;
 			children = (
@@ -707,22 +795,23 @@
 		7881A3DF1BAF3B3E00ECB3C6 /* MetabolicCompass */ = {
 			isa = PBXGroup;
 			children = (
-				7881A3E01BAF3B3E00ECB3C6 /* AppDelegate.swift */,
-				788BA17C1D2DE6690031C26B /* ManageEventMenu */,
-				F515CFC91CECC88000318CB6 /* CommonUI */,
-				E7E48DE31CE4A0F100DB020F /* MetabolicCharts */,
-				E74A897A1CE338BA0056A2D2 /* ContentManager */,
+				54205EC51E772631003E3EC4 /* Info.plist */,
 				E74A89771CE3260F0056A2D2 /* AccountManager */,
-				E7591D0C1CE1C7AE00DCBA39 /* LPRTabelView */,
-				9585680A1CD0EDAC00EDD385 /* Utils */,
+				54205E5E1E76213B003E3EC4 /* AddEventMenu */,
+				7881A3E01BAF3B3E00ECB3C6 /* AppDelegate.swift */,
+				54205E6D1E762162003E3EC4 /* Charts+Extended */,
+				F515CFC91CECC88000318CB6 /* CommonUI */,
+				E74A897A1CE338BA0056A2D2 /* ContentManager */,
 				958568061CD0D39000EDD385 /* DataSources */,
 				958568071CD0D39000EDD385 /* Extensions */,
+				54205E801E762183003E3EC4 /* Images.xcassets */,
+				E7591D0C1CE1C7AE00DCBA39 /* LPRTabelView */,
 				F43A7C591BBDF3D800B6FA56 /* Model */,
-				F43A7C5A1BBDF3FD00B6FA56 /* View */,
-				F43A7C5F1BBDF43C00B6FA56 /* View Controller */,
 				84207D201CCA20CF00776848 /* Resourses */,
 				84207D1D1CCA1FA900776848 /* Storyboards */,
-				F43A7C581BBDF3BE00B6FA56 /* Supporting Files */,
+				9585680A1CD0EDAC00EDD385 /* Utils */,
+				F43A7C5A1BBDF3FD00B6FA56 /* View */,
+				F43A7C5F1BBDF43C00B6FA56 /* View Controller */,
 			);
 			path = MetabolicCompass;
 			sourceTree = "<group>";
@@ -730,8 +819,8 @@
 		7881A3F41BAF3B3E00ECB3C6 /* MetabolicCompassTests */ = {
 			isa = PBXGroup;
 			children = (
-				7881A3F51BAF3B3E00ECB3C6 /* MetabolicCompassTests.swift */,
 				7881A3F71BAF3B3E00ECB3C6 /* Info.plist */,
+				7881A3F51BAF3B3E00ECB3C6 /* MetabolicCompassTests.swift */,
 			);
 			path = MetabolicCompassTests;
 			sourceTree = "<group>";
@@ -739,24 +828,10 @@
 		7881A3FF1BAF3B3E00ECB3C6 /* MetabolicCompassUITests */ = {
 			isa = PBXGroup;
 			children = (
-				7881A4001BAF3B3E00ECB3C6 /* MetabolicCompassUITests.swift */,
 				7881A4021BAF3B3E00ECB3C6 /* Info.plist */,
+				7881A4001BAF3B3E00ECB3C6 /* MetabolicCompassUITests.swift */,
 			);
 			path = MetabolicCompassUITests;
-			sourceTree = "<group>";
-		};
-		788BA17C1D2DE6690031C26B /* ManageEventMenu */ = {
-			isa = PBXGroup;
-			children = (
-				788BA17D1D2DE6B50031C26B /* ManageEventMenu.swift */,
-				788BA17F1D2DE6C70031C26B /* PathMenuItem.swift */,
-				781DA9011D9827F90004B4A1 /* ActivityPicker.swift */,
-				781DA9031D9828E60004B4A1 /* SlideButtonArray.swift */,
-				781DA9051D98293F0004B4A1 /* AddActivityManager.swift */,
-				781DA9071D9829580004B4A1 /* FrequentActivity.swift */,
-				781DA9091D9829F70004B4A1 /* DeleteActivityManager.swift */,
-			);
-			name = ManageEventMenu;
 			sourceTree = "<group>";
 		};
 		78969D921D6988A000E867C3 /* Our Study */ = {
@@ -772,10 +847,10 @@
 		84207D1D1CCA1FA900776848 /* Storyboards */ = {
 			isa = PBXGroup;
 			children = (
-				95F400A51CE385E10060F28C /* Settings.storyboard */,
-				84207D1E1CCA1FEC00776848 /* RegisterLoginProcess.storyboard */,
-				E7592DB41CDB3A2400E313BB /* TabScreens.storyboard */,
 				84EF0EAC1D05606300A25760 /* AddEvents.storyboard */,
+				84207D1E1CCA1FEC00776848 /* RegisterLoginProcess.storyboard */,
+				95F400A51CE385E10060F28C /* Settings.storyboard */,
+				E7592DB41CDB3A2400E313BB /* TabScreens.storyboard */,
 			);
 			path = Storyboards;
 			sourceTree = "<group>";
@@ -783,9 +858,9 @@
 		84207D201CCA20CF00776848 /* Resourses */ = {
 			isa = PBXGroup;
 			children = (
+				54205EB01E762507003E3EC4 /* Images.xcassets */,
+				54205E9D1E7624CB003E3EC4 /* Fonts */,
 				1C2DA1401D47A72100C738DF /* health_data_mock.json */,
-				952470461CE9DAED003E7EDF /* fonts */,
-				84207D211CCA210000776848 /* Images.xcassets */,
 			);
 			path = Resourses;
 			sourceTree = "<group>";
@@ -810,73 +885,59 @@
 			path = Analysis;
 			sourceTree = "<group>";
 		};
-		84EF0EBE1D05767500A25760 /* AddEvents */ = {
-			isa = PBXGroup;
-			children = (
-				84EF0EBF1D0576B500A25760 /* AddEventViewController.swift */,
-			);
-			path = AddEvents;
-			sourceTree = "<group>";
-		};
-		952470461CE9DAED003E7EDF /* fonts */ = {
-			isa = PBXGroup;
-			children = (
-				952470471CE9DAEE003E7EDF /* gotham-book.ttf */,
-			);
-			path = fonts;
-			sourceTree = "<group>";
-		};
 		95748C3E1CCFC7350002F6A3 /* Cells */ = {
 			isa = PBXGroup;
 			children = (
-				842B7DCA1D0960C0007F2126 /* BaseChartCollectionCell.swift */,
-				842B7DCC1D0960CB007F2126 /* LineChartCollectionCell.swift */,
-				842B7DCD1D0960CB007F2126 /* LineChartCollectionCell.xib */,
-				842B7DCE1D0960CB007F2126 /* ScatterChartCollectionCell.swift */,
-				842B7DCF1D0960CB007F2126 /* ScatterChartCollectionCell.xib */,
-				11FE4B921D50A5B4007A8D8E /* TwoLineCorrelcationCell.xib */,
-				11FE4B941D50A5DD007A8D8E /* TwoLineCorrelcationCell.swift */,
-				11FE4B8E1D507F1D007A8D8E /* ScatterCorrelcationCell.xib */,
-				11FE4B901D508020007A8D8E /* ScatterCorrelcationCell.swift */,
+				54205EB21E7625E4003E3EC4 /* PhysioParameterCollectionViewCell.swift */,
+				54205EB31E7625E4003E3EC4 /* PhysioParameterCollectionViewCell.xib */,
+				84EF0EC91D058A9000A25760 /* BaseAddEventTableViewCell.swift */,
 				842B7DC61D0960A7007F2126 /* BarChartCollectionCell.swift */,
 				842B7DC71D0960A7007F2126 /* BarChartCollectionCell.xib */,
-				84EF0EC91D058A9000A25760 /* BaseAddEventTableViewCell.swift */,
+				842B7DCA1D0960C0007F2126 /* BaseChartCollectionCell.swift */,
+				95748C521CCFC8020002F6A3 /* BaseCollectionViewCell.swift */,
 				95F4008F1CE385C60060F28C /* CircleImageCollectionViewCell.swift */,
 				95F400901CE385C60060F28C /* CircleImageCollectionViewCell.xib */,
-				95F400911CE385C60060F28C /* InfoCollectionViewCell.swift */,
-				95F400921CE385C60060F28C /* InfoCollectionViewCell.xib */,
-				95748C441CCFC7AA0002F6A3 /* InputCollectionViewCell.swift */,
-				95748C451CCFC7AA0002F6A3 /* InputCollectionViewCell.xib */,
-				95748C4E1CCFC7D90002F6A3 /* DoubleCheckListCollectionViewCell.swift */,
-				95748C4F1CCFC7D90002F6A3 /* DoubleCheckListCollectionViewCell.xib */,
-				95748C521CCFC8020002F6A3 /* BaseCollectionViewCell.swift */,
-				9585680D1CD1020600EDD385 /* LoadImageCollectionViewCell.swift */,
-				9585680E1CD1020600EDD385 /* LoadImageCollectionViewCell.xib */,
-				95C0B9A11CD2563B006E523F /* TitledInputCollectionViewCell.swift */,
-				95C0B9A21CD2563B006E523F /* TitledInputCollectionViewCell.xib */,
-				95635AA11CD3ACF200BCC467 /* ScrollSelectionViewCell.swift */,
-				95635AA21CD3ACF300BCC467 /* ScrollSelectionViewCell.xib */,
-				95769B821CE4869C00F26668 /* TitleCollectionViewCell.swift */,
-				95769B831CE4869C00F26668 /* TitleCollectionViewCell.xib */,
-				95D142BA1CE60312006A9118 /* DoubleCheckListTitledCollectionViewCell.swift */,
-				95D142BB1CE60312006A9118 /* DoubleCheckListTitledCollectionViewCell.xib */,
 				84AB38D11CEA0F9900B7DB4E /* DailyProgressDayTableViewCell.swift */,
 				84AB38CF1CEA0EFA00B7DB4E /* DailyProgressDayTableViewCell.xib */,
 				84EF0EAE1D056F3800A25760 /* DatePickerTableViewCell.swift */,
 				84EF0EB21D056F6700A25760 /* DatePickerTableViewCell.xib */,
-				84EF0EB01D056F4B00A25760 /* PickerTableViewCell.swift */,
-				84EF0EB41D056FF800A25760 /* PickerTableViewCell.xib */,
-				84EF0EB61D05710D00A25760 /* TypeTableViewCell.swift */,
-				84EF0EB81D05711B00A25760 /* TypeTableViewCell.xib */,
-				84EF0EBA1D05722700A25760 /* DurationTableViewCell.swift */,
+				95748C4E1CCFC7D90002F6A3 /* DoubleCheckListCollectionViewCell.swift */,
+				95748C4F1CCFC7D90002F6A3 /* DoubleCheckListCollectionViewCell.xib */,
+				95D142BA1CE60312006A9118 /* DoubleCheckListTitledCollectionViewCell.swift */,
+				95D142BB1CE60312006A9118 /* DoubleCheckListTitledCollectionViewCell.xib */,
 				84EF0EBC1D05723300A25760 /* DurationTableViewCell.xib */,
-				84EF0EC51D0580B000A25760 /* WhenTableViewCell.swift */,
-				84EF0EC71D0580C500A25760 /* WhenTableViewCell.xib */,
-				84DC44F51D0704340091900F /* StartSleepTableViewCell.swift */,
-				84DC44FB1D0704740091900F /* StartSleepTableViewCell.xib */,
+				84EF0EBA1D05722700A25760 /* DurationTableViewCell.swift */,
 				84DC44F71D0704420091900F /* EndSleepTableViewCell.swift */,
 				84DC44F91D07045C0091900F /* EndSleepTableViewCell.xib */,
+				95F400911CE385C60060F28C /* InfoCollectionViewCell.swift */,
+				95F400921CE385C60060F28C /* InfoCollectionViewCell.xib */,
+				95748C441CCFC7AA0002F6A3 /* InputCollectionViewCell.swift */,
+				95748C451CCFC7AA0002F6A3 /* InputCollectionViewCell.xib */,
+				842B7DCC1D0960CB007F2126 /* LineChartCollectionCell.swift */,
+				842B7DCD1D0960CB007F2126 /* LineChartCollectionCell.xib */,
+				9585680D1CD1020600EDD385 /* LoadImageCollectionViewCell.swift */,
+				9585680E1CD1020600EDD385 /* LoadImageCollectionViewCell.xib */,
+				84EF0EB01D056F4B00A25760 /* PickerTableViewCell.swift */,
+				84EF0EB41D056FF800A25760 /* PickerTableViewCell.xib */,
 				843B40931D364BCE0044691C /* PhysiologicalHeaderView.xib */,
+				11FE4B8E1D507F1D007A8D8E /* ScatterCorrelcationCell.xib */,
+				11FE4B901D508020007A8D8E /* ScatterCorrelcationCell.swift */,
+				842B7DCE1D0960CB007F2126 /* ScatterChartCollectionCell.swift */,
+				842B7DCF1D0960CB007F2126 /* ScatterChartCollectionCell.xib */,
+				95635AA11CD3ACF200BCC467 /* ScrollSelectionViewCell.swift */,
+				95635AA21CD3ACF300BCC467 /* ScrollSelectionViewCell.xib */,
+				84DC44F51D0704340091900F /* StartSleepTableViewCell.swift */,
+				84DC44FB1D0704740091900F /* StartSleepTableViewCell.xib */,
+				95769B821CE4869C00F26668 /* TitleCollectionViewCell.swift */,
+				95769B831CE4869C00F26668 /* TitleCollectionViewCell.xib */,
+				95C0B9A11CD2563B006E523F /* TitledInputCollectionViewCell.swift */,
+				95C0B9A21CD2563B006E523F /* TitledInputCollectionViewCell.xib */,
+				11FE4B921D50A5B4007A8D8E /* TwoLineCorrelcationCell.xib */,
+				11FE4B941D50A5DD007A8D8E /* TwoLineCorrelcationCell.swift */,
+				84EF0EB61D05710D00A25760 /* TypeTableViewCell.swift */,
+				84EF0EB81D05711B00A25760 /* TypeTableViewCell.xib */,
+				84EF0EC51D0580B000A25760 /* WhenTableViewCell.swift */,
+				84EF0EC71D0580C500A25760 /* WhenTableViewCell.xib */,
 			);
 			path = Cells;
 			sourceTree = "<group>";
@@ -884,9 +945,9 @@
 		9580D3A51CEB29DC0074178D /* BaseControls */ = {
 			isa = PBXGroup;
 			children = (
+				9580D3AA1CEB2BF20074178D /* AppButton.swift */,
 				9580D3A61CEB29DC0074178D /* AppLabel.swift */,
 				9580D3A71CEB29DC0074178D /* AppTextField.swift */,
-				9580D3AA1CEB2BF20074178D /* AppButton.swift */,
 				F56CC2B31CF6077000040604 /* FontScaleLabel.swift */,
 				F56CC2B51CF6078500040604 /* FontScaleTextField.swift */,
 				1C2DA13E1D479CD400C738DF /* MetabolicChart.swift */,
@@ -897,13 +958,13 @@
 		958568061CD0D39000EDD385 /* DataSources */ = {
 			isa = PBXGroup;
 			children = (
+				95C0B9A51CD25814006E523F /* AdditionalInfoDataSource.swift */,
+				84EF0EC11D057F8F00A25760 /* AddMealDataSource.swift */,
+				95C0B9A71CD25860006E523F /* BaseDataSource.swift */,
 				842B7DB81D095F5A007F2126 /* ChartCollectionDataSource.swift */,
 				842B7DB91D095F5A007F2126 /* ChartCollectionDelegate.swift */,
 				95F4009F1CE385CC0060F28C /* ProfileDataSource.swift */,
 				958568111CD12B5200EDD385 /* RegisterModelDataSource.swift */,
-				95C0B9A51CD25814006E523F /* AdditionalInfoDataSource.swift */,
-				95C0B9A71CD25860006E523F /* BaseDataSource.swift */,
-				84EF0EC11D057F8F00A25760 /* AddMealDataSource.swift */,
 			);
 			path = DataSources;
 			sourceTree = "<group>";
@@ -911,12 +972,14 @@
 		958568071CD0D39000EDD385 /* Extensions */ = {
 			isa = PBXGroup;
 			children = (
-				95F4008D1CE385B70060F28C /* UIView+Extended.swift */,
+				846E48881D59E1B7004CB794 /* Array+Extended.swift */,
+				54205E991E762412003E3EC4 /* NSDate+Common.swift */,
 				958568081CD0D3A000EDD385 /* String+Extended.swift */,
 				E74A89751CE308800056A2D2 /* UIColor+Extended.swift */,
+				54205E9A1E762412003E3EC4 /* UIFont+Common.swift */,
 				84A16A5F1CE3630400D61935 /* UIImage+Extended.swift */,
 				F5057FE81CEE1BC200F66EB0 /* UITextField+Common.swift */,
-				846E48881D59E1B7004CB794 /* Array+Extended.swift */,
+				95F4008D1CE385B70060F28C /* UIView+Extended.swift */,
 			);
 			path = Extensions;
 			sourceTree = "<group>";
@@ -927,18 +990,6 @@
 				F5057FEA1CEF058900F66EB0 /* TextInputFilter.swift */,
 			);
 			path = Utils;
-			sourceTree = "<group>";
-		};
-		95C0B9971CD23E90006E523F /* AuthorizationViewControllers */ = {
-			isa = PBXGroup;
-			children = (
-				95C0B9981CD23E90006E523F /* LoginViewController.swift */,
-				95C0B9991CD23E90006E523F /* RegisterViewController.swift */,
-				95C0B99C1CD23EBA006E523F /* RegistrationCompletionViewController.swift */,
-				95C0B9A91CD25AAC006E523F /* AdditionalInfoViewController.swift */,
-				95635AA51CD3C11600BCC467 /* ForgotPasswordViewController.swift */,
-			);
-			path = AuthorizationViewControllers;
 			sourceTree = "<group>";
 		};
 		95F400A71CE385E80060F28C /* SettingsViewControllers */ = {
@@ -1068,21 +1119,6 @@
 			name = Cells;
 			sourceTree = "<group>";
 		};
-		E7E48DE31CE4A0F100DB020F /* MetabolicCharts */ = {
-			isa = PBXGroup;
-			children = (
-				842B7DC01D096062007F2126 /* MCChartXAxisRenderer.swift */,
-				842B7DC11D096062007F2126 /* MCScatterChartDataSet.swift */,
-				842B7DC21D096062007F2126 /* MCScatterChartRenderer.swift */,
-				E7E48DE41CE4A12900DB020F /* MetabolicChartRender.swift */,
-				E7E48DE61CE4BCAB00DB020F /* MetabolicChartDataSet.swift */,
-				E7E48DE81CE4C2DC00DB020F /* MetabolicDataEntry.swift */,
-				78E62B5F1DE4F55400AAEF7D /* CycleChartRenderer.swift */,
-			);
-			name = MetabolicCharts;
-			path = "Charts+Extended";
-			sourceTree = "<group>";
-		};
 		E7E48DEC1CE5FEC200DB020F /* ManageBalance */ = {
 			isa = PBXGroup;
 			children = (
@@ -1118,25 +1154,27 @@
 		F42F5B331BE1FD1E00195490 /* MetabolicCompassKit */ = {
 			isa = PBXGroup;
 			children = (
-				F42F5B341BE1FD1E00195490 /* MetabolicCompassKit.h */,
+				54205E841E76229F003E3EC4 /* AppLog.swift */,
 				7863EA9B1C27302B0038DE7A /* ConsentManager.swift */,
 				786DF10C1C72AFE0007C2D4C /* Constants.swift */,
 				783E53D11C75856200BEBF33 /* DataGenerator.swift */,
 				785978401C1BD4F1008377F9 /* EventManager.swift */,
+				F42F5B361BE1FD1E00195490 /* Info.plist */,
 				F42F5B421BE2048400195490 /* IOSHealthManager.swift */,
+				F42F5B341BE1FD1E00195490 /* MetabolicCompassKit.h */,
 				78076E0E1DE269BD00B6FB50 /* NotificationManager.swift */,
 				78BEAC9D1C5E7EE800F0B541 /* PopulationHealthManager.swift */,
 				F4F4DA591C025BE30073E9EE /* PreviewManager.swift */,
 				7861300E1C25F42B00F50DB3 /* QueryManager.swift */,
 				78D46C301E2AD6DE00913639 /* RemoteLogManager.swift */,
 				F42F5B431BE2048400195490 /* SampleFormatter.swift */,
+				54205E821E762281003E3EC4 /* SecureConstants.swift.gpg */,
 				7843F9111C1FAD9900AB8978 /* ServiceAPI.swift */,
 				F42F5B441BE2048400195490 /* Theme.swift */,
 				9585680B1CD0EDBD00EDD385 /* UnitsUtils.swift */,
 				786DEBB31D48F9DC00D6654E /* UploadManager.swift */,
 				78AC90CB1C1E859F008C931B /* UserAccount.swift */,
 				7816FFBA1C1E45D3002E2ED8 /* UserManager.swift */,
-				F42F5B361BE1FD1E00195490 /* Info.plist */,
 			);
 			path = MetabolicCompassKit;
 			sourceTree = "<group>";
@@ -1144,10 +1182,10 @@
 		F42F5B4D1BE20CDD00195490 /* MetabolicCompassWatch */ = {
 			isa = PBXGroup;
 			children = (
-				78B279C31C80FFEA005A6249 /* MetabolicCompassWatch.entitlements */,
-				F42F5B4E1BE20CDD00195490 /* Interface.storyboard */,
 				F42F5B511BE20CDD00195490 /* Assets.xcassets */,
 				F42F5B531BE20CDD00195490 /* Info.plist */,
+				F42F5B4E1BE20CDD00195490 /* Interface.storyboard */,
+				78B279C31C80FFEA005A6249 /* MetabolicCompassWatch.entitlements */,
 			);
 			path = MetabolicCompassWatch;
 			sourceTree = "<group>";
@@ -1155,6 +1193,7 @@
 		F42F5B5C1BE20CDD00195490 /* MetabolicCompassWatchExtension */ = {
 			isa = PBXGroup;
 			children = (
+				F42F5B691BE20CDD00195490 /* Assets.xcassets */,
 				F42F5B671BE20CDD00195490 /* ComplicationController.swift */,
 				78B45B201CE3B6200010AC4C /* ExerciseInterfaceController.swift */,
 				78E7C1FE1D32F83200DE0495 /* ExerciseEndTimeController.swift */,
@@ -1168,6 +1207,7 @@
 				78E7C2031D32F83200DE0495 /* HealthDataService.swift */,
 				78E7C2041D32F83200DE0495 /* HealthManager_Watch.swift */,
 				78E7C2051D32F83200DE0495 /* HKQuantity_AddQuantities.swift */,
+				F42F5B6B1BE20CDD00195490 /* Info.plist */,
 				78B45B211CE3B6200010AC4C /* IntroInterfaceController.swift */,
 				78B45B221CE3B6200010AC4C /* MealInterfaceController.swift */,
 				78B45B231CE3B6200010AC4C /* MealTimesInterfaceController.swift */,
@@ -1185,8 +1225,6 @@
 				78E7C20E1D32F83200DE0495 /* WorkoutSessionService_Queries.swift */,
 				78E7C20F1D32F83200DE0495 /* WorkoutSessionService.swift */,
 				78B279C21C80FFE5005A6249 /* MetabolicCompassWatchExtension.entitlements */,
-				F42F5B691BE20CDD00195490 /* Assets.xcassets */,
-				F42F5B6B1BE20CDD00195490 /* Info.plist */,
 				F42F5B5D1BE20CDD00195490 /* Supporting Files */,
 			);
 			path = MetabolicCompassWatchExtension;
@@ -1200,36 +1238,22 @@
 			name = "Supporting Files";
 			sourceTree = "<group>";
 		};
-		F43A7C581BBDF3BE00B6FA56 /* Supporting Files */ = {
-			isa = PBXGroup;
-			children = (
-				F43A7C601BBDF49D00B6FA56 /* MetabolicCompass.entitlements */,
-				F43A7C561BBDF29D00B6FA56 /* LaunchScreen.storyboard */,
-				F43A7C541BBDF25E00B6FA56 /* Images.xcassets */,
-				781EE1231BAF3F6B00E6DDA1 /* Podfile */,
-				781EE1241BAF3F6B00E6DDA1 /* README.md */,
-				7881A3EC1BAF3B3E00ECB3C6 /* Info.plist */,
-				F518F9DE1CEF452400E829AE /* MetabolicCompass-Bridging-Header.h */,
-			);
-			name = "Supporting Files";
-			sourceTree = "<group>";
-		};
 		F43A7C591BBDF3D800B6FA56 /* Model */ = {
 			isa = PBXGroup;
 			children = (
+				84DC44F31D06CCF00091900F /* AddEventModel.swift */,
+				95635A9F1CD3782200BCC467 /* AdditionalInfoModel.swift */,
 				842B7DBC1D095F71007F2126 /* BarChartModel.swift */,
-				95F400A11CE385D50060F28C /* ProfileModel.swift */,
-				95F400A21CE385D50060F28C /* UserInfoModel.swift */,
-				F42F5ADC1BDC85AF00195490 /* SampleDataAnalyzer.swift */,
+				78CA69911DFA153E008B7BE8 /* ComparisonDataModel.swift */,
+				78076E0C1DDF4F6900B6FB50 /* CycleDataModel.swift */,
+				84C9CB4D1CEA0018005ED875 /* DailyChartModel.swift */,
 				F49B2B701C7A83BD005F2BFB /* EventPickerManager.swift */,
 				84207D271CCE02A400776848 /* LoginModel.swift */,
-				958568021CD0B18900EDD385 /* RegistrationModel.swift */,
-				95635A9F1CD3782200BCC467 /* AdditionalInfoModel.swift */,
 				95F400AC1CE38F2F0060F28C /* ModelItem.swift */,
-				84C9CB4D1CEA0018005ED875 /* DailyChartModel.swift */,
-				84DC44F31D06CCF00091900F /* AddEventModel.swift */,
-				78076E0C1DDF4F6900B6FB50 /* CycleDataModel.swift */,
-				78CA69911DFA153E008B7BE8 /* ComparisonDataModel.swift */,
+				95F400A11CE385D50060F28C /* ProfileModel.swift */,
+				958568021CD0B18900EDD385 /* RegistrationModel.swift */,
+				F42F5ADC1BDC85AF00195490 /* SampleDataAnalyzer.swift */,
+				95F400A21CE385D50060F28C /* UserInfoModel.swift */,
 			);
 			path = Model;
 			sourceTree = "<group>";
@@ -1237,19 +1261,17 @@
 		F43A7C5A1BBDF3FD00B6FA56 /* View */ = {
 			isa = PBXGroup;
 			children = (
-				84B727A61D13E56E00839E54 /* SunpathBackgroundView.swift */,
-				9580D3A51CEB29DC0074178D /* BaseControls */,
-				95748C3E1CCFC7350002F6A3 /* Cells */,
-				E7E48DEA1CE5CB2700DB020F /* MetabolicRadarChartView.swift */,
-				84C9CB481CE9BB76005ED875 /* MetabolicDailyProgressChartView.swift */,
-				F43A7C5C1BBDF43600B6FA56 /* PlotButton.swift */,
-				F43A7C671BBE508D00B6FA56 /* IntroCompareDataTableViewCell.swift */,
-				84207D251CCA6A7E00776848 /* InputTableCellWithImage.swift */,
-				842B7DBE1D09601B007F2126 /* BallonMarker.swift */,
-				958568001CD0AFA400EDD385 /* CheckBox.swift */,
-				951BA49C1CE6295F0036600A /* BrightButton.swift */,
-				951BA49E1CE630A70036600A /* UnBrightButton.swift */,
 				952470411CE9BC6C003E7EDF /* AppLogoLabel.swift */,
+				842B7DBE1D09601B007F2126 /* BallonMarker.swift */,
+				9580D3A51CEB29DC0074178D /* BaseControls */,
+				951BA49C1CE6295F0036600A /* BrightButton.swift */,
+				95748C3E1CCFC7350002F6A3 /* Cells */,
+				958568001CD0AFA400EDD385 /* CheckBox.swift */,
+				84207D251CCA6A7E00776848 /* InputTableCellWithImage.swift */,
+				F43A7C671BBE508D00B6FA56 /* IntroCompareDataTableViewCell.swift */,
+				F43A7C5C1BBDF43600B6FA56 /* PlotButton.swift */,
+				84B727A61D13E56E00839E54 /* SunpathBackgroundView.swift */,
+				951BA49E1CE630A70036600A /* UnBrightButton.swift */,
 			);
 			path = View;
 			sourceTree = "<group>";
@@ -1257,31 +1279,31 @@
 		F43A7C5F1BBDF43C00B6FA56 /* View Controller */ = {
 			isa = PBXGroup;
 			children = (
+				54205EB61E76265F003E3EC4 /* AddEvents */,
 				846E488A1D5AFEB5004CB794 /* Analysis */,
-				786818841D33040200CAE4ED /* Fasting */,
-				78969D921D6988A000E867C3 /* Our Study */,
-				84EF0EBE1D05767500A25760 /* AddEvents */,
+				54205EB91E76266F003E3EC4 /* AuthorizationViewControllers */,
+				958568041CD0BF6300EDD385 /* BaseViewController.swift */,
 				842B7DB51D095ED6007F2126 /* Charts */,
-				95F400A71CE385E80060F28C /* SettingsViewControllers */,
-				E7592DB61CDB471000E313BB /* TabController */,
-				95C0B9971CD23E90006E523F /* AuthorizationViewControllers */,
+				84B727A81D13E5B100839E54 /* CircadianBehaviorViewController.swift */,
+				F42F5B941BE2C89200195490 /* CorrelationViewController.swift */,
+				84C9CB461CE9B3A4005ED875 /* DailyProgressViewController.swift */,
+				7860E9121C61C470004C9741 /* DebugViewController.swift */,
+				78076E0A1DDE973700B6FB50 /* DialViewController.swift */,
+				7840A49A1C6E5A680005B66F /* ErrorViewController.swift */,
+				84B727A91D13E5B100839E54 /* EventInboxViewController.swift */,
+				786818841D33040200CAE4ED /* Fasting */,
 				84B727AE1D13E62200839E54 /* LogEventViewController.swift */,
+				78969D921D6988A000E867C3 /* Our Study */,
+				F44B1A2C1BDAC20D002238E6 /* PlotViewController.swift */,
 				786817601C6CF37D0018ABB5 /* ProfileSubviewController.swift */,
 				7861300C1C25E05600F50DB3 /* QueryViewController.swift */,
 				78F65A4C1C25126E0074449D /* QueryBuilderViewController.swift */,
 				78CE00AC1C65CC5A005E955C /* RadarViewController.swift */,
-				F44B1A2C1BDAC20D002238E6 /* PlotViewController.swift */,
-				F42F5B941BE2C89200195490 /* CorrelationViewController.swift */,
-				7860E9121C61C470004C9741 /* DebugViewController.swift */,
-				7840A4981C6E53A80005B66F /* VariantViewController.swift */,
-				7840A49A1C6E5A680005B66F /* ErrorViewController.swift */,
 				84207D231CCA3C3600776848 /* RegisterLoginLandingViewController.swift */,
-				958568041CD0BF6300EDD385 /* BaseViewController.swift */,
-				84C9CB461CE9B3A4005ED875 /* DailyProgressViewController.swift */,
-				84B727A81D13E5B100839E54 /* CircadianBehaviorViewController.swift */,
 				84B727AA1D13E5B100839E54 /* RepeatedEventManagerViewController.swift */,
-				84B727A91D13E5B100839E54 /* EventInboxViewController.swift */,
-				78076E0A1DDE973700B6FB50 /* DialViewController.swift */,
+				95F400A71CE385E80060F28C /* SettingsViewControllers */,
+				E7592DB61CDB471000E313BB /* TabController */,
+				7840A4981C6E53A80005B66F /* VariantViewController.swift */,
 			);
 			path = "View Controller";
 			sourceTree = "<group>";
@@ -1290,9 +1312,9 @@
 			isa = PBXGroup;
 			children = (
 				F515CFCA1CECC88000318CB6 /* ScreenManager.swift */,
+				78969D951D6A22A200E867C3 /* UIComponents.swift */,
 				7884E8E71C5F0804000261EE /* UINotifications.swift */,
 				786DEBB51D48FA7A00D6654E /* UITooltips.swift */,
-				78969D951D6A22A200E867C3 /* UIComponents.swift */,
 			);
 			path = CommonUI;
 			sourceTree = "<group>";
@@ -1535,29 +1557,37 @@
 				84AB38D01CEA0EFA00B7DB4E /* DailyProgressDayTableViewCell.xib in Resources */,
 				84EF0EC81D0580C500A25760 /* WhenTableViewCell.xib in Resources */,
 				842B7DD31D0960CB007F2126 /* ScatterChartCollectionCell.xib in Resources */,
-				F43A7C571BBDF29D00B6FA56 /* LaunchScreen.storyboard in Resources */,
 				95748C511CCFC7D90002F6A3 /* DoubleCheckListCollectionViewCell.xib in Resources */,
-				952470481CE9DAEE003E7EDF /* gotham-book.ttf in Resources */,
 				95635AA41CD3ACF300BCC467 /* ScrollSelectionViewCell.xib in Resources */,
+				54205EA81E7624CB003E3EC4 /* Gotham XLight Italic.otf in Resources */,
 				958568101CD1020600EDD385 /* LoadImageCollectionViewCell.xib in Resources */,
-				84207D221CCA210000776848 /* Images.xcassets in Resources */,
+				54205E811E762183003E3EC4 /* Images.xcassets in Resources */,
 				78D47DD31D57BE2700F432D1 /* DashboardFilterHeaderView.xib in Resources */,
 				1C2DA1421D47A72100C738DF /* health_data_mock.json in Resources */,
+				54205EC61E772631003E3EC4 /* Info.plist in Resources */,
 				95769B851CE4869C00F26668 /* TitleCollectionViewCell.xib in Resources */,
 				84207D1F1CCA1FEC00776848 /* RegisterLoginProcess.storyboard in Resources */,
+				54205EA71E7624CB003E3EC4 /* Gotham Medium.otf in Resources */,
+				54205EAD1E7624CB003E3EC4 /* HelveticaLTStd-Roman.otf in Resources */,
 				842B7DC91D0960A7007F2126 /* BarChartCollectionCell.xib in Resources */,
+				54205EAC1E7624CB003E3EC4 /* HelveticaLTStd-Blk.otf in Resources */,
+				54205EA61E7624CB003E3EC4 /* Gotham Book.otf in Resources */,
+				54205EAA1E7624CB003E3EC4 /* GothamExLight Italic.otf in Resources */,
 				95F4009A1CE385C60060F28C /* InfoCollectionViewCell.xib in Resources */,
 				95C0B9A41CD2563B006E523F /* TitledInputCollectionViewCell.xib in Resources */,
 				84EF0EAD1D05606300A25760 /* AddEvents.storyboard in Resources */,
+				54205EA91E7624CB003E3EC4 /* gotham-book.ttf in Resources */,
 				11FE4B931D50A5B4007A8D8E /* TwoLineCorrelcationCell.xib in Resources */,
 				95748C471CCFC7AA0002F6A3 /* InputCollectionViewCell.xib in Resources */,
 				95F400981CE385C60060F28C /* CircleImageCollectionViewCell.xib in Resources */,
+				54205EAB1E7624CB003E3EC4 /* helvetica_neue_ce_55_roman-webfont.ttf in Resources */,
 				843B40941D364BCE0044691C /* PhysiologicalHeaderView.xib in Resources */,
 				84EF0EB51D056FF800A25760 /* PickerTableViewCell.xib in Resources */,
 				E7592DB51CDB3A2400E313BB /* TabScreens.storyboard in Resources */,
+				54205EB11E762507003E3EC4 /* Images.xcassets in Resources */,
 				95F400A61CE385E10060F28C /* Settings.storyboard in Resources */,
+				54205EB51E7625E4003E3EC4 /* PhysioParameterCollectionViewCell.xib in Resources */,
 				84DC44FC1D0704740091900F /* StartSleepTableViewCell.xib in Resources */,
-				F43A7C551BBDF25E00B6FA56 /* Images.xcassets in Resources */,
 				84DC44FA1D07045C0091900F /* EndSleepTableViewCell.xib in Resources */,
 				84EF0EB31D056F6700A25760 /* DatePickerTableViewCell.xib in Resources */,
 				84EF0EB91D05711B00A25760 /* TypeTableViewCell.xib in Resources */,
@@ -1585,6 +1615,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				54205E831E762281003E3EC4 /* SecureConstants.swift.gpg in Resources */,
 				1C2DA1411D47A72100C738DF /* health_data_mock.json in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -1991,14 +2022,15 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				95C0B99A1CD23E90006E523F /* LoginViewController.swift in Sources */,
-				781DA9041D9828E60004B4A1 /* SlideButtonArray.swift in Sources */,
-				842B7DC31D096062007F2126 /* MCChartXAxisRenderer.swift in Sources */,
+				54205E7D1E762162003E3EC4 /* MetabolicDailyProgressChartView.swift in Sources */,
 				842B7DB71D095EF6007F2126 /* ChartsViewController.swift in Sources */,
 				84DC44F81D0704420091900F /* EndSleepTableViewCell.swift in Sources */,
+				54205E7C1E762162003E3EC4 /* MetabolicChartRender.swift in Sources */,
 				84C9CB4E1CEA0018005ED875 /* DailyChartModel.swift in Sources */,
 				95C0B9A61CD25814006E523F /* AdditionalInfoDataSource.swift in Sources */,
-				842B7DC51D096062007F2126 /* MCScatterChartRenderer.swift in Sources */,
+				54205E791E762162003E3EC4 /* MCScatterChartDataSet.swift in Sources */,
+				54205E6B1E76213B003E3EC4 /* PathMenuItem.swift in Sources */,
+				54205EC31E76266F003E3EC4 /* RegistrationCompletionViewController.swift in Sources */,
 				F49B2B711C7A83BD005F2BFB /* EventPickerManager.swift in Sources */,
 				E75E95AB1CDCD10700A18756 /* DashboardManageController.swift in Sources */,
 				78B734281C90B86A00693229 /* PlotViewController.swift in Sources */,
@@ -2012,31 +2044,30 @@
 				E75E95B21CDCD6CB00A18756 /* DashboardMetricsAppearanceProvider.swift in Sources */,
 				95769B871CE49E4000F26668 /* PhysiologicalDataViewController.swift in Sources */,
 				E7E48DF11CE6033100DB020F /* ManageBalanceCell.swift in Sources */,
+				54205E681E76213B003E3EC4 /* DeleteActivityManager.swift in Sources */,
 				78B734291C90B86D00693229 /* CorrelationViewController.swift in Sources */,
 				78CA69921DFA153E008B7BE8 /* ComparisonDataModel.swift in Sources */,
-				84C9CB491CE9BB76005ED875 /* MetabolicDailyProgressChartView.swift in Sources */,
+				54205E671E76213B003E3EC4 /* AddActivityManager.swift in Sources */,
 				84B727AC1D13E5B100839E54 /* EventInboxViewController.swift in Sources */,
 				78B7341E1C90B84600693229 /* ProfileSubviewController.swift in Sources */,
 				789BFFFF1DA94E3300396D7A /* StudyStatsModel.swift in Sources */,
 				958568051CD0BF6300EDD385 /* BaseViewController.swift in Sources */,
+				54205E7A1E762162003E3EC4 /* MCScatterChartRenderer.swift in Sources */,
 				84B727B11D13FB5A00839E54 /* ManageChartsViewController.swift in Sources */,
 				95C0B9A31CD2563B006E523F /* TitledInputCollectionViewCell.swift in Sources */,
 				958568121CD12B5200EDD385 /* RegisterModelDataSource.swift in Sources */,
-				84EF0EC01D0576B500A25760 /* AddEventViewController.swift in Sources */,
-				E7E48DEB1CE5CB2700DB020F /* MetabolicRadarChartView.swift in Sources */,
+				54205E771E762162003E3EC4 /* CycleChartRenderer.swift in Sources */,
 				842B7DBA1D095F5A007F2126 /* ChartCollectionDataSource.swift in Sources */,
 				78969D961D6A22A200E867C3 /* UIComponents.swift in Sources */,
 				84B727AF1D13E62200839E54 /* LogEventViewController.swift in Sources */,
-				E7E48DE91CE4C2DC00DB020F /* MetabolicDataEntry.swift in Sources */,
 				842B7DCB1D0960C0007F2126 /* BaseChartCollectionCell.swift in Sources */,
 				84EF0ECA1D058A9000A25760 /* BaseAddEventTableViewCell.swift in Sources */,
-				95C0B9AA1CD25AAC006E523F /* AdditionalInfoViewController.swift in Sources */,
+				54205EB81E76265F003E3EC4 /* AddEventViewController.swift in Sources */,
 				78076E0B1DDE973700B6FB50 /* DialViewController.swift in Sources */,
 				958568011CD0AFA400EDD385 /* CheckBox.swift in Sources */,
 				E7592DBC1CDC7BBE00E313BB /* DashboardComparisonController.swift in Sources */,
 				78B734261C90B86200693229 /* RadarViewController.swift in Sources */,
 				78191B801D6BC8CF00C0454B /* UserSettingsViewController.swift in Sources */,
-				95C0B99D1CD23EBA006E523F /* RegistrationCompletionViewController.swift in Sources */,
 				842B7DBB1D095F5A007F2126 /* ChartCollectionDelegate.swift in Sources */,
 				E74A89761CE308800056A2D2 /* UIColor+Extended.swift in Sources */,
 				842B7DC81D0960A7007F2126 /* BarChartCollectionCell.swift in Sources */,
@@ -2052,57 +2083,61 @@
 				E7E48DEF1CE6028600DB020F /* DashboardManageBalanceController.swift in Sources */,
 				E7592DB81CDB490600E313BB /* MainTabController.swift in Sources */,
 				84EF0EC61D0580B000A25760 /* WhenTableViewCell.swift in Sources */,
-				788BA17E1D2DE6B50031C26B /* ManageEventMenu.swift in Sources */,
 				95F400AD1CE38F2F0060F28C /* ModelItem.swift in Sources */,
-				781DA9081D9829580004B4A1 /* FrequentActivity.swift in Sources */,
 				E75E95A11CDCA89700A18756 /* DashboardFilterController.swift in Sources */,
+				54205E9C1E762412003E3EC4 /* UIFont+Common.swift in Sources */,
 				95769B891CE49E5C00F26668 /* NotificationsViewController.swift in Sources */,
 				9580D3A91CEB29DC0074178D /* AppTextField.swift in Sources */,
 				95D142BC1CE60312006A9118 /* DoubleCheckListTitledCollectionViewCell.swift in Sources */,
 				E75E95A91CDCB69A00A18756 /* DashboardFilterItem.swift in Sources */,
 				9580D3AB1CEB2BF20074178D /* AppButton.swift in Sources */,
-				781DA9021D9827F90004B4A1 /* ActivityPicker.swift in Sources */,
 				E75E95A71CDCB18D00A18756 /* DashboardFilterHeaderView.swift in Sources */,
 				78969D941D69891C00E867C3 /* OurStudyViewController.swift in Sources */,
 				1C7107BE1D4B14B500C2B3D4 /* CorrelationChartsViewController.swift in Sources */,
 				84EF0EB11D056F4B00A25760 /* PickerTableViewCell.swift in Sources */,
-				E7E48DE51CE4A12900DB020F /* MetabolicChartRender.swift in Sources */,
 				E7592DBA1CDB704600E313BB /* DashboardTabControllerViewController.swift in Sources */,
 				842B7DD01D0960CB007F2126 /* LineChartCollectionCell.swift in Sources */,
 				E75E95A31CDCA8DD00A18756 /* DashboardFilterCell.swift in Sources */,
+				54205EC11E76266F003E3EC4 /* LoginViewController.swift in Sources */,
 				9580D3A81CEB29DC0074178D /* AppLabel.swift in Sources */,
 				95C0B9A81CD25860006E523F /* BaseDataSource.swift in Sources */,
-				95C0B99B1CD23E90006E523F /* RegisterViewController.swift in Sources */,
 				84EF0EB71D05710D00A25760 /* TypeTableViewCell.swift in Sources */,
 				786818881D33044A00CAE4ED /* BalanceBarView.swift in Sources */,
 				E7591D0E1CE1C7DE00DCBA39 /* LPRTableView.swift in Sources */,
 				F5057FEB1CEF058900F66EB0 /* TextInputFilter.swift in Sources */,
 				95F400971CE385C60060F28C /* CircleImageCollectionViewCell.swift in Sources */,
 				952470421CE9BC6C003E7EDF /* AppLogoLabel.swift in Sources */,
+				54205E7B1E762162003E3EC4 /* MetabolicChartDataSet.swift in Sources */,
 				78B7342B1C90B87600693229 /* VariantViewController.swift in Sources */,
-				781DA9061D98293F0004B4A1 /* AddActivityManager.swift in Sources */,
 				846E488C1D5AFF8E004CB794 /* AnalysisViewController.swift in Sources */,
+				54205E661E76213B003E3EC4 /* ActivityPicker.swift in Sources */,
 				786DEBB61D48FA7A00D6654E /* UITooltips.swift in Sources */,
 				84B727AD1D13E5B100839E54 /* RepeatedEventManagerViewController.swift in Sources */,
+				54205E7F1E762162003E3EC4 /* MetabolicRadarChartView.swift in Sources */,
 				F42F5ADD1BDC85AF00195490 /* SampleDataAnalyzer.swift in Sources */,
+				54205EB41E7625E4003E3EC4 /* PhysioParameterCollectionViewCell.swift in Sources */,
 				958568091CD0D3A000EDD385 /* String+Extended.swift in Sources */,
 				78B7342C1C90B87A00693229 /* ErrorViewController.swift in Sources */,
 				95F400A01CE385CC0060F28C /* ProfileDataSource.swift in Sources */,
 				84DC44F41D06CCF00091900F /* AddEventModel.swift in Sources */,
+				54205EBF1E76266F003E3EC4 /* AdditionalInfoViewController.swift in Sources */,
 				84A16A601CE3630400D61935 /* UIImage+Extended.swift in Sources */,
 				78076E0D1DDF4F6900B6FB50 /* CycleDataModel.swift in Sources */,
+				54205EC21E76266F003E3EC4 /* RegisterViewController.swift in Sources */,
 				95F400991CE385C60060F28C /* InfoCollectionViewCell.swift in Sources */,
 				84EF0EAF1D056F3800A25760 /* DatePickerTableViewCell.swift in Sources */,
 				846E48891D59E1B7004CB794 /* Array+Extended.swift in Sources */,
 				95769B8B1CE49E7300F26668 /* HealthAccessViewController.swift in Sources */,
 				84AB38D21CEA0F9900B7DB4E /* DailyProgressDayTableViewCell.swift in Sources */,
-				842B7DC41D096062007F2126 /* MCScatterChartDataSet.swift in Sources */,
+				54205E6C1E76213B003E3EC4 /* SlideButtonArray.swift in Sources */,
+				54205E6A1E76213B003E3EC4 /* ManageEventMenu.swift in Sources */,
 				84EF0EBB1D05722700A25760 /* DurationTableViewCell.swift in Sources */,
 				7881A3E11BAF3B3E00ECB3C6 /* AppDelegate.swift in Sources */,
+				54205E7E1E762162003E3EC4 /* MetabolicDataEntry.swift in Sources */,
+				54205EC01E76266F003E3EC4 /* ForgotPasswordViewController.swift in Sources */,
 				84DC44F61D0704340091900F /* StartSleepTableViewCell.swift in Sources */,
 				9585680F1CD1020600EDD385 /* LoadImageCollectionViewCell.swift in Sources */,
 				E75E95AE1CDCD5A700A18756 /* DashboardMetricsConfigItem.swift in Sources */,
-				788BA1801D2DE6C70031C26B /* PathMenuItem.swift in Sources */,
 				E75E95A51CDCAD3300A18756 /* DashboardFilterCellData.swift in Sources */,
 				E7E48DF51CE614E400DB020F /* BalanceSampleListController.swift in Sources */,
 				84207D241CCA3C3600776848 /* RegisterLoginLandingViewController.swift in Sources */,
@@ -2123,22 +2158,21 @@
 				84207D281CCE02A400776848 /* LoginModel.swift in Sources */,
 				11FE4B951D50A5DD007A8D8E /* TwoLineCorrelcationCell.swift in Sources */,
 				842B7DBF1D09601B007F2126 /* BallonMarker.swift in Sources */,
+				54205E9B1E762412003E3EC4 /* NSDate+Common.swift in Sources */,
 				F56CC2B41CF6077000040604 /* FontScaleLabel.swift in Sources */,
+				54205E691E76213B003E3EC4 /* FrequentActivity.swift in Sources */,
 				F56CC2B61CF6078500040604 /* FontScaleTextField.swift in Sources */,
 				F5057FE91CEE1BC200F66EB0 /* UITextField+Common.swift in Sources */,
 				F515CFCB1CECC88000318CB6 /* ScreenManager.swift in Sources */,
 				95F400A31CE385D50060F28C /* ProfileModel.swift in Sources */,
 				95635AA01CD3782200BCC467 /* AdditionalInfoModel.swift in Sources */,
-				95635AA61CD3C11600BCC467 /* ForgotPasswordViewController.swift in Sources */,
-				78E62B601DE4F55500AAEF7D /* CycleChartRenderer.swift in Sources */,
+				54205E781E762162003E3EC4 /* MCChartXAxisRenderer.swift in Sources */,
 				95F400A41CE385D50060F28C /* UserInfoModel.swift in Sources */,
 				F43A7C681BBE508D00B6FA56 /* IntroCompareDataTableViewCell.swift in Sources */,
-				E7E48DE71CE4BCAB00DB020F /* MetabolicChartDataSet.swift in Sources */,
 				95F400AB1CE385E80060F28C /* ProfileViewController.swift in Sources */,
 				95F400AA1CE385E80060F28C /* MainSettingsViewController.swift in Sources */,
 				786818891D33044A00CAE4ED /* FastingDataModel.swift in Sources */,
 				95748C461CCFC7AA0002F6A3 /* InputCollectionViewCell.swift in Sources */,
-				781DA90A1D9829F70004B4A1 /* DeleteActivityManager.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -2146,6 +2180,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				54205EC41E76F986003E3EC4 /* AppDelegate.swift in Sources */,
 				7881A3F61BAF3B3E00ECB3C6 /* MetabolicCompassTests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -2172,6 +2207,7 @@
 				78076E0F1DE269BE00B6FB50 /* NotificationManager.swift in Sources */,
 				7861300F1C25F42B00F50DB3 /* QueryManager.swift in Sources */,
 				786DEBB41D48F9DC00D6654E /* UploadManager.swift in Sources */,
+				54205E851E76229F003E3EC4 /* AppLog.swift in Sources */,
 				F42F5B451BE2048400195490 /* IOSHealthManager.swift in Sources */,
 				783E53D21C75856200BEBF33 /* DataGenerator.swift in Sources */,
 				7843F9121C1FAD9900AB8978 /* ServiceAPI.swift in Sources */,
@@ -2300,6 +2336,7 @@
 				PROVISIONING_PROFILE = "$(APP_UDID)";
 				SDKROOT = iphoneos;
 				SWIFT_OPTIMIZATION_LEVEL = "-Owholemodule";
+				SWIFT_VERSION = 2.3;
 				TARGETED_DEVICE_FAMILY = "1,2";
 				VALIDATE_PRODUCT = YES;
 			};
@@ -2370,6 +2407,7 @@
 		};
 		786130081C25D7BC00F50DB3 /* Debug */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = 4043F623AD2CAEFBBB99D4FA /* Pods-MetabolicCompass.debug.xcconfig */;
 			buildSettings = {
 				BUNDLE_LOADER = "$(TEST_HOST)";
 				CODE_SIGN_ENTITLEMENTS = MetabolicCompass/MetabolicCompass.entitlements;
@@ -2388,6 +2426,7 @@
 		};
 		786130091C25D7BC00F50DB3 /* Debug */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = 4043F623AD2CAEFBBB99D4FA /* Pods-MetabolicCompass.debug.xcconfig */;
 			buildSettings = {
 				CODE_SIGN_ENTITLEMENTS = MetabolicCompass/MetabolicCompass.entitlements;
 				CODE_SIGN_IDENTITY = "";
@@ -2488,6 +2527,7 @@
 				PROVISIONING_PROFILE = "$(APP_UDID)";
 				SDKROOT = iphoneos;
 				SWIFT_OPTIMIZATION_LEVEL = "-Owholemodule";
+				SWIFT_VERSION = 2.3;
 				TARGETED_DEVICE_FAMILY = "1,2";
 				VALIDATE_PRODUCT = YES;
 			};
@@ -2520,6 +2560,7 @@
 		};
 		7881A40A1BAF3B3E00ECB3C6 /* Release */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = 28283F06DD206CE6A1754044 /* Pods-MetabolicCompass.release.xcconfig */;
 			buildSettings = {
 				BUNDLE_LOADER = "$(TEST_HOST)";
 				CODE_SIGN_ENTITLEMENTS = MetabolicCompass/MetabolicCompass.entitlements;
@@ -2537,6 +2578,7 @@
 		};
 		7881A40D1BAF3B3E00ECB3C6 /* Release */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = 28283F06DD206CE6A1754044 /* Pods-MetabolicCompass.release.xcconfig */;
 			buildSettings = {
 				CODE_SIGN_ENTITLEMENTS = MetabolicCompass/MetabolicCompass.entitlements;
 				CODE_SIGN_IDENTITY = "";
@@ -2593,6 +2635,7 @@
 				PROVISIONING_PROFILE = "$(APP_UDID)";
 				SDKROOT = iphoneos;
 				SWIFT_OPTIMIZATION_LEVEL = "-Owholemodule";
+				SWIFT_VERSION = 2.3;
 				TARGETED_DEVICE_FAMILY = "1,2";
 				VALIDATE_PRODUCT = YES;
 			};
@@ -2663,6 +2706,7 @@
 		};
 		78C6B3BB1D85B089002F3EF6 /* Debug-Dev */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = 3DC33266A9ED21E6F61DFCB8 /* Pods-MetabolicCompass.debug-dev.xcconfig */;
 			buildSettings = {
 				BUNDLE_LOADER = "$(TEST_HOST)";
 				CODE_SIGN_ENTITLEMENTS = MetabolicCompass/MetabolicCompass.entitlements;
@@ -2681,6 +2725,7 @@
 		};
 		78C6B3BC1D85B089002F3EF6 /* Debug-Dev */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = 3DC33266A9ED21E6F61DFCB8 /* Pods-MetabolicCompass.debug-dev.xcconfig */;
 			buildSettings = {
 				CODE_SIGN_ENTITLEMENTS = MetabolicCompass/MetabolicCompass.entitlements;
 				CODE_SIGN_IDENTITY = "";

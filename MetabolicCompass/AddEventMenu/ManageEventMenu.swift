@@ -17,7 +17,7 @@ import Crashlytics
 import MCCircadianQueries
 
 
-public class ManageEventMenu: UIView, PathMenuItemDelegate {
+public class ManageEventMenu: UIView, CAAnimationDelegate, PathMenuItemDelegate {
 
     //MARK: Internal typedefs
     struct Duration {
@@ -192,7 +192,7 @@ public class ManageEventMenu: UIView, PathMenuItemDelegate {
         return CGRectContainsPoint(startButton!.frame, point)
     }
 
-    override public func animationDidStop(anim: CAAnimation, finished flag: Bool) {
+    public func animationDidStop(anim: CAAnimation, finished flag: Bool) {
         if let animId = anim.valueForKey("id") {
             if animId.isEqual("lastAnimation") {
                 delegate?.manageEventMenuDidFinishAnimationClose(self)

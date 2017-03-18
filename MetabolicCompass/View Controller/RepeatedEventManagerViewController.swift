@@ -102,19 +102,19 @@ public func drawCircle(FillColor color : UIColor) -> UIImage {
         let context = UIGraphicsGetCurrentContext()
         
         //sets context's fill register with color
-        CGContextSetFillColorWithColor(context, color.CGColor)
+        CGContextSetFillColorWithColor(context!, color.CGColor)
         
         //draws path in context
-        CGContextBeginPath(context)
-        CGContextAddPath(context, path.CGPath)
+        CGContextBeginPath(context!)
+        CGContextAddPath(context!, path.CGPath)
         
         //draws path defined in canvas within graphics context
-        CGContextDrawPath(context, .Fill)
+        CGContextDrawPath(context!, .Fill)
         
         //creates UIImage from current graphics contexts and returns
         let image = UIGraphicsGetImageFromCurrentImageContext()
         UIGraphicsEndImageContext()
-        return image
+        return image!
     }()
     
     return circleImage
@@ -531,7 +531,7 @@ class RepeatedEventManagerViewController: UIViewController {
                     
                     //correctly lays out seperator lines such that they are dependent upon each other
                     if previous != nil {
-                        timeLabelConstraints.append(timeLabel.topAnchor.constraintEqualToAnchor(previous?.bottomAnchor, constant: self.intervalHeight * 2 - 10.0))
+                        timeLabelConstraints.append(timeLabel.topAnchor.constraintEqualToAnchor((previous?.bottomAnchor)!, constant: self.intervalHeight * 2 - 10.0))
                     } else {
                         timeLabelConstraints.append(timeLabel.topAnchor.constraintEqualToAnchor(view.topAnchor))
                     }

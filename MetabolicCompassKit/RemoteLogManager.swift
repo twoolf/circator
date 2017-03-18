@@ -301,7 +301,7 @@ public class RemoteLogManager {
             if let rv = result.value as? [String: AnyObject] where pullSuccess {
                 self.log.debug("Log reconfiguration result: \(rv)")
                 if let n = rv["name"] as? String,
-                       c = rv["config"] as? [String: AnyObject], cfg = self.parseLogConfig(c)
+                    c = rv["config"] as? [String: AnyObject], cfg = self.parseLogConfig(c)
                 {
                     if let ttl = rv["ttl"] as? Int {
                         let ttlSecs = ttl * 60

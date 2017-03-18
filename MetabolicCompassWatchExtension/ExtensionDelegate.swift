@@ -13,7 +13,15 @@ import HealthKit
 let NotificationPurchasedMovieOnWatch = "PurchasedMovieOnWatch"
 
 class ExtensionDelegate: NSObject, WKExtensionDelegate, WCSessionDelegate {
+    @available(watchOSApplicationExtension 2.2, *)
+    public func session(session: WCSession, activationDidCompleteWithState activationState: WCSessionActivationState, error: NSError?){
+    }
     
+    public func sessionDidBecomeInactive(session: WCSession) {
+    }
+    
+    public func sessionDidDeactivate(session: WCSession) {
+    }
     lazy var documentsDirectory: String = {
         return NSSearchPathForDirectoriesInDomains(NSSearchPathDirectory.DocumentDirectory, NSSearchPathDomainMask.UserDomainMask, true).first!
     }()

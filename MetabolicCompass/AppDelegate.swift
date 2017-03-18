@@ -16,7 +16,7 @@ import Locksmith
 import SwiftDate
 import SwiftyUserDefaults
 import WatchConnectivity
-import LogKit
+//import LogKit
 
 let log = RemoteLogManager.sharedManager.log
 
@@ -27,7 +27,15 @@ An overview of the Circator files and their connections follows. First, a reader
 */
 class AppDelegate: UIResponder, UIApplicationDelegate, WCSessionDelegate
 {
-
+    @available(iOS 9.3, *)
+    public func session(session: WCSession, activationDidCompleteWithState activationState: WCSessionActivationState, error: NSError?){
+    }
+    
+    public func sessionDidBecomeInactive(session: WCSession) {
+    }
+    
+    public func sessionDidDeactivate(session: WCSession) {
+    }
     var window: UIWindow?
     var mainViewController: UIViewController!
     private let firstRunKey = "FirstRun"

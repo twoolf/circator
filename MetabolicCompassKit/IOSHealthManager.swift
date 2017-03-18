@@ -14,7 +14,15 @@ import SwiftDate
 import MCCircadianQueries
 
 public class IOSHealthManager: NSObject, WCSessionDelegate {
-
+    @available(iOS 9.3, *)
+    public func session(session: WCSession, activationDidCompleteWithState activationState: WCSessionActivationState, error: NSError?){
+    }
+    
+    public func sessionDidBecomeInactive(session: WCSession) {
+    }
+    
+    public func sessionDidDeactivate(session: WCSession) {
+    }
     public static let sharedManager = IOSHealthManager()
     var observerQueries: [HKQuery] = []
 

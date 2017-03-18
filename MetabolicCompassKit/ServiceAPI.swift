@@ -42,10 +42,10 @@ public class  RequestResult{
         case .BoolWithMessage:
             return _ok ?? false
         case .AFObject:
-            let afObjRes = _obj as? Alamofire.Result<AnyObject>
+            let afObjRes = _obj as? Alamofire.Result<AnyObject, NSError>
             return afObjRes?.isSuccess ?? false
         case .AFString:
-            let afStrRes = _obj as? Alamofire.Result<String>
+            let afStrRes = _obj as? Alamofire.Result<String, NSError>
             return afStrRes?.isSuccess ?? false
         case .Error:
             let err = _obj as? NSError
@@ -62,11 +62,11 @@ public class  RequestResult{
         case .BoolWithMessage:
             return _obj as? String ?? ""
         case .AFObject:
-            let afRes = _obj as? Alamofire.Result<AnyObject>
-            return (afRes?.error as? NSError)?.localizedDescription ?? ""
+            let afRes = _obj as? Alamofire.Result<AnyObject, NSError>
+            return ((afRes?.error)! as NSError).localizedDescription ?? ""
         case .AFString:
-            let afRes = _obj as? Alamofire.Result<String>
-            return (afRes?.error as? NSError)?.localizedDescription ?? ""
+            let afRes = _obj as? Alamofire.Result<String, NSError>
+            return ((afRes?.error)! as NSError).localizedDescription ?? ""
         case .Error:
             let err = _obj as? NSError
             return err?.localizedDescription ?? ""
@@ -87,11 +87,11 @@ public class  RequestResult{
         _ok = false
         _obj = errorMessage
     }
-    init(afObjectResult: Alamofire.Result<AnyObject>) {
+    init(afObjectResult: Alamofire.Result<AnyObject, NSError>) {
         resType = .AFObject
         _obj = afObjectResult
     }
-    init(afStringResult: Alamofire.Result<String>) {
+    init(afStringResult: Alamofire.Result<String, NSError>) {
         resType = .AFString
         _obj = afStringResult
     }
@@ -223,7 +223,7 @@ public enum MCRouter : URLRequestConvertible {
     // MARK: URLRequestConvertible
 
     public var URLRequest: NSMutableURLRequest {
-        let mutableURLRequest = NSMutableURLRequest(URL: MCRouter.apiURL.URLByAppendingPathComponent(path))
+        let mutableURLRequest = NSMutableURLRequest(URL: MCRouter.apiURL!.URLByAppendingPathComponent(path)!)
         mutableURLRequest.HTTPMethod = method.rawValue
 
         if let token = MCRouter.OAuthToken {
@@ -270,32 +270,50 @@ public enum MCRouter : URLRequestConvertible {
 }
 
 public protocol ServiceRequestResultDelegate {
-    func didFinishJSONRequest(request:NSURLRequest?, response:NSHTTPURLResponse?, result:Alamofire.Result<AnyObject>)
-    func didFinishStringRequest(request:NSURLRequest?, response:NSHTTPURLResponse?, result:Alamofire.Result<String>)
+    func didFinishJSONRequest(request:NSURLRequest?, response:NSHTTPURLResponse?, result:Alamofire.Result<AnyObject, NSError>)
+    func didFinishStringRequest(request:NSURLRequest?, response:NSHTTPURLResponse?, result:Alamofire.Result<String, NSError>)
 }
+
+
 
 public class Service {
     public static var delegate:ServiceRequestResultDelegate?
     internal static func string<S: SequenceType where S.Generator.Element == Int>
         (route: MCRouter, statusCode: S, tag: String,
-        completion: (NSURLRequest?, NSHTTPURLResponse?, Alamofire.Result<String>) -> Void)
+         completion: (NSURLRequest?, NSHTTPURLResponse?, Alamofire.Result<String, NSError>) -> Void)
         -> Alamofire.Request
     {
-        return Alamofire.request(route).validate(statusCode: statusCode).logResponseString(tag, completion: completion)
+        return Alamofire.request(route).validate(statusCode: statusCode).responseString { response in
+            log.debug("\(tag): " + (response.result.isSuccess ? "SUCCESS" : "FAILED"))
+            if Service.delegate != nil{
+                Service.delegate!.didFinishStringRequest(response.request, response:response.response, result:response.result)
+            }
+            log.debug("\n***result:\(response.result)")
+            completion(response.request, response.response, response.result)
+        }
     }
-
+    
     internal static func json<S: SequenceType where S.Generator.Element == Int>
         (route: MCRouter, statusCode: S, tag: String,
-        completion: (NSURLRequest?, NSHTTPURLResponse?, Alamofire.Result<AnyObject>) -> Void)
+         completion: (NSURLRequest?, NSHTTPURLResponse?, Alamofire.Result<AnyObject,NSError>) -> Void)
         -> Alamofire.Request
     {
-        return Alamofire.request(route).validate(statusCode: statusCode).logResponseJSON(tag, completion: completion)
+        return Alamofire.request(route).validate(statusCode: statusCode).responseJSON { response in
+            log.debug("\(tag): " + (response.result.isSuccess ? "SUCCESS" : "FAILED"))
+            if let json = response.result.value {
+                if Service.delegate != nil{
+                    Service.delegate!.didFinishJSONRequest(response.request, response:response.response, result:response.result)
+                }
+                log.debug("\n***result:\(response.result)")
+            completion(response.request, response.response, response.result)
+        }
     }
+  }
 }
 
-extension Alamofire.Request {
-    public func logResponseString(tag: String, completion: (NSURLRequest?, NSHTTPURLResponse?, Alamofire.Result<String>) -> Void)
-        -> Self
+/*extension Alamofire.Request {
+    public func logResponseString(tag: String, completion: (NSURLRequest?, NSHTTPURLResponse?, Alamofire.Result<String,NSError>) -> Void)
+        ->
     {
         return self.responseString() { req, resp, result in
             log.debug("\(tag): " + (result.isSuccess ? "SUCCESS" : "FAILED"))
@@ -305,9 +323,9 @@ extension Alamofire.Request {
             log.debug("\n***result:\(result)")
             completion(req, resp, result)
         }
-    }
-
-    public func logResponseJSON(tag: String, completion: (NSURLRequest?, NSHTTPURLResponse?, Alamofire.Result<AnyObject>) -> Void)
+    } */
+    
+/*    public func logResponseJSON(tag: String, completion: (NSURLRequest?, NSHTTPURLResponse?, Alamofire.Result<AnyObject,NSError>) -> Void)
         -> Self
     {
         return self.responseJSON() { req, resp, result in
@@ -323,4 +341,53 @@ extension Alamofire.Request {
             completion(req, resp, result)
         }
     }
-}
+}*/
+
+/*extension Alamofire.Request {
+    public func logResponseString(tag: String, completion: (NSURLRequest?, NSHTTPURLResponse?, Alamofire.Result<String, NSError>) -> Void)
+         -> Self
+         {
+         return self.responseString() { req, resp, result.value in
+         log.debug("\(tag): " + (result.isSuccess ? "SUCCESS" : "FAILED"))
+         if Service.delegate != nil{
+         Service.delegate!.didFinishStringRequest(req, response:resp, result:result)
+         }
+         log.debug("\n***result:\(result)")
+         completion(req, resp, result)
+         }
+         }
+         
+    public func logResponseJSON(tag: String, completion: (NSURLRequest?, NSHTTPURLResponse?, Alamofire.Result<AnyObject, NSError>) -> Void)
+         -> Self
+         {
+         return self.responseJSON() { req, resp, result in
+         log.debug("\(tag): " + (result.isSuccess ? "SUCCESS" : "FAILED"))
+         if Service.delegate != nil{
+         Service.delegate!.didFinishJSONRequest(req, response:resp, result:result)
+         }
+         log.debug("\n***result:\(result)")
+         if !result.isSuccess {
+         log.debug("\n***response:\(resp)")
+         log.debug("\n***error:\(result.error)")
+         }
+         completion(req, resp, result)
+         }
+         }
+    }
+} */
+
+/*        return Alamofire.request(route).validate(statusCode: statusCode).responseString { response in
+ switch response.result {
+ case .Success(let value):
+ completion(response.request!, response.response!, value)
+ case .Failure:
+ completion(response.request!, response.response!, response.result as! String)
+ } */
+
+/*        return Alamofire.request(route).validate(statusCode: statusCode).responseJSON { response in
+ switch response.result {
+ case .Success(let value):
+ completion(response.request!, response.response!, value)
+ case .Failure(let error):
+ completion(response.request!, response.response!, error)
+ } */

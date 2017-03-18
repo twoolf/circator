@@ -16,7 +16,15 @@ import MCCircadianQueries
 //import SwiftyBeaver
 
 class IntroInterfaceController: WKInterfaceController, WCSessionDelegate  {
+    @available(watchOSApplicationExtension 2.2, *)
+    public func session(session: WCSession, activationDidCompleteWithState activationState: WCSessionActivationState, error: NSError?){
+    }
     
+    public func sessionDidBecomeInactive(session: WCSession) {
+    }
+    
+    public func sessionDidDeactivate(session: WCSession) {
+    }
     var heightHK, weightHK:HKQuantitySample?
     var proteinHK, fatHK, carbHK:HKQuantitySample?
     var bmiHK:Double = 22.1

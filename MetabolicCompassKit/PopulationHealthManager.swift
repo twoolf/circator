@@ -209,6 +209,7 @@ public class PopulationHealthManager: NSObject {
                 params.updateValue(queryColumns, forKey: "columns")
                 Service.json(MCRouter.AggregateMeasures(params), statusCode: 200..<300, tag: "AGGPOST") {
                     _, response, result in
+                    print("got joson update line 212 \(result.value)")
                     guard !result.isSuccess else {
                         self.refreshAggregatesFromMsg(result.value, completion: completion)
                         return
@@ -224,6 +225,7 @@ public class PopulationHealthManager: NSObject {
             // No caching for filtered queries.
             Service.json(MCRouter.AggregateMeasures(params), statusCode: 200..<300, tag: "AGGPOST") {
                 _, response, result in
+                print("got joson update line 228 \(result.value)")
                 guard !result.isSuccess else {
                     self.refreshAggregatesFromMsg(result.value, completion: completion)
                     return

@@ -115,6 +115,13 @@ class ComplicationController: NSObject, CLKComplicationDataSource {
             newTemplate.textProvider = CLKRelativeDateTextProvider(date: endTime, style: .Timer, units: [.Hour, .Minute])
             newTemplate.tintColor = UIColor(red:0, green:0.85, blue:0.76, alpha:1)
             template = newTemplate
+        default:
+            let endTime = MetricsStore.sharedInstance.lastAteAsNSDate
+            let newTemplate = CLKComplicationTemplateModularSmallStackText()
+            newTemplate.line1TextProvider = CLKSimpleTextProvider(text: "fast")
+            newTemplate.line2TextProvider = CLKRelativeDateTextProvider(date: endTime, style: .Timer, units: [.Hour, .Minute])
+            newTemplate.tintColor = UIColor(red:0, green:0.85, blue:0.76, alpha:1)
+            template = newTemplate
         }
         
         handler(CLKComplicationTimelineEntry(date: NSDate(), complicationTemplate: template!))
@@ -181,6 +188,14 @@ class ComplicationController: NSObject, CLKComplicationDataSource {
             entries.append(CLKComplicationTimelineEntry(date: start, complicationTemplate: newTemplate))
   
             handler(entries)
+        default:
+            let endTime = MetricsStore.sharedInstance.lastAteAsNSDate
+            let endingTime = endTime + 24.hours
+            let newTemplate = CLKComplicationTemplateModularSmallStackText()
+            newTemplate.line1TextProvider = CLKSimpleTextProvider(text: "fast")
+            newTemplate.line2TextProvider = CLKRelativeDateTextProvider(date: endTime, style: .Timer, units: [.Hour, .Minute])
+            
+            entries.append(CLKComplicationTimelineEntry(date: endingTime, complicationTemplate: newTemplate))
         }
     }
 
@@ -229,6 +244,12 @@ class ComplicationController: NSObject, CLKComplicationDataSource {
         case .CircularSmall:
             let newTemplate = CLKComplicationTemplateCircularSmallSimpleText()
             newTemplate.textProvider = CLKSimpleTextProvider(text: "00:00")
+            newTemplate.tintColor = UIColor(red:0, green:0.85, blue:0.76, alpha:1)
+            template = newTemplate
+        default:
+            let newTemplate = CLKComplicationTemplateModularSmallStackText()
+            newTemplate.line1TextProvider = CLKSimpleTextProvider(text: "fast")
+            newTemplate.line2TextProvider = CLKSimpleTextProvider(text: "line2")
             newTemplate.tintColor = UIColor(red:0, green:0.85, blue:0.76, alpha:1)
             template = newTemplate
         }

@@ -532,19 +532,19 @@ public class UserManager {
 
         Service.json(MCRouter.TokenExpiry, statusCode: 200..<300, tag: "ACCTOK") {
             _, response, result in
-                guard result.isSuccess else {
-                    self.refreshAccessToken(tried, completion: completion)
-                    return
-                }
-                guard let jwtDict = result.value as? [String:[String:AnyObject]],
-                    expiry  = jwtDict["body"]?["exp"] as? NSTimeInterval
-                    where expiry > NSDate().timeIntervalSince1970 else
-                {
-                    self.refreshAccessToken(tried, completion: completion)
-                    return
-                }
-                self.tokenExpiry = expiry
-                completion(false)
+            guard result.isSuccess else {
+                self.refreshAccessToken(tried, completion: completion)
+                return
+            }
+            guard let jwtDict = result.value as? [String:[String:AnyObject]],
+                expiry  = jwtDict["body"]?["exp"] as? NSTimeInterval
+                where expiry > NSDate().timeIntervalSince1970 else
+            {
+                self.refreshAccessToken(tried, completion: completion)
+                return
+            }
+            self.tokenExpiry = expiry
+            completion(false)
         }
     }
 
@@ -785,7 +785,7 @@ public class UserManager {
                 // All account component routes return a JSON object.
                 // Use this to refresh the component cache.
                 if let dict = result.value as? [String: AnyObject],
-                       refreshVal = self.unwrapResponse(component, response: dict)
+                    refreshVal = self.unwrapResponse(component, response: dict)
                 {
                     self.refreshComponentCache(component, componentData: refreshVal)
                     self.lastComponentLoadDate[component] = NSDate()
@@ -1199,9 +1199,9 @@ public class UserManager {
 
                 let urlPathStr = url.absoluteString
 
-                if fileManager.fileExistsAtPath(urlPathStr) {
+                if fileManager.fileExistsAtPath(urlPathStr!) {
                     do {
-                        try fileManager.removeItemAtPath(urlPathStr)
+                        try fileManager.removeItemAtPath(urlPathStr!)
                         result = true
                     } catch {
                         print("File does not exists \(error)")

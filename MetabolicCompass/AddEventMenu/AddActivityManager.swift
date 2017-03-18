@@ -62,7 +62,7 @@ class AppPickerManager: PickerManager, PickerManagerSelectionDelegate {
         self.notificationView = notificationView
 
         self.availableActivityApps = Dictionary(pairs: AppPickerManager.activityApps.filter { (name, scheme) in
-            if let scheme = scheme as? String, url = NSURL(string: "\(scheme)//") {
+            if let scheme = scheme as? String, let url = NSURL(string: "\(scheme)//") {
                 return UIApplication.sharedApplication().canOpenURL(url)
             }
             log.debug("App \(name) unavailable with scheme: \(scheme)", feature: "appIntegration")
@@ -113,7 +113,7 @@ class AppPickerManager: PickerManager, PickerManagerSelectionDelegate {
         return self.apps[item]
     }
 
-    func pickerView(pickerView: AKPickerView, cellForItem: AKCollectionViewCell, constraintsForItem item: Int) -> [NSLayoutConstraint] {
+    func pickerView(pickerView: AKPickerView, cellForItem: UICollectionViewCell, constraintsForItem item: Int) -> [NSLayoutConstraint] {
         let height = cellHeight()
 
         let image = apps[item].subviews[0] as! UIImageView
@@ -152,7 +152,7 @@ class AppPickerManager: PickerManager, PickerManagerSelectionDelegate {
     func pickerView(pickerView: AKPickerView, contentWidthForItem item: Int) -> CGFloat {
         let height = cellHeight()
 
-        if let label = apps[item].subviews[1] as? UILabel, image = apps[item].subviews[0] as? UIImageView {
+        if let label = apps[item].subviews[1] as? UILabel, let image = apps[item].subviews[0] as? UIImageView {
             return cellWidth(label, image: image, item: item)
         }
         return height
@@ -160,7 +160,7 @@ class AppPickerManager: PickerManager, PickerManagerSelectionDelegate {
 
     // MARK : - PickerManagerSelectionDelegate
     func pickerItemSelected(pickerManager: PickerManager, itemType: String?, index: Int, item: String, data: AnyObject?) {
-        if let scheme = data as? String, url = NSURL(string: "\(scheme)//") {
+        if let scheme = data as? String, let url = NSURL(string: "\(scheme)//") {
             if UIApplication.sharedApplication().canOpenURL(url) {
                 UIApplication.sharedApplication().openURL(url)
             }
@@ -438,7 +438,7 @@ public class AddActivityManager: UITableView, UITableViewDelegate, UITableViewDa
                     if ( nextDateIndex < queryStartDates.count )
                         && ( queryStartDates[dateIndex].compare(queryStartDates[nextDateIndex] - 1.days) == .OrderedSame )
                     {
-                        if let e1 = circadianEvents[queryStartDates[dateIndex]], e2 = circadianEvents[queryStartDates[nextDateIndex]] {
+                        if let e1 = circadianEvents[queryStartDates[dateIndex]], let e2 = circadianEvents[queryStartDates[nextDateIndex]] {
                             let eventsUnion = e1 + e2
                             eventsUnion.enumerate().forEach { (index, eventEdge) in
                                 let nextIndex = index+1

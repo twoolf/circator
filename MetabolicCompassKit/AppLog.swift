@@ -6,6 +6,7 @@
 //  Copyright © 2016 Yanif Ahmad, Tom Woolf. All rights reserved.
 //
 
+/*
 import Foundation
 import AppLogManager
 import Alamofire
@@ -55,4 +56,4 @@ func addSARequestLog(request:NSURLRequest?, response:NSHTTPURLResponse?, result:
 //        total += number
 //    }
 //    return total / Double(numbers.count)
-//}
+//} */

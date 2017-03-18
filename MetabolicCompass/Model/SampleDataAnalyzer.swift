@@ -310,7 +310,7 @@ class PlotDataAnalyzer: SampleDataAnalyzer {
         let entries: [ChartDataEntry] = samples.map { (sample) -> ChartDataEntry in
             let dayDiff = zeroDate.difference(sample.startDate.startOf(.Day, inRegion: Region()), unitFlags: .Day)
             let val = sample.numeralValue ?? 0.0
-            return ChartDataEntry(value: val, xIndex: dayDiff!.day)
+            return ChartDataEntry(value: val, xIndex: dayDiff.day)
         }
         return (xVals, entries)
     }
@@ -325,7 +325,7 @@ class PlotDataAnalyzer: SampleDataAnalyzer {
 
         let entries: [ChartDataEntry] = values.map { (sample) -> ChartDataEntry in
             let dayDiff = zeroDate.difference(sample.0.startOf(.Day, inRegion: Region()), unitFlags: .Day)
-            return ChartDataEntry(value: sample.1, xIndex: dayDiff!.day)
+            return ChartDataEntry(value: sample.1, xIndex: dayDiff.day)
         }
         return (xVals, entries)
     }

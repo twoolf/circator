@@ -20,6 +20,10 @@
 		<string>epicHaiku</string>
 		<string>epicMyChart</string>
 	</array>
+	<key>NSHealthShareUsageDescription</key>
+	<string>Metabolic Compass needs to access your Health Metrics for Display and Analysis</string>
+	<key>NSHealthUpdateUsageDescription</key>
+	<string>Metabolic Compass values your privacy and honors your PII and HIPAA</string>
 	<key>CFBundleDevelopmentRegion</key>
 	<string>en</string>
 	<key>CFBundleDisplayName</key>
