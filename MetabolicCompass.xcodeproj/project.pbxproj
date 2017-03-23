@@ -63,6 +63,7 @@
 		54205EC31E76266F003E3EC4 /* RegistrationCompletionViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 54205EBE1E76266F003E3EC4 /* RegistrationCompletionViewController.swift */; };
 		54205EC41E76F986003E3EC4 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7881A3E01BAF3B3E00ECB3C6 /* AppDelegate.swift */; };
 		54205EC61E772631003E3EC4 /* Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 54205EC51E772631003E3EC4 /* Info.plist */; };
+		545AB0FB1E8014C0006C45F6 /* LaunchImage_320by568@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 545AB0FA1E8014C0006C45F6 /* LaunchImage_320by568@2x.png */; };
 		78076E0B1DDE973700B6FB50 /* DialViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 78076E0A1DDE973700B6FB50 /* DialViewController.swift */; };
 		78076E0D1DDF4F6900B6FB50 /* CycleDataModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 78076E0C1DDF4F6900B6FB50 /* CycleDataModel.swift */; };
 		78076E0F1DE269BE00B6FB50 /* NotificationManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 78076E0E1DE269BD00B6FB50 /* NotificationManager.swift */; };
@@ -372,6 +373,7 @@
 		4043F623AD2CAEFBBB99D4FA /* Pods-MetabolicCompass.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-MetabolicCompass.debug.xcconfig"; path = "Pods/Target Support Files/Pods-MetabolicCompass/Pods-MetabolicCompass.debug.xcconfig"; sourceTree = "<group>"; };
 		41794893B1F71861C9B559DE /* Pods-MetabolicCompassKit.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-MetabolicCompassKit.debug.xcconfig"; path = "Pods/Target Support Files/Pods-MetabolicCompassKit/Pods-MetabolicCompassKit.debug.xcconfig"; sourceTree = "<group>"; };
 		54024C61FD99E12902CC4E62 /* Pods-MetabolicCompassWatch.debug-dev.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-MetabolicCompassWatch.debug-dev.xcconfig"; path = "Pods/Target Support Files/Pods-MetabolicCompassWatch/Pods-MetabolicCompassWatch.debug-dev.xcconfig"; sourceTree = "<group>"; };
+		5411C8281E7F436000E05EFF /* MetabolicCompass.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = MetabolicCompass.entitlements; sourceTree = "<group>"; };
 		54205E5F1E76213B003E3EC4 /* ActivityPicker.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ActivityPicker.swift; sourceTree = "<group>"; };
 		54205E601E76213B003E3EC4 /* AddActivityManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AddActivityManager.swift; sourceTree = "<group>"; };
 		54205E611E76213B003E3EC4 /* DeleteActivityManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DeleteActivityManager.swift; sourceTree = "<group>"; };
@@ -411,6 +413,7 @@
 		54205EBD1E76266F003E3EC4 /* RegisterViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RegisterViewController.swift; sourceTree = "<group>"; };
 		54205EBE1E76266F003E3EC4 /* RegistrationCompletionViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RegistrationCompletionViewController.swift; sourceTree = "<group>"; };
 		54205EC51E772631003E3EC4 /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		545AB0FA1E8014C0006C45F6 /* LaunchImage_320by568@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "LaunchImage_320by568@2x.png"; sourceTree = "<group>"; };
 		69DAFDA8EC7BDEE80F78A27B /* Pods-MetabolicCompassWatch.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-MetabolicCompassWatch.release.xcconfig"; path = "Pods/Target Support Files/Pods-MetabolicCompassWatch/Pods-MetabolicCompassWatch.release.xcconfig"; sourceTree = "<group>"; };
 		6E31F6785F853C33FD3E9838 /* Pods-MetabolicCompassWatchExtension.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-MetabolicCompassWatchExtension.debug.xcconfig"; path = "Pods/Target Support Files/Pods-MetabolicCompassWatchExtension/Pods-MetabolicCompassWatchExtension.debug.xcconfig"; sourceTree = "<group>"; };
 		774AE36AA555EE6DC0F80E16 /* Pods_MetabolicCompassWatchExtension.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_MetabolicCompassWatchExtension.framework; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -795,6 +798,8 @@
 		7881A3DF1BAF3B3E00ECB3C6 /* MetabolicCompass */ = {
 			isa = PBXGroup;
 			children = (
+				545AB0FA1E8014C0006C45F6 /* LaunchImage_320by568@2x.png */,
+				5411C8281E7F436000E05EFF /* MetabolicCompass.entitlements */,
 				54205EC51E772631003E3EC4 /* Info.plist */,
 				E74A89771CE3260F0056A2D2 /* AccountManager */,
 				54205E5E1E76213B003E3EC4 /* AddEventMenu */,
@@ -1565,6 +1570,7 @@
 				78D47DD31D57BE2700F432D1 /* DashboardFilterHeaderView.xib in Resources */,
 				1C2DA1421D47A72100C738DF /* health_data_mock.json in Resources */,
 				54205EC61E772631003E3EC4 /* Info.plist in Resources */,
+				545AB0FB1E8014C0006C45F6 /* LaunchImage_320by568@2x.png in Resources */,
 				95769B851CE4869C00F26668 /* TitleCollectionViewCell.xib in Resources */,
 				84207D1F1CCA1FEC00776848 /* RegisterLoginProcess.storyboard in Resources */,
 				54205EA71E7624CB003E3EC4 /* Gotham Medium.otf in Resources */,
@@ -2351,6 +2357,7 @@
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				CURRENT_PROJECT_VERSION = 88;
 				DEFINES_MODULE = YES;
+				DEVELOPMENT_TEAM = E4SL9A9Z96;
 				DYLIB_COMPATIBILITY_VERSION = 1;
 				DYLIB_CURRENT_VERSION = 88;
 				DYLIB_INSTALL_NAME_BASE = "@rpath";
@@ -2384,6 +2391,7 @@
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				CURRENT_PROJECT_VERSION = 88;
+				DEVELOPMENT_TEAM = E4SL9A9Z96;
 				EMBEDDED_CONTENT_CONTAINS_SWIFT = YES;
 				FRAMEWORK_SEARCH_PATHS = "$(inherited)";
 				GCC_OPTIMIZATION_LEVEL = 0;
@@ -2394,7 +2402,7 @@
 				);
 				GCC_WARN_ABOUT_DEPRECATED_FUNCTIONS = NO;
 				INFOPLIST_FILE = MetabolicCompass/Info.plist;
-				IPHONEOS_DEPLOYMENT_TARGET = 9.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = edu.jhu.cs.damsl.MetabolicCompass.app;
 				PRODUCT_NAME = MetabolicCompass;
@@ -2452,6 +2460,7 @@
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "iPhone Developer";
+				DEVELOPMENT_TEAM = E4SL9A9Z96;
 				EMBEDDED_CONTENT_CONTAINS_SWIFT = NO;
 				GCC_OPTIMIZATION_LEVEL = 0;
 				IBSC_MODULE = MetabolicCompassWatch_Extension;
@@ -2475,6 +2484,7 @@
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "iPhone Developer";
+				DEVELOPMENT_TEAM = E4SL9A9Z96;
 				EMBEDDED_CONTENT_CONTAINS_SWIFT = "$(inherited)";
 				GCC_OPTIMIZATION_LEVEL = 0;
 				INFOPLIST_FILE = MetabolicCompassWatchExtension/Info.plist;
@@ -2542,12 +2552,13 @@
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				CURRENT_PROJECT_VERSION = 88;
+				DEVELOPMENT_TEAM = E4SL9A9Z96;
 				EMBEDDED_CONTENT_CONTAINS_SWIFT = YES;
 				FRAMEWORK_SEARCH_PATHS = "$(inherited)";
 				GCC_OPTIMIZATION_LEVEL = s;
 				GCC_WARN_ABOUT_DEPRECATED_FUNCTIONS = NO;
 				INFOPLIST_FILE = MetabolicCompass/Info.plist;
-				IPHONEOS_DEPLOYMENT_TARGET = 9.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = edu.jhu.cs.damsl.MetabolicCompass.app;
 				PRODUCT_NAME = MetabolicCompass;
@@ -2650,6 +2661,7 @@
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				CURRENT_PROJECT_VERSION = 88;
 				DEFINES_MODULE = YES;
+				DEVELOPMENT_TEAM = E4SL9A9Z96;
 				DYLIB_COMPATIBILITY_VERSION = 1;
 				DYLIB_CURRENT_VERSION = 88;
 				DYLIB_INSTALL_NAME_BASE = "@rpath";
@@ -2683,6 +2695,7 @@
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				CURRENT_PROJECT_VERSION = 88;
+				DEVELOPMENT_TEAM = E4SL9A9Z96;
 				EMBEDDED_CONTENT_CONTAINS_SWIFT = YES;
 				FRAMEWORK_SEARCH_PATHS = "$(inherited)";
 				GCC_OPTIMIZATION_LEVEL = 0;
@@ -2693,7 +2706,7 @@
 				);
 				GCC_WARN_ABOUT_DEPRECATED_FUNCTIONS = NO;
 				INFOPLIST_FILE = MetabolicCompass/Info.plist;
-				IPHONEOS_DEPLOYMENT_TARGET = 9.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = edu.jhu.cs.damsl.MetabolicCompass.app;
 				PRODUCT_NAME = MetabolicCompass;
@@ -2751,6 +2764,7 @@
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "iPhone Developer";
+				DEVELOPMENT_TEAM = E4SL9A9Z96;
 				EMBEDDED_CONTENT_CONTAINS_SWIFT = NO;
 				GCC_OPTIMIZATION_LEVEL = 0;
 				IBSC_MODULE = MetabolicCompassWatch_Extension;
@@ -2774,6 +2788,7 @@
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "iPhone Developer";
+				DEVELOPMENT_TEAM = E4SL9A9Z96;
 				EMBEDDED_CONTENT_CONTAINS_SWIFT = "$(inherited)";
 				GCC_OPTIMIZATION_LEVEL = 0;
 				INFOPLIST_FILE = MetabolicCompassWatchExtension/Info.plist;
@@ -2797,6 +2812,7 @@
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				CURRENT_PROJECT_VERSION = 88;
 				DEFINES_MODULE = YES;
+				DEVELOPMENT_TEAM = E4SL9A9Z96;
 				DYLIB_COMPATIBILITY_VERSION = 1;
 				DYLIB_CURRENT_VERSION = 88;
 				DYLIB_INSTALL_NAME_BASE = "@rpath";
@@ -2828,6 +2844,7 @@
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "iPhone Developer";
+				DEVELOPMENT_TEAM = E4SL9A9Z96;
 				EMBEDDED_CONTENT_CONTAINS_SWIFT = "$(inherited)";
 				INFOPLIST_FILE = MetabolicCompassWatchExtension/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @executable_path/../../Frameworks";
@@ -2850,6 +2867,7 @@
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "iPhone Developer";
+				DEVELOPMENT_TEAM = E4SL9A9Z96;
 				EMBEDDED_CONTENT_CONTAINS_SWIFT = NO;
 				IBSC_MODULE = MetabolicCompassWatch_Extension;
 				INFOPLIST_FILE = MetabolicCompassWatch/Info.plist;

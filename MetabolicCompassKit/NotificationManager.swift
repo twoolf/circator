@@ -239,13 +239,13 @@ public class NotificationManager {
             Defaults.synchronize()
         }
 
-        log.debug([
+/*        log.debug([
             "sstart \(streakStarts)",
             "send \(streakEnds)",
             "sstate mfw \(streakState[.Fasting]!.dailyMFW)",
             "sstate dn \(streakState[.Fasting]!.daysNotified)",
             "smax \(streakMax)"
-            ].componentsJoinedByString("\n"), feature: "initManager")
+            ].componentsJoinedByString("\n"), feature: "initManager") */
 
     }
 
