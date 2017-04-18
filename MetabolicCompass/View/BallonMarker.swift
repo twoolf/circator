@@ -30,18 +30,18 @@ public class BalloonMarker: ChartMarker
 
     public init(color: UIColor, font: UIFont, insets: UIEdgeInsets)
     {
-        super.init()
+//        super.init()
 
         self.font = font
         self.insets = insets
         
-        _paragraphStyle = NSParagraphStyle.defaultParagraphStyle().mutableCopy() as? NSMutableParagraphStyle
-        _paragraphStyle?.alignment = .Center
+        _paragraphStyle = NSParagraphStyle.default.mutableCopy() as? NSMutableParagraphStyle
+        _paragraphStyle?.alignment = .center
     }
     
-    public override var size: CGSize { return _size; }
+    public override var size: Size { return _size; }
     
-    public override func draw(context context: CGContext, point: CGPoint)
+    public override func draw(context: CGContext, point: CGPoint)
     {
         if (labelns == nil)
         {
@@ -72,21 +72,21 @@ public class BalloonMarker: ChartMarker
         let bezierPath = getBallonPathForRect(rect)
 
         UIGraphicsPushContext(context);
-        CGContextSaveGState(context);
+        context.saveGState();
         bezierPath.stroke()
 
         rect.origin.y += self.insets.top
         rect.size.height -= self.insets.top + self.insets.bottom
 
         labelns?.drawInRect(rect, withAttributes: _drawAttributes)
-        CGContextRestoreGState(context);
+        context.restoreGState();
         UIGraphicsPopContext();
     }
     
-    public override func refreshContent(entry entry: ChartDataEntry, highlight: ChartHighlight)
+    public override func refreshContent(entry: ChartDataEntry, highlight: Highlight)
     {
         yActual = entry.value
-        if let bentry = entry as? BarChartDataEntry, vals = bentry.values {
+        if let bentry = entry as? BarChartDataEntry, let vals = bentry.values {
             labelns = NSString(format: "%.5g", vals[vals.count-1])
             yActual = vals[vals.count-1]
         } else {
@@ -96,9 +96,9 @@ public class BalloonMarker: ChartMarker
         _drawAttributes.removeAll()
         _drawAttributes[NSFontAttributeName] = self.font
         _drawAttributes[NSParagraphStyleAttributeName] = _paragraphStyle
-        _drawAttributes[NSForegroundColorAttributeName] = UIColor.whiteColor()
+        _drawAttributes[NSForegroundColorAttributeName] = UIColor.white
         
-        _labelSize = labelns?.sizeWithAttributes(_drawAttributes) ?? CGSizeZero
+        _labelSize = labelns?.size(attributes: _drawAttributes) ?? SizeZero
         _size.width = _labelSize.width + self.insets.left + self.insets.right
         _size.height = _labelSize.height + self.insets.top + self.insets.bottom
         _size.width = max(minimumSize.width, _size.width)
@@ -108,57 +108,57 @@ public class BalloonMarker: ChartMarker
     func getBallonPathForRect (rect: CGRect) -> UIBezierPath {
         let color2 = UIColor(red: 0.008, green: 0.145, blue: 0.329, alpha: 1.000)
         let bezier3Path = UIBezierPath()
-        bezier3Path.moveToPoint(CGPointMake(rect.origin.x + 7.64, rect.origin.y + 0))
-        bezier3Path.addLineToPoint(CGPointMake(rect.origin.x + 29.36, rect.origin.y + 0))
-        bezier3Path.addCurveToPoint(CGPointMake(rect.origin.x + 33.65,rect.origin.y + 0.33),
-                                    controlPoint1: CGPointMake(rect.origin.x + 31.56, rect.origin.y + 0),
-                                    controlPoint2: CGPointMake(rect.origin.x + 32.66, rect.origin.y + 0))
-        bezier3Path.addLineToPoint(CGPointMake(rect.origin.x + 33.84, rect.origin.y + 0.37))
-        bezier3Path.addCurveToPoint(CGPointMake(rect.origin.x + 36.63, rect.origin.y + 3.16),
-                                    controlPoint1: CGPointMake(rect.origin.x + 35.14, rect.origin.y + 0.85),
-                                    controlPoint2: CGPointMake(rect.origin.x + 36.15, rect.origin.y + 1.86))
-        bezier3Path.addCurveToPoint(CGPointMake(rect.origin.x + 37, rect.origin.y + 7.64),
-                                    controlPoint1: CGPointMake(rect.origin.x + 37, rect.origin.y + 4.34),
-                                    controlPoint2: CGPointMake(rect.origin.x + 37, rect.origin.y + 5.44))
-        bezier3Path.addLineToPoint(CGPointMake(rect.origin.x + 37, rect.origin.y + 16.36))
-        bezier3Path.addCurveToPoint(CGPointMake(rect.origin.x + 36.67, rect.origin.y + 20.65),
-                                    controlPoint1: CGPointMake(rect.origin.x + 37, rect.origin.y + 18.56),
-                                    controlPoint2: CGPointMake(rect.origin.x + 37, rect.origin.y + 19.66))
-        bezier3Path.addLineToPoint(CGPointMake(rect.origin.x + 36.63, rect.origin.y + 20.84))
-        bezier3Path.addCurveToPoint(CGPointMake(rect.origin.x + 33.84, rect.origin.y + 23.63),
-                                    controlPoint1: CGPointMake(rect.origin.x + 36.15, rect.origin.y + 22.14),
-                                    controlPoint2: CGPointMake(rect.origin.x + 35.14, rect.origin.y + 23.15))
-        bezier3Path.addCurveToPoint(CGPointMake(rect.origin.x + 29.36, rect.origin.y + 24),
-                                    controlPoint1: CGPointMake(rect.origin.x + 32.66, rect.origin.y + 24),
-                                    controlPoint2: CGPointMake(rect.origin.x + 31.56, rect.origin.y + 24))
-        bezier3Path.addLineToPoint(CGPointMake(rect.origin.x + 7.64, rect.origin.y + 24))
-        bezier3Path.addCurveToPoint(CGPointMake(rect.origin.x + 3.35, rect.origin.y + 23.67),
-                                    controlPoint1: CGPointMake(rect.origin.x + 5.44, rect.origin.y + 24),
-                                    controlPoint2: CGPointMake(rect.origin.x + 4.34, rect.origin.y + 24))
-        bezier3Path.addLineToPoint(CGPointMake(rect.origin.x + 3.16, rect.origin.y + 23.63))
-        bezier3Path.addCurveToPoint(CGPointMake(rect.origin.x + 0.37, rect.origin.y + 20.84),
-                                    controlPoint1: CGPointMake(rect.origin.x + 1.86, rect.origin.y + 23.15),
-                                    controlPoint2: CGPointMake(rect.origin.x + 0.85, rect.origin.y + 22.14))
-        bezier3Path.addCurveToPoint(CGPointMake(rect.origin.x + 0, rect.origin.y + 16.36),
-                                    controlPoint1: CGPointMake(rect.origin.x + 0, rect.origin.y + 19.66),
-                                    controlPoint2: CGPointMake(rect.origin.x + 0, rect.origin.y + 18.56))
-        bezier3Path.addLineToPoint(CGPointMake(rect.origin.x + 0, rect.origin.y + 7.64))
-        bezier3Path.addCurveToPoint(CGPointMake(rect.origin.x + 0.33, rect.origin.y + 3.35),
-                                    controlPoint1: CGPointMake(rect.origin.x + 0, rect.origin.y + 5.44),
-                                    controlPoint2: CGPointMake(rect.origin.x + 0, rect.origin.y + 4.34))
-        bezier3Path.addLineToPoint(CGPointMake(rect.origin.x + 0.37, rect.origin.y + 3.16))
-        bezier3Path.addCurveToPoint(CGPointMake(rect.origin.x + 3.16, rect.origin.y + 0.37),
-                                    controlPoint1: CGPointMake(rect.origin.x + 0.85, rect.origin.y + 1.86),
-                                    controlPoint2: CGPointMake(rect.origin.x + 1.86, rect.origin.y + 0.85))
-        bezier3Path.addCurveToPoint(CGPointMake(rect.origin.x + 7.64, rect.origin.y + 0),
-                                    controlPoint1: CGPointMake(rect.origin.x + 4.34, rect.origin.y + 0),
-                                    controlPoint2: CGPointMake(rect.origin.x + 5.44, rect.origin.y + 0))
-        bezier3Path.closePath()
-        bezier3Path.moveToPoint(CGPointMake(rect.origin.x + 14, rect.origin.y + 24))
-        bezier3Path.addLineToPoint(CGPointMake(rect.origin.x + 24, rect.origin.y + 24))
-        bezier3Path.addLineToPoint(CGPointMake(rect.origin.x + 19, rect.origin.y + 29))
-        bezier3Path.addLineToPoint(CGPointMake(rect.origin.x + 14, rect.origin.y + 24))
-        bezier3Path.closePath()
+        bezier3Path.move(to: CGPoint(rect.origin.x + 7.64, rect.origin.y + 0))
+        bezier3Path.addLine(to: CGPoint(rect.origin.x + 29.36, rect.origin.y + 0))
+        bezier3Path.addCurve(to: CGPoint(rect.origin.x + 33.65,rect.origin.y + 0.33),
+                                    controlPoint1: CGPoint(rect.origin.x + 31.56, rect.origin.y + 0),
+                                    controlPoint2: CGPoint(rect.origin.x + 32.66, rect.origin.y + 0))
+        bezier3Path.addLine(to: CGPoint(rect.origin.x + 33.84, rect.origin.y + 0.37))
+        bezier3Path.addCurve(to: CGPoint(rect.origin.x + 36.63, rect.origin.y + 3.16),
+                                    controlPoint1: CGPoint(rect.origin.x + 35.14, rect.origin.y + 0.85),
+                                    controlPoint2: CGPoint(rect.origin.x + 36.15, rect.origin.y + 1.86))
+        bezier3Path.addCurve(to: CGPoint(rect.origin.x + 37, rect.origin.y + 7.64),
+                                    controlPoint1: CGPoint(rect.origin.x + 37, rect.origin.y + 4.34),
+                                    controlPoint2: CGPoint(rect.origin.x + 37, rect.origin.y + 5.44))
+        bezier3Path.addLine(to: CGPoint(rect.origin.x + 37, rect.origin.y + 16.36))
+        bezier3Path.addCurve(to: CGPoint(rect.origin.x + 36.67, rect.origin.y + 20.65),
+                                    controlPoint1: CGPoint(rect.origin.x + 37, rect.origin.y + 18.56),
+                                    controlPoint2: CGPoint(rect.origin.x + 37, rect.origin.y + 19.66))
+        bezier3Path.addLine(to: CGPoint(rect.origin.x + 36.63, rect.origin.y + 20.84))
+        bezier3Path.addCurve(to: CGPoint(rect.origin.x + 33.84, rect.origin.y + 23.63),
+                                    controlPoint1: CGPoint(rect.origin.x + 36.15, rect.origin.y + 22.14),
+                                    controlPoint2: CGPoint(rect.origin.x + 35.14, rect.origin.y + 23.15))
+        bezier3Path.addCurve(to: CGPoint(rect.origin.x + 29.36, rect.origin.y + 24),
+                                    controlPoint1: CGPoint(rect.origin.x + 32.66, rect.origin.y + 24),
+                                    controlPoint2: CGPoint(rect.origin.x + 31.56, rect.origin.y + 24))
+        bezier3Path.addLine(to: CGPoint(rect.origin.x + 7.64, rect.origin.y + 24))
+        bezier3Path.addCurve(to: CGPoint(rect.origin.x + 3.35, rect.origin.y + 23.67),
+                                    controlPoint1: CGPoint(rect.origin.x + 5.44, rect.origin.y + 24),
+                                    controlPoint2: CGPoint(rect.origin.x + 4.34, rect.origin.y + 24))
+        bezier3Path.addLine(to: CGPoint(rect.origin.x + 3.16, rect.origin.y + 23.63))
+        bezier3Path.addCurve(to: CGPoint(rect.origin.x + 0.37, rect.origin.y + 20.84),
+                                    controlPoint1: CGPoint(rect.origin.x + 1.86, rect.origin.y + 23.15),
+                                    controlPoint2: CGPoint(rect.origin.x + 0.85, rect.origin.y + 22.14))
+        bezier3Path.addCurve(to: CGPoint(rect.origin.x + 0, rect.origin.y + 16.36),
+                                    controlPoint1: CGPoint(rect.origin.x + 0, rect.origin.y + 19.66),
+                                    controlPoint2: CGPoint(rect.origin.x + 0, rect.origin.y + 18.56))
+        bezier3Path.addLine(to: CGPoint(rect.origin.x + 0, rect.origin.y + 7.64))
+        bezier3Path.addCurve(to: CGPoint(rect.origin.x + 0.33, rect.origin.y + 3.35),
+                                    controlPoint1: CGPoint(rect.origin.x + 0, rect.origin.y + 5.44),
+                                    controlPoint2: CGPoint(rect.origin.x + 0, rect.origin.y + 4.34))
+        bezier3Path.addLine(to: CGPoint(rect.origin.x + 0.37, rect.origin.y + 3.16))
+        bezier3Path.addCurve(to: CGPoint(rect.origin.x + 3.16, rect.origin.y + 0.37),
+                                    controlPoint1: CGPoint(rect.origin.x + 0.85, rect.origin.y + 1.86),
+                                    controlPoint2: CGPoint(rect.origin.x + 1.86, rect.origin.y + 0.85))
+        bezier3Path.addCurve(to: CGPoint(rect.origin.x + 7.64, rect.origin.y + 0),
+                                    controlPoint1: CGPoint(rect.origin.x + 4.34, rect.origin.y + 0),
+                                    controlPoint2: CGPoint(rect.origin.x + 5.44, rect.origin.y + 0))
+        bezier3Path.close()
+        bezier3Path.move(to: CGPoint(rect.origin.x + 14, rect.origin.y + 24))
+        bezier3Path.addLine(to: CGPoint(rect.origin.x + 24, rect.origin.y + 24))
+        bezier3Path.addLine(to: CGPoint(rect.origin.x + 19, rect.origin.y + 29))
+        bezier3Path.addLine(to: CGPoint(rect.origin.x + 14, rect.origin.y + 24))
+        bezier3Path.close()
         color2.setFill()
         bezier3Path.fill()
         color2.setStroke()

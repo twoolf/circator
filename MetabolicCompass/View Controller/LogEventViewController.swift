@@ -292,8 +292,8 @@ final class EventCoreInfoFormViewController: FormViewController {
                 self.eventTitle = title
         }
         
-        let formatTime: (NSDate -> String) = { time in
-            let timeFormatter = NSDateFormatter()
+        let formatTime: (Date -> String) = { time in
+            let timeFormatter = DateFormatter()
             timeFormatter.dateFormat = "h:mm a"
             return timeFormatter.stringFromDate(time)
         }

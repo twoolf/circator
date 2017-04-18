@@ -172,7 +172,7 @@ class AccountManager: NSObject {
 
     func checkLocalNotifications() {
         log.debug("Notifications status: \(Defaults.objectForKey(AMNotificationsKey))", feature: "notifications")
-        if let notificationsOn = Defaults.objectForKey(AMNotificationsKey) as? Bool where notificationsOn {
+        if let notificationsOn = Defaults.objectForKey(AMNotificationsKey) as? Bool, notificationsOn {
             return
         }
 

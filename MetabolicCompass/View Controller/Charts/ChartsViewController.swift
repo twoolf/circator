@@ -43,29 +43,29 @@ class ChartsViewController: UIViewController {
         collectionView.dataSource = chartCollectionDataSource
     }
 
-    override func viewWillAppear(animated: Bool) {
+    override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-        NSNotificationCenter.defaultCenter().addObserver(self, selector: #selector(updateChartDataWithClean), name: UIApplicationWillEnterForegroundNotification, object: nil)
-        NSNotificationCenter.defaultCenter().addObserver(self, selector: #selector(updateChartsData), name: HMDidUpdatedChartsData, object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(updateChartDataWithClean), name: UIApplicationWillEnterForegroundNotification, object: nil)
+        NotificationCenter.defaultCenter().addObserver(self, selector: #selector(updateChartsData), name: HMDidUpdatedChartsData, object: nil)
         chartCollectionDataSource.updateData()
         updateChartsData()
         logContentView()
     }
 
-    override func viewWillDisappear(animated: Bool) {
+    override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
-        logContentView(false)
+        logContentView(asAppear: false)
     }
 
-    override func viewDidDisappear(animated: Bool) {
+    override func viewDidDisappear(_ animated: Bool) {
         super.viewDidDisappear(animated)
-        NSNotificationCenter.defaultCenter().removeObserver(self)
+        NotificationCenter.default.removeObserver(self)
     }
 
     func logContentView(asAppear: Bool = true) {
         Answers.logContentViewWithName("Charts",
                                        contentType: asAppear ? "Appear" : "Disappear",
-                                       contentId: NSDate().toString(DateFormat.Custom("YYYY-MM-dd:HH")),
+                                       contentId: Date().toString(DateFormat.Custom("YYYY-MM-dd:HH")),
                                        customAttributes: ["range": rangeType.rawValue])
     }
 
@@ -78,10 +78,10 @@ class ChartsViewController: UIViewController {
     }
     
     func updateChartsData () {
-        if !activityIndicator.isAnimating() {
+        if !activityIndicator.isAnimating {
             activityIndicator.startAnimating()
         }
-        chartsModel.getAllDataForCurrentPeriod({ 
+        chartsModel.getAllDataForCurrentPeriod(completion: { 
             self.activityIndicator.stopAnimating()
             self.collectionView.reloadData()
         })
@@ -89,18 +89,18 @@ class ChartsViewController: UIViewController {
 
     func registerCells () {
         let barChartCellNib = UINib(nibName: "BarChartCollectionCell", bundle: nil)
-        collectionView?.registerNib(barChartCellNib, forCellWithReuseIdentifier: barChartCellIdentifier)
+        collectionView?.register(barChartCellNib, forCellWithReuseIdentifier: barChartCellIdentifier)
 
         let lineChartCellNib = UINib(nibName: "LineChartCollectionCell", bundle: nil)
-        collectionView?.registerNib(lineChartCellNib, forCellWithReuseIdentifier: lineChartCellIdentifier)
+        collectionView?.register(lineChartCellNib, forCellWithReuseIdentifier: lineChartCellIdentifier)
 
         let scatterChartCellNib = UINib(nibName: "ScatterChartCollectionCell", bundle: nil)
-        collectionView.registerNib(scatterChartCellNib, forCellWithReuseIdentifier: scatterChartCellIdentifier)
+        collectionView.register(scatterChartCellNib, forCellWithReuseIdentifier: scatterChartCellIdentifier)
     }
 
     func updateNavigationBar () {
-        let manageButton = ScreenManager.sharedInstance.appNavButtonWithTitle("Manage")
-        manageButton.addTarget(self, action: #selector(manageCharts), forControlEvents: .TouchUpInside)
+        let manageButton = ScreenManager.sharedInstance.appNavButtonWithTitle(title: "Manage")
+        manageButton.addTarget(self, action: #selector(manageCharts), for: .touchUpInside)
         let manageBarButton = UIBarButtonItem(customView: manageButton)
         self.navigationItem.leftBarButtonItem = manageBarButton
         self.navigationItem.title = NSLocalizedString("CHART", comment: "chart screen title")
@@ -116,21 +116,21 @@ class ChartsViewController: UIViewController {
 //        var showCorrelate = false
 //        let correlateSegment = sender.numberOfSegments-1
         switch sender.selectedSegmentIndex {
-            case HealthManagerStatisticsRangeType.Month.rawValue:
-                chartsModel.rangeType = .Month
-            case HealthManagerStatisticsRangeType.Year.rawValue:
-                chartsModel.rangeType = .Year
+            case HealthManagerStatisticsRangeType.month.rawValue:
+                chartsModel.rangeType = .month
+            case HealthManagerStatisticsRangeType.year.rawValue:
+                chartsModel.rangeType = .year
                 break
             default:
-                chartsModel.rangeType = .Week
+                chartsModel.rangeType = .week
         }
         logContentView()
         updateChartsData()
     }
 
     func manageCharts () {
-        let manageController = UIStoryboard(name: "TabScreens", bundle: nil).instantiateViewControllerWithIdentifier("manageCharts")
-        self.presentViewController(manageController, animated: true) {}
+        let manageController = UIStoryboard(name: "TabScreens", bundle: nil).instantiateViewController(withIdentifier: "manageCharts")
+        self.present(manageController, animated: true) {}
     }
 
 //    func correlateChart () {

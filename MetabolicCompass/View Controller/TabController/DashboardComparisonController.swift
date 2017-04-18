@@ -87,7 +87,7 @@ class DashboardComparisonController: UIViewController, UITableViewDelegate, UITa
     func logContentView(asAppear: Bool = true) {
         Answers.logContentViewWithName("Population",
                                        contentType: asAppear ? "Appear" : "Disappear",
-                                       contentId: NSDate().toString(DateFormat.Custom("YYYY-MM-dd:HH")),
+                                       contentId: Date().toString(DateFormat.Custom("YYYY-MM-dd:HH")),
                                        customAttributes: nil)
     }
 
@@ -113,7 +113,7 @@ class DashboardComparisonController: UIViewController, UITableViewDelegate, UITa
         let active = QueryManager.sharedManager.isQueriedType(sampleType)
         cell.setPopulationFiltering(active)
 
-        let timeSinceRefresh = NSDate().timeIntervalSinceDate(PopulationHealthManager.sharedManager.aggregateRefreshDate ?? NSDate.distantPast())
+        let timeSinceRefresh = Date().timeIntervalSinceDate(PopulationHealthManager.sharedManager.aggregateRefreshDate ?? Date.distantPast())
         let refreshPeriod = UserManager.sharedManager.getRefreshFrequency() ?? Int.max
         let stale = timeSinceRefresh > Double(refreshPeriod)
 

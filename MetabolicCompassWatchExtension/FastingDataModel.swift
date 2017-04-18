@@ -40,13 +40,13 @@ public class FastingDataModel : NSObject {
     
     public func updateData() {
         var someError: [NSError?] = []
-        let group = dispatch_group_create()
+        let group = DispatchGroup()
         
-        dispatch_group_enter(group)
+        group.enter()
         MCHealthManager.sharedManager.fetchWeeklyFastState { (cFast, cNonFast, error) in
             guard error == nil else {
                 someError.append(error)
-                dispatch_group_leave(group)
+                group.leave()
                 return
             }
             
@@ -55,27 +55,27 @@ public class FastingDataModel : NSObject {
             MetricsStore.sharedInstance.cumulativeWeeklyFasting = String(format: "%.1f h", (self.cumulativeWeeklyFasting / 3600.0))
             MetricsStore.sharedInstance.cumulativeWeeklyNonFast = String(format: "%.1f h", (self.cumulativeWeeklyNonFast / 3600.0))
             
-            dispatch_group_leave(group)
+            group.leave()
         }
         
-        dispatch_group_enter(group)
+        group.enter()
         MCHealthManager.sharedManager.fetchWeeklyFastingVariability { (variability, error) in
             guard error == nil else {
                 someError.append(error)
-                dispatch_group_leave(group)
+                group.leave()
                 return
             }
             
             self.weeklyFastingVariability = variability
             MetricsStore.sharedInstance.weeklyFastingVariability = String(format: "%.1f h", (self.weeklyFastingVariability / 3600.0))
-            dispatch_group_leave(group)
+            group.leave()
         }
         
-        dispatch_group_enter(group)
+        group.enter()
         MCHealthManager.sharedManager.fetchWeeklyFastType { (fSleep, fAwake, error) in
             guard error == nil else {
                 someError.append(error)
-                dispatch_group_leave(group)
+                group.leave()
                 return
             }
             
@@ -84,14 +84,14 @@ public class FastingDataModel : NSObject {
             MetricsStore.sharedInstance.fastSleep = String(format: "%.1f h", (self.fastSleep / 3600.0))
             MetricsStore.sharedInstance.fastAwake = String(format: "%.1f h", (self.fastSleep / 3600.0))
 
-            dispatch_group_leave(group)
+            group.leave()
         }
         
-        dispatch_group_enter(group)
+        group.enter()
         MCHealthManager.sharedManager.fetchWeeklyEatAndExercise { (tEat, tExercise, error) in
             guard error == nil else {
                 someError.append(error)
-                dispatch_group_leave(group)
+                group.leave()
                 return
             }
             
@@ -100,7 +100,7 @@ public class FastingDataModel : NSObject {
             MetricsStore.sharedInstance.fastEat = String(format: "%.1f h", (self.fastEat / 3600.0))
             MetricsStore.sharedInstance.fastExercise = String(format: "%.1f h", (self.fastExercise / 3600.0))
 
-            dispatch_group_leave(group)
+            group.leave()
         }
         
     }

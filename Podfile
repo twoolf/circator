@@ -1,42 +1,40 @@
 use_frameworks!
 
 def shared_pods
-    pod 'AKPickerView-Swift'
-    pod 'Alamofire', '= 3.5.1'
-    pod 'ARSLineProgress', '~> 1.0'
-    pod 'AsyncKit', '~> 1.2'
-    pod 'AsyncSwift', '= 1.7.4'
-    pod 'AwesomeCache', :git => 'https://github.com/aschuch/AwesomeCache.git', :branch => 'swift2.3'
-    pod 'Charts', '~> 2.3.1'
-    pod 'CryptoSwift', '~> 0.5.2'
-    pod 'Dodo', '~> 2.2'
-    pod 'EasyAnimation', '~> 1.0.5'
-    pod 'EasyTipView', '= 1.0.1'
-    pod 'FileKit', '~> 2.0.0'
-    pod 'Former', '~> 1.4.0'
+    pod 'AKPickerView-Swift', :git => 'https://github.com/Akkyie/AKPickerView-Swift.git' 
+    pod 'Alamofire' 
+    pod 'ARSLineProgress' 
+    pod 'AsyncKit' 
+    pod 'AsyncSwift', :git => 'https://github.com/duemunk/Async.git' 
+    pod 'AwesomeCache' 
+    pod 'Charts' 
+    pod 'CryptoSwift' 
+    pod 'Dodo' 
+    pod 'EasyAnimation' 
+    pod 'EasyTipView' 
+    pod 'FileKit' 
+    pod 'Former' 
     pod 'Granola', :git => 'https://github.com/yanif/Granola.git'
-    pod 'HealthKitSampleGenerator'
     pod 'HTPressableButton'
-    pod 'JWTDecode', '~> 1.1.0'
-    pod 'Locksmith', :git => 'https://github.com/matthewpalmer/Locksmith.git', :branch => 'swift-2.3'
-    pod 'LogKit', '~> 2.3'
+    pod 'JWTDecode'
+    pod 'Locksmith' 
     pod 'MCCircadianQueries', :git => 'https://github.com/twoolf/MCCircadianQueries.git'
-    pod 'MGSwipeTableCell', '~> 1.5.5'
-    pod 'Navajo-Swift', '~> 0.0.6'
-    pod 'NVActivityIndicatorView', '~> 2.12'
-    pod 'Pages', '~> 0.6'
-    pod 'ReachabilitySwift', '~> 2.3'
+    pod 'MGSwipeTableCell' 
+    pod 'Navajo-Swift' 
+    pod 'NVActivityIndicatorView' 
+    pod 'Pages' 
+    pod 'ReachabilitySwift' 
     pod 'ResearchKit', :git => 'https://github.com/twoolf/ResearchKit.git'
-    pod 'Realm', '~> 1.0'
-    pod 'RealmSwift', '~> 1.0'
+    pod 'Realm' 
+    pod 'RealmSwift'
     pod 'SORandom'
-    pod 'Stormpath', :git => 'https://github.com/stormpath/stormpath-sdk-ios.git', :branch => 'swift2.3'
-    pod 'SwiftChart', '= 0.2.1'
-    pod 'SwiftDate', :git => 'https://github.com/malcommac/SwiftDate.git', :branch => 'feature/swift_23' 
-    pod 'SwiftyBeaver', ‘= 0.7.0'
-    pod 'SwiftyJSON', '~> 2.4.0'
-    pod 'SwiftyUserDefaults', '~> 2.0'
-    pod 'SwiftMessages', '~> 2.0.0'
+    pod 'Stormpath' 
+    pod 'SwiftChart'
+    pod 'SwiftDate', :git => 'https://github.com/malcommac/SwiftDate.git'
+    pod 'SwiftyBeaver'
+    pod 'SwiftyJSON' 
+    pod 'SwiftyUserDefaults', :git => 'https://github.com/radex/SwiftyUserDefaults.git'
+    pod 'SwiftMessages' 
 end
 
 target 'MetabolicCompassKit' do
@@ -50,35 +48,28 @@ target 'MetabolicCompass' do
 end
 
 target 'MetabolicCompassWatchExtension' do 
- platform :watchos, '2.0'
- pod 'SwiftDate', :git => 'https://github.com/malcommac/SwiftDate.git', :branch => 'feature/swift_23' 
- pod 'SwiftyBeaver',  ‘= 0.7.0'
- pod 'AwesomeCache', :git => 'https://github.com/aschuch/AwesomeCache.git', :branch => 'swift2.3'
+ platform :watchos, '3.0'
+ pod 'SwiftDate', :git => 'https://github.com/malcommac/SwiftDate.git'
+ pod 'SwiftyBeaver' 
+ pod 'AwesomeCache' 
  pod 'MCCircadianQueries', :git => 'https://github.com/twoolf/MCCircadianQueries.git'
 end
 
 target 'MetabolicCompassWatch' do
- platform :watchos, '2.0'
- pod 'SwiftDate', :git => 'https://github.com/malcommac/SwiftDate.git', :branch => 'feature/swift_23' 
- pod 'SwiftyBeaver',  ‘= 0.7.0'
- pod 'AwesomeCache', :git => 'https://github.com/aschuch/AwesomeCache.git', :branch => 'swift2.3'
+ platform :watchos, '3.0'
+ pod 'SwiftDate', :git => 'https://github.com/malcommac/SwiftDate.git' 
+ pod 'SwiftyBeaver'  
+ pod 'AwesomeCache' 
  pod 'MCCircadianQueries', :git => 'https://github.com/twoolf/MCCircadianQueries.git'
 end
 
-post_install do |installer|
-  installer.pods_project.targets.each do |target|
-    target.build_configurations.each do |config|
-      config.build_settings['GCC_NO_COMMON_BLOCKS'] = 'NO'
-    end
-  end
 
-# Force swift 2.3 config
+# Force swift 3.0 config
 post_install do |installer|
   installer.pods_project.targets.each do |target|
       target.build_configurations.each do |config|
-          config.build_settings['SWIFT_VERSION'] = '2.3'
+          config.build_settings['SWIFT_VERSION'] = '3.0'
       end
   end
 end
 
-end

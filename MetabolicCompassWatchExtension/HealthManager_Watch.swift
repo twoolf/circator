@@ -15,20 +15,20 @@ class HealthManager: NSObject {
     lazy var healthKitStore: HKHealthStore = HKHealthStore()
     /// This function saves a workout from a WorkoutSessionService and its HKWorkoutSession
     func saveWorkout(workoutService: WorkoutSessionService,
-                     completion: (Bool, NSError!) -> Void) {
-        guard let start = workoutService.startDate, end = workoutService.endDate else {return}
+                     completion: @escaping (Bool, NSError?) -> Void) {
+        guard let start = workoutService.startDate, let end = workoutService.endDate else {return}
         
         // Create some metadata to save the interval timer details.
         var metadata = workoutService.configuration.dictionaryRepresentation()
-        metadata[HKMetadataKeyIndoorWorkout] = workoutService.configuration.exerciseType.location == .Indoor
+        metadata[HKMetadataKeyIndoorWorkout] = workoutService.configuration.exerciseType.location as AnyObject?
         
         let workout = HKWorkout(activityType: workoutService.configuration.exerciseType.workoutType,
-                                startDate: start,
-                                endDate: end,
-                                duration: end.timeIntervalSinceDate(start),
+                                start: start as Date,
+                                end: end as Date,
+                                duration: end.timeIntervalSince(start as Date),
                                 totalEnergyBurned: workoutService.energyBurned,
                                 totalDistance: workoutService.distance,
-                                device: HKDevice.localDevice(),
+                                device: HKDevice.local(),
                                 metadata: metadata)
         
         // Collect the sampled data
@@ -38,15 +38,15 @@ class HealthManager: NSObject {
         samples += workoutService.energyData
         
         // Save the workout
-        healthKitStore.saveObject(workout) { success, error in
+        healthKitStore.save(workout) { success, error in
             if (!success || samples.count == 0) {
-                completion(success, error)
+                completion(success, error as NSError?)
                 return
             }
             
             // If there are samples to save, add them to the workout
-            self.healthKitStore.addSamples(samples, toWorkout: workout, completion: { success, error  in
-                completion(success, error)
+            self.healthKitStore.add(samples, to: workout, completion: { success, error  in
+                completion(success, error as NSError?)
             })
         }
     }

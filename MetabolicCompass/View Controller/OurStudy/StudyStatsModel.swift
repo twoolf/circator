@@ -19,10 +19,10 @@ public class StudyStatsModel: NSObject {
     public convenience init(ringIndexKeys: [String], studystats: [String:AnyObject]) {
         self.init()
 
-        let getInt : String -> Int = { key in
+        let getInt : (String) -> Int = { key in
             if let u = studystats[key] as? Int {
                 return u
-            } else if let s = studystats[key] as? String, u = Int(s) {
+            } else if let s = studystats[key] as? String, let u = Int(s) {
                 return u
             } else {
                 return -1
@@ -35,11 +35,11 @@ public class StudyStatsModel: NSObject {
         self.fullDays           = getInt("full_days")
         self.partialDays        = getInt("partial_days")
 
-        self.ringValues = ringIndexKeys.enumerate().map { (index, key) in
+        self.ringValues = ringIndexKeys.enumerated().map { (index, key) in
             var value: Double! = nil
             if let v = studystats[key] as? Double {
                 value = v
-            } else if let s = studystats[key] as? String, v = Double(s) {
+            } else if let s = studystats[key] as? String, let v = Double(s) {
                 value = v
             }
 

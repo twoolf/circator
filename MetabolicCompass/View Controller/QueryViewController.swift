@@ -30,7 +30,7 @@ class QueryViewController: UITableViewController {
         super.viewDidAppear(animated)
         Answers.logContentViewWithName("Query",
             contentType: "",
-            contentId: NSDate().toString(DateFormat.Custom("YYYY-MM-dd:HH:mm:ss")),
+            contentId: Date().toString(DateFormat.Custom("YYYY-MM-dd:HH:mm:ss")),
             customAttributes: nil)
     }
 

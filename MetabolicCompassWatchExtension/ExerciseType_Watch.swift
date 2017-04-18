@@ -12,27 +12,27 @@ import HealthKit
 extension ExerciseType {
     var location: HKWorkoutSessionLocationType {
         switch self {
-        case .Cycling:                    return HKWorkoutSessionLocationType.Outdoor
-        case .StationaryBike:             return HKWorkoutSessionLocationType.Indoor
-        case .Elliptical:                 return HKWorkoutSessionLocationType.Indoor
-        case .FunctionalStrengthTraining: return HKWorkoutSessionLocationType.Indoor
-        case .Rowing:                     return HKWorkoutSessionLocationType.Outdoor
-        case .RowingMachine:              return HKWorkoutSessionLocationType.Indoor
-        case .Running:                    return HKWorkoutSessionLocationType.Outdoor
-        case .Treadmill:                  return HKWorkoutSessionLocationType.Indoor
-        case .StairClimbing:              return HKWorkoutSessionLocationType.Indoor
-        case .Swimming:                   return HKWorkoutSessionLocationType.Indoor
-        case .Stretching:                 return HKWorkoutSessionLocationType.Unknown
-        case .Walking:                    return HKWorkoutSessionLocationType.Outdoor
-        case .Other:                      return HKWorkoutSessionLocationType.Unknown
+        case .Cycling:                    return HKWorkoutSessionLocationType.outdoor
+        case .StationaryBike:             return HKWorkoutSessionLocationType.indoor
+        case .Elliptical:                 return HKWorkoutSessionLocationType.indoor
+        case .FunctionalStrengthTraining: return HKWorkoutSessionLocationType.indoor
+        case .Rowing:                     return HKWorkoutSessionLocationType.outdoor
+        case .RowingMachine:              return HKWorkoutSessionLocationType.indoor
+        case .Running:                    return HKWorkoutSessionLocationType.outdoor
+        case .Treadmill:                  return HKWorkoutSessionLocationType.indoor
+        case .StairClimbing:              return HKWorkoutSessionLocationType.indoor
+        case .Swimming:                   return HKWorkoutSessionLocationType.indoor
+        case .Stretching:                 return HKWorkoutSessionLocationType.unknown
+        case .Walking:                    return HKWorkoutSessionLocationType.outdoor
+        case .Other:                      return HKWorkoutSessionLocationType.unknown
         }
     }
     
     var locationName: String {
         switch self.location {
-        case .Indoor:  return "Indoor Exercise"
-        case .Outdoor: return "Outdoor Exercise"
-        case .Unknown: return "General Exercise"
+        case .indoor:  return "Indoor Exercise"
+        case .outdoor: return "Outdoor Exercise"
+        case .unknown: return "General Exercise"
         }
     }
 }

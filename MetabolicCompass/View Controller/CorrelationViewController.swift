@@ -90,7 +90,7 @@ class CorrelationViewController: UIViewController, ChartViewDelegate {
                         MCHealthManager.sharedManager.fetchMaxFastingTimes { (aggregates, error) in
                             guard (error == nil) && !aggregates.isEmpty else {
                                 Async.main {
-                                    if let idx = self.errorIndex, pv = self.parentViewController as? PagesController {
+                                    if let idx = self.errorIndex, let pv = self.parentViewController as? PagesController {
                                         pv.goTo(idx)
                                     }
                                 }
@@ -104,7 +104,7 @@ class CorrelationViewController: UIViewController, ChartViewDelegate {
                             (zipped, error) -> Void in
                             guard (error == nil) && !zipped.isEmpty else {
                                 Async.main {
-                                    if let idx = self.errorIndex, pv = self.parentViewController as? PagesController {
+                                    if let idx = self.errorIndex, let pv = self.parentViewController as? PagesController {
                                         pv.goTo(idx)
                                     }
                                 }
@@ -118,7 +118,7 @@ class CorrelationViewController: UIViewController, ChartViewDelegate {
                             (zipped, error) -> Void in
                             guard (error == nil) && !zipped.isEmpty else {
                                 Async.main {
-                                    if let idx = self.errorIndex, pv = self.parentViewController as? PagesController {
+                                    if let idx = self.errorIndex, let pv = self.parentViewController as? PagesController {
                                         pv.goTo(idx)
                                     }
                                 }
@@ -132,7 +132,7 @@ class CorrelationViewController: UIViewController, ChartViewDelegate {
                             (stat1, stat2, error) -> Void in
                             guard (error == nil) && !(stat1.isEmpty || stat2.isEmpty) else {
                                 Async.main {
-                                    if let idx = self.errorIndex, pv = self.parentViewController as? PagesController {
+                                    if let idx = self.errorIndex, let pv = self.parentViewController as? PagesController {
                                         pv.goTo(idx)
                                     }
                                 }
@@ -168,12 +168,12 @@ class CorrelationViewController: UIViewController, ChartViewDelegate {
         self.plotCorrelate(analyzer)
     }
 
-    func correlateFastingSelf(aggregates: [(NSDate, Double)]) {
+    func correlateFastingSelf(aggregates: [(Date, Double)]) {
         let analyzer = CorrelationDataAnalyzer(labels: specLabels(), values: [aggregates, aggregates])!
         self.plotCorrelate(analyzer)
     }
 
-    func correlateFasting(zipped: [(NSDate, Double, MCSample)], flip: Bool = false) {
+    func correlateFasting(zipped: [(Date, Double, MCSample)], flip: Bool = false) {
         let labels = specLabels()
         let flippedLabels = [labels[1], labels[0]]
         let analyzer = CorrelationDataAnalyzer(labels: flip ? flippedLabels : labels, zipped: zipped)!
@@ -208,14 +208,14 @@ class CorrelationViewController: UIViewController, ChartViewDelegate {
         self.correlationChart.data?.setValueFont(UIFont.systemFontOfSize(10, weight: UIFontWeightThin))
 
         Async.main {
-            if let idx = self.pageIndex, pv = self.parentViewController as? PagesController {
+            if let idx = self.pageIndex, let pv = self.parentViewController as? PagesController {
                 pv.goTo(idx)
             }
         }
 
         Answers.logContentViewWithName("Correlate",
             contentType: self.getSampleDescriptor(),
-            contentId: NSDate().toString(DateFormat.Custom("YYYY-MM-dd:HH:mm:ss")),
+            contentId: Date().toString(DateFormat.Custom("YYYY-MM-dd:HH:mm:ss")),
             customAttributes: nil)
     }
 
@@ -238,7 +238,7 @@ class CorrelationViewController: UIViewController, ChartViewDelegate {
         super.viewDidAppear(animated)
         Answers.logContentViewWithName("Correlate",
             contentType: getSampleDescriptor(),
-            contentId: NSDate().toString(DateFormat.Custom("YYYY-MM-dd:HH:mm:ss")),
+            contentId: Date().toString(DateFormat.Custom("YYYY-MM-dd:HH:mm:ss")),
             customAttributes: nil)
     }
 

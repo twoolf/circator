@@ -32,5 +32,5 @@ class DatePickerTableViewCell: UITableViewCell {
 }
 
 protocol DatePickerTableViewCellDelegate {
-    func picker(picker:UIDatePicker, didSelectDate date:NSDate)
+    func picker(picker:UIDatePicker, didSelectDate date:Date)
 }

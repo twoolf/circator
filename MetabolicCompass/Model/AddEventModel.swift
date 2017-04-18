@@ -27,7 +27,7 @@ class AddEventModel: NSObject {
         }
     }
 
-    var eventDate: NSDate = floorDate(NSDate(), granularity: granularity5Mins) - defaultDuration.seconds {//default is current date
+    var eventDate: Date = floorDate(Date(), granularity: granularity5Mins) - defaultDuration.seconds {//default is current date
         didSet {
             dataWasChanged = true
         }
@@ -39,19 +39,19 @@ class AddEventModel: NSObject {
                 eventDate = AddEventModel.applyTimeForDate(mealUsualDate, toDate: eventDate)
             } else {//reset event date to the default state. Current date
                 //it works in case when user selected event with existing usual time and then changed meal type
-                eventDate = floorDate(NSDate(), granularity: granularity5Mins)
+                eventDate = floorDate(Date(), granularity: granularity5Mins)
             }
         }
     }
     
-    var sleepStartDate: NSDate = AddEventModel.getDefaultStartSleepDate() {
+    var sleepStartDate: Date = AddEventModel.getDefaultStartSleepDate() {
         didSet {
             dataWasChanged = true
             self.delegate?.sleepTimeUpdated(getSleepTimeString())
         }
     }
     
-    var sleepEndDate: NSDate =  AddEventModel.getDefaultWokeUpDate() {
+    var sleepEndDate: Date =  AddEventModel.getDefaultWokeUpDate() {
         didSet {
             dataWasChanged = true
             self.delegate?.sleepTimeUpdated(getSleepTimeString())
@@ -116,42 +116,42 @@ class AddEventModel: NSObject {
         return countDownPickerTags.contains(rowIndex)
     }
     
-    func timeStringForDate(date: NSDate) -> String {
+    func timeStringForDate(date: Date) -> String {
         let minutesString = date.minute < 10 ? "0\(date.minute)" : "\(date.minute)"
         return "\((date.hour)):" + minutesString
     }
     
-    func dayStringForDate(date: NSDate) -> String {
+    func dayStringForDate(date: Date) -> String {
         return "\((date.day)) \((date.monthName))"
     }
     
     //MARK: Class methods
     
-    class func getDefaultStartSleepDate() -> NSDate {
+    class func getDefaultStartSleepDate() -> Date {
         if let whenToSleepDate = UserManager.sharedManager.getUsualWhenToSleepTime() {
             // If we have usual time user go to sleep, we use it as default value
             // If the value is after midday, we treat it as a date/time object for yesterday.
             if whenToSleepDate.hour >= 12 {
                 return AddEventModel.applyTimeForDate(whenToSleepDate, toDate: 1.days.ago)
             } else {
-                return AddEventModel.applyTimeForDate(whenToSleepDate, toDate: NSDate())
+                return AddEventModel.applyTimeForDate(whenToSleepDate, toDate: Date())
             }
 
         }
 
         // If we have no date for usual sleep, use a constant.
-        return NSDate().startOf(.Day) - 1.hours
+        return Date().startOf(.Day) - 1.hours
     }
     
-    class func getDefaultWokeUpDate() -> NSDate {
+    class func getDefaultWokeUpDate() -> Date {
         if let whenWokeUp = UserManager.sharedManager.getUsualWokeUpTime() {
-            return AddEventModel.applyTimeForDate(whenWokeUp, toDate: NSDate())
+            return AddEventModel.applyTimeForDate(whenWokeUp, toDate: Date())
         }
         // If we have no date for usual sleep, use a constant.
         return getDefaultStartSleepDate() + 7.hours
     }
     
-    class func applyTimeForDate(fromDate: NSDate, toDate: NSDate) -> NSDate {
+    class func applyTimeForDate(fromDate: Date, toDate: Date) -> Date {
         let calendar = NSCalendar.currentCalendar()
         let components = calendar.components([.Year, .Month, .Day, .Hour, .Minute], fromDate: toDate)
         components.hour = fromDate.hour
@@ -161,7 +161,7 @@ class AddEventModel: NSObject {
     
     //MARK: Save events
     
-    func saveMealEvent(completion:(success: Bool, errorMessage: String?) -> ()) {
+    func saveMealEvent(completion:(_ success: Bool, _ errorMessage: String?) -> ()) {
         
         if mealType == .Empty {
             completion(success: false, errorMessage: "Please choose meal type")
@@ -195,7 +195,7 @@ class AddEventModel: NSObject {
         }
     }
     
-    func saveExerciseEvent(completion:(success: Bool, errorMessage: String?) -> ()) {
+    func saveExerciseEvent(completion:(_ success: Bool, _ errorMessage: String?) -> ()) {
         let hours = Int(duration/3600.0)
         let minutes = Int((duration - Double((hours * 3600)))/60)
         
@@ -220,7 +220,7 @@ class AddEventModel: NSObject {
         }
     }
     
-    func saveSleepEvent(completion:(success: Bool, errorMessage: String?) -> ()) {
+    func saveSleepEvent(completion:(_ success: Bool, _ errorMessage: String?) -> ()) {
         let dayHourMinuteSecond: NSCalendarUnit = [.Month, .Day, .Hour, .Minute]
         let difference = NSCalendar.currentCalendar().components(dayHourMinuteSecond, fromDate: sleepStartDate, toDate: sleepEndDate, options: [])
         if difference.hour < 0 || difference.minute < 0 {
@@ -254,7 +254,7 @@ class AddEventModel: NSObject {
     }
     
     //MARK: Validation
-    func validateTimedEvent(startTime: NSDate, endTime: NSDate, completion: (success: Bool, errorMessage: String?) -> ()) {
+    func validateTimedEvent(startTime: Date, endTime: Date, completion: (_ success: Bool, _ errorMessage: String?) -> ()) {
         // Fetch all sleep and workout data since yesterday.
         let sleepTy = HKObjectType.categoryTypeForIdentifier(HKCategoryTypeIdentifierSleepAnalysis)!
         let workoutTy = HKWorkoutType.workoutType()

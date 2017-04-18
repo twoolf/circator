@@ -212,7 +212,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, WCSessionDelegate
     }
 
     func errorNotification(notification: NSNotification) {
-        if let info = notification.userInfo, event = info["event"] as? String, attrs = info["attrs"] as? [String: AnyObject]
+        if let info = notification.userInfo, let event = info["event"] as? String, let attrs = info["attrs"] as? [String: AnyObject]
         {
             Answers.logCustomEventWithName(event, customAttributes: attrs)
         }

@@ -11,10 +11,10 @@ import HealthKit
 
 protocol WorkoutSessionServiceDelegate: class {
     /// This method is called when an HKWorkoutSession is correctly started
-    func workoutSessionService(service: WorkoutSessionService, didStartWorkoutAtDate startDate: NSDate)
+    func workoutSessionService(service: WorkoutSessionService, didStartWorkoutAtDate startDate: Date)
     
     /// This method is called when an HKWorkoutSession is correctly stopped
-    func workoutSessionService(service: WorkoutSessionService, didStopWorkoutAtDate endDate: NSDate)
+    func workoutSessionService(service: WorkoutSessionService, didStopWorkoutAtDate endDate: Date)
     
     /// This method is called when a workout is successfully saved
     func workoutSessionServiceDidSave(service: WorkoutSessionService)
@@ -31,16 +31,16 @@ protocol WorkoutSessionServiceDelegate: class {
 
 
 class WorkoutSessionService: NSObject {
-    private let healthService = HealthManager()
+    let healthService = HealthManager()
     let session: HKWorkoutSession
     let configuration: WorkoutConfiguration
     
-    var startDate: NSDate?
-    var endDate: NSDate?
+    var startDate: Date?
+    var endDate: Date?
     
     // ****** Units and Types
     var distanceType: HKQuantityType {
-        if self.configuration.exerciseType.workoutType == .Cycling {
+        if self.configuration.exerciseType.workoutType == .cycling {
             return cyclingDistanceType
         } else {
             return runningDistanceType
@@ -53,7 +53,7 @@ class WorkoutSessionService: NSObject {
     var distanceData: [HKQuantitySample] = [HKQuantitySample]()
     
     // ****** Query Management
-    private var queries: [HKQuery] = [HKQuery]()
+    internal var queries: [HKQuery] = [HKQuery]()
     internal var distanceAnchorValue:HKQueryAnchor?
     internal var hrAnchorValue:HKQueryAnchor?
     internal var energyAnchorValue:HKQueryAnchor?
@@ -81,17 +81,17 @@ class WorkoutSessionService: NSObject {
     }
     
     func startSession() {
-        healthService.healthKitStore.startWorkoutSession(session)
+        healthService.healthKitStore.start(session)
     }
     
     func stopSession() {
-        healthService.healthKitStore.endWorkoutSession(session)
+        healthService.healthKitStore.end(session)
     }
     
     func saveSession() {
-        healthService.saveWorkout(self) { success, error in
+        healthService.saveWorkout(workoutService: self) { success, error in
             if success {
-                self.delegate?.workoutSessionServiceDidSave(self)
+                self.delegate?.workoutSessionServiceDidSave(service: self)
             }
         }
     }
@@ -99,56 +99,55 @@ class WorkoutSessionService: NSObject {
 
 extension WorkoutSessionService: HKWorkoutSessionDelegate {
     
-    func workoutSession(workoutSession: HKWorkoutSession,
-                        didChangeToState toState: HKWorkoutSessionState,
-                                         fromState: HKWorkoutSessionState, date: NSDate) {
+    open func workoutSession(_ workoutSession: HKWorkoutSession,
+                        didChangeTo toState: HKWorkoutSessionState,
+                        from fromState: HKWorkoutSessionState, date: Date) {
         
-        dispatch_async(dispatch_get_main_queue()) { () -> Void in
+        DispatchQueue.main.async() { () -> Void in
             switch toState {
-            case .Running:
-                self.sessionStarted(date)
-            case .Ended:
-                self.sessionEnded(date)
+            case .running:
+                self.sessionStarted(date: date)
+            case .ended:
+                self.sessionEnded(date: date)
             default:
                 print("Something weird happened. Not a valid state")
             }
         }
     }
     
-    func workoutSession(workoutSession: HKWorkoutSession,
-                        didFailWithError error: NSError) {
-        sessionEnded(NSDate())
+    open func workoutSession(_ workoutSession: HKWorkoutSession,
+                        didFailWithError error: Error) {
+        sessionEnded(date: Date())
     }
     
     // MARK: Internal Session Control
-    private func sessionStarted(date: NSDate) {
+    open func sessionStarted(date: Date) {
         
         // Create and Start Queries
-        queries.append(distanceQuery(withStartDate: date))
-        queries.append(heartRateQuery(withStartDate: date))
-        queries.append(energyQuery(withStartDate: date))
+        queries.append(distanceQuery(withStartDate: date as Date))
+        queries.append(heartRateQuery(withStartDate: date as Date))
+        queries.append(energyQuery(withStartDate: date as Date))
         
         for query in queries {
-            healthService.healthKitStore.executeQuery(query)
+            healthService.healthKitStore.execute(query)
         }
         
         startDate = date
         
-        // Let the delegate know
-        delegate?.workoutSessionService(self, didStartWorkoutAtDate: date)
+        self.delegate?.workoutSessionService(service: self.delegate as! WorkoutSessionService, didStartWorkoutAtDate: startDate!)
+//        self.delegate?.workoutSession(service: WorkoutSessionService.init(configuration: configuration), didStartWorkoutAtDate: startDate!)
     }
     
-    private func sessionEnded(date: NSDate) {
+    open func sessionEnded(date: Date) {
         
         // Stop Any Queries
         for query in queries {
-            healthService.healthKitStore.stopQuery(query)
+            healthService.healthKitStore.stop(query)
         }
-        queries.removeAll()
-        
+        queries.removeAll()        
         endDate = date
         
         // Let the delegate know
-        self.delegate?.workoutSessionService(self, didStopWorkoutAtDate: date)
+        self.delegate?.workoutSessionService(service: self.delegate as! WorkoutSessionService, didStopWorkoutAtDate: endDate!)
     }
 }

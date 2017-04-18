@@ -46,19 +46,19 @@ enum ExerciseType: Int {
     
     var workoutType: HKWorkoutActivityType {
         switch self {
-        case .Cycling:                    return HKWorkoutActivityType.Cycling
-        case .StationaryBike:             return HKWorkoutActivityType.Cycling
-        case .Elliptical:                 return HKWorkoutActivityType.Elliptical
-        case .FunctionalStrengthTraining: return HKWorkoutActivityType.FunctionalStrengthTraining
-        case .Rowing:                     return HKWorkoutActivityType.Rowing
-        case .RowingMachine:              return HKWorkoutActivityType.Rowing
-        case .Running:                    return HKWorkoutActivityType.Running
-        case .Treadmill:                  return HKWorkoutActivityType.Running
-        case .StairClimbing:              return HKWorkoutActivityType.StairClimbing
-        case .Swimming:                   return HKWorkoutActivityType.Swimming
-        case .Stretching:                 return HKWorkoutActivityType.Other
-        case .Walking:                    return HKWorkoutActivityType.Walking
-        case .Other:                      return HKWorkoutActivityType.Other
+        case .Cycling:                    return HKWorkoutActivityType.cycling
+        case .StationaryBike:             return HKWorkoutActivityType.cycling
+        case .Elliptical:                 return HKWorkoutActivityType.elliptical
+        case .FunctionalStrengthTraining: return HKWorkoutActivityType.functionalStrengthTraining
+        case .Rowing:                     return HKWorkoutActivityType.rowing
+        case .RowingMachine:              return HKWorkoutActivityType.rowing
+        case .Running:                    return HKWorkoutActivityType.running
+        case .Treadmill:                  return HKWorkoutActivityType.running
+        case .StairClimbing:              return HKWorkoutActivityType.stairClimbing
+        case .Swimming:                   return HKWorkoutActivityType.swimming
+        case .Stretching:                 return HKWorkoutActivityType.other
+        case .Walking:                    return HKWorkoutActivityType.walking
+        case .Other:                      return HKWorkoutActivityType.other
         }
     }
 

@@ -23,8 +23,8 @@ class ExerciseEndTimeController: WKInterfaceController {
     @IBOutlet var exerciseEndTimeButton: WKInterfaceButton!
     
     var exerciseBeginTime = 0
-    override func awakeWithContext(context: AnyObject?) {
-        super.awakeWithContext(context)
+    func awakeWithContext(context: AnyObject?) {
+        super.awake(withContext: context)
         exerciseEndTimeButton.setTitle("Begin \(exerciseTypebyButton.exerciseType) ")
         var tempItems: [WKPickerItem] = []
         for i in 0...48 {
@@ -34,15 +34,16 @@ class ExerciseEndTimeController: WKInterfaceController {
         }
         exerciseEndTimePicker.setItems(tempItems)
         
-        let thisRegion = DateRegion()
+        let thisRegion = DateInRegion()
         var beginTimePointer = 24
-        let calendar = NSCalendar.currentCalendar()
-        var beginDate = NSDate()
-        let beginComponents = calendar.components([.Year, .Month, .Day, .Hour, .Minute], fromDate: beginDate)
-        if beginComponents.minute < 15 {
-            beginTimePointer = 2*beginComponents.hour
+        let calendar = Calendar.current
+        var beginDate = Date()
+//        let beginComponents = calendar.components([.Year, .Month, .Day, .Hour, .Minute], fromDate: beginDate)
+        let beginComponents = calendar.dateComponents([.year, .month, .day, .hour, .minute], from: beginDate)
+        if beginComponents.minute! < 15 {
+            beginTimePointer = 2*beginComponents.hour!
         } else {
-            beginTimePointer = 2*beginComponents.hour + 1
+            beginTimePointer = 2*beginComponents.hour! + 1
         }
         exerciseEndTimePicker.setSelectedItemIndex(beginTimePointer-2)
     }
@@ -62,6 +63,6 @@ class ExerciseEndTimeController: WKInterfaceController {
     
     @IBAction func onExerciseStartTimeSave() {
         exerciseTimeStruc.exerciseBegin = exerciseBeginTime
-        pushControllerWithName("ExerciseStartTimeController", context: self)
+        pushController(withName: "ExerciseStartTimeController", context: self)
     }
 }

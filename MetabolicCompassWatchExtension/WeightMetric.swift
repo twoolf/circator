@@ -9,19 +9,19 @@
 import Foundation
 
 final class WeightMetric: NSObject {
-    private static let dateFormatter: NSDateFormatter = {
-        let dateFormatter = NSDateFormatter()
+    private static let dateFormatter: DateFormatter = {
+        let dateFormatter = DateFormatter()
         dateFormatter.dateFormat = "yyyy-MM-dd HH:mm"
         return dateFormatter
     }()
     
-    let date: NSDate
+    let date: Date
     let pounds: Double
     
     // Calculated by HealthConditions
     var situation: HealthConditions.HealthSituation
     
-    init(date: NSDate, pounds: Double) {
+    init(date: Date, pounds: Double) {
         self.date = date
         self.pounds = pounds
         self.situation = .Unknown
@@ -29,14 +29,14 @@ final class WeightMetric: NSObject {
     }
     
     convenience init?(json: [String: AnyObject]) {
-        guard let dateString = json["t"] as? String, poundsString = json["v"] as? String else {
+        guard let dateString = json["t"] as? String, let poundsString = json["v"] as? String else {
             return nil
         }
         
-        guard let date = WeightMetric.dateFormatter.dateFromString(dateString), let pounds = Double(poundsString) else {
+        guard let date = WeightMetric.dateFormatter.date(from: dateString), let pounds = Double(poundsString) else {
             return nil
         }
-        self.init(date: date, pounds: pounds)
+        self.init(date: date as Date, pounds: pounds)
     }
     
     override var description: String {
@@ -64,16 +64,16 @@ extension WeightMetric: NSCoding {
     }
     
     convenience init(coder aDecoder: NSCoder) {
-        let date = aDecoder.decodeObjectForKey(CodingKeys.date) as! NSDate
-        let pounds = aDecoder.decodeDoubleForKey(CodingKeys.pounds)
+        let date = aDecoder.decodeObject(forKey: CodingKeys.date) as! Date
+        let pounds = aDecoder.decodeDouble(forKey: CodingKeys.pounds)
         self.init(date: date, pounds: pounds)
         
-        self.situation = HealthConditions.HealthSituation(rawValue: aDecoder.decodeObjectForKey(CodingKeys.situation) as! String)!
+        self.situation = HealthConditions.HealthSituation(rawValue: aDecoder.decodeObject(forKey: CodingKeys.situation) as! String)!
     }
     
-    func encodeWithCoder(encoder: NSCoder) {
-        encoder.encodeObject(date, forKey: CodingKeys.date)
-        encoder.encodeDouble(pounds, forKey: CodingKeys.pounds)
-        encoder.encodeObject(situation.rawValue, forKey: CodingKeys.situation)
+    func encode(with encoder: NSCoder) {
+        encoder.encode(date, forKey: CodingKeys.date)
+        encoder.encode(pounds, forKey: CodingKeys.pounds)
+        encoder.encode(situation.rawValue, forKey: CodingKeys.situation)
     }
 }

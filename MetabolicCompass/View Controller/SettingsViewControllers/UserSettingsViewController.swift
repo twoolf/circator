@@ -37,7 +37,7 @@ class UserSettingsViewController: BaseViewController {
     var refresh: Int! = nil
 
     var reminder: Int! = nil
-    var blackoutTimes: [NSDate] = []
+    var blackoutTimes: [Date] = []
 
     // Reminder period in minutes
     static let reminderOptions: [Int] = [ /*1, 2, 5, 10,*/ 120, 240, 360, 480, 720, 1440, 2880, 4320, -1 ]
@@ -109,7 +109,7 @@ class UserSettingsViewController: BaseViewController {
                         && refresh == UserManager.sharedManager.getRefreshFrequency()
 
         let savedReminder = Defaults.objectForKey(USNReminderFrequencyKey) as? Int
-        let savedTimes = Defaults.objectForKey(USNBlackoutTimesKey) as? [NSDate]
+        let savedTimes = Defaults.objectForKey(USNBlackoutTimesKey) as? [Date]
 
         return !(partial && (savedReminder == nil ? true : (savedReminder! == reminder))
                          && (savedTimes == nil ? true : (savedTimes! == blackoutTimes)) )
@@ -189,8 +189,8 @@ class UserSettingsViewController: BaseViewController {
 
         former = Former(tableView: tableView)
 
-        let mediumTimeNoDate: NSDate -> String = { date in
-            let dateFormatter = NSDateFormatter()
+        let mediumTimeNoDate: Date -> String = { date in
+            let dateFormatter = DateFormatter()
             dateFormatter.locale = .currentLocale()
             dateFormatter.timeStyle = .MediumStyle
             dateFormatter.dateStyle = .NoStyle

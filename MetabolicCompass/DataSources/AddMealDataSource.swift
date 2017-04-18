@@ -199,7 +199,7 @@ class AddMealDataSource: NSObject, UITableViewDataSource, UITableViewDelegate, P
     
     //MARK: DatePickerTableViewCellDelegate
     
-    func picker(picker: UIDatePicker, didSelectDate date: NSDate) {
+    func picker(picker: UIDatePicker, didSelectDate date: Date) {
         if sleepMode {
             let startSleepPickerTag = addEventModel?.datePickerTags.first
             switch picker.tag {

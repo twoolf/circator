@@ -68,7 +68,7 @@ public class Sunpath : UIView {
     var locations : [CGFloat] = [CGFloat(0.0), CGFloat(1.0/6), CGFloat((1.0/6)*2), CGFloat((1.0/6)*3), CGFloat((1.0/6)*4), CGFloat((1.0/6)*5), CGFloat(1.0)]
     
     func getStart() -> Int {
-        return Int(floor(6 * Double((NSDate().hour * 3600) + (NSDate().minute * 60)) / (24*3600)))
+        return Int(floor(6 * Double((Date().hour * 3600) + (Date().minute * 60)) / (24*3600)))
     }
     
     func getColors() -> [CGColor] {

@@ -16,22 +16,26 @@ import Async
 import Granola
 import SwiftDate
 import SwiftyUserDefaults
+import SwiftyBeaver
+
+//let log = SwiftyBeaver.self
 
 // Sorted array helpers.
 // From http://stackoverflow.com/questions/31904396/swift-binary-search-for-standard-array/33674192#33674192
 
-public extension CollectionType where Index: RandomAccessIndexType {
+public extension Collection where Index: Strideable {
     /// Finds such index N that predicate is true for all elements up to
     /// but not including the index N, and is false for all elements
     /// starting with index N.
     /// Behavior is undefined if there is no such N.
-    func binarySearch(predicate: Generator.Element -> Bool) -> Index {
+    func binarySearch(predicate: (Generator.Element) -> Bool) -> Index {
         var low = startIndex
         var high = endIndex
         while low != high {
-            let mid = low.advancedBy(low.distanceTo(high) / 2)
+//            let mid = low.advancedBy(low.distanceTo(high) / 2)
+            let mid = low.advanced(by: low.distance(to: high))
             if predicate(self[mid]) {
-                low = mid.advancedBy(1)
+                low = mid.advanced(by: 1)
             } else {
                 high = mid
             }
@@ -42,14 +46,14 @@ public extension CollectionType where Index: RandomAccessIndexType {
 
 public extension Array {
     func splitBy(size: Int) -> [[Element]] {
-        return 0.stride(to: self.count, by: size).map { startIndex in
-            let endIndex = startIndex.advancedBy(size, limit: self.count)
+        return stride(from: 0, to: self.count, by: size).map { startIndex in
+            let endIndex = startIndex.advanced(by: size)
             return Array(self[startIndex ..< endIndex])
         }
     }
 }
 
-// Constants
+// Constants  
 let remoteLogSeqKey             = "ios_log"
 let remoteLogSeqDeviceCnt       = "0"
 let remoteLogSeqIdKey           = "seq_id"
@@ -57,6 +61,10 @@ let remoteLogSeqDataKey         = "seq_data"
 let remoteLogSeqDevKey          = "seq_dvc"
 
 let remoteSyncSeqIdKey = "seq_id"
+
+let minute:TimeInterval = 60.0
+let hour:TimeInterval = 60.0 * minute
+let day:TimeInterval = 24 * hour
 
 // Randomized, truncated exponential backoff constants
 
@@ -68,8 +76,8 @@ public let maxRetries = 10
 public let uploadBlockSize = 100
 public let uploadBufferThrottleLimit = 1000
 
-private let HMAnchorKey      = DefaultsKey<[String: AnyObject]?>("HKClientAnchorKey")
-private let HMAnchorTSKey    = DefaultsKey<[String: AnyObject]?>("HKAnchorTSKey")
+private let HMAnchorKey      = DefaultsKey<[String: Any]?>("HKClientAnchorKey")
+private let HMAnchorTSKey    = DefaultsKey<[String: Any]?>("HKAnchorTSKey")
 
 public let syncNotificationLimit = 100
 public let SyncBeganNotification = "SyncBeganNotification"
@@ -103,51 +111,54 @@ public class UMSampleUUID: Object {
     dynamic var uuid = NSData()
     public convenience init(insertion: HKObject) {
         self.init()
-        self.uuid = UMSampleUUID.nsDataOfUUID(insertion.UUID)
+        self.uuid = UMSampleUUID.nsDataOfUUID(uuid: insertion.uuid as NSUUID)
     }
 
     public convenience init(deletion: HKDeletedObject) {
         self.init()
-        self.uuid = UMSampleUUID.nsDataOfUUID(deletion.UUID)
+        self.uuid = UMSampleUUID.nsDataOfUUID(uuid: deletion.uuid as NSUUID)
     }
 
     public static func nsDataOfUUID(uuid: NSUUID) -> NSData {
-        var uuidBytes: [UInt8] = [UInt8](count: 16, repeatedValue: 0)
-        uuid.getUUIDBytes(&uuidBytes)
+        var uuidBytes: [UInt8] = [UInt8](repeating: 0, count: 16)
+        uuid.getBytes(&uuidBytes)
         return NSData(bytes: &uuidBytes, length: 16)
     }
 
     public static func uuidOfNSData(data: NSData) -> NSUUID {
-        return NSUUID(UUIDBytes: UnsafePointer<UInt8>(data.bytes))
+//        return NSUUID(UUIDBytes: UnsafePointer<UInt8>(data.bytes))
+//        return NSUUID(uuidBytes: data.bytes)
+        let uuidString = NSUUID().uuidString
+        return uuidString as! NSUUID
     }
 }
 
 public class UMLogEntry: Object {
     public dynamic var id: Int = 0
     public dynamic var msid = String()
-    public dynamic var ts = NSDate()
+    public dynamic var ts = Date()
     public dynamic var anchor = NSData()
 
     let insert_uuids = List<UMSampleUUID>()
     let delete_uuids = List<UMSampleUUID>()
 
-    public dynamic var retry_ts = NSDate()
+    public dynamic var retry_ts = Date()
     public dynamic var retry_count: Int = 1
 
     // Note: because we may add a LSN for this type, this initializer must be called in a write block.
-    public convenience init(realm: Realm!, sampleType: HKSampleType, ts: NSDate = NSDate(), anchor: HKQueryAnchor, added: [HKSample], deleted: [HKDeletedObject]) {
+    public convenience init(realm: Realm!, sampleType: HKSampleType, ts: Date = Date(), anchor: HKQueryAnchor, added: [HKSample], deleted: [HKDeletedObject]) {
         self.init()
 
-        self.id = self.incrSequenceNumberForType(realm, sampleType: sampleType)
+        self.id = self.incrSequenceNumberForType(realm: realm, sampleType: sampleType)
         self.msid = sampleType.identifier
         self.ts = ts
-        self.anchor = UploadManager.sharedManager.encodeRemoteAnchorAsData(anchor)
-        self.insert_uuids.appendContentsOf(added.map { return UMSampleUUID(insertion: $0) })
-        self.delete_uuids.appendContentsOf(deleted.map { return UMSampleUUID(deletion: $0) })
-        self.retry_ts = NSDate() + retryPeriodBase.seconds
+        self.anchor = UploadManager.sharedManager.encodeRemoteAnchorAsData(anchor: anchor)
+        self.insert_uuids.append(objectsIn: added.map { return UMSampleUUID(insertion: $0) })
+        self.delete_uuids.append(objectsIn: deleted.map { return UMSampleUUID(deletion: $0) })
+        self.retry_ts = Date() + retryPeriodBase.seconds
         self.compoundKey = compoundKeyValue()
-        log.debug("Created UMLogEntry", feature: "entryConstruction")
-        self.logEntry("entryConstruction")
+        log.debug("Created UMLogEntry", "entryConstruction")
+        self.logEntry(feature: "entryConstruction")
     }
 
     public static func initSequenceNumberForType(realm: Realm!, sampleType: HKSampleType, seqNumber: Int) {
@@ -156,11 +167,11 @@ public class UMLogEntry: Object {
     }
 
     public static func sequenceNumberForType(realm: Realm!, sampleType: HKSampleType) -> UMLogSequenceNumber? {
-        return realm.objectForPrimaryKey(UMLogSequenceNumber.self, key: sampleType.identifier)
+        return realm.object(ofType: UMLogSequenceNumber.self, forPrimaryKey: sampleType.identifier as AnyObject)
     }
 
     public func incrSequenceNumberForType(realm: Realm!, sampleType: HKSampleType) -> Int {
-        if let seq = UMLogEntry.sequenceNumberForType(realm, sampleType: sampleType) {
+        if let seq = UMLogEntry.sequenceNumberForType(realm: realm, sampleType: sampleType) {
             return seq.incr()
         } else {
             let seq = UMLogSequenceNumber(type: sampleType)
@@ -174,7 +185,7 @@ public class UMLogEntry: Object {
         self.compoundKey = compoundKeyValue()
     }
 
-    public func setTS(ts: NSDate = NSDate()) {
+    public func setTS(ts: Date = Date()) {
         self.ts = ts
         self.compoundKey = compoundKeyValue()
     }
@@ -190,25 +201,25 @@ public class UMLogEntry: Object {
     }
 
     public func logEntry(feature: String = "logEntries") {
-        log.debug([
-            "id:\(self.id)",
-            "msid:\(self.msid)",
-            "ts:\(self.ts.timeIntervalSince1970)",
+//        log.debug([
+//            "id:\(self.id)",
+//            "msid:\(self.msid)",
+//            "ts:\(self.ts.timeIntervalSince1970)",
             //"anchor:\(self.anchor.base64EncodedStringWithOptions(NSDataBase64EncodingOptions(rawValue: 0)))",
-            "insert_uuids:\(self.insert_uuids.count)",
-            "delete_uuids:\(self.delete_uuids.count)",
+ //           "insert_uuids:\(self.insert_uuids.count)",
+//            "delete_uuids:\(self.delete_uuids.count)",
             //"retry_ts:\(self.retry_ts)",
             //"retry_count:\(self.retry_count)",
-        ].componentsJoinedByString("\n"), feature: feature)
+ //       ].componentsJoinedByString("\n"), feature)
     }
 
     public func logEntryCompact(feature: String = "logEntries") {
-        log.debug([
-            "id:\(self.id)",
-            "msid:\(self.msid)",
-            "ts:\(self.ts.timeIntervalSince1970)",
-            "retry_count:\(self.retry_count)"
-        ].componentsJoinedByString("\n"), feature: feature)
+ //       log.debug([
+ //           "id:\(self.id)",
+//            "msid:\(self.msid)",
+//            "ts:\(self.ts.timeIntervalSince1970)",
+ //           "retry_count:\(self.retry_count)"
+//        ].componentsJoinedByString("\n"), feature)
     }
 
 }
@@ -217,11 +228,11 @@ public class UploadManager: NSObject {
     public static let sharedManager: UploadManager = UploadManager()
 
     // Random number generation
-    let rng = GKARC4RandomSource(seed: "1234".dataUsingEncoding(NSUTF8StringEncoding)!)
+    let rng = GKARC4RandomSource(seed: "1234".data(using: String.Encoding.utf8)!)
     let rngSource = GKRandomDistribution(lowestValue: 1, highestValue: maxBackoff)
 
     // Custom upload task queue
-    let uploadQueue: dispatch_queue_t!
+//    let uploadQueue: DispatchQueue.async!
 
     // Granola serializer
     public static let serializer = OMHSerializer()
@@ -243,14 +254,14 @@ public class UploadManager: NSObject {
     var deviceSync: Async? = nil
 
     public override init() {
-        self.uploadQueue = dispatch_queue_create("UploadQueue", DISPATCH_QUEUE_SERIAL)
+//        self.uploadQueue = dispatch_queue_create("UploadQueue", DISPATCH_QUEUE_SERIAL)
         super.init()
     }
 
     // MARK: - initialize uploads.
 
     public func resetUploadManager() {
-        log.debug("Upload Manager state before reset", feature: "metadata:resetState")
+        log.debug("Upload Manager state before reset", "metadata:resetState")
         logMetadata()
 
         let realm = try! Realm()
@@ -259,20 +270,20 @@ public class UploadManager: NSObject {
             let seqs = UserManager.sharedManager.getAcquisitionSeq()
 
             if seqs.isEmpty {
-                log.debug("Skipping initsync, no remote seqnos found", feature: "skip:resetState")
+                log.debug("Skipping initsync, no remote seqnos found", "skip:resetState")
             }
 
             for (type, deviceData) in seqs {
                 if let deviceInfo = deviceData as? [String:AnyObject],
-                       seqForIOS = deviceInfo[remoteLogSeqKey] as? [String: AnyObject],
-                       seqInfo = seqForIOS[remoteLogSeqDeviceCnt] as? [String: AnyObject],
-                       remoteSeqNum = seqInfo[remoteLogSeqIdKey] as? Int
+                       let seqForIOS = deviceInfo[remoteLogSeqKey] as? [String: AnyObject],
+                       let seqInfo = seqForIOS[remoteLogSeqDeviceCnt] as? [String: AnyObject],
+                       let remoteSeqNum = seqInfo[remoteLogSeqIdKey] as? Int
                 {
                     var doInit = false
                     var onDeviceSeq = 0
                     let nextSeqNum = remoteSeqNum + 1
 
-                    if let seq = UMLogEntry.sequenceNumberForType(realm, sampleType: type) {
+                    if let seq = UMLogEntry.sequenceNumberForType(realm: realm, sampleType: type) {
                         doInit = seq.seqid < nextSeqNum
                         onDeviceSeq = seq.seqid
                     } else {
@@ -280,27 +291,27 @@ public class UploadManager: NSObject {
                     }
 
                     if doInit {
-                        log.debug("Initsync seq for \(type.identifier): \(nextSeqNum)", feature: "resetState")
-                        UMLogEntry.initSequenceNumberForType(realm, sampleType: type, seqNumber: nextSeqNum)
+                        log.debug("Initsync seq for \(type.identifier): \(nextSeqNum)", "resetState")
+                        UMLogEntry.initSequenceNumberForType(realm: realm, sampleType: type, seqNumber: nextSeqNum)
                     } else {
-                        log.debug("Skipping initsync seq for \(type.identifier) (found \(onDeviceSeq) on device vs \(remoteSeqNum) remotely)", feature: "skip:resetState")
+                        log.debug("Skipping initsync seq for \(type.identifier) (found \(onDeviceSeq) on device vs \(remoteSeqNum) remotely)", "skip:resetState")
                     }
                 } else {
-                    log.debug("Skipping initsync seq for \(type.identifier) (no remote seq found)", feature: "skip:resetState")
+                    log.debug("Skipping initsync seq for \(type.identifier) (no remote seq found)", "skip:resetState")
                 }
             }
 
             // Clean log entries.
             for logEntry in realm.objects(UMLogEntry.self) {
                 if logEntry.insert_uuids.count > uploadBlockSize || logEntry.delete_uuids.count > uploadBlockSize {
-                    log.debug("Clearing log entry", feature: "resetState")
+                    log.debug("Clearing log entry", "resetState")
                     logEntry.logEntry()
                     realm.delete(logEntry)
                 }
             }
         }
 
-        log.debug("Upload Manager state after reset", feature: "metadata:resetState")
+        log.debug("Upload Manager state after reset", "metadata:resetState")
         logMetadata()
     }
 
@@ -308,50 +319,50 @@ public class UploadManager: NSObject {
         let realm = try! Realm()
 
         realm.objects(UMLogSequenceNumber.self).forEach { seqno in
-            log.debug("SEQ msid: \(seqno.msid) id: \(seqno.seqid)", feature: "metadata:resetState")
+            log.debug("SEQ msid: \(seqno.msid) id: \(seqno.seqid)", "metadata:resetState")
         }
 
 
         realm.objects(UMLogEntry.self).forEach { logEntry in
-            logEntry.logEntry("metadata:resetState")
+            logEntry.logEntry(feature: "metadata:resetState")
         }
     }
 
     // MARK: - Remote encoding helpers.
 
     public func encodeRemoteAnchorAsData(anchor: HKQueryAnchor) -> NSData {
-        return NSKeyedArchiver.archivedDataWithRootObject(anchor)
+        return NSKeyedArchiver.archivedData(withRootObject: anchor) as NSData
     }
 
     public func encodeRemoteAnchor(anchor: HKQueryAnchor) -> String {
-        return encodeRemoteAnchorAsData(anchor).base64EncodedStringWithOptions(NSDataBase64EncodingOptions(rawValue: 0))
+        return encodeRemoteAnchorAsData(anchor: anchor).base64EncodedString(options: NSData.Base64EncodingOptions(rawValue: 0))
     }
 
     public func decodeRemoteAnchorFromData(remoteAnchor: NSData) -> HKQueryAnchor? {
-        return NSKeyedUnarchiver.unarchiveObjectWithData(remoteAnchor) as? HKQueryAnchor
+        return NSKeyedUnarchiver.unarchiveObject(with: remoteAnchor as Data) as? HKQueryAnchor
     }
 
     public func decodeRemoteAnchor(remoteAnchor: String) -> HKQueryAnchor? {
-        if let encodedAnchor = NSData(base64EncodedString: remoteAnchor, options: NSDataBase64DecodingOptions(rawValue: 0)) {
-            return decodeRemoteAnchorFromData(encodedAnchor)
+        if let encodedAnchor = NSData(base64Encoded: remoteAnchor, options: NSData.Base64DecodingOptions(rawValue: 0)) {
+            return decodeRemoteAnchorFromData(remoteAnchor: encodedAnchor)
         }
         return nil
     }
 
-    // MARK: - Anchor metadata accessors
+    // MARK: - Anchor metadata accessors 
 
     // Setter and getter for the anchor object returned by HealthKit, as stored in user defaults.
     public func getAnchorForType(type: HKSampleType) -> HKQueryAnchor {
         if let anchorDict = Defaults[HMAnchorKey] {
             if let encodedAnchor = anchorDict[type.identifier] as? NSData {
-                return NSKeyedUnarchiver.unarchiveObjectWithData(encodedAnchor) as! HKQueryAnchor
+                return NSKeyedUnarchiver.unarchiveObject(with: encodedAnchor as Data) as! HKQueryAnchor
             }
         }
         return noAnchor
     }
 
     public func setAnchorForType(anchor: HKQueryAnchor, forType type: HKSampleType) {
-        let encodedAnchor = NSKeyedArchiver.archivedDataWithRootObject(anchor)
+        let encodedAnchor = NSKeyedArchiver.archivedData(withRootObject: anchor)
         if !Defaults.hasKey(HMAnchorKey) {
             Defaults[HMAnchorKey] = [type.identifier: encodedAnchor]
         } else {
@@ -362,41 +373,41 @@ public class UploadManager: NSObject {
 
     public func getRemoteAnchorForType(type: HKSampleType) -> HKQueryAnchor? {
         let tname = type.displayText ?? type.identifier
-        if let deviceInfo = UserManager.sharedManager.getAcquisitionSeq(type) as? [String:AnyObject]
+        if let deviceInfo = UserManager.sharedManager.getAcquisitionSeq(type: type) as? [String:AnyObject]
         {
             if let seqForIOS = deviceInfo[remoteLogSeqKey] as? [String: AnyObject],
-                   seqInfo = seqForIOS[remoteLogSeqDeviceCnt] as? [String: AnyObject],
-                   remoteAnchor = seqInfo[remoteLogSeqDataKey] as? String
+                   let seqInfo = seqForIOS[remoteLogSeqDeviceCnt] as? [String: AnyObject],
+                   let remoteAnchor = seqInfo[remoteLogSeqDataKey] as? String
             {
                 if let remoteDevice = seqInfo[remoteLogSeqDevKey] as? String {
-                    let currentDevice = UIDevice.currentDevice().identifierForVendor?.UUIDString ?? "<no-id>"
+                    let currentDevice = UIDevice.current.identifierForVendor?.uuidString ?? "<no-id>"
                     if currentDevice == remoteDevice {
-                        return decodeRemoteAnchor(remoteAnchor)
+                        return decodeRemoteAnchor(remoteAnchor: remoteAnchor)
                     } else {
-                        log.debug("Detected device mismatch, ignoring remote anchor for \(tname) (\(remoteDevice) vs \(currentDevice))", feature: "remoteAnchor")
+                        log.debug("Detected device mismatch, ignoring remote anchor for \(tname) (\(remoteDevice) vs \(currentDevice))", "remoteAnchor")
                     }
                 } else {
-                    log.debug("No remote device found for anchor, ignoring remote anchor for \(tname)", feature: "remoteAnchor")
+                    log.debug("No remote device found for anchor, ignoring remote anchor for \(tname)", "remoteAnchor")
                 }
             } else {
-                log.debug("Invalid seq fields for remote anchor decode on \(tname)", feature: "remoteAnchor")
+                log.debug("Invalid seq fields for remote anchor decode on \(tname)", "remoteAnchor")
             }
         } else {
-            log.debug("Invalid seq dict for remote anchor decode on \(tname)", feature: "remoteAnchor")
+            log.debug("Invalid seq dict for remote anchor decode on \(tname)", "remoteAnchor")
         }
         return nil
     }
 
     public func resetAnchors() {
         HMConstants.sharedInstance.healthKitTypesToObserve.forEach { type in
-            self.setAnchorForType(noAnchor, forType: type)
+            self.setAnchorForType(anchor: noAnchor, forType: type)
         }
     }
 
     public func getNextAnchor(type: HKSampleType) -> (Bool, HKQueryAnchor?, NSPredicate?) {
         var remoteAnchor = false
         var needOldestSamples = false
-        var anchor = getAnchorForType(type)
+        var anchor = getAnchorForType(type: type)
         var predicate : NSPredicate? = nil
 
         let tname = type.displayText ?? type.identifier
@@ -407,42 +418,44 @@ public class UploadManager: NSObject {
         {
             // We use anchors stored in the remote profile if available,
             // to grab all data since the last anchor uploaded to the server.
-            if let anchorForType = getRemoteAnchorForType(type) {
+            if let anchorForType = getRemoteAnchorForType(type: type) {
                 // We have a remote anchor available, and do not use a temporal predicate.
                 anchor = anchorForType
                 remoteAnchor = true
-                log.debug("Data import from anchor \(anchor): \(tname)", feature: "getNextAnchor")
+                log.debug("Data import from anchor \(anchor): \(tname)", "getNextAnchor")
             }
-            else if let (_, hend) = UserManager.sharedManager.getHistoricalRangeForType(type) {
+            else if let (_, hend) = UserManager.sharedManager.getHistoricalRangeForType(type: type) {
                 // We have no server anchor available.
                 // Here, we upload all samples between the end of the historical range (i.e., when the
                 // app was first run on the device), to a point in the near future.
-                let nearFuture = 1.minutes.fromNow
-                let pstart = NSDate(timeIntervalSinceReferenceDate: hend)
-                predicate = HKQuery.predicateForSamplesWithStartDate(pstart, endDate: nearFuture, options: .None)
-                log.debug("Data import from \(pstart) \(nearFuture): \(tname)", feature: "getNextAnchor")
+//                let nearFuture = 1.minutes.fromNow
+                let minute:TimeInterval = 60.0
+                let nearFuture = Date(timeIntervalSinceNow: minute)
+                let pstart = Date(timeIntervalSinceReferenceDate: hend)
+                predicate = HKQuery.predicateForSamples(withStart: pstart as Date, end: nearFuture, options: [])
+                log.debug("Data import from \(pstart) \(nearFuture): \(tname)", "getNextAnchor")
             }
             else {
                 // We have no anchor or archive span available.
                 // We consider this the first run of the app on this device, and initialize the historical range
                 // (i.e., the archive span).
                 // This captures how much data is available on the device prior to using our app.
-                let (start, end) = UserManager.sharedManager.initializeHistoricalRangeForType(type, sync: true)
-                let (dstart, dend) = (NSDate(timeIntervalSinceReferenceDate: start), NSDate(timeIntervalSinceReferenceDate: end))
-                predicate = HKQuery.predicateForSamplesWithStartDate(dstart, endDate: dend, options: .None)
+                let (start, end) = UserManager.sharedManager.initializeHistoricalRangeForType(type: type, sync: true)
+                let (dstart, dend) = (Date(timeIntervalSinceReferenceDate: start), Date(timeIntervalSinceReferenceDate: end))
+                predicate = HKQuery.predicateForSamples(withStart: dstart as Date, end: dend as Date, options: [])
                 needOldestSamples = true
-                log.debug("Initialized historical range for \(tname): \(dstart) \(dend)", feature: "getNextAnchor")
+                log.debug("Initialized historical range for \(tname): \(dstart) \(dend)", "getNextAnchor")
             }
         }
 
-        log.debug("Anchor for \(tname)(\(remoteAnchor)): \(anchor)", feature: "getNextAnchor")
+        log.debug("Anchor for \(tname)(\(remoteAnchor)): \(anchor)", "getNextAnchor")
         return (needOldestSamples, anchor, predicate)
     }
 
     // MARK: - Upload helpers.
 
     public func jsonifySample(sample : HKSample) throws -> [String : AnyObject] {
-        return try UploadManager.serializer.dictForSample(sample)
+        return try UploadManager.serializer.dict(for: sample)
     }
 
     public func jsonifyLogEntry(logEntry: UMLogEntry, added: [HKSample], deleted: [NSUUID]) -> [String:AnyObject]? {
@@ -455,22 +468,22 @@ public class UploadManager: NSObject {
         }
 
         let seqInfo: [String: AnyObject] = [
-            remoteLogSeqIdKey   : logEntry.id,
-            remoteLogSeqDataKey : logEntry.anchor.base64EncodedStringWithOptions(NSDataBase64EncodingOptions(rawValue: 0)),
-            remoteLogSeqDevKey  : UIDevice.currentDevice().identifierForVendor!.UUIDString
+            remoteLogSeqIdKey   : logEntry.id as AnyObject,
+            remoteLogSeqDataKey : logEntry.anchor.base64EncodedString(options: NSData.Base64EncodingOptions(rawValue: 0)) as AnyObject,
+            remoteLogSeqDevKey  : UIDevice.current.identifierForVendor!.uuidString as AnyObject
         ]
 
         let deviceInfo: [String: AnyObject] = [
             remoteLogSeqKey: ([remoteLogSeqDeviceCnt: seqInfo] as AnyObject)
         ]
 
-        let commands: [String:AnyObject] = [
-            "inserts": addedJson,
-            "deletes": deleted.map { return ["uuid": $0.UUIDString] }
+        let commands: [String:Any] = [
+            "inserts": addedJson as Any,
+            "deletes": deleted.map { return ["uuid": $0.uuidString] }
         ]
 
         var measures: [String] = []
-        if let measureSeqId = seqIdOfSampleTypeId(logEntry.msid) {
+        if let measureSeqId = seqIdOfSampleTypeId(typeIdentifier: logEntry.msid) {
             measures = [measureSeqId]
         } else {
             log.error("No MCDB seq id found for \(logEntry.msid)")
@@ -478,30 +491,30 @@ public class UploadManager: NSObject {
         }
 
         return [
-            "seq": deviceInfo,
-            "measures": measures,
-            "commands": commands
+            "seq": deviceInfo as AnyObject,
+            "measures": measures as AnyObject,
+            "commands": commands as AnyObject
         ]
     }
 
     public func putSample(jsonObj: [String: AnyObject]) -> () {
-        Service.string(MCRouter.AddMeasures(jsonObj), statusCode: 200..<300, tag: "UPLOAD") {
+        Service.string(route: MCRouter.AddMeasures(jsonObj), statusCode: 200..<300, tag: "UPLOAD") {
             _, response, result in
-            log.debug("Upload: \(result.value)", feature: "uploadStatus")
+            log.debug("Upload: \(result.value)", "uploadStatus")
         }
     }
 
     public func putBlockSample(jsonObjBlock: [[String:AnyObject]]) -> () {
-        Service.string(MCRouter.AddMeasures(["block":jsonObjBlock]), statusCode: 200..<300, tag: "UPLOAD") {
+        Service.string(route: MCRouter.AddMeasures(["block":jsonObjBlock as AnyObject]), statusCode: 200..<300, tag: "UPLOAD") {
             _, response, result in
-            log.debug("Upload: \(result.value)", feature: "uploadStatus")
+            log.debug("Upload: \(result.value)", "uploadStatus")
         }
     }
 
     public func putSample(type: HKSampleType, added: [HKSample]) {
         do {
             let tname = type.displayText ?? type.identifier
-            log.debug("Uploading \(added.count) \(tname) samples", feature: "uploadProgress")
+            log.debug("Uploading \(added.count) \(tname) samples", "uploadProgress")
 
             let blockSize = 100
             let totalBlocks = ((added.count / blockSize)+1)
@@ -509,9 +522,9 @@ public class UploadManager: NSObject {
                 for i in 0..<totalBlocks {
                     autoreleasepool { _ in
                         do {
-                            log.debug("Uploading block \(i) / \(totalBlocks)", feature: "uploadProgress")
+                            log.debug("Uploading block \(i) / \(totalBlocks)", "uploadProgress")
                             let jsonObjs = try added[(i*blockSize)..<(min((i+1)*blockSize, added.count))].map(self.jsonifySample)
-                            self.putBlockSample(jsonObjs)
+                            self.putBlockSample(jsonObjBlock: jsonObjs)
                         } catch {
                             log.error((error as NSError).localizedDescription)
                         }
@@ -528,80 +541,80 @@ public class UploadManager: NSObject {
 
     public func retryPendingUploads(force: Bool = false) {
         // Dispatch retries based on the persistent pending list
-        let now = NSDate()
+        let now = Date()
         let realm = try! Realm()
 
         for logEntry in realm.objects(UMLogEntry.self).filter({ return (force || $0.retry_ts < now) }) {
-            log.debug("Retrying pending upload", feature: "uploadRetries")
-            logEntry.logEntryCompact("uploadRetries")
+            log.debug("Retrying pending upload", "uploadRetries")
+            logEntry.logEntryCompact(feature: "uploadRetries")
 
             let entryKey: String = logEntry.compoundKey
             var sampleType: HKSampleType! = nil
 
             switch logEntry.msid {
-            case HKCategoryTypeIdentifierSleepAnalysis, HKCategoryTypeIdentifierAppleStandHour:
-                sampleType = HKObjectType.categoryTypeForIdentifier(logEntry.msid)
+            case HKCategoryTypeIdentifier.sleepAnalysis.rawValue, HKCategoryTypeIdentifier.appleStandHour.rawValue:
+                sampleType = HKObjectType.categoryType(forIdentifier: HKCategoryTypeIdentifier(rawValue: logEntry.msid))
 
-            case HKCorrelationTypeIdentifierBloodPressure:
-                sampleType = HKObjectType.correlationTypeForIdentifier(logEntry.msid)
+            case HKCorrelationTypeIdentifier.bloodPressure.rawValue:
+                sampleType = HKObjectType.correlationType(forIdentifier: HKCorrelationTypeIdentifier(rawValue: logEntry.msid))
 
             case HKWorkoutTypeIdentifier:
                 sampleType = HKObjectType.workoutType()
 
             default:
-                sampleType = HKObjectType.quantityTypeForIdentifier(logEntry.msid)
+                sampleType = HKObjectType.quantityType(forIdentifier: HKQuantityTypeIdentifier(rawValue: logEntry.msid))
             }
 
             if let type = sampleType {
-                let uuids = Set(logEntry.insert_uuids.map { return UMSampleUUID.uuidOfNSData($0.uuid) })
-                let deleted: [NSUUID] = logEntry.delete_uuids.map { return UMSampleUUID.uuidOfNSData($0.uuid) }
+                let uuids = Set(logEntry.insert_uuids.map { return UMSampleUUID.uuidOfNSData(data: $0.uuid) })
+                let deleted: [NSUUID] = logEntry.delete_uuids.map { return UMSampleUUID.uuidOfNSData(data: $0.uuid) }
 
-                log.debug("Retry upload invoking fetchSamplesByUUID for \(entryKey)", feature: "uploadRetries")
+                log.debug("Retry upload invoking fetchSamplesByUUID for \(entryKey)", "uploadRetries")
 
-                MCHealthManager.sharedManager.fetchSamplesByUUID(type, uuids: uuids) { (samples, error) in
+                MCHealthManager.sharedManager.fetchSamplesByUUID(type, uuids: uuids as Set<UUID>) { (samples, error) in
                     // We need a new Realm instance since this completion will execute in a different thread
                     // than the realm instance outside the above loop.
-                    log.debug("Retry upload in fetchSamplesByUUID completion for \(entryKey)", feature: "uploadRetries")
+                    log.debug("Retry upload in fetchSamplesByUUID completion for \(entryKey)", "uploadRetries")
                     let realm = try! Realm()
                     if error != nil {
                         log.error(error!.localizedDescription)
                         // Refetch the obejct since we are in a background thread from the health manager.
-                        if let logEntry = realm.objectForPrimaryKey(UMLogEntry.self, key: entryKey) {
+                        if let logEntry = realm.object(ofType: UMLogEntry.self, forPrimaryKey: entryKey as AnyObject) {
                             try! realm.write {
                                 realm.delete(logEntry)
                             }
                         } else {
-                            log.debug("No realm object found for deleting \(entryKey)", feature: "uploadRealmSync")
+                            log.debug("No realm object found for deleting \(entryKey)", "uploadRealmSync")
                         }
                     }
                     else {
-                        if let logEntry = realm.objectForPrimaryKey(UMLogEntry.self, key: entryKey) {
-                            log.debug("Enqueueing retried upload \(logEntry.id) \(logEntry.compoundKey) with \(samples.count) inserts, \(deleted.count) deletions", feature: "uploadRetries")
+                        if let logEntry = realm.object(ofType: UMLogEntry.self, forPrimaryKey: entryKey as AnyObject) {
+                            log.debug("Enqueueing retried upload \(logEntry.id) \(logEntry.compoundKey) with \(samples.count) inserts, \(deleted.count) deletions", "uploadRetries")
 
                             let added: [HKSample] = samples.map { $0 as! HKSample }
-                            self.batchLogEntryUpload(logEntry.compoundKey, added: added, deleted: deleted)
+//                            self.batchLogEntryUpload(logEntryKey: logEntry.compoundKey, added: added, deleted: deleted)
 
                             try! realm.write {
                                 if logEntry.retry_count < maxRetries {
                                     // Plan for the next retry regardless of whether the above log entry upload request fails.
-                                    let backoff = max(maxBackoff, self.rngSource.nextIntWithUpperBound(logEntry.retry_count) * retryPeriodBase)
+                                    let backoff = max(maxBackoff, self.rngSource.nextInt(upperBound: logEntry.retry_count) * retryPeriodBase)
                                     logEntry.retry_ts = now + backoff.seconds
                                     logEntry.retry_count += 1
-                                    log.debug("Backed off log entry \(logEntry.id) \(logEntry.compoundKey) to \(logEntry.retry_count) \(logEntry.retry_ts)", feature: "uploadRetries")
+                                    log.debug("Backed off log entry \(logEntry.id) \(logEntry.compoundKey) to \(logEntry.retry_count) \(logEntry.retry_ts)", "uploadRetries")
                                 } else {
-                                    log.debug("Too many retries for \(logEntry.id) \(logEntry.compoundKey) \(logEntry.retry_count), deleting...", feature: "uploadRetries")
+                                    log.debug("Too many retries for \(logEntry.id) \(logEntry.compoundKey) \(logEntry.retry_count), deleting...", "uploadRetries")
                                     realm.delete(logEntry)
                                 }
                             }
                         } else {
-                            log.debug("No realm object found for \(entryKey)", feature: "uploadRealmSync")
+//                            log.debug("No realm object found for \(entryKey)", feature: "uploadRealmSync")
                         }
                     }
                 }
             }
             else {
-                log.debug("No sample type found for retried upload", feature: "uploadRetries")
-                logEntry.logEntryCompact("uploadRetries")
+                log.debug("No sample type found for retried upload", "uploadRetries")
+                logEntry.logEntryCompact(feature: "uploadRetries")
             }
         }
     }
@@ -611,8 +624,8 @@ public class UploadManager: NSObject {
         let realm = try! Realm()
         try! realm.write {
             if success {
-                log.debug("Completed pending uploads \(sampleKeys.joinWithSeparator(", "))", feature: "uploadProgress")
-                let objects = sampleKeys.flatMap { realm.objectForPrimaryKey(UMLogEntry.self, key: $0) }
+                log.debug("Completed pending uploads \(sampleKeys.joined(separator: ", "))", "uploadProgress")
+                let objects = sampleKeys.flatMap { realm.object(ofType: UMLogEntry.self, forPrimaryKey: $0 as AnyObject) }
                 realm.delete(objects)
             }
 
@@ -622,10 +635,10 @@ public class UploadManager: NSObject {
             if syncMode{
                 if logEntryBatchBuffer.isEmpty {
                     syncMode = false
-                    NSNotificationCenter.defaultCenter().postNotificationName(SyncEndedNotification, object: nil)
+                    NotificationCenter.default.post(name: NSNotification.Name(rawValue: SyncEndedNotification), object: nil)
                 } else {
                     let info = ["count": logEntryBatchBuffer.count]
-                    NSNotificationCenter.defaultCenter().postNotificationName(SyncProgressNotification, object: nil, userInfo: info)
+                    NotificationCenter.default.post(name: NSNotification.Name(rawValue: SyncProgressNotification), object: nil, userInfo: info)
                 }
             }
         }
@@ -633,7 +646,7 @@ public class UploadManager: NSObject {
 
     func syncLogEntryBuffer() {
         if !logEntryBatchBuffer.isEmpty {
-            log.debug("Sync start", feature: "uploadExec")
+            log.debug("Sync start", "uploadExec")
             autoreleasepool { _ in
                 let batchSize = min(logEntryBatchBuffer.count, logEntryUploadBatchSize)
                 let uploadSlice = logEntryBatchBuffer[0..<batchSize]
@@ -643,52 +656,53 @@ public class UploadManager: NSObject {
 
                 let realm = try! Realm()
 
-                let blockBuildStart = NSDate()
+                let blockBuildStart = Date()
                 uploadSlice.forEach { batch in
                     autoreleasepool { _ in
-                        if let logEntry = realm.objectForPrimaryKey(UMLogEntry.self, key: batch.0) {
-                            if let params = self.jsonifyLogEntry(logEntry, added: batch.1, deleted: batch.2) {
-                                log.debug("Serialized UMLogEntry \(batch.1.count) \(batch.2.count)", feature: "uploadExec")
-                                logEntry.logEntryCompact("uploadExec")
+                        if let logEntry = realm.object(ofType: UMLogEntry.self, forPrimaryKey: batch.0 as AnyObject) {
+                            if let params = self.jsonifyLogEntry(logEntry: logEntry, added: batch.1, deleted: batch.2) {
+                                log.debug("Serialized UMLogEntry \(batch.1.count) \(batch.2.count)", "uploadExec")
+                                logEntry.logEntryCompact(feature: "uploadExec")
                                 block.append(params)
                                 blockKeys.append(batch.0)
                             } else {
-                                log.warning("Unable to JSONify log entry", feature: "serialize:uploadExec")
-                                logEntry.logEntry("serialize:uploadExec")
+                                log.warning("Unable to JSONify log entry", "serialize:uploadExec")
+                                logEntry.logEntry(feature: "serialize:uploadExec")
                             }
                         } else {
-                            log.debug("No log entry found for key: \(batch.0)", feature: "realm:uploadExec")
+                            log.debug("No log entry found for key: \(batch.0)", "realm:uploadExec")
                         }
                     }
                 }
 
-                log.debug("Blockbuild: \(NSDate().timeIntervalSinceDate(blockBuildStart))", feature: "uploadExec")
+//                log.debug("Blockbuild: \(Date().timeIntervalSinceDate(blockBuildStart))", "uploadExec")
+             
 
                 if block.count > 0 {
-                    log.debug("Syncing \(block.count) log entries with keys \(blockKeys.joinWithSeparator(", "))", feature: "uploadExec")
+                    log.debug("Syncing \(block.count) log entries with keys \(blockKeys.joined(separator: ", "))", "uploadExec")
 
-                    Service.json(MCRouter.AddSeqMeasures(["block": block]), statusCode: 200..<300, tag: "UPLOADLOG") {
+                    Service.json(route: MCRouter.AddSeqMeasures(["block": block as AnyObject]), statusCode: 200..<300, tag: "UPLOADLOG") {
                         _, response, result in
-                        log.debug("Upload log entries: \(result.value)", feature: "uploadExec")
-                        self.onCompletedUpload(result.isSuccess, sampleKeys: blockKeys)
+                        log.debug("Upload log entries: \(result.value)", "uploadExec")
+                        self.onCompletedUpload(success: result.isSuccess, sampleKeys: blockKeys)
                     }
                 }
                 else {
-                    log.debug("Skipping log entry sync, no log entries to upload", feature: "uploadExec")
+                    log.debug("Skipping log entry sync, no log entries to upload", "uploadExec")
                 }
 
                 // Recur as an upload loop while we still have elements in the upload queue.
                 logEntryBatchBuffer.removeFirst(batchSize)
                 if !logEntryBatchBuffer.isEmpty {
-                    log.debug("Remaining batches: \(logEntryBatchBuffer.count)", feature: "uploadExec")
+                    log.debug("Remaining batches: \(logEntryBatchBuffer.count)", "uploadExec")
                     logEntryUploadAsync?.cancel()
-                    logEntryUploadAsync = Async.customQueue(self.uploadQueue, after: logEntryUploadDelay) {
+//                    logEntryUploadAsync = Async(self.uploadQueue, after: logEntryUploadDelay) {
                         self.syncLogEntryBuffer()
                     }
                 }
-            }
+//            }
         } else {
-            log.debug("Skipping syncLogEntryBuffer, empty upload buffer", feature: "uploadExec")
+            log.debug("Skipping syncLogEntryBuffer, empty upload buffer", "uploadExec")
         }
     }
 
@@ -697,7 +711,7 @@ public class UploadManager: NSObject {
             logEntryBatchBuffer.append((logEntryKey, added, deleted))
         }
         else if logEntryKey < logEntryBatchBuffer[0].0 {
-            logEntryBatchBuffer.insert((logEntryKey, added, deleted), atIndex: 0)
+            logEntryBatchBuffer.insert((logEntryKey, added, deleted), at: 0)
         }
         else {
             var inserted = false
@@ -711,32 +725,32 @@ public class UploadManager: NSObject {
             if !inserted {
                 let index = logEntryBatchBuffer.binarySearch { $0.0 < logEntryKey }
                 if logEntryBatchBuffer[index].0 != logEntryKey {
-                    logEntryBatchBuffer.insert((logEntryKey, added, deleted), atIndex: index)
+                    logEntryBatchBuffer.insert((logEntryKey, added, deleted), at: index)
                 } else {
-                    log.debug("Skipping duplicate pending for \(logEntryKey)", feature: "uploadExec")
+                    log.debug("Skipping duplicate pending for \(logEntryKey)", "uploadExec")
                 }
             }
         }
 
 
         logEntryUploadAsync?.cancel()
-        logEntryUploadAsync = Async.customQueue(self.uploadQueue, after: logEntryUploadDelay) {
-            self.syncLogEntryBuffer()
-        }
+//        logEntryUploadAsync = Async(self.uploadQueue, after: logEntryUploadDelay) {
+ //           self.syncLogEntryBuffer()
+ //       }
 
         // Post notifications if we have a substantial amount of work.
         if !syncMode && logEntryBatchBuffer.count > syncNotificationLimit {
             syncMode = true
             let info = ["count": logEntryBatchBuffer.count]
-            NSNotificationCenter.defaultCenter().postNotificationName(SyncBeganNotification, object: nil, userInfo: info)
+            NotificationCenter.default.post(name: NSNotification.Name(rawValue: SyncBeganNotification), object: nil, userInfo: info)
         }
 
         // Throttle if upload buffer is large.
-        if logEntryBatchBuffer.count > uploadBufferThrottleLimit && !NSThread.isMainThread() {
-            log.debug("Throttling upload enqueueing for \(logEntryUploadDelay * 3) secs", feature: "perf:uploadExec")
-            NSThread.sleepForTimeInterval(logEntryUploadDelay * 3)
+        if logEntryBatchBuffer.count > uploadBufferThrottleLimit && !Thread.isMainThread {
+            log.debug("Throttling upload enqueueing for \(logEntryUploadDelay * 3) secs", "perf:uploadExec")
+            Thread.sleep(forTimeInterval: logEntryUploadDelay * 3)
         } else {
-            log.debug("Batched after UL: \(logEntryBatchBuffer.count)", feature: "uploadExec")
+            log.debug("Batched after UL: \(logEntryBatchBuffer.count)", "uploadExec")
         }
     }
 
@@ -754,7 +768,7 @@ public class UploadManager: NSObject {
                     realm.add(logEntry)
 
                     // Add to upload queue
-                    batchLogEntryUpload(logEntry.compoundKey, added: added, deleted: deleted.map { $0.UUID })
+//                    batchLogEntryUpload(logEntryKey: logEntry.compoundKey, added: added, deleted: deleted.map { $0.uuid as! NSUUID })
                 }
                 else {
                     var addedIndex = 0
@@ -774,32 +788,32 @@ public class UploadManager: NSObject {
                             deletedIndex += lDeleted.count
 
                             // Add to upload queue
-                            batchLogEntryUpload(logEntry.compoundKey, added: lAdded, deleted: lDeleted.map { $0.UUID })
+//                            batchLogEntryUpload(logEntryKey: logEntry.compoundKey, added: lAdded, deleted: lDeleted.map { $0.uuid as! NSUUID })
                         }
                     }
                 }
 
-                // Set the latest anchor for which we're attempting an upload (rather than on upload success).
+                // Set the latest anchor for which we're attempting an upload (rather than on upload success).  
                 // This ensures subsequent parallel anchor queries move forward from this anchor.
-                setAnchorForType(anchor, forType: type)
+//                setAnchorForType(anchor: anchor, forType: type)
             }
         }
     }
     
 
-    public func deleteSamples(startDate: NSDate, endDate: NSDate, measures: [String:AnyObject], completion: Bool -> Void) {
+    public func deleteSamples(startDate: Date, endDate: Date, measures: [String:AnyObject], completion: @escaping (Bool) -> Void) {
         // Delete remotely.
         let params: [String: AnyObject] = [
-            "tstart"  : Int(floor(startDate.timeIntervalSince1970)),
-            "tend"    : Int(ceil(endDate.timeIntervalSince1970)),
-            "columns" : measures
+            "tstart"  : Int(floor(startDate.timeIntervalSince1970)) as AnyObject,
+            "tend"    : Int(ceil(endDate.timeIntervalSince1970)) as AnyObject,
+            "columns" : measures as AnyObject
         ]
 
-        Service.json(MCRouter.RemoveMeasures(params), statusCode: 200..<300, tag: "DELPOST") {
+        Service.json(route: MCRouter.RemoveMeasures(params), statusCode: 200..<300, tag: "DELPOST") {
             _, response, result in
-            log.debug("Deletions: \(result.value)", feature: "deleteSamples")
+            log.debug("Deletions: \(result.value)", "deleteSamples")
             if !result.isSuccess {
-                log.error("Failed to delete samples on the server, server may potentially diverge from device.", feature: "deleteSamples")
+                log.error("Failed to delete samples on the server, server may potentially diverge from device.", "deleteSamples")
             }
             completion(result.isSuccess)
         }
@@ -807,12 +821,12 @@ public class UploadManager: NSObject {
 
     // MARK: - Upload helpers.
 
-    private func uploadInitialAnchorForType(type: HKSampleType, completion: (Bool, (Bool, NSDate)?) -> Void) {
+    private func uploadInitialAnchorForType(type: HKSampleType, completion: @escaping (Bool, (Bool, Date)?) -> Void) {
         let tname = type.displayText ?? type.identifier
-        if let wend = UserManager.sharedManager.getHistoricalRangeStartForType(type) {
-            let dwend = NSDate(timeIntervalSinceReferenceDate: wend)
-            let dwstart = UserManager.sharedManager.decrAnchorDate(dwend)
-            let pred = HKQuery.predicateForSamplesWithStartDate(dwstart, endDate: dwend, options: .None)
+        if let wend = UserManager.sharedManager.getHistoricalRangeStartForType(type: type) {
+            let dwend = Date(timeIntervalSinceReferenceDate: wend)
+            let dwstart = UserManager.sharedManager.decrAnchorDate(d: dwend)
+            let pred = HKQuery.predicateForSamples(withStart: dwstart as Date, end: dwend as Date, options: [])
             MCHealthManager.sharedManager.fetchSamplesOfType(type, predicate: pred) { (samples, error) in
                 guard error == nil else {
                     log.error("Could not get initial anchor samples for: \(tname) \(dwstart) \(dwend)")
@@ -820,35 +834,35 @@ public class UploadManager: NSObject {
                 }
 
                 let hksamples = samples as! [HKSample]
-                UploadManager.sharedManager.putSample(type, added: hksamples)
-                UserManager.sharedManager.decrHistoricalRangeStartForType(type)
+                UploadManager.sharedManager.putSample(type: type, added: hksamples)
+                UserManager.sharedManager.decrHistoricalRangeStartForType(type: type)
 
-                log.debug("Uploaded \(tname) to \(dwstart)", feature: "uploadAcqRange")
-                if let min = UserManager.sharedManager.getHistoricalRangeMinForType(type) {
-                    let dmin = NSDate(timeIntervalSinceReferenceDate: min)
+                log.debug("Uploaded \(tname) to \(dwstart)", "uploadAcqRange")
+                if let min = UserManager.sharedManager.getHistoricalRangeMinForType(type: type) {
+                    let dmin = Date(timeIntervalSinceReferenceDate: min)
                     if dwstart > dmin {
                         completion(false, (false, dwstart))
-                        Async.background(after: 0.5) { self.uploadInitialAnchorForType(type, completion: completion) }
+                        Async.background(after: 0.5) { self.uploadInitialAnchorForType(type: type, completion: completion) }
                     } else {
                         completion(false, (true, dmin))
                     }
                 } else {
-                    log.error("No earliest sample found for \(tname)", feature: "uploadAcqRange")
+                    log.error("No earliest sample found for \(tname)", "uploadAcqRange")
                 }
             }
         } else {
-            log.debug("No bulk anchor date found for \(tname)", feature: "uploadAcqRange")
+            log.debug("No bulk anchor date found for \(tname)", "uploadAcqRange")
         }
     }
 
-    private func backgroundUploadForType(type: HKSampleType, completion: (Bool, (Bool, NSDate)?) -> Void) {
+    private func backgroundUploadForType(type: HKSampleType, completion: @escaping (Bool, (Bool, Date)?) -> Void) {
         let tname = type.displayText ?? type.identifier
-        if let _ = UserManager.sharedManager.getHistoricalRangeForType(type),
-            _ = UserManager.sharedManager.getHistoricalRangeMinForType(type)
+        if let _ = UserManager.sharedManager.getHistoricalRangeForType(type: type),
+            let _ = UserManager.sharedManager.getHistoricalRangeMinForType(type: type)
         {
-            self.uploadInitialAnchorForType(type, completion: completion)
+//            self.uploadInitialAnchorForType(type: type, completion: completion)
         } else {
-            log.warning("No historical range found for \(tname)", feature: "uploadAcqRange")
+            log.warning("No historical range found for \(tname)", "uploadAcqRange")
             completion(true, nil)
         }
     }
@@ -860,17 +874,18 @@ public class UploadManager: NSObject {
             guard success else { return }
 
             UploadManager.sharedManager.resetUploadManager()
-            UploadManager.sharedManager.retryPendingUploads(true)
+            UploadManager.sharedManager.retryPendingUploads(force: true)
 
-            let typeChunks = HMConstants.sharedInstance.healthKitTypesToObserve.splitBy(5)
+            let typeChunks = HMConstants.sharedInstance.healthKitTypesToObserve.splitBy(size: 5)
 
-            typeChunks.enumerate().forEach { (index, types) in
-                Async.background(after: 0.5 + (Double(index) * 0.2)) {
+            typeChunks.enumerated().forEach { (index, types) in
+//                Async(after: 0.5 + (Double(index) * 0.2)) {
+                Async.main(after: 0.5 + (Double(index) * 0.2)) {
                     types.forEach { type in
-                        IOSHealthManager.sharedManager.startBackgroundObserverForType(type, getAnchorCallback: UploadManager.sharedManager.getNextAnchor)
+                        IOSHealthManager.sharedManager.startBackgroundObserverForType(type: type, getAnchorCallback: UploadManager.sharedManager.getNextAnchor)
                         { (added, deleted, newAnchor, error, completion) -> Void in
                             guard error == nil else {
-                                log.error("Failed to register observers: \(error)", feature: "uploadObservers")
+                                log.error("Failed to register observers: \(error)", "uploadObservers")
                                 completion()
                                 return
                             }
@@ -888,19 +903,19 @@ public class UploadManager: NSObject {
                             }
 
                             if withSyncInfo {
-                                NSNotificationCenter.defaultCenter().postNotificationName(SyncDidUpdateCircadianEvents, object: nil)
+                                NotificationCenter.default.post(name: NSNotification.Name(rawValue: SyncDidUpdateCircadianEvents), object: nil)
                             }
 
                             if ( userAdded.count > 0 || deleted.count > 0 ) {
-                                UploadManager.sharedManager.uploadAnchorCallback(type, anchor: newAnchor, added: userAdded, deleted: deleted)
+//                                UploadManager.sharedManager.uploadAnchorCallback(type: type, anchor: newAnchor, added: userAdded, deleted: deleted)
                             }
                             else {
                                 // Advance the anchor for this type so that we don't see the synchronized entries again.
-                                if let anchor = newAnchor where withSyncInfo {
-                                    self.setAnchorForType(anchor, forType: type)
+                                if let anchor = newAnchor, withSyncInfo {
+//                                    setAnchorForType(anchor: anchor, forType: type)
                                 }
 
-                                log.debug("Skipping upload for \(typeId): \(userAdded.count) insertions \(deleted.count) deletions", feature: "uploadObservers")
+                                log.debug("Skipping upload for \(typeId): \(userAdded.count) insertions \(deleted.count) deletions", "uploadObservers")
                             }
                             completion()
                         }
@@ -910,7 +925,7 @@ public class UploadManager: NSObject {
         }
     }
 
-    public func deregisterUploadObservers(completion: (Bool, NSError?) -> Void) {
+    public func deregisterUploadObservers(completion: @escaping (Bool, NSError?) -> Void) {
         MCHealthManager.sharedManager.authorizeHealthKit { (success, _) -> Void in
             guard success else { return }
             IOSHealthManager.sharedManager.stopAllBackgroundObservers { (success, error) in
@@ -918,7 +933,7 @@ public class UploadManager: NSObject {
                     log.error(error!.localizedDescription)
                     return
                 }
-                self.logEntryUploadAsync?.cancel()
+//                logEntryUploadAsync?.cancel()
                 completion(success, error)
             }
         }
@@ -939,16 +954,16 @@ public class UploadManager: NSObject {
     func columnGroupsOfType(type: HKSampleType) -> [[String]] {
         var columnGroups : [[String]] = []
 
-        if let column = HMConstants.sharedInstance.hkToMCDB[type.identifier] {
+        if let column = HMConstants.sharedInstance.hkToMCDB[type.identifier.hash] {
             columnGroups.append([column])
         }
         else if let (activity_category, quantity) = HMConstants.sharedInstance.hkQuantityToMCDBActivity[type.identifier] {
             columnGroups.append(["activity_duration", "activity_type", "activity_value"])
         }
-        else if type.identifier == HKCorrelationTypeIdentifierBloodPressure {
+        else if type.identifier == HKCorrelationTypeIdentifier.bloodPressure.rawValue {
             // Issue queries for both systolic and diastolic.
-            columnGroups.append([HMConstants.sharedInstance.hkToMCDB[HKQuantityTypeIdentifierBloodPressureDiastolic]!,
-                                 HMConstants.sharedInstance.hkToMCDB[HKQuantityTypeIdentifierBloodPressureSystolic]!])
+            columnGroups.append([HMConstants.sharedInstance.hkToMCDB[HKQuantityTypeIdentifier.bloodPressureDiastolic.hashValue]!,
+                                 HMConstants.sharedInstance.hkToMCDB[HKQuantityTypeIdentifier.bloodPressureSystolic.hashValue]!])
         }
         else if type.identifier == HKWorkoutType.workoutType().identifier {
             columnGroups.append(["meal_duration", "food_type", "activity_duration", "activity_type", "activity_value"])
@@ -962,11 +977,11 @@ public class UploadManager: NSObject {
 
     // What about meal_duration, activity_duration, etc?
     // TODO: category filter for activities.
-    func columnDictOfType(type: HKSampleType) -> [String:AnyObject] {
+    func columnDictOfType(type: HKSampleType) -> [String:Any] {
         var columnIndex = 0
-        var columns : [String:AnyObject] = [:]
+        var columns : [String:Any] = [:]
 
-        if let column = HMConstants.sharedInstance.hkToMCDB[type.identifier] {
+        if let column = HMConstants.sharedInstance.hkToMCDB[type.identifier.hash] {
             columns[String(columnIndex)] = column
             columnIndex += 1
         }
@@ -976,10 +991,10 @@ public class UploadManager: NSObject {
             columns[String(columnIndex+2)] = ["activity_value"]
             columnIndex += 3
         }
-        else if type.identifier == HKCorrelationTypeIdentifierBloodPressure {
+        else if type.identifier == HKCorrelationTypeIdentifier.bloodPressure.rawValue {
             // Issue queries for both systolic and diastolic.
-            columns[String(columnIndex)]   = HMConstants.sharedInstance.hkToMCDB[HKQuantityTypeIdentifierBloodPressureDiastolic]!
-            columns[String(columnIndex+1)] = HMConstants.sharedInstance.hkToMCDB[HKQuantityTypeIdentifierBloodPressureSystolic]!
+            columns[String(columnIndex)]   = HMConstants.sharedInstance.hkToMCDB[HKQuantityTypeIdentifier.bloodPressureDiastolic.hashValue]!
+            columns[String(columnIndex+1)] = HMConstants.sharedInstance.hkToMCDB[HKQuantityTypeIdentifier.bloodPressureSystolic.hashValue]!
             columnIndex += 2
         }
         else if type.identifier == HKWorkoutType.workoutType().identifier {
@@ -998,25 +1013,25 @@ public class UploadManager: NSObject {
     }
 
     public func syncDeviceMeasuresPeriodically() {
-        deviceSync = Async.background(after: 30.0) {
+//        self.deviceSync = Async.background(after: 30.0) {
             // Refresh last acquired
             UserManager.sharedManager.pullAcquisitionSeq { result in
                 guard result.error == nil else {
 
                     // TODO: exponential backoff.
-                    log.warning("Failed to get acquisition state", feature: "syncSeqIds")
-                    self.syncDeviceMeasuresPeriodically()
+                    log.warning("Failed to get acquisition state", "syncSeqIds")
+ //                   self.syncDeviceMeasuresPeriodically()
                     return
                 }
 
                 // Invoke sync
-                self.syncDeviceMeasures(HKWorkoutType.workoutType(), deviceClass: "alexa", deviceId: "0")
+//                self.syncDeviceMeasures(type: HKWorkoutType.workoutType(), deviceClass: "alexa", deviceId: "0")
 
                 // Tail call
-                self.syncDeviceMeasuresPeriodically()
+//                self.syncDeviceMeasuresPeriodically()
             }
         }
-    }
+//    }
 
     func syncToSeqId(type: HKSampleType, deviceClass: String, deviceId: String,
                      queryOffset: Int, localSeq: Int, remoteSeq: Int, columns: [String: AnyObject])
@@ -1024,52 +1039,52 @@ public class UploadManager: NSObject {
         let limit: Int = 100
 
         let params: [String: AnyObject] = [
-            "with_ids": true,
-            "sstart": localSeq,
-            "send": remoteSeq,
-            "device_class": deviceClassParam(deviceClass),
-            "device_id": deviceId,
-            "columns": columns,
-            "offset": queryOffset,
-            "limit": limit
+            "with_ids": true as AnyObject,
+            "sstart": localSeq as AnyObject,
+            "send": remoteSeq as AnyObject,
+            "device_class": deviceClassParam(deviceClass: deviceClass) as AnyObject,
+            "device_id": deviceId as AnyObject,
+            "columns": columns as AnyObject,
+            "offset": queryOffset as AnyObject,
+            "limit": limit  as AnyObject
         ]
 
-        log.debug("Sync \(type.identifier) \(deviceClass) \(deviceId) from \(localSeq) to \(remoteSeq) with params \(params)", feature: "syncSeqIds")
+        log.debug("Sync \(type.identifier) \(deviceClass) \(deviceId) from \(localSeq) to \(remoteSeq) with params \(params)", "syncSeqIds")
 
-        Service.json(MCRouter.GetMeasures(params), statusCode: 200..<300, tag: "GETMEAS") {
+        Service.json(route: MCRouter.GetMeasures(params), statusCode: 200..<300, tag: "GETMEAS") {
             _, response, result in
 
             guard result.isSuccess else {
                 // TODO: retry w/ backoff.
-                log.error("Failed to sync server samples, server may potentially diverge from device.", feature: "syncSeqIds")
+                log.error("Failed to sync server samples, server may potentially diverge from device.", "syncSeqIds")
                 return
             }
 
-            log.info("Sync response on \(queryOffset) \(localSeq) \(remoteSeq) for \(type.identifier) \(deviceClass) \(deviceId)", feature: "syncSeqIds")
+            log.info("Sync response on \(queryOffset) \(localSeq) \(remoteSeq) for \(type.identifier) \(deviceClass) \(deviceId)", "syncSeqIds")
 
             // Write retrieved data into HealthKit, ensuring that we add metadata tags for sample ids.
-            self.writeDeviceMeasures(type, deviceClass: deviceClass, deviceId: deviceId, payload: result.value) {
+            self.writeDeviceMeasures(type: type, deviceClass: deviceClass, deviceId: deviceId, payload: result.value as AnyObject?) {
                 (success, completedSeq, payloadSize, err) in
                 guard success && err == nil else {
-                    log.error("Sync failed to parse and write measures: \(completedSeq) \(payloadSize)", feature: "syncSeqIds")
-                    log.error(err!.localizedDescription, feature: "syncSeqIds")
+                    log.error("Sync failed to parse and write measures: \(completedSeq) \(payloadSize)", "syncSeqIds")
+                    log.error(err!.localizedDescription, "syncSeqIds")
                     return
                 }
 
                 // Recur while we got a non-empty set of measures, and we have not yet reached our target remote seq.
                 // TODO: throttling.
 
-                log.info("Sync recur on \(queryOffset) \(completedSeq) \(localSeq) \(remoteSeq) \(payloadSize) for \(type.identifier) \(deviceClass) \(deviceId)", feature: "syncSeqIds")
+                log.info("Sync recur on \(queryOffset) \(completedSeq) \(localSeq) \(remoteSeq) \(payloadSize) for \(type.identifier) \(deviceClass) \(deviceId)", "syncSeqIds")
 
-                if let numMeasures = payloadSize, seq = completedSeq where numMeasures == limit && seq < remoteSeq {
+                if let numMeasures = payloadSize, let seq = completedSeq, numMeasures == limit && seq < remoteSeq {
                     let nextOffset = queryOffset + numMeasures
-                    self.syncToSeqId(type, deviceClass: deviceClass, deviceId: deviceId, queryOffset: nextOffset, localSeq: seq, remoteSeq: remoteSeq, columns: columns)
+                    self.syncToSeqId(type: type, deviceClass: deviceClass, deviceId: deviceId, queryOffset: nextOffset, localSeq: seq, remoteSeq: remoteSeq, columns: columns)
                 }
-                else if let numMeasures = payloadSize, seq = completedSeq {
-                    log.warning("Sync stopped for \(type.identifier) \(deviceClass) \(deviceId) at \(seq), offset \(queryOffset), #results \(numMeasures)", feature: "syncSeqIds")
+                else if let numMeasures = payloadSize, let seq = completedSeq {
+                    log.warning("Sync stopped for \(type.identifier) \(deviceClass) \(deviceId) at \(seq), offset \(queryOffset), #results \(numMeasures)", "syncSeqIds")
                 }
                 else {
-                    log.error("Sync stopped for \(type.identifier) \(deviceClass) \(deviceId) with \(completedSeq) \(payloadSize), offset \(queryOffset)", feature: "syncSeqIds")
+                    log.error("Sync stopped for \(type.identifier) \(deviceClass) \(deviceId) with \(completedSeq) \(payloadSize), offset \(queryOffset)", "syncSeqIds")
                 }
             }
         }
@@ -1078,12 +1093,12 @@ public class UploadManager: NSObject {
     // Note: we should make sure that when we add the events to the local HealthKit store,
     // we include metadata to ensure it will not be processed for uploads by our anchor query.
     public func syncDeviceMeasures(type: HKSampleType, deviceClass: String, deviceId: String) {
-        if let classInfo = UserManager.sharedManager.getAcquisitionSeq(type) as? [String:AnyObject]
+        if let classInfo = UserManager.sharedManager.getAcquisitionSeq(type: type) as? [String:AnyObject]
         {
-            log.warning("Retrieving remote seq for \(type.identifier), \(deviceClass), \(deviceId) from \(classInfo)", feature: "syncSeqIds")
+            log.warning("Retrieving remote seq for \(type.identifier), \(deviceClass), \(deviceId) from \(classInfo)", "syncSeqIds")
             if let dataForClass = classInfo[deviceClass] as? [String: AnyObject],
-                seqInfo = dataForClass[deviceId] as? [String: AnyObject],
-                syncSeqId = seqInfo[remoteSyncSeqIdKey] as? Int
+                let seqInfo = dataForClass[deviceId] as? [String: AnyObject],
+                let syncSeqId = seqInfo[remoteSyncSeqIdKey] as? Int
             {
                 // Retrieve all remote samples between max local seq, and max known remote seq
                 //  -- where do we store the max local seq?
@@ -1098,30 +1113,30 @@ public class UploadManager: NSObject {
                 var localSeq: Int! = nil
                 let remoteSeq = syncSeqId
 
-                let columns = columnDictOfType(type)
+                let columns = columnDictOfType(type: type)
 
-                let key = seqCacheKey(type, deviceClass: deviceClass, deviceId: deviceId)
+                let key = seqCacheKey(type: type, deviceClass: deviceClass, deviceId: deviceId)
 
                 if Defaults.hasKey(key) {
 
-                    log.debug("Cache fetch local seq for key \(key)", feature: "syncSeqIds")
+                    log.debug("Cache fetch local seq for key \(key)", "syncSeqIds")
 
-                    localSeq = Defaults.integerForKey(key)
-                    if let localSeq = localSeq where localSeq < remoteSeq {
-                        syncToSeqId(type, deviceClass: deviceClass, deviceId: deviceId, queryOffset: 0, localSeq: localSeq + 1, remoteSeq: remoteSeq, columns: columns)
+                    localSeq = Defaults.integer(forKey: key)
+                    if let localSeq = localSeq, localSeq < remoteSeq {
+                        syncToSeqId(type: type, deviceClass: deviceClass, deviceId: deviceId, queryOffset: 0, localSeq: localSeq + 1, remoteSeq: remoteSeq, columns: columns as [String : AnyObject])
                     }
                     else {
-                        log.debug("Cache hit result for key \(key) \(localSeq)", feature: "syncSeqIds")
+                        log.debug("Cache hit result for key \(key) \(localSeq)", "syncSeqIds")
                     }
                 }
                 else {
 
-                    log.debug("HK fetch local seq for key \(key)", feature: "syncSeqIds")
+                    log.debug("HK fetch local seq for key \(key)", "syncSeqIds")
 
                     let conjuncts = [
-                        HKQuery.predicateForObjectsWithMetadataKey("DeviceClass", operatorType: NSPredicateOperatorType.EqualToPredicateOperatorType, value: deviceClass),
-                        HKQuery.predicateForObjectsWithMetadataKey("DeviceId", operatorType: NSPredicateOperatorType.EqualToPredicateOperatorType, value: deviceId),
-                        HKQuery.predicateForObjectsWithMetadataKey("SeqId")
+                        HKQuery.predicateForObjects(withMetadataKey: "DeviceClass", operatorType: NSComparisonPredicate.Operator.equalTo, value: deviceClass),
+                        HKQuery.predicateForObjects(withMetadataKey: "DeviceId", operatorType: NSComparisonPredicate.Operator.equalTo, value: deviceId),
+                        HKQuery.predicateForObjects(withMetadataKey: "SeqId")
                     ]
 
                     let devicePredicate = NSCompoundPredicate(andPredicateWithSubpredicates: conjuncts)
@@ -1132,12 +1147,12 @@ public class UploadManager: NSObject {
                             return
                         }
 
-                        let rmin = samples.reduce(Int.min, combine: { (acc, sample) in
-                            if let s = sample as? HKObject, m = s.metadata {
+                        let rmin = samples.reduce(Int.min, { (acc, sample) in
+                            if let s = sample as? HKObject, let m = s.metadata {
                                 if let seq = m["SeqId"] as? Int {
                                     return min(acc, seq)
                                 }
-                                else if let s = m["SeqId"] as? String, seq = Int(s) {
+                                else if let s = m["SeqId"] as? String, let seq = Int(s) {
                                     return min(acc, seq)
                                 }
                             }
@@ -1147,46 +1162,48 @@ public class UploadManager: NSObject {
                         if rmin != Int.min { localSeq = rmin + 1 }
                         else if localSeq == nil { localSeq = 0 }
 
-                        if let localSeq = localSeq where localSeq < remoteSeq {
-                            self.syncToSeqId(type, deviceClass: deviceClass, deviceId: deviceId, queryOffset: 0, localSeq: localSeq, remoteSeq: remoteSeq, columns: columns)
+                        if let localSeq = localSeq, localSeq < remoteSeq {
+                            self.syncToSeqId(type: type, deviceClass: deviceClass, deviceId: deviceId, queryOffset: 0, localSeq: localSeq, remoteSeq: remoteSeq, columns: columns as [String : AnyObject])
                         }
                         else {
-                            log.debug("HK result for key \(key) \(localSeq)", feature: "syncSeqIds")
+                            log.debug("HK result for key \(key) \(localSeq)", "syncSeqIds")
                         }
 
                     }
                 }
             }
             else {
-                log.warning("Invalid seq for \(type.identifier), \(deviceClass), \(deviceId)", feature: "status:syncSeqIds")
+                log.warning("Invalid seq for \(type.identifier), \(deviceClass), \(deviceId)", "status:syncSeqIds")
             }
         }
         else {
-            log.warning("Invalid seq for \(type.identifier), \(deviceClass), \(deviceId)", feature: "status:syncSeqIds")
+            log.warning("Invalid seq for \(type.identifier), \(deviceClass), \(deviceId)", "status:syncSeqIds")
         }
     }
 
     private func processSyncMeasure(type: HKSampleType, deviceClass: String, deviceId: String,
                                     sample: [String: AnyObject], columnGroups: [[String]]) -> (Bool, Int?, [HKSample])
     {
-        log.debug("Process sync for \(type.displayText ?? type.identifier): \(sample)", feature: "syncSeqIds")
+        log.debug("Process sync for \(type.displayText ?? type.identifier): \(sample)", "syncSeqIds")
 
         var id: Int! = nil
-        var ts: NSDate! = nil
+        var ts: Date! = nil
 
-        if let s = sample["id"] as? String, i = Int(s) { id = i }
+        if let s = sample["id"] as? String, let i = Int(s) { id = i }
         else if let i = sample["id"] as? Int { id = i }
 
-        if let s = sample["ts"] as? String, t = s.toDate(.ISO8601Format(.Full)) { ts = t }
+//        if let s = sample["ts"] as? String, let t = s.toDate(.ISO8601Format(.Full)) { ts = t }
+//        if let s = sample["ts"] as? String, let t = s.) { ts = t }
+//        if let s = sample["ts"] as? String, let t = Date(s) { ts = t }
 
         let values: [[AnyObject]] = columnGroups.flatMap { cgroup in
             var vgroup: [AnyObject] = []
 
             if cgroup.contains("meal_duration") {
-                if let m = sample["meal_duration"], f = sample["food_type"] {
+                if let m = sample["meal_duration"], let f = sample["food_type"] {
                     vgroup = [m, f]
                 }
-                else if let d = sample["activity_duration"], t = sample["activity_type"], v = sample["activity_value"] {
+                else if let d = sample["activity_duration"], let t = sample["activity_type"], let v = sample["activity_value"] {
                     vgroup = [d,t,v]
                 }
                 return vgroup.count > 0 ? vgroup : nil
@@ -1197,20 +1214,20 @@ public class UploadManager: NSObject {
         }
 
         guard !(id == nil || ts == nil || values.count != columnGroups.count) else {
-            log.warning("Failed to sync \(type.identifier) \(deviceClass) \(deviceId) for \(id) \(ts) \(values.count) \(columnGroups.count) \(sample)", feature: "syncSeqIds")
+            log.warning("Failed to sync \(type.identifier) \(deviceClass) \(deviceId) for \(id) \(ts) \(values.count) \(columnGroups.count) \(sample)", "syncSeqIds")
             return (false, nil, [])
         }
 
         var samples: [HKSample] = []
-        let metadata: [String: AnyObject] = ["DeviceClass": deviceClass, "DeviceID": deviceId, "SeqId": id]
+        let metadata: [String: AnyObject] = ["DeviceClass": deviceClass as AnyObject, "DeviceID": deviceId as AnyObject, "SeqId": id as AnyObject]
 
-        columnGroups.enumerate().forEach { (index, cgroup) in
+        columnGroups.enumerated().forEach { (index, cgroup) in
             let vgroup = values[index]
 
             var meal: [String: AnyObject] = [:]
             var activity: [String: AnyObject] = [:]
 
-            cgroup.enumerate().forEach { (index, column) in
+            cgroup.enumerated().forEach { (index, column) in
                 if index < vgroup.count {
                     if column == "meal_duration" || column == "food_type" {
                         meal[column] = vgroup[index]
@@ -1221,32 +1238,36 @@ public class UploadManager: NSObject {
                     else {
                         var dvalue: Double! = nil
                         if let d = vgroup[index] as? Double { dvalue = d }
-                        if let s = vgroup[index] as? String, d = Double(s) { dvalue = d }
+                        if let s = vgroup[index] as? String, let d = Double(s) { dvalue = d }
 
-                        if let value = dvalue, typeIdentifier = HMConstants.sharedInstance.mcdbToHK[column] {
+                        if let value = dvalue, let typeIdentifier = HMConstants.sharedInstance.mcdbToHK[column] {
                             switch typeIdentifier {
-                            case HKCategoryTypeIdentifierSleepAnalysis:
-                                let sampleType = HKObjectType.categoryTypeForIdentifier(HKCategoryTypeIdentifierSleepAnalysis)!
-                                let ts_end = ts.dateByAddingTimeInterval(value)
+                            case HKCategoryTypeIdentifier.sleepAnalysis.hashValue:
+                                let sampleType = HKObjectType.categoryType(forIdentifier: HKCategoryTypeIdentifier.sleepAnalysis)!
+                                let ts_end = ts.addingTimeInterval(value)
 
-                                let catval = HKCategoryValueSleepAnalysis.Asleep.rawValue
-                                let hkSample = HKCategorySample(type: sampleType, value: catval, startDate: ts, endDate: ts_end, metadata: metadata)
+                                let catval = HKCategoryValueSleepAnalysis.asleep.rawValue
+                                let hkSample = HKCategorySample(type: sampleType, value: catval, start: ts as Date, end: ts_end as Date, metadata: metadata)
 
                                 samples.append(hkSample)
 
-                            case HKCategoryTypeIdentifierAppleStandHour:
-                                let sampleType = HKObjectType.categoryTypeForIdentifier(HKCategoryTypeIdentifierAppleStandHour)!
-                                let ts_end = ts.dateByAddingTimeInterval(value)
+                            case HKCategoryTypeIdentifier.appleStandHour.hashValue:
+                                let sampleType = HKObjectType.categoryType(forIdentifier: HKCategoryTypeIdentifier.appleStandHour)!
+                                let ts_end = ts.addingTimeInterval(value)
 
-                                let catval = HKCategoryValueAppleStandHour.Stood.rawValue
-                                let hkSample = HKCategorySample(type: sampleType, value: catval, startDate: ts, endDate: ts_end, metadata: metadata)
+                                let catval = HKCategoryValueAppleStandHour.stood.rawValue
+                                let hkSample = HKCategorySample(type: sampleType, value: catval, start: ts as Date, end: ts_end as Date, metadata: metadata)
 
                                 samples.append(hkSample)
 
                             default:
-                                let sampleType = HKObjectType.quantityTypeForIdentifier(typeIdentifier)!
-                                let hkQuantity = HKQuantity(unit: sampleType.serviceUnit!, doubleValue: value)
-                                let hkSample = HKQuantitySample(type: sampleType, quantity: hkQuantity, startDate: ts, endDate: ts, metadata: metadata)
+                                let sampleType = HKObjectType.categoryType(forIdentifier: HKCategoryTypeIdentifier.appleStandHour)!
+ //                               let hkQuantity = HKQuantity(unit: sampleType.serviceUnit!, doubleValue: value)
+                                let ts_end = ts.addingTimeInterval(value)
+                                
+                                let catval = HKCategoryValueAppleStandHour.stood.rawValue
+                                let hkSample = HKCategorySample(type: sampleType, value: catval, start: ts as Date, end: ts_end as Date, metadata: metadata)
+//                                let hkSample = HKQuantitySample(type: sampleType, quantity: hkQuantity, startDate: ts, endDate: ts, metadata: metadata)
                                 
                                 samples.append(hkSample)
                             }
@@ -1258,19 +1279,19 @@ public class UploadManager: NSObject {
             if meal.count > 0 {
                 // Add meal object
                 var duration: Double! = nil
-                if let s = meal["meal_duration"] as? String, d = Double(s) { duration = d }
+                if let s = meal["meal_duration"] as? String, let d = Double(s) { duration = d }
                 else if let d = meal["meal_duration"] as? Double { duration = d }
 
                 if let duration = duration,
-                    food_type = meal["food_type"] as? [[String: AnyObject]],
-                    meal_type = food_type[0]["value"] as? String
+                    let food_type = meal["food_type"] as? [[String: AnyObject]],
+                    let meal_type = food_type[0]["value"] as? String
                 {
-                    let ts_end = ts.dateByAddingTimeInterval(duration)
-                    let energy = HKQuantity(unit: HKUnit.kilocalorieUnit(), doubleValue: 0.0)
-                    let distance = HKQuantity(unit: HKUnit.meterUnit(), doubleValue: 0.0)
-                    let wMetadata: [String: AnyObject] = ["Meal Type": meal_type, "DeviceClass": deviceClass, "DeviceId": deviceId, "SeqId": id]
+                    let ts_end = ts.addingTimeInterval(duration)
+                    let energy = HKQuantity(unit: HKUnit.kilocalorie(), doubleValue: 0.0)
+                    let distance = HKQuantity(unit: HKUnit.meter(), doubleValue: 0.0)
+                    let wMetadata: [String: AnyObject] = ["Meal Type": meal_type as AnyObject, "DeviceClass": deviceClass as AnyObject, "DeviceId": deviceId as AnyObject, "SeqId": id as AnyObject]
 
-                    let hkSample = HKWorkout(activityType: HKWorkoutActivityType.PreparationAndRecovery, startDate: ts, endDate: ts_end, duration: duration, totalEnergyBurned: energy, totalDistance: distance, metadata: wMetadata)
+                    let hkSample = HKWorkout(activityType: HKWorkoutActivityType.preparationAndRecovery, start: ts as Date, end: ts_end as Date, duration: duration, totalEnergyBurned: energy, totalDistance: distance, metadata: wMetadata)
 
                     samples.append(hkSample)
                 }
@@ -1281,28 +1302,28 @@ public class UploadManager: NSObject {
                 var duration: Double! = nil
                 var activity_type: Int! = nil
 
-                if let s = activity["activity_duration"] as? String, d = Double(s) { duration = d }
+                if let s = activity["activity_duration"] as? String, let d = Double(s) { duration = d }
                 else if let d = activity["activity_duration"] as? Double { duration = d }
 
-                if let s = activity["activity_type"] as? String, i = Int(s) { activity_type = i }
+                if let s = activity["activity_type"] as? String, let i = Int(s) { activity_type = i }
                 else if let i = activity["activity_type"] as? Int { activity_type = i }
 
-                if let duration = duration, activity_type = activity_type {
-                    let ts_end = ts.dateByAddingTimeInterval(duration)
+                if let duration = duration, let activity_type = activity_type {
+                    let ts_end = ts.addingTimeInterval(duration)
 
                     if let typeIdentifier = HMConstants.sharedInstance.mcActivityToHKQuantity[activity_type] {
-                        let sampleType = HKObjectType.quantityTypeForIdentifier(typeIdentifier)!
+                        let sampleType = HKObjectType.quantityType(forIdentifier: HKQuantityTypeIdentifier(rawValue: typeIdentifier))!
 
                         var qKey = ""
                         switch typeIdentifier {
-                        case HKQuantityTypeIdentifierStepCount:
+                        case HKQuantityTypeIdentifier.stepCount.rawValue:
                             qKey = "step_count"
 
-                        case HKQuantityTypeIdentifierDistanceWalkingRunning:
+                        case HKQuantityTypeIdentifier.distanceWalkingRunning.rawValue:
                             qKey = "flights_climbed"
 
 
-                        case HKQuantityTypeIdentifierFlightsClimbed:
+                        case HKQuantityTypeIdentifier.flightsClimbed.rawValue:
                             qKey = "distance_walking_running"
 
                         default:
@@ -1311,16 +1332,16 @@ public class UploadManager: NSObject {
 
                         if !qKey.isEmpty {
                             var hkQuantity: HKQuantity! = nil
-                            if let quantities = activity["activity_value"] as? [String: AnyObject], s = quantities["step_count"] as? String, i = Int(s)
+                            if let quantities = activity["activity_value"] as? [String: AnyObject], let s = quantities["step_count"] as? String, let i = Int(s)
                             {
                                 hkQuantity = HKQuantity(unit: sampleType.serviceUnit!, doubleValue: Double(i))
                             }
-                            else if let quantities = activity["activity_value"] as? [String: AnyObject], i = quantities["step_count"] as? Int
+                            else if let quantities = activity["activity_value"] as? [String: AnyObject], let i = quantities["step_count"] as? Int
                             {
                                 hkQuantity = HKQuantity(unit: sampleType.serviceUnit!, doubleValue: Double(i))
 
                             }
-                            let hkSample = HKQuantitySample(type: sampleType, quantity: hkQuantity, startDate: ts, endDate: ts, metadata: metadata)
+                            let hkSample = HKQuantitySample(type: sampleType, quantity: hkQuantity, start: ts as Date, end: ts as Date, metadata: metadata)
 
                             samples.append(hkSample)
                         }
@@ -1329,16 +1350,16 @@ public class UploadManager: NSObject {
                         var energy: Double! = nil
                         var distance: Double! = nil
 
-                        if let v = activity["activity_value"] as? [String: AnyObject], e = v["kcal_burned"] as? Double { energy = e }
-                        else if let v = activity["activity_value"] as? [String: AnyObject], s = v["kcal_burned"] as? String, e = Double(s) { energy = e }
+                        if let v = activity["activity_value"] as? [String: AnyObject], let e = v["kcal_burned"] as? Double { energy = e }
+                        else if let v = activity["activity_value"] as? [String: AnyObject], let s = v["kcal_burned"] as? String, let e = Double(s) { energy = e }
 
-                        if let v = activity["activity_value"] as? [String: AnyObject], d = v["distance"] as? Double { distance = d }
-                        else if let v = activity["activity_value"] as? [String: AnyObject], s = v["distance"] as? String, d = Double(s) { distance = d }
+                        if let v = activity["activity_value"] as? [String: AnyObject], let d = v["distance"] as? Double { distance = d }
+                        else if let v = activity["activity_value"] as? [String: AnyObject], let s = v["distance"] as? String, let d = Double(s) { distance = d }
 
-                        let energyQ = HKQuantity(unit: HKUnit.kilocalorieUnit(), doubleValue: energy == nil ? 0.0 : energy!)
-                        let distanceQ = HKQuantity(unit: HKUnit.meterUnit(), doubleValue: distance == nil ? 0.0 : distance!)
+                        let energyQ = HKQuantity(unit: HKUnit.kilocalorie(), doubleValue: energy == nil ? 0.0 : energy!)
+                        let distanceQ = HKQuantity(unit: HKUnit.meter(), doubleValue: distance == nil ? 0.0 : distance!)
 
-                        let hkSample = HKWorkout(activityType: hkActivityType, startDate: ts, endDate: ts_end, duration: duration, totalEnergyBurned: energyQ, totalDistance: distanceQ, metadata: metadata)
+                        let hkSample = HKWorkout(activityType: hkActivityType, start: ts as Date, end: ts_end as Date, duration: duration, totalEnergyBurned: energyQ, totalDistance: distanceQ, metadata: metadata)
 
                         samples.append(hkSample)
                     }
@@ -1350,39 +1371,39 @@ public class UploadManager: NSObject {
     }
 
     private func writeDeviceMeasures(type: HKSampleType, deviceClass: String, deviceId: String, payload: AnyObject?,
-                                     completion: (Bool, Int?, Int?, NSError?) -> Void)
+                                     completion: @escaping (Bool, Int?, Int?, NSError?) -> Void)
     {
         var failed = false
 
         var maxSampleId: Int! = nil
         var samples: [HKSample] = []
 
-        let columnGroups = columnGroupsOfType(type)
+        let columnGroups = columnGroupsOfType(type: type)
 
-        if let response = payload as? [String:AnyObject], measures = response["items"] as? [[String:AnyObject]] {
+        if let response = payload as? [String:AnyObject], let measures = response["items"] as? [[String:AnyObject]] {
             for sample in measures {
-                let (success, sampleId, newSamples) = processSyncMeasure(type, deviceClass: deviceClass, deviceId: deviceId, sample: sample, columnGroups: columnGroups)
+                let (success, sampleId, newSamples) = processSyncMeasure(type: type, deviceClass: deviceClass, deviceId: deviceId, sample: sample, columnGroups: columnGroups)
 
                 failed = !success
                 if failed { break }
                 if let cmax = sampleId { maxSampleId = maxSampleId == nil ? cmax : max(maxSampleId, cmax) }
-                samples.appendContentsOf(newSamples)
+                samples.append(contentsOf: newSamples)
             }
 
-            log.info("Write parsed \(samples.count) samples", feature: "syncSeqIds")
+            log.info("Write parsed \(samples.count) samples", "syncSeqIds")
 
             // Only add samples if there were no parsing errors.
-            if let maxId = maxSampleId where !failed {
+            if let maxId = maxSampleId, !failed {
                 MCHealthManager.sharedManager.saveSamples(samples) { (success, err) in
                     guard success && err == nil else {
-                        log.error("Failed to sync \(type.identifier) \(deviceClass) \(deviceId) to \(maxId)", feature: "syncSeqIds")
-                        return completion(!failed, nil, measures.count, err)
+                        log.error("Failed to sync \(type.identifier) \(deviceClass) \(deviceId) to \(maxId)", "syncSeqIds")
+                        return completion(!failed, nil, measures.count, err as NSError?)
                     }
 
-                    log.info("Advance pptr for \(type.identifier) \(deviceClass) \(deviceId) advance pptr to \(maxId)", feature: "syncSeqIds")
+                    log.info("Advance pptr for \(type.identifier) \(deviceClass) \(deviceId) advance pptr to \(maxId)", "syncSeqIds")
 
-                    let key = self.seqCacheKey(type, deviceClass: deviceClass, deviceId: deviceId)
-                    Defaults.setInteger(maxId, forKey: key)
+                    let key = self.seqCacheKey(type: type, deviceClass: deviceClass, deviceId: deviceId)
+                    Defaults.set(maxId, forKey: key)
                     completion(!failed, maxId, measures.count, nil)
                 }
             }
@@ -1394,5 +1415,4 @@ public class UploadManager: NSObject {
             completion(false, nil, nil, nil)
         }
     }
-
 }

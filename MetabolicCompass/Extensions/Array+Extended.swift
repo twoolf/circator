@@ -8,11 +8,11 @@
 
 import Foundation
 
-extension Array where Element: NSOperation {
-    func onFinish(block: () -> Void) {
+extension Array where Element: Operation {
+    func onFinish(block: @escaping () -> Void) {
         // This block will be executed after all operations from the array.
-        let finishOperationBlock = NSBlockOperation(block: block)
+        let finishOperationBlock = BlockOperation(block: block)
         self.forEach { [unowned finishOperationBlock] in finishOperationBlock.addDependency($0) }
-        NSOperationQueue().addOperation(finishOperationBlock)
+        OperationQueue().addOperation(finishOperationBlock)
     }
 }

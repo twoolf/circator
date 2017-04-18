@@ -16,6 +16,7 @@ import SwiftDate
 import Crashlytics
 import Charts
 import EasyTipView
+import GameplayKit
 
 private let fastingViewLabelSize: CGFloat = 12.0
 private let fastingViewTextSize: CGFloat = 24.0
@@ -57,7 +58,7 @@ public class FastingViewController : UIViewController, ChartViewDelegate {
         colors.appendContentsOf(ChartColorTemplates.joyful())
         colors.appendContentsOf(ChartColorTemplates.vordiplom())
 
-        //return GKRandomSource.sharedRandom().arrayByShufflingObjectsInArray(colors) as! [NSUIColor]
+        return GKRandomSource.sharedRandom().arrayByShufflingObjectsInArray(colors) as! [NSUIColor]
         return colors
     }()
 
@@ -163,7 +164,7 @@ public class FastingViewController : UIViewController, ChartViewDelegate {
     func logContentView(asAppear: Bool = true) {
         Answers.logContentViewWithName("Fasting",
                                        contentType: asAppear ? "Appear" : "Disappear",
-                                       contentId: NSDate().toString(DateFormat.Custom("YYYY-MM-dd:HH")),
+                                       contentId: Date().toString(DateFormat.Custom("YYYY-MM-dd:HH")),
                                        customAttributes: nil)
     }
 
@@ -262,7 +263,7 @@ public class FastingViewController : UIViewController, ChartViewDelegate {
         let badgeSize = ScreenManager.sharedInstance.badgeIconSize()
 
         if let imageLabelStack = fastingStreakBadge.subviews[1] as? UIStackView,
-            badge = imageLabelStack.subviews[0] as? UIImageView
+            let badge = imageLabelStack.subviews[0] as? UIImageView
         {
             constraints.append(badge.widthAnchor.constraintEqualToConstant(badgeSize))
             constraints.append(badge.heightAnchor.constraintEqualToAnchor(badge.widthAnchor))
@@ -319,9 +320,9 @@ public class FastingViewController : UIViewController, ChartViewDelegate {
 
     func refreshFastingStreak(fastingLevel: Double) {
         if let descLabel = fastingStreakBadge.subviews[0] as? UILabel,
-            imageLabelStack = fastingStreakBadge.subviews[1] as? UIStackView,
-            badge = imageLabelStack.subviews[0] as? UIImageView,
-            label = imageLabelStack.subviews[1] as? UILabel
+            let imageLabelStack = fastingStreakBadge.subviews[1] as? UIStackView,
+            let badge = imageLabelStack.subviews[0] as? UIImageView,
+            let label = imageLabelStack.subviews[1] as? UILabel
         {
             let compact = UIScreen.mainScreen().bounds.size.height < 569
             let (_, icon, desc) = FastingViewController.fastingStreakClassAndIcon(fastingLevel)

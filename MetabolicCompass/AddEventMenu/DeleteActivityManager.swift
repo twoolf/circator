@@ -3,7 +3,7 @@
 //  MetabolicCompass
 //
 //  Created by Yanif Ahmad on 9/25/16.
-//  Copyright © 2016 Yanif Ahmad, Tom Woolf. All rights reserved.
+//  Copyright © 2016 Yanif Ahmad, Tom Woolf. All rights reserved. 
 //
 
 import Foundation
@@ -58,7 +58,7 @@ public class DeleteActivityManager: UITableView, PickerManagerSelectionDelegate 
 
     private var delRecentImage: UIImageView! = nil
     private var delRecentManager: PickerManager! = nil
-    private var delDates: [NSDate] = []
+    private var delDates: [Date] = []
 
     private let delPickerSections = ["Delete Recent Activities", "Delete Activities By Date"]
 
@@ -84,8 +84,8 @@ public class DeleteActivityManager: UITableView, PickerManagerSelectionDelegate 
 
         let datePickerFontSize: CGFloat = 16.0
 
-        let mediumDateShortTime: NSDate -> String = { date in
-            let dateFormatter = NSDateFormatter()
+        let mediumDateShortTime: Date -> String = { date in
+            let dateFormatter = DateFormatter()
             dateFormatter.locale = .currentLocale()
             dateFormatter.timeStyle = .ShortStyle
             dateFormatter.dateStyle = .MediumStyle
@@ -104,7 +104,7 @@ public class DeleteActivityManager: UITableView, PickerManagerSelectionDelegate 
                 $0.rowHeight = UITableViewAutomaticDimension
         }
 
-        var endDate = NSDate()
+        var endDate = Date()
         endDate = endDate.add(minutes: 15 - (endDate.minute % 15))
         delDates = [endDate - 15.minutes, endDate]
 
@@ -199,7 +199,7 @@ public class DeleteActivityManager: UITableView, PickerManagerSelectionDelegate 
     func handleQuickDelRecentTap(sender: UIButton)  {
         log.debug("Delete recent tapped", feature: "deleteActivity")
         if let mins = delRecentManager.getSelectedValue() as? Int {
-            let endDate = NSDate()
+            let endDate = Date()
             let startDate = endDate.dateByAddingTimeInterval(-(Double(mins) * 60.0))
             log.debug("Delete circadian events between \(startDate) \(endDate)", feature: "deleteActivity")
             Async.main { sender.enabled = false; sender.setNeedsDisplay() }
@@ -226,7 +226,7 @@ public class DeleteActivityManager: UITableView, PickerManagerSelectionDelegate 
     func pickerItemSelected(pickerManager: PickerManager, itemType: String?, index: Int, item: String, data: AnyObject?) {
         log.debug("Delete recent picker selected \(item) \(data)", feature: "deleteActivity")
         if let mins = data as? Int {
-            let endDate = NSDate()
+            let endDate = Date()
             let startDate = endDate.dateByAddingTimeInterval(-(Double(mins) * 60.0))
             log.debug("Delete circadian events between \(startDate) \(endDate)", feature: "deleteActivity")
 

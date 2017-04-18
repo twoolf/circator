@@ -10,32 +10,35 @@ import Foundation
 import HealthKit
 
 // ****** Units and Types
-let energyUnit = HKUnit.kilocalorieUnit()
-let energyFormatterUnit: NSEnergyFormatterUnit = {
-    return HKUnit.energyFormatterUnitFromUnit(energyUnit)
+let energyUnit = HKUnit.kilocalorie()
+let energyFormatterUnit: EnergyFormatter.Unit = {
+    return HKUnit.energyFormatterUnit(from: energyUnit)
 } ()
 
 let distanceUnit: HKUnit = {
-    let locale = NSLocale.currentLocale()
-    let isMetric: Bool = (locale.objectForKey(NSLocaleUsesMetricSystem)?.boolValue)!
-    
+    let locale = NSLocale.current
+    let isMetric: Bool = true
+//    let isMetric: Bool = (locale.objectForKey(NSLocaleUsesMetricSystem)?.boolValue)!
+//    let isMetric: Bool = (locale.objectForKey(NSLocale.Key.usesMetricSystem)?.boolValue)!
+//    let isMetric: Bool = (locale(objectForKey:NSLocale.Key).usesMetricSystem)?.boolValue)!
+
     if isMetric {
-        return HKUnit.meterUnit()
+        return HKUnit.meter()
     } else {
-        return HKUnit.mileUnit()
+        return HKUnit.mile()
     }
 } ()
-let distanceFormatterUnit: NSLengthFormatterUnit = {
-    return HKUnit.lengthFormatterUnitFromUnit(distanceUnit)
+let distanceFormatterUnit: LengthFormatter.Unit = {
+    return HKUnit.lengthFormatterUnit(from: distanceUnit)
 } ()
 
 
-let hrUnit = HKUnit(fromString: "count/min")
+let hrUnit = HKUnit(from: "count/min")
 
-let energyType = HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierActiveEnergyBurned)!
-let hrType:HKQuantityType = HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierHeartRate)!
-let cyclingDistanceType = HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierDistanceCycling)!
-let runningDistanceType = HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierDistanceWalkingRunning)!
+let energyType = HKObjectType.quantityType(forIdentifier: HKQuantityTypeIdentifier.activeEnergyBurned)!
+let hrType:HKQuantityType = HKObjectType.quantityType(forIdentifier: HKQuantityTypeIdentifier.heartRate)!
+let cyclingDistanceType = HKObjectType.quantityType(forIdentifier: HKQuantityTypeIdentifier.distanceCycling)!
+let runningDistanceType = HKObjectType.quantityType(forIdentifier: HKQuantityTypeIdentifier.distanceWalkingRunning)!
 
 class HealthDataService {
     
@@ -44,7 +47,7 @@ class HealthDataService {
     init() {}
     
     /// This function asks HealthKit for authorization to read and write to the health store
-    func authorizeHealthKitAccess(completion: ((success:Bool, error:NSError!) -> Void)!) {
+    func authorizeHealthKitAccess(completion: @escaping ((_ success:Bool, _ error:NSError?) -> Void)) {
         let typesToShare = Set(
             [HKObjectType.workoutType(),
                 energyType,
@@ -59,80 +62,80 @@ class HealthDataService {
             hrType
             ])
         
-        healthKitStore.requestAuthorizationToShareTypes(typesToShare, readTypes: typesToSave) { success, error in
-            completion(success: success, error: error)
+        healthKitStore.requestAuthorization(toShare: typesToShare, read: typesToSave) { success, error in
+            completion(success, error as NSError?)
         }
     }
     
     /// This function gets HKWorkouts from the Health Store that were created by this app
-    func readWorkouts(completion: (success: Bool, workouts:[HKWorkout], error: NSError!) -> Void) {
+    func readWorkouts(completion: @escaping (_ success: Bool, _ workouts:[HKWorkout], _ error: NSError?) -> Void) {
         
         // Predicate indicating "this app"
-        let sourcePredicate = HKQuery.predicateForObjectsFromSource(HKSource.defaultSource())
+        let sourcePredicate = HKQuery.predicateForObjects(from: HKSource.default())
         
         // Get workouts that took some amount of time
-        let workoutsPredicate = HKQuery.predicateForWorkoutsWithOperatorType(.GreaterThanPredicateOperatorType, duration: 0)
+        let workoutsPredicate = HKQuery.predicateForWorkouts(with: .greaterThan, duration: 0)
         
         // AND the two predicates together
-        let predicate = NSCompoundPredicate(type: .AndPredicateType, subpredicates: [sourcePredicate, workoutsPredicate])
+        let predicate = NSCompoundPredicate(type: .and, subpredicates: [sourcePredicate, workoutsPredicate])
         let sortDescriptor = NSSortDescriptor(key:HKSampleSortIdentifierStartDate, ascending: false)
         
         let sampleQuery = HKSampleQuery(sampleType: HKWorkoutType.workoutType(), predicate: predicate, limit: 0, sortDescriptors: [sortDescriptor])
         { (sampleQuery, results, error ) -> Void in
             
             guard let samples = results as? [HKWorkout] else {
-                completion(success: false, workouts: [HKWorkout](), error: error)
+                completion(false, [HKWorkout](), error as NSError?)
                 return
             }
             
-            completion(success:error == nil, workouts:samples, error:error)
+            completion(error == nil, samples, error as NSError?)
         }
-        healthKitStore.executeQuery(sampleQuery)
+        healthKitStore.execute(sampleQuery)
     }
     
     /// This function gets samples of a certain type from the workout passed in
     func samplesForWorkout(workout: HKWorkout,
-                           intervalStart: NSDate,
-                           intervalEnd: NSDate,
+                           intervalStart: Date,
+                           intervalEnd: Date,
                            type: HKQuantityType,
-                           completion: (samples: [HKSample], error: NSError!) -> Void) {
+                           completion: @escaping (_ samples: [HKSample], _ error: NSError?) -> Void) {
         
         // Start with the workout
-        let workoutPredicate = HKQuery.predicateForObjectsFromWorkout(workout)
+        let workoutPredicate = HKQuery.predicateForObjects(from: workout)
         
         // Just get samples within the timeframe of a certain interval
-        let datePredicate = HKQuery.predicateForSamplesWithStartDate(intervalStart, endDate: intervalEnd, options: .None)
+        let datePredicate = HKQuery.predicateForSamples(withStart: intervalStart as Date, end: intervalEnd as Date, options: [])
         
         // AND the two predicates
-        let predicate = NSCompoundPredicate(type: .AndPredicateType, subpredicates: [workoutPredicate, datePredicate])
+        let predicate = NSCompoundPredicate(type: .and, subpredicates: [workoutPredicate, datePredicate])
         let startDateSort = NSSortDescriptor(key: HKSampleSortIdentifierStartDate, ascending: true)
         
         let query = HKSampleQuery(sampleType: type, predicate: predicate, limit: 0, sortDescriptors: [startDateSort]) { (query, samples, error) -> Void in
-            completion(samples: samples!, error: error)
+            completion(samples!, error as NSError?)
         }
-        healthKitStore.executeQuery(query)
+        healthKitStore.execute(query)
     }
     
     /// This function gets statistics of a certain type from the workout passed in
     func statisticsForWorkout(workout: HKWorkout,
-                              intervalStart: NSDate,
-                              intervalEnd: NSDate,
+                              intervalStart: Date,
+                              intervalEnd: Date,
                               type: HKQuantityType,
                               options: HKStatisticsOptions,
-                              completion: (statistics: HKStatistics, error: NSError!) -> Void) {
+                              completion: @escaping (_ statistics: HKStatistics, _ error: NSError?) -> Void) {
         
         // Start with the workout
-        let workoutPredicate = HKQuery.predicateForObjectsFromWorkout(workout)
+        let workoutPredicate = HKQuery.predicateForObjects(from: workout)
         
         // Just get stats within the timeframe of a certain interval
-        let datePredicate = HKQuery.predicateForSamplesWithStartDate(intervalStart, endDate: intervalEnd, options: .None)
+        let datePredicate = HKQuery.predicateForSamples(withStart: intervalStart as Date, end: intervalEnd as Date, options: [])
         
         // AND the two predicates
-        let predicate = NSCompoundPredicate(type: .AndPredicateType, subpredicates: [workoutPredicate, datePredicate])
+        let predicate = NSCompoundPredicate(type: .and, subpredicates: [workoutPredicate, datePredicate])
         
         let query = HKStatisticsQuery(quantityType: type, quantitySamplePredicate: predicate, options: options) { (query, stats, error) -> Void in
-            completion(statistics: stats!, error: error)
+            completion(stats!, error as NSError?)
         }
-        healthKitStore.executeQuery(query)
+        healthKitStore.execute(query)
     }
 }

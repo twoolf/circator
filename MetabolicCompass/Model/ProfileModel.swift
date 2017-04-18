@@ -2,7 +2,7 @@
 //  ProfileModel.swift
 //  MetabolicCompass
 //
-//  Created by Anna Tkach on 5/11/16.
+//  Created by Anna Tkach on 5/11/16. 
 //  Copyright © 2016 Yanif Ahmad, Tom Woolf. All rights reserved.
 //
 
@@ -38,23 +38,23 @@ class ProfileModel: UserInfoModel {
 
         for item in items {
             if item.type == .Units {
-                item.setNewValue(units.rawValue)
+                item.setNewValue(newValue: units.rawValue as AnyObject?)
             }
             else if item.type == .FirstName {
-                item.setNewValue(profileInfo[firstNameField.name] as? String ?? "<unknown>")
+                item.setNewValue(newValue: profileInfo[firstNameField.name] as? String as AnyObject?? ?? "<unknown>" as AnyObject?)
             }
             else if item.type == .LastName {
-                item.setNewValue(profileInfo[lastNameField.name] as? String ?? "<unknown>")
+                item.setNewValue(newValue: profileInfo[lastNameField.name] as? String as AnyObject?? ?? "<unknown>" as AnyObject?)
             }
             else if item.type == .Photo {
-                item.setNewValue(UserManager.sharedManager.userProfilePhoto())
+                item.setNewValue(newValue: UserManager.sharedManager.userProfilePhoto())
             }
             else if item.type == .Email {
-                item.setNewValue(UserManager.sharedManager.getUserId())
+                item.setNewValue(newValue: UserManager.sharedManager.getUserId() as AnyObject?)
             } else {
                 if item.type == .HeightInches {
                     var cmHeightAsDouble = 0.0
-                    if let heightInfo = profileInfo[heightField.name] as? String, heightAsDouble = Double(heightInfo) {
+                    if let heightInfo = profileInfo[heightField.name] as? String, let heightAsDouble = Double(heightInfo) {
                         cmHeightAsDouble = heightAsDouble
                     }
                     else if let heightAsDouble = profileInfo[heightField.name] as? Double {
@@ -65,43 +65,44 @@ class ProfileModel: UserInfoModel {
                     }
 
                     let heightFtIn = UnitsUtils.heightValue(valueInDefaultSystem: Float(cmHeightAsDouble), withUnits: units)
-                    item.setNewValue(Int(floor((heightFtIn % 1.0) * 12.0)))
+//                    item.setNewValue(newValue: Int(floor((heightFtIn % 1.0) * 12.0)) as AnyObject?)
+                    item.setNewValue(newValue: Int(floor((heightFtIn .truncatingRemainder(dividingBy: 1.0)) * 12.0)) as AnyObject?)
                 }
                 else if let profileItemInfo = profileInfo[item.name]{
                     if item.type == .Gender {
-                        let gender = Gender.valueByTitle(profileItemInfo as! String)
-                        item.setNewValue(gender.rawValue)
+                        let gender = Gender.valueByTitle(title: profileItemInfo as! String)
+                        item.setNewValue(newValue: gender.rawValue as AnyObject?)
                     }
                     else if item.type == .Weight {
-                        item.setNewValue(profileItemInfo)
+                        item.setNewValue(newValue: profileItemInfo)
                         if let value = item.floatValue() {
                             // Convert from kg to lb as needed
-                            item.setNewValue(UnitsUtils.weightValue(valueInDefaultSystem: value, withUnits: units))
+                            item.setNewValue(newValue: UnitsUtils.weightValue(valueInDefaultSystem: value, withUnits: units) as AnyObject?)
                         }
                     }
                     else if item.type == .Height {
-                        item.setNewValue(profileItemInfo)
+                        item.setNewValue(newValue: profileItemInfo)
                         if let value = item.floatValue() {
                             // Convert from cm to ft/in as needed
                             var convertedValue = UnitsUtils.heightValue(valueInDefaultSystem: value, withUnits: units)
                             if units == .Imperial { convertedValue = floor(convertedValue) }
-                            item.setNewValue(convertedValue)
+                            item.setNewValue(newValue: convertedValue as AnyObject?)
                         }
                     }
                     else if item.type == .Weight || item.type == .Height {
-                        item.setNewValue(profileItemInfo)
+                        item.setNewValue(newValue: profileItemInfo)
                         if let value = item.floatValue() {
                             if item.type == .Weight {
                                 // Convert from kg to lb as needed
-                                item.setNewValue(UnitsUtils.weightValue(valueInDefaultSystem: value, withUnits: units))
+                                item.setNewValue(newValue: UnitsUtils.weightValue(valueInDefaultSystem: value, withUnits: units) as AnyObject?)
                             } else {
                                 // Convert from cm to ft/in as needed
-                                item.setNewValue(UnitsUtils.heightValue(valueInDefaultSystem: value, withUnits: units))
+                                item.setNewValue(newValue: UnitsUtils.heightValue(valueInDefaultSystem: value, withUnits: units) as AnyObject?)
                             }
                         }
                     }
                     else {
-                        item.setNewValue(profileItemInfo)
+                        item.setNewValue(newValue: profileItemInfo)
                     }
                 } else {
                     log.warning("Could not find profile field for \(item.name)")
@@ -120,11 +121,11 @@ class ProfileModel: UserInfoModel {
     override func profileItems() -> [String : String] {
         var newItems : [ModelItem] = [ModelItem]()
         for item in items {
-            if isItemEditable(item) {
+            if isItemEditable(item: item) {
                 newItems.append(item)
             }
         }
-        return profileItems(newItems)
+        return profileItems(newItems: newItems)
     }
     
     override func isModelValid() -> Bool {

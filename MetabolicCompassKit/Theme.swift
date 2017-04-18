@@ -16,7 +16,7 @@ import UIKit
  */
 public class Theme: NSObject {
 
-    public static let universityDarkTheme = Theme(.White, .Blue, .White, .Custom(Color.White.color.colorWithAlphaComponent(0.75)), complementForegroundColors: [.Emerald, .Gray, .MilkyGreen, .Crimson])!
+    public static let universityDarkTheme = Theme(.White, .Blue, .White, .Custom(Color.White.color.withAlphaComponent(0.75)), complementForegroundColors: [.Emerald, .Gray, .MilkyGreen, .Crimson])!
 
     public enum Color {
         case Blue
@@ -32,11 +32,11 @@ public class Theme: NSObject {
         public var color: UIColor {
             switch self {
             case .Black:
-                return UIColor.blackColor()
+                return UIColor.black
             case .Emerald:
                 return UIColor(red: 71 / 255.0, green: 201 / 255.0, blue: 113 / 255.0, alpha: 1)
             case .White:
-                return UIColor.whiteColor()
+                return UIColor.white
             case .LightGray:
                 return UIColor(red: 239 / 255.0, green: 241 / 255.0, blue: 243 / 255.0, alpha: 1)
             case .Gray:
@@ -65,7 +65,7 @@ public class Theme: NSObject {
         }
         
         public init(foregroundColors: [Color]) {
-            self.foregroundColors = foregroundColors.sort { c1, c2 -> Bool in
+            self.foregroundColors = foregroundColors.sorted { c1, c2 -> Bool in
                 var saturation1: CGFloat = 0
                 var saturation2: CGFloat = 0
                 c1.color.getHue(nil, saturation: &saturation1, brightness: nil, alpha: nil)

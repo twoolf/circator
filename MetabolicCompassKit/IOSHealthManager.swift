@@ -15,13 +15,13 @@ import MCCircadianQueries
 
 public class IOSHealthManager: NSObject, WCSessionDelegate {
     @available(iOS 9.3, *)
-    public func session(session: WCSession, activationDidCompleteWithState activationState: WCSessionActivationState, error: NSError?){
+    public func session(_ session: WCSession, activationDidCompleteWith activationState: WCSessionActivationState, error: Error?){
     }
     
-    public func sessionDidBecomeInactive(session: WCSession) {
+    public func sessionDidBecomeInactive(_ session: WCSession) {
     }
     
-    public func sessionDidDeactivate(session: WCSession) {
+    public func sessionDidDeactivate(_ session: WCSession) {
     }
     public static let sharedManager = IOSHealthManager()
     var observerQueries: [HKQuery] = []
@@ -41,19 +41,19 @@ public class IOSHealthManager: NSObject, WCSessionDelegate {
 
     func connectWatch() {
         if WCSession.isSupported() {
-            let session = WCSession.defaultSession()
+            let session = WCSession.default()
             session.delegate = self
-            session.activateSession()
+            session.activate()
         }
     }
 
     func updateWatchContext() {
         // This release currently removed watch support
-        guard WCSession.isSupported() && WCSession.defaultSession().watchAppInstalled else {
+        guard WCSession.isSupported() && WCSession.default().isWatchAppInstalled else {
             return
         }
         do {
-            let applicationContext = [:]
+            let applicationContext = [String:Any]()
             /*
             let sampleFormatter = SampleFormatter()
             let applicationContext = MCHealthManager.sharedManager.mostRecentSamples.map {
@@ -65,7 +65,7 @@ public class IOSHealthManager: NSObject, WCSessionDelegate {
                 ]
             }
             */
-            try WCSession.defaultSession().updateApplicationContext(["context": applicationContext])
+            try WCSession.default().updateApplicationContext(["context": applicationContext])
         } catch {
             log.error((error as NSError).localizedDescription)
         }
@@ -75,23 +75,23 @@ public class IOSHealthManager: NSObject, WCSessionDelegate {
     // MARK: - Push-based HealthKit data access.
 
     private func fetchAnchoredSamplesOfType(type: HKSampleType, predicate: NSPredicate?, anchor: HKQueryAnchor?,
-                                            maxResults: Int, callContinuously: Bool, completion: HMAnchorSamplesBlock)
+                                            maxResults: Int, callContinuously: Bool, completion: @escaping HMAnchorSamplesBlock)
     {
         let hkAnchor = anchor ?? noAnchor
         let onAnchorQueryResults: HMAnchorQueryBlock = {
             (query, addedObjects, deletedObjects, newAnchor, nsError) -> Void in
-            completion(added: addedObjects ?? [], deleted: deletedObjects ?? [], newAnchor: newAnchor, error: nsError)
+            completion(addedObjects ?? [], deletedObjects ?? [], newAnchor, nsError)
         }
         let anchoredQuery = HKAnchoredObjectQuery(type: type, predicate: predicate, anchor: hkAnchor, limit: Int(maxResults), resultsHandler: onAnchorQueryResults)
         if callContinuously {
             anchoredQuery.updateHandler = onAnchorQueryResults
         }
-        MCHealthManager.sharedManager.healthKitStore.executeQuery(anchoredQuery)
+        MCHealthManager.sharedManager.healthKitStore.execute(anchoredQuery)
     }
 
     public func startBackgroundObserverForType(type: HKSampleType, maxResultsPerQuery: Int = Int(HKObjectQueryNoLimit),
-                                               getAnchorCallback: HKSampleType -> (Bool, HKQueryAnchor?, NSPredicate?),
-                                               anchorQueryCallback: HMAnchorSamplesCBlock) -> Void
+                                               getAnchorCallback: @escaping (HKSampleType) -> (Bool, HKQueryAnchor?, NSPredicate?),
+                                               anchorQueryCallback: @escaping HMAnchorSamplesCBlock) -> Void
     {
         let onBackgroundStarted = {(success: Bool, nsError: NSError?) -> Void in
             guard success else {
@@ -110,54 +110,54 @@ public class IOSHealthManager: NSObject, WCSessionDelegate {
                 // components that run at higher priority.
                 Async.background {
                     let tname = type.displayText ?? type.identifier
-                    let asCircadian = type.identifier == HKWorkoutTypeIdentifier || type.identifier == HKCategoryTypeIdentifierSleepAnalysis
+                    let asCircadian = type.identifier == HKWorkoutTypeIdentifier.description || type.identifier == HKCategoryTypeIdentifier.sleepAnalysis.rawValue
 
                     let (needsOldestSamples, anchor, predicate) = getAnchorCallback(type)
                     if needsOldestSamples {
                         Async.background(after: 0.5) {
-                            log.debug("Registering bulk ingestion availability for: \(tname)", feature: "registerObservers")
+                            log.debug("Registering bulk ingestion availability for: \(tname)", "registerObservers")
                             MCHealthManager.sharedManager.getOldestSampleDateForType(type) { date in
                                 if let minDate = date {
-                                    log.debug("Lower bound date for \(type.displayText ?? type.identifier): \(minDate)", feature: "registerObservers")
-                                    UserManager.sharedManager.setHistoricalRangeMinForType(type, min: minDate, sync: true)
+                                    log.debug("Lower bound date for \(type.displayText ?? type.identifier): \(minDate)", "registerObservers")
+                                    UserManager.sharedManager.setHistoricalRangeMinForType(type: type, min: minDate as Date, sync: true)
                                 }
                             }
                         }
                     }
 
-                    log.debug("Anchor query for \(tname)", feature: "anchorQuery")
-                    self.fetchAnchoredSamplesOfType(type, predicate: predicate, anchor: anchor, maxResults: maxResultsPerQuery, callContinuously: false) {
+                    log.debug("Anchor query for \(tname)", "anchorQuery")
+                    self.fetchAnchoredSamplesOfType(type: type, predicate: predicate, anchor: anchor, maxResults: maxResultsPerQuery, callContinuously: false) {
                         (added, deleted, newAnchor, error) -> Void in
 
-                        log.debug("Anchor query completion for \(tname), size: +\(added.count) -\(deleted.count)", feature: "anchorQuery")
+                        log.debug("Anchor query completion for \(tname), size: +\(added.count) -\(deleted.count)", "anchorQuery")
                         if added.count > 0 || deleted.count > 0 {
                             MCHealthManager.sharedManager.invalidateCacheForUpdates(type, added: (asCircadian ? added : nil))
                         }
 
                         // Data-driven notifications.
                         if asCircadian {
-                            NotificationManager.sharedManager.onCircadianEvents(added)
+                            NotificationManager.sharedManager.onCircadianEvents(events: added)
                         }
 
                         // Callback invocation.
-                        anchorQueryCallback(added: added, deleted: deleted, newAnchor: newAnchor, error: error, completion: completion)
+                        anchorQueryCallback(added, deleted, newAnchor, error, completion)
                     }
                 }
             }
             self.observerQueries.append(obsQuery)
-            MCHealthManager.sharedManager.healthKitStore.executeQuery(obsQuery)
+            MCHealthManager.sharedManager.healthKitStore.execute(obsQuery)
         }
-        MCHealthManager.sharedManager.healthKitStore.enableBackgroundDeliveryForType(type, frequency: HKUpdateFrequency.Immediate, withCompletion: onBackgroundStarted)
+        MCHealthManager.sharedManager.healthKitStore.enableBackgroundDelivery(for: type, frequency: HKUpdateFrequency.immediate, withCompletion: onBackgroundStarted as! (Bool, Error?) -> Void)
     }
 
-    public func stopAllBackgroundObservers(completion: (Bool, NSError?) -> Void) {
-        MCHealthManager.sharedManager.healthKitStore.disableAllBackgroundDeliveryWithCompletion { (success, error) in
+    public func stopAllBackgroundObservers(completion: @escaping (Bool, NSError?) -> Void) {
+        MCHealthManager.sharedManager.healthKitStore.disableAllBackgroundDelivery { (success, error) in
             if !(success && error == nil) { log.error(error!.localizedDescription) }
             else {
-                self.observerQueries.forEach { MCHealthManager.sharedManager.healthKitStore.stopQuery($0) }
+                self.observerQueries.forEach { MCHealthManager.sharedManager.healthKitStore.stop($0) }
                 self.observerQueries.removeAll()
             }
-            completion(success, error)
+            completion(success, error as NSError?)
         }
     }
 
@@ -165,72 +165,72 @@ public class IOSHealthManager: NSObject, WCSessionDelegate {
     // MARK: - Chart data access
 
     public func collectDataForCharts() {
-        log.debug("Clearing HMAggregateCache expired objects", feature: "clearCache")
+        log.debug("Clearing HMAggregateCache expired objects", "clearCache")
         MCHealthManager.sharedManager.aggregateCache.removeExpiredObjects()
         MCHealthManager.sharedManager.circadianCache.removeExpiredObjects()
 
         let periods: [HealthManagerStatisticsRangeType] = [
-            HealthManagerStatisticsRangeType.Week
-            , HealthManagerStatisticsRangeType.Month
-            , HealthManagerStatisticsRangeType.Year
+            HealthManagerStatisticsRangeType.week
+            , HealthManagerStatisticsRangeType.month
+            , HealthManagerStatisticsRangeType.year
         ]
 
-        let group = dispatch_group_create()
+        let group = DispatchGroup()
 
         for sampleType in PreviewManager.manageChartsSampleTypes {
-            let type = sampleType.identifier == HKCorrelationTypeIdentifierBloodPressure ? HKQuantityTypeIdentifierBloodPressureSystolic : sampleType.identifier
+            let type = sampleType.identifier == HKCorrelationTypeIdentifier.bloodPressure.rawValue ? HKQuantityTypeIdentifier.bloodPressureSystolic.rawValue : sampleType.identifier
 
             let keyPrefix = type
 
             for period in periods {
-                log.debug("Collecting chart data for \(keyPrefix) \(period)", feature: "fetchCharts")
+                log.debug("Collecting chart data for \(keyPrefix) \(period)", "fetchCharts")
 
-                dispatch_group_enter(group)
+                group.enter()
                 // We should get max and min values. because for this type we are using scatter chart
-                if type == HKQuantityTypeIdentifierHeartRate || type == HKQuantityTypeIdentifierUVExposure {
+                if type == HKQuantityTypeIdentifier.heartRate.rawValue || type == HKQuantityTypeIdentifier.uvExposure.rawValue {
                     MCHealthManager.sharedManager.getMinMaxOfTypeForPeriod(keyPrefix, sampleType: sampleType, period: period) {
                         if $2 != nil { log.error($2!.localizedDescription) }
-                        dispatch_group_leave(group)
+                        group.leave()
                     }
-                } else if type == HKQuantityTypeIdentifierBloodPressureSystolic {
+                } else if type == HKQuantityTypeIdentifier.bloodPressureSystolic.rawValue {
                     // We should also get data for HKQuantityTypeIdentifierBloodPressureDiastolic
-                    let diastolicKeyPrefix = HKQuantityTypeIdentifierBloodPressureDiastolic
-                    let bloodPressureGroup = dispatch_group_create()
+                    let diastolicKeyPrefix = HKQuantityTypeIdentifier.bloodPressureDiastolic
+                    let bloodPressureGroup = DispatchGroup()
 
-                    dispatch_group_enter(bloodPressureGroup)
-                    MCHealthManager.sharedManager.getMinMaxOfTypeForPeriod(keyPrefix, sampleType: HKObjectType.quantityTypeForIdentifier(type)!, period: period) {
+                    bloodPressureGroup.enter()
+                    MCHealthManager.sharedManager.getMinMaxOfTypeForPeriod(keyPrefix, sampleType: HKObjectType.quantityType(forIdentifier: HKQuantityTypeIdentifier(rawValue: type))!, period: period) {
                         if $2 != nil { log.error($2!.localizedDescription) }
-                        dispatch_group_leave(bloodPressureGroup)
+                        bloodPressureGroup.leave()
                     }
 
-                    let diastolicType = HKQuantityTypeIdentifierBloodPressureDiastolic
-                    dispatch_group_enter(bloodPressureGroup)
-                    MCHealthManager.sharedManager.getMinMaxOfTypeForPeriod(diastolicKeyPrefix, sampleType: HKObjectType.quantityTypeForIdentifier(diastolicType)!, period: period) {
+                    let diastolicType = HKQuantityTypeIdentifier.bloodPressureDiastolic
+                    bloodPressureGroup.enter()
+                    MCHealthManager.sharedManager.getMinMaxOfTypeForPeriod(diastolicKeyPrefix.rawValue, sampleType: HKObjectType.quantityType(forIdentifier: diastolicType)!, period: period) {
                         if $2 != nil { log.error($2!.localizedDescription) }
-                        dispatch_group_leave(bloodPressureGroup)
+                        bloodPressureGroup.leave()
                     }
 
-                    dispatch_group_notify(bloodPressureGroup, dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_BACKGROUND, 0)) {
-                        dispatch_group_leave(group) //leave main group
+                    group.notify(queue: DispatchQueue.main) {
+                        group.leave() //leave main group
                     }
 
                 } else {
-                    MCHealthManager.sharedManager.getDailyStatisticsOfTypeForPeriod(keyPrefix, sampleType: sampleType, period: period, aggOp: .DiscreteAverage) {
+                    MCHealthManager.sharedManager.getDailyStatisticsOfTypeForPeriod(keyPrefix, sampleType: sampleType, period: period, aggOp: .discreteAverage) {
                         if $1 != nil { log.error($1!.localizedDescription) }
-                        dispatch_group_leave(group) //leave main group
+                        group.leave() //leave main group
                     }
                 }
             }
         }
 
         // After completion, notify that we finished collecting statistics for all types
-        dispatch_group_notify(group, dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_BACKGROUND, 0)) {
-            NSNotificationCenter.defaultCenter().postNotificationName(HMDidUpdatedChartsData, object: nil)
+        group.notify(queue: DispatchQueue.global()) {
+            NotificationCenter.default.post(name: NSNotification.Name(rawValue: HMDidUpdatedChartsData), object: nil)
         }
     }
 
-    public func getChartDataForQuantity(sampleType: HKSampleType, inPeriod period: HealthManagerStatisticsRangeType, completion: AnyObject -> Void) {
-        let type = sampleType.identifier == HKCorrelationTypeIdentifierBloodPressure ? HKQuantityTypeIdentifierBloodPressureSystolic : sampleType.identifier
+    public func getChartDataForQuantity(sampleType: HKSampleType, inPeriod period: HealthManagerStatisticsRangeType, completion: @escaping (Any) -> Void) {
+        let type = sampleType.identifier == HKCorrelationTypeIdentifier.bloodPressure.rawValue ? HKQuantityTypeIdentifier.bloodPressureSystolic.rawValue : sampleType.identifier
         let keyPrefix = type
         var key : String
 
@@ -245,51 +245,52 @@ public class IOSHealthManager: NSObject, WCSessionDelegate {
             var agg = $1; agg.finalAggregate($0); return agg as MCSample
         }
 
-        if  type == HKQuantityTypeIdentifierHeartRate ||
-            type == HKQuantityTypeIdentifierUVExposure ||
-            type == HKQuantityTypeIdentifierBloodPressureSystolic
+        if  type == HKQuantityTypeIdentifier.heartRate.rawValue ||
+            type == HKQuantityTypeIdentifier.uvExposure.rawValue ||
+            type == HKQuantityTypeIdentifier.bloodPressureSystolic.rawValue
         {
-            key = MCHealthManager.sharedManager.getPeriodCacheKey(keyPrefix, aggOp: [.DiscreteMin, .DiscreteMax], period: period)
+            key = MCHealthManager.sharedManager.getPeriodCacheKey(keyPrefix, aggOp: [.discreteMin, .discreteMax], period: period)
             asMinMax = true
-            asBP = type == HKQuantityTypeIdentifierBloodPressureSystolic
+            asBP = type == HKQuantityTypeIdentifier.bloodPressureSystolic.rawValue
         } else {
-            key = MCHealthManager.sharedManager.getPeriodCacheKey(keyPrefix, aggOp: .DiscreteAverage, period: period)
+            key = MCHealthManager.sharedManager.getPeriodCacheKey(keyPrefix, aggOp: .discreteAverage, period: period)
         }
 
         if let aggArray = MCHealthManager.sharedManager.aggregateCache[key] {
-            log.debug("Cache hit for \(key) (size \(aggArray.aggregates.count))", feature: "fetchCharts")
+            log.debug("Cache hit for \(key) (size \(aggArray.aggregates.count))", "fetchCharts")
         } else {
-            log.debug("Cache miss for \(key)", feature: "fetchCharts")
+            log.debug("Cache miss for \(key)", "fetchCharts")
         }
 
         if asMinMax {
             if asBP {
-                let diastolicKeyPrefix = HKQuantityTypeIdentifierBloodPressureDiastolic
-                let diastolicType = HKQuantityTypeIdentifierBloodPressureDiastolic
-                let bloodPressureGroup = dispatch_group_create()
+                let diastolicKeyPrefix = HKQuantityTypeIdentifier.bloodPressureDiastolic
+                let diastolicType = HKQuantityTypeIdentifier.bloodPressureDiastolic
+                let bloodPressureGroup = DispatchGroup()
 
-                dispatch_group_enter(bloodPressureGroup)
-                MCHealthManager.sharedManager.getMinMaxOfTypeForPeriod(keyPrefix, sampleType: HKObjectType.quantityTypeForIdentifier(type)!, period: period) {
+                bloodPressureGroup.enter()
+                MCHealthManager.sharedManager.getMinMaxOfTypeForPeriod(keyPrefix, sampleType: HKObjectType.quantityType(forIdentifier: HKQuantityTypeIdentifier(rawValue: type))!, period: period) {
                     if $2 != nil { log.error($2!.localizedDescription) }
-                    dispatch_group_leave(bloodPressureGroup)
+                    bloodPressureGroup.leave()
                 }
 
-                dispatch_group_enter(bloodPressureGroup)
-                MCHealthManager.sharedManager.getMinMaxOfTypeForPeriod(diastolicKeyPrefix, sampleType: HKObjectType.quantityTypeForIdentifier(diastolicType)!, period: period) {
+                bloodPressureGroup.enter()
+                MCHealthManager.sharedManager.getMinMaxOfTypeForPeriod(diastolicKeyPrefix.rawValue, sampleType: HKObjectType.quantityType(forIdentifier: diastolicType)!, period: period) {
                     if $2 != nil { log.error($2!.localizedDescription) }
-                    dispatch_group_leave(bloodPressureGroup)
+                    bloodPressureGroup.leave()
                 }
 
-                dispatch_group_notify(bloodPressureGroup, dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_BACKGROUND, 0)) {
-                    let diastolicKey = MCHealthManager.sharedManager.getPeriodCacheKey(diastolicKeyPrefix, aggOp: [.DiscreteMin, .DiscreteMax], period: period)
+
+                DispatchGroup().notify(queue: DispatchQueue.main) {
+                    let diastolicKey = MCHealthManager.sharedManager.getPeriodCacheKey(diastolicKeyPrefix.rawValue, aggOp: [.discreteMin, .discreteMax], period: period)
 
                     if let systolicAggArray = MCHealthManager.sharedManager.aggregateCache[key],
-                           diastolicAggArray = MCHealthManager.sharedManager.aggregateCache[diastolicKey]
+                           let diastolicAggArray = MCHealthManager.sharedManager.aggregateCache[diastolicKey]
                     {
-                        completion([systolicAggArray.aggregates.map { return finalizeAgg(.DiscreteMax, $0).numeralValue! },
-                                    systolicAggArray.aggregates.map { return finalizeAgg(.DiscreteMin, $0).numeralValue! },
-                                    diastolicAggArray.aggregates.map { return finalizeAgg(.DiscreteMax, $0).numeralValue! },
-                                    diastolicAggArray.aggregates.map { return finalizeAgg(.DiscreteMin, $0).numeralValue! }])
+                        completion([systolicAggArray.aggregates.map { return finalizeAgg(.discreteMax, $0).numeralValue! },
+                                    systolicAggArray.aggregates.map { return finalizeAgg(.discreteMin, $0).numeralValue! },
+                                    diastolicAggArray.aggregates.map { return finalizeAgg(.discreteMax, $0).numeralValue! },
+                                    diastolicAggArray.aggregates.map { return finalizeAgg(.discreteMin, $0).numeralValue! }])
                     } else {
                         completion([])
                     }
@@ -302,14 +303,14 @@ public class IOSHealthManager: NSObject, WCSessionDelegate {
                     }
 
                     if let aggArray = MCHealthManager.sharedManager.aggregateCache[key] {
-                        let mins = aggArray.aggregates.map { return finalizeAgg(.DiscreteMin, $0).numeralValue! }
-                        let maxs = aggArray.aggregates.map { return finalizeAgg(.DiscreteMax, $0).numeralValue! }
+                        let mins = aggArray.aggregates.map { return finalizeAgg(.discreteMin, $0).numeralValue! }
+                        let maxs = aggArray.aggregates.map { return finalizeAgg(.discreteMax, $0).numeralValue! }
                         completion([maxs, mins])
                     }
                 }
             }
         } else {
-            MCHealthManager.sharedManager.getDailyStatisticsOfTypeForPeriod(keyPrefix, sampleType: sampleType, period: period, aggOp: .DiscreteAverage) { (_, error) in
+            MCHealthManager.sharedManager.getDailyStatisticsOfTypeForPeriod(keyPrefix, sampleType: sampleType, period: period, aggOp: .discreteAverage) { (_, error) in
                 guard error == nil || MCHealthManager.sharedManager.aggregateCache[key] != nil else {
                     completion([])
                     return
@@ -324,7 +325,7 @@ public class IOSHealthManager: NSObject, WCSessionDelegate {
     
     //MARK: Working with cache
     public func cleanCache() {
-        log.debug("Clearing HMAggregateCache", feature: "clearCache")
+        log.debug("Clearing HMAggregateCache", "clearCache")
         MCHealthManager.sharedManager.aggregateCache.removeAllObjects()
     }
 }

@@ -15,12 +15,12 @@ import MCCircadianQueries
 
 public let EKMStartSessionNotification = "EKMStartSessionNotification"
 
-private let EMAccessKey  = DefaultsKey<NSDate?>("EKAccessKey")
+private let EMAccessKey  = DefaultsKey<Date?>("EKAccessKey")
 private let EMCounterKey = DefaultsKey<Int>("EKCounterKey")
 
 struct DiningEventKey : Equatable, Hashable {
-    var start : NSDate
-    var end : NSDate
+    var start : Date
+    var end : Date
     var hashValue : Int {
         get { return start.hashValue ^ end.hashValue }
     }
@@ -38,29 +38,34 @@ func ==(lhs: DiningEventKey, rhs: DiningEventKey) -> Bool
  - remark: used with IntroViewController and RepeatedEventsController
  */
 public class EventManager : NSObject, WCSessionDelegate {
+    /** Called when the session has completed activation. If session state is WCSessionActivationStateNotActivated there will be an error with more details. */
+    @available(iOS 9.3, *)
+    public func session(_ session: WCSession, activationDidCompleteWith activationState: WCSessionActivationState, error: Error?) {
+    }
+
 
     @available(iOS 9.3, *)
     public func session(session: WCSession, activationDidCompleteWithState activationState: WCSessionActivationState, error: NSError?){
     }
     
-    public func sessionDidBecomeInactive(session: WCSession) {
+    public func sessionDidBecomeInactive(_ session: WCSession) {
     }
     
-    public func sessionDidDeactivate(session: WCSession) {
+    public func sessionDidDeactivate(_ session: WCSession) {
     }
     public static let sharedManager = EventManager()
 
     lazy var eventKitStore: EKEventStore = EKEventStore()
 
     var calendar   : EKCalendar?
-    var lastAccess : NSDate
+    var lastAccess : Date
     var pending    : Bool
     var hasAccess  : Bool?
     var eventCounter : Int
 
     private override init() {
         self.calendar = nil
-        self.lastAccess = NSDate.distantPast()
+        self.lastAccess = Date.distantPast
         self.pending = false
         self.hasAccess = nil
         self.eventCounter = 0
@@ -71,48 +76,48 @@ public class EventManager : NSObject, WCSessionDelegate {
         connectWatch()
     }
 
-    public func checkCalendarAuthorizationStatus(completion: (Void -> Void)) {
+    public func checkCalendarAuthorizationStatus(completion: @escaping ((Void) -> Void)) {
         if self.pending { return }
-        let status = EKEventStore.authorizationStatusForEntityType(EKEntityType.Event)
+        let status = EKEventStore.authorizationStatus(for: EKEntityType.event)
 
         switch (status) {
-        case EKAuthorizationStatus.NotDetermined:
+        case EKAuthorizationStatus.notDetermined:
             self.pending = true
-            requestAccessToCalendar(completion)
+            requestAccessToCalendar(completion: completion)
 
-        case EKAuthorizationStatus.Authorized:
+        case EKAuthorizationStatus.authorized:
             self.hasAccess = true
-            initializeCalendarSession(completion)
+            initializeCalendarSession(completion: completion)
 
-        case EKAuthorizationStatus.Restricted, EKAuthorizationStatus.Denied:
+        case EKAuthorizationStatus.restricted, EKAuthorizationStatus.denied:
             self.hasAccess = false
             completion()
         }
     }
 
-    func requestAccessToCalendar(completion: (Void -> Void)) {
-        eventKitStore.requestAccessToEntityType(EKEntityType.Event, completion: {
+    func requestAccessToCalendar(completion: @escaping ((Void) -> Void)) {
+        eventKitStore.requestAccess(to: EKEntityType.event, completion: {
             (accessGranted, error) in
 
             guard error == nil else {
-                log.error("Calendar access error: \(error)")
+//                log.error("Calendar access error: \(error)")
                 return
             }
 
             if accessGranted == true {
                 self.hasAccess = true
-                dispatch_async(dispatch_get_main_queue(), {
-                    self.initializeCalendarSession(completion)
+                DispatchQueue.main.async(execute: {
+                    self.initializeCalendarSession(completion: completion)
                 })
             }
         })
     }
 
-    func initializeCalendarSession(completion: (Void -> Void)) {
+    func initializeCalendarSession(completion: ((Void) -> Void)) {
         self.calendar = eventKitStore.defaultCalendarForNewEvents
 
         // Perform an initial refresh.
-        fetchEventsfromCalendar(false)
+        fetchEventsfromCalendar(onRefresh: false)
 
         // Set up the observer for event changes.
         registerCalendarObserver()
@@ -124,34 +129,35 @@ public class EventManager : NSObject, WCSessionDelegate {
     }
 
     func registerCalendarObserver() {
-        NSNotificationCenter.defaultCenter().addObserver(
+        NotificationCenter.default.addObserver(
             self,
             selector: "refreshCalendarEvents:",
-            name: EKEventStoreChangedNotification,
+            name: NSNotification.Name.EKEventStoreChanged,
             object: nil)
     }
 
     @objc func refreshCalendarEvents(notification: NSNotification) {
-        fetchEventsfromCalendar(true)
+        fetchEventsfromCalendar(onRefresh: true)
     }
 
     public func fetchEventsfromCalendar(onRefresh : Bool) {
-        if let doAccess = hasAccess where doAccess {
+        if let doAccess = hasAccess, doAccess {
 
             var doCommit = false
-            let events = eventKitStore.eventsMatchingPredicate(
-                            eventKitStore.predicateForEventsWithStartDate(
-                                lastAccess, endDate: NSDate.distantFuture(), calendars: [self.calendar!]))
+            let events = eventKitStore.events(
+                matching: eventKitStore.predicateForEvents(
+                    withStart: lastAccess as Date, end: Date.distantFuture, calendars: [self.calendar!]))
 
-            let dateFormatter = NSDateFormatter()
+            let dateFormatter = DateFormatter()
             dateFormatter.dateFormat = "HH:mm:ss"
-            dateFormatter.AMSymbol = "AM"
-            dateFormatter.PMSymbol = "PM"
+            dateFormatter.amSymbol = "AM"
+            dateFormatter.pmSymbol = "PM"
 
             var eventIndex : [DiningEventKey:[(Int, String)]] = [:]
             for ev in events {
                 let hotword = UserManager.sharedManager.getHotWords()
-                if let rng = ev.title.lowercaseString.rangeOfString(hotword)
+//                if let rng = ev.title.lowercaseString.rangeOfString(hotword)
+                    if let rng = ev.title.range(of: hotword)
                 {
                     let key = DiningEventKey(start: ev.startDate, end: ev.endDate)
 
@@ -165,7 +171,7 @@ public class EventManager : NSObject, WCSessionDelegate {
                         eventId = newCounter()
                         ev.notes = String(eventId)
                         do {
-                            try eventKitStore.saveEvent(ev, span: EKSpan.ThisEvent, commit: false)
+                            try eventKitStore.save(ev, span: EKSpan.thisEvent, commit: false)
                             doCommit = true
                         } catch {
                             log.error("Error saving event id: \(error)")
@@ -173,7 +179,7 @@ public class EventManager : NSObject, WCSessionDelegate {
                     }
 
                     var edata = ev.title
-                    edata.removeRange(rng)
+                    edata.removeSubrange(rng)
                     if var items = eventIndex[key] {
                         items.append((eventId, edata))
                         eventIndex.updateValue(items, forKey: key)
@@ -196,15 +202,15 @@ public class EventManager : NSObject, WCSessionDelegate {
 
                 for eitems in eventIndex {
                     for eid in eitems.1 {
-                        let sstr = dateFormatter.stringFromDate(eitems.0.start)
-                        let estr = dateFormatter.stringFromDate(eitems.0.end)
+                        let sstr = dateFormatter.string(from: eitems.0.start)
+                        let estr = dateFormatter.string(from: eitems.0.end)
                         log.debug("Writing food log " + sstr + "->" + estr + " " + eid.1)
 
                         let emeta = ["Source":"Calendar","EventId":String(eid.0), "Data":eid.1]
                         MCHealthManager.sharedManager.savePreparationAndRecoveryWorkout(
-                            eitems.0.start, endDate: eitems.0.end,
-                            distance: 0.0, distanceUnit: HKUnit.meterUnit(), kiloCalories: 0.0,
-                            metadata: emeta,
+                            eitems.0.start as Date, endDate: eitems.0.end,
+                            distance: 0.0, distanceUnit: HKUnit.meter(), kiloCalories: 0.0,
+                            metadata: emeta as NSDictionary,
                             completion: { (success, error ) -> Void in
                                 guard error == nil else {
                                     log.error(error!.localizedDescription)
@@ -227,16 +233,16 @@ public class EventManager : NSObject, WCSessionDelegate {
                 }
             }
 
-            self.lastAccess = NSDate()
+            self.lastAccess = Date()
             setLastAccess()
         }
     }
 
-    private func getLastAccess() -> NSDate {
+    private func getLastAccess() -> Date {
         if let access = Defaults[EMAccessKey] {
             return access
         } else {
-            return NSDate.distantPast()
+            return Date.distantPast
         }
     }
 
@@ -263,9 +269,9 @@ public class EventManager : NSObject, WCSessionDelegate {
 
     func connectWatch() {
         if WCSession.isSupported() {
-            let session = WCSession.defaultSession()
+            let session = WCSession.default()
             session.delegate = self
-            session.activateSession()
+            session.activate()
         }
     }
 }

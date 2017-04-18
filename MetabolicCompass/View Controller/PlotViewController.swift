@@ -121,7 +121,7 @@ class PlotViewController: UIViewController, ChartViewDelegate {
                             self.plotValues(aggregates)
                             Answers.logContentViewWithName("Plot",
                                 contentType: self.sampleType.identifier,
-                                contentId: NSDate().toString(DateFormat.Custom("YYYY-MM-dd:HH:mm:ss")),
+                                contentId: Date().toString(DateFormat.Custom("YYYY-MM-dd:HH:mm:ss")),
                                 customAttributes: nil)
                         }
 
@@ -134,7 +134,7 @@ class PlotViewController: UIViewController, ChartViewDelegate {
                             self.plotResults(results)
                             Answers.logContentViewWithName("Plot",
                                 contentType: self.sampleType.identifier,
-                                contentId: NSDate().toString(DateFormat.Custom("YYYY-MM-dd:HH:mm:ss")),
+                                contentId: Date().toString(DateFormat.Custom("YYYY-MM-dd:HH:mm:ss")),
                                 customAttributes: nil)
                         }
                     }
@@ -171,7 +171,7 @@ class PlotViewController: UIViewController, ChartViewDelegate {
         super.viewDidAppear(animated)
         Answers.logContentViewWithName("Plot",
             contentType: sampleType.identifier,
-            contentId: NSDate().toString(DateFormat.Custom("YYYY-MM-dd:HH:mm:ss")),
+            contentId: Date().toString(DateFormat.Custom("YYYY-MM-dd:HH:mm:ss")),
             customAttributes: nil)
     }
 
@@ -311,14 +311,14 @@ class PlotViewController: UIViewController, ChartViewDelegate {
         plotChart(analyzer)
     }
 
-    func plotValues(values: [(NSDate, Double)]) {
+    func plotValues(values: [(Date, Double)]) {
         let analyzer = PlotDataAnalyzer(sampleType: self.sampleType, values: values)
         plotChart(analyzer)
     }
 
     func showError() {
         Async.main {
-            if let idx = self.errorIndex, pv = self.parentViewController as? PagesController {
+            if let idx = self.errorIndex, let pv = self.parentViewController as? PagesController {
                 pv.goTo(idx)
             }
         }
@@ -326,7 +326,7 @@ class PlotViewController: UIViewController, ChartViewDelegate {
 
     func showChart() {
         Async.main {
-            if let idx = self.pageIndex, pv = self.parentViewController as? PagesController {
+            if let idx = self.pageIndex, let pv = self.parentViewController as? PagesController {
                 pv.goTo(idx)
             }
         }

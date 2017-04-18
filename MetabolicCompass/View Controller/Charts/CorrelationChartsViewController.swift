@@ -115,7 +115,7 @@ class CorrelationChartsViewController: UIViewController, UITableViewDelegate, UI
 
         Answers.logContentViewWithName("Correlate",
                                        contentType: "\(contentType)",
-                                       contentId: NSDate().toString(DateFormat.Custom("YYYY-MM-dd:HH")),
+                                       contentId: Date().toString(DateFormat.Custom("YYYY-MM-dd:HH")),
                                        customAttributes: nil)
     }
 
@@ -254,7 +254,7 @@ class CorrelationChartsViewController: UIViewController, UITableViewDelegate, UI
         
         if (model == scatterChartsModel) {
             let chartData = model.scatterChartDataWithMultipleDataSets(xValues, dataSets: dataSets, calcAvg: calcAvg)
-            if let yMax = chartData?.yMax, yMin = chartData?.yMin where yMax > 0 || yMin > 0 {
+            if let yMax = chartData?.yMax, let yMin = chartData?.yMin, yMax > 0 || yMin > 0 {
                 scatterCh.chartView.data = nil
                 scatterCh.updateLeftAxisWith(chartData?.yMin, maxValue: chartData?.yMax, minOffsetFactor: 0.05, maxOffsetFactor: 0.05)
                 scatterCh.chartView.data = chartData
@@ -264,8 +264,8 @@ class CorrelationChartsViewController: UIViewController, UITableViewDelegate, UI
             }
         } else {
             let chartData = model.lineChartWithMultipleDataSets(xValues, dataSets: dataSets, calcAvg: calcAvg)
-            if let ds0 = chartData?.dataSets[0], ds1 = chartData?.dataSets[1],
-                   yMax = chartData?.yMax, yMin = chartData?.yMin where yMax > 0 || yMin > 0
+            if let ds0 = chartData?.dataSets[0], let ds1 = chartData?.dataSets[1],
+                   let yMax = chartData?.yMax, let yMin = chartData?.yMin, yMax > 0 || yMin > 0
             {
                 correlCh.chartView.data = nil
                 correlCh.updateLeftAxisWith(ds0.yMin, maxValue: ds0.yMax, minOffsetFactor: 0.03, maxOffsetFactor: 0.03)

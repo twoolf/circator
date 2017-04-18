@@ -11,7 +11,7 @@ import MetabolicCompassKit
 
 class BaseCollectionViewCell: UICollectionViewCell, UITextFieldDelegate {
     
-    var changesHandler:((cell: UICollectionViewCell, newValue: AnyObject?)->Void)?
+    var changesHandler:((_ cell: UICollectionViewCell, _ newValue: AnyObject?)->Void)?
     
     @IBOutlet weak var cellImage: UIImageView?
     @IBOutlet weak var separatorView: UIView?
@@ -19,7 +19,7 @@ class BaseCollectionViewCell: UICollectionViewCell, UITextFieldDelegate {
     
     func valueChanged(newValue: AnyObject?) {
         if let changesBlock = changesHandler {
-            changesBlock(cell: self, newValue: newValue)
+            changesBlock(self, newValue)
         }
     }
     
@@ -32,7 +32,7 @@ class BaseCollectionViewCell: UICollectionViewCell, UITextFieldDelegate {
     
     var separatorVisible : Bool = false {
         didSet {
-            separatorView?.hidden = !separatorVisible
+            separatorView?.isHidden = !separatorVisible
         }
     }
     
@@ -44,13 +44,14 @@ class BaseCollectionViewCell: UICollectionViewCell, UITextFieldDelegate {
     }
         
     func textFieldDidChange(textField: UITextField) {
-        valueChanged(textField.text)
+        valueChanged(newValue: textField.text as AnyObject?)
     }
     
     func addDoneToolbar(toTextField textField: UITextField) {
         let toolbar = UIToolbar()
         toolbar.sizeToFit()
-        let doneBtn = UIBarButtonItem(title: "Done".localized, style: UIBarButtonItemStyle.Plain, target: self, action:  #selector(BaseCollectionViewCell.doneAction(_:)))
+//        let doneBtn = UIBarButtonItem(title: "Done".localized, style: UIBarButtonItemStyle.Plain, target: self, action:  #selector(BaseCollectionViewCell.doneAction(_:)))
+        let doneBtn = UIBarButtonItem(title: "Done".localized, style: UIBarButtonItemStyle.plain, target: self, action:  #selector(BaseCollectionViewCell.doneAction(Sender:)))
         
         toolbar.setItems([doneBtn], animated: false)
         textField.inputAccessoryView = toolbar

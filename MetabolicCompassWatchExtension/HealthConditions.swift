@@ -12,8 +12,8 @@ import WatchConnectivity
 import WatchKit
 
 final class HealthConditions: NSObject {
-    private static let dateFormatter: NSDateFormatter = {
-        let dateFormatter = NSDateFormatter()
+    static let dateFormatter: DateFormatter = {
+        let dateFormatter = DateFormatter()
         dateFormatter.dateFormat = "yyyyMMdd"
         return dateFormatter
     }()
@@ -30,7 +30,7 @@ final class HealthConditions: NSObject {
         super.init()
     }
     
-    func readMostRecentSample(sampleType:HKSampleType , completion: ((HKSample!, NSError!) -> Void)!)
+    func readMostRecentSample(sampleType:HKSampleType , completion: ((HKSample?, NSError?) -> Void)!)
     {
         var weight:HKQuantitySample?
         let height:HKQuantitySample?
@@ -38,15 +38,15 @@ final class HealthConditions: NSObject {
         let kUnknownString   = "Unknown"
         var HKBMIString:String = "24.0"
         let healthKitStore:HKHealthStore = HKHealthStore()
-        let past = NSDate.distantPast()
-        let now   = NSDate()
-        let mostRecentPredicate = HKQuery.predicateForSamplesWithStartDate(past, endDate:now, options: .None)
+        let past = Date.distantPast
+        let now   = Date()
+        let mostRecentPredicate = HKQuery.predicateForSamples(withStart: past, end:now as Date, options: [])
         let sortDescriptor = NSSortDescriptor(key:HKSampleSortIdentifierStartDate, ascending: false)
         let limit = 1
         let sampleQuery = HKSampleQuery(sampleType: sampleType, predicate: mostRecentPredicate, limit: limit, sortDescriptors: [sortDescriptor])
         { (sampleQuery, results, error ) -> Void in
             if error != nil {
-                completion(nil,error)
+//                completion(nil,error)
                 return;
             }
             let mostRecentSample = results!.first as? HKQuantitySample
@@ -54,35 +54,35 @@ final class HealthConditions: NSObject {
                 completion(mostRecentSample,nil)
             }
         }
-        healthKitStore.executeQuery(sampleQuery)
+        healthKitStore.execute(sampleQuery)
     }
     
     func updateWeight()
     {
-        let sampleType = HKSampleType.quantityTypeForIdentifier(HKQuantityTypeIdentifierBodyMass)
+        let sampleType = HKSampleType.quantityType(forIdentifier: HKQuantityTypeIdentifier.bodyMass)
         var weight:HKQuantitySample?
 //        let height:HKQuantitySample?
 //        _:Double = 22.0
         let kUnknownString   = "Unknown"
 //        var HKBMIString:String = "24.0"
 //        let healthKitStore:HKHealthStore = HKHealthStore()
-        readMostRecentSample(sampleType!, completion: { (mostRecentWeight, error) -> Void in
+        readMostRecentSample(sampleType: sampleType!, completion: { (mostRecentWeight, error) -> Void in
             
             if( error != nil )
             {
-                print("Error reading weight from HealthKit Store: \(error.localizedDescription)")
+                print("Error reading weight from HealthKit Store: \(error?.localizedDescription)")
                 return;
             }
             
             var weightLocalizedString = kUnknownString;
             weight = mostRecentWeight as? HKQuantitySample;
-            if let kilograms = weight?.quantity.doubleValueForUnit(HKUnit.gramUnitWithMetricPrefix(.Kilo)) {
-                let weightFormatter = NSMassFormatter()
-                weightFormatter.forPersonMassUse = true;
-                weightLocalizedString = weightFormatter.stringFromKilograms(kilograms)
+            if let kilograms = weight?.quantity.doubleValue(for: HKUnit.gramUnit(with: .kilo)) {
+                let weightFormatter = MassFormatter()
+                weightFormatter.isForPersonMassUse = true;
+                weightLocalizedString = weightFormatter.string(fromKilograms: kilograms)
             }
             
-            dispatch_async(dispatch_get_main_queue(), { () -> Void in
+            DispatchQueue.main.async(execute: { () -> Void in
                 self.updateBMI()
                 print("in weight update: \(weightLocalizedString)")
             });
@@ -96,24 +96,24 @@ final class HealthConditions: NSObject {
         let kUnknownString   = "Unknown"
         var HKBMIString:String = "24.0"
 //        _:HKHealthStore = HKHealthStore()
-        let sampleType = HKSampleType.quantityTypeForIdentifier(HKQuantityTypeIdentifierHeight)
-        readMostRecentSample(sampleType!, completion: { (mostRecentHeight, error) -> Void in
+        let sampleType = HKSampleType.quantityType(forIdentifier: HKQuantityTypeIdentifier.height)
+        readMostRecentSample(sampleType: sampleType!, completion: { (mostRecentHeight, error) -> Void in
             
             if( error != nil )
             {
-                print("Error reading height from HealthKit Store: \(error.localizedDescription)")
+                print("Error reading height from HealthKit Store: \(error?.localizedDescription)")
                 return;
             }
             
             var heightLocalizedString = kUnknownString;
             height = mostRecentHeight as? HKQuantitySample;
-            if let meters = height?.quantity.doubleValueForUnit(HKUnit.meterUnit()) {
-                let heightFormatter = NSLengthFormatter()
-                heightFormatter.forPersonHeightUse = true;
-                heightLocalizedString = heightFormatter.stringFromMeters(meters);
+            if let meters = height?.quantity.doubleValue(for: HKUnit.meter()) {
+                let heightFormatter = LengthFormatter()
+                heightFormatter.isForPersonHeightUse = true;
+                heightLocalizedString = heightFormatter.string(fromMeters: meters);
             }
             
-            dispatch_async(dispatch_get_main_queue(), { () -> Void in
+            DispatchQueue.main.async(execute: { () -> Void in
                 print("in height update: \(heightLocalizedString)")
                 self.updateBMI()
             });
@@ -134,16 +134,18 @@ final class HealthConditions: NSObject {
     
     func updateBMI()
     {
-        var height:HKQuantitySample?
-        var weight:HKQuantitySample?
+        var height:HKQuantitySample? = nil
+        var weight:HKQuantitySample? = nil
         var bmi:Double = 22.0
+        var weightInKilograms = 6.0
+        var heightInMeters = 2.0
 //        let kUnknownString   = "Unknown"
         var HKBMIString:String = "24.0"
-        if weight != nil && height != nil {
-            let weightInKilograms = weight!.quantity.doubleValueForUnit(HKUnit.gramUnitWithMetricPrefix(.Kilo))
-            let heightInMeters = height!.quantity.doubleValueForUnit(HKUnit.meterUnit())
-            bmi = calculateBMIWithWeightInKilograms(weightInKilograms, heightInMeters: heightInMeters)!
-        }
+//        if weight != nil && height != nil {
+        if (weight != nil) { weightInKilograms = weight!.quantity.doubleValue(for: HKUnit.gramUnit(with: .kilo)) }
+        if (height != nil) {heightInMeters = height!.quantity.doubleValue(for: HKUnit.meter()) }
+            bmi = calculateBMIWithWeightInKilograms(weightInKilograms: weightInKilograms, heightInMeters: heightInMeters)!
+//        }
 //        print("new bmi in HealthConditions: \(bmi)")
         HKBMIString = String(format: "%.1f", bmi)
     }
@@ -171,7 +173,7 @@ extension HealthConditions {
         }
         averageWeightMetric = totalWeightMetric / Double(weightMetrics.count)
         
-        for (i, value) in weightMetrics.enumerate() {
+        for (i, value) in weightMetrics.enumerated() {
             let pounds = value.pounds
             if (i == 0) { // First data point
                 let nextPounds = weightMetrics[i+1].pounds
@@ -199,7 +201,7 @@ extension HealthConditions {
 }
 
 extension HealthConditions {
-    func loadWeightMetrics(from fromDate: NSDate, to toDate: NSDate, completion:(success: Bool)->()) {
+    func loadWeightMetrics(from fromDate: Date, to toDate: Date, completion:(_ success: Bool)->()) {
         var params = [
             "units": "metric",
             "time_zone": "gmt",
@@ -208,20 +210,20 @@ extension HealthConditions {
             "interval": "h",
             "metrics": metrics.metric_name
         ]
-        params["begin_date"] = HealthConditions.dateFormatter.stringFromDate(fromDate)
-        params["end_date"] = HealthConditions.dateFormatter.stringFromDate(toDate)
+        params["begin_date"] = HealthConditions.dateFormatter.string(from: fromDate)
+        params["end_date"] = HealthConditions.dateFormatter.string(from: toDate)
         print("in loadWeightMetrics")
         updateHealthInfo()
-        completion(success: true)
+        completion(true)
     }
 }
 
 // MARK: Persistance
 extension HealthConditions {
     private static var storePath: String {
-        let paths = NSSearchPathForDirectoriesInDomains(.DocumentDirectory, .UserDomainMask, true)
+        let paths = NSSearchPathForDirectoriesInDomains(.documentDirectory, .userDomainMask, true)
         let docPath = paths.first!
-        return (docPath as NSString).stringByAppendingPathComponent("HealthConditions")
+        return (docPath as NSString).appendingPathComponent("HealthConditions")
     }
     
     /*    static func loadConditions() -> HealthConditions {
@@ -249,16 +251,16 @@ extension HealthConditions: NSCoding {
     }
     
     convenience init(coder aDecoder: NSCoder) {
-        let metrics = aDecoder.decodeObjectForKey(CodingKeys.metrics) as! MetricDescriptions
+        let metrics = aDecoder.decodeObject(forKey: CodingKeys.metrics) as! MetricDescriptions
         self.init(metrics: metrics)
         
-        self.weightMetrics = aDecoder.decodeObjectForKey(CodingKeys.weightMetrics) as! [WeightMetric]
-        self.averageWeightMetric = aDecoder.decodeDoubleForKey(CodingKeys.averageWeightMetric)
+        self.weightMetrics = aDecoder.decodeObject(forKey: CodingKeys.weightMetrics) as! [WeightMetric]
+        self.averageWeightMetric = aDecoder.decodeDouble(forKey: CodingKeys.averageWeightMetric)
     }
     
-    func encodeWithCoder(encoder: NSCoder) {
-        encoder.encodeObject(metrics, forKey: CodingKeys.metrics)
-        encoder.encodeObject(weightMetrics, forKey: CodingKeys.weightMetrics)
-        encoder.encodeDouble(averageWeightMetric, forKey: CodingKeys.averageWeightMetric)
+    func encode(with encoder: NSCoder) {
+        encoder.encode(metrics, forKey: CodingKeys.metrics)
+        encoder.encode(weightMetrics, forKey: CodingKeys.weightMetrics)
+        encoder.encode(averageWeightMetric, forKey: CodingKeys.averageWeightMetric)
     }
 }

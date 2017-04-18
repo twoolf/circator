@@ -142,7 +142,7 @@ class RadarViewController : UIViewController, ChartViewDelegate {
     func logContentView(asAppear: Bool = true) {
         Answers.logContentViewWithName("Balance",
                                        contentType: asAppear ? "Appear" : "Disappear",
-                                       contentId: NSDate().toString(DateFormat.Custom("YYYY-MM-dd:HH")),
+                                       contentId: Date().toString(DateFormat.Custom("YYYY-MM-dd:HH")),
                                        customAttributes: nil)
     }
 
@@ -226,8 +226,8 @@ class RadarViewController : UIViewController, ChartViewDelegate {
 
     func normalizeType(type: HKSampleType, quantity: Double) -> Double {
         if let sex = MCHealthManager.sharedManager.getBiologicalSex(),
-               paramdict = logisticParametersByType[sex.biologicalSex == HKBiologicalSex.Male],
-               (x0, k) = paramdict[type.identifier]
+               let paramdict = logisticParametersByType[sex.biologicalSex == HKBiologicalSex.Male],
+               let (x0, k) = paramdict[type.identifier]
         {
             return min(1.0,(1 / (1 + exp(-k * (quantity - x0)))) + 0.2)
         }

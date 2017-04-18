@@ -41,24 +41,24 @@ class GlanceController: WKInterfaceController {
     var fastEatString:String = "fastEat"
     var fastExerciseString:String = "fastExercise"
     
-    override func awakeWithContext(context: AnyObject?) {
-        super.awakeWithContext(context)
-    }
+//    override func awakeWithContext(context: AnyObject?) {
+//        super.awake(withContext: context)
+//    }
     
     override func willActivate() {
         super.willActivate()
         print("glance updated")
         firstRow.setText("M-Compass Stats:")
-        firstRow.setTextColor(UIColor.greenColor())
+        firstRow.setTextColor(UIColor.green)
         maxDailyFastingString = "Fast: \(MetricsStore.sharedInstance.fastingTime)"
         secondRow.setText(maxDailyFastingString)
         currentFastingTimeString = "Current Fast: \(MetricsStore.sharedInstance.currentFastingTime)"
         lastAteAsString = "Last Ate: \(MetricsStore.sharedInstance.lastAte)"
         
-        let dateFormatter = NSDateFormatter()
+        let dateFormatter = DateFormatter()
         dateFormatter.dateFormat = "HH:mm"
-        wokeFromSleep = "sleep:  " + dateFormatter.stringFromDate(MetricsStore.sharedInstance.Sleep)
-        finishedExerciseLast = "exercise:   " + dateFormatter.stringFromDate(MetricsStore.sharedInstance.Exercise)
+        wokeFromSleep = "sleep:  " + dateFormatter.string(from: MetricsStore.sharedInstance.Sleep as Date)
+        finishedExerciseLast = "exercise:   " + dateFormatter.string(from: MetricsStore.sharedInstance.Exercise as Date)
         weightString         = "     Lbs:    " + MetricsStore.sharedInstance.weight
         BMIString            = "     BMI:    " + MetricsStore.sharedInstance.BMI
         proteinString        = "     Prot:   " + MetricsStore.sharedInstance.Protein
@@ -84,9 +84,9 @@ class GlanceController: WKInterfaceController {
             fastEatString + "\n" +
         fastExerciseString
         thirdRow.setText(thirdRowString)
-        thirdRow.setTextColor(UIColor.blueColor())
+        thirdRow.setTextColor(UIColor.blue)
 //        fourthRow.setText(samplesCollectedString)
         fourthRow.setText("")
-        fourthRow.setTextColor(UIColor.yellowColor())
+        fourthRow.setTextColor(UIColor.yellow)
     }
 }

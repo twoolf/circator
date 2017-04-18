@@ -10,6 +10,9 @@ import Foundation
 import HealthKit
 import Async
 import MCCircadianQueries
+import SwiftyBeaver
+
+let log = SwiftyBeaver.self
 
 
 public let PMErrorDomain = "PMErrorDomain"
@@ -29,7 +32,7 @@ public class PopulationHealthManager: NSObject {
 
     public var aggregateCache: HMSampleCache
 
-    public var aggregateRefreshDate : NSDate! = nil
+    public var aggregateRefreshDate : Date! = nil
 
     public var mostRecentAggregates = [HKSampleType: [MCSample]]()
 
@@ -43,7 +46,9 @@ public class PopulationHealthManager: NSObject {
 
         // Initialize in-memory aggregates from cache.
         PreviewManager.previewSampleTypes.forEach { type in
-            if let key = self.cacheKeyForType(type), codedSamples = self.aggregateCache.objectForKey(key) {
+//            if let key = self.cacheKeyForType(type: type), let codedSamples = self.aggregateCache.
+            if let key = self.cacheKeyForType(type: type), let codedSamples = self.aggregateCache.object(forKey: key) {
+//            if let key = self.cacheKeyForType(type: type), let codedSamples = self.aggregateCache.objectForKey(key) {
                 mostRecentAggregates[type] = codedSamples.samples
             }
         }
@@ -54,18 +59,18 @@ public class PopulationHealthManager: NSObject {
     // Clear all aggregates.
     public func reset() {
         aggregateCache.removeAllObjects()
-        aggregateRefreshDate = NSDate()
+        aggregateRefreshDate = Date()
         mostRecentAggregates = [:]
     }
 
     private func cacheKeyForType(type: HKSampleType) -> String? {
-        if let column = HMConstants.sharedInstance.hkToMCDB[type.identifier] {
+        if let column = HMConstants.sharedInstance.hkToMCDB[type.hashValue] {
             return column
         }
         else if let _ = HMConstants.sharedInstance.hkQuantityToMCDBActivity[type.identifier] {
             return nil
         }
-        else if type.identifier == HKCorrelationTypeIdentifierBloodPressure {
+        else if type.identifier == HKCorrelationTypeIdentifier.bloodPressure.rawValue {
             return nil
         }
         log.warning("PHMGR: No population query column available for \(type.identifier)")
@@ -74,14 +79,14 @@ public class PopulationHealthManager: NSObject {
 
     // Retrieve aggregates for all previewed rows.
     // TODO: enable input of start time, end time and columns retrieved in the query view controllers.
-    public func fetchAggregates(previewTypes: [HKSampleType], completion: NSError? -> Void) {
+    public func fetchAggregates(previewTypes: [HKSampleType], completion: @escaping (NSError?) -> Void) {
         var columnIndex = 0
-        var columns : [String:AnyObject] = [:]
+        var columns : [String:Any] = [:]
 
-        var tstart  : NSDate = NSDate(timeIntervalSince1970: 0)
-        var tend    : NSDate = NSDate()
+        var tstart  : Date = Date(timeIntervalSince1970: 0)
+        var tend    : Date = Date()
 
-        var userfilter  : [String:AnyObject] = [:]
+        var userfilter  : [String:Any] = [:]
 
         // Add population filter parameters.
         let popQueryIndex = QueryManager.sharedManager.getSelectedQuery()
@@ -117,15 +122,15 @@ public class PopulationHealthManager: NSObject {
                                 }
                             }
                         } else {
-                            if let column = HMConstants.sharedInstance.hkToMCDB[hksType.identifier] {
+                            if let column = HMConstants.sharedInstance.hkToMCDB[hksType.hashValue] {
                                 columns[String(columnIndex)] = column
                                 columnIndex += 1
-                            } else if hksType.identifier == HKCorrelationTypeIdentifierBloodPressure {
+                            } else if hksType.identifier == HKCorrelationTypeIdentifier.bloodPressure.rawValue {
                                 // Issue queries for both systolic and diastolic.
-                                columns[String(columnIndex)] = HMConstants.sharedInstance.hkToMCDB[HKQuantityTypeIdentifierBloodPressureDiastolic]!
+                                columns[String(columnIndex)] = HMConstants.sharedInstance.hkToMCDB[HKQuantityTypeIdentifier.bloodPressureDiastolic.hashValue]!
                                 columnIndex += 1
 
-                                columns[String(columnIndex)] = HMConstants.sharedInstance.hkToMCDB[HKQuantityTypeIdentifierBloodPressureSystolic]!
+                                columns[String(columnIndex)] = HMConstants.sharedInstance.hkToMCDB[HKQuantityTypeIdentifier.bloodPressureSystolic.hashValue]!
                                 columnIndex += 1
                             } else {
                                 log.warning("Cannot perform population query for \(hksType.identifier)")
@@ -136,7 +141,7 @@ public class PopulationHealthManager: NSObject {
 
                 let units : UnitsSystem = UserManager.sharedManager.useMetricUnits() ? .Metric : .Imperial
                 let convert : (String, Int) -> Int = { (type, value) in
-                    return Int((type == HKQuantityTypeIdentifierHeight) ?
+                    return Int((type == HKQuantityTypeIdentifier.height.rawValue) ?
                         UnitsUtils.heightValueInDefaultSystem(fromValue: Float(value), inUnitsSystem: units)
                         : UnitsUtils.weightValueInDefaultSystem(fromValue: Float(value), inUnitsSystem: units))
                 }
@@ -144,7 +149,7 @@ public class PopulationHealthManager: NSObject {
                 let predArray = aggpreds.map {
                     let predicateType = $0.1.0.identifier
                     if HMConstants.sharedInstance.healthKitTypesWithCustomMetrics.contains(predicateType) {
-                        if let lower = $0.2, upper = $0.3, lowerInt = Int(lower), upperInt = Int(upper) {
+                        if let lower = $0.2, let upper = $0.3, let lowerInt = Int(lower), let upperInt = Int(upper) {
                             return ($0.0, $0.1, String(convert(predicateType, lowerInt)), String(convert(predicateType, upperInt)))
                         }
                         return $0
@@ -163,7 +168,7 @@ public class PopulationHealthManager: NSObject {
 
         if columns.isEmpty {
             for hksType in previewTypes {
-                if let column = HMConstants.sharedInstance.hkToMCDB[hksType.identifier] {
+                if let column = HMConstants.sharedInstance.hkToMCDB[hksType.hashValue] {
                     columns[String(columnIndex)] = column
                     columnIndex += 1
                 }
@@ -171,12 +176,12 @@ public class PopulationHealthManager: NSObject {
                     columns[String(columnIndex)] = ["activity_value": [activity_category:quantity]]
                     columnIndex += 1
                 }
-                else if hksType.identifier == HKCorrelationTypeIdentifierBloodPressure {
+                else if hksType.hashValue == HKCorrelationTypeIdentifier.bloodPressure.hashValue {
                     // Issue queries for both systolic and diastolic.
-                    columns[String(columnIndex)] = HMConstants.sharedInstance.hkToMCDB[HKQuantityTypeIdentifierBloodPressureDiastolic]!
+                    columns[String(columnIndex)] = HMConstants.sharedInstance.hkToMCDB[HKQuantityTypeIdentifier.bloodPressureDiastolic.hashValue]!
                     columnIndex += 1
 
-                    columns[String(columnIndex)] = HMConstants.sharedInstance.hkToMCDB[HKQuantityTypeIdentifierBloodPressureSystolic]!
+                    columns[String(columnIndex)] = HMConstants.sharedInstance.hkToMCDB[HKQuantityTypeIdentifier.bloodPressureSystolic.hashValue]!
                     columnIndex += 1
                 }
                 else {
@@ -186,10 +191,10 @@ public class PopulationHealthManager: NSObject {
         }
 
         var params : [String:AnyObject] = [
-            "tstart"       : Int(floor(tstart.timeIntervalSince1970)),
-            "tend"         : Int(ceil(tend.timeIntervalSince1970)),
-            "columns"      : columns,
-            "userfilter"   : userfilter
+            "tstart"       : Int(floor(tstart.timeIntervalSince1970)) as AnyObject,
+            "tend"         : Int(ceil(tend.timeIntervalSince1970)) as AnyObject,
+            "columns"      : columns as AnyObject,
+            "userfilter"   : userfilter as AnyObject
         ]
 
         // log.info("Running popquery \(params)")
@@ -198,36 +203,37 @@ public class PopulationHealthManager: NSObject {
             let queryColumns = Dictionary(pairs: columns.filter { (idx, val) in
                 switch val {
                 case is String:
-                    return aggregateCache.objectForKey(val as! String) == nil
-
+//                    return aggregateCache.objectForKey(val as! String) == nil
+                    return (aggregateCache.object(forKey: val as! String) != nil)
+                    
                 default:
                     return true
                 }
             })
 
             if !queryColumns.isEmpty {
-                params.updateValue(queryColumns, forKey: "columns")
-                Service.json(MCRouter.AggregateMeasures(params), statusCode: 200..<300, tag: "AGGPOST") {
+                params.updateValue(queryColumns as AnyObject, forKey: "columns")
+                Service.json(route: MCRouter.AggregateMeasures(params), statusCode: 200..<300, tag: "AGGPOST") {
                     _, response, result in
                     print("got joson update line 212 \(result.value)")
                     guard !result.isSuccess else {
-                        self.refreshAggregatesFromMsg(result.value, completion: completion)
+                        self.refreshAggregatesFromMsg(payload: result.value as AnyObject?, completion: completion)
                         return
                     }
                 }
             }
             else {
-                NSNotificationCenter.defaultCenter().postNotificationName(HMDidUpdateRecentSamplesNotification, object: self)
+                NotificationCenter.default.post(name: NSNotification.Name(rawValue: HMDidUpdateRecentSamplesNotification), object: self)
                 completion(nil)
             }
         }
         else {
             // No caching for filtered queries.
-            Service.json(MCRouter.AggregateMeasures(params), statusCode: 200..<300, tag: "AGGPOST") {
+            Service.json(route: MCRouter.AggregateMeasures(params), statusCode: 200..<300, tag: "AGGPOST") {
                 _, response, result in
                 print("got joson update line 228 \(result.value)")
                 guard !result.isSuccess else {
-                    self.refreshAggregatesFromMsg(result.value, completion: completion)
+                    self.refreshAggregatesFromMsg(payload: result.value as AnyObject?, completion: completion)
                     return
                 }
             }
@@ -242,18 +248,18 @@ public class PopulationHealthManager: NSObject {
     // where MCDBType is a union type, MCDBType = HKWorkoutActivityType | String (e.g., for meals)
     // and   Quantity is a String (e.g., distance, kcal_burned, step_count, flights)
     //
-    func refreshAggregatesFromMsg(payload: AnyObject?, completion: NSError? -> Void) {
+    func refreshAggregatesFromMsg(payload: Any?, completion: @escaping (NSError?) -> Void) {
         var populationAggregates : [HKSampleType: [MCSample]] = [:]
-        var columnsByType: [HKSampleType: AnyObject] = [:]
+        var columnsByType: [HKSampleType: Any] = [:]
 
-        if let response = payload as? [String:AnyObject],
-               aggregates = response["items"] as? [[String:AnyObject]]
+        if let response = payload as? [String:Any],
+               let aggregates = response["items"] as? [[String:Any]]
         {
             var failed = false
             for sample in aggregates {
                 for (column, val) in sample {
                     if !failed {
-                        log.debug("Refreshing population aggregate for \(column)", feature: "refreshPop")
+                        log.debug("Refreshing population aggregate for \(column)", "refreshPop")
 
                         // Handle meal_duration/activity_duration/activity_value columns.
                         // TODO: this only supports activity values that are HealthKit quantities for now (step count, flights climbed, distance/walking/running)
@@ -263,15 +269,15 @@ public class PopulationHealthManager: NSObject {
                             if let categorizedVals = val as? [String:AnyObject] {
                                 for (category, catval) in categorizedVals {
                                     if let (mcdbQuantity, hkQuantity) = categoryQuantities[category],
-                                        sampleType = HKObjectType.quantityTypeForIdentifier(hkQuantity),
-                                        categoryValues = catval as? [String: AnyObject]
+                                        let sampleType = HKObjectType.quantityType(forIdentifier: HKQuantityTypeIdentifier(rawValue: hkQuantity)),
+                                        let categoryValues = catval as? [String: Any]
                                     {
                                         if let sampleValue = categoryValues[mcdbQuantity] as? Double {
-                                            populationAggregates[sampleType] = [doubleAsAggregate(sampleType, sampleValue: sampleValue)]
-                                            columnsByType[sampleType] = column
+                                            populationAggregates[sampleType] = [doubleAsAggregate(sampleType: sampleType, sampleValue: sampleValue)]
+                                            columnsByType[sampleType] = column as Any?
                                         } else {
                                             populationAggregates[sampleType] = []
-                                            columnsByType[sampleType] = column
+                                            columnsByType[sampleType] = column as Any?
                                         }
                                     }
                                     else {
@@ -289,47 +295,47 @@ public class PopulationHealthManager: NSObject {
                         {
                             var sampleType: HKSampleType! = nil
                             switch typeIdentifier {
-                            case HKCategoryTypeIdentifierSleepAnalysis:
-                                sampleType = HKObjectType.categoryTypeForIdentifier(HKCategoryTypeIdentifierSleepAnalysis)!
+                            case HKCategoryTypeIdentifier.sleepAnalysis.hashValue:
+                                sampleType = HKObjectType.categoryType(forIdentifier: HKCategoryTypeIdentifier.sleepAnalysis)!
 
-                            case HKCategoryTypeIdentifierAppleStandHour:
-                                sampleType = HKObjectType.categoryTypeForIdentifier(HKCategoryTypeIdentifierAppleStandHour)!
-
+                            case HKCategoryTypeIdentifier.appleStandHour.hashValue:
+                                sampleType = HKObjectType.categoryType(forIdentifier: HKCategoryTypeIdentifier.appleStandHour)!
+// will want to adjust this
                             default:
-                                sampleType = HKObjectType.quantityTypeForIdentifier(typeIdentifier)!
+                                sampleType = HKObjectType.categoryType(forIdentifier: HKCategoryTypeIdentifier.mindfulSession)!
                             }
 
                             if let sampleValue = val as? Double {
-                                let agg = doubleAsAggregate(sampleType, sampleValue: sampleValue)
+                                let agg = doubleAsAggregate(sampleType: sampleType, sampleValue: sampleValue)
                                 populationAggregates[sampleType] = [agg]
-                                columnsByType[sampleType] = column
+                                columnsByType[sampleType] = column as AnyObject?
 
                                 // Population correlation type entry for systolic/diastolic blood pressure sample.
-                                if typeIdentifier == HKQuantityTypeIdentifierBloodPressureSystolic
-                                    || typeIdentifier == HKQuantityTypeIdentifierBloodPressureDiastolic
+                                if typeIdentifier == HKQuantityTypeIdentifier.bloodPressureSystolic.hashValue
+                                    || typeIdentifier == HKQuantityTypeIdentifier.bloodPressureDiastolic.hashValue
                                 {
-                                    let bpType = HKObjectType.correlationTypeForIdentifier(HKCorrelationTypeIdentifierBloodPressure)!
-                                    let sType = HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierBloodPressureSystolic)!
-                                    let dType = HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierBloodPressureDiastolic)!
+                                    let bpType = HKObjectType.correlationType(forIdentifier: HKCorrelationTypeIdentifier.bloodPressure)!
+                                    let sType = HKObjectType.quantityType(forIdentifier: HKQuantityTypeIdentifier.bloodPressureSystolic)!
+                                    let dType = HKObjectType.quantityType(forIdentifier: HKQuantityTypeIdentifier.bloodPressureDiastolic)!
 
-                                    let bpIndex = typeIdentifier == HKQuantityTypeIdentifierBloodPressureSystolic ? 0 : 1
+                                    let bpIndex = typeIdentifier == HKQuantityTypeIdentifier.bloodPressureSystolic.hashValue ? 0 : 1
                                     if populationAggregates[bpType] == nil {
                                         populationAggregates[bpType] = [
-                                            MCAggregateSample(value: Double.quietNaN, sampleType: sType, op: sType.aggregationOptions),
-                                            MCAggregateSample(value: Double.quietNaN, sampleType: dType, op: dType.aggregationOptions),
+                                            MCAggregateSample(value: Double.nan, sampleType: sType, op: sType.aggregationOptions),
+                                            MCAggregateSample(value: Double.nan, sampleType: dType, op: dType.aggregationOptions),
                                         ]
                                     }
                                     populationAggregates[bpType]![bpIndex] = agg
                                     if var columns = columnsByType[bpType] as? [String] {
                                         columns.append(column)
-                                        columnsByType.updateValue(columns, forKey: bpType)
+                                        columnsByType.updateValue(columns as Any, forKey: bpType)
                                     } else {
                                         columnsByType[bpType] = [column]
                                     }
                                 }
                             } else {
                                 populationAggregates[sampleType] = []
-                                columnsByType[sampleType] = column
+                                columnsByType[sampleType] = column as Any?
                             }
                         }
                         else {
@@ -349,20 +355,20 @@ public class PopulationHealthManager: NSObject {
                     let expiry = Double(UserManager.sharedManager.getRefreshFrequency()) * 0.9
                     populationAggregates.forEach { (key, samples) in
                         if let column = columnsByType[key] as? String {
-                            log.debug("Caching \(column) \(expiry)", feature: "cachePop")
-                            self.aggregateCache.setObject(MCSampleArray(samples: samples), forKey: column, expires: .Seconds(expiry))
+                            log.debug("Caching \(column) \(expiry)", "cachePop")
+                            self.aggregateCache.setObject(MCSampleArray(samples: samples), forKey: column, expires: .seconds(expiry))
                         }
                         else if let columns = columnsByType[key] as? [String] {
                             columns.forEach { column in
-                                log.debug("Caching \(column) \(expiry)", feature: "cachePop")
-                                self.aggregateCache.setObject(MCSampleArray(samples: samples), forKey: column, expires: .Seconds(expiry))
+                                log.debug("Caching \(column) \(expiry)", "cachePop")
+                                self.aggregateCache.setObject(MCSampleArray(samples: samples), forKey: column, expires: .seconds(expiry))
                             }
                         }
                         self.mostRecentAggregates.updateValue(samples, forKey: key)
                     }
 
-                    self.aggregateRefreshDate = NSDate()
-                    NSNotificationCenter.defaultCenter().postNotificationName(HMDidUpdateRecentSamplesNotification, object: self)
+                    self.aggregateRefreshDate = Date()
+                    NotificationCenter.default.post(name: NSNotification.Name(rawValue: HMDidUpdateRecentSamplesNotification), object: self)
                     completion(nil)
                 }
             }
@@ -370,7 +376,7 @@ public class PopulationHealthManager: NSObject {
                 let msg = "Failed to retrieve population aggregates from response: \(response)"
                 let error = NSError(domain: PMErrorDomain, code: 0, userInfo: [NSLocalizedDescriptionKey: msg])
                 log.error(msg)
-                NSNotificationCenter.defaultCenter().postNotificationName(HMDidUpdateRecentSamplesNotification, object: self)
+                NotificationCenter.default.post(name: NSNotification.Name(rawValue: HMDidUpdateRecentSamplesNotification), object: self)
                 completion(error)
             }
         }
@@ -378,23 +384,23 @@ public class PopulationHealthManager: NSObject {
             let msg = "Failed to deserialize population query response"
             let error = NSError(domain: PMErrorDomain, code: 1, userInfo: [NSLocalizedDescriptionKey: msg])
             log.error(msg)
-            NSNotificationCenter.defaultCenter().postNotificationName(HMDidUpdateRecentSamplesNotification, object: self)
+            NotificationCenter.default.post(name: NSNotification.Name(rawValue: HMDidUpdateRecentSamplesNotification), object: self)
             completion(error)
         }
     }
 
     func doubleAsAggregate(sampleType: HKSampleType, sampleValue: Double) -> MCAggregateSample {
-        let convertedSampleValue = HKQuantity(unit: sampleType.serviceUnit!, doubleValue: sampleValue).doubleValueForUnit(sampleType.defaultUnit!)
-        log.debug("Popquery \(sampleType.displayText ?? sampleType.identifier) \(sampleValue) \(convertedSampleValue)", feature: "execPop")
+        let convertedSampleValue = HKQuantity(unit: sampleType.serviceUnit!, doubleValue: sampleValue).doubleValue(for: sampleType.defaultUnit!)
+        log.debug("Popquery \(sampleType.displayText ?? sampleType.identifier) \(sampleValue) \(convertedSampleValue)", "execPop")
         return MCAggregateSample(value: convertedSampleValue, sampleType: sampleType, op: sampleType.aggregationOptions)
     }
 
 
     // MARK : - Study stats queries
-    public func fetchStudyStats(completion: (Bool, AnyObject?) -> Void) {
-        Service.json(MCRouter.StudyStats, statusCode: 200..<300, tag: "GETSTUDYSTATS") {
+    public func fetchStudyStats(completion: @escaping (Bool, AnyObject?) -> Void) {
+        Service.json(route: MCRouter.StudyStats, statusCode: 200..<300, tag: "GETSTUDYSTATS") {
             _, response, result in
-            completion(result.isSuccess, result.value)
+            completion(result.isSuccess, result.value as AnyObject?)
         }
     }
 }

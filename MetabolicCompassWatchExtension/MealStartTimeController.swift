@@ -17,8 +17,8 @@ class MealStartTimeController: WKInterfaceController {
     @IBOutlet var mealStartTimeButton: WKInterfaceButton!
     
     var mealClose = 0
-    override func awakeWithContext(context: AnyObject?) {
-        super.awakeWithContext(context)
+    func awakeWithContext(context: AnyObject?) {
+        super.awake(withContext: context)
         mealStartTimeButton.setTitle("Ended \(mealTypebyButton.mealType)")
         var tempItems: [WKPickerItem] = []
         for i in 0...146 {
@@ -47,15 +47,16 @@ class MealStartTimeController: WKInterfaceController {
         mealStartTimeButton.setTitle("Saved")
         
         // setting up conversion of saved value from 'waking from sleep' in 1st screen
-        let thisRegion = DateRegion()
-        let calendar = NSCalendar.currentCalendar()
-        var beginDate = NSDate.today(inRegion: thisRegion)
-        let beginComponents = calendar.components([.Year, .Month, .Day, .Hour, .Minute], fromDate: beginDate)
+        let thisRegion = DateInRegion()
+        let calendar = Calendar.current
+//        var beginDate = NSDate.today(inRegion: thisRegion)
+        var beginDate = Date()
+        var beginComponents = calendar.dateComponents([.year, .month, .day, .hour, .minute], from: beginDate)
         var timeConvertBegin:Int = 0
         var timeAddToBegin:Int = 0
         
         // note: imageset (0-146) is keyed into 24-hour schedule
-        //  so 0=midnight, 6=1AM, 12=2AM etc
+        //  so 0=midnight, 6=1AM, 12=2AM etc 
         if mealTimesStruc.mealBegin % 6 == 0 {
             timeConvertBegin = ( (mealTimesStruc.mealBegin)/6 )
             timeAddToBegin=0
@@ -81,10 +82,12 @@ class MealStartTimeController: WKInterfaceController {
         }
         beginComponents.hour = timeConvertBegin
         beginComponents.minute = timeAddToBegin
-        beginDate = calendar.dateFromComponents(beginComponents)!
+        beginDate = calendar.date(from: beginComponents)!
+//        beginDate = calendar.dateFromComponents(beginComponents)!
         
         // setting up values from current picker and getting 'beginning of sleep' ready
-        var closeDate = NSDate.today(inRegion: thisRegion)
+//        var closeDate = NSDate.today(inRegion: thisRegion)
+        var closeDate = Date()
         var timeConvertClose:Int = 0
         var timeAddToClose:Int = 0
         
@@ -112,31 +115,33 @@ class MealStartTimeController: WKInterfaceController {
             timeAddToClose=50
         }
         
-        let closeComponents = calendar.components([.Year, .Month, .Day, .Hour, .Minute], fromDate: closeDate)
+        var closeComponents = calendar.dateComponents([.year, .month, .day, .hour, .minute], from: closeDate)
         closeComponents.hour = timeConvertClose
         closeComponents.minute = timeAddToClose
-        closeDate = calendar.dateFromComponents(closeComponents)!
+        closeDate = calendar.date(from: closeComponents)!
+//        closeDate = calendar.dateFromComponents(closeComponents)!
         
         if closeDate < beginDate {
-            closeComponents.day = closeComponents.day-1
-            closeDate = calendar.dateFromComponents(closeComponents)!
+            closeComponents.day = closeComponents.day!-1
+            closeDate = calendar.date(from: closeComponents)!
+//            closeDate = calendar.dateFromComponents(closeComponents)!
         }
         
-        let mealDurationHours = beginComponents.hour - closeComponents.hour
-        let mealDurationMinutes = beginComponents.minute - closeComponents.minute
+        let mealDurationHours = beginComponents.hour! - closeComponents.hour!
+        let mealDurationMinutes = beginComponents.minute! - closeComponents.minute!
         let mealDurationTime = mealDurationHours*60+mealDurationMinutes
         
         let workout = HKWorkout(activityType:
-            .PreparationAndRecovery,
-                                startDate: beginDate,
-                                endDate: closeDate,
+            .preparationAndRecovery,
+                                start: beginDate,
+                                end: closeDate,
                                 duration: Double(mealDurationTime)*60,
-                                totalEnergyBurned: HKQuantity(unit:HKUnit.calorieUnit(), doubleValue:0.0),
-                                totalDistance: HKQuantity(unit:HKUnit.meterUnit(), doubleValue:0.0),
-                                device: HKDevice.localDevice(),
+                                totalEnergyBurned: HKQuantity(unit:HKUnit.calorie(), doubleValue:0.0),
+                                totalDistance: HKQuantity(unit:HKUnit.meter(), doubleValue:0.0),
+                                device: HKDevice.local(),
                                 metadata: [mealTypebyButton.mealType:"source"])
         let healthKitStore:HKHealthStore = HKHealthStore()
-        healthKitStore.saveObject(workout) { success, error in
+        healthKitStore.save(workout) { success, error in
         }
     }
     
@@ -146,8 +151,7 @@ class MealStartTimeController: WKInterfaceController {
     
     @IBAction func mealSaveButton() {
         showButton()
-        dispatch_after(3,
-            dispatch_get_main_queue()){
+        DispatchQueue.main.asyncAfter(deadline: .now() + 3.0){
               self.popToRootController()
         }
     }

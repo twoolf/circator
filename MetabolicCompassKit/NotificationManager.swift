@@ -13,6 +13,7 @@ import MCCircadianQueries
 import SwiftDate
 import SwiftyUserDefaults
 import SwiftMessages
+import GameplayKit
 
 // Constants
 public let delayBetweenInAppNotificationsSecs = 2
@@ -43,10 +44,10 @@ public enum NotifyType: Int {
 
 public class FastingState: NSObject {
 
-    var dailyMFW: [NSDate: Double] = [:]
-    var daysNotified: [NSDate: Bool] = [:]
+    var dailyMFW: [Date: Double] = [:]
+    var daysNotified: [Date: Bool] = [:]
 
-    convenience init(mfw: [NSDate: Double], notified: [NSDate: Bool]) {
+    convenience init(mfw: [Date: Double], notified: [Date: Bool]) {
         self.init()
         self.dailyMFW = mfw
         self.daysNotified = notified
@@ -55,8 +56,8 @@ public class FastingState: NSObject {
 
 
 // Default blackout times: 10pm - 6am
-public func defaultNotificationBlackoutTimes() -> [NSDate] {
-    let today = NSDate().startOf(.Day)
+public func defaultNotificationBlackoutTimes() -> [Date] {
+    let today = Date().startOf(component: .day)
     return [today + 22.hours - 1.days, today + 6.hours]
 }
 
@@ -67,23 +68,23 @@ public func defaultNotificationReminderFrequency() -> Int {
 
 public func getNotificationReminderFrequency() -> Int {
     var reminder: Int! = nil
-    if let r = Defaults.objectForKey(USNReminderFrequencyKey) as? Int {
+    if let r = Defaults.object(forKey: USNReminderFrequencyKey) as? Int {
         reminder = r
     } else {
         reminder = defaultNotificationReminderFrequency()
-        Defaults.setObject(reminder, forKey: USNReminderFrequencyKey)
+        Defaults.set(reminder, forKey: USNReminderFrequencyKey)
         Defaults.synchronize()
     }
     return reminder!
 }
 
-public func getNotificationBlackoutTimes() -> [NSDate] {
-    var blackoutTimes: [NSDate] = []
-    if let t = Defaults.objectForKey(USNBlackoutTimesKey) as? [NSDate] {
+public func getNotificationBlackoutTimes() -> [Date] {
+    var blackoutTimes: [Date] = []
+    if let t = Defaults.object(forKey: USNBlackoutTimesKey) as? [Date] {
         blackoutTimes = t
     } else {
         blackoutTimes = defaultNotificationBlackoutTimes()
-        Defaults.setObject(blackoutTimes, forKey: USNBlackoutTimesKey)
+        Defaults.set(blackoutTimes, forKey: USNBlackoutTimesKey)
         Defaults.synchronize()
     }
     return blackoutTimes
@@ -97,8 +98,8 @@ public class NotificationManager {
     // Fasting threshold (in seconds) for fasting streak definition.
     var fastingThreshold = Double(10 * 60 * 60)
 
-    var streakStarts : [StreakType: NSDate] = [:]
-    var streakEnds   : [StreakType: NSDate] = [:]
+    var streakStarts : [StreakType: Date] = [:]
+    var streakEnds   : [StreakType: Date] = [:]
 
     var streakState  : [StreakType: AnyObject] = [:]
     var streakMax    : [StreakType: Double] = [:]
@@ -204,38 +205,38 @@ public class NotificationManager {
 
         SwiftMessages.pauseBetweenMessages = Double(delayBetweenInAppNotificationsSecs)
 
-        if let ss = Defaults.objectForKey(NMStreakStartKey) as? [StreakType: NSDate] {
+        if let ss = Defaults.object(forKey: NMStreakStartKey) as? [StreakType: Date] {
             streakStarts = ss
         } else {
-            streakStarts[.Fasting] = NSDate() - initStartOffset.days
-            streakStarts[.Contribution] = NSDate() - initStartOffset.days
-            Defaults.setObject(streakStarts as? AnyObject, forKey: NMStreakStartKey)
+            streakStarts[.Fasting] = Date() - initStartOffset.days
+            streakStarts[.Contribution] = Date() - initStartOffset.days
+            Defaults.set(streakStarts as? AnyObject, forKey: NMStreakStartKey)
             Defaults.synchronize()
         }
 
-        if let se = Defaults.objectForKey(NMStreakEndKey) as? [StreakType: NSDate] {
+        if let se = Defaults.object(forKey: NMStreakEndKey) as? [StreakType: Date] {
             streakEnds = se
         } else {
-            streakEnds[.Fasting] = (NSDate() - initEndOffset.days) + initEndDeltaSecs.seconds
-            streakEnds[.Contribution] = (NSDate() - initEndOffset.days) + initEndDeltaSecs.seconds
-            Defaults.setObject(streakEnds as? AnyObject, forKey: NMStreakEndKey)
+            streakEnds[.Fasting] = (Date() - initEndOffset.days) + initEndDeltaSecs.seconds
+            streakEnds[.Contribution] = (Date() - initEndOffset.days) + initEndDeltaSecs.seconds
+            Defaults.set(streakEnds as? AnyObject, forKey: NMStreakEndKey)
             Defaults.synchronize()
         }
 
-        if let ss = Defaults.objectForKey(NMStreakStateKey) as? [StreakType: AnyObject] {
+        if let ss = Defaults.object(forKey: NMStreakStateKey) as? [StreakType: AnyObject] {
             streakState = ss
         } else {
             streakState[.Fasting] = FastingState()
-            Defaults.setObject(streakState as? AnyObject, forKey: NMStreakStateKey)
+            Defaults.set(streakState as? AnyObject, forKey: NMStreakStateKey)
             Defaults.synchronize()
         }
 
-        if let sm = Defaults.objectForKey(NMStreakMaxKey) as? [StreakType: Double] {
+        if let sm = Defaults.object(forKey: NMStreakMaxKey) as? [StreakType: Double] {
             streakMax = sm
         } else {
             streakMax[.Fasting] = 0.0 + maxDelta
             streakMax[.Contribution] = 0.0 + maxDelta
-            Defaults.setObject(streakMax as? AnyObject, forKey: NMStreakMaxKey)
+            Defaults.set(streakMax as? AnyObject, forKey: NMStreakMaxKey)
             Defaults.synchronize()
         }
 
@@ -250,11 +251,11 @@ public class NotificationManager {
     }
 
     public func reset() {
-        streakStarts[.Fasting] = NSDate()
-        streakStarts[.Contribution] = NSDate()
+        streakStarts[.Fasting] = Date()
+        streakStarts[.Contribution] = Date()
 
-        streakEnds[.Fasting] = NSDate()
-        streakEnds[.Contribution] = NSDate()
+        streakEnds[.Fasting] = Date()
+        streakEnds[.Contribution] = Date()
 
         streakState[.Fasting] = FastingState()
 
@@ -265,10 +266,10 @@ public class NotificationManager {
     }
 
     public func sync() {
-        Defaults.setObject(streakStarts as? AnyObject, forKey: NMStreakStartKey)
-        Defaults.setObject(streakEnds as? AnyObject, forKey: NMStreakEndKey)
-        Defaults.setObject(streakState as? AnyObject, forKey: NMStreakStateKey)
-        Defaults.setObject(streakMax as? AnyObject, forKey: NMStreakMaxKey)
+        Defaults.set(streakStarts as? AnyObject, forKey: NMStreakStartKey)
+        Defaults.set(streakEnds as? AnyObject, forKey: NMStreakEndKey)
+        Defaults.set(streakState as? AnyObject, forKey: NMStreakStateKey)
+        Defaults.set(streakMax as? AnyObject, forKey: NMStreakMaxKey)
         Defaults.synchronize()
     }
 
@@ -280,13 +281,13 @@ public class NotificationManager {
         }
 
         let view = MessageView.viewFromNib(layout: .CardView)
-        view.configureTheme(.Info)
+        view.configureTheme(.info)
         view.configureContent(title: notification.alertTitle ?? "Metabolic Compass", body: msg)
-        view.button?.hidden = true
+        view.button?.isHidden = true
 
         var viewConfig = SwiftMessages.Config()
-        viewConfig.presentationContext = .Window(windowLevel: UIWindowLevelStatusBar)
-        viewConfig.duration = .Seconds(seconds: 5)
+        viewConfig.presentationContext = .window(windowLevel: UIWindowLevelStatusBar)
+        viewConfig.duration = .seconds(seconds: 5)
 
         //log.info("NTMGR SHOW \(notification)")
         SwiftMessages.show(config: viewConfig, view: view)
@@ -295,44 +296,43 @@ public class NotificationManager {
     // Main entry trigger for circadian-event driven notification scheduling.
 
     public func onCircadianEvents(events: [HKSample]) {
-        if let newest = events.sort({ $0.0.startDate > $0.1.startDate }).first {
+        if let newest = events.sorted(by: { $0.0.startDate > $0.1.startDate }).first {
             var cEvent: CircadianEvent! = nil
             if let mt = newest.metadata?["Meal Type"] as? String {
-                cEvent = .Meal(mealType: MealType(rawValue: mt)!)
+                cEvent = .meal(mealType: MealType(rawValue: mt)!)
             }
-            else if newest.sampleType.identifier == HKCategoryTypeIdentifierSleepAnalysis {
-                cEvent = .Sleep
+            else if newest.sampleType.identifier == HKCategoryTypeIdentifier.sleepAnalysis.rawValue {
+                cEvent = .sleep
             }
             else if newest.sampleType.identifier == HKWorkoutTypeIdentifier {
                 if let wk = newest as? HKWorkout {
-                    cEvent = .Exercise(exerciseType: wk.workoutActivityType)
+                    cEvent = .exercise(exerciseType: wk.workoutActivityType)
                 }
             }
 
             if cEvent != nil {
-                onCircadianEvent(newest.startDate, endDate: newest.endDate, event: cEvent)
+                onCircadianEvent(startDate: newest.startDate, endDate: newest.endDate, event: cEvent)
             }
         }
     }
 
-    public func onCircadianEvent(startDate: NSDate, endDate: NSDate, event: CircadianEvent) {
+    public func onCircadianEvent(startDate: Date, endDate: Date, event: CircadianEvent) {
 
         // Maintain fasting streak.
         switch event {
-        case .Meal(_):
-            log.debug("B1(a) \(startDate) \(streakEnds[.Fasting])", feature: "FStreak")
+        case .meal(_):
+//            log.debug("B1(a) \(startDate) \(streakEnds[.Fasting])", feature: "FStreak")
 
             if let fstStart = streakStarts[.Fasting],
-                    fstEnd = streakEnds[.Fasting],
-                    fstState = streakState[.Fasting] as? FastingState
-                where startDate >= fstEnd
+                    let fstEnd = streakEnds[.Fasting],
+                    let fstState = streakState[.Fasting] as? FastingState, startDate >= fstEnd
             {
-                let eventDayNotified = fstState.daysNotified[startDate.startOf(.Day)] ?? false
+                let eventDayNotified = fstState.daysNotified[startDate.startOf(component: .day)] ?? false
 
-                log.debug("B1(b) evdn \(eventDayNotified)", feature: "FStreak")
+                log.debug("B1(b) evdn \(eventDayNotified)", "FStreak")
 
                 if !eventDayNotified {
-                    incrFastingStreak(startDate, endDate: endDate, streakStart: fstStart, streakEnd: fstEnd, fastingState: fstState, finalize: false)
+                    incrFastingStreak(startDate: startDate, endDate: endDate, streakStart: fstStart, streakEnd: fstEnd, fastingState: fstState, finalize: false)
                 }
             }
 
@@ -340,45 +340,45 @@ public class NotificationManager {
             break
         }
 
-        log.debug("B2(a) \(startDate) \(streakEnds[.Fasting])", feature: "FCStreak")
+        log.debug("B2(a) \(startDate) \(streakEnds[.Fasting])", "FCStreak")
 
         if let fstStart = streakStarts[.Fasting],
-            fstEnd = streakEnds[.Fasting],
-            fstState = streakState[.Fasting] as? FastingState
-            where startDate >= fstEnd && self.isDayAfter(fstEnd, b: startDate)
+            let fstEnd = streakEnds[.Fasting],
+            let fstState = streakState[.Fasting] as? FastingState, startDate >= fstEnd && self.isDayAfter(a: fstEnd, b: startDate)
         {
-            let eventDayNotified = fstState.daysNotified[startDate.startOf(.Day)] ?? false
-            let streakEndDayNotified = fstState.daysNotified[fstEnd.startOf(.Day)] ?? false
+            let eventDayNotified = fstState.daysNotified[startDate.startOf(component: .day)] ?? false
+            let streakEndDayNotified = fstState.daysNotified[fstEnd.startOf(component: .day)] ?? false
 
-            log.debug("B2(b) evsedn \(eventDayNotified) \(streakEndDayNotified)", feature: "FStreak")
+            log.debug("B2(b) evsedn \(eventDayNotified) \(streakEndDayNotified)", "FStreak")
 
             if !eventDayNotified && !streakEndDayNotified {
-                incrFastingStreak(startDate, endDate: endDate, streakStart: fstStart, streakEnd: fstEnd, fastingState: fstState, finalize: true)
+                incrFastingStreak(startDate: startDate, endDate: endDate, streakStart: fstStart, streakEnd: fstEnd, fastingState: fstState, finalize: true)
             }
         }
 
 
         // Maintain contribution streak.
-        incrContributionStreak(startDate, endDate: endDate)
+        incrContributionStreak(startDate: startDate, endDate: endDate)
 
         sync()
     }
 
 
-    func incrFastingStreak(startDate: NSDate, endDate: NSDate, streakStart: NSDate, streakEnd: NSDate,
+    func incrFastingStreak(startDate: Date, endDate: Date, streakStart: Date, streakEnd: Date,
                            fastingState: FastingState, finalize: Bool)
     {
-        let eventDay = startDate.startOf(.Day)
+        let eventDay = startDate.startOf(component: .day)
 
-        let fastingLength = startDate.timeIntervalSinceDate(max(streakEnd, self.fastingDayStart(startDate)))
+        let fastingLength = startDate.timeIntervalSince(max(streakEnd as Date, self.fastingDayStart(date: startDate) as Date))
         let rmaxFasting = max(fastingState.dailyMFW[eventDay] ?? 0.0, fastingLength)
         fastingState.dailyMFW[eventDay] = rmaxFasting
 
-        log.debug("FIncr \(finalize) \(eventDay) \(fastingLength) \(rmaxFasting) \(fastingThreshold)", feature: "FStreak")
-        log.debug("FIncr \(finalize) \(eventDay.isInSameDayAsDate(streakEnd)) \(self.isDayAfter(streakEnd, b: startDate))", feature: "FStreak")
+        log.debug("FIncr \(finalize) \(eventDay) \(fastingLength) \(rmaxFasting) \(fastingThreshold)", "FStreak")
+//        log.debug("FIncr \(finalize) \(eventDay.isInSameDayAsDate(streakEnd)) \(self.isDayAfter(streakEnd, b: startDate))", "FStreak")
+        log.debug("FIncr \(finalize) \(eventDay.isInSameDayOf(date: startDate)) \(self.isDayAfter(a: streakEnd, b: startDate))", "FStreak")
 
         if rmaxFasting > fastingThreshold {
-            if eventDay.isInSameDayAsDate(streakEnd) || self.isDayAfter(streakEnd, b: startDate) {
+            if eventDay.isInSameDayOf(date: streakEnd) || self.isDayAfter(a: streakEnd, b: startDate) {
 
                 if finalize {
                     fastingState.daysNotified = Dictionary(pairs: fastingState.daysNotified.filter { $0.0 <= eventDay })
@@ -387,36 +387,38 @@ public class NotificationManager {
                     fastingState.daysNotified[eventDay] = true
                 }
 
-                let streakLength = floor(eventDay.endOf(.Day).timeIntervalSinceDate(streakStart) / (24 * 60 * 60))
+//                let streakLength = floor(eventDay.endOf(component: .day).timeIntervalSinceDate(streakStart) / (24 * 60 * 60))
+                let streakLength = floor(eventDay.endOf(component: .day).timeIntervalSince(streakStart) / (24 * 60 * 60))
                 let rmax = streakMax[.Fasting] ?? 0.0
 
                 let notifyType: NotifyType = streakLength >= rmax ? (streakLength == rmax ? .MatchedMax : .ExceededMax) : .MatchedLevel
 
                 streakMax[.Fasting] = max(rmax, streakLength)
-                self.notifyFastingStreak(streakLength, notifyType: notifyType)
+                self.notifyFastingStreak(streakLength: streakLength, notifyType: notifyType)
             }
             else {
-                streakStarts[.Fasting] = endDate.startOf(.Day)
+                streakStarts[.Fasting] = endDate.startOf(component: .day)
             }
             streakEnds[.Fasting] = endDate
         }
     }
 
-    func incrContributionStreak(startDate: NSDate, endDate: NSDate) {
-        log.debug("CIncr \(startDate) \(streakEnds[.Contribution]) \(self.isDayAfter(streakEnds[.Contribution]!, b: startDate))", feature: "CStreak")
+    func incrContributionStreak(startDate: Date, endDate: Date) {
+        log.debug("CIncr \(startDate) \(streakEnds[.Contribution]) \(self.isDayAfter(a: streakEnds[.Contribution]!, b: startDate))", "CStreak")
 
-        if let cstStart = streakStarts[.Contribution], cstEnd = streakEnds[.Contribution] where startDate >= cstEnd {
-            if self.isDayAfter(cstEnd, b: startDate) {
-                let streakLength = floor(endDate.endOf(.Day).timeIntervalSinceDate(cstStart) / (24 * 60 * 60))
+        if let cstStart = streakStarts[.Contribution], let cstEnd = streakEnds[.Contribution], startDate >= cstEnd {
+            if self.isDayAfter(a: cstEnd, b: startDate) {
+//                let streakLength = floor(endDate.endOf(component: .day).timeIntervalSinceDate(cstStart) / (24 * 60 * 60))
+                let streakLength = floor(endDate.endOf(component: .day).timeIntervalSince(cstStart)) / (24 * 60 * 60)
                 let rmax = streakMax[.Contribution] ?? 0.0
 
                 let notifyType: NotifyType = streakLength >= rmax ? (streakLength == rmax ? .MatchedMax : .ExceededMax) : .MatchedLevel
 
                 streakMax[.Contribution] = max(rmax, streakLength)
-                self.notifyContributionStreak(streakLength, notifyType: notifyType)
+                self.notifyContributionStreak(streakLength: streakLength, notifyType: notifyType)
             }
-            else if self.isMoreThanDayAfter(cstEnd, b: startDate) {
-                streakStarts[.Contribution] = endDate.startOf(.Day)
+            else if self.isMoreThanDayAfter(a: cstEnd, b: startDate) {
+                streakStarts[.Contribution] = endDate.startOf(component: .day)
             }
 
             streakEnds[.Contribution] = endDate
@@ -426,14 +428,14 @@ public class NotificationManager {
     // App background/foreground re-entry.
 
     public func onRecycleEvent() {
-        enqueueNotification("CollectData", messages: collectionMsgs)
+        enqueueNotification(notificationId: "CollectData", messages: collectionMsgs)
     }
 
     // Helpers.
 
-    func mkNotification(date: NSDate, freq: NSCalendarUnit?, body: String, action: String = "enter your circadian events") -> UILocalNotification {
+    func mkNotification(date: Date, freq: NSCalendar.Unit?, body: String, action: String = "enter your circadian events") -> UILocalNotification {
         let notification = UILocalNotification()
-        notification.fireDate = date
+        notification.fireDate = date as Date
         notification.alertBody = body
         notification.alertAction = action
         notification.soundName = UILocalNotificationDefaultSoundName
@@ -442,28 +444,29 @@ public class NotificationManager {
         return notification
     }
 
-    func fastingDayStart(date: NSDate) -> NSDate {
-        return date.startOf(.Day)
+    func fastingDayStart(date: Date) -> Date {
+        return date.startOf(component: .day)
     }
 
-    func isDayAfter(a: NSDate, b: NSDate) -> Bool {
-        return a.isInSameDayAsDate(b - 1.days)
+    func isDayAfter(a: Date, b: Date) -> Bool {
+//        return a.isInSameDayAsDate(b - 1.days)
+        return a.isInSameDayOf(date: b - 1.days)
     }
 
-    func isMoreThanDayAfter(a: NSDate, b: NSDate) -> Bool {
-        return a.endOf(.Day) + 1.days < b
+    func isMoreThanDayAfter(a: Date, b: Date) -> Bool {
+        return a.endOf(component: .day) + 1.days < b
     }
     
     func notifyFastingStreak(streakLength: Double, notifyType: NotifyType) {
-        doNotify(.Fasting, streakLength: streakLength, buckets: self.fastingStreakBuckets, notifyType: notifyType)
+        doNotify(streakType: .Fasting, streakLength: streakLength, buckets: self.fastingStreakBuckets, notifyType: notifyType)
     }
 
     func notifyContributionStreak(streakLength: Double, notifyType: NotifyType) {
-        doNotify(.Contribution, streakLength: streakLength, buckets: self.contributionStreakBuckets, notifyType: notifyType)
+        doNotify(streakType: .Contribution, streakLength: streakLength, buckets: self.contributionStreakBuckets, notifyType: notifyType)
     }
 
     func doNotify(streakType: StreakType, streakLength: Double, buckets: [(Double, String, String)], notifyType: NotifyType) {
-        var rankIndex = buckets.indexOf { $0.0 >= streakLength }
+        var rankIndex = buckets.index { $0.0 >= streakLength }
         if rankIndex == nil { rankIndex = buckets.count }
         rankIndex = max(0, rankIndex! - 1)
 
@@ -478,27 +481,27 @@ public class NotificationManager {
 
         switch notifyType {
         case .MatchedLevel:
-            msg = matchedLevelMsg(msg)
+            msg = matchedLevelMsg(msg: msg)
 
         case .MatchedMax:
-            msg = matchedMaxMsg(msg)
+            msg = matchedMaxMsg(msg: msg)
 
         case .ExceededMax:
-            msg = exceededMaxMsg(msg)
+            msg = exceededMaxMsg(msg: msg)
 
         }
 
         let notificationId = streakType == .Fasting ? "FStreak" : "CStreak"
-        log.debug("Notify \(notificationId) \(notifyType) \(streakLength) \(rankIndex) \(buckets.indexOf { $0.0 >= streakLength }) \(msg)", feature: notificationId)
+        log.debug("Notify \(notificationId) \(notifyType) \(streakLength) \(rankIndex) \(buckets.index { $0.0 >= streakLength }) \(msg)", notificationId)
 
-        enqueueNotification(notificationId, messages: [msg], immediate: true)
+        enqueueNotification(notificationId: notificationId, messages: [msg], immediate: true)
     }
 
-    func notificationIntervals(now: NSDate) -> [(NSDate, NSDate)] {
+    func notificationIntervals(now: Date) -> [(Date, Date)] {
         let blackoutTimes = getNotificationBlackoutTimes()
 
-        let todayStart = now.startOf(.Day)
-        let todayEnd = now.endOf(.Day)
+        let todayStart = now.startOf(component: .day)
+        let todayEnd = now.endOf(component: .day)
 
         let blackoutStartToday = todayStart + blackoutTimes[0].hour.hours + blackoutTimes[0].minute.minutes
         let blackoutEndToday = todayStart + blackoutTimes[1].hour.hours + blackoutTimes[1].minute.minutes
@@ -511,96 +514,100 @@ public class NotificationManager {
     }
 
     func immediateNotification(messages: [String], action: String? = nil) {
-        let now = NSDate()
-        let validToday = notificationIntervals(now)
+        let now = Date()
+        let validToday = notificationIntervals(now: now)
 
-        let fire = validToday.indexOf { $0.0 < now && now < $0.1 }
+        let fire = validToday.index { $0.0 < now && now < $0.1 }
 
-        let idx = GKRandomSource.sharedRandom().nextIntWithUpperBound(messages.count)
+//        let idx = GKRandomSource.sharedRandom().nextIntWithUpperBound(messages.count)
+        let idx = GKRandomSource.sharedRandom().nextInt(upperBound: messages.count)
         let body = messages[idx]
 
         var notification: UILocalNotification! = nil
         if let action = action {
-            notification = mkNotification(now + immediateNotificationDelaySecs.seconds, freq: nil, body: body, action: action)
+            notification = mkNotification(date: now + immediateNotificationDelaySecs.seconds, freq: nil, body: body, action: action)
         } else {
-            notification = mkNotification(now + immediateNotificationDelaySecs.seconds, freq: nil, body: body)
+            notification = mkNotification(date: now + immediateNotificationDelaySecs.seconds, freq: nil, body: body)
         }
 
         if fire != nil {
-            log.debug("L-notify for \(notification.fireDate?.toString())", feature: "execNotify")
-            UIApplication.sharedApplication().scheduleLocalNotification(notification)
+//            log.debug("L-notify for \(notification.fireDate?.toString())", "execNotify")
+            UIApplication.shared.scheduleLocalNotification(notification)
         } else {
-            log.warning("Skip immediate notification during blackout period: \(body)", feature: "execNotify")
+            log.warning("Skip immediate notification during blackout period: \(body)", "execNotify")
         }
     }
 
     // Periodic notifications.
     // This cancels all notifications scheduled for the notification id before reissuing.
     func repeatedNotification(notificationId: String, frequencyInMinutes: Int, messages: [String], action: String? = nil) {
-        let now = NSDate()
-        let todayEnd = now.endOf(.Day)
+        let now = Date()
+        let todayEnd = now.endOf(component: .day)
 
-        let validToday = notificationIntervals(now)
+        let validToday = notificationIntervals(now: now)
         let validTmw = validToday.map { ($0.0 + 1.days, $0.1 + 1.days) }
 
-        let overlaps: (NSDate, Bool, (NSDate, NSDate)) -> Bool = { (date, acc, rng) in
+        let overlaps: (Date, Bool, (Date, Date)) -> Bool = { (date, acc, rng) in
             acc || (rng.0 < date && date < rng.1)
         }
 
         if let nGroup = notificationGroups[notificationId] {
             nGroup.forEach { notification in
-                UIApplication.sharedApplication().cancelLocalNotification(notification)
-                log.info("Cancelled l-notify for \(notification.fireDate?.toString()) repeating \(notification.repeatInterval)", feature: "cancel:execNotify")
+                UIApplication.shared.cancelLocalNotification(notification)
+//                log.info("Cancelled l-notify for \(notification.fireDate?.toString()) repeating \(notification.repeatInterval)", "cancel:execNotify")
             }
             notificationGroups[notificationId] = []
         }
 
         // For debugging.
-        logCurrentNotifications("state:execNotify")
+        logCurrentNotifications(feature: "state:execNotify")
 
         let frequencyInHours = frequencyInMinutes / 60
 
-        var noteDate   : NSDate! = nil
-        var noteEnd    : NSDate! = nil
-        var repeatUnit : NSCalendarUnit! = nil
-        var dateStep   : NSDateComponents! = nil
+        var noteDate   : Date! = nil
+        var noteEnd    : Date! = nil
+        var repeatUnit : NSCalendar.Unit? = nil
+//        var repeatUnit : Calendar.Unit! = nil
+        var dateStep   : DateComponents! = nil
         var skipBlackoutCheck = false
 
         if frequencyInMinutes < 60 {
-            dateStep = Int(frequencyInMinutes).minutes
+            dateStep = Int(frequencyInMinutes).minutes as DateComponents!
             noteDate = now + dateStep
             noteEnd = noteDate + 1.hours
-            repeatUnit = .Hour
+            repeatUnit = .hour
         }
         else if frequencyInMinutes < 1440 {
-            dateStep = Int(frequencyInHours).hours
+            dateStep = Int(frequencyInHours).hours as DateComponents!
             noteDate = now + dateStep
             noteEnd = noteDate + 1.days
-            repeatUnit = .Day
+            repeatUnit = .day
         }
         else {
-            dateStep = Int(frequencyInHours/24).days
+            dateStep = Int(frequencyInHours/24).days as DateComponents!
             noteDate = now
             noteEnd = noteDate + 1.weeks
-            if !validToday.reduce(false, combine: { (acc, rng) in overlaps(noteDate, acc, rng) }) {
-                let idx = GKRandomSource.sharedRandom().nextIntWithUpperBound(validToday.count)
+            if !validToday.reduce(false, { (acc, rng) in overlaps(noteDate, acc, rng) }) {
+//                let idx = GKRandomSource.sharedRandom().nextIntWithUpperBound(validToday.count)
+                let idx = GKRandomSource.sharedRandom().nextInt(upperBound: validToday.count)
                 let rangeSecs = validToday[idx].1.timeIntervalSinceReferenceDate - validToday[idx].0.timeIntervalSinceReferenceDate
                 noteDate = validToday[idx].0 + Int(drand48() * rangeSecs).seconds
             }
 
             noteDate = noteDate + dateStep
-            repeatUnit = .WeekOfYear
+            repeatUnit = .weekOfYear
             skipBlackoutCheck = true
         }
 
         while noteDate < noteEnd {
             if skipBlackoutCheck ||
-                (( noteDate < todayEnd && validToday.reduce(false, combine: { (acc, rng) in overlaps(noteDate, acc, rng) }) )
-                    || (noteDate > todayEnd && validTmw.reduce(false, combine: { (acc, rng) in overlaps(noteDate, acc, rng) }) ))
+                (( noteDate < todayEnd && validToday.reduce(false, { (acc, rng) in overlaps(noteDate, acc, rng) }) )
+                    || (noteDate > todayEnd && validTmw.reduce(false, { (acc, rng) in overlaps(noteDate, acc, rng) }) ))
             {
-                let idx = GKRandomSource.sharedRandom().nextIntWithUpperBound(messages.count)
+//                let idx = GKRandomSource.sharedRandom().nextIntWithUpperBound(messages.count)
+                let idx = GKRandomSource.sharedRandom().nextInt(upperBound: messages.count)
                 let body = messages[idx]
-                let notification = mkNotification(noteDate, freq: repeatUnit, body: body)
+                let notification = mkNotification(date: noteDate, freq: repeatUnit, body: body)
 
                 if var group = notificationGroups[notificationId] {
                     group.append(notification)
@@ -609,42 +616,42 @@ public class NotificationManager {
                     notificationGroups[notificationId] = [notification]
                 }
 
-                UIApplication.sharedApplication().scheduleLocalNotification(notification)
-                log.debug("Scheduled l-notify for \(notification.fireDate?.toString()) repeating \(repeatUnit)", feature: "execNotify")
+                UIApplication.shared.scheduleLocalNotification(notification)
+//                log.debug("Scheduled l-notify for \(notification.fireDate?.toString()) repeating \(repeatUnit)", "execNotify")
             }
             noteDate = noteDate + dateStep
         }
 
         // For debugging.
-        logCurrentNotifications("state:execNotify")
+        logCurrentNotifications(feature: "state:execNotify")
     }
 
     func enqueueNotification(notificationId: String, messages: [String], action: String? = nil, immediate: Bool = false) {
-        if let settings = UIApplication.sharedApplication().currentUserNotificationSettings() {
-            if settings.types != .None {
+        if let settings = UIApplication.shared.currentUserNotificationSettings {
+            if settings.types != .none {
                 if immediate {
-                    immediateNotification(messages, action: action)
+                    immediateNotification(messages: messages, action: action)
                 }
                 else {
                     let frequencyInMinutes = getNotificationReminderFrequency()
                     if frequencyInMinutes > 0 {
-                        repeatedNotification(notificationId, frequencyInMinutes: frequencyInMinutes, messages: messages, action: action)
+                        repeatedNotification(notificationId: notificationId, frequencyInMinutes: frequencyInMinutes, messages: messages, action: action)
                     } else {
-                        log.debug("Skipping notification, user requested silence", feature: "execNotify")
+                        log.debug("Skipping notification, user requested silence", "execNotify")
                     }
                 }
             } else {
-                log.warning("User has disabled notifications", feature: "execNotify")
+                log.warning("User has disabled notifications", "execNotify")
             }
         } else {
-            log.error("Unable to retrieve notifications settings.", feature: "execNotify")
+            log.error("Unable to retrieve notifications settings.", "execNotify")
         }
     }
 
     func logCurrentNotifications(feature: String) {
-        if let ns = UIApplication.sharedApplication().scheduledLocalNotifications {
+        if let ns = UIApplication.shared.scheduledLocalNotifications {
             ns.forEach { n in
-                log.debug("CL-notify \(n.fireDate?.toString() ?? "<none>") repeating \(n.repeatInterval)", feature: feature)
+//                log.debug("CL-notify \(n.fireDate?.toString() ?? "<none>") repeating \(n.repeatInterval)", feature)
             }
         }
     }
@@ -690,7 +697,8 @@ public class NotificationManager {
     ]
 
     func matchedLevelMsg(msg: String) -> String {
-        let idx = GKRandomSource.sharedRandom().nextIntWithUpperBound(matchedLevelPrefixes.count)
+//        let idx = GKRandomSource.sharedRandom().nextIntWithUpperBound(matchedLevelPrefixes.count)
+        let idx = GKRandomSource.sharedRandom().nextInt(upperBound: matchedLevelPrefixes.count)
         return "\(matchedLevelPrefixes[idx]) \(msg)!"
 
     }
@@ -702,12 +710,14 @@ public class NotificationManager {
     ]
 
     func exceededMaxMsg(msg: String) -> String {
-        let idx = GKRandomSource.sharedRandom().nextIntWithUpperBound(exceededPrefixes.count)
+//        let idx = GKRandomSource.sharedRandom().nextIntWithUpperBound(exceededPrefixes.count)
+        let idx = GKRandomSource.sharedRandom().nextInt(upperBound: exceededPrefixes.count)
         return "\(exceededPrefixes[idx]) \(msg)!"
     }
 
     func matchedMaxMsg(msg: String) -> String {
-        let idx = GKRandomSource.sharedRandom().nextIntWithUpperBound(3)
+//        let idx = GKRandomSource.sharedRandom().nextIntWithUpperBound(3)
+        let idx = GKRandomSource.sharedRandom().nextInt(upperBound: 3)
         switch idx {
         case 0:
             return "\(msg), matching your personal best! Keep going to beat it!"

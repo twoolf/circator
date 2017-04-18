@@ -22,8 +22,8 @@ class SleepInterfaceController: WKInterfaceController {
     @IBOutlet var sleepPicker: WKInterfacePicker!
 
     var sleep = 0
-    override func awakeWithContext(context: AnyObject?) {
-        super.awakeWithContext(context)
+    func awakeWithContext(context: AnyObject?) {
+        super.awake(withContext: context)
         var tempItems: [WKPickerItem] = []
         for i in 0...48 {
             let item = WKPickerItem()
@@ -31,15 +31,16 @@ class SleepInterfaceController: WKInterfaceController {
             tempItems.append(item)
         }
 
-        let thisRegion = DateRegion()
+        let thisRegion = DateInRegion()
         var beginTimePointer = 24
-        let calendar = NSCalendar.currentCalendar()
-        var beginDate = NSDate()
-        let beginComponents = calendar.components([.Year, .Month, .Day, .Hour, .Minute], fromDate: beginDate)
-        if beginComponents.minute < 15 {
-            beginTimePointer = 2*beginComponents.hour
+        let calendar = Calendar.current
+        var beginDate = Date()
+//        let beginComponents = calendar.components([.Year, .Month, .Day, .Hour, .Minute], fromDate: beginDate)
+        let beginComponents = calendar.dateComponents([.year, .month, .day, .hour, .minute], from: beginDate)
+        if beginComponents.minute! < 15 {
+            beginTimePointer = 2*beginComponents.hour!
         } else {
-            beginTimePointer = 2*beginComponents.hour + 1
+            beginTimePointer = 2*beginComponents.hour! + 1
         }
         sleepPicker.setItems(tempItems)
         sleepPicker.setSelectedItemIndex(beginTimePointer-16)
@@ -58,7 +59,7 @@ class SleepInterfaceController: WKInterfaceController {
     }
     @IBAction func sleepSaveButton() {
         sleepTimesStruc.sleepBegin = sleep
-        pushControllerWithName("SleepTimesInterfaceController", context: self)
+        pushController(withName: "SleepTimesInterfaceController", context: self)
     }
     }
 

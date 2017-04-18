@@ -2,7 +2,7 @@
 //  DashboardFilterController.swift
 //  MetabolicCompass
 //
-//  Created by Inaiur on 5/6/16.
+//  Created by Inaiur on 5/6/16.  
 //  Copyright © 2016 Yanif Ahmad, Tom Woolf. All rights reserved.
 //
 
@@ -31,10 +31,10 @@ class DashboardFilterController: UIViewController, UITableViewDelegate, UITableV
     var data: [DashboardFilterItem] = [] {
         didSet {
             if sectionVisibility.count != self.data.count {
-                sectionVisibility = [Bool](count: self.data.count, repeatedValue: true)
+                sectionVisibility = [Bool](repeating: true, count: self.data.count)
             }
             if sectionGestureRecognizers.count != self.data.count {
-                sectionGestureRecognizers = [UITapGestureRecognizer?](count: self.data.count, repeatedValue: nil)
+                sectionGestureRecognizers = [UITapGestureRecognizer?](repeating: nil, count: self.data.count)
             }
             self.tableView.reloadData()
         }
@@ -43,10 +43,10 @@ class DashboardFilterController: UIViewController, UITableViewDelegate, UITableV
     //MARK: View life circle
     override func viewDidLoad() {
         super.viewDidLoad()
-        let rightButton = ScreenManager.sharedInstance.appNavButtonWithTitle("Clear all")
-        rightButton.addTarget(self, action: #selector(clearAll), forControlEvents: .TouchUpInside)
+        let rightButton = ScreenManager.sharedInstance.appNavButtonWithTitle(title: "Clear all")
+        rightButton.addTarget(self, action: #selector(clearAll), for: .touchUpInside)
         let rightBarButtonItem = UIBarButtonItem(customView: rightButton)
-        let leftButton = UIBarButtonItem(image: UIImage(named: "close-button"), style: .Plain, target: self, action: #selector(closeAction))
+        let leftButton = UIBarButtonItem(image: UIImage(named: "close-button"), style: .plain, target: self, action: #selector(closeAction))
         
         self.navigationItem.leftBarButtonItem = leftButton
         self.navigationItem.rightBarButtonItem = rightBarButtonItem
@@ -55,30 +55,30 @@ class DashboardFilterController: UIViewController, UITableViewDelegate, UITableV
         registerViews()
         self.tableView.delegate = self;
         self.tableView.dataSource = self;
-        self.navigationController?.navigationBar.barStyle = .Black;
-        self.navigationController?.navigationBar.tintColor = UIColor.whiteColor()
+        self.navigationController?.navigationBar.barStyle = .black;
+        self.navigationController?.navigationBar.tintColor = UIColor.white
         addData()
     }
     
-    override func viewWillDisappear(animated: Bool) {
+    override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
         saveSettings()
     }
 
     func registerViews () {
         let headerNib = UINib(nibName: "DashboardFilterHeaderView", bundle: nil)
-        tableView.registerNib(headerNib, forHeaderFooterViewReuseIdentifier:  headerIdentifier)
+        tableView.register(headerNib, forHeaderFooterViewReuseIdentifier:  headerIdentifier)
     }
 
     func loadSettings() {
-        if let userSelectedRows = Defaults.objectForKey(selectedRowsDefaultsKey) as? [String: AnyObject] {
+        if let userSelectedRows = Defaults.object(forKey: selectedRowsDefaultsKey) as? [String: AnyObject] {
             selectedRows = userSelectedRows
         } else {
             log.warning("Clearing defaults for \(selectedRowsDefaultsKey)")
             Defaults.remove(selectedRowsDefaultsKey)
         }
 
-        if let userSectionsVisible = Defaults.objectForKey(sectionVisibilityDefaultsKey) as? [Bool] {
+        if let userSectionsVisible = Defaults.object(forKey: sectionVisibilityDefaultsKey) as? [Bool] {
             sectionVisibility = userSectionsVisible
         } else {
             log.warning("Clearing defaults for \(sectionVisibilityDefaultsKey)")
@@ -87,8 +87,8 @@ class DashboardFilterController: UIViewController, UITableViewDelegate, UITableV
     }
 
     func saveSettings() {
-        Defaults.setObject(selectedRows, forKey: selectedRowsDefaultsKey)
-        Defaults.setObject(sectionVisibility, forKey: sectionVisibilityDefaultsKey)
+        Defaults.set(selectedRows, forKey: selectedRowsDefaultsKey)
+        Defaults.set(sectionVisibility, forKey: sectionVisibilityDefaultsKey)
         Defaults.synchronize()
     }
 
@@ -103,7 +103,7 @@ class DashboardFilterController: UIViewController, UITableViewDelegate, UITableV
     }
     
     func closeAction() {
-        self.dismissViewControllerAnimated(true, completion: nil)
+        self.dismiss(animated: true, completion: nil)
     }
     
     //MARK: UITableViewDataSource
@@ -113,26 +113,26 @@ class DashboardFilterController: UIViewController, UITableViewDelegate, UITableV
         return data.count
     }
 
-    func tableView(tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+    func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         if sectionVisibility[section] {
             return data[section].items.count
         }
         return 0
     }
 
-    func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell {
-        let cell  = tableView.dequeueReusableCellWithIdentifier(dashboardFilterCellIdentifier, forIndexPath: indexPath) as! DashboardFilterCell
+    func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+        let cell  = tableView.dequeueReusableCell(withIdentifier: dashboardFilterCellIdentifier, for: indexPath) as! DashboardFilterCell
         let item = self.data[indexPath.section].items[indexPath.row]
         if deselectAll {
             item.selected = false
-            if cell.checkBoxButton.selected {
-                cell.didPressButton(self)
+            if cell.checkBoxButton.isSelected {
+                cell.didPressButton(sender: self)
             }
         }
         cell.data = item
         if let selectedRowForSection = selectedRows["\(indexPath.section)"] as? Int {
-            if selectedRowForSection == indexPath.row && !cell.checkBoxButton.selected { // prevent deselect
-                cell.didPressButton(self)
+            if selectedRowForSection == indexPath.row && !cell.checkBoxButton.isSelected { // prevent deselect
+                cell.didPressButton(sender: self)
             }
         }
         return cell
@@ -140,7 +140,7 @@ class DashboardFilterController: UIViewController, UITableViewDelegate, UITableV
     
     //MARK: UITableViewDelegate
     func tableView(tableView: UITableView, viewForHeaderInSection section: Int) -> UIView? {
-        let view = tableView.dequeueReusableHeaderFooterViewWithIdentifier(headerIdentifier) as! DashboardFilterHeaderView
+        let view = tableView.dequeueReusableHeaderFooterView(withIdentifier: headerIdentifier) as! DashboardFilterHeaderView
         view.captionLabel.text = self.data[section].title
 
         if sectionGestureRecognizers[section] == nil {
@@ -169,25 +169,25 @@ class DashboardFilterController: UIViewController, UITableViewDelegate, UITableV
     }
 
     func tableView(tableView: UITableView, didSelectRowAtIndexPath indexPath: NSIndexPath) {
-        let cell = tableView.cellForRowAtIndexPath(indexPath) as? DashboardFilterCell
+        let cell = tableView.cellForRow(at: indexPath as IndexPath) as? DashboardFilterCell
         let filterItems = self.data[indexPath.section].items
         let selectedItem = filterItems[indexPath.row]//See DashboardFilterCellData
         
         if selectedItem.selected { // item already selected so just remove it and deselect
-            cell?.didPressButton(self)
-            deselectRow(indexPath.section, row: indexPath.row, refresh: true)
+            cell?.didPressButton(sender: self)
+            deselectRow(section: indexPath.section, row: indexPath.row, refresh: true)
         } else {
             // Deselect all other items in this section. This enforces mutually exclusive filters.
-            for (index, item) in filterItems.enumerate() {
+            for (index, item) in filterItems.enumerated() {
                 if (item.selected && indexPath.row != index) {
-                    let currentlySelectedCell = tableView.cellForRowAtIndexPath(NSIndexPath(forRow: index, inSection: indexPath.section)) as? DashboardFilterCell
+                    let currentlySelectedCell = tableView.cellForRowAtIndexPath(IndexPath(forRow: index, inSection: indexPath.section)) as? DashboardFilterCell
                     currentlySelectedCell?.didPressButton(self)
-                    deselectRow(indexPath.section, row: index)
+                    deselectRow(section: indexPath.section, row: index)
                 }
             }
 
-            selectRow(indexPath.section, row: indexPath.row)
-            cell?.didPressButton(self)//set cell as selected
+            selectRow(section: indexPath.section, row: indexPath.row)
+            cell?.didPressButton(sender: self)//set cell as selected
         }
     }
     
@@ -200,7 +200,7 @@ class DashboardFilterController: UIViewController, UITableViewDelegate, UITableV
     }
 
     func selectRow(section: Int, row: Int) {
-        selectedRows.updateValue(row, forKey: "\(section)")
+        selectedRows.updateValue(row as AnyObject, forKey: "\(section)")
         refreshQuery()
     }
 
@@ -208,7 +208,7 @@ class DashboardFilterController: UIViewController, UITableViewDelegate, UITableV
         let key = "\(section)"
         if let selectedRowForSection = selectedRows[key] as? Int {
             if selectedRowForSection == row {
-                selectedRows.removeValueForKey(key)
+                selectedRows.removeValue(forKey: key)
                 if refresh { refreshQuery() }
             }
         }
@@ -218,7 +218,7 @@ class DashboardFilterController: UIViewController, UITableViewDelegate, UITableV
         var conjunctDescriptions: [String] = []
         var currentConjuncts : [MCQueryPredicate] = []
         for (key, value) in selectedRows {
-            if let section = Int(key), row = value as? Int {
+            if let section = Int(key), let row = value as? Int {
                 if let predicate = self.data[section].items[row].predicate {
                     let ctitle = self.data[section].items[row].title
                     conjunctDescriptions.append(ctitle)
@@ -234,16 +234,16 @@ class DashboardFilterController: UIViewController, UITableViewDelegate, UITableV
         QueryManager.sharedManager.clearQueries()
 
         if !currentConjuncts.isEmpty {
-            let title = conjunctDescriptions.joinWithSeparator(" and ")
+            let title = conjunctDescriptions.joined(separator: " and ")
             let query = Query.ConjunctiveQuery(nil, nil, nil, currentConjuncts)
-            QueryManager.sharedManager.addQuery(title, query: query)
-            QueryManager.sharedManager.selectQuery(0)
+            QueryManager.sharedManager.addQuery(name: title, query: query)
+            QueryManager.sharedManager.selectQuery(index: 0)
         }
     }
 
     func addData () {
         let specs = (UserManager.sharedManager.useMetricUnits() ? metricFilterSpecs : imperialFilterSpecs) + commonFilterSpecs
-        self.data = filterSpecsToItems(specs)
+        self.data = filterSpecsToItems(specs: specs)
     }
 
 
@@ -251,10 +251,10 @@ class DashboardFilterController: UIViewController, UITableViewDelegate, UITableV
     typealias FilterSpecs = [(String, String, HKUnit?, [(Int, Int, String?)])]
 
     let commonFilterSpecs: FilterSpecs = [
-        ("Body Mass Index", HKQuantityTypeIdentifierBodyMassIndex, nil,
+        ("Body Mass Index", HKQuantityTypeIdentifierBodyMassIndex.rawValue, nil,
             [(0, 18, "(underweight)"), (18, 25, "(standard)"), (25, 30, "(overweight)"), (30, Int.max, "(obese)")]),
 
-        ("Dietary Energy", HKQuantityTypeIdentifierDietaryEnergyConsumed, nil,
+        ("Dietary Energy", HKQuantityTypeIdentifierDietaryEnergyConsumed.rawValue, nil,
             [(0, 1000, nil), (1000, 2000, nil), (2000, 3500, nil), (3500, Int.max, nil)]),
 
         ("Heart Rate", HKQuantityTypeIdentifierHeartRate, nil,
@@ -316,12 +316,12 @@ class DashboardFilterController: UIViewController, UITableViewDelegate, UITableV
     ]
 
     let metricFilterSpecs: FilterSpecs = [
-        ("Weight", HKQuantityTypeIdentifierBodyMass, HKUnit.gramUnitWithMetricPrefix(.Kilo),
+        ("Weight", HKQuantityTypeIdentifier.bodyMass.rawValue, HKUnit.gramUnit(with: .kilo),
             [(0, 40, nil), (40, 65, nil), (65, 90, nil), (90, 1000, nil)]),
     ]
 
     let imperialFilterSpecs: FilterSpecs = [
-        ("Weight", HKQuantityTypeIdentifierBodyMass, HKUnit.poundUnit(),
+        ("Weight", HKQuantityTypeIdentifier.bodyMass.rawValue, HKUnit.pound(),
             [(0, 90, nil), (90, 140, nil), (140, 200, nil), (200, 1000, nil)]),
     ]
 

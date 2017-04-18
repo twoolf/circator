@@ -5,12 +5,12 @@
 //  Created by Yanif Ahmad on 1/14/17.
 //  Copyright © 2017 Yanif Ahmad, Tom Woolf. All rights reserved.
 //
-
+/*
 import Foundation
 import MCCircadianQueries
 import Alamofire
 import Async
-import LogKit
+//import LogKit
 import SwiftDate
 import SwiftyUserDefaults
 
@@ -200,7 +200,7 @@ public let RLogDidExpire = "RLogDidExpire"
 
 public class RemoteLogManager {
 
-    public let log = RemoteLog.sharedInstance
+//    public let log = RemoteLog.sharedInstance
 
     public static let sharedManager = RemoteLogManager(
         token: "INVALID"
@@ -262,8 +262,8 @@ public class RemoteLogManager {
             if self.log.url == nil { self.log.setURL(token); self.log.loadRemote() }
 
             // Set default config if we have an empty config, or if the config has expired.
-            let now = NSDate()
-            let expiry = Defaults.objectForKey(RLogExpiryKey) as? NSDate ?? now
+            let now = Date()
+            let expiry = Defaults.objectForKey(RLogExpiryKey) as? Date ?? now
             if now > expiry { self.resetConfig() }
             else if self.log.configName == MCInitLogConfigName { self.log.setLogConfig(self.defaultName, cfg: self.defaultConfig) }
 
@@ -277,14 +277,14 @@ public class RemoteLogManager {
         let nc: [(String, AnyObject)] = c.flatMap({ k,v in
             if let nested = v as? [String:AnyObject] {
                 let nv: [(String, AnyObject)] = nested.flatMap({ k2,v2 in
-                    if let l2 = v2 as? String, p2 = self.log.priority(l2) { return (k2, p2.rawValue) }
+                    if let l2 = v2 as? String, let p2 = self.log.priority(l2) { return (k2, p2.rawValue) }
                     log.debug("Skipping log config entry: \(k), \(k2) => \(v2)")
                     failed = true
                     return nil
                 })
                 return (k, Dictionary(pairs: nv))
             }
-            else if let flat = v as? String, p = self.log.priority(flat) {
+            else if let flat = v as? String, let p = self.log.priority(flat) {
                 return (k, p.rawValue)
             }
             log.debug("Skipping log config entry: \(k) => \(v)")
@@ -294,18 +294,18 @@ public class RemoteLogManager {
         return failed ? nil : Dictionary(pairs: nc)
     }
 
-    public func reconfigure(completion: Bool -> Void) -> Void {
+    public func reconfigure(completion: @escaping (Bool) -> Void) -> Void {
         Service.json(MCRouter.RLogConfig, statusCode: 200..<300, tag: "GRLOG") {
             _, _, result in
             let pullSuccess = result.isSuccess
-            if let rv = result.value as? [String: AnyObject] where pullSuccess {
+            if let rv = result.value as? [String: AnyObject], pullSuccess {
                 self.log.debug("Log reconfiguration result: \(rv)")
                 if let n = rv["name"] as? String,
-                    c = rv["config"] as? [String: AnyObject], cfg = self.parseLogConfig(c)
+                    let c = rv["config"] as? [String: AnyObject], let cfg = self.parseLogConfig(c)
                 {
                     if let ttl = rv["ttl"] as? Int {
                         let ttlSecs = ttl * 60
-                        let expiry = NSDate() + ttlSecs.seconds
+                        let expiry = Date() + ttlSecs.seconds
                         self.log.debug("Reconfiguration TTL: \(ttl), date: \(expiry)")
                         Defaults.setObject(expiry, forKey: RLogExpiryKey)
                         NSTimer.scheduledTimerWithTimeInterval(Double(ttlSecs), target: self, selector: #selector(self.resetConfig), userInfo: nil, repeats: false)
@@ -323,6 +323,6 @@ public class RemoteLogManager {
     @objc func resetConfig() {
         self.log.debug("Resetting remote log to a default configuration")
         self.log.setLogConfig(self.defaultName, cfg: self.defaultConfig)
-        NSNotificationCenter.defaultCenter().postNotificationName(RLogDidExpire, object: self)
+        NotificationCenter.defaultCenter().postNotificationName(RLogDidExpire, object: self)
     }
-}
+} */

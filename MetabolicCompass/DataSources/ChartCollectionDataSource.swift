@@ -2,7 +2,7 @@
 //  ChartCollectionDataSource.swift
 //  ChartsMC
 //
-//  Created by Artem Usachov on 6/1/16.
+//  Created by Artem Usachov on 6/1/16.  
 //  Copyright © 2016 SROST. All rights reserved.
 //
 
@@ -13,6 +13,11 @@ import HealthKit
 import MetabolicCompassKit
 
 class ChartCollectionDataSource: NSObject, UICollectionViewDataSource {
+    @available(iOS 6.0, *)
+    public func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
+        <#code#>
+    }
+
 
     internal var collectionData: [ChartData] = []
     internal var model: BarChartModel?
@@ -26,7 +31,7 @@ class ChartCollectionDataSource: NSObject, UICollectionViewDataSource {
         data = PreviewManager.chartsSampleTypes
     }
     
-    func collectionView(collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
+    func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
         return data.count
     }
     
@@ -34,20 +39,20 @@ class ChartCollectionDataSource: NSObject, UICollectionViewDataSource {
         let cell: BaseChartCollectionCell
         
         let type = data[indexPath.row]
-        let typeToShow = type.identifier == HKCorrelationTypeIdentifierBloodPressure ? HKQuantityTypeIdentifierBloodPressureSystolic : type.identifier
-        let chartType: ChartType = (model?.chartTypeForQuantityTypeIdentifier(typeToShow))!
+        let typeToShow = type.identifier == HKCorrelationTypeIdentifier.bloodPressure.rawValue ? HKQuantityTypeIdentifier.bloodPressureSystolic.rawValue : type.identifier
+        let chartType: ChartType = (model?.chartTypeForQuantityTypeIdentifier(qType: typeToShow))!
         let key = typeToShow + "\((model?.rangeType.rawValue)!)"
         let chartData = model?.typesChartData[key]
         if(chartType == ChartType.BarChart) {
-            cell = collectionView.dequeueReusableCellWithReuseIdentifier(barChartCellIdentifier, forIndexPath: indexPath) as! BarChartCollectionCell
+            cell = collectionView.dequeueReusableCell(withReuseIdentifier: barChartCellIdentifier, for: indexPath as IndexPath) as! BarChartCollectionCell
         } else if (chartType == ChartType.LineChart) {
-            cell = collectionView.dequeueReusableCellWithReuseIdentifier(lineChartCellIdentifier, forIndexPath: indexPath) as! LineChartCollectionCell
+            cell = collectionView.dequeueReusableCell(withReuseIdentifier: lineChartCellIdentifier, for: indexPath as IndexPath) as! LineChartCollectionCell
         } else {//Scatter chart
-            cell = collectionView.dequeueReusableCellWithReuseIdentifier(scatterChartCellIdentifier, forIndexPath: indexPath) as! ScatterChartCollectionCell
+            cell = collectionView.dequeueReusableCell(withReuseIdentifier: scatterChartCellIdentifier, for: indexPath as IndexPath) as! ScatterChartCollectionCell
         }
         cell.chartView.data = nil
-        if let yMax = chartData?.yMax, yMin = chartData?.yMin where yMax > 0 || yMin > 0 {
-            cell.updateLeftAxisWith(chartData?.yMin, maxValue: chartData?.yMax)
+        if let yMax = chartData?.yMax, let yMin = chartData?.yMin, yMax > 0 || yMin > 0 {
+            cell.updateLeftAxisWith(minValue: chartData?.yMin, maxValue: chartData?.yMax)
             cell.chartView.data = chartData
             if let marker = cell.chartView.marker as? BalloonMarker {
                 marker.yMax = cell.chartView.leftAxis.axisMaxValue
@@ -55,7 +60,7 @@ class ChartCollectionDataSource: NSObject, UICollectionViewDataSource {
                 marker.yPixelRange = Double(cell.chartView.contentRect.height)
             }
         }
-        cell.chartTitleLabel.text = appearanceProvider.stringForSampleType(typeToShow == HKQuantityTypeIdentifierBloodPressureSystolic ? HKCorrelationTypeIdentifierBloodPressure : typeToShow)
+        cell.chartTitleLabel.text = appearanceProvider.stringForSampleType(sampleType: typeToShow == HKQuantityTypeIdentifierBloodPressureSystolic.rawValue ? HKCorrelationTypeIdentifierBloodPressure.rawValue : typeToShow)
         return cell
     }
 }

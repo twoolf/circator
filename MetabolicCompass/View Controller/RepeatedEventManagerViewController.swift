@@ -56,9 +56,9 @@ public struct Event : Equatable {
     //optional text info
     var note : String?
     //optional exact time for exact event logging
-    var currentDay : NSDate?
+    var currentDay : Date?
     
-    init(nameOfEvent name : String, typeOfEvent type : EventType, timeOfDayOffsetInSeconds offset : NSTimeInterval, durationInSeconds duration : NSTimeInterval, CurrentTimeAsCurrentDay time : NSDate? = nil, additionalInfo note : String? = nil) {
+    init(nameOfEvent name : String, typeOfEvent type : EventType, timeOfDayOffsetInSeconds offset : NSTimeInterval, durationInSeconds duration : NSTimeInterval, CurrentTimeAsCurrentDay time : Date? = nil, additionalInfo note : String? = nil) {
         self.name = name
         self.eventType = type
         self.timeOfDayOffset = offset
@@ -469,7 +469,7 @@ class RepeatedEventManagerViewController: UIViewController {
     
     func selectCurrentWeekday() {
         
-        self.setWeekdayView(self.weekdayButtons[NSDate().weekday - 1])
+        self.setWeekdayView(self.weekdayButtons[Date().weekday - 1])
         
     }
     
@@ -754,24 +754,24 @@ class RepeatedEventDetailViewController : UIViewController {
         //TODO
         //events that end or start on the half-hour are not displaying correctly
         
-        let formatTime: (NSDate -> String) = { time in
-            let timeFormatter = NSDateFormatter()
+        let formatTime: (Date -> String) = { time in
+            let timeFormatter = DateFormatter()
             timeFormatter.dateFormat = "h:mm a"
             return timeFormatter.stringFromDate(time)
         }
         
         let start : String = {
-            let components = NSDateComponents()
+            let components = DateComponents()
             components.hour = Int((self.event?.event.timeOfDayOffset)!)/3600
             components.minute = Int((self.event?.event.timeOfDayOffset)!)%60
-            return formatTime(NSDate(components: components))
+            return formatTime(Date(components: components))
         }()
         
         let end : String = {
-            let components = NSDateComponents()
+            let components = DateComponents()
             components.hour = Int((self.event?.event.timeOfDayOffset)! + (self.event?.event.duration)!)/3600
             components.minute = Int((self.event?.event.timeOfDayOffset)! + (self.event?.event.duration)!)%60
-            return formatTime(NSDate(components: components))
+            return formatTime(Date(components: components))
         }()
         
         eventTimeLabel.text = "from " + start + " to " + end
@@ -1115,8 +1115,8 @@ final class RepeatedEventFormViewController: FormViewController {
                 self.eventTitle = title
         }
         
-        let formatTime: (NSDate -> String) = { time in
-            let timeFormatter = NSDateFormatter()
+        let formatTime: (Date -> String) = { time in
+            let timeFormatter = DateFormatter()
             timeFormatter.dateFormat = "h:mm a"
             return timeFormatter.stringFromDate(time)
         }
@@ -1132,14 +1132,14 @@ final class RepeatedEventFormViewController: FormViewController {
                 //TODO
                 //timeToShow instantiated properply but datePicker setDate won't change the date properly
                 
-                let timeToShow : NSDate = {
-                    let components = NSDate().components
+                let timeToShow : Date = {
+                    let components = Date().components
                     if components.minute < 30 {
                         components.minute = 0
                     } else {
                         components.minute = 30
                     }
-                    return NSDate(components: components)
+                    return Date(components: components)
                 }()
                 
                 print(timeToShow)
@@ -1198,7 +1198,7 @@ final class RepeatedEventFormViewController: FormViewController {
                 selectDays.selectedIndices = self.selectedDays
                 selectDays.selectionUpdateHandler = { [unowned self] days in
                     self.selectedDays = days
-                    selectedDaysLabel.text = self.selectedDays.sort().map { self.dynamicType.dayNames[$0] }.joinWithSeparator(", ")
+                    selectedDaysLabel.text = self.selectedDays.sort().map { type(of: self).dayNames[$0] }.joinWithSeparator(", ")
                 }
                 self.presentViewController(selectDays, animated: true, completion: nil)
                 row.former!.deselect(true)
@@ -1338,7 +1338,7 @@ class DaySelectionViewController: UIViewController {
         
         override func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell {
             let cell = tableView.dequeueReusableCellWithIdentifier("dayCell", forIndexPath: indexPath)
-            cell.textLabel?.text = self.dynamicType.dayNames[indexPath.row]
+            cell.textLabel?.text = type(of: self).dayNames[indexPath.row]
             cell.accessoryType = selectedIndices.contains(indexPath.row) ? .Checkmark : .None
             return cell
         }

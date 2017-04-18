@@ -140,8 +140,8 @@ public class OurStudyViewController: UIViewController, ChartViewDelegate {
             labelFontSize: studyLabelFontSize, labelSpacing: 0.0, value: Double(rank), unit: "%", prefix: "Top", suffix: "of all users")
 
         if let imageLabelStack = stack.subviews[1] as? UIStackView,
-            badge = imageLabelStack.subviews[0] as? UIImageView,
-            label = imageLabelStack.subviews[1] as? UILabel
+            let badge = imageLabelStack.subviews[0] as? UIImageView,
+            let label = imageLabelStack.subviews[1] as? UILabel
         {
             label.attributedText = OurStudyViewController.userRankingLabelText(rank)
             label.setNeedsDisplay()
@@ -163,9 +163,9 @@ public class OurStudyViewController: UIViewController, ChartViewDelegate {
             labelSpacing: 0.0, value: 1.0, unit: "straight days", prefix: "You've logged", suffix: "")
 
         if let descLabel = stack.subviews[0] as? UILabel,
-            imageLabelStack = stack.subviews[1] as? UIStackView,
-            badge = imageLabelStack.subviews[0] as? UIImageView,
-            label = imageLabelStack.subviews[1] as? UILabel
+            let imageLabelStack = stack.subviews[1] as? UIStackView,
+            let badge = imageLabelStack.subviews[0] as? UIImageView,
+            let label = imageLabelStack.subviews[1] as? UILabel
         {
             let compact = UIScreen.mainScreen().bounds.size.height < 569
             let (_, icon, desc) = OurStudyViewController.contributionStreakClassAndIcon(streak)
@@ -255,7 +255,7 @@ public class OurStudyViewController: UIViewController, ChartViewDelegate {
     func logContentView(asAppear: Bool = true) {
         Answers.logContentViewWithName("Our Study",
                                        contentType: asAppear ? "Appear" : "Disappear",
-                                       contentId: NSDate().toString(DateFormat.Custom("YYYY-MM-dd:HH")),
+                                       contentId: Date().toString(DateFormat.Custom("YYYY-MM-dd:HH")),
                                        customAttributes: nil)
     }
 
@@ -347,14 +347,14 @@ public class OurStudyViewController: UIViewController, ChartViewDelegate {
         let badgeSize = ScreenManager.sharedInstance.badgeIconSize()
 
         if let imageLabelStack = userRankingBadge.subviews[1] as? UIStackView,
-            badge = imageLabelStack.subviews[0] as? UIImageView
+            let badge = imageLabelStack.subviews[0] as? UIImageView
         {
             phaseConstraints.append(badge.widthAnchor.constraintEqualToConstant(badgeSize))
             phaseConstraints.append(badge.heightAnchor.constraintEqualToAnchor(badge.widthAnchor))
         }
 
         if let imageLabelStack = contributionStreakBadge.subviews[1] as? UIStackView,
-            badge = imageLabelStack.subviews[0] as? UIImageView
+            let badge = imageLabelStack.subviews[0] as? UIImageView
         {
             phaseConstraints.append(badge.widthAnchor.constraintEqualToConstant(badgeSize))
             phaseConstraints.append(badge.heightAnchor.constraintEqualToAnchor(badge.widthAnchor))
@@ -492,8 +492,8 @@ public class OurStudyViewController: UIViewController, ChartViewDelegate {
 
     func refreshUserRanking(rank: Int) {
         if let imageLabelStack = userRankingBadge.subviews[1] as? UIStackView,
-               badge = imageLabelStack.subviews[0] as? UIImageView,
-               label = imageLabelStack.subviews[1] as? UILabel
+               let badge = imageLabelStack.subviews[0] as? UIImageView,
+               let label = imageLabelStack.subviews[1] as? UILabel
         {
             label.attributedText = OurStudyViewController.userRankingLabelText(rank)
             label.setNeedsDisplay()
@@ -507,9 +507,9 @@ public class OurStudyViewController: UIViewController, ChartViewDelegate {
 
     func refreshContributionStreak(days: Int) {
         if let descLabel = contributionStreakBadge.subviews[0] as? UILabel,
-            imageLabelStack = contributionStreakBadge.subviews[1] as? UIStackView,
-            badge = imageLabelStack.subviews[0] as? UIImageView,
-            label = imageLabelStack.subviews[1] as? UILabel
+            let imageLabelStack = contributionStreakBadge.subviews[1] as? UIStackView,
+            let badge = imageLabelStack.subviews[0] as? UIImageView,
+            let label = imageLabelStack.subviews[1] as? UILabel
         {
             let compact = UIScreen.mainScreen().bounds.size.height < 569
             let (_, icon, desc) = OurStudyViewController.contributionStreakClassAndIcon(days)

@@ -26,21 +26,21 @@ enum InboxItemType {
 protocol InboxItemData {
     
     // date is formatted as "dd-mm-YYYY" like 27-09-1991 as September 27, 1991 for inbox view
-    var receiptDate : NSDate { get }
+    var receiptDate : Date { get }
     var inboxItemType : InboxItemType { get }
     var itemContentView : UIView { get set }
-    init(receiptDate date : NSDate, inboxItemType type : InboxItemType)
+    init(receiptDate date : Date, inboxItemType type : InboxItemType)
 
     
 }
 
 class InboxItem : UITableViewCell {
     
-    var receiptDate : NSDate!
+    var receiptDate : Date!
     var itemData : InboxItemData!
 
     
-    init(receiptDate date : NSDate, itemData data : InboxItemData) {
+    init(receiptDate date : Date, itemData data : InboxItemData) {
         
         super.init(style: .Default, reuseIdentifier: "InboxItemTableViewCell")
 
@@ -116,19 +116,19 @@ class InboxManager {
     
     var items : [InboxItem] = []
     
-    var lastUpdated : NSDate? {
+    var lastUpdated : Date? {
         didSet {
             EventInboxViewController.shared.reloadData()
         }
     }
     
-    //var lastCleared : NSDate?
+    //var lastCleared : Date?
     
     func fetchRepeatedEvents() -> [InboxItem] {
         
         
         if self.lastUpdated == nil {
-            self.lastUpdated = NSDate()
+            self.lastUpdated = Date()
         }
         
         self.loadEventsSinceUpdated()
@@ -143,10 +143,10 @@ class InboxManager {
     func loadEventsSinceUpdated() {
         
         let calender = NSCalendar(calendarIdentifier: NSCalendarIdentifierGregorian)!
-        let components = calender.components(.Minute, fromDate: self.lastUpdated!, toDate: NSDate(), options: .WrapComponents)
+        let components = calender.components(.Minute, fromDate: self.lastUpdated!, toDate: Date(), options: .WrapComponents)
         
-        let dateFormatter : NSDateFormatter = {
-            let formatter = NSDateFormatter()
+        let dateFormatter : DateFormatter = {
+            let formatter = DateFormatter()
             formatter.dateFormat = "EEEE mmmm, dd"
             return formatter
         }()
@@ -194,7 +194,7 @@ class InboxManager {
         }
         
         //changes date of last update to now
-        self.lastUpdated = NSDate()
+        self.lastUpdated = Date()
         
     }
 

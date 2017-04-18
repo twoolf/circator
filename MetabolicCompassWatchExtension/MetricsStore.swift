@@ -19,8 +19,8 @@ class MetricsStore {
     var StepCount: String = "10001"
     var ActiveEnergy: String = "1200"
     var RestingEnergy: String = "900"
-    var Sleep: NSDate = NSDate()
-    var Exercise: NSDate = NSDate()
+    var Sleep: Date = Date()
+    var Exercise: Date = Date()
     var UVExposure: String = "8"
     var Protein: String = "1215"
     var Carbohydrate: String = "1776"
@@ -39,7 +39,7 @@ class MetricsStore {
     var currentFastingTime = "none"
     var lastEatingTime = "no data"
     var lastAte = "no data"
-    var lastAteAsNSDate: NSDate = NSDate()
+    var lastAteAsDate: Date = Date()
     var cumulativeWeeklyFasting = "7"
     var cumulativeWeeklyNonFast = "14"
     var weeklyFastingVariability = "2"

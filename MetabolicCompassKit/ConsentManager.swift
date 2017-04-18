@@ -10,13 +10,13 @@ import ResearchKit
 import Locksmith
 import Async
 
-public typealias ConsentBlock = ((consented: Bool, givenName: String?, familyName: String?) -> Void)?
+public typealias ConsentBlock = ((_ consented: Bool, _ givenName: String?, _ familyName: String?) -> Void)?
 
 private let ConsentFilePathKey = "CMConsentFileKey"
 private let unnamedAccount = "default"
 
 /**
- Interacts with ResearchKit to control the electronic consent process.  Note that this flows from work with our Johns Hopkin IRB panel for consent of the process.  The ResearchKit framework supports a range of questions and their responses as well as the creation of the final pdf document.
+ Interacts with ResearchKit to control the electronic consent process.  Note that this flows from work with our Johns Hopkin IRB panel for consent of the process.  The ResearchKit framework supports a range of questions and their responses as well as the creation of the final pdf document.  
  
  */
 public class ConsentManager: NSObject, ORKTaskViewControllerDelegate {
@@ -46,19 +46,19 @@ public class ConsentManager: NSObject, ORKTaskViewControllerDelegate {
     
     public static let sharedManager = ConsentManager()
     
-    private var consentHandler: ((consented: Bool, givenName: String?, familyName: String?) -> Void)?
+    private var consentHandler: ((_ consented: Bool, _ givenName: String?, _ familyName: String?) -> Void)?
     
     public func resetConsentFilePath () {
         do {
-            try Locksmith.deleteDataForUserAccount(unnamedAccount)
+            try Locksmith.deleteDataForUserAccount(userAccount: unnamedAccount)
         } catch {
             print ("Can't delete default user data")
         }
     }
     
     public func getConsentFilePath() -> String? {
-        if let dictionary = Locksmith.loadDataForUserAccount(unnamedAccount),
-            consentFilePath = dictionary["consentfile"] as? String
+        if let dictionary = Locksmith.loadDataForUserAccount(userAccount: unnamedAccount),
+            let consentFilePath = dictionary["consentfile"] as? String
         {
             return consentFilePath
         }
@@ -67,11 +67,11 @@ public class ConsentManager: NSObject, ORKTaskViewControllerDelegate {
     
     private func setConsentFilePath(consentFilePath: String) {
         do {
-            if let _ = Locksmith.loadDataForUserAccount(unnamedAccount)
+            if let _ = Locksmith.loadDataForUserAccount(userAccount: unnamedAccount)
             {
-                try Locksmith.updateData(["consentfile": consentFilePath], forUserAccount: unnamedAccount)
+                try Locksmith.updateData(data: ["consentfile": consentFilePath], forUserAccount: unnamedAccount)
             } else {
-                try Locksmith.saveData(["consentfile": consentFilePath], forUserAccount: unnamedAccount)
+                try Locksmith.saveData(data: ["consentfile": consentFilePath], forUserAccount: unnamedAccount)
             }
         } catch {
             print("Error: Cannot save to keychain!")
@@ -81,7 +81,7 @@ public class ConsentManager: NSObject, ORKTaskViewControllerDelegate {
     public func removeConsentFile(consentFilePath: String) {
         do {
             print("Removing file at: \(consentFilePath)")
-            try NSFileManager.defaultManager().removeItemAtPath(consentFilePath)
+            try FileManager.default.removeItem(atPath: consentFilePath)
         }
         catch let error as NSError {
             print("Failed to remove consent file: \(error)")
@@ -139,20 +139,20 @@ public class ConsentManager: NSObject, ORKTaskViewControllerDelegate {
     private var eligibilitySteps: [ORKStep] {
         get {
             // Intro step
-            let introStep = ORKInstructionStep(identifier: String(Identifier.EligibilityIntroStep))
+            let introStep = ORKInstructionStep(identifier: String(describing: Identifier.EligibilityIntroStep))
             introStep.title = NSLocalizedString("Welcome to Metabolic Compass", comment: "")
             
             // Form step
-            let formStep = ORKFormStep(identifier: String(Identifier.EligibilityFormStep))
-            formStep.optional = false
+            let formStep = ORKFormStep(identifier: String(describing: Identifier.EligibilityFormStep))
+            formStep.isOptional = false
             
             // Form items
-            let formItem01 = ORKFormItem(identifier: String(Identifier.EligibilityFormItem01), text: "Are you over 18?", answerFormat: ORKAnswerFormat.eligibilityAnswerFormat())
-            formItem01.optional = false
-            let formItem02 = ORKFormItem(identifier: String(Identifier.EligibilityFormItem02), text: "Do you worry about your diet?", answerFormat: ORKAnswerFormat.eligibilityAnswerFormat())
-            formItem02.optional = false
-            let formItem03 = ORKFormItem(identifier: String(Identifier.EligibilityFormItem03), text: "Do you live in the United States of America?", answerFormat: ORKAnswerFormat.eligibilityAnswerFormat())
-            formItem03.optional = false
+            let formItem01 = ORKFormItem(identifier: String(describing: Identifier.EligibilityFormItem01), text: "Are you over 18?", answerFormat: ORKAnswerFormat.eligibilityAnswerFormat())
+            formItem01.isOptional = false
+            let formItem02 = ORKFormItem(identifier: String(describing: Identifier.EligibilityFormItem02), text: "Do you worry about your diet?", answerFormat: ORKAnswerFormat.eligibilityAnswerFormat())
+            formItem02.isOptional = false
+            let formItem03 = ORKFormItem(identifier: String(describing: Identifier.EligibilityFormItem03), text: "Do you live in the United States of America?", answerFormat: ORKAnswerFormat.eligibilityAnswerFormat())
+            formItem03.isOptional = false
             
             formStep.formItems = [
                 formItem01,
@@ -161,11 +161,11 @@ public class ConsentManager: NSObject, ORKTaskViewControllerDelegate {
             ]
             
             // Ineligible step
-            let ineligibleStep = ORKInstructionStep(identifier: String(Identifier.EligibilityIneligibleStep))
+            let ineligibleStep = ORKInstructionStep(identifier: String(describing: Identifier.EligibilityIneligibleStep))
             ineligibleStep.title = NSLocalizedString("You are ineligible to join the study", comment: "")
             
             // Eligible step
-            let eligibleStep = ORKCompletionStep(identifier: String(Identifier.EligibilityEligibleStep))
+            let eligibleStep = ORKCompletionStep(identifier: String(describing: Identifier.EligibilityEligibleStep))
             eligibleStep.title = NSLocalizedString("You are eligible to join the study", comment: "")
             
             return [
@@ -203,7 +203,7 @@ public class ConsentManager: NSObject, ORKTaskViewControllerDelegate {
         the consent review step.
         */
         let participantSignatureTitle = NSLocalizedString("Participant", comment: "")
-        let participantSignature = ORKConsentSignature(forPersonWithTitle: participantSignatureTitle, dateFormatString: nil, identifier: String(Identifier.ConsentDocumentParticipantSignature))
+        let participantSignature = ORKConsentSignature(forPersonWithTitle: participantSignatureTitle, dateFormatString: nil, identifier: String(describing: Identifier.ConsentDocumentParticipantSignature))
         
         consentDocument.addSignature(participantSignature)
         
@@ -219,11 +219,11 @@ public class ConsentManager: NSObject, ORKTaskViewControllerDelegate {
         let investigatorSignatureTitle = NSLocalizedString("Professor", comment: "")
         let investigatorSignatureGivenName = NSLocalizedString("Thomas", comment: "")
         let investigatorSignatureFamilyName = NSLocalizedString("Woolf", comment: "")
-        let dateFormatter = NSDateFormatter()
+        let dateFormatter = DateFormatter()
         dateFormatter.dateFormat = "MM/dd/YY"
-        let investigatorSignatureDateString = dateFormatter.stringFromDate(NSDate())
+        let investigatorSignatureDateString = dateFormatter.string(from: Date())
         
-        let investigatorSignature = ORKConsentSignature(forPersonWithTitle: investigatorSignatureTitle, dateFormatString: nil, identifier: String(Identifier.ConsentDocumentInvestigatorSignature), givenName: investigatorSignatureGivenName, familyName: investigatorSignatureFamilyName, signatureImage: signatureImage, dateString: investigatorSignatureDateString)
+        let investigatorSignature = ORKConsentSignature(forPersonWithTitle: investigatorSignatureTitle, dateFormatString: nil, identifier: String(describing: Identifier.ConsentDocumentInvestigatorSignature), givenName: investigatorSignatureGivenName, familyName: investigatorSignatureFamilyName, signatureImage: signatureImage, dateString: investigatorSignatureDateString)
         
         consentDocument.addSignature(investigatorSignature)
         
@@ -252,14 +252,14 @@ public class ConsentManager: NSObject, ORKTaskViewControllerDelegate {
         animated transitions.
         */
         let consentSectionTypes: [ORKConsentSectionType] = [
-            .Overview,
-            .DataGathering,
-            .Privacy,
-            .DataUse,
-            .TimeCommitment,
-            .StudySurvey,
-            .StudyTasks,
-            .Withdrawing
+            .overview,
+            .dataGathering,
+            .privacy,
+            .dataUse,
+            .timeCommitment,
+            .studySurvey,
+            .studyTasks,
+            .withdrawing
         ]
         
         /*
@@ -269,35 +269,35 @@ public class ConsentManager: NSObject, ORKTaskViewControllerDelegate {
         var consentSections: [ORKConsentSection] = consentSectionTypes.map { contentSectionType in
             let consentSection = ORKConsentSection(type: contentSectionType)
             
-            if contentSectionType == .Overview {
+            if contentSectionType == .overview {
                 consentSection.summary = welcomeText
                 consentSection.htmlContent = welcomeSectionText
             }
-            else if contentSectionType == .DataGathering {
+            else if contentSectionType == .dataGathering {
                 consentSection.summary = dataProcessingText
                 consentSection.htmlContent = sensorDataContentString
             }
-            else if contentSectionType == .Privacy {
+            else if contentSectionType == .privacy {
                 consentSection.summary = protectingYourData
                 consentSection.htmlContent = protectingDataString
             }
-            else if contentSectionType == .DataUse {
+            else if contentSectionType == .dataUse {
                 consentSection.summary = dataUse
                 consentSection.htmlContent = dataUseString
             }
-            else if contentSectionType == .TimeCommitment {
+            else if contentSectionType == .timeCommitment {
                 consentSection.summary = potentialBenefits
                 consentSection.htmlContent = PotentialBenefitsLong
             }
-            else if contentSectionType == .StudySurvey {
+            else if contentSectionType == .studySurvey {
                 consentSection.summary = issuesToConsider
                 consentSection.htmlContent = ConsiderLongText
             }
-            else if contentSectionType == .StudyTasks {
+            else if contentSectionType == .studyTasks {
                 consentSection.summary = riskToPrivacy
                 consentSection.htmlContent = sharingResearchString
             }
-            else if contentSectionType == .Withdrawing {
+            else if contentSectionType == .withdrawing {
                 consentSection.summary = withdrawing
                 consentSection.htmlContent = withDrawingString
             }
@@ -316,7 +316,7 @@ public class ConsentManager: NSObject, ORKTaskViewControllerDelegate {
         Informed consent starts by presenting an animated sequence conveying
         the main points of your consent document.
         */
-        let visualConsentStep = ORKVisualConsentStep(identifier: String(Identifier.VisualConsentStep), document: consentDocument)
+        let visualConsentStep = ORKVisualConsentStep(identifier: String(describing: Identifier.VisualConsentStep), document: consentDocument)
         
         let investigatorShortDescription = NSLocalizedString("Johns Hopkins University", comment: "")
         let investigatorLongDescription = NSLocalizedString("Johns Hopkins University and its partners", comment: "")
@@ -329,7 +329,7 @@ public class ConsentManager: NSObject, ORKTaskViewControllerDelegate {
         explicit permission from the participant. Use the consent sharing step
         for this.
         */
-        let sharingConsentStep = ORKConsentSharingStep(identifier: String(Identifier.ConsentSharingStep), investigatorShortDescription: investigatorShortDescription, investigatorLongDescription: investigatorLongDescription, localizedLearnMoreHTMLContent: localizedLearnMoreHTMLContent)
+        let sharingConsentStep = ORKConsentSharingStep(identifier: String(describing: Identifier.ConsentSharingStep), investigatorShortDescription: investigatorShortDescription, investigatorLongDescription: investigatorLongDescription, localizedLearnMoreHTMLContent: localizedLearnMoreHTMLContent)
         
         /*
         After the visual presentation, the consent review step displays
@@ -341,7 +341,7 @@ public class ConsentManager: NSObject, ORKTaskViewControllerDelegate {
         */
         let signature = consentDocument.signatures!.first
         
-        let reviewConsentStep = ORKConsentReviewStep(identifier: String(Identifier.ConsentReviewStep), signature: signature, inDocument: consentDocument)
+        let reviewConsentStep = ORKConsentReviewStep(identifier: String(describing: Identifier.ConsentReviewStep), signature: signature, in: consentDocument)
         
         // In a real application, you would supply your own localized text.
         reviewConsentStep.text = ConsiderLongText
@@ -355,78 +355,121 @@ public class ConsentManager: NSObject, ORKTaskViewControllerDelegate {
     }
  
     private func consentTaskWithEligibilitySection() -> ORKTask {
-        let consentTask = ORKNavigableOrderedTask(identifier: String(Identifier.EligibilityAndConsentTask), steps: Array([eligibilitySteps, consentSteps].flatten()))
+        let consentTask = ORKNavigableOrderedTask(identifier: String(describing: Identifier.EligibilityAndConsentTask), steps: Array([eligibilitySteps, consentSteps].joined()))
         
         // Build navigation rules.
-        var resultSelector = ORKResultSelector(stepIdentifier: String(Identifier.EligibilityFormStep), resultIdentifier: String(Identifier.EligibilityFormItem01))
-        let predicateFormItem01 = ORKResultPredicate.predicateForBooleanQuestionResultWithResultSelector(resultSelector, expectedAnswer: true)
+        var resultSelector = ORKResultSelector(stepIdentifier: String(describing: Identifier.EligibilityFormStep), resultIdentifier: String(describing: Identifier.EligibilityFormItem01))
+        let predicateFormItem01 = ORKResultPredicate.predicateForBooleanQuestionResult(with: resultSelector, expectedAnswer: true)
         
-        resultSelector = ORKResultSelector(stepIdentifier: String(Identifier.EligibilityFormStep), resultIdentifier: String(Identifier.EligibilityFormItem02))
-        let predicateFormItem02 = ORKResultPredicate.predicateForBooleanQuestionResultWithResultSelector(resultSelector, expectedAnswer: true)
+        resultSelector = ORKResultSelector(stepIdentifier: String(describing: Identifier.EligibilityFormStep), resultIdentifier: String(describing: Identifier.EligibilityFormItem02))
+        let predicateFormItem02 = ORKResultPredicate.predicateForBooleanQuestionResult(with: resultSelector, expectedAnswer: true)
         
-        resultSelector = ORKResultSelector(stepIdentifier: String(Identifier.EligibilityFormStep), resultIdentifier: String(Identifier.EligibilityFormItem03))
-        let predicateFormItem03 = ORKResultPredicate.predicateForBooleanQuestionResultWithResultSelector(resultSelector, expectedAnswer: true)
+        resultSelector = ORKResultSelector(stepIdentifier: String(describing: Identifier.EligibilityFormStep), resultIdentifier: String(describing: Identifier.EligibilityFormItem03))
+        let predicateFormItem03 = ORKResultPredicate.predicateForBooleanQuestionResult(with: resultSelector, expectedAnswer: true)
         
         let predicateEligible = NSCompoundPredicate(andPredicateWithSubpredicates: [predicateFormItem01, predicateFormItem02, predicateFormItem03])
         
-        let predicateRule = ORKPredicateStepNavigationRule(resultPredicates: [predicateEligible], destinationStepIdentifiers: [String(Identifier.EligibilityEligibleStep)], defaultStepIdentifier: nil, validateArrays: false)
+        let predicateRule = ORKPredicateStepNavigationRule(resultPredicates: [predicateEligible], destinationStepIdentifiers: [String(describing: Identifier.EligibilityEligibleStep)], defaultStepIdentifier: nil, validateArrays: false)
         
-        consentTask.setNavigationRule(predicateRule, forTriggerStepIdentifier:String(Identifier.EligibilityFormStep))
+        consentTask.setNavigationRule(predicateRule, forTriggerStepIdentifier:String(describing: Identifier.EligibilityFormStep))
         
         // Add end direct rules to skip unneeded steps
         let directRule = ORKDirectStepNavigationRule(destinationStepIdentifier: ORKNullStepIdentifier)
-        consentTask.setNavigationRule(directRule, forTriggerStepIdentifier:String(Identifier.EligibilityIneligibleStep))
+        consentTask.setNavigationRule(directRule, forTriggerStepIdentifier:String(describing: Identifier.EligibilityIneligibleStep))
         return consentTask
     }
     
     public func checkConsentWithBaseViewController(viewController: UIViewController, consentBlock: ConsentBlock) {
         self.consentHandler = consentBlock
         guard UserManager.sharedManager.hasUserId() else {
-            let taskViewController = ORKTaskViewController(task: consentTaskWithEligibilitySection(), taskRunUUID: nil)
+            let taskViewController = ORKTaskViewController(task: consentTaskWithEligibilitySection(), taskRun: nil)
             taskViewController.delegate = self
             taskViewController.view.tintColor = Theme.universityDarkTheme.backgroundColor
-            viewController.presentViewController(taskViewController, animated: true, completion: nil)
+            viewController.present(taskViewController, animated: true, completion: nil)
             return
         }
-        self.consentHandler?(consented: true, givenName: nil, familyName: nil)
+        self.consentHandler?(true, nil, nil)
     }
    
     // MARK: - Task view controller delegate
+
+    public func taskViewController(_ taskViewController: ORKTaskViewController, didFinishWith reason: ORKTaskViewControllerFinishReason, error: Error?) {
+     var completedToDocument = false
+     var givenName: String? = nil
+     var familyName: String? = nil
+     switch reason {
+     case .completed:
+//     let document = consentDocument.copy() as! ORKConsentDocument
+//     if let consentStep = taskViewController.result.stepResultForStepIdentifier(String(Identifier.ConsentReviewStep)),
+//     let signatureResult = consentStep.firstResult as? ORKConsentSignatureResult
+//     {
+//     completedToDocument = signatureResult.consented
+//     givenName = signatureResult.signature?.givenName
+//     familyName = signatureResult.signature?.familyName
+     
+//     signatureResult.applyToDocument(document)
+//     document.makePDF { (data, error) -> Void in
+     guard error == nil else {
+     return
+     }
+     let path = (NSTemporaryDirectory() as NSString).appendingPathComponent("consent.pdf")
+     self.setConsentFilePath(consentFilePath: path)
+//     data!.write(to: try path.asURL()!, options: true)
+//     }
+     case .discarded:
+        return
+     case .failed:
+        return
+     case .saved:
+        return
     
-    public func taskViewController(taskViewController: ORKTaskViewController, didFinishWithReason reason: ORKTaskViewControllerFinishReason, error: NSError?) {
+     }
+     
+//     case .discarded:
+//     break
+//     case .failed:
+//     log.error("Consent view failed: \(error)")
+//     case .saved:
+//     break
+     }
+//     taskViewController.dismiss(animated: true) {
+//     self.consentHandler?(completedToDocument, givenName, familyName)
+//     }
+//    }
+/*    public func taskViewController(_ taskViewController: ORKTaskViewController, didFinishWith reason: ORKTaskViewControllerFinishReason, error: Error?) {
         var completedToDocument = false
         var givenName: String? = nil
         var familyName: String? = nil
         switch reason {
-        case .Completed:
+        case .completed:
             let document = consentDocument.copy() as! ORKConsentDocument
             if let consentStep = taskViewController.result.stepResultForStepIdentifier(String(Identifier.ConsentReviewStep)),
-                   signatureResult = consentStep.firstResult as? ORKConsentSignatureResult
+                   let signatureResult = consentStep.firstResult as? ORKConsentSignatureResult
             {
                 completedToDocument = signatureResult.consented
                 givenName = signatureResult.signature?.givenName
                 familyName = signatureResult.signature?.familyName
 
                 signatureResult.applyToDocument(document)
-                document.makePDFWithCompletionHandler { (data, error) -> Void in
+                document.makePDF { (data, error) -> Void in
                     guard error == nil else {
                         return
                     }
-                    let path = (NSTemporaryDirectory() as NSString).stringByAppendingPathComponent("consent.pdf")
-                    self.setConsentFilePath(path)
-                    data!.writeToFile(path, atomically: true)
+                    let path = (NSTemporaryDirectory() as NSString).appendingPathComponent("consent.pdf")
+                    self.setConsentFilePath(consentFilePath: path)
+                    data!.write(to: try path.asURL()!, options: true)
                 }
             }
 
-        case .Discarded:
+        case .discarded:
             break
-        case .Failed:
+        case .failed:
             log.error("Consent view failed: \(error)")
-        case .Saved:
+        case .saved:
             break
         }
-        taskViewController.dismissViewControllerAnimated(true) {
-            self.consentHandler?(consented: completedToDocument, givenName: givenName, familyName: familyName)
+        taskViewController.dismiss(animated: true) {
+            self.consentHandler?(completedToDocument, givenName, familyName)
         }
-    }
+    } */
 }

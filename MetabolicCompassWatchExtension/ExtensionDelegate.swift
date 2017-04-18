@@ -14,7 +14,7 @@ let NotificationPurchasedMovieOnWatch = "PurchasedMovieOnWatch"
 
 class ExtensionDelegate: NSObject, WKExtensionDelegate, WCSessionDelegate {
     @available(watchOSApplicationExtension 2.2, *)
-    public func session(session: WCSession, activationDidCompleteWithState activationState: WCSessionActivationState, error: NSError?){
+    public func session(_ session: WCSession, activationDidCompleteWith activationState: WCSessionActivationState, error: Error?){
     }
     
     public func sessionDidBecomeInactive(session: WCSession) {
@@ -23,11 +23,11 @@ class ExtensionDelegate: NSObject, WKExtensionDelegate, WCSessionDelegate {
     public func sessionDidDeactivate(session: WCSession) {
     }
     lazy var documentsDirectory: String = {
-        return NSSearchPathForDirectoriesInDomains(NSSearchPathDirectory.DocumentDirectory, NSSearchPathDomainMask.UserDomainMask, true).first!
+        return NSSearchPathForDirectoriesInDomains(FileManager.SearchPathDirectory.documentDirectory, FileManager.SearchPathDomainMask.userDomainMask, true).first!
     }()
     
-    lazy var notificationCenter: NSNotificationCenter = {
-        return NSNotificationCenter.defaultCenter()
+    lazy var notificationCenter: NotificationCenter = {
+        return NotificationCenter.default
     }()
     
     func applicationDidFinishLaunching() {
@@ -37,15 +37,15 @@ class ExtensionDelegate: NSObject, WKExtensionDelegate, WCSessionDelegate {
  
     private func setupWatchConnectivity() {
         if WCSession.isSupported() {
-            let session  = WCSession.defaultSession()
+            let session  = WCSession.default()
             session.delegate = self
-            session.activateSession()
+            session.activate()
         }
     }
     
     func session(session: WCSession,
                  didReceiveUserInfo userInfo: [String : AnyObject]) {
-        dispatch_async(dispatch_get_main_queue()) { () -> Void in
+        DispatchQueue.main.async() { () -> Void in
             if let fastingHrs  = userInfo["fastingHrs"]  as? String,
                 let fastingMins = userInfo["fastingMins"] as? String {
                 print("information transferred: \(fastingHrs)")

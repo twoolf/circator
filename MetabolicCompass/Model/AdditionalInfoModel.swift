@@ -95,7 +95,7 @@ class AdditionalInfoModel: NSObject {
                     else if let i = value as? Int {
                         result = HKQuantity(unit: srcUnits, doubleValue: Double(i)).doubleValueForUnit(dstUnits)
                     }
-                    else if let s = value as? String, d = Double(s) {
+                    else if let s = value as? String, let d = Double(s) {
                         result = HKQuantity(unit: srcUnits, doubleValue: d).doubleValueForUnit(dstUnits)
                     }
                 }
@@ -111,12 +111,12 @@ class AdditionalInfoModel: NSObject {
             for item in section.items {
                 if let key = item.key {
                     if let (categoryType, _) = HMConstants.sharedInstance.mcdbActivityToHKQuantity[key],
-                            profileCategory = profileCache["activity_value"] as? [String: AnyObject],
-                            profileQuantity = profileCategory[categoryType] as? [String: AnyObject],
-                            profileValue = profileQuantity[categoryType]
+                            let profileCategory = profileCache["activity_value"] as? [String: AnyObject],
+                            let profileQuantity = profileCategory[categoryType] as? [String: AnyObject],
+                            let profileValue = profileQuantity[categoryType]
                     {
                         item.value = convertFieldValue(item.name, value: profileValue, toServiceUnits: false)
-                    } else if let _ = HMConstants.sharedInstance.mcdbToHK[key], profileValue = profileCache[key] {
+                    } else if let _ = HMConstants.sharedInstance.mcdbToHK[key], let profileValue = profileCache[key] {
                         item.value = convertFieldValue(item.name, value: profileValue, toServiceUnits: false)
                     } else {
                         log.warning("AIM Invalid key \(key)")
@@ -217,13 +217,13 @@ class AdditionalInfoModel: NSObject {
     }
 
     func validateItem(value: AnyObject) -> Bool {
-        if let d = value as? Double where d >= 0.0 {
+        if let d = value as? Double, d >= 0.0 {
             return true
         }
-        else if let i = value as? Int where i >= 0 {
+        else if let i = value as? Int, i >= 0 {
             return true
         }
-        else if let s = value as? String, d = Double(s) where d >= 0.0 {
+        else if let s = value as? String, let d = Double(s), d >= 0.0 {
             return true
         }
         return false

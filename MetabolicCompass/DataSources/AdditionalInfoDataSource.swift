@@ -2,7 +2,7 @@
 //  AdditionalInfoDataSource.swift
 //  MetabolicCompass
 //
-//  Created by Anna Tkach on 4/28/16.
+//  Created by Anna Tkach on 4/28/16. 
 //  Copyright © 2016 Yanif Ahmad, Tom Woolf. All rights reserved.
 //
 
@@ -17,7 +17,7 @@ class HeaderView: UICollectionReusableView {
     
     override func awakeFromNib() {
         super.awakeFromNib()
-        titleLbl.font = ScreenManager.appFontOfSize(15)
+        titleLbl.font = ScreenManager.appFontOfSize(size: 15)
     }
 }
 
@@ -32,13 +32,13 @@ public class AdditionalInfoDataSource: BaseDataSource {
 
     override func registerCells() {
         let loadImageCellNib = UINib(nibName: "TitledInputCollectionViewCell", bundle: nil)
-        collectionView?.registerNib(loadImageCellNib, forCellWithReuseIdentifier: titledInputCellIdentifier)
+        collectionView?.register(loadImageCellNib, forCellWithReuseIdentifier: titledInputCellIdentifier)
 
         let scrollSelectionCellNib = UINib(nibName: "ScrollSelectionViewCell", bundle: nil)
-        collectionView?.registerNib(scrollSelectionCellNib, forCellWithReuseIdentifier: scrollSelectionCellIdentifier)
+        collectionView?.register(scrollSelectionCellNib, forCellWithReuseIdentifier: scrollSelectionCellIdentifier)
         
         let physiologicalHeaderViewNib = UINib(nibName: "PhysiologicalHeaderView", bundle: nil)
-        collectionView?.registerNib(physiologicalHeaderViewNib, forSupplementaryViewOfKind: UICollectionElementKindSectionHeader, withReuseIdentifier: "sectionHeaderView")
+        collectionView?.register(physiologicalHeaderViewNib, forSupplementaryViewOfKind: UICollectionElementKindSectionHeader, withReuseIdentifier: "sectionHeaderView")
     }
 
     internal func isSleepCellAtIndexPath(indexPath: NSIndexPath) -> Bool {
@@ -52,15 +52,15 @@ public class AdditionalInfoDataSource: BaseDataSource {
     }
 
     override public func collectionView(collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        return model.numberOfItemsInSection(section)
+        return model.numberOfItemsInSection(section: section)
     }
 
     override public func collectionView(collectionView: UICollectionView, cellForItemAtIndexPath indexPath: NSIndexPath) -> UICollectionViewCell {
-        let item = model.itemAtIndexPath(indexPath)
+        let item = model.itemAtIndexPath(indexPath: indexPath)
 
-        if isSleepCellAtIndexPath(indexPath) {
+        if isSleepCellAtIndexPath(indexPath: indexPath) {
             // it is sleep cell
-            let cell = collectionView.dequeueReusableCellWithReuseIdentifier(scrollSelectionCellIdentifier, forIndexPath: indexPath) as! ScrollSelectionViewCell
+            let cell = collectionView.dequeueReusableCell(withReuseIdentifier: scrollSelectionCellIdentifier, for: indexPath as IndexPath) as! ScrollSelectionViewCell
 
             cell.minValue = 3
             cell.maxValue = 12
@@ -73,22 +73,22 @@ public class AdditionalInfoDataSource: BaseDataSource {
             cell.smallDescriptionLbl.font = AdditionalInfoUnitsFont
             cell.valueLbl.font = AdditionalInfoFont
 
-            if let value = item.intValue() where value > 0 {
-                cell.setSelectedValue(value)
+            if let value = item.intValue(), value > 0 {
+                cell.setSelectedValue(value: value)
             } else {
                 let defaultValue = 8
-                self.model.setNewValueForItem(atIndexPath: indexPath, newValue: defaultValue)
-                cell.setSelectedValue(defaultValue)
+                self.model.setNewValueForItem(atIndexPath: indexPath, newValue: defaultValue as AnyObject?)
+                cell.setSelectedValue(value: defaultValue)
             }
             cell.changesHandler = { (cell: UICollectionViewCell, newValue: AnyObject?) -> () in
-                if let indexPath = self.collectionView!.indexPathForCell(cell) {
-                    self.model.setNewValueForItem(atIndexPath: indexPath, newValue: newValue)
+                if let indexPath = self.collectionView!.indexPath(for: cell) {
+                    self.model.setNewValueForItem(atIndexPath: indexPath as NSIndexPath, newValue: newValue)
                 }
             }
             return cell
         }
 
-        let cell = collectionView.dequeueReusableCellWithReuseIdentifier(titledInputCellIdentifier, forIndexPath: indexPath) as! TitledInputCollectionViewCell
+        let cell = collectionView.dequeueReusableCell(withReuseIdentifier: titledInputCellIdentifier, for: indexPath as IndexPath) as! TitledInputCollectionViewCell
 
         cell.titleLbl.text = item.name
         if let strValue = item.stringValue() {
@@ -104,12 +104,12 @@ public class AdditionalInfoDataSource: BaseDataSource {
         let attr = [NSForegroundColorAttributeName : unselectedTextColor, NSFontAttributeName: AdditionalInfoFont]
         cell.inputTxtField.attributedPlaceholder = NSAttributedString(string: item.title, attributes: attr)
 
-        var keypadType = UIKeyboardType.Default
+        var keypadType = UIKeyboardType.default
         if item.dataType == .Int {
-            keypadType = UIKeyboardType.NumberPad
+            keypadType = UIKeyboardType.numberPad
         }
         else if item.dataType == .Decimal {
-            keypadType = UIKeyboardType.DecimalPad
+            keypadType = UIKeyboardType.decimalPad
         }
 
         cell.inputTxtField.keyboardType = keypadType
@@ -132,26 +132,26 @@ public class AdditionalInfoDataSource: BaseDataSource {
         cell.smallDescriptionLbl.numberOfLines = 1
 
         cell.changesHandler = { (cell: UICollectionViewCell, newValue: AnyObject?) -> () in
-            if let indexPath = self.collectionView!.indexPathForCell(cell) {
-                self.model.setNewValueForItem(atIndexPath: indexPath, newValue: newValue)
+            if let indexPath = self.collectionView!.indexPath(for: cell) {
+                self.model.setNewValueForItem(atIndexPath: indexPath as NSIndexPath, newValue: newValue)
             }
         }
 
-        cell.userInteractionEnabled = editMode
+        cell.isUserInteractionEnabled = editMode
         return cell
     }
 
     func collectionView(collectionView: UICollectionView, viewForSupplementaryElementOfKind kind: String, atIndexPath indexPath: NSIndexPath) -> UICollectionReusableView {
         if kind == UICollectionElementKindSectionHeader {
-            let headerView = collectionView.dequeueReusableSupplementaryViewOfKind(kind, withReuseIdentifier: "sectionHeaderView", forIndexPath: indexPath) as! HeaderView
-            headerView.titleLbl.text = model.sectionTitleAtIndexPath(indexPath)
+            let headerView = collectionView.dequeueReusableSupplementaryView(ofKind: kind, withReuseIdentifier: "sectionHeaderView", for: indexPath as IndexPath) as! HeaderView
+            headerView.titleLbl.text = model.sectionTitleAtIndexPath(indexPath: indexPath)
             return headerView
         }
         return UICollectionReusableView()
     }
     
     func collectionView(collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, referenceSizeForHeaderInSection section: Int) -> CGSize {
-        return CGSizeMake(CGRectGetWidth(collectionView.frame), 50)
+        return CGSize(collectionView.frame.width, 50)
     }
 
     // MARK: - Cells sizes
@@ -159,17 +159,17 @@ public class AdditionalInfoDataSource: BaseDataSource {
     private let cellHeightHight: CGFloat = 110
 
     private func defaultCellSize() -> CGSize {
-        let size = CGSizeMake(self.collectionView!.bounds.width, cellHeight)
+        let size = CGSize(self.collectionView!.bounds.width, cellHeight)
         return size
     }
 
     private func intPickerCellSize() -> CGSize {
-        let size = CGSizeMake(self.collectionView!.bounds.width, editMode ? cellHeightHight : cellHeight)
+        let size = CGSize(self.collectionView!.bounds.width, editMode ? cellHeightHight : cellHeight)
         return size
     }
 
     func collectionView(collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAtIndexPath indexPath: NSIndexPath) -> CGSize {
-        return isSleepCellAtIndexPath(indexPath) ? intPickerCellSize() : defaultCellSize()
+        return isSleepCellAtIndexPath(indexPath: indexPath) ? intPickerCellSize() : defaultCellSize()
     }
 
     func reset() {

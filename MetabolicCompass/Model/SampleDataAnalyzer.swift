@@ -30,8 +30,8 @@ class SampleDataAnalyzer: NSObject {
 class CorrelationDataAnalyzer: SampleDataAnalyzer {
     let labels: [String]
     let samples: [[MCSample]]
-    let values: [[(NSDate, Double)]]
-    let zipped: [(NSDate, Double, MCSample)]
+    let values: [[(Date, Double)]]
+    let zipped: [(Date, Double, MCSample)]
     var dataSetConfigurators: [((LineChartDataSet) -> Void)?] = []
 
     init?(labels: [String], samples: [[MCSample]]) {
@@ -50,7 +50,7 @@ class CorrelationDataAnalyzer: SampleDataAnalyzer {
         super.init()
     }
 
-    init?(labels: [String], values: [[(NSDate, Double)]]) {
+    init?(labels: [String], values: [[(Date, Double)]]) {
         guard labels.count == 2 && values.count == 2 else {
             self.labels = []
             self.samples = []
@@ -66,7 +66,7 @@ class CorrelationDataAnalyzer: SampleDataAnalyzer {
         super.init()
     }
 
-    init?(labels: [String], zipped: [(NSDate, Double, MCSample)]) {
+    init?(labels: [String], zipped: [(Date, Double, MCSample)]) {
         guard labels.count == 2 else {
             self.labels = []
             self.samples = []
@@ -131,7 +131,7 @@ class CorrelationDataAnalyzer: SampleDataAnalyzer {
 class PlotDataAnalyzer: SampleDataAnalyzer {
     let sampleType: HKSampleType
     let samples: [MCSample]
-    let values: [(NSDate, Double)]
+    let values: [(Date, Double)]
 
     init(sampleType: HKSampleType, samples: [MCSample]) {
         self.sampleType = sampleType
@@ -140,7 +140,7 @@ class PlotDataAnalyzer: SampleDataAnalyzer {
         super.init()
     }
 
-    init(sampleType: HKSampleType, values: [(NSDate, Double)]) {
+    init(sampleType: HKSampleType, values: [(Date, Double)]) {
         self.sampleType = sampleType
         self.samples = []
         self.values = values
@@ -275,11 +275,11 @@ class PlotDataAnalyzer: SampleDataAnalyzer {
         return summaryData.sort().first!
     }
 
-    func enumerateDates(startDate: NSDate, endDate: NSDate) -> [NSDate] {
+    func enumerateDates(startDate: Date, endDate: Date) -> [Date] {
         let zeroDate = startDate.startOf(.Day, inRegion: Region()) - 1.days
         let finalDate = endDate.startOf(.Day, inRegion: Region()) + 1.days
         var currentDate = zeroDate
-        var dates: [NSDate] = []
+        var dates: [Date] = []
         while currentDate <= finalDate {
             currentDate = currentDate + 1.days
             dates.append(currentDate)
@@ -287,13 +287,13 @@ class PlotDataAnalyzer: SampleDataAnalyzer {
         return dates
     }
 
-    func datesFromSamples() -> [NSDate] {
+    func datesFromSamples() -> [Date] {
         let firstDate = samples.first!.startDate
         let lastDate = samples.last!.startDate
         return enumerateDates(firstDate, endDate: lastDate)
     }
 
-    func datesFromValues() -> [NSDate] {
+    func datesFromValues() -> [Date] {
         let firstDate = values.first!.0
         let lastDate = values.last!.0
         return enumerateDates(firstDate, endDate: lastDate)

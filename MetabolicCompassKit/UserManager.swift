@@ -20,8 +20,8 @@ import JWTDecode
 import SwiftyUserDefaults
 
 // Helper typealiases to indicate whether the bool argument expects an error or success status.
-public typealias ErrorCompletion = Bool -> Void
-public typealias SuccessCompletion = Bool -> Void
+public typealias ErrorCompletion = (Bool) -> Void
+public typealias SuccessCompletion = (Bool) -> Void
 
 private let UMPrimaryUserKey = "UMPrimaryUserKey"
 private let UMUserHashKey    = "UMUserHashKey"
@@ -53,17 +53,22 @@ public let UMPushReadBinaryFileError : (AccountComponent, String) -> String = { 
     return "Failed to read \(component) file at: \(path)"
 }
 
-public let UMPullMultipleComponentsError : [String] -> String = { components in
-    return "Failed to pull account components \(components.joinWithSeparator(","))"
+public let UMPullMultipleComponentsError : ([String]) -> String = { components in
+    return "Failed to pull account components \(components.joined(separator: ","))"
 }
 
 // Inverts the text error for a failed multi-component access as an array of account components.
-public let UMPullComponentErrorAsArray : String -> [AccountComponent] = { errorMsg in
+public let UMPullComponentErrorAsArray : (String) -> [AccountComponent] = { errorMsg in
     let prefix = "Failed to pull account components "
     var result : [AccountComponent] = []
     if errorMsg.hasPrefix(prefix) {
-        let componentsStr = errorMsg.substringFromIndex(errorMsg.startIndex.advancedBy(prefix.characters.count - 1))
-        result = componentsStr.componentsSeparatedByString(",").flatMap(getComponentByName)
+//        let componentsStr = errorMsg.substringFromIndex(errorMsg.startIndex.advancedBy(prefix.characters.count - 1))
+//        let componentsStr = errorMsg.
+//        result = componentsStr.componentsSeparatedByString(",").flatMap(getComponentByName)
+//        result = ["needs to be fixed"]
+//        let componentsStr = errorMsg.substringFromIndex(errorMsg.startIndex.advancedBy(prefix.characters.count - 1))
+//        let componentsStr = errorMsg.substring(from: componentsStr.characters.count)
+//        result = componentsStr.componentsSeparatedByString(",").flatMap(getComponentByName)
     }
     return result
 }
@@ -73,13 +78,13 @@ public let granularity5Mins = 300.0
 public let granularity10Mins = 600.0
 public let granularity15Mins = 900.0
 
-public func floorDate(date: NSDate, granularity: Double) -> NSDate {
-    return NSDate(timeIntervalSinceReferenceDate:
+public func floorDate(date: Date, granularity: Double) -> Date {
+    return Date(timeIntervalSinceReferenceDate:
         (floor(date.timeIntervalSinceReferenceDate / granularity) * granularity))
 }
 
-public func roundDate(date: NSDate, granularity: Double) -> NSDate {
-    return NSDate(timeIntervalSinceReferenceDate:
+public func roundDate(date: Date, granularity: Double) -> Date {
+    return Date(timeIntervalSinceReferenceDate:
         (round(date.timeIntervalSinceReferenceDate / granularity) * granularity))
 }
 
@@ -93,7 +98,7 @@ extension Dictionary {
 
 // Namespace helpers.
 internal func seqIdOfSampleTypeId(typeIdentifier: String) -> String? {
-    if let key = HMConstants.sharedInstance.hkToMCDB[typeIdentifier] {
+    if let key = HMConstants.sharedInstance.hkToMCDB[typeIdentifier.hashValue] {
         return key
     }
     else if let (category,_) = HMConstants.sharedInstance.hkQuantityToMCDBActivity[typeIdentifier] {
@@ -112,8 +117,8 @@ internal func sampleTypeIdOfSeqId(anchorIdentifier: String) -> String? {
     else if let (_,typeIdentifier) = HMConstants.sharedInstance.mcdbActivityToHKQuantity[anchorIdentifier] {
         return typeIdentifier
     }
-    else if let typeIdentifier = HMConstants.sharedInstance.mcdbToHK[anchorIdentifier] {
-        return typeIdentifier
+    else if let typeIdentifier = HMConstants.sharedInstance.mcdbToHK[anchorIdentifier.description] {
+        return typeIdentifier.description
     }
     return nil
 }
@@ -122,19 +127,19 @@ internal func sampleTypeOfTypeId(typeIdentifier: String) -> HKSampleType? {
     if typeIdentifier == HKWorkoutType.workoutType().identifier {
         return HKWorkoutType.workoutType()
     }
-    else if typeIdentifier == HKCategoryTypeIdentifierAppleStandHour
-                || typeIdentifier == HKCategoryTypeIdentifierSleepAnalysis
+    else if typeIdentifier == HKCategoryTypeIdentifier.appleStandHour.rawValue
+                || typeIdentifier == HKCategoryTypeIdentifier.sleepAnalysis.rawValue
     {
-        return HKSampleType.categoryTypeForIdentifier(typeIdentifier)
+        return HKSampleType.categoryType(forIdentifier: HKCategoryTypeIdentifier(rawValue: typeIdentifier))
     } else {
-        return HKSampleType.quantityTypeForIdentifier(typeIdentifier)
+        return HKSampleType.quantityType(forIdentifier: HKQuantityTypeIdentifier(rawValue: typeIdentifier))
     }
 
 }
 
 internal func sampleTypeOfSeqId(anchorIdentifier: String) -> HKSampleType? {
-    if let typeId = sampleTypeIdOfSeqId(anchorIdentifier) {
-        return sampleTypeOfTypeId(typeId)
+    if let typeId = sampleTypeIdOfSeqId(anchorIdentifier: anchorIdentifier) {
+        return sampleTypeOfTypeId(typeIdentifier: typeId)
     }
     return nil
 }
@@ -160,7 +165,7 @@ public class UserManager {
     // Primary user
     public var userId: String? {
         get {
-            if let dictionary = Locksmith.loadDataForUserAccount(UMPrimaryUserKey)
+            if let dictionary = Locksmith.loadDataForUserAccount(userAccount: UMPrimaryUserKey)
             {
                 return dictionary["userId"] as? String
             } else {
@@ -170,16 +175,16 @@ public class UserManager {
         set(newUser) {
             do {
                 if let _newUser = newUser {
-                    if let _ = Locksmith.loadDataForUserAccount(UMPrimaryUserKey)
+                    if let _ = Locksmith.loadDataForUserAccount(userAccount: UMPrimaryUserKey)
                     {
-                        try Locksmith.updateData(["userId" : _newUser], forUserAccount: UMPrimaryUserKey)
+                        try Locksmith.updateData(data: ["userId" : _newUser], forUserAccount: UMPrimaryUserKey)
                     } else {
-                        try Locksmith.saveData(["userId" : _newUser], forUserAccount: UMPrimaryUserKey)
+                        try Locksmith.saveData(data: ["userId" : _newUser], forUserAccount: UMPrimaryUserKey)
                     }
                 }
                 else {
-                    if let _ = Locksmith.loadDataForUserAccount(UMPrimaryUserKey) {
-                        try Locksmith.deleteDataForUserAccount(UMPrimaryUserKey)
+                    if let _ = Locksmith.loadDataForUserAccount(userAccount: UMPrimaryUserKey) {
+                        try Locksmith.deleteDataForUserAccount(userAccount: UMPrimaryUserKey)
                     }
                 }
             } catch {
@@ -188,7 +193,7 @@ public class UserManager {
         }
     }
 
-    var tokenExpiry : NSTimeInterval = NSDate().timeIntervalSince1970   // Expiry in time interval since 1970.
+    var tokenExpiry : TimeInterval = Date().timeIntervalSince1970   // Expiry in time interval since 1970.
     
     // Account component dictionary cache.
     private(set) public var componentCache : [AccountComponent: [String: AnyObject]] = [
@@ -196,12 +201,12 @@ public class UserManager {
         .Photo        : [:],
         .Profile      : [:],
         .Settings     : [:],
-        .ArchiveSpan  : [HMHRangeMinKey: [String:AnyObject](), HMHRangeStartKey: [String:AnyObject](), HMHRangeEndKey: [String:AnyObject]()],
+        .ArchiveSpan  : [HMHRangeMinKey: [String:AnyObject]() as AnyObject, HMHRangeStartKey: [String:AnyObject]() as AnyObject, HMHRangeEndKey: [String:AnyObject]() as AnyObject],
         .LastAcquired : [:]
     ]
 
     // Track when the remote account component was last retrieved
-    var lastComponentLoadDate : [AccountComponent: NSDate?] = [
+    var lastComponentLoadDate : [AccountComponent: Date?] = [
         .Consent      : nil,
         .Photo        : nil,
         .Profile      : nil,
@@ -222,11 +227,13 @@ public class UserManager {
     ]
 
     // Custom component update task queue
-    let componentUpdateQueue: dispatch_queue_t!
+    let componentUpdateQueue = DispatchQueue(label:"UserManangerUpdateQueue", attributes: .concurrent)
 
     init() {
-        StormpathConfiguration.defaultConfiguration.APIURL = MCRouter.baseURL
-        self.componentUpdateQueue = dispatch_queue_create("UserManangerUpdateQueue", DISPATCH_QUEUE_SERIAL)
+//        StormpathConfiguration.defaultConfiguration.APIURL = MCRouter.baseURL as URL
+        self.componentUpdateQueue.async {
+            StormpathConfiguration.defaultConfiguration.APIURL = MCRouter.baseURL as URL
+        }
     }
 
     // MARK: - Account status, and authentication
@@ -243,40 +250,40 @@ public class UserManager {
     }
     
     public func removeFirstLogin () {
-        Defaults.removeObjectForKey(UserManager.firstLoginKey + "." + userId!)
+        Defaults.removeObject(forKey: UserManager.firstLoginKey + "." + userId!)
         Defaults.synchronize()
     }
     
     public func setAsFirstLogin () {
-        Defaults.setObject("1", forKey: UserManager.firstLoginKey + "." + userId!)
+        Defaults.set("1", forKey: UserManager.firstLoginKey + "." + userId!)
         Defaults.synchronize()
     }
     
     public func isItFirstLogin () -> Bool {
-        let firstLoginObject = Defaults.objectForKey(UserManager.firstLoginKey + "." + userId!)
+        let firstLoginObject = Defaults.object(forKey: UserManager.firstLoginKey + "." + userId!)
         return firstLoginObject != nil
     }
     
     public func saveAdditionalProfileData (data: [String: AnyObject]) {
         // Initialize constants for adding events.
-        let defaultSleepStart = NSDate().startOf(.Day) - 1.hours
+        let defaultSleepStart = Date().startOf(component: .day) - 1.hours
         if let i = data["sleep_duration"] as? Int {
             let defaultSleepEnd = defaultSleepStart + i.seconds
-            setUsualWhenToSleepTime(defaultSleepStart)
-            setUsualWokeUpTime(defaultSleepEnd)
+            setUsualWhenToSleepTime(date: defaultSleepStart)
+            setUsualWokeUpTime(date: defaultSleepEnd)
         }
-        else if let s = data["sleep_duration"] as? String, i = Int(s) {
+        else if let s = data["sleep_duration"] as? String, let i = Int(s) {
             let defaultSleepEnd = defaultSleepStart + i.seconds
-            setUsualWhenToSleepTime(defaultSleepStart)
-            setUsualWokeUpTime(defaultSleepEnd)
+            setUsualWhenToSleepTime(date: defaultSleepStart)
+            setUsualWokeUpTime(date: defaultSleepEnd)
         }
 
-        Defaults.setObject(data, forKey: UserManager.additionalInfoDataKey + "." + userId!)
+        Defaults.set(data, forKey: UserManager.additionalInfoDataKey + "." + userId!)
         Defaults.synchronize()
     }
     
     public func getAdditionalProfileData () -> [String: AnyObject]? {
-        return Defaults.objectForKey(UserManager.additionalInfoDataKey + "." + userId!) as? [String: AnyObject]
+        return Defaults.object(forKey: UserManager.additionalInfoDataKey + "." + userId!) as? [String: AnyObject]
     }
     
     public func getUserId() -> String?     { return userId }
@@ -289,22 +296,22 @@ public class UserManager {
         if let user = userId {
             let account = UserAccount(username: user, password: "")
             let lockbox = account.readFromSecureStore()
-            return lockbox?.data
+            return lockbox?.data as [String : AnyObject]?
         }
         return nil
     }
 
     public func setAccountData(items: [String:AnyObject]) {
         withUserId { user in
-            if var datadict = Locksmith.loadDataForUserAccount(user) {
+            if var datadict = Locksmith.loadDataForUserAccount(userAccount: user) {
                 for (k,v) in items { datadict[k] = v }
                 do {
-                    try Locksmith.updateData(datadict, forUserAccount: user)
+                    try Locksmith.updateData(data: datadict, forUserAccount: user)
                 } catch {
                     log.error("setAccountData: \(error)")
                 }
             } else {
-                print("\(Locksmith.loadDataForUserAccount(user))")
+                print("\(Locksmith.loadDataForUserAccount(userAccount: user))")
             }
         }
     }
@@ -347,14 +354,14 @@ public class UserManager {
     }
 
     public func getPassword() -> String? {
-        if let data = getAccountData(), pass = data["password"] as? String {
+        if let data = getAccountData(), let pass = data["password"] as? String {
             return pass
         }
         return nil
     }
 
     public func hasPassword() -> Bool {
-        if let data = getAccountData(), pass = data["password"] as? String {
+        if let data = getAccountData(), let pass = data["password"] as? String {
             return !pass.isEmpty
         }
         return false
@@ -362,39 +369,39 @@ public class UserManager {
     
     public func setPassword(userPass: String) {
         if hasAccount() {
-            setAccountData(["password": userPass])
+            setAccountData(items: ["password": userPass as AnyObject])
         } else {
-            withUserId { user in self.createAccount(user, userPass: userPass) }
+            withUserId { user in self.createAccount(userId: user, userPass: userPass) }
         }
     }
 
     // Set a username and password in keychain, invoking a completion with an error status.
     public func ensureUserPass(user: String?, pass: String?, completion: ErrorCompletion) {
-        if let u = user, p = pass {
+        if let u = user, let p = pass {
             guard !(u.isEmpty || p.isEmpty) else {
                 completion(true)
                 return
             }
-            UserManager.sharedManager.setUserId(u)
-            UserManager.sharedManager.setPassword(p)
+            UserManager.sharedManager.setUserId(userId: u)
+            UserManager.sharedManager.setPassword(userPass: p)
             completion(false)
         }
     }
 
     // Set the username and password in keychain.
     public func overrideUserPass(user: String?, pass: String?) {
-        withUserPass(user, password: pass) { (newUser, newPass) in
-            UserManager.sharedManager.setUserId(newUser)
-            UserManager.sharedManager.setPassword(newPass)
+        withUserPass(username: user, password: pass) { (newUser, newPass) in
+            UserManager.sharedManager.setUserId(userId: newUser)
+            UserManager.sharedManager.setPassword(userPass: newPass)
         }
     }
 
 
     // MARK: - Stormpath-based account creation and authentication
 
-    public func loginWithCompletion(completion: SvcResultCompletion) {
-        withUserPass (getPassword()) { (user, pass) in
-            Stormpath.sharedSession.login(user, password: pass) {
+    public func loginWithCompletion(completion: @escaping SvcResultCompletion) {
+        withUserPass (password: getPassword()) { (user, pass) in
+            Stormpath.sharedSession.login(username: user, password: pass) {
                 (success, err) -> Void in
                 guard success && err == nil else {
                     log.error("Stormpath login failed: \(err!.localizedDescription)")
@@ -404,60 +411,60 @@ public class UserManager {
                 }
 
                 log.info("Access token: \(Stormpath.sharedSession.accessToken)")
-                MCRouter.updateAuthToken(Stormpath.sharedSession.accessToken)
+                MCRouter.updateAuthToken(token: Stormpath.sharedSession.accessToken)
                 completion(RequestResult())
             }
         }
     }
 
-    public func loginWithPush(profile: [String: AnyObject], completion: SvcResultCompletion) {
+    public func loginWithPush(profile: [String: AnyObject], completion: @escaping SvcResultCompletion) {
         loginWithCompletion { res in
             guard res.ok else {
                 completion(res)
                 return
             }
-            self.pushProfile(profile, completion: completion)
+            self.pushProfile(componentData: profile, completion: completion)
         }
     }
 
-    public func loginWithPull(completion: SvcResultCompletion) {
+    public func loginWithPull(completion: @escaping SvcResultCompletion) {
         loginWithCompletion { res in
             guard res.ok  else {
                 completion(res)
                 return
             }
-            self.pullFullAccount(completion)
+            self.pullFullAccount(completion: completion)
         }
     }
 
-    public func login(userPass: String, completion: SvcResultCompletion) {
+    public func login(userPass: String, completion: @escaping SvcResultCompletion) {
         withUserId { user in
-            if !self.validateAccount(userPass) {
+            if !self.validateAccount(userPass: userPass) {
                 self.resetAccount()
-                self.createAccount(user, userPass: userPass)
+                self.createAccount(userId: user, userPass: userPass)
             }
-            self.loginWithPull(completion)
+            self.loginWithPull(completion: completion)
         }
     }
 
-    public func logoutWithCompletion(completion: (Void -> Void)?) {
+    public func logoutWithCompletion(completion: ((Void) -> Void)?) {
         Stormpath.sharedSession.logout()
-        MCRouter.updateAuthToken(nil)
+        MCRouter.updateAuthToken(token: nil)
         resetUser()
         if let comp = completion { comp() }
     }
 
     public func logout() {
-        logoutWithCompletion(nil)
+        logoutWithCompletion(completion: nil)
     }
 
-    public func register(firstName: String, lastName: String, consentPath: String, initialData: [String: String], completion: ((Account?, Bool, String?) -> Void)) {
-        withUserPass(getPassword()) { (user,pass) in
-            let account = RegistrationModel(email: user, password: pass)
+/*    public func register(firstName: String, lastName: String, consentPath: String, initialData: [String: String], completion: @escaping ((Account?, Bool, String?) -> Void)) {
+        withUserPass(password: getPassword()) { (user,pass) in
+//            let account = registrationModel(email: user, password: pass)
             account.givenName = firstName
             account.surname = lastName
             if let data = NSData(contentsOfFile: consentPath) {
-                let consentStr = data.base64EncodedStringWithOptions(NSDataBase64EncodingOptions())
+                let consentStr = data.base64EncodedString(options: NSData.Base64EncodingOptions())
                 account.customFields = ["consent": consentStr]
                 account.customFields.update(initialData)
                 Stormpath.sharedSession.register(account) { (account, error) -> Void in
@@ -470,11 +477,11 @@ public class UserManager {
                 completion(nil, true, msg)
             }
         }
-    }
+    } */
 
-    public func withdraw(keepData: Bool, completion: SuccessCompletion) {
+    public func withdraw(keepData: Bool, completion: @escaping SuccessCompletion) {
         let params = ["keep": keepData]
-        Service.string(MCRouter.DeleteAccount(params), statusCode: 200..<300, tag: "WITHDRAW") {
+        Service.string(route: MCRouter.DeleteAccount(params as [String : AnyObject]), statusCode: 200..<300, tag: "WITHDRAW") {
             _, response, result in
             if result.isSuccess { self.resetFull() }
             completion(result.isSuccess)
@@ -482,8 +489,8 @@ public class UserManager {
     }
 
 
-    public func resetPassword(email: String, completion: ((Bool, String?) -> Void)) {
-        Stormpath.sharedSession.resetPassword(email) { (success, error) -> Void in
+    public func resetPassword(email: String, completion: @escaping ((Bool, String?) -> Void)) {
+        Stormpath.sharedSession.resetPassword(email: email) { (success, error) -> Void in
             if error != nil { log.error("Reset Password failed: \(error)") }
             completion(success, error?.localizedDescription)
         }
@@ -507,7 +514,7 @@ public class UserManager {
     //
     // TODO: Yanif: remove checking local expiration, since this should never be feasible.
     //
-    public func ensureAccessToken(tried: Int, completion: ErrorCompletion) {
+    public func ensureAccessToken(tried: Int, completion: @escaping ErrorCompletion) {
         guard tried < UserManager.maxTokenRetries else {
             log.error("Failed to get access token within \(UserManager.maxTokenRetries) iterations")
             // Get the expiry time locally from the token if available.
@@ -516,7 +523,7 @@ public class UserManager {
             var doReset = true
             if let token = Stormpath.sharedSession.accessToken {
                 do {
-                    let jwt = try decode(token)
+                    let jwt = try decode(jwt: token)
                     if let expiry = jwt.expiresAt?.timeIntervalSince1970 {
                         doReset = false
                         self.tokenExpiry = expiry
@@ -526,21 +533,20 @@ public class UserManager {
             }
             if doReset { self.resetFull() }
             completion(doReset)
-            NSNotificationCenter.defaultCenter().postNotificationName(UMDidLogoutNotification, object: nil)
+            NotificationCenter.default.post(name: NSNotification.Name(rawValue: UMDidLogoutNotification), object: nil)
             return
         }
 
-        Service.json(MCRouter.TokenExpiry, statusCode: 200..<300, tag: "ACCTOK") {
+        Service.json(route: MCRouter.TokenExpiry, statusCode: 200..<300, tag: "ACCTOK") {
             _, response, result in
             guard result.isSuccess else {
-                self.refreshAccessToken(tried, completion: completion)
+                self.refreshAccessToken(tried: tried, completion: completion)
                 return
             }
             guard let jwtDict = result.value as? [String:[String:AnyObject]],
-                expiry  = jwtDict["body"]?["exp"] as? NSTimeInterval
-                where expiry > NSDate().timeIntervalSince1970 else
+                let expiry  = jwtDict["body"]?["exp"] as? TimeInterval, expiry > Date().timeIntervalSince1970 else
             {
-                self.refreshAccessToken(tried, completion: completion)
+                self.refreshAccessToken(tried: tried, completion: completion)
                 return
             }
             self.tokenExpiry = expiry
@@ -548,16 +554,16 @@ public class UserManager {
         }
     }
 
-    public func ensureAccessToken(completion: ErrorCompletion) {
+    public func ensureAccessToken(completion: @escaping ErrorCompletion) {
         if let token = Stormpath.sharedSession.accessToken {
-            MCRouter.updateAuthToken(token)
-            ensureAccessToken(0, completion: completion)
+            MCRouter.updateAuthToken(token: token)
+            ensureAccessToken(tried: 0, completion: completion)
         } else {
-            self.refreshAccessToken(completion)
+            self.refreshAccessToken(completion: completion)
         }
     }
 
-    public func refreshAccessToken(tried: Int, completion: ErrorCompletion) {
+    public func refreshAccessToken(tried: Int, completion: @escaping ErrorCompletion) {
         Stormpath.sharedSession.refreshAccessToken { (success, error) in
             guard success && error == nil else {
                 log.warning("Refresh failed: \(error!.localizedDescription)")
@@ -573,8 +579,8 @@ public class UserManager {
 
             if let token = Stormpath.sharedSession.accessToken {
                 log.debug("Refreshed token: \(token)")
-                MCRouter.updateAuthToken(Stormpath.sharedSession.accessToken)
-                self.ensureAccessToken(tried+1, completion: completion)
+                MCRouter.updateAuthToken(token: Stormpath.sharedSession.accessToken)
+                self.ensureAccessToken(tried: tried+1, completion: completion)
             } else {
                 log.error("RefreshAccessToken failed, please login manually.")
                 completion(true)
@@ -582,8 +588,8 @@ public class UserManager {
         }
     }
 
-    public func refreshAccessToken(completion: ErrorCompletion) {
-        refreshAccessToken(0, completion: completion)
+    public func refreshAccessToken(completion: @escaping ErrorCompletion) {
+        refreshAccessToken(tried: 0, completion: completion)
     }
 
     // MARK: - Account component extractors
@@ -594,7 +600,7 @@ public class UserManager {
     private func downloadProfileExtractor(data: [String:AnyObject]) -> [String:AnyObject] {
         if let id = data["userid"] {
             var profile = data
-            profile.removeValueForKey("userid")
+            profile.removeValue(forKey: "userid")
             profile[UMUserHashKey] = id
             return profile
         }
@@ -602,28 +608,28 @@ public class UserManager {
     }
 
     private func uploadSettingsExtractor(data: [String:AnyObject]) -> [String:AnyObject] {
-        return Dictionary(pairs: data.map { kv in return (settingsServerId(kv.0), kv.1) })
+        return Dictionary(pairs: data.map { kv in return (settingsServerId(key: kv.0), kv.1) })
     }
 
     private func downloadSettingsExtractor(data: [String:AnyObject]) -> [String:AnyObject] {
-        return Dictionary(pairs: data.map { kv in return (settingsClientId(kv.0), kv.1)} )
+        return Dictionary(pairs: data.map { kv in return (settingsClientId(key: kv.0), kv.1)} )
     }
 
     private func uploadArchiveSpanExtractor(data: [String:AnyObject]) -> [String:AnyObject] {
-        return Dictionary(pairs: data.map { kv in return (archiveSpanServerId(kv.0), kv.1) })
+        return Dictionary(pairs: data.map { kv in return (archiveSpanServerId(key: kv.0), kv.1) })
     }
 
     private func downloadArchiveSpanExtractor(data: [String:AnyObject]) -> [String:AnyObject] {
-        return Dictionary(pairs: data.map { kv in return (archiveSpanClientId(kv.0), kv.1)} )
+        return Dictionary(pairs: data.map { kv in return (archiveSpanClientId(key: kv.0), kv.1)} )
     }
 
     public func uploadLastAcquiredExtractor(data: [String:AnyObject]) -> [String:AnyObject] {
         let pairs: [(String, AnyObject)] = data.flatMap { kv in
-            if let serverKey = lastAcquiredServerId(kv.0) { return (serverKey, kv.1) }
+            if let serverKey = lastAcquiredServerId(key: kv.0) { return (serverKey, kv.1) }
             log.error("USM no server key found for last acquired extractor on \(kv.0)")
-            let attrs: [String: AnyObject] = ["Type": "Upload", "Key": kv.0]
-            let info: [NSObject: AnyObject] = ["event": "LastAcquiredExtractor", "attrs": attrs]
-            NSNotificationCenter.defaultCenter().postNotificationName(MCRemoteErrorNotification, object: nil, userInfo: info)
+            let attrs: [String: AnyObject] = ["Type": "Upload" as AnyObject, "Key": kv.0 as AnyObject]
+            let info: [NSObject: AnyObject] = ["event" as NSObject: "LastAcquiredExtractor" as AnyObject, "attrs" as NSObject: attrs as AnyObject]
+            NotificationCenter.default.post(name: NSNotification.Name(rawValue: MCRemoteErrorNotification), object: nil, userInfo: info)
             return nil
         }
         return Dictionary(pairs: pairs)
@@ -631,11 +637,11 @@ public class UserManager {
 
     public func downloadLastAcquiredExtractor(data: [String:AnyObject]) -> [String:AnyObject] {
         let pairs: [(String, AnyObject)] = data.flatMap { kv in
-            if let clientKey = lastAcquiredClientId(kv.0) { return (clientKey, kv.1) }
+            if let clientKey = lastAcquiredClientId(key: kv.0) { return (clientKey, kv.1) }
             log.error("USM no client key found for last acquired extractor on \(kv.0)")
-            let attrs: [String: AnyObject] = ["Type": "Download", "Key": kv.0]
-            let info: [NSObject: AnyObject] = ["event": "LastAcquiredExtractor", "attrs": attrs]
-            NSNotificationCenter.defaultCenter().postNotificationName(MCRemoteErrorNotification, object: nil, userInfo: info)
+            let attrs: [String: AnyObject] = ["Type": "Download" as AnyObject, "Key": kv.0 as AnyObject]
+            let info: [NSObject: AnyObject] = ["event" as NSObject: "LastAcquiredExtractor" as AnyObject, "attrs" as NSObject: attrs as AnyObject]
+            NotificationCenter.default.post(name: NSNotification.Name(rawValue: MCRemoteErrorNotification), object: nil, userInfo: info)
             return nil
         }
         return Dictionary(pairs: pairs)
@@ -649,7 +655,7 @@ public class UserManager {
     // Consent and photo data are stored in wrapped form, and thus need no additional wrapping.
     private func wrapCache(component: AccountComponent) -> [String:AnyObject]?
     {
-        let componentName = getComponentName(component)
+        let componentName = getComponentName(component: component)
         if let componentData = componentCache[component] {
             switch component {
             case .Consent:
@@ -657,13 +663,13 @@ public class UserManager {
             case .Photo:
                 return componentData
             case .Profile:
-                return [componentName: self.uploadProfileExtractor(componentData)]
+                return [componentName: self.uploadProfileExtractor(data: componentData) as AnyObject]
             case .Settings:
-                return [componentName: self.uploadSettingsExtractor(componentData)]
+                return [componentName: self.uploadSettingsExtractor(data: componentData) as AnyObject]
             case .ArchiveSpan:
-                return [componentName: self.uploadArchiveSpanExtractor(componentData)]
+                return [componentName: self.uploadArchiveSpanExtractor(data: componentData) as AnyObject]
             case .LastAcquired:
-                return [componentName: self.uploadLastAcquiredExtractor(componentData)]
+                return [componentName: self.uploadLastAcquiredExtractor(data: componentData) as AnyObject]
             }
         }
         return nil
@@ -674,48 +680,48 @@ public class UserManager {
     // Consent and photo data are returned in wrapped form.
     private func unwrapResponse(component: AccountComponent, response: [String:AnyObject]) -> [String:AnyObject]?
     {
-        let componentName = getComponentName(component)
+        let componentName = getComponentName(component: component)
         switch component {
         case .Consent:
             fallthrough
         case .Photo:
             if let componentData = response[componentName] as? String {
-                return [componentName: componentData]
+                return [componentName: componentData as AnyObject]
             }
             return nil
 
         case .Profile:
             if let componentData = response[componentName] as? [String:AnyObject] {
-                return self.downloadProfileExtractor(componentData)
+                return self.downloadProfileExtractor(data: componentData)
             }
             return nil
 
         case .Settings:
             if let componentData = response[componentName] as? [String:AnyObject] {
-                return self.downloadSettingsExtractor(componentData)
+                return self.downloadSettingsExtractor(data: componentData)
             }
             return nil
 
         case .ArchiveSpan:
             if let componentData = response[componentName] as? [String:AnyObject] {
-                return self.downloadArchiveSpanExtractor(componentData)
+                return self.downloadArchiveSpanExtractor(data: componentData)
             }
             return nil
 
         case .LastAcquired:
             if let componentData = response[componentName] as? [String:AnyObject] {
-                return self.downloadLastAcquiredExtractor(componentData)
+                return self.downloadLastAcquiredExtractor(data: componentData)
             }
             return nil
         }
     }
 
     // Retrieves the currently cached account component, wraps it, and pushes it to the backend.
-    private func syncAccountComponent(component: AccountComponent, completion: SvcResultCompletion)
+    private func syncAccountComponent(component: AccountComponent, completion: @escaping SvcResultCompletion)
     {
-        let componentData = wrapCache(component)
+        let componentData = wrapCache(component: component)
         if let _componentData = componentData {
-            Service.string(MCRouter.SetUserAccountData(_componentData), statusCode: 200..<300, tag: "SYNCACC") {
+            Service.string(route: MCRouter.SetUserAccountData(_componentData), statusCode: 200..<300, tag: "SYNCACC") {
                 _, response, result in completion(RequestResult(afStringResult:result))
             }
         }
@@ -727,7 +733,7 @@ public class UserManager {
             requestAsyncs[component]!.0?.cancel()
             let componentDelay = requestAsyncs[component]!.1
             let newAsync = Async.background(after: componentDelay) {
-                self.syncAccountComponent(component) { _ in () }
+                self.syncAccountComponent(component: component) { _ in () }
             }
             requestAsyncs[component] = (newAsync, componentDelay)
         }
@@ -737,11 +743,11 @@ public class UserManager {
     private func pushAccountComponent(component: AccountComponent,
                                       refresh: Bool,
                                       componentData: [String:AnyObject],
-                                      completion: SvcResultCompletion)
+                                      completion: @escaping SvcResultCompletion)
     {
         // Refresh cache, and post to the backend.
-        if refresh { refreshComponentCache(component, componentData: componentData) }
-        syncAccountComponent(component, completion: completion)
+        if refresh { refreshComponentCache(component: component, componentData: componentData) }
+        syncAccountComponent(component: component, completion: completion)
     }
 
     // Sets the component data in the cache as requested, and batches synchronization requests.
@@ -749,20 +755,20 @@ public class UserManager {
                                                 refresh: Bool, sync: Bool,
                                                 componentData: [String:AnyObject])
     {
-        if refresh { refreshComponentCache(component, componentData: componentData) }
-        deferredSyncOnAccountComponent(component, sync: sync)
+        if refresh { refreshComponentCache(component: component, componentData: componentData) }
+        deferredSyncOnAccountComponent(component: component, sync: sync)
     }
 
     // A helper function for a binary account component that retrieves the component data from a file.
     // This is common to both the consent pdf and the profile pic.
     private func pushBinaryFileAccountComponent(filePath: String?, component: AccountComponent,
-                                                refresh: Bool, completion: SvcResultCompletion)
+                                                refresh: Bool, completion: @escaping SvcResultCompletion)
     {
         if let path = filePath {
             if let data = NSData(contentsOfFile: path) {
-                let componentName = getComponentName(component)
-                let cache = [componentName: data.base64EncodedStringWithOptions(NSDataBase64EncodingOptions())]
-                pushAccountComponent(component, refresh: true, componentData: cache, completion: completion)
+                let componentName = getComponentName(component: component)
+                let cache = [componentName: data.base64EncodedString(options: NSData.Base64EncodingOptions())]
+                pushAccountComponent(component: component, refresh: true, componentData: cache as [String : AnyObject], completion: completion)
             } else {
                 let msg = UMPushReadBinaryFileError(component, path)
                 log.error(msg)
@@ -776,19 +782,19 @@ public class UserManager {
     }
 
     // Retrieves an account component from the backend service.
-    private func pullAccountComponent(component: AccountComponent, completion: SvcResultCompletion)
+    private func pullAccountComponent(component: AccountComponent, completion: @escaping SvcResultCompletion)
     {
-        Service.json(MCRouter.GetUserAccountData([component]), statusCode: 200..<300, tag: "GACC\(component)") {
+        Service.json(route: MCRouter.GetUserAccountData([component]), statusCode: 200..<300, tag: "GACC\(component)") {
             _, _, result in
             var pullSuccess = result.isSuccess
             if pullSuccess {
                 // All account component routes return a JSON object.
                 // Use this to refresh the component cache.
                 if let dict = result.value as? [String: AnyObject],
-                    refreshVal = self.unwrapResponse(component, response: dict)
+                    let refreshVal = self.unwrapResponse(component: component, response: dict)
                 {
-                    self.refreshComponentCache(component, componentData: refreshVal)
-                    self.lastComponentLoadDate[component] = NSDate()
+                    self.refreshComponentCache(component: component, componentData: refreshVal)
+                    self.lastComponentLoadDate[component] = Date()
                 } else {
                     // Indicate a failure if we cannot unwrap the component from the response.
                     pullSuccess = false
@@ -799,17 +805,17 @@ public class UserManager {
     }
 
     // Retrieves an account component if it is stale.
-    private func pullAccountComponentIfNeeded(component: AccountComponent, completion: SvcResultCompletion)
+    private func pullAccountComponentIfNeeded(component: AccountComponent, completion: @escaping SvcResultCompletion)
     {
-        if isAccountComponentOutdated(component) {
-            pullAccountComponent(component, completion: completion)
+        if isAccountComponentOutdated(component: component) {
+            pullAccountComponent(component: component, completion: completion)
         } else {
             completion(RequestResult())
         }
     }
 
     private func isAccountComponentOutdated(component: AccountComponent) -> Bool {
-        if let lastDateOpt = lastComponentLoadDate[component], lastDate = lastDateOpt {
+        if let lastDateOpt = lastComponentLoadDate[component], let lastDate = lastDateOpt {
             return lastDate.timeIntervalSinceNow < -300.0 // sec
         } else {
             return true
@@ -832,12 +838,12 @@ public class UserManager {
 
     // Batch reset of all components.
     private func resetAccountComponents(components: [AccountComponent]) {
-        for component in components { resetCachedComponent(component) }
+        for component in components { resetCachedComponent(component: component) }
     }
 
     // Retrieves multiple account components in a single request.
-    private func pullMultipleAccountComponents(components: [AccountComponent], requiredComponents: [AccountComponent], completion: SvcResultCompletion) {
-        Service.json(MCRouter.GetUserAccountData(components), statusCode: 200..<300, tag: "GALLACC") {
+    private func pullMultipleAccountComponents(components: [AccountComponent], requiredComponents: [AccountComponent], completion: @escaping SvcResultCompletion) {
+        Service.json(route: MCRouter.GetUserAccountData(components), statusCode: 200..<300, tag: "GALLACC") {
             _, response, result in
             var pullSuccess = result.isSuccess
             var failedComponents : [String] = []
@@ -846,12 +852,12 @@ public class UserManager {
                 // Use this to refresh the component cache.
                 if let dict = result.value as? [String: AnyObject] {
                     for component in components {
-                        if let refreshVal = self.unwrapResponse(component, response: dict) {
-                            self.refreshComponentCache(component, componentData: refreshVal)
-                            self.lastComponentLoadDate[component] = NSDate()
+                        if let refreshVal = self.unwrapResponse(component: component, response: dict) {
+                            self.refreshComponentCache(component: component, componentData: refreshVal)
+                            self.lastComponentLoadDate[component] = Date()
                         } else if requiredComponents.contains(component) {
                             // Indicate a failure if we cannot unwrap a required component from the response.
-                            failedComponents.append(getComponentName(component))
+                            failedComponents.append(getComponentName(component: component))
                             pullSuccess = false
                             break
                         }
@@ -863,66 +869,66 @@ public class UserManager {
         }
     }
 
-    public func pullFullAccount(completion: SvcResultCompletion) {
-        pullMultipleAccountComponents([ .Consent, .Photo, .Profile, .Settings, .ArchiveSpan, .LastAcquired],
+    public func pullFullAccount(completion: @escaping SvcResultCompletion) {
+        pullMultipleAccountComponents(components: [ .Consent, .Photo, .Profile, .Settings, .ArchiveSpan, .LastAcquired],
                                       requiredComponents: [.Consent, .Profile, .Settings],
                                       completion: completion)
     }
 
 
     // MARK: - Consent accessors
-    public func getConsent() -> [String: AnyObject] { return getCachedComponent(.Consent) }
+    public func getConsent() -> [String: AnyObject] { return getCachedComponent(component: .Consent) }
 
-    public func syncConsent(completion: SvcResultCompletion) {
-        syncAccountComponent(.Consent, completion: completion)
+    public func syncConsent(completion: @escaping SvcResultCompletion) {
+        syncAccountComponent(component: .Consent, completion: completion)
     }
 
-    public func pushConsent(filePath: String?, completion: SvcResultCompletion) {
-        pushBinaryFileAccountComponent(filePath, component: .Consent, refresh: true, completion: completion)
+    public func pushConsent(filePath: String?, completion: @escaping SvcResultCompletion) {
+        pushBinaryFileAccountComponent(filePath: filePath, component: .Consent, refresh: true, completion: completion)
     }
 
-    public func pullConsent(completion: SvcResultCompletion) {
-        pullAccountComponent(.Consent, completion: completion)
+    public func pullConsent(completion: @escaping SvcResultCompletion) {
+        pullAccountComponent(component: .Consent, completion: completion)
     }
 
     // MARK: - Photo accessors
-    public func getPhoto() -> [String: AnyObject] { return getCachedComponent(.Photo) }
+    public func getPhoto() -> [String: AnyObject] { return getCachedComponent(component: .Photo) }
 
-    public func syncPhoto(completion: SvcResultCompletion) {
-        syncAccountComponent(.Photo, completion: completion)
+    public func syncPhoto(completion: @escaping SvcResultCompletion) {
+        syncAccountComponent(component: .Photo, completion: completion)
     }
 
-    public func pushPhoto(filePath: String?, completion: SvcResultCompletion) {
-        pushBinaryFileAccountComponent(filePath, component: .Photo, refresh: true, completion: completion)
+    public func pushPhoto(filePath: String?, completion: @escaping SvcResultCompletion) {
+        pushBinaryFileAccountComponent(filePath: filePath, component: .Photo, refresh: true, completion: completion)
     }
 
-    public func pullPhoto(completion: SvcResultCompletion) {
-        pullAccountComponent(.Photo, completion: completion)
+    public func pullPhoto(completion: @escaping SvcResultCompletion) {
+        pullAccountComponent(component: .Photo, completion: completion)
     }
 
 
     // MARK: - Profile accessors
 
-    public func getProfileCache() -> [String: AnyObject] { return getCachedComponent(.Profile) }
+    public func getProfileCache() -> [String: AnyObject] { return getCachedComponent(component: .Profile) }
 
-    public func syncProfile(completion: SvcResultCompletion) {
-        syncAccountComponent(.Profile, completion: completion)
+    public func syncProfile(completion: @escaping SvcResultCompletion) {
+        syncAccountComponent(component: .Profile, completion: completion)
     }
 
-    public func pushProfile(componentData: [String: AnyObject], completion: SvcResultCompletion) {
-        pushAccountComponent(.Profile, refresh: true, componentData: componentData, completion: completion)
+    public func pushProfile(componentData: [String: AnyObject], completion: @escaping SvcResultCompletion) {
+        pushAccountComponent(component: .Profile, refresh: true, componentData: componentData, completion: completion)
     }
 
-    public func pullProfile(completion: SvcResultCompletion) {
-        pullAccountComponent(.Profile, completion: completion)
+    public func pullProfile(completion: @escaping SvcResultCompletion) {
+        pullAccountComponent(component: .Profile, completion: completion)
     }
 
     public func isProfileOutdated() -> Bool {
-        return isAccountComponentOutdated(.Profile)
+        return isAccountComponentOutdated(component: .Profile)
     }
 
-    public func pullProfileIfNeeded(completion: SvcResultCompletion) {
-        pullAccountComponentIfNeeded(.Profile, completion: completion)
+    public func pullProfileIfNeeded(completion: @escaping SvcResultCompletion) {
+        pullAccountComponentIfNeeded(component: .Profile, completion: completion)
     }
 
     public func getUserIdHash() -> String? {
@@ -930,22 +936,22 @@ public class UserManager {
     }
 
 
-    // MARK: - Settings accessors
+    // MARK: - Settings accessors 
 
-    public func getSettingsCache() -> [String: AnyObject] { return getCachedComponent(.Settings) }
+    public func getSettingsCache() -> [String: AnyObject] { return getCachedComponent(component: .Settings) }
 
-    public func resetSettingsCache() { resetCachedComponent(.Settings) }
+    public func resetSettingsCache() { resetCachedComponent(component: .Settings) }
 
-    public func syncSettings(completion: SvcResultCompletion) {
-        syncAccountComponent(.Settings, completion: completion)
+    public func syncSettings(completion: @escaping SvcResultCompletion) {
+        syncAccountComponent(component: .Settings, completion: completion)
     }
 
-    public func pushSettings(componentData: [String: AnyObject], completion: SvcResultCompletion) {
-        pushAccountComponent(.Settings, refresh: true, componentData: componentData, completion: completion)
+    public func pushSettings(componentData: [String: AnyObject], completion: @escaping SvcResultCompletion) {
+        pushAccountComponent(component: .Settings, refresh: true, componentData: componentData, completion: completion)
     }
 
-    public func pullSettings(completion: SvcResultCompletion) {
-        pullAccountComponent(.Settings, completion: completion)
+    public func pullSettings(completion: @escaping SvcResultCompletion) {
+        pullAccountComponent(component: .Settings, completion: completion)
     }
 
     public func getHotWords() -> String {
@@ -953,7 +959,7 @@ public class UserManager {
     }
 
     public func setHotWords(hotWords: String) {
-        pushSettings([UMPHotwordKey: hotWords]) { _ in () }
+        pushSettings(componentData: [UMPHotwordKey: hotWords as AnyObject]) { _ in () }
     }
 
     public func getRefreshFrequency() -> Int {
@@ -961,120 +967,120 @@ public class UserManager {
     }
 
     public func setRefreshFrequency(frequency: Int) {
-        pushSettings([UMPFrequencyKey: frequency]) { _ in () }
+        pushSettings(componentData: [UMPFrequencyKey: frequency as AnyObject]) { _ in () }
     }
 
 
     // MARK: - Historical ranges for anchor query bulk ingestion
 
-    public func getArchiveSpanCache() -> [String: AnyObject] { return getCachedComponent(.ArchiveSpan) }
+    public func getArchiveSpanCache() -> [String: AnyObject] { return getCachedComponent(component: .ArchiveSpan) }
 
-    public func resetArchiveSpanCache() { resetCachedComponent(.ArchiveSpan) }
+    public func resetArchiveSpanCache() { resetCachedComponent(component: .ArchiveSpan) }
 
     // Returns a global historical range over all HKSampleTypes.
-    public func getHistoricalRange() -> (NSTimeInterval, NSTimeInterval)? {
+    public func getHistoricalRange() -> (TimeInterval, TimeInterval)? {
         let cache = getArchiveSpanCache()
         if let mdict = cache[HMHRangeMinKey] as? [String: AnyObject],
-               edict = cache[HMHRangeEndKey] as? [String: AnyObject]
+               let edict = cache[HMHRangeEndKey] as? [String: AnyObject]
         {
-            let start = mdict.minElement { (a, b) in return (a.1 as! NSTimeInterval) < (b.1 as! NSTimeInterval) }
-            let end   = edict.maxElement { (a, b) in return (a.1 as! NSTimeInterval) < (b.1 as! NSTimeInterval) }
+            let start = mdict.min { (a, b) in return (a.1 as! TimeInterval) < (b.1 as! TimeInterval) }
+            let end   = edict.max { (a, b) in return (a.1 as! TimeInterval) < (b.1 as! TimeInterval) }
 
-            if let s = start?.1 as? NSTimeInterval, e = end?.1 as? NSTimeInterval { return (s, e) }
+            if let s = start?.1 as? TimeInterval, let e = end?.1 as? TimeInterval { return (s, e) }
         }
         return nil
     }
 
-    public func getHistoricalRangeForType(type: HKSampleType) -> (NSTimeInterval, NSTimeInterval)? {
+    public func getHistoricalRangeForType(type: HKSampleType) -> (TimeInterval, TimeInterval)? {
 
         let cache = getArchiveSpanCache()
-        if let k = seqIdOfSampleTypeId(type.identifier),
-               s = cache[HMHRangeStartKey]?[k] as? NSTimeInterval,
-               e = cache[HMHRangeEndKey]?[k] as? NSTimeInterval
+        if let k = seqIdOfSampleTypeId(typeIdentifier: type.identifier),
+               let s = cache[HMHRangeStartKey]?[k] as? TimeInterval,
+               let e = cache[HMHRangeEndKey]?[k] as? TimeInterval
         {
             return (s, e)
         }
         return nil
     }
 
-    public func initializeHistoricalRangeForType(type: HKSampleType, sync: Bool = false) -> (NSTimeInterval, NSTimeInterval) {
-        let (start, end) = (decrAnchorDate(NSDate()).timeIntervalSinceReferenceDate, NSDate().timeIntervalSinceReferenceDate)
+    public func initializeHistoricalRangeForType(type: HKSampleType, sync: Bool = false) -> (TimeInterval, TimeInterval) {
+        let (start, end) = (decrAnchorDate(d: Date()).timeIntervalSinceReferenceDate, Date().timeIntervalSinceReferenceDate)
 
-        Async.customQueue(self.componentUpdateQueue) {
+        Async.custom(queue: self.componentUpdateQueue) {
             var cache = self.getArchiveSpanCache()
-            if let k = seqIdOfSampleTypeId(type.identifier),
-               var sdict = cache[HMHRangeStartKey] as? [String: AnyObject],
-               var edict = cache[HMHRangeEndKey] as? [String: AnyObject]
+            if let k = seqIdOfSampleTypeId(typeIdentifier: type.identifier),
+               var sdict = cache[HMHRangeStartKey] as? [String: Any],
+               var edict = cache[HMHRangeEndKey] as? [String: Any]
             {
                 sdict.updateValue(start, forKey: k)
                 edict.updateValue(end, forKey: k)
                 let newSpan = [HMHRangeStartKey: sdict, HMHRangeEndKey: edict]
-                self.deferredPushOnAccountComponent(.ArchiveSpan, refresh: true, sync: sync, componentData: newSpan)
+                self.deferredPushOnAccountComponent(component: .ArchiveSpan, refresh: true, sync: sync, componentData: newSpan as [String : AnyObject])
             }
         }
 
         return (start, end)
     }
 
-    public func getHistoricalRangeStartForType(type: HKSampleType) -> NSTimeInterval? {
+    public func getHistoricalRangeStartForType(type: HKSampleType) -> TimeInterval? {
         let cache = getArchiveSpanCache()
-        if let k = seqIdOfSampleTypeId(type.identifier) {
-            return cache[HMHRangeStartKey]?[k] as? NSTimeInterval
+        if let k = seqIdOfSampleTypeId(typeIdentifier: type.identifier) {
+            return cache[HMHRangeStartKey]?[k] as? TimeInterval
         }
         return nil
     }
 
     public func decrHistoricalRangeStartForType(type: HKSampleType, sync: Bool = false) {
-        Async.customQueue(self.componentUpdateQueue) {
+        Async.custom(queue: self.componentUpdateQueue) {
             let cache = self.getArchiveSpanCache()
-            if let k = seqIdOfSampleTypeId(type.identifier),
-                var sdict = cache[HMHRangeStartKey] as? [String: AnyObject],
-                let start = sdict[k] as? NSTimeInterval
+            if let k = seqIdOfSampleTypeId(typeIdentifier: type.identifier),
+                var sdict = cache[HMHRangeStartKey] as? [String: Any],
+                let start = sdict[k] as? TimeInterval
             {
-                let newDate = self.decrAnchorDate(NSDate(timeIntervalSinceReferenceDate: start)).timeIntervalSinceReferenceDate
+                let newDate = self.decrAnchorDate(d: Date(timeIntervalSinceReferenceDate: start)).timeIntervalSinceReferenceDate
                 sdict.updateValue(newDate, forKey: k)
                 let newSpan = [HMHRangeStartKey: sdict]
-                self.deferredPushOnAccountComponent(.ArchiveSpan, refresh: true, sync: sync, componentData: newSpan)
+                self.deferredPushOnAccountComponent(component: .ArchiveSpan, refresh: true, sync: sync, componentData: newSpan as [String : AnyObject])
             } else {
                 log.error("Could not find historical sample range for \(type.identifier)")
             }
         }
     }
 
-    public func getHistoricalRangeMinForType(type: HKSampleType) -> NSTimeInterval? {
+    public func getHistoricalRangeMinForType(type: HKSampleType) -> TimeInterval? {
         let cache = getArchiveSpanCache()
-        if let k = seqIdOfSampleTypeId(type.identifier) {
-            return cache[HMHRangeMinKey]?[k] as? NSTimeInterval
+        if let k = seqIdOfSampleTypeId(typeIdentifier: type.identifier) {
+            return cache[HMHRangeMinKey]?[k] as? TimeInterval
         }
         return nil
     }
 
-    public func setHistoricalRangeMinForType(type: HKSampleType, min: NSDate, sync: Bool = false) {
-        Async.customQueue(self.componentUpdateQueue) {
+    public func setHistoricalRangeMinForType(type: HKSampleType, min: Date, sync: Bool = false) {
+        Async.custom(queue: self.componentUpdateQueue) {
             var cache = self.getArchiveSpanCache()
-            if cache[HMHRangeMinKey] == nil { cache[HMHRangeMinKey] = [:] }
-            if let k = seqIdOfSampleTypeId(type.identifier), var mdict = cache[HMHRangeMinKey] as? [String: AnyObject]
+//            if cache[HMHRangeMinKey] == nil { cache[HMHRangeMinKey]   }
+            if let k = seqIdOfSampleTypeId(typeIdentifier: type.identifier), var mdict = cache[HMHRangeMinKey] as? [String: AnyObject]
             {
-                mdict.updateValue(min.timeIntervalSinceReferenceDate, forKey: k)
+                mdict.updateValue(min.timeIntervalSinceReferenceDate as AnyObject, forKey: k)
                 let newSpan = [HMHRangeMinKey: mdict]
-                self.deferredPushOnAccountComponent(.ArchiveSpan, refresh: true, sync: sync, componentData: newSpan)
+                self.deferredPushOnAccountComponent(component: .ArchiveSpan, refresh: true, sync: sync, componentData: newSpan as [String : AnyObject])
             }
         }
     }
 
-    public func decrAnchorDate(d: NSDate) -> NSDate {
-        let region = Region()
-        return (d - 2.weeks).startOf(.Day, inRegion: region)
+    public func decrAnchorDate(d: Date) -> Date {
+//        let region = Region()
+        return (d - 2.weeks).startOf(component: .day)
     }
 
 
     // MARK : - Last acquisition times.
 
     public func getAcquisitionSeq() -> [HKSampleType: AnyObject] {
-        let mcdbSeqs = getCachedComponent(.LastAcquired)
+        let mcdbSeqs = getCachedComponent(component: .LastAcquired)
         var typedSeqs: [HKSampleType: AnyObject] = [:]
         for (typeId, seqData) in mcdbSeqs {
-            if let type = sampleTypeOfTypeId(typeId) {
+            if let type = sampleTypeOfTypeId(typeIdentifier: typeId) {
                 typedSeqs.updateValue(seqData, forKey: type)
             }
             else {
@@ -1085,21 +1091,21 @@ public class UserManager {
     }
 
     public func getAcquisitionSeq(type: HKSampleType) -> AnyObject? {
-        return getCachedComponent(.LastAcquired)[type.identifier]
+        return getCachedComponent(component: .LastAcquired)[type.identifier]
     }
 
-    public func resetAcquisitionSeq() { resetCachedComponent(.LastAcquired) }
+    public func resetAcquisitionSeq() { resetCachedComponent(component: .LastAcquired) }
 
-    public func pullAcquisitionSeq(completion: SvcResultCompletion) {
-        pullAccountComponent(.LastAcquired, completion: completion)
+    public func pullAcquisitionSeq(completion: @escaping SvcResultCompletion) {
+        pullAccountComponent(component: .LastAcquired, completion: completion)
     }
 
-    public func syncAcquisitionSeq(completion: SvcResultCompletion) {
-        syncAccountComponent(.LastAcquired, completion: completion)
+    public func syncAcquisitionSeq(completion: @escaping SvcResultCompletion) {
+        syncAccountComponent(component: .LastAcquired, completion: completion)
     }
 
     public func setAcquisitionSeq(seqs: [String: AnyObject], sync: Bool = false) {
-        deferredPushOnAccountComponent(.LastAcquired, refresh: true, sync: sync, componentData: seqs)
+        deferredPushOnAccountComponent(component: .LastAcquired, refresh: true, sync: sync, componentData: seqs)
     }
 
     public func setAcquisitionSeq(typedSeqs: [HKSampleType: AnyObject], sync: Bool = false) {
@@ -1107,13 +1113,14 @@ public class UserManager {
         for (type, seqData) in typedSeqs {
             seqs.updateValue(seqData, forKey: type.identifier)
         }
-        setAcquisitionSeq(seqs, sync: sync)
+//        setAcquisitionSeq(seqs, sync: sync)
+//        setAcquisitionSeq(seqs: seqs, sync: type.identifier)
     }
 
 
     // MARK : - Naming functions
-    func hkToMCDB(key: String) -> String? { return HMConstants.sharedInstance.hkToMCDB[key] }
-    func mcdbToHK(key: String) -> String? { return HMConstants.sharedInstance.mcdbToHK[key] }
+//    func hkToMCDB(key: String) -> String? { return HMConstants.sharedInstance.hkToMCDB[key] }
+//    func mcdbToHK(key: String) -> String? { return HMConstants.sharedInstance.mcdbToHK[key] }
 
     private static let settingsClient = [
         "hotword"           : UMPHotwordKey,
@@ -1143,37 +1150,37 @@ public class UserManager {
     func archiveSpanClientId(key: String) -> String { return UserManager.archiveSpanClient[key]! }
     func archiveSpanServerId(key: String) -> String { return UserManager.archiveSpanServer[key]! }
 
-    func lastAcquiredClientId(key: String) -> String? { return sampleTypeIdOfSeqId(key) }
-    func lastAcquiredServerId(key: String) -> String? { return seqIdOfSampleTypeId(key) }
+    func lastAcquiredClientId(key: String) -> String? { return sampleTypeIdOfSeqId(anchorIdentifier: key) }
+    func lastAcquiredServerId(key: String) -> String? { return seqIdOfSampleTypeId(typeIdentifier: key) }
 
 
     // MARK : - Utility functions
 
-    func withUserId (completion: (String -> Void)) {
+    func withUserId (completion: ((String) -> Void)) {
         if let user = userId { completion(user) }
         else { log.error("No user id available") }
     }
 
     func withUserPass (password: String?, completion: ((String, String) -> Void)) {
-        if let user = userId, pass = password { completion(user, pass) }
+        if let user = userId, let pass = password { completion(user, pass) }
         else { log.error("No user/password available") }
     }
 
     func withUserPass (username: String?, password: String?, completion: ((String, String) -> Void)) {
-        if let user = username, pass = password { completion(user, pass) }
+        if let user = username, let pass = password { completion(user, pass) }
         else { log.error("No user/password available") }
     }
 
     // Resets all user-specific data, but preserves the last user id.
     public func resetUser() {
         resetAccount()
-        resetAccountComponents([.Consent, .Photo, .Profile, .Settings, .ArchiveSpan, .LastAcquired])
+        resetAccountComponents(components: [.Consent, .Photo, .Profile, .Settings, .ArchiveSpan, .LastAcquired])
     }
 
     // Resets all user-related data, including the user id.
     public func resetFull() {
         resetAccount()
-        resetAccountComponents([.Consent, .Photo, .Profile, .Settings, .ArchiveSpan, .LastAcquired])
+        resetAccountComponents(components: [.Consent, .Photo, .Profile, .Settings, .ArchiveSpan, .LastAcquired])
         resetUserId()
     }
 
@@ -1189,19 +1196,19 @@ public class UserManager {
             if let ph = photo {
                 // save photo
                 let imageData = UIImagePNGRepresentation(ph)
-                result = imageData!.writeToURL(url, atomically: false)
+//                result = imageData!.writeToURL(url, atomically: false)
             }
 
             else {
                 // remove if exists
 
-                let fileManager = NSFileManager.defaultManager()
+                let fileManager = FileManager.default
 
                 let urlPathStr = url.absoluteString
 
-                if fileManager.fileExistsAtPath(urlPathStr!) {
+                if fileManager.fileExists(atPath: urlPathStr!) {
                     do {
-                        try fileManager.removeItemAtPath(urlPathStr!)
+                        try fileManager.removeItem(atPath: urlPathStr!)
                         result = true
                     } catch {
                         print("File does not exists \(error)")
@@ -1227,13 +1234,13 @@ public class UserManager {
     private func userProfilePhotoUrl() -> NSURL? {
 
         if let user = self.userId {
-            let photoFileName =  user + ".png"
+            _ =  user + ".png"
 
-            let documentsURL = NSFileManager.defaultManager().URLsForDirectory(.DocumentDirectory, inDomains: .UserDomainMask)[0]
+            let documentsURL = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask)[0]
 
-            let imageURL = documentsURL.URLByAppendingPathComponent(photoFileName)
+//            let imageURL = documentsURL.URLByAppendingPathComponent(photoFileName)
 
-            return imageURL
+//            return imageURL
         }
 
         return nil
@@ -1251,7 +1258,7 @@ public class UserManager {
                 return !(metricS == "false")
             }
         }
-        return HMConstants.sharedInstance.defaultToMetricUnits
+        return HMConstants.sharedInstance.defaultToMetricUnits!
     }
 
     public func userUnitsForType(type: HKSampleType) -> HKUnit? {
@@ -1261,60 +1268,60 @@ public class UserManager {
     // MARK: - Default meal & activity times
 
     //setting usual time when user goes to sleep
-    public func setUsualWhenToSleepTime(date: NSDate) {
+    public func setUsualWhenToSleepTime(date: Date) {
         if let user = userId {
             let key = "usualWhenToSleepTime"+user
-            Defaults.setObject(date, forKey: key)
+            Defaults.set(date, forKey: key)
             Defaults.synchronize()
         }
     }
     //setting usual duration user sleeping
-    public func setUsualWokeUpTime(date: NSDate) {
+    public func setUsualWokeUpTime(date: Date) {
         if let user = userId {
             let key = "usualSleepDuration"+user
-            Defaults.setObject(date, forKey: key)
+            Defaults.set(date, forKey: key)
             Defaults.synchronize()
         }
     }
 
-    public func getUsualWhenToSleepTime() -> NSDate? {
+    public func getUsualWhenToSleepTime() -> Date? {
         if let user = userId {
             let key = "usualWhenToSleepTime"+user
-            let date = Defaults.objectForKey(key)
-            if let d = date as? NSDate {
-                return floorDate(d, granularity: granularity5Mins)
+            let date = Defaults.object(forKey: key)
+            if let d = date as? Date {
+                return floorDate(date: d, granularity: granularity5Mins)
             }
         }
         return nil
     }
 
-    public func getUsualWokeUpTime() -> NSDate? {
+    public func getUsualWokeUpTime() -> Date? {
         if let user = userId {
             let key = "usualSleepDuration"+user
-            let duration = Defaults.objectForKey(key)
-            if let d = duration as? NSDate {
-                return floorDate(d, granularity: granularity5Mins)
+            let duration = Defaults.object(forKey: key)
+            if let d = duration as? Date {
+                return floorDate(date: d, granularity: granularity5Mins)
             }
         }
         return nil
     }
 
     //setting ususal date for meals
-    public func setUsualMealTime(mealType: String, forDate date: NSDate) {
+    public func setUsualMealTime(mealType: String, forDate date: Date) {
         if let user = userId {
             let key = mealType+user
-            Defaults.setObject(date, forKey: key)
+            Defaults.set(date, forKey: key)
             Defaults.synchronize()
         }
     }
 
     //get usual date for meals
-    public func getUsualMealTime(mealType: String) -> NSDate? {
-        if let user = userId where Defaults.hasKey(mealType+user) {
+    public func getUsualMealTime(mealType: String) -> Date? {
+        if let user = userId, Defaults.hasKey(mealType+user) {
             let key = mealType+user
-            let dateOfMeal = Defaults.objectForKey(key)
-            if let d = dateOfMeal as? NSDate {
-                return floorDate(d, granularity: granularity5Mins)
+            let dateOfMeal = Defaults.object(forKey: key)
+            if let d = dateOfMeal as? Date {
+                return floorDate(date: d, granularity: granularity5Mins)
             }
 
         }

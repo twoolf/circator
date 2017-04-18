@@ -10,14 +10,14 @@ import Foundation
 
 class FrequentActivity: NSObject, NSCoding {
     var desc: String
-    var start: NSDate
+    var start: Date
     var duration: Double
 
     static var descKey = "desc"
     static var startKey = "st"
     static var durationKey = "dur"
 
-    init(desc: String, start: NSDate, duration: Double) {
+    init(desc: String, start: Date, duration: Double) {
         self.desc = desc
         self.start = start
         self.duration = duration
@@ -25,7 +25,7 @@ class FrequentActivity: NSObject, NSCoding {
 
     required internal convenience init?(coder aDecoder: NSCoder) {
         guard let desc = aDecoder.decodeObjectForKey(FrequentActivity.descKey) as? String else { return nil }
-        guard let start = aDecoder.decodeObjectForKey(FrequentActivity.startKey) as? NSDate else { return nil }
+        guard let start = aDecoder.decodeObjectForKey(FrequentActivity.startKey) as? Date else { return nil }
         let duration = aDecoder.decodeDoubleForKey(FrequentActivity.durationKey)
         self.init(desc: desc, start: start, duration: duration)
     }

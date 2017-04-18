@@ -11,14 +11,14 @@ import Foundation
 class WorkoutConfiguration {
     
     let exerciseType: ExerciseType
-    var activeTime: NSTimeInterval
-    var restTime: NSTimeInterval
+    var activeTime: TimeInterval
+    var restTime: TimeInterval
     
     private let exerciseTypeKey = "com.raywenderlich.config.exerciseType"
     private let activeTimeKey = "com.raywenderlich.config.activeTime"
     private let restTimeKey = "com.raywenderlich.config.restTime"
     
-    init(exerciseType: ExerciseType = .Other, activeTime: NSTimeInterval = 120, restTime: NSTimeInterval = 30) {
+    init(exerciseType: ExerciseType = .Other, activeTime: TimeInterval = 120, restTime: TimeInterval = 30) {
         self.exerciseType = exerciseType
         self.activeTime = activeTime
         self.restTime = restTime
@@ -31,28 +31,28 @@ class WorkoutConfiguration {
             self.exerciseType = ExerciseType.Other
         }
         
-        if let active = rawDictionary[activeTimeKey] as? NSTimeInterval {
+        if let active = rawDictionary[activeTimeKey] as? TimeInterval {
             self.activeTime = active
         } else {
             self.activeTime = 120
         }
         
-        if let rest = rawDictionary[restTimeKey] as? NSTimeInterval {
+        if let rest = rawDictionary[restTimeKey] as? TimeInterval {
             self.restTime = rest
         } else {
             self.restTime = 30
         }
     }
     
-    func intervalDuration() -> NSTimeInterval {
+    func intervalDuration() -> TimeInterval {
         return activeTime + restTime
     }
     
     func dictionaryRepresentation() -> [String : AnyObject] {
         return [
-            exerciseTypeKey : exerciseType.rawValue,
-            activeTimeKey : activeTime,
-            restTimeKey : restTime,
+            exerciseTypeKey : exerciseType.rawValue as AnyObject,
+            activeTimeKey : activeTime as AnyObject,
+            restTimeKey : restTime as AnyObject,
         ]
     }
 }

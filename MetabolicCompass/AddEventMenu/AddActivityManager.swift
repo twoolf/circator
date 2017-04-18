@@ -199,8 +199,8 @@ public class AddActivityManager: UITableView, UITableViewDelegate, UITableViewDa
 
     // Row to activity date
     private var frequentActivityByRow: [Int: FrequentActivity] = [:]
-    private var nextActivityRowExpiry: NSDate = NSDate().startOf(.Day)
-    private let nextActivityExpiryIncrement: NSDateComponents = 1.minutes // 10.minutes
+    private var nextActivityRowExpiry: Date = Date().startOf(.Day)
+    private let nextActivityExpiryIncrement: DateComponents = 1.minutes // 10.minutes
 
     // Activity date to cell contents.
     private var frequentActivityCells: [Int: [UIView]] = [:]
@@ -264,7 +264,7 @@ public class AddActivityManager: UITableView, UITableViewDelegate, UITableViewDa
         aCoder.encodeObject(menuItems, forKey: "menuItems")
     }
 
-    func frequentActivityCacheKey(date: NSDate) -> String {
+    func frequentActivityCacheKey(date: Date) -> String {
         return "\(date.weekday)"
     }
 
@@ -381,7 +381,7 @@ public class AddActivityManager: UITableView, UITableViewDelegate, UITableViewDa
     }
 
     private func refreshFrequentActivities() {
-        let now = NSDate()
+        let now = Date()
         let nowStart = now.startOf(.Day)
 
         let cacheKey = frequentActivityCacheKey(nowStart)
@@ -391,7 +391,7 @@ public class AddActivityManager: UITableView, UITableViewDelegate, UITableViewDa
         frequentActivitiesCache.setObjectForKey(cacheKey, cacheBlock: { (success, failure) in
             // if weekday populate from previous day and same day last week
             // else populate from the same day for the past 4 weekends
-            var queryStartDates: [NSDate] = []
+            var queryStartDates: [Date] = []
 
             // Since sleep events may span the end of day boundary, we also include the previous day.
             if nowStart.weekday < 6 {
@@ -403,7 +403,7 @@ public class AddActivityManager: UITableView, UITableViewDelegate, UITableViewDa
 
             var activities: [FrequentActivity] = []
 
-            var circadianEvents: [NSDate: [(NSDate, CircadianEvent)]] = [:]
+            var circadianEvents: [Date: [(Date, CircadianEvent)]] = [:]
             var queryErrors: [NSError?] = []
             let queryGroup = dispatch_group_create()
 
@@ -509,7 +509,7 @@ public class AddActivityManager: UITableView, UITableViewDelegate, UITableViewDa
         if section == frequentActivitySectionIdx {
             log.debug("Activities #rows \(shadowActivities.count) \(frequentActivities.count)", feature: "freqActivity")
 
-            let now = NSDate()
+            let now = Date()
             let nowStart = now.startOf(.Day)
 
             // Swap buffer.
@@ -718,9 +718,9 @@ public class AddActivityManager: UITableView, UITableViewDelegate, UITableViewDa
         }
     }
 
-    func validateTimedEvent(startTime: NSDate, endTime: NSDate, completion: NSError? -> Void) {
+    func validateTimedEvent(startTime: Date, endTime: Date, completion: NSError? -> Void) {
         // Fetch all sleep and workout data since yesterday.
-        let (yesterday, now) = (1.days.ago, NSDate())
+        let (yesterday, now) = (1.days.ago, Date())
         let sleepTy = HKObjectType.categoryTypeForIdentifier(HKCategoryTypeIdentifierSleepAnalysis)!
         let workoutTy = HKWorkoutType.workoutType()
         let datePredicate = HKQuery.predicateForSamplesWithStartDate(yesterday, endDate: now, options: .None)
@@ -744,9 +744,9 @@ public class AddActivityManager: UITableView, UITableViewDelegate, UITableViewDa
         }
     }
 
-    func addSleep(hoursSinceStart: Double, startDate: NSDate? = nil, completion: NSError? -> Void) {
+    func addSleep(hoursSinceStart: Double, startDate: Date? = nil, completion: NSError? -> Void) {
         let startTime = startDate == nil ? (Int(hoursSinceStart * 60)).minutes.ago : startDate!
-        let endTime = startDate == nil ? NSDate() : startDate! + (Int(hoursSinceStart * 60)).minutes
+        let endTime = startDate == nil ? Date() : startDate! + (Int(hoursSinceStart * 60)).minutes
 
         log.debug("Saving sleep event: \(startTime) \(endTime)", feature: "addActivity")
 
@@ -765,9 +765,9 @@ public class AddActivityManager: UITableView, UITableViewDelegate, UITableViewDa
         }
     }
 
-    func addMeal(mealType: String, minutesSinceStart: Int, startDate: NSDate? = nil, completion: NSError? -> Void) {
+    func addMeal(mealType: String, minutesSinceStart: Int, startDate: Date? = nil, completion: NSError? -> Void) {
         let startTime = startDate == nil ? minutesSinceStart.minutes.ago : startDate!
-        let endTime = startDate == nil ? NSDate() : startDate! + (Int(minutesSinceStart)).minutes
+        let endTime = startDate == nil ? Date() : startDate! + (Int(minutesSinceStart)).minutes
         let metadata = ["Meal Type": mealType]
 
         log.debug("Saving meal event: \(mealType) \(startTime) \(endTime)", feature: "addActivity")
@@ -790,9 +790,9 @@ public class AddActivityManager: UITableView, UITableViewDelegate, UITableViewDa
         }
     }
 
-    func addExercise(workoutType: HKWorkoutActivityType, minutesSinceStart: Int, startDate: NSDate? = nil, completion: NSError? -> Void) {
+    func addExercise(workoutType: HKWorkoutActivityType, minutesSinceStart: Int, startDate: Date? = nil, completion: NSError? -> Void) {
         let startTime = startDate == nil ? minutesSinceStart.minutes.ago : startDate!
-        let endTime = startDate == nil ? NSDate() : startDate! + (Int(minutesSinceStart)).minutes
+        let endTime = startDate == nil ? Date() : startDate! + (Int(minutesSinceStart)).minutes
 
         log.debug("Saving exercise event: \(workoutType) \(startTime) \(endTime)", feature: "addActivity")
 
@@ -814,7 +814,7 @@ public class AddActivityManager: UITableView, UITableViewDelegate, UITableViewDa
         }
     }
 
-    func processSelection(sender: UIButton?, pickerManager: PickerManager?, itemType: String, startDate: NSDate? = nil, duration: Double, durationInSecs: Bool) {
+    func processSelection(sender: UIButton?, pickerManager: PickerManager?, itemType: String, startDate: Date? = nil, duration: Double, durationInSecs: Bool) {
         var asSleep = false
         var workoutType : HKWorkoutActivityType? = nil
         var mealType: String? = nil
@@ -914,7 +914,7 @@ public class AddActivityManager: UITableView, UITableViewDelegate, UITableViewDa
         var activitiesToAdd: [FrequentActivity] = []
 
         self.frequentActivityCells.forEach { kv in
-            if let button = kv.1[1] as? UIButton where button.selected {
+            if let button = kv.1[1] as? UIButton, button.selected {
                 if let aInfo = self.frequentActivityByRow[kv.0] {
                     activitiesToAdd.append(aInfo)
                 }

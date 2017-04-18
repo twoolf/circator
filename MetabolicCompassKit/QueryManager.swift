@@ -41,13 +41,13 @@ public typealias MCQueryAttribute = (HKObjectType, MCQueryMealActivity?)
 public typealias MCQueryPredicate = (Aggregate, MCQueryAttribute, String?, String?)
 
 public enum Query {
-    case ConjunctiveQuery(NSDate?, NSDate?, [MCQueryAttribute]?, [MCQueryPredicate])
+    case ConjunctiveQuery(Date?, Date?, [MCQueryAttribute]?, [MCQueryPredicate])
         // Start time, end time, columns to retrieve, conjunct array
 }
 
 public typealias Queries = [(String, Query)]
 
-private let QMQueriesKey  = DefaultsKey<[AnyObject]?>("QMQueriesKey")
+private let QMQueriesKey  = DefaultsKey<[Any]?>("QMQueriesKey")
 private let QMSelectedKey = DefaultsKey<Int>("QMSelectedKey")
 
 public let noQuerySelected = -1
@@ -68,7 +68,7 @@ public class QueryManager {
 
     func load() {
         let qs = Defaults[QMQueriesKey] as? [[String:AnyObject]] ?? []
-        let dsQueries = deserializeQueries(qs)
+        let dsQueries = deserializeQueries(qs: qs)
         queries = dsQueries.isEmpty ? [] : dsQueries
         querySelected = dsQueries.isEmpty ? noQuerySelected : Defaults[QMSelectedKey]
         refreshQueriedTypes()
@@ -80,7 +80,7 @@ public class QueryManager {
     }
 
     func saveQueries() {
-        let q = serializeQueries(queries)
+        let q = serializeQueries(qs: queries)
         Defaults[QMQueriesKey] = q
     }
 
@@ -99,7 +99,7 @@ public class QueryManager {
 
     public func removeQuery(index: Int) {
         if 0 <= index && index < queries.count {
-            queries.removeAtIndex(index)
+            queries.remove(at: index)
             if querySelected >= index {
                 querySelected = querySelected == index ? 0 : querySelected - 1
             }
@@ -157,7 +157,7 @@ public class QueryManager {
 
                 let initial : ([HKObjectType], Set<HKObjectType>) = ([], Set())
 
-                let types = predicates.map({ $0.1.0 }).reduce(initial, combine: { (acc, elem) in
+                let types = predicates.map({ $0.1.0 }).reduce(initial, { (acc, elem) in
                     if acc.1.contains(elem) { return acc }
                     return (acc.0 + [elem], acc.1.union([elem]))
                 }).0
@@ -192,19 +192,19 @@ private let QKey = "query"
 func serializeMCQueryMealActivity(v: MCQueryMealActivity) -> [String: AnyObject] {
     switch v {
     case .MCQueryMeal(let mealType):
-        return [MealActivityDiscriminatorKey: "meal", MealTypeKey: mealType]
+        return [MealActivityDiscriminatorKey: "meal" as AnyObject, MealTypeKey: mealType as AnyObject]
     case .MCQueryActivity(let workoutType, let valueType):
-        return [MealActivityDiscriminatorKey: "activity", WorkoutTypeKey: workoutType.rawValue, ActivityValueKey: valueType.rawValue]
+        return [MealActivityDiscriminatorKey: "activity" as AnyObject, WorkoutTypeKey: workoutType.rawValue as AnyObject, ActivityValueKey: valueType.rawValue as AnyObject]
     }
 }
 
 func serializeMCQueryAttribute(attr: MCQueryAttribute) -> [String:AnyObject] {
     if let mealActivityInfo = attr.1 {
-        var qmaDict = serializeMCQueryMealActivity(mealActivityInfo)
-        qmaDict[AttrTypeKey] = attr.0.identifier
+        var qmaDict = serializeMCQueryMealActivity(v: mealActivityInfo)
+        qmaDict[AttrTypeKey] = attr.0.identifier as AnyObject?
         return qmaDict
     }
-    return [AttrTypeKey: attr.0.identifier]
+    return [AttrTypeKey: attr.0.identifier as AnyObject]
 }
 
 func deserializeMCQueryMealActivity(dict: [String:AnyObject]) -> MCQueryMealActivity? {
@@ -227,21 +227,21 @@ func deserializeMCQueryAttribute(dict: [String:AnyObject]) -> MCQueryAttribute {
     switch attrIdentifier {
     case HKWorkoutTypeIdentifier:
         attrType = HKObjectType.workoutType()
-    case HKCategoryTypeIdentifierSleepAnalysis:
-        attrType = HKObjectType.categoryTypeForIdentifier(attrIdentifier)!
-    case HKCategoryTypeIdentifierAppleStandHour:
-        attrType = HKObjectType.categoryTypeForIdentifier(attrIdentifier)!
+    case HKCategoryTypeIdentifier.sleepAnalysis.rawValue:
+        attrType = HKObjectType.categoryType(forIdentifier: HKCategoryTypeIdentifier(rawValue: attrIdentifier))!
+    case HKCategoryTypeIdentifier.appleStandHour.rawValue:
+        attrType = HKObjectType.categoryType(forIdentifier: HKCategoryTypeIdentifier(rawValue: attrIdentifier))!
     default:
-        attrType = HKObjectType.quantityTypeForIdentifier(attrIdentifier)!
+        attrType = HKObjectType.quantityType(forIdentifier: HKQuantityTypeIdentifier(rawValue: attrIdentifier))!
     }
 
-    return MCQueryAttribute(attrType!, deserializeMCQueryMealActivity(dict))
+    return MCQueryAttribute(attrType!, deserializeMCQueryMealActivity(dict: dict))
 }
 
 func serializeMCQueryPredicate(p: MCQueryPredicate) -> [String: AnyObject] {
-    var result :[String:AnyObject] = [GKey: p.0.rawValue, AKey: serializeMCQueryAttribute(p.1)]
-    if let lb = p.2 { result[LKey] = lb }
-    if let ub = p.3 { result[UKey] = ub }
+    var result :[String:AnyObject] = [GKey: p.0.rawValue as AnyObject, AKey: serializeMCQueryAttribute(attr: p.1) as AnyObject]
+    if let lb = p.2 { result[LKey] = lb as AnyObject? }
+    if let ub = p.3 { result[UKey] = ub as AnyObject? }
     return result
 }
 
@@ -249,24 +249,24 @@ func serializeQueries(qs: Queries) -> [[String: AnyObject]] {
     return qs.map { (n,q) in
         switch q {
         case .ConjunctiveQuery(let start, let end, let columns, let conjuncts):
-            var result : [String:AnyObject] = [NKey: n, QKey: conjuncts.map(serializeMCQueryPredicate)]
+            var result : [String:Any] = [NKey: n as AnyObject, QKey: conjuncts.map(serializeMCQueryPredicate)]
             if start != nil {
-                result[SKey] = start!
+                result[SKey] = start! as AnyObject?
             }
             if end != nil {
-                result[EKey] = end!
+                result[EKey] = end! as AnyObject?
             }
             if columns != nil {
                 result[CKey] = columns!.map(serializeMCQueryAttribute)
             }
-            return result
+            return result as [String : AnyObject]
         }
     }
 }
 
 func deserializeMCQueryPredicate(p: [String: AnyObject]) -> MCQueryPredicate {
     return MCQueryPredicate(Aggregate(rawValue: p[GKey] as! Int)!,
-                            deserializeMCQueryAttribute(p[AKey] as! [String:AnyObject]),
+                            deserializeMCQueryAttribute(dict: p[AKey] as! [String:AnyObject]),
                             p[LKey] as? String,
                             p[UKey] as? String)
 }
@@ -275,24 +275,24 @@ func deserializeQueries(qs: [[String: AnyObject]]) -> Queries {
     return qs.map { dict in
         let name    = dict[NKey] as! String
         let preds   = (dict[QKey] as! [[String: AnyObject]]).map(deserializeMCQueryPredicate)
-        let start   = dict[SKey] as? NSDate
-        let end     = dict[EKey] as? NSDate
+        let start   = dict[SKey] as? Date
+        let end     = dict[EKey] as? Date
         let columns = dict[CKey] as? [MCQueryAttribute]
         return (name, .ConjunctiveQuery(start, end, columns, preds))
     }
 }
 
-func serializeMCQueryPredicateREST(p: MCQueryPredicate) -> [String: AnyObject] {
+func serializeMCQueryPredicateREST(p: MCQueryPredicate) -> [String: Any] {
     var spec : [String:AnyObject] = [:]
-    if let lb = p.2 { spec["min"] = lb }
-    if let ub = p.3 { spec["max"] = ub }
+    if let lb = p.2 { spec["min"] = lb as Any? as AnyObject? }
+    if let ub = p.3 { spec["max"] = ub as Any? as AnyObject? }
 
     if p.1.0.identifier == HKObjectType.workoutType().identifier {
         if let mealActivityInfo = p.1.1 {
             switch mealActivityInfo {
             case .MCQueryMeal(let mealType):
                 if mealType.isEmpty {
-                    return ["meal_duration": spec]
+                    return ["meal_duration": spec as Any]
                 }
                 return ["meal_duration": [mealType: spec]]
 
@@ -301,7 +301,7 @@ func serializeMCQueryPredicateREST(p: MCQueryPredicate) -> [String: AnyObject] {
                     if activityValueType == .Duration {
                         return ["activity_duration": [mcActivityType: spec]]
                     } else {
-                        spec["quantity"] = activityValueType == .Distance ? "distance" : "kcal_burned"
+                        spec["quantity"] = activityValueType == .Distance ? "distance" as AnyObject? : "kcal_burned" as AnyObject?
                         return ["activity_value": [mcActivityType: spec]]
                     }
                 }
@@ -309,10 +309,10 @@ func serializeMCQueryPredicateREST(p: MCQueryPredicate) -> [String: AnyObject] {
         }
     }
     else if let (activity_type, quantity) = HMConstants.sharedInstance.hkQuantityToMCDBActivity[p.1.0.identifier] {
-        spec["quantity"] = quantity
+        spec["quantity"] = quantity as Any? as AnyObject?
         return ["activity_value": [activity_type: spec]]
     }
 
-    let mcAttrType = HMConstants.sharedInstance.hkToMCDB[p.1.0.identifier]!
+    let mcAttrType = HMConstants.sharedInstance.hkToMCDB[p.1.0.identifier.hashValue]!
     return [mcAttrType: spec]
 }

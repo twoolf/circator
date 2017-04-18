@@ -21,8 +21,8 @@ class ExerciseInterfaceController: WKInterfaceController {
     @IBOutlet var swimButton: WKInterfaceButton!
     @IBOutlet var walkButton: WKInterfaceButton!
     
-    override func awakeWithContext(context: AnyObject?) {
-        super.awakeWithContext(context)
+    func awakeWithContext(context: AnyObject?) {
+        super.awake(withContext: context)
     }
     
     override func willActivate() {
@@ -35,22 +35,22 @@ class ExerciseInterfaceController: WKInterfaceController {
     
     @IBAction func onRun() {
         exerciseTypebyButton.exerciseType = "Running"
-        pushControllerWithName("ExerciseEndTimeController", context: self)
+        pushController(withName: "ExerciseEndTimeController", context: self)
     }
     
     @IBAction func onCycle() {
         exerciseTypebyButton.exerciseType = "Cycling"
-        pushControllerWithName("ExerciseEndTimeController", context: self)
+        pushController(withName: "ExerciseEndTimeController", context: self)
     }
     
     @IBAction func onSwim() {
         exerciseTypebyButton.exerciseType = "Swimming"
-        pushControllerWithName("ExerciseEndTimeController", context: self)
+        pushController(withName: "ExerciseEndTimeController", context: self)
     }
 
     @IBAction func onWalk() {
         exerciseTypebyButton.exerciseType = "Walking"
-        pushControllerWithName("ExerciseEndTimeController", context: self)
+        pushController(withName: "ExerciseEndTimeController", context: self)
     }
     
 }

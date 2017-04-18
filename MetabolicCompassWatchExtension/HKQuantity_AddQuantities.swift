@@ -14,9 +14,9 @@ extension HKQuantity {
     func addQuantities(quantities: [HKQuantity]?, unit: HKUnit) -> HKQuantity {
         guard let quantities = quantities else {return self}
         
-        var accumulatedQuantity: Double = self.doubleValueForUnit(unit)
+        var accumulatedQuantity: Double = self.doubleValue(for: unit)
         for quantity in quantities {
-            let newQuantityValue = quantity.doubleValueForUnit(unit)
+            let newQuantityValue = quantity.doubleValue(for: unit)
             accumulatedQuantity += newQuantityValue
         }
         return HKQuantity(unit: unit, doubleValue: accumulatedQuantity)
@@ -25,99 +25,99 @@ extension HKQuantity {
     func addSamples(samples: [HKQuantitySample]?, unit: HKUnit) -> HKQuantity {
         guard let samples = samples else {return self}
         
-        return addQuantities(samples.map { (sample) -> HKQuantity in
+        return addQuantities(quantities: samples.map { (sample) -> HKQuantity in
             return sample.quantity
             }, unit: unit)
     }
     
 }
 
-public extension HKQuantityType {
+/*public extension HKQuantityType {
     override var aggregationOptions: HKStatisticsOptions {
         switch identifier {
         case HKCategoryTypeIdentifierSleepAnalysis:
-            return .DiscreteAverage
+            return .discreteAverage
             
         case HKCorrelationTypeIdentifierBloodPressure:
-            return .DiscreteAverage
+            return .discreteAverage
             
         case HKQuantityTypeIdentifierActiveEnergyBurned:
-            return .CumulativeSum
+            return .cumulativeSum
             
         case HKQuantityTypeIdentifierBasalEnergyBurned:
-            return .DiscreteAverage
+            return .discreteAverage
             
         case HKQuantityTypeIdentifierBloodGlucose:
-            return .DiscreteAverage
+            return .discreteAverage
             
         case HKQuantityTypeIdentifierBloodPressureSystolic:
-            return .DiscreteAverage
+            return .discreteAverage
             
         case HKQuantityTypeIdentifierBloodPressureDiastolic:
-            return .DiscreteAverage
+            return .discreteAverage
             
         case HKQuantityTypeIdentifierBodyMass:
-            return .DiscreteAverage
+            return .discreteAverage
             
         case HKQuantityTypeIdentifierBodyMassIndex:
-            return .DiscreteAverage
+            return .discreteAverage
             
         case HKQuantityTypeIdentifierDietaryCaffeine:
-            return .CumulativeSum
+            return .cumulativeSum
             
         case HKQuantityTypeIdentifierDietaryCarbohydrates:
-            return .CumulativeSum
+            return .cumulativeSum
             
         case HKQuantityTypeIdentifierDietaryCholesterol:
-            return .CumulativeSum
+            return .cumulativeSum
             
         case HKQuantityTypeIdentifierDietaryEnergyConsumed:
-            return .CumulativeSum
+            return .cumulativeSum
             
         case HKQuantityTypeIdentifierDietaryFatMonounsaturated:
-            return .CumulativeSum
+            return .cumulativeSum
             
         case HKQuantityTypeIdentifierDietaryFatPolyunsaturated:
-            return .CumulativeSum
+            return .cumulativeSum
             
         case HKQuantityTypeIdentifierDietaryFatSaturated:
-            return .CumulativeSum
+            return .cumulativeSum
             
         case HKQuantityTypeIdentifierDietaryFatTotal:
-            return .CumulativeSum
+            return .cumulativeSum
             
         case HKQuantityTypeIdentifierDietaryProtein:
-            return .CumulativeSum
+            return .cumulativeSum
             
         case HKQuantityTypeIdentifierDietarySodium:
-            return .CumulativeSum
+            return .cumulativeSum
             
         case HKQuantityTypeIdentifierDietarySugar:
-            return .CumulativeSum
+            return .cumulativeSum
             
         case HKQuantityTypeIdentifierDietaryWater:
-            return .CumulativeSum
+            return .cumulativeSum
             
         case HKQuantityTypeIdentifierDistanceWalkingRunning:
-            return .CumulativeSum
+            return .cumulativeSum
             
         case HKQuantityTypeIdentifierFlightsClimbed:
-            return .CumulativeSum
+            return .cumulativeSum
             
         case HKQuantityTypeIdentifierHeartRate:
-            return .DiscreteAverage
+            return .discreteAverage
             
         case HKQuantityTypeIdentifierStepCount:
-            return .CumulativeSum
+            return .cumulativeSum
             
         case HKQuantityTypeIdentifierUVExposure:
-            return .DiscreteAverage
+            return .discreteAverage
             
         case HKWorkoutTypeIdentifier:
-            return .CumulativeSum
+            return .cumulativeSum
             
         default:
             return .None
         }
-    }
-}
+    } 
+ } */

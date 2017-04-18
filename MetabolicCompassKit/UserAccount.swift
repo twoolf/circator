@@ -12,13 +12,14 @@ import Locksmith
 /**
  This class sets up the user accounts. This information needs to be kept separate from the anonymous aggregated data.  For this reason we use a third party authenticator to enable the personally identifiable information to be kept separately from the longitudinal study data.
 
- - note: uses Stormpath for authentication
+ - note: uses Stormpath for authentication   
  */
 struct UserAccount : ReadableSecureStorable,
                      CreateableSecureStorable,
                      DeleteableSecureStorable,
                      GenericPasswordSecureStorable
 {
+//    public var data: [String : Any]
     let username: String
     let password: String
 
@@ -26,8 +27,8 @@ struct UserAccount : ReadableSecureStorable,
 
     var account: String { return username }
 
-    var data: [String: AnyObject] {
-        return ["password" : password]
+    public var data: [String: Any] {
+        return ["password" : password as Any]
     }
 }
 

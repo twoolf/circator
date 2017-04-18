@@ -108,7 +108,7 @@ class DialViewController : UIViewController, ChartViewDelegate {
     func logContentView(asAppear: Bool = true) {
         Answers.logContentViewWithName("Cycle",
                                        contentType: asAppear ? "Appear" : "Disappear",
-                                       contentId: NSDate().toString(DateFormat.Custom("YYYY-MM-dd:HH")),
+                                       contentId: Date().toString(DateFormat.Custom("YYYY-MM-dd:HH")),
                                        customAttributes: nil)
     }
 
@@ -170,7 +170,7 @@ class DialViewController : UIViewController, ChartViewDelegate {
 
     func refreshPieChart() {
         let model = AnalysisDataModel.sharedInstance.cycleModel
-        var segments : [(NSDate, ChartDataEntry)] = []
+        var segments : [(Date, ChartDataEntry)] = []
         var colors : [NSUIColor] = []
 
         let hrType = HKSampleType.quantityTypeForIdentifier(HKQuantityTypeIdentifierHeartRate)!
@@ -297,7 +297,7 @@ class DialViewController : UIViewController, ChartViewDelegate {
 
         switch AnalysisDataModel.sharedInstance.cycleModel.segmentIndex {
         case 0:
-            if let opt = entry.data as? [Int]?, counts = opt {
+            if let opt = entry.data as? [Int]?, let counts = opt {
                 let sleepCount = "\(counts[0])"
                 let eatCount = "\(counts[1])"
                 let exCount = "\(counts[2])"
@@ -310,12 +310,12 @@ class DialViewController : UIViewController, ChartViewDelegate {
             }
 
         case 1:
-            if let opt = entry.data as? Double?, bpm = opt {
+            if let opt = entry.data as? Double?, let bpm = opt {
                 entryStr += "\n" + String(format: "%.3g", bpm) + " bpm"
             }
 
         case 2:
-            if let opt = entry.data as? Double?, steps = opt {
+            if let opt = entry.data as? Double?, let steps = opt {
                 entryStr += "\n" + String(format: "%.6g", steps) + " steps"
             }
 

@@ -16,8 +16,8 @@ import AwesomeCache
 import MCCircadianQueries
 
 @objc protocol DailyChartModelProtocol {
-    optional func dataCollectingFinished()
-    optional func dailyProgressStatCollected()
+    @objc optional func dataCollectingFinished()
+    @objc optional func dailyProgressStatCollected()
 }
 
 class DailyProgressDayInfo: NSObject, NSCoding {
@@ -25,7 +25,7 @@ class DailyProgressDayInfo: NSObject, NSCoding {
     static var dayColorsKey = "dayColors"
     static var dayValuesKey = "dayValues"
     
-    internal var dayColors: [UIColor] = [UIColor.clearColor()]
+    internal var dayColors: [UIColor] = [UIColor.clear]
     internal var dayValues: [Double] = [24.0]
     
     init(colors: [UIColor], values: [Double]) {
@@ -34,14 +34,14 @@ class DailyProgressDayInfo: NSObject, NSCoding {
     }
     
     required internal convenience init?(coder aDecoder: NSCoder) {
-        guard let colors = aDecoder.decodeObjectForKey(DailyProgressDayInfo.dayColorsKey) as? [UIColor] else { return nil }
-        guard let values = aDecoder.decodeObjectForKey(DailyProgressDayInfo.dayValuesKey) as? [Double] else { return nil }
+        guard let colors = aDecoder.decodeObject(forKey: DailyProgressDayInfo.dayColorsKey) as? [UIColor] else { return nil }
+        guard let values = aDecoder.decodeObject(forKey: DailyProgressDayInfo.dayValuesKey) as? [Double] else { return nil }
         self.init(colors: colors, values: values)
     }
     
-    internal func encodeWithCoder(aCoder: NSCoder) {
-        aCoder.encodeObject(dayColors, forKey: DailyProgressDayInfo.dayColorsKey)
-        aCoder.encodeObject(dayValues, forKey: DailyProgressDayInfo.dayValuesKey)
+    internal func encode(with aCoder: NSCoder) {
+        aCoder.encode(dayColors, forKey: DailyProgressDayInfo.dayColorsKey)
+        aCoder.encode(dayValues, forKey: DailyProgressDayInfo.dayValuesKey)
     }
 }
 
@@ -61,7 +61,7 @@ class DailyChartModel : NSObject, UITableViewDataSource {
     var cachedDailyProgress: MCDailyProgressCache
     
     var delegate:DailyChartModelProtocol? = nil
-    var chartDataAndColors: [NSDate: [(Double, UIColor)]] = [:]
+    var chartDataAndColors: [Date: [(Double, UIColor)]] = [:]
     var fastingText: String = ""
     var lastAteText: String = ""
     var eatingText: String = ""
@@ -76,20 +76,20 @@ class DailyChartModel : NSObject, UITableViewDataSource {
             fatalError("Unable to create DailyChartModel circadian cache.")
         }
         super.init()
-        NSNotificationCenter.defaultCenter().addObserver(self, selector: #selector(invalidateCache), name: HMDidUpdateCircadianEvents, object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(invalidateCache), name: NSNotification.Name(rawValue: HMDidUpdateCircadianEvents), object: nil)
     }
     
-    var daysArray: [NSDate] = { return DailyChartModel.getChartDateRange() }()
+    var daysArray: [Date] = { return DailyChartModel.getChartDateRange() }()
     
     var daysStringArray: [String] = { return DailyChartModel.getChartDateRangeStrings() }()
 
     func invalidateCache(note: NSNotification) {
-        if let info = note.userInfo, dates = info[HMCircadianEventsDateUpdateKey] as? Set<NSDate> {
+        if let info = note.userInfo, let dates = info[HMCircadianEventsDateUpdateKey] as? Set<Date> {
             if dates.count > 0 {
                 for date in dates {
                     let cacheKey = "\(date.month)_\(date.day)_\(date.year)"
                     log.debug("Invalidating daily progress cache for \(cacheKey)", feature: "invalidateCache")
-                    cachedDailyProgress.removeObjectForKey(cacheKey)
+                    cachedDailyProgress.removeObject(forKey: cacheKey)
                 }
                 prepareChartData()
             }
@@ -97,25 +97,25 @@ class DailyChartModel : NSObject, UITableViewDataSource {
     }
 
     func updateRowHeight (){
-        self.daysTableView?.rowHeight = CGRectGetHeight(self.daysTableView!.frame)/7.0
+        self.daysTableView?.rowHeight = self.daysTableView!.frame.height/7.0
         self.daysTableView?.reloadData()
     }
 
     func registerCells() {
         let dayCellNib = UINib(nibName: "DailyProgressDayTableViewCell", bundle: nil)
-        self.daysTableView?.registerNib(dayCellNib, forCellReuseIdentifier: dayCellIdentifier)
+        self.daysTableView?.register(dayCellNib, forCellReuseIdentifier: dayCellIdentifier)
     }
 
     // MARK: -  UITableViewDataSource
 
-    func tableView(tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+    func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         return self.daysStringArray.count
     }
 
-    func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell {
-        let cell = tableView.dequeueReusableCellWithIdentifier(dayCellIdentifier) as! DailyProgressDayTableViewCell
+    func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+        let cell = tableView.dequeueReusableCell(withIdentifier: dayCellIdentifier) as! DailyProgressDayTableViewCell
         cell.dayLabel.text = self.daysStringArray[indexPath.row]
-        cell.dayLabel.textColor = indexPath.row == 0 ? UIColor.colorWithHexString("#ffffff", alpha: 1) : UIColor.colorWithHexString("#ffffff", alpha: 0.3)
+        cell.dayLabel.textColor = indexPath.row == 0 ? UIColor.colorWithHexString(rgb: "#ffffff", alpha: 1) : UIColor.colorWithHexString(rgb: "#ffffff", alpha: 0.3)
         return cell
     }
     
@@ -123,16 +123,16 @@ class DailyChartModel : NSObject, UITableViewDataSource {
     
     func valueOfCircadianEvent(e: CircadianEvent) -> Double {
         switch e {
-        case .Meal:
+        case .meal:
             return stEat
             
-        case .Fast:
+        case .fast:
             return stFast
             
-        case .Exercise:
+        case .exercise:
             return stWorkout
             
-        case .Sleep:
+        case .sleep:
             return stSleep
         }
     }
@@ -140,13 +140,15 @@ class DailyChartModel : NSObject, UITableViewDataSource {
     func prepareChartData () {
         log.debug("Resetting chart data with \(self.chartDataAndColors.count) values", feature: "prepareChart")
         self.chartDataAndColors = [:]
-        self.getDataForDay(nil, lastDay: false)
+        getDataForDay(day: nil, lastDay: false)
+        
     }
 
-    class func getChartDateRange(endDate: NSDate? = nil) -> [NSDate] {
-        var lastSevenDays: [NSDate] = []
-        let calendar = NSCalendar(calendarIdentifier: NSCalendarIdentifierGregorian)
-        let dateComponents = (endDate ?? NSDate()).startOf(.Day).components
+    class func getChartDateRange(endDate: Date? = nil) -> [Date] {
+        var lastSevenDays: [Date] = []
+        let calendar = NSCalendar(calendarIdentifier: NSCalendar.Identifier.gregorian)
+//        let dateComponents = (endDate ?? Date()).startOf(component: .day).components
+        let dateComponents = DateComponents().
         for _ in 0...6 {
             let date = calendar!.dateFromComponents(dateComponents)
             dateComponents.day -= 1;
@@ -154,67 +156,71 @@ class DailyChartModel : NSObject, UITableViewDataSource {
                 lastSevenDays.append(date)
             }
         }
-        return lastSevenDays.reverse()
+        return lastSevenDays.reversed()
     }
 
-    class func getChartDateRangeStrings(endDate: NSDate? = nil) -> [String] {
-        let formatter = NSDateFormatter()
+    class func getChartDateRangeStrings(endDate: Date? = nil) -> [String] {
+        let formatter = DateFormatter()
         formatter.dateFormat = "MMM\ndd"
 
         // Note: we reverse the strings array since days are from recent (top) to oldest (bottom)
-        return getChartDateRange(endDate).map { date in
-            let dateString = formatter.stringFromDate(date)
+        return getChartDateRange(endDate: endDate).map { date in
+            let dateString = formatter.string(from: date)
             if date.day % 10 == 1 {
                 if date.day == 11 {
-                    return dateString.stringByAppendingString(" th")
+//                    return dateString.stringByAppendingString(" th")
+                    return dateString.appending(" th")
                 } else {
-                    return dateString.stringByAppendingString(" st")
+//                    return dateString.stringByAppendingString(" st")
+                  return dateString.appending(" st")
                 }
             } else if date.day % 10 == 2 {
                 if date.day == 12 {
-                    return dateString.stringByAppendingString(" th")
+                    return dateString.appending(" th")
                 } else {
-                    return dateString.stringByAppendingString(" nd")
+                    return dateString.appending(" nd")
                 }
             } else if date.day % 10 == 3 {
                 if date.day == 13 {
-                    return dateString.stringByAppendingString(" th")
+                    return dateString.appending(" th")
                 } else {
-                    return dateString.stringByAppendingString(" rd")
+                    return dateString.appending(" rd")
                 }
             } else {
-                return dateString.stringByAppendingString(" th")
+                return dateString.appending(" th")
             }
-        }.reverse()
+        }.reversed()
     }
 
-    func getStartDate() -> NSDate? { return self.daysArray.first }
-    func getEndDate() -> NSDate? { return self.daysArray.last }
+    func getStartDate() -> Date? { return self.daysArray.first }
+    func getEndDate() -> Date? { return self.daysArray.last }
 
-    func setEndDate(endDate: NSDate? = nil) {
-        self.daysArray = DailyChartModel.getChartDateRange(endDate)
-        self.daysStringArray = DailyChartModel.getChartDateRangeStrings(endDate)
+    func setEndDate(endDate: Date? = nil) {
+        self.daysArray = DailyChartModel.getChartDateRange(endDate: endDate)
+        self.daysStringArray = DailyChartModel.getChartDateRangeStrings(endDate: endDate)
     }
 
-    func refreshChartDateRange(lastViewDate: NSDate?) {
-        let now = NSDate()
-        if let last = lastViewDate, end = getEndDate() where last.isInSameDayAsDate(end) && !last.isInSameDayAsDate(now) {
+    func refreshChartDateRange(lastViewDate: Date?) {
+        let now = Date()
+        if let last = lastViewDate, let end = getEndDate(), last.isInSameDayAsDate(end) && !last.
             self.daysArray = DailyChartModel.getChartDateRange()
             self.daysStringArray = DailyChartModel.getChartDateRangeStrings()
         }
     }
 
-    func getDataForDay(day: NSDate?, lastDay:Bool) {
+    func getDataForDay(day: Date?, lastDay:Bool) {
         let startDay = day == nil ? self.daysArray.first! : day!
-        let today = startDay.isInToday()
+//        let today = startDay.isInToday()
+        let today = startDay.isToday
 
-        let dateIndex = self.daysArray.indexOf(startDay)
+        let dateIndex = self.daysArray.index(of: startDay)
         let cacheKey = "\(startDay.month)_\(startDay.day)_\(startDay.year)"
         let cacheDuration = today ? 5.0 : 60.0 //if it's today we will add cache time for 10 seconds in other cases cache will be saved for 1 minute
 
-        self.cachedDailyProgress.setObjectForKey(cacheKey, cacheBlock: { (success, error) in
-            self.getCircadianEventsForDay(startDay, completion: { (dayInfo) in
-                success(dayInfo, .Seconds(cacheDuration))
+//        self.cachedDailyProgress.setObjectForKey(cacheKey, cacheBlock: { (success, error) in
+        self.cachedDailyProgress.setObject(forKey: cacheKey, cacheBlock: { (success, error) in
+            self.getCircadianEventsForDay(day: startDay, completion: { (dayInfo) in
+                success(dayInfo, .seconds(cacheDuration))
             })
         }, completion: { (dayInfoFromCache, loadedFromCache, error) in
             if (dayInfoFromCache != nil) {
@@ -239,10 +245,11 @@ class DailyChartModel : NSObject, UITableViewDataSource {
         })
     }
     
-    func getCircadianEventsForDay(day: NSDate, completion: (dayInfo: DailyProgressDayInfo) -> Void) {
+    func getCircadianEventsForDay(day: Date, completion: @escaping (_ dayInfo: DailyProgressDayInfo) -> Void) {
         
-        var endOfDay = self.endOfDay(day)
-        let dayPlus24 = (day.startOf(.Day) + 24.hours) - 1.seconds
+//        var endOfDay = date.endOfDay(date: day)
+        var endOfDay = Date().endOfDay
+        let dayPlus24 = (day.startOf(component: .day) + 24.hours) - 1.seconds
 
         // Force to 24 hours to handle time zone changes that result in a non-24hr day.
         if dayPlus24 != endOfDay { endOfDay = dayPlus24 }
@@ -250,7 +257,7 @@ class DailyChartModel : NSObject, UITableViewDataSource {
         var dayEvents:[Double] = []
         var dayColors:[UIColor] = []
         var previousEventType: CircadianEvent?
-        var previousEventDate: NSDate? = nil
+        var previousEventDate: Date? = nil
 
         // Run the query in a user interactive thread to prioritize the data model update over
         // any concurrent observer queries (i.e., when resuming the app from the background).
@@ -288,17 +295,18 @@ class DailyChartModel : NSObject, UITableViewDataSource {
                     completion(dayInfo: dayInfo)
                     return
                 }
-                completion(dayInfo: DailyProgressDayInfo(colors: [UIColor.clearColor()], values: [24.0]))
+                completion(DailyProgressDayInfo(colors: [UIColor.clearColor()], values: [24.0]))
             })
         }
     }
     
     func getDailyProgress() {
-        typealias Event = (NSDate, Double)
+        typealias Event = (Date, Double)
         typealias IEvent = (Double, Double)
         
-        /// Fetch all sleep and workout data since yesterday, and then aggregate sleep, exercise and meal events.
-        let yesterday = 1.days.ago
+        /// Fetch all sleep and workout data since yesterday, and then aggregate sleep, exercise and meal events. 
+//        let yesterday = 1.days.ago
+        let yesterday = Date(timeIntervalSinceNow: -60 * 60 * 24)
         let startDate = yesterday
 
         Async.userInteractive {
@@ -363,7 +371,7 @@ class DailyChartModel : NSObject, UITableViewDataSource {
                         // vi. the accumulated fasting window
                         // vii. a bool indicating if we are in an accumulating fasting interval
                         //
-                        let initialAccumulator : (Double, Double, Double, IEvent!, Bool, Double, Bool) =
+                        let initialAccumulator : (Double, Double, Double, IEvent?, Bool, Double, Bool) =
                             (0.0, 0.0, 0.0, nil, true, 0.0, false)
 
                         let stats = vals.filter { $0.0 >= yesterday.timeIntervalSinceDate(startDate) } .reduce(initialAccumulator, combine:
@@ -434,33 +442,34 @@ class DailyChartModel : NSObject, UITableViewDataSource {
                                 )
                         })
 
-                        let today = NSDate().startOf(.Day, inRegion: Region())
-                        let lastAte : NSDate? = stats.1 == 0 ? nil : ( startDate + Int(round(stats.1 * 3600.0)).seconds)
+//                        let today = Date().startOf(.Day, inRegion: Region()) 
+                        let today = Date()
+                        let lastAte : Date? = stats.1 == 0 ? nil : ( startDate + Int(round(stats.1 * 3600.0)).seconds)
 
                         let eatingTime = roundDate((today + Int(stats.0 * 3600.0).seconds), granularity: granularity1Min)
                         if eatingTime.hour == 0 && eatingTime.minute == 0 {
-                            self.eatingText = self.emptyValueString
+                            eatingTime = emptyValueString
                         } else {
-                            self.eatingText = eatingTime.toString(DateFormat.Custom("HH 'h' mm 'm'"))!
+                            eatingText = eatingTime.toString(DateFormat.Custom("HH 'h' mm 'm'"))!
                         }
 
                         let fastingHrs = Int(floor(stats.2))
                         let fastingMins = (today + Int(round((stats.2 % 1.0) * 60.0)).minutes).toString(DateFormat.Custom("mm"))!
-                        self.fastingText = "\(fastingHrs) h \(fastingMins) m"
+                        fastingText = "\(fastingHrs) h \(fastingMins) m"
 
                         if let lastAte = lastAte {
-                            let components = NSDate().components - lastAte.components
+                            let components = Date().components - lastAte.components
                             if components.day > 0 {
                                 let mins = (today + components.minute.minutes).toString(DateFormat.Custom("mm 'm'"))!
-                                self.lastAteText = "\(components.day * 24 + components.hour) h \(mins)"
+                                lastAteText = "\(components.day * 24 + components.hour) h \(mins)"
                             } else {
-                                self.lastAteText = (today + components).toString(DateFormat.Custom("HH 'h' mm 'm'"))!
+                                lastAteText = (today + components).toString(DateFormat.Custom("HH 'h' mm 'm'"))!
                             }
                         } else {
-                            self.lastAteText = self.emptyValueString
+                            lastAteText = emptyValueString
                         }
                         
-                        self.delegate?.dailyProgressStatCollected?()
+                        delegate?.dailyProgressStatCollected?()
                     }
                 }
             }
@@ -470,27 +479,27 @@ class DailyChartModel : NSObject, UITableViewDataSource {
     func getColorForEventType(eventType: CircadianEvent) -> UIColor {
         var eventColor: UIColor = MetabolicDailyProgressChartView.fastingColor
         switch eventType {
-        case .Exercise:
-            eventColor = highlightFasting ? MetabolicDailyProgressChartView.mutedExerciseColor : MetabolicDailyProgressChartView.exerciseColor
+        case .exercise:
+            eventColor = toggleHighlightFasting ? MetabolicDailyProgressChartView.mutedExerciseColor : MetabolicDailyProgressChartView.exerciseColor
             break
-        case .Sleep :
-            eventColor = highlightFasting ? MetabolicDailyProgressChartView.mutedSleepColor : MetabolicDailyProgressChartView.sleepColor
+        case .sleep :
+            eventColor = toggleHighlightFasting ? MetabolicDailyProgressChartView.mutedSleepColor : MetabolicDailyProgressChartView.sleepColor
             break
-        case .Meal :
-            eventColor = highlightFasting ? MetabolicDailyProgressChartView.mutedEatingColor : MetabolicDailyProgressChartView.eatingColor
+        case .meal :
+            eventColor = toggleHighlightFasting ? MetabolicDailyProgressChartView.mutedEatingColor : MetabolicDailyProgressChartView.eatingColor
             break
         default:
-            eventColor = highlightFasting ? MetabolicDailyProgressChartView.highlightFastingColor : MetabolicDailyProgressChartView.fastingColor
+            eventColor = toggleHighlightFasting ? MetabolicDailyProgressChartView.highlightFastingColor : MetabolicDailyProgressChartView.fastingColor
         }
         return eventColor
     }
     
     //MARK: Working with date
     
-    func getDifferenceForEvents(previousEventDate:NSDate?, currentEventDate: NSDate) -> Double {
+    func getDifferenceForEvents(previousEventDate:Date?, currentEventDate: Date) -> Double {
         var eventDuration = 0.0
         //if we have situation when event started at the end of the previos day and ended on next day
-        let dateForCurrentEvent = currentEventDate.day > previousEventDate?.day ? self.endOfDay(previousEventDate!) : currentEventDate
+        let dateForCurrentEvent = currentEventDate.day > (previousEventDate?.day)! ? self.endOfDay(previousEventDate!) : currentEventDate
         let differenceComponets = previousEventDate?.difference(dateForCurrentEvent, unitFlags: [.Hour, .Minute])
         let differenceMinutes = Double((differenceComponets?.minute)!)
         let minutes = Double(differenceMinutes / 60.0)//we need to devide by 60 because 60 is 100% (minutes in hour)
@@ -500,17 +509,17 @@ class DailyChartModel : NSObject, UITableViewDataSource {
         } else {//less then 1h
             eventDuration = minutes
         }
-        return self.roundToPlaces(eventDuration, places: 2)
+        return self.roundToPlaces(daoubleToRound: eventDuration, places: 2)
     }
     
-    func endOfDay(date: NSDate) -> NSDate {
-        let calendar = NSCalendar(calendarIdentifier: NSCalendarIdentifierGregorian)
-        let components = calendar!.components([.Day, .Year, .Month, .Hour, .Minute, .Second], fromDate: date)
+    func endOfDay(date: Date) -> Date {
+        let calendar = NSCalendar(calendarIdentifier: NSCalendar.Identifier.gregorian)
+        var components = calendar!.components([.day, .year, .month, .hour, .minute, .second], from: date)
         components.timeZone = NSTimeZone(name: NSTimeZone.localTimeZone().abbreviation ?? "GMT")
         components.hour = 23
         components.minute = 59
         components.second = 59
-        return calendar!.dateFromComponents(components)!
+        return calendar!.date(from: components)!
     }
     
     func roundToPlaces(daoubleToRound: Double, places:Int) -> Double {
@@ -519,23 +528,23 @@ class DailyChartModel : NSObject, UITableViewDataSource {
     }
 
     func selectColor(color: UIColor) -> UIColor {
-        if CGColorEqualToColor(color.CGColor, MetabolicDailyProgressChartView.mutedExerciseColor.CGColor)
-            || CGColorEqualToColor(color.CGColor, MetabolicDailyProgressChartView.exerciseColor.CGColor)
+        if CGColorEqualToColor(color.cgColor, MetabolicDailyProgressChartView.mutedExerciseColor.cgColor)
+            || CGColorEqualToColor(color.CGColor, MetabolicDailyProgressChartView.exerciseColor.cgColor)
         {
             return highlightFasting ? MetabolicDailyProgressChartView.mutedExerciseColor : MetabolicDailyProgressChartView.exerciseColor
         }
-        if CGColorEqualToColor(color.CGColor, MetabolicDailyProgressChartView.mutedSleepColor.CGColor)
-            || CGColorEqualToColor(color.CGColor, MetabolicDailyProgressChartView.sleepColor.CGColor)
+        if ColorEqualToColor(color.cgColor, MetabolicDailyProgressChartView.mutedSleepColor.cgColor)
+            || cgColorEqualToColor(color.cgColor, MetabolicDailyProgressChartView.sleepColor.cgColor)
         {
             return highlightFasting ? MetabolicDailyProgressChartView.mutedSleepColor : MetabolicDailyProgressChartView.sleepColor
         }
-        if CGColorEqualToColor(color.CGColor, MetabolicDailyProgressChartView.mutedEatingColor.CGColor)
-            || CGColorEqualToColor(color.CGColor, MetabolicDailyProgressChartView.eatingColor.CGColor)
+        if ColorEqualToColor(color.cgColor, MetabolicDailyProgressChartView.mutedEatingColor.cgColor)
+            || ColorEqualToColor(color.cgColor, MetabolicDailyProgressChartView.eatingColor.cgColor)
         {
             return highlightFasting ? MetabolicDailyProgressChartView.mutedEatingColor : MetabolicDailyProgressChartView.eatingColor
         }
-        if CGColorEqualToColor(color.CGColor, MetabolicDailyProgressChartView.highlightFastingColor.CGColor)
-            || CGColorEqualToColor(color.CGColor, MetabolicDailyProgressChartView.fastingColor.CGColor)
+        if ColorEqualToColor(color.cgColor, MetabolicDailyProgressChartView.highlightFastingColor.cgColor)
+            || ColorEqualToColor(color.cgColor, MetabolicDailyProgressChartView.fastingColor.cgColor)
         {
             return highlightFasting ? MetabolicDailyProgressChartView.highlightFastingColor : MetabolicDailyProgressChartView.fastingColor
         }
@@ -548,6 +557,6 @@ class DailyChartModel : NSObject, UITableViewDataSource {
 
     //MARK: Deinit
     deinit {
-        NSNotificationCenter.defaultCenter().removeObserver(self)
+        NotificationCenter.defaultCenter().removeObserver(self)
     }
 }

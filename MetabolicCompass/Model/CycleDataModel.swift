@@ -24,8 +24,8 @@ public let CDMNeedsRefresh = "CDMNeedsRefresh"
 // i. boolean indicating whether the current endpoint starts an interval.
 // ii. the previous event timestamp.
 // iii. a disjoint window dictionary of the max count, the total AUC and the number of level changes.
-public typealias CycleWindows = [NSDate: [(Int, Double, Int)]]
-public typealias CycleAccum = (Bool, NSDate!, CycleWindows)
+public typealias CycleWindows = [Date: [(Int, Double, Int)]]
+public typealias CycleAccum = (Bool, Date!, CycleWindows)
 
 class CycleWindowInfo : NSObject, NSCoding {
     static var winValuesKey  = "winValues"
@@ -70,13 +70,13 @@ typealias MCCycleWindowCache = Cache<CycleWindowInfo>
 
 public class CycleDataModel : NSObject {
 
-    public var cycleSegments : [(NSDate, ChartDataEntry)] = []
+    public var cycleSegments : [(Date, ChartDataEntry)] = []
     public var cycleColors: [NSUIColor] = []
 
     // Window size in seconds.
     public let cycleWindowSize: Int = 900
 
-    public var measureSegments: [HKSampleType: [(NSDate, ChartDataEntry)]] = [:]
+    public var measureSegments: [HKSampleType: [(Date, ChartDataEntry)]] = [:]
     public var measureColors: [HKSampleType: [NSUIColor]] = [:]
 
     public var segmentIndex = 0
@@ -98,7 +98,7 @@ public class CycleDataModel : NSObject {
     }
 
     public func updateData(completion: NSError? -> Void) {
-        let end = NSDate().endOf(.Day)
+        let end = Date().endOf(.Day)
         let start = (end - 1.months).startOf(.Day)
 
         var someError: [NSError?] = []
@@ -122,7 +122,7 @@ public class CycleDataModel : NSObject {
             }
         }
 
-        let activityAggregator : (CycleAccum, (NSDate, CircadianEvent)) -> CycleAccum = { (acc, e) in
+        let activityAggregator : (CycleAccum, (Date, CircadianEvent)) -> CycleAccum = { (acc, e) in
             var (startOfInterval, eStart, windows) = acc
             if !startOfInterval && eStart != nil {
                 let evtIndex = eventIndex(e.1)
@@ -194,7 +194,7 @@ public class CycleDataModel : NSObject {
         let scType = HKSampleType.quantityTypeForIdentifier(HKQuantityTypeIdentifierStepCount)!
 
         let predicate = HKQuery.predicateForSamplesWithStartDate(start, endDate: end, options: .None)
-        let interval = NSDateComponents()
+        let interval = DateComponents()
         interval.minute = 15
 
         let measureQueries : [(HKQuantityType, HKStatisticsOptions, String)] = [(hrType, .DiscreteAverage, WCHeartRateKey), (scType, .CumulativeSum, WCStepCountKey)]
@@ -242,7 +242,7 @@ public class CycleDataModel : NSObject {
     }
 
     // Create colors by composing each event type color component, normalized to window length * max count
-    func getChartActivityEntries(startDate: NSDate, endDate: NSDate, windows: CycleWindows) -> ([Double], [AnyObject?], [NSUIColor]) {
+    func getChartActivityEntries(startDate: Date, endDate: Date, windows: CycleWindows) -> ([Double], [AnyObject?], [NSUIColor]) {
         let secsPerDay = Double(24 * 60 * 60)
         let maxCounts = windows.reduce([1, 1, 1], combine: { acc in acc.0.enumerate().map { max($0.1, acc.1.1[$0.0].2) } }).map { CGFloat($0) }
 
@@ -311,9 +311,9 @@ public class CycleDataModel : NSObject {
         return (resultEntries, resultMeta, resultColors)
     }
 
-    func getChartMeasureEntries(startDate: NSDate, endDate: NSDate, sampleType: HKSampleType, statistics: [HKStatistics]) -> ([Double], [AnyObject?], [NSUIColor]) {
+    func getChartMeasureEntries(startDate: Date, endDate: Date, sampleType: HKSampleType, statistics: [HKStatistics]) -> ([Double], [AnyObject?], [NSUIColor]) {
         let secsPerDay = Double(24 * 60 * 60)
-        var windows: [NSDate: Double] = [:]
+        var windows: [Date: Double] = [:]
         var minMeasure: Double = 1000.0
         var maxMeasure: Double = 0.0
 
@@ -395,7 +395,7 @@ public class CycleDataModel : NSObject {
     }
 
     func invalidateMeasureEntries(note: NSNotification) {
-        if let info = note.userInfo, sampleTypeId = info["type"] as? String {
+        if let info = note.userInfo, let sampleTypeId = info["type"] as? String {
             log.info("Invalidating cycle window cache for \(sampleTypeId)")
             cachedWindows.removeObjectForKey(sampleTypeId)
             NSNotificationCenter.defaultCenter().postNotificationName(CDMNeedsRefresh, object: self, userInfo: ["type": sampleTypeId])

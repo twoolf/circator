@@ -8,40 +8,41 @@
 
 import Foundation
 
-extension NSDate {
-    func isAfterDate(dateToCompare: NSDate?, by: NSTimeInterval = 0.0) -> Bool {
+extension Date {
+    func isAfterDate(dateToCompare: Date?, by: TimeInterval = 0.0) -> Bool {
         if dateToCompare != nil{
-            return self.timeIntervalSinceDate(dateToCompare!) > by
+            return self.timeIntervalSince(dateToCompare!) > by
         }
         else{
             return true
         }
     }
     
-    func isBeforeDate(dateToCompare: NSDate?, by: NSTimeInterval = 0.0) -> Bool {
+    func isBeforeDate(dateToCompare: Date?, by: TimeInterval = 0.0) -> Bool {
         if dateToCompare != nil{
-            return self.timeIntervalSinceDate(dateToCompare!) > by
+//            return self.timeIntervalSinceDate(dateToCompare!) > by
+            return self.timeIntervalSince(dateToCompare!) > by
         }
         else{
             return false
         }
     }
     
-    class func isNowAfterDate(dateToCompare: NSDate?, by: NSTimeInterval = 0.0) -> Bool {
+    static func isNowAfterDate(dateToCompare: Date?, by: TimeInterval = 0.0) -> Bool {
         if dateToCompare != nil{
-            return dateToCompare?.timeIntervalSinceNow < -by
+            return (dateToCompare?.timeIntervalSinceNow)! < -by
         }
         else{
             return true
         }
     }
 
-    func isGreaterThanDate(dateToCompare: NSDate) -> Bool {
+    func isGreaterThanDate(dateToCompare: Date) -> Bool {
         //Declare Variables
         var isGreater = false
         
         //Compare Values
-        if self.compare(dateToCompare) == NSComparisonResult.OrderedDescending {
+        if self.compare(dateToCompare) == ComparisonResult.orderedDescending {
             isGreater = true
         }
         
@@ -49,12 +50,12 @@ extension NSDate {
         return isGreater
     }
     
-    func isLessThanDate(dateToCompare: NSDate) -> Bool {
+    func isLessThanDate(dateToCompare: Date) -> Bool {
         //Declare Variables
         var isLess = false
         
         //Compare Values
-        if self.compare(dateToCompare) == NSComparisonResult.OrderedAscending {
+        if self.compare(dateToCompare) == ComparisonResult.orderedAscending {
             isLess = true
         }
         
@@ -62,12 +63,12 @@ extension NSDate {
         return isLess
     }
     
-    func equalToDate(dateToCompare: NSDate) -> Bool {
+    func equalToDate(dateToCompare: Date) -> Bool {
         //Declare Variables
         var isEqualTo = false
         
         //Compare Values
-        if self.compare(dateToCompare) == NSComparisonResult.OrderedSame {
+        if self.compare(dateToCompare) == ComparisonResult.orderedSame {
             isEqualTo = true
         }
         
@@ -75,17 +76,19 @@ extension NSDate {
         return isEqualTo
     }
     
-    func addDays(daysToAdd: Int) -> NSDate {
-        let secondsInDays: NSTimeInterval = Double(daysToAdd) * 60 * 60 * 24
-        let dateWithDaysAdded: NSDate = self.dateByAddingTimeInterval(secondsInDays)
+    func addDays(daysToAdd: Int) -> Date {
+        let secondsInDays: TimeInterval = Double(daysToAdd) * 60 * 60 * 24
+//        let dateWithDaysAdded: Date = self.dateByAddingTimeInterval(secondsInDays)
+        let dateWithDaysAdded: Date = self.addingTimeInterval(secondsInDays)
         
         //Return Result
         return dateWithDaysAdded
     }
     
-    func addHours(hoursToAdd: Int) -> NSDate {
-        let secondsInHours: NSTimeInterval = Double(hoursToAdd) * 60 * 60
-        let dateWithHoursAdded: NSDate = self.dateByAddingTimeInterval(secondsInHours)
+    func addHours(hoursToAdd: Int) -> Date {
+        let secondsInHours: TimeInterval = Double(hoursToAdd) * 60 * 60
+//        let dateWithHoursAdded: Date = self.dateByAddingTimeInterval(secondsInHours)
+        let dateWithHoursAdded: Date = self.addingTimeInterval(secondsInHours)
         
         //Return Result
         return dateWithHoursAdded

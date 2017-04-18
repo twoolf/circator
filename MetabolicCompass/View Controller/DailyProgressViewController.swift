@@ -72,8 +72,8 @@ class DailyProgressViewController : UIViewController, DailyChartModelProtocol {
 
     private var updateContentWithAnimation = true
 
-    private var lastViewDate: NSDate! = nil
-    private var loadStart: NSDate! = nil
+    private var lastViewDate: Date! = nil
+    private var loadStart: Date! = nil
 
     //MARK: View life circle
     
@@ -142,14 +142,14 @@ class DailyProgressViewController : UIViewController, DailyChartModelProtocol {
 
     override func viewWillDisappear(animated: Bool) {
         super.viewWillDisappear(animated)
-        self.lastViewDate = NSDate()
+        self.lastViewDate = Date()
         logContentView(false)
     }
 
     func logContentView(asAppear: Bool = true) {
         Answers.logContentViewWithName("Body Clock",
                                        contentType: asAppear ? "Appear" : "Disappear",
-                                       contentId: NSDate().toString(DateFormat.Custom("YYYY-MM-dd:HH")),
+                                       contentId: Date().toString(DateFormat.Custom("YYYY-MM-dd:HH")),
                                        customAttributes: nil)
     }
 
@@ -175,7 +175,7 @@ class DailyProgressViewController : UIViewController, DailyChartModelProtocol {
         Async.main {
             if self.activityIndicator != nil {
                 self.activityIndicator.startAnimating()
-                self.loadStart = NSDate()
+                self.loadStart = Date()
             }
             self.dailyChartModel.prepareChartData()
             if dailyProgress { self.dailyChartModel.getDailyProgress() }
@@ -189,7 +189,7 @@ class DailyProgressViewController : UIViewController, DailyChartModelProtocol {
             self.activityIndicator.stopAnimating()
 
             if self.loadStart != nil {
-                log.debug("BODY CLOCK query time: \((NSDate().timeIntervalSinceReferenceDate - self.loadStart.timeIntervalSinceReferenceDate))", feature: "dataLoad")
+                log.debug("BODY CLOCK query time: \((Date().timeIntervalSinceReferenceDate - self.loadStart.timeIntervalSinceReferenceDate))", feature: "dataLoad")
             }
 
             self.dailyProgressChartView.updateChartData(self.updateContentWithAnimation,
@@ -223,10 +223,10 @@ class DailyProgressViewController : UIViewController, DailyChartModelProtocol {
     }
 
     func scrollRecent() {
-        var newDate: NSDate? = nil
+        var newDate: Date? = nil
         if let date = self.dailyChartModel.getEndDate() {
             if !date.isInToday() {
-                let today = NSDate()
+                let today = Date()
                 newDate = today < (date + 1.weeks) ? today : (date + 1.weeks)
 
                 self.scrollRecentButton.enabled = !(newDate?.isInSameDayAsDate(today) ?? false)
@@ -240,7 +240,7 @@ class DailyProgressViewController : UIViewController, DailyChartModelProtocol {
     }
 
     func scrollOlder() {
-        var newDate: NSDate? = nil
+        var newDate: Date? = nil
         if let date = self.dailyChartModel.getEndDate() {
             let oldest = 3.months.ago
             if !date.isInSameDayAsDate(oldest) {

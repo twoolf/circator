@@ -29,23 +29,23 @@ extension MetricDescriptions: NSCoding {
     }
     
     convenience init(coder aDecoder: NSCoder) {
-        let metric_name = aDecoder.decodeObjectForKey(CodingKeys.metric_name) as! String
-        let HKSampleName = aDecoder.decodeObjectForKey(CodingKeys.HKSampleName) as! String
-        let metric_units = aDecoder.decodeObjectForKey(CodingKeys.metric_units) as! String
+        let metric_name = aDecoder.decodeObject(forKey: CodingKeys.metric_name) as! String
+        let HKSampleName = aDecoder.decodeObject(forKey: CodingKeys.HKSampleName) as! String
+        let metric_units = aDecoder.decodeObject(forKey: CodingKeys.metric_units) as! String
         self.init(metric_name: metric_name, HKSampleName: HKSampleName, metric_units: metric_units)
     }
     
-    func encodeWithCoder(encoder: NSCoder) {
-        encoder.encodeObject(metric_name, forKey: CodingKeys.metric_name)
-        encoder.encodeObject(HKSampleName, forKey: CodingKeys.HKSampleName)
-        encoder.encodeObject(metric_units, forKey: CodingKeys.metric_units)
+    func encode(with encoder: NSCoder) {
+        encoder.encode(metric_name, forKey: CodingKeys.metric_name)
+        encoder.encode(HKSampleName, forKey: CodingKeys.HKSampleName)
+        encoder.encode(metric_units, forKey: CodingKeys.metric_units)
     }
 }
 
 // MARK: Loading
 extension MetricDescriptions {
     class func allMetrics() -> [MetricDescriptions] {
-        guard let file = NSBundle.mainBundle().pathForResource("Metrics", ofType: "plist") else { return [] }
+        guard let file = Bundle.main.path(forResource: "Metrics", ofType: "plist") else { return [] }
         guard let metricStrings = NSArray(contentsOfFile: file) as? [String] else { return [] }
         let metrics = [MetricDescriptions(metric_name: "weight", HKSampleName: "HKSampleType", metric_units: "lbs")]
         /*        let metrics = metricStrings.map { s -> MetricDescriptions in

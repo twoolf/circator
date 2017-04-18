@@ -19,23 +19,23 @@ class ConsentViewController: BaseViewController {
 
         let consentDict = UserManager.sharedManager.getConsent()
         if let pdfstr = consentDict["consent"] as? String,
-            pdfdata = NSData(base64EncodedString: pdfstr, options: NSDataBase64DecodingOptions())
+            let pdfdata = NSData(base64Encoded: pdfstr, options: NSData.Base64DecodingOptions())
         {
-            let url = NSURL.fileURLWithPath(NSBundle.mainBundle().bundlePath)
-            webView.loadData(pdfdata, MIMEType: "application/pdf", textEncodingName: "UTF-8", baseURL: url)
+            let url = NSURL.fileURLWithPath(Bundle.main.bundlePath)
+            webView.loadData(pdfdata as Data, MIMEType: "application/pdf", textEncodingName: "UTF-8", baseURL: url)
         } else {
             let label = UILabel()
             label.font = UIFont(name: "GothamBook", size: 20)!
-            label.textColor = .blackColor()
-            label.textAlignment = .Center
+            label.textColor = .blackColor
+            label.textAlignment = .center
             label.text = "Unable to show consent PDF"
 
             label.translatesAutoresizingMaskIntoConstraints = false
             self.view.addSubview(label)
             self.view.addConstraints([
-                label.centerXAnchor.constraintEqualToAnchor(view.layoutMarginsGuide.centerXAnchor),
-                label.centerYAnchor.constraintEqualToAnchor(view.layoutMarginsGuide.centerYAnchor),
-                label.heightAnchor.constraintEqualToConstant(100)
+                label.centerXAnchor.constraint(equalTo: view.layoutMarginsGuide.centerXAnchor),
+                label.centerYAnchor.constraint(equalTo: view.layoutMarginsGuide.centerYAnchor),
+                label.heightAnchor.constraint(equalToConstant: 100)
             ])
         }
     }

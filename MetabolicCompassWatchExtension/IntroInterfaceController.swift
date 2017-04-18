@@ -17,7 +17,7 @@ import MCCircadianQueries
 
 class IntroInterfaceController: WKInterfaceController, WCSessionDelegate  {
     @available(watchOSApplicationExtension 2.2, *)
-    public func session(session: WCSession, activationDidCompleteWithState activationState: WCSessionActivationState, error: NSError?){
+    public func session(_ session: WCSession, activationDidCompleteWith activationState: WCSessionActivationState, error: Error?){
     }
     
     public func sessionDidBecomeInactive(session: WCSession) {
@@ -38,37 +38,37 @@ class IntroInterfaceController: WKInterfaceController, WCSessionDelegate  {
     
     var model: FastingDataModel = FastingDataModel()
     
-    typealias HMCircadianAggregateBlock = (aggregates: [(NSDate, Double)], error: NSError?) -> Void
+    typealias HMCircadianAggregateBlock = (_ aggregates: [(Date, Double)], _ error: NSError?) -> Void
     
     var session : WCSession!
     
     override init() {
         super.init()
         if (WCSession.isSupported()) {
-            session = WCSession.defaultSession()
+            session = WCSession.default()
             session.delegate = self
-            session.activateSession()
+            session.activate()
         }
     }
     
     func session(session: WCSession, didReceiveApplicationContext applicationContext: [String : AnyObject]) {
         let displayDate = (applicationContext["dateKey"] as? String)
         
-        let defaults = NSUserDefaults.standardUserDefaults()
-        defaults.setObject(displayDate, forKey: "dateKey")
+        let defaults = UserDefaults.standard
+        defaults.set(displayDate, forKey: "dateKey")
     }
     
     func session(session: WCSession, didReceiveUserInfo userInfo: [String : AnyObject]) {
         if let dateString = userInfo["dateKey"] as? String {
             
-            let defaults = NSUserDefaults.standardUserDefaults()
-            defaults.setObject(dateString, forKey: "dateKey")
+            let defaults = UserDefaults.standard
+            defaults.set(dateString, forKey: "dateKey")
             
         }
     }
     
-    override func awakeWithContext(context: AnyObject?) {
-        super.awakeWithContext(context)
+    func awakeWithContext(context: AnyObject?) {
+        super.awake(withContext: context)
     }
     
     override func willActivate() {
@@ -81,13 +81,13 @@ class IntroInterfaceController: WKInterfaceController, WCSessionDelegate  {
 
         func reloadComplications() {
             let server = CLKComplicationServer.sharedInstance()
-            guard let complications = server.activeComplications where complications.count > 0 else {
+            guard let complications = server.activeComplications, complications.count > 0 else {
                 //                log.error("hit a zero in reloadComplications")
                 return
             }
             
             for complication in complications  {
-                server.reloadTimelineForComplication(complication)
+                server.reloadTimeline(for: complication)
             }
         }
         
@@ -99,16 +99,16 @@ class IntroInterfaceController: WKInterfaceController, WCSessionDelegate  {
         
         func valueOfCircadianEvent(e: CircadianEvent) -> Double {
             switch e {
-            case .Meal:
+            case .meal:
                 return stEat
                 
-            case .Fast:
+            case .fast:
                 return stFast
                 
-            case .Exercise:
+            case .exercise:
                 return stWorkout
                 
-            case .Sleep:
+            case .sleep:
                 return stSleep
             }
         }
@@ -118,14 +118,15 @@ class IntroInterfaceController: WKInterfaceController, WCSessionDelegate  {
          let stSleep = 0.33
          let stFast = 0.66
          let stEat = 1.0
-         typealias Event = (NSDate, Double)
+         typealias Event = (Date, Double)
          typealias IEvent = (Double, Double)?
          
-         let yesterday = 1.days.ago
-         let startDate = yesterday
+//         let yesterday = Date().
+//         let startDate = yesterday
+         let startDate = Date().startOfDay
          
          MCHealthManager.sharedManager.fetchCircadianEventIntervals(startDate) { (intervals, error) -> Void in
-         dispatch_async(dispatch_get_main_queue(), {
+         DispatchQueue.main.async(execute: {
          guard error == nil else {
          print("Failed to fetch circadian events: \(error)")
          return
@@ -137,17 +138,18 @@ class IntroInterfaceController: WKInterfaceController, WCSessionDelegate  {
          } else {
          
          let vals : [(x: Double, y: Double)] = intervals.map { event in
-         let startTimeInFractionalHours = event.0.timeIntervalSinceDate(startDate) / 3600.0
-         let metabolicStateAsDouble = valueOfCircadianEvent(event.1)
+//         let startTimeInFractionalHours = event.0.timeIntervalSinceDate(startDate) / 3600.0
+         let startTimeInFractionalHours = 15.0
+         let metabolicStateAsDouble = valueOfCircadianEvent(e: event.1)
          return (x: startTimeInFractionalHours, y: metabolicStateAsDouble)
          }
          
          let initialAccumulator : (Double, Double, Double, IEvent, Bool, Double, Bool) =
          (0.0, 0.0, 0.0, nil, true, 0.0, false)
          
-         let stats = vals.filter { $0.0 >= yesterday.timeIntervalSinceDate(startDate) }
-         .reduce(initialAccumulator, combine:
-         { (acc, event) in
+//         let stats = vals.filter { $0.0 >= yesterday.timeIntervalSinceDate(startDate) }
+         let stats = vals.filter { $0.0 >= Date().timeIntervalSince(startDate) }
+         .reduce(initialAccumulator, { (acc, event) in
          // Named accumulator components
          var newEatingTime = acc.0
          let lastEatingTime = acc.1
@@ -196,26 +198,26 @@ class IntroInterfaceController: WKInterfaceController, WCSessionDelegate  {
          )
          })
          
-         let today = NSDate().startOf(.Day, inRegion: Region())
-         let lastAte : NSDate? = stats.1 == 0 ? nil : ( startDate + Int(round(stats.1 * 3600.0)).seconds )
+         let today = Date().startOfDay
+         let lastAte : Date? = stats.1 == 0 ? nil : ( startDate + Int(round(stats.1 * 3600.0)).seconds )
          if (lastAte != nil) {
-         MetricsStore.sharedInstance.lastAteAsNSDate = lastAte!
+         MetricsStore.sharedInstance.lastAteAsDate = lastAte!
          }
          else {
-         MetricsStore.sharedInstance.lastAteAsNSDate = NSDate()
+         MetricsStore.sharedInstance.lastAteAsDate = Date()
          }
-         
+            
          let fastingHrs = Int(floor(stats.2))
-         let fastingMins = (today + Int(round((stats.2 % 1.0) * 60.0)).minutes).toString(DateFormat.Custom("mm"))!
+         let fastingMins = (today + Int(round((stats.2 .truncatingRemainder(dividingBy: 1.0)) * 60.0)).minutes).string()
          MetricsStore.sharedInstance.fastingTime = "\(fastingHrs):\(fastingMins)"
          
          let currentFastingHrs = Int(floor(stats.5))
-         let currentFastingMins = (today + Int(round((stats.5 % 1.0) * 60.0)).minutes).toString(DateFormat.Custom("mm"))!
+         let currentFastingMins = (today + Int(round((stats.5 .truncatingRemainder(dividingBy: 1.0)) * 60.0)).minutes).string()
          
          MetricsStore.sharedInstance.currentFastingTime = "\(currentFastingHrs):\(currentFastingMins)"
          
          let newLastEatingTimeHrs = Int(floor(stats.1))
-         let newLastEatingTimeMins = (today + Int(round((stats.1 % 1.0) * 60.0)).minutes).toString(DateFormat.Custom("mm"))!
+         let newLastEatingTimeMins = (today + Int(round((stats.1 .truncatingRemainder(dividingBy: 1.0)) * 60.0)).minutes).string()
          
          MetricsStore.sharedInstance.lastEatingTime = "\(newLastEatingTimeHrs):\(newLastEatingTimeMins)"
          

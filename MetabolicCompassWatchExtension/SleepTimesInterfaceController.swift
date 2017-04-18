@@ -22,8 +22,8 @@ class SleepTimesInterfaceController: WKInterfaceController {
     @IBOutlet var sleepTimesButton: WKInterfaceButton!
 
     var sleepClose = 0
-    override func awakeWithContext(context: AnyObject?) {
-        super.awakeWithContext(context)
+    func awakeWithContext(context: AnyObject?) {
+        super.awake(withContext: context)
         var tempItems: [WKPickerItem] = []
         for i in 0...48 {
             let item = WKPickerItem()
@@ -48,10 +48,10 @@ class SleepTimesInterfaceController: WKInterfaceController {
         sleepTimesButton.setTitle("Saved")
         
 // setting up conversion of saved value from 'waking from sleep' in 1st screen
-        let thisRegion = DateRegion()
-        let calendar = NSCalendar.currentCalendar()
-        var beginDate = NSDate.today(inRegion: thisRegion)
-        let beginComponents = calendar.components([.Year, .Month, .Day, .Hour, .Minute], fromDate: beginDate)
+        let thisRegion = DateInRegion()
+        let calendar = Calendar.current
+        var beginDate = Date()
+        var beginComponents = calendar.dateComponents([.year, .month, .day, .hour, .minute], from: beginDate)
         var timeConvertBegin:Int = 0
         var timeAddHalfHourBegin:Int = 0
 
@@ -66,9 +66,11 @@ class SleepTimesInterfaceController: WKInterfaceController {
         }
         beginComponents.hour = timeConvertBegin
         beginComponents.minute = timeAddHalfHourBegin
-        beginDate = calendar.dateFromComponents(beginComponents)!
+        beginDate = calendar.date(from: beginComponents)!
+//        beginDate = calendar.dateFromComponents(beginComponents)!
   
-        var closeDate = NSDate.today(inRegion: thisRegion)
+//        var closeDate = NSDate.today(inRegion: thisRegion)
+        var closeDate = Date().endOfDay
         var timeConvertClose:Int = 0
         var timeAddHalfHourClose:Int = 0
         
@@ -79,31 +81,32 @@ class SleepTimesInterfaceController: WKInterfaceController {
             timeAddHalfHourClose=30
         }
         
-        let closeComponents = calendar.components([.Year, .Month, .Day, .Hour, .Minute], fromDate: closeDate)
+        var closeComponents = calendar.dateComponents([.year, .month, .day, .hour, .minute], from: closeDate)
         closeComponents.hour = timeConvertClose
         closeComponents.minute = timeAddHalfHourClose
-        closeDate = calendar.dateFromComponents(closeComponents)!
+        closeDate = calendar.date(from: closeComponents)!
+//        closeDate = calendar.dateFromComponents(closeComponents)!
         
         if closeDate < beginDate {
-            beginComponents.day = beginComponents.day-1
-            beginDate = calendar.dateFromComponents(beginComponents)!
+            beginComponents.day = beginComponents.day!-1
+            beginDate = calendar.date(from: beginComponents)!
+//            beginDate = calendar.dateFromComponents(beginComponents)!
         }
         
-        let type = HKObjectType.categoryTypeForIdentifier(HKCategoryTypeIdentifierSleepAnalysis)!
+        let type = HKObjectType.categoryType(forIdentifier: HKCategoryTypeIdentifier.sleepAnalysis)!
         let sample = HKCategorySample(type: type,
-                                      value: HKCategoryValueSleepAnalysis.Asleep.rawValue,
-                                      startDate: beginDate,
-                                      endDate: closeDate,
+                                      value: HKCategoryValueSleepAnalysis.asleep.rawValue,
+                                      start: beginDate,
+                                      end: closeDate,
                                       metadata:["Apple Watch Sleep Entry":"source"])
         let healthKitStore:HKHealthStore = HKHealthStore()
-        healthKitStore.saveObject(sample) { success, error in
+        healthKitStore.save(sample) { success, error in
         }
     }
     
     @IBAction func onButtonSave() {
         showButton()
-        dispatch_after(3,
-            dispatch_get_main_queue()){
+            DispatchQueue.main.asyncAfter(deadline: .now() + 3.0){
                 self.popToRootController()
         }
     }

@@ -451,11 +451,11 @@ class BarChartModel : NSObject {
     // MARK :- Chart titles for X
 
     func getWeekTitles () -> [String] {
-        let currentDate = NSDate()
+        let currentDate = Date()
         let weekAgoDate = currentDate - 7.days
         var weekTitles: [String] = []
-        var prevMonthDates: [NSDate] = []
-        var currentMonthDates: [NSDate] = []
+        var prevMonthDates: [Date] = []
+        var currentMonthDates: [Date] = []
 
         weekTitles.append("")//create a gap for the left side
 
@@ -482,11 +482,11 @@ class BarChartModel : NSObject {
 
     func getMonthTitles () -> [String] {
         var monthTitles: [String] = []
-        let currentDate = NSDate()
+        let currentDate = Date()
         let numberOfDays = 31//max number of days in one month
         let monthAgoDate = currentDate - numberOfDays.days
-        var prevMonthDates: [NSDate] = []
-        var currentMonthDates: [NSDate] = []
+        var prevMonthDates: [Date] = []
+        var currentMonthDates: [Date] = []
 
         //empty labels for left gap
         monthTitles.append("")
@@ -520,10 +520,10 @@ class BarChartModel : NSObject {
 
     func getYearTitles () -> [String] {
         let numOfMonth = 13
-        let currentDate = NSDate()
+        let currentDate = Date()
         let dateYearAgo = currentDate - 1.years
-        var prevYearMonthes: [NSDate] = []
-        var currentYearMonthes: [NSDate] = []
+        var prevYearMonthes: [Date] = []
+        var currentYearMonthes: [Date] = []
         var yearTitles: [String] = []
 
         yearTitles.append(" ")//space for gap
@@ -554,7 +554,7 @@ class BarChartModel : NSObject {
         return .BarChart
     }
 
-    func convertDateToYearString (date: NSDate, forIndex index: Int) -> String {
+    func convertDateToYearString (date: Date, forIndex index: Int) -> String {
         let month = date.monthName
         let cutRange = month.startIndex ..< month.startIndex.advancedBy(3)
         let monthName = month.length > 3 ? month.substringWithRange(cutRange) : month
@@ -566,7 +566,7 @@ class BarChartModel : NSObject {
         return monthName
     }
 
-    func convertDateToWeekString (date: NSDate, forIndex index: Int) -> String {
+    func convertDateToWeekString (date: Date, forIndex index: Int) -> String {
         if index == 0 {
             let month = date.monthName
             let cutRange = month.startIndex ..< month.startIndex.advancedBy(3)

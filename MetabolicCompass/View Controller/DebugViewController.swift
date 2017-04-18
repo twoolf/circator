@@ -6,6 +6,7 @@
 //  Copyright © 2016 Yanif Ahmad, Tom Woolf. All rights reserved.
 //
 
+/*
 import Foundation
 import UIKit
 import HealthKit
@@ -17,7 +18,7 @@ import HTPressableButton
 import Crashlytics
 import SwiftDate
 
-private let refDate  = NSDate(timeIntervalSinceReferenceDate: 0)
+private let refDate  = Date(timeIntervalSinceReferenceDate: 0)
 private let noAnchor = HKQueryAnchor(fromValue: Int(HKAnchoredObjectQueryNoAnchor))
 
 /**
@@ -253,16 +254,16 @@ class DebugViewController : FormViewController {
     func doGenRandom() {
         let genUserId : String! = generatorParamValues["rUserId"] as? String
         if let nuParam     = generatorParamValues["rNumUsers"] as? String,
-               szParam     = generatorParamValues["rSize"]     as? String,
-               genNumUsers = Int(nuParam),
-               genSize     = Int(szParam),
-               genStart    = generatorParamValues["rStart"]    as? String,
-               genEnd      = generatorParamValues["rEnd"]      as? String
+               let szParam     = generatorParamValues["rSize"]     as? String,
+               let genNumUsers = Int(nuParam),
+               let genSize     = Int(szParam),
+               let genStart    = generatorParamValues["rStart"]    as? String,
+               let genEnd      = generatorParamValues["rEnd"]      as? String
         {
             if genNumUsers > 0 || genUserId != nil {
                 let asPopulation = genNumUsers > 0
                 let desc = asPopulation ? "\(genNumUsers) users" : "user \(genUserId!)"
-                if let st = genStart.toDate(genDateFormat), en = genEnd.toDate(genDateFormat) {
+                if let st = genStart.toDate(genDateFormat), let en = genEnd.toDate(genDateFormat) {
                     log.info("Generating data for \(desc) between \(st) and \(en)")
                     if asPopulation {
                         DataGenerator.sharedInstance.generateDatasetForService(
@@ -282,11 +283,11 @@ class DebugViewController : FormViewController {
 
     func doGenCover() {
         if let sptParam            = generatorParamValues["cSamplesPerType"] as? String,
-               genSamplesPerType   = Int(sptParam),
-               genStart            = generatorParamValues["cStart"]    as? String,
-               genEnd              = generatorParamValues["cEnd"]      as? String
+               let genSamplesPerType   = Int(sptParam),
+               let genStart            = generatorParamValues["cStart"]    as? String,
+               let genEnd              = generatorParamValues["cEnd"]      as? String
         {
-            if let st = genStart.toDate(genDateFormat), en = genEnd.toDate(genDateFormat) {
+            if let st = genStart.toDate(genDateFormat), let en = genEnd.toDate(genDateFormat) {
                 log.info("Generating covering dataset between \(st) and \(en)")
                 DataGenerator.sharedInstance.generateInMemoryCoveringDataset(genSamplesPerType, startDate: st, endDate: en)
                 {
@@ -314,11 +315,11 @@ class DebugViewController : FormViewController {
 
     func doGenLocal() {
         if let sptParam            = generatorParamValues["lSamplesPerType"] as? String,
-               genSamplesPerType   = Int(sptParam),
-               genStart            = generatorParamValues["lStart"]    as? String,
-               genEnd              = generatorParamValues["lEnd"]      as? String
+               let genSamplesPerType   = Int(sptParam),
+               let genStart            = generatorParamValues["lStart"]    as? String,
+               let genEnd              = generatorParamValues["lEnd"]      as? String
         {
-            if let st = genStart.toDate(genDateFormat), en = genEnd.toDate(genDateFormat) {
+            if let st = genStart.toDate(genDateFormat), let en = genEnd.toDate(genDateFormat) {
                 log.info("Generating local dataset between \(st) and \(en)")
                 DataGenerator.sharedInstance.generateLocalInMemoryCoveringDatasetWithoutUpload(genSamplesPerType, startDate: st, endDate: en)
             } else {
@@ -329,11 +330,11 @@ class DebugViewController : FormViewController {
 
     func doGenLocalWithUpload() {
         if let sptParam            = generatorParamValues["lSamplesPerType"] as? String,
-            genSamplesPerType   = Int(sptParam),
-            genStart            = generatorParamValues["lStart"]    as? String,
-            genEnd              = generatorParamValues["lEnd"]      as? String
+            let genSamplesPerType   = Int(sptParam),
+            let genStart            = generatorParamValues["lStart"]    as? String,
+            let genEnd              = generatorParamValues["lEnd"]      as? String
         {
-            if let st = genStart.toDate(genDateFormat), en = genEnd.toDate(genDateFormat) {
+            if let st = genStart.toDate(genDateFormat), let en = genEnd.toDate(genDateFormat) {
                 log.info("Generating local dataset between \(st) and \(en)")
                 DataGenerator.sharedInstance.generateLocalInMemoryCoveringDatasetWithUpload(genSamplesPerType, startDate: st, endDate: en)
             } else {
@@ -351,4 +352,4 @@ class DebugViewController : FormViewController {
 
     class MCButton : HTPressableButton {}
 
-}
+} */

@@ -42,10 +42,10 @@ public class  RequestResult{
         case .BoolWithMessage:
             return _ok ?? false
         case .AFObject:
-            let afObjRes = _obj as? Alamofire.Result<AnyObject, NSError>
+            let afObjRes = _obj as? Alamofire.Result<Any>
             return afObjRes?.isSuccess ?? false
         case .AFString:
-            let afStrRes = _obj as? Alamofire.Result<String, NSError>
+            let afStrRes = _obj as? Alamofire.Result<String>
             return afStrRes?.isSuccess ?? false
         case .Error:
             let err = _obj as? NSError
@@ -62,10 +62,10 @@ public class  RequestResult{
         case .BoolWithMessage:
             return _obj as? String ?? ""
         case .AFObject:
-            let afRes = _obj as? Alamofire.Result<AnyObject, NSError>
+            let afRes = _obj as? Alamofire.Result<Any>
             return ((afRes?.error)! as NSError).localizedDescription ?? ""
         case .AFString:
-            let afRes = _obj as? Alamofire.Result<String, NSError>
+            let afRes = _obj as? Alamofire.Result<String>
             return ((afRes?.error)! as NSError).localizedDescription ?? ""
         case .Error:
             let err = _obj as? NSError
@@ -87,11 +87,11 @@ public class  RequestResult{
         _ok = false
         _obj = errorMessage
     }
-    init(afObjectResult: Alamofire.Result<AnyObject, NSError>) {
+    init(afObjectResult: Alamofire.Result<Any>) {
         resType = .AFObject
         _obj = afObjectResult
     }
-    init(afStringResult: Alamofire.Result<String, NSError>) {
+    init(afStringResult: Alamofire.Result<String>) {
         resType = .AFString
         _obj = afStringResult
     }
@@ -112,17 +112,17 @@ public class  RequestResult{
  */
 public enum MCRouter : URLRequestConvertible {
     public static let baseURL          = srvURL
-    public static let apiURL           = srvURL.URLByAppendingPathComponent(apiPathComponent)
-    public static let resetPassURL     = srvURL.URLByAppendingPathComponent("forgot")
-    public static let aboutURL         = wwwURL.URLByAppendingPathComponent("about")
-    public static let privacyPolicyURL = wwwURL.URLByAppendingPathComponent("privacy")
+    public static let apiURL           = srvURL.appendingPathComponent(apiPathComponent)
+    public static let resetPassURL     = srvURL.appendingPathComponent("forgot")
+    public static let aboutURL         = wwwURL.appendingPathComponent("about")
+    public static let privacyPolicyURL = wwwURL.appendingPathComponent("privacy")
 
     static var OAuthToken: String?
-    static var tokenExpireTime: NSTimeInterval = 0
+    static var tokenExpireTime: TimeInterval = 0
 
     static func updateAuthToken (token: String?) {
         OAuthToken = token
-        tokenExpireTime = token != nil ? NSDate().timeIntervalSince1970 + 3600: 0
+        tokenExpireTime = token != nil ? Date().timeIntervalSince1970 + 3600: 0
     }
 
     // Data API
@@ -146,43 +146,43 @@ public enum MCRouter : URLRequestConvertible {
     // Token management API
     case TokenExpiry
 
-    // Remote logging API
+    // Remote logging API 
     case RLogConfig
 
-    var method: Alamofire.Method {
+    var method: HTTPMethod {
         switch self {
         case .GetMeasures:
-            return .GET
+            return .get
 
         case .AddMeasures:
-            return .POST
+            return .post
 
         case .AddSeqMeasures:
-            return .POST
+            return .post
 
         case .RemoveMeasures:
-            return .POST
+            return .post
 
         case .AggregateMeasures:
-            return .GET
+            return .get
 
         case .StudyStats:
-            return .GET
+            return .get
 
         case .DeleteAccount:
-            return .POST
+            return .post
 
         case .GetUserAccountData:
-            return .GET
+            return .get
 
         case .SetUserAccountData:
-            return .POST
+            return .post
 
         case .TokenExpiry:
-            return .GET
+            return .get
 
         case .RLogConfig:
-            return .GET
+            return .get
         }
     }
 
@@ -222,45 +222,57 @@ public enum MCRouter : URLRequestConvertible {
 
     // MARK: URLRequestConvertible
 
-    public var URLRequest: NSMutableURLRequest {
-        let mutableURLRequest = NSMutableURLRequest(URL: MCRouter.apiURL!.URLByAppendingPathComponent(path)!)
-        mutableURLRequest.HTTPMethod = method.rawValue
+    public func asURLRequest() throws -> URLRequest {
+//        let mutableURLRequest = NSMutableURLRequest(URL: MCRouter.apiURL!.URLByAppendingPathComponent(path)!)
+        let baseURL = try MCRouter.baseURL
+        var mutableURLRequest = URLRequest(url: baseURL.appendingPathComponent(path)!)
+//        mutableURLRequest.appendingPathComponent(method.rawValue)
 
+        mutableURLRequest.httpMethod = method.rawValue
         if let token = MCRouter.OAuthToken {
             mutableURLRequest.setValue("Bearer \(token)", forHTTPHeaderField: "Authorization")
         }
 
         switch self {
         case .GetMeasures(let parameters):
-            return Alamofire.ParameterEncoding.URL.encode(mutableURLRequest, parameters: parameters).0
+//            return Alamofire.ParameterEncoding.URL.encode(mutableURLRequest, parameters: parameters).0
+            return try URLEncoding.default.encode(mutableURLRequest, with: parameters)
 
         case .AddMeasures(let parameters):
-            return Alamofire.ParameterEncoding.JSON.encode(mutableURLRequest, parameters: parameters).0
+//            return Alamofire.ParameterEncoding.JSON.encode(mutableURLRequest, parameters: parameters).0
+//            return try URLEncoding.default.encode(mutableURLRequest, with: parameters)
+            return try URLEncoding.default.encode(mutableURLRequest, with: parameters)
 
         case .AddSeqMeasures(let parameters):
-            return Alamofire.ParameterEncoding.JSON.encode(mutableURLRequest, parameters: parameters).0
+//            return Alamofire.ParameterEncoding.JSON.encode(mutableURLRequest, parameters: parameters).0
+            return try URLEncoding.default.encode(mutableURLRequest, with: parameters)
 
         case .RemoveMeasures(let parameters):
-            return Alamofire.ParameterEncoding.JSON.encode(mutableURLRequest, parameters: parameters).0
+//            return Alamofire.ParameterEncoding.JSON.encode(mutableURLRequest, parameters: parameters).0
+            return try URLEncoding.default.encode(mutableURLRequest, with: parameters)
 
         case .AggregateMeasures(let parameters):
-            return Alamofire.ParameterEncoding.URL.encode(mutableURLRequest, parameters: parameters).0
+//            return Alamofire.ParameterEncoding.URL.encode(mutableURLRequest, parameters: parameters).0
+            return try URLEncoding.default.encode(mutableURLRequest, with: parameters)
 
         case .StudyStats:
-            return mutableURLRequest
+            return try mutableURLRequest
 
         case .DeleteAccount(let parameters):
-            return Alamofire.ParameterEncoding.JSON.encode(mutableURLRequest, parameters: parameters).0
+//            return Alamofire.ParameterEncoding.JSON.encode(mutableURLRequest, parameters: parameters).0
+            return try URLEncoding.default.encode(mutableURLRequest, with: parameters)
 
         case .GetUserAccountData(let components):
             let parameters = ["components": components.map(getComponentName)]
-            return Alamofire.ParameterEncoding.URL.encode(mutableURLRequest, parameters: parameters).0
+            return try URLEncoding.default.encode(mutableURLRequest as URLRequestConvertible, with: parameters)
 
         case .SetUserAccountData(let parameters):
-            return Alamofire.ParameterEncoding.JSON.encode(mutableURLRequest, parameters: parameters).0
+//            return Alamofire.ParameterEncoding.JSON.encode(mutableURLRequest, parameters: parameters).0
+            return try URLEncoding.default.encode(mutableURLRequest, with: parameters)
 
         case .TokenExpiry:
-            return mutableURLRequest
+            return try mutableURLRequest
+//            return try URLEncoding.default.encode(<#T##urlRequest: URLRequestConvertible##URLRequestConvertible#>, with: <#T##Parameters?#>)
 
         case .RLogConfig:
             return mutableURLRequest
@@ -270,42 +282,41 @@ public enum MCRouter : URLRequestConvertible {
 }
 
 public protocol ServiceRequestResultDelegate {
-    func didFinishJSONRequest(request:NSURLRequest?, response:NSHTTPURLResponse?, result:Alamofire.Result<AnyObject, NSError>)
-    func didFinishStringRequest(request:NSURLRequest?, response:NSHTTPURLResponse?, result:Alamofire.Result<String, NSError>)
+    func didFinishJSONRequest(request:NSURLRequest?, response:HTTPURLResponse?, result:Alamofire.Result<Any>)
+    func didFinishStringRequest(request:NSURLRequest?, response:HTTPURLResponse?, result:Alamofire.Result<String>)
 }
-
 
 
 public class Service {
     public static var delegate:ServiceRequestResultDelegate?
-    internal static func string<S: SequenceType where S.Generator.Element == Int>
+    internal static func string<S: Sequence where S.Iterator.Element == Int>
         (route: MCRouter, statusCode: S, tag: String,
-         completion: (NSURLRequest?, NSHTTPURLResponse?, Alamofire.Result<String, NSError>) -> Void)
+         completion: @escaping (NSURLRequest?, HTTPURLResponse?, Alamofire.Result<String>) -> Void)
         -> Alamofire.Request
     {
         return Alamofire.request(route).validate(statusCode: statusCode).responseString { response in
             log.debug("\(tag): " + (response.result.isSuccess ? "SUCCESS" : "FAILED"))
             if Service.delegate != nil{
-                Service.delegate!.didFinishStringRequest(response.request, response:response.response, result:response.result)
+                Service.delegate!.didFinishStringRequest(request: response.request as NSURLRequest?, response:response.response, result:response.result)
             }
             log.debug("\n***result:\(response.result)")
-            completion(response.request, response.response, response.result)
+            completion(response.request as NSURLRequest?, response.response, response.result)
         }
     }
     
-    internal static func json<S: SequenceType where S.Generator.Element == Int>
+    internal static func json<S: Sequence where S.Iterator.Element == Int>
         (route: MCRouter, statusCode: S, tag: String,
-         completion: (NSURLRequest?, NSHTTPURLResponse?, Alamofire.Result<AnyObject,NSError>) -> Void)
+         completion: @escaping (NSURLRequest?, HTTPURLResponse?, Alamofire.Result<Any>) -> Void)
         -> Alamofire.Request
     {
         return Alamofire.request(route).validate(statusCode: statusCode).responseJSON { response in
             log.debug("\(tag): " + (response.result.isSuccess ? "SUCCESS" : "FAILED"))
             if let json = response.result.value {
                 if Service.delegate != nil{
-                    Service.delegate!.didFinishJSONRequest(response.request, response:response.response, result:response.result)
+                    Service.delegate!.didFinishJSONRequest(request: response.request as NSURLRequest?, response:response.response, result:response.result)
                 }
                 log.debug("\n***result:\(response.result)")
-            completion(response.request, response.response, response.result)
+            completion(response.request as NSURLRequest?, response.response, response.result)
         }
     }
   }

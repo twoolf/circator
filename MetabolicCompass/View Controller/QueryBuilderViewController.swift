@@ -97,7 +97,7 @@ class QueryBuilderViewController: UIViewController, UITextFieldDelegate {
         super.viewDidAppear(animated)
         Answers.logContentViewWithName("QueryBuilder",
             contentType: "",
-            contentId: NSDate().toString(DateFormat.Custom("YYYY-MM-dd:HH:mm:ss")),
+            contentId: Date().toString(DateFormat.Custom("YYYY-MM-dd:HH:mm:ss")),
             customAttributes: nil)
     }
 
