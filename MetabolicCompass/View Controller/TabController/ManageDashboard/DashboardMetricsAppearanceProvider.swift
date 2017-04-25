@@ -1,6 +1,6 @@
 //
 //  DashboardMetricsAppearanceProvider.swift
-//  MetabolicCompass
+//  MetabolicCompass 
 //
 //  Created by Inaiur on 5/6/16.
 //  Copyright © 2016 Yanif Ahmad, Tom Woolf. All rights reserved.
@@ -14,12 +14,12 @@ class DashboardMetricsAppearanceProvider: NSObject {
     
     func attributedText(text: String, forSampleType sampleType: String, active: Bool) -> NSAttributedString
     {
-        return NSAttributedString(string: text, attributes: [NSForegroundColorAttributeName: self.colorForSampleType(sampleType, active: active)])
+        return NSAttributedString(string: text, attributes: [NSForegroundColorAttributeName: self.colorForSampleType(sampleType: sampleType, active: active)])
     }
     
     func colorForSampleType(sampleType: String, active: Bool) -> UIColor
     {
-        return self.getColorForSampleType(sampleType, active: active) ?? UIColor.whiteColor()
+        return self.getColorForSampleType(sampleType: sampleType, active: active) ?? UIColor.whiteColor()
     }
     
     enum SampleGroupColor: UInt32 {

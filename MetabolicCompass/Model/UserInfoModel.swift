@@ -1,6 +1,6 @@
 //
 //  UserInfoModel.swift
-//  MetabolicCompass
+//  MetabolicCompass 
 //
 //  Created by Anna Tkach on 5/11/16.
 //  Copyright © 2016 Yanif Ahmad, Tom Woolf. All rights reserved.
@@ -43,7 +43,7 @@ class UserInfoModel: NSObject {
     }()
 
     lazy private(set) var genderField : ModelItem = {
-        return self.modelItem(withIndex: self.genderIndex, iconImageName: "icon-sex", value: Gender.Male.rawValue, type: .Gender)
+        return self.modelItem(withIndex: self.genderIndex, iconImageName: "icon-sex", value: Gender.Male.rawValue as AnyObject?, type: .Gender)
     }()
 
     lazy private(set) var ageField : ModelItem = {
@@ -63,7 +63,7 @@ class UserInfoModel: NSObject {
     }()
 
     lazy private(set) var unitsSystemField : ModelItem = {
-         return ModelItem(name: "metric", title: "Units", type: .Units, iconImageName: "icon-measure", value: UnitsSystem.Imperial.rawValue)
+         return ModelItem(name: "metric", title: "Units", type: .Units, iconImageName: "icon-measure", value: UnitsSystem.Imperial.rawValue as AnyObject?)
     }()
 
 
@@ -92,11 +92,11 @@ class UserInfoModel: NSObject {
     func setAtItem(itemIndex itemIndex: Int, newValue: AnyObject?) {
         let fieldItem = items[itemIndex]
 
-        fieldItem.setNewValue(newValue)
+        fieldItem.setNewValue(newValue: newValue)
     }
 
     func profileItems() -> [String : String] {
-        return profileItems(items)
+        return profileItems(newItems: items)
     }
 
     // Note, this returns a profile in the standard units of the MC webservice (i.e., metric).
@@ -165,10 +165,10 @@ class UserInfoModel: NSObject {
 
             // Set to whole number of feet, and save remainder in inches field.
             if units == .Imperial {
-                heightField.setNewValue(floor(convertedValue))
-                heightInchesField.setNewValue(Int(floor((convertedValue % 1.0) * 12.0)))
+                heightField.setNewValue(newValue: floor(convertedValue))
+                heightInchesField.setNewValue(newValue: Int(floor((convertedValue % 1.0) * 12.0)))
             } else {
-                heightField.setNewValue(round(1000.0*convertedValue)/1000.0)
+                heightField.setNewValue(newValue: round(1000.0*convertedValue)/1000.0)
             }
         }
 
@@ -182,18 +182,18 @@ class UserInfoModel: NSObject {
                 convertedValue = UnitsUtils.weightValueInDefaultSystem(fromValue: value, inUnitsSystem: .Imperial)
             }
 
-            weightField.setNewValue(round(1000.0*convertedValue)/1000.0)
+            weightField.setNewValue(newValue: round(1000.0*convertedValue)/1000.0)
         }
     }
 
     func unitsDependedItemsIndexes() -> [NSIndexPath] {
         var indexes = [NSIndexPath]()
 
-        let weightIndex = items.indexOf(weightField)
-        indexes.append(NSIndexPath(forRow: weightIndex!, inSection: 0))
+        let weightIndex = items.index(of: weightField)
+        indexes.append(IndexPath(forRow: weightIndex!, inSection: 0))
 
-        let heightIndex = items.indexOf(heightField)
-        indexes.append(NSIndexPath(forRow: heightIndex!, inSection: 0))
+        let heightIndex = items.index(of: heightField)
+        indexes.append(IndexPath(forRow: heightIndex!, inSection: 0))
 
         return indexes
     }
@@ -280,7 +280,7 @@ class UserInfoModel: NSObject {
     }
 
     func isEmailValid() -> Bool {
-        var isValid = isRequiredStringValid(email)
+        var isValid = isRequiredStringValid(value: email)
 
         if isValid {
             isValid = email!.isValidAsEmail()
@@ -298,11 +298,11 @@ class UserInfoModel: NSObject {
 
 
     func isPasswordValid() -> Bool {
-        if isRequiredStringValid(password) {
+        if isRequiredStringValid(value: password) {
             let lengthRule = NJOLengthRule(min: 8, max: 100)
-            let lowerRule  = NJORequiredCharacterRule(preset: .LowercaseCharacter)
-            let upperRule  = NJORequiredCharacterRule(preset: .UppercaseCharacter)
-            let numberRule = NJORequiredCharacterRule(preset: .DecimalDigitCharacter)
+            let lowerRule  = NJORequiredCharacterRule(preset: .lowercaseCharacter)
+            let upperRule  = NJORequiredCharacterRule(preset: .uppercaseCharacter)
+            let numberRule = NJORequiredCharacterRule(preset: .decimalDigitCharacter)
             let validator = NJOPasswordValidator(rules: [lengthRule, lowerRule, upperRule, numberRule])
 
             let failingRules = validator.validatePassword(password!)
@@ -317,11 +317,11 @@ class UserInfoModel: NSObject {
     }
 
     func isFirstNameValid() -> Bool {
-        return isValidString(firstName, minLength: 2, incorrectMessage: firstNameInvalidFormat) && containsOnlyLetters(firstName!.trimmed(), incorrectMessage: firstNameInvalidFormat)
+        return isValidString(string: firstName, minLength: 2, incorrectMessage: firstNameInvalidFormat) && containsOnlyLetters(firstName!.trimmed(), incorrectMessage: firstNameInvalidFormat)
     }
 
     func isLastNameValid() -> Bool {
-        return isValidString(lastName, minLength: 2, incorrectMessage: lastNameInvalidFormat) && containsOnlyLetters(lastName!.trimmed(), incorrectMessage: lastNameInvalidFormat)
+        return isValidString(string: lastName, minLength: 2, incorrectMessage: lastNameInvalidFormat) && containsOnlyLetters(lastName!.trimmed(), incorrectMessage: lastNameInvalidFormat)
     }
 
     private func containsOnlyLetters(string: String, incorrectMessage: String) -> Bool {
@@ -333,7 +333,7 @@ class UserInfoModel: NSObject {
     }
 
     private func isValidString(string: String?, minLength: Int, incorrectMessage: String) -> Bool {
-        var isValid = isRequiredStringValid(string)
+        var isValid = isRequiredStringValid(value: string)
 
         if isValid {
             isValid = string!.characters.count > minLength
@@ -350,7 +350,7 @@ class UserInfoModel: NSObject {
 
 
     func isAgeValid() -> Bool {
-        let isValid = isRequiredIntValidInRange(age, minValue: 18, maxValue: 100)
+        let isValid = isRequiredIntValidInRange(value: age, minValue: 18, maxValue: 100)
 
         if !isValid {
             validationMessage = age == nil ? emptyFieldMessage : ageInvalidFormat
@@ -369,7 +369,7 @@ class UserInfoModel: NSObject {
         let maxWeightInUserUnits = self.units == .Metric ? maxWeight : maxWeightImp
 
         log.info("VALIDATING WEIGHT \(weight) \(minWeightInUserUnits) \(maxWeightInUserUnits)")
-        let isValid = isRequiredFloatValidInRange(weight, minValue: minWeightInUserUnits, maxValue: maxWeightInUserUnits)
+        let isValid = isRequiredFloatValidInRange(value: weight, minValue: minWeightInUserUnits, maxValue: maxWeightInUserUnits)
 
         if !isValid {
             validationMessage = weight == nil ? emptyFieldMessage : (self.units == .Metric ? metricWeightInvalidFormat : imperialWeightInvalidFormat)
@@ -392,7 +392,7 @@ class UserInfoModel: NSObject {
         if units == .Imperial { heightWithInches += Float(heightInches ?? 0) / 12.0 }
 
         log.info("VALIDATING HEIGHT \(heightWithInches) \(minHeightInUserUnits) \(maxHeightInUserUnits)")
-        let isValid = isRequiredFloatValidInRange(heightWithInches, minValue: minHeightInUserUnits, maxValue: maxHeightInUserUnits)
+        let isValid = isRequiredFloatValidInRange(value: heightWithInches, minValue: minHeightInUserUnits, maxValue: maxHeightInUserUnits)
 
         if !isValid {
             validationMessage = height == nil ? emptyFieldMessage : (self.units == .Metric ? metricHeightInvalidFormat : imperialHeightInvalidFormat)
@@ -401,7 +401,7 @@ class UserInfoModel: NSObject {
     }
 
     func isHeightInchesValid() -> Bool {
-        let isValid = isRequiredIntValidInRange(heightInches, minValue: 0, maxValue: 11)
+        let isValid = isRequiredIntValidInRange(value: heightInches, minValue: 0, maxValue: 11)
 
         if !isValid {
             validationMessage = heightInches == nil ? emptyFieldMessage : heightInchesInvalidFormat

@@ -3,7 +3,7 @@
 //  MetabolicCompass
 //
 //  Created by Yanif Ahmad on 8/21/16.
-//  Copyright © 2016 Yanif Ahmad, Tom Woolf. All rights reserved.
+//  Copyright © 2016 Yanif Ahmad, Tom Woolf. All rights reserved.   
 //
 
 import Foundation
@@ -20,37 +20,37 @@ let ringLabelFontSize: CGFloat = 12.0
 let studyLabelFontSize: CGFloat = 14.0
 
 let studyLabelAttrs: [String: AnyObject] = [
-    NSForegroundColorAttributeName: UIColor.whiteColor(),
-    NSUnderlineStyleAttributeName: NSNumber(integer: NSUnderlineStyle.StyleSingle.rawValue)
+    NSForegroundColorAttributeName: UIColor.white,
+    NSUnderlineStyleAttributeName: NSNumber(value: NSUnderlineStyle.styleSingle.rawValue)
 ]
 
 public class OurStudyViewController: UIViewController, ChartViewDelegate {
 
     var scrollView: UIScrollView!
 
-    // UI Components.
-    public static let grey   = UIColor.ht_concreteColor()
-    public static let red    = UIColor.ht_pomegranateColor()
+    // UI Components.     
+    public static let grey   = UIColor.ht_concrete()
+    public static let red    = UIColor.ht_pomegranate()
     public static let orange = ChartColorTemplates.colorful()[1]
     public static let blue   = ChartColorTemplates.joyful()[4]
     public static let yellow = ChartColorTemplates.colorful()[2]
     public static let green  = ChartColorTemplates.colorful()[3]
-    public static let purple  = UIColor.ht_amethystColor()
-    public static let clouds  = UIColor.ht_cloudsColor()
+    public static let purple  = UIColor.ht_amethyst()
+    public static let clouds  = UIColor.ht_clouds()
 
     lazy var phaseProgress: BalanceBarView = {
-        let attrs = [NSForegroundColorAttributeName: UIColor.whiteColor(),
-                      NSUnderlineStyleAttributeName: NSNumber(integer: NSUnderlineStyle.StyleSingle.rawValue),
+        let attrs = [NSForegroundColorAttributeName: UIColor.white,
+                      NSUnderlineStyleAttributeName: NSNumber(value: NSUnderlineStyle.styleSingle.rawValue),
                       NSFontAttributeName: UIFont(name: "GothamBook", size: studyLabelFontSize)!]
 
         let userCount = Double(AnalysisDataModel.sharedInstance.studyStatsModel.activeUsers)
-        let userTarget = OurStudyViewController.userGrowthTarget(userCount)
+        let userTarget = OurStudyViewController.userGrowthTarget(activeUsers: userCount)
         let ratio = userCount >= 0 ? CGFloat(userCount / userTarget) : 0.0
 
-        let title = userCount >= 0 ? OurStudyViewController.userGrowthBarTitle(userTarget)
+        let title = userCount >= 0 ? OurStudyViewController.userGrowthBarTitle(target: userTarget)
                         : NSMutableAttributedString(string: "Study Progress: N/A, please try later", attributes: attrs)
 
-        let bar = BalanceBarView(ratio: ratio, title: title, color1: OurStudyViewController.red, color2: OurStudyViewController.grey)
+        let bar = BalanceBarView(ratio: ratio, title: title, color1: OurStudyViewController.red!, color2: OurStudyViewController.grey!)
         return bar
     }()
 
@@ -73,12 +73,13 @@ public class OurStudyViewController: UIViewController, ChartViewDelegate {
             chart.delegate = self
             chart.descriptionText = ""
             chart.holeRadiusPercent = 0.7
-            chart.backgroundColor = .clearColor()
-            chart.holeColor = .clearColor()
+            chart.backgroundColor = .clear
+            chart.holeColor = .clear
             chart.highlightPerTapEnabled = false
             chart.drawMarkers = true
             chart.drawHoleEnabled = true
-            chart.drawSliceTextEnabled = false
+//            chart.drawSliceTextEnabled = false
+            chart.drawEntryLabelsEnabled = false
             chart.usePercentValuesEnabled = true
             chart.rotationEnabled = false
             chart.legend.enabled = false
@@ -88,7 +89,7 @@ public class OurStudyViewController: UIViewController, ChartViewDelegate {
 
     var ringTips: [TapTip] = []
 
-    lazy var pieChartColors: [[NSUIColor]] = {
+    lazy var pieChartColors: [[UIColor?]] = {
         return [
             [OurStudyViewController.yellow, OurStudyViewController.green],
             [OurStudyViewController.orange, OurStudyViewController.blue],
@@ -135,7 +136,7 @@ public class OurStudyViewController: UIViewController, ChartViewDelegate {
         if rank < 0 { rank = 1 }
 
         let stack = UIComponents.createNumberWithImageAndLabel(
-            "Your Contributions Rank", imageName: "icon-gold-medal",
+            title: "Your Contributions Rank", imageName: "icon-gold-medal",
             titleAttrs: studyLabelAttrs, bodyFontSize: studyContributionFontSize,
             labelFontSize: studyLabelFontSize, labelSpacing: 0.0, value: Double(rank), unit: "%", prefix: "Top", suffix: "of all users")
 
@@ -143,9 +144,9 @@ public class OurStudyViewController: UIViewController, ChartViewDelegate {
             let badge = imageLabelStack.subviews[0] as? UIImageView,
             let label = imageLabelStack.subviews[1] as? UILabel
         {
-            label.attributedText = OurStudyViewController.userRankingLabelText(rank)
+            label.attributedText = OurStudyViewController.userRankingLabelText(rank: rank)
             label.setNeedsDisplay()
-            let (_, icon) = OurStudyViewController.userRankingClassAndIcon(rank)
+            let (_, icon) = OurStudyViewController.userRankingClassAndIcon(rank: rank)
             badge.image = UIImage(named: icon)
             badge.setNeedsDisplay()
         }
@@ -158,7 +159,7 @@ public class OurStudyViewController: UIViewController, ChartViewDelegate {
         if streak < 0 { streak = 0 }
 
         let stack = UIComponents.createNumberWithImageAndLabel(
-            "Your Contributions Streak", imageName: "icon-gold-medal", titleAttrs: studyLabelAttrs,
+            title: "Your Contributions Streak", imageName: "icon-gold-medal", titleAttrs: studyLabelAttrs,
             bodyFontSize: studyLabelFontSize, unitsFontSize: studyLabelFontSize, labelFontSize: studyLabelFontSize,
             labelSpacing: 0.0, value: 1.0, unit: "straight days", prefix: "You've logged", suffix: "")
 
@@ -167,9 +168,9 @@ public class OurStudyViewController: UIViewController, ChartViewDelegate {
             let badge = imageLabelStack.subviews[0] as? UIImageView,
             let label = imageLabelStack.subviews[1] as? UILabel
         {
-            let compact = UIScreen.mainScreen().bounds.size.height < 569
-            let (_, icon, desc) = OurStudyViewController.contributionStreakClassAndIcon(streak)
-            let (descAttrText, labelAttrText) = OurStudyViewController.contributionStreakLabelText(streak, description: desc, compact: compact, descFontSize: studyLabelFontSize, labelFontSize: studyLabelFontSize)
+            let compact = UIScreen.main.bounds.size.height < 569
+            let (_, icon, desc) = OurStudyViewController.contributionStreakClassAndIcon(days: streak)
+            let (descAttrText, labelAttrText) = OurStudyViewController.contributionStreakLabelText(days: streak, description: desc, compact: compact, descFontSize: studyLabelFontSize, labelFontSize: studyLabelFontSize)
 
             descLabel.attributedText = descAttrText
             descLabel.setNeedsDisplay()
@@ -184,18 +185,18 @@ public class OurStudyViewController: UIViewController, ChartViewDelegate {
         return stack
     }()
 
-    // Metrics.
+    // Metrics.  
 
     lazy var fullDaysLabel: UIStackView = {
         var fullDays = AnalysisDataModel.sharedInstance.studyStatsModel.fullDays
 
         let stack = UIComponents.createNumberLabel(
-            "Full Days Tracked", titleAttrs: studyLabelAttrs,
+            title: "Full Days Tracked", titleAttrs: studyLabelAttrs,
             bodyFontSize: studyBodyFontSize, labelFontSize: studyLabelFontSize-2.0, value: 0.0, unit: "days")
 
         if let label = stack.subviews[1] as? UILabel {
             if fullDays >= 0 {
-                label.attributedText = OurStudyViewController.collectedDaysLabelText(fullDays, unit: "days")
+                label.attributedText = OurStudyViewController.collectedDaysLabelText(value: fullDays, unit: "days")
             } else {
                 label.attributedText = NSAttributedString(string: "N/A")
             }
@@ -208,12 +209,12 @@ public class OurStudyViewController: UIViewController, ChartViewDelegate {
         var partialDays = AnalysisDataModel.sharedInstance.studyStatsModel.partialDays
 
         let stack = UIComponents.createNumberLabel(
-            "Partial Days Tracked", titleAttrs: studyLabelAttrs,
+            title: "Partial Days Tracked", titleAttrs: studyLabelAttrs,
             bodyFontSize: studyBodyFontSize, labelFontSize: studyLabelFontSize-2.0, value: 0.0, unit: "days")
 
         if let label = stack.subviews[1] as? UILabel {
             if partialDays >= 0 {
-                label.attributedText = OurStudyViewController.collectedDaysLabelText(partialDays, unit: "days")
+                label.attributedText = OurStudyViewController.collectedDaysLabelText(value: partialDays, unit: "days")
             } else {
                 label.attributedText = NSAttributedString(string: "N/A")
             }
@@ -231,16 +232,16 @@ public class OurStudyViewController: UIViewController, ChartViewDelegate {
 
     var activityIndicator: UIActivityIndicatorView! = nil
 
-    override public func viewWillAppear(animated: Bool) {
+    override public func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         self.activityIndicator.startAnimating()
         self.logContentView()
         self.refreshData()
     }
 
-    override public func viewWillDisappear(animated: Bool) {
+    override public func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
-        self.logContentView(false)
+        self.logContentView(asAppear: false)
     }
 
     override public func viewDidLoad() {
@@ -253,9 +254,10 @@ public class OurStudyViewController: UIViewController, ChartViewDelegate {
     }
 
     func logContentView(asAppear: Bool = true) {
-        Answers.logContentViewWithName("Our Study",
+        Answers.logContentView(withName: "Our Study",
                                        contentType: asAppear ? "Appear" : "Disappear",
-                                       contentId: Date().toString(DateFormat.Custom("YYYY-MM-dd:HH")),
+//                                       contentId: Date().toString(DateFormat.Custom("YYYY-MM-dd:HH")),
+            contentId: Date().string(),
                                        customAttributes: nil)
     }
 
@@ -266,24 +268,24 @@ public class OurStudyViewController: UIViewController, ChartViewDelegate {
         view.addSubview(activityIndicator)
 
         let constraints: [NSLayoutConstraint] = [
-            activityIndicator.topAnchor.constraintEqualToAnchor(view.topAnchor),
-            activityIndicator.bottomAnchor.constraintEqualToAnchor(view.bottomAnchor),
-            activityIndicator.leadingAnchor.constraintEqualToAnchor(view.leadingAnchor),
-            activityIndicator.trailingAnchor.constraintEqualToAnchor(view.trailingAnchor)
+            activityIndicator.topAnchor.constraint(equalTo: view.topAnchor),
+            activityIndicator.bottomAnchor.constraint(equalTo: view.bottomAnchor),
+            activityIndicator.leadingAnchor.constraint(equalTo: view.leadingAnchor),
+            activityIndicator.trailingAnchor.constraint(equalTo: view.trailingAnchor)
         ]
         view.addConstraints(constraints)
     }
 
     func setupBackground() {
         let backgroundImage = UIImageView(image: UIImage(named: "university_logo"))
-        backgroundImage.contentMode = .Center
+        backgroundImage.contentMode = .center
         backgroundImage.layer.opacity = 0.03
         backgroundImage.translatesAutoresizingMaskIntoConstraints = false
-        self.view.insertSubview(backgroundImage, atIndex: 0)
+        self.view.insertSubview(backgroundImage, at: 0)
 
         let bgConstraints: [NSLayoutConstraint] = [
-            backgroundImage.centerXAnchor.constraintEqualToAnchor(self.view.centerXAnchor),
-            backgroundImage.centerYAnchor.constraintEqualToAnchor(self.view.centerYAnchor)
+            backgroundImage.centerXAnchor.constraint(equalTo: self.view.centerXAnchor),
+            backgroundImage.centerYAnchor.constraint(equalTo: self.view.centerYAnchor)
         ]
 
         self.view.addConstraints(bgConstraints)
@@ -291,16 +293,16 @@ public class OurStudyViewController: UIViewController, ChartViewDelegate {
 
     func setupScrollView() {
         scrollView = UIScrollView()
-        scrollView.userInteractionEnabled = true
+        scrollView.isUserInteractionEnabled = true
 
         scrollView.translatesAutoresizingMaskIntoConstraints = false
         view.addSubview(scrollView)
 
         let scrollConstraints: [NSLayoutConstraint] = [
-            view.leadingAnchor.constraintEqualToAnchor(scrollView.leadingAnchor),
-            view.trailingAnchor.constraintEqualToAnchor(scrollView.trailingAnchor),
-            view.topAnchor.constraintEqualToAnchor(scrollView.topAnchor),
-            view.bottomAnchor.constraintEqualToAnchor(scrollView.bottomAnchor)
+            view.leadingAnchor.constraint(equalTo: scrollView.leadingAnchor),
+            view.trailingAnchor.constraint(equalTo: scrollView.trailingAnchor),
+            view.topAnchor.constraint(equalTo: scrollView.topAnchor),
+            view.bottomAnchor.constraint(equalTo: scrollView.bottomAnchor)
         ]
         view.addConstraints(scrollConstraints)
     }
@@ -313,9 +315,9 @@ public class OurStudyViewController: UIViewController, ChartViewDelegate {
 
         let labelStack: UIStackView = {
             let stack = UIStackView(arrangedSubviews: [fullDaysLabel, partialDaysLabel])
-            stack.axis = .Horizontal
-            stack.distribution = UIStackViewDistribution.FillEqually
-            stack.alignment = UIStackViewAlignment.Fill
+            stack.axis = .horizontal
+            stack.distribution = UIStackViewDistribution.fillEqually
+            stack.alignment = UIStackViewAlignment.fill
             return stack
         }()
 
@@ -330,18 +332,18 @@ public class OurStudyViewController: UIViewController, ChartViewDelegate {
         scrollView.addSubview(labelStack)
 
         var phaseConstraints: [NSLayoutConstraint] = [
-            phaseProgress.topAnchor.constraintEqualToAnchor(scrollView.topAnchor, constant: 10),
-            phaseProgress.leadingAnchor.constraintEqualToAnchor(view.leadingAnchor),
-            phaseProgress.trailingAnchor.constraintEqualToAnchor(view.trailingAnchor),
-            phaseProgress.heightAnchor.constraintEqualToAnchor(view.widthAnchor, multiplier: 0.2),
-            userRankingBadge.topAnchor.constraintEqualToAnchor(phaseProgress.bottomAnchor, constant: 10),
-            userRankingBadge.leadingAnchor.constraintEqualToAnchor(view.leadingAnchor, constant: 10),
-            userRankingBadge.trailingAnchor.constraintEqualToAnchor(view.trailingAnchor, constant: -10),
-            userRankingBadge.heightAnchor.constraintEqualToAnchor(view.widthAnchor, multiplier: 0.3),
-            contributionStreakBadge.topAnchor.constraintEqualToAnchor(userRankingBadge.bottomAnchor),
-            contributionStreakBadge.leadingAnchor.constraintEqualToAnchor(view.leadingAnchor, constant: 10),
-            contributionStreakBadge.trailingAnchor.constraintEqualToAnchor(view.trailingAnchor, constant: -10),
-            contributionStreakBadge.heightAnchor.constraintEqualToAnchor(view.widthAnchor, multiplier: 0.4)
+            phaseProgress.topAnchor.constraint(equalTo: scrollView.topAnchor, constant: 10),
+            phaseProgress.leadingAnchor.constraint(equalTo: view.leadingAnchor),
+            phaseProgress.trailingAnchor.constraint(equalTo: view.trailingAnchor),
+            phaseProgress.heightAnchor.constraint(equalTo: view.widthAnchor, multiplier: 0.2),
+            userRankingBadge.topAnchor.constraint(equalTo: phaseProgress.bottomAnchor, constant: 10),
+            userRankingBadge.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 10),
+            userRankingBadge.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -10),
+            userRankingBadge.heightAnchor.constraint(equalTo: view.widthAnchor, multiplier: 0.3),
+            contributionStreakBadge.topAnchor.constraint(equalTo: userRankingBadge.bottomAnchor),
+            contributionStreakBadge.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 10),
+            contributionStreakBadge.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -10),
+            contributionStreakBadge.heightAnchor.constraint(equalTo: view.widthAnchor, multiplier: 0.4)
         ]
 
         let badgeSize = ScreenManager.sharedInstance.badgeIconSize()
@@ -349,15 +351,15 @@ public class OurStudyViewController: UIViewController, ChartViewDelegate {
         if let imageLabelStack = userRankingBadge.subviews[1] as? UIStackView,
             let badge = imageLabelStack.subviews[0] as? UIImageView
         {
-            phaseConstraints.append(badge.widthAnchor.constraintEqualToConstant(badgeSize))
-            phaseConstraints.append(badge.heightAnchor.constraintEqualToAnchor(badge.widthAnchor))
+            phaseConstraints.append(badge.widthAnchor.constraint(equalToConstant: badgeSize))
+            phaseConstraints.append(badge.heightAnchor.constraint(equalTo: badge.widthAnchor))
         }
 
         if let imageLabelStack = contributionStreakBadge.subviews[1] as? UIStackView,
             let badge = imageLabelStack.subviews[0] as? UIImageView
         {
-            phaseConstraints.append(badge.widthAnchor.constraintEqualToConstant(badgeSize))
-            phaseConstraints.append(badge.heightAnchor.constraintEqualToAnchor(badge.widthAnchor))
+            phaseConstraints.append(badge.widthAnchor.constraint(equalToConstant: badgeSize))
+            phaseConstraints.append(badge.heightAnchor.constraint(equalTo: badge.widthAnchor))
         }
 
         view.addConstraints(phaseConstraints)
@@ -367,10 +369,10 @@ public class OurStudyViewController: UIViewController, ChartViewDelegate {
 
         var firstChart: UIStackView! = nil
 
-        rings.enumerate().forEach { (index, pieChart) in
+        rings.enumerated().forEach { (index, pieChart) in
             let chart: UIStackView =
                 UIComponents.createLabelledComponent(
-                    OurStudyViewController.ringNames[index], labelOnTop: index != 2, labelFontSize: ringLabelFontSize, labelSpacing: 0.0, value: (), constructor: {
+                    title: OurStudyViewController.ringNames[index], labelOnTop: index != 2, labelFontSize: ringLabelFontSize, labelSpacing: 0.0, value: (), constructor: {
                         _ in return pieChart
                 })
 
@@ -387,27 +389,27 @@ public class OurStudyViewController: UIViewController, ChartViewDelegate {
 
             var constraints: [NSLayoutConstraint] = []
             if index == 0 {
-                constraints.appendContentsOf([
-                    chart.topAnchor.constraintEqualToAnchor(compositeView.topAnchor, constant: 10),
-                    chart.heightAnchor.constraintGreaterThanOrEqualToAnchor(compositeView.heightAnchor, multiplier: 0.66),
-                    chart.leadingAnchor.constraintEqualToAnchor(compositeView.leadingAnchor, constant: -5),
-                    chart.widthAnchor.constraintEqualToAnchor(compositeView.widthAnchor, multiplier: 0.45)
+                constraints.append(contentsOf: [
+                    chart.topAnchor.constraint(equalTo: compositeView.topAnchor, constant: 10),
+                    chart.heightAnchor.constraint(greaterThanOrEqualTo: compositeView.heightAnchor, multiplier: 0.66),
+                    chart.leadingAnchor.constraint(equalTo: compositeView.leadingAnchor, constant: -5),
+                    chart.widthAnchor.constraint(equalTo: compositeView.widthAnchor, multiplier: 0.45)
                     ])
             } else if index == 1 {
-                constraints.appendContentsOf([
-                    chart.topAnchor.constraintEqualToAnchor(compositeView.topAnchor, constant: 10),
-                    chart.heightAnchor.constraintEqualToAnchor(firstChart.heightAnchor),
-                    chart.trailingAnchor.constraintEqualToAnchor(compositeView.trailingAnchor, constant: 5),
-                    chart.widthAnchor.constraintEqualToAnchor(firstChart.widthAnchor)
+                constraints.append(contentsOf: [
+                    chart.topAnchor.constraint(equalTo: compositeView.topAnchor, constant: 10),
+                    chart.heightAnchor.constraint(equalTo: firstChart.heightAnchor),
+                    chart.trailingAnchor.constraint(equalTo: compositeView.trailingAnchor, constant: 5),
+                    chart.widthAnchor.constraint(equalTo: firstChart.widthAnchor)
                     ])
 
             } else if index == 2 {
-                ring2TopConstraint = chart.topAnchor.constraintEqualToAnchor(firstChart.bottomAnchor)
-                constraints.appendContentsOf([
+                ring2TopConstraint = chart.topAnchor.constraint(equalTo: firstChart.bottomAnchor)
+                constraints.append(contentsOf: [
                     ring2TopConstraint,
-                    chart.heightAnchor.constraintEqualToAnchor(firstChart.heightAnchor),
-                    chart.centerXAnchor.constraintEqualToAnchor(compositeView.centerXAnchor),
-                    chart.widthAnchor.constraintEqualToAnchor(firstChart.widthAnchor)
+                    chart.heightAnchor.constraint(equalTo: firstChart.heightAnchor),
+                    chart.centerXAnchor.constraint(equalTo: compositeView.centerXAnchor),
+                    chart.widthAnchor.constraint(equalTo: firstChart.widthAnchor)
                     ])
 
             }
@@ -415,23 +417,23 @@ public class OurStudyViewController: UIViewController, ChartViewDelegate {
         }
 
         let labelledRings = UIComponents.createLabelledComponent(
-            "Study-Wide Dataset Statistics", attrs: studyLabelAttrs,
+            title: "Study-Wide Dataset Statistics", attrs: studyLabelAttrs,
             labelFontSize: studyLabelFontSize, labelSpacing: 8.0, value: (), constructor: { _ in return compositeView })
 
         labelledRings.translatesAutoresizingMaskIntoConstraints = false
         scrollView.addSubview(labelledRings)
 
-        let ringHeightMultiplier: CGFloat = UIScreen.mainScreen().bounds.size.height < 569 ? 1.0 : 0.7
+        let ringHeightMultiplier: CGFloat = UIScreen.main.bounds.size.height < 569 ? 1.0 : 0.7
 
         let constraints: [NSLayoutConstraint] = [
-            labelledRings.topAnchor.constraintEqualToAnchor(contributionStreakBadge.bottomAnchor, constant: 20),
-            labelledRings.leadingAnchor.constraintEqualToAnchor(view.leadingAnchor),
-            labelledRings.widthAnchor.constraintEqualToAnchor(view.widthAnchor),
-            labelledRings.heightAnchor.constraintEqualToAnchor(view.widthAnchor, multiplier: ringHeightMultiplier),
-            labelStack.topAnchor.constraintEqualToAnchor(labelledRings.bottomAnchor, constant: 40.0),
-            labelStack.bottomAnchor.constraintEqualToAnchor(scrollView.bottomAnchor),
-            labelStack.leadingAnchor.constraintEqualToAnchor(view.leadingAnchor),
-            labelStack.trailingAnchor.constraintEqualToAnchor(view.trailingAnchor),
+            labelledRings.topAnchor.constraint(equalTo: contributionStreakBadge.bottomAnchor, constant: 20),
+            labelledRings.leadingAnchor.constraint(equalTo: view.leadingAnchor),
+            labelledRings.widthAnchor.constraint(equalTo: view.widthAnchor),
+            labelledRings.heightAnchor.constraint(equalTo: view.widthAnchor, multiplier: ringHeightMultiplier),
+            labelStack.topAnchor.constraint(equalTo: labelledRings.bottomAnchor, constant: 40.0),
+            labelStack.bottomAnchor.constraint(equalTo: scrollView.bottomAnchor),
+            labelStack.leadingAnchor.constraint(equalTo: view.leadingAnchor),
+            labelStack.trailingAnchor.constraint(equalTo: view.trailingAnchor),
         ]
 
         view.addConstraints(constraints)
@@ -473,14 +475,14 @@ public class OurStudyViewController: UIViewController, ChartViewDelegate {
 
 
     func refreshData() {
-        AnalysisDataModel.sharedInstance.refreshStudyStats(ringIndexKeys) { success in
+        AnalysisDataModel.sharedInstance.refreshStudyStats(ringIndexKeys: ringIndexKeys) { success in
             if success {
                 let studystats = AnalysisDataModel.sharedInstance.studyStatsModel
-                self.refreshUserGrowth(studystats.activeUsers)
-                self.refreshUserRanking(studystats.userRank)
-                self.refreshContributionStreak(studystats.contributionStreak)
-                self.refreshDaysCollected(studystats.fullDays, partialDays: studystats.partialDays)
-                self.refreshStudyRings(studystats.ringValues)
+                self.refreshUserGrowth(activeUsers: studystats.activeUsers)
+                self.refreshUserRanking(rank: studystats.userRank)
+                self.refreshContributionStreak(days: studystats.contributionStreak)
+                self.refreshDaysCollected(fullDays: studystats.fullDays, partialDays: studystats.partialDays)
+                self.refreshStudyRings(ringValues: studystats.ringValues)
             }
             else {
                 log.error("STUDYSTATS Failed to refresh from server")
@@ -495,9 +497,9 @@ public class OurStudyViewController: UIViewController, ChartViewDelegate {
                let badge = imageLabelStack.subviews[0] as? UIImageView,
                let label = imageLabelStack.subviews[1] as? UILabel
         {
-            label.attributedText = OurStudyViewController.userRankingLabelText(rank)
+            label.attributedText = OurStudyViewController.userRankingLabelText(rank: rank)
             label.setNeedsDisplay()
-            let (_, icon) = OurStudyViewController.userRankingClassAndIcon(rank)
+            let (_, icon) = OurStudyViewController.userRankingClassAndIcon(rank: rank)
             badge.image = UIImage(named: icon)
             badge.setNeedsDisplay()
         } else {
@@ -511,9 +513,9 @@ public class OurStudyViewController: UIViewController, ChartViewDelegate {
             let badge = imageLabelStack.subviews[0] as? UIImageView,
             let label = imageLabelStack.subviews[1] as? UILabel
         {
-            let compact = UIScreen.mainScreen().bounds.size.height < 569
-            let (_, icon, desc) = OurStudyViewController.contributionStreakClassAndIcon(days)
-            let (descAttrText, labelAttrText) = OurStudyViewController.contributionStreakLabelText(days, description: desc, compact: compact, descFontSize: studyLabelFontSize, labelFontSize: studyLabelFontSize)
+            let compact = UIScreen.main.bounds.size.height < 569
+            let (_, icon, desc) = OurStudyViewController.contributionStreakClassAndIcon(days: days)
+            let (descAttrText, labelAttrText) = OurStudyViewController.contributionStreakLabelText(days: days, description: desc, compact: compact, descFontSize: studyLabelFontSize, labelFontSize: studyLabelFontSize)
 
             descLabel.attributedText = descAttrText
             descLabel.setNeedsDisplay()
@@ -531,7 +533,7 @@ public class OurStudyViewController: UIViewController, ChartViewDelegate {
     func refreshDaysCollected(fullDays: Int, partialDays: Int) {
         if let label = fullDaysLabel.subviews[1] as? UILabel {
             if fullDays >= 0 {
-                label.attributedText = OurStudyViewController.collectedDaysLabelText(fullDays, unit: "days")
+                label.attributedText = OurStudyViewController.collectedDaysLabelText(value: fullDays, unit: "days")
             } else {
                 label.attributedText = NSAttributedString(string: "N/A")
             }
@@ -539,7 +541,7 @@ public class OurStudyViewController: UIViewController, ChartViewDelegate {
 
         if let label = partialDaysLabel.subviews[1] as? UILabel {
             if partialDays >= 0 {
-                label.attributedText = OurStudyViewController.collectedDaysLabelText(partialDays, unit: "days")
+                label.attributedText = OurStudyViewController.collectedDaysLabelText(value: partialDays, unit: "days")
             } else {
                 label.attributedText = NSAttributedString(string: "N/A")
             }
@@ -551,48 +553,50 @@ public class OurStudyViewController: UIViewController, ChartViewDelegate {
             self.phaseProgress.ratio = 0.0
             self.phaseProgress.refreshData()
 
-            let attrs = [NSForegroundColorAttributeName: UIColor.whiteColor(),
-                         NSUnderlineStyleAttributeName: NSNumber(integer: NSUnderlineStyle.StyleSingle.rawValue),
+            let attrs = [NSForegroundColorAttributeName: UIColor.white,
+                         NSUnderlineStyleAttributeName: NSNumber(value: NSUnderlineStyle.styleSingle.rawValue),
                          NSFontAttributeName: UIFont(name: "GothamBook", size: studyLabelFontSize)!]
 
             let aStr = NSMutableAttributedString(string: "Study Progress: N/A, please try later", attributes: attrs)
-            self.phaseProgress.refreshTitle(aStr)
+            self.phaseProgress.refreshTitle(title: aStr)
         }
         else {
             let userCount = Double(activeUsers)
-            let userTarget = OurStudyViewController.userGrowthTarget(userCount)
+            let userTarget = OurStudyViewController.userGrowthTarget(activeUsers: userCount)
             self.phaseProgress.ratio = CGFloat(userCount / userTarget)
             self.phaseProgress.refreshData()
-            self.phaseProgress.refreshTitle(OurStudyViewController.userGrowthBarTitle(userTarget))
+            self.phaseProgress.refreshTitle(title: OurStudyViewController.userGrowthBarTitle(target: userTarget))
         }
     }
 
     func refreshStudyRings(ringValues: [(Double, Double)]) {
         let attrs = [NSFontAttributeName: UIFont(name: "GothamBook", size: studyLabelFontSize)!,
-                     NSForegroundColorAttributeName: UIColor.whiteColor(),
-                     NSBackgroundColorAttributeName: UIColor.clearColor()]
+                     NSForegroundColorAttributeName: UIColor.white,
+                     NSBackgroundColorAttributeName: UIColor.clear]
         
-        OurStudyViewController.ringNames.enumerate().forEach { (index, _) in
+        OurStudyViewController.ringNames.enumerated().forEach { (index, _) in
             let (value, maxValue) = ringValues[index]
 
             var ringText: String = "N/A"
-            var pieChartDataSet = PieChartDataSet(yVals: [], label: "")
+            var pieChartDataSet = PieChartDataSet(values: [], label: "")
             var pieChartLabels: [String] = []
 
             if value >= 0 || maxValue >= 0 {
-                let entries = [value, maxValue - value].enumerate().map { return ChartDataEntry(value: $0.1, xIndex: $0.0) }
+                let entries = [value, maxValue - value].enumerated().map { return ChartDataEntry(x: $0.1, y: Double($0.0)) }
 
-                ringText = MetricSuffixFormatter.sharedInstance.formatDouble(value) + OurStudyViewController.ringUnits[index]
+                ringText = MetricSuffixFormatter.sharedInstance.formatDouble(i: value) + OurStudyViewController.ringUnits[index]
 
-                pieChartDataSet = PieChartDataSet(yVals: entries, label: "")
-                pieChartLabels = ["Value", "Target"]
+                pieChartDataSet = PieChartDataSet(values: entries, label: "")
+//                pieChartLabels = ["Value", "Target"]
+                pieChartLabels = ["Value"]
             }
 
-            pieChartDataSet.colors = pieChartColors[index]
+            pieChartDataSet.colors = pieChartColors[index] as! [NSUIColor]
             pieChartDataSet.drawValuesEnabled = false
 
-            let pieChartData = PieChartData(xVals: pieChartLabels, dataSet: pieChartDataSet)
-            self.rings[index].data = pieChartData
+//            let pieChartDataEntry = PieChartDataEntry(x: pieChartLabels, dataSet: pieChartDataSet)
+//            let pieChartData = PieChartDataEntry(value: 1.0, label: pieChartLabels, data: pieChartDataSet)
+//            self.rings[index].data = pieChartData
 
             self.rings[index].centerAttributedText = NSMutableAttributedString(string: ringText, attributes: attrs)
             self.rings[index].centerTextRadiusPercent = 100.0
@@ -607,8 +611,8 @@ public class OurStudyViewController: UIViewController, ChartViewDelegate {
 
     class func userGrowthBarTitle(target: Double) -> NSAttributedString {
         let phase = max(1, Int(log10(target)) - 1)
-        let attrs = [NSForegroundColorAttributeName: UIColor.whiteColor(),
-                     NSUnderlineStyleAttributeName: NSNumber(integer: NSUnderlineStyle.StyleSingle.rawValue),
+        let attrs = [NSForegroundColorAttributeName: UIColor.white,
+                     NSUnderlineStyleAttributeName: NSNumber(value: NSUnderlineStyle.styleSingle.rawValue),
                      NSFontAttributeName: UIFont(name: "GothamBook", size: studyLabelFontSize)!]
 
         return NSMutableAttributedString(string: "Study Progress: Phase \(phase): \(Int(ceil(target))) users", attributes: attrs)
@@ -616,7 +620,7 @@ public class OurStudyViewController: UIViewController, ChartViewDelegate {
 
     class func userRankingClassAndIcon(rank: Int) -> (Double, String) {
         let doubleRank = Double(rank)
-        var rankIndex = OurStudyViewController.userRankingBadgeBuckets.indexOf { $0.0 >= doubleRank }
+        var rankIndex = OurStudyViewController.userRankingBadgeBuckets.index { $0.0 >= doubleRank }
         if rankIndex == nil { rankIndex = OurStudyViewController.userRankingBadgeBuckets.count }
         rankIndex = max(0, rankIndex! - 1)
         return OurStudyViewController.userRankingBadgeBuckets[rankIndex!]
@@ -624,7 +628,7 @@ public class OurStudyViewController: UIViewController, ChartViewDelegate {
 
     class func contributionStreakClassAndIcon(days: Int) -> (Double, String, String) {
         let doubleDays = Double(days)
-        var rankIndex = OurStudyViewController.contributionStreakBadgeBuckets.indexOf { $0.0 >= doubleDays }
+        var rankIndex = OurStudyViewController.contributionStreakBadgeBuckets.index { $0.0 >= doubleDays }
         if rankIndex == nil { rankIndex = OurStudyViewController.contributionStreakBadgeBuckets.count }
         rankIndex = max(0, rankIndex! - 1)
         return OurStudyViewController.contributionStreakBadgeBuckets[rankIndex!]
@@ -637,7 +641,7 @@ public class OurStudyViewController: UIViewController, ChartViewDelegate {
             let prefixStr = "Top"
             let suffixStr = "% of all users"
 
-            let (rankClass, _) = OurStudyViewController.userRankingClassAndIcon(rank)
+            let (rankClass, _) = OurStudyViewController.userRankingClassAndIcon(rank: rank)
             let vStr = String(format: "%.2g", rankClass)
             aStr = NSMutableAttributedString(string: prefixStr + " " + vStr + " " + suffixStr)
 
@@ -657,7 +661,7 @@ public class OurStudyViewController: UIViewController, ChartViewDelegate {
 
         let paragraphStyle = NSMutableParagraphStyle()
         paragraphStyle.lineSpacing = 2.0
-        paragraphStyle.alignment = .Center
+        paragraphStyle.alignment = .center
         aStr.addAttribute(NSParagraphStyleAttributeName, value: paragraphStyle, range: NSMakeRange(0, aStr.length))
 
         return aStr
@@ -693,7 +697,7 @@ public class OurStudyViewController: UIViewController, ChartViewDelegate {
 
         let paragraphStyle = NSMutableParagraphStyle()
         paragraphStyle.lineSpacing = 4.0
-        paragraphStyle.alignment = .Center
+        paragraphStyle.alignment = .center
 
         descStr.addAttribute(NSParagraphStyleAttributeName, value: paragraphStyle, range: NSMakeRange(0, descStr.length))
         lblStr.addAttribute(NSParagraphStyleAttributeName, value: paragraphStyle, range: NSMakeRange(0, lblStr.length))

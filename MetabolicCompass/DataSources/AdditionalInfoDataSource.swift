@@ -2,7 +2,7 @@
 //  AdditionalInfoDataSource.swift
 //  MetabolicCompass
 //
-//  Created by Anna Tkach on 4/28/16. 
+//  Created by Anna Tkach on 4/28/16.   
 //  Copyright © 2016 Yanif Ahmad, Tom Woolf. All rights reserved.
 //
 
@@ -51,11 +51,11 @@ public class AdditionalInfoDataSource: BaseDataSource {
         return model.sections.count
     }
 
-    override public func collectionView(collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
+    override public func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
         return model.numberOfItemsInSection(section: section)
     }
 
-    override public func collectionView(collectionView: UICollectionView, cellForItemAtIndexPath indexPath: NSIndexPath) -> UICollectionViewCell {
+    override public func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         let item = model.itemAtIndexPath(indexPath: indexPath)
 
         if isSleepCellAtIndexPath(indexPath: indexPath) {

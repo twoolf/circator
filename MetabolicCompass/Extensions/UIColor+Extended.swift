@@ -23,19 +23,21 @@ extension UIColor {
         guard rgb.hasPrefix("#") else {
             return nil
         }
+}
+}
         
-        guard let hexString: String = rgb.substringFromIndex(rgb.startIndex.advancedBy(1)),
-            var   hexValue:  UInt32 = 0
-            where NSScanner(string: hexString).scanHexInt(&hexValue) else {
-                return nil
-        }
+//        guard let hexString: String = rgb.substringFromIndex(rgb.startIndex.advancedBy(1)),
+//        guard let hexString: String = rgb.substring(from: rgb.startIndex.advancedBy(1)),
+//            var   hexValue:  UInt32 = 0, Scanner(string: hexString).scanHexInt32(&hexValue) else {
+//                return nil
+//        }
         
-        switch (hexString.characters.count) {
+/*        switch (hexString.characters.count) {
         case 6:
-            return UIColor.colorWithHex(hexValue, alpha: alpha)
+            return UIColor.colorWithHex(hex6: hexValue, alpha: alpha)
         default:
             return nil
-        }
-    }
+        } */
+//    }
     
-}
+//}

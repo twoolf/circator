@@ -1,6 +1,6 @@
 //
 //  CheckButton.swift
-//  MetabolicCompass
+//  MetabolicCompass 
 //
 //  Created by Anna Tkach on 4/27/16.
 //  Copyright © 2016 Yanif Ahmad, Tom Woolf. All rights reserved.
@@ -23,7 +23,7 @@ class CheckBox : AppButton {
     var isChecked: Bool = false {
         didSet{
             if isChecked == true {
-                self.setImage(checkedImage, forState: .Normal)
+                self.setImage(checkedImage, for: .Normal)
             } else {
                 self.setImage(uncheckedImage, forState: .Normal)
             }

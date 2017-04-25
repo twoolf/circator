@@ -1,6 +1,6 @@
 //
 //  FastingDataModel.swift
-//  MetabolicCompass
+//  MetabolicCompass 
 //
 //  Created by Yanif Ahmad on 7/9/16.
 //  Copyright © 2016 Yanif Ahmad, Tom Woolf. All rights reserved.

@@ -20,7 +20,7 @@ public class SlideButtonArray: UIView, SlideButtonArrayDelegate {
     public var arrayRowIndex: Int
     public var activeButtonIndex: Int
 
-    public var exclusiveArrays: [SlideButtonArrayDelegate!] = []
+    public var exclusiveArrays: [SlideButtonArrayDelegate?] = []
 
     var buttons: [UIButton] = []
     var pickers: [AKPickerView] = []
@@ -45,19 +45,19 @@ public class SlideButtonArray: UIView, SlideButtonArrayDelegate {
     }
 
     required public init?(coder aDecoder: NSCoder) {
-        buttonsTagBase = aDecoder.decodeIntegerForKey("buttonsTagBase")
-        arrayRowIndex = aDecoder.decodeIntegerForKey("arrayRowIndex")
-        activeButtonIndex = aDecoder.decodeIntegerForKey("activeButtonIndex")
+        buttonsTagBase = aDecoder.decodeInteger(forKey: "buttonsTagBase")
+        arrayRowIndex = aDecoder.decodeInteger(forKey: "arrayRowIndex")
+        activeButtonIndex = aDecoder.decodeInteger(forKey: "activeButtonIndex")
         super.init(coder: aDecoder)
     }
 
-    override public func encodeWithCoder(aCoder: NSCoder) {
-        aCoder.encodeInteger(buttonsTagBase, forKey: "buttonsTagBase")
-        aCoder.encodeInteger(arrayRowIndex, forKey: "arrayRowIndex")
-        aCoder.encodeInteger(activeButtonIndex, forKey: "activeButtonIndex")
+    public func encodeWithCoder(aCoder: NSCoder) {
+        aCoder.encode(buttonsTagBase, forKey: "buttonsTagBase")
+        aCoder.encode(arrayRowIndex, forKey: "arrayRowIndex")
+        aCoder.encode(activeButtonIndex, forKey: "activeButtonIndex")
     }
 
-    private func setupButtonArray() {
+    public func setupButtonArray() {
         var buttonSpecs: [(String, String, [(String, Double)])] = []
 
         if arrayRowIndex == 0 {
@@ -88,20 +88,20 @@ public class SlideButtonArray: UIView, SlideButtonArrayDelegate {
             ]
         }
 
-        let screenSize = UIScreen.mainScreen().bounds.size
+        let screenSize = UIScreen.main.bounds.size
 
-        buttonSpecs.enumerate().forEach { (index, spec) in
-            let button = UIButton(frame: CGRectMake(0, 0, 60, 60))
+        buttonSpecs.enumerated().forEach { (index, spec) in
+            let button = UIButton(frame: CGRect(0, 0, 60, 60))
             button.tag = self.buttonsTagBase + index
-            button.backgroundColor = .clearColor()
+            button.backgroundColor = .clear
 
-            button.setImage(UIImage(named: spec.1), forState: .Normal)
-            button.imageView?.contentMode = .ScaleAspectFit
+            button.setImage(UIImage(named: spec.1), for: .normal)
+            button.imageView?.contentMode = .scaleAspectFit
 
-            button.setTitle(spec.0, forState: .Normal)
-            button.setTitleColor(UIColor.ht_midnightBlueColor(), forState: .Normal)
-            button.titleLabel?.contentMode = .Center
-            button.titleLabel?.font = UIFont.systemFontOfSize(12.0, weight: UIFontWeightBold)
+            button.setTitle(spec.0, for: .normal)
+            button.setTitleColor(UIColor.ht_midnightBlue(), for: .normal)
+            button.titleLabel?.contentMode = .center
+            button.titleLabel?.font = UIFont.systemFont(ofSize: 12.0, weight: UIFontWeightBold)
 
             let imageSize: CGSize = button.imageView!.image!.size
             button.titleEdgeInsets = UIEdgeInsetsMake(0.0, -imageSize.width, -((screenSize.height < 569 ? 0.62 : 0.7) * imageSize.height), 0.0)
@@ -112,10 +112,10 @@ public class SlideButtonArray: UIView, SlideButtonArrayDelegate {
              button.imageEdgeInsets = UIEdgeInsetsMake(0.0, 0.0, 0.0, -titleSize.width)
              */
 
-            button.addTarget(self, action: #selector(self.handleTap(_:)), forControlEvents: .TouchUpInside)
+            button.addTarget(self, action: #selector(self.handleTap(_:)), for: .TouchUpInside)
 
             var pickerData: [String: AnyObject] = [:]
-            spec.2.forEach { pickerData[$0.0] = $0.1 }
+            spec.2.forEach { pickerData[$0.0] = $0.1 as AnyObject? }
             let manager = PickerManager(itemType: spec.0, items: spec.2.map { $0.0 }, data: pickerData)
             manager.delegate = delegate
 
@@ -128,9 +128,9 @@ public class SlideButtonArray: UIView, SlideButtonArrayDelegate {
             picker.font = pickerFont
             picker.highlightedFont = pickerFont
 
-            picker.backgroundColor = UIColor.clearColor().colorWithAlphaComponent(0.0)
-            picker.highlightedTextColor = UIColor.whiteColor()
-            picker.textColor = UIColor.whiteColor().colorWithAlphaComponent(0.7)
+            picker.backgroundColor = UIColor.clear.withAlphaComponent(0.0)
+            picker.highlightedTextColor = UIColor.white
+            picker.textColor = UIColor.white.withAlphaComponent(0.7)
             picker.reloadData()
 
             buttons.append(button)
@@ -147,7 +147,7 @@ public class SlideButtonArray: UIView, SlideButtonArrayDelegate {
 
         self.translatesAutoresizingMaskIntoConstraints = false
 
-        buttons.enumerate().forEach { (index, button) in
+        buttons.enumerated().forEach { (index, button) in
             let picker = self.pickers[index]
             picker.layer.opacity = 0.0
 
@@ -157,14 +157,14 @@ public class SlideButtonArray: UIView, SlideButtonArrayDelegate {
             addSubview(picker)
 
             var constraints: [NSLayoutConstraint] = [
-                button.topAnchor.constraintEqualToAnchor(topAnchor),
-                button.heightAnchor.constraintEqualToAnchor(heightAnchor),
-                button.leadingAnchor.constraintEqualToAnchor(index == 0 ? leadingAnchor : buttons[index-1].trailingAnchor, constant: 5.0),
-                button.widthAnchor.constraintEqualToAnchor(widthAnchor, multiplier: 1.0 / CGFloat(numButtons), constant: -5),
-                picker.topAnchor.constraintEqualToAnchor(button.topAnchor),
-                picker.heightAnchor.constraintEqualToAnchor(heightAnchor),
-                picker.leadingAnchor.constraintEqualToAnchor(button.trailingAnchor, constant: -3000),
-                picker.widthAnchor.constraintEqualToAnchor(widthAnchor, multiplier: (CGFloat(numButtons) - 1.0) / CGFloat(numButtons), constant: 0.0)
+                button.topAnchor.constraint(equalTo: topAnchor),
+                button.heightAnchor.constraint(equalTo: heightAnchor),
+                button.leadingAnchor.constraint(equalTo: index == 0 ? leadingAnchor : buttons[index-1].trailingAnchor, constant: 5.0),
+                button.widthAnchor.constraint(equalTo: widthAnchor, multiplier: 1.0 / CGFloat(numButtons), constant: -5),
+                picker.topAnchor.constraint(equalTo: button.topAnchor),
+                picker.heightAnchor.constraint(equalTo: heightAnchor),
+                picker.leadingAnchor.constraint(equalTo: button.trailingAnchor, constant: -3000),
+                picker.widthAnchor.constraint(equalTo: widthAnchor, multiplier: (CGFloat(numButtons) - 1.0) / CGFloat(numButtons), constant: 0.0)
             ]
 
             buttonLeadingConstraints.append(constraints[2])
@@ -181,9 +181,9 @@ public class SlideButtonArray: UIView, SlideButtonArrayDelegate {
         removeConstraints(buttonLeadingConstraints)
         buttonLeadingConstraints.removeAll()
 
-        buttons.enumerate().forEach { (index, button) in
+        buttons.enumerated().forEach { (index, button) in
             let o = 5 + (CGFloat(index) * self.frame.width) / CGFloat(numButtons)
-            let c = button.leadingAnchor.constraintEqualToAnchor(leadingAnchor, constant: o)
+            let c = button.leadingAnchor.constraint(equalTo: leadingAnchor, constant: o)
             self.addConstraint(c)
             buttonLeadingConstraints.append(c)
         }
@@ -200,13 +200,13 @@ public class SlideButtonArray: UIView, SlideButtonArrayDelegate {
             fixLayout()
         }
 
-        buttonLeadingConstraints.enumerate().forEach { (index, constraint) in
+        buttonLeadingConstraints.enumerated().forEach { (index, constraint) in
             constraint.constant = 5 + ( (CGFloat(index) * self.frame.width) / CGFloat(numButtons) )
         }
 
         pickerLeadingConstraints.forEach { $0.constant = -3000.0 }
 
-        UIView.animateWithDuration(0.4, animations: {
+        UIView.animate(withDuration: 0.4, animations: {
             self.buttons.forEach { $0.layer.opacity = 1.0 }
             if prevActiveButtonIndex >= 0 {
                 self.pickers[prevActiveButtonIndex].layer.opacity = 0.0
@@ -227,7 +227,7 @@ public class SlideButtonArray: UIView, SlideButtonArrayDelegate {
         if 0 <= index && index < numButtons {
             activeButtonIndex = index
 
-            buttonLeadingConstraints.enumerate().forEach { (index, constraint) in
+            buttonLeadingConstraints.enumerated().forEach { (index, constraint) in
                 if index == activeButtonIndex {
                     // Set the constraint's offset relative to the button's original anchor.
                     constraint.constant = 5.0
@@ -239,23 +239,23 @@ public class SlideButtonArray: UIView, SlideButtonArrayDelegate {
 
             pickerLeadingConstraints[activeButtonIndex].constant = 0.0
 
-            UIView.animateWithDuration(0.4, animations: {
-                self.buttons.enumerate().forEach { if $0.0 != self.activeButtonIndex { $0.1.layer.opacity = 0.0 } }
+            UIView.animate(withDuration: 0.4, animations: {
+                self.buttons.enumerated().forEach { if $0.0 != self.activeButtonIndex { $0.1.layer.opacity = 0.0 } }
                 self.pickers[self.activeButtonIndex].layer.opacity = 1.0
                 self.layoutIfNeeded()
             })
         }
 
         exclusiveArrays.forEach { array in
-            if array != nil { array.layoutDefault() }
+            if array != nil { array?.layoutDefault() }
         }
     }
 
-    func handleTap(sender: UIButton) {
+    public func handleTap(sender: UIButton) {
         if activeButtonIndex >= 0 {
             layoutDefault()
         } else {
-            layoutFocused(sender.tag)
+            layoutFocused(buttonTag: sender.tag)
         }
     }
     

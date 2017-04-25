@@ -18,33 +18,34 @@ enum ChartType {
 
 class BarChartModel : NSObject {
 
-    var rangeType: HealthManagerStatisticsRangeType = HealthManagerStatisticsRangeType.Week
+    var rangeType: HealthManagerStatisticsRangeType = HealthManagerStatisticsRangeType.week
     var typesChartData: [String: ChartData] = [:]
-    var _chartDataOperationQueue: NSOperationQueue = NSOperationQueue()
+//    var chartDataOperationQueue: OperationQueue = OperationQueue
+    var chartDataOperationQueue: OperationQueue
     
-    private var chartTypeToQuantityType: [String: ChartType] = [HKQuantityTypeIdentifierDietaryEnergyConsumed : .BarChart,
-                                                                HKQuantityTypeIdentifierBasalEnergyBurned : .BarChart,
-                                                                HKQuantityTypeIdentifierStepCount : .BarChart,
-                                                                HKQuantityTypeIdentifierActiveEnergyBurned : .BarChart,
-                                                                HKCategoryTypeIdentifierSleepAnalysis : .BarChart,
-                                                                HKQuantityTypeIdentifierDietaryProtein : .BarChart,
-                                                                HKQuantityTypeIdentifierDietaryFatTotal : .BarChart,
-                                                                HKQuantityTypeIdentifierDietaryCarbohydrates : .BarChart,
-                                                                HKQuantityTypeIdentifierDietaryFiber : .BarChart,
-                                                                HKQuantityTypeIdentifierDietarySugar : .BarChart,
-                                                                HKQuantityTypeIdentifierDietarySodium : .BarChart, //salt
-                                                                HKQuantityTypeIdentifierDietaryCaffeine : .BarChart,
-                                                                HKQuantityTypeIdentifierDietaryCholesterol: .BarChart,
-                                                                HKQuantityTypeIdentifierDietaryFatPolyunsaturated : .BarChart,
-                                                                HKQuantityTypeIdentifierDietaryFatSaturated : .BarChart,
-                                                                HKQuantityTypeIdentifierDietaryFatMonounsaturated : .BarChart,
-                                                                HKQuantityTypeIdentifierDietaryWater : .BarChart,
-                                                                HKQuantityTypeIdentifierBodyMassIndex : .LineChart,
-                                                                HKQuantityTypeIdentifierBodyMass : .LineChart,
-                                                                HKQuantityTypeIdentifierHeartRate : .ScatterChart,
-                                                                HKQuantityTypeIdentifierBloodPressureSystolic : .ScatterChart,
-                                                                HKQuantityTypeIdentifierBloodPressureDiastolic : .ScatterChart,
-                                                                HKQuantityTypeIdentifierUVExposure : .ScatterChart]
+    private var chartTypeToQuantityType: [String: ChartType] = [HKQuantityTypeIdentifier.dietaryEnergyConsumed.rawValue : .BarChart,
+                                                                HKQuantityTypeIdentifier.basalEnergyBurned.rawValue : .BarChart,
+                                                                HKQuantityTypeIdentifier.stepCount.rawValue : .BarChart,
+                                                                HKQuantityTypeIdentifier.activeEnergyBurned.rawValue : .BarChart,
+                                                                HKCategoryTypeIdentifier.sleepAnalysis.rawValue : .BarChart,
+                                                                HKQuantityTypeIdentifier.dietaryProtein.rawValue : .BarChart,
+                                                                HKQuantityTypeIdentifier.dietaryFatTotal.rawValue : .BarChart,
+                                                                HKQuantityTypeIdentifier.dietaryCarbohydrates.rawValue : .BarChart,
+                                                                HKQuantityTypeIdentifier.dietaryFiber.rawValue : .BarChart,
+                                                                HKQuantityTypeIdentifier.dietarySugar.rawValue : .BarChart,
+                                                                HKQuantityTypeIdentifier.dietarySodium.rawValue : .BarChart, //salt
+                                                                HKQuantityTypeIdentifier.dietaryCaffeine.rawValue : .BarChart,
+                                                                HKQuantityTypeIdentifier.dietaryCholesterol.rawValue: .BarChart,
+                                                                HKQuantityTypeIdentifier.dietaryFatPolyunsaturated.rawValue : .BarChart,
+                                                                HKQuantityTypeIdentifier.dietaryFatSaturated.rawValue : .BarChart,
+                                                                HKQuantityTypeIdentifier.dietaryFatMonounsaturated.rawValue : .BarChart,
+                                                                HKQuantityTypeIdentifier.dietaryWater.rawValue : .BarChart,
+                                                                HKQuantityTypeIdentifier.bodyMassIndex.rawValue : .LineChart,
+                                                                HKQuantityTypeIdentifier.bodyMass.rawValue : .LineChart,
+                                                                HKQuantityTypeIdentifier.heartRate.rawValue : .ScatterChart,
+                                                                HKQuantityTypeIdentifier.bloodPressureSystolic.rawValue : .ScatterChart,
+                                                                HKQuantityTypeIdentifier.bloodPressureDiastolic.rawValue : .ScatterChart,
+                                                                HKQuantityTypeIdentifier.uvExposure.rawValue : .ScatterChart]
 
     //MARK: Data for YEAR
     func getChartDataForYear(type: ChartType, values: [Double], minValues: [Double]?) -> ChartData {
@@ -52,45 +53,47 @@ class BarChartModel : NSObject {
         let xVals = getYearTitles()
         var yVals: [ChartDataEntry] = []
         if let minValues = minValues {
-            yVals = getYValuesForScatterChart(minValues, maxValues: values, period: .Year)
+            yVals = getYValuesForScatterChart(minValues: minValues, maxValues: values, period: .year)
         } else {
-            yVals = convertStatisticsValues(values, forRange: .Year)
+            yVals = convertStatisticsValues(stisticsValues: values, forRange: .year)
         }
 
-        return getChartDataFor(xVals, yVals: yVals, type: type)
+        return getChartDataFor(xVals: xVals, yVals: yVals, type: type)
     }
 
     //MARK: Data for MONTH
     func getChartDataForMonth(type: ChartType, values: [Double], minValues: [Double]?) -> ChartData {
         let xVals = getMonthTitles()
-        var yVals = convertStatisticsValues(values, forRange: .Month)
+        var yVals = convertStatisticsValues(stisticsValues: values, forRange: .month)
         if let minValues = minValues {
-            yVals = getYValuesForScatterChart(minValues, maxValues: values, period: .Month)
+            yVals = getYValuesForScatterChart(minValues: minValues, maxValues: values, period: .month)
         }
 
-        return getChartDataFor(xVals, yVals: yVals, type: type)
+        return getChartDataFor(xVals: xVals, yVals: yVals, type: type)
     }
 
     //MARK: Data for WEEK
     func getChartDataForWeek(type: ChartType, values: [Double], minValues: [Double]?) -> ChartData {
         let xVals = getWeekTitles()
-        var yVals = convertStatisticsValues(values, forRange: .Week)
+        var yVals = convertStatisticsValues(stisticsValues: values, forRange: .week)
         if let minValues = minValues {
-            yVals = getYValuesForScatterChart(minValues, maxValues: values, period: .Week)
+            yVals = getYValuesForScatterChart(minValues: minValues, maxValues: values, period: .week)
         }
 
-        return getChartDataFor(xVals, yVals: yVals, type: type)
+        return getChartDataFor(xVals: xVals, yVals: yVals, type: type)
     }
 
-    //MARK: Prepate chart data
+    //MARK: Prepare chart data
     func convertStatisticsValues(stisticsValues: [Double], forRange range: HealthManagerStatisticsRangeType) -> [ChartDataEntry] {
-        let indexIncrement = range == .Month || range == .Year ? 2 : 1;//For year and Month we add 2 for index because we ahve empty values on left and right to make a gap for xAxis
+        let indexIncrement = range == .month || range == .year ? 2 : 1;//For year and Month we add 2 for index because we have empty values on left and right to make a gap for xAxis
         //for week we have only one empty value left and right on xAxis
         var yVals: [ChartDataEntry] = []
 
-        for (index, value) in stisticsValues.enumerate() {
+        for (index, value) in stisticsValues.enumerated() {
             if value > 0.0 {
-                yVals.append(BarChartDataEntry(value: value, xIndex: index+indexIncrement))
+//                yVals.append(BarChartDataEntry(value: value, xIndex: index+indexIncrement))
+//                yVals.append(barChartDataWith(xVals: (index+indexIncrement) as String, yVals: value))
+                yVals.append(BarChartDataEntry(x: Double(index), y: value))
             }
         }
         return yVals
@@ -98,24 +101,28 @@ class BarChartModel : NSObject {
 
     func getChartDataForRange(range: HealthManagerStatisticsRangeType, type: ChartType, values: [Double], minValues: [Double]?) -> ChartData {
         switch range {
-            case .Week:
-                return self.getChartDataForWeek(type, values: values, minValues: minValues)
-            case .Month:
-                return self.getChartDataForMonth(type, values: values, minValues: minValues)
-            case .Year:
-                return self.getChartDataForYear(type, values: values, minValues: minValues)
+            case .week:
+                return self.getChartDataForWeek(type: type, values: values, minValues: minValues)
+            case .month:
+                return self.getChartDataForMonth(type: type, values: values, minValues: minValues)
+            case .year:
+                return self.getChartDataForYear(type: type, values: values, minValues: minValues)
         }
     }
 
     func getYValuesForScatterChart (minValues: [Double], maxValues: [Double], period: HealthManagerStatisticsRangeType) -> [ChartDataEntry] {
         var yVals: [ChartDataEntry] = []
-        let indexIncrement = period == .Month || period == .Year ? 2 : 1;
-        for (index, minValue) in minValues.enumerate() {
+        let indexIncrement = period == .month || period == .year ? 2 : 1;
+        for (index, minValue) in minValues.enumerated() {
             let maxValue = maxValues[index]
             if maxValue > 0 && minValue > 0 {
-                yVals.append(BarChartDataEntry(values: [minValue, maxValue] , xIndex: index+indexIncrement))
+//                yVals.append(BarChartDataEntry(values: [minValue, maxValue] , xIndex: index+indexIncrement))
+//                yVals.append(barChartDataWith(xVals: (index+indexIncrement  as String), yVals: [minValue, maxValue]))
+                yVals.append(BarChartDataEntry(xVals: (index+indexIncrement  as String), yVals: [minValue, maxValue]))
             } else if maxValue > 0 {
-                yVals.append(BarChartDataEntry(values: [maxValue] , xIndex: index+indexIncrement))
+//                yVals.append(BarChartDataEntry(values: [maxValue] , xIndex: index+indexIncrement))
+//                yVals.append(barChartDataWith(xVals: (index+indexIncrement as String), yVals: [maxValue]))
+                yVals.append(BarChartDataEntry(xVals: (index+indexIncrement as String), yVals: [maxValue]))
             }
         }
         return yVals
@@ -124,88 +131,97 @@ class BarChartModel : NSObject {
     func getChartDataFor(xVals: [String], yVals: [ChartDataEntry], type: ChartType) -> ChartData {
         switch type {
             case .BarChart:
-                return barChartDataWith(xVals, yVals: yVals)
+//                return barChartDataWith(xVals: xVals, yVals: yVals)
+                return BarChartDataEntry(x: xVals, y: yVals)
             case .LineChart:
-                return lineChartDataWith(xVals, yVals: yVals)
+//                return lineChartDataWith(xVals: xVals, yVals: yVals)
+                return LineChartData(x: xVals, y: yVals)
             case .ScatterChart:
-                return scatterChartDataWith(xVals, yVals: yVals)
+//                return scatterChartDataWith(xVals: xVals, yVals: yVals)
+                return scatterChartData(x: xVals, y: yVals)
         }
     }
 
     func getBloodPressureChartData(range: HealthManagerStatisticsRangeType, systolicMax: [Double], systolicMin: [Double], diastolicMax: [Double], diastolicMin: [Double]) -> ChartData{
-        let systolicWeekData = getYValuesForScatterChart(systolicMin, maxValues: systolicMax, period: range)
-        let diastolicWeekData = getYValuesForScatterChart(diastolicMin, maxValues: diastolicMax, period: range)
+        let systolicWeekData = getYValuesForScatterChart(minValues: systolicMin, maxValues: systolicMax, period: range)
+        let diastolicWeekData = getYValuesForScatterChart(minValues: diastolicMin, maxValues: diastolicMax, period: range)
         var xVals: [String] = []
         switch range {
-            case .Week:
+            case .week:
                 xVals = getWeekTitles()
-            case .Month:
+            case .month:
                 xVals = getMonthTitles()
-            case .Year:
+            case .year:
                 xVals = getYearTitles()
 
         }
-        return scatterChartDataWith(xVals, yVals1: systolicWeekData, yVals2: diastolicWeekData)
-    }
+//        return scatterChartDataWith(xVals, yVals1: systolicWeekData, yVals2: diastolicWeekData) 
+        return scatterChartDataWith(xVals: xVals, yVals1: systolicWeekData, yVals2: diastolicWeekData)
 
-    private func barChartDataWith(xVals: [String], yVals: [ChartDataEntry]) -> BarChartData {
-        let daysDataSet = BarChartDataSet(yVals: yVals, label: "")
-        daysDataSet.barSpace = 0.9
-        daysDataSet.colors = [UIColor.colorWithHexString("#ffffff", alpha: 0.8)!]
+    func barChartDataWith(xVals: [String], yVals: [ChartDataEntry]) -> BarChartData {
+        let daysDataSet = BarChartDataSet(values: yVals, label: "")
+//        daysDataSet.barSpace = 0.9
+//        daysDataSet.barWidth = 0.9
+        daysDataSet.barBorderWidth = 0.1
+        daysDataSet.colors = [UIColor.colorWithHexString(rgb: "#ffffff", alpha: 0.8)!]
         daysDataSet.drawValuesEnabled = false
 
-        let barChartData = BarChartData(xVals: xVals, dataSets: [daysDataSet])
+//        let barChartData = BarChartData(xVals: xVals, dataSets: [daysDataSet])
+        let barChartData = barChartDataWith(xVals: xVals, yVals: [daysDataSet])
         return barChartData
     }
 
-    private func lineChartDataWith(xVals: [String], yVals: [ChartDataEntry]) -> LineChartData {
-        let lineChartDataSet = LineChartDataSet(yVals: yVals, label: "")
-        lineChartDataSet.colors = [UIColor.whiteColor().colorWithAlphaComponent(0.3)]
+    func lineChartDataWith(xVals: [String], yVals: [ChartDataEntry]) -> LineChartData {
+        let lineChartDataSet = LineChartDataSet(values: yVals, label: "")
+        lineChartDataSet.colors = [UIColor.white.withAlphaComponent(0.3)]
         lineChartDataSet.circleRadius = 3.0
         lineChartDataSet.drawValuesEnabled = false
         lineChartDataSet.circleHoleRadius = 1.5
         lineChartDataSet.circleHoleColor = UIColor(colorLiteralRed: 51.0/255.0, green: 138.0/255.0, blue: 255.0/255.0, alpha: 1.0)
-        lineChartDataSet.circleColors = [UIColor.whiteColor()]
+        lineChartDataSet.circleColors = [UIColor.white]
         lineChartDataSet.drawHorizontalHighlightIndicatorEnabled = false
         lineChartDataSet.drawVerticalHighlightIndicatorEnabled = false
 
-        let lineChartData = LineChartData(xVals: xVals, dataSets: [lineChartDataSet])
+//        let lineChartData = LineChartDataEntry(x: xVals, dataSets: [lineChartDataSet])
+        let lineChartData = lineChartDataSet(xVals: xVals, dataSets: [lineChartDataSet])
         return lineChartData
     }
 
-    private func scatterChartDataWith(xVals: [String], yVals:[ChartDataEntry], dataSetType: DataSetType = DataSetType.HeartRate) -> ScatterChartData {
+    func scatterChartDataWith(xVals: [String], yVals:[ChartDataEntry], dataSetType: DataSetType = DataSetType.HeartRate) -> ScatterChartData {
 
-        let dataSet = MCScatterChartDataSet(yVals: yVals, label: "")
+        let dataSet = MCScatterChartDataSet(values: yVals, label: "")
         dataSet.dataSetType = dataSetType
-        dataSet.colors = [UIColor.whiteColor()]
+        dataSet.colors = [UIColor.white]
         dataSet.drawValuesEnabled = false
         dataSet.drawHorizontalHighlightIndicatorEnabled = false
         dataSet.drawVerticalHighlightIndicatorEnabled = false
 
-        let chartData = ScatterChartData(xVals: xVals, dataSets: [dataSet])
+//        let chartData = ScatterChartData(xVals: xVals, dataSets: [dataSet])
+        let chartData = scatterChartDataWith(xVals: xVals, yVals: [dataSet])
         return chartData
     }
 
-    private func scatterChartDataWith(xVals: [String], yVals1:[ChartDataEntry], yVals2:[ChartDataEntry]) -> ScatterChartData {
+    func scatterChartDataWith(xVals: [String], yVals1:[ChartDataEntry], yVals2:[ChartDataEntry]) -> ScatterChartData {
 
-        let dataSet1 = MCScatterChartDataSet(yVals: yVals1, label: "")
+        let dataSet1 = MCScatterChartDataSet(values: yVals1, label: "")
         dataSet1.dataSetType = .BloodPressureTop
-        dataSet1.colors = [UIColor.whiteColor()]
+        dataSet1.colors = [UIColor.white]
         dataSet1.drawValuesEnabled = false
         dataSet1.drawHorizontalHighlightIndicatorEnabled = false
         dataSet1.drawVerticalHighlightIndicatorEnabled = false
 
-        let dataSet2 = MCScatterChartDataSet(yVals: yVals2, label: "")
+        let dataSet2 = MCScatterChartDataSet(values: yVals2, label: "")
         dataSet2.dataSetType = .BloodPressureBottom
-        dataSet2.colors = [UIColor.whiteColor()]
+        dataSet2.colors = [UIColor.white]
         dataSet2.drawValuesEnabled = false
         dataSet2.drawHorizontalHighlightIndicatorEnabled = false
         dataSet2.drawVerticalHighlightIndicatorEnabled = false
 
-        let chartData = ScatterChartData(xVals: xVals, dataSets: [dataSet1, dataSet2])
+//        let chartData = ScatterChartData(xVals: xVals, dataSets: [dataSet1, dataSet2])
+        let chartData = scatterChartDataWith(xVals: xVals, yVals: [dataSet2, dataSet2])
         return chartData
     }
-    //TODO: Maybe we should remove this function
+    //TODO: Maybe we should remove this function 
     //Don't know for what this function exists. Can't find usage in the project.
     func scatterChartDataWithMultipleEntries(xVals: [String], yVals:[[ChartDataEntry]], types: [DataSetType?]) -> ScatterChartData {
         
@@ -215,15 +231,16 @@ class BarChartModel : NSObject {
         
         var i = 0
         while i <= yVals.count {
-            let dataSet1 = MCScatterChartDataSet(yVals: yVals[i], label: "")
-            dataSet1.colors = i % 2 == 0 ? [UIColor.whiteColor()] : [UIColor.redColor()]
+            let dataSet1 = MCScatterChartDataSet(values: yVals[i], label: "")
+            dataSet1.colors = i % 2 == 0 ? [UIColor.white] : [UIColor.red]
             if types[i] != nil { dataSet1.dataSetType = types[i]! }
             dataSet1.drawValuesEnabled = false
             dataSets.append(dataSet1)
             i += 1
         }
         
-        let chartData = ScatterChartData(xVals: xVals, dataSets: dataSets)
+//        let chartData = ScatterChartData(xVals: xVals, dataSets: dataSets)
+        let chartData = scatterChartDataWith(xVals: xVals, yVals: dataSets)
         return chartData
     }
     
@@ -238,7 +255,7 @@ class BarChartModel : NSObject {
         //dataSets[1] xAxis
         let finalDataSet = MCScatterChartDataSet()
         finalDataSet.dataSetType = .HeartRate
-        finalDataSet.colors = [UIColor.whiteColor()]
+        finalDataSet.colors = [UIColor.white]
         finalDataSet.drawValuesEnabled = false
         finalDataSet.drawHorizontalHighlightIndicatorEnabled = false
         finalDataSet.drawVerticalHighlightIndicatorEnabled = false
@@ -255,7 +272,7 @@ class BarChartModel : NSObject {
                 return entry == nil ? entry : (entry!.xIndex == idx ? entry : nil)
             }
 
-            let averageEntry : ChartDataEntry -> ChartDataEntry = { entry in
+            let averageEntry : (ChartDataEntry) -> ChartDataEntry = { entry in
                 switch entry {
                 case is BarChartDataEntry:
                     let e = entry as! BarChartDataEntry
@@ -281,10 +298,13 @@ class BarChartModel : NSObject {
             //log.info("SCATTER MODEL common datasets: \(dSet1.yVals) \(dSet2.yVals)")
 
             //sort values in the right way
-            dSet1.yVals.sortInPlace({ $0.0.value < $0.1.value })
+//            dSet1.yVals.sortInPlace({ $0.0.value < $0.1.value })
+//            dSet1.y.sortInPlace({ $0.0.value < $0.1.value })
+            dSet1.values.sortInPlace({ $0.0.value < $0.1.value })
 
             //prepare xAxis labels
-            let xDoubleVals: Set<Double> = Set<Double>(dSet1.yVals.flatMap({ yValue in
+//            let xDoubleVals: Set<Double> = Set<Double>(dSet1.yVals.flatMap({ yValue in
+            let xDoubleVals: Set<Double> = Set<Double>(dSet1.values.flatMap({ yValue in
                 let currentYValue = dSet2.yValForXIndex(yValue.xIndex)
                 if !currentYValue.isNaN {
                     let numberIsDecimal = yValue.value - floor(yValue.value) > 0.001
@@ -294,9 +314,9 @@ class BarChartModel : NSObject {
                 return nil
             }))
 
-            xValues = xDoubleVals.sort({ $0.0 < $0.1 }).map({ "\($0)" })
+            xValues = xDoubleVals.sorted(by: { $0.0 < $0.1 }).map({ "\($0)" })
 
-            let groupByYValue: [Double: [Double]] = dSet1.yVals.reduce([:], combine: { (acc, entry1) in
+            let groupByYValue: [Double: [Double]] = dSet1.values.reduce([:], { (acc, entry1) in
                 var nacc = acc
                 let entry2 = dSet2.yValForXIndex(entry1.xIndex)
                 if !entry2.isNaN {
@@ -306,14 +326,15 @@ class BarChartModel : NSObject {
                 }
                 return nacc
             })
-            let sortedByYValue = groupByYValue.sort { $0.0.0 < $0.1.0 }
+            let sortedByYValue = groupByYValue.sorted { $0.0.0 < $0.1.0 }
 
             //log.info("SCATTER MODEL corr entries \(sortedByYValue)")
 
-            sortedByYValue.enumerate().forEach { (index, yAndXVals) in
+            sortedByYValue.enumerated().forEach { (index, yAndXVals) in
                 let values = yAndXVals.1
                 if values.count > 0 {
-                    finalDataSet.addEntry(BarChartDataEntry(values: values, xIndex: index + 1))
+//                    finalDataSet.addEntry(BarChartDataEntry(values: values, xIndex: index + 1))
+                    finalDataSet.addEntry(BarChartDataEntry(x: Double(index+1), y: values)
                 } else {
                     //log.info("SCATTER MODEL no entries for \(yAndXVals)")
                 }
@@ -325,13 +346,13 @@ class BarChartModel : NSObject {
         var newValues : [String] = Array()
         newValues.append("")//gap from the left side
         newValues += xValues
-        newValues.append("")//gap from the right side
+        newValues.append("")//gap from the right side 
         let chartData = ScatterChartData(xVals: newValues, dataSets: [finalDataSet])
         return chartData
     }
     
     func lineChartWithMultipleDataSets(xVals: [String?], dataSets:[IChartDataSet], calcAvg: [Bool]) -> LineChartData? {
-        let averageEntry : ChartDataEntry -> ChartDataEntry = { entry in
+        let averageEntry : (ChartDataEntry) -> ChartDataEntry = { entry in
             switch entry {
             case is BarChartDataEntry:
                 let e = entry as! BarChartDataEntry
@@ -348,14 +369,14 @@ class BarChartModel : NSObject {
             }
         }
 
-        let lineChartDataSetWith : [ChartDataEntry] -> LineChartDataSet = { yVals in
-            let lineChartDataSet = LineChartDataSet(yVals: yVals, label: "")
-            lineChartDataSet.colors = [UIColor.whiteColor().colorWithAlphaComponent(0.3)]
+        let lineChartDataSetWith : ([ChartDataEntry]) -> LineChartDataSet = { yVals in
+            let lineChartDataSet = LineChartDataSet(values: yVals, label: "")
+            lineChartDataSet.colors = [UIColor.white.withAlphaComponent(0.3)]
             lineChartDataSet.circleRadius = 3.0
             lineChartDataSet.drawValuesEnabled = false
             lineChartDataSet.circleHoleRadius = 1.5
             lineChartDataSet.circleHoleColor = UIColor(colorLiteralRed: 51.0/255.0, green: 138.0/255.0, blue: 255.0/255.0, alpha: 1.0)
-            lineChartDataSet.circleColors = [UIColor.whiteColor()]
+            lineChartDataSet.circleColors = [UIColor.white]
             lineChartDataSet.drawHorizontalHighlightIndicatorEnabled = false
             lineChartDataSet.drawVerticalHighlightIndicatorEnabled = false
             return lineChartDataSet
@@ -364,87 +385,88 @@ class BarChartModel : NSObject {
         var ds0: LineChartDataSet = dataSets[0] as! LineChartDataSet
         var ds1: LineChartDataSet = dataSets[1] as! LineChartDataSet
 
-        if calcAvg[0] { ds0 = lineChartDataSetWith(ds0.yVals.map(averageEntry)) }
-        ds0.axisDependency = .Left
-        ds0.colors = [UIColor.whiteColor()]
+        if calcAvg[0] { ds0 = lineChartDataSetWith(ds0.values.map(averageEntry)) }
+        ds0.axisDependency = .left
+        ds0.colors = [UIColor.white]
 
-        if calcAvg[1] { ds1 = lineChartDataSetWith(ds1.yVals.map(averageEntry)) }
-        ds1.axisDependency = .Right
-        ds1.colors = [UIColor.redColor()]
+        if calcAvg[1] { ds1 = lineChartDataSetWith(ds1.values.map(averageEntry)) }
+        ds1.axisDependency = .right
+        ds1.colors = [UIColor.red]
 
-        let chartData = LineChartData(xVals: xVals, dataSets: [ds0, ds1])
+//        let chartData = LineChartData(xVals: xVals, dataSets: [ds0, ds1])
+        let chartData = lineChartDataWith(xVals: xVals as! [String], yVals: [ds0, ds1])
         return chartData
     }
 
     // MARK :- Get all data for type
     
-    func getAllDataForCurrentPeriodForSample(qType : HKSampleType,  _chartType: ChartType?, completion: Bool -> Void) {
+    func getAllDataForCurrentPeriodForSample(qType : HKSampleType,  _chartType: ChartType?, completion: @escaping (Bool) -> Void) {
         
-        let type = qType.identifier == HKCorrelationTypeIdentifierBloodPressure ? HKQuantityTypeIdentifierBloodPressureSystolic : qType.identifier
-        let chartType = _chartType == nil ? chartTypeForQuantityTypeIdentifier(type) : _chartType
+        let type = qType.identifier == HKCorrelationTypeIdentifier.bloodPressure.rawValue ? HKQuantityTypeIdentifier.bloodPressureSystolic.rawValue : qType.identifier
+        let chartType = _chartType == nil ? chartTypeForQuantityTypeIdentifier(qType: type) : _chartType
         let key = type + "\(self.rangeType.rawValue)"
         
         //log.warning("Getting chart data for \(type)")
         
-        if type == HKQuantityTypeIdentifierHeartRate || type == HKQuantityTypeIdentifierUVExposure {
+        if type == HKQuantityTypeIdentifier.heartRate.rawValue || type == HKQuantityTypeIdentifier.uvExposure.rawValue {
             // We should get max and min values. because for this type we are using scatter chart
-            IOSHealthManager.sharedManager.getChartDataForQuantity(qType, inPeriod: self.rangeType) { obj in
+            IOSHealthManager.sharedManager.getChartDataForQuantity(sampleType: qType, inPeriod: self.rangeType) { obj in
                 let values = obj as! [[Double]]
                 if values.count > 0 {
-                    self.typesChartData[key] = self.getChartDataForRange(self.rangeType, type: chartType!, values: values[0], minValues: values[1])
+                    self.typesChartData[key] = self.getChartDataForRange(range: self.rangeType, type: chartType!, values: values[0], minValues: values[1])
                 }
                 completion(values.count > 0)
             }
-        } else if type == HKQuantityTypeIdentifierBloodPressureSystolic {
+        } else if type == HKQuantityTypeIdentifier.bloodPressureSystolic.rawValue {
             // We should also get data for HKQuantityTypeIdentifierBloodPressureDiastolic
-            IOSHealthManager.sharedManager.getChartDataForQuantity(HKObjectType.quantityTypeForIdentifier(type)!, inPeriod: self.rangeType) { obj in
+            IOSHealthManager.sharedManager.getChartDataForQuantity(sampleType: HKObjectType.quantityType(forIdentifier: HKQuantityTypeIdentifier(rawValue: type))!, inPeriod: self.rangeType) { obj in
                 let values = obj as! [[Double]]
                 if values.count > 0 {
-                    self.typesChartData[key] = self.getBloodPressureChartData(self.rangeType,
+                    self.typesChartData[key] = self.getBloodPressureChartData(range: self.rangeType,
                                                                               systolicMax: values[0], systolicMin: values[1],
                                                                               diastolicMax: values[2], diastolicMin: values[3])
                 }
                 completion(values.count > 0)
             }
         } else {
-            IOSHealthManager.sharedManager.getChartDataForQuantity(qType, inPeriod: self.rangeType) { obj in
+            IOSHealthManager.sharedManager.getChartDataForQuantity(sampleType: qType, inPeriod: self.rangeType) { obj in
                 let values = obj as! [Double]
-                self.typesChartData[key] = self.getChartDataForRange(self.rangeType, type: chartType!, values: values, minValues: nil)
+                self.typesChartData[key] = self.getChartDataForRange(range: self.rangeType, type: chartType!, values: values, minValues: nil)
                 completion(values.count > 0)
             }
         }
     }
     
-    func gettAllDataForSpecifiedType(chartType: ChartType, completion: () -> Void) {
+    func gettAllDataForSpecifiedType(chartType: ChartType, completion: @escaping () -> Void) {
         resetOperation()
-        let chartGroup = dispatch_group_create()
+        let chartGroup = DispatchGroup()
         for qType in PreviewManager.chartsSampleTypes {
-            dispatch_group_enter(chartGroup)
-            _chartDataOperationQueue.addOperationWithBlock({
-                self.getAllDataForCurrentPeriodForSample(qType, _chartType: chartType) { _ in
-                    dispatch_group_leave(chartGroup)
+            chartGroup.enter()
+            chartDataOperationQueue.addOperation({
+                getAllDataForCurrentPeriodForSample(qType: qType, _chartType: chartType) { _ in
+                    chartGroup.leave()
                 }
             })
         }
-        dispatch_group_notify(chartGroup, dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_BACKGROUND, 0)) {
-            self.addCompletionForOperationQueue(completion)
+        dispatch_group_notify(chartGroup, DispatchQueue.global(DispatchQueue.GlobalQueuePriority.background, 0)) {
+            self.addCompletionForOperationQueue(completion: completion)
         }
     }
     
-    func getAllDataForCurrentPeriod(completion: () -> Void) {
+    func getAllDataForCurrentPeriod(completion: @escaping () -> Void) {
         //always reset current operation queue before start new one
         resetOperation()
-        let chartGroup = dispatch_group_create()
+        let chartGroup = DispatchGroup()
         for qType in PreviewManager.chartsSampleTypes {
-            dispatch_group_enter(chartGroup)
-            _chartDataOperationQueue.addOperationWithBlock({ 
-                self.getAllDataForCurrentPeriodForSample(qType, _chartType: nil) { _ in
-                    dispatch_group_leave(chartGroup)
+            chartGroup.enter()
+            chartDataOperationQueue.addOperation({ 
+                getAllDataForCurrentPeriodForSample(qType: qType, _chartType: nil) { _ in
+                    chartGroup.leave()
                 }
             })
         }
-        dispatch_group_notify(chartGroup, dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_BACKGROUND, 0)) {
-            self.addCompletionForOperationQueue(completion)
+        dispatch_group_notify(chartGroup, DispatchQueue.global(DispatchQueue.GlobalQueuePriority.background, 0)) {
+            self.addCompletionForOperationQueue(completion: completion)
         }
     }
 
@@ -468,15 +490,15 @@ class BarChartModel : NSObject {
             }
         }
 
-        for (index, date) in prevMonthDates.enumerate() {
-            weekTitles.append(convertDateToWeekString(date, forIndex: index))
+        for (index, date) in prevMonthDates.enumerated() {
+            weekTitles.append(convertDateToWeekString(date: date, forIndex: index))
         }
 
-        for (index, date) in currentMonthDates.enumerate() {
-            weekTitles.append(convertDateToWeekString(date, forIndex: index))
+        for (index, date) in currentMonthDates.enumerated() {
+            weekTitles.append(convertDateToWeekString(date: date, forIndex: index))
         }
 
-        weekTitles.append("")//create a gap for the right side
+        weekTitles.append("")//create a gap for the right side 
         return weekTitles
     }
 
@@ -502,12 +524,12 @@ class BarChartModel : NSObject {
             }
         }
 
-        for (index, date) in prevMonthDates.enumerate() {
-            monthTitles.append(convertDateToWeekString(date, forIndex: index))
+        for (index, date) in prevMonthDates.enumerated() {
+            monthTitles.append(convertDateToWeekString(date: date, forIndex: index))
         }
 
-        for (index, date) in currentMonthDates.enumerate() {
-            monthTitles.append(convertDateToWeekString(date, forIndex: index))
+        for (index, date) in currentMonthDates.enumerated() {
+            monthTitles.append(convertDateToWeekString(date: date, forIndex: index))
         }
 
         //empty labels for right gap
@@ -533,12 +555,12 @@ class BarChartModel : NSObject {
             date.year < currentDate.year ? prevYearMonthes.append(date) : currentYearMonthes.append(date)
         }
 
-        for (index, date) in prevYearMonthes.enumerate() {
-            yearTitles.append(convertDateToYearString(date, forIndex: index))
+        for (index, date) in prevYearMonthes.enumerated() {
+            yearTitles.append(convertDateToYearString(date: date, forIndex: index))
         }
 
-        for (index, date) in currentYearMonthes.enumerate() {
-            yearTitles.append(convertDateToYearString(date, forIndex: index))
+        for (index, date) in currentYearMonthes.enumerated() {
+            yearTitles.append(convertDateToYearString(date: date, forIndex: index))
         }
 
         yearTitles.append(" ")//space for gap
@@ -556,7 +578,9 @@ class BarChartModel : NSObject {
 
     func convertDateToYearString (date: Date, forIndex index: Int) -> String {
         let month = date.monthName
-        let cutRange = month.startIndex ..< month.startIndex.advancedBy(3)
+//        let cutRange = month.startIndex ..< month.startIndex.advancedBy(3)
+//        let cutRange = month.startIndex ..< month.index(offsetBy: 3)
+        let cutRange = month.startIndex ..< (month.startIndex+3)
         let monthName = month.length > 3 ? month.substringWithRange(cutRange) : month
 
         if index == 0 {
@@ -569,23 +593,24 @@ class BarChartModel : NSObject {
     func convertDateToWeekString (date: Date, forIndex index: Int) -> String {
         if index == 0 {
             let month = date.monthName
-            let cutRange = month.startIndex ..< month.startIndex.advancedBy(3)
+//            let cutRange = month.startIndex ..< month.startIndex.advancedBy(3)
+            let cutRange = month.startIndex ..< (month.startIndex+3)
             let monthName = month.length > 3 ? month.substringWithRange(cutRange) : month
             return monthName + " \(date.day)"
         }
         return "\(date.day)"
     }
     
-    func addCompletionForOperationQueue(completion: () -> Void) {
-        _chartDataOperationQueue.operations.onFinish({
-            NSOperationQueue.mainQueue().addOperationWithBlock({
+    func addCompletionForOperationQueue(completion: @escaping () -> Void) {
+        chartDataOperationQueue.operations.onFinish(block: {
+            OperationQueue.main.addOperation({
                 completion()
             })
         })
     }
     
     func resetOperation () {
-        _chartDataOperationQueue.cancelAllOperations()
-        _chartDataOperationQueue = NSOperationQueue()
+        chartDataOperationQueue.cancelAllOperations()
+        chartDataOperationQueue = OperationQueue()
     }
 }

@@ -1,6 +1,6 @@
 //
 //  BalanceSampleListController.swift
-//  MetabolicCompass
+//  MetabolicCompass 
 //
 //  Created by Inaiur on 5/13/16.
 //  Copyright © 2016 Yanif Ahmad, Tom Woolf. All rights reserved.
@@ -19,7 +19,7 @@ class BalanceSampleListController: UIViewController, UITableViewDelegate, UITabl
     let rowHeight:CGFloat = 60.0
     var selectdType: HKSampleType!
     var backgroundImage:UIImage? = nil
-    var completionBlock: (Void -> Void)?
+    var completionBlock: ((Void) -> Void)?
     
     var data: [DashboardMetricsConfigItem] = [] {
         didSet {
@@ -35,7 +35,7 @@ class BalanceSampleListController: UIViewController, UITableViewDelegate, UITabl
         self.tableView.delegate   = self;
     }
     
-    override func viewWillAppear(animated: Bool) {
+    override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         self.refreshContent()
     }
@@ -59,11 +59,11 @@ class BalanceSampleListController: UIViewController, UITableViewDelegate, UITabl
             }
         }
         
-        PreviewManager.updatePreviewSampleTypes(samples)
+        PreviewManager.updatePreviewSampleTypes(types: samples)
     }
     
-    override func preferredStatusBarStyle() -> UIStatusBarStyle {
-        return .LightContent;
+    func preferredStatusBarStyle() -> UIStatusBarStyle {
+        return .lightContent;
     }
     
     override func didReceiveMemoryWarning() {
@@ -72,7 +72,7 @@ class BalanceSampleListController: UIViewController, UITableViewDelegate, UITabl
     }
     
     @IBAction func onClose(sender: AnyObject) {
-        self.dismissViewControllerAnimated(true, completion: nil)
+        self.dismiss(animated: true, completion: nil)
         save()
     }
     
@@ -80,15 +80,15 @@ class BalanceSampleListController: UIViewController, UITableViewDelegate, UITabl
         return 1
     }
     
-    func tableView(tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+    func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         return self.data.count
     }
     
     private let cellIdentifier = "DashboardManageCell"
     
-    func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell {
+    func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: IndexPath) -> UITableViewCell {
         
-        let cell = tableView.dequeueReusableCellWithIdentifier(cellIdentifier, forIndexPath: indexPath) as! ManageDashboardCell
+        let cell = tableView.dequeueReusableCellWithIdentifier(cellIdentifier, forIndexPath: indexPath as IndexPath) as! ManageDashboardCell
         
         let item = self.data[indexPath.row]
         cell.showsReorderControl         = false
@@ -102,7 +102,7 @@ class BalanceSampleListController: UIViewController, UITableViewDelegate, UITabl
     
     func tableView(tableView: UITableView, didSelectRowAtIndexPath indexPath: NSIndexPath) {
         
-        let obj = tableView.cellForRowAtIndexPath(indexPath) as? ManageDashboardCell
+        let obj = tableView.cellForRowAtIndexPath(indexPath as IndexPath) as? ManageDashboardCell
         guard let cell = obj else {
             return
         }
@@ -111,7 +111,7 @@ class BalanceSampleListController: UIViewController, UITableViewDelegate, UITabl
         for item in data {
             
             item.active = false
-            if let otherCell = tableView.cellForRowAtIndexPath(NSIndexPath(forRow: index, inSection: 0)) as? ManageDashboardCell {
+            if let otherCell = tableView.cellForRowAtIndexPath(IndexPath(forRow: index, inSection: 0)) as? ManageDashboardCell {
                 otherCell.button.selected = false
             }
             
@@ -124,9 +124,9 @@ class BalanceSampleListController: UIViewController, UITableViewDelegate, UITabl
         
         Async.main(after: 0.1) {
             var samples = PreviewManager.balanceSampleTypes
-            let index   = PreviewManager.balanceSampleTypes.indexOf(self.selectdType)!
+            let index   = PreviewManager.balanceSampleTypes.index(of: self.selectdType)!
             samples[index] = item.object
-            PreviewManager.updateBalanceSampleTypes(samples)
+            PreviewManager.updateBalanceSampleTypes(types: samples)
         }
         
         guard let block = self.completionBlock else {
@@ -137,6 +137,6 @@ class BalanceSampleListController: UIViewController, UITableViewDelegate, UITabl
     }
 
     @IBAction func closeAction() {
-        self.dismissViewControllerAnimated(true, completion: nil)
+        self.dismiss(animated: true, completion: nil)
     }
 }

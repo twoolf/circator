@@ -2,7 +2,7 @@
 //  RegisterRecommendedViewController.swift
 //  MetabolicCompass
 //
-//  Created by Yanif Ahmad on 2/11/16.
+//  Created by Yanif Ahmad on 2/11/16. 
 //  Copyright © 2016 Yanif Ahmad, Tom Woolf. All rights reserved.
 //
 
@@ -29,10 +29,10 @@ class ProfileSubviewController : FormViewController {
 
     internal var subviewDesc : String = "Subview"
     internal var bgColor : UIColor = Theme.universityDarkTheme.backgroundColor
-    internal var txtColor : UIColor = .whiteColor()
-    internal var plcColor : UIColor = UIColor.lightGrayColor()
+    internal var txtColor : UIColor = .white
+    internal var plcColor : UIColor = UIColor.lightGray
 
-    override func viewWillAppear(animated: Bool) {
+    override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         navigationController?.setNavigationBarHidden(false, animated: false)
     }
@@ -42,10 +42,10 @@ class ProfileSubviewController : FormViewController {
 
         view.backgroundColor = bgColor
 
-        let profileDoneButton = UIBarButtonItem(barButtonSystemItem: .Done, target: self, action: #selector(updateProfile))
+        let profileDoneButton = UIBarButtonItem(barButtonSystemItem: .done, target: self, action: #selector(updateProfile))
         navigationItem.rightBarButtonItem = profileDoneButton
 
-        profileUpdateAsyncs = Array(count: profileFields.count, repeatedValue: nil)
+        profileUpdateAsyncs = Array(repeating: nil, count: profileFields.count)
 
         let profileFieldRows = (0..<profileFields.count).map { index -> RowFormer in
             let text = profileFields[index]
@@ -54,18 +54,18 @@ class ProfileSubviewController : FormViewController {
 
             return TextFieldRowFormer<FormTextFieldCell>() {
                 $0.backgroundColor = self.bgColor
-                $0.tintColor = .blueColor()
+                $0.tintColor = .blue
                 $0.titleLabel.text = text
                 $0.titleLabel.textColor = self.txtColor
-                $0.titleLabel.font = .boldSystemFontOfSize(lblFontSize)
+                $0.titleLabel.font = .boldSystemFont(ofSize: lblFontSize)
                 $0.textField.textColor = self.txtColor
-                $0.textField.font = .boldSystemFontOfSize(inputFontSize)
-                $0.textField.textAlignment = .Right
-                $0.textField.returnKeyType = .Next
+                $0.textField.font = .boldSystemFont(ofSize: inputFontSize)
+                $0.textField.textAlignment = .right
+                $0.textField.returnKeyType = .next
 
-                $0.textField.autocorrectionType = UITextAutocorrectionType.No
-                $0.textField.autocapitalizationType = UITextAutocapitalizationType.None
-                $0.textField.keyboardType = UIKeyboardType.Default
+                $0.textField.autocorrectionType = UITextAutocorrectionType.no
+                $0.textField.autocapitalizationType = UITextAutocapitalizationType.none
+                $0.textField.keyboardType = UIKeyboardType.default
 
                 }.configure {
                     let attrs = [NSForegroundColorAttributeName: plcColor]
@@ -101,6 +101,6 @@ class ProfileSubviewController : FormViewController {
 
     func updateProfile() {
         log.info("Updating profile..")
-        navigationController?.popViewControllerAnimated(true)
+        navigationController?.popViewController(animated: true)
     }
 }

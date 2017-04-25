@@ -1,8 +1,8 @@
 //
 //  UserSettingsViewController.swift
-//  MetabolicCompass
+//  MetabolicCompass 
 //
-//  Created by Yanif Ahmad on 8/22/16.
+//  Created by Yanif Ahmad on 8/22/16. 
 //  Copyright © 2016 Yanif Ahmad, Tom Woolf. All rights reserved.
 //
 
@@ -51,17 +51,17 @@ class UserSettingsViewController: BaseViewController {
     var remoteLogSwitchRow: SwitchRowFormer<FormSwitchCell>! = nil
     var remoteLogConfigLabel: LabelRowFormer<FormLabelCell>! = nil
 
-    override func viewWillAppear(animated: Bool) {
+    override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         setupSettings()
-        toggleEditing(false)
+        toggleEditing(asEdited: false)
     }
 
     override func viewDidLoad() {
         super.viewDidLoad()
         setupSettings()
         self.setupFormer()
-        NSNotificationCenter.defaultCenter().addObserver(self, selector: #selector(self.refreshRemoteLogDisplay), name: RLogDidExpire, object: nil)
+        NotificationCenter.defaultCenter().addObserver(self, selector: #selector(self.refreshRemoteLogDisplay), name: RLogDidExpire, object: nil)
     }
 
     func toggleEditing(asEdited: Bool = true) {
@@ -79,10 +79,10 @@ class UserSettingsViewController: BaseViewController {
 
     func reloadData() {
         let paragraphStyle = NSMutableParagraphStyle()
-        paragraphStyle.alignment = .Right
+        paragraphStyle.alignment = .right
 
         let placeholderAttrs: [String: AnyObject] = [
-            NSForegroundColorAttributeName: UIColor.lightGrayColor(),
+            NSForegroundColorAttributeName: UIColor.lightGrayColor,
             NSParagraphStyleAttributeName: paragraphStyle
         ]
 
@@ -90,7 +90,7 @@ class UserSettingsViewController: BaseViewController {
         syncInput.attributedPlaceholder = NSAttributedString(string: "\(refresh)", attributes: placeholderAttrs)
 
         if reminder != nil {
-            let index = UserSettingsViewController.reminderOptions.indexOf(reminder)!
+            let index = UserSettingsViewController.reminderOptions.index(of: reminder)!
             reminderInput.selectedRow = index
         }
 
@@ -108,16 +108,16 @@ class UserSettingsViewController: BaseViewController {
         let partial = hotword == UserManager.sharedManager.getHotWords()
                         && refresh == UserManager.sharedManager.getRefreshFrequency()
 
-        let savedReminder = Defaults.objectForKey(USNReminderFrequencyKey) as? Int
-        let savedTimes = Defaults.objectForKey(USNBlackoutTimesKey) as? [Date]
+        let savedReminder = Defaults.object(forKey: USNReminderFrequencyKey) as? Int
+        let savedTimes = Defaults.object(forKey: USNBlackoutTimesKey) as? [Date]
 
         return !(partial && (savedReminder == nil ? true : (savedReminder! == reminder))
                          && (savedTimes == nil ? true : (savedTimes! == blackoutTimes)) )
     }
 
     private func setupNavBar() {
-        if rightButton == nil { rightButton = createBarButtonItem(lsSaveTitle, action: #selector(rightAction)) }
-        if leftButton == nil { leftButton = createBarButtonItem(lsCancelTitle, action: #selector(leftAction)) }
+        if rightButton == nil { rightButton = createBarButtonItem(title: lsSaveTitle, action: #selector(rightAction)) }
+        if leftButton == nil { leftButton = createBarButtonItem(title: lsCancelTitle, action: #selector(leftAction)) }
         self.navigationItem.rightBarButtonItem = edited ? rightButton : nil
         self.navigationItem.leftBarButtonItem = edited ? leftButton : nil
     }
@@ -142,24 +142,24 @@ class UserSettingsViewController: BaseViewController {
         }
 
         // Saving
-        if reminder != nil { Defaults.setObject(reminder!, forKey: USNReminderFrequencyKey) }
-        Defaults.setObject(blackoutTimes, forKey: USNBlackoutTimesKey)
+        if reminder != nil { Defaults.set(reminder!, forKey: USNReminderFrequencyKey) }
+        Defaults.set(blackoutTimes, forKey: USNBlackoutTimesKey)
         Defaults.synchronize()
 
-        UserManager.sharedManager.setHotWords(hotword)
-        UserManager.sharedManager.setRefreshFrequency(refresh)
+        UserManager.sharedManager.setHotWords(hotWords: hotword)
+        UserManager.sharedManager.setRefreshFrequency(frequency: refresh)
         UserManager.sharedManager.syncSettings { res in
             if !res.ok {
                 let message = res.info.hasContent ? res.info : "Unable to sync your settings remotely. Please, try later".localized
                 self.showAlert(withMessage: message)
             } else {
-                UINotifications.genericSuccessMsgOnView(self.view, msg: "Saved your settings")
+                UINotifications.genericSuccessMsgOnView(view: self.view, msg: "Saved your settings")
             }
-            self.toggleEditing(false)
+            self.toggleEditing(asEdited: false)
         }
 
         // Post to recalculate local notification firing times.
-        NSNotificationCenter.defaultCenter().postNotificationName(USNDidUpdateBlackoutNotification, object: nil)
+        NotificationCenter.defaultCenter().postNotificationName(USNDidUpdateBlackoutNotification, object: nil)
     }
 
     func rightAction(sender: UIBarButtonItem) {
@@ -170,52 +170,52 @@ class UserSettingsViewController: BaseViewController {
         if dataChanged() {
             let lsConfirmTitle = "Confirm cancel".localized
             let lsConfirmMessage = "Your changes have not been saved yet. Continue without saving?".localized
-            let confirmAlert = UIAlertController(title: lsConfirmTitle, message: lsConfirmMessage, preferredStyle: UIAlertControllerStyle.Alert)
-            confirmAlert.addAction(UIAlertAction(title: "Yes".localized, style: .Default, handler: { (action: UIAlertAction!) in
+            let confirmAlert = UIAlertController(title: lsConfirmTitle, message: lsConfirmMessage, preferredStyle: UIAlertControllerStyle.alert)
+            confirmAlert.addAction(UIAlertAction(title: "Yes".localized, style: .default, handler: { (action: UIAlertAction!) in
                 self.doReset()
-                self.toggleEditing(false)
+                self.toggleEditing(asEdited: false)
             }))
-            confirmAlert.addAction(UIAlertAction(title: "No".localized, style: .Cancel, handler: nil))
-            presentViewController(confirmAlert, animated: true, completion: nil)
+            confirmAlert.addAction(UIAlertAction(title: "No".localized, style: .cancel, handler: nil))
+            present(confirmAlert, animated: true, completion: nil)
         } else {
-            self.toggleEditing(false)
+            self.toggleEditing(asEdited: false)
         }
     }
 
     func setupFormer() {
         tableView.backgroundView = UIImageView(image: UIImage(named: "university_logo"))
-        tableView.backgroundView?.contentMode = .Center
+        tableView.backgroundView?.contentMode = .center
         tableView.backgroundView?.layer.opacity = 0.02
 
         former = Former(tableView: tableView)
 
-        let mediumTimeNoDate: Date -> String = { date in
+        let mediumTimeNoDate: (Date) -> String = { date in
             let dateFormatter = DateFormatter()
             dateFormatter.locale = .currentLocale()
-            dateFormatter.timeStyle = .MediumStyle
+            dateFormatter.timeStyle = .medium
             dateFormatter.dateStyle = .NoStyle
-            return dateFormatter.stringFromDate(date)
+            return dateFormatter.string(from: date)
         }
 
         let appRows = [
             ("Siri Hotword", hotword),
             ("Cloud Sync Rate (secs)", "\(refresh)")
-            ].enumerate().map { (index: Int, rowSpec: (String, String)) in
+            ].enumerated().map { (index: Int, rowSpec: (String, String)) in
             return TextFieldRowFormer<FormTextFieldCell>() {
-                $0.backgroundColor = .clearColor()
+                $0.backgroundColor = .clearColor
                 $0.titleLabel.text = rowSpec.0
-                $0.titleLabel.textColor = .whiteColor()
+                $0.titleLabel.textColor = .whiteColor
                 $0.titleLabel.font = UIFont(name: "GothamBook", size: userSettingsFontSize)!
-                $0.textField.textColor = .whiteColor()
+                $0.textField.textColor = .whiteColor
                 $0.textField.font = UIFont(name: "GothamBook", size: userSettingsFontSize)!
-                $0.textField.returnKeyType = .Next
-                $0.textField.textAlignment = .Right
+                $0.textField.returnKeyType = .next
+                $0.textField.textAlignment = .right
                 }.configure {
                     let paragraphStyle = NSMutableParagraphStyle()
-                    paragraphStyle.alignment = .Right
+                    paragraphStyle.alignment = .right
 
                     let placeholderAttrs: [String: AnyObject] = [
-                        NSForegroundColorAttributeName: UIColor.lightGrayColor(),
+                        NSForegroundColorAttributeName: UIColor.lightGrayColor,
                         NSParagraphStyleAttributeName: paragraphStyle
                     ]
 
@@ -223,9 +223,9 @@ class UserSettingsViewController: BaseViewController {
                 }.onTextChanged {
                     self.toggleEditing()
                     if index == 0 {
-                        UserManager.sharedManager.setHotWords($0)
+                        UserManager.sharedManager.setHotWords(hotWords: $0)
                     } else if index == 1 {
-                        UserManager.sharedManager.setRefreshFrequency(Int($0) ?? 600)
+                        UserManager.sharedManager.setRefreshFrequency(frequency: Int($0) ?? 600)
                     }
             }
         }
@@ -235,11 +235,11 @@ class UserSettingsViewController: BaseViewController {
 
         let reminderRow =
             InlinePickerRowFormer<FormInlinePickerCell, Int>() {
-                $0.backgroundColor = .clearColor()
+                $0.backgroundColor = .clearColor
                 $0.titleLabel.text = "Data Entry Reminder"
-                $0.titleLabel.textColor = .whiteColor()
+                $0.titleLabel.textColor = .whiteColor
                 $0.titleLabel.font = UIFont(name: "GothamBook", size: userSettingsFontSize)!
-                $0.displayLabel.textColor = .lightGrayColor()
+                $0.displayLabel.textColor = .lightGrayColor
                 $0.displayLabel.font = UIFont(name: "GothamBook", size: userSettingsFontSize)!
                 }.configure {
                     $0.pickerItems = UserSettingsViewController.reminderOptions.map {
@@ -252,10 +252,10 @@ class UserSettingsViewController: BaseViewController {
                         else               { label = "\($0) minutes" }
                         return InlinePickerItem(title: label, value: $0)
                     }
-                    $0.displayEditingColor = .whiteColor()
+                    $0.displayEditingColor = .whiteColor
             }
 
-        let reminderIndex = self.reminder == nil ? 0 : (UserSettingsViewController.reminderOptions.indexOf(self.reminder) ?? 0)
+        let reminderIndex = self.reminder == nil ? 0 : (UserSettingsViewController.reminderOptions.index(of: self.reminder) ?? 0)
         reminderRow.selectedRow = reminderIndex
         reminderRow.update()
 
@@ -266,20 +266,20 @@ class UserSettingsViewController: BaseViewController {
 
         reminderInput = reminderRow
 
-        let blackoutTimesRows = ["Blackout Start Time", "Blackout End Time"].enumerate().map { (index, rowName) in
+        let blackoutTimesRows = ["Blackout Start Time", "Blackout End Time"].enumerated().map { (index, rowName) in
             return InlineDatePickerRowFormer<FormInlineDatePickerCell>() {
-                $0.backgroundColor = .clearColor()
+                $0.backgroundColor = .clear
                 $0.titleLabel.text = rowName
-                $0.titleLabel.textColor = .whiteColor()
+                $0.titleLabel.textColor = .white
                 $0.titleLabel.font = UIFont(name: "GothamBook", size: userSettingsFontSize)!
-                $0.displayLabel.textColor = .lightGrayColor()
+                $0.displayLabel.textColor = .lightGrayColor
                 $0.displayLabel.font = UIFont(name: "GothamBook", size: userSettingsFontSize)!
                 }.inlineCellSetup {
-                    $0.datePicker.datePickerMode = .Time
+                    $0.datePicker.datePickerMode = .time
                     $0.datePicker.minuteInterval = 5
                     $0.datePicker.date = self.blackoutTimes[index]
                 }.configure {
-                    $0.displayEditingColor = .whiteColor()
+                    $0.displayEditingColor = .whiteColor
                     $0.date = self.blackoutTimes[index]
                 }.displayTextFromDate(mediumTimeNoDate)
         }
@@ -295,15 +295,15 @@ class UserSettingsViewController: BaseViewController {
 
         let headers = ["Application", "Notifications", "Debug"].map { sectionName in
             return LabelViewFormer<FormLabelHeaderView> {
-                $0.contentView.backgroundColor = .clearColor()
-                $0.titleLabel.backgroundColor = .clearColor()
-                $0.titleLabel.textColor = .lightGrayColor()
+                $0.contentView.backgroundColor = .clearColor
+                $0.titleLabel.backgroundColor = .clearColor
+                $0.titleLabel.textColor = .lightGrayColor
                 $0.titleLabel.font = UIFont(name: "GothamBook", size: userSettingsHeaderFontSize)!
 
                 if sectionName == "Debug" {
                     let button: MCButton = {
-                        let button = MCButton(frame: CGRectMake(0, 0, 66, 66), buttonStyle: .Rounded)
-                        button.buttonColor = .clearColor()
+                        let button = MCButton(frame: CGRect(0, 0, 66, 66), buttonStyle: .rounded)
+                        button?.buttonColor = .clearColor()
                         button.shadowColor = .clearColor()
                         button.shadowHeight = 0
                         button.setImage(UIImage(named: "icon-debug-refresh"), forState: .Normal)

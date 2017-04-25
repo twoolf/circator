@@ -21,12 +21,12 @@ class ConsentViewController: BaseViewController {
         if let pdfstr = consentDict["consent"] as? String,
             let pdfdata = NSData(base64Encoded: pdfstr, options: NSData.Base64DecodingOptions())
         {
-            let url = NSURL.fileURLWithPath(Bundle.main.bundlePath)
-            webView.loadData(pdfdata as Data, MIMEType: "application/pdf", textEncodingName: "UTF-8", baseURL: url)
+            let url = NSURL.fileURL(withPath: Bundle.main.bundlePath)
+            webView.load(pdfdata as Data, mimeType: "application/pdf", textEncodingName: "UTF-8", baseURL: url)
         } else {
             let label = UILabel()
             label.font = UIFont(name: "GothamBook", size: 20)!
-            label.textColor = .blackColor
+            label.textColor = .black
             label.textAlignment = .center
             label.text = "Unable to show consent PDF"
 

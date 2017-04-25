@@ -15,7 +15,7 @@ import AwesomeCache
 import SwiftDate
 
 private let WCActivityKey = "Circ"
-private let WCHeartRateKey = HKQuantityTypeIdentifierHeartRate
+private let WCHeartRateKey = HKQuantityTypeIdentifier.heartRate
 private let WCStepCountKey = "HKQuantityTypeIdentifierStepCount"
 
 public let CDMNeedsRefresh = "CDMNeedsRefresh"
@@ -25,7 +25,7 @@ public let CDMNeedsRefresh = "CDMNeedsRefresh"
 // ii. the previous event timestamp.
 // iii. a disjoint window dictionary of the max count, the total AUC and the number of level changes.
 public typealias CycleWindows = [Date: [(Int, Double, Int)]]
-public typealias CycleAccum = (Bool, Date!, CycleWindows)
+public typealias CycleAccum = (Bool, Date?, CycleWindows)
 
 class CycleWindowInfo : NSObject, NSCoding {
     static var winValuesKey  = "winValues"
@@ -44,10 +44,10 @@ class CycleWindowInfo : NSObject, NSCoding {
     }
 
     required internal convenience init?(coder aDecoder: NSCoder) {
-        guard let entries = aDecoder.decodeObjectForKey(CycleWindowInfo.winValuesKey) as? [Double] else { return nil }
-        guard let colors = aDecoder.decodeObjectForKey(CycleWindowInfo.winColorsKey) as? [NSUIColor] else { return nil }
-        guard let mpos = aDecoder.decodeObjectForKey(CycleWindowInfo.winMetaPKey) as? [Bool] else { return nil }
-        guard let mval = aDecoder.decodeObjectForKey(CycleWindowInfo.winMetaVKey) as? [AnyObject] else { return nil }
+        guard let entries = aDecoder.decodeObject(forKey: CycleWindowInfo.winValuesKey) as? [Double] else { return nil }
+        guard let colors = aDecoder.decodeObject(forKey: CycleWindowInfo.winColorsKey) as? [NSUIColor] else { return nil }
+        guard let mpos = aDecoder.decodeObject(forKey: CycleWindowInfo.winMetaPKey) as? [Bool] else { return nil }
+        guard let mval = aDecoder.decodeObject(forKey: CycleWindowInfo.winMetaVKey) as? [AnyObject] else { return nil }
 
         var i: Int = 0
         let metadata: [AnyObject?] = mpos.map { if $0 { return nil } else { i += 1; return mval[i-1] } }
@@ -59,10 +59,10 @@ class CycleWindowInfo : NSObject, NSCoding {
         let mpos : [Bool] = winMetadata.map { $0 == nil }
         let mval : [AnyObject] = winMetadata.flatMap { $0 }
 
-        aCoder.encodeObject(winEntries, forKey: CycleWindowInfo.winValuesKey)
-        aCoder.encodeObject(winColors, forKey: CycleWindowInfo.winColorsKey)
-        aCoder.encodeObject(mpos, forKey: CycleWindowInfo.winMetaPKey)
-        aCoder.encodeObject(mval, forKey: CycleWindowInfo.winMetaVKey)
+        aCoder.encode(winEntries, forKey: CycleWindowInfo.winValuesKey)
+        aCoder.encode(winColors, forKey: CycleWindowInfo.winColorsKey)
+        aCoder.encode(mpos, forKey: CycleWindowInfo.winMetaPKey)
+        aCoder.encode(mval, forKey: CycleWindowInfo.winMetaVKey)
     }
 }
 
@@ -91,31 +91,31 @@ public class CycleDataModel : NSObject {
             fatalError("Unable to create CycleDataModel window cache.")
         }
         super.init()
-        NSNotificationCenter.defaultCenter().addObserver(self, selector: #selector(invalidateActivityEntries), name: HMDidUpdateCircadianEvents, object: nil)
+        NotificationCenter.defaultCenter.addObserver(self, selector: #selector(invalidateActivityEntries), name: HMDidUpdateCircadianEvents, object: nil)
         MCHealthManager.sharedManager.measureInvalidationsByType.forEach {
-            NSNotificationCenter.defaultCenter().addObserver(self, selector: #selector(invalidateMeasureEntries), name: HMDidUpdateMeasuresPfx + $0, object: nil)
+            NotificationCenter.defaultCenter().addObserver(self, selector: #selector(invalidateMeasureEntries), name: HMDidUpdateMeasuresPfx + $0, object: nil)
         }
     }
 
-    public func updateData(completion: NSError? -> Void) {
-        let end = Date().endOf(.Day)
+    public func updateData(completion: (NSError?) -> Void) {
+        let end = Date().endOf(component: .Day)
         let start = (end - 1.months).startOf(.Day)
 
         var someError: [NSError?] = []
-        let group = dispatch_group_create()
+        let group = DispatchGroup()
 
         let initAcc: CycleAccum = (true, nil, [:])
-        let finalizer: CycleAccum -> CycleWindows = { $0.2 }
+        let finalizer: (CycleAccum) -> CycleWindows = { $0.2 }
 
         let initWinAcc = [(0, 0.0, 0), (0, 0.0, 0), (0, 0.0, 0)]
 
-        let eventIndex: CircadianEvent -> Int = { e in
+        let eventIndex: (CircadianEvent) -> Int = { e in
             switch e {
-            case .Sleep:
+            case .sleep:
                 return 0
-            case .Meal(_):
+            case .meal(_):
                 return 1
-            case .Exercise(_):
+            case .exercise(_):
                 return 2
             default:
                 return -1
@@ -129,7 +129,7 @@ public class CycleDataModel : NSObject {
 
                 if evtIndex >= 0 {
                     // Loop over windows spanned by the event, adding the contribution of the event to each window.
-                    var eWindow = floorDate(eStart, granularity: Double(self.cycleWindowSize))
+                    var eWindow = floorDate(date: eStart, granularity: Double(self.cycleWindowSize))
                     var firstStep = true
 
                     while eWindow < e.0 {
@@ -158,7 +158,7 @@ public class CycleDataModel : NSObject {
         }
 
         // Retrieve activity entries from the cache.
-        dispatch_group_enter(group)
+        group.enter()
         cachedWindows.setObjectForKey(WCActivityKey, cacheBlock: {
             (success, failure) in
             MCHealthManager.sharedManager.fetchAggregatedCircadianEvents(
@@ -190,19 +190,19 @@ public class CycleDataModel : NSObject {
         })
 
         // Retrieve measure entries from the cache.
-        let hrType = HKSampleType.quantityTypeForIdentifier(HKQuantityTypeIdentifierHeartRate)!
-        let scType = HKSampleType.quantityTypeForIdentifier(HKQuantityTypeIdentifierStepCount)!
+        let hrType = HKSampleType.quantityType(forIdentifier: HKQuantityTypeIdentifierHeartRate)!
+        let scType = HKSampleType.quantityType(forIdentifier: HKQuantityTypeIdentifierStepCount)!
 
         let predicate = HKQuery.predicateForSamplesWithStartDate(start, endDate: end, options: .None)
-        let interval = DateComponents()
+        var interval = DateComponents()
         interval.minute = 15
 
-        let measureQueries : [(HKQuantityType, HKStatisticsOptions, String)] = [(hrType, .DiscreteAverage, WCHeartRateKey), (scType, .CumulativeSum, WCStepCountKey)]
+        let measureQueries : [(HKQuantityType, HKStatisticsOptions, String)] = [(hrType, .DiscreteAverage, WCHeartRateKey.rawValue), (scType, .CumulativeSum, WCStepCountKey)]
 
         measureQueries.forEach { (sampleType, aggOp, cacheKey) in
-            dispatch_group_enter(group)
+            group.enter()
 
-            cachedWindows.setObjectForKey(cacheKey, cacheBlock: { (success, failure) in
+            cachedWindows.setObject(forKey: cacheKey, cacheBlock: { (success, failure) in
                 let query = HKStatisticsCollectionQuery(quantityType: sampleType, quantitySamplePredicate: predicate, options: aggOp, anchorDate: start, intervalComponents: interval)
 
                 query.initialResultsHandler = { query, results, error in
@@ -232,7 +232,7 @@ public class CycleDataModel : NSObject {
             })
         }
 
-        dispatch_group_notify(group, dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_BACKGROUND, 0)) {
+        dispatch_group_notify(group, DispatchQueue.global(DispatchQueue.GlobalQueuePriority.background, 0)) {
             guard someError.count == 0 else {
                 completion(someError[0])
                 return

@@ -2,7 +2,7 @@
 //  ComparisonDataModel.swift
 //  MetabolicCompass
 //
-//  Created by Yanif Ahmad on 12/8/16.
+//  Created by Yanif Ahmad on 12/8/16. 
 //  Copyright © 2016 Yanif Ahmad, Tom Woolf. All rights reserved.
 //
 
@@ -19,7 +19,7 @@ public class ComparisonDataModel : NSObject {
     public var recentSamples: [HKSampleType: [MCSample]] = [:]
     public var recentAggregates: [HKSampleType: [MCSample]] = [:]
 
-    public func updateIndividualData(types: [HKSampleType], completion: NSError? -> Void) {
+    public func updateIndividualData(types: [HKSampleType], completion: @escaping NSError? -> Void) {
         AccountManager.shared.withHKCalAuth {
             log.debug("Fetching recent samples", feature: "comparison")
             MCHealthManager.sharedManager.fetchMostRecentSamples(ofTypes: types) { (samplesByType, error) -> Void in

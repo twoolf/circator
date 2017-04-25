@@ -2,7 +2,7 @@
 //  QueryViewController.swift
 //  MetabolicCompass
 //
-//  Created by Yanif Ahmad on 12/19/15.
+//  Created by Yanif Ahmad on 12/19/15. 
 //  Copyright © 2015 Yanif Ahmad, Tom Woolf. All rights reserved.
 //
 

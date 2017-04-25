@@ -1,6 +1,6 @@
 //
 //  DashboardManageBalanceController.swift
-//  MetabolicCompass
+//  MetabolicCompass 
 //
 //  Created by Inaiur on 5/13/16.
 //  Copyright © 2016 Yanif Ahmad, Tom Woolf. All rights reserved.
@@ -51,7 +51,7 @@ class DashboardManageBalanceController: UIViewController, UITableViewDelegate, U
     override func viewWillAppear(animated: Bool) {
         super.viewWillAppear(animated)
 
-        NSNotificationCenter.defaultCenter().addObserver(self, selector: #selector(contentDidChange), name: PMDidUpdateBalanceSampleTypesNotification, object: nil)
+        NotificationCenter.defaultCenter().addObserver(self, selector: #selector(contentDidChange), name: PMDidUpdateBalanceSampleTypesNotification, object: nil)
     }
     
     override func viewWillDisappear(animated: Bool) {

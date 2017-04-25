@@ -3,7 +3,7 @@
 //  MetabolicCompass
 //
 //  Created by Inaiur on 5/12/16.
-//  Copyright © 2016 Yanif Ahmad, Tom Woolf. All rights reserved.
+//  Copyright © 2016 Yanif Ahmad, Tom Woolf. All rights reserved. 
 //
 
 import UIKit
@@ -42,13 +42,13 @@ class MetabolicChartRender: RadarChartRenderer {
         internal static let RAD2DEG = 180.0 / M_PI
     }
     
-    override func drawValues(context context: CGContext) {
+    override func drawValues(context: CGContext) {
         super.drawValues(context: context)
         self.drawPoints(context: context)
     }
     
     
-    func getPosition(center center: CGPoint, dist: CGFloat, angle: CGFloat) -> CGPoint
+    func getPosition(center: CGPoint, dist: CGFloat, angle: CGFloat) -> CGPoint
     {
         return CGPoint(
             x: center.x + dist * cos(angle * Math.FDEG2RAD),
@@ -56,7 +56,7 @@ class MetabolicChartRender: RadarChartRenderer {
         )
     }
     
-    override func drawExtras(context context: CGContext) {
+    override func drawExtras(context: CGContext) {
         
         guard let
             chart = chart
@@ -71,7 +71,8 @@ class MetabolicChartRender: RadarChartRenderer {
         context.beginPath()
         context.addEllipse(in: CGRect(center.x - radius, center.y - radius, radius * 2.0, radius * 2.0))
         context.setFillColor(self.centerCircleColor.cgColor)
-        CGContextEOFillPath(context)
+//        context.setFillPath(context)
+        context.fillPath()
         
         context.restoreGState()
         
@@ -79,7 +80,7 @@ class MetabolicChartRender: RadarChartRenderer {
         self.drawWeb(context: context)
     }
     
-    override func drawWeb(context context: CGContext)
+    override func drawWeb(context: CGContext)
     {
         guard let
             chart = chart as? MetabolicRadarChartView,
@@ -107,7 +108,7 @@ class MetabolicChartRender: RadarChartRenderer {
         
         var _webLineSegmentsBuffer = [CGPoint](repeating: CGPoint(), count: 2)
         
-        for i in 0.stride(to: data.xValCount, by: xIncrements)
+        for i in stride(from: 0, to: data.dataSetCount, by: xIncrements)
         {
             let p = self.getPosition(
                 center: center,
@@ -119,10 +120,10 @@ class MetabolicChartRender: RadarChartRenderer {
             _webLineSegmentsBuffer[1].x = p.x
             _webLineSegmentsBuffer[1].y = p.y
             
-            CGContextStrokeLineSegments(context, _webLineSegmentsBuffer, 2)
+//            strokeLineSegments(context, _webLineSegmentsBuffer, 2)
         }
         
-        // draw the inner-web
+        // draw the inner-web  
         context.setLineWidth(chart.innerWebLineWidth)
         context.setStrokeColor(chart.webColor.cgColor)
         context.setAlpha(chart.webAlpha)
@@ -141,7 +142,7 @@ class MetabolicChartRender: RadarChartRenderer {
         context.restoreGState()
     }
     
-    func drawIcons(context context: CGContext)
+    func drawIcons(context: CGContext)
     {
         guard let
             chart = chart,
@@ -178,16 +179,19 @@ class MetabolicChartRender: RadarChartRenderer {
         if let set = dataSet
         {
             var index = -1
-            for i in 0.stride(to: data.xValCount, by: xIncrements)
-            {
+            let (first, last, interval) = (0, data.dataSetCount, xIncrements)
+            for i in stride(from: first, to: last, by: interval) {
+//                for i in 0.stride(
+//            {
                 index += 1
-                let entry = set.entryForXIndex(index)
-                if entry?.xIndex != index
-                {
+//                let entry = set.entryForXIndex(index)
+//                if entry?.xIndex != index
+//                    if entry?.
+                do {
                     continue
                 }
                 
-                guard let dataEntry = entry as? MetabolicDataEntry else {
+                guard let dataEntry = entry.self as? MetabolicDataEntry else {
                     continue
                 }
                 
@@ -200,7 +204,7 @@ class MetabolicChartRender: RadarChartRenderer {
                     dist: CGFloat(chart.yRange) * factor + self.imageIndent,
                     angle: sliceangle * CGFloat(i) + rotationangle)
                 
-                image.drawInRect(CGRect(p.x - image.size.width/2, p.y - image.size.height/2, image.size.width, image.size.height))
+                image.draw(in: CGRect(p.x - image.size.width/2, p.y - image.size.height/2, image.size.width, image.size.height))
             }
         }
         
@@ -211,7 +215,7 @@ class MetabolicChartRender: RadarChartRenderer {
         context.restoreGState()
     }
     
-    func drawPoints(context context: CGContext)
+    func drawPoints(context: CGContext)
     {
         guard let
             chart = self.chart,
@@ -252,14 +256,17 @@ class MetabolicChartRender: RadarChartRenderer {
         
         for i in 0...set.entryCount {
             
-            let e = set.entryForXIndex(i)
-            if e?.xIndex != i
+//            let e = set.entryForXIndex(i)
+            let e = set.entryForIndex(i)
+//            if e?.xIndex != i
+                if e?.index(ofAccessibilityElement: i) != i
             {
                 continue
             }
             
             let j = set.entryIndex(entry: e!)
-            let y = (e!.value - chart.chartYMin)
+//            let y = (e!.value - chart.chartYMin)
+            let y = (e!.y - chart.chartYMin)
             
             if (y.isNaN)
             {
@@ -274,8 +281,8 @@ class MetabolicChartRender: RadarChartRenderer {
             
             let _highlightPointBuffer = self.getPosition(
                 center: center,
-                dist: CGFloat(y) * factor * phaseY,
-                angle: sliceangle * CGFloat(j) * phaseX + chart.rotationAngle)
+                dist: CGFloat(y) * factor * CGFloat(phaseY),
+                angle: sliceangle * CGFloat(j) * CGFloat(phaseX) + chart.rotationAngle)
             
             
             if (!_highlightPointBuffer.x.isNaN && !_highlightPointBuffer.y.isNaN)
@@ -296,7 +303,7 @@ class MetabolicChartRender: RadarChartRenderer {
     }
    
     internal func drawHighlightCircle2(
-        context context: CGContext,
+        context: CGContext,
                 atPoint point: CGPoint,
                         outerRadius: CGFloat,
                         fillColor: NSUIColor?,
@@ -310,7 +317,9 @@ class MetabolicChartRender: RadarChartRenderer {
             context.beginPath()
             context.addEllipse(in: CGRect(point.x - outerRadius, point.y - outerRadius, outerRadius * 2.0, outerRadius * 2.0))
             context.setFillColor(fillColor.cgColor)
-            CGContextEOFillPath(context)
+//            context.setFillPath(context)
+            context.fillPath()
+//            CGContextEOFillPath(context)
         }
         
         if let strokeColor = strokeColor

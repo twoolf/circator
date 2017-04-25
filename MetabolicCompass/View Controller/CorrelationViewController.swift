@@ -3,7 +3,7 @@
 //  MetabolicCompass
 //
 //  Created by Sihao Lu on 10/29/15.
-//  Copyright © 2015 Yanif Ahmad, Tom Woolf. All rights reserved.
+//  Copyright © 2015 Yanif Ahmad, Tom Woolf. All rights reserved.    
 //
 
 import UIKit
@@ -34,11 +34,11 @@ class CorrelationViewController: UIViewController, ChartViewDelegate {
     
     lazy var correlationLabel: UILabel = {
         let label: UILabel = UILabel()
-        label.font = UIFont.systemFontOfSize(16, weight: UIFontWeightSemibold)
+        label.font = UIFont.systemFont(ofSize: 16, weight: UIFontWeightSemibold)
         label.textColor = Theme.universityDarkTheme.backgroundColor
-        label.textAlignment = .Center
+        label.textAlignment = .center
         label.text = NSLocalizedString("Attribute 2 Relative to Increasing Attribute 1", comment: "Plot view section title label")
-        label.lineBreakMode = .ByWordWrapping
+        label.lineBreakMode = .byWordWrapping
         label.numberOfLines = 0
         return label
     }()
@@ -53,24 +53,27 @@ class CorrelationViewController: UIViewController, ChartViewDelegate {
         chart.doubleTapToZoomEnabled = false
         chart.drawGridBackgroundEnabled = false
         chart.leftAxis.labelTextColor = Theme.universityDarkTheme.backgroundColor
-        chart.leftAxis.valueFormatter = SampleFormatter.numberFormatter
-        chart.leftAxis.startAtZeroEnabled = false
+//        chart.leftAxis.valueFormatter = SampleFormatter.numberFormatter
+        chart.leftAxis.valueFormatter = DefaultAxisValueFormatter()
+//        chart.leftAxis.startAtZeroEnabled = false
+        chart.leftAxis.axisMinimum = 0.0
         chart.rightAxis.enabled = true
-        chart.rightAxis.startAtZeroEnabled = false
+//        chart.rightAxis.startAtZeroEnabled = false
+        chart.rightAxis.axisMinimum = 0.0
         chart.rightAxis.labelTextColor = Theme.universityDarkTheme.backgroundColor
-        chart.rightAxis.valueFormatter = SampleFormatter.numberFormatter
-        chart.xAxis.labelPosition = .Bottom
+        chart.rightAxis.valueFormatter = DefaultAxisValueFormatter()
+        chart.xAxis.labelPosition = .bottom
         chart.xAxis.avoidFirstLastClippingEnabled = true
         chart.xAxis.drawAxisLineEnabled = true
         chart.xAxis.drawGridLinesEnabled = true
         chart.xAxis.labelTextColor = Theme.universityDarkTheme.backgroundColor
-        chart.legend.position = .BelowChartCenter
-        chart.legend.form = .Circle
-        chart.legend.font = UIFont.systemFontOfSize(UIFont.smallSystemFontSize())
+        chart.legend.position = .belowChartCenter
+        chart.legend.form = .circle
+        chart.legend.font = UIFont.systemFont(ofSize: UIFont.smallSystemFontSize)
         chart.legend.textColor = Theme.universityDarkTheme.backgroundColor
         return chart
     }()
-
+ 
     var lspec: PlotSpec!
     var rspec: PlotSpec!
 
@@ -80,8 +83,8 @@ class CorrelationViewController: UIViewController, ChartViewDelegate {
                 let lsp = self.lspec ?? .PlotPredicate("", nil)
                 let rsp = self.rspec ?? .PlotPredicate("", nil)
 
-                let attr1 = self.attrNameOfSpec(lsp, name: HMConstants.sharedInstance.healthKitShortNames[self.sampleTypes[0].identifier]!)
-                let attr2 = self.attrNameOfSpec(rsp, name: HMConstants.sharedInstance.healthKitShortNames[self.sampleTypes[1].identifier]!)
+                let attr1 = self.attrNameOfSpec(spec: lsp, name: HMConstants.sharedInstance.healthKitShortNames[self.sampleTypes[0].identifier]!)
+                let attr2 = self.attrNameOfSpec(spec: rsp, name: HMConstants.sharedInstance.healthKitShortNames[self.sampleTypes[1].identifier]!)
                 self.correlationLabel.text = NSLocalizedString("\(attr2) Relative to Increasing \(attr1)", comment: "Plot view section title label")
 
                 Async.background {
@@ -90,13 +93,13 @@ class CorrelationViewController: UIViewController, ChartViewDelegate {
                         MCHealthManager.sharedManager.fetchMaxFastingTimes { (aggregates, error) in
                             guard (error == nil) && !aggregates.isEmpty else {
                                 Async.main {
-                                    if let idx = self.errorIndex, let pv = self.parentViewController as? PagesController {
+                                    if let idx = self.errorIndex, let pv = self.parent as? PagesController {
                                         pv.goTo(idx)
                                     }
                                 }
                                 return
                             }
-                            self.correlateFastingSelf(aggregates)
+                            self.correlateFastingSelf(aggregates: aggregates)
                         }
 
                     case let (.PlotFasting, .PlotPredicate(_, predicate)):
@@ -104,13 +107,13 @@ class CorrelationViewController: UIViewController, ChartViewDelegate {
                             (zipped, error) -> Void in
                             guard (error == nil) && !zipped.isEmpty else {
                                 Async.main {
-                                    if let idx = self.errorIndex, let pv = self.parentViewController as? PagesController {
+                                    if let idx = self.errorIndex, let pv = self.parent as? PagesController {
                                         pv.goTo(idx)
                                     }
                                 }
                                 return
                             }
-                            self.correlateFasting(zipped)
+                            self.correlateFasting(zipped: zipped)
                         }
 
                     case let (.PlotPredicate(_, predicate), .PlotFasting):
@@ -118,13 +121,13 @@ class CorrelationViewController: UIViewController, ChartViewDelegate {
                             (zipped, error) -> Void in
                             guard (error == nil) && !zipped.isEmpty else {
                                 Async.main {
-                                    if let idx = self.errorIndex, let pv = self.parentViewController as? PagesController {
+                                    if let idx = self.errorIndex, let pv = self.parent as? PagesController {
                                         pv.goTo(idx)
                                     }
                                 }
                                 return
                             }
-                            self.correlateFasting(zipped, flip: true)
+                            self.correlateFasting(zipped: zipped, flip: true)
                         }
 
                     case let (.PlotPredicate(_, lpred), .PlotPredicate(_, rpred)):
@@ -132,13 +135,13 @@ class CorrelationViewController: UIViewController, ChartViewDelegate {
                             (stat1, stat2, error) -> Void in
                             guard (error == nil) && !(stat1.isEmpty || stat2.isEmpty) else {
                                 Async.main {
-                                    if let idx = self.errorIndex, let pv = self.parentViewController as? PagesController {
+                                    if let idx = self.errorIndex, let pv = self.parent as? PagesController {
                                         pv.goTo(idx)
                                     }
                                 }
                                 return
                             }
-                            self.correlateSamplePair(stat1, stat2: stat2)
+                            self.correlateSamplePair(stat1: stat1, stat2: stat2)
                         }
                     }
                 }
@@ -160,62 +163,64 @@ class CorrelationViewController: UIViewController, ChartViewDelegate {
     func specLabels() -> [String] {
         let lsp = self.lspec ?? .PlotPredicate("", nil)
         let rsp = self.rspec ?? .PlotPredicate("", nil)
-        return [attrNameOfSpec(lsp, name: sampleTypes[0].displayText!), attrNameOfSpec(rsp, name: sampleTypes[1].displayText!)]
+        return [attrNameOfSpec(spec: lsp, name: sampleTypes[0].displayText!), attrNameOfSpec(spec: rsp, name: sampleTypes[1].displayText!)]
 
     }
     func correlateSamplePair(stat1: [MCSample], stat2: [MCSample]) {
         let analyzer = CorrelationDataAnalyzer(labels: specLabels(), samples: [stat1, stat2])!
-        self.plotCorrelate(analyzer)
+        self.plotCorrelate(analyzer: analyzer)
     }
 
     func correlateFastingSelf(aggregates: [(Date, Double)]) {
         let analyzer = CorrelationDataAnalyzer(labels: specLabels(), values: [aggregates, aggregates])!
-        self.plotCorrelate(analyzer)
+        self.plotCorrelate(analyzer: analyzer)
     }
 
     func correlateFasting(zipped: [(Date, Double, MCSample)], flip: Bool = false) {
         let labels = specLabels()
         let flippedLabels = [labels[1], labels[0]]
         let analyzer = CorrelationDataAnalyzer(labels: flip ? flippedLabels : labels, zipped: zipped)!
-        self.plotCorrelate(analyzer)
+        self.plotCorrelate(analyzer: analyzer)
     }
 
     func plotCorrelate(analyzer: CorrelationDataAnalyzer) {
         let configurator: ((LineChartDataSet) -> Void)? = { dataSet in
             dataSet.drawCircleHoleEnabled = false
             dataSet.circleRadius = 6
-            dataSet.valueFormatter = SampleFormatter.numberFormatter
-            dataSet.circleColors = [Theme.universityDarkTheme.complementForegroundColors!.colorWithVibrancy(0.6)!]
-            dataSet.colors = [Theme.universityDarkTheme.complementForegroundColors!.colorWithVibrancy(0.6)!]
+            dataSet.valueFormatter = DefaultValueFormatter()
+            dataSet.circleColors = [Theme.universityDarkTheme.complementForegroundColors!.colorWithVibrancy(vibrancy: 0.6)!]
+            dataSet.colors = [Theme.universityDarkTheme.complementForegroundColors!.colorWithVibrancy(vibrancy: 0.6)!]
             dataSet.lineWidth = 2
-            dataSet.fillColor = Theme.universityDarkTheme.complementForegroundColors!.colorWithVibrancy(0.6)!
-            dataSet.axisDependency = .Left
+            dataSet.fillColor = Theme.universityDarkTheme.complementForegroundColors!.colorWithVibrancy(vibrancy: 0.6)!
+            dataSet.axisDependency = .left
         }
         let configurator2: ((LineChartDataSet) -> Void)? = { dataSet in
             dataSet.drawCircleHoleEnabled = false
             dataSet.circleRadius = 6
-            dataSet.valueFormatter = SampleFormatter.numberFormatter
-            dataSet.circleColors = [Theme.universityDarkTheme.complementForegroundColors!.colorWithVibrancy(0.9)!]
-            dataSet.colors = [Theme.universityDarkTheme.complementForegroundColors!.colorWithVibrancy(0.9)!]
+//            dataSet.valueFormatter = SampleFormatter.numberFormatter
+            dataSet.valueFormatter = DefaultValueFormatter()
+            dataSet.circleColors = [Theme.universityDarkTheme.complementForegroundColors!.colorWithVibrancy(vibrancy: 0.9)!]
+            dataSet.colors = [Theme.universityDarkTheme.complementForegroundColors!.colorWithVibrancy(vibrancy: 0.9)!]
             dataSet.lineWidth = 2
-            dataSet.fillColor = Theme.universityDarkTheme.complementForegroundColors!.colorWithVibrancy(0.9)!
-            dataSet.axisDependency = .Right
+            dataSet.fillColor = Theme.universityDarkTheme.complementForegroundColors!.colorWithVibrancy(vibrancy: 0.9)!
+            dataSet.axisDependency = .right
         }
         analyzer.dataSetConfigurators = [configurator, configurator2]
         let cdata = analyzer.correlationChartData
-        self.correlationChart.data = cdata.yValCount == 0 ? nil : cdata
+//        self.correlationChart.data = cdata.yValCount == 0 ? nil : cdata
         self.correlationChart.data?.setValueTextColor(Theme.universityDarkTheme.bodyTextColor)
-        self.correlationChart.data?.setValueFont(UIFont.systemFontOfSize(10, weight: UIFontWeightThin))
+        self.correlationChart.data?.setValueFont(UIFont.systemFont(ofSize: 10, weight: UIFontWeightThin))
 
         Async.main {
-            if let idx = self.pageIndex, let pv = self.parentViewController as? PagesController {
+            if let idx = self.pageIndex, let pv = self.parent as? PagesController {
                 pv.goTo(idx)
             }
         }
 
-        Answers.logContentViewWithName("Correlate",
+        Answers.logContentView(withName: "Correlate",
             contentType: self.getSampleDescriptor(),
-            contentId: Date().toString(DateFormat.Custom("YYYY-MM-dd:HH:mm:ss")),
+//            contentId: Date().toString(DateFormat.Custom("YYYY-MM-dd:HH:mm:ss")),
+            contentId: Date().string(),
             customAttributes: nil)
     }
 
@@ -224,21 +229,22 @@ class CorrelationViewController: UIViewController, ChartViewDelegate {
         configureViews()
     }
 
-    override func viewWillAppear(animated: Bool) {
+    override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         navigationController?.setNavigationBarHidden(false, animated: false)
     }
 
-    override func viewWillDisappear(animated: Bool) {
+    override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
-        UIDevice.currentDevice().setValue(UIInterfaceOrientation.Portrait.rawValue, forKey: "orientation")
+        UIDevice.current.setValue(UIInterfaceOrientation.portrait.rawValue, forKey: "orientation")
     }
 
-    override func viewDidAppear(animated: Bool) {
+    override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
-        Answers.logContentViewWithName("Correlate",
+        Answers.logContentView(withName: "Correlate",
             contentType: getSampleDescriptor(),
-            contentId: Date().toString(DateFormat.Custom("YYYY-MM-dd:HH:mm:ss")),
+//            contentId: Date().toString(DateFormat.Custom("YYYY-MM-dd:HH:mm:ss")),
+            contentId: Date().string(),
             customAttributes: nil)
     }
 
@@ -259,22 +265,22 @@ class CorrelationViewController: UIViewController, ChartViewDelegate {
         scrollView.addSubview(correlationChart)
 
         let constraints: [NSLayoutConstraint] = [
-            correlationLabel.leadingAnchor.constraintEqualToAnchor(scrollView.layoutMarginsGuide.leadingAnchor),
-            correlationLabel.trailingAnchor.constraintEqualToAnchor(scrollView.layoutMarginsGuide.trailingAnchor),
-            correlationLabel.topAnchor.constraintEqualToAnchor(scrollView.topAnchor, constant: 12),
-            correlationChart.topAnchor.constraintEqualToAnchor(correlationLabel.bottomAnchor, constant: 8),
-            correlationChart.leadingAnchor.constraintEqualToAnchor(correlationLabel.leadingAnchor),
-            correlationChart.trailingAnchor.constraintEqualToAnchor(correlationLabel.trailingAnchor),
+            correlationLabel.leadingAnchor.constraint(equalTo: scrollView.layoutMarginsGuide.leadingAnchor),
+            correlationLabel.trailingAnchor.constraint(equalTo: scrollView.layoutMarginsGuide.trailingAnchor),
+            correlationLabel.topAnchor.constraint(equalTo: scrollView.topAnchor, constant: 12),
+            correlationChart.topAnchor.constraint(equalTo: correlationLabel.bottomAnchor, constant: 8),
+            correlationChart.leadingAnchor.constraint(equalTo: correlationLabel.leadingAnchor),
+            correlationChart.trailingAnchor.constraint(equalTo: correlationLabel.trailingAnchor),
         ]
         scrollView.addConstraints(constraints)
         correlationChart.translatesAutoresizingMaskIntoConstraints = false
-        correlationChart.heightAnchor.constraintEqualToConstant(200).active = true
+        correlationChart.heightAnchor.constraint(equalToConstant: 200).isActive = true
 
         let svconstraints : [NSLayoutConstraint] = [
-            scrollView.topAnchor.constraintEqualToAnchor(topLayoutGuide.bottomAnchor),
-            scrollView.bottomAnchor.constraintEqualToAnchor(view.bottomAnchor),
-            scrollView.leadingAnchor.constraintEqualToAnchor(view.leadingAnchor),
-            scrollView.trailingAnchor.constraintEqualToAnchor(view.trailingAnchor)
+            scrollView.topAnchor.constraint(equalTo: topLayoutGuide.bottomAnchor),
+            scrollView.bottomAnchor.constraint(equalTo: view.bottomAnchor),
+            scrollView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
+            scrollView.trailingAnchor.constraint(equalTo: view.trailingAnchor)
         ]
         view.addConstraints(svconstraints)
     }
@@ -283,7 +289,7 @@ class CorrelationViewController: UIViewController, ChartViewDelegate {
         if sampleTypes == nil {
             return ""
         }
-        return sampleTypes.reduce("", combine: { (acc, t) in acc + ":" + t.identifier })
+        return sampleTypes.reduce("", { (acc, t) in acc + ":" + t.identifier })
     }
 
 }

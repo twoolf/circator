@@ -16,26 +16,26 @@ public class UIComponents {
 
     static public func createLabelledComponent<T>(title: String, attrs: [String: AnyObject]? = nil,
                                                   labelOnTop: Bool = true, labelFontSize: CGFloat, labelSpacing: CGFloat = 8.0,
-                                                  stackAlignment: UIStackViewAlignment = .Fill, value: T, constructor: T -> UIView) -> UIStackView
+                                                  stackAlignment: UIStackViewAlignment = .fill, value: T, constructor: (T) -> UIView) -> UIStackView
     {
         let desc : UILabel = {
             let label = UILabel()
             label.font = UIFont(name: "GothamBook", size: labelFontSize)!
-            label.textColor = .lightGrayColor()
+            label.textColor = .lightGray
 
             let aString = NSMutableAttributedString(string: title, attributes: attrs)
 
             let paragraphStyle = NSMutableParagraphStyle()
             paragraphStyle.lineSpacing = 5.0
-            paragraphStyle.alignment = .Center
+            paragraphStyle.alignment = .center
             aString.addAttribute(NSParagraphStyleAttributeName, value: paragraphStyle, range: NSMakeRange(0, aString.length))
 
             label.attributedText = aString
 
-            label.lineBreakMode = .ByWordWrapping
+            label.lineBreakMode = .byWordWrapping
             label.numberOfLines = 0
             label.sizeToFit()
-            label.textAlignment = .Center
+            label.textAlignment = .center
 
             return label
         }()
@@ -44,8 +44,8 @@ public class UIComponents {
 
         let stack: UIStackView = {
             let stack = UIStackView(arrangedSubviews: labelOnTop ? [desc, component] : [component, desc])
-            stack.axis = .Vertical
-            stack.distribution = UIStackViewDistribution.Fill
+            stack.axis = .vertical
+            stack.distribution = UIStackViewDistribution.fill
             stack.alignment = stackAlignment
             stack.spacing = labelSpacing
             return stack
@@ -67,12 +67,12 @@ public class UIComponents {
                                          labelOnTop: Bool = true, labelFontSize: CGFloat, labelSpacing: CGFloat = 8.0,
                                          value: Double, unit: String) -> UIStackView
     {
-        return UIComponents.createLabelledComponent(title, attrs: titleAttrs, labelOnTop: labelOnTop, labelFontSize: labelFontSize,
+        return UIComponents.createLabelledComponent(title: title, attrs: titleAttrs, labelOnTop: labelOnTop, labelFontSize: labelFontSize,
                                                     labelSpacing: labelSpacing, value: value, constructor: { value in
             let label = UILabel()
             label.font = UIFont(name: "GothamBook", size: bodyFontSize)!
-            label.textColor = .whiteColor()
-            label.textAlignment = .Center
+            label.textColor = .white
+            label.textAlignment = .center
             label.numberOfLines = 0
 
             let vString = String(format: "%.1f", value)
@@ -83,7 +83,7 @@ public class UIComponents {
 
             let paragraphStyle = NSMutableParagraphStyle()
             paragraphStyle.lineSpacing = 2.0
-            paragraphStyle.alignment = .Center
+            paragraphStyle.alignment = .center
             aString.addAttribute(NSParagraphStyleAttributeName, value: paragraphStyle, range: NSMakeRange(0, aString.length))
 
             label.attributedText = aString
@@ -96,13 +96,13 @@ public class UIComponents {
                                                      labelOnTop: Bool = true, labelFontSize: CGFloat, labelSpacing: CGFloat = 8.0,
                                                      value: Double, unit: String, prefix: String? = nil, suffix: String? = nil) -> UIStackView
     {
-        return UIComponents.createLabelledComponent(title, attrs: titleAttrs,
+        return UIComponents.createLabelledComponent(title: title, attrs: titleAttrs,
                                                     labelOnTop: labelOnTop, labelFontSize: labelFontSize, labelSpacing: labelSpacing,
                                                     value: value, constructor:
         { value in
             let label = UILabel()
             label.font = UIFont(name: "GothamBook", size: bodyFontSize)!
-            label.textColor = .whiteColor()
+            label.textColor = .white
             label.numberOfLines = 0
 
             let prefixStr = prefix ?? ""
@@ -121,19 +121,19 @@ public class UIComponents {
 
             let paragraphStyle = NSMutableParagraphStyle()
             paragraphStyle.lineSpacing = 2.0
-            paragraphStyle.alignment = .Center
+            paragraphStyle.alignment = .center
             aStr.addAttribute(NSParagraphStyleAttributeName, value: paragraphStyle, range: NSMakeRange(0, aStr.length))
 
             label.attributedText = aStr
 
-            let imageView = UIImageView(frame: CGRectMake(0, 0, 110, 110))
+            let imageView = UIImageView(frame: CGRect(0, 0, 110, 110))
             imageView.image = UIImage(named: imageName)
-            imageView.contentMode = .ScaleAspectFit
+            imageView.contentMode = .scaleAspectFit
 
             let stack = UIStackView(arrangedSubviews: [imageView, label])
-            stack.axis = .Horizontal
-            stack.distribution = UIStackViewDistribution.Fill
-            stack.alignment = UIStackViewAlignment.Fill
+            stack.axis = .horizontal
+            stack.distribution = UIStackViewDistribution.fill
+            stack.alignment = UIStackViewAlignment.fill
             stack.spacing = 10.0
             return stack
         })

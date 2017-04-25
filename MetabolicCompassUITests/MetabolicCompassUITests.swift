@@ -2,7 +2,7 @@
 //  MetabolicCompassUITests.swift
 //  MetabolicCompassUITests
 //
-//  Created by Yanif Ahmad on 9/20/15.
+//  Created by Yanif Ahmad on 9/20/15. 
 //  Copyright © 2015 Yanif Ahmad, Tom Woolf. All rights reserved.
 //
 

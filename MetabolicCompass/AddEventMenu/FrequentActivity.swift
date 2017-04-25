@@ -2,7 +2,7 @@
 //  FrequentActivity.swift
 //  MetabolicCompass
 //
-//  Created by Yanif Ahmad on 9/25/16.
+//  Created by Yanif Ahmad on 9/25/16.    
 //  Copyright © 2016 Yanif Ahmad, Tom Woolf. All rights reserved.
 //
 
@@ -24,16 +24,20 @@ class FrequentActivity: NSObject, NSCoding {
     }
 
     required internal convenience init?(coder aDecoder: NSCoder) {
-        guard let desc = aDecoder.decodeObjectForKey(FrequentActivity.descKey) as? String else { return nil }
-        guard let start = aDecoder.decodeObjectForKey(FrequentActivity.startKey) as? Date else { return nil }
-        let duration = aDecoder.decodeDoubleForKey(FrequentActivity.durationKey)
+        guard let desc = aDecoder.decodeObject(forKey: FrequentActivity.descKey) as? String else { return nil }
+        guard let start = aDecoder.decodeObject(forKey: FrequentActivity.startKey) as? Date else { return nil }
+        let duration = aDecoder.decodeDouble(forKey: FrequentActivity.durationKey)
         self.init(desc: desc, start: start, duration: duration)
+    }
+    
+    internal func initWithCoder(coder aDecoder: NSCoder) {
+
     }
 
     internal func encodeWithCoder(aCoder: NSCoder) {
-        aCoder.encodeObject(self.desc, forKey: FrequentActivity.descKey)
-        aCoder.encodeObject(self.start, forKey: FrequentActivity.startKey)
-        aCoder.encodeDouble(self.duration, forKey: FrequentActivity.durationKey)
+        aCoder.encode(self.desc, forKey: FrequentActivity.descKey)
+        aCoder.encode(self.start, forKey: FrequentActivity.startKey)
+        aCoder.encode(self.duration, forKey: FrequentActivity.durationKey)
     }
 }
 
@@ -48,11 +52,15 @@ class FrequentActivityInfo: NSObject, NSCoding {
     }
 
     required internal convenience init?(coder aDecoder: NSCoder) {
-        guard let activities = aDecoder.decodeObjectForKey(FrequentActivityInfo.activitiesKey) as? [FrequentActivity] else { return nil }
+        guard let activities = aDecoder.decodeObject(forKey: FrequentActivityInfo.activitiesKey) as? [FrequentActivity] else { return nil }
         self.init(activities: activities)
+    }
+    
+    internal func initWithCoder(coder aDecoder: NSCoder) {
+        
     }
 
     internal func encodeWithCoder(aCoder: NSCoder) {
-        aCoder.encodeObject(self.activities, forKey: FrequentActivityInfo.activitiesKey)
+        aCoder.encode(self.activities, forKey: FrequentActivityInfo.activitiesKey)
     }
 }

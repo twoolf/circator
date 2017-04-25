@@ -3,7 +3,7 @@
 //  MetabolicCompass
 //
 //  Created by Yanif Ahmad on 7/8/16.
-//  Copyright © 2016 Yanif Ahmad, Tom Woolf. All rights reserved.
+//  Copyright © 2016 Yanif Ahmad, Tom Woolf. All rights reserved. 
 //
 
 import UIKit
@@ -33,11 +33,12 @@ public class FastingViewController : UIViewController, ChartViewDelegate {
         chart.animate(xAxisDuration: 1.0, yAxisDuration: 1.0)
         chart.delegate = self
         chart.descriptionText = ""
-        chart.backgroundColor = .clearColor()
-        chart.holeColor = .clearColor()
+        chart.backgroundColor = .clear
+        chart.holeColor = .clear
         chart.drawMarkers = true
         chart.drawHoleEnabled = true
-        chart.drawSliceTextEnabled = false
+//        chart.drawSliceTextEnabled = false
+        chart.drawEntryLabelsEnabled = false
         chart.usePercentValuesEnabled = true
         chart.rotationEnabled = false
         chart.legend.enabled = false
@@ -51,14 +52,14 @@ public class FastingViewController : UIViewController, ChartViewDelegate {
         // Populate 15 colors. Add more if needed.
         var colors : [NSUIColor] = []
 
-        colors.appendContentsOf(ChartColorTemplates.material())
-        colors.appendContentsOf(ChartColorTemplates.colorful())
-        colors.appendContentsOf(ChartColorTemplates.liberty())
-        colors.appendContentsOf(ChartColorTemplates.pastel())
-        colors.appendContentsOf(ChartColorTemplates.joyful())
-        colors.appendContentsOf(ChartColorTemplates.vordiplom())
+        colors.append(contentsOf: ChartColorTemplates.material())
+        colors.append(contentsOf: ChartColorTemplates.colorful())
+        colors.append(contentsOf: ChartColorTemplates.liberty())
+        colors.append(contentsOf: ChartColorTemplates.pastel())
+        colors.append(contentsOf: ChartColorTemplates.joyful())
+        colors.append(contentsOf: ChartColorTemplates.vordiplom())
 
-        return GKRandomSource.sharedRandom().arrayByShufflingObjectsInArray(colors) as! [NSUIColor]
+        return GKRandomSource.sharedRandom().arrayByShufflingObjects(in: colors) as! [NSUIColor]
         return colors
     }()
 
@@ -125,15 +126,15 @@ public class FastingViewController : UIViewController, ChartViewDelegate {
 
     lazy var fastingStreakBadge: UIStackView =
         UIComponents.createNumberWithImageAndLabel(
-            "Your Fasting Streak", imageName: "icon-gold-medal", titleAttrs: studyLabelAttrs,
+            title: "Your Fasting Streak", imageName: "icon-gold-medal", titleAttrs: studyLabelAttrs,
             bodyFontSize: studyLabelFontSize, unitsFontSize: studyLabelFontSize, labelFontSize: studyLabelFontSize,
             labelSpacing: 0.0, value: 1.0, unit: "hours this week", prefix: "You've fasted", suffix: "")
 
 
     // Metrics.
 
-    lazy var cwfLabel: UIStackView = UIComponents.createNumberLabel("Cumulative Weekly Fasting", labelFontSize: fastingViewLabelSize, value: 0.0, unit: "hrs")
-    lazy var wfvLabel: UIStackView = UIComponents.createNumberLabel("Weekly Fasting Variability", labelFontSize: fastingViewLabelSize, value: 0.0, unit: "hrs")
+    lazy var cwfLabel: UIStackView = UIComponents.createNumberLabel(title: "Cumulative Weekly Fasting", labelFontSize: fastingViewLabelSize, value: 0.0, unit: "hrs")
+    lazy var wfvLabel: UIStackView = UIComponents.createNumberLabel(title: "Weekly Fasting Variability", labelFontSize: fastingViewLabelSize, value: 0.0, unit: "hrs")
 
     private let cwfTipMsg = "Your cumulative weekly fasting is the total number of hours that you've spent fasting over the last 7 days"
     private let wfvTipMsg = "Your weekly fasting variability shows you how much your fasting hours varies day-by-day. We calculate this over the last week."
@@ -144,16 +145,16 @@ public class FastingViewController : UIViewController, ChartViewDelegate {
     private var wfvTip: TapTip! = nil
     private var fastingStreakTip: TapTip! = nil
 
-    override public func viewWillAppear(animated: Bool) {
+    override public func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         self.activityIndicator.startAnimating()
         self.logContentView()
         self.refreshData()
     }
 
-    override public func viewWillDisappear(animated: Bool) {
+    override public func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
-        self.logContentView(false)
+        self.logContentView(asAppear: false)
     }
 
     override public func viewDidLoad() {
@@ -162,9 +163,10 @@ public class FastingViewController : UIViewController, ChartViewDelegate {
     }
 
     func logContentView(asAppear: Bool = true) {
-        Answers.logContentViewWithName("Fasting",
+        Answers.logContentView(withName: "Fasting",
                                        contentType: asAppear ? "Appear" : "Disappear",
-                                       contentId: Date().toString(DateFormat.Custom("YYYY-MM-dd:HH")),
+//                                       contentId: Date().toString(DateFormat.Custom("YYYY-MM-dd:HH")),
+            contentId: Date().string(),
                                        customAttributes: nil)
     }
 
@@ -175,24 +177,24 @@ public class FastingViewController : UIViewController, ChartViewDelegate {
         view.addSubview(activityIndicator)
 
         let constraints: [NSLayoutConstraint] = [
-            activityIndicator.topAnchor.constraintEqualToAnchor(view.topAnchor),
-            activityIndicator.bottomAnchor.constraintEqualToAnchor(view.bottomAnchor),
-            activityIndicator.leadingAnchor.constraintEqualToAnchor(view.leadingAnchor),
-            activityIndicator.trailingAnchor.constraintEqualToAnchor(view.trailingAnchor)
+            activityIndicator.topAnchor.constraint(equalTo: view.topAnchor),
+            activityIndicator.bottomAnchor.constraint(equalTo: view.bottomAnchor),
+            activityIndicator.leadingAnchor.constraint(equalTo: view.leadingAnchor),
+            activityIndicator.trailingAnchor.constraint(equalTo: view.trailingAnchor)
         ]
         view.addConstraints(constraints)
     }
 
     func setupBackground() {
         let backgroundImage = UIImageView(image: UIImage(named: "university_logo"))
-        backgroundImage.contentMode = .Center
+        backgroundImage.contentMode = .center
         backgroundImage.layer.opacity = 0.03
         backgroundImage.translatesAutoresizingMaskIntoConstraints = false
-        self.view.insertSubview(backgroundImage, atIndex: 0)
+        self.view.insertSubview(backgroundImage, at: 0)
 
         let bgConstraints: [NSLayoutConstraint] = [
-            backgroundImage.centerXAnchor.constraintEqualToAnchor(self.view.centerXAnchor),
-            backgroundImage.centerYAnchor.constraintEqualToAnchor(self.view.centerYAnchor)
+            backgroundImage.centerXAnchor.constraint(equalTo: self.view.centerXAnchor),
+            backgroundImage.centerYAnchor.constraint(equalTo: self.view.centerYAnchor)
         ]
 
         self.view.addConstraints(bgConstraints)
@@ -200,17 +202,17 @@ public class FastingViewController : UIViewController, ChartViewDelegate {
 
     func setupScrollView() {
         scrollView = UIScrollView()
-        scrollView.userInteractionEnabled = true
+        scrollView.isUserInteractionEnabled = true
 
         view.addSubview(scrollView)
 
         scrollView.translatesAutoresizingMaskIntoConstraints = false
 
         let scrollConstraints: [NSLayoutConstraint] = [
-            view.leadingAnchor.constraintEqualToAnchor(scrollView.leadingAnchor),
-            view.trailingAnchor.constraintEqualToAnchor(scrollView.trailingAnchor),
-            view.topAnchor.constraintEqualToAnchor(scrollView.topAnchor),
-            view.bottomAnchor.constraintEqualToAnchor(scrollView.bottomAnchor)
+            view.leadingAnchor.constraint(equalTo: scrollView.leadingAnchor),
+            view.trailingAnchor.constraint(equalTo: scrollView.trailingAnchor),
+            view.topAnchor.constraint(equalTo: scrollView.topAnchor),
+            view.bottomAnchor.constraint(equalTo: scrollView.bottomAnchor)
         ]
         view.addConstraints(scrollConstraints)
     }
@@ -222,7 +224,7 @@ public class FastingViewController : UIViewController, ChartViewDelegate {
 
         refreshPieChart()
 
-        let pieChartStack: UIStackView = UIComponents.createLabelledComponent("Data Collected This Year", labelFontSize: fastingViewLabelSize, value: (), constructor: {
+        let pieChartStack: UIStackView = UIComponents.createLabelledComponent(title: "Data Collected This Year", labelFontSize: fastingViewLabelSize, value: (), constructor: {
             _ in return self.pieChart
         })
 
@@ -230,34 +232,34 @@ public class FastingViewController : UIViewController, ChartViewDelegate {
 
         let labelStack: UIStackView = {
             let stack = UIStackView(arrangedSubviews: [cwfLabel, wfvLabel])
-            stack.axis = .Horizontal
-            stack.distribution = UIStackViewDistribution.FillEqually
-            stack.alignment = UIStackViewAlignment.Fill
+            stack.axis = .horizontal
+            stack.distribution = UIStackViewDistribution.fillEqually
+            stack.alignment = UIStackViewAlignment.fill
             return stack
         }()
 
         let stack: UIStackView = {
             let stack = UIStackView(arrangedSubviews: [pieChartStack, fastingStreakBadge, sleepAwakeBalance, eatExerciseBalance, labelStack])
-            stack.axis = .Vertical
-            stack.distribution = UIStackViewDistribution.Fill
-            stack.alignment = UIStackViewAlignment.Fill
+            stack.axis = .vertical
+            stack.distribution = UIStackViewDistribution.fill
+            stack.alignment = UIStackViewAlignment.fill
             stack.spacing = 20
             return stack
-        }()
+        }() 
 
         stack.translatesAutoresizingMaskIntoConstraints = false
         scrollView.addSubview(stack)
 
         var constraints: [NSLayoutConstraint] = [
-            stack.topAnchor.constraintEqualToAnchor(scrollView.topAnchor),
-            stack.leadingAnchor.constraintEqualToAnchor(view.leadingAnchor),
-            stack.trailingAnchor.constraintEqualToAnchor(view.trailingAnchor),
-            stack.bottomAnchor.constraintEqualToAnchor(scrollView.bottomAnchor),
-            pieChartStack.heightAnchor.constraintEqualToAnchor(pieChartStack.widthAnchor, multiplier: 0.8),
-            fastingStreakBadge.heightAnchor.constraintEqualToAnchor(view.widthAnchor, multiplier: 0.33),
-            sleepAwakeBalance.heightAnchor.constraintEqualToConstant(60),
-            eatExerciseBalance.heightAnchor.constraintEqualToConstant(60),
-            labelStack.heightAnchor.constraintEqualToConstant(80),
+            stack.topAnchor.constraint(equalTo: scrollView.topAnchor),
+            stack.leadingAnchor.constraint(equalTo: view.leadingAnchor),
+            stack.trailingAnchor.constraint(equalTo: view.trailingAnchor),
+            stack.bottomAnchor.constraint(equalTo: scrollView.bottomAnchor),
+            pieChartStack.heightAnchor.constraint(equalTo: pieChartStack.widthAnchor, multiplier: 0.8),
+            fastingStreakBadge.heightAnchor.constraint(equalTo: view.widthAnchor, multiplier: 0.33),
+            sleepAwakeBalance.heightAnchor.constraint(equalToConstant: 60),
+            eatExerciseBalance.heightAnchor.constraint(equalToConstant: 60),
+            labelStack.heightAnchor.constraint(equalToConstant: 80),
         ]
 
         let badgeSize = ScreenManager.sharedInstance.badgeIconSize()
@@ -265,8 +267,8 @@ public class FastingViewController : UIViewController, ChartViewDelegate {
         if let imageLabelStack = fastingStreakBadge.subviews[1] as? UIStackView,
             let badge = imageLabelStack.subviews[0] as? UIImageView
         {
-            constraints.append(badge.widthAnchor.constraintEqualToConstant(badgeSize))
-            constraints.append(badge.heightAnchor.constraintEqualToAnchor(badge.widthAnchor))
+            constraints.append(badge.widthAnchor.constraint(equalToConstant: badgeSize))
+            constraints.append(badge.heightAnchor.constraint(equalTo: badge.widthAnchor))
         }
 
         view.addConstraints(constraints)
@@ -286,13 +288,13 @@ public class FastingViewController : UIViewController, ChartViewDelegate {
         fastingStreakTip = TapTip(forView: fastingStreakBadge, withinView: scrollView, text: fastingStreakTipMsg, asTop: true)
 
         cwfLabel.addGestureRecognizer(cwfTip.tapRecognizer)
-        cwfLabel.userInteractionEnabled = true
+        cwfLabel.isUserInteractionEnabled = true
 
         wfvLabel.addGestureRecognizer(wfvTip.tapRecognizer)
-        wfvLabel.userInteractionEnabled = true
+        wfvLabel.isUserInteractionEnabled = true
 
         fastingStreakBadge.addGestureRecognizer(fastingStreakTip.tapRecognizer)
-        fastingStreakBadge.userInteractionEnabled = true
+        fastingStreakBadge.isUserInteractionEnabled = true
 
         sleepAwakeBalance.tip.withinView = scrollView
         eatExerciseBalance.tip.withinView = scrollView
@@ -300,7 +302,7 @@ public class FastingViewController : UIViewController, ChartViewDelegate {
 
     func refreshPieChart() {
         let model = AnalysisDataModel.sharedInstance.fastingModel
-        let pieChartDataSet = PieChartDataSet(yVals: model.samplesCollectedDataEntries.map { $0.1 }, label: "Samples per type")
+        let pieChartDataSet = PieChartDataSet(values: model.samplesCollectedDataEntries.map { $0.1 }, label: "Samples per type")
         pieChartDataSet.colors = pieChartColors
         pieChartDataSet.drawValuesEnabled = false
 
@@ -313,8 +315,8 @@ public class FastingViewController : UIViewController, ChartViewDelegate {
             }
         }
 
-        let pieChartData = PieChartData(xVals: xVals, dataSet: pieChartDataSet)
-        self.pieChart.data = pieChartData
+        let pieChartDataEntry = PieChartDataEntry(labels: xVals, dataSet: pieChartDataSet)
+        self.pieChart.data = pieChartDataEntry
         self.pieChart.setNeedsDisplay()
     }
 
@@ -324,9 +326,9 @@ public class FastingViewController : UIViewController, ChartViewDelegate {
             let badge = imageLabelStack.subviews[0] as? UIImageView,
             let label = imageLabelStack.subviews[1] as? UILabel
         {
-            let compact = UIScreen.mainScreen().bounds.size.height < 569
-            let (_, icon, desc) = FastingViewController.fastingStreakClassAndIcon(fastingLevel)
-            let (descAttrText, lblAttrText) = FastingViewController.fastingStreakLabelText(fastingLevel, description: desc, compact: compact, descFontSize: studyLabelFontSize, labelFontSize: studyLabelFontSize)
+            let compact = UIScreen.main.bounds.size.height < 569
+            let (_, icon, desc) = FastingViewController.fastingStreakClassAndIcon(fastingLevel: fastingLevel)
+            let (descAttrText, lblAttrText) = FastingViewController.fastingStreakLabelText(fastingLevel: fastingLevel, description: desc, compact: compact, descFontSize: studyLabelFontSize, labelFontSize: studyLabelFontSize)
 
             descLabel.attributedText = descAttrText
             descLabel.setNeedsDisplay()
@@ -363,7 +365,7 @@ public class FastingViewController : UIViewController, ChartViewDelegate {
                 let saTotal = AnalysisDataModel.sharedInstance.fastingModel.fastSleep + AnalysisDataModel.sharedInstance.fastingModel.fastAwake
                 let eeTotal = AnalysisDataModel.sharedInstance.fastingModel.fastEat + AnalysisDataModel.sharedInstance.fastingModel.fastExercise
 
-                self.refreshFastingStreak(cwfHours)
+                self.refreshFastingStreak(fastingLevel: cwfHours)
 
                 self.sleepAwakeBalance.ratio = saTotal == 0.0 ? -1.0 : CGFloat( AnalysisDataModel.sharedInstance.fastingModel.fastSleep / saTotal )
                 self.sleepAwakeBalance.refreshData()
@@ -393,22 +395,22 @@ public class FastingViewController : UIViewController, ChartViewDelegate {
     }
 
     //MARK: ChartViewDelegate
-    public func chartValueSelected(chartView: ChartViewBase, entry: ChartDataEntry, dataSetIndex: Int, highlight: ChartHighlight) {
+    public func chartValueSelected(chartView: ChartViewBase, entry: ChartDataEntry, dataSetIndex: Int, highlight: Highlight) {
         var typeIdentifier : String = ""
-        switch AnalysisDataModel.sharedInstance.fastingModel.samplesCollectedDataEntries[entry.xIndex].0 {
+        switch AnalysisDataModel.sharedInstance.fastingModel.samplesCollectedDataEntries[entry.x].0 {
         case .HKType(let sampleType):
             typeIdentifier = HMConstants.sharedInstance.healthKitShortNames[sampleType.identifier]!
         case .Other:
             typeIdentifier = "Other"
         }
 
-        let numberFont = UIFont.systemFontOfSize(20, weight: UIFontWeightRegular)
-        let smallFont = UIFont.systemFontOfSize(14, weight: UIFontWeightRegular)
+        let numberFont = UIFont.systemFont(ofSize: 20, weight: UIFontWeightRegular)
+        let smallFont = UIFont.systemFont(ofSize: 14, weight: UIFontWeightRegular)
 
-        let cString = typeIdentifier + "\n\(String(format: "%.1f%%", entry.value * 100.0))"
+        let cString = typeIdentifier + "\n\(String(format: "%.1f%%", Double(entry.value) * 100.0))"
         let attrs : [String: AnyObject] = [
             NSFontAttributeName: numberFont,
-            NSForegroundColorAttributeName: UIColor.whiteColor()
+            NSForegroundColorAttributeName: UIColor.white
         ]
 
         let aString = NSMutableAttributedString(string: cString, attributes: attrs)
@@ -424,7 +426,7 @@ public class FastingViewController : UIViewController, ChartViewDelegate {
     }
 
     class func fastingStreakClassAndIcon(fastingLevel: Double) -> (Double, String, String) {
-        var rankIndex = FastingViewController.fastingStreakBadgeBuckets.indexOf { $0.0 >= fastingLevel }
+        var rankIndex = FastingViewController.fastingStreakBadgeBuckets.index { $0.0 >= fastingLevel }
         if rankIndex == nil { rankIndex = FastingViewController.fastingStreakBadgeBuckets.count }
         rankIndex = max(0, rankIndex! - 1)
         return FastingViewController.fastingStreakBadgeBuckets[rankIndex!]
@@ -455,7 +457,7 @@ public class FastingViewController : UIViewController, ChartViewDelegate {
 
         let paragraphStyle = NSMutableParagraphStyle()
         paragraphStyle.lineSpacing = 4.0
-        paragraphStyle.alignment = .Center
+        paragraphStyle.alignment = .center
 
         descStr.addAttribute(NSParagraphStyleAttributeName, value: paragraphStyle, range: NSMakeRange(0, descStr.length))
         lblStr.addAttribute(NSParagraphStyleAttributeName, value: paragraphStyle, range: NSMakeRange(0, lblStr.length))

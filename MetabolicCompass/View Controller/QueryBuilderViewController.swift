@@ -3,7 +3,7 @@
 //  MetabolicCompass
 //
 //  Created by Yanif Ahmad on 12/18/15.
-//  Copyright © 2015 Yanif Ahmad, Tom Woolf. All rights reserved.
+//  Copyright © 2015 Yanif Ahmad, Tom Woolf. All rights reserved. 
 //
 
 import UIKit
@@ -27,19 +27,20 @@ private let inputFontSize = ScreenManager.sharedInstance.queryBuilderInputFontSi
 /**
  This class is used to build queries for filtering the displayed metrics on the 1st and 2nd dashboard screens. The advantage to our users is the ability to create a set of filters that provide an optimal, and ongoing, comparison to their own situation.
 
- - note: used in QueryViewController
+ - note: used in QueryViewController 
  */
 class QueryBuilderViewController: UIViewController, UITextFieldDelegate {
 
-    let dataTableView: PredicateTableView = PredicateTableView(frame: CGRectMake(0, 0, 1000, 1000), style: .Plain)
-    let queryTableView: UITableView = UITableView(frame: CGRect.zero, style: .Plain)
+    let dataTableView: PredicateTableView = PredicateTableView(frame: CGRect(0, 0, 1000, 1000), style: .plain)
+    let queryTableView: UITableView = UITableView(frame: CGRect.zero, style: .plain)
     lazy var former: Former = Former(tableView: self.queryTableView)
 
     // TODO: meal/activity attributes.
     // TODO: humanize attribute names.
     static let attributeOptions =
         PreviewManager.supportedTypes.flatMap { type in
-            HMConstants.sharedInstance.hkToMCDB[type.identifier]
+//            HMConstants.sharedInstance.hkToMCDB[type.identifier]
+            HMConstants.sharedInstance.hkToMCDB[HKDocumentTypeIdentifier]
         }
 
     static let aggregateOperators = ["avg", "min", "max"]
@@ -53,39 +54,39 @@ class QueryBuilderViewController: UIViewController, UITextFieldDelegate {
     var upperBound : String? = nil
 
     lazy var addPredicateButton: UIButton = {
-        let button = MCButton(frame: CGRectMake(0, 0, 100, 25), buttonStyle: .Rounded)
-        button.cornerRadius = 4.0
-        button.buttonColor = UIColor.ht_sunflowerColor()
-        button.shadowColor = UIColor.ht_citrusColor()
-        button.shadowHeight = 4
-        button.setTitle("Add Predicate", forState: .Normal)
-        button.titleLabel?.font = UIFont.systemFontOfSize(lblFontSize, weight: UIFontWeightRegular)
-        button.addTarget(self, action: "addPredicate:", forControlEvents: .TouchUpInside)
-        return button
+        let button = MCButton(frame: CGRect(0, 0, 100, 25), buttonStyle: .rounded)
+        button?.cornerRadius = 4.0
+        button?.buttonColor = UIColor.ht_sunflower()
+        button?.shadowColor = UIColor.ht_citrus()
+        button?.shadowHeight = 4
+        button?.setTitle("Add Predicate", for: .normal)
+        button?.titleLabel?.font = UIFont.systemFont(ofSize: lblFontSize, weight: UIFontWeightRegular)
+        button?.addTarget(self, action: "addPredicate:", for: .touchUpInside)
+        return button!
     }()
 
     lazy var saveQueryButton: UIButton = {
-        let button = MCButton(frame: CGRectMake(0, 0, 100, 25), buttonStyle: .Rounded)
-        button.cornerRadius = 4.0
-        button.buttonColor = UIColor.ht_pumpkinColor()
-        button.shadowColor = UIColor.ht_pomegranateColor()
-        button.shadowHeight = 4
-        button.setTitle("Save Query", forState: .Normal)
-        button.titleLabel?.font = UIFont.systemFontOfSize(lblFontSize, weight: UIFontWeightRegular)
-        button.addTarget(self, action: "saveQuery:", forControlEvents: .TouchUpInside)
-        return button
+        let button = MCButton(frame: CGRect(0, 0, 100, 25), buttonStyle: .rounded)
+        button?.cornerRadius = 4.0
+        button?.buttonColor = UIColor.ht_pumpkin()
+        button?.shadowColor = UIColor.ht_pomegranate()
+        button?.shadowHeight = 4
+        button?.setTitle("Save Query", for: .normal)
+        button?.titleLabel?.font = UIFont.systemFont(ofSize: lblFontSize, weight: UIFontWeightRegular)
+        button?.addTarget(self, action: "saveQuery:", for: .touchUpInside)
+        return button!
     }()
 
     lazy var buttonStack: UIStackView = {
         let stack = UIStackView(arrangedSubviews: [self.addPredicateButton, self.saveQueryButton])
-        stack.axis = .Horizontal
-        stack.distribution = UIStackViewDistribution.FillEqually
-        stack.alignment = UIStackViewAlignment.Fill
+        stack.axis = .horizontal
+        stack.distribution = UIStackViewDistribution.fillEqually
+        stack.alignment = UIStackViewAlignment.fill
         stack.spacing = 5
         return stack
     }()
 
-    override func viewWillAppear(animated: Bool) {
+    override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         navigationController?.setNavigationBarHidden(false, animated: false)
         navigationItem.title = "Query Builder"
@@ -93,11 +94,12 @@ class QueryBuilderViewController: UIViewController, UITextFieldDelegate {
         queryTableView.reloadData()
     }
 
-    override func viewDidAppear(animated: Bool) {
+    override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
-        Answers.logContentViewWithName("QueryBuilder",
+        Answers.logContentView(withName: "QueryBuilder",
             contentType: "",
-            contentId: Date().toString(DateFormat.Custom("YYYY-MM-dd:HH:mm:ss")),
+//            contentId: Date().toString(DateFormat.Custom("YYYY-MM-dd:HH:mm:ss")),
+            contentId: Date().string(),
             customAttributes: nil)
     }
 
@@ -118,8 +120,8 @@ class QueryBuilderViewController: UIViewController, UITextFieldDelegate {
             }
         }
 
-        dataTableView.registerClass(MGSwipeTableCell.self, forCellReuseIdentifier: "predicateCell")
-        queryTableView.registerClass(UITableViewCell.self, forCellReuseIdentifier: "inputCell")
+        dataTableView.register(MGSwipeTableCell.self, forCellReuseIdentifier: "predicateCell")
+        queryTableView.register(UITableViewCell.self, forCellReuseIdentifier: "inputCell")
         configureViews()
         dataTableView.layoutIfNeeded()
     }
@@ -129,25 +131,25 @@ class QueryBuilderViewController: UIViewController, UITextFieldDelegate {
         let attributeSelectorRow = SelectorPickerRowFormer<FormSelectorPickerCell, Any> {
             $0.backgroundColor = Theme.universityDarkTheme.backgroundColor
             $0.titleLabel.text = "Attribute"
-            $0.titleLabel.textColor = .whiteColor()
-            $0.titleLabel.font = .boldSystemFontOfSize(inputFontSize)
-            $0.displayLabel.textColor = .whiteColor()
-            $0.displayLabel.font = .boldSystemFontOfSize(lblFontSize)
+            $0.titleLabel.textColor = .white
+            $0.titleLabel.font = .boldSystemFont(ofSize: inputFontSize)
+            $0.displayLabel.textColor = .white
+            $0.displayLabel.font = .boldSystemFont(ofSize: lblFontSize)
             }.configure {
                 let toolBar = UIToolbar()
-                toolBar.barStyle = UIBarStyle.Default
-                toolBar.translucent = true
-                toolBar.tintColor = UIColor.ht_wetAsphaltColor()
+                toolBar.barStyle = UIBarStyle.default
+                toolBar.isTranslucent = true
+                toolBar.tintColor = UIColor.ht_wetAsphalt()
                 toolBar.sizeToFit()
 
-                let doneButton = UIBarButtonItem(title: "Done", style: UIBarButtonItemStyle.Plain, target: self, action: "donePicker")
-                let spaceButton = UIBarButtonItem(barButtonSystemItem: UIBarButtonSystemItem.FlexibleSpace, target: nil, action: nil)
+                let doneButton = UIBarButtonItem(title: "Done", style: UIBarButtonItemStyle.plain, target: self, action: #selector(QueryBuilderViewController.donePicker))
+                let spaceButton = UIBarButtonItem(barButtonSystemItem: UIBarButtonSystemItem.flexibleSpace, target: nil, action: nil)
 
                 toolBar.setItems([spaceButton, doneButton], animated: false)
-                toolBar.userInteractionEnabled = true
+                toolBar.isUserInteractionEnabled = true
 
                 $0.inputAccessoryView = toolBar
-                $0.selectorView.tintColor = UIColor.ht_belizeHoleColor()
+                $0.selectorView.tintColor = UIColor.ht_belizeHole()
                 $0.pickerItems = QueryBuilderViewController.attributeOptions.map { SelectorPickerItem(title: $0) }
             }.onValueChanged { [weak self] item in
                 self?.attribute = item.title
@@ -156,12 +158,12 @@ class QueryBuilderViewController: UIViewController, UITextFieldDelegate {
         let aggregatePickerRow = SegmentedRowFormer<FormSegmentedCell>(instantiateType: .Class) {
             $0.backgroundColor = Theme.universityDarkTheme.backgroundColor
             $0.titleLabel.text = "Aggregate"
-            $0.titleLabel.textColor = .whiteColor()
-            $0.titleLabel.font = .boldSystemFontOfSize(inputFontSize)
-            $0.tintColor = .whiteColor()
+            $0.titleLabel.textColor = .white
+            $0.titleLabel.font = .boldSystemFont(ofSize: inputFontSize)
+            $0.tintColor = .white
             }.configure {
-                let attr = NSDictionary(object: UIFont.systemFontOfSize(inputFontSize), forKey: NSFontAttributeName)
-                $0.cell.formSegmented().setTitleTextAttributes(attr as [NSObject : AnyObject], forState: .Normal)
+                let attr = NSDictionary(object: UIFont.systemFont(ofSize: inputFontSize), forKey: NSFontAttributeName as NSCopying)
+                $0.cell.formSegmented().setTitleTextAttributes(attr as [NSObject : AnyObject], for: .normal)
                 $0.segmentTitles = QueryBuilderViewController.aggregateOperators
                 $0.selectedIndex = 0
             }.onSegmentSelected { [weak self] index, _ in
@@ -171,16 +173,16 @@ class QueryBuilderViewController: UIViewController, UITextFieldDelegate {
         let lowerBoundRow = TextFieldRowFormer<FormTextFieldCell>() {
             $0.backgroundColor = Theme.universityDarkTheme.backgroundColor
             $0.titleLabel.text = "Lower bound"
-            $0.titleLabel.textColor = .whiteColor()
-            $0.titleLabel.font = .boldSystemFontOfSize(inputFontSize)
-            $0.textField.textColor = .whiteColor()
-            $0.textField.font = .boldSystemFontOfSize(lblFontSize)
-            $0.textField.textAlignment = .Right
-            $0.textField.returnKeyType = .Next
-            $0.tintColor = .blueColor()
+            $0.titleLabel.textColor = .white
+            $0.titleLabel.font = .boldSystemFont(ofSize: inputFontSize)
+            $0.textField.textColor = .white
+            $0.textField.font = .boldSystemFont(ofSize: lblFontSize)
+            $0.textField.textAlignment = .right
+            $0.textField.returnKeyType = .next
+            $0.tintColor = .blue
             }.configure {
                 $0.attributedPlaceholder = NSAttributedString(string:"0",
-                    attributes:[NSForegroundColorAttributeName: UIColor.whiteColor()])
+                    attributes:[NSForegroundColorAttributeName: UIColor.white])
             }.onTextChanged { [weak self] txt in
                 self?.lowerBound = txt
         }
@@ -188,16 +190,16 @@ class QueryBuilderViewController: UIViewController, UITextFieldDelegate {
         let upperBoundRow = TextFieldRowFormer<FormTextFieldCell>() {
             $0.backgroundColor = Theme.universityDarkTheme.backgroundColor
             $0.titleLabel.text = "Upper bound"
-            $0.titleLabel.textColor = .whiteColor()
-            $0.titleLabel.font = .boldSystemFontOfSize(inputFontSize)
-            $0.textField.textColor = .whiteColor()
-            $0.textField.font = .boldSystemFontOfSize(lblFontSize)
-            $0.textField.textAlignment = .Right
-            $0.textField.returnKeyType = .Next
-            $0.tintColor = .blueColor()
+            $0.titleLabel.textColor = .white
+            $0.titleLabel.font = .boldSystemFont(ofSize: inputFontSize)
+            $0.textField.textColor = .white
+            $0.textField.font = .boldSystemFont(ofSize: lblFontSize)
+            $0.textField.textAlignment = .right
+            $0.textField.returnKeyType = .next
+            $0.tintColor = .blue
             }.configure {
                 $0.attributedPlaceholder = NSAttributedString(string:"100",
-                    attributes:[NSForegroundColorAttributeName: UIColor.whiteColor()])
+                    attributes:[NSForegroundColorAttributeName: UIColor.white])
             }.onTextChanged { [weak self] txt in
                 self?.upperBound = txt
         }
@@ -205,15 +207,15 @@ class QueryBuilderViewController: UIViewController, UITextFieldDelegate {
         let queryNameRow = TextFieldRowFormer<FormTextFieldCell>() {
             $0.backgroundColor = Theme.universityDarkTheme.backgroundColor
             $0.titleLabel.text = "Query name"
-            $0.titleLabel.textColor = .whiteColor()
-            $0.titleLabel.font = .boldSystemFontOfSize(inputFontSize)
-            $0.textField.textColor = .whiteColor()
-            $0.textField.font = .boldSystemFontOfSize(lblFontSize)
-            $0.textField.textAlignment = .Right
-            $0.textField.returnKeyType = .Next
-            $0.tintColor = .blueColor()
+            $0.titleLabel.textColor = .white
+            $0.titleLabel.font = .boldSystemFont(ofSize: inputFontSize)
+            $0.textField.textColor = .white
+            $0.textField.font = .boldSystemFont(ofSize: lblFontSize)
+            $0.textField.textAlignment = .right
+            $0.textField.returnKeyType = .next
+            $0.tintColor = .blue
             }.configure {
-                $0.attributedPlaceholder = NSAttributedString(string:self.queryName, attributes:[NSForegroundColorAttributeName: UIColor.whiteColor()])
+                $0.attributedPlaceholder = NSAttributedString(string:self.queryName, attributes:[NSForegroundColorAttributeName: UIColor.white])
             }.onTextChanged { [weak self] txt in
                 self?.queryName = txt
         }
@@ -240,7 +242,7 @@ class QueryBuilderViewController: UIViewController, UITextFieldDelegate {
 
         queryTableView.translatesAutoresizingMaskIntoConstraints = false
         queryTableView.backgroundColor = Theme.universityDarkTheme.backgroundColor
-        queryTableView.scrollEnabled = false
+        queryTableView.isScrollEnabled = false
         queryTableView.separatorColor = Theme.universityDarkTheme.backgroundColor
 
         buttonStack.translatesAutoresizingMaskIntoConstraints = false
@@ -252,19 +254,19 @@ class QueryBuilderViewController: UIViewController, UITextFieldDelegate {
         view.addSubview(buttonStack)
 
         view.addConstraints([
-            dataTableView.topAnchor.constraintEqualToAnchor(view.layoutMarginsGuide.topAnchor),
-            dataTableView.leadingAnchor.constraintEqualToAnchor(view.layoutMarginsGuide.leadingAnchor),
-            dataTableView.trailingAnchor.constraintEqualToAnchor(view.layoutMarginsGuide.trailingAnchor),
-            dataTableView.bottomAnchor.constraintEqualToAnchor(view.layoutMarginsGuide.centerYAnchor),
+            dataTableView.topAnchor.constraint(equalTo: view.layoutMarginsGuide.topAnchor),
+            dataTableView.leadingAnchor.constraint(equalTo: view.layoutMarginsGuide.leadingAnchor),
+            dataTableView.trailingAnchor.constraint(equalTo: view.layoutMarginsGuide.trailingAnchor),
+            dataTableView.bottomAnchor.constraint(equalTo: view.layoutMarginsGuide.centerYAnchor),
 
-            queryTableView.topAnchor.constraintEqualToAnchor(view.layoutMarginsGuide.centerYAnchor),
-            queryTableView.leadingAnchor.constraintEqualToAnchor(view.layoutMarginsGuide.leadingAnchor),
-            queryTableView.trailingAnchor.constraintEqualToAnchor(view.layoutMarginsGuide.trailingAnchor),
-            queryTableView.bottomAnchor.constraintEqualToAnchor(view.layoutMarginsGuide.bottomAnchor, constant: -30),
+            queryTableView.topAnchor.constraint(equalTo: view.layoutMarginsGuide.centerYAnchor),
+            queryTableView.leadingAnchor.constraint(equalTo: view.layoutMarginsGuide.leadingAnchor),
+            queryTableView.trailingAnchor.constraint(equalTo: view.layoutMarginsGuide.trailingAnchor),
+            queryTableView.bottomAnchor.constraint(equalTo: view.layoutMarginsGuide.bottomAnchor, constant: -30),
 
-            buttonStack.bottomAnchor.constraintEqualToAnchor(view.layoutMarginsGuide.bottomAnchor, constant: -10),
-            buttonStack.centerXAnchor.constraintEqualToAnchor(view.layoutMarginsGuide.centerXAnchor),
-            buttonStack.heightAnchor.constraintEqualToConstant(44)
+            buttonStack.bottomAnchor.constraint(equalTo: view.layoutMarginsGuide.bottomAnchor, constant: -10),
+            buttonStack.centerXAnchor.constraint(equalTo: view.layoutMarginsGuide.centerXAnchor),
+            buttonStack.heightAnchor.constraint(equalToConstant: 44)
         ])
     }
 
@@ -276,9 +278,9 @@ class QueryBuilderViewController: UIViewController, UITextFieldDelegate {
             let hkIdentifier = HMConstants.sharedInstance.mcdbToHK[attribute]!
 
             switch hkIdentifier {
-            case HKCategoryTypeIdentifierSleepAnalysis:
+            case HKCategoryTypeIdentifier.sleepAnalysis.hashValue:
                 hkType = HKObjectType.categoryTypeForIdentifier(hkIdentifier)!
-            case HKCategoryTypeIdentifierAppleStandHour:
+            case HKCategoryTypeIdentifier.appleStandHour.hashValue:
                 hkType = HKObjectType.categoryTypeForIdentifier(hkIdentifier)!
             default:
                 hkType = HKObjectType.quantityTypeForIdentifier(hkIdentifier)!
@@ -298,12 +300,12 @@ class QueryBuilderViewController: UIViewController, UITextFieldDelegate {
     func saveQuery(sender: UIButton) {
         switch buildMode! {
         case .Creating:
-            QueryManager.sharedManager.addQuery(self.queryName, query: Query.ConjunctiveQuery(nil, nil, nil, dataTableView.predicates))
+            QueryManager.sharedManager.addQuery(name: self.queryName, query: Query.ConjunctiveQuery(nil, nil, nil, dataTableView.predicates))
 
         case .Editing(let row):
-            QueryManager.sharedManager.updateQuery(row, name: self.queryName, query: Query.ConjunctiveQuery(nil, nil, nil, dataTableView.predicates))
+            QueryManager.sharedManager.updateQuery(index: row, name: self.queryName, query: Query.ConjunctiveQuery(nil, nil, nil, dataTableView.predicates))
         }
-        self.navigationController?.popViewControllerAnimated(true)
+        self.navigationController?.popViewController(animated: true)
     }
 }
 
@@ -327,7 +329,7 @@ class PredicateTableView : UITableView, UITableViewDelegate, UITableViewDataSour
         return 1
     }
 
-    func tableView(tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+    func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         return predicates.count
     }
 
@@ -335,13 +337,14 @@ class PredicateTableView : UITableView, UITableViewDelegate, UITableViewDataSour
         return "Predicates"
     }
 
-    func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell {
-        let cell = tableView.dequeueReusableCellWithIdentifier("predicateCell", forIndexPath: indexPath) as! MGSwipeTableCell
+    func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+        let cell = tableView.dequeueReusableCell(withIdentifier: "predicateCell", for: indexPath as IndexPath) as! MGSwipeTableCell
 
         cell.backgroundColor = Theme.universityDarkTheme.backgroundColor
         let (aggr,mcattr,lb,ub) = predicates[indexPath.row]
         let aggstr = QueryBuilderViewController.aggregateOperators[aggr.rawValue]
-        let attrstr = HMConstants.sharedInstance.hkToMCDB[mcattr.0.identifier]
+//        let attrstr = HMConstants.sharedInstance.hkToMCDB[mcattr.0.identifier]
+        let attrstr = HMConstants.sharedInstance.hkToMCDB[mcattr.0.identifier.hashValue]
 
         var celltxt = "<invalid>"
         if let lbstr = lb {
@@ -356,30 +359,30 @@ class PredicateTableView : UITableView, UITableViewDelegate, UITableViewDataSour
             }
         }
 
-        cell.textLabel?.textColor = UIColor.whiteColor()
-        cell.textLabel?.font = .boldSystemFontOfSize(lblFontSize)
+        cell.textLabel?.textColor = UIColor.white
+        cell.textLabel?.font = .boldSystemFont(ofSize: lblFontSize)
         cell.textLabel?.text = celltxt
 
-        let deleteButton = MGSwipeButton(title: "Delete", backgroundColor: .ht_carrotColor(), callback: {
+        let deleteButton = MGSwipeButton(title: "Delete", backgroundColor: .ht_carrot(), callback: {
             (sender: MGSwipeTableCell!) -> Bool in
-            if let idx = tableView.indexPathForCell(sender) {
-                self.predicates.removeAtIndex(idx.row)
-                tableView.deleteRowsAtIndexPaths([idx], withRowAnimation: UITableViewRowAnimation.Right)
+            if let idx = tableView.indexPath(for: sender) {
+                self.predicates.remove(at: idx.row)
+                tableView.deleteRows(at: [idx], with: UITableViewRowAnimation.right)
                 return false
             }
             return true
         })
-        deleteButton.titleLabel?.font = .boldSystemFontOfSize(14)
+        deleteButton.titleLabel?.font = .boldSystemFont(ofSize: 14)
 
         cell.rightButtons = [deleteButton]
-        cell.leftSwipeSettings.transition = MGSwipeTransition.Static
+        cell.leftSwipeSettings.transition = MGSwipeTransition.static
         return cell
     }
 
     func tableView(tableView: UITableView, willDisplayHeaderView view: UIView, forSection section: Int) {
         let header: UITableViewHeaderFooterView = view as! UITableViewHeaderFooterView
         header.contentView.backgroundColor = Theme.universityDarkTheme.backgroundColor
-        header.textLabel?.textColor = UIColor.whiteColor()
+        header.textLabel?.textColor = UIColor.white
     }
 
     class MCButton : HTPressableButton {

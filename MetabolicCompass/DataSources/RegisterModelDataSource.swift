@@ -22,42 +22,42 @@ class RegisterModelDataSource: BaseDataSource {
 
     override func registerCells() {
         let loadImageCellNib = UINib(nibName: "LoadImageCollectionViewCell", bundle: nil)
-        collectionView?.registerNib(loadImageCellNib, forCellWithReuseIdentifier: loadImageCellIdentifier)
+        collectionView?.register(loadImageCellNib, forCellWithReuseIdentifier: loadImageCellIdentifier)
 
         let inputTextCellNib = UINib(nibName: "InputCollectionViewCell", bundle: nil)
-        collectionView?.registerNib(inputTextCellNib, forCellWithReuseIdentifier: inputTextCellIdentifier)
+        collectionView?.register(inputTextCellNib, forCellWithReuseIdentifier: inputTextCellIdentifier)
 
         let doubleCheckBoxCellNib = UINib(nibName: "DoubleCheckListCollectionViewCell", bundle: nil)
-        collectionView?.registerNib(doubleCheckBoxCellNib, forCellWithReuseIdentifier: doubleCheckBoxCellIdentifier)
+        collectionView?.register(doubleCheckBoxCellNib, forCellWithReuseIdentifier: doubleCheckBoxCellIdentifier)
     }
 
 
     // MARK: - CollectionView Delegate & DataSource
 
-    override func collectionView(collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
+    override func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
         return model.items.count
     }
 
-    override func collectionView(collectionView: UICollectionView, cellForItemAtIndexPath indexPath: NSIndexPath) -> UICollectionViewCell {
-        let field = model.itemAtIndexPath(indexPath)
+    override func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
+        let field = model.itemAtIndexPath(indexPath: indexPath as NSIndexPath)
         var cell: BaseCollectionViewCell?
 
         let cellType = field.type
 
         switch (cellType) {
         case .Email, .Password, .FirstName, .LastName, .Weight, .Height, .HeightInches, .Age, .Other:
-            cell = inputCellForIndex(indexPath, forField: field)
+            cell = inputCellForIndex(indexPath: indexPath as NSIndexPath, forField: field)
         case  .Gender, .Units:
-            cell = checkSelectionCellForIndex(indexPath, forField: field)
+            cell = checkSelectionCellForIndex(indexPath: indexPath as NSIndexPath, forField: field)
         case .Photo:
-            cell = loadPhotoCellForIndex(indexPath, forField: field)
+            cell = loadPhotoCellForIndex(indexPath: indexPath as NSIndexPath, forField: field)
         }
 
         cell!.changesHandler = { (cell: UICollectionViewCell, newValue: AnyObject?) -> () in
-            if let indexPath = self.collectionView!.indexPathForCell(cell) {
+            if let indexPath = self.collectionView!.indexPath(for: cell) {
                 self.model.setAtItem(itemIndex: indexPath.row, newValue: newValue)
 
-                let field = self.model.itemAtIndexPath(indexPath)
+                let field = self.model.itemAtIndexPath(indexPath: indexPath as NSIndexPath)
                 if field.type == .Units {
                     /*
                     let needsUpdateIndexPathes = self.model.unitsDependedItemsIndexes()
@@ -75,7 +75,7 @@ class RegisterModelDataSource: BaseDataSource {
 
 
     func collectionView(collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAtIndexPath indexPath: NSIndexPath) -> CGSize {
-        let field = model.itemAtIndexPath(indexPath)
+        let field = model.itemAtIndexPath(indexPath: indexPath)
 
         if model.units == .Imperial && (field.type == .Weight || field.type == .Height || field.type == .HeightInches) {
             return field.type == .HeightInches ? smallHeightInchesCellSize() : (field.type == .Height ? smallHeightCellSize() : smallWeightCellSize())
@@ -98,7 +98,7 @@ class RegisterModelDataSource: BaseDataSource {
 
     func collectionView(collectionView: UICollectionView, viewForSupplementaryElementOfKind kind: String, atIndexPath indexPath: NSIndexPath) -> UICollectionReusableView {
         if kind == UICollectionElementKindSectionFooter {
-            let footerView = collectionView.dequeueReusableSupplementaryViewOfKind(kind, withReuseIdentifier: "footerView", forIndexPath: indexPath)
+            let footerView = collectionView.dequeueReusableSupplementaryView(ofKind: kind, withReuseIdentifier: "footerView", for: indexPath as IndexPath)
             return footerView
         }
 
@@ -108,7 +108,7 @@ class RegisterModelDataSource: BaseDataSource {
     // MARK: - Cells configuration
 
     private func inputCellForIndex(indexPath: NSIndexPath, forField field: ModelItem) -> BaseCollectionViewCell {
-        let cell = collectionView!.dequeueReusableCellWithReuseIdentifier(inputTextCellIdentifier, forIndexPath: indexPath) as! InputCollectionViewCell
+        let cell = collectionView!.dequeueReusableCell(withReuseIdentifier: inputTextCellIdentifier, for: indexPath as IndexPath) as! InputCollectionViewCell
 
         cell.inputTxtField.textColor = selectedTextColor
         cell.inputTxtField.attributedPlaceholder = NSAttributedString(string: (field.type == .HeightInches ? "0-11 " : field.title), attributes: [NSForegroundColorAttributeName : unselectedTextColor, NSFontAttributeName: RegisterFont])
@@ -119,13 +119,14 @@ class RegisterModelDataSource: BaseDataSource {
         cell.nameLbl.font = RegisterFont
 
         if field.type == .Password {
-            cell.inputTxtField.secureTextEntry = true
+//            cell.inputTxtField.secureTextEntry = true
+            cell.inputTxtField.isSecureTextEntry = true
         }
         else if field.type == .Email {
-            cell.inputTxtField.keyboardType = UIKeyboardType.EmailAddress
+            cell.inputTxtField.keyboardType = UIKeyboardType.emailAddress
         }
         else if field.type == .Age {
-            cell.inputTxtField.keyboardType = UIKeyboardType.NumberPad
+            cell.inputTxtField.keyboardType = UIKeyboardType.numberPad
         }
 
         if let iconImageName = field.iconImageName {
@@ -162,15 +163,15 @@ class RegisterModelDataSource: BaseDataSource {
 
         if field.type == .Weight {
             cell.nameLbl.text = model.units.weightTitle
-            cell.inputTxtField.keyboardType = UIKeyboardType.NumberPad
+            cell.inputTxtField.keyboardType = UIKeyboardType.numberPad
         }
         else if field.type == .Height {
             cell.nameLbl.text = model.units.heightTitle
-            cell.inputTxtField.keyboardType = UIKeyboardType.NumberPad
+            cell.inputTxtField.keyboardType = UIKeyboardType.numberPad
         }
         else if field.type == .HeightInches {
             cell.nameLbl.text = model.units.heightInchesTitle ?? ""
-            cell.inputTxtField.keyboardType = UIKeyboardType.NumberPad
+            cell.inputTxtField.keyboardType = UIKeyboardType.numberPad
         }
 
 
@@ -179,16 +180,16 @@ class RegisterModelDataSource: BaseDataSource {
     }
 
     private func checkSelectionCellForIndex(indexPath: NSIndexPath, forField field: ModelItem) -> BaseCollectionViewCell {
-        let cell = collectionView!.dequeueReusableCellWithReuseIdentifier(doubleCheckBoxCellIdentifier, forIndexPath: indexPath) as! DoubleCheckListCollectionViewCell
+        let cell = collectionView!.dequeueReusableCell(withReuseIdentifier: doubleCheckBoxCellIdentifier, for: indexPath as IndexPath) as! DoubleCheckListCollectionViewCell
 
         if field.type == .Gender {
-            cell.setFirstTitle(Gender.Male.title)
-            cell.setSecondTitle(Gender.Female.title)
+            cell.setFirstTitle(firstTitle: Gender.Male.title)
+            cell.setSecondTitle(firstTitle: Gender.Female.title)
             cell.setSelectedItem(selectedItemIndex: model.gender.rawValue)
         }
         else if field.type == .Units {
-            cell.setFirstTitle(UnitsSystem.Imperial.title)
-            cell.setSecondTitle(UnitsSystem.Metric.title)
+            cell.setFirstTitle(firstTitle: UnitsSystem.Imperial.title)
+            cell.setSecondTitle(firstTitle: UnitsSystem.Metric.title)
             cell.setSelectedItem(selectedItemIndex: model.units.rawValue)
         }
 
@@ -199,7 +200,7 @@ class RegisterModelDataSource: BaseDataSource {
     }
 
     private func loadPhotoCellForIndex(indexPath: NSIndexPath, forField field: ModelItem) -> BaseCollectionViewCell {
-        let cell = collectionView!.dequeueReusableCellWithReuseIdentifier(loadImageCellIdentifier, forIndexPath: indexPath) as! LoadImageCollectionViewCell
+        let cell = collectionView!.dequeueReusableCell(withReuseIdentifier: loadImageCellIdentifier, for: indexPath as IndexPath) as! LoadImageCollectionViewCell
         cell.presentingViewController = viewController!.navigationController
         return cell
     }
@@ -210,32 +211,32 @@ class RegisterModelDataSource: BaseDataSource {
     private let cellHighHeight: CGFloat = 160
 
     private func highCellSize() -> CGSize {
-        let size = CGSizeMake(self.collectionView!.bounds.width, cellHighHeight)
+        let size = CGSize(self.collectionView!.bounds.width, cellHighHeight)
         return size
     }
 
     private func defaultCellSize() -> CGSize {
-        let size = CGSizeMake(self.collectionView!.bounds.width, cellHeight)
+        let size = CGSize(self.collectionView!.bounds.width, cellHeight)
         return size
     }
 
     private func smallCellSize() -> CGSize {
-        let size = CGSizeMake((self.collectionView!.bounds.width - spaceBetweenCellsInOneRow) / 2.0, cellHeight)
+        let size = CGSize((self.collectionView!.bounds.width - spaceBetweenCellsInOneRow) / 2.0, cellHeight)
         return size
     }
 
     private func smallWeightCellSize() -> CGSize {
-        let size = CGSizeMake(4.5*(self.collectionView!.bounds.width - spaceBetweenCellsInOneRow) / 10.0, cellHeight)
+        let size = CGSize(4.5*(self.collectionView!.bounds.width - spaceBetweenCellsInOneRow) / 10.0, cellHeight)
         return size
     }
 
     private func smallHeightCellSize() -> CGSize {
-        let size = CGSizeMake(3.5*(self.collectionView!.bounds.width - spaceBetweenCellsInOneRow) / 10.0, cellHeight)
+        let size = CGSize(3.5*(self.collectionView!.bounds.width - spaceBetweenCellsInOneRow) / 10.0, cellHeight)
         return size
     }
 
     private func smallHeightInchesCellSize() -> CGSize {
-        let size = CGSizeMake(2*(self.collectionView!.bounds.width - spaceBetweenCellsInOneRow) / 10.0, cellHeight)
+        let size = CGSize(2*(self.collectionView!.bounds.width - spaceBetweenCellsInOneRow) / 10.0, cellHeight)
         return size
     }
 

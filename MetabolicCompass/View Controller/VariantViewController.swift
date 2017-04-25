@@ -1,6 +1,6 @@
 //
 //  VariantViewController.swift
-//  MetabolicCompass
+//  MetabolicCompass 
 //
 //  Created by Yanif Ahmad on 2/12/16.
 //  Copyright © 2016 Yanif Ahmad, Tom Woolf. All rights reserved.

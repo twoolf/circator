@@ -1,8 +1,8 @@
 //
 //  IntroCompareDataTableViewCell.swift
-//  MetabolicCompass
+//  MetabolicCompass 
 //
-//  Created by Sihao Lu on 10/2/15.
+//  Created by Sihao Lu on 10/2/15. 
 //  Copyright © 2015 Yanif Ahmad, Tom Woolf. All rights reserved.
 //
 
@@ -20,7 +20,7 @@ class IntroCompareDataTableViewCell: UITableViewCell {
 
     lazy var healthParameterImageView: UIImageView = {
         let imageView = UIImageView()
-        imageView.contentMode = .ScaleAspectFit
+        imageView.contentMode = .scaleAspectFit
         imageView.tintColor = Theme.universityDarkTheme.foregroundColor
         return imageView
     }()
@@ -28,10 +28,10 @@ class IntroCompareDataTableViewCell: UITableViewCell {
     lazy var userDataLabel: UILabel = {
         let label = UILabel()
         label.textColor = Theme.universityDarkTheme.bodyTextColor
-        label.backgroundColor = UIColor.clearColor()
+        label.backgroundColor = UIColor.clear
         label.text = "75 kg"
-        label.textAlignment = .Center
-        label.font = UIFont.systemFontOfSize(20)
+        label.textAlignment = .center
+        label.font = UIFont.systemFont(ofSize: 20)
         label.minimumScaleFactor = 0.5
         label.adjustsFontSizeToFitWidth = true
         return label
@@ -40,10 +40,10 @@ class IntroCompareDataTableViewCell: UITableViewCell {
     lazy var populationAverageLabel: UILabel = {
         let label = UILabel()
         label.textColor = Theme.universityDarkTheme.bodyTextColor
-        label.backgroundColor = UIColor.clearColor()
+        label.backgroundColor = UIColor.clear
         label.text = "123"
-        label.textAlignment = .Center
-        label.font = UIFont.systemFontOfSize(20)
+        label.textAlignment = .center
+        label.font = UIFont.systemFont(ofSize: 20)
         label.minimumScaleFactor = 0.5
         label.adjustsFontSizeToFitWidth = true
         return label
@@ -51,9 +51,9 @@ class IntroCompareDataTableViewCell: UITableViewCell {
 
     lazy var labelContainerView: UIStackView = {
         let stackView = UIStackView(arrangedSubviews: [self.userDataLabel, self.populationAverageLabel])
-        stackView.axis = .Horizontal
-        stackView.distribution = UIStackViewDistribution.FillEqually
-        stackView.alignment = UIStackViewAlignment.Fill
+        stackView.axis = .horizontal
+        stackView.distribution = UIStackViewDistribution.fillEqually
+        stackView.alignment = UIStackViewAlignment.fill
         stackView.spacing = 10
         return stackView
     }()
@@ -64,7 +64,7 @@ class IntroCompareDataTableViewCell: UITableViewCell {
                 healthParameterImageView.image = nil
                 return
             }
-            healthParameterImageView.image = PreviewManager.iconForSampleType(sampleType!)
+            healthParameterImageView.image = PreviewManager.iconForSampleType(sampleType: sampleType!)
         }
     }
 
@@ -72,19 +72,19 @@ class IntroCompareDataTableViewCell: UITableViewCell {
 
     /// loading both User and Population samples
     func setUserData(userData: [MCSample], populationAverageData: [MCSample], stalePopulation: Bool = false) {
-        loadUserSamples(userData, toLabel: userDataLabel)
-        loadPopSamples(populationAverageData, toLabel: populationAverageLabel, stale: stalePopulation)
+        loadUserSamples(results: userData, toLabel: userDataLabel)
+        loadPopSamples(results: populationAverageData, toLabel: populationAverageLabel, stale: stalePopulation)
     }
 
     /// note setUserData above that uses this call
     private func loadUserSamples( results: [MCSample], toLabel label: UILabel) {
-        label.text = IntroCompareDataTableViewCell.healthFormatter.stringFromSamples(results)
+        label.text = IntroCompareDataTableViewCell.healthFormatter.stringFromSamples(samples: results)
     }
 
     /// note setUserData above that uses this call
     private func loadPopSamples(results: [MCSample], toLabel label: UILabel, stale: Bool) {
-        label.text = IntroCompareDataTableViewCell.healthFormatter.stringFromSamples(results)
-        if stale { label.textColor = UIColor.yellowColor() }
+        label.text = IntroCompareDataTableViewCell.healthFormatter.stringFromSamples(samples: results)
+        if stale { label.textColor = UIColor.yellow }
         else { label.textColor = Theme.universityDarkTheme.bodyTextColor }
     }
 
@@ -100,32 +100,32 @@ class IntroCompareDataTableViewCell: UITableViewCell {
 
     /// constraints and styles
     private func configureView() {
-        backgroundColor = UIColor.clearColor()
+        backgroundColor = UIColor.clear
         contentView.addSubview(healthParameterImageView)
         healthParameterImageView.translatesAutoresizingMaskIntoConstraints = false
-        let topConstraint = healthParameterImageView.topAnchor.constraintEqualToAnchor(contentView.topAnchor, constant: 8)
+        let topConstraint = healthParameterImageView.topAnchor.constraint(equalTo: contentView.topAnchor, constant: 8)
         topConstraint.priority = 999
         let imageViewConstraints: [NSLayoutConstraint] = [
-            healthParameterImageView.leadingAnchor.constraintEqualToAnchor(contentView.layoutMarginsGuide.leadingAnchor, constant: 10),
-            healthParameterImageView.widthAnchor.constraintEqualToAnchor(healthParameterImageView.heightAnchor),
+            healthParameterImageView.leadingAnchor.constraint(equalTo: contentView.layoutMarginsGuide.leadingAnchor, constant: 10),
+            healthParameterImageView.widthAnchor.constraint(equalTo: healthParameterImageView.heightAnchor),
             topConstraint,
-            healthParameterImageView.bottomAnchor.constraintEqualToAnchor(contentView.bottomAnchor, constant: -8),
-            healthParameterImageView.heightAnchor.constraintEqualToConstant(37)
+            healthParameterImageView.bottomAnchor.constraint(equalTo: contentView.bottomAnchor, constant: -8),
+            healthParameterImageView.heightAnchor.constraint(equalToConstant: 37)
         ]
         contentView.addConstraints(imageViewConstraints)
         labelContainerView.translatesAutoresizingMaskIntoConstraints = false
         contentView.addSubview(labelContainerView)
         let labelConstraints: [NSLayoutConstraint] = [
-            labelContainerView.leadingAnchor.constraintEqualToAnchor(healthParameterImageView.trailingAnchor, constant: 15),
-            labelContainerView.trailingAnchor.constraintEqualToAnchor(contentView.trailingAnchor),
-            labelContainerView.topAnchor.constraintEqualToAnchor(contentView.topAnchor, constant: 0),
-            labelContainerView.bottomAnchor.constraintEqualToAnchor(contentView.bottomAnchor)
+            labelContainerView.leadingAnchor.constraint(equalTo: healthParameterImageView.trailingAnchor, constant: 15),
+            labelContainerView.trailingAnchor.constraint(equalTo: contentView.trailingAnchor),
+            labelContainerView.topAnchor.constraint(equalTo: contentView.topAnchor, constant: 0),
+            labelContainerView.bottomAnchor.constraint(equalTo: contentView.bottomAnchor)
         ]
         contentView.addConstraints(labelConstraints)
 
     }
 
-    override func setSelected(selected: Bool, animated: Bool) {
+    override func setSelected(_ selected: Bool, animated: Bool) {
         super.setSelected(selected, animated: animated)
 
     }

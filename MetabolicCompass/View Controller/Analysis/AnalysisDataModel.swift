@@ -1,6 +1,6 @@
 //
 //  AnalysisDataModel.swift
-//  MetabolicCompass
+//  MetabolicCompass 
 //
 //  Created by Yanif Ahmad on 10/8/16.
 //  Copyright © 2016 Yanif Ahmad, Tom Woolf. All rights reserved.
@@ -21,10 +21,10 @@ public class AnalysisDataModel {
 
     public var cycleModel: CycleDataModel = CycleDataModel()
 
-    public func refreshStudyStats(ringIndexKeys: [String], completion: Bool -> Void) {
+    public func refreshStudyStats(ringIndexKeys: [String], completion: @escaping (Bool) -> Void) {
         PopulationHealthManager.sharedManager.fetchStudyStats { (success, payload) in
             if success && payload != nil {
-                if let response = payload as? [String:AnyObject], studystats = response["result"] as? [String:AnyObject] {
+                if let response = payload as? [String:AnyObject], let studystats = response["result"] as? [String:AnyObject] {
                     self.studyStatsModel = StudyStatsModel(ringIndexKeys: ringIndexKeys, studystats: studystats)
                 } else {
                     log.error("Failed to refresh study stats from \(payload)")

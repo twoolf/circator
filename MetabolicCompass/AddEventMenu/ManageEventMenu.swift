@@ -40,7 +40,7 @@ public class ManageEventMenu: UIView, CAAnimationDelegate, PathMenuItemDelegate 
     public weak var delegate: ManageEventMenuDelegate?
 
     public var flag: Int?
-    public var timer: NSTimer?
+    public var timer: Timer?
 
     public var timeOffset: CGFloat!
 
@@ -49,7 +49,7 @@ public class ManageEventMenu: UIView, CAAnimationDelegate, PathMenuItemDelegate 
 
     public var motionState: State?
 
-    public var startPoint: CGPoint = CGPointZero {
+    public var startPoint: CGPoint = CGPoint.zero {
         didSet {
             startButton?.center = startPoint
         }
@@ -104,14 +104,14 @@ public class ManageEventMenu: UIView, CAAnimationDelegate, PathMenuItemDelegate 
         self.init(frame: frame)
 
         self.menuItems = items ?? []
-        self.menuItems.enumerate().forEach { (index, item) in
+        self.menuItems.enumerated().forEach { (index, item) in
             item.tag = itemsTag + index
         }
 
         self.timeOffset = 0.036
         self.animationDuration = Duration.DefaultAnimation
         self.startMenuAnimationDuration = Duration.MenuDefaultAnimation
-        self.startPoint = CGPointMake(UIScreen.mainScreen().bounds.width/2, UIScreen.mainScreen().bounds.height/2)
+        self.startPoint = CGPoint(UIScreen.main.bounds.width/2, UIScreen.main.bounds.height/2)
         self.motionState = .Close
         
         self.startButton = startItem
@@ -119,21 +119,21 @@ public class ManageEventMenu: UIView, CAAnimationDelegate, PathMenuItemDelegate 
         self.startButton!.center = startPoint
         self.addSubview(startButton!)
 
-        let attrs = [NSFontAttributeName: UIFont.systemFontOfSize(17, weight: UIFontWeightRegular)]
+        let attrs = [NSFontAttributeName: UIFont.systemFont(ofSize: 17, weight: UIFontWeightRegular)]
         self.segmenter = UISegmentedControl(items: ["Add Activity", "Delete Activity"])
         self.segmenter.selectedSegmentIndex = 0
-        self.segmenter.setTitleTextAttributes(attrs, forState: .Normal)
-        self.segmenter.addTarget(self, action: #selector(segmentChanged(_:)), forControlEvents: .ValueChanged)
+        self.segmenter.setTitleTextAttributes(attrs, for: .normal)
+        self.segmenter.addTarget(self, action: #selector(self.segmentChanged(_:)), for: .ValueChanged)
 
-        self.segmenter.hidden = true
+        self.segmenter.isHidden = true
         self.segmenter.translatesAutoresizingMaskIntoConstraints = false
         self.addSubview(segmenter)
 
         let segConstraints : [NSLayoutConstraint] = [
-            segmenter.topAnchor.constraintEqualToAnchor(topAnchor, constant: 60.0),
-            segmenter.heightAnchor.constraintEqualToConstant(30.0),
-            segmenter.leadingAnchor.constraintEqualToAnchor(leadingAnchor, constant: 20.0),
-            segmenter.trailingAnchor.constraintEqualToAnchor(trailingAnchor, constant: -20.0)
+            segmenter.topAnchor.constraint(equalTo: topAnchor, constant: 60.0),
+            segmenter.heightAnchor.constraint(equalToConstant: 30.0),
+            segmenter.leadingAnchor.constraint(equalTo: leadingAnchor, constant: 20.0),
+            segmenter.trailingAnchor.constraint(equalTo: trailingAnchor, constant: -20.0)
         ]
 
         self.addConstraints(segConstraints)
@@ -141,14 +141,15 @@ public class ManageEventMenu: UIView, CAAnimationDelegate, PathMenuItemDelegate 
         // self.addTableView = AddEventTable(frame: CGRect.zero, style: .Grouped, menuItems: self.menuItems, notificationView: self.segmenter)
         // self.delTableView = DeleteEventTable(frame: CGRect.zero, style: .Grouped, menuItems: self.menuItems, notificationView: self.segmenter)
 
-        self.addView = AddActivityManager(frame: CGRect.zero, style: .Grouped, menuItems: self.menuItems, notificationView: self.segmenter)
-        self.delView = DeleteActivityManager(frame: CGRect.zero, style: .Grouped, notificationView: self.segmenter)
+        self.addView = AddActivityManager(frame: CGRect.zero, style: .grouped, menuItems: self.menuItems, notificationView: self.segmenter)
+        self.delView = DeleteActivityManager(frame: CGRect.zero, style: .grouped, notificationView: self.segmenter)
     }
 
     public func logContentView(asAppear: Bool = true) {
-        Answers.logContentViewWithName("Quick Add Activity",
+        Answers.logContentView(withName: "Quick Add Activity",
                                        contentType: asAppear ? "Appear" : "Disappear",
-                                       contentId: Date().toString(DateFormat.Custom("YYYY-MM-dd:HH")),
+//                                       contentId: Date().toString(DateFormat.Custom("YYYY-MM-dd:HH")),
+            contentId: Date().string(),
                                        customAttributes: ["action": (segmenter?.selectedSegmentIndex) ?? 0])
     }
 
@@ -169,16 +170,16 @@ public class ManageEventMenu: UIView, CAAnimationDelegate, PathMenuItemDelegate 
     }
 
     public func hideView(hide: Bool = false) {
-        self.segmenter.hidden = hide
-        refreshHiddenFromSegmenter(hide)
+        self.segmenter.isHidden = hide
+        refreshHiddenFromSegmenter(hide: hide)
     }
 
     public func refreshHiddenFromSegmenter(hide: Bool = false) {
-        getCurrentManagerView()?.hidden = hide
-        getOtherManagerView()?.hidden = true
+        getCurrentManagerView()?.isHidden = hide
+        getOtherManagerView()?.isHidden = true
     }
 
-    func segmentChanged(sender: UISegmentedControl) {
+    public func segmentChanged(sender: UISegmentedControl) {
         Async.main {
             self.refreshHiddenFromSegmenter()
             self.updateViewFromSegmenter()
@@ -187,25 +188,25 @@ public class ManageEventMenu: UIView, CAAnimationDelegate, PathMenuItemDelegate 
 
     //MARK: UIView's methods
 
-    override public func pointInside(point: CGPoint, withEvent event: UIEvent?) -> Bool {
+    override public func point(inside point: CGPoint, with event: UIEvent?) -> Bool {
         if motionState == .Expand { return true }
-        return CGRectContainsPoint(startButton!.frame, point)
+        return startButton!.frame.contains(point)
     }
 
     public func animationDidStop(anim: CAAnimation, finished flag: Bool) {
-        if let animId = anim.valueForKey("id") {
-            if animId.isEqual("lastAnimation") {
-                delegate?.manageEventMenuDidFinishAnimationClose(self)
+        if let animId = anim.value(forKey: "id") {
+            if (animId as AnyObject).isEqual("lastAnimation") {
+                delegate?.manageEventMenuDidFinishAnimationClose(menu: self)
             }
-            if animId.isEqual("firstAnimation") {
-                delegate?.manageEventMenuDidFinishAnimationOpen(self)
+            if (animId as AnyObject).isEqual("firstAnimation") {
+                delegate?.manageEventMenuDidFinishAnimationOpen(menu: self)
             }
         }
     }
 
     //MARK: UIGestureRecognizer
     
-    public override func touchesBegan(touches: Set<UITouch>, withEvent event: UIEvent?) {
+    public func touchesBegan(touches: Set<UITouch>, withEvent event: UIEvent?) {
         handleTap()
     }
     
@@ -219,14 +220,14 @@ public class ManageEventMenu: UIView, CAAnimationDelegate, PathMenuItemDelegate 
         if item == startButton { return }
 
         motionState = .Close
-        delegate?.manageEventMenuWillAnimateClose(self)
+        delegate?.manageEventMenuWillAnimateClose(menu: self)
         
         let angle = motionState == .Expand ? CGFloat(M_PI_4) + CGFloat(M_PI) : 0.0
-        UIView.animateWithDuration(Double(startMenuAnimationDuration!), animations: { [weak self] () -> Void in
-            self?.startButton?.transform = CGAffineTransformMakeRotation(angle)
+        UIView.animate(withDuration: Double(startMenuAnimationDuration!), animations: { [weak self] () -> Void in
+            self?.startButton?.transform = CGAffineTransform(rotationAngle: angle)
         })
         
-        delegate?.manageEventMenu(self, didSelectIndex: item.tag - itemsTag)
+        delegate?.manageEventMenu(menu: self, didSelectIndex: item.tag - itemsTag)
     }
     
     //MARK: Animation, Position
@@ -240,27 +241,27 @@ public class ManageEventMenu: UIView, CAAnimationDelegate, PathMenuItemDelegate 
         switch state {
         case .Close:
             setMenu()
-            delegate?.manageEventMenuWillAnimateOpen(self)
+            delegate?.manageEventMenuWillAnimateOpen(menu: self)
             selector = #selector(expand)
             flag = 0
             motionState = .Expand
             angle = CGFloat(M_PI_4) + CGFloat(M_PI)
         case .Expand:
-            delegate?.manageEventMenuWillAnimateClose(self)
+            delegate?.manageEventMenuWillAnimateClose(menu: self)
             selector = #selector(close)
             flag = 10
             motionState = .Close
             angle = 0
         }
         
-        UIView.animateWithDuration(Double(startMenuAnimationDuration!), animations: { [weak self] () -> Void in
-            self?.startButton?.transform = CGAffineTransformMakeRotation(angle)
+        UIView.animate(withDuration: Double(startMenuAnimationDuration!), animations: { [weak self] () -> Void in
+            self?.startButton?.transform = CGAffineTransform(rotationAngle: angle)
         })
         
         if timer == nil {
-            timer = NSTimer.scheduledTimerWithTimeInterval(Double(timeOffset!), target: self, selector: selector, userInfo: nil, repeats: true)
+            timer = Timer.scheduledTimer(timeInterval: Double(timeOffset!), target: self, selector: selector, userInfo: nil, repeats: true)
             if let timer = timer {
-                NSRunLoop.currentRunLoop().addTimer(timer, forMode: NSRunLoopCommonModes)
+                RunLoop.current.add(timer, forMode: RunLoopMode.commonModes)
             }
         }
     }
@@ -273,12 +274,12 @@ public class ManageEventMenu: UIView, CAAnimationDelegate, PathMenuItemDelegate 
         }
 
         let opacityAnimation = CABasicAnimation(keyPath: "opacity")
-        opacityAnimation.fromValue = NSNumber(float: 0.0)
-        opacityAnimation.toValue = NSNumber(float: 1.0)
+        opacityAnimation.fromValue = NSNumber(value: 0.0)
+        opacityAnimation.toValue = NSNumber(value: 1.0)
 
         let scaleAnimation = CABasicAnimation(keyPath: "transform")
-        scaleAnimation.fromValue = NSValue(CATransform3D: CATransform3DMakeScale(1.2, 1.2, 1))
-        scaleAnimation.toValue = NSValue(CATransform3D: CATransform3DMakeScale(1, 1, 1))
+        scaleAnimation.fromValue = NSValue(caTransform3D: CATransform3DMakeScale(1.2, 1.2, 1))
+        scaleAnimation.toValue = NSValue(caTransform3D: CATransform3DMakeScale(1, 1, 1))
 
         let animationgroup: CAAnimationGroup = CAAnimationGroup()
         animationgroup.animations     = [opacityAnimation, scaleAnimation]
@@ -291,7 +292,7 @@ public class ManageEventMenu: UIView, CAAnimationDelegate, PathMenuItemDelegate 
             animationgroup.setValue("firstAnimation", forKey: "id")
         }
 
-        getCurrentManagerView()?.layer.addAnimation(animationgroup, forKey: "Expand")
+        getCurrentManagerView()?.layer.add(animationgroup, forKey: "Expand")
         getCurrentManagerView()?.layer.opacity = 1.0
 
         flag! += 1
@@ -305,12 +306,12 @@ public class ManageEventMenu: UIView, CAAnimationDelegate, PathMenuItemDelegate 
         }
 
         let opacityAnimation = CABasicAnimation(keyPath: "opacity")
-        opacityAnimation.fromValue = NSNumber(float: 1.0)
-        opacityAnimation.toValue = NSNumber(float: 0.0)
+        opacityAnimation.fromValue = NSNumber(value: 1.0)
+        opacityAnimation.toValue = NSNumber(value: 0.0)
 
         let scaleAnimation = CABasicAnimation(keyPath: "transform")
-        scaleAnimation.fromValue = NSValue(CATransform3D: CATransform3DMakeScale(1, 1, 1))
-        scaleAnimation.toValue = NSValue(CATransform3D: CATransform3DMakeScale(1.2, 1.2, 1))
+        scaleAnimation.fromValue = NSValue(caTransform3D: CATransform3DMakeScale(1, 1, 1))
+        scaleAnimation.toValue = NSValue(caTransform3D: CATransform3DMakeScale(1.2, 1.2, 1))
 
         let animationgroup: CAAnimationGroup = CAAnimationGroup()
         animationgroup.animations     = [opacityAnimation, scaleAnimation]
@@ -323,14 +324,14 @@ public class ManageEventMenu: UIView, CAAnimationDelegate, PathMenuItemDelegate 
             animationgroup.setValue("lastAnimation", forKey: "id")
         }
 
-        getCurrentManagerView()?.layer.addAnimation(animationgroup, forKey: "Close")
+        getCurrentManagerView()?.layer.add(animationgroup, forKey: "Close")
         getCurrentManagerView()?.layer.opacity = 0.0
 
         flag! -= 1
     }
     
     public func setMenu() {
-        for (index, menuItem) in menuItems.enumerate() {
+        for (index, menuItem) in menuItems.enumerated() {
             let item = menuItem
             item.tag = itemsTag + index
             item.delegate = self
@@ -355,19 +356,19 @@ public class ManageEventMenu: UIView, CAAnimationDelegate, PathMenuItemDelegate 
         if let manager = getCurrentManagerView() {
             if let adder = manager as? AddActivityManager { adder.reloadData() }
 
-            manager.backgroundColor = .clearColor()
+            manager.backgroundColor = .clear
             manager.translatesAutoresizingMaskIntoConstraints = false
             insertSubview(manager, belowSubview: startButton!)
 
-            let screenSize = UIScreen.mainScreen().bounds.size
+            let screenSize = UIScreen.main.bounds.size
             let topAnchorOffset: CGFloat = screenSize.height < 569 ? 0.0: 20.0
             let bottomAnchorOffset: CGFloat = -44.0
 
             let managerConstraints: [NSLayoutConstraint] = [
-                manager.topAnchor.constraintEqualToAnchor(segmenter.bottomAnchor, constant: topAnchorOffset),
-                manager.bottomAnchor.constraintEqualToAnchor(bottomAnchor, constant: bottomAnchorOffset),
-                manager.leadingAnchor.constraintEqualToAnchor(leadingAnchor),
-                manager.trailingAnchor.constraintEqualToAnchor(trailingAnchor)
+                manager.topAnchor.constraint(equalTo: segmenter.bottomAnchor, constant: topAnchorOffset),
+                manager.bottomAnchor.constraint(equalTo: bottomAnchor, constant: bottomAnchorOffset),
+                manager.leadingAnchor.constraint(equalTo: leadingAnchor),
+                manager.trailingAnchor.constraint(equalTo: trailingAnchor)
             ]
             self.addConstraints(managerConstraints)
             logContentView()

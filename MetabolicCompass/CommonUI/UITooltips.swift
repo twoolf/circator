@@ -2,7 +2,7 @@
 //  UITooltips.swift
 //  MetabolicCompass
 //
-//  Created by Yanif Ahmad on 7/17/16.
+//  Created by Yanif Ahmad on 7/17/16.   
 //  Copyright © 2016 Yanif Ahmad, Tom Woolf. All rights reserved.
 //
 
@@ -14,9 +14,9 @@ public class UITooltips : NSObject {
 
     public override init() {
         var preferences = EasyTipView.Preferences()
-        preferences.drawing.foregroundColor = .whiteColor()
-        preferences.drawing.backgroundColor = .blueColor()
-        preferences.drawing.arrowPosition = .Top
+        preferences.drawing.foregroundColor = .white
+        preferences.drawing.backgroundColor = .blue
+        preferences.drawing.arrowPosition = .top
         EasyTipView.globalPreferences = preferences
     }
 
@@ -26,18 +26,18 @@ public class UITooltips : NSObject {
 
     public func tipBelow() -> EasyTipView.Preferences {
         var preferences = EasyTipView.Preferences()
-        preferences.drawing.foregroundColor = .whiteColor()
-        preferences.drawing.backgroundColor = .blueColor()
-        preferences.drawing.arrowPosition = .Top
+        preferences.drawing.foregroundColor = .white
+        preferences.drawing.backgroundColor = .blue
+        preferences.drawing.arrowPosition = .top
         preferences.positioning.maxWidth = ScreenManager.sharedInstance.tooltipMaxWidth()
         return preferences
     }
 
     public func tipAbove() -> EasyTipView.Preferences {
         var preferences = EasyTipView.Preferences()
-        preferences.drawing.foregroundColor = .whiteColor()
-        preferences.drawing.backgroundColor = .blueColor()
-        preferences.drawing.arrowPosition = .Bottom
+        preferences.drawing.foregroundColor = .white
+        preferences.drawing.backgroundColor = .blue
+        preferences.drawing.arrowPosition = .bottom
         preferences.positioning.maxWidth = ScreenManager.sharedInstance.tooltipMaxWidth()
         return preferences
     }
@@ -72,7 +72,7 @@ public class TapTip : NSObject, EasyTipViewDelegate {
         }
     }
 
-    public func easyTipViewDidDismiss(tipView: EasyTipView) {
+    public func easyTipViewDidDismiss(_ tipView: EasyTipView) {
         visible = false
     }
 }

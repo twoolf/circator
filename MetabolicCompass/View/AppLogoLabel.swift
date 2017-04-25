@@ -1,6 +1,6 @@
 //
 //  AppLogoLabel.swift
-//  MetabolicCompass
+//  MetabolicCompass 
 //
 //  Created by Anna Tkach on 5/16/16.
 //  Copyright © 2016 Yanif Ahmad, Tom Woolf. All rights reserved.
@@ -12,13 +12,13 @@ import MetabolicCompassKit
 
 class AppLogoLabel: UIView {
     
-    var logoFont = ScreenManager.appFontOfSize(16.0) {
+    var logoFont = ScreenManager.appFontOfSize(size: 16.0) {
         didSet {
             label.font = logoFont
         }
     }
     
-    var logoColor = UIColor.whiteColor() {
+    var logoColor = UIColor.whiteColor {
         didSet {
             label.textColor = logoColor
             topLine.backgroundColor = logoColor
@@ -57,36 +57,36 @@ class AppLogoLabel: UIView {
         // init label
         label = UILabel(frame: bounds)
         label.autoresizingMask =
-            [ .FlexibleBottomMargin,
-              .FlexibleHeight,
-              .FlexibleLeftMargin,
-              .FlexibleRightMargin,
-              .FlexibleTopMargin,
-              .FlexibleWidth ]
+            [ .flexibleBottomMargin,
+              .flexibleHeight,
+              .flexibleLeftMargin,
+              .flexibleRightMargin,
+              .flexibleTopMargin,
+              .flexibleWidth ]
         label.text = logoText
         label.font = logoFont
         label.textColor = logoColor
-        label.textAlignment = .Center
+        label.textAlignment = .center
         
         self.addSubview(label)
         
         // init top line
-        topLine = UIView(frame: CGRectMake(0, 0, bounds.size.width, lineHeight))
-        topLine.autoresizingMask =  [ .FlexibleLeftMargin,
-                                      .FlexibleRightMargin,
-                                      .FlexibleTopMargin,
-                                      .FlexibleWidth ]
+        topLine = UIView(frame: CGRect(0, 0, bounds.size.width, lineHeight))
+        topLine.autoresizingMask =  [ .flexibleLeftMargin,
+                                      .flexibleRightMargin,
+                                      .flexibleTopMargin,
+                                      .flexibleWidth ]
         topLine.backgroundColor = logoColor
         
         self.addSubview(topLine)
         
         // init bottom line
-        bottomLine = UIView(frame: CGRectMake(0, bounds.size.height - lineHeight, bounds.size.width, lineHeight))
+        bottomLine = UIView(frame: CGRect(0, bounds.size.height - lineHeight, bounds.size.width, lineHeight))
         bottomLine.autoresizingMask =  [
-                                      .FlexibleBottomMargin,
-                                      .FlexibleLeftMargin,
-                                      .FlexibleRightMargin,
-                                      .FlexibleWidth ]
+                                      .flexibleBottomMargin,
+                                      .flexibleLeftMargin,
+                                      .flexibleRightMargin,
+                                      .flexibleWidth ]
         bottomLine.backgroundColor = logoColor
         
         self.addSubview(bottomLine)

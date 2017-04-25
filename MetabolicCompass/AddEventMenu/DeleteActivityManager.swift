@@ -3,7 +3,7 @@
 //  MetabolicCompass
 //
 //  Created by Yanif Ahmad on 9/25/16.
-//  Copyright © 2016 Yanif Ahmad, Tom Woolf. All rights reserved. 
+//  Copyright © 2016 Yanif Ahmad, Tom Woolf. All rights reserved.   
 //
 
 import Foundation
@@ -74,27 +74,28 @@ public class DeleteActivityManager: UITableView, PickerManagerSelectionDelegate 
         super.init(coder: aDecoder)
     }
 
-    private func setupFormer() {
-        self.hidden = true
-        self.separatorStyle = .None
+    func setupFormer() {
+        self.isHidden = true
+        self.separatorStyle = .none
 
-        self.separatorInset = UIEdgeInsetsZero
-        self.layoutMargins = UIEdgeInsetsZero
+        self.separatorInset = UIEdgeInsets.zero
+        self.layoutMargins = UIEdgeInsets.zero
         self.cellLayoutMarginsFollowReadableWidth = false
 
         let datePickerFontSize: CGFloat = 16.0
 
-        let mediumDateShortTime: Date -> String = { date in
+        let mediumDateShortTime: (Date) -> String = { date in
             let dateFormatter = DateFormatter()
-            dateFormatter.locale = .currentLocale()
-            dateFormatter.timeStyle = .ShortStyle
-            dateFormatter.dateStyle = .MediumStyle
-            return dateFormatter.stringFromDate(date)
+//            dateFormatter.locale = .Locale()
+            dateFormatter.locale = .autoupdatingCurrent
+            dateFormatter.timeStyle = .short
+            dateFormatter.dateStyle = .medium
+            return dateFormatter.string(from: date)
         }
 
         let deleteRecentRow = AKPickerRowFormer<AKPickerCell>() {
-            $0.backgroundColor = .clearColor()
-            $0.manager.refreshData(items: self.quickDelRecentItems, data: self.quickDelRecentData)
+            $0.backgroundColor = .clear
+            $0.manager.refreshData(items: self.quickDelRecentItems, data: self.quickDelRecentData as [String : AnyObject])
             $0.manager.delegate = self
             $0.picker.reloadData()
             $0.imageview.image = UIImage(named: "icon-delete-quick")
@@ -105,23 +106,24 @@ public class DeleteActivityManager: UITableView, PickerManagerSelectionDelegate 
         }
 
         var endDate = Date()
-        endDate = endDate.add(minutes: 15 - (endDate.minute % 15))
+//        endDate = endDate.add(minutes: 15 - (endDate.minute % 15))
+        endDate = endDate.addingTimeInterval(TimeInterval(15 - (endDate.minute % 15)))
         delDates = [endDate - 15.minutes, endDate]
 
-        let deleteByDateRows = ["Start Date", "End Date"].enumerate().map { (index, rowName) in
+        let deleteByDateRows = ["Start Date", "End Date"].enumerated().map { (index, rowName) in
             return InlineDatePickerRowFormer<FormInlineDatePickerCell>() {
-                $0.backgroundColor = .clearColor()
+                $0.backgroundColor = .clear
                 $0.titleLabel.text = rowName
-                $0.titleLabel.textColor = .whiteColor()
+                $0.titleLabel.textColor = .white
                 $0.titleLabel.font = UIFont(name: "GothamBook", size: datePickerFontSize)!
-                $0.displayLabel.textColor = .lightGrayColor()
+                $0.displayLabel.textColor = .lightGray
                 $0.displayLabel.font = UIFont(name: "GothamBook", size: datePickerFontSize)!
                 }.inlineCellSetup {
-                    $0.datePicker.datePickerMode = .DateAndTime
+                    $0.datePicker.datePickerMode = .dateAndTime
                     $0.datePicker.minuteInterval = 15
                     $0.datePicker.date = self.delDates[index]
                 }.configure {
-                    $0.displayEditingColor = .whiteColor()
+                    $0.displayEditingColor = .white
                     $0.date = self.delDates[index]
                 }.displayTextFromDate(mediumDateShortTime)
         }
@@ -133,39 +135,39 @@ public class DeleteActivityManager: UITableView, PickerManagerSelectionDelegate 
 
         let headers = delPickerSections.map { sectionName in
             return LabelViewFormer<FormLabelHeaderView> {
-                $0.contentView.backgroundColor = .clearColor()
-                $0.titleLabel.backgroundColor = .clearColor()
-                $0.titleLabel.textColor = .lightGrayColor()
+                $0.contentView.backgroundColor = .clear
+                $0.titleLabel.backgroundColor = .clear
+                $0.titleLabel.textColor = .lightGray
                 $0.titleLabel.font = UIFont(name: "GothamBook", size: sectionHeaderSize)!
 
                 let button: MCButton = {
-                    let button = MCButton(frame: CGRectMake(0, 0, 66, 66), buttonStyle: .Rounded)
-                    button.buttonColor = .clearColor()
-                    button.shadowColor = .clearColor()
-                    button.shadowHeight = 0
+                    let button = MCButton(frame: CGRect(0, 0, 66, 66), buttonStyle: .rounded)
+                    button?.buttonColor = .clear
+                    button?.shadowColor = .clear
+                    button?.shadowHeight = 0
 
-                    button.setImage(UIImage(named: "icon-trash"), forState: .Normal)
-                    button.imageView?.contentMode = .ScaleAspectFit
+                    button?.setImage(UIImage(named: "icon-trash"), for: .normal)
+                    button?.imageView?.contentMode = .scaleAspectFit
 
                     if sectionName == self.delPickerSections[0] {
-                        button.addTarget(self, action: #selector(self.handleQuickDelRecentTap(_:)), forControlEvents: .TouchUpInside)
+                        button?.addTarget(self, action: #selector(DeleteActivityManager.handleQuickDelRecentTap(_:)), for: .TouchUpInside)
 
                     } else {
-                        button.addTarget(self, action: #selector(self.handleQuickDelDateTap(_:)), forControlEvents: .TouchUpInside)
+                        button?.addTarget(self, action: #selector(DeleteActivityManager.handleQuickDelDateTap(_:)), for: .TouchUpInside)
                     }
-                    return button
+                    return button!
                 }()
 
                 button.translatesAutoresizingMaskIntoConstraints = false
                 $0.contentView.addSubview(button)
 
                 let buttonConstraints : [NSLayoutConstraint] = [
-                    $0.contentView.topAnchor.constraintEqualToAnchor(button.topAnchor),
-                    $0.contentView.bottomAnchor.constraintEqualToAnchor(button.bottomAnchor),
-                    $0.contentView.trailingAnchor.constraintEqualToAnchor(button.trailingAnchor, constant: 10),
-                    button.widthAnchor.constraintEqualToConstant(66),
-                    button.heightAnchor.constraintEqualToConstant(66),
-                    $0.titleLabel.heightAnchor.constraintEqualToAnchor(button.heightAnchor)
+                    $0.contentView.topAnchor.constraint(equalTo: button.topAnchor),
+                    $0.contentView.bottomAnchor.constraint(equalTo: button.bottomAnchor),
+                    $0.contentView.trailingAnchor.constraint(equalTo: button.trailingAnchor, constant: 10),
+                    button.widthAnchor.constraint(equalToConstant: 66),
+                    button.heightAnchor.constraint(equalToConstant: 66),
+                    $0.titleLabel.heightAnchor.constraint(equalTo: button.heightAnchor)
                 ]
 
                 $0.contentView.addConstraints(buttonConstraints)
@@ -186,40 +188,41 @@ public class DeleteActivityManager: UITableView, PickerManagerSelectionDelegate 
         if error != nil { log.error(error!.localizedDescription) }
         else {
             Async.main {
-                UINotifications.genericSuccessMsgOnView(self.notificationView ?? self.superview!, msg: "Successfully deleted events.")
+                UINotifications.genericSuccessMsgOnView(view: self.notificationView ?? self.superview!, msg: "Successfully deleted events.")
                 if let sender = sender {
-                    sender.enabled = true
+                    sender.isEnabled = true
                     sender.setNeedsDisplay()
                 }
             }
-            NSNotificationCenter.defaultCenter().postNotificationName(MEMDidUpdateCircadianEvents, object: nil)
+            NotificationCenter.default.post(name: NSNotification.Name(rawValue: MEMDidUpdateCircadianEvents), object: nil)
         }
     }
 
-    func handleQuickDelRecentTap(sender: UIButton)  {
+    public func handleQuickDelRecentTap(sender: UIButton)  {
         log.debug("Delete recent tapped", feature: "deleteActivity")
         if let mins = delRecentManager.getSelectedValue() as? Int {
             let endDate = Date()
-            let startDate = endDate.dateByAddingTimeInterval(-(Double(mins) * 60.0))
+//            let startDate = endDate.dateByAddingTimeInterval(-(Double(mins) * 60.0))
+            let startDate = endDate.addHours(hoursToAdd: -(mins)*60)
             log.debug("Delete circadian events between \(startDate) \(endDate)", feature: "deleteActivity")
-            Async.main { sender.enabled = false; sender.setNeedsDisplay() }
+            Async.main { sender.isEnabled = false; sender.setNeedsDisplay() }
             MCHealthManager.sharedManager.deleteCircadianEvents(startDate, endDate: endDate) {
-                self.circadianOpCompletion(sender, pickerManager: nil, error: $0)
+                self.circadianOpCompletion(sender: sender, pickerManager: nil, error: $0)
             }
         }
     }
 
-    func handleQuickDelDateTap(sender: UIButton) {
+    public func handleQuickDelDateTap(sender: UIButton) {
         let startDate = delDates[0]
         let endDate = delDates[1]
         if startDate < endDate {
             log.debug("Delete circadian events between \(startDate) \(endDate)", feature: "deleteActivity")
-            Async.main { sender.enabled = false; sender.setNeedsDisplay() }
+            Async.main { sender.isEnabled = false; sender.setNeedsDisplay() }
             MCHealthManager.sharedManager.deleteCircadianEvents(startDate, endDate: endDate) {
-                self.circadianOpCompletion(sender, pickerManager: nil, error: $0)
+                self.circadianOpCompletion(sender: sender, pickerManager: nil, error: $0)
             }
         } else {
-            UINotifications.genericErrorOnView(self.notificationView ?? self.superview!, msg: "Start date must be before the end date")
+            UINotifications.genericErrorOnView(view: self.notificationView ?? self.superview!, msg: "Start date must be before the end date")
         }
     }
 
@@ -227,31 +230,32 @@ public class DeleteActivityManager: UITableView, PickerManagerSelectionDelegate 
         log.debug("Delete recent picker selected \(item) \(data)", feature: "deleteActivity")
         if let mins = data as? Int {
             let endDate = Date()
-            let startDate = endDate.dateByAddingTimeInterval(-(Double(mins) * 60.0))
+//            let startDate = endDate.dateByAddingTimeInterval(-(Double(mins) * 60.0))
+            let startDate = endDate.addHours(hoursToAdd: -mins*60)
             log.debug("Delete circadian events between \(startDate) \(endDate)", feature: "deleteActivity")
 
-            if let rootVC = UIApplication.sharedApplication().delegate?.window??.rootViewController {
+            if let rootVC = UIApplication.shared.delegate?.window??.rootViewController {
                 var interval = "\(mins) minutes"
                 if mins == 60 { interval = "1 hour" }
                 else if mins % 60 == 0 { interval = "\(mins/60) hours" }
 
                 let msg = "Are you sure you wish to delete all events in the last \(interval)?"
-                let alertController = UIAlertController(title: "", message: msg, preferredStyle: .Alert)
+                let alertController = UIAlertController(title: "", message: msg, preferredStyle: .alert)
 
-                let cancelAction = UIAlertAction(title: "Cancel", style: .Cancel) { (alertAction: UIAlertAction!) in
-                    rootVC.dismissViewControllerAnimated(true, completion: nil)
+                let cancelAction = UIAlertAction(title: "Cancel", style: .cancel) { (alertAction: UIAlertAction!) in
+                    rootVC.dismiss(animated: true, completion: nil)
                     pickerManager.finishProcessingSelection()
                 }
 
-                let okAction = UIAlertAction(title: "OK", style: .Default) { (alertAction: UIAlertAction!) in
-                    rootVC.dismissViewControllerAnimated(true, completion: nil)
+                let okAction = UIAlertAction(title: "OK", style: .default) { (alertAction: UIAlertAction!) in
+                    rootVC.dismiss(animated: true, completion: nil)
                     MCHealthManager.sharedManager.deleteCircadianEvents(startDate, endDate: endDate) {
-                        self.circadianOpCompletion(nil, pickerManager: pickerManager, error: $0)
+                        self.circadianOpCompletion(sender: nil, pickerManager: pickerManager, error: $0)
                     }
                 }
                 alertController.addAction(cancelAction)
                 alertController.addAction(okAction)
-                rootVC.presentViewController(alertController, animated: true, completion: nil)
+                rootVC.present(alertController, animated: true, completion: nil)
             }
         }
     }

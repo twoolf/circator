@@ -20,40 +20,40 @@ import MCCircadianQueries
 
 typealias FrequentActivityCache = Cache<FrequentActivityInfo>
 
-class AppPickerManager: PickerManager, PickerManagerSelectionDelegate {
+open class AppPickerManager: PickerManager, PickerManagerSelectionDelegate {
 
     var apps: [UIStackView]
 
     private var notificationView: UIView! = nil
 
     static let activityApps: [String: AnyObject] = [
-        "Cardiograph"     : "cardiograph:",
-        "Sleep Cycle"     : "fb162575247235:", /* Sleep Cycle */
-        "Runkeeper"       : "fb62572192129:", /* Runkeeper */
-        "FitBit"          : "fitbit:",
-        "Garmin"          : "garmin:",
-        "LoseIt"          : "loseit:",
-        "MyFitnessPal"    : "mfp:",
-        "MyFitnessPal HD" : "mfphd:",
-        "MyPlate"         : "myplate:",
-        "Nike+ Run Club"  : "nikeplus:",
-        "Strava"          : "strava:",
-        "HealthMate"      : "withings-bd2:"
+        "Cardiograph"     : "cardiograph:" as AnyObject,
+        "Sleep Cycle"     : "fb162575247235:" as AnyObject, /* Sleep Cycle */
+        "Runkeeper"       : "fb62572192129:" as AnyObject, /* Runkeeper */
+        "FitBit"          : "fitbit:" as AnyObject,
+        "Garmin"          : "garmin:" as AnyObject,
+        "LoseIt"          : "loseit:" as AnyObject,
+        "MyFitnessPal"    : "mfp:" as AnyObject,
+        "MyFitnessPal HD" : "mfphd:" as AnyObject,
+        "MyPlate"         : "myplate:" as AnyObject,
+        "Nike+ Run Club"  : "nikeplus:" as AnyObject,
+        "Strava"          : "strava:" as AnyObject,
+        "HealthMate"      : "withings-bd2:" as AnyObject
     ]
 
     static let appIcons: [String: AnyObject] = [
-        "Cardiograph"     : "icon-Cardiograph",
-        "Sleep Cycle"     : "icon-SleepCycle",
-        "Runkeeper"       : "icon-runkeeper",
-        "FitBit"          : "icon-fitbit",
-        "Garmin"          : "icon-Garmin",
-        "LoseIt"          : "icon-LoseIt",
-        "MyFitnessPal"    : "icon-myfitnesspal",
-        "MyFitnessPal HD" : "icon-myfitnesspal",
-        "MyPlate"         : "icon-MyPlate",
-        "Nike+ Run Club"  : "icon-Nike+RunClub",
-        "Strava"          : "icon-Strava",
-        "HealthMate"      : "icon-WithingsHealthMate"
+        "Cardiograph"     : "icon-Cardiograph" as AnyObject,
+        "Sleep Cycle"     : "icon-SleepCycle" as AnyObject,
+        "Runkeeper"       : "icon-runkeeper" as AnyObject,
+        "FitBit"          : "icon-fitbit" as AnyObject,
+        "Garmin"          : "icon-Garmin" as AnyObject,
+        "LoseIt"          : "icon-LoseIt" as AnyObject,
+        "MyFitnessPal"    : "icon-myfitnesspal" as AnyObject,
+        "MyFitnessPal HD" : "icon-myfitnesspal" as AnyObject,
+        "MyPlate"         : "icon-MyPlate" as AnyObject,
+        "Nike+ Run Club"  : "icon-Nike+RunClub" as AnyObject,
+        "Strava"          : "icon-Strava" as AnyObject,
+        "HealthMate"      : "icon-WithingsHealthMate" as AnyObject,
     ]
 
     var availableActivityApps: [String: AnyObject] = [:]
@@ -63,32 +63,32 @@ class AppPickerManager: PickerManager, PickerManagerSelectionDelegate {
 
         self.availableActivityApps = Dictionary(pairs: AppPickerManager.activityApps.filter { (name, scheme) in
             if let scheme = scheme as? String, let url = NSURL(string: "\(scheme)//") {
-                return UIApplication.sharedApplication().canOpenURL(url)
+                return UIApplication.shared.canOpenURL(url as URL)
             }
             log.debug("App \(name) unavailable with scheme: \(scheme)", feature: "appIntegration")
             return false
         })
 
-        let ctor : String -> UIImageView = { name in
+        let ctor : (String) -> UIImageView = { name in
             let image = UIImage(named: AppPickerManager.appIcons[name]! as! String)!
             let view = UIImageView(image: image)
-            view.backgroundColor = UIColor.clearColor()
-            view.contentMode = .ScaleAspectFit
-            view.autoresizingMask = [.FlexibleWidth, .FlexibleHeight]
+            view.backgroundColor = UIColor.clear
+            view.contentMode = .scaleAspectFit
+            view.autoresizingMask = [.flexibleWidth, .flexibleHeight]
             view.layer.cornerRadius = 8
             view.layer.masksToBounds = true
-            view.layer.shadowColor = UIColor.lightGrayColor().CGColor
+            view.layer.shadowColor = UIColor.lightGray.cgColor
             view.layer.shadowOffset = CGSize(width: 3, height: 3)
             view.layer.shadowOpacity = 0.7
             view.layer.shadowRadius = 4.0
             return view
         }
 
-        let appNames = availableActivityApps.map({ $0.0 }).sort()
+        let appNames = availableActivityApps.map({ $0.0 }).sorted()
 
         self.apps = appNames.map { name in
-            let stack = UIComponents.createLabelledComponent(name, labelOnTop: false, labelFontSize: 12.0, stackAlignment: .Center, value: name, constructor: ctor)
-            stack.autoresizingMask = [.FlexibleWidth, .FlexibleHeight]
+            let stack = UIComponents.createLabelledComponent(title: name, labelOnTop: false, labelFontSize: 12.0, stackAlignment: .center, value: name, constructor: ctor)
+            stack.autoresizingMask = [.flexibleWidth, .flexibleHeight]
             return stack
         }
 
@@ -96,7 +96,7 @@ class AppPickerManager: PickerManager, PickerManagerSelectionDelegate {
     }
 
     func cellHeight() -> CGFloat {
-        let screenSize = UIScreen.mainScreen().bounds.size
+        let screenSize = UIScreen.main.bounds.size
         return (screenSize.width / 5) + 28.0
     }
 
@@ -104,7 +104,7 @@ class AppPickerManager: PickerManager, PickerManagerSelectionDelegate {
         let height = cellHeight()
 
         let txt = label.text ?? ""
-        let size = txt.sizeWithAttributes([NSFontAttributeName: label.font])
+        let size = txt.size(attributes: [NSFontAttributeName: label.font])
         return max(max(size.width, image.image!.size.width), height)
     }
 
@@ -122,19 +122,19 @@ class AppPickerManager: PickerManager, PickerManagerSelectionDelegate {
         image.translatesAutoresizingMaskIntoConstraints = false
         label.translatesAutoresizingMaskIntoConstraints = false
 
-        let width = cellWidth(label, image: image, item: item)
+        let width = cellWidth(label: label, image: image, item: item)
 
         let constraints: [NSLayoutConstraint] = [
-            image.widthAnchor.constraintEqualToAnchor(image.heightAnchor),
-            cellForItem.contentView.heightAnchor.constraintEqualToConstant(height),
-            cellForItem.contentView.topAnchor.constraintEqualToAnchor(apps[item].topAnchor, constant: -10.0),
-            cellForItem.contentView.bottomAnchor.constraintEqualToAnchor(apps[item].bottomAnchor, constant: 10.0),
-            cellForItem.contentView.centerXAnchor.constraintEqualToAnchor(apps[item].centerXAnchor),
-            apps[item].heightAnchor.constraintEqualToConstant(height - 20.0),
-            apps[item].centerXAnchor.constraintEqualToAnchor(image.centerXAnchor),
-            apps[item].centerXAnchor.constraintEqualToAnchor(label.centerXAnchor),
-            image.heightAnchor.constraintEqualToConstant(height - (label.font.lineHeight + 28.0)),
-            label.widthAnchor.constraintEqualToConstant(width)
+            image.widthAnchor.constraint(equalTo: image.heightAnchor),
+            cellForItem.contentView.heightAnchor.constraint(equalToConstant: height),
+            cellForItem.contentView.topAnchor.constraint(equalTo: apps[item].topAnchor, constant: -10.0),
+            cellForItem.contentView.bottomAnchor.constraint(equalTo: apps[item].bottomAnchor, constant: 10.0),
+            cellForItem.contentView.centerXAnchor.constraint(equalTo: apps[item].centerXAnchor),
+            apps[item].heightAnchor.constraint(equalToConstant: height - 20.0),
+            apps[item].centerXAnchor.constraint(equalTo: image.centerXAnchor),
+            apps[item].centerXAnchor.constraint(equalTo: label.centerXAnchor),
+            image.heightAnchor.constraint(equalToConstant: height - (label.font.lineHeight + 28.0)),
+            label.widthAnchor.constraint(equalToConstant: width)
         ]
 
         constraints[0].priority = 1000
@@ -142,7 +142,7 @@ class AppPickerManager: PickerManager, PickerManagerSelectionDelegate {
     }
 
     func pickerView(pickerView: AKPickerView, configureView view: UIView, forItem item: Int) {
-        configureItemContentView(view, item: item)
+        configureItemContentView(view: view, item: item)
     }
 
     func pickerView(pickerView: AKPickerView, contentHeightForItem item: Int) -> CGFloat {
@@ -153,7 +153,7 @@ class AppPickerManager: PickerManager, PickerManagerSelectionDelegate {
         let height = cellHeight()
 
         if let label = apps[item].subviews[1] as? UILabel, let image = apps[item].subviews[0] as? UIImageView {
-            return cellWidth(label, image: image, item: item)
+            return cellWidth(label: label, image: image, item: item)
         }
         return height
     }
@@ -161,14 +161,14 @@ class AppPickerManager: PickerManager, PickerManagerSelectionDelegate {
     // MARK : - PickerManagerSelectionDelegate
     func pickerItemSelected(pickerManager: PickerManager, itemType: String?, index: Int, item: String, data: AnyObject?) {
         if let scheme = data as? String, let url = NSURL(string: "\(scheme)//") {
-            if UIApplication.sharedApplication().canOpenURL(url) {
-                UIApplication.sharedApplication().openURL(url)
+            if UIApplication.shared.canOpenURL(url as URL) {
+                UIApplication.shared.openURL(url as URL)
             }
             else {
                 Async.main {
                     log.error("Could not find \(url)", feature: "appIntegration")
                     let msg = "We could not find your \(item) app, please restart Metabolic Compass if you've uninstalled it."
-                    UINotifications.genericErrorOnView(self.notificationView, msg: msg)
+                    UINotifications.genericErrorOnView(view: self.notificationView, msg: msg)
                 }
             }
         }
@@ -176,7 +176,7 @@ class AppPickerManager: PickerManager, PickerManagerSelectionDelegate {
             Async.main {
                 log.error("Invalid URL scheme for \(data)", feature: "appIntegration")
                 let msg = "Failed to open your \(item) app!"
-                UINotifications.genericErrorOnView(self.notificationView, msg: msg)
+                UINotifications.genericErrorOnView(view: self.notificationView, msg: msg)
             }
         }
 
@@ -185,7 +185,7 @@ class AppPickerManager: PickerManager, PickerManagerSelectionDelegate {
 }
 
 
-public class AddActivityManager: UITableView, UITableViewDelegate, UITableViewDataSource, PickerManagerSelectionDelegate {
+open class AddActivityManager: UITableView, UITableViewDelegate, UITableViewDataSource, PickerManagerSelectionDelegate {
 
     public var menuItems: [PathMenuItem]
 
@@ -199,7 +199,7 @@ public class AddActivityManager: UITableView, UITableViewDelegate, UITableViewDa
 
     // Row to activity date
     private var frequentActivityByRow: [Int: FrequentActivity] = [:]
-    private var nextActivityRowExpiry: Date = Date().startOf(.Day)
+    private var nextActivityRowExpiry: Date = Date().startOf(component: .day)
     private let nextActivityExpiryIncrement: DateComponents = 1.minutes // 10.minutes
 
     // Activity date to cell contents.
@@ -252,16 +252,16 @@ public class AddActivityManager: UITableView, UITableViewDelegate, UITableViewDa
             fatalError("Unable to create frequent activites cache.")
         }
 
-        guard let mi = aDecoder.decodeObjectForKey("menuItems") as? [PathMenuItem] else {
-            menuItems = []; super.init(frame: CGRect.zero, style: .Grouped); return nil
+        guard let mi = aDecoder.decodeObject(forKey: "menuItems") as? [PathMenuItem] else {
+            menuItems = []; super.init(frame: CGRect.zero, style: .grouped); return nil
         }
 
         menuItems = mi
         super.init(coder: aDecoder)
     }
 
-    override public func encodeWithCoder(aCoder: NSCoder) {
-        aCoder.encodeObject(menuItems, forKey: "menuItems")
+    public func encodeWithCoder(aCoder: NSCoder) {
+        aCoder.encode(menuItems, forKey: "menuItems")
     }
 
     func frequentActivityCacheKey(date: Date) -> String {
@@ -269,13 +269,13 @@ public class AddActivityManager: UITableView, UITableViewDelegate, UITableViewDa
     }
 
     private func setupTable() {
-        self.hidden = true
+        self.isHidden = true
         self.allowsSelection = false
-        self.separatorStyle = .None
+        self.separatorStyle = .none
         self.layer.opacity = 0.0
 
-        self.registerClass(UITableViewCell.self, forCellReuseIdentifier: addEventCellIdentifier)
-        self.registerClass(UITableViewCell.self, forCellReuseIdentifier: addEventSectionHeaderCellIdentifier)
+        self.register(UITableViewCell.self, forCellReuseIdentifier: addEventCellIdentifier)
+        self.register(UITableViewCell.self, forCellReuseIdentifier: addEventSectionHeaderCellIdentifier)
 
         self.delegate = self;
         self.dataSource = self;
@@ -285,8 +285,8 @@ public class AddActivityManager: UITableView, UITableViewDelegate, UITableViewDa
         self.rowHeight = UITableViewAutomaticDimension
         self.sectionHeaderHeight = UITableViewAutomaticDimension
 
-        self.separatorInset = UIEdgeInsetsZero
-        self.layoutMargins = UIEdgeInsetsZero
+        self.separatorInset = UIEdgeInsets.zero
+        self.layoutMargins = UIEdgeInsets.zero
         self.cellLayoutMarginsFollowReadableWidth = false
 
         quickAddButtons.append(SlideButtonArray(frame: CGRect.zero, buttonsTag: 3000, arrayRowIndex: 0))
@@ -324,71 +324,74 @@ public class AddActivityManager: UITableView, UITableViewDelegate, UITableViewDa
             appPicker.font = pickerFont
             appPicker.highlightedFont = pickerFont
 
-            appPicker.backgroundColor = UIColor.clearColor().colorWithAlphaComponent(0.0)
-            appPicker.highlightedTextColor = UIColor.whiteColor()
-            appPicker.textColor = UIColor.whiteColor().colorWithAlphaComponent(0.7)
+            appPicker.backgroundColor = UIColor.clear.withAlphaComponent(0.0)
+            appPicker.highlightedTextColor = UIColor.white
+            appPicker.textColor = UIColor.white.withAlphaComponent(0.7)
             appPicker.reloadData()
         }
     }
 
     private func descOfCircadianEvent(event: CircadianEvent) -> String {
         switch event {
-        case .Meal(let mealType):
+        case .meal(let mealType):
             return mealType.rawValue
-        case .Exercise(let exerciseType):
+        case .exercise(let exerciseType):
             switch exerciseType {
-            case .Running: return "Running"
-            case .Cycling: return "Cycling"
+            case .running: return "Running"
+            case .cycling: return "Cycling"
             default: return "Exercise"
             }
-        case .Sleep:
+        case .sleep:
             return "Sleep"
         default:
             return ""
         }
     }
 
-    private func frequentActivityCellView(tag: Int, aInfo: FrequentActivity) -> [UIView] {
-        let fmt = DateFormat.Custom("HH:mm")
-        let endDate = aInfo.start.dateByAddingTimeInterval(aInfo.duration)
+    func frequentActivityCellView(tag: Int, aInfo: FrequentActivity) -> [UIView] {
+        let fmt = DateFormat.custom("HH:mm")
+//        let endDate = aInfo.start.dateByAddingTimeInterval(aInfo.duration)
+        let endDate = aInfo.start.addingTimeInterval(aInfo.duration)
 
         let label = UILabel()
-        label.backgroundColor = .clearColor()
-        label.textColor = .lightGrayColor()
-        label.textAlignment = .Left
+        label.backgroundColor = .clear
+        label.textColor = .lightGray
+        label.textAlignment = .left
 
-        let dayTxt = aInfo.start.isInToday() ? "" : "yesterday "
-        let stTxt = aInfo.start.toString(fmt)!
-        let enTxt = endDate.toString(fmt)!
+//        let dayTxt = aInfo.start.isInToday() ? "" : "yesterday "
+        let dayTxt = aInfo.start.isToday ? "" : "yesterday "
+//        let stTxt = aInfo.start.string(fmt)!
+        let stTxt = aInfo.start.string(format: fmt)
+        let enTxt = endDate.string(format: fmt)
         label.text = "\(aInfo.desc), \(dayTxt)\(stTxt) - \(enTxt)"
 
         let unchecked_image = UIImage(named: "checkbox-unchecked-register") as UIImage?
         let checked_image = UIImage(named: "checkbox-checked-register") as UIImage?
-        let button = UIButton(type: .Custom)
+        let button = UIButton(type: .custom)
 
         button.tag = tag
-        button.backgroundColor = .clearColor()
-        button.setImage(unchecked_image, forState: .Normal)
-        button.setImage(checked_image, forState: .Selected)
-        button.addTarget(self, action: #selector(self.addFrequentActivity(_:)), forControlEvents: .TouchUpInside)
+        button.backgroundColor = .clear
+        button.setImage(unchecked_image, for: .normal)
+        button.setImage(checked_image, for: .selected)
+        button.addTarget(self, action: #selector(addFrequentActivity(_:)), for: .TouchUpInside)
 
         return [label, button]
     }
 
-    func addFrequentActivity(sender: UIButton) {
+    public func addFrequentActivity(sender: UIButton) {
         log.debug("Selected freq. activity \(sender.tag)", feature: "freqActivity")
-        sender.selected = !sender.selected
+        sender.isSelected = !sender.isSelected
     }
 
     private func refreshFrequentActivities() {
         let now = Date()
-        let nowStart = now.startOf(.Day)
+        let nowStart = now.startOf(component: .day)
 
-        let cacheKey = frequentActivityCacheKey(nowStart)
+        let cacheKey = frequentActivityCacheKey(date: nowStart)
 
         log.debug("Refreshing activities \(self.nextActivityRowExpiry)", feature: "freqActivity")
 
-        frequentActivitiesCache.setObjectForKey(cacheKey, cacheBlock: { (success, failure) in
+        frequentActivitiesCache.setObject(forKey: cacheKey, cacheBlock: { (success, failure) in
             // if weekday populate from previous day and same day last week
             // else populate from the same day for the past 4 weekends
             var queryStartDates: [Date] = []
@@ -405,24 +408,24 @@ public class AddActivityManager: UITableView, UITableViewDelegate, UITableViewDa
 
             var circadianEvents: [Date: [(Date, CircadianEvent)]] = [:]
             var queryErrors: [NSError?] = []
-            let queryGroup = dispatch_group_create()
+            let queryGroup = DispatchGroup()
 
             queryStartDates.forEach { date in
-                dispatch_group_enter(queryGroup)
-                MCHealthManager.sharedManager.fetchCircadianEventIntervals(date, endDate: date.endOf(.Day), noTruncation: true)
+                queryGroup.enter()
+                MCHealthManager.sharedManager.fetchCircadianEventIntervals(date, endDate: date.endOf(component: .day), noTruncation: true)
                 { (intervals, error) in
                     guard error == nil else {
                         log.error("Failed to fetch circadian events: \(error)", feature: "freqActivity")
                         queryErrors.append(error)
-                        dispatch_group_leave(queryGroup)
+                        queryGroup.leave()
                         return
                     }
                     circadianEvents[date] = intervals
-                    dispatch_group_leave(queryGroup)
+                    queryGroup.leave()
                 }
             }
 
-            dispatch_group_notify(queryGroup, dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0)) {
+            queryGroup.notify(queue: DispatchQueue.global(DispatchQueue.GlobalQueuePriority.default)) {
                 guard queryErrors.isEmpty else {
                     failure(queryErrors.first!)
                     return
@@ -474,7 +477,7 @@ public class AddActivityManager: UITableView, UITableViewDelegate, UITableViewDa
                 success(FrequentActivityInfo(activities: activities), CacheExpiry.Seconds(self.cacheDuration))
             } // end cacheBlock
 
-            }, completion: { (activityInfoFromCache, loadedFromCache, error) in
+             completion: { (activityInfoFromCache, loadedFromCache, error) in
                 log.debug("Cache result: \(activityInfoFromCache?.activities.count ?? -1) (hit: \(loadedFromCache))", feature: "cache:freqActivity")
 
                 guard error == nil else {
@@ -501,16 +504,16 @@ public class AddActivityManager: UITableView, UITableViewDelegate, UITableViewDa
         })
     }
 
-    public func numberOfSectionsInTableView(tableView: UITableView) -> Int {
+    func numberOfSectionsInTableView(tableView: UITableView) -> Int {
         return addSectionTitles.count
     }
 
-    public func tableView(tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+    func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         if section == frequentActivitySectionIdx {
             log.debug("Activities #rows \(shadowActivities.count) \(frequentActivities.count)", feature: "freqActivity")
 
             let now = Date()
-            let nowStart = now.startOf(.Day)
+            let nowStart = now.startOf(component: .day)
 
             // Swap buffer.
             if shadowActivities.count > 0 {
@@ -520,9 +523,9 @@ public class AddActivityManager: UITableView, UITableViewDelegate, UITableViewDa
 
             if nextActivityRowExpiry <= now {
                 // Refresh cache as needed.
-                let cacheKey = frequentActivityCacheKey(nowStart)
+                let cacheKey = frequentActivityCacheKey(date: nowStart)
 
-                if frequentActivities.isEmpty || frequentActivitiesCache.objectForKey(cacheKey) == nil {
+                if frequentActivities.isEmpty || frequentActivitiesCache.object(forKey: cacheKey) == nil {
                     //log.debug("Refreshing cache", feature: "cache:freqActivity")
                     frequentActivitiesCache.removeExpiredObjects()
                     refreshFrequentActivities()
@@ -540,11 +543,11 @@ public class AddActivityManager: UITableView, UITableViewDelegate, UITableViewDa
                             return FrequentActivity(desc: aInfo.desc, start: aInfo.start - 1.days, duration: aInfo.duration)
                         }
                         return aInfo
-                    }).sort({ $0.0.start < $0.1.start })
+                    }).sorted(by: { $0.0.start < $0.1.start })
 
-                    reorderedActivities.enumerate().forEach { (index, aInfo) in
+                    reorderedActivities.enumerated().forEach { (index, aInfo) in
                         self.frequentActivityByRow[index] = aInfo
-                        self.frequentActivityCells[index] = self.frequentActivityCellView(index, aInfo: aInfo)
+                        self.frequentActivityCells[index] = self.frequentActivityCellView(tag: index, aInfo: aInfo)
                     }
                     
                     nextActivityRowExpiry = now + nextActivityExpiryIncrement
@@ -561,21 +564,21 @@ public class AddActivityManager: UITableView, UITableViewDelegate, UITableViewDa
         return 0
     }
 
-    public func tableView(tableView: UITableView, titleForHeaderInSection section: Int) -> String? {
+    func tableView(tableView: UITableView, titleForHeaderInSection section: Int) -> String? {
         return addSectionTitles[section]
     }
 
-    public func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell {
-        let cell = tableView.dequeueReusableCellWithIdentifier(addEventCellIdentifier, forIndexPath: indexPath)
+    func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+        let cell = tableView.dequeueReusableCell(withIdentifier: addEventCellIdentifier, for: indexPath as IndexPath)
 
         for sv in cell.contentView.subviews { sv.removeFromSuperview() }
-        cell.textLabel?.hidden = true
+        cell.textLabel?.isHidden = true
         cell.imageView?.image = nil
-        cell.accessoryType = .None
-        cell.selectionStyle = .None
+        cell.accessoryType = .none
+        cell.selectionStyle = .none
 
-        cell.backgroundColor = UIColor.clearColor()
-        cell.contentView.backgroundColor = UIColor.clearColor()
+        cell.backgroundColor = UIColor.clear
+        cell.contentView.backgroundColor = UIColor.clear
 
         if indexPath.section == 0  {
             let v = quickAddButtons[indexPath.row]
@@ -583,29 +586,29 @@ public class AddActivityManager: UITableView, UITableViewDelegate, UITableViewDa
             cell.contentView.addSubview(v)
 
             let constraints : [NSLayoutConstraint] = [
-                cell.contentView.topAnchor.constraintEqualToAnchor(v.topAnchor, constant: -10),
-                cell.contentView.bottomAnchor.constraintEqualToAnchor(v.bottomAnchor, constant: 10),
-                cell.contentView.leadingAnchor.constraintEqualToAnchor(v.leadingAnchor, constant: -10),
-                cell.contentView.trailingAnchor.constraintEqualToAnchor(v.trailingAnchor, constant: 10)
+                cell.contentView.topAnchor.constraint(equalTo: v.topAnchor, constant: -10),
+                cell.contentView.bottomAnchor.constraint(equalTo: v.bottomAnchor, constant: 10),
+                cell.contentView.leadingAnchor.constraint(equalTo: v.leadingAnchor, constant: -10),
+                cell.contentView.trailingAnchor.constraint(equalTo: v.trailingAnchor, constant: 10)
             ]
 
             cell.contentView.addConstraints(constraints)
         }
         else if indexPath.section == 1 {
-            let stackView: UIStackView = UIStackView(arrangedSubviews: self.menuItems ?? [])
-            stackView.axis = .Horizontal
-            stackView.distribution = UIStackViewDistribution.FillEqually
-            stackView.alignment = UIStackViewAlignment.Fill
+            let stackView: UIStackView = UIStackView(arrangedSubviews: self.menuItems )
+            stackView.axis = .horizontal
+            stackView.distribution = UIStackViewDistribution.fillEqually
+            stackView.alignment = UIStackViewAlignment.fill
             stackView.spacing = 0
 
             stackView.translatesAutoresizingMaskIntoConstraints = false
             cell.contentView.addSubview(stackView)
 
             let stackConstraints : [NSLayoutConstraint] = [
-                cell.contentView.topAnchor.constraintEqualToAnchor(stackView.topAnchor, constant: -10),
-                cell.contentView.bottomAnchor.constraintEqualToAnchor(stackView.bottomAnchor, constant: 10),
-                cell.contentView.leadingAnchor.constraintEqualToAnchor(stackView.leadingAnchor),
-                cell.contentView.trailingAnchor.constraintEqualToAnchor(stackView.trailingAnchor)
+                cell.contentView.topAnchor.constraint(equalTo: stackView.topAnchor, constant: -10),
+                cell.contentView.bottomAnchor.constraint(equalTo: stackView.bottomAnchor, constant: 10),
+                cell.contentView.leadingAnchor.constraint(equalTo: stackView.leadingAnchor),
+                cell.contentView.trailingAnchor.constraint(equalTo: stackView.trailingAnchor)
             ]
 
             cell.contentView.addConstraints(stackConstraints)
@@ -615,10 +618,10 @@ public class AddActivityManager: UITableView, UITableViewDelegate, UITableViewDa
             cell.contentView.addSubview(appPicker)
 
             let constraints : [NSLayoutConstraint] = [
-                cell.contentView.topAnchor.constraintEqualToAnchor(appPicker.topAnchor),
-                cell.contentView.bottomAnchor.constraintEqualToAnchor(appPicker.bottomAnchor),
-                cell.contentView.leadingAnchor.constraintEqualToAnchor(appPicker.leadingAnchor, constant: -10),
-                cell.contentView.trailingAnchor.constraintEqualToAnchor(appPicker.trailingAnchor, constant: 10)
+                cell.contentView.topAnchor.constraint(equalTo: appPicker.topAnchor),
+                cell.contentView.bottomAnchor.constraint(equalTo: appPicker.bottomAnchor),
+                cell.contentView.leadingAnchor.constraint(equalTo: appPicker.leadingAnchor, constant: -10),
+                cell.contentView.trailingAnchor.constraint(equalTo: appPicker.trailingAnchor, constant: 10)
             ]
 
             cell.contentView.addConstraints(constraints)
@@ -629,28 +632,28 @@ public class AddActivityManager: UITableView, UITableViewDelegate, UITableViewDa
                 activityCells = views
             } else {
                 let label = UILabel()
-                label.backgroundColor = .clearColor()
-                label.textColor = .lightGrayColor()
-                label.textAlignment = .Center
+                label.backgroundColor = .clear
+                label.textColor = .lightGray
+                label.textAlignment = .center
                 label.text = "No frequent activities found"
                 activityCells.append(label)
             }
 
             let stackView: UIStackView = UIStackView(arrangedSubviews: activityCells)
 
-            stackView.axis = .Horizontal
-            stackView.distribution = UIStackViewDistribution.EqualSpacing
-            stackView.alignment = UIStackViewAlignment.Fill
+            stackView.axis = .horizontal
+            stackView.distribution = UIStackViewDistribution.equalSpacing
+            stackView.alignment = UIStackViewAlignment.fill
             stackView.spacing = 0
 
             stackView.translatesAutoresizingMaskIntoConstraints = false
             cell.contentView.addSubview(stackView)
 
             let stackConstraints : [NSLayoutConstraint] = [
-                cell.contentView.topAnchor.constraintEqualToAnchor(stackView.topAnchor, constant: -10),
-                cell.contentView.bottomAnchor.constraintEqualToAnchor(stackView.bottomAnchor, constant: 10),
-                cell.contentView.leadingAnchor.constraintEqualToAnchor(stackView.leadingAnchor, constant: -20),
-                cell.contentView.trailingAnchor.constraintEqualToAnchor(stackView.trailingAnchor, constant: 20)
+                cell.contentView.topAnchor.constraint(equalTo: stackView.topAnchor, constant: -10),
+                cell.contentView.bottomAnchor.constraint(equalTo: stackView.bottomAnchor, constant: 10),
+                cell.contentView.leadingAnchor.constraint(equalTo: stackView.leadingAnchor, constant: -20),
+                cell.contentView.trailingAnchor.constraint(equalTo: stackView.trailingAnchor, constant: 20)
             ]
 
             cell.contentView.addConstraints(stackConstraints)
@@ -659,36 +662,36 @@ public class AddActivityManager: UITableView, UITableViewDelegate, UITableViewDa
     }
 
     //MARK: UITableViewDelegate
-    public func tableView(tableView: UITableView, viewForHeaderInSection section: Int) -> UIView? {
-        let cell = tableView.dequeueReusableCellWithIdentifier(addEventSectionHeaderCellIdentifier)!
+    func tableView(tableView: UITableView, viewForHeaderInSection section: Int) -> UIView? {
+        let cell = tableView.dequeueReusableCell(withIdentifier: addEventSectionHeaderCellIdentifier)!
 
         let sectionHeaderSize = ScreenManager.sharedInstance.quickAddSectionHeaderFontSize()
 
         cell.textLabel?.text = self.addSectionTitles[section]
         cell.textLabel?.font = UIFont(name: "GothamBook", size: sectionHeaderSize)
-        cell.textLabel?.textColor = .lightGrayColor()
+        cell.textLabel?.textColor = .lightGray
         cell.textLabel?.numberOfLines = 0
 
         if section == 0 || section == frequentActivitySectionIdx {
             for sv in cell.contentView.subviews { sv.removeFromSuperview() }
 
-            let button = UIButton(frame: CGRectMake(0, 0, 44, 44))
-            button.backgroundColor = .clearColor()
+            let button = UIButton(frame: CGRect(0, 0, 44, 44))
+            button.backgroundColor = .clear
 
-            button.setImage(UIImage(named: "icon-quick-add-tick"), forState: .Normal)
-            button.imageView?.contentMode = .ScaleAspectFit
+            button.setImage(UIImage(named: "icon-quick-add-tick"), for: .normal)
+            button.imageView?.contentMode = .scaleAspectFit
 
-            button.addTarget(self, action: (section == frequentActivitySectionIdx ? #selector(self.handleFrequentAddTap(_:)) : #selector(self.handleQuickAddTap(_:))), forControlEvents: .TouchUpInside)
+            button.addTarget(self, action: (section == frequentActivitySectionIdx ? #selector(handleFrequentAddTap(_:)) : #selector(self.handleQuickAddTap(_:))), for: .TouchUpInside)
 
             button.translatesAutoresizingMaskIntoConstraints = false
             cell.contentView.addSubview(button)
 
             let buttonConstraints : [NSLayoutConstraint] = [
-                cell.contentView.topAnchor.constraintEqualToAnchor(button.topAnchor, constant: -20),
-                cell.contentView.bottomAnchor.constraintEqualToAnchor(button.bottomAnchor, constant: 10),
-                cell.contentView.trailingAnchor.constraintEqualToAnchor(button.trailingAnchor, constant: 20),
-                button.widthAnchor.constraintEqualToConstant(44),
-                button.heightAnchor.constraintEqualToConstant(44)
+                cell.contentView.topAnchor.constraint(equalTo: button.topAnchor, constant: -20),
+                cell.contentView.bottomAnchor.constraint(equalTo: button.bottomAnchor, constant: 10),
+                cell.contentView.trailingAnchor.constraint(equalTo: button.trailingAnchor, constant: 20),
+                button.widthAnchor.constraint(equalToConstant: 44),
+                button.heightAnchor.constraint(equalToConstant: 44)
             ]
 
             cell.contentView.addConstraints(buttonConstraints)
@@ -700,52 +703,54 @@ public class AddActivityManager: UITableView, UITableViewDelegate, UITableViewDa
     func circadianOpCompletion(sender: UIButton?, manager: PickerManager?, displayError: Bool, error: NSError?) -> Void {
         Async.main {
             if error == nil {
-                UINotifications.genericSuccessMsgOnView(self.notificationView ?? self.superview!, msg: "Successfully added events.")
+                UINotifications.genericSuccessMsgOnView(view: self.notificationView ?? self.superview!, msg: "Successfully added events.")
             }
             else {
                 let msg = displayError ? (error?.localizedDescription ?? "Unknown error") : "Failed to add event"
-                UINotifications.genericErrorOnView(self.notificationView ?? self.superview!, msg: msg)
+                UINotifications.genericErrorOnView(view: self.notificationView ?? self.superview!, msg: msg)
             }
             if let sender = sender {
-                sender.enabled = true
+                sender.isEnabled = true
                 sender.setNeedsDisplay()
             }
         }
         manager?.finishProcessingSelection()
         if error != nil { log.error(error!.localizedDescription) }
         else {
-            NSNotificationCenter.defaultCenter().postNotificationName(MEMDidUpdateCircadianEvents, object: nil)
+            NotificationCenter.default.post(name: NSNotification.Name(rawValue: MEMDidUpdateCircadianEvents), object: nil)
         }
     }
 
-    func validateTimedEvent(startTime: Date, endTime: Date, completion: NSError? -> Void) {
+    func validateTimedEvent(startTime: Date, endTime: Date, completion: @escaping (NSError?) -> Void) {
         // Fetch all sleep and workout data since yesterday.
-        let (yesterday, now) = (1.days.ago, Date())
-        let sleepTy = HKObjectType.categoryTypeForIdentifier(HKCategoryTypeIdentifierSleepAnalysis)!
+//        let (yesterday, now) = (1.days.ago, Date())
+        let (yesterday, now) = (Date().addDays(daysToAdd: -1), Date())
+        let sleepTy = HKObjectType.categoryType(forIdentifier: HKCategoryTypeIdentifier.sleepAnalysis)!
         let workoutTy = HKWorkoutType.workoutType()
-        let datePredicate = HKQuery.predicateForSamplesWithStartDate(yesterday, endDate: now, options: .None)
+        let datePredicate = HKQuery.predicateForSamples(withStart: yesterday, end: now, options: [])
         let typesAndPredicates = [sleepTy: datePredicate, workoutTy: datePredicate]
 
         // Aggregate sleep, exercise and meal events.
         MCHealthManager.sharedManager.fetchSamples(typesAndPredicates) { (samples, error) -> Void in
             guard error == nil else { log.error(error!.localizedDescription); return }
-            let overlaps = samples.reduce(false, combine: { (acc, kv) in
+            let overlaps = samples.reduce(false, { (acc, kv) in
                 guard !acc else { return acc }
-                return kv.1.reduce(acc, combine: { (acc, s) in return acc || !( startTime >= s.endDate || endTime <= s.startDate ) })
+                return kv.1.reduce(acc, { (acc, s) in return acc || !( startTime >= s.endDate || endTime <= s.startDate ) })
             })
 
             if !overlaps { completion(nil) }
             else {
                 let msg = "This event overlaps with another, please try again"
                 let err = NSError(domain: HMErrorDomain, code: 1048576, userInfo: [NSLocalizedDescriptionKey: msg])
-                UINotifications.genericErrorOnView(self.notificationView ?? self.superview!, msg: msg)
+                UINotifications.genericErrorOnView(view: self.notificationView ?? self.superview!, msg: msg)
                 completion(err)
             }
         }
     }
 
-    func addSleep(hoursSinceStart: Double, startDate: Date? = nil, completion: NSError? -> Void) {
-        let startTime = startDate == nil ? (Int(hoursSinceStart * 60)).minutes.ago : startDate!
+    func addSleep(hoursSinceStart: Double, startDate: Date? = nil, completion: @escaping (NSError?) -> Void) {
+//        let startTime = startDate == nil ? (Int(hoursSinceStart * 60)).minutes.ago : startDate!
+        let startTime = startDate = nil ? Date().addingTimeInterval(Int(hoursSinceStart * 60)) : startDate!
         let endTime = startDate == nil ? Date() : startDate! + (Int(hoursSinceStart * 60)).minutes
 
         log.debug("Saving sleep event: \(startTime) \(endTime)", feature: "addActivity")
@@ -765,8 +770,9 @@ public class AddActivityManager: UITableView, UITableViewDelegate, UITableViewDa
         }
     }
 
-    func addMeal(mealType: String, minutesSinceStart: Int, startDate: Date? = nil, completion: NSError? -> Void) {
-        let startTime = startDate == nil ? minutesSinceStart.minutes.ago : startDate!
+    func addMeal(mealType: String, minutesSinceStart: Int, startDate: Date? = nil, completion: @escaping (NSError?) -> Void) {
+//        let startTime = startDate == nil ? minutesSinceStart.minutes.ago : startDate!
+        let startTime = startDate == nil ? Date().addingTimeInterval(minutesSinceStart) : startDate!
         let endTime = startDate == nil ? Date() : startDate! + (Int(minutesSinceStart)).minutes
         let metadata = ["Meal Type": mealType]
 
@@ -790,8 +796,9 @@ public class AddActivityManager: UITableView, UITableViewDelegate, UITableViewDa
         }
     }
 
-    func addExercise(workoutType: HKWorkoutActivityType, minutesSinceStart: Int, startDate: Date? = nil, completion: NSError? -> Void) {
-        let startTime = startDate == nil ? minutesSinceStart.minutes.ago : startDate!
+    func addExercise(workoutType: HKWorkoutActivityType, minutesSinceStart: Int, startDate: Date? = nil, completion: @escaping (NSError?) -> Void) {
+//        let startTime = startDate == nil ? minutesSinceStart.minutes.ago : startDate!
+        let startTime = startDate == nil ? Date().addingTimeInterval(timeInterval: minutesSinceStart) : startDate!
         let endTime = startDate == nil ? Date() : startDate! + (Int(minutesSinceStart)).minutes
 
         log.debug("Saving exercise event: \(workoutType) \(startTime) \(endTime)", feature: "addActivity")
@@ -824,13 +831,13 @@ public class AddActivityManager: UITableView, UITableViewDelegate, UITableViewDa
             mealType = itemType
 
         case "Running":
-            workoutType = .Running
+            workoutType = .running
 
         case "Cycling":
-            workoutType = .Cycling
+            workoutType = .cycling
 
         case "Exercise":
-            workoutType = .Other
+            workoutType = .other
 
         case "Sleep":
             asSleep = true
@@ -840,26 +847,26 @@ public class AddActivityManager: UITableView, UITableViewDelegate, UITableViewDa
         }
 
         if asSleep {
-            addSleep(durationInSecs ? duration / 3600.0 : duration, startDate: startDate) {
-                self.circadianOpCompletion(sender, manager: pickerManager, displayError: false, error: $0)
+            addSleep(hoursSinceStart: durationInSecs ? duration / 3600.0 : duration, startDate: startDate) {
+                self.circadianOpCompletion(sender: sender, manager: pickerManager, displayError: false, error: $0)
             }
         }
         else if let mt = mealType {
             let minutesSinceStart = Int(durationInSecs ? (duration / 60) : duration)
-            addMeal(mt, minutesSinceStart: minutesSinceStart, startDate: startDate) {
-                self.circadianOpCompletion(sender, manager: pickerManager, displayError: false, error: $0)
+            addMeal(mealType: mt, minutesSinceStart: minutesSinceStart, startDate: startDate) {
+                self.circadianOpCompletion(sender: sender, manager: pickerManager, displayError: false, error: $0)
             }
         }
         else if let wt = workoutType {
             let minutesSinceStart = Int(durationInSecs ? (duration / 60) : duration)
-            addExercise(wt, minutesSinceStart: minutesSinceStart, startDate: startDate) {
-                self.circadianOpCompletion(sender, manager: pickerManager, displayError: false, error: $0)
+            addExercise(workoutType: wt, minutesSinceStart: minutesSinceStart, startDate: startDate) {
+                self.circadianOpCompletion(sender: sender, manager: pickerManager, displayError: false, error: $0)
             }
         }
         else {
             let msg = "Unknown activity type \(itemType)"
             let err = NSError(domain: HMErrorDomain, code: 1048576, userInfo: [NSLocalizedDescriptionKey: msg])
-            circadianOpCompletion(sender, manager: pickerManager, displayError: true, error: err)
+            circadianOpCompletion(sender: sender, manager: pickerManager, displayError: true, error: err)
         }
     }
 
@@ -868,14 +875,14 @@ public class AddActivityManager: UITableView, UITableViewDelegate, UITableViewDa
                           itemType: String?, index: Int, item: String, data: AnyObject?)
     {
         if let itemType = itemType, let duration = data as? Double {
-            processSelection(sender, pickerManager: pickerManager, itemType: itemType, duration: duration, durationInSecs: false)
+            processSelection(sender: sender, pickerManager: pickerManager, itemType: itemType, duration: duration, durationInSecs: false)
         }
         else {
             let msg = itemType == nil ?
                 "Unknown quick add event type \(itemType)" : "Failed to convert duration into integer: \(data)"
 
             let err = NSError(domain: HMErrorDomain, code: 1048576, userInfo: [NSLocalizedDescriptionKey: msg])
-            circadianOpCompletion(sender, manager: pickerManager, displayError: true, error: err)
+            circadianOpCompletion(sender: sender, manager: pickerManager, displayError: true, error: err)
         }
     }
 
@@ -883,20 +890,21 @@ public class AddActivityManager: UITableView, UITableViewDelegate, UITableViewDa
         log.debug("Quick add button pressed", feature: "addActivity")
 
         Async.main {
-            sender.enabled = false
+            sender.isEnabled = false
             sender.setNeedsDisplay()
         }
 
-        let selection = quickAddButtons.reduce(nil, combine: { (acc, buttonArray) in
+        let selection = quickAddButtons.reduce(nil, { (acc, buttonArray) in
             return acc != nil ? acc : buttonArray.getSelection()
         })
 
         if let s = selection {
-            processSelection(sender, pickerManager: s.0, itemType: s.1, index: s.2, item: s.3, data: s.4)
+//            processSelection(sender, pickerManager: s.0, itemType: s.1, index: s.2, item: s.3, data: s.4)
+             processSelection(sender: sender, pickerManager: s.0, itemType: s.1, index: s.2, item: s.3, data: s.4)
         } else {
             Async.main {
-                UINotifications.genericErrorOnView(self.notificationView ?? self.superview!, msg: "No event selected")
-                sender.enabled = true
+                UINotifications.genericErrorOnView(view: self.notificationView ?? self.superview!, msg: "No event selected")
+                sender.isEnabled = true
                 sender.setNeedsDisplay()
             }
         }
@@ -906,7 +914,7 @@ public class AddActivityManager: UITableView, UITableViewDelegate, UITableViewDa
         log.debug("Adding selected frequent activities", feature: "addActivity")
 
         Async.main {
-            sender.enabled = false
+            sender.isEnabled = false
             sender.setNeedsDisplay()
         }
 
@@ -914,12 +922,12 @@ public class AddActivityManager: UITableView, UITableViewDelegate, UITableViewDa
         var activitiesToAdd: [FrequentActivity] = []
 
         self.frequentActivityCells.forEach { kv in
-            if let button = kv.1[1] as? UIButton, button.selected {
+            if let button = kv.1[1] as? UIButton, button.isSelected {
                 if let aInfo = self.frequentActivityByRow[kv.0] {
                     activitiesToAdd.append(aInfo)
                 }
                 Async.main {
-                    button.selected = false
+                    button.isSelected = false
                     button.setNeedsDisplay()
                 }
             }
@@ -940,8 +948,8 @@ public class AddActivityManager: UITableView, UITableViewDelegate, UITableViewDa
         if overlaps {
             Async.main {
                 let msg = "You selected overlapping events, please try again"
-                UINotifications.genericErrorOnView(self.notificationView ?? self.superview!, msg: msg)
-                sender.enabled = true
+                UINotifications.genericErrorOnView(view: self.notificationView ?? self.superview!, msg: msg)
+                sender.isEnabled = true
                 sender.setNeedsDisplay()
             }
         } else {
@@ -949,7 +957,7 @@ public class AddActivityManager: UITableView, UITableViewDelegate, UITableViewDa
                 processSelection(nil, pickerManager: nil, itemType: aInfo.desc, startDate: aInfo.start, duration: aInfo.duration, durationInSecs: true)
             }
             Async.main {
-                sender.enabled = true
+                sender.isEnabled = true
                 sender.setNeedsDisplay()
             }
         }

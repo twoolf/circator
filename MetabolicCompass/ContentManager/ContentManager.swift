@@ -2,7 +2,7 @@
 //  ContentManager.swift
 //  MetabolicCompass
 //
-//  Created by Inaiur on 5/11/16.
+//  Created by Inaiur on 5/11/16.  
 //  Copyright © 2016 Yanif Ahmad, Tom Woolf. All rights reserved.
 //
 
@@ -45,7 +45,7 @@ class ContentManager: NSObject {
             return
         }
 
-        if !reachability.isReachable() {
+        if !reachability.isReachable {
             log.debug("Skipping background work, network unreachable!", feature: "reachability")
             return
         }
@@ -60,7 +60,7 @@ class ContentManager: NSObject {
 
             self.fetchInitialAggregates()
 
-            ComparisonDataModel.sharedManager.updateIndividualData(PreviewManager.previewSampleTypes) { _ in
+            ComparisonDataModel.sharedManager.updateIndividualData(types: PreviewManager.previewSampleTypes) { _ in
                 AccountManager.shared.withHKCalAuth {
                     log.debug("Prefetching charts", feature: "accountExec")
                     IOSHealthManager.sharedManager.collectDataForCharts()
@@ -119,16 +119,16 @@ class ContentManager: NSObject {
 
     func fetchAggregatesPeriodically() {
         UserManager.sharedManager.ensureAccessToken { error in
-            // Do not fetch any aggregates if we do not have a valid access token.
+            // Do not fetch any aggregates if we do not have a valid access token.  
             // Regardless, we try to fetch the aggregates again, with the next request also
             // attempting to ensure a valid access token even if we did not get one this time.
             if error {
                 log.warning("Could not ensure an access token while fetching aggregates, trying later...", feature: "popLoop")
             } else {
                 let populationTypes = PreviewManager.previewSampleTypes
-                PopulationHealthManager.sharedManager.fetchAggregates(populationTypes) { error in
+                PopulationHealthManager.sharedManager.fetchAggregates(previewTypes: populationTypes) { error in
                     guard error == nil else { return }
-                    ComparisonDataModel.sharedManager.updatePopulationData(populationTypes)
+                    ComparisonDataModel.sharedManager.updatePopulationData(types: populationTypes)
                 }
             }
             let freq = UserManager.sharedManager.getRefreshFrequency()

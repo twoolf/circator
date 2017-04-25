@@ -9,7 +9,8 @@
 import Foundation
 import Charts
 
-public class BalloonMarker: ChartMarker
+//public class BalloonMarker: ChartMarker
+public class BalloonMarker: MarkerImage
 {
     public var font: UIFont?
     public var insets = UIEdgeInsets()
@@ -39,16 +40,16 @@ public class BalloonMarker: ChartMarker
         _paragraphStyle?.alignment = .center
     }
     
-    public override var size: Size { return _size; }
+//    var size: Size { return _size; }
     
-    public override func draw(context: CGContext, point: CGPoint)
+    open override func draw(context: CGContext, point: CGPoint)
     {
         if (labelns == nil)
         {
             return
         }
         
-        let offset = self.offsetForDrawingAtPos(point)
+        let offset = self.offsetForDrawing(atPoint: point)
 
         var rect = CGRect(
             origin: CGPoint(
@@ -69,7 +70,7 @@ public class BalloonMarker: ChartMarker
         rect.origin.x -= (_size.width + 1.0) / 2.0
         rect.origin.y -= _size.height + 1.0
 
-        let bezierPath = getBallonPathForRect(rect)
+        let bezierPath = getBallonPathForRect(rect: rect)
 
         UIGraphicsPushContext(context);
         context.saveGState();
@@ -78,27 +79,29 @@ public class BalloonMarker: ChartMarker
         rect.origin.y += self.insets.top
         rect.size.height -= self.insets.top + self.insets.bottom
 
-        labelns?.drawInRect(rect, withAttributes: _drawAttributes)
+        labelns?.draw(in: rect, withAttributes: _drawAttributes)
         context.restoreGState();
         UIGraphicsPopContext();
     }
     
-    public override func refreshContent(entry: ChartDataEntry, highlight: Highlight)
+    open override func refreshContent(entry: ChartDataEntry, highlight: Highlight)
     {
-        yActual = entry.value
-        if let bentry = entry as? BarChartDataEntry, let vals = bentry.values {
+        yActual = entry.y
+        
+        var _: [BarChartDataEntry]
+/*        for i in bentry {
             labelns = NSString(format: "%.5g", vals[vals.count-1])
             yActual = vals[vals.count-1]
         } else {
-            labelns = NSString(format: "%.5g", entry.value)
-        }
+            labelns = NSString(format: "%.5g", entry.y)
+        } */
 
         _drawAttributes.removeAll()
         _drawAttributes[NSFontAttributeName] = self.font
         _drawAttributes[NSParagraphStyleAttributeName] = _paragraphStyle
         _drawAttributes[NSForegroundColorAttributeName] = UIColor.white
         
-        _labelSize = labelns?.size(attributes: _drawAttributes) ?? SizeZero
+        _labelSize = labelns?.size(attributes: _drawAttributes) ?? .zero
         _size.width = _labelSize.width + self.insets.left + self.insets.right
         _size.height = _labelSize.height + self.insets.top + self.insets.bottom
         _size.width = max(minimumSize.width, _size.width)

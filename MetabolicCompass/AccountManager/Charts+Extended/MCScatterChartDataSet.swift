@@ -21,12 +21,12 @@ class MCScatterChartDataSet: ScatterChartDataSet {
         super.init()
     }
     
-    override internal var yMin: Double {
+/*    override internal var yMin: Double {
         get {
-            var entryValues: [Double] = []
-            for dataEntry in self.yVals {
-                let entry = dataEntry as? BarChartDataEntry
-                if let values = entry?.values, values.count > 0 {
+            var entryValues: [ScatterChartData] = []
+            for dataEntry in entryValues {
+                let entry = dataEntry
+                if let values = entry., values.count > 0 {
                     entryValues += values
                 } else {
                     entryValues.append(dataEntry.value)
@@ -55,9 +55,9 @@ class MCScatterChartDataSet: ScatterChartDataSet {
             }
             return 0.0
         }
-    }
+    } */
     
-    override init(yVals: [ChartDataEntry]?, label: String?) {
+    override init(values yVals: [ChartDataEntry]?, label: String?) {
         super.init(values: yVals, label: label)
         self.scatterShapeHoleColor = UIColor(colorLiteralRed: 51.0/255.0, green: 138.0/255.0, blue: 255.0/255.0, alpha: 1.0)
         self.colors = [UIColor.white]
@@ -66,14 +66,14 @@ class MCScatterChartDataSet: ScatterChartDataSet {
     var dataSetType: DataSetType = .HeartRate {
         didSet {
             switch self.dataSetType {
-                case .BloodPressureTop:
-                    self.scatterShape = .Custom
-                    self.customScatterShape = topBloodPressurePath()
-                case .BloodPressureBottom:
-                    self.scatterShape = .Custom
-                    self.customScatterShape = bottomBloodPressurePath()
+//                case .BloodPressureTop:
+//                    self.scatterShape = .Custom
+//                    self.customScatterShape = topBloodPressurePath()
+//                case .BloodPressureBottom:
+//                    self.scatterShape = .Custom
+//                    self.customScatterShape = bottomBloodPressurePath()
                 default:
-                    self.scatterShape = .Circle
+//                    self.scatterShape = .Circle
                     self.scatterShapeSize = 6.0
                     self.scatterShapeHoleRadius = self.scatterShapeSize/4.0
                 }

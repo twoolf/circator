@@ -52,7 +52,8 @@ class CycleChartRender: PieChartRenderer {
 
         let yValueSum = (data as! PieChartData).yValueSum
 
-        let drawXVals = chart.isDrawSliceTextEnabled
+//        let drawXVals = chart.isDrawSliceTextEnabled
+//        let drawXVals = chart.isdrawEntryLabelsEnabled
         let usePercentValuesEnabled = chart.usePercentValuesEnabled
 
         var angle: CGFloat = 0.0
@@ -67,7 +68,7 @@ class CycleChartRender: PieChartRenderer {
 
             let drawYVals = dataSet.isDrawValuesEnabled
 
-            if (!drawYVals && !drawXVals)
+            if (!drawYVals)
             {
                 continue
             }
@@ -82,7 +83,7 @@ class CycleChartRender: PieChartRenderer {
 
             for j in 0 ..< dataSet.entryCount
             {
-                if (drawXVals && !drawYVals && (j >= data.xValCount || data.xVals[j] == nil))
+                if (drawYVals && !drawYVals && (j >= data.dataSetCount || data.getDataSetByIndex(j) == nil))
                 {
                     xIndex += 1
                     continue
@@ -96,32 +97,36 @@ class CycleChartRender: PieChartRenderer {
                 }
                 else
                 {
-                    angle = absoluteAngles[xIndex - 1] * phaseX
+                    angle = absoluteAngles[xIndex - 1] * (phaseX as! CGFloat)
                 }
 
                 let sliceAngle = drawAngles[xIndex]
                 let sliceSpace = dataSet.sliceSpace
                 let sliceSpaceMiddleAngle = sliceSpace / (Math.FDEG2RAD * labelRadius)
 
-                // offset needed to center the drawn text in the slice
+                // offset needed to center the drawn text in the slice 
                 let angleOffset = (sliceAngle - sliceSpaceMiddleAngle / 2.0) / 2.0
 
                 angle = angle + angleOffset
 
-                let transformedAngle = rotationAngle + angle * phaseY
+                let transformedAngle = rotationAngle + angle * (phaseY as! CGFloat)
 
-                let value = usePercentValuesEnabled ? e.value / yValueSum * 100.0 : e.value
-                let valueText = formatter.stringFromNumber(value)!
+            
+                let value = usePercentValuesEnabled ? e.x / yValueSum * 100.0 : e.x
+//                let valueText = formatter.stringFromNumber(value)!
+//                let valueText = formatter.stringForValue(value)!
+                let valueText = formatter.description
 
                 let sliceXBase = cos(transformedAngle * Math.FDEG2RAD)
                 let sliceYBase = sin(transformedAngle * Math.FDEG2RAD)
 
-                let drawXOutside = drawXVals && xValuePosition == .OutsideSlice
-                let drawYOutside = drawYVals && yValuePosition == .OutsideSlice
-                let drawXInside = drawXVals && xValuePosition == .InsideSlice
-                let drawYInside = drawYVals && yValuePosition == .InsideSlice
+//                let drawXOutside = drawXVals && xValuePosition == .OutsideSlice
+                let drawXOutside = drawYVals && xValuePosition == .outsideSlice
+                let drawYOutside = drawYVals && yValuePosition == .outsideSlice
+                let drawXInside = drawYVals && xValuePosition == .insideSlice
+                let drawYInside = drawYVals && yValuePosition == .insideSlice
 
-                if drawXOutside || drawYOutside
+                if drawYOutside || drawYOutside
                 {
                     let valueLineLength1 = dataSet.valueLinePart1Length
                     let valueLineLength2 = dataSet.valueLinePart2Length
@@ -154,7 +159,7 @@ class CycleChartRender: PieChartRenderer {
                         x: labelRadius * (1 + valueLineLength1) * sliceXBase + center.x,
                         y: labelRadius * (1 + valueLineLength1) * sliceYBase + center.y)
 
-                    if transformedAngle % 360.0 >= 90.0 && transformedAngle % 360.0 <= 270.0
+                    if transformedAngle .truncatingRemainder(dividingBy: 360.0) >= 90.0 && transformedAngle .truncatingRemainder(dividingBy: 360.0) <= 270.0
                     {
                         pt2 = CGPoint(x: pt1.x - polyline2Length, y: pt1.y)
                         align = .right
@@ -172,9 +177,13 @@ class CycleChartRender: PieChartRenderer {
                         context.setStrokeColor(dataSet.valueLineColor!.cgColor)
                         context.setLineWidth(dataSet.valueLineWidth);
 
-                        CGContextMoveToPoint(context, pt0.x, pt0.y)
-                        CGContextAddLineToPoint(context, pt1.x, pt1.y)
-                        CGContextAddLineToPoint(context, pt2.x, pt2.y)
+
+                        context.move(to: pt0)
+                        context.addLine(to: pt0)
+                        context.addLine(to: pt1)
+//                        CGContextmoveToPoint(context, pt0.x, pt0.y)
+//                        CGContextAddLine(context, pt1.x, pt1.y)
+//                        CGContextAddLine(context, pt2.x, pt2.y)
 
                         context.drawPath(using: CGPathDrawingMode.stroke);
                     }
@@ -189,11 +198,12 @@ class CycleChartRender: PieChartRenderer {
                             attributes: [NSFontAttributeName: valueFont, NSForegroundColorAttributeName: dataSet.valueTextColorAt(j)]
                         )
 
-                        if (j < data.xValCount && data.xVals[j] != nil)
+                        if (j < data.dataSetCount && data.getDataSetByIndex(j) != nil)
                         {
                             ChartUtils.drawText(
                                 context: context,
-                                text: data.xVals[j]!,
+//                                text: data.xVals[j]!,
+                                text: data.getDataSetByIndex(j)! as! String,
                                 point: CGPoint(x: labelPoint.x, y: labelPoint.y + lineHeight),
                                 align: align,
                                 attributes: [NSFontAttributeName: valueFont, NSForegroundColorAttributeName: dataSet.valueTextColorAt(j)]
@@ -204,7 +214,7 @@ class CycleChartRender: PieChartRenderer {
                     {
                         ChartUtils.drawText(
                             context: context,
-                            text: data.xVals[j]!,
+                            text: data.getDataSetByIndex(j)! as! String,
                             point: CGPoint(x: labelPoint.x, y: labelPoint.y + lineHeight / 2.0),
                             align: align,
                             attributes: [NSFontAttributeName: valueFont, NSForegroundColorAttributeName: dataSet.valueTextColorAt(j)]
@@ -234,17 +244,17 @@ class CycleChartRender: PieChartRenderer {
                             context: context,
                             text: valueText,
                             point: CGPoint(x: x, y: y),
-                            align: .Center,
+                            align: .center,
                             attributes: [NSFontAttributeName: valueFont, NSForegroundColorAttributeName: dataSet.valueTextColorAt(j)]
                         )
 
-                        if j < data.xValCount && data.xVals[j] != nil
+                        if j < data.dataSetCount && data.getDataSetByIndex(j) != nil
                         {
                             ChartUtils.drawText(
                                 context: context,
-                                text: data.xVals[j]!,
+                                text: data.getDataSetByIndex(j)! as! String,
                                 point: CGPoint(x: x, y: y + lineHeight),
-                                align: .Center,
+                                align: .center,
                                 attributes: [NSFontAttributeName: valueFont, NSForegroundColorAttributeName: dataSet.valueTextColorAt(j)]
                             )
                         }
@@ -253,9 +263,9 @@ class CycleChartRender: PieChartRenderer {
                     {
                         ChartUtils.drawText(
                             context: context,
-                            text: data.xVals[j]!,
+                            text: data.getDataSetByIndex(j)! as! String,
                             point: CGPoint(x: x, y: y + lineHeight / 2.0),
-                            align: .Center,
+                            align: .center,
                             attributes: [NSFontAttributeName: valueFont, NSForegroundColorAttributeName: dataSet.valueTextColorAt(j)]
                         )
                     }
@@ -265,7 +275,7 @@ class CycleChartRender: PieChartRenderer {
                             context: context,
                             text: valueText,
                             point: CGPoint(x: x, y: y + lineHeight / 2.0),
-                            align: .Center,
+                            align: .center,
                             attributes: [NSFontAttributeName: valueFont, NSForegroundColorAttributeName: dataSet.valueTextColorAt(j)]
                         )
                     }

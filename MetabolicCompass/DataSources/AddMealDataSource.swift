@@ -34,14 +34,14 @@ class AddMealDataSource: NSObject, UITableViewDataSource, UITableViewDelegate, P
     private let defaultPickerHeight: CGFloat = 216.0
     
     //MARK: UITableViewDataSource
-    func tableView(tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+    func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         return dataSourceCells.count
     }
     
-    func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell {
+    func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         var cell: UITableViewCell? = nil
         let cellIdentifier = dataSourceCells[indexPath.row]
-        cell = tableView.dequeueReusableCellWithIdentifier(cellIdentifier)
+        cell = tableView.dequeueReusableCell(withIdentifier: cellIdentifier)
         
         switch cellIdentifier {
             case startSleepCellIdentifier:
@@ -65,13 +65,13 @@ class AddMealDataSource: NSObject, UITableViewDataSource, UITableViewDelegate, P
             case pickerCellIdentifier:
                 let pickerCell = cell as! PickerTableViewCell
                 pickerCell.pickerCellDelegate = self
-                let row = pickerCell.components.indexOf((addEventModel?.mealType.rawValue)!)
+                let row = pickerCell.components.index(of: (addEventModel?.mealType.rawValue)!)
                 pickerCell.pickerView.selectRow(row!, inComponent: 0, animated: false)
             case datePickerCellIdentifier:
                 let datePickerCell = cell as! DatePickerTableViewCell
                 datePickerCell.delegate = self
-                if addEventModel!.datePickerRow(indexPath.row) {//date and time
-                    datePickerCell.datePicker.datePickerMode = .DateAndTime
+                if addEventModel!.datePickerRow(rowIndex: indexPath.row) {//date and time
+                    datePickerCell.datePicker.datePickerMode = .dateAndTime
                     datePickerCell.datePicker.minuteInterval = 5
                     datePickerCell.datePicker.tag = indexPath.row
                     if sleepMode {
@@ -85,8 +85,8 @@ class AddMealDataSource: NSObject, UITableViewDataSource, UITableViewDelegate, P
                     } else {
                         datePickerCell.datePicker.date = (addEventModel?.eventDate)!
                     }
-                } else if addEventModel!.countDownPickerRow(indexPath.row)  {//countdoun
-                    datePickerCell.datePicker.datePickerMode = .CountDownTimer
+                } else if addEventModel!.countDownPickerRow(rowIndex: indexPath.row)  {//countdoun
+                    datePickerCell.datePicker.datePickerMode = .countDownTimer
                     datePickerCell.datePicker.minuteInterval = 5
                     datePickerCell.datePicker.tag = indexPath.row
                     datePickerCell.datePicker.countDownDuration = (addEventModel?.duration)!
@@ -101,7 +101,7 @@ class AddMealDataSource: NSObject, UITableViewDataSource, UITableViewDelegate, P
     //MARK: UITableViewDelegate
     
     func tableView(tableView: UITableView, didSelectRowAtIndexPath indexPath: NSIndexPath) {
-        displayPickerForRowAtIndexPath(indexPath, inTable: tableView)
+        displayPickerForRowAtIndexPath(indexPath: indexPath, inTable: tableView)
     }
 
     func tableView(tableView: UITableView, heightForRowAtIndexPath indexPath: NSIndexPath) -> CGFloat {
@@ -116,8 +116,8 @@ class AddMealDataSource: NSObject, UITableViewDataSource, UITableViewDelegate, P
     
     func removePickerForIndexPath (indexPath: NSIndexPath, inTable tableView: UITableView) {
         tableView.beginUpdates()
-        dataSourceCells.removeAtIndex(self.pickerIndexPath!.row)
-        tableView.deleteRowsAtIndexPaths([self.pickerIndexPath!], withRowAnimation: .Middle)
+        dataSourceCells.remove(at: self.pickerIndexPath!.row)
+        tableView.deleteRows(at: [self.pickerIndexPath! as IndexPath], with: .middle)
         tableView.endUpdates()
         self.pickerIndexPath = nil
     }
@@ -126,7 +126,7 @@ class AddMealDataSource: NSObject, UITableViewDataSource, UITableViewDelegate, P
         var pickerIdentifier = ""
         let pickerRow = indexPath.row + 1
         
-        if addEventModel!.datePickerRow(pickerRow) || addEventModel!.countDownPickerRow(pickerRow) {
+        if addEventModel!.datePickerRow(rowIndex: pickerRow) || addEventModel!.countDownPickerRow(rowIndex: pickerRow) {
             pickerIdentifier = datePickerCellIdentifier
         } else {
             pickerIdentifier = pickerCellIdentifier
@@ -137,36 +137,38 @@ class AddMealDataSource: NSObject, UITableViewDataSource, UITableViewDelegate, P
         var sameCellSelected = false
         
         if hasPickerCell() {
-            before = pickerIndexPath?.row < indexPath.row
+            before = (pickerIndexPath?.row)! < indexPath.row
             sameCellSelected = (pickerIndexPath?.row)! - 1 == indexPath.row
-            removePickerForIndexPath(indexPath, inTable: tableView)
+            removePickerForIndexPath(indexPath: indexPath, inTable: tableView)
         }
         
         if !sameCellSelected {
             let row = before ? indexPath.row - 1 : indexPath.row
-            self.pickerIndexPath = NSIndexPath(forRow: row+1, inSection: 0)
-            dataSourceCells.insert(pickerIdentifier, atIndex: self.pickerIndexPath!.row)
-            tableView.insertRowsAtIndexPaths([self.pickerIndexPath!], withRowAnimation: .Middle)            
-            openDropDownImage(true, forCellAtIndexPath: indexPath, inTableView: tableView)
+//            self.pickerIndexPath = NSIndexPath(forRow: row+1, inSection: 0)
+            self.pickerIndexPath = NSIndexPath(row: row+1, section: 0)
+            dataSourceCells.insert(pickerIdentifier, at: self.pickerIndexPath!.row)
+            tableView.insertRows(at: [self.pickerIndexPath! as IndexPath], with: .middle)            
+            openDropDownImage(close: true, forCellAtIndexPath: indexPath, inTableView: tableView)
         } else {
-            self.tableView(tableView, didDeselectRowAtIndexPath: indexPath)
+//            self.tableView(tableView, didDeselectRowAtIndexPath: indexPath)
+            self.tableView(tableView: tableView, didDeselectRowAtIndexPath: indexPath)
         }
         
         tableView.endUpdates()
         if hasPickerCell() {
-            tableView.scrollToRowAtIndexPath(self.pickerIndexPath!, atScrollPosition: .Middle, animated: true)
+            tableView.scrollToRow(at: self.pickerIndexPath! as IndexPath, at: .middle, animated: true)
         }
     }
     
     func tableView(tableView: UITableView, didDeselectRowAtIndexPath indexPath: NSIndexPath) {
-        openDropDownImage(false, forCellAtIndexPath: indexPath, inTableView: tableView)
+        openDropDownImage(close: false, forCellAtIndexPath: indexPath, inTableView: tableView)
     }
     
     func openDropDownImage(close: Bool, forCellAtIndexPath indexPath: NSIndexPath, inTableView table: UITableView) {
-        let cell = table.cellForRowAtIndexPath(indexPath)
+        let cell = table.cellForRow(at: indexPath as IndexPath)
         if cell is BaseAddEventTableViewCell {
             let baseCell = cell as! BaseAddEventTableViewCell
-            baseCell.toggleDropDownImage(close)
+            baseCell.toggleDropDownImage(close: close)
         }
     }
     
@@ -197,7 +199,7 @@ class AddMealDataSource: NSObject, UITableViewDataSource, UITableViewDelegate, P
         }
     }
     
-    //MARK: DatePickerTableViewCellDelegate
+    //MARK: DatePickerTableViewCellDelegate 
     
     func picker(picker: UIDatePicker, didSelectDate date: Date) {
         if sleepMode {
@@ -213,11 +215,11 @@ class AddMealDataSource: NSObject, UITableViewDataSource, UITableViewDelegate, P
                     self.endSleepCell?.dayLabel.text = addEventModel?.getEndSleepForDayLabel()
             }            
         } else {
-            if addEventModel!.datePickerRow(picker.tag) {
+            if addEventModel!.datePickerRow(rowIndex: picker.tag) {
                 addEventModel?.eventDate = date
                 self.whenCell?.timeLabel.text = addEventModel?.getTextForTimeLabel()
                 self.whenCell?.dayLabel.text = addEventModel?.getTextForDayLabel()
-            } else if addEventModel!.countDownPickerRow(picker.tag) {
+            } else if addEventModel!.countDownPickerRow(rowIndex: picker.tag) {
                 addEventModel?.duration = picker.countDownDuration
                 self.durationCell?.durationLabel.attributedText = addEventModel?.getTextForTimeInterval()
             }

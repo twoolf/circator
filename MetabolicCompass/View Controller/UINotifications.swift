@@ -2,7 +2,7 @@
 //  DodoMessages.swift
 //  MetabolicCompass
 //
-//  Created by Yanif Ahmad on 1/31/16.
+//  Created by Yanif Ahmad on 1/31/16.  
 //  Copyright © 2016 Yanif Ahmad, Tom Woolf. All rights reserved.
 //
 
@@ -18,18 +18,18 @@ let negativeNotificationDelay = 5.0
 /**
  This class contains a library of our standard user notifications, implemented with Dodo.  By putting these UI notifications in one place, it makes it easier to maintain the usage and to keep a consistent style.
 
-- note: used broadly in code-base to report interactions
+- note: used broadly in code-base to report interactions 
 */
 public class UINotifications {
 
     public static func configureNotifications() {
-        let screenSize = UIScreen.mainScreen().bounds.size
+        let screenSize = UIScreen.main.bounds.size
         log.warning("UINOTIFICATIONS screen height \(screenSize.height) \(screenSize.width)")
         DodoLabelDefaultStyles.font = UIFont(name: "GothamBook", size: ScreenManager.sharedInstance.dodoFontSize())!
     }
 
     public static func doWelcome(vc: UIViewController, pop: Bool = false, asNav: Bool = false, user: String = "") {
-        withPop(vc, pop: pop, asNav: asNav) {
+        withPop(vc: vc, pop: pop, asNav: asNav) {
             Async.main {
                 vc.view.dodo.style.bar.hideAfterDelaySeconds = positiveNotificationDelay
                 vc.view.dodo.style.bar.hideOnTap = true
@@ -41,7 +41,7 @@ public class UINotifications {
     }
 
     public static func invalidProfile(vc: UIViewController, pop: Bool = false, asNav: Bool = false) {
-        withPop(vc, pop: pop, asNav: asNav) {
+        withPop(vc: vc, pop: pop, asNav: asNav) {
             Async.main {
                 vc.view.dodo.style.bar.hideAfterDelaySeconds = negativeNotificationDelay
                 vc.view.dodo.style.bar.hideOnTap = true
@@ -53,7 +53,7 @@ public class UINotifications {
     }
 
     public static func invalidUserPass(vc: UIViewController, pop: Bool = false, asNav: Bool = false) {
-        withPop(vc, pop: pop, asNav: asNav) {
+        withPop(vc: vc, pop: pop, asNav: asNav) {
             Async.main {
                 vc.view.dodo.style.bar.hideAfterDelaySeconds = negativeNotificationDelay
                 vc.view.dodo.style.bar.hideOnTap = true
@@ -65,7 +65,7 @@ public class UINotifications {
     }
 
     public static func loginGoodbye(vc: UIViewController, pop: Bool = false, asNav: Bool = false, user: String = "") {
-        withPop(vc, pop: pop, asNav: asNav) {
+        withPop(vc: vc, pop: pop, asNav: asNav) {
             Async.main {
                 vc.view.dodo.style.bar.hideAfterDelaySeconds = positiveNotificationDelay
                 vc.view.dodo.style.bar.hideOnTap = true
@@ -77,7 +77,7 @@ public class UINotifications {
     }
 
     public static func loginFailed(vc: UIViewController, pop: Bool = false, asNav: Bool = false, reason: String? = nil) {
-        withPop(vc, pop: pop, asNav: asNav) {
+        withPop(vc: vc, pop: pop, asNav: asNav) {
             Async.main {
                 vc.view.dodo.style.bar.hideAfterDelaySeconds = negativeNotificationDelay
                 vc.view.dodo.style.bar.hideOnTap = true
@@ -89,7 +89,7 @@ public class UINotifications {
     }
 
     public static func loginRequest(vc: UIViewController, pop: Bool = false, asNav: Bool = false) {
-        withPop(vc, pop: pop, asNav: asNav) {
+        withPop(vc: vc, pop: pop, asNav: asNav) {
             Async.main {
                 vc.view.dodo.style.bar.hideAfterDelaySeconds = negativeNotificationDelay
                 vc.view.dodo.style.bar.hideOnTap = true
@@ -101,7 +101,7 @@ public class UINotifications {
     }
 
     public static func noConsent(vc: UIViewController, pop: Bool = false, asNav: Bool = false) {
-        withPop(vc, pop: pop, asNav: asNav) {
+        withPop(vc: vc, pop: pop, asNav: asNav) {
             Async.main {
                 vc.view.dodo.style.bar.hideAfterDelaySeconds = negativeNotificationDelay
                 vc.view.dodo.style.bar.hideOnTap = true
@@ -113,7 +113,7 @@ public class UINotifications {
     }
 
     public static func noHealthKit(vc: UIViewController, pop: Bool = false, asNav: Bool = false) {
-        withPop(vc, pop: pop, asNav: asNav) {
+        withPop(vc: vc, pop: pop, asNav: asNav) {
             Async.main {
                 vc.view.dodo.style.bar.hideAfterDelaySeconds = negativeNotificationDelay
                 vc.view.dodo.style.bar.hideOnTap = true
@@ -125,7 +125,7 @@ public class UINotifications {
     }
 
     public static func profileFetchFailed(vc: UIViewController, pop: Bool = false, asNav: Bool = false) {
-        withPop(vc, pop: pop, asNav: asNav) {
+        withPop(vc: vc, pop: pop, asNav: asNav) {
             Async.main {
                 vc.view.dodo.style.bar.hideAfterDelaySeconds = negativeNotificationDelay
                 vc.view.dodo.style.bar.hideOnTap = true
@@ -137,7 +137,7 @@ public class UINotifications {
     }
 
     public static func profileUpdated(vc: UIViewController, pop: Bool = false, asNav: Bool = false) {
-        withPop(vc, pop: pop, asNav: asNav) {
+        withPop(vc: vc, pop: pop, asNav: asNav) {
             Async.main {
                 vc.view.dodo.style.bar.hideAfterDelaySeconds = positiveNotificationDelay
                 vc.view.dodo.style.bar.hideOnTap = true
@@ -149,7 +149,7 @@ public class UINotifications {
     }
 
     public static func registrationError(vc: UIViewController, pop: Bool = false, asNav: Bool = false, msg: String? = nil) {
-        withPop(vc, pop: pop, asNav: asNav) {
+        withPop(vc: vc, pop: pop, asNav: asNav) {
             Async.main {
                 vc.view.dodo.style.bar.hideAfterDelaySeconds = negativeNotificationDelay
                 vc.view.dodo.style.bar.hideOnTap = true
@@ -162,7 +162,7 @@ public class UINotifications {
     }
 
     public static func retryingHealthkit(vc: UIViewController, pop: Bool = false, asNav: Bool = false) {
-        withPop(vc, pop: pop, asNav: asNav) {
+        withPop(vc: vc, pop: pop, asNav: asNav) {
             Async.main {
                 vc.view.dodo.style.bar.hideAfterDelaySeconds = negativeNotificationDelay
                 vc.view.dodo.style.bar.hideOnTap = true
@@ -174,7 +174,7 @@ public class UINotifications {
     }
 
     public static func showCount(vc: UIViewController, count: Int, pop: Bool = false, asNav: Bool = false) {
-        withPop(vc, pop: pop, asNav: asNav) {
+        withPop(vc: vc, pop: pop, asNav: asNav) {
             Async.main {
                 vc.view.dodo.style.bar.hideAfterDelaySeconds = positiveNotificationDelay
                 vc.view.dodo.style.bar.hideOnTap = true
@@ -186,7 +186,7 @@ public class UINotifications {
     }
 
     public static func genericMsg(vc: UIViewController, msg: String, pop: Bool = false, asNav: Bool = false, nohide: Bool = false) {
-        withPop(vc, pop: pop, asNav: asNav) {
+        withPop(vc: vc, pop: pop, asNav: asNav) {
             Async.main {
                 if !nohide { vc.view.dodo.style.bar.hideAfterDelaySeconds = positiveNotificationDelay }
                 vc.view.dodo.style.bar.hideOnTap = true
@@ -198,7 +198,7 @@ public class UINotifications {
     }
 
     public static func genericError(vc: UIViewController, msg: String, pop: Bool = false, asNav: Bool = false, nohide: Bool = false) {
-        withPop(vc, pop: pop, asNav: asNav) {
+        withPop(vc: vc, pop: pop, asNav: asNav) {
             Async.main {
                 if !nohide { vc.view.dodo.style.bar.hideAfterDelaySeconds = negativeNotificationDelay }
                 vc.view.dodo.style.bar.hideOnTap = true
@@ -237,17 +237,17 @@ public class UINotifications {
         if pop {
             if asNav {
                 if let ctlr = vc as? UINavigationController {
-                    ctlr.popViewControllerAnimated(true)
+                    ctlr.popViewController(animated: true)
                 }
             } else {
-                vc.navigationController?.popViewControllerAnimated(true)
+                vc.navigationController?.popViewController(animated: true)
             }
         }
         msg()
     }
     
     public static func showError(vc: UIViewController, pop: Bool = false, asNav: Bool = false, msg: String? = nil, title: String? = nil) {
-        withPop(vc, pop: pop, asNav: asNav) {
+        withPop(vc: vc, pop: pop, asNav: asNav) {
             Async.main {
                 vc.view.dodo.style.bar.hideAfterDelaySeconds = negativeNotificationDelay
                 vc.view.dodo.style.bar.hideOnTap = true

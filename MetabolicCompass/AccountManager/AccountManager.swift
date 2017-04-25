@@ -3,7 +3,7 @@
 //  MetabolicCompass
 //
 //  Created by Inaiur on 5/11/16.
-//  Copyright © 2016 Yanif Ahmad, Tom Woolf. All rights reserved.
+//  Copyright © 2016 Yanif Ahmad, Tom Woolf. All rights reserved. 
 //
 
 import UIKit
@@ -44,10 +44,10 @@ class AccountManager: NSObject {
         self.rootViewController?.pushViewController(registerVC, animated: true)
     }
 
-    func doLogin(animated: Bool = true, completion: (Void -> Void)?) {
-        assert(NSThread.isMainThread(), "can be called from main thread only")
+    func doLogin(animated: Bool = true, completion: ((Void) -> Void)?) {
+        assert(Thread.isMainThread, "can be called from main thread only")
         let registerLandingStoryboard = UIStoryboard(name: "RegisterLoginProcess", bundle: nil)
-        let registerLoginLandingController = registerLandingStoryboard.instantiateViewControllerWithIdentifier("landingLoginRegister") as! RegisterLoginLandingViewController
+        let registerLoginLandingController = registerLandingStoryboard.instantiateViewController(withIdentifier: "landingLoginRegister") as! RegisterLoginLandingViewController
         
         registerLoginLandingController.completion = completion
         
@@ -59,17 +59,17 @@ class AccountManager: NSObject {
         self.rootViewController?.pushViewController(registerLoginLandingController, animated: animated)
     }
 
-    func doLogout(completion: (Void -> Void)?) {
+    func doLogout(completion: ((Void) -> Void)?) {
         log.debug("User logging out", feature: "accountExec")
-        UserManager.sharedManager.logoutWithCompletion(completion)
+        UserManager.sharedManager.logoutWithCompletion(completion: completion)
         IOSHealthManager.sharedManager.reset()
         self.contentManager.stopBackgroundWork()
         PopulationHealthManager.sharedManager.reset()
     }
 
-    func doWithdraw(keepData: Bool, completion: Bool -> Void) {
+    func doWithdraw(keepData: Bool, completion: @escaping (Bool) -> Void) {
         log.debug("User withdrawing", feature: "accountExec")
-        UserManager.sharedManager.withdraw(keepData, completion: completion)
+        UserManager.sharedManager.withdraw(keepData: keepData, completion: completion)
         IOSHealthManager.sharedManager.reset()
         self.contentManager.stopBackgroundWork()
         PopulationHealthManager.sharedManager.reset()
@@ -79,7 +79,7 @@ class AccountManager: NSObject {
         log.debug("User login complete", feature: "loginExec")
 
         Async.main() {
-            NSNotificationCenter.defaultCenter().postNotificationName(self.didCompleteLoginNotification, object: nil)
+            NotificationCenter.default.post(name: NSNotification.Name(rawValue: self.didCompleteLoginNotification), object: nil)
         }
     }
 
@@ -94,7 +94,7 @@ class AccountManager: NSObject {
         log.debug("Login start", feature: "loginExec")
         guard isAuthorized else {
             log.debug("Login: No token found, launching dialog", feature: "loginExec")
-            self.doLogin (animated) { self.loginComplete() }
+            self.doLogin (animated: animated) { self.loginComplete() }
             return
         }
 
@@ -103,7 +103,7 @@ class AccountManager: NSObject {
             UserManager.sharedManager.ensureAccessToken { error in
                 guard !error else {
                     log.debug("Login: HK/Cal auth failed, relaunching dialog", feature: "loginExec")
-                    Async.main() { self.doLogin (animated) { self.loginComplete() } }
+                    Async.main() { self.doLogin (animated: animated) { self.loginComplete() } }
                     return
                 }
 
@@ -142,7 +142,7 @@ class AccountManager: NSObject {
         }
     }
 
-    func withHKCalAuth(completion: Void -> Void) {
+    func withHKCalAuth(completion: @escaping (Void) -> Void) {
         MCHealthManager.sharedManager.authorizeHealthKit { (success, error) -> Void in
             guard error == nil else {
                 self.isHealthKitAuthorized = false
@@ -152,16 +152,17 @@ class AccountManager: NSObject {
 
             self.isHealthKitAuthorized = true
             self.checkLocalNotifications()
-            EventManager.sharedManager.checkCalendarAuthorizationStatus(completion)
+            EventManager.sharedManager.checkCalendarAuthorizationStatus(completion: completion)
         }
     }
 
     func registerLocalNotifications() {
         log.debug("Registering for local notifications", feature: "notifications")
         resetLocalNotifications()
-        let notificationType: UIUserNotificationType = [.Alert, .Badge, .Sound]
-        let notificationSettings = UIUserNotificationSettings(forTypes: notificationType, categories: nil)
-        UIApplication.sharedApplication().registerUserNotificationSettings(notificationSettings)
+        let notificationType: UIUserNotificationType = [.alert, .badge, .sound]
+//        let notificationSettings: UIUserNotificationSettings = UIUserNotificationSettings(forTypes: notificationType, categories: nil)
+        let notificationSettings: UIUserNotificationSettings = UIUserNotificationSettings(types: notificationType, categories: nil)
+        UIApplication.shared.registerUserNotificationSettings(notificationSettings)
     }
 
     func resetLocalNotifications() {
@@ -172,7 +173,7 @@ class AccountManager: NSObject {
 
     func checkLocalNotifications() {
         log.debug("Notifications status: \(Defaults.objectForKey(AMNotificationsKey))", feature: "notifications")
-        if let notificationsOn = Defaults.objectForKey(AMNotificationsKey) as? Bool, notificationsOn {
+        if let notificationsOn = Defaults.object(forKey: AMNotificationsKey) as? Bool, notificationsOn {
             return
         }
 
@@ -191,9 +192,9 @@ class AccountManager: NSObject {
 
         log.debug("Uploading consent file", feature: "uploadConsent")
         self.uploadInProgress = true
-        UserManager.sharedManager.pushConsent(consentPath) { [weak self]res in
+        UserManager.sharedManager.pushConsent(filePath: consentPath) { [weak self]res in
             if res.ok {
-                ConsentManager.sharedManager.removeConsentFile(consentPath)
+                ConsentManager.sharedManager.removeConsentFile(consentFilePath: consentPath)
             }
             self?.uploadInProgress = false
         }

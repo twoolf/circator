@@ -2,7 +2,7 @@
 //  BaseDataSource.swift
 //  MetabolicCompass
 //
-//  Created by Anna Tkach on 4/28/16.
+//  Created by Anna Tkach on 4/28/16.  
 //  Copyright © 2016 Yanif Ahmad, Tom Woolf. All rights reserved.
 //
 
@@ -30,11 +30,11 @@ public class BaseDataSource: NSObject, UICollectionViewDataSource, UICollectionV
 
     // MARK: - UICollectionView DataSource & Delegate
 
-    public func collectionView(collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
+    public func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
         return 0
     }
 
-    public func collectionView(collectionView: UICollectionView, cellForItemAtIndexPath indexPath: NSIndexPath) -> UICollectionViewCell {
+    public func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         return UICollectionViewCell()
     }
 }

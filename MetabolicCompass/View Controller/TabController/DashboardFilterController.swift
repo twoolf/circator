@@ -164,7 +164,7 @@ class DashboardFilterController: UIViewController, UITableViewDelegate, UITableV
         return 40
     }
 
-    func tableView(tableView: UITableView, viewForFooterInSection section: Int) -> UIView? {
+    func tableView(_ tableView: UITableView, viewForFooterInSection section: Int) -> UIView? {
         return UIView()
     }
 
@@ -180,8 +180,10 @@ class DashboardFilterController: UIViewController, UITableViewDelegate, UITableV
             // Deselect all other items in this section. This enforces mutually exclusive filters.
             for (index, item) in filterItems.enumerated() {
                 if (item.selected && indexPath.row != index) {
-                    let currentlySelectedCell = tableView.cellForRowAtIndexPath(IndexPath(forRow: index, inSection: indexPath.section)) as? DashboardFilterCell
-                    currentlySelectedCell?.didPressButton(self)
+//                    let currentlySelectedCell = tableView.cellForRowAtIndexPath(IndexPath(forRow: index, inSection: indexPath.section)) as? DashboardFilterCell
+                    let IndexPathToUse = IndexPath(row: index, section: indexPath.section)
+                    let currentlySelectedCell = tableView.cellForRow(at: IndexPathToUse)
+//                    currentlySelectedCell?.didPressButton(self)
                     deselectRow(section: indexPath.section, row: index)
                 }
             }
@@ -251,67 +253,67 @@ class DashboardFilterController: UIViewController, UITableViewDelegate, UITableV
     typealias FilterSpecs = [(String, String, HKUnit?, [(Int, Int, String?)])]
 
     let commonFilterSpecs: FilterSpecs = [
-        ("Body Mass Index", HKQuantityTypeIdentifierBodyMassIndex.rawValue, nil,
+        ("Body Mass Index", HKQuantityTypeIdentifier.bodyMassIndex.rawValue, nil,
             [(0, 18, "(underweight)"), (18, 25, "(standard)"), (25, 30, "(overweight)"), (30, Int.max, "(obese)")]),
 
-        ("Dietary Energy", HKQuantityTypeIdentifierDietaryEnergyConsumed.rawValue, nil,
+        ("Dietary Energy", HKQuantityTypeIdentifier.dietaryEnergyConsumed.rawValue, nil,
             [(0, 1000, nil), (1000, 2000, nil), (2000, 3500, nil), (3500, Int.max, nil)]),
 
-        ("Heart Rate", HKQuantityTypeIdentifierHeartRate, nil,
+        ("Heart Rate", HKQuantityTypeIdentifier.heartRate.rawValue, nil,
             [(0, 50, nil), (50, 65, nil), (65, 80, nil), (80, Int.max, nil)]),
 
-        ("Step Count", HKQuantityTypeIdentifierStepCount, nil,
+        ("Step Count", HKQuantityTypeIdentifier.stepCount.rawValue, nil,
             [(0, 1000, nil), (1000, 5000, nil), (5000, 10000, nil), (10000, Int.max, nil)]),
 
-        ("Active Energy", HKQuantityTypeIdentifierActiveEnergyBurned, nil,
+        ("Active Energy", HKQuantityTypeIdentifier.activeEnergyBurned.rawValue, nil,
             [(0, 500, nil), (500, 1500, nil), (1500, 3500, nil), (3500, Int.max, nil)]),
 
-        ("Resting Energy", HKQuantityTypeIdentifierBasalEnergyBurned, nil,
+        ("Resting Energy", HKQuantityTypeIdentifier.basalEnergyBurned.rawValue, nil,
             [(0, 1000, nil), (1000, 2000, nil), (2000, 3000, nil), (3000, Int.max, nil)]),
 
-        ("Sleep", HKCategoryTypeIdentifierSleepAnalysis, HKUnit.hourUnit(),
+        ("Sleep", HKCategoryTypeIdentifier.sleepAnalysis.rawValue, HKUnit.hour(),
             [(0, 5, nil), (5, 7, nil), (7, 9, nil), (9, Int.max, nil)]),
 
-        ("Protein", HKQuantityTypeIdentifierDietaryProtein, nil,
+        ("Protein", HKQuantityTypeIdentifier.dietaryProtein.rawValue, nil,
             [(0, 40, nil), (40, 80, nil), (80, 120, nil), (120, Int.max, nil)]),
 
-        ("Fat", HKQuantityTypeIdentifierDietaryFatTotal, nil,
+        ("Fat", HKQuantityTypeIdentifier.dietaryFatTotal.rawValue, nil,
             [(0, 50, nil), (50, 75, nil), (75, 100, nil), (100, Int.max, nil)]),
 
-        ("Carbohydrates", HKQuantityTypeIdentifierDietaryCarbohydrates, nil,
+        ("Carbohydrates", HKQuantityTypeIdentifier.dietaryCarbohydrates.rawValue, nil,
             [(0, 200, nil), (200, 300, nil), (300, 400, nil), (400, Int.max, nil)]),
 
-        ("Fiber", HKQuantityTypeIdentifierDietaryFiber, nil,
+        ("Fiber", HKQuantityTypeIdentifier.dietaryFiber.rawValue, nil,
             [(0, 10, nil), (10, 15, nil), (15, 20, nil), (20, Int.max, nil)]),
 
-        ("Sugar", HKQuantityTypeIdentifierDietarySugar, nil,
+        ("Sugar", HKQuantityTypeIdentifier.dietarySugar.rawValue, nil,
             [(0, 50, nil), (50, 110, nil), (110, 180, nil), (180, Int.max, nil)]),
 
-        ("Salt", HKQuantityTypeIdentifierDietarySodium, nil,
+        ("Salt", HKQuantityTypeIdentifier.dietarySodium.rawValue, nil,
             [(0, 1000, nil), (1000, 3000, nil), (3000, 5000, nil), (5000, Int.max, nil)]),
 
-        ("Caffeine", HKQuantityTypeIdentifierDietaryCaffeine, nil,
+        ("Caffeine", HKQuantityTypeIdentifier.dietaryCaffeine.rawValue, nil,
             [(0, 50, nil), (50, 150, nil), (150, 300, nil), (300, Int.max, nil)]),
 
-        ("Cholesterol", HKQuantityTypeIdentifierDietaryCholesterol, nil,
+        ("Cholesterol", HKQuantityTypeIdentifier.dietaryCholesterol.rawValue, nil,
             [(0, 150, nil), (150, 300, nil), (300, 450, nil), (450, Int.max, nil)]),
 
-        ("Polyunsaturated Fat", HKQuantityTypeIdentifierDietaryFatPolyunsaturated, nil,
+        ("Polyunsaturated Fat", HKQuantityTypeIdentifier.dietaryFatPolyunsaturated.rawValue, nil,
             [(0, 10, nil), (10, 20, nil), (20, 30, nil), (30, Int.max, nil)]),
 
-        ("Saturated Fat", HKQuantityTypeIdentifierDietaryFatSaturated, nil,
+        ("Saturated Fat", HKQuantityTypeIdentifier.dietaryFatSaturated.rawValue, nil,
             [(0, 15, nil), (15, 25, nil), (25, 35, nil), (35, Int.max, nil)]),
 
-        ("Monounsaturated Fat", HKQuantityTypeIdentifierDietaryFatMonounsaturated, nil,
+        ("Monounsaturated Fat", HKQuantityTypeIdentifier.dietaryFatMonounsaturated.rawValue, nil,
             [(0, 20, nil), (20, 30, nil), (30, 40, nil), (40, Int.max, nil)]),
 
-        ("Water", HKQuantityTypeIdentifierDietaryWater, nil,
+        ("Water", HKQuantityTypeIdentifier.dietaryWater.rawValue, nil,
             [(0, 500, nil), (500, 1500, nil), (1500, 3000, nil), (3000, Int.max, nil)]),
 
-        ("Blood Pressure Systolic",  HKQuantityTypeIdentifierBloodPressureSystolic, nil,
+        ("Blood Pressure Systolic",  HKQuantityTypeIdentifier.bloodPressureSystolic.rawValue, nil,
             [(0, 110, nil), (110, 120, nil), (120, 130, nil), (130, Int.max, nil)]),
 
-        ("Blood Pressure Diastolic", HKQuantityTypeIdentifierBloodPressureDiastolic, nil,
+        ("Blood Pressure Diastolic", HKQuantityTypeIdentifier.bloodPressureDiastolic.rawValue, nil,
             [(0, 60, nil), (60, 70, nil), (70, 80, nil), (80, Int.max, nil)])
     ]
 

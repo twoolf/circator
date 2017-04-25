@@ -2,7 +2,7 @@
 //  PathMenuItem.swift
 //  PathMenu
 //
-//  Created by pixyzehn on 12/27/14.
+//  Created by pixyzehn on 12/27/14. 
 //  Copyright (c) 2014 pixyzehn. All rights reserved.
 //
 
@@ -26,9 +26,9 @@ public class PathMenuItem: UIImageView {
     
     public weak var delegate: PathMenuItemDelegate?
     
-    override public var highlighted: Bool {
+    override public var isHighlighted: Bool {
         didSet {
-            contentImageView?.highlighted = highlighted
+            contentImageView?.isHighlighted = isHighlighted
         }
     }
 
@@ -47,7 +47,7 @@ public class PathMenuItem: UIImageView {
                  contentText text: String?  = nil)
     {
 
-        self.init(frame: CGRectZero)
+        self.init(frame: CGRect.zero)
         self.image = image
         self.highlightedImage = himg
 
@@ -57,18 +57,18 @@ public class PathMenuItem: UIImageView {
         self.contentLabel = UILabel(frame: CGRect.zero)
         self.contentLabel.text = text
         self.contentLabel.font = UIFont(name: "GothamBook", size: 14.0)
-        self.contentLabel.textColor = .lightGrayColor()
+        self.contentLabel.textColor = .lightGray
 
-        self.userInteractionEnabled = true
+        self.isUserInteractionEnabled = true
         self.addSubview(contentImageView!)
 
         self.contentLabel.translatesAutoresizingMaskIntoConstraints = false
         self.addSubview(contentLabel)
         let constraints: [NSLayoutConstraint] = [
-            contentLabel.topAnchor.constraintEqualToAnchor(bottomAnchor, constant: 10.0),
+            contentLabel.topAnchor.constraint(equalTo: bottomAnchor, constant: 10.0),
             //contentLabel.heightAnchor.constraintEqualToConstant(25.0),
-            contentLabel.leadingAnchor.constraintEqualToAnchor(leadingAnchor),
-            contentLabel.trailingAnchor.constraintEqualToAnchor(trailingAnchor)
+            contentLabel.leadingAnchor.constraint(equalTo: leadingAnchor),
+            contentLabel.trailingAnchor.constraint(equalTo: trailingAnchor)
         ]
 
         self.addConstraints(constraints)
@@ -77,7 +77,7 @@ public class PathMenuItem: UIImageView {
     private func ScaleRect(rect: CGRect, n: CGFloat) -> CGRect {
         let width  = rect.size.width
         let height = rect.size.height
-        return CGRectMake((width - width * n)/2, (height - height * n)/2, width * n, height * n)
+        return CGRect((width - width * n)/2, (height - height * n)/2, width * n, height * n)
     }
 
     //MARK: UIView's methods
@@ -85,40 +85,40 @@ public class PathMenuItem: UIImageView {
     override public func layoutSubviews() {
         super.layoutSubviews()
         if let image = image {
-            bounds = CGRectMake(0, 0, image.size.width, image.size.height)
+            bounds = CGRect(0, 0, image.size.width, image.size.height)
         }
         
         if let imageView = contentImageView,
                 let width = imageView.image?.size.width,
                     let height = imageView.image?.size.height {
 
-            imageView.frame = CGRectMake(bounds.size.width/2 - width/2, bounds.size.height/2 - height/2, width, height)
+            imageView.frame = CGRect(bounds.size.width/2 - width/2, bounds.size.height/2 - height/2, width, height)
         }
     }
     
-    public override func touchesBegan(touches: Set<UITouch>, withEvent event: UIEvent?) {
-        highlighted = true
-        delegate?.pathMenuItemTouchesBegin(self)
+    public func touchesBegan(touches: Set<UITouch>, withEvent event: UIEvent?) {
+        isHighlighted = true
+        delegate?.pathMenuItemTouchesBegin(item: self)
     }
     
-    public override func touchesMoved(touches: Set<UITouch>, withEvent event: UIEvent?) {
-        if let location = touches.first?.locationInView(self) {
-            if !CGRectContainsPoint(ScaleRect(bounds, n: 2.0), location) {
-                highlighted = false
+    public func touchesMoved(touches: Set<UITouch>, withEvent event: UIEvent?) {
+        if let location = touches.first?.location(in: self) {
+            if !ScaleRect(rect: bounds, n: 2.0).contains(location) {
+                isHighlighted = false
             }
         }
     }
 
-    public override func touchesEnded(touches: Set<UITouch>, withEvent event: UIEvent?) {
-        highlighted = false
-        if let location = touches.first?.locationInView(self) {
-            if CGRectContainsPoint(ScaleRect(bounds, n: 2.0), location) {
-                delegate?.pathMenuItemTouchesEnd(self)
+    public func touchesEnded(touches: Set<UITouch>, withEvent event: UIEvent?) {
+        isHighlighted = false
+        if let location = touches.first?.location(in: self) {
+            if ScaleRect(rect: bounds, n: 2.0).contains(location) {
+                delegate?.pathMenuItemTouchesEnd(item: self)
             }
         }
     }
     
     public override func touchesCancelled(touches: Set<UITouch>?, withEvent event: UIEvent?) {
-        highlighted = false
+        isHighlighted = false
     }
 }

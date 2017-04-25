@@ -30,7 +30,7 @@ class ChartsViewController: UIViewController {
     private let scatterChartCellIdentifier = "ScatterChartCollectionCell"
     private let chartCollectionDataSource = ChartCollectionDataSource()
     private let chartCollectionDelegate = ChartCollectionDelegate()
-    private let chartsModel = BarChartModel()
+//    private let chartsModel = BarChartModel()
     private var segmentControl: UISegmentedControl? = nil
 
     // MARK :- View life cycle
@@ -45,8 +45,8 @@ class ChartsViewController: UIViewController {
 
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-        NotificationCenter.default.addObserver(self, selector: #selector(updateChartDataWithClean), name: UIApplicationWillEnterForegroundNotification, object: nil)
-        NotificationCenter.defaultCenter().addObserver(self, selector: #selector(updateChartsData), name: HMDidUpdatedChartsData, object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(updateChartDataWithClean), name: NSNotification.Name.UIApplicationWillEnterForeground, object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(updateChartsData), name: NSNotification.Name(rawValue: HMDidUpdatedChartsData), object: nil)
         chartCollectionDataSource.updateData()
         updateChartsData()
         logContentView()
@@ -63,9 +63,10 @@ class ChartsViewController: UIViewController {
     }
 
     func logContentView(asAppear: Bool = true) {
-        Answers.logContentViewWithName("Charts",
+        Answers.logContentView(withName: "Charts",
                                        contentType: asAppear ? "Appear" : "Disappear",
-                                       contentId: Date().toString(DateFormat.Custom("YYYY-MM-dd:HH")),
+//                                       contentId: Date().toString(DateFormat.Custom("YYYY-MM-dd:HH")),
+                                       contentId: Date().intervalString(toDate: Date()),
                                        customAttributes: ["range": rangeType.rawValue])
     }
 
@@ -81,15 +82,18 @@ class ChartsViewController: UIViewController {
         if !activityIndicator.isAnimating {
             activityIndicator.startAnimating()
         }
-        chartsModel.getAllDataForCurrentPeriod(completion: { 
-            self.activityIndicator.stopAnimating()
-            self.collectionView.reloadData()
-        })
+//        chartsModel.getAllDataForCurrentPeriod(completion: {
+//        chartsModel(updateChartsData()) {
+//            self.updateChartsData {
+//            self.activityIndicator.stopAnimating()
+//            self.collectionView.reloadData()
+//        })
     }
 
     func registerCells () {
         let barChartCellNib = UINib(nibName: "BarChartCollectionCell", bundle: nil)
-        collectionView?.register(barChartCellNib, forCellWithReuseIdentifier: barChartCellIdentifier)
+        collectionView.register(barChartCellNib, forCellWithReuseIdentifier: barChartCellIdentifier)
+//        collectionView?.register(barChartCellNib, forCellWithReuseIdentifier: barChartCellIdentifier)
 
         let lineChartCellNib = UINib(nibName: "LineChartCollectionCell", bundle: nil)
         collectionView?.register(lineChartCellNib, forCellWithReuseIdentifier: lineChartCellIdentifier)

@@ -2,7 +2,7 @@
 //  AdditionalInfoModel.swift
 //  MetabolicCompass
 //
-//  Created by Anna Tkach on 4/29/16.
+//  Created by Anna Tkach on 4/29/16. 
 //  Copyright © 2016 Yanif Ahmad, Tom Woolf. All rights reserved.
 //
 

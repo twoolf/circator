@@ -79,7 +79,8 @@ class MetabolicDailyProgressChartView : HorizontalBarChartView, DailyChartModelP
         rightAxis.labelFont = ScreenManager.appFontOfSize(size: 12.0)
         rightAxis.drawAxisLineEnabled = true
         rightAxis.drawGridLinesEnabled = true
-        rightAxis.valueFormatter = formatter
+//        rightAxis.valueFormatter = formatter
+//        rightAxis.valueFormatter = formatter
         rightAxis.axisMinValue = 0.0
         rightAxis.axisMaxValue = 24.0
         rightAxis.gridLineWidth = 1
@@ -120,15 +121,16 @@ class MetabolicDailyProgressChartView : HorizontalBarChartView, DailyChartModelP
         let days = ["", "", "", "", "", "", ""]
         var dataSetArray: [BarChartDataSet] = []
         for (index, daysData) in valuesAndColors.sorted(by: { $0.0.0 < $0.1.0 }).enumerated() {
-            let entry = BarChartDataEntry.init(values: daysData.1.map { $0.0 }, xIndex: index)
-            let set = BarChartDataSet.init(yVals: [entry], label: nil)
-            set.barSpace = 55
-            set.drawValuesEnabled = false
-            set.colors = daysData.1.map { $0.1 }
-            dataSetArray.append(set)
+//            let entry = BarChartDataEntry.init(values: daysData.1.map { $0.0 }, xIndex: index)
+//            let set = BarChartDataSet.init(values: [entry], label: nil)
+//            set.barSpace = 55
+            // set.barWidth = 55
+//            set.drawValuesEnabled = false
+//            set.colors = daysData.1.map { $0.1 }
+//            dataSetArray.append(set)
         }
-        let data = BarChartData.init(xVals: days, dataSets: dataSetArray)
-        data.groupSpace = 75
+//        let data = BarChartData.init(xVals: days, dataSets: dataSetArray)
+//        data.groupSpace = 75
         self.data = data
 
         let labelsInHours: Int = 2
@@ -141,7 +143,7 @@ class MetabolicDailyProgressChartView : HorizontalBarChartView, DailyChartModelP
         rightAxis.labelCount = Int(rightAxis.axisMaxValue - rightAxis.axisMinValue) / labelsInHours
         if animate { self.animate(yAxisDuration: 1.0) }
 
-        self.setVisibleXRange(minXRange: CGFloat(self.xAxis.axisRange) / zoomFactor, maxXRange: CGFloat(self.xAxis.axisRange))
+//        self.setVisibleXRange(minXRange: CGFloat(self.xAxis.axisRange/zoomFactor), maxXRange: CGFloat(self.xAxis.axisRange))
     }
 
     func toggleColors() {

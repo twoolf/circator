@@ -1,6 +1,6 @@
 //
 //  BaseViewController.swift
-//  MetabolicCompass
+//  MetabolicCompass 
 //
 //  Created by Anna Tkach on 4/27/16.
 //  Copyright © 2016 Yanif Ahmad, Tom Woolf. All rights reserved.
@@ -21,14 +21,15 @@ class BaseViewController: UIViewController, UIGestureRecognizerDelegate {
 
     class func storyboardId() -> String {
         let fullClassName = NSStringFromClass(self) as String
-        let className = fullClassName.componentsSeparatedByString(".").last!
+//        let className = fullClassName.componentsSeparatedByString(".").last!
+        let className = fullClassName.components(separatedBy: ".").last!
 
         return className
     }
 
     class func viewControllerFromStoryboard() -> BaseViewController {
-        let storyboard = UIStoryboard(name: storyboardName, bundle: NSBundle.mainBundle())
-        return storyboard.instantiateViewControllerWithIdentifier(self.storyboardId()) as! BaseViewController
+        let storyboard = UIStoryboard(name: storyboardName, bundle: Bundle.main)
+        return storyboard.instantiateViewController(withIdentifier: self.storyboardId()) as! BaseViewController
     }
 
 
@@ -48,7 +49,7 @@ class BaseViewController: UIViewController, UIGestureRecognizerDelegate {
         self.view.addGestureRecognizer(gr)
     }
 
-    override func viewWillDisappear(animated: Bool) {
+    override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
 
         hideKeyboard()
@@ -60,8 +61,8 @@ class BaseViewController: UIViewController, UIGestureRecognizerDelegate {
 
 
     private func configureNavBar() {
-        self.navigationItem.backBarButtonItem = UIBarButtonItem(title:"", style:.Plain, target:nil, action:nil)
-        self.navigationItem.title = self.title?.localized.uppercaseString
+        self.navigationItem.backBarButtonItem = UIBarButtonItem(title:"", style:.plain, target:nil, action:nil)
+        self.navigationItem.title = self.title?.localized.uppercased()
 
         let navBarTextColor = ScreenManager.sharedInstance.appNavBarTextColor()
 
@@ -75,8 +76,8 @@ class BaseViewController: UIViewController, UIGestureRecognizerDelegate {
     }
 
     func createBarButtonItem(title: String?, action: Selector) -> UIBarButtonItem{
-        let bbItem = UIBarButtonItem(title: title, style: UIBarButtonItemStyle.Plain, target: self, action: action)
-        bbItem.setTitleTextAttributes([NSForegroundColorAttributeName: ScreenManager.appTitleTextColor()], forState: UIControlState.Normal)
+        let bbItem = UIBarButtonItem(title: title, style: UIBarButtonItemStyle.plain, target: self, action: action)
+        bbItem.setTitleTextAttributes([NSForegroundColorAttributeName: ScreenManager.appTitleTextColor()], for: UIControlState.normal)
         return bbItem
     }
 
@@ -86,7 +87,7 @@ class BaseViewController: UIViewController, UIGestureRecognizerDelegate {
 
         let vc = self.navigationController ?? self
 
-        UINotifications.showError(vc, msg: message, title: title)
+        UINotifications.showError(vc: vc, msg: message, title: title)
 //
 //        let alert = UIAlertController(title: title, message: message, preferredStyle: UIAlertControllerStyle.Alert)
 //        alert.addAction(UIAlertAction(title: "Ok", style: UIAlertActionStyle.Cancel, handler: {(alert: UIAlertAction!) in
@@ -121,19 +122,19 @@ class BaseViewController: UIViewController, UIGestureRecognizerDelegate {
     func setupScrollViewForKeyboardsActions(view: UIScrollView) {
         scrollView = view
 
-        NSNotificationCenter.defaultCenter().addObserver(self, selector: #selector(BaseViewController.keyboardWillShow(_:)), name:UIKeyboardWillShowNotification, object: nil)
-        NSNotificationCenter.defaultCenter().addObserver(self, selector: #selector(BaseViewController.keyboardWillHide(_:)), name:UIKeyboardWillHideNotification, object: nil)
+        NotificationCenter.defaultCenter.addObserver(self, selector: #selector(BaseViewController.keyboardWillShow(_:)), name:UIKeyboardWillShowNotification, object: nil)
+        NotificationCenter.defaultCenter.addObserver(self, selector: #selector(BaseViewController.keyboardWillHide(_:)), name:UIKeyboardWillHideNotification, object: nil)
     }
 
     func keyboardWillShow(notification:NSNotification){
         if let _scrollView = scrollView {
             var userInfo = notification.userInfo!
-            var keyboardFrame:CGRect = (userInfo[UIKeyboardFrameBeginUserInfoKey] as! NSValue).CGRectValue()
-            keyboardFrame = view.convertRect(keyboardFrame, fromView: nil)
+            var keyboardFrame:CGRect = (userInfo[UIKeyboardFrameBeginUserInfoKey] as! NSValue).CGRectValue
+            keyboardFrame = view.convert(keyboardFrame, from: nil)
 
             if keyboardFrame.size.height == 0 {
-                keyboardFrame = (userInfo[UIKeyboardFrameEndUserInfoKey] as! NSValue).CGRectValue()
-                keyboardFrame = view.convertRect(keyboardFrame, fromView: nil)
+                keyboardFrame = (userInfo[UIKeyboardFrameEndUserInfoKey] as! NSValue).cgRectValue
+                keyboardFrame = view.convert(keyboardFrame, from: nil)
             }
 
             var contentInset:UIEdgeInsets = _scrollView.contentInset
@@ -151,7 +152,7 @@ class BaseViewController: UIViewController, UIGestureRecognizerDelegate {
         }
 
         if let _scrollView = scrollView {
-            let contentInset:UIEdgeInsets = UIEdgeInsetsZero
+            let contentInset:UIEdgeInsets = UIEdgeInsets.zero
             _scrollView.contentInset = contentInset
         }
     }

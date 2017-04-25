@@ -2,7 +2,7 @@
 //  DailyProgressViewController.swift
 //  MetabolicCompass
 //
-//  Created by Artem Usachov on 5/16/16.
+//  Created by Artem Usachov on 5/16/16. 
 //  Copyright © 2016 Yanif Ahmad, Tom Woolf. All rights reserved.
 //
 
@@ -22,19 +22,19 @@ enum UIUserInterfaceIdiom : Int
 
 struct ScreenSize
 {
-    static let SCREEN_WIDTH         = UIScreen.mainScreen().bounds.size.width
-    static let SCREEN_HEIGHT        = UIScreen.mainScreen().bounds.size.height
+    static let SCREEN_WIDTH         = UIScreen.main.bounds.size.width
+    static let SCREEN_HEIGHT        = UIScreen.main.bounds.size.height
     static let SCREEN_MAX_LENGTH    = max(ScreenSize.SCREEN_WIDTH, ScreenSize.SCREEN_HEIGHT)
     static let SCREEN_MIN_LENGTH    = min(ScreenSize.SCREEN_WIDTH, ScreenSize.SCREEN_HEIGHT)
 }
 
 struct DeviceType
 {
-    static let IS_IPHONE_4_OR_LESS  = UIDevice.currentDevice().userInterfaceIdiom == .Phone && ScreenSize.SCREEN_MAX_LENGTH < 568.0
-    static let IS_IPHONE_5          = UIDevice.currentDevice().userInterfaceIdiom == .Phone && ScreenSize.SCREEN_MAX_LENGTH == 568.0
-    static let IS_IPHONE_6          = UIDevice.currentDevice().userInterfaceIdiom == .Phone && ScreenSize.SCREEN_MAX_LENGTH == 667.0
-    static let IS_IPHONE_6P         = UIDevice.currentDevice().userInterfaceIdiom == .Phone && ScreenSize.SCREEN_MAX_LENGTH == 736.0
-    static let IS_IPAD              = UIDevice.currentDevice().userInterfaceIdiom == .Pad && ScreenSize.SCREEN_MAX_LENGTH == 1024.0
+    static let IS_IPHONE_4_OR_LESS  = UIDevice.current.userInterfaceIdiom == .phone && ScreenSize.SCREEN_MAX_LENGTH < 568.0
+    static let IS_IPHONE_5          = UIDevice.current.userInterfaceIdiom == .phone && ScreenSize.SCREEN_MAX_LENGTH == 568.0
+    static let IS_IPHONE_6          = UIDevice.current.userInterfaceIdiom == .phone && ScreenSize.SCREEN_MAX_LENGTH == 667.0
+    static let IS_IPHONE_6P         = UIDevice.current.userInterfaceIdiom == .phone && ScreenSize.SCREEN_MAX_LENGTH == 736.0
+    static let IS_IPAD              = UIDevice.current.userInterfaceIdiom == .pad && ScreenSize.SCREEN_MAX_LENGTH == 1024.0
 }
 
 class DailyProgressViewController : UIViewController, DailyChartModelProtocol {
@@ -80,7 +80,7 @@ class DailyProgressViewController : UIViewController, DailyChartModelProtocol {
     override func viewDidLoad() {
         super.viewDidLoad()
         self.setupTooltips()
-        self.fastingSquare.layer.borderColor = UIColor.colorWithHexString("#ffffff", alpha: 0.3)?.CGColor
+        self.fastingSquare.layer.borderColor = UIColor.colorWithHexString(rgb: "#ffffff", alpha: 0.3)?.cgColor
         self.dailyChartModel.daysTableView = self.daysTableView
         self.dailyChartModel.delegate = self
         self.dailyChartModel.registerCells()
@@ -107,49 +107,50 @@ class DailyProgressViewController : UIViewController, DailyChartModelProtocol {
 
         self.dailyProgressChartView.prepareChart()
 
-        self.scrollRecentButton.setImage(UIImage(named: "icon-daily-progress-scroll-recent"), forState: .Normal)
-        self.scrollOlderButton.setImage(UIImage(named: "icon-daily-progress-scroll-older"), forState: .Normal)
+        self.scrollRecentButton.setImage(UIImage(named: "icon-daily-progress-scroll-recent"), for: .normal)
+        self.scrollOlderButton.setImage(UIImage(named: "icon-daily-progress-scroll-older"), for: .normal)
 
-        self.scrollRecentButton.addTarget(self, action: #selector(scrollRecent), forControlEvents: .TouchUpInside)
-        self.scrollOlderButton.addTarget(self, action: #selector(scrollOlder), forControlEvents: .TouchUpInside)
+        self.scrollRecentButton.addTarget(self, action: #selector(scrollRecent), for: .touchUpInside)
+        self.scrollOlderButton.addTarget(self, action: #selector(scrollOlder), for: .touchUpInside)
 
-        self.scrollRecentButton.enabled = false
-        self.scrollOlderButton.enabled = true
+        self.scrollRecentButton.isEnabled = false
+        self.scrollOlderButton.isEnabled = true
 
-        NSNotificationCenter.defaultCenter().addObserver(self, selector: #selector(syncAddedCircadianEvents), name: SyncDidUpdateCircadianEvents, object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(syncAddedCircadianEvents), name: NSNotification.Name(rawValue: SyncDidUpdateCircadianEvents), object: nil)
 
     }
 
-    override func viewDidAppear(animated: Bool) {
+    override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
         let width = self.dailyProgressChartScrollView.contentSize.width
-        let height = CGRectGetHeight(self.dailyProgressChartView.frame)
-        self.dailyProgressChartScrollView.contentSize = CGSizeMake(width, height)
+        let height = self.dailyProgressChartView.frame.height
+        self.dailyProgressChartScrollView.contentSize = CGSize(width, height)
         self.dailyChartModel.updateRowHeight()
-        let mainScrollViewContentWidth = CGRectGetWidth(self.mainScrollView.frame)
+        let mainScrollViewContentWidth = CGRect(dictionaryRepresentation: self.mainScrollView.frame as! CFDictionary)
         let mainScrollViewContentHeight = self.mainScrollView.contentSize.height
-        self.mainScrollView.contentSize = CGSizeMake(mainScrollViewContentWidth, mainScrollViewContentHeight)
+        self.mainScrollView.contentSize = CGSize(mainScrollViewContentWidth as! CGFloat, mainScrollViewContentHeight)
 
         // Update chart data
         self.contentDidUpdate()
     }
 
-    override func viewWillAppear(animated: Bool) {
+    override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-        self.dailyChartModel.refreshChartDateRange(lastViewDate)
+        self.dailyChartModel.refreshChartDateRange(lastViewDate: lastViewDate)
         logContentView()
     }
 
-    override func viewWillDisappear(animated: Bool) {
+    override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
         self.lastViewDate = Date()
-        logContentView(false)
+        logContentView(asAppear: false)
     }
 
     func logContentView(asAppear: Bool = true) {
-        Answers.logContentViewWithName("Body Clock",
+        Answers.logContentView(withName: "Body Clock",
                                        contentType: asAppear ? "Appear" : "Disappear",
-                                       contentId: Date().toString(DateFormat.Custom("YYYY-MM-dd:HH")),
+//                                       contentId: Date().String(),
+                                    contentId: Date().string(format: DateFormat.custom("YYYY-MM-dd:HH")),
                                        customAttributes: nil)
     }
 
@@ -157,18 +158,18 @@ class DailyProgressViewController : UIViewController, DailyChartModelProtocol {
         let dailyEatingMsg = "Total time spent eating meals today (in hours and minutes)"
         dailyEatingTip = TapTip(forView: dailyEatingContainer, text: dailyEatingMsg, asTop: true)
         dailyEatingContainer.addGestureRecognizer(dailyEatingTip.tapRecognizer)
-        dailyEatingContainer.userInteractionEnabled = true
+        dailyEatingContainer.isUserInteractionEnabled = true
 
         let maxDailyFastingMsg = "Maximum duration spent in a fasting state in the last 24 hours. You are fasting when not eating, that is, while you are awake, sleeping or exercising."
 
         maxDailyFastingTip = TapTip(forView: maxDailyFastingContainer, text: maxDailyFastingMsg, asTop: true)
         maxDailyFastingContainer.addGestureRecognizer(maxDailyFastingTip.tapRecognizer)
-        maxDailyFastingContainer.userInteractionEnabled = true
+        maxDailyFastingContainer.isUserInteractionEnabled = true
 
         let lastAteMsg = "Time elapsed since your last meal (in hours and minutes)"
         lastAteTip = TapTip(forView: lastAteContainer, text: lastAteMsg, asTop: true)
         lastAteContainer.addGestureRecognizer(lastAteTip.tapRecognizer)
-        lastAteContainer.userInteractionEnabled = true
+        lastAteContainer.isUserInteractionEnabled = true
     }
 
     func contentDidUpdate(withDailyProgress dailyProgress: Bool = true) {
@@ -192,7 +193,7 @@ class DailyProgressViewController : UIViewController, DailyChartModelProtocol {
                 log.debug("BODY CLOCK query time: \((Date().timeIntervalSinceReferenceDate - self.loadStart.timeIntervalSinceReferenceDate))", feature: "dataLoad")
             }
 
-            self.dailyProgressChartView.updateChartData(self.updateContentWithAnimation,
+            self.dailyProgressChartView.updateChartData(animate: self.updateContentWithAnimation,
                 valuesAndColors: self.dailyChartModel.chartDataAndColors)
             self.updateContentWithAnimation = true
             self.dailyProgressChartView.setNeedsDisplay()
@@ -200,17 +201,17 @@ class DailyProgressViewController : UIViewController, DailyChartModelProtocol {
     }
 
     func dailyProgressStatCollected() {
-        self.dailyEatingLabel.attributedText = self.dailyChartModel.eatingText.formatTextWithRegex("[-+]?(\\d*[.,])?\\d+",
-                                                                                                    format: [NSForegroundColorAttributeName: UIColor.whiteColor()],
-                                                                                                    defaultFormat: [NSForegroundColorAttributeName: UIColor.colorWithHexString("#ffffff", alpha: 0.3)!])
+        self.dailyEatingLabel.attributedText = self.dailyChartModel.eatingText.formatTextWithRegex(regex: "[-+]?(\\d*[.,])?\\d+",
+                                                                                                    format: [NSForegroundColorAttributeName: UIColor.white],
+                                                                                                    defaultFormat: [NSForegroundColorAttributeName: UIColor.colorWithHexString(rgb: "#ffffff", alpha: 0.3)!])
         
-        self.maxDailyFastingLabel.attributedText = self.dailyChartModel.fastingText.formatTextWithRegex("[-+]?(\\d*[.,])?\\d+",
-                                                                                                  format: [NSForegroundColorAttributeName: UIColor.whiteColor()],
-                                                                                                  defaultFormat: [NSForegroundColorAttributeName: UIColor.colorWithHexString("#ffffff", alpha: 0.3)!])
+        self.maxDailyFastingLabel.attributedText = self.dailyChartModel.fastingText.formatTextWithRegex(regex: "[-+]?(\\d*[.,])?\\d+",
+                                                                                                  format: [NSForegroundColorAttributeName: UIColor.white],
+                                                                                                  defaultFormat: [NSForegroundColorAttributeName: UIColor.colorWithHexString(rgb: "#ffffff", alpha: 0.3)!])
         
-        self.lastAteLabel.attributedText = self.dailyChartModel.lastAteText.formatTextWithRegex("[-+]?(\\d*[.,])?\\d+",
-                                                                                                format: [NSForegroundColorAttributeName: UIColor.whiteColor()],
-                                                                                                defaultFormat: [NSForegroundColorAttributeName: UIColor.colorWithHexString("#ffffff", alpha: 0.3)!])
+        self.lastAteLabel.attributedText = self.dailyChartModel.lastAteText.formatTextWithRegex(regex: "[-+]?(\\d*[.,])?\\d+",
+                                                                                                format: [NSForegroundColorAttributeName: UIColor.white],
+                                                                                                defaultFormat: [NSForegroundColorAttributeName: UIColor.colorWithHexString(rgb: "#ffffff", alpha: 0.3)!])
     }
     
     override func viewDidLayoutSubviews() {
@@ -225,14 +226,16 @@ class DailyProgressViewController : UIViewController, DailyChartModelProtocol {
     func scrollRecent() {
         var newDate: Date? = nil
         if let date = self.dailyChartModel.getEndDate() {
-            if !date.isInToday() {
+//            if !date.isInToday() {
+            let today = Date()
+            if !date.isInSameDayOf(date: today) {
                 let today = Date()
                 newDate = today < (date + 1.weeks) ? today : (date + 1.weeks)
 
-                self.scrollRecentButton.enabled = !(newDate?.isInSameDayAsDate(today) ?? false)
-                self.scrollOlderButton.enabled = true
+                self.scrollRecentButton.isEnabled = !(newDate?.isInSameDayOf(date: today) ?? false)
+                self.scrollOlderButton.isEnabled = true
 
-                self.dailyChartModel.setEndDate(newDate)
+                self.dailyChartModel.setEndDate(endDate: newDate)
                 self.dailyProgressChartDaysTable.reloadData()
                 self.contentDidUpdate(withDailyProgress: false)
             }
@@ -242,14 +245,15 @@ class DailyProgressViewController : UIViewController, DailyChartModelProtocol {
     func scrollOlder() {
         var newDate: Date? = nil
         if let date = self.dailyChartModel.getEndDate() {
-            let oldest = 3.months.ago
-            if !date.isInSameDayAsDate(oldest) {
+//            let oldest = 3.months.ago
+            let oldest = 3.months.ago()!
+            if !date.isInSameDayOf(date: oldest) {
                 newDate = (date - 1.weeks) < oldest ? oldest : (date - 1.weeks)
 
-                self.scrollOlderButton.enabled = !(newDate?.isInSameDayAsDate(oldest) ?? false)
-                self.scrollRecentButton.enabled = true
+                self.scrollOlderButton.isEnabled = !(newDate?.isInSameDayOf(date: oldest) ?? false)
+                self.scrollRecentButton.isEnabled = true
 
-                self.dailyChartModel.setEndDate(newDate)
+                self.dailyChartModel.setEndDate(endDate: newDate)
                 self.dailyProgressChartDaysTable.reloadData()
                 self.contentDidUpdate(withDailyProgress: false)
             }
@@ -264,7 +268,7 @@ class DailyProgressViewController : UIViewController, DailyChartModelProtocol {
 
     // MARK :- Deinit
     deinit {
-        NSNotificationCenter.defaultCenter().removeObserver(self)
+        NotificationCenter.default.removeObserver(self)
     }
 
 }

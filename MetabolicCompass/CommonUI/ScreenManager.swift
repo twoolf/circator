@@ -25,14 +25,14 @@ public class ScreenManager {
     private static var _scaleFactor:CGFloat? = nil
     public class var scaleFactor:CGFloat {
         if _scaleFactor == nil{
-           _scaleFactor = UIScreen.mainScreen().bounds.width / ScreenManager.baseScreenWidth
+           _scaleFactor = UIScreen.main.bounds.width / ScreenManager.baseScreenWidth
            print("scaleFactor:\(_scaleFactor)")
         }
         return _scaleFactor!
     }
 
     func dodoFontSize() -> CGFloat {
-        let screenSize = UIScreen.mainScreen().bounds.size
+        let screenSize = UIScreen.main.bounds.size
         let screenHeight = screenSize.height
 
         if (screenHeight < 569) {
@@ -43,7 +43,7 @@ public class ScreenManager {
     }
 
     func labelFontSize() -> CGFloat {
-        let screenSize = UIScreen.mainScreen().bounds.size
+        let screenSize = UIScreen.main.bounds.size
         let screenHeight = screenSize.height
 
         if (screenHeight < 569) {
@@ -54,7 +54,7 @@ public class ScreenManager {
     }
 
     func inputFontSize() -> CGFloat {
-        let screenSize = UIScreen.mainScreen().bounds.size
+        let screenSize = UIScreen.main.bounds.size
         let screenHeight = screenSize.height
 
         if (screenHeight < 569) {
@@ -65,12 +65,12 @@ public class ScreenManager {
     }
 
     public func tooltipMaxWidth() -> CGFloat {
-        let screensize = UIScreen.mainScreen().bounds.size
+        let screensize = UIScreen.main.bounds.size
         return 0.66 * screensize.width
     }
 
     public func dashboardRows() -> Int {
-        let screenSize = UIScreen.mainScreen().bounds.size
+        let screenSize = UIScreen.main.bounds.size
         let screenHeight = screenSize.height
 
         if (screenHeight < 569) {
@@ -83,7 +83,7 @@ public class ScreenManager {
     }
 
     public func dashboardButtonHeight() -> CGFloat {
-        let screenSize = UIScreen.mainScreen().bounds.size
+        let screenSize = UIScreen.main.bounds.size
         let screenHeight = screenSize.height
 
         if (screenHeight < 569) {
@@ -94,7 +94,7 @@ public class ScreenManager {
     }
 
     public func dashboardTitleLeading() -> CGFloat {
-        let screenSize = UIScreen.mainScreen().bounds.size
+        let screenSize = UIScreen.main.bounds.size
         let screenHeight = screenSize.height
 
         if (screenHeight < 569) {
@@ -105,7 +105,7 @@ public class ScreenManager {
     }
 
     public func loginButtonFontSize() -> CGFloat {
-        let screenSize = UIScreen.mainScreen().bounds.size
+        let screenSize = UIScreen.main.bounds.size
         let screenHeight = screenSize.height
 
         if (screenHeight < 569) {
@@ -116,7 +116,7 @@ public class ScreenManager {
     }
 
     public func settingsCellTrailing() -> CGFloat {
-        let screenSize = UIScreen.mainScreen().bounds.size
+        let screenSize = UIScreen.main.bounds.size
         let screenHeight = screenSize.height
 
         if (screenHeight < 569) {
@@ -127,11 +127,11 @@ public class ScreenManager {
     }
 
     public func radarLegendPosition() -> ChartLegend.Position {
-        return ChartLegend.Position.BelowChartCenter
+        return Legend.Position.belowChartCenter
     }
 
     public func eventTimeViewSummaryFontSize() -> CGFloat {
-        let screenSize = UIScreen.mainScreen().bounds.size
+        let screenSize = UIScreen.main.bounds.size
         let screenHeight = screenSize.height
 
         if (screenHeight < 569) {
@@ -142,7 +142,7 @@ public class ScreenManager {
     }
 
     public func eventTimeViewPlotFontSize() -> CGFloat {
-        let screenSize = UIScreen.mainScreen().bounds.size
+        let screenSize = UIScreen.main.bounds.size
         let screenHeight = screenSize.height
 
         if (screenHeight < 569) {
@@ -153,7 +153,7 @@ public class ScreenManager {
     }
 
     public func eventTimeViewHeight() -> CGFloat {
-        let screenSize = UIScreen.mainScreen().bounds.size
+        let screenSize = UIScreen.main.bounds.size
         let screenHeight = screenSize.height
 
         if (screenHeight < 569) {
@@ -164,7 +164,7 @@ public class ScreenManager {
     }
 
     public func radarChartBottomIndent() -> CGFloat {
-        let screenSize = UIScreen.mainScreen().bounds.size
+        let screenSize = UIScreen.main.bounds.size
         let screenHeight = screenSize.height
 
         if (screenHeight < 569) {
@@ -199,7 +199,7 @@ public class ScreenManager {
     }
 
     public func quickAddSectionHeaderFontSize() -> CGFloat {
-        let screenSize = UIScreen.mainScreen().bounds.size
+        let screenSize = UIScreen.main.bounds.size
         let screenHeight = screenSize.height
 
         if (screenHeight < 569) {
@@ -222,7 +222,7 @@ public class ScreenManager {
     }
 
     public class func appSectionTitleTextColor() -> UIColor {
-        return UIColor.colorWithHex(0x338AFF, alpha:1.0)
+        return UIColor.colorWithHex(hex6: 0x338AFF, alpha:1.0)
     }
 
     public class func appNavigationBackColor() -> UIColor {
@@ -244,29 +244,29 @@ public class ScreenManager {
     //MARK: Nav buttons
     
     public func appNavButtonWithTitle (title: String) -> UIButton {
-        let manageButton = UIButton(type: .Custom)
-        manageButton.titleLabel?.font = ScreenManager.appFontOfSize(15)
-        manageButton.setTitle(title, forState: .Normal)
+        let manageButton = UIButton(type: .custom)
+        manageButton.titleLabel?.font = ScreenManager.appFontOfSize(size: 15)
+        manageButton.setTitle(title, for: .normal)
         manageButton.sizeToFit()
         return manageButton
     }
 
-    //MARK: - fonts
+    //MARK: - fonts 
 
     public func appBrightTextColor() -> UIColor {
-        return UIColor.whiteColor()
+        return UIColor.white
     }
 
     public func appUnBrightTextColor() -> UIColor {
-        return UIColor.whiteColor().colorWithAlphaComponent(0.4)
+        return UIColor.white.withAlphaComponent(0.4)
     }
 
     public func appSeparatorColor() -> UIColor {
-        return UIColor.lightGrayColor()
+        return UIColor.lightGray
     }
 
     public func appNavBarTextColor() -> UIColor {
-        return UIColor.whiteColor().colorWithAlphaComponent(0.6)
+        return UIColor.white.withAlphaComponent(0.6)
     }
 
     static private let defaulytFontName = "GothamBook"
@@ -285,7 +285,7 @@ public class ScreenManager {
 
     // MARK :- badge icons
     public func badgeIconSize() -> CGFloat {
-        let screenSize = UIScreen.mainScreen().bounds.size
+        let screenSize = UIScreen.main.bounds.size
         let screenHeight = screenSize.height
 
         if (screenHeight < 569) {

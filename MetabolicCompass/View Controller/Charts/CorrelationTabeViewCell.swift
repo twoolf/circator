@@ -1,6 +1,6 @@
 //
 //  CorrelationTabeViewCell.swift
-//  MetabolicCompass
+//  MetabolicCompass 
 //
 //  Created by Rostislav Roginevich on 7/29/16.
 //  Copyright © 2016 Yanif Ahmad, Tom Woolf. All rights reserved.

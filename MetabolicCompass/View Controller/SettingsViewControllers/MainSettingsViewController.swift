@@ -1,8 +1,8 @@
 //
 //  MainSettingsViewController.swift
-//  MetabolicCompass
+//  MetabolicCompass 
 //
-//  Created by Anna Tkach on 5/11/16.
+//  Created by Anna Tkach on 5/11/16. 
 //  Copyright © 2016 Yanif Ahmad, Tom Woolf. All rights reserved.
 //
 
@@ -42,109 +42,109 @@ class MainSettingsViewController: BaseViewController, UICollectionViewDataSource
         collectionView?.dataSource = self
         
         let titleCellNib = UINib(nibName: "TitleCollectionViewCell", bundle: nil)
-        collectionView?.registerNib(titleCellNib, forCellWithReuseIdentifier: titleCellIdentifier)
+        collectionView?.register(titleCellNib, forCellWithReuseIdentifier: titleCellIdentifier)
 //        navigationController!.navigationBar.titleTextAttributes = [NSForegroundColorAttributeName: ScreenManager.appTitleTextColor(), NSFontAttributeName: ScreenManager.appNavBarFont()]
 //        self.navigationController?.navigationBar.tintColor = ScreenManager.appNavigationBackColor()
     }
 
     func logoutAction()  {
-        let alertController = UIAlertController(title: "", message: "Are you sure you wish to log out?", preferredStyle: .Alert)
-        let cancelAction = UIAlertAction(title: "Cancel", style: .Cancel, handler: nil)
-        let okAction = UIAlertAction(title: "OK", style: .Default) { (alertAction: UIAlertAction!) in
-            AccountManager.shared.doLogout({
-                NSNotificationCenter.defaultCenter().postNotificationName(UMDidLogoutNotification, object: nil)
+        let alertController = UIAlertController(title: "", message: "Are you sure you wish to log out?", preferredStyle: .alert)
+        let cancelAction = UIAlertAction(title: "Cancel", style: .cancel, handler: nil)
+        let okAction = UIAlertAction(title: "OK", style: .default) { (alertAction: UIAlertAction!) in
+            AccountManager.shared.doLogout(completion: {
+                NotificationCenter.defaultCenter.postNotificationName(UMDidLogoutNotification, object: nil)
                 AccountManager.shared.loginOrRegister()
             })
         }
         alertController.addAction(cancelAction)
         alertController.addAction(okAction)
-        self.presentViewController(alertController, animated: true, completion: nil)
+        self.present(alertController, animated: true, completion: nil)
     }
 
     func setupBackground() {
         let backgroundImage = UIImageView(image: UIImage(named: "university_logo"))
-        backgroundImage.contentMode = .Center
+        backgroundImage.contentMode = .center
         backgroundImage.layer.opacity = 0.02
         backgroundImage.translatesAutoresizingMaskIntoConstraints = false
-        self.view.insertSubview(backgroundImage, atIndex: 0)
+        self.view.insertSubview(backgroundImage, at: 0)
 
         let bgConstraints: [NSLayoutConstraint] = [
-            backgroundImage.centerXAnchor.constraintEqualToAnchor(self.view.centerXAnchor),
-            backgroundImage.centerYAnchor.constraintEqualToAnchor(self.view.centerYAnchor)
+            backgroundImage.centerXAnchor.constraint(equalTo: self.view.centerXAnchor),
+            backgroundImage.centerYAnchor.constraint(equalTo: self.view.centerYAnchor)
         ]
 
         self.view.addConstraints(bgConstraints)
     }
 
     func socialAction() {
-        let alertController = UIAlertController(title: nil, message: "Tell your friends about us!", preferredStyle: .ActionSheet)
+        let alertController = UIAlertController(title: nil, message: "Tell your friends about us!", preferredStyle: .actionSheet)
 
-        let doShare : String -> Void = { serviceType in
+        let doShare : (String) -> Void = { serviceType in
             if let vc = SLComposeViewController(forServiceType: serviceType) {
                 let msg = "Check out Metabolic Compass -- tracks your body clock for medical research on metabolic syndrome at Johns Hopkins."
                 vc.setInitialText(msg)
-                vc.addURL(NSURL(string: "https://www.metaboliccompass.com"))
-                self.presentViewController(vc, animated: true, completion: nil)
+                vc.addURL(NSURL(string: "https://www.metaboliccompass.com") as URL!)
+                self.present(vc, animated: true, completion: nil)
             } else {
                 let service = serviceType == SLServiceTypeTwitter ? "Twitter" : "Facebook"
                 self.showAlert(withMessage: "Please log into your \(service) account from your iOS Settings")
             }
         }
 
-        let withKeepAction = UIAlertAction(title: "Share on Twitter", style: .Default) {
+        let withKeepAction = UIAlertAction(title: "Share on Twitter", style: .default) {
             (alertAction: UIAlertAction!) in
             doShare(SLServiceTypeTwitter)
         }
 
-        let withDeleteAction = UIAlertAction(title: "Share on Facebook", style: .Default) {
+        let withDeleteAction = UIAlertAction(title: "Share on Facebook", style: .default) {
             (alertAction: UIAlertAction!) in
             doShare(SLServiceTypeFacebook)
         }
 
-        let cancelAction = UIAlertAction(title: "Cancel", style: .Cancel, handler: nil)
+        let cancelAction = UIAlertAction(title: "Cancel", style: .cancel, handler: nil)
         alertController.addAction(withKeepAction)
         alertController.addAction(withDeleteAction)
         alertController.addAction(cancelAction)
-        self.presentViewController(alertController, animated: true, completion: nil)
+        self.present(alertController, animated: true, completion: nil)
     }
 
     func webAction(asPrivacyPolicy: Bool) {
-        let vc = SFSafariViewController(URL: (asPrivacyPolicy ? MCRouter.privacyPolicyURL : MCRouter.aboutURL)!, entersReaderIfAvailable: false)
-        presentViewController(vc, animated: true, completion: nil)
+        let vc = SFSafariViewController(url: (asPrivacyPolicy ? MCRouter.privacyPolicyURL : MCRouter.aboutURL)!, entersReaderIfAvailable: false)
+        present(vc, animated: true, completion: nil)
     }
 
     func withdrawAction() {
-        let alertController = UIAlertController(title: nil, message: "Are you sure you wish to withdraw?", preferredStyle: .ActionSheet)
+        let alertController = UIAlertController(title: nil, message: "Are you sure you wish to withdraw?", preferredStyle: .actionSheet)
 
         let doWithdraw = { keepData in
-            AccountManager.shared.doWithdraw(keepData) { success in
-                NSNotificationCenter.defaultCenter().postNotificationName(UMDidLogoutNotification, object: nil)
+            AccountManager.shared.doWithdraw(keepData: keepData) { success in
+                NotificationCenter.defaultCenter.postNotificationName(UMDidLogoutNotification, object: nil)
                 AccountManager.shared.loginOrRegister()
                 if success {
                     let msg = "Thanks for using Metabolic Compass!"
-                    UINotifications.genericMsg(self.navigationController!, msg: msg, pop: true, asNav: true)
+                    UINotifications.genericMsg(vc: self.navigationController!, msg: msg, pop: true, asNav: true)
                 } else {
                     let msg = "Failed to withdraw, please try again later"
-                    UINotifications.genericError(self.navigationController!, msg: msg, pop: false, asNav: true)
+                    UINotifications.genericError(vc: self.navigationController!, msg: msg, pop: false, asNav: true)
                 }
             }
         }
 
-        let withKeepAction = UIAlertAction(title: "Yes, and keep my data for research", style: .Default) {
+        let withKeepAction = UIAlertAction(title: "Yes, and keep my data for research", style: .default) {
             (alertAction: UIAlertAction!) in
             doWithdraw(true)
         }
 
-        let withDeleteAction = UIAlertAction(title: "Yes, but delete all of my data", style: .Destructive) {
+        let withDeleteAction = UIAlertAction(title: "Yes, but delete all of my data", style: .destructive) {
             (alertAction: UIAlertAction!) in
             doWithdraw(false)
         }
 
-        let cancelAction = UIAlertAction(title: "Cancel", style: .Cancel, handler: nil)
+        let cancelAction = UIAlertAction(title: "Cancel", style: .cancel, handler: nil)
         alertController.addAction(withKeepAction)
         alertController.addAction(withDeleteAction)
         alertController.addAction(cancelAction)
-        self.presentViewController(alertController, animated: true, completion: nil)
+        self.present(alertController, animated: true, completion: nil)
     }
 
     // MARK: - Data source
@@ -201,8 +201,8 @@ class MainSettingsViewController: BaseViewController, UICollectionViewDataSource
     }
 
     private func cellHasSubviewAtIndexPath(indexPath: NSIndexPath) -> Bool {
-        return !( isCellShareOurStoryAtIndexPath(indexPath)
-                    || isCellAboutAtIndexPath(indexPath)
+        return !( isCellShareOurStoryAtIndexPath(indexPath: indexPath)
+                    || isCellAboutAtIndexPath(indexPath: indexPath)
                     || isCellPrivacyPolicyAtIndexPath(indexPath)
                     || isCellLogoutAtIndexPath(indexPath)
                     || isCellWithdrawAtIndexPath(indexPath) )
@@ -231,15 +231,15 @@ class MainSettingsViewController: BaseViewController, UICollectionViewDataSource
     // MARK: - UICollectionView DataSource & Delegate
     
     
-    func collectionView(collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
+    func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
         return items.count
     }
     
-    func collectionView(collectionView: UICollectionView, cellForItemAtIndexPath indexPath: NSIndexPath) -> UICollectionViewCell {
+    func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         
-        let item = itemAtIndexPath(indexPath)
+        let item = itemAtIndexPath(indexPath: indexPath as NSIndexPath)
         
-        let cell = collectionView.dequeueReusableCellWithReuseIdentifier(titleCellIdentifier, forIndexPath: indexPath) as! TitleCollectionViewCell
+        let cell = collectionView.dequeueReusableCell(withReuseIdentifier: titleCellIdentifier, for: indexPath as IndexPath) as! TitleCollectionViewCell
         
         cell.titleLbl.text = item.title
         
@@ -247,39 +247,39 @@ class MainSettingsViewController: BaseViewController, UICollectionViewDataSource
             cell.cellImage?.image = UIImage(named: imageName)
         }
         
-        if !cellHasSubviewAtIndexPath(indexPath) {
+        if !cellHasSubviewAtIndexPath(indexPath: indexPath as NSIndexPath) {
             cell.hasAccessoryView = false
         }
         
         cell.titleLbl.textColor = ScreenManager.sharedInstance.appBrightTextColor()
-        cell.titleLbl.font = cell.titleLbl.font.fontWithSize(16.0)
+        cell.titleLbl.font = cell.titleLbl.font.withSize(16.0)
         
         return cell
     }
 
     func collectionView(collectionView: UICollectionView, didSelectItemAtIndexPath indexPath: NSIndexPath) {
 
-        let shareOurStoryCell = isCellShareOurStoryAtIndexPath(indexPath)
-        let asAboutCell = isCellAboutAtIndexPath(indexPath)
-        let asPrivacyPolicyCell = isCellPrivacyPolicyAtIndexPath(indexPath)
+        let shareOurStoryCell = isCellShareOurStoryAtIndexPath(indexPath: indexPath)
+        let asAboutCell = isCellAboutAtIndexPath(indexPath: indexPath)
+        let asPrivacyPolicyCell = isCellPrivacyPolicyAtIndexPath(indexPath: indexPath)
 
         if shareOurStoryCell {
             socialAction()
         }
         else if asAboutCell || asPrivacyPolicyCell  {
-            webAction(asPrivacyPolicyCell)
+            webAction(asPrivacyPolicy: asPrivacyPolicyCell)
         }
-        else if isCellLogoutAtIndexPath(indexPath) {
+        else if isCellLogoutAtIndexPath(indexPath: indexPath) {
             logoutAction()
         }
-        else if isCellWithdrawAtIndexPath(indexPath) {
+        else if isCellWithdrawAtIndexPath(indexPath: indexPath) {
             withdrawAction()
         }
         else {
-            let item = itemAtIndexPath(indexPath)
+            let item = itemAtIndexPath(indexPath: indexPath)
             
             if let segueIdentifier = item.segueIdentifier {
-                self.performSegueWithIdentifier(segueIdentifier, sender: nil)
+                self.performSegue(withIdentifier: segueIdentifier, sender: nil)
             }
         }
     }
@@ -293,7 +293,7 @@ class MainSettingsViewController: BaseViewController, UICollectionViewDataSource
     private let cellHeight: CGFloat = 65
     
     private func defaultCellSize() -> CGSize {
-        let size = CGSizeMake(self.collectionView!.bounds.width, cellHeight)
+        let size = CGSize(self.collectionView!.bounds.width, cellHeight)
         return size
     }
 }

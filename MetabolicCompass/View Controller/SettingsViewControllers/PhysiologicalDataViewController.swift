@@ -1,8 +1,8 @@
 //
 //  PhysiologicalDataViewController.swift
-//  MetabolicCompass
+//  MetabolicCompass 
 //
-//  Created by Anna Tkach on 5/12/16.
+//  Created by Anna Tkach on 5/12/16.   
 //  Copyright © 2016 Yanif Ahmad, Tom Woolf. All rights reserved.
 //
 
@@ -35,12 +35,12 @@ class PhysiologicalDataViewController: BaseViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         dataSource.editMode = false
-        setupScrollViewForKeyboardsActions(collectionView)
+        setupScrollViewForKeyboardsActions(view: collectionView)
         dataSource.collectionView = self.collectionView
         self.setupNavBar()
     }
 
-    override func viewWillAppear(animated: Bool) {
+    override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         dataSource.model.loadValues{ _ in
             self.collectionView.reloadData()
@@ -54,19 +54,19 @@ class PhysiologicalDataViewController: BaseViewController {
 //    }
 
     private func setupNavBar() {
-        rightButton = createBarButtonItem(lsEditTitle, action: #selector(rightAction))
+        rightButton = createBarButtonItem(title: lsEditTitle, action: #selector(rightAction))
         self.navigationItem.rightBarButtonItem = rightButton
-        leftButton = createBarButtonItem(lsCancelTitle, action: #selector(leftAction))
+        leftButton = createBarButtonItem(title: lsCancelTitle, action: #selector(leftAction))
     }
 
     func rightAction(sender: UIBarButtonItem) {
         if dataSource.editMode {
             dataSource.model.additionalInfoDict { (error, additionalInfo) in
                 guard error == nil else {
-                    UINotifications.genericError(self, msg: error!)
+                    UINotifications.genericError(vc: self, msg: error!)
                     return
                 }
-                UserManager.sharedManager.pushProfile(additionalInfo, completion: { _ in
+                UserManager.sharedManager.pushProfile(componentData: additionalInfo, completion: { _ in
                     self.editMode = false
                 })
             }
@@ -78,14 +78,14 @@ class PhysiologicalDataViewController: BaseViewController {
     func leftAction(sender: UIBarButtonItem) {
         let lsConfirmTitle = "Confirm cancel".localized
         let lsConfirmMessage = "Your changes have not been saved yet. Exit without saving?".localized
-        let confirmAlert = UIAlertController(title: lsConfirmTitle, message: lsConfirmMessage, preferredStyle: UIAlertControllerStyle.Alert)
-        confirmAlert.addAction(UIAlertAction(title: "Yes".localized, style: .Default, handler: { (action: UIAlertAction!) in
+        let confirmAlert = UIAlertController(title: lsConfirmTitle, message: lsConfirmMessage, preferredStyle: UIAlertControllerStyle.alert)
+        confirmAlert.addAction(UIAlertAction(title: "Yes".localized, style: .default, handler: { (action: UIAlertAction!) in
             //reset data & change mode
             self.dataSource.reset()
             self.editMode = false
         }))
-        confirmAlert.addAction(UIAlertAction(title: "No".localized, style: .Cancel, handler: nil))
-        presentViewController(confirmAlert, animated: true, completion: nil)
+        confirmAlert.addAction(UIAlertAction(title: "No".localized, style: .cancel, handler: nil))
+        present(confirmAlert, animated: true, completion: nil)
 
     }
 }

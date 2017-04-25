@@ -13,11 +13,6 @@ import HealthKit
 import MetabolicCompassKit
 
 class ChartCollectionDataSource: NSObject, UICollectionViewDataSource {
-    @available(iOS 6.0, *)
-    public func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
-        <#code#>
-    }
-
 
     internal var collectionData: [ChartData] = []
     internal var model: BarChartModel?
@@ -35,21 +30,24 @@ class ChartCollectionDataSource: NSObject, UICollectionViewDataSource {
         return data.count
     }
     
-    func collectionView(collectionView: UICollectionView, cellForItemAtIndexPath indexPath: NSIndexPath) -> UICollectionViewCell {
+    public func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         let cell: BaseChartCollectionCell
         
         let type = data[indexPath.row]
         let typeToShow = type.identifier == HKCorrelationTypeIdentifier.bloodPressure.rawValue ? HKQuantityTypeIdentifier.bloodPressureSystolic.rawValue : type.identifier
-        let chartType: ChartType = (model?.chartTypeForQuantityTypeIdentifier(qType: typeToShow))!
+
+
         let key = typeToShow + "\((model?.rangeType.rawValue)!)"
         let chartData = model?.typesChartData[key]
-        if(chartType == ChartType.BarChart) {
+//        let chartType: ChartType = (model?.chartTypeForQuantityTypeIdentifier(qType: typeToShow))!
+//        let chartType: ChartType = (model?.getChartDataFor(xVals: [" not yet " ], yVals: [chartData!], type: typeToShow))
+/*        if(chartType == ChartType.BarChart) {
             cell = collectionView.dequeueReusableCell(withReuseIdentifier: barChartCellIdentifier, for: indexPath as IndexPath) as! BarChartCollectionCell
         } else if (chartType == ChartType.LineChart) {
             cell = collectionView.dequeueReusableCell(withReuseIdentifier: lineChartCellIdentifier, for: indexPath as IndexPath) as! LineChartCollectionCell
         } else {//Scatter chart
             cell = collectionView.dequeueReusableCell(withReuseIdentifier: scatterChartCellIdentifier, for: indexPath as IndexPath) as! ScatterChartCollectionCell
-        }
+        } */
         cell.chartView.data = nil
         if let yMax = chartData?.yMax, let yMin = chartData?.yMin, yMax > 0 || yMin > 0 {
             cell.updateLeftAxisWith(minValue: chartData?.yMin, maxValue: chartData?.yMax)
@@ -60,7 +58,7 @@ class ChartCollectionDataSource: NSObject, UICollectionViewDataSource {
                 marker.yPixelRange = Double(cell.chartView.contentRect.height)
             }
         }
-        cell.chartTitleLabel.text = appearanceProvider.stringForSampleType(sampleType: typeToShow == HKQuantityTypeIdentifierBloodPressureSystolic.rawValue ? HKCorrelationTypeIdentifierBloodPressure.rawValue : typeToShow)
+        cell.chartTitleLabel.text = appearanceProvider.stringForSampleType(sampleType: typeToShow == HKQuantityTypeIdentifier.bloodPressureSystolic.rawValue ? HKCorrelationTypeIdentifier.bloodPressure.rawValue : typeToShow)
         return cell
     }
 }

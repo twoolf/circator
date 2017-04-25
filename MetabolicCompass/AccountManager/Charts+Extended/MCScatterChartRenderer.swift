@@ -31,7 +31,8 @@ class MCScatterChartRenderer: ScatterChartRenderer {
         let valueToPixelMatrix = trans.valueToPixelMatrix
         
 //        let shape = dataSet.scatterShape
-        let shape = dataSet.scatterShapeSize
+ //       let shape = dataSet.scatterShapeSize
+        let shape = dataSet.visible
         
         let shapeSize = dataSet.scatterShapeSize
         let shapeHalf = shapeSize / 2.0
@@ -49,92 +50,109 @@ class MCScatterChartRenderer: ScatterChartRenderer {
             
             if e is BarChartDataEntry {
                 let entry = e as! BarChartDataEntry
-                if entry.values == nil {//we have only one value to draw
-                    point.x = CGFloat(e.xIndex)
-                    point.y = CGFloat(e.value) * phaseY
+                if entry.yValues == nil {//we have only one value to draw
+//                    point.x = CGFloat(e.xIndex)
+                    point.x = CGFloat(e.x)
+                    point.y = CGFloat(e.y) * CGFloat(phaseY)
                     point = point.applying(valueToPixelMatrix);
                     
-                    if (!viewPortHandler?.isInBoundsRight(point.x)) {
+                    if (!(viewPortHandler?.isInBoundsRight(point.x))!) {
                         break
                     }
                     
-                    if (!viewPortHandler.isInBoundsLeft(point.x) || !viewPortHandler?.isInBoundsY(point.y)) {
+                    if (!(viewPortHandler?.isInBoundsLeft(point.x))! || !(viewPortHandler?.isInBoundsY(point.y))!) {
                         continue
                     }
 
-                    if (shape == .Circle) {//drawing circle
+//                    if (shape == .Circle) {//drawing circle
+                    if (shape == true) {
                         if shapeHoleSize > 0.0 {
-                            drawCircleShapeWithHole(context: context, point: point, color: dataSet.colorAt(j).CGColor,
+                            drawCircleShapeWithHole(context: context, //point: point, color: dataSet.colorAt(j).CGColor,
+                                point: point, color: dataSet.color(atIndex: j).cgColor,
                                             shapeHoleSizeHalf: shapeStrokeSizeHalf, shapeStrokeSize: shapeStrokeSize,
                                             shapeStrokeSizeHalf: shapeStrokeSizeHalf, shapeHoleSize: shapeHoleSize, shapeHoleColor: shapeHoleColor)
                         } else {
-                            drawCircleShapeWithoutHole(context: context, color: dataSet.colorAt(j).CGColor, point: point, shapeHalf: shapeHalf, shapeSize: shapeSize)
+                            drawCircleShapeWithoutHole(context: context, color: dataSet.color(atIndex: j).cgColor, point: point, shapeHalf: shapeHalf, shapeSize: shapeSize)
                         }
-                    } else if (shape == .Custom) {
-                        CGContextSetFillColorWithColor(context, dataSet.colorAt(j).CGColor)
-                        let customShape = dataSet.customScatterShape
-                        if customShape == nil {
-                            return
+                    } else if (shape == false) {
+                        context.setFillColor(dataSet.color(atIndex: j).cgColor)
+//                        let customShape = dataSet.customScatterShape
+//                        if customShape == nil {
+//                            return
                         }
                         
-                        drawCustomShape(context, point: point, customShape: customShape!)
+                        drawCustomShape(context: context, point: point, customShape: drawCustomShape as! CGPath)
                     }
-                } else {//we have more than one value to draw and we should connect them wiht a line
+                } else {//we have more than one value to draw and we should connect them with a line
                     var prevPoint = CGPoint(-100, -100)
-                    for value in entry.values! {
-                        point.x = CGFloat(e.xIndex)
-                        point.y = CGFloat(value) * phaseY
-                        point = CGPointApplyAffineTransform(point, valueToPixelMatrix);
+//                    for value in entry.values! {
+                    for value in BarChartDataEntry.accessibilityElements()! {
+//                        point.x = CGFloat(e.xIndex)
+                        point.x = CGFloat(e.x)
+                        point.y = CGFloat(e.y) * CGFloat(phaseY)
+                        point = point.applying(valueToPixelMatrix);
                         
-                        if (!viewPortHandler.isInBoundsRight(point.x)) {
+                        if (!(viewPortHandler?.isInBoundsRight(point.x))!) {
                             break
                         }
                         
-                        if (!viewPortHandler.isInBoundsLeft(point.x) || !viewPortHandler.isInBoundsY(point.y)) {
+                        if (!(viewPortHandler?.isInBoundsLeft(point.x))! || !(viewPortHandler?.isInBoundsY(point.y))!) {
                             continue
                         }
 
-                        if (shape == .Circle) {
+                        //context, point: point, color: dataSet.colorAt(j).CGColor  
+                        if (shape == true) {
                             if shapeHoleSize > 0.0 {
-                                drawCircleShapeWithHole(context, point: point, color: dataSet.colorAt(j).CGColor,
+                                drawCircleShapeWithHole(context: context, point: point, color: dataSet.color(atIndex: j).cgColor,
                                                         shapeHoleSizeHalf: shapeStrokeSizeHalf, shapeStrokeSize: shapeStrokeSize,
                                                         shapeStrokeSizeHalf: shapeStrokeSizeHalf, shapeHoleSize: shapeHoleSize, shapeHoleColor: shapeHoleColor)
                                 
                                 if (prevPoint.x > 0 && shouldDrawConnectionLines) {//driwing line that connects circle shapes
-                                    CGContextSetStrokeColorWithColor(context, UIColor.whiteColor().colorWithAlphaComponent(0.3).CGColor)
-                                    CGContextSetLineWidth(context, shapeHoleSize + shapeStrokeSize)
-                                    CGContextMoveToPoint(context, prevPoint.x + 0.5, prevPoint.y - 1.0)
-                                    CGContextAddLineToPoint(context, point.x + 0.5, point.y + 2.0)
-                                    CGContextStrokePath(context);
+                                    context.setStrokeColor(color: CGcolor.white.colorWithAlphaComponent(0.3).CGColor)
+                                    context.setLineWidth(shapeHoleSize + shapeStrokeSize)
+                                    prevPoint.x = prevPoint.x + 0.5
+                                    prevPoint.y = prevPoint.y - 1.0
+                                    context.move(to: prevPoint)
+//                                    context.moveToPoint(context, prevPoint.x + 0.5, prevPoint.y - 1.0)
+//                                    context.addLineToPoint(context, point.x + 0.5, point.y + 2.0)
+                                    point.x = point.x + 0.5
+                                    point.y = point.y + 2.0
+                                    context.addLine(to: point)
+                                    context.strokePath();
                                 }
                             } else {
-                                drawCircleShapeWithoutHole(context, color: dataSet.colorAt(j).CGColor, point: point, shapeHalf: shapeHalf, shapeSize: shapeSize)
+                                drawCircleShapeWithoutHole(context: context, color: dataSet.color(atIndex: j).cgColor, point: point, shapeHalf: shapeHalf, shapeSize: shapeSize)
                             }
-                        } else if (shape == .Custom) {
-                            CGContextSetFillColorWithColor(context, dataSet.colorAt(j).CGColor)
-                            let customShape = dataSet.customScatterShape
-                            if customShape == nil {
+                        } else if (shape == false) {
+//                            context.setFillColorWithColor(context, dataSet.color(atIndex: j).CGColor)
+//                            context.setFillColor(color: dataSet.color(atIndex: j).CGColor)
+//                            let customShape = dataSet.customScatterShape
+                            if drawCustomShape == nil {
                                 return
                             }
                             let mcDataSet = dataSet as! MCScatterChartDataSet
                             // transform the provided custom path
-                            CGContextSaveGState(context)
+                            context.saveGState()
                             if (prevPoint.x > 0) {//drawing line that connect custom shapes
-                                CGContextSetStrokeColorWithColor(context, UIColor.whiteColor().colorWithAlphaComponent(0.3).CGColor)
-                                CGContextSetLineWidth(context, 7.0)
+//                                context.setStrokeColorWithColor(context, UIColor.whiteColor.withAlphaComponent(0.3).CGColor)
+//                                context.setStrokeColor(color: whiteColor.withAlphaComponent(0.3).CGColor)
+                                context.setLineWidth(7.0)
                                 if mcDataSet.dataSetType == DataSetType.BloodPressureTop {
-                                    CGContextMoveToPoint(context, prevPoint.x + 0.5, prevPoint.y)
-                                    CGContextAddLineToPoint(context, point.x + 0.5, point.y)
-                                    CGContextStrokePath(context)
+                                    context.move(to: point)
+//                                    context.move(to: <#T##CGPoint#>)
+                                    context.addLine(to: point)
+//                                    context.addLine(to: <#T##CGPoint#>)
+                                    context.strokePath()
                                 } else {
-                                    CGContextMoveToPoint(context, prevPoint.x + 0.5, prevPoint.y + 2.0)
-                                    CGContextAddLineToPoint(context, point.x + 0.5, point.y + 2.0)
-                                    CGContextStrokePath(context)
+                                    context.move(to: point)
+//                                    context.addLine(context, point.x + 0.5, point.y + 2.0)
+                                    context.addLine(to: point)
+                                    context.strokePath()
                                 }
                             }
                             
-                            drawCustomShape(context, point: point, customShape: customShape!)
-                            CGContextRestoreGState(context)
+                            drawCustomShape(context: context, point: point, customShape: drawCustomShape as! CGPath)
+                            context.restoreGState()
                         }
                         
                         prevPoint = point
@@ -142,8 +160,9 @@ class MCScatterChartRenderer: ScatterChartRenderer {
                 }
             }
         }
-        
-        context.restoreGState()
+    
+//        context.restoreGState()
+//    context.
     }
     
     func drawCircleShapeWithHole (context: CGContext, point: CGPoint, color: CGColor, shapeHoleSizeHalf: CGFloat,
@@ -184,4 +203,4 @@ class MCScatterChartRenderer: ScatterChartRenderer {
         context.addPath(customShape)
         context.fillPath()
     }
-}
+

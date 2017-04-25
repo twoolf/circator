@@ -2,7 +2,7 @@
 //  SampleDataAnalyzer.swift
 //  MetabolicCompass
 //
-//  Created by Sihao Lu on 10/24/15.
+//  Created by Sihao Lu on 10/24/15. 
 //  Copyright © 2015 Yanif Ahmad, Tom Woolf. All rights reserved.
 //
 

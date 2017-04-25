@@ -1,8 +1,8 @@
 //
 //  SunpathBackgroundView.swift
-//  MetabolicCompass
+//  MetabolicCompass 
 //
-//  Created by Edwin L. Whitman on 5/25/16.
+//  Created by Edwin L. Whitman on 5/25/16. 
 //  Copyright © 2016 Yanif Ahmad, Tom Woolf. All rights reserved.
 //
 
@@ -55,12 +55,12 @@ public class Sunpath : UIView {
     
     let colors : [CGColor] = {
         
-        var dawn = UIColor(red: 113/255.0, green: 129/255.0, blue: 165/255.0, alpha: 1.0).CGColor
-        var morning = UIColor(red: 222/255.0, green: 169/255.0, blue: 167/255.0, alpha: 1.0).CGColor
-        var noon = UIColor(red: 255/255.0, green: 238/255.0, blue: 177/255.0, alpha: 1.0).CGColor
-        var afternoon = UIColor(red: 249/255.0, green: 201/255.0, blue: 148/255.0, alpha: 1.0).CGColor
-        var dusk = UIColor(red: 62/255.0, green: 110/255.0, blue: 137/255.0, alpha: 1.0).CGColor
-        var night = UIColor(red: 32/255.0, green: 54/255.0, blue: 78/255.0, alpha: 1.0).CGColor
+        var dawn = UIColor(red: 113/255.0, green: 129/255.0, blue: 165/255.0, alpha: 1.0).cgColor
+        var morning = UIColor(red: 222/255.0, green: 169/255.0, blue: 167/255.0, alpha: 1.0).cgColor
+        var noon = UIColor(red: 255/255.0, green: 238/255.0, blue: 177/255.0, alpha: 1.0).cgColor
+        var afternoon = UIColor(red: 249/255.0, green: 201/255.0, blue: 148/255.0, alpha: 1.0).cgColor
+        var dusk = UIColor(red: 62/255.0, green: 110/255.0, blue: 137/255.0, alpha: 1.0).cgColor
+        var night = UIColor(red: 32/255.0, green: 54/255.0, blue: 78/255.0, alpha: 1.0).cgColor
         
         return [night, dawn, morning, noon, afternoon, dusk, night]
     }()
@@ -80,7 +80,7 @@ public class Sunpath : UIView {
         return [0.0, 1.0]
     }
     
-    override public func drawRect(rect: CGRect) {
+    override public func drawRect(_ rect: CGRect) {
         
         self.getStart()
         
@@ -97,7 +97,7 @@ public class Sunpath : UIView {
         let colorLocations:[CGFloat] = self.getLocations()
         
         //5 - create the gradient
-        let gradient = CGGradientCreateWithColors(colorSpace, colors, colorLocations)
+        let gradient = CGGradientCreateWithColors(colorSpace, colors as CFArray, colorLocations)
         
         //6 - draw the gradient
         let startPoint = CGPoint.zero
@@ -109,8 +109,8 @@ public class Sunpath : UIView {
 
 class SunpathBackgroundView : UIView {
     
-    override func drawRect(rect: CGRect) {
-        super.drawRect(rect)
+    override func draw(_ rect: CGRect) {
+        super.draw(rect)
         let gradient = Sunpath()
         gradient.translatesAutoresizingMaskIntoConstraints = false
         
@@ -118,15 +118,15 @@ class SunpathBackgroundView : UIView {
         
         let gradientConstraints : [NSLayoutConstraint] = [
         
-            gradient.topAnchor.constraintEqualToAnchor(self.topAnchor),
-            gradient.leftAnchor.constraintEqualToAnchor(self.leftAnchor),
-            gradient.rightAnchor.constraintEqualToAnchor(self.rightAnchor),
-            gradient.bottomAnchor.constraintEqualToAnchor(self.bottomAnchor)
+            gradient.topAnchor.constraint(equalTo: self.topAnchor),
+            gradient.leftAnchor.constraint(equalTo: self.leftAnchor),
+            gradient.rightAnchor.constraint(equalTo: self.rightAnchor),
+            gradient.bottomAnchor.constraint(equalTo: self.bottomAnchor)
         ]
         
         self.addConstraints(gradientConstraints)
         
-        let blurEffect = UIBlurEffect(style: UIBlurEffectStyle.Dark)
+        let blurEffect = UIBlurEffect(style: UIBlurEffectStyle.dark)
         let blurEffectView = UIVisualEffectView(effect: blurEffect)
         blurEffectView.translatesAutoresizingMaskIntoConstraints = false
         
@@ -135,10 +135,10 @@ class SunpathBackgroundView : UIView {
         let blurEffectViewConstraints : [NSLayoutConstraint] = [
             
             
-            blurEffectView.topAnchor.constraintEqualToAnchor(self.topAnchor),
-            blurEffectView.leftAnchor.constraintEqualToAnchor(self.leftAnchor),
-            blurEffectView.rightAnchor.constraintEqualToAnchor(self.rightAnchor),
-            blurEffectView.bottomAnchor.constraintEqualToAnchor(self.bottomAnchor)
+            blurEffectView.topAnchor.constraint(equalTo: self.topAnchor),
+            blurEffectView.leftAnchor.constraint(equalTo: self.leftAnchor),
+            blurEffectView.rightAnchor.constraint(equalTo: self.rightAnchor),
+            blurEffectView.bottomAnchor.constraint(equalTo: self.bottomAnchor)
         ]
         
         self.addConstraints(blurEffectViewConstraints)

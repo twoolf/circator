@@ -31,11 +31,12 @@ class DialViewController : UIViewController, ChartViewDelegate {
         chart.animate(xAxisDuration: 1.0, yAxisDuration: 1.0)
         chart.delegate = self
         chart.descriptionText = ""
-        chart.backgroundColor = .clearColor()
-        chart.holeColor = .clearColor()
+        chart.backgroundColor = .clear
+        chart.holeColor = .clear
         chart.drawMarkers = true
         chart.drawHoleEnabled = true
-        chart.drawSliceTextEnabled = true
+//        chart.drawSliceTextEnabled = true 
+        chart.drawEntryLabelsEnabled = true
         chart.usePercentValuesEnabled = false
         chart.rotationEnabled = true
         chart.rotationWithTwoFingers = true
@@ -46,9 +47,9 @@ class DialViewController : UIViewController, ChartViewDelegate {
     lazy var activityLegendLabel: UILabel = {
         let label = UILabel()
         label.font = UIFont(name: "GothamBook", size: dialLegendLabelSize)!
-        label.textColor = .lightGrayColor()
+        label.textColor = .lightGray
 
-        let basicAttrs = [NSForegroundColorAttributeName: UIColor.whiteColor()]
+        let basicAttrs = [NSForegroundColorAttributeName: UIColor.white]
 
         let sleepAttrs = [NSForegroundColorAttributeName: MetabolicDailyProgressChartView.sleepColor,
                           NSBackgroundColorAttributeName: MetabolicDailyProgressChartView.sleepColor]
@@ -67,15 +68,15 @@ class DialViewController : UIViewController, ChartViewDelegate {
 
         let paragraphStyle = NSMutableParagraphStyle()
         paragraphStyle.lineSpacing = 5.0
-        paragraphStyle.alignment = .Center
+        paragraphStyle.alignment = .center
         aString.addAttribute(NSParagraphStyleAttributeName, value: paragraphStyle, range: NSMakeRange(0, aString.length))
 
         label.attributedText = aString
 
-        label.lineBreakMode = .ByWordWrapping
+        label.lineBreakMode = .byWordWrapping
         label.numberOfLines = 0
         label.sizeToFit()
-        label.textAlignment = .Center
+        label.textAlignment = .center
 
         return label
     }()
@@ -83,19 +84,19 @@ class DialViewController : UIViewController, ChartViewDelegate {
     private let pieTipMsg = "This heatmap shows when you've typically slept, ate and exercised in the last month"
     private var pieTip: TapTip! = nil
 
-    override func viewWillAppear(animated: Bool) {
+    override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         self.visible = true
         self.logContentView()
         self.refreshData()
     }
 
-    override func viewWillDisappear(animated: Bool) {
+    override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
-        self.logContentView(false)
+        self.logContentView(asAppear: false)
     }
 
-    override func viewDidDisappear(animated: Bool) {
+    override func viewDidDisappear(_ animated: Bool) {
         super.viewDidDisappear(animated)
         self.visible = false
     }
@@ -106,26 +107,27 @@ class DialViewController : UIViewController, ChartViewDelegate {
     }
 
     func logContentView(asAppear: Bool = true) {
-        Answers.logContentViewWithName("Cycle",
+        Answers.logContentView(withName: "Cycle",
                                        contentType: asAppear ? "Appear" : "Disappear",
-                                       contentId: Date().toString(DateFormat.Custom("YYYY-MM-dd:HH")),
+//                                       contentId: Date().String(DateFormat.Custom("YYYY-MM-dd:HH")),
+            contentId: Date().string(),
                                        customAttributes: nil)
     }
 
     func setupActivityIndicator() {
-        let screenSize = UIScreen.mainScreen().bounds.size
+        let screenSize = UIScreen.main.bounds.size
         let sz: CGFloat = screenSize.height < 569 ? 75 : 100
-        let activityFrame = CGRectMake((screenSize.width - sz) / 2, (screenSize.height - sz) / 2, sz, sz)
-        self.activityIndicator = NVActivityIndicatorView(frame: activityFrame, type: .Orbit, color: UIColor.yellowColor())
+        let activityFrame = CGRect((screenSize.width - sz) / 2, (screenSize.height - sz) / 2, sz, sz)
+        self.activityIndicator = NVActivityIndicatorView(frame: activityFrame, type: .orbit, color: UIColor.yellow)
 
         activityIndicator.translatesAutoresizingMaskIntoConstraints = false
         view.addSubview(activityIndicator)
 
         let constraints: [NSLayoutConstraint] = [
-            activityIndicator.centerXAnchor.constraintEqualToAnchor(pieChart.centerXAnchor),
-            activityIndicator.centerYAnchor.constraintEqualToAnchor(pieChart.centerYAnchor),
-            activityIndicator.widthAnchor.constraintEqualToConstant(sz),
-            activityIndicator.heightAnchor.constraintEqualToConstant(sz)
+            activityIndicator.centerXAnchor.constraint(equalTo: pieChart.centerXAnchor),
+            activityIndicator.centerYAnchor.constraint(equalTo: pieChart.centerYAnchor),
+            activityIndicator.widthAnchor.constraint(equalToConstant: sz),
+            activityIndicator.heightAnchor.constraint(equalToConstant: sz)
         ]
         view.addConstraints(constraints)
     }
@@ -134,7 +136,7 @@ class DialViewController : UIViewController, ChartViewDelegate {
 
         refreshPieChart()
 
-        let pieChartStack: UIStackView = UIComponents.createLabelledComponent("Circadian Activity In The Last Month", labelFontSize: 16.0, value: (), constructor: {
+        let pieChartStack: UIStackView = UIComponents.createLabelledComponent(title: "Circadian Activity In The Last Month", labelFontSize: 16.0, value: (), constructor: {
             _ in return self.pieChart
         })
 
@@ -152,20 +154,20 @@ class DialViewController : UIViewController, ChartViewDelegate {
         view.addSubview(activityLegendLabel)
 
         let constraints: [NSLayoutConstraint] = [
-            pieChartStack.topAnchor.constraintEqualToAnchor(view.topAnchor, constant: 20),
-            pieChartStack.bottomAnchor.constraintEqualToAnchor(activityLegendLabel.topAnchor),
-            activityLegendLabel.bottomAnchor.constraintEqualToAnchor(view.bottomAnchor, constant: -20),
-            pieChartStack.leadingAnchor.constraintEqualToAnchor(view.leadingAnchor),
-            pieChartStack.trailingAnchor.constraintEqualToAnchor(view.trailingAnchor),
-            activityLegendLabel.leadingAnchor.constraintEqualToAnchor(view.leadingAnchor),
-            activityLegendLabel.trailingAnchor.constraintEqualToAnchor(view.trailingAnchor),
-            activityLegendLabel.heightAnchor.constraintGreaterThanOrEqualToConstant(30.0)
+            pieChartStack.topAnchor.constraint(equalTo: view.topAnchor, constant: 20),
+            pieChartStack.bottomAnchor.constraint(equalTo: activityLegendLabel.topAnchor),
+            activityLegendLabel.bottomAnchor.constraint(equalTo: view.bottomAnchor, constant: -20),
+            pieChartStack.leadingAnchor.constraint(equalTo: view.leadingAnchor),
+            pieChartStack.trailingAnchor.constraint(equalTo: view.trailingAnchor),
+            activityLegendLabel.leadingAnchor.constraint(equalTo: view.leadingAnchor),
+            activityLegendLabel.trailingAnchor.constraint(equalTo: view.trailingAnchor),
+            activityLegendLabel.heightAnchor.constraint(greaterThanOrEqualToConstant: 30.0)
         ]
         view.addConstraints(constraints)
 
         setupActivityIndicator()
 
-        NSNotificationCenter.defaultCenter().addObserver(self, selector: #selector(self.invalidateView), name: CDMNeedsRefresh, object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(self.invalidateView), name: NSNotification.Name(rawValue: CDMNeedsRefresh), object: nil)
     }
 
     func refreshPieChart() {
@@ -173,8 +175,8 @@ class DialViewController : UIViewController, ChartViewDelegate {
         var segments : [(Date, ChartDataEntry)] = []
         var colors : [NSUIColor] = []
 
-        let hrType = HKSampleType.quantityTypeForIdentifier(HKQuantityTypeIdentifierHeartRate)!
-        let scType = HKSampleType.quantityTypeForIdentifier(HKQuantityTypeIdentifierStepCount)!
+        let hrType = HKSampleType.quantityType(forIdentifier: HKQuantityTypeIdentifier.heartRate)!
+        let scType = HKSampleType.quantityType(forIdentifier: HKQuantityTypeIdentifier.stepCount)!
 
         switch model.segmentIndex {
         case 0:
@@ -188,26 +190,26 @@ class DialViewController : UIViewController, ChartViewDelegate {
             colors = model.measureColors[scType] ?? []
         }
 
-        let pieChartDataSet = PieChartDataSet(yVals: segments.map { $0.1 }, label: "Circadian segments")
+        let pieChartDataSet = PieChartDataSet(values: segments.map { $0.1 }, label: "Circadian segments")
         pieChartDataSet.colors = colors
         pieChartDataSet.drawValuesEnabled = false
-        pieChartDataSet.xValuePosition = .OutsideSlice
-        pieChartDataSet.valueLineColor = UIColor.lightGrayColor()
+        pieChartDataSet.xValuePosition = .outsideSlice
+        pieChartDataSet.valueLineColor = UIColor.lightGray
 
-        let xVals : [String?] = segments.enumerate().map {
+        let xVals : [String?] = segments.enumerated().map {
             if ($0.0 % (segments.count / 4)) == 0 {
-                return Optional($0.1.0.toString(DateFormat.Custom("HH:mm")) ?? "")
+                return Optional($0.1.0.string())
             }
             return nil
         }
 
-        let pieChartData = PieChartData(xVals: xVals, dataSet: pieChartDataSet)
-        self.pieChart.data = pieChartData
+        let pieChartDataEntry = PieChartDataEntry(x: xVals, dataSet: pieChartDataSet)
+        self.pieChart.data = PieChartDataEntry
         self.pieChart.setNeedsDisplay()
     }
 
     func refreshLegend() {
-        let basicAttrs = [NSForegroundColorAttributeName: UIColor.whiteColor()]
+        let basicAttrs = [NSForegroundColorAttributeName: UIColor.white]
 
         let segmentAttrs = [NSForegroundColorAttributeName: AnalysisDataModel.sharedInstance.cycleModel.segmentColor(),
                             NSBackgroundColorAttributeName: AnalysisDataModel.sharedInstance.cycleModel.segmentColor()]
@@ -223,7 +225,7 @@ class DialViewController : UIViewController, ChartViewDelegate {
 
         let paragraphStyle = NSMutableParagraphStyle()
         paragraphStyle.lineSpacing = 5.0
-        paragraphStyle.alignment = .Center
+        paragraphStyle.alignment = .center
 
         switch AnalysisDataModel.sharedInstance.cycleModel.segmentIndex {
         case 0:
@@ -278,18 +280,18 @@ class DialViewController : UIViewController, ChartViewDelegate {
 
     func invalidateView(note: NSNotification) {
         // Reload data if the view is currently visible.
-        if ( self.isViewLoaded() && (self.view.window != nil || self.visible) ) {
+        if ( self.isViewLoaded && (self.view.window != nil || self.visible) ) {
             self.refreshData()
             self.view.setNeedsDisplay()
         }
     }
 
     //MARK: ChartViewDelegate
-    func chartValueSelected(chartView: ChartViewBase, entry: ChartDataEntry, dataSetIndex: Int, highlight: ChartHighlight) {
-        var entryStr = AnalysisDataModel.sharedInstance.cycleModel.cycleSegments[entry.xIndex].0.toString(DateFormat.Custom("HH:mm")) ?? ""
+    func chartValueSelected(chartView: ChartViewBase, entry: ChartDataEntry, dataSetIndex: Int, highlight: Highlight) {
+        var entryStr = AnalysisDataModel.sharedInstance.cycleModel.cycleSegments[entry.x].0.String(DateFormat.Custom("HH:mm")) ?? ""
 
-        let txtFont = UIFont.systemFontOfSize(20, weight: UIFontWeightRegular)
-        let numberFont = UIFont.systemFontOfSize(14, weight: UIFontWeightRegular)
+        let txtFont = UIFont.systemFont(ofSize: 20, weight: UIFontWeightRegular)
+        let numberFont = UIFont.systemFont(ofSize: 14, weight: UIFontWeightRegular)
 
         var slRange: NSRange! = nil
         var eatRange: NSRange! = nil
@@ -325,7 +327,7 @@ class DialViewController : UIViewController, ChartViewDelegate {
 
         let attrs : [String: AnyObject] = [
             NSFontAttributeName: txtFont,
-            NSForegroundColorAttributeName: UIColor.whiteColor()
+            NSForegroundColorAttributeName: UIColor.white
         ]
 
         let aString = NSMutableAttributedString(string: entryStr, attributes: attrs)
@@ -350,7 +352,7 @@ class DialViewController : UIViewController, ChartViewDelegate {
         }
 
         let paragraphStyle = NSMutableParagraphStyle()
-        paragraphStyle.alignment = .Center
+        paragraphStyle.alignment = .center
         aString.addAttribute(NSParagraphStyleAttributeName, value: paragraphStyle, range: NSMakeRange(0, aString.length))
 
         pieChart.centerAttributedText = aString

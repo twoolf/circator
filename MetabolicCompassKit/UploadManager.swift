@@ -735,7 +735,7 @@ public class UploadManager: NSObject {
 
         logEntryUploadAsync?.cancel()
 //        logEntryUploadAsync = Async(self.uploadQueue, after: logEntryUploadDelay) {
- //           self.syncLogEntryBuffer()
+ //           self.syncLogEntryBuffer() 
  //       }
 
         // Post notifications if we have a substantial amount of work.

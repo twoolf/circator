@@ -1,8 +1,8 @@
 //
 //  ManageChartsViewController.swift
-//  MetabolicCompass
+//  MetabolicCompass 
 //
-//  Created by Artem Usachov on 6/17/16.
+//  Created by Artem Usachov on 6/17/16.       
 //  Copyright © 2016 Yanif Ahmad, Tom Woolf. All rights reserved.
 //
 
@@ -27,36 +27,36 @@ class ManageChartsViewController: UIViewController, UITableViewDataSource, UITab
         }
         self.tableView.delegate = self
         self.tableView.dataSource = self
-        self.tableView.editing = true
+        self.tableView.isEditing = true
         self.tableView.allowsSelectionDuringEditing = true
-        self.navigationController?.navigationBar.barStyle = UIBarStyle.Black;
+        self.navigationController?.navigationBar.barStyle = UIBarStyle.black;
         self.navigationItem.title = NSLocalizedString("MANAGE CHART", comment: "chart screen title")
-        let leftButton = UIBarButtonItem(image: UIImage(named: "close-button"), style: .Plain, target: self, action: #selector(closeAction))
+        let leftButton = UIBarButtonItem(image: UIImage(named: "close-button"), style: .plain, target: self, action: #selector(closeAction))
         self.navigationItem.leftBarButtonItem = leftButton
     }
     
     //MARK: Actions
     func closeAction () {
         save()
-        self.dismissViewControllerAnimated(true, completion: nil)
+        self.dismiss(animated: true, completion: nil)
     }
     
     //MARK: UITableViewDataSource
-    func tableView(tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+    func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         return data.count
     }
     
-    func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell {
-        let cell = tableView.dequeueReusableCellWithIdentifier(cellIdentifier) as! ManageDashboardCell
+    func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+        let cell = tableView.dequeueReusableCell(withIdentifier: cellIdentifier) as! ManageDashboardCell
         let item = data[indexPath.row]
         cell.showsReorderControl = false
-        cell.updateSelectionStatus(item.active, appearanceProvider: appearanceProvider, itemType: item.type)
+        cell.updateSelectionStatus(selected: item.active, appearanceProvider: appearanceProvider, itemType: item.type)
         return cell
     }
     
     //MARK: UITableViewDelegate
     func tableView(tableView: UITableView, didSelectRowAtIndexPath indexPath: NSIndexPath) {
-        let obj = tableView.cellForRowAtIndexPath(indexPath) as? ManageDashboardCell
+        let obj = tableView.cellForRowAtIndexPath(indexPath as IndexPath) as? ManageDashboardCell
         guard let cell = obj else {
             return
         }
@@ -76,7 +76,7 @@ class ManageChartsViewController: UIViewController, UITableViewDataSource, UITab
     }
     
     func tableView(tableView: UITableView, editingStyleForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCellEditingStyle {
-        return .None
+        return .none
     }
     
     func tableView(tableView: UITableView, shouldIndentWhileEditingRowAtIndexPath indexPath: NSIndexPath) -> Bool {
@@ -85,12 +85,12 @@ class ManageChartsViewController: UIViewController, UITableViewDataSource, UITab
     
     func tableView(tableView: UITableView, moveRowAtIndexPath fromIndexPath: NSIndexPath, toIndexPath: NSIndexPath) {
         let itemToMove = data[fromIndexPath.row]
-        data.removeAtIndex(fromIndexPath.row)
-        data.insert(itemToMove, atIndex: toIndexPath.row)
+        data.remove(at: fromIndexPath.row)
+        data.insert(itemToMove, at: toIndexPath.row)
         
         let manageItemToMove = manageData[fromIndexPath.row]
-        manageData.removeAtIndex(fromIndexPath.row)
-        manageData.insert(manageItemToMove, atIndex: toIndexPath.row)
+        manageData.remove(at: fromIndexPath.row)
+        manageData.insert(manageItemToMove, at: toIndexPath.row)
     }
     
     func tableView(tableView: UITableView, willDisplayCell cell: UITableViewCell, forRowAtIndexPath indexPath: NSIndexPath) {
@@ -115,7 +115,7 @@ class ManageChartsViewController: UIViewController, UITableViewDataSource, UITab
                 samples.append(item.object)
             }
         }
-        PreviewManager.updateChartsSampleTypes(samples)
-        PreviewManager.updateManageChartsSampleTypes(manageData)
+        PreviewManager.updateChartsSampleTypes(types: samples)
+        PreviewManager.updateManageChartsSampleTypes(types: manageData)
     }
 }

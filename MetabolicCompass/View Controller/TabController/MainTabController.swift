@@ -42,7 +42,7 @@ class MainTabController: UITabBarController, UITabBarControllerDelegate, ManageE
         NotificationCenter.default.addObserver(self, selector: #selector(userDidLogin), name: NSNotification.Name(rawValue: UMDidLoginNotifiaction), object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(userDidLogout), name: NSNotification.Name(rawValue: UMDidLogoutNotification), object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(userAddedCircadianEvents), name: NSNotification.Name(rawValue: MEMDidUpdateCircadianEvents), object: nil)
-        NotificationCenter.defaultCenter().addObserver(self, selector: #selector(syncBegan(_:)), name: SyncBeganNotification, object: nil)
+//        NotificationCenter.defaultCenter().addObserver(self, selector: #selector(syncBegan(_:)), name: SyncBeganNotification, object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(syncEnded), name: NSNotification.Name(rawValue: SyncEndedNotification), object: nil)
     }
     
@@ -58,9 +58,9 @@ class MainTabController: UITabBarController, UITabBarControllerDelegate, ManageE
         self.navigationController?.navigationBar.barStyle = .black
     }
 
-    override func preferredStatusBarStyle() -> UIStatusBarStyle {
+/*    func preferredStatusBarStyle() -> UIStatusBarStyle {
         return .lightContent;
-    }
+    } */
     
     func configureTabBar() {
         
@@ -145,7 +145,7 @@ class MainTabController: UITabBarController, UITabBarControllerDelegate, ManageE
     func syncBegan(notification: NSNotification) {
         if let dict = notification.userInfo, let initial = dict["count"] as? Int {
             if !syncMode {
-                NotificationCenter.defaultCenter().addObserver(self, selector: #selector(syncProgress(_:)), name: SyncProgressNotification, object: nil)
+//                NotificationCenter.defaultCenter().addObserver(self, selector: #selector(syncProgress(_:)), name: SyncProgressNotification, object: nil)
             }
             syncMode = true
             syncInitial = CGFloat(initial)
@@ -183,7 +183,7 @@ class MainTabController: UITabBarController, UITabBarControllerDelegate, ManageE
 
     func syncEnded() {
         if syncMode {
-            NotificationCenter.defaultCenter.removeObserver(self, name: NSNotification.Name(rawValue: SyncProgressNotification), object: nil)
+            NotificationCenter.default.removeObserver(self, name: NSNotification.Name(rawValue: SyncProgressNotification), object: nil)
         }
         syncMode = false
         syncInitial = 0.0
@@ -231,7 +231,7 @@ class MainTabController: UITabBarController, UITabBarControllerDelegate, ManageE
             self.view.window?.rootViewController?.view.addSubview(overlay)
             self.manageEventOverlayView = overlay
             //add title for overlay
-            let titleLabel = UILabel(frame:rectZero)
+            let titleLabel = UILabel()
             titleLabel.text = "YOUR CIRCADIAN RHYTHM"
             titleLabel.font = ScreenManager.appFontOfSize(size: 16)
             titleLabel.textColor = UIColor.colorWithHexString(rgb: "#ffffff", alpha: 0.6)
@@ -358,6 +358,6 @@ class MainTabController: UITabBarController, UITabBarControllerDelegate, ManageE
 
     //MARK: Deinit
     deinit {
-        NotificationCenter.defaultCenter().removeObserver(self)
+        NotificationCenter.default.removeObserver(self)
     }
 }

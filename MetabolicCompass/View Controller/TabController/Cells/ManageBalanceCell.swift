@@ -2,7 +2,7 @@
 //  ManageBalanceCell.swift
 //  MetabolicCompass
 //
-//  Created by Inaiur on 5/13/16.
+//  Created by Inaiur on 5/13/16. 
 //  Copyright © 2016 Yanif Ahmad, Tom Woolf. All rights reserved.
 //
 

@@ -1,6 +1,6 @@
 //
 //  HealthAccessViewController.swift
-//  MetabolicCompass
+//  MetabolicCompass 
 //
 //  Created by Anna Tkach on 5/12/16.
 //  Copyright © 2016 Yanif Ahmad, Tom Woolf. All rights reserved.

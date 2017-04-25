@@ -1,8 +1,8 @@
 //
 //  ErrorViewController.swift
-//  MetabolicCompass
+//  MetabolicCompass 
 //
-//  Created by Yanif Ahmad on 2/12/16.
+//  Created by Yanif Ahmad on 2/12/16.  
 //  Copyright © 2016 Yanif Ahmad, Tom Woolf. All rights reserved.
 //
 
@@ -24,12 +24,12 @@ class ErrorViewController : UIViewController {
         configureViews()
     }
 
-    override func viewWillAppear(animated: Bool) {
+    override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         navigationController?.setNavigationBarHidden(false, animated: false)
     }
 
-    override func viewDidAppear(animated: Bool) {
+    override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
     }
 
@@ -38,12 +38,12 @@ class ErrorViewController : UIViewController {
 
         let iview = UIImageView()
         iview.image = image
-        iview.contentMode = .ScaleAspectFit
+        iview.contentMode = .scaleAspectFit
         iview.tintColor = Theme.universityDarkTheme.foregroundColor
 
         let lbl = UILabel()
-        lbl.textAlignment = .Center
-        lbl.lineBreakMode = .ByWordWrapping
+        lbl.textAlignment = .center
+        lbl.lineBreakMode = .byWordWrapping
         lbl.numberOfLines = 0
         lbl.text = msg
         lbl.textColor = Theme.universityDarkTheme.foregroundColor
@@ -55,13 +55,13 @@ class ErrorViewController : UIViewController {
         view.addSubview(lbl)
 
         let constraints: [NSLayoutConstraint] = [
-            iview.centerXAnchor.constraintEqualToAnchor(view.centerXAnchor),
-            iview.centerYAnchor.constraintEqualToAnchor(view.centerYAnchor, constant: -50),
-            lbl.topAnchor.constraintEqualToAnchor(iview.bottomAnchor),
-            lbl.centerXAnchor.constraintEqualToAnchor(view.centerXAnchor),
-            iview.widthAnchor.constraintEqualToConstant(100),
-            iview.heightAnchor.constraintEqualToConstant(100),
-            lbl.widthAnchor.constraintEqualToAnchor(view.widthAnchor, constant: -50)
+            iview.centerXAnchor.constraint(equalTo: view.centerXAnchor),
+            iview.centerYAnchor.constraint(equalTo: view.centerYAnchor, constant: -50),
+            lbl.topAnchor.constraint(equalTo: iview.bottomAnchor),
+            lbl.centerXAnchor.constraint(equalTo: view.centerXAnchor),
+            iview.widthAnchor.constraint(equalToConstant: 100),
+            iview.heightAnchor.constraint(equalToConstant: 100),
+            lbl.widthAnchor.constraint(equalTo: view.widthAnchor, constant: -50)
         ]
         view.addConstraints(constraints)
     }
