@@ -112,7 +112,7 @@ public class SlideButtonArray: UIView, SlideButtonArrayDelegate {
              button.imageEdgeInsets = UIEdgeInsetsMake(0.0, 0.0, 0.0, -titleSize.width)
              */
 
-            button.addTarget(self, action: #selector(self.handleTap(_:)), for: .TouchUpInside)
+//            button.addTarget(self, action: #selector(self.handleTap(_:)), for: .TouchUpInside)
 
             var pickerData: [String: AnyObject] = [:]
             spec.2.forEach { pickerData[$0.0] = $0.1 as AnyObject? }

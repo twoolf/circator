@@ -15,34 +15,34 @@ class RegistrationCompletionViewController: BaseViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        view.backgroundColor = view.backgroundColor?.colorWithAlphaComponent(0.93)
-        view.opaque = false
-        self.navigationController?.navigationBar.barStyle = UIBarStyle.Black;
+        view.backgroundColor = view.backgroundColor?.withAlphaComponent(0.93)
+        view.isOpaque = false
+        self.navigationController?.navigationBar.barStyle = UIBarStyle.black;
     }
     
-    override func viewDidAppear(animated: Bool) {
+    override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
-        UINotifications.genericMsg(self, msg: "We've emailed you an account verification link. Please check your inbox.", pop: false, asNav: true, nohide: true)
+        UINotifications.genericMsg(vc: self, msg: "We've emailed you an account verification link. Please check your inbox.", pop: false, asNav: true, nohide: true)
     }
     
-    override func preferredStatusBarStyle() -> UIStatusBarStyle {
-        return .LightContent;
-    }
+//    func preferredStatusBarStyle() -> UIStatusBarStyle {
+//        return .lightContent;
+//    }
     
     @IBAction func noThanksAction(sender: UIButton) {
         // back
-        self.dismissViewControllerAnimated(true, completion: nil)
+        self.dismiss(animated: true, completion: nil)
         if let regVC = registerViewController {
-            Answers.logCustomEventWithName("Register Additional", customAttributes: ["WithAdditional": false])
+            Answers.logCustomEvent(withName: "Register Additional", customAttributes: ["WithAdditional": false])
             regVC.registrationComplete()
         }
     }
     
     private let segueRegistrationCompletionIdentifier = "AdditionInfoController"
     
-    override func prepareForSegue(segue: UIStoryboardSegue, sender: AnyObject?) {
+    func prepareForSegue(segue: UIStoryboardSegue, sender: AnyObject?) {
         if segue.identifier == segueRegistrationCompletionIdentifier {
-            if let vc = segue.destinationViewController as? AdditionalInfoViewController {
+            if let vc = segue.destination as? AdditionalInfoViewController {
                 vc.registerViewController = self.registerViewController
             }
         }

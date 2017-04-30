@@ -89,7 +89,7 @@ class UserInfoModel: NSObject {
         return items[indexPath.row]
     }
 
-    func setAtItem(itemIndex itemIndex: Int, newValue: AnyObject?) {
+    func setAtItem(itemIndex: Int, newValue: AnyObject?) {
         let fieldItem = items[itemIndex]
 
         fieldItem.setNewValue(newValue: newValue)
@@ -144,7 +144,7 @@ class UserInfoModel: NSObject {
             }
         }
 
-        log.info("PROFILE ITEMS \(heightInchesComponent) \(profile[heightField.name]) \(profile[weightField.name])")
+//        log.info("PROFILE ITEMS \(heightInchesComponent) \(profile[heightField.name]) \(profile[weightField.name])")
 
         return profile
     }
@@ -165,10 +165,12 @@ class UserInfoModel: NSObject {
 
             // Set to whole number of feet, and save remainder in inches field.
             if units == .Imperial {
-                heightField.setNewValue(newValue: floor(convertedValue))
-                heightInchesField.setNewValue(newValue: Int(floor((convertedValue % 1.0) * 12.0)))
+//                heightField.setNewValue(newValue: floor(convertedValue))
+                heightField.setNewValue(newValue: convertedValue as AnyObject?)
+//                heightInchesField.setNewValue(newValue: Int(floor((convertedValue % 1.0) * 12.0)) as AnyObject?)
+                heightInchesField.setNewValue(newValue: Int((convertedValue) * 12.0) as AnyObject?)
             } else {
-                heightField.setNewValue(newValue: round(1000.0*convertedValue)/1000.0)
+                heightField.setNewValue(newValue: (round(1000.0*Double(convertedValue))/1000.0) as AnyObject?)
             }
         }
 
@@ -182,7 +184,8 @@ class UserInfoModel: NSObject {
                 convertedValue = UnitsUtils.weightValueInDefaultSystem(fromValue: value, inUnitsSystem: .Imperial)
             }
 
-            weightField.setNewValue(newValue: round(1000.0*convertedValue)/1000.0)
+//            weightField.setNewValue(newValue: round(1000.0*convertedValue)/1000.0)
+            weightField.setNewValue(newValue: round(1000.0*Double(convertedValue))/1000.0 as AnyObject?)
         }
     }
 
@@ -190,10 +193,14 @@ class UserInfoModel: NSObject {
         var indexes = [NSIndexPath]()
 
         let weightIndex = items.index(of: weightField)
-        indexes.append(IndexPath(forRow: weightIndex!, inSection: 0))
+//        indexes.append(IndexPath(forRow: weightIndex!, inSection: 0))
+//        indexes.append(IndexPath(forRow: weightIndex!))
+//        indexes.append(indexes)
 
         let heightIndex = items.index(of: heightField)
-        indexes.append(IndexPath(forRow: heightIndex!, inSection: 0))
+//        indexes.append(IndexPath(forRow: heightIndex!, inSection: 0))
+//        indexes.append(IndexPath(forRow: heightIndex!))
+//        indexes.append(indexes)
 
         return indexes
     }
@@ -305,7 +312,8 @@ class UserInfoModel: NSObject {
             let numberRule = NJORequiredCharacterRule(preset: .decimalDigitCharacter)
             let validator = NJOPasswordValidator(rules: [lengthRule, lowerRule, upperRule, numberRule])
 
-            let failingRules = validator.validatePassword(password!)
+//            let failingRules = validator.validatePassword(password!)
+            let failingRules = validator.validate(password!)
             if let _ = failingRules {
                 validationMessage = passwordInvalidFormat
                 return false
@@ -317,11 +325,11 @@ class UserInfoModel: NSObject {
     }
 
     func isFirstNameValid() -> Bool {
-        return isValidString(string: firstName, minLength: 2, incorrectMessage: firstNameInvalidFormat) && containsOnlyLetters(firstName!.trimmed(), incorrectMessage: firstNameInvalidFormat)
+        return isValidString(string: firstName, minLength: 2, incorrectMessage: firstNameInvalidFormat) && containsOnlyLetters(string: firstName!.trimmed(), incorrectMessage: firstNameInvalidFormat)
     }
 
     func isLastNameValid() -> Bool {
-        return isValidString(string: lastName, minLength: 2, incorrectMessage: lastNameInvalidFormat) && containsOnlyLetters(lastName!.trimmed(), incorrectMessage: lastNameInvalidFormat)
+        return isValidString(string: lastName, minLength: 2, incorrectMessage: lastNameInvalidFormat) && containsOnlyLetters(string: lastName!.trimmed(), incorrectMessage: lastNameInvalidFormat)
     }
 
     private func containsOnlyLetters(string: String, incorrectMessage: String) -> Bool {
@@ -368,7 +376,7 @@ class UserInfoModel: NSObject {
         let minWeightInUserUnits = self.units == .Metric ? minWeight : minWeightImp
         let maxWeightInUserUnits = self.units == .Metric ? maxWeight : maxWeightImp
 
-        log.info("VALIDATING WEIGHT \(weight) \(minWeightInUserUnits) \(maxWeightInUserUnits)")
+//        log.info("VALIDATING WEIGHT \(weight) \(minWeightInUserUnits) \(maxWeightInUserUnits)")
         let isValid = isRequiredFloatValidInRange(value: weight, minValue: minWeightInUserUnits, maxValue: maxWeightInUserUnits)
 
         if !isValid {
@@ -391,7 +399,7 @@ class UserInfoModel: NSObject {
         var heightWithInches = height ?? 0.0
         if units == .Imperial { heightWithInches += Float(heightInches ?? 0) / 12.0 }
 
-        log.info("VALIDATING HEIGHT \(heightWithInches) \(minHeightInUserUnits) \(maxHeightInUserUnits)")
+//        log.info("VALIDATING HEIGHT \(heightWithInches) \(minHeightInUserUnits) \(maxHeightInUserUnits)")
         let isValid = isRequiredFloatValidInRange(value: heightWithInches, minValue: minHeightInUserUnits, maxValue: maxHeightInUserUnits)
 
         if !isValid {

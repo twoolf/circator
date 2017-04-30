@@ -116,12 +116,13 @@ open class PickerManager: NSObject, AKPickerViewDelegate, AKPickerViewDataSource
             itemContentViews[item]?.superview?.layer.cornerRadius = 8
             itemContentViews[item]?.superview?.layer.masksToBounds = true
 
-            let press = UILongPressGestureRecognizer(target: self, action: #selector(self.itemSelected(_:)))
+//            let press = UILongPressGestureRecognizer(target: self, action: #selector(PickerManager.itemSelected(_:)))
+            let press = UILongPressGestureRecognizer(target: self, action: #selector(PickerManager.itemSelected(sender:)))
             press.minimumPressDuration = EventPickerPressDuration
             press.delegate = self
             itemContentViews[item]?.superview?.tag = item
             itemContentViews[item]?.superview?.isUserInteractionEnabled = true
-            itemContentViews[item].superview?.addGestureRecognizer(press)
+            itemContentViews[item]?.superview?.addGestureRecognizer(press)
         }
     }
 
@@ -130,11 +131,11 @@ open class PickerManager: NSObject, AKPickerViewDelegate, AKPickerViewDataSource
     }
 
     func startProcessingSelection(selected: Int) {
-        log.info("Processing selection \(selected)")
+//        log.info("Processing selection \(selected)")
         if let delegate = delegate {
             if selected == current {
                 // Disable all recognizers and mark the selection as processing to prevent further interaction.
-                log.info("Processing selection \(selected) disabling and invoking delegate")
+//                log.info("Processing selection \(selected) disabling and invoking delegate")
                 selectionProcessing = true
                 itemContentViews.forEach {
                     if let view = $0 {
@@ -145,10 +146,10 @@ open class PickerManager: NSObject, AKPickerViewDelegate, AKPickerViewDataSource
                 delegate.pickerItemSelected(pickerManager: self, itemType: itemType, index: selected, item: getSelectedItem(), data: getSelectedValue())
             }
             else {
-                log.error("PickerManager: Selected non-current index \(current) \(selected)")
+//                log.error("PickerManager: Selected non-current index \(current) \(selected)")
             }
         } else {
-            log.warning("PickerManager: No delegate found")
+//            log.warning("PickerManager: No delegate found")
         }
     }
 

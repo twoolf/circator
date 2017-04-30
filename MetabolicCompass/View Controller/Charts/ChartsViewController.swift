@@ -38,9 +38,9 @@ class ChartsViewController: UIViewController {
         super.viewDidLoad()
         updateNavigationBar()
         registerCells()
-        chartCollectionDataSource.model = chartsModel
-        collectionView.delegate = chartCollectionDelegate
-        collectionView.dataSource = chartCollectionDataSource
+//        chartCollectionDataSource.model = chartsModel
+//        collectionView.delegate = chartCollectionDelegate
+//        collectionView.dataSource = chartCollectionDataSource
     }
 
     override func viewWillAppear(_ animated: Bool) {
@@ -72,7 +72,7 @@ class ChartsViewController: UIViewController {
 
     // MARK :- Base preparation
     func updateChartDataWithClean() {
-        chartsModel.typesChartData = [:]
+//        chartsModel.typesChartData = [:]
         IOSHealthManager.sharedManager.cleanCache()
         IOSHealthManager.sharedManager.collectDataForCharts()
         activityIndicator.startAnimating()
@@ -120,13 +120,13 @@ class ChartsViewController: UIViewController {
 //        var showCorrelate = false
 //        let correlateSegment = sender.numberOfSegments-1
         switch sender.selectedSegmentIndex {
-            case HealthManagerStatisticsRangeType.month.rawValue:
-                chartsModel.rangeType = .month
+            case HealthManagerStatisticsRangeType.month.rawValue: break
+//                chartsModel.rangeType = .month
             case HealthManagerStatisticsRangeType.year.rawValue:
-                chartsModel.rangeType = .year
+//                chartsModel.rangeType = .year
                 break
-            default:
-                chartsModel.rangeType = .week
+            default: break
+//                chartsModel.rangeType = .week
         }
         logContentView()
         updateChartsData()

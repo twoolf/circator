@@ -2,7 +2,7 @@
 //  VariantViewController.swift
 //  MetabolicCompass 
 //
-//  Created by Yanif Ahmad on 2/12/16.
+//  Created by Yanif Ahmad on 2/12/16. 
 //  Copyright © 2016 Yanif Ahmad, Tom Woolf. All rights reserved.
 //
 
@@ -26,12 +26,12 @@ class VariantViewController: UIViewController {
         configureViews()
     }
 
-    override func viewWillAppear(animated: Bool) {
+    override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         navigationController?.setNavigationBarHidden(!withNavigation, animated: false)
     }
 
-    override func viewDidAppear(animated: Bool) {
+    override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
     }
 
@@ -42,17 +42,17 @@ class VariantViewController: UIViewController {
         controller.showPageControl = false
 
         let pageView = controller.view
-        pageView.translatesAutoresizingMaskIntoConstraints = false
+        pageView?.translatesAutoresizingMaskIntoConstraints = false
         self.addChildViewController(controller)
-        view.addSubview(pageView)
+        view.addSubview(pageView!)
         let constraints: [NSLayoutConstraint] = [
-            pageView.topAnchor.constraintEqualToAnchor(view.topAnchor),
-            pageView.leftAnchor.constraintEqualToAnchor(view.leftAnchor),
-            pageView.rightAnchor.constraintEqualToAnchor(view.rightAnchor),
-            pageView.bottomAnchor.constraintEqualToAnchor(view.bottomAnchor)
+            pageView!.topAnchor.constraint(equalTo: view.topAnchor),
+            pageView!.leftAnchor.constraint(equalTo: view.leftAnchor),
+            pageView!.rightAnchor.constraint(equalTo: view.rightAnchor),
+            pageView!.bottomAnchor.constraint(equalTo: view.bottomAnchor)
         ]
         view.addConstraints(constraints)
-        controller.didMoveToParentViewController(self)
+        controller.didMove(toParentViewController: self)
 
         controller.goTo(startIndex)
     }

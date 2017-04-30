@@ -18,10 +18,10 @@ class ManageDashboardCell: UITableViewCell {
     override func awakeFromNib() {
         super.awakeFromNib()
         // Initialization code
-        self.button.userInteractionEnabled = false
+        self.button.isUserInteractionEnabled = false
     }
 
-    override func setSelected(selected: Bool, animated: Bool) {
+    override func setSelected(_ selected: Bool, animated: Bool) {
         super.setSelected(selected, animated: animated)
 
         // Configure the view for the selected state
@@ -29,7 +29,7 @@ class ManageDashboardCell: UITableViewCell {
     
     func updateSelectionStatus (selected: Bool, appearanceProvider: DashboardMetricsAppearanceProvider, itemType: String)
     {
-        self.button.selected = selected
+        self.button.isSelected = selected
         
         if (selected) {
             self.reorderImage?.image  = UIImage(named: "icon-manage-filters-active")
@@ -38,8 +38,8 @@ class ManageDashboardCell: UITableViewCell {
             self.reorderImage?.image  = UIImage(named: "icon-manage-filters-unactive")
         }
         
-        self.leftImageView.image         = appearanceProvider.imageForSampleType(itemType, active: selected)
-        self.captionLabel.attributedText = appearanceProvider.titleForSampleType(itemType, active: selected)
+        self.leftImageView.image         = appearanceProvider.imageForSampleType(sampleType: itemType, active: selected)
+        self.captionLabel.attributedText = appearanceProvider.titleForSampleType(sampleType: itemType, active: selected)
         
     }
 

@@ -24,8 +24,8 @@ class DashboardManageController: UIViewController, UITableViewDelegate, UITableV
 
         self.navigationBar.titleTextAttributes = [NSForegroundColorAttributeName : ScreenManager.sharedInstance.appNavBarTextColor(),
                                                   NSFontAttributeName : ScreenManager.appNavBarFont()]
-        self.navigationBar.tintColor = UIColor.whiteColor()
-        self.navigationBar.barStyle = UIBarStyle.Black;
+        self.navigationBar.tintColor = UIColor.white
+        self.navigationBar.barStyle = UIBarStyle.black;
         
         self.tableView.dataSource = self;
         self.tableView.delegate   = self;
@@ -37,7 +37,7 @@ class DashboardManageController: UIViewController, UITableViewDelegate, UITableV
             manageData.append(type)
         }
         
-        self.tableView.editing = true
+        self.tableView.isEditing = true
     }
     
     func save() {
@@ -50,16 +50,16 @@ class DashboardManageController: UIViewController, UITableViewDelegate, UITableV
             }
         }
         
-        PreviewManager.updatePreviewSampleTypes(samples)
-        PreviewManager.updateManagePreviewSampleTypes(manageData)
+        PreviewManager.updatePreviewSampleTypes(types: samples)
+        PreviewManager.updateManagePreviewSampleTypes(types: manageData)
     }
     
-    override func preferredStatusBarStyle() -> UIStatusBarStyle {
-        return .LightContent;
-    }
+/*    func preferredStatusBarStyle() -> UIStatusBarStyle {
+        return .lightContent;
+    } */
     
     @IBAction func onClose(sender: AnyObject) {
-        self.dismissViewControllerAnimated(true, completion: nil)
+        self.dismiss(animated: true, completion: nil)
         save()
     }
     
@@ -67,17 +67,17 @@ class DashboardManageController: UIViewController, UITableViewDelegate, UITableV
         return 1
     }
 
-    func tableView(tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+    func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         return self.data.count
     }
     
     private let cellIdentifier = "DashboardManageCell"
     
-    func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell {
-        let cell = tableView.dequeueReusableCellWithIdentifier(cellIdentifier, forIndexPath: indexPath) as! ManageDashboardCell
+    func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+        let cell = tableView.dequeueReusableCell(withIdentifier: cellIdentifier, for: indexPath as IndexPath) as! ManageDashboardCell
         let item = self.data[indexPath.row]
         cell.showsReorderControl = false
-        cell.updateSelectionStatus(item.active, appearanceProvider: appearanceProvider, itemType: item.type)
+        cell.updateSelectionStatus(selected: item.active, appearanceProvider: appearanceProvider, itemType: item.type)
         return cell;
     }
     
@@ -95,7 +95,7 @@ class DashboardManageController: UIViewController, UITableViewDelegate, UITableV
     
     func tableView(tableView: UITableView, didSelectRowAtIndexPath indexPath: NSIndexPath) {
         
-        let obj = tableView.cellForRowAtIndexPath(indexPath) as? ManageDashboardCell
+        let obj = tableView.cellForRow(at: indexPath as IndexPath) as? ManageDashboardCell
         guard let cell = obj else {
             return
         }
@@ -107,7 +107,7 @@ class DashboardManageController: UIViewController, UITableViewDelegate, UITableV
         }
         
         item.active = !item.active
-        cell.updateSelectionStatus(item.active, appearanceProvider: appearanceProvider, itemType: item.type)
+        cell.updateSelectionStatus(selected: item.active, appearanceProvider: appearanceProvider, itemType: item.type)
     }
 
     func tableView(tableView: UITableView, canMoveRowAtIndexPath indexPath: NSIndexPath) -> Bool {
@@ -115,7 +115,7 @@ class DashboardManageController: UIViewController, UITableViewDelegate, UITableV
     }
     
     func tableView(tableView: UITableView, editingStyleForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCellEditingStyle {
-        return .None
+        return .none
     }
     
     func tableView(tableView: UITableView, shouldIndentWhileEditingRowAtIndexPath indexPath: NSIndexPath) -> Bool {
@@ -124,12 +124,12 @@ class DashboardManageController: UIViewController, UITableViewDelegate, UITableV
     
     func tableView(tableView: UITableView, moveRowAtIndexPath fromIndexPath: NSIndexPath, toIndexPath: NSIndexPath) {
         let itemToMove = self.data[fromIndexPath.row]
-        self.data.removeAtIndex(fromIndexPath.row)
-        self.data.insert(itemToMove, atIndex: toIndexPath.row)
+        self.data.remove(at: fromIndexPath.row)
+        self.data.insert(itemToMove, at: toIndexPath.row)
         
         let manageItemToMove = manageData[fromIndexPath.row]
-        manageData.removeAtIndex(fromIndexPath.row)
-        manageData.insert(manageItemToMove, atIndex: toIndexPath.row)
+        manageData.remove(at: fromIndexPath.row)
+        manageData.insert(manageItemToMove, at: toIndexPath.row)
     }
     
     func tableView(tableView: UITableView, willDisplayCell cell: UITableViewCell, forRowAtIndexPath indexPath: NSIndexPath) {

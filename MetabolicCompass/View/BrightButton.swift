@@ -25,8 +25,8 @@ class BrightButton: AppButton {
         
         self.backgroundColor = bgColor
         
-        self.setTitleColor(textColor, forState: .normal)
+        self.setTitleColor(textColor, for: .normal)
         
-        roundCornersWithRadius(cornerRadius)
+        roundCornersWithRadius(radius: cornerRadius)
     }
 }

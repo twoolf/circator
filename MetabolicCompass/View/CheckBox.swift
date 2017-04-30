@@ -8,7 +8,6 @@
 
 import UIKit
 
-
 @objc protocol CheckBoxProtocol {
     func checkBoxValueChanged(sender: CheckBox, newValue: Bool)
 }
@@ -23,26 +22,27 @@ class CheckBox : AppButton {
     var isChecked: Bool = false {
         didSet{
             if isChecked == true {
-                self.setImage(checkedImage, for: .Normal)
+                self.setImage(checkedImage, for: .normal)
             } else {
-                self.setImage(uncheckedImage, forState: .Normal)
+                self.setImage(uncheckedImage, for: .normal)
             }
+        }
+    }
+    
+    public func buttonClicked(sender: UIButton) {
+        isChecked = !isChecked
+        
+        if let _ = delegate {
+            delegate!.checkBoxValueChanged(sender: sender as! CheckBox, newValue: isChecked)
         }
     }
     
     override func awakeFromNib() {
         super.awakeFromNib()
         
-        self.addTarget(self, action: #selector(CheckBox.buttonClicked(_:)), forControlEvents: UIControlEvents.TouchUpInside)
+//        self.addTarget(self, action: #selector(CheckBox.buttonClicked(_:)), for: UIControlEvents.TouchUpInside)
+        self.addTarget(self, action: #selector(CheckBox.buttonClicked(sender:)), for: UIControlEvents.touchUpInside)
         self.isChecked = false
-    }
-    
-    func buttonClicked(sender: UIButton) {
-        isChecked = !isChecked
-        
-        if let _ = delegate {
-            delegate!.checkBoxValueChanged(sender as! CheckBox, newValue: isChecked)
-        }
     }
     
 }

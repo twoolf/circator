@@ -24,7 +24,7 @@ class InputCollectionViewCell: BaseCollectionViewCell {
         super.awakeFromNib()
         // Initialization code
         
-        inputTxtField.addTarget(self, action: #selector(InputCollectionViewCell.textFieldDidChange(_:)), forControlEvents: UIControlEvents.EditingChanged)
+        inputTxtField.addTarget(self, action: #selector(BaseCollectionViewCell.textFieldDidChange(textField: )), for: UIControlEvents.editingChanged)
         inputTxtField.delegate = self
     }
     
@@ -35,8 +35,8 @@ class InputCollectionViewCell: BaseCollectionViewCell {
         inputTxtField.text = nil
         nameLbl.text = nil
 
-        inputTxtField.secureTextEntry = false
-        inputTxtField.keyboardType = UIKeyboardType.Default
+//        inputTxtField.secureTextEntry = false
+        inputTxtField.keyboardType = UIKeyboardType.default
     }
     
  }

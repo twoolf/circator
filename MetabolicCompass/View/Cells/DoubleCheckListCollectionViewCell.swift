@@ -10,14 +10,14 @@ import UIKit
 
 class DoubleCheckListCollectionViewCell: BaseCollectionViewCell, CheckBoxProtocol {
 
-    var selectedTextColor = UIColor.whiteColor() {
+    var selectedTextColor = UIColor.white {
         didSet{
             layoutTitles()
             colorsChanged()
         }
     }
     
-    var unselectedTextColor = UIColor.lightGrayColor() {
+    var unselectedTextColor = UIColor.lightGray {
         didSet{
             layoutTitles()
             colorsChanged()
@@ -53,10 +53,10 @@ class DoubleCheckListCollectionViewCell: BaseCollectionViewCell, CheckBoxProtoco
     
     func setSelectedItem(selectedItemIndex index: Int) {
         if index < 0 || index > 1 {
-           selectItemAtIndex(0)
+           selectItemAtIndex(index: 0)
         }
         else {
-            selectItemAtIndex(index)
+            selectItemAtIndex(index: index)
         }
     }
     
@@ -64,8 +64,8 @@ class DoubleCheckListCollectionViewCell: BaseCollectionViewCell, CheckBoxProtoco
         let selectedCheckBox = index == 0 ? firstCheckBox : secondCheckBox
         let unselectedCheckBox = index == 0 ? secondCheckBox : firstCheckBox
         
-        selectedCheckBox.isChecked = true
-        unselectedCheckBox.isChecked = false
+        selectedCheckBox?.isChecked = true
+        unselectedCheckBox?.isChecked = false
 
         layoutTitles()
     }
@@ -86,13 +86,13 @@ class DoubleCheckListCollectionViewCell: BaseCollectionViewCell, CheckBoxProtoco
     
     func checkBoxValueChanged(sender: CheckBox, newValue: Bool) {
         let anotherCheckBox = sender == firstCheckBox ? secondCheckBox : firstCheckBox
-        anotherCheckBox.isChecked = !newValue
+        anotherCheckBox?.isChecked = !newValue
         
         layoutTitles()
         
         // send new selected index
         let selectedIndex = firstCheckBox.isChecked ? 0 : 1
-        valueChanged(selectedIndex)
+        valueChanged(newValue: selectedIndex as AnyObject?)
         
     }
     

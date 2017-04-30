@@ -42,7 +42,7 @@ public class FontScaleLabel: UILabel {
         set {
             self.notScaledFont = newValue;
             if newValue != nil{
-                let scaledFont = newValue!.fontWithSize(newValue!.pointSize * FontScaleLabel.scaleFactor)
+                let scaledFont = newValue!.withSize(newValue!.pointSize * FontScaleLabel.scaleFactor)
                 super.font = scaledFont
             }
         }

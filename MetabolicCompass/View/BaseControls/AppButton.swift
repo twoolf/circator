@@ -16,7 +16,7 @@ class AppButton: UIButton {
     
     var fontSize: CGFloat = 14.0 {
         didSet {
-            setupFontSize(fontSize)
+            setupFontSize(size: fontSize)
         }
     }
     
@@ -40,11 +40,11 @@ class AppButton: UIButton {
     
     private func setupFont() {
         fontSize = self.titleLabel?.font.pointSize ?? defaultFontSize
-        setupFontSize(fontSize)
+        setupFontSize(size: fontSize)
     }
     
     func setupFontSize(size: CGFloat) {
-        self.titleLabel?.font = ScreenManager.appFontOfSize(fontSize)
+        self.titleLabel?.font = ScreenManager.appFontOfSize(size: fontSize)
     }
 
 }

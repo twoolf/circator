@@ -25,7 +25,7 @@ class TwoLineCorrelcationCell: LineChartCollectionCell {
             let topLimit = ChartLimitLine(limit:topLimitMax)
             topLimit.lineWidth = 1
             topLimit.lineDashLengths = [3.0, 3.0]
-            topLimit.lineColor = UIColor.colorWithHexString("#338aff", alpha: 0.4)!
+            topLimit.lineColor = UIColor.colorWithHexString(rgb: "#338aff", alpha: 0.4)!
             rightAxis.axisMaxValue = topLimitMax
             let minMultiplier = minOffsetFactor ?? 1.3
             rightAxis.axisMinValue = minValue - (minMultiplier == 0 ? 0.0 : minValue * minMultiplier)

@@ -118,7 +118,7 @@ public class PathMenuItem: UIImageView {
         }
     }
     
-    public override func touchesCancelled(touches: Set<UITouch>?, withEvent event: UIEvent?) {
+    public override func touchesCancelled(_ touches: Set<UITouch>?, with event: UIEvent?) {
         isHighlighted = false
     }
 }

@@ -164,10 +164,10 @@ class MainTabController: UITabBarController, UITabBarControllerDelegate, ManageE
                     ARSLineProgress.showWithProgress(initialValue: 0.01, onView: self.syncOverlayView!.contentView)
                 }
             }
-            log.debug("DATA SYNC starting", feature: "dataSync")
+//            log.debug("DATA SYNC starting", feature: "dataSync")
         }
         else {
-            log.error("DATA SYNC No initial upload size found", feature: "dataSync")
+//            log.error("DATA SYNC No initial upload size found", feature: "dataSync")
         }
     }
 
@@ -195,7 +195,7 @@ class MainTabController: UITabBarController, UITabBarControllerDelegate, ManageE
                 self.syncOverlayView!.setNeedsDisplay()
             }
         }
-        log.debug("DATA SYNC finished", feature: "dataSync")
+//        log.debug("DATA SYNC finished", feature: "dataSync")
     }
 
     func syncProgress(notification: NSNotification) {
@@ -208,7 +208,7 @@ class MainTabController: UITabBarController, UITabBarControllerDelegate, ManageE
 
             let progress = max(0.01, 100.0 * (syncInitial - syncCounter) / syncInitial)
             ARSLineProgress.updateWithProgress(progress)
-            log.debug("DATA SYNC progress \(progress)", feature: "dataSync")
+//            log.debug("DATA SYNC progress \(progress)", feature: "dataSync")
 
             syncCheckpoint = syncCounter
             syncTerminator?.cancel()
@@ -328,7 +328,7 @@ class MainTabController: UITabBarController, UITabBarControllerDelegate, ManageE
                     self.dailyProgressVC?.contentDidUpdate()
                 }
             } else {
-                log.warning("No DailyProgressViewController available", feature: "addActivityView")
+ //               log.warning("No DailyProgressViewController available", feature: "addActivityView")
             }
         }
         self.manageEventMenu?.logContentView(asAppear: false)
@@ -352,7 +352,7 @@ class MainTabController: UITabBarController, UITabBarControllerDelegate, ManageE
                     break
                 }
             }
-            log.debug("Daily progress view controller after init: \(dailyProgressVC)", feature: "addActivityView")
+//            log.debug("Daily progress view controller after init: \(dailyProgressVC)", feature: "addActivityView")
         }
     }
 

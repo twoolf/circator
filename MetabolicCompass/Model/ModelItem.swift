@@ -31,9 +31,9 @@ enum Gender: Int {
     }
 
     static func valueByTitle(title: String) -> Gender {
-        let titleStr = title.trimmed().lowercaseString
+        let titleStr = title.trimmed().lowercased()
 
-        if femaleGenderKey.lowercaseString == titleStr {
+        if femaleGenderKey.lowercased() == titleStr {
             return Gender.Female
         }
 
@@ -56,7 +56,7 @@ class ModelItem: NSObject {
     var dataType: FieldDataType = .String
     var key: String?{
         get {
-            return UserProfile.keyForItemName(name)
+            return UserProfile.keyForItemName(itemName: name)
         }
     }
 

@@ -203,9 +203,9 @@ class DialViewController : UIViewController, ChartViewDelegate {
             return nil
         }
 
-        let pieChartDataEntry = PieChartDataEntry(x: xVals, dataSet: pieChartDataSet)
-        self.pieChart.data = PieChartDataEntry
-        self.pieChart.setNeedsDisplay()
+//        let pieChartDataEntry = PieChartDataEntry(x: xVals, yVals: pieChartDataSet)
+//        self.pieChart.data = PieChartDataEntry
+//        self.pieChart.setNeedsDisplay()
     }
 
     func refreshLegend() {
@@ -256,7 +256,7 @@ class DialViewController : UIViewController, ChartViewDelegate {
         self.activityIndicator?.startAnimating()
         AnalysisDataModel.sharedInstance.cycleModel.updateData { error in
             guard error == nil else {
-                log.error(error!.localizedDescription)
+//                log.error(error!.localizedDescription)
                 return
             }
 
@@ -288,7 +288,9 @@ class DialViewController : UIViewController, ChartViewDelegate {
 
     //MARK: ChartViewDelegate
     func chartValueSelected(chartView: ChartViewBase, entry: ChartDataEntry, dataSetIndex: Int, highlight: Highlight) {
-        var entryStr = AnalysisDataModel.sharedInstance.cycleModel.cycleSegments[entry.x].0.String(DateFormat.Custom("HH:mm")) ?? ""
+//        var entryStr = AnalysisDataModel.sharedInstance.cycleModel.cycleSegments[entry.x].0.String(DateFormat.Custom("HH:mm")) ?? "" 
+        
+//        var entryStr = AnalysisDataModel.sharedInstance.cycleModel.cycleSegments[entry.hashValue].0.string ?? " "
 
         let txtFont = UIFont.systemFont(ofSize: 20, weight: UIFontWeightRegular)
         let numberFont = UIFont.systemFont(ofSize: 14, weight: UIFontWeightRegular)
@@ -304,7 +306,7 @@ class DialViewController : UIViewController, ChartViewDelegate {
                 let eatCount = "\(counts[1])"
                 let exCount = "\(counts[2])"
 
-                entryStr += "\n◻︎ \(sleepCount)  ◻︎ \(eatCount)  ◻︎ \(exCount)"
+//                entryStr += "\n◻︎ \(sleepCount)  ◻︎ \(eatCount)  ◻︎ \(exCount)"
 
                 slRange = NSRange(location: 6, length: 2)
                 eatRange = NSRange(location: 11 + sleepCount.characters.count, length: 1)
@@ -313,12 +315,12 @@ class DialViewController : UIViewController, ChartViewDelegate {
 
         case 1:
             if let opt = entry.data as? Double?, let bpm = opt {
-                entryStr += "\n" + String(format: "%.3g", bpm) + " bpm"
+//                entryStr += "\n" + String(format: "%.3g", bpm) + " bpm"
             }
 
         case 2:
             if let opt = entry.data as? Double?, let steps = opt {
-                entryStr += "\n" + String(format: "%.6g", steps) + " steps"
+//                entryStr += "\n" + String(format: "%.6g", steps) + " steps"
             }
 
         default:
@@ -330,9 +332,9 @@ class DialViewController : UIViewController, ChartViewDelegate {
             NSForegroundColorAttributeName: UIColor.white
         ]
 
-        let aString = NSMutableAttributedString(string: entryStr, attributes: attrs)
+ //       let aString = NSMutableAttributedString(string: entryStr, attributes: attrs)
 
-        if aString.length > 5 {
+ /*       if aString.length > 5 {
             aString.addAttribute(NSFontAttributeName, value: numberFont, range: NSMakeRange(6, aString.length - 6))
 
             if AnalysisDataModel.sharedInstance.cycleModel.segmentIndex == 0 {
@@ -349,13 +351,13 @@ class DialViewController : UIViewController, ChartViewDelegate {
                 aString.addAttributes(eatAttrs, range: eatRange)
                 aString.addAttributes(exAttrs, range: exRange)
             }
-        }
+        } */
 
         let paragraphStyle = NSMutableParagraphStyle()
         paragraphStyle.alignment = .center
-        aString.addAttribute(NSParagraphStyleAttributeName, value: paragraphStyle, range: NSMakeRange(0, aString.length))
+ //       aString.addAttribute(NSParagraphStyleAttributeName, value: paragraphStyle, range: NSMakeRange(0, aString.length))
 
-        pieChart.centerAttributedText = aString
+//        pieChart.centerAttributedText = aString
         pieChart.drawCenterTextEnabled = true
     }
 

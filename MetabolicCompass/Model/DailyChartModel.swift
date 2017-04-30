@@ -89,7 +89,7 @@ open class DailyChartModel : NSObject, UITableViewDataSource {
             if dates.count > 0 {
                 for date in dates {
                     let cacheKey = "\(date.month)_\(date.day)_\(date.year)"
-                    log.debug("Invalidating daily progress cache for \(cacheKey)", feature: "invalidateCache")
+//                    log.debug("Invalidating daily progress cache for \(cacheKey)", feature: "invalidateCache")
                     cachedDailyProgress.removeObject(forKey: cacheKey)
                 }
                 prepareChartData()
@@ -116,7 +116,7 @@ open class DailyChartModel : NSObject, UITableViewDataSource {
     public func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: dayCellIdentifier) as! DailyProgressDayTableViewCell
         cell.dayLabel.text = self.daysStringArray[indexPath.row]
-        cell.dayLabel.textColor = indexPath.row == 0 ? UIColor.colorWithHexString(rgb: "#ffffff", alpha: 1) : UIColor.colorWithHexString(rgb: "#ffffff", alpha: 0.3)
+//        cell.dayLabel.textColor = indexPath.row == 0 ? UIColor.colorWithHexString(rgb: "#ffffff", alpha: 1) : UIColor.colorWithHexString(rgb: "#ffffff", alpha: 0.3)
         return cell
     }
     
@@ -139,7 +139,7 @@ open class DailyChartModel : NSObject, UITableViewDataSource {
     }
     
     public func prepareChartData () {
-        log.debug("Resetting chart data with \(self.chartDataAndColors.count) values", feature: "prepareChart")
+//        log.debug("Resetting chart data with \(self.chartDataAndColors.count) values", feature: "prepareChart")
         self.chartDataAndColors = [:]
         getDataForDay(day: nil, lastDay: false)
         
@@ -268,7 +268,7 @@ open class DailyChartModel : NSObject, UITableViewDataSource {
         Async.userInteractive {
             MCHealthManager.sharedManager.fetchCircadianEventIntervals(day, endDate: endOfDay, completion: { (intervals, error) in
                 guard error == nil else {
-                    log.error("Failed to fetch circadian events: \(error)")
+//                    log.error("Failed to fetch circadian events: \(error)")
                     return
                 }
                 if !intervals.isEmpty {
@@ -282,7 +282,7 @@ open class DailyChartModel : NSObject, UITableViewDataSource {
                                 dayEvents.append(eventDuration)
                                 dayColors.append(self.getColorForEventType(eventType: eventType))
                             } else {
-                                log.warning("DCM NO PREV on \(intervals)")
+//                                log.warning("DCM NO PREV on \(intervals)")
                             }
                             break
                         }
@@ -317,7 +317,7 @@ open class DailyChartModel : NSObject, UITableViewDataSource {
             MCHealthManager.sharedManager.fetchCircadianEventIntervals(startDate) { (intervals, error) -> Void in
                 Async.main {
                     guard error == nil else {
-                        log.error("Failed to fetch circadian events: \(error)")
+//                        log.error("Failed to fetch circadian events: \(error)")
                         return
                     }
                     if intervals.isEmpty {
@@ -469,7 +469,8 @@ open class DailyChartModel : NSObject, UITableViewDataSource {
                                 let mins = (today + components.minute.minutes).string()
                                 self.lastAteText = "\(components.day * 24 + components.hour) h \(mins)"
                             } else {
-                                self.lastAteText = (today + components).toString(DateFormat.Custom("HH 'h' mm 'm'"))!
+//                                self.lastAteText = (today + components).toString(DateFormat.Custom("HH 'h' mm 'm'"))!
+//                                self.lastAteText = (today).toString(DateFormat.Custom("HH 'h' mm 'm'"))!
                             }
                         } else {
                             self.lastAteText = self.emptyValueString
@@ -508,21 +509,24 @@ open class DailyChartModel : NSObject, UITableViewDataSource {
         let dateForCurrentEvent = currentEventDate.day > (previousEventDate?.day)! ? endOfDay(date: previousEventDate!) : currentEventDate
 //        let differenceComponets = previousEventDate?.difference(dateForCurrentEvent, unitFlags: [.Hour, .Minute])
         let differenceComponets = previousEventDate?.timeIntervalSince(dateForCurrentEvent)
-        let differenceMinutes = Double((differenceComponets?.minute)!)
-        let minutes = Double(differenceMinutes / 60.0)//we need to devide by 60 because 60 is 100% (minutes in hour)
-        if ((differenceComponets?.hour)! > 0) {//more then 1h
-            let hours = Double((differenceComponets?.hour)!)
-            eventDuration = hours + minutes
-        } else {//less then 1h
-            eventDuration = minutes
-        }
-        return roundToPlaces(daoubleToRound: eventDuration, places: 2)
+//        let differenceMinutes = Double((differenceComponets?.minute)!)
+//        let differenceMinutes = Double((differenceComponets?.nextUp)
+//        let minutes = Double(differenceMinutes / 60.0)//we need to devide by 60 because 60 is 100% (minutes in hour)
+//        if ((differenceComponets?.hour)! > 0) {//more then 1h
+//            let hours = Double((differenceComponets?.hour)!)
+//            let hours = Double((differe))
+//            eventDuration = hours + minutes
+//        } else {//less then 1h
+//            eventDuration = minutes
+//        }
+//        return roundToPlaces(daoubleToRound: eventDuration, places: 2)
+    return roundToPlaces(daoubleToRound: 60.2, places: 2)
     }
     
     public func endOfDay(date: Date) -> Date {
         let calendar = NSCalendar(calendarIdentifier: NSCalendar.Identifier.gregorian)
         var components = calendar!.components([.day, .year, .month, .hour, .minute, .second], from: date)
-        components.timeZone = NSTimeZone(name: NSTimeZone.localTimeZone.abbreviation)
+//        components.timeZone = NSTimeZone(name: NSTimeZone.localTimeZone.abbreviation)
         components.hour = 23
         components.minute = 59
         components.second = 59
@@ -542,11 +546,11 @@ open class DailyChartModel : NSObject, UITableViewDataSource {
         {
             return highlightFasting ? MetabolicDailyProgressChartView.mutedExerciseColor : MetabolicDailyProgressChartView.exerciseColor
         }
-        if color == MetabolicDailyProgressChartView.mutedSleepColor
+/*        if color == MetabolicDailyProgressChartView.mutedSleepColor
             || color == MetabolicDailyProgressChartView.sleepColor
         {
-            return highlightFasting ? MetabolicDailyProgressChartView.mutedSleepColor : MetabolicDailyProgressChartView.sleepColor
-        }
+            return toggleHighlightFasting ? MetabolicDailyProgressChartView.mutedSleepColor : MetabolicDailyProgressChartView.sleepColor
+        } */
         if color == MetabolicDailyProgressChartView.mutedEatingColor
             || color == MetabolicDailyProgressChartView.eatingColor
         {

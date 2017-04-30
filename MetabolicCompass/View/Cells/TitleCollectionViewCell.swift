@@ -21,7 +21,7 @@ class TitleCollectionViewCell: BaseCollectionViewCell {
     override func layoutSubviews() {
         super.layoutSubviews()
         
-        separatorView?.backgroundColor = UIColor.blackColor()
+        separatorView?.backgroundColor = UIColor.black
     }
     
     override func prepareForReuse() {
@@ -34,7 +34,7 @@ class TitleCollectionViewCell: BaseCollectionViewCell {
     
     var hasAccessoryView: Bool = true {
         didSet {
-            accessoryView.hidden = !hasAccessoryView
+            accessoryView.isHidden = !hasAccessoryView
         }
     }
     

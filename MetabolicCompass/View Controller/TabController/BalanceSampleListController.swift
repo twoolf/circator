@@ -62,9 +62,9 @@ class BalanceSampleListController: UIViewController, UITableViewDelegate, UITabl
         PreviewManager.updatePreviewSampleTypes(types: samples)
     }
     
-    func preferredStatusBarStyle() -> UIStatusBarStyle {
-        return .lightContent;
-    }
+//    func preferredStatusBarStyle() -> UIStatusBarStyle {
+//        return .lightContent;
+//    }
     
     override func didReceiveMemoryWarning() {
         super.didReceiveMemoryWarning()
@@ -86,23 +86,23 @@ class BalanceSampleListController: UIViewController, UITableViewDelegate, UITabl
     
     private let cellIdentifier = "DashboardManageCell"
     
-    func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: IndexPath) -> UITableViewCell {
+    func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         
-        let cell = tableView.dequeueReusableCellWithIdentifier(cellIdentifier, forIndexPath: indexPath as IndexPath) as! ManageDashboardCell
+        let cell = tableView.dequeueReusableCell(withIdentifier: cellIdentifier, for: indexPath as IndexPath) as! ManageDashboardCell
         
         let item = self.data[indexPath.row]
         cell.showsReorderControl         = false
         
-        cell.leftImageView.image = appearanceProvider.imageForSampleType(item.type, active: false)
-        cell.captionLabel.text   = appearanceProvider.titleForSampleType(item.type, active: false).string
-        cell.button.selected     = item.active
+        cell.leftImageView.image = appearanceProvider.imageForSampleType(sampleType: item.type, active: false)
+        cell.captionLabel.text   = appearanceProvider.titleForSampleType(sampleType: item.type, active: false).string
+        cell.button.isSelected     = item.active
         return cell;
     }
     
     
     func tableView(tableView: UITableView, didSelectRowAtIndexPath indexPath: NSIndexPath) {
         
-        let obj = tableView.cellForRowAtIndexPath(indexPath as IndexPath) as? ManageDashboardCell
+        let obj = tableView.cellForRow(at: indexPath as IndexPath) as? ManageDashboardCell
         guard let cell = obj else {
             return
         }
@@ -111,16 +111,17 @@ class BalanceSampleListController: UIViewController, UITableViewDelegate, UITabl
         for item in data {
             
             item.active = false
-            if let otherCell = tableView.cellForRowAtIndexPath(IndexPath(forRow: index, inSection: 0)) as? ManageDashboardCell {
-                otherCell.button.selected = false
-            }
+//            if let otherCell = tableView.cellForRowAtIndexPath(IndexPath(forRow: index, inSection: 0)) as? ManageDashboardCell {
+//            if let otherCell = cellForRowAtIndexPath(tableView(tableView, cellForRowAt: index)) as? ManageDashboardCell {
+ //               otherCell.button.selected = false
+//            }
             
             index += 1
         }
         
         let item = self.data[indexPath.row]
-        item.active = true
-        cell.button.selected = true
+//        item.active = true
+//        cell.button.isSelected = true
         
         Async.main(after: 0.1) {
             var samples = PreviewManager.balanceSampleTypes

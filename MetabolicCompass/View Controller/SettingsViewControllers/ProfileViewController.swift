@@ -2,7 +2,7 @@
 //  ProfileViewController.swift
 //  MetabolicCompass 
 //
-//  Created by Anna Tkach on 5/11/16.
+//  Created by Anna Tkach on 5/11/16.   
 //  Copyright © 2016 Yanif Ahmad, Tom Woolf. All rights reserved.
 //
 
@@ -24,14 +24,14 @@ class ProfileViewController: BaseViewController {
 
         setupNavBar()
 
-        setupScrollViewForKeyboardsActions(collectionView)
+        setupScrollViewForKeyboardsActions(view: collectionView)
 
         dataSource.collectionView = self.collectionView
     }
 
     private func setupNavBar() {
-        rightBarBtn = createBarButtonItem("", action: #selector(rightAction))
-        cancelBarBtn = createBarButtonItem("Cancel".localized, action: #selector(cancelAction))
+        rightBarBtn = createBarButtonItem(title: "", action: #selector(rightAction))
+        cancelBarBtn = createBarButtonItem(title: "Cancel".localized, action: #selector(cancelAction))
         self.navigationItem.rightBarButtonItem = rightBarBtn
         configureNavBar()
     }
@@ -40,18 +40,18 @@ class ProfileViewController: BaseViewController {
         let confirmTitle = "Confirm cancel".localized
         let confirmMessage = "Your changes have not been saved yet. Exit without saving?".localized
 
-        let confirmAlert = UIAlertController(title: confirmTitle, message: confirmMessage, preferredStyle: UIAlertControllerStyle.Alert)
+        let confirmAlert = UIAlertController(title: confirmTitle, message: confirmMessage, preferredStyle: UIAlertControllerStyle.alert)
 
-        confirmAlert.addAction(UIAlertAction(title: "Yes".localized, style: .Default, handler: { (action: UIAlertAction!) in
+        confirmAlert.addAction(UIAlertAction(title: "Yes".localized, style: .default, handler: { (action: UIAlertAction!) in
             //reset data & change mode
 
             self.dataSource.reset()
             self.changeMode()
         }))
 
-        confirmAlert.addAction(UIAlertAction(title: "No".localized, style: .Cancel, handler: nil))
+        confirmAlert.addAction(UIAlertAction(title: "No".localized, style: .cancel, handler: nil))
 
-        presentViewController(confirmAlert, animated: true, completion: nil)
+        present(confirmAlert, animated: true, completion: nil)
     }
 
     func rightAction(sender: UIBarButtonItem) {
@@ -70,14 +70,14 @@ class ProfileViewController: BaseViewController {
 
         // Saving
 
-        sender.enabled = false
+        sender.isEnabled = false
         let newProfileInfo = dataSource.model.profileItems()
 
-        UserManager.sharedManager.pushProfile(newProfileInfo, completion: { res in
+        UserManager.sharedManager.pushProfile(componentData: newProfileInfo as [String : AnyObject], completion: { res in
 
             if res.ok {
                 // save new photo
-                UserManager.sharedManager.setUserProfilePhoto(self.dataSource.model.loadPhotoField.value as? UIImage)
+                UserManager.sharedManager.setUserProfilePhoto(photo: self.dataSource.model.loadPhotoField.value as? UIImage)
 
                 self.changeMode()
             }
@@ -86,7 +86,7 @@ class ProfileViewController: BaseViewController {
                 self.showAlert(withMessage: message)
             }
 
-            sender.enabled = true
+            sender.isEnabled = true
         })
 
     }

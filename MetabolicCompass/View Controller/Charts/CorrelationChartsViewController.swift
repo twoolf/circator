@@ -5,6 +5,7 @@
 //  Created by Rostislav Roginevich on 7/28/16.
 //  Copyright © 2016 Yanif Ahmad, Tom Woolf. All rights reserved.
 //
+/*
 
 import UIKit
 import Charts
@@ -29,8 +30,8 @@ class CorrelationChartsViewController: UIViewController, UITableViewDelegate, UI
     //MARK: - VARS
     internal var data: [HKSampleType] = PreviewManager.chartsSampleTypes
     var rangeType = DataRangeType.Week
-    let scatterChartsModel = ChartModel()
-    let lineChartsModel = ChartModel()
+    let scatterChartsModel = DailyChartModel()
+    let lineChartsModel = DailyChartModel()
     let TopCorrelationType = DefaultsKey<Int?>("TopCorrelationType")
     let BottomCorrelationType = DefaultsKey<Int?>("BottomCorrelationType")
     
@@ -60,8 +61,8 @@ class CorrelationChartsViewController: UIViewController, UITableViewDelegate, UI
     
     
     func updateChartDataWithClean() {
-        scatterChartsModel.typesChartData = [:]
-        lineChartsModel.typesChartData = [:]
+//        scatterChartsModel.typesChartData = [:]
+//        lineChartsModel.typesChartData = [:]
         IOSHealthManager.sharedManager.cleanCache()
         IOSHealthManager.sharedManager.collectDataForCharts()
         activityIndicator.startAnimating()
@@ -71,8 +72,8 @@ class CorrelationChartsViewController: UIViewController, UITableViewDelegate, UI
         if (!activityIndicator.isAnimating) {
             activityIndicator.startAnimating()
         }
-        scatterChartsModel.gettAllDataForSpecifiedType(chartType: ChartType.ScatterChart) {
-            self.lineChartsModel.gettAllDataForSpecifiedType(chartType: ChartType.LineChart) {
+//        scatterChartsModel.gettAllDataForSpecifiedType(chartType: ChartType.ScatterChart) {
+//            self.lineChartsModel.gettAllDataForSpecifiedType(chartType: ChartType.LineChart) {
                 self.activityIndicator.stopAnimating()
                 self.updateChartData()
             }
@@ -80,7 +81,7 @@ class CorrelationChartsViewController: UIViewController, UITableViewDelegate, UI
     }
     
     override func viewWillAppear(_ animated: Bool) {
-        super.viewWillAppear(animated)
+//        super.viewWillAppear(animated)
         NotificationCenter.default.addObserver(self, selector: #selector(updateChartDataWithClean), name: NSNotification.Name.UIApplicationWillEnterForeground, object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(updateChartsData), name: NSNotification.Name(rawValue: HMDidUpdatedChartsData), object: nil)
 
@@ -89,7 +90,7 @@ class CorrelationChartsViewController: UIViewController, UITableViewDelegate, UI
     }
     
     override func viewDidDisappear(_ animated: Bool) {
-        super.viewDidDisappear(animated)
+//        super.viewDidDisappear(animated)
         self.logContentView(asAppear: false)
         NotificationCenter.default.removeObserver(self)
     }
@@ -214,7 +215,7 @@ class CorrelationChartsViewController: UIViewController, UITableViewDelegate, UI
         scatterCh.chartMaxValueLabel.text = ""
     }
 
-    func updateChartDataForChartsModel(model: BarChartModel) -> Bool {
+    func updateChartDataForChartsModel(model: DailyChartModel) -> Bool {
 
         var dataSets = [IChartDataSet]()
         var calcAvg = [Bool]()
@@ -229,7 +230,7 @@ class CorrelationChartsViewController: UIViewController, UITableViewDelegate, UI
             let pickerDataArray = pickerData[0]
             let type = pickerDataArray[selectedRow]
             let typeToShow = type.identifier == HKCorrelationTypeIdentifier.bloodPressure.rawValue ? HKQuantityTypeIdentifier.bloodPressureSystolic.rawValue : type.identifier
-            let key = typeToShow + "\((model.rangeType.rawValue))"
+//            let key = typeToShow + "\((model.rangeType.rawValue))"
             let chartData = model.typesChartData[key]
             if (chartData == nil) {
                 resetAllCharts()
@@ -254,7 +255,7 @@ class CorrelationChartsViewController: UIViewController, UITableViewDelegate, UI
             }
         }
         
-        if (model == scatterChartsModel) {
+        if (model == DailyChartsModel) {
             let chartData = model.scatterChartDataWithMultipleDataSets(xVals: xValues, dataSets: dataSets, calcAvg: calcAvg)
             if let yMax = chartData?.yMax, let yMin = chartData?.yMin, yMax > 0 || yMin > 0 {
                 scatterCh.chartView.data = nil
@@ -362,4 +363,4 @@ extension CorrelationChartsViewController : UIPickerViewDelegate {
         self.tableView.reloadRows(at: [self.selectedIndexPath! as IndexPath], with: .none)
         updateChartData()
     }
-}
+} */

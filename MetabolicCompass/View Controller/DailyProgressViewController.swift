@@ -80,7 +80,8 @@ class DailyProgressViewController : UIViewController, DailyChartModelProtocol {
     override func viewDidLoad() {
         super.viewDidLoad()
         self.setupTooltips()
-        self.fastingSquare.layer.borderColor = UIColor.colorWithHexString(rgb: "#ffffff", alpha: 0.3)?.cgColor
+//        self.fastingSquare.layer.borderColor = UIColor.colorWithHexString(rgb: "#ffffff", alpha: 0.3).cgColor
+        self.fastingSquare.layer.borderColor = UIColor.colorWithHexString(rgb: "#ffffff", alpha: 0.3) as! CGColor?
         self.dailyChartModel.daysTableView = self.daysTableView
         self.dailyChartModel.delegate = self
         self.dailyChartModel.registerCells()
@@ -89,7 +90,7 @@ class DailyProgressViewController : UIViewController, DailyChartModelProtocol {
         self.dailyProgressChartView.changeColorCompletion = { _ in
             Async.main {
                 self.updateContentWithAnimation = false
-                self.dailyChartModel.toggleHighlightFasting()
+//                self.dailyChartModel.toggleHighlightFasting()
                 if self.dailyChartModel.highlightFasting {
                     self.fastingSquare.backgroundColor  = MetabolicDailyProgressChartView.highlightFastingColor
                     self.sleepSquare.backgroundColor    = MetabolicDailyProgressChartView.mutedSleepColor
@@ -190,7 +191,7 @@ class DailyProgressViewController : UIViewController, DailyChartModelProtocol {
             self.activityIndicator.stopAnimating()
 
             if self.loadStart != nil {
-                log.debug("BODY CLOCK query time: \((Date().timeIntervalSinceReferenceDate - self.loadStart.timeIntervalSinceReferenceDate))", feature: "dataLoad")
+//                log.debug("BODY CLOCK query time: \((Date().timeIntervalSinceReferenceDate - self.loadStart.timeIntervalSinceReferenceDate))", feature: "dataLoad")
             }
 
             self.dailyProgressChartView.updateChartData(animate: self.updateContentWithAnimation,
@@ -203,15 +204,15 @@ class DailyProgressViewController : UIViewController, DailyChartModelProtocol {
     func dailyProgressStatCollected() {
         self.dailyEatingLabel.attributedText = self.dailyChartModel.eatingText.formatTextWithRegex(regex: "[-+]?(\\d*[.,])?\\d+",
                                                                                                     format: [NSForegroundColorAttributeName: UIColor.white],
-                                                                                                    defaultFormat: [NSForegroundColorAttributeName: UIColor.colorWithHexString(rgb: "#ffffff", alpha: 0.3)!])
+                                                                                                    defaultFormat: [NSForegroundColorAttributeName: UIColor.colorWithHexString(rgb: "#ffffff", alpha: 0.3) as AnyObject])
         
         self.maxDailyFastingLabel.attributedText = self.dailyChartModel.fastingText.formatTextWithRegex(regex: "[-+]?(\\d*[.,])?\\d+",
                                                                                                   format: [NSForegroundColorAttributeName: UIColor.white],
-                                                                                                  defaultFormat: [NSForegroundColorAttributeName: UIColor.colorWithHexString(rgb: "#ffffff", alpha: 0.3)!])
+                                                                                                  defaultFormat: [NSForegroundColorAttributeName: UIColor.colorWithHexString(rgb: "#ffffff", alpha: 0.3) as AnyObject])
         
         self.lastAteLabel.attributedText = self.dailyChartModel.lastAteText.formatTextWithRegex(regex: "[-+]?(\\d*[.,])?\\d+",
                                                                                                 format: [NSForegroundColorAttributeName: UIColor.white],
-                                                                                                defaultFormat: [NSForegroundColorAttributeName: UIColor.colorWithHexString(rgb: "#ffffff", alpha: 0.3)!])
+                                                                                                defaultFormat: [NSForegroundColorAttributeName: UIColor.colorWithHexString(rgb: "#ffffff", alpha: 0.3) as AnyObject])
     }
     
     override func viewDidLayoutSubviews() {

@@ -10,6 +10,11 @@ import UIKit
 import MCCircadianQueries
 
 class PickerTableViewCell: UITableViewCell, UIPickerViewDataSource, UIPickerViewDelegate {
+    @available(iOS 2.0, *)
+    public func numberOfComponents(in pickerView: UIPickerView) -> Int {
+        return 5
+    }
+
 
     @IBOutlet weak var pickerView: UIPickerView!
     
@@ -18,8 +23,8 @@ class PickerTableViewCell: UITableViewCell, UIPickerViewDataSource, UIPickerView
     
     override func awakeFromNib() {
         super.awakeFromNib()
-        self.selectionStyle = .None
-        self.contentView.userInteractionEnabled = false
+        self.selectionStyle = .none
+        self.contentView.isUserInteractionEnabled = false
         self.pickerView.dataSource = self
         self.pickerView.delegate = self
         // Initialization code
@@ -31,7 +36,7 @@ class PickerTableViewCell: UITableViewCell, UIPickerViewDataSource, UIPickerView
         return 1
     }
     
-    func pickerView(pickerView: UIPickerView, numberOfRowsInComponent component: Int) -> Int {
+    func pickerView(_ pickerView: UIPickerView, numberOfRowsInComponent component: Int) -> Int {
         return components.count
     }
     
@@ -41,7 +46,7 @@ class PickerTableViewCell: UITableViewCell, UIPickerViewDataSource, UIPickerView
     }
     
     func pickerView(pickerView: UIPickerView, didSelectRow row: Int, inComponent component: Int) {
-        self.pickerCellDelegate?.pickerSelectedRowWithTitle(components[row])
+        self.pickerCellDelegate?.pickerSelectedRowWithTitle(title: components[row])
     }
 }
 

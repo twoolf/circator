@@ -160,15 +160,15 @@ open class RepeatedEventsOrganizer : NSObject {
         return true
     }
     
-    public func removeRepeatedEvent(RepeatedEvent event : RepeatedEvent) -> Bool {
-        for i in Range(0..<repeatedEvents.count) {
+/*    public func removeRepeatedEvent(RepeatedEvent event : RepeatedEvent) -> Bool {
+        for i in Range(0..<(repeatedEvents.endIndex)) {
             if self.repeatedEvents[i] == event {
                 self.repeatedEvents.removeAtIndex(i)
                 return true
             }
         }
         return false
-    }
+    } */
     
     public func getEventsForDay(DayOfWeek day : Weekday) -> [RepeatedEvent] {
         
@@ -584,7 +584,8 @@ open class RepeatedEventManagerViewController: UIViewController {
             
             let eventItem = RepeatedEventItemView(repeatedEvent: event)
             eventItem.translatesAutoresizingMaskIntoConstraints = false
-            eventItem.addTarget(self, action: #selector(RepeatedEventPlannerView.eventDetailDoubleTap(_:)), for: .TouchDownRepeat)
+//            eventItem.addTarget(self, action: #selector(RepeatedEventManagerViewController.eventDetailDoubleTap(_:)), for: .TouchDownRepeat)
+            eventItem.addTarget(self, action: #selector(RepeatedEventPlannerView.eventDetailDoubleTap(sender:)), for: .touchDownRepeat)
             
             self.contentView.addSubview(eventItem)
 
@@ -896,7 +897,8 @@ open class RepeatedEventDetailViewController : UIViewController {
         
         let deleteEventAction = UIAlertAction(title: "Delete", style: .destructive) { action in
             
-            RepeatedEventsOrganizer.shared.removeRepeatedEvent(RepeatedEvent: self.event)
+//            RepeatedEventsOrganizer.shared.removeRepeatedEvent(RepeatedEvent: self.event)
+//            RepeatedEventsOrganizer.shared.
             
             for view in RepeatedEventManagerViewController.sharedManager.eventsListView.contentView.subviews {
                 if view is RepeatedEventItemView && (view as! RepeatedEventItemView).event == self.event {
@@ -936,8 +938,10 @@ open class NewRepeatedEventViewController: UIViewController {
         
         let navigationItems = UINavigationItem()
         
-        let left = UIBarButtonItem(title: "cancel", style: .Plain, target: self, action: #selector(NewRepeatedEventViewController.cancel(_:)))
-        let right = UIBarButtonItem(title: "add", style: .Plain, target: self, action: #selector(self.NewRepeatedEventViewController.add(_:)))
+//        let left = UIBarButtonItem(title: "cancel", style: .Plain, target: self, action: #selector(NewRepeatedEventViewController.cancel(_:)))
+        let left = UIBarButtonItem(title: "cancel", style: .plain, target: self, action: #selector(RepeatedEventManagerViewController.cancelPreviousPerformRequests(withTarget:)))
+//        let right = UIBarButtonItem(title: "add", style: .Plain, target: self, action: #selector(RepeatedEventManagerViewController.add(_:)))
+        let right = UIBarButtonItem(title: "add", style: .plain, target: self, action: #selector(RepeatedEventManagerViewController.addRepeatedEvent(sender:)))
         
         navigationItems.title = "New Repeated Event"
         navigationItems.leftBarButtonItem = left
@@ -1021,7 +1025,7 @@ open class NewRepeatedEventViewController: UIViewController {
         
         if form?.durationInSeconds != nil {
             durationInSeconds = form?.durationInSeconds
-            if durationInSeconds <= 0.seconds {
+            if ((durationInSeconds?.negated()) != nil) {
                 UINotifications.genericError(vc: self, msg: "Event must end after it starts.")
                 return
             }
@@ -1142,7 +1146,8 @@ final class RepeatedEventFormViewController: FormViewController {
                     } else {
                         components.minute = 30
                     }
-                    return Date(components: components)
+//                    return Date(components: components)
+                    return Date()
                 }()
                 
                 print(timeToShow)

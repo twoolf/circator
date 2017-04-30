@@ -14,7 +14,7 @@ class AppLabel: FontScaleLabel {
     
     var fontSize: CGFloat = 14.0 {
         didSet {
-            setupFontSize(fontSize)
+            setupFontSize(size: fontSize)
         }
     }
     
@@ -38,10 +38,10 @@ class AppLabel: FontScaleLabel {
     
     private func setupFont() {
         fontSize = self.font.pointSize
-        setupFontSize(fontSize)
+        setupFontSize(size: fontSize)
     }
 
     func setupFontSize(size: CGFloat) {
-        self.font = ScreenManager.appFontOfSize(fontSize)
+        self.font = ScreenManager.appFontOfSize(size: fontSize)
     }
 }

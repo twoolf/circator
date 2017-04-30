@@ -2,7 +2,7 @@
 //  BalanceBarView.swift
 //  MetabolicCompass 
 //
-//  Created by Yanif Ahmad on 7/9/16.
+//  Created by Yanif Ahmad on 7/9/16. 
 //  Copyright © 2016 Yanif Ahmad, Tom Woolf. All rights reserved.
 //
 
@@ -14,8 +14,8 @@ private let fastingViewTextSize: CGFloat = 24.0
 public class BalanceBarView : UIView {
     public var ratio: CGFloat = 0.5
 
-    public var color1: UIColor = .redColor()
-    public var color2: UIColor = .blueColor()
+    public var color1: UIColor = .red
+    public var color2: UIColor = .blue
 
     private var barTitle: UILabel = UILabel()
     private var barText: UILabel = UILabel()
@@ -41,16 +41,16 @@ public class BalanceBarView : UIView {
         self.color1 = color1
         self.color2 = color2
 
-        backgroundColor = .clearColor
-        barTitle.backgroundColor = .clearColor
+        backgroundColor = .clear
+        barTitle.backgroundColor = .clear
         barTitle.font = UIFont.systemFont(ofSize: fastingViewLabelSize, weight: UIFontWeightRegular)
-        barTitle.textColor = .lightGrayColor
+        barTitle.textColor = .lightGray
         barTitle.textAlignment = .center
         barTitle.attributedText = title
 
-        barText.backgroundColor = .clearColor
+        barText.backgroundColor = .clear
         barText.font = UIFont.systemFont(ofSize: fastingViewTextSize, weight: UIFontWeightBold)
-        barText.textColor = .whiteColor
+        barText.textColor = .white
         barText.textAlignment = .center
 
         barTitle.translatesAutoresizingMaskIntoConstraints = false
@@ -86,8 +86,8 @@ public class BalanceBarView : UIView {
             barText.text = "\(Int(ratio*100.0))%"
             refreshConstraints(withRemove: true)
         } else {
-            label1.backgroundColor = UIColor.lightGrayColor
-            label2.backgroundColor = UIColor.darkGrayColor
+            label1.backgroundColor = UIColor.lightGray
+            label2.backgroundColor = UIColor.darkGray
             barText.text = "N/A"
         }
         setNeedsDisplay()
@@ -100,7 +100,7 @@ public class BalanceBarView : UIView {
 
         // Clean ratio value
         if ratio < 0.0 || ratio > 1.0 {
-            log.warning("Invalid ratio of \(ratio), resetting to 0.5")
+//            log.warning("Invalid ratio of \(ratio), resetting to 0.5")
             ratio = 0.5
         }
 
@@ -131,11 +131,12 @@ public class BalanceBarView : UIView {
             barTitle.leadingAnchor.constraint(equalTo: leadingAnchor),
             barTitle.trailingAnchor.constraint(equalTo: trailingAnchor),
             label1.leadingAnchor.constraint(equalTo: leadingAnchor, constant: 10.0),
-            label2.trailingAnchor.constraintequalTo(trailingAnchor, constant: -10.0),
-            barText.topAnchor.constraintequalTo(label1.topAnchor),
-            barText.bottomAnchor.constraintequalTo(label1.bottomAnchor),
-            barText.leadingAnchor.constraintequalTo(label1.leadingAnchor),
-            barText.trailingAnchor.constraintequalTo(label2.trailingAnchor)
+//            label2.trailingAnchor.constraintequalTo(trailingAnchor, constant: -10.0),
+            label2.trailingAnchor.constraint(equalTo: trailingAnchor, constant: -10.0),
+            barText.topAnchor.constraint(equalTo: label1.topAnchor),
+            barText.bottomAnchor.constraint(equalTo: label1.bottomAnchor),
+            barText.leadingAnchor.constraint(equalTo: label1.leadingAnchor),
+            barText.trailingAnchor.constraint(equalTo: label2.trailingAnchor)
         ] + extraConstraints
         
         addConstraints(barConstraints)

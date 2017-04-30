@@ -108,7 +108,7 @@ class MCScatterChartRenderer: ScatterChartRenderer {
                                                         shapeStrokeSizeHalf: shapeStrokeSizeHalf, shapeHoleSize: shapeHoleSize, shapeHoleColor: shapeHoleColor)
                                 
                                 if (prevPoint.x > 0 && shouldDrawConnectionLines) {//driwing line that connects circle shapes
-                                    context.setStrokeColor(color: CGcolor.white.colorWithAlphaComponent(0.3).CGColor)
+//                                    context.setStrokeColor(color: UIColor.whiteColor)
                                     context.setLineWidth(shapeHoleSize + shapeStrokeSize)
                                     prevPoint.x = prevPoint.x + 0.5
                                     prevPoint.y = prevPoint.y - 1.0

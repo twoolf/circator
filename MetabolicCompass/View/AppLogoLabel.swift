@@ -18,7 +18,7 @@ class AppLogoLabel: UIView {
         }
     }
     
-    var logoColor = UIColor.whiteColor {
+    var logoColor = UIColor.white {
         didSet {
             label.textColor = logoColor
             topLine.backgroundColor = logoColor

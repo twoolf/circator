@@ -16,9 +16,9 @@ class ForgotPasswordViewController: BaseViewController, UITextFieldDelegate {
 
     override func viewDidLoad() {
         super.viewDidLoad()
-        self.setupScrollViewForKeyboardsActions(containerScrollView)
+        self.setupScrollViewForKeyboardsActions(view: containerScrollView)
         emailTxtField.delegate = self
-        emailTxtField.keyboardType = .EmailAddress
+        emailTxtField.keyboardType = .emailAddress
         emailTxtField.attributedPlaceholder = NSAttributedString(string: "E-mail".localized, attributes: [NSForegroundColorAttributeName : unselectedTextColor])
         emailTxtField.textColor = selectedTextColor
     }
@@ -49,13 +49,13 @@ class ForgotPasswordViewController: BaseViewController, UITextFieldDelegate {
 
             if email.isValidAsEmail() {
 
-                sender.enabled = false
+                sender.isEnabled = false
 
-                UserManager.sharedManager.resetPassword(email, completion: { (success, errorMessage) in
+                UserManager.sharedManager.resetPassword(email: email, completion: { (success, errorMessage) in
                     if success {
 
                         self.alertControllerOkButtonHandler = {
-                            self.navigationController?.popViewControllerAnimated(true)
+                            self.navigationController?.popViewController(animated: true)
                         }
 
                         self.showAlert(withMessage: self.resetPasswordSuccessMessage, title: self.resetPasswordTitle)
@@ -65,7 +65,7 @@ class ForgotPasswordViewController: BaseViewController, UITextFieldDelegate {
                         self.showAlert(withMessage: message, title: self.resetPasswordTitle)
                     }
 
-                    sender.enabled = true
+                    sender.isEnabled = true
                 })
 
             }
@@ -80,7 +80,7 @@ class ForgotPasswordViewController: BaseViewController, UITextFieldDelegate {
     }
 
     @IBAction func backToLoginAction(sender: UIButton) {
-        self.navigationController?.popViewControllerAnimated(true)
+        self.navigationController?.popViewController(animated: true)
     }
 
     // MARK: - TextField Delegate

@@ -2,7 +2,7 @@
 //  AdditionalInfoModel.swift
 //  MetabolicCompass
 //
-//  Created by Anna Tkach on 4/29/16. 
+//  Created by Anna Tkach on 4/29/16.  
 //  Copyright © 2016 Yanif Ahmad, Tom Woolf. All rights reserved.
 //
 
@@ -50,7 +50,7 @@ class AdditionalInfoModel: NSObject {
         self.setupSections()
     }
 
-    func loadValues(completion:() -> ()){
+    func loadValues(completion:@escaping () -> ()){
         UserManager.sharedManager.pullProfileIfNeeded { res in
             self.updateValues()
             completion()
@@ -64,17 +64,17 @@ class AdditionalInfoModel: NSObject {
             let profileFieldName = profileFieldSpec.profileFieldName
             var profileFieldUnits: HKUnit! = nil
 
-            if let customUnit = UserProfile.sharedInstance.customFieldUnits[profileFieldName] {
+            if let customUnit = UserProfile.sharedInstance.customFieldUnits[profileFieldName!] {
                 profileFieldUnits = customUnit
             } else {
                 profileFieldUnits = UserProfile.sharedInstance.profileUnitsMapping[profileFieldSpec.unitsTitle!]!
             }
 
             var serviceUnits: HKUnit! = nil
-            if let (_, quantityType) = HMConstants.sharedInstance.mcdbActivityToHKQuantity[profileFieldName] {
-                serviceUnits =  HKObjectType.quantityTypeForIdentifier(quantityType)!.serviceUnit
+ /*           if let (_, quantityType) = HMConstants.sharedInstance.mcdbActivityToHKQuantity[profileFieldName!] {
+                serviceUnits =  HKObjectType.quantityType(forIdentifier: HKQuantityTypeIdentifier(rawValue: quantityType))!.serviceUnit
             }
-            else if let type = HMConstants.sharedInstance.mcdbToHK[profileFieldName] {
+            else if let type = HMConstants.sharedInstance.mcdbToHK[profileFieldName!] {
                 if type == HKCategoryTypeIdentifierAppleStandHour ||
                     type == HKCategoryTypeIdentifierSleepAnalysis
                 {
@@ -82,7 +82,7 @@ class AdditionalInfoModel: NSObject {
                 } else {
                     serviceUnits =  HKObjectType.quantityTypeForIdentifier(type)!.serviceUnit
                 }
-            }
+            } */
 
             if serviceUnits != nil {
                 let srcUnits = toServiceUnits ? profileFieldUnits : serviceUnits
@@ -90,13 +90,13 @@ class AdditionalInfoModel: NSObject {
                 
                 if srcUnits != dstUnits {
                     if let d = value as? Double {
-                        result = HKQuantity(unit: srcUnits, doubleValue: d).doubleValueForUnit(dstUnits)
+                        result = HKQuantity(unit: srcUnits!, doubleValue: d).doubleValue(for: dstUnits!) as AnyObject
                     }
                     else if let i = value as? Int {
-                        result = HKQuantity(unit: srcUnits, doubleValue: Double(i)).doubleValueForUnit(dstUnits)
+                        result = HKQuantity(unit: srcUnits!, doubleValue: Double(i)).doubleValue(for: dstUnits!) as AnyObject
                     }
                     else if let s = value as? String, let d = Double(s) {
-                        result = HKQuantity(unit: srcUnits, doubleValue: d).doubleValueForUnit(dstUnits)
+                        result = HKQuantity(unit: srcUnits!, doubleValue: d).doubleValue(for: dstUnits!) as AnyObject
                     }
                 }
             }
@@ -115,14 +115,14 @@ class AdditionalInfoModel: NSObject {
                             let profileQuantity = profileCategory[categoryType] as? [String: AnyObject],
                             let profileValue = profileQuantity[categoryType]
                     {
-                        item.value = convertFieldValue(item.name, value: profileValue, toServiceUnits: false)
+                        item.value = convertFieldValue(fieldName: item.name, value: profileValue, toServiceUnits: false)
                     } else if let _ = HMConstants.sharedInstance.mcdbToHK[key], let profileValue = profileCache[key] {
-                        item.value = convertFieldValue(item.name, value: profileValue, toServiceUnits: false)
+                        item.value = convertFieldValue(fieldName: item.name, value: profileValue, toServiceUnits: false)
                     } else {
-                        log.warning("AIM Invalid key \(key)")
+//                        log.warning("AIM Invalid key \(key)")
                     }
                 } else {
-                    log.warning("AIM no key found for \(item.name)")
+//                    log.warning("AIM no key found for \(item.name)")
                 }
             }
         }
@@ -131,12 +131,12 @@ class AdditionalInfoModel: NSObject {
     private func section(withTitle title: String, inRange range: Range<Int>) -> AdditionalSectionInfo {
         let section = AdditionalSectionInfo(title: title)
 
-        for i in range {
+ /*       for i in range {
             let fieldItem = UserProfile.sharedInstance.fields[i]
             let item = ModelItem(name: fieldItem.fieldName, title: defaultPlaceholder, type: .Other, iconImageName: nil, value: nil, unitsTitle: fieldItem.unitsTitle)
             item.dataType = fieldItem.type
             section.addItem(item)
-        }
+        } */
 
         return section
     }
@@ -155,8 +155,8 @@ class AdditionalInfoModel: NSObject {
     }
 
     func setNewValueForItem(atIndexPath indexPath: NSIndexPath, newValue: AnyObject?) {
-        let item = self.itemAtIndexPath(indexPath)
-        item.setNewValue(newValue)
+        let item = self.itemAtIndexPath(indexPath: indexPath)
+        item.setNewValue(newValue: newValue)
     }
 
     func additionalInfoDict(standardizeUnits: Bool = true, completion: (String?, [String: AnyObject]) -> Void) -> Void {
@@ -165,7 +165,7 @@ class AdditionalInfoModel: NSObject {
 
         var items = [ModelItem]()
         for section in sections {
-            items.appendContentsOf(section.items)
+            items.append(contentsOf: section.items)
         }
 
         var infoDict = [String : AnyObject]()
@@ -176,26 +176,26 @@ class AdditionalInfoModel: NSObject {
                 let profileFieldName = profileFieldSpec.profileFieldName
 
                 if let value = item.value {
-                    if !validateItem(value) {
+                    if !validateItem(value: value) {
                         error = "Please enter a valid number for \(fieldName)"
                         break
                     }
 
-                    if let (categoryType, _) = HMConstants.sharedInstance.mcdbActivityToHKQuantity[profileFieldName]
+                    if let (categoryType, _) = HMConstants.sharedInstance.mcdbActivityToHKQuantity[profileFieldName!]
                     {
                         // Note for categorized types, we must manually do a merge with any existing profile values ourselves.
                         if var profileCategories = profileCache["activity_value"] as? [String: AnyObject],
                             var profileQuantities = profileCategories[categoryType] as? [String: AnyObject]
                         {
-                            profileQuantities.updateValue(self.convertFieldValue(fieldName, value: value), forKey: categoryType)
-                            profileCategories.updateValue(profileQuantities, forKey: categoryType)
-                            infoDict["activity_value"] = profileCategories
+                            profileQuantities.updateValue(self.convertFieldValue(fieldName: fieldName, value: value), forKey: categoryType)
+                            profileCategories.updateValue(profileQuantities as AnyObject, forKey: categoryType)
+                            infoDict["activity_value"] = profileCategories as AnyObject?
                         } else {
-                            infoDict["activity_value"] = [categoryType: [categoryType: self.convertFieldValue(fieldName, value: value)]]
+//                            infoDict["activity_value"] = [categoryType: [categoryType: self.convertFieldValue(fieldName, value: value)]]
                         }
                     }
-                    else if let _ = HMConstants.sharedInstance.mcdbToHK[profileFieldName] {
-                        infoDict[profileFieldName] = self.convertFieldValue(item.name, value: value)
+                    else if let _ = HMConstants.sharedInstance.mcdbToHK[profileFieldName!] {
+                        infoDict[profileFieldName!] = self.convertFieldValue(fieldName: item.name, value: value)
                     }
                     else {
                         error = "No schema mapping found for \(fieldName) in additional info model"
@@ -211,7 +211,7 @@ class AdditionalInfoModel: NSObject {
         if error != nil {
             completion(error, [:])
         } else {
-            log.info("ADID result \(infoDict)")
+//            log.info("ADID result \(infoDict)")
             completion(nil, infoDict)
         }
     }

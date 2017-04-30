@@ -2,8 +2,8 @@
 //  QueryViewController.swift
 //  MetabolicCompass
 //
-//  Created by Yanif Ahmad on 12/19/15. 
-//  Copyright © 2015 Yanif Ahmad, Tom Woolf. All rights reserved.
+//  Created by Yanif Ahmad on 12/19/15.
+//  Copyright © 2015 Yanif Ahmad, Tom Woolf. All rights reserved. 
 //
 
 import MetabolicCompassKit
@@ -19,18 +19,18 @@ import SwiftDate
  */
 class QueryViewController: UITableViewController {
 
-    override func viewWillAppear(animated: Bool) {
+    override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         navigationController?.setNavigationBarHidden(false, animated: false)
         navigationItem.title = "Queries"
         tableView.reloadData()
     }
 
-    override func viewDidAppear(animated: Bool) {
+    override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
-        Answers.logContentViewWithName("Query",
+        Answers.logContentView(withName: "Query",
             contentType: "",
-            contentId: Date().toString(DateFormat.Custom("YYYY-MM-dd:HH:mm:ss")),
+            contentId: Date().string(),
             customAttributes: nil)
     }
 
@@ -38,9 +38,9 @@ class QueryViewController: UITableViewController {
         super.viewDidLoad()
 
         view.backgroundColor = Theme.universityDarkTheme.backgroundColor
-        tableView.registerClass(MGSwipeTableCell.self, forCellReuseIdentifier: "queryCell")
+        tableView.register(MGSwipeTableCell.self, forCellReuseIdentifier: "queryCell")
 
-        let addQueryButton = UIBarButtonItem(barButtonSystemItem: .Add, target: self, action: "addQuery")
+        let addQueryButton = UIBarButtonItem(barButtonSystemItem: .add, target: self, action: "addQuery")
         navigationItem.rightBarButtonItem = addQueryButton
     }
 
@@ -50,31 +50,31 @@ class QueryViewController: UITableViewController {
         navigationController?.pushViewController(builder, animated: true)
     }
 
-    override func numberOfSectionsInTableView(tableView: UITableView) -> Int {
+    func numberOfSectionsInTableView(tableView: UITableView) -> Int {
         return 1
     }
 
-    override func tableView(tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+    override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         return QueryManager.sharedManager.getQueries().count
     }
 
-    override func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell {
-        let cell = tableView.dequeueReusableCellWithIdentifier("queryCell", forIndexPath: indexPath) as! MGSwipeTableCell
+    func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell {
+        let cell = tableView.dequeueReusableCell(withIdentifier: "queryCell", for: indexPath as IndexPath) as! MGSwipeTableCell
 
-        let deleteButton = MGSwipeButton(title: "Delete", backgroundColor: .ht_pomegranateColor(), callback: {
+        let deleteButton = MGSwipeButton(title: "Delete", backgroundColor: .ht_pomegranate(), callback: {
             (sender: MGSwipeTableCell!) -> Bool in
-            if let idx = tableView.indexPathForCell(sender) {
-                QueryManager.sharedManager.removeQuery(idx.row)
-                tableView.deleteRowsAtIndexPaths([idx], withRowAnimation: UITableViewRowAnimation.Right)
+            if let idx = tableView.indexPath(for: sender) {
+                QueryManager.sharedManager.removeQuery(index: idx.row)
+                tableView.deleteRows(at: [idx], with: UITableViewRowAnimation.right)
                 return false
             }
             return true
         })
-        deleteButton.titleLabel?.font = .boldSystemFontOfSize(14)
+        deleteButton.titleLabel?.font = .boldSystemFont(ofSize: 14)
 
-        let editButton = MGSwipeButton(title: "Edit", backgroundColor: .ht_carrotColor(), callback: {
+        let editButton = MGSwipeButton(title: "Edit", backgroundColor: .ht_carrot(), callback: {
             (sender: MGSwipeTableCell!) -> Bool in
-            if let idx = tableView.indexPathForCell(sender) {
+            if let idx = tableView.indexPath(for: sender) {
                 switch QueryManager.sharedManager.getQueries()[idx.row].1 {
                 case Query.ConjunctiveQuery(_, _, _, _):
                     let builder = QueryBuilderViewController()
@@ -85,51 +85,52 @@ class QueryViewController: UITableViewController {
             }
             return true
         })
-        editButton.titleLabel?.font = .boldSystemFontOfSize(14)
+        editButton.titleLabel?.font = .boldSystemFont(ofSize: 14)
 
 
         cell.rightButtons = [deleteButton, editButton]
-        cell.leftSwipeSettings.transition = MGSwipeTransition.Static
+        cell.leftSwipeSettings.transition = MGSwipeTransition.static
 
         if QueryManager.sharedManager.getSelectedQuery() == indexPath.row {
-            cell.accessoryType = .Checkmark
+            cell.accessoryType = .checkmark
         } else {
-            cell.accessoryType = .None
+            cell.accessoryType = .none
         }
         cell.backgroundColor = Theme.universityDarkTheme.backgroundColor
-        cell.tintColor = cell.selected ? UIColor.ht_belizeHoleColor() : UIColor.ht_sunflowerColor()
-        cell.textLabel?.font = .boldSystemFontOfSize(14)
+        cell.tintColor = cell.isSelected ? UIColor.ht_belizeHole() : UIColor.ht_sunflower()
+        cell.textLabel?.font = .boldSystemFont(ofSize: 14)
         cell.textLabel?.text = QueryManager.sharedManager.getQueries()[indexPath.row].0
-        cell.textLabel?.textColor = .whiteColor()
+        cell.textLabel?.textColor = .white
         return cell
     }
 
-    override func tableView(tableView: UITableView, didSelectRowAtIndexPath indexPath: NSIndexPath) {
+    func tableView(tableView: UITableView, didSelectRowAtIndexPath indexPath: NSIndexPath) {
         if QueryManager.sharedManager.getSelectedQuery() == indexPath.row {
-            // Deselect query
-            if let cell = tableView.cellForRowAtIndexPath(indexPath) {
+            // Deselect query 
+            if let cell = tableView.cellForRow(at: indexPath as IndexPath) {
                 QueryManager.sharedManager.deselectQuery()
-                cell.accessoryType = .None
-                cell.tintColor = UIColor.ht_sunflowerColor()
+                cell.accessoryType = .none
+                cell.tintColor = UIColor.ht_sunflower()
             }
         } else {
-            if let oldcell = tableView.cellForRowAtIndexPath(NSIndexPath(forRow: QueryManager.sharedManager.getSelectedQuery(), inSection: 0)) {
-                oldcell.accessoryType = .None
-                oldcell.tintColor = UIColor.ht_sunflowerColor()
+//            if let oldcell = tableView.cellForRowAtIndexPath(NSIndexPath(forRow: QueryManager.sharedManager.getSelectedQuery(), inSection: 0)) {
+            if let oldcell = tableView.cellForRow(at: IndexPath(row: QueryManager.sharedManager.getSelectedQuery(), section: 0)) {
+                oldcell.accessoryType = .none
+                oldcell.tintColor = UIColor.ht_sunflower()
             }
 
-            if let cell = tableView.cellForRowAtIndexPath(indexPath) {
-                QueryManager.sharedManager.selectQuery(indexPath.row)
-                cell.accessoryType = .Checkmark
-                cell.tintColor = UIColor.ht_belizeHoleColor()
+            if let cell = tableView.cellForRow(at: indexPath as IndexPath) {
+                QueryManager.sharedManager.selectQuery(index: indexPath.row)
+                cell.accessoryType = .checkmark
+                cell.tintColor = UIColor.ht_belizeHole()
             }
         }
     }
 
-    override func tableView(tableView: UITableView, willDisplayHeaderView view: UIView, forSection section: Int) {
+    func tableView(tableView: UITableView, willDisplayHeaderView view: UIView, forSection section: Int) {
         let header: UITableViewHeaderFooterView = view as! UITableViewHeaderFooterView
         header.contentView.backgroundColor = Theme.universityDarkTheme.backgroundColor
-        header.textLabel?.textColor = UIColor.whiteColor()
+        header.textLabel?.textColor = UIColor.white
     }
 
 }

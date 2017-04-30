@@ -25,13 +25,13 @@ class RegisterLoginLandingViewController: BaseViewController {
         self.navigationController?.navigationBar.barStyle = UIBarStyle.black;
         self.navigationController?.navigationBar.tintColor = UIColor.white
 
-        do {
+/*        do {
             reachability = try Reachability.reachabilityForInternetConnection()
         } catch {
             let msg = "Failed to create reachability detector"
-            log.error(msg)
+//            log.error(msg)
             fatalError(msg)
-        }
+        } */
     }
     
     override func viewWillAppear(_ animated: Bool) {
@@ -39,12 +39,12 @@ class RegisterLoginLandingViewController: BaseViewController {
         navigationController?.setNavigationBarHidden(true, animated: false)
     }
     
-    func preferredStatusBarStyle() -> UIStatusBarStyle {
-        return .lightContent;
-    }
+//    func preferredStatusBarStyle() -> UIStatusBarStyle {
+//        return .lightContent;
+ //   }
     
     //MARK: Actions
-    @IBAction func onLogin(sender: AnyObject) {
+/*    @IBAction func onLogin(sender: AnyObject) {
         self.performSegue(withIdentifier: self.loginSegue, sender: self)
     }
     
@@ -56,7 +56,7 @@ class RegisterLoginLandingViewController: BaseViewController {
         default:
             self.performSegue(withIdentifier: self.registerSegue, sender: self)
         }
-    }
+    } */
     
     func prepareForSegue(segue: UIStoryboardSegue, sender: AnyObject?) {
         if (segue.identifier == self.loginSegue) {

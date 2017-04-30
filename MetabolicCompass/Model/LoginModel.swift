@@ -22,12 +22,12 @@ class LoginModel : NSObject, UITableViewDataSource, UITextFieldDelegate {
         return 1
     }
 
-    func tableView(tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+    func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         return 2
     }
 
-    func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell {
-        let cell = tableView.dequeueReusableCellWithIdentifier(String(InputTableCellWithImage), forIndexPath: indexPath) as! InputTableCellWithImage
+    func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+        let cell = tableView.dequeueReusableCell(withIdentifier: String(describing: InputTableCellWithImage()), for: indexPath as IndexPath) as! InputTableCellWithImage
         cell.cellInput.delegate = self
         cell.cellInput.tag = indexPath.row
         cell.cellInput.textColor = ScreenManager.sharedInstance.appBrightTextColor()
@@ -35,11 +35,12 @@ class LoginModel : NSObject, UITableViewDataSource, UITextFieldDelegate {
         if indexPath.row == 1 {
             cell.cellImage.image = UIImage(named: "icon-password")
             cell.cellInput.attributedPlaceholder = NSAttributedString(string: "Password", attributes: [NSForegroundColorAttributeName : ScreenManager.sharedInstance.appUnBrightTextColor()])
-            cell.cellInput.secureTextEntry = true
+//            cell.cellInput.secureTextEntry = true
+            cell.cellInput.isSecureTextEntry = true
         } else {
             cell.cellImage.image = UIImage(named: "icon-email")
             cell.cellInput.attributedPlaceholder = NSAttributedString(string: "E-mail", attributes: [NSForegroundColorAttributeName : ScreenManager.sharedInstance.appUnBrightTextColor()])
-            cell.cellInput.keyboardType = UIKeyboardType.EmailAddress
+            cell.cellInput.keyboardType = UIKeyboardType.emailAddress
         }
         textfields.append(cell.cellInput)
         return cell

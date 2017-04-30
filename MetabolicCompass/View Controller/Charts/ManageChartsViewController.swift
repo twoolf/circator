@@ -56,7 +56,7 @@ class ManageChartsViewController: UIViewController, UITableViewDataSource, UITab
     
     //MARK: UITableViewDelegate
     func tableView(tableView: UITableView, didSelectRowAtIndexPath indexPath: NSIndexPath) {
-        let obj = tableView.cellForRowAtIndexPath(indexPath as IndexPath) as? ManageDashboardCell
+        let obj = tableView.cellForRow(at: indexPath as IndexPath) as? ManageDashboardCell
         guard let cell = obj else {
             return
         }
@@ -68,7 +68,7 @@ class ManageChartsViewController: UIViewController, UITableViewDataSource, UITab
         }
         
         item.active = !item.active
-        cell.updateSelectionStatus(item.active, appearanceProvider: appearanceProvider, itemType: item.type)
+        cell.updateSelectionStatus(selected: item.active, appearanceProvider: appearanceProvider, itemType: item.type)
     }
     
     func tableView(tableView: UITableView, canMoveRowAtIndexPath indexPath: NSIndexPath) -> Bool {

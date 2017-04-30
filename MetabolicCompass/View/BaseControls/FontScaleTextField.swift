@@ -41,7 +41,7 @@ public class FontScaleTextField: UITextField {
         set {
             self.notScaledFont = newValue;
             if newValue != nil{
-                let scaledFont = newValue!.fontWithSize(newValue!.pointSize * FontScaleTextField.scaleFactor)
+                let scaledFont = newValue!.withSize(newValue!.pointSize * FontScaleTextField.scaleFactor)
                 super.font = scaledFont
             }
         }

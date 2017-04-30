@@ -23,11 +23,13 @@ public class TextInputFilter: NSObject{
         var str = textField.text ?? ""
         switch filterType {
         case .InputCharacterFiterDigits:
-            let sRange = str.strRange(range)
-            str = str.stringByReplacingOccurrencesOfString("\\D", withString:"", options:.RegularExpressionSearch, range:sRange)
+            let sRange = str.strRange(range: range)
+//            str = str.stringByReplacingOccurrencesOfString("\\D", withString:"", options:.RegularExpressionSearch, range:sRange)
+            str = str.replacingOccurrences(of: "\\D", with: "",  range: sRange)
         case .InputCharacterFiterLetters:
-            let sRange = str.strRange(range)
-            str = str.stringByReplacingOccurrencesOfString("[^a-zA-Z]", withString:"", options:.RegularExpressionSearch, range:sRange)
+            let sRange = str.strRange(range: range)
+//            str = str.stringByReplacingOccurrencesOfString("[^a-zA-Z]", withString:"", options:.RegularExpressionSearch, range:sRange)
+            str = str.replacingOccurrences(of: "[^a-zA-Z]", with: "", range: sRange)
         default: ()
         }
     }

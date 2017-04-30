@@ -29,21 +29,21 @@ class LoginViewController: BaseViewController {
 
     @IBOutlet weak var loginTable: UITableView!
 
-    var completion: (Void -> Void)?
+    var completion: ((Void) -> Void)?
 
-    override func viewWillAppear(animated: Bool) {
+    override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         navigationController?.setNavigationBarHidden(false, animated: false)
     }
 
-    override func viewWillDisappear(animated: Bool) {
+    func viewWillDisappear(animated: Bool) {
         super.viewWillDisappear(animated)
-        UIDevice.currentDevice().setValue(UIInterfaceOrientation.Portrait.rawValue, forKey: "orientation")
+        UIDevice.current.setValue(UIInterfaceOrientation.portrait.rawValue, forKey: "orientation")
     }
 
-    override func preferredStatusBarStyle() -> UIStatusBarStyle {
-        return .LightContent;
-    }
+/*    func preferredStatusBarStyle() -> UIStatusBarStyle {
+        return .lightContent;
+    } */
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -52,19 +52,19 @@ class LoginViewController: BaseViewController {
         loginModel.controllerView = self.view
         loginTable.dataSource = loginModel
 
-        self.setupScrollViewForKeyboardsActions(containerScrollView)
+        self.setupScrollViewForKeyboardsActions(view: containerScrollView)
     }
 
 
     func uploadLostConsentFile() {
         guard let consentPath = ConsentManager.sharedManager.getConsentFilePath() else {
-            UINotifications.noConsent(self.navigationController!, pop: true, asNav: true)
+            UINotifications.noConsent(vc: self.navigationController!, pop: true, asNav: true)
             return
         }
 
-        UserManager.sharedManager.pushConsent(consentPath) { res in
+        UserManager.sharedManager.pushConsent(filePath: consentPath) { res in
             if res.ok {
-                ConsentManager.sharedManager.removeConsentFile(consentPath)
+                ConsentManager.sharedManager.removeConsentFile(consentFilePath: consentPath)
             }
             self.loginComplete()
         }
@@ -72,11 +72,11 @@ class LoginViewController: BaseViewController {
 
     func loginComplete() {
         if let comp = self.completion { comp() }
-        self.navigationController?.popToRootViewControllerAnimated(true)
+        self.navigationController?.popToRootViewController(animated: true)
         
         Async.main {
-            Answers.logLoginWithMethod("SPL", success: true, customAttributes: nil)
-            NSNotificationCenter.defaultCenter().postNotificationName(UMDidLoginNotifiaction, object: nil)
+            Answers.logLogin(withMethod: "SPL", success: true, customAttributes: nil)
+            NotificationCenter.default.post(name: NSNotification.Name(rawValue: UMDidLoginNotifiaction), object: nil)
         }
     }
 
@@ -87,9 +87,9 @@ class LoginViewController: BaseViewController {
         
         let loginCredentials = loginModel.getCredentials()
 
-        UserManager.sharedManager.ensureUserPass(loginCredentials.email, pass: loginCredentials.password) { error in
+        UserManager.sharedManager.ensureUserPass(user: loginCredentials.email, pass: loginCredentials.password) { error in
             guard !error else {
-                UINotifications.invalidUserPass(self.navigationController!)
+                UINotifications.invalidUserPass(vc: self.navigationController!)
                 return
             }
             UserManager.sharedManager.loginWithPull { res in
@@ -100,33 +100,33 @@ class LoginViewController: BaseViewController {
                         // Try to upload the consent file if we encounter a consent pull error.
                         if components.contains(.Consent) {
                             self.uploadLostConsentFile()
-                            // Raise a notification if there are other errors.
+                            // Raise a notification if there are other errors. 
                             if components.count > 1 {
-                                Answers.logLoginWithMethod("SPL", success: false, customAttributes: nil)
-                                let componentNames = components.map { getComponentName($0) }.joinWithSeparator(", ")
+                                Answers.logLogin(withMethod: "SPL", success: false, customAttributes: nil)
+                                let componentNames = components.map { getComponentName(component: $0) }.joined(separator: ", ")
                                 let reason = components.isEmpty ? "" : " (missing \(componentNames))"
-                                UINotifications.loginFailed(self, reason: "Failed to get account\(reason)")
+                                UINotifications.loginFailed(vc: self, reason: "Failed to get account\(reason)")
                             }
                         } else {
-                            Answers.logLoginWithMethod("SPL", success: false, customAttributes: nil)
-                            let componentNames = components.map { getComponentName($0) }.joinWithSeparator(", ")
+                            Answers.logLogin(withMethod: "SPL", success: false, customAttributes: nil)
+                            let componentNames = components.map { getComponentName(component: $0) }.joined(separator: ", ")
                             let reason = components.isEmpty ? "" : " (missing \(componentNames))"
-                            UINotifications.loginFailed(self, reason: "Failed to get account\(reason)")
+                            UINotifications.loginFailed(vc: self, reason: "Failed to get account\(reason)")
                         }
                     } else {
-                        Answers.logLoginWithMethod("SPL", success: false, customAttributes: nil)
-                        UINotifications.invalidUserPass(self)
+                        Answers.logLogin(withMethod: "SPL", success: false, customAttributes: nil)
+                        UINotifications.invalidUserPass(vc: self)
                     }
 
                     // Explicitly logout on an error to clear the UserManager's userid.
                     // This way the user does not see the dashboard on app relaunch.
-                    log.info(res.info)
+//                    log.info(res.info) 
                     UserManager.sharedManager.logout()
                     return
                 }
                 if UserManager.sharedManager.isItFirstLogin() {//if it's first login
                     if let additionalInfo = UserManager.sharedManager.getAdditionalProfileData() {//and user has an additional data. we will push it to the server
-                        UserManager.sharedManager.pushProfile(additionalInfo , completion: { _ in
+                        UserManager.sharedManager.pushProfile(componentData: additionalInfo , completion: { _ in
                             UserManager.sharedManager.removeFirstLogin()
                         })
                     } else {//in other case we just remove marker for first login

@@ -35,10 +35,10 @@ class InfoCollectionViewCell: BaseCollectionViewCell {
         super.awakeFromNib()
         // Initialization code
         
-        inputTxtField.addTarget(self, action: #selector(InputCollectionViewCell.textFieldDidChange(_:)), forControlEvents: UIControlEvents.EditingChanged)
+        inputTxtField.addTarget(self, action: #selector(BaseCollectionViewCell.textFieldDidChange(textField: )), for: UIControlEvents.editingChanged)
         inputTxtField.delegate = self
         
-        inputTxtField.textColor = UIColor.whiteColor()
+        inputTxtField.textColor = UIColor.white
         
         addDoneToolbar(toTextField: inputTxtField)
     }
@@ -51,8 +51,8 @@ class InfoCollectionViewCell: BaseCollectionViewCell {
         titleLbl.text = nil
         textValueCommentLbl.text = nil
         
-        inputTxtField.secureTextEntry = false
-        inputTxtField.keyboardType = UIKeyboardType.Default
+//        inputTxtField.secureTextEntry = false
+        inputTxtField.keyboardType = UIKeyboardType.default
     }
     
     func setImageWithName(imageName: String?, smallTextOffset: Bool = false) {
@@ -68,7 +68,7 @@ class InfoCollectionViewCell: BaseCollectionViewCell {
     }
     
     override func valueChanged(newValue: AnyObject?) {
-        super.valueChanged(newValue)
+        super.valueChanged(newValue: newValue)
     }
     
 }

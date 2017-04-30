@@ -2,7 +2,7 @@
 //  MainSettingsViewController.swift
 //  MetabolicCompass 
 //
-//  Created by Anna Tkach on 5/11/16. 
+//  Created by Anna Tkach on 5/11/16.  
 //  Copyright © 2016 Yanif Ahmad, Tom Woolf. All rights reserved.
 //
 
@@ -52,7 +52,7 @@ class MainSettingsViewController: BaseViewController, UICollectionViewDataSource
         let cancelAction = UIAlertAction(title: "Cancel", style: .cancel, handler: nil)
         let okAction = UIAlertAction(title: "OK", style: .default) { (alertAction: UIAlertAction!) in
             AccountManager.shared.doLogout(completion: {
-                NotificationCenter.defaultCenter.postNotificationName(UMDidLogoutNotification, object: nil)
+                NotificationCenter.default.post(name: NSNotification.Name(rawValue: UMDidLogoutNotification), object: nil)
                 AccountManager.shared.loginOrRegister()
             })
         }
@@ -83,7 +83,7 @@ class MainSettingsViewController: BaseViewController, UICollectionViewDataSource
             if let vc = SLComposeViewController(forServiceType: serviceType) {
                 let msg = "Check out Metabolic Compass -- tracks your body clock for medical research on metabolic syndrome at Johns Hopkins."
                 vc.setInitialText(msg)
-                vc.addURL(NSURL(string: "https://www.metaboliccompass.com") as URL!)
+                vc.add(NSURL(string: "https://www.metaboliccompass.com") as URL!)
                 self.present(vc, animated: true, completion: nil)
             } else {
                 let service = serviceType == SLServiceTypeTwitter ? "Twitter" : "Facebook"
@@ -118,7 +118,7 @@ class MainSettingsViewController: BaseViewController, UICollectionViewDataSource
 
         let doWithdraw = { keepData in
             AccountManager.shared.doWithdraw(keepData: keepData) { success in
-                NotificationCenter.defaultCenter.postNotificationName(UMDidLogoutNotification, object: nil)
+                NotificationCenter.default.post(name: NSNotification.Name(rawValue: UMDidLogoutNotification), object: nil)
                 AccountManager.shared.loginOrRegister()
                 if success {
                     let msg = "Thanks for using Metabolic Compass!"
@@ -203,9 +203,9 @@ class MainSettingsViewController: BaseViewController, UICollectionViewDataSource
     private func cellHasSubviewAtIndexPath(indexPath: NSIndexPath) -> Bool {
         return !( isCellShareOurStoryAtIndexPath(indexPath: indexPath)
                     || isCellAboutAtIndexPath(indexPath: indexPath)
-                    || isCellPrivacyPolicyAtIndexPath(indexPath)
-                    || isCellLogoutAtIndexPath(indexPath)
-                    || isCellWithdrawAtIndexPath(indexPath) )
+                    || isCellPrivacyPolicyAtIndexPath(indexPath: indexPath)
+                    || isCellLogoutAtIndexPath(indexPath: indexPath)
+                    || isCellWithdrawAtIndexPath(indexPath: indexPath) )
     }
 
     private func isCellShareOurStoryAtIndexPath(indexPath: NSIndexPath) -> Bool {

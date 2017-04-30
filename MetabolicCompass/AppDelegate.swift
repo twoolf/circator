@@ -18,7 +18,7 @@ import SwiftyUserDefaults
 import WatchConnectivity
 //import LogKit
 
-let log = RemoteLogManager.sharedManager.log
+// let log = RemoteLogManager.sharedManager.log
 
 @UIApplicationMain
 /**
@@ -28,13 +28,13 @@ An overview of the Circator files and their connections follows. First, a reader
 class AppDelegate: UIResponder, UIApplicationDelegate, WCSessionDelegate
 {
     @available(iOS 9.3, *)
-    public func session(session: WCSession, activationDidCompleteWithState activationState: WCSessionActivationState, error: NSError?){
+    public func session(_ session: WCSession, activationDidCompleteWith activationState: WCSessionActivationState, error: Error?){
     }
     
-    public func sessionDidBecomeInactive(session: WCSession) {
+    public func sessionDidBecomeInactive(_ session: WCSession) {
     }
     
-    public func sessionDidDeactivate(session: WCSession) {
+    public func sessionDidDeactivate(_ session: WCSession) {
     }
     var window: UIWindow?
     var mainViewController: UIViewController!
@@ -44,28 +44,28 @@ class AppDelegate: UIResponder, UIApplicationDelegate, WCSessionDelegate
     {
         Fabric.with([Crashlytics.self,Answers.self])
 
-        log.info("Using service URL: \(MCRouter.baseURL)")
+//        log.info("Using service URL: \(MCRouter.baseURL)")
 
-        if ((Defaults.objectForKey(firstRunKey) == nil)) {
+        if ((Defaults.object(forKey: firstRunKey) == nil)) {
             UserManager.sharedManager.resetFull()
-            Defaults.setObject("firstrun", forKey: firstRunKey)
+            Defaults.set("firstrun", forKey: firstRunKey)
             Defaults.synchronize()
         }
 
         // Set up notifications after launching the app.
-        UIApplication.sharedApplication().cancelAllLocalNotifications()
+        UIApplication.shared.cancelAllLocalNotifications()
         AccountManager.shared.resetLocalNotifications()
         recycleNotification()
         UINotifications.configureNotifications()
 
         createShortcutItems()
 
-        window = UIWindow(frame: UIScreen.mainScreen().bounds)
-        window?.backgroundColor = UIColor.whiteColor()
+        window = UIWindow(frame: UIScreen.main.bounds)
+        window?.backgroundColor = UIColor.white
 
         // Override point for customization after application launch.
         // Sets background to a blank/empty image
-        UINavigationBar.appearance().setBackgroundImage(UIImage(), forBarMetrics: .Default)
+        UINavigationBar.appearance().setBackgroundImage(UIImage(), for: .default)
 
         // Sets shadow (line below the bar) to a blank image
         UINavigationBar.appearance().shadowImage = UIImage()
@@ -74,7 +74,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, WCSessionDelegate
         UINavigationBar.appearance().backgroundColor = UIColor(red: 0.0, green: 0.0, blue: 0.0, alpha: 0.0)
 
         // Set translucent. (Default value is already true, so this can be removed if desired.)
-        UINavigationBar.appearance().translucent = true
+        UINavigationBar.appearance().isTranslucent = true
         UINavigationBar.appearance().titleTextAttributes = [
             NSForegroundColorAttributeName: ScreenManager.appTitleTextColor(),
             NSFontAttributeName: ScreenManager.appNavBarFont()
@@ -88,7 +88,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, WCSessionDelegate
 
 
         let tabBarStoryboard = UIStoryboard(name: "TabScreens", bundle: nil)
-        let tabBarScreen = tabBarStoryboard.instantiateViewControllerWithIdentifier("TabBarController")
+        let tabBarScreen = tabBarStoryboard.instantiateViewController(withIdentifier: "TabBarController")
         mainViewController = tabBarScreen
 
         let navController  = UINavigationController(rootViewController: mainViewController)
@@ -101,35 +101,37 @@ class AppDelegate: UIResponder, UIApplicationDelegate, WCSessionDelegate
         window?.makeKeyAndVisible()
 
         var launchSuccess = true
-        if let shortcutItem = launchOptions?[UIApplicationLaunchOptionsShortcutItemKey] as? UIApplicationShortcutItem {
-            launchSuccess = launchShortcutActivity(shortcutItem)
-        }
+//        if let shortcutItem = launchOptions?[UIApplicationLaunchOptionsShortcutItemKey] as? UIApplicationShortcutItem {
+//        let shortcutItem = UIApplicationLaunchOptionsKey
+//        var launchSuccess = launchShortcutActivity(shortcutItem: shortcutItem)
+        
 
         // Add a recycling observer.
-        NSNotificationCenter.defaultCenter().addObserver(self, selector: #selector(recycleNotification), name: USNDidUpdateBlackoutNotification, object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(self.recycleNotification), name: NSNotification.Name(rawValue: USNDidUpdateBlackoutNotification), object: nil)
 
         // Add a debugging observer.
-        NSNotificationCenter.defaultCenter().addObserver(self, selector: #selector(errorNotification(_:)), name: MCRemoteErrorNotification, object: nil)
+//        NotificationCenter.default.addObserver(self, selector: #selector(self.errorNotification(_:)), name: MCRemoteErrorNotification, object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(errorNotification(notification:)), name: NSNotification.Name(rawValue: MCRemoteErrorNotification), object: nil)
 
         return launchSuccess
     }
 
     func application(application: UIApplication, supportedInterfaceOrientationsForWindow window: UIWindow?) -> UIInterfaceOrientationMask {
         //return checkOrientation(self.window?.rootViewController)
-        return UIInterfaceOrientationMask.Portrait
+        return UIInterfaceOrientationMask.portrait
     }
 
     func checkOrientation(viewController: UIViewController?) -> UIInterfaceOrientationMask {
         if viewController == nil {
-            return .All
+            return .all
         } else if viewController is QueryViewController {
-            return .Portrait
+            return .portrait
         } else if viewController is QueryBuilderViewController {
-            return .Portrait
+            return .portrait
         } else if viewController is UINavigationController {
-            return checkOrientation((viewController as? UINavigationController)!.visibleViewController)
+            return checkOrientation(viewController: (viewController as? UINavigationController)!.visibleViewController)
         } else {
-            return checkOrientation(viewController!.presentedViewController)
+            return checkOrientation(viewController: viewController!.presentedViewController)
         }
     }
 
@@ -157,20 +159,20 @@ class AppDelegate: UIResponder, UIApplicationDelegate, WCSessionDelegate
     }
 
     func application(application: UIApplication, didRegisterUserNotificationSettings: UIUserNotificationSettings) {
-        let enabled = didRegisterUserNotificationSettings.types != .None
-        log.info("APPDEL Enabling user notifications: \(enabled)")
-        Defaults.setObject(enabled, forKey: AMNotificationsKey)
+        let enabled = didRegisterUserNotificationSettings.types != .none
+//        log.info("APPDEL Enabling user notifications: \(enabled)")
+        Defaults.set(enabled, forKey: AMNotificationsKey)
         Defaults.synchronize()
     }
 
     func application(application: UIApplication, didReceiveLocalNotification notification: UILocalNotification) {
-        log.info("APPDEL received \(notification)")
-        NotificationManager.sharedManager.showInApp(notification)
+//        log.info("APPDEL received \(notification)")
+        NotificationManager.sharedManager.showInApp(notification: notification)
     }
 
     func application(application: UIApplication, performActionForShortcutItem shortcutItem: UIApplicationShortcutItem, completionHandler: (Bool) -> Void) {
-        log.debug("Shortcut \"\(shortcutItem.localizedTitle)\" pressed")
-        completionHandler(self.launchShortcutActivity(shortcutItem))
+//        log.debug("Shortcut \"\(shortcutItem.localizedTitle)\" pressed")
+        completionHandler(self.launchShortcutActivity(shortcutItem: shortcutItem))
     }
 
     func createShortcutItems() {
@@ -179,7 +181,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, WCSessionDelegate
             ("Add your Sleep", "com.metaboliccompass.sleep", "add-sleep-button"),
             ("Add Exercise", "com.metaboliccompass.exercise", "add-exercises-button")]
 
-        UIApplication.sharedApplication().shortcutItems =  itemSpecs.map { (title, type, iconName) in
+        UIApplication.shared.shortcutItems =  itemSpecs.map { (title, type, iconName) in
             let icon = UIApplicationShortcutIcon(templateImageName: iconName)
             return UIMutableApplicationShortcutItem(type: type, localizedTitle: title, localizedSubtitle: nil, icon: icon, userInfo: nil)
         }
@@ -187,7 +189,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, WCSessionDelegate
 
     func launchShortcutActivity(shortcutItem: UIApplicationShortcutItem) -> Bool {
         let storyboard = UIStoryboard(name: "AddEvents", bundle: nil)
-        let controller = storyboard.instantiateViewControllerWithIdentifier("AddMealNavViewController") as! UINavigationController
+        let controller = storyboard.instantiateViewController(withIdentifier: "AddMealNavViewController") as! UINavigationController
         let addController = controller.viewControllers[0] as! AddEventViewController
 
         if shortcutItem.type == "com.metaboliccompass.meal" {
@@ -203,7 +205,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, WCSessionDelegate
             return false
         }
 
-        window?.rootViewController?.presentViewController(controller, animated: true, completion: nil)
+        window?.rootViewController?.present(controller, animated: true, completion: nil)
         return true
     }
 
@@ -214,15 +216,15 @@ class AppDelegate: UIResponder, UIApplicationDelegate, WCSessionDelegate
     func errorNotification(notification: NSNotification) {
         if let info = notification.userInfo, let event = info["event"] as? String, let attrs = info["attrs"] as? [String: AnyObject]
         {
-            Answers.logCustomEventWithName(event, customAttributes: attrs)
+            Answers.logCustomEvent(withName: event, customAttributes: attrs)
         }
     }
 
     private func setupWatchConnectivity() {
         if WCSession.isSupported() {
-            let session = WCSession.defaultSession()
+            let session = WCSession.default()
             session.delegate = self
-            session.activateSession()
+            session.activate()
         }
     }
 }

@@ -15,8 +15,8 @@ class DailyProgressDayTableViewCell: UITableViewCell {
     
     override func awakeFromNib() {
         super.awakeFromNib()
-        self.contentView.backgroundColor = UIColor.clearColor()
-        self.backgroundColor = UIColor.clearColor()
+        self.contentView.backgroundColor = UIColor.clear
+        self.backgroundColor = UIColor.clear
     }
     
     override func prepareForReuse() {

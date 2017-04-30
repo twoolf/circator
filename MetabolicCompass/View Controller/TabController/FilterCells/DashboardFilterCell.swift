@@ -2,7 +2,7 @@
 //  DashboardFilterCell.swift
 //  MetabolicCompass
 //
-//  Created by Inaiur on 5/6/16.
+//  Created by Inaiur on 5/6/16. 
 //  Copyright © 2016 Yanif Ahmad, Tom Woolf. All rights reserved.
 //
 
@@ -23,25 +23,25 @@ class DashboardFilterCell: UITableViewCell {
             assert(data != nil)
             guard data != nil else { return }
             self.nameLabel.text = data!.title;
-            self.checkBoxButton.selected = data!.selected
+            self.checkBoxButton.isSelected = data!.selected
         }
     }
 
     override func awakeFromNib() {
         super.awakeFromNib()
-        self.checkBoxButton.userInteractionEnabled = false
+        self.checkBoxButton.isUserInteractionEnabled = false
     }
 
-    override func setSelected(selected: Bool, animated: Bool) {
+    override func setSelected(_ selected: Bool, animated: Bool) {
         super.setSelected(selected, animated: animated)
     }
 
     @IBAction func didPressButton(sender: AnyObject) {
-        self.checkBoxButton.selected = !self.checkBoxButton.selected;
-        self.data?.selected = self.checkBoxButton.selected
+        self.checkBoxButton.isSelected = !self.checkBoxButton.isSelected;
+        self.data?.selected = self.checkBoxButton.isSelected
 
         if let delegate = self.delegate {
-            delegate.didChangeSelectionStatus(self.checkBoxButton.selected)
+            delegate.didChangeSelectionStatus(selected: self.checkBoxButton.isSelected)
         }
     }
 

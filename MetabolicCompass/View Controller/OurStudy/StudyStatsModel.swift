@@ -54,11 +54,11 @@ public class StudyStatsModel: NSObject {
     }
 
     func logModel() {
-        log.info("activeUsers: \(activeUsers)")
-        log.info("userRank: \(userRank)")
-        log.info("contributionStreak: \(contributionStreak)")
-        log.info("fullDays: \(fullDays)")
-        log.info("partialDays: \(partialDays)")
-        log.info("ringValues: \(ringValues)")
+//        log.info("activeUsers: \(activeUsers)")
+//        log.info("userRank: \(userRank)")
+//        log.info("contributionStreak: \(contributionStreak)")
+//        log.info("fullDays: \(fullDays)")
+//        log.info("partialDays: \(partialDays)")
+//        log.info("ringValues: \(ringValues)")
     }
 }

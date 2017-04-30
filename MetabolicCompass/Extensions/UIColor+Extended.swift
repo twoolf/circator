@@ -20,10 +20,11 @@ extension UIColor {
     }
     
     public static func colorWithHexString(rgb: String, alpha: CGFloat = 1) -> UIColor? {
+//    public static func colorWithHexString(rgb: String, alpha: CGFloat = 1) -> Void? {
         guard rgb.hasPrefix("#") else {
-            return nil
+            return UIColor.black
         }
-}
+     return UIColor.white  }
 }
         
 //        guard let hexString: String = rgb.substringFromIndex(rgb.startIndex.advancedBy(1)),

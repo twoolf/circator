@@ -14,8 +14,8 @@ class BaseAddEventTableViewCell: UITableViewCell {
     
     override func awakeFromNib() {
         super.awakeFromNib()
-        self.backgroundColor = UIColor.clearColor()
-        self.selectionStyle = .None
+        self.backgroundColor = UIColor.clear
+        self.selectionStyle = .none
     }
     
     func toggleDropDownImage(close: Bool) {

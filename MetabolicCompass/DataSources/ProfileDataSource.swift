@@ -48,19 +48,19 @@ class ProfileDataSource: BaseDataSource {
         return count
     }
 
-    override func collectionView(collectionView: UICollectionView, cellForItemAtIndexPath indexPath: IndexPath) -> UICollectionViewCell {
+    override func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         let field = model.itemAtIndexPath(indexPath: indexPath as NSIndexPath)
         var cell: BaseCollectionViewCell?
 
         let cellType = field.type
         if cellType == .Photo {
-             cell = loadPhotoCellForIndex(indexPath: indexPath, forField: field)
+             cell = loadPhotoCellForIndex(indexPath: indexPath as NSIndexPath, forField: field)
         } else {
             let cellEditMode = editMode && model.isItemEditable(item: field)
             if cellEditMode {
                 cell = infoEditableCellForIndex(indexPath: indexPath as NSIndexPath, forField: field)
             } else {
-                cell = infoCellForIndex(indexPath: indexPath, forField: field)
+                cell = infoCellForIndex(indexPath: indexPath as NSIndexPath, forField: field)
             }
 
             // Adjust label spacing of weight and height cells.

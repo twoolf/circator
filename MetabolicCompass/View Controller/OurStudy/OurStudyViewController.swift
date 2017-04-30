@@ -485,7 +485,7 @@ public class OurStudyViewController: UIViewController, ChartViewDelegate {
                 self.refreshStudyRings(ringValues: studystats.ringValues)
             }
             else {
-                log.error("STUDYSTATS Failed to refresh from server")
+//                log.error("STUDYSTATS Failed to refresh from server")
             }
 
             self.activityIndicator.stopAnimating()
@@ -503,7 +503,7 @@ public class OurStudyViewController: UIViewController, ChartViewDelegate {
             badge.image = UIImage(named: icon)
             badge.setNeedsDisplay()
         } else {
-            log.error("OUR STUDY could not get ranking badge/label")
+//            log.error("OUR STUDY could not get ranking badge/label")
         }
     }
 
@@ -526,7 +526,7 @@ public class OurStudyViewController: UIViewController, ChartViewDelegate {
             badge.image = UIImage(named: icon)
             badge.setNeedsDisplay()
         } else {
-            log.error("OUR STUDY could not get contribution streak badge/label")
+//            log.error("OUR STUDY could not get contribution streak badge/label")
         }
     }
 

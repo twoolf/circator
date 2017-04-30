@@ -28,11 +28,11 @@ class MetabolicChart : Chart {
         self.topInset = 25.0
         self.bottomInset = 50.0
         self.lineWidth = 2.0
-        self.labelColor = .whiteColor()
-        self.labelFont = UIFont.systemFontOfSize(plotFontSize)
+//        self.labelColor = .whiteColor()
+        self.labelFont = UIFont.systemFont(ofSize: plotFontSize)
         
         self.xLabels = [0.0, 6.0, 12.0, 18.0, 24.0]
-        self.xLabelsTextAlignment = .Left
+        self.xLabelsTextAlignment = .left
 //        self.xLabelsFormatter = { (labelIndex: Int, labelValue: Float) -> String in
 //            let d = 24.hours.ago + (Int(labelValue)).hours
 //            return d.toString(DateFormat.Custom("HH:mm"))!

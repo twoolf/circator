@@ -11,15 +11,17 @@ import UIKit
 
 extension UITextField {
     func setCursorPosition(position:Int){
-        self.setSelectionRange(NSRange(location: position, length: 0))
+        self.setSelectionRange(range: NSRange(location: position, length: 0))
     }
 
     func setSelectionRange(range:NSRange){
-        if let start = self.positionFromPosition(self.beginningOfDocument, offset: range.location){
-            if let end = self.positionFromPosition(start, offset: range.length){
-                self.selectedTextRange = self.textRangeFromPosition(start, toPosition: end)
-            }
-        }
+//        if let start = self.positionFromPosition(self.beginningOfDocument, offset: range.location){
+//            if let end = self.positionFromPosition(start, offset: range.length){
+//        if let start = self.position(position(from: self.beginningOfDocument, offset: range.location)) {
+//            if let end = self.position(from: start, in: UITextLayoutDirection, offset: range.length) {
+ //               self.selectedTextRange = self.textRangeFromPosition(start, toPosition: end)
+//            }
+//        }
     }
     
     func replaceRange(range:NSRange, replacementString:String, limitedToLength:Int){
@@ -29,10 +31,10 @@ extension UITextField {
         let repLength = replacementString.characters.count
         var validRepString = replacementString
         if repLength > allowedRepLength{
-            validRepString = (replacementString as NSString).substringToIndex(allowedRepLength)
+            validRepString = (replacementString as NSString).substring(to: allowedRepLength)
         }
-        (text as NSString).stringByReplacingCharactersInRange(range, withString: validRepString);
-        self.setCursorPosition(range.location + validRepString.characters.count)
+        (text as NSString).replacingCharacters(in: range, with: validRepString);
+        self.setCursorPosition(position: range.location + validRepString.characters.count)
     }
 
 }

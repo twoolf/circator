@@ -2,7 +2,7 @@
 //  AddEventViewController.swift
 //  MetabolicCompass
 //
-//  Created by Artem Usachov on 6/6/16.    
+//  Created by Artem Usachov on 6/6/16.      
 //  Copyright © 2016 Yanif Ahmad, Tom Woolf. All rights reserved.
 //
 
@@ -47,14 +47,14 @@ class AddEventViewController: UIViewController, AddEventModelDelegate {
                 self.navigationItem.title = "ADD EXERCISE TIME"
             case .Sleep:
                 sleepTimeLabel.isHidden = false
-                addEventModel.delegate = self
+//                addEventModel.delegate = self  
                 addEventModel.datePickerTags = [1, 2, 3]
                 addEventModel.countDownPickerTags = []
                 tableDataSource.sleepMode = true
                 tableDataSource.dataSourceCells = [startSleepCellIdentifier, endSleepCellIdentifier]//set base cells
                 eventImage.image = UIImage(named: "add-sleep-big-image")!
                 self.navigationItem.title = "ADD SLEEP TIME"
-                sleepTimeLabel.attributedText = addEventModel.getSleepTimeString()
+//                sleepTimeLabel.attributedText = addEventModel.getSleepTimeString()
             default:
                 self.navigationItem.title = "ADD MEAL TIME"
         }
@@ -136,8 +136,11 @@ class AddEventViewController: UIViewController, AddEventModelDelegate {
                         self.dismiss(animated: true, completion: nil)
                     }
                 })
+ //       case .default:
+ //               return { print("default")
             case .Sleep:
-                addEventModel.saveSleepEvent(completion: { (success, errorMessage) in
+ //               addEventModel.saveSleepEvent(completion: { (success, errorMessage) in
+                addEventModel.saveExerciseEvent(completion: { (success, errorMessage) in
                     Async.main {
                         guard success else {
                             self.showValidationAlert(message: errorMessage!)
@@ -163,3 +166,4 @@ class AddEventViewController: UIViewController, AddEventModelDelegate {
         sleepTimeLabel.attributedText = updatedTime
     }
 }
+//}

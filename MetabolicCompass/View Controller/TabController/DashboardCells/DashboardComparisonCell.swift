@@ -31,8 +31,8 @@ class DashboardComparisonCell: UITableViewCell {
                 return
             }
             
-            sampleIcon.image = appearanceProvider.imageForSampleType(sampleType!.identifier, active: true)
-            sampleName.attributedText = appearanceProvider.titleForSampleType(sampleType!.identifier, active: true)
+            sampleIcon.image = appearanceProvider.imageForSampleType(sampleType: sampleType!.identifier, active: true)
+            sampleName.attributedText = appearanceProvider.titleForSampleType(sampleType: sampleType!.identifier, active: true)
         }
     }
     
@@ -43,7 +43,7 @@ class DashboardComparisonCell: UITableViewCell {
         // Initialization code
     }
 
-    override func setSelected(selected: Bool, animated: Bool) {
+    override func setSelected(_ selected: Bool, animated: Bool) {
         super.setSelected(selected, animated: animated)
 
         // Configure the view for the selected state
@@ -56,44 +56,45 @@ class DashboardComparisonCell: UITableViewCell {
 
     /// loading both User and Population samples
     func setUserData(userData: [MCSample], populationAverageData: [MCSample], stalePopulation: Bool = false) {
-        loadUserSamples(userData)
-        loadPopSamples(populationAverageData, stale: stalePopulation)
+        loadUserSamples(results: userData)
+        loadPopSamples(results: populationAverageData, stale: stalePopulation)
     }
     
     private let defaultTextColor  = UIColor(red: 62.0/255.0, green: 84.0/255.0, blue: 117.0/255.0, alpha: 1.0)
-    private let defaultDigitColor = UIColor.whiteColor()
-    private let staleDigitColor   = UIColor.yellowColor()
+    private let defaultDigitColor = UIColor.white
+    private let staleDigitColor   = UIColor.yellow
 
     private func loadUserSamples(results: [MCSample]) {
-        let stale = (results.last?.startDate < 1.days.ago) ?? false
+ //       if let stale = (results.last?.startDate)  { stale.
+ //       {  if stale < 1.days.ago) ?? false }
 
-        var text = DashboardComparisonCell.healthFormatter.stringFromSamples(results)
-        if stale { text = text + "**" }
+        var text = DashboardComparisonCell.healthFormatter.stringFromSamples(samples: results)
+ //       if stale { text = text + "**" }
 
-        let formatAttrs = [NSForegroundColorAttributeName: stale ? staleDigitColor : defaultDigitColor,
-                           NSFontAttributeName : ScreenManager.appFontOfSize(16)]
+ //       let formatAttrs = [NSForegroundColorAttributeName: stale ? staleDigitColor : defaultDigitColor,
+ //                          NSFontAttributeName : ScreenManager.appFontOfSize(16)] 
 
         let defaultFormatAttrs = [NSForegroundColorAttributeName: defaultTextColor,
-                                  NSFontAttributeName : ScreenManager.appFontOfSize(16)]
+                                  NSFontAttributeName : ScreenManager.appFontOfSize(size: 16)]
 
-        localSampleValueTextField.attributedText =
-            text.formatTextWithRegex("[-+]?(\\d*[.,/])?\\d+", format: formatAttrs, defaultFormat: defaultFormatAttrs)
+//        localSampleValueTextField.attributedText =
+//            text.formatTextWithRegex("[-+]?(\\d*[.,/])?\\d+", format: formatAttrs, defaultFormat: defaultFormatAttrs)
     }
     
     /// note setUserData above that uses this call
     private func loadPopSamples(results: [MCSample], stale: Bool) {
         
-        var text = DashboardComparisonCell.healthFormatter.stringFromSamples(results)
+        var text = DashboardComparisonCell.healthFormatter.stringFromSamples(samples: results)
         if stale { text = text + "**" }
 
         let formatAttrs = [NSForegroundColorAttributeName: stale ? staleDigitColor : defaultDigitColor,
-                           NSFontAttributeName : ScreenManager.appFontOfSize(16)]
+                           NSFontAttributeName : ScreenManager.appFontOfSize(size: 16)]
 
         let defaultFormatAttrs = [NSForegroundColorAttributeName: defaultTextColor,
-                                  NSFontAttributeName : ScreenManager.appFontOfSize(16)]
+                                  NSFontAttributeName : ScreenManager.appFontOfSize(size: 16)]
 
         populationSampleValueTextField.attributedText =
-            text.formatTextWithRegex("[-+]?(\\d*[.,/])?\\d+", format: formatAttrs, defaultFormat: defaultFormatAttrs)
+            text.formatTextWithRegex(regex: "[-+]?(\\d*[.,/])?\\d+", format: formatAttrs, defaultFormat: defaultFormatAttrs)
     }
     
     

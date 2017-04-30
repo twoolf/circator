@@ -28,23 +28,23 @@ class DashboardTabControllerViewController: UIViewController {
         self.updateNavigationItem()
     }
    
-    override func preferredStatusBarStyle() -> UIStatusBarStyle {
-        return .LightContent
-    }
+/*    func preferredStatusBarStyle() -> UIStatusBarStyle {
+        return .lightContent
+    } */
     
     func updateNavigationItem() {
         
-        self.navigationController?.navigationBar.tintColor = UIColor.whiteColor()
-        self.navigationController?.navigationBar.barStyle = .Black;
+        self.navigationController?.navigationBar.tintColor = UIColor.white
+        self.navigationController?.navigationBar.barStyle = .black;
         
         self.navigationItem.title = NSLocalizedString("DASHBOARD", comment: "dashboard screen title")
         
-        let manageButton = ScreenManager.sharedInstance.appNavButtonWithTitle(NSLocalizedString("Manage", comment: "dashboard manage button"))
-        manageButton.addTarget(self, action: #selector(didSelectManageButton), forControlEvents: .TouchUpInside)
+        let manageButton = ScreenManager.sharedInstance.appNavButtonWithTitle(title: NSLocalizedString("Manage", comment: "dashboard manage button"))
+        manageButton.addTarget(self, action: #selector(didSelectManageButton), for: .touchUpInside)
         self.leftNavButton = UIBarButtonItem(customView: manageButton)
         
-        let filtersButton = ScreenManager.sharedInstance.appNavButtonWithTitle(NSLocalizedString("Filters", comment: "dashboard filter button"))
-        filtersButton.addTarget(self, action: #selector(didSelectFiltersButton), forControlEvents: .TouchUpInside)
+        let filtersButton = ScreenManager.sharedInstance.appNavButtonWithTitle(title: NSLocalizedString("Filters", comment: "dashboard filter button"))
+        filtersButton.addTarget(self, action: #selector(didSelectFiltersButton), for: .touchUpInside)
         self.rightNavButton = UIBarButtonItem(customView: filtersButton)
         
         navigationItem.leftBarButtonItem = self.leftNavButton
@@ -56,7 +56,7 @@ class DashboardTabControllerViewController: UIViewController {
     private let manageBalanceControllerSegue   = "ManageBalanceSegue"
     
     func didSelectFiltersButton(sender: AnyObject) {
-        self.performSegueWithIdentifier(filterControllerSegue, sender: self)
+        self.performSegue(withIdentifier: filterControllerSegue, sender: self)
     }
     
     func manageSegueForIndex (index: NSInteger) -> String {
@@ -72,16 +72,16 @@ class DashboardTabControllerViewController: UIViewController {
     }
     
     func didSelectManageButton(sender: AnyObject) {
-        self.performSegueWithIdentifier(self.manageSegueForIndex(self.segmentedControll.selectedSegmentIndex), sender: self)
+        self.performSegue(withIdentifier: self.manageSegueForIndex(index: self.segmentedControll.selectedSegmentIndex), sender: self)
     }
     
     private let dashboardSegueIdentifier = "DashboardSegue"
     
-    override func prepareForSegue(segue: UIStoryboardSegue, sender: AnyObject?)
+    func prepareForSegue(segue: UIStoryboardSegue, sender: AnyObject?)
     {
         if (segue.identifier == dashboardSegueIdentifier)
         {
-            containerController = segue.destinationViewController as? UITabBarController;
+            containerController = segue.destination as? UITabBarController;
         }
     }
 

@@ -13,7 +13,13 @@ import UIKit
  
  - note: could be easily extended to support other metrics for data entry
  */
-class EventPickerManager: NSObject, UIPickerViewDataSource, UIPickerViewDelegate {
+//class EventPickerManager: NSObject, UIPickerViewDataSource, UIPickerViewDelegate {
+class EventPickerManager: NSObject, UIPickerViewDataSource {
+    @available(iOS 2.0, *)
+//    public func numberOfComponents(in pickerView: UIPickerView) -> Int {
+//        return 5
+//    }
+
     
     enum Event {
         case Meal
@@ -23,12 +29,51 @@ class EventPickerManager: NSObject, UIPickerViewDataSource, UIPickerViewDelegate
     
     let event: Event
     
+    @available(iOS 2.0, *)
+    public func numberOfComponents(in pickerView: UIPickerView) -> Int {
+        return 5
+    }
+    
     lazy var pickerView: UIPickerView = {
         let view = UIPickerView()
         view.dataSource = self
-        view.delegate = self
+//        view.delegate = self
         return view
     }()
+    
+    @available(iOS 2.0, *)
+    public func pickerView(_ pickerView: UIPickerView, widthForComponent component: Int) -> CGFloat {
+        let view = UIPickerView()
+        view.dataSource = self
+//        view.delegate = self
+        return view.alpha
+    }
+    
+    @available(iOS 2.0, *)
+    public func pickerView(_ pickerView: UIPickerView, rowHeightForComponent component: Int) -> CGFloat {
+     return CGFloat(5.0)
+    }
+    
+    @available(iOS 2.0, *)
+    public func pickerView(_ pickerView: UIPickerView, titleForRow row: Int, forComponent component: Int) -> String? {
+       return "string"
+    }
+    
+    @available(iOS 6.0, *)
+    public func pickerView(_ pickerView: UIPickerView, attributedTitleForRow row: Int, forComponent component: Int) -> NSAttributedString? {
+        return "NSAttributedstring" as! NSAttributedString
+    }
+    
+    @available(iOS 2.0, *)
+    public func pickerView(_ pickerView: UIPickerView, viewForRow row: Int, forComponent component: Int, reusing view: UIView?) -> UIView {
+        return UIView.init()
+    }
+    
+    
+    @available(iOS 2.0, *)
+    public func pickerView(_ pickerView: UIPickerView, didSelectRow row: Int, inComponent component: Int) {
+        
+    }
     
     init(event: Event) {
         self.event = event
@@ -97,11 +142,11 @@ class EventPickerManager: NSObject, UIPickerViewDataSource, UIPickerViewDelegate
         }
     }
     
-    func pickerView(pickerView: UIPickerView, numberOfRowsInComponent component: Int) -> Int {
+    func pickerView(_ pickerView: UIPickerView, numberOfRowsInComponent component: Int) -> Int {
         switch event {
         case .Sleep:
             if component >= EventPickerManager.sleepEndpointTypeStrings.count {
-                log.info("Invalid PV NRC \(pickerView.numberOfComponents) \(component)")
+//                log.info("Invalid PV NRC \(pickerView.numberOfComponents) \(component)")
                 return 0
             }
             return EventPickerManager.sleepEndpointTypeStrings[component].count
@@ -109,7 +154,7 @@ class EventPickerManager: NSObject, UIPickerViewDataSource, UIPickerViewDelegate
             return EventPickerManager.previewMealTypeStrings[component].count
         case .Exercise:
             if component >= EventPickerManager.durationTypeStrings.count {
-                log.info("Invalid PV NRC \(pickerView.numberOfComponents) \(component)")
+//                log.info("Invalid PV NRC \(pickerView.numberOfComponents) \(component)")
                 return 0
             }
             return EventPickerManager.durationTypeStrings[component].count
@@ -120,13 +165,13 @@ class EventPickerManager: NSObject, UIPickerViewDataSource, UIPickerViewDelegate
         switch event {
         case .Sleep:
             if component >= EventPickerManager.sleepEndpointTypeStrings.count {
-                log.info("Invalid PVRow \(pickerView.numberOfComponents) \(component)")
+//                log.info("Invalid PVRow \(pickerView.numberOfComponents) \(component)")
                 return nil
             }
             return EventPickerManager.sleepEndpointTypeStrings[component][row]
         case .Exercise:
             if component >= EventPickerManager.durationTypeStrings.count {
-                log.info("Invalid PVRow \(pickerView.numberOfComponents) \(component)")
+//                log.info("Invalid PVRow \(pickerView.numberOfComponents) \(component)")
                 return nil
             }
             return EventPickerManager.durationTypeStrings[component][row]

@@ -15,9 +15,9 @@ enum InboxItemType {
     case Notfication
     var controls : [UIControl] {
         switch self {
-        case Event:
+        case .Event:
             return [UIControl()]
-        case Notfication:
+        case .Notfication:
             return [UIControl()]
         }
     }
@@ -42,7 +42,7 @@ class InboxItem : UITableViewCell {
     
     init(receiptDate date : Date, itemData data : InboxItemData) {
         
-        super.init(style: .Default, reuseIdentifier: "InboxItemTableViewCell")
+        super.init(style: .default, reuseIdentifier: "InboxItemTableViewCell")
 
         self.itemData = data
         self.receiptDate = self.itemData.receiptDate
@@ -65,10 +65,10 @@ class InboxItem : UITableViewCell {
         self.contentView.addSubview(controlView)
         
         let controlViewConstraints : [NSLayoutConstraint] = [
-            controlView.topAnchor.constraintEqualToAnchor(self.contentView.topAnchor, constant: 8),
-            controlView.rightAnchor.constraintEqualToAnchor(self.contentView.rightAnchor, constant: -16),
-            controlView.bottomAnchor.constraintEqualToAnchor(self.contentView.bottomAnchor, constant: -8),
-            controlView.widthAnchor.constraintEqualToAnchor(self.contentView.widthAnchor, multiplier: 0.33)
+            controlView.topAnchor.constraint(equalTo: self.contentView.topAnchor, constant: 8),
+            controlView.rightAnchor.constraint(equalTo: self.contentView.rightAnchor, constant: -16),
+            controlView.bottomAnchor.constraint(equalTo: self.contentView.bottomAnchor, constant: -8),
+            controlView.widthAnchor.constraint(equalTo: self.contentView.widthAnchor, multiplier: 0.33)
         ]
         
         self.contentView.addConstraints(controlViewConstraints)
@@ -77,10 +77,10 @@ class InboxItem : UITableViewCell {
         self.contentView.addSubview(self.itemData.itemContentView)
         
         let itemContentsConstraints : [NSLayoutConstraint] = [
-            self.itemData.itemContentView.topAnchor.constraintEqualToAnchor(self.contentView.topAnchor, constant: 8),
-            self.itemData.itemContentView.leftAnchor.constraintEqualToAnchor(self.contentView.leftAnchor, constant: 16),
-            self.itemData.itemContentView.bottomAnchor.constraintEqualToAnchor(self.contentView.bottomAnchor, constant: -8),
-            self.itemData.itemContentView.rightAnchor.constraintEqualToAnchor(controlView.leftAnchor, constant: -16)
+            self.itemData.itemContentView.topAnchor.constraint(equalTo: self.contentView.topAnchor, constant: 8),
+            self.itemData.itemContentView.leftAnchor.constraint(equalTo: self.contentView.leftAnchor, constant: 16),
+            self.itemData.itemContentView.bottomAnchor.constraint(equalTo: self.contentView.bottomAnchor, constant: -8),
+            self.itemData.itemContentView.rightAnchor.constraint(equalTo: controlView.leftAnchor, constant: -16)
         ]
         
         self.contentView.addConstraints(itemContentsConstraints)
@@ -116,7 +116,7 @@ class InboxManager {
     
     var items : [InboxItem] = []
     
-    var lastUpdated : Date? {
+    var lastUpdated : DateComponents? {
         didSet {
             EventInboxViewController.shared.reloadData()
         }
@@ -128,7 +128,7 @@ class InboxManager {
         
         
         if self.lastUpdated == nil {
-            self.lastUpdated = Date()
+            self.lastUpdated = DateComponents()
         }
         
         self.loadEventsSinceUpdated()
@@ -142,10 +142,10 @@ class InboxManager {
     
     func loadEventsSinceUpdated() {
         
-        let calender = NSCalendar(calendarIdentifier: NSCalendarIdentifierGregorian)!
-        let components = calender.components(.Minute, fromDate: self.lastUpdated!, toDate: Date(), options: .WrapComponents)
+        var calender = NSCalendar(calendarIdentifier: NSCalendar.Identifier.gregorian)!
+//        var components = calender.components(.minute, from: self.lastUpdated!, to: Date(), options: .wrapComponents)
         
-        let dateFormatter : DateFormatter = {
+        var dateFormatter : DateFormatter = {
             let formatter = DateFormatter()
             formatter.dateFormat = "EEEE mmmm, dd"
             return formatter
@@ -153,17 +153,17 @@ class InboxManager {
         
         if let then = self.lastUpdated {
             
-            if then.components.minute % 15 != 0 {
-                let difference = 15 - (then.components.minute % 15)
-                then.components.setValue(then.components.minute + difference, forComponent: .Minute)
+            if then.minute! % 15 != 0 {
+                var difference = 15 - (then.minute! % 15)
+//                then.setValue(then.minute + difference, forComponent: .minute)
             }
             
             
-            while components.minute > 0 {
+            while then.minute! > 0 {
                 
-                let weekday = Weekday(rawValue: 1)!
+                var weekday = Weekday(rawValue: 1)!
                 
-                print(components)
+//                print(components)
                 
                 //TODO
                 //is componenents.seconds the same thing as number of second elapsed since midnight of that day??
@@ -183,10 +183,9 @@ class InboxManager {
                 
                 /* updates counter of minutes then until now, eventually decrementing to zero */
                 
-                then.components.setValue(then.components.minute + 15, forComponent: .Minute)
+//                then.components.setValue(then.components.minute + 15, forComponent: .Minute)
 
-                components.setValue(components.minute - 15, forComponent: .Minute)
-                
+//
  
             }
             
@@ -194,7 +193,7 @@ class InboxManager {
         }
         
         //changes date of last update to now
-        self.lastUpdated = Date()
+        self.lastUpdated = DateComponents()
         
     }
 

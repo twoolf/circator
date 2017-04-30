@@ -87,14 +87,14 @@ class RadarViewController : UIViewController, ChartViewDelegate {
         chart.yAxis.axisRange = 1.0
         chart.yAxis.drawLabelsEnabled = false
         chart.xAxis.drawLabelsEnabled = false
-        chart.webColor = UIColor.colorWithHexString(rgb: "#042652")!
+//        chart.webColor = UIColor.colorWithHexString(rgb: "#042652")!
         chart.webAlpha = 1.0
 
         let legend = chart.legend
         legend.enabled = true
         legend.position = ScreenManager.sharedInstance.radarLegendPosition()
         legend.font = ScreenManager.appFontOfSize(size: 12)
-        legend.textColor = UIColor.colorWithHexString(rgb: "#ffffff", alpha: 0.3)!
+//        legend.textColor = UIColor.colorWithHexString(rgb: "#ffffff", alpha: 0.3)!
         legend.xEntrySpace = 50.0
         legend.yEntrySpace = 5.0
         return chart
@@ -275,7 +275,7 @@ class RadarViewController : UIViewController, ChartViewDelegate {
         let popData = sampleTypeRange.map(popEntry)
 
         let indDataSet = MetabolicChartDataSet(values: indData, label: NSLocalizedString("Individual value", comment: "Individual"))
-        indDataSet.fillColor = UIColor.colorWithHexString(rgb: "#427DC9", alpha: 1.0)!
+//        indDataSet.fillColor = UIColor.colorWithHexString(rgb: "#427DC9", alpha: 1.0)!
         indDataSet.setColor(indDataSet.fillColor)
         indDataSet.drawFilledEnabled = true
         indDataSet.lineWidth = 1.0
@@ -300,11 +300,11 @@ class RadarViewController : UIViewController, ChartViewDelegate {
         
         let xVals = sampleTypes.map { type in return HMConstants.sharedInstance.healthKitShortNames[type.identifier]! }
 
-        let data = RadarChartDataEntry(value: Double(xVals), data: [indDataSet, popDataSet])
-        data.setDrawValues(false)
-        radarChart.data = data
+//        let data = RadarChartDataEntry(xValues: Double(xVals), data: [indDataSet, popDataSet])
+//        data.setDrawValues(false)
+//        radarChart.data = data
 
-        radarChart.highlightValue(xIndex: 0, dataSetIndex: 0, callDelegate: false)
+//        radarChart.highlightValue(xIndex: 0, dataSetIndex: 0, callDelegate: false)
         radarChart.xAxis.labelTextColor = .white
         radarChart.xAxis.labelFont = UIFont.systemFont(ofSize: 12, weight: UIFontWeightRegular)
         radarChart.yAxis.drawLabelsEnabled = false

@@ -2,7 +2,7 @@
 //  FastingDataModel.swift
 //  MetabolicCompass 
 //
-//  Created by Yanif Ahmad on 7/9/16.
+//  Created by Yanif Ahmad on 7/9/16.     
 //  Copyright © 2016 Yanif Ahmad, Tom Woolf. All rights reserved.
 //
 
@@ -50,21 +50,21 @@ public class FastingDataModel : NSObject {
         //self.logModel()
     }
 
-    public func updateData(completion: NSError? -> Void) {
+    public func updateData(completion: @escaping (NSError?) -> Void) {
         var someError: [NSError?] = []
-        let group = dispatch_group_create()
+        let group = DispatchGroup()
 
-        dispatch_group_enter(group)
+        group.enter()
         MCHealthManager.sharedManager.fetchSampleCollectionDays(PreviewManager.manageChartsSampleTypes) { (table, error) in
             guard error == nil else {
-                log.error(error!.localizedDescription)
+ //               log.error(error!.localizedDescription)
                 someError.append(error)
-                dispatch_group_leave(group)
+                group.leave()
                 return
             }
 
             self.samplesCollected = table
-            dispatch_group_leave(group)
+            group.leave()
         }
 
         /*
@@ -84,65 +84,68 @@ public class FastingDataModel : NSObject {
         }
         */
 
-        dispatch_group_enter(group)
-        MCHealthManager.sharedManager.fetchMaxFastingTimes(1.weeks.ago) { (dailyMax, error) in
+        group.enter()
+        let dateAgo = Date().addDays(daysToAdd: -7)
+//        MCHealthManager.sharedManager.fetchMaxFastingTimes(1.weeks.ago) { (dailyMax, error) in
+        MCHealthManager.sharedManager.fetchMaxFastingTimes(dateAgo as NSDate?) { (dailyMax, error) in
             guard error == nil else {
-                log.error(error!.localizedDescription)
+//                log.error(error!.localizedDescription)
                 someError.append(error)
-                dispatch_group_leave(group)
+                group.leave()
                 return
             }
 
-            self.cumulativeWeeklyFasting = dailyMax.reduce(0.0, combine: { $0 + $1.1 })
-            log.info("WF MAXF result: \(dailyMax) \(self.cumulativeWeeklyFasting)")
-            dispatch_group_leave(group)
+            self.cumulativeWeeklyFasting = dailyMax.reduce(0.0, { $0 + $1.1 })
+//            log.info("WF MAXF result: \(dailyMax) \(self.cumulativeWeeklyFasting)")
+            group.leave()
         }
 
-        dispatch_group_enter(group)
+        group.enter()
         MCHealthManager.sharedManager.fetchWeeklyFastingVariability { (variability, error) in
             guard error == nil else {
-                log.error(error!.localizedDescription)
+//                log.error(error!.localizedDescription)
                 someError.append(error)
-                dispatch_group_leave(group)
+                group.leave()
                 return
             }
 
-            log.info("WF variability result: \(variability)")
+//            log.info("WF variability result: \(variability)")
             self.weeklyFastingVariability = variability
-            dispatch_group_leave(group)
+            group.leave()
         }
 
-        dispatch_group_enter(group)
+        group.enter()
         MCHealthManager.sharedManager.fetchWeeklyFastType { (fSleep, fAwake, error) in
             guard error == nil else {
-                log.error(error!.localizedDescription)
+//                log.error(error!.localizedDescription)
                 someError.append(error)
-                dispatch_group_leave(group)
+                group.leave()
                 return
             }
 
-            log.info("WF FS/FA TYPE result: \(fSleep) \(fAwake)")
+//            log.info("WF FS/FA TYPE result: \(fSleep) \(fAwake)")
             self.fastSleep = fSleep
             self.fastAwake = fAwake
-            dispatch_group_leave(group)
+            group.leave()
         }
 
-        dispatch_group_enter(group)
+        group.enter()
         MCHealthManager.sharedManager.fetchWeeklyEatAndExercise { (tEat, tExercise, error) in
             guard error == nil else {
-                log.error(error!.localizedDescription)
+//                log.error(error!.localizedDescription)
                 someError.append(error)
-                dispatch_group_leave(group)
+                group.leave()
                 return
             }
 
-            log.info("WEE result: \(tEat) \(tExercise)")
+//            log.info("WEE result: \(tEat) \(tExercise)") 
             self.fastEat = tEat
             self.fastExercise = tExercise
-            dispatch_group_leave(group)
+            group.leave()
         }
 
-        dispatch_group_notify(group, dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_BACKGROUND, 0)) {
+//        DispatchGroup.notify(qos: group, queue: DispatchQueue.global(DISPATCH_QUEUE_PRIORITY_BACKGROUND)) {
+   /*    group.notify(qos: group, queue: DispatchQueue.main) {
             guard someError.count == 0 else {
                 completion(someError[0])
                 return
@@ -151,15 +154,15 @@ public class FastingDataModel : NSObject {
             self.refreshChartEntries()
             // self.logModel()
             completion(nil)
-        }
+        } */
     }
 
     func refreshChartEntries() {
         var typeFraction : [(SamplesCollectedIndex, Double)] = []
         var typeFractionForOther : [(SamplesCollectedIndex, Double)] = [] // Types to be summarized as "Other"
 
-        let sorted = self.samplesCollected.sort({ (a,b) in return a.1 > b.1 })
-        let total = sorted.reduce(0.0, combine: { (acc, e) in acc + Double(e.1) })
+        let sorted = self.samplesCollected.sorted(by: { (a,b) in return a.1 > b.1 })
+        let total = sorted.reduce(0.0, { (acc, e) in acc + Double(e.1) })
 
         if total == 0.0 {
             self.samplesCollectedDataEntries = []
@@ -173,27 +176,27 @@ public class FastingDataModel : NSObject {
                 i += 1
             }
 
-            self.samplesCollectedDataEntries = typeFraction.enumerate().map {
-                return ($0.1.0, ChartDataEntry(value: total == 0.0 ? 0.0 : ( $0.1.1 / total ), xIndex: $0.0))
+            self.samplesCollectedDataEntries = typeFraction.enumerated().map {
+                return ($0.1.0, ChartDataEntry(x: total == 0.0 ? 0.0 : ( $0.1.1 / total ), y: Double($0.0)))
             }
 
             if !typeFractionForOther.isEmpty {
-                let otherTotal = typeFractionForOther.reduce(0.0, combine: { return $0.0 + $0.1.1 })
-                let entry = ChartDataEntry(value: otherTotal / total, xIndex: self.samplesCollectedDataEntries.count)
+                let otherTotal = typeFractionForOther.reduce(0.0, { return $0.0 + $0.1.1 })
+                let entry = ChartDataEntry(x: otherTotal / total, y: Double(self.samplesCollectedDataEntries.count))
                 self.samplesCollectedDataEntries.append((.Other, entry))
             }
         }
     }
 
     func logModel() {
-        log.info("fastSlp: \(self.fastSleep)")
-        log.info("fastAwk: \(self.fastAwake)")
-        log.info("fastEat: \(self.fastEat)")
-        log.info("fastExc: \(self.fastExercise)")
-        log.info("cwf: \(self.cumulativeWeeklyFasting)")
+//        log.info("fastSlp: \(self.fastSleep)")
+//        log.info("fastAwk: \(self.fastAwake)")
+//        log.info("fastEat: \(self.fastEat)")
+//        log.info("fastExc: \(self.fastExercise)")
+//        log.info("cwf: \(self.cumulativeWeeklyFasting)")
         //log.info("cwnf: \(self.cumulativeWeeklyNonFast)")
-        log.info("wvf: \(self.weeklyFastingVariability)")
-        log.info("sd: \(self.samplesCollected)")
+//        log.info("wvf: \(self.weeklyFastingVariability)")
+//        log.info("sd: \(self.samplesCollected)")
     }
 }
 

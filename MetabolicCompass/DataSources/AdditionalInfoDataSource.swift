@@ -56,9 +56,9 @@ public class AdditionalInfoDataSource: BaseDataSource {
     }
 
     override public func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
-        let item = model.itemAtIndexPath(indexPath: indexPath)
+        let item = model.itemAtIndexPath(indexPath: indexPath as NSIndexPath)
 
-        if isSleepCellAtIndexPath(indexPath: indexPath) {
+        if isSleepCellAtIndexPath(indexPath: indexPath as NSIndexPath) {
             // it is sleep cell
             let cell = collectionView.dequeueReusableCell(withReuseIdentifier: scrollSelectionCellIdentifier, for: indexPath as IndexPath) as! ScrollSelectionViewCell
 
@@ -77,7 +77,7 @@ public class AdditionalInfoDataSource: BaseDataSource {
                 cell.setSelectedValue(value: value)
             } else {
                 let defaultValue = 8
-                self.model.setNewValueForItem(atIndexPath: indexPath, newValue: defaultValue as AnyObject?)
+                self.model.setNewValueForItem(atIndexPath: indexPath as NSIndexPath, newValue: defaultValue as AnyObject?)
                 cell.setSelectedValue(value: defaultValue)
             }
             cell.changesHandler = { (cell: UICollectionViewCell, newValue: AnyObject?) -> () in

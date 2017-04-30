@@ -19,7 +19,7 @@ class DashboardMetricsAppearanceProvider: NSObject {
     
     func colorForSampleType(sampleType: String, active: Bool) -> UIColor
     {
-        return self.getColorForSampleType(sampleType: sampleType, active: active) ?? UIColor.whiteColor()
+        return self.getColorForSampleType(sampleType: sampleType, active: active) ?? UIColor.white
     }
     
     enum SampleGroupColor: UInt32 {
@@ -33,48 +33,48 @@ class DashboardMetricsAppearanceProvider: NSObject {
     private func getColorForSampleType(sampleType: String, active: Bool) -> UIColor?
     {
         if (!active) {
-            return UIColor.lightGrayColor()
+            return UIColor.lightGray
         }
         
         switch sampleType {
-        case HKQuantityTypeIdentifierBodyMass,
-             HKQuantityTypeIdentifierBodyMassIndex,
-             HKQuantityTypeIdentifierDietaryEnergyConsumed:
-            return UIColor.colorWithHexString("#388CFB")
+        case HKQuantityTypeIdentifier.bodyMass.rawValue,
+             HKQuantityTypeIdentifier.bodyMassIndex.rawValue,
+             HKQuantityTypeIdentifier.dietaryEnergyConsumed.rawValue:
+            return UIColor.colorWithHexString(rgb: "#388CFB")
             
-        case HKQuantityTypeIdentifierHeartRate,
-             HKQuantityTypeIdentifierStepCount,
-             HKQuantityTypeIdentifierBasalEnergyBurned,
-             HKQuantityTypeIdentifierActiveEnergyBurned:
-            return UIColor.colorWithHex(SampleGroupColor.sgRed.rawValue)
+        case HKQuantityTypeIdentifier.heartRate.rawValue,
+             HKQuantityTypeIdentifier.stepCount.rawValue,
+             HKQuantityTypeIdentifier.basalEnergyBurned.rawValue,
+             HKQuantityTypeIdentifier.activeEnergyBurned.rawValue:
+            return UIColor.colorWithHex(hex6: SampleGroupColor.sgRed.rawValue)
             
-        case HKCategoryTypeIdentifierSleepAnalysis,
-             HKQuantityTypeIdentifierUVExposure:
-            return UIColor.colorWithHex(SampleGroupColor.sgYelow.rawValue)
+        case HKCategoryTypeIdentifier.sleepAnalysis.rawValue,
+             HKQuantityTypeIdentifier.uvExposure.rawValue:
+            return UIColor.colorWithHex(hex6: SampleGroupColor.sgYelow.rawValue)
         
-        case HKQuantityTypeIdentifierDietarySugar,
-             HKQuantityTypeIdentifierDietarySodium,
-             HKQuantityTypeIdentifierDietaryCholesterol,
-             HKQuantityTypeIdentifierDietaryCaffeine:
-            return UIColor.colorWithHexString("#8627B5")
+        case HKQuantityTypeIdentifier.dietarySugar.rawValue,
+             HKQuantityTypeIdentifier.dietarySodium.rawValue,
+             HKQuantityTypeIdentifier.dietaryCholesterol.rawValue,
+             HKQuantityTypeIdentifier.dietaryCaffeine.rawValue:
+            return UIColor.colorWithHexString(rgb: "#8627B5")
         
-        case HKQuantityTypeIdentifierDietaryProtein,
-             HKQuantityTypeIdentifierDietaryFatTotal,
-             HKQuantityTypeIdentifierDietaryCarbohydrates:
-            return UIColor.colorWithHexString("#138F16")
+        case HKQuantityTypeIdentifier.dietaryProtein.rawValue,
+             HKQuantityTypeIdentifier.dietaryFatTotal.rawValue,
+             HKQuantityTypeIdentifier.dietaryCarbohydrates.rawValue:
+            return UIColor.colorWithHexString(rgb: "#138F16")
         
-        case HKQuantityTypeIdentifierDietaryFatPolyunsaturated,
-             HKQuantityTypeIdentifierDietaryFatMonounsaturated,
-             HKQuantityTypeIdentifierDietaryFatSaturated,
-             HKQuantityTypeIdentifierDietaryFiber:
-            return UIColor.colorWithHexString("#A57B55")
+        case HKQuantityTypeIdentifier.dietaryFatPolyunsaturated.rawValue,
+             HKQuantityTypeIdentifier.dietaryFatMonounsaturated.rawValue,
+             HKQuantityTypeIdentifier.dietaryFatSaturated.rawValue,
+             HKQuantityTypeIdentifier.dietaryFiber.rawValue:
+            return UIColor.colorWithHexString(rgb: "#A57B55")
         
-        case HKQuantityTypeIdentifierDietaryWater,
-             HKCorrelationTypeIdentifierBloodPressure:
-            return UIColor.colorWithHexString("#BA1075")
+        case HKQuantityTypeIdentifier.dietaryWater.rawValue,
+             HKCorrelationTypeIdentifier.bloodPressure.rawValue:
+            return UIColor.colorWithHexString(rgb: "#BA1075")
 
         default:
-            return UIColor.whiteColor()
+            return UIColor.white
             
         }
     }
@@ -82,56 +82,56 @@ class DashboardMetricsAppearanceProvider: NSObject {
     func typeFromString(string:String) -> String {
         switch string {
         case NSLocalizedString("Weight", comment: "user weight"):
-            return HKQuantityTypeIdentifierBodyMass
+            return HKQuantityTypeIdentifier.bodyMass.rawValue
         case NSLocalizedString("Heart rate", comment: "Heartrate"):
-            return HKQuantityTypeIdentifierHeartRate
+            return HKQuantityTypeIdentifier.heartRate.rawValue
             
         case NSLocalizedString("Sleep", comment: "Sleep") :
-            return HKCategoryTypeIdentifierSleepAnalysis
+            return HKCategoryTypeIdentifier.sleepAnalysis.rawValue
         case NSLocalizedString("BMI", comment: "Body Mass Index") :
-            return HKQuantityTypeIdentifierBodyMassIndex
+            return HKQuantityTypeIdentifier.bodyMassIndex.rawValue
         case NSLocalizedString("Active Energy", comment: "energy burned") :
-            return HKQuantityTypeIdentifierActiveEnergyBurned
+            return HKQuantityTypeIdentifier.activeEnergyBurned.rawValue
         case NSLocalizedString("Resting Energy", comment: "Basal Energy") :
-            return HKQuantityTypeIdentifierBasalEnergyBurned
+            return HKQuantityTypeIdentifier.basalEnergyBurned.rawValue
         case NSLocalizedString("UV Exposure", comment: "UV Exposure") :
-            return HKQuantityTypeIdentifierUVExposure
+            return HKQuantityTypeIdentifier.uvExposure.rawValue
         case NSLocalizedString("Caffeine", comment: "Caffeine") :
-            return HKQuantityTypeIdentifierDietaryCaffeine
+            return HKQuantityTypeIdentifier.dietaryCaffeine.rawValue
         case NSLocalizedString("Sugar", comment: "Sugar") :
-            return HKQuantityTypeIdentifierDietarySugar
+            return HKQuantityTypeIdentifier.dietarySugar.rawValue
         case NSLocalizedString("Cholesterol", comment: "Cholesterol") :
-            return HKQuantityTypeIdentifierDietaryCholesterol
+            return HKQuantityTypeIdentifier.dietaryCholesterol.rawValue
         case NSLocalizedString("Salt", comment: "Sodium") :
-            return HKQuantityTypeIdentifierDietarySodium
+            return HKQuantityTypeIdentifier.dietarySodium.rawValue
         case NSLocalizedString("Protein", comment: "Protein") :
-            return HKQuantityTypeIdentifierDietaryProtein
+            return HKQuantityTypeIdentifier.dietaryProtein.rawValue
         case NSLocalizedString("Fiber", comment: "Fiber") :
-            return HKQuantityTypeIdentifierDietaryFiber
+            return HKQuantityTypeIdentifier.dietaryFiber.rawValue
         case NSLocalizedString("Fat", comment: "Fat") :
-            return HKQuantityTypeIdentifierDietaryFatTotal
+            return HKQuantityTypeIdentifier.dietaryFatTotal.rawValue
         case NSLocalizedString("Carbohydrates", comment: "Carbohydrates") :
-            return HKQuantityTypeIdentifierDietaryCarbohydrates
+            return HKQuantityTypeIdentifier.dietaryCarbohydrates.rawValue
         case NSLocalizedString("Polyunsaturated fat", comment: "Polyunsaturated Fat") :
-            return HKQuantityTypeIdentifierDietaryFatPolyunsaturated
+            return HKQuantityTypeIdentifier.dietaryFatPolyunsaturated.rawValue
         case NSLocalizedString("Saturated fat", comment: "Saturated Fat") :
-            return HKQuantityTypeIdentifierDietaryFatSaturated
+            return HKQuantityTypeIdentifier.dietaryFatSaturated.rawValue
         case NSLocalizedString("Monosaturated fat", comment: "Monosaturated Fat") :
-            return HKQuantityTypeIdentifierDietaryFatMonounsaturated
+            return HKQuantityTypeIdentifier.dietaryFatMonounsaturated.rawValue
         case NSLocalizedString("Water", comment: "Water") :
-            return HKQuantityTypeIdentifierDietaryWater
+            return HKQuantityTypeIdentifier.dietaryWater.rawValue
         case NSLocalizedString("Dietary energy", comment: "Dietary Energy") :
-            return HKQuantityTypeIdentifierDietaryEnergyConsumed
+            return HKQuantityTypeIdentifier.dietaryEnergyConsumed.rawValue
         case NSLocalizedString("Blood pressure", comment: "Blood pressure") :
-            return HKCorrelationTypeIdentifierBloodPressure
+            return HKCorrelationTypeIdentifier.bloodPressure.rawValue
         case NSLocalizedString("Step count", comment: "Step count") :
-            return HKQuantityTypeIdentifierStepCount
+            return HKQuantityTypeIdentifier.stepCount.rawValue
         case NSLocalizedString("UV Exposure", comment: "UV Exposure") :
-            return HKQuantityTypeIdentifierUVExposure
+            return HKQuantityTypeIdentifier.uvExposure.rawValue
         case NSLocalizedString("Salt", comment: "Salt") :
-            return HKQuantityTypeIdentifierDietarySodium
+            return HKQuantityTypeIdentifier.dietarySodium.rawValue
         case NSLocalizedString("Active Energy Burned", comment: " Active Energy Burned") :
-            return HKQuantityTypeIdentifierActiveEnergyBurned
+            return HKQuantityTypeIdentifier.activeEnergyBurned.rawValue
         default:
             return ""
         }
@@ -140,55 +140,55 @@ class DashboardMetricsAppearanceProvider: NSObject {
     func stringForSampleType(sampleType: String) -> String
     {
         switch sampleType {
-        case HKQuantityTypeIdentifierBodyMass:
+        case HKQuantityTypeIdentifier.bodyMass.rawValue:
             return NSLocalizedString("Weight", comment: "user weight")
-        case HKQuantityTypeIdentifierHeartRate:
+        case HKQuantityTypeIdentifier.heartRate.rawValue:
             return NSLocalizedString("Heart rate", comment: "Heartrate")
-        case HKCategoryTypeIdentifierSleepAnalysis:
+        case HKCategoryTypeIdentifier.sleepAnalysis.rawValue:
             return NSLocalizedString("Sleep", comment: "Sleep")
-        case HKQuantityTypeIdentifierBodyMassIndex:
+        case HKQuantityTypeIdentifier.bodyMassIndex.rawValue:
             return NSLocalizedString("BMI", comment: "Body Mass Index")
-        case HKQuantityTypeIdentifierActiveEnergyBurned:
+        case HKQuantityTypeIdentifier.activeEnergyBurned.rawValue:
             return NSLocalizedString("Active Energy", comment: "energy burned")
-        case HKQuantityTypeIdentifierBasalEnergyBurned:
+        case HKQuantityTypeIdentifier.basalEnergyBurned.rawValue:
             return NSLocalizedString("Resting Energy", comment: "Basal Energy")
-        case HKQuantityTypeIdentifierUVExposure:
+        case HKQuantityTypeIdentifier.uvExposure.rawValue:
             return NSLocalizedString("UV Exposure", comment: "UV Exposure")
-        case HKQuantityTypeIdentifierDietaryCaffeine:
+        case HKQuantityTypeIdentifier.dietaryCaffeine.rawValue:
             return NSLocalizedString("Caffeine", comment: "Caffeine")
-        case HKQuantityTypeIdentifierDietarySugar:
+        case HKQuantityTypeIdentifier.dietarySugar.rawValue:
             return NSLocalizedString("Sugar", comment: "Sugar")
-        case HKQuantityTypeIdentifierDietaryCholesterol:
+        case HKQuantityTypeIdentifier.dietaryCholesterol.rawValue:
             return NSLocalizedString("Cholesterol", comment: "Cholesterol")
-        case HKQuantityTypeIdentifierDietarySodium:
+        case HKQuantityTypeIdentifier.dietarySodium.rawValue:
             return NSLocalizedString("Salt", comment: "Sodium")
-        case HKQuantityTypeIdentifierDietaryProtein:
+        case HKQuantityTypeIdentifier.dietaryProtein.rawValue:
             return NSLocalizedString("Protein", comment: "Protein")
-        case HKQuantityTypeIdentifierDietaryFiber:
+        case HKQuantityTypeIdentifier.dietaryFiber.rawValue:
             return NSLocalizedString("Fiber", comment: "Fiber")
-        case HKQuantityTypeIdentifierDietaryFatTotal:
+        case HKQuantityTypeIdentifier.dietaryFatTotal.rawValue:
             return NSLocalizedString("Fat", comment: "Fat")
-        case HKQuantityTypeIdentifierDietaryCarbohydrates:
+        case HKQuantityTypeIdentifier.dietaryCarbohydrates.rawValue:
             return NSLocalizedString("Carbohydrates", comment: "Carbohydrates")
-        case HKQuantityTypeIdentifierDietaryFatPolyunsaturated:
+        case HKQuantityTypeIdentifier.dietaryFatPolyunsaturated.rawValue:
             return NSLocalizedString("Polyunsaturated fat", comment: "Polyunsaturated Fat")
-        case HKQuantityTypeIdentifierDietaryFatSaturated:
+        case HKQuantityTypeIdentifier.dietaryFatSaturated.rawValue:
             return NSLocalizedString("Saturated fat", comment: "Saturated Fat")
-        case HKQuantityTypeIdentifierDietaryFatMonounsaturated:
+        case HKQuantityTypeIdentifier.dietaryFatMonounsaturated.rawValue:
             return NSLocalizedString("Monosaturated fat", comment: "Monosaturated Fat")
-        case HKQuantityTypeIdentifierDietaryWater:
+        case HKQuantityTypeIdentifier.dietaryWater.rawValue:
             return NSLocalizedString("Water", comment: "Water")
-        case HKQuantityTypeIdentifierDietaryEnergyConsumed:
+        case HKQuantityTypeIdentifier.dietaryEnergyConsumed.rawValue:
             return NSLocalizedString("Dietary energy", comment: "Dietary Energy")
-        case HKCorrelationTypeIdentifierBloodPressure:
+        case HKCorrelationTypeIdentifier.bloodPressure.rawValue:
             return NSLocalizedString("Blood pressure", comment: "Blood pressure")
-        case HKQuantityTypeIdentifierStepCount:
+        case HKQuantityTypeIdentifier.stepCount.rawValue:
             return NSLocalizedString("Step count", comment: "Step count")
-        case HKQuantityTypeIdentifierUVExposure:
+        case HKQuantityTypeIdentifier.uvExposure.rawValue:
             return NSLocalizedString("UV Exposure", comment: "UV Exposure")
-        case HKQuantityTypeIdentifierDietarySodium:
+        case HKQuantityTypeIdentifier.dietarySodium.rawValue:
             return NSLocalizedString("Salt", comment: "Salt")
-        case HKQuantityTypeIdentifierActiveEnergyBurned:
+        case HKQuantityTypeIdentifier.activeEnergyBurned.rawValue:
             return NSLocalizedString("Active Energy Burned", comment: " Active Energy Burned")
         default:
             return ""
@@ -198,51 +198,51 @@ class DashboardMetricsAppearanceProvider: NSObject {
     func stringForSampleTypeOfCorrelate(sampleType: String) -> String
     {
         switch sampleType {
-        case HKQuantityTypeIdentifierBodyMass:
+        case HKQuantityTypeIdentifier.bodyMass.rawValue:
             return NSLocalizedString("Weight", comment: "user weight")
-        case HKQuantityTypeIdentifierHeartRate:
+        case HKQuantityTypeIdentifier.heartRate.rawValue:
             return NSLocalizedString("Heart rate", comment: "Heartrate")
-        case HKCategoryTypeIdentifierSleepAnalysis:
+        case HKCategoryTypeIdentifier.sleepAnalysis.rawValue:
             return NSLocalizedString("Sleep", comment: "Sleep")
-        case HKQuantityTypeIdentifierBodyMassIndex:
+        case HKQuantityTypeIdentifier.bodyMassIndex.rawValue:
             return NSLocalizedString("BMI", comment: "Body Mass Index")
-        case HKQuantityTypeIdentifierActiveEnergyBurned:
+        case HKQuantityTypeIdentifier.activeEnergyBurned.rawValue:
             return NSLocalizedString("Active En.", comment: "energy burned")
-        case HKQuantityTypeIdentifierBasalEnergyBurned:
+        case HKQuantityTypeIdentifier.basalEnergyBurned.rawValue:
             return NSLocalizedString("Resting En.", comment: "Basal Energy")
-        case HKQuantityTypeIdentifierDietaryCaffeine:
+        case HKQuantityTypeIdentifier.dietaryCaffeine.rawValue:
             return NSLocalizedString("Caffeine", comment: "Caffeine")
-        case HKQuantityTypeIdentifierDietarySugar:
+        case HKQuantityTypeIdentifier.dietarySugar.rawValue:
             return NSLocalizedString("Sugar", comment: "Sugar")
-        case HKQuantityTypeIdentifierDietaryCholesterol:
+        case HKQuantityTypeIdentifier.dietaryCholesterol.rawValue:
             return NSLocalizedString("Cholesterol", comment: "Cholesterol")
-        case HKQuantityTypeIdentifierDietarySodium:
+        case HKQuantityTypeIdentifier.dietarySodium.rawValue:
             return NSLocalizedString("Salt", comment: "Sodium")
-        case HKQuantityTypeIdentifierDietaryProtein:
+        case HKQuantityTypeIdentifier.dietaryProtein.rawValue:
             return NSLocalizedString("Protein", comment: "Protein")
-        case HKQuantityTypeIdentifierDietaryFiber:
+        case HKQuantityTypeIdentifier.dietaryFiber.rawValue:
             return NSLocalizedString("Fiber", comment: "Fiber")
-        case HKQuantityTypeIdentifierDietaryFatTotal:
+        case HKQuantityTypeIdentifier.dietaryFatTotal.rawValue:
             return NSLocalizedString("Fat", comment: "Fat")
-        case HKQuantityTypeIdentifierDietaryCarbohydrates:
+        case HKQuantityTypeIdentifier.dietaryCarbohydrates.rawValue:
             return NSLocalizedString("Carbohydrates", comment: "Carbohydrates")
-        case HKQuantityTypeIdentifierDietaryFatPolyunsaturated:
+        case HKQuantityTypeIdentifier.dietaryFatPolyunsaturated.rawValue:
             return NSLocalizedString("Polyunsat. Fat", comment: "Polyunsaturated Fat")
-        case HKQuantityTypeIdentifierDietaryFatSaturated:
+        case HKQuantityTypeIdentifier.dietaryFatSaturated.rawValue:
             return NSLocalizedString("Sat. Fat", comment: "Saturated Fat")
-        case HKQuantityTypeIdentifierDietaryFatMonounsaturated:
+        case HKQuantityTypeIdentifier.dietaryFatMonounsaturated.rawValue:
             return NSLocalizedString("Monosat. Fat", comment: "Monosaturated Fat")
-        case HKQuantityTypeIdentifierDietaryWater:
+        case HKQuantityTypeIdentifier.dietaryWater.rawValue:
             return NSLocalizedString("Water", comment: "Water")
-        case HKQuantityTypeIdentifierDietaryEnergyConsumed:
+        case HKQuantityTypeIdentifier.dietaryEnergyConsumed.rawValue:
             return NSLocalizedString("Dietary En.", comment: "Dietary Energy")
-        case HKCorrelationTypeIdentifierBloodPressure:
+        case HKCorrelationTypeIdentifier.bloodPressure.rawValue:
             return NSLocalizedString("Blood pressure", comment: "Blood pressure")
-        case HKQuantityTypeIdentifierStepCount:
+        case HKQuantityTypeIdentifier.stepCount.rawValue:
             return NSLocalizedString("Steps", comment: "Step count")
-        case HKQuantityTypeIdentifierUVExposure:
+        case HKQuantityTypeIdentifier.uvExposure.rawValue:
             return NSLocalizedString("UV", comment: "UV Exposure")
-        case HKQuantityTypeIdentifierDietarySodium:
+        case HKQuantityTypeIdentifier.dietarySodium.rawValue:
             return NSLocalizedString("Salt", comment: "Salt")
         default:
             return ""
@@ -251,11 +251,11 @@ class DashboardMetricsAppearanceProvider: NSObject {
     
     func titleForSampleType(sampleType: String, active: Bool) -> NSAttributedString
     {
-        return self.attributedText(self.stringForSampleType(sampleType), forSampleType: sampleType, active: active)
+        return self.attributedText(text: self.stringForSampleType(sampleType: sampleType), forSampleType: sampleType, active: active)
     }
     
     func titleForAnalysisChartOfType(sampleType: String) -> NSAttributedString {
-        return self.attributedText(self.stringForSampleTypeOfCorrelate(sampleType), forSampleType: sampleType, active: false)
+        return self.attributedText(text: self.stringForSampleTypeOfCorrelate(sampleType: sampleType), forSampleType: sampleType, active: false)
     }
     
     private func imageNameWithState(baseName: String, active: Bool) -> String
@@ -266,53 +266,53 @@ class DashboardMetricsAppearanceProvider: NSObject {
     private func imageNameForSampleType(sampleType: String) -> String
     {
         switch sampleType {
-        case HKQuantityTypeIdentifierBodyMass:
+        case HKQuantityTypeIdentifier.bodyMass.rawValue:
             return "icon-weight"
-        case HKQuantityTypeIdentifierHeartRate:
+        case HKQuantityTypeIdentifier.heartRate.rawValue:
             return "icon-heart-rate"
-        case HKCategoryTypeIdentifierSleepAnalysis:
+        case HKCategoryTypeIdentifier.sleepAnalysis.rawValue:
             return "icon-sleep"
-        case HKQuantityTypeIdentifierBodyMassIndex:
+        case HKQuantityTypeIdentifier.bodyMassIndex.rawValue:
             return "icon-bmi"
-        case HKQuantityTypeIdentifierActiveEnergyBurned:
+        case HKQuantityTypeIdentifier.activeEnergyBurned.rawValue:
             return "icon-active-energy"
-        case HKQuantityTypeIdentifierBasalEnergyBurned:
+        case HKQuantityTypeIdentifier.basalEnergyBurned.rawValue:
             return "icon-resting-energy"
-        case HKQuantityTypeIdentifierUVExposure:
+        case HKQuantityTypeIdentifier.uvExposure.rawValue:
             return "icon-uv"
-        case HKQuantityTypeIdentifierDietaryCaffeine:
+        case HKQuantityTypeIdentifier.dietaryCaffeine.rawValue:
             return "icon-caffeine"
-        case HKQuantityTypeIdentifierDietarySugar:
+        case HKQuantityTypeIdentifier.dietarySugar.rawValue:
             return "icon-sugar"
-        case HKQuantityTypeIdentifierDietaryCholesterol:
+        case HKQuantityTypeIdentifier.dietaryCholesterol.rawValue:
             return "icon-cholesterol"
-        case HKQuantityTypeIdentifierDietarySodium:
+        case HKQuantityTypeIdentifier.dietarySodium.rawValue:
             return "icon-salt"
-        case HKQuantityTypeIdentifierDietaryProtein:
+        case HKQuantityTypeIdentifier.dietaryProtein.rawValue:
             return "icon-protein"
-        case HKQuantityTypeIdentifierDietaryFiber:
+        case HKQuantityTypeIdentifier.dietaryFiber.rawValue:
             return "icon-fiber"
-        case HKQuantityTypeIdentifierDietaryFatTotal:
+        case HKQuantityTypeIdentifier.dietaryFatTotal.rawValue:
             return "icon-fat"
-        case HKQuantityTypeIdentifierDietaryCarbohydrates:
+        case HKQuantityTypeIdentifier.dietaryCarbohydrates.rawValue:
             return "icon-carbohydrates"
-        case HKQuantityTypeIdentifierDietaryFatPolyunsaturated:
+        case HKQuantityTypeIdentifier.dietaryFatPolyunsaturated.rawValue:
             return "icon-polyunsaturated-fat"
-        case HKQuantityTypeIdentifierDietaryFatSaturated:
+        case HKQuantityTypeIdentifier.dietaryFatSaturated.rawValue:
             return "icon-saturated-fat"
-        case HKQuantityTypeIdentifierDietaryFatMonounsaturated:
+        case HKQuantityTypeIdentifier.dietaryFatMonounsaturated.rawValue:
             return "icon-monosaturated-fat"
-        case HKQuantityTypeIdentifierDietaryWater:
+        case HKQuantityTypeIdentifier.dietaryWater.rawValue:
             return "icon-water"
-        case HKQuantityTypeIdentifierDietaryEnergyConsumed:
+        case HKQuantityTypeIdentifier.dietaryEnergyConsumed.rawValue:
             return "icon-calories"
-        case HKCorrelationTypeIdentifierBloodPressure:
+        case HKCorrelationTypeIdentifier.bloodPressure.rawValue:
             return "icon-blood"
-        case HKQuantityTypeIdentifierStepCount:
+        case HKQuantityTypeIdentifier.stepCount.rawValue:
             return "icon-steps"
-        case HKQuantityTypeIdentifierUVExposure:
+        case HKQuantityTypeIdentifier.uvExposure.rawValue:
             return "icon-uv"
-        case HKQuantityTypeIdentifierDietarySodium:
+        case HKQuantityTypeIdentifier.dietarySodium.rawValue:
             return "icon-salt"
         default:
             return ""
@@ -321,7 +321,7 @@ class DashboardMetricsAppearanceProvider: NSObject {
 
     func imageForSampleType(sampleType: String, active: Bool) -> UIImage?
     {
-        let imageName = self.imageNameWithState(self.imageNameForSampleType(sampleType), active: active)
+        let imageName = self.imageNameWithState(baseName: self.imageNameForSampleType(sampleType: sampleType), active: active)
         let image = UIImage(named: imageName)
         return image
     }

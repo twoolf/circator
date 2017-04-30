@@ -122,14 +122,14 @@ class BaseViewController: UIViewController, UIGestureRecognizerDelegate {
     func setupScrollViewForKeyboardsActions(view: UIScrollView) {
         scrollView = view
 
-        NotificationCenter.defaultCenter.addObserver(self, selector: #selector(BaseViewController.keyboardWillShow(_:)), name:UIKeyboardWillShowNotification, object: nil)
-        NotificationCenter.defaultCenter.addObserver(self, selector: #selector(BaseViewController.keyboardWillHide(_:)), name:UIKeyboardWillHideNotification, object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(self.keyboardWillShow(notification:)), name:NSNotification.Name.UIKeyboardWillShow, object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(self.keyboardWillHide(notification: )), name:NSNotification.Name.UIKeyboardWillHide, object: nil)
     }
 
-    func keyboardWillShow(notification:NSNotification){
+    open func keyboardWillShow(notification:NSNotification){
         if let _scrollView = scrollView {
             var userInfo = notification.userInfo!
-            var keyboardFrame:CGRect = (userInfo[UIKeyboardFrameBeginUserInfoKey] as! NSValue).CGRectValue
+            var keyboardFrame:CGRect = (userInfo[UIKeyboardFrameBeginUserInfoKey] as! NSValue).cgRectValue
             keyboardFrame = view.convert(keyboardFrame, from: nil)
 
             if keyboardFrame.size.height == 0 {
@@ -145,8 +145,8 @@ class BaseViewController: UIViewController, UIGestureRecognizerDelegate {
 
     func keyboardWillHide(notification:NSNotification) {
         switch scrollView {
-        case is UICollectionView:
-            log.info("CollectionView hiding keyboard")
+        case is UICollectionView: break
+//            log.info("CollectionView hiding keyboard")
         default:
             ()
         }

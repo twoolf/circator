@@ -24,7 +24,7 @@ public class UINotifications {
 
     public static func configureNotifications() {
         let screenSize = UIScreen.main.bounds.size
-        log.warning("UINOTIFICATIONS screen height \(screenSize.height) \(screenSize.width)")
+//        log.warning("UINOTIFICATIONS screen height \(screenSize.height) \(screenSize.width)")
         DodoLabelDefaultStyles.font = UIFont(name: "GothamBook", size: ScreenManager.sharedInstance.dodoFontSize())!
     }
 

@@ -17,9 +17,9 @@ class TitledInputCollectionViewCell: BaseCollectionViewCell {
     override func awakeFromNib() {
         super.awakeFromNib()
         
-        inputTxtField.contentVerticalAlignment = UIControlContentVerticalAlignment.Center
+        inputTxtField.contentVerticalAlignment = UIControlContentVerticalAlignment.center
 
-        inputTxtField.addTarget(self, action: #selector(InputCollectionViewCell.textFieldDidChange(_:)), forControlEvents: UIControlEvents.EditingChanged)
+        inputTxtField.addTarget(self, action: #selector(BaseCollectionViewCell.textFieldDidChange(textField: )), for: UIControlEvents.editingChanged)
         inputTxtField.delegate = self
         
         addDoneToolbar(toTextField: inputTxtField)

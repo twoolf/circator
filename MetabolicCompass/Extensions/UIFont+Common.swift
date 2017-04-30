@@ -11,9 +11,9 @@ import UIKit
 
 extension UIFont {
     class func printAllAppFonts(){
-        for familyName in UIFont.familyNames() {
+        for familyName in UIFont.familyNames {
             print("family: \(familyName)")
-            for fontName in UIFont.fontNamesForFamilyName(familyName){
+            for fontName in UIFont.fontNames(forFamilyName: familyName){
                 print("\tfont: \(fontName)")
             }
         }

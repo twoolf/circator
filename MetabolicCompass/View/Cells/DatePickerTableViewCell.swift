@@ -16,18 +16,18 @@ class DatePickerTableViewCell: UITableViewCell {
     
     override func awakeFromNib() {
         super.awakeFromNib()
-        self.selectionStyle = .None
-        self.contentView.userInteractionEnabled = false
+        self.selectionStyle = .none
+        self.contentView.isUserInteractionEnabled = false
     }
 
-    override func setSelected(selected: Bool, animated: Bool) {
+    override func setSelected(_ selected: Bool, animated: Bool) {
         super.setSelected(selected, animated: animated)
 
         // Configure the view for the selected state
     }
 
     @IBAction func pickerDateChanged(sender: UIDatePicker) {
-        self.delegate?.picker(sender, didSelectDate: sender.date)
+        self.delegate?.picker(picker: sender, didSelectDate: sender.date)
     }
 }
 

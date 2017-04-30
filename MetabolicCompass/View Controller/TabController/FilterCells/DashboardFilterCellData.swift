@@ -18,24 +18,24 @@ class DashboardFilterCellData: NSObject {
             var hkQType : HKSampleType? = nil
             if let hkType = hkType {
                 switch hkType {
-                    case HKCategoryTypeIdentifierSleepAnalysis:
-                        hkQType = HKObjectType.categoryTypeForIdentifier(hkType)!
-                    case HKCategoryTypeIdentifierAppleStandHour:
-                        hkQType = HKObjectType.categoryTypeForIdentifier(hkType)!
+                    case HKCategoryTypeIdentifier.sleepAnalysis.rawValue:
+                        hkQType = HKObjectType.categoryType(forIdentifier: HKCategoryTypeIdentifier(rawValue: hkType))!
+                    case HKCategoryTypeIdentifier.appleStandHour.rawValue:
+                        hkQType = HKObjectType.categoryType(forIdentifier: HKCategoryTypeIdentifier(rawValue: hkType))!
                     default:
-                        hkQType = HKObjectType.quantityTypeForIdentifier(hkType)!
+                        hkQType = HKObjectType.quantityType(forIdentifier: HKQuantityTypeIdentifier(rawValue: hkType))!
                 }
                 let mcQueryAttr : MCQueryAttribute = (hkQType!, nil)
 
                 let boundsUnit: HKUnit = hkUnit == nil ? hkQType!.defaultUnit! : hkUnit!
                 var convertedLower = Double(lowerBound)
                 if boundsUnit != hkQType!.serviceUnit! {
-                    convertedLower = HKQuantity(unit: boundsUnit, doubleValue: convertedLower).doubleValueForUnit(hkQType!.serviceUnit!)
+                    convertedLower = HKQuantity(unit: boundsUnit, doubleValue: convertedLower).doubleValue(for: hkQType!.serviceUnit!)
                 }
 
                 var convertedUpper = Double(upperBound)
                 if hkUnit != hkQType!.serviceUnit! {
-                    convertedUpper = HKQuantity(unit: boundsUnit, doubleValue: convertedUpper).doubleValueForUnit(hkQType!.serviceUnit!)
+                    convertedUpper = HKQuantity(unit: boundsUnit, doubleValue: convertedUpper).doubleValue(for: hkQType!.serviceUnit!)
                 }
 
                 return (aggrType, mcQueryAttr, String(convertedLower), String(convertedUpper))

@@ -123,7 +123,7 @@ public class ManageEventMenu: UIView, CAAnimationDelegate, PathMenuItemDelegate 
         self.segmenter = UISegmentedControl(items: ["Add Activity", "Delete Activity"])
         self.segmenter.selectedSegmentIndex = 0
         self.segmenter.setTitleTextAttributes(attrs, for: .normal)
-        self.segmenter.addTarget(self, action: #selector(self.segmentChanged(_:)), for: .ValueChanged)
+//        self.segmenter.addTarget(self, action: #selector(self.segmentChanged(_:)), for: .ValueChanged)
 
         self.segmenter.isHidden = true
         self.segmenter.translatesAutoresizingMaskIntoConstraints = false

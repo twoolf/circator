@@ -29,24 +29,24 @@ private let inputFontSize = ScreenManager.sharedInstance.profileInputFontSize()
     @IBOutlet weak var collectionView: UICollectionView!
 
     internal var consentOnLoad : Bool = false
-    internal var registerCompletion : (Void -> Void)?
+    internal var registerCompletion : ((Void) -> Void)?
     private var stashedUserId : String?
     
     //MARK: View life circle
-    override func viewWillAppear(animated: Bool) {
+    override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         navigationController?.setNavigationBarHidden(false, animated: false)
     }
 
-    override func viewWillDisappear(animated: Bool) {
+    override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
-        UIDevice.currentDevice().setValue(UIInterfaceOrientation.Portrait.rawValue, forKey: "orientation")
+        UIDevice.current.setValue(UIInterfaceOrientation.portrait.rawValue, forKey: "orientation")
         
     }
     override func viewDidLoad() {
         super.viewDidLoad()
 
-        setupScrollViewForKeyboardsActions(collectionView)
+        setupScrollViewForKeyboardsActions(view: collectionView)
 
         dataSource.viewController = self
         dataSource.collectionView = self.collectionView
@@ -55,16 +55,16 @@ private let inputFontSize = ScreenManager.sharedInstance.profileInputFontSize()
         self.doConsent()
     }
 
-    override func preferredStatusBarStyle() -> UIStatusBarStyle {
-        return .LightContent;
-    }
+//    func preferredStatusBarStyle() -> UIStatusBarStyle {  
+//        return .lightContent;
+//    }
    
     //MARK: Actions
-    @IBAction func registerAction(sender: UIButton) {
+    func registerAction(sender: UIButton) {
         startAction()
 
         guard let consentPath = ConsentManager.sharedManager.getConsentFilePath() else {
-            UINotifications.noConsent(self.navigationController!, pop: true, asNav: true)
+            UINotifications.noConsent(vc: self.navigationController!, pop: true, asNav: true)
             return
         }
 
@@ -74,12 +74,13 @@ private let inputFontSize = ScreenManager.sharedInstance.profileInputFontSize()
             return
         }
 
-        sender.enabled = false
+        sender.isEnabled = false
 
-        UINotifications.genericMsg(self.navigationController!, msg: "Registering account...")
-        UserManager.sharedManager.overrideUserPass(userRegistrationModel.email, pass: userRegistrationModel.password)
+        UINotifications.genericMsg(vc: self.navigationController!, msg: "Registering account...")
+        UserManager.sharedManager.overrideUserPass(user: userRegistrationModel.email, pass: userRegistrationModel.password)
         
         let initialProfile = self.dataSource.model.profileItems()
+/*        UserManager.sharedManager.register(userRegistrationModel.firstName!, userRegistrationModel.lastName!, userRegistrationModel.)
         UserManager.sharedManager.register(userRegistrationModel.firstName!, lastName: userRegistrationModel.lastName!, consentPath: consentPath, initialData: initialProfile) { (_, error, errormsg) in
             guard !error else {
                 // Return from this function to allow the user to try registering again with the 'Done' button.
@@ -99,34 +100,34 @@ private let inputFontSize = ScreenManager.sharedInstance.profileInputFontSize()
             // save user profile image
             UserManager.sharedManager.setUserProfilePhoto(userRegistrationModel.photo)
             self.performSegueWithIdentifier(self.segueRegistrationCompletionIdentifier, sender: nil)
-        }
+        } */
     }
 
     func doConsent() {
         stashedUserId = UserManager.sharedManager.getUserId()
         UserManager.sharedManager.resetFull()
-        ConsentManager.sharedManager.checkConsentWithBaseViewController(self.navigationController!) { [weak self] consentAndNames -> Void in
+        ConsentManager.sharedManager.checkConsentWithBaseViewController(viewController: self.navigationController!) { [weak self] consentAndNames -> Void in
             guard consentAndNames.0 else {
                 UserManager.sharedManager.resetFull()
                 if let user = self!.stashedUserId {
-                    UserManager.sharedManager.setUserId(user)
+                    UserManager.sharedManager.setUserId(userId: user)
                 }
-                self!.navigationController?.popViewControllerAnimated(true)
+                self!.navigationController?.popViewController(animated: true)
                 return
             }
 
             // Note: add 1 to index, due to photo field.
             if let s = self {
                 let updatedData = consentAndNames.1 != nil || consentAndNames.2 != nil
-                if consentAndNames.1 != nil { s.dataSource.model.setAtItem(itemIndex: s.dataSource.model.firstNameIndex+1, newValue: consentAndNames.1!) }
-                if consentAndNames.2 != nil { s.dataSource.model.setAtItem(itemIndex: s.dataSource.model.lastNameIndex+1, newValue: consentAndNames.2!) }
+                if consentAndNames.1 != nil { s.dataSource.model.setAtItem(itemIndex: s.dataSource.model.firstNameIndex+1, newValue: consentAndNames.1! as AnyObject?) }
+                if consentAndNames.2 != nil { s.dataSource.model.setAtItem(itemIndex: s.dataSource.model.lastNameIndex+1, newValue: consentAndNames.2! as AnyObject?) }
                 if updatedData { s.collectionView.reloadData() }
             }
         }
     }
 
     func registrationComplete() {
-        self.navigationController?.popViewControllerAnimated(true)
+        self.navigationController?.popViewController(animated: true)
         self.registerCompletion?()
     }
 
@@ -134,13 +135,13 @@ private let inputFontSize = ScreenManager.sharedInstance.profileInputFontSize()
 
     private let segueRegistrationCompletionIdentifier = "completionRegistrationSeque"
 
-    override func prepareForSegue(segue: UIStoryboardSegue, sender: AnyObject?) {
+    func prepareForSegue(segue: UIStoryboardSegue, sender: AnyObject?) {
         if segue.identifier == segueRegistrationCompletionIdentifier {
-            segue.destinationViewController.modalPresentationStyle = .OverCurrentContext
-            if let vc = segue.destinationViewController as? RegistrationCompletionViewController {
+            segue.destination.modalPresentationStyle = .overCurrentContext
+            if let vc = segue.destination as? RegistrationCompletionViewController {
                 vc.registerViewController = self
             }
-            else if let navVC = segue.destinationViewController as? UINavigationController {
+            else if let navVC = segue.destination as? UINavigationController {
                 if let vc = navVC.viewControllers.first as? RegistrationCompletionViewController {
                     vc.registerViewController = self
                 }

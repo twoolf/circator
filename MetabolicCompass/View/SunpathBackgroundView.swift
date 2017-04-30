@@ -80,7 +80,7 @@ public class Sunpath : UIView {
         return [0.0, 1.0]
     }
     
-    override public func drawRect(_ rect: CGRect) {
+    override public func draw(_ rect: CGRect) {
         
         self.getStart()
         
@@ -97,13 +97,13 @@ public class Sunpath : UIView {
         let colorLocations:[CGFloat] = self.getLocations()
         
         //5 - create the gradient
-        let gradient = CGGradientCreateWithColors(colorSpace, colors as CFArray, colorLocations)
+        let gradient = CGGradient(colorsSpace: colorSpace, colors: colors as CFArray, locations: colorLocations)
         
         //6 - draw the gradient
         let startPoint = CGPoint.zero
         let endPoint = CGPoint(x:0, y:self.bounds.height)
         
-        CGContextDrawLinearGradient(context!, gradient!, startPoint, endPoint, CGGradientDrawingOptions.DrawsBeforeStartLocation)
+        context!.drawLinearGradient(gradient!, start: startPoint, end: endPoint, options: CGGradientDrawingOptions.drawsBeforeStartLocation)
     }
 }
 

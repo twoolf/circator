@@ -23,20 +23,20 @@ class LoadImageCollectionViewCell: CircleImageCollectionViewCell, UIImagePickerC
 
     @IBAction func loadPhotoAction(sender: UIButton) {
         if let navVC = presentingViewController {
-            let actionSheet = UIAlertController(title: nil, message: nil, preferredStyle: .ActionSheet)
-            let cancelAction = UIAlertAction(title: "Cancel", style: .Cancel, handler: nil)
+            let actionSheet = UIAlertController(title: nil, message: nil, preferredStyle: .actionSheet)
+            let cancelAction = UIAlertAction(title: "Cancel", style: .cancel, handler: nil)
             actionSheet.addAction(cancelAction)
 
-            let showCameraAction = UIAlertAction(title: "Take a pic", style: .Default, handler: { (action) in
+            let showCameraAction = UIAlertAction(title: "Take a pic", style: .default, handler: { (action) in
                 self.checkCamera()
             })
             actionSheet.addAction(showCameraAction)
             
-            let showPhotoLibrary = UIAlertAction(title: "Choose from Album", style: .Default, handler: { (action) in
+            let showPhotoLibrary = UIAlertAction(title: "Choose from Album", style: .default, handler: { (action) in
                 self.checkCameraRoll()
             })
             actionSheet.addAction(showPhotoLibrary)
-            navVC.presentViewController(actionSheet, animated: true, completion: nil)
+            navVC.present(actionSheet, animated: true, completion: nil)
         }
     }
 
@@ -48,23 +48,23 @@ class LoadImageCollectionViewCell: CircleImageCollectionViewCell, UIImagePickerC
             imagePicker.delegate = self
             //calculate the height for nav bar. 
             //because we have an apperance with transparent nav bar we should update nav bar for image picker with white image
-            let statusBarHeight = CGRectGetHeight(UIApplication.sharedApplication().statusBarFrame)
-            let navBarSize = CGSizeMake(CGRectGetWidth(navVC.view.frame), CGRectGetHeight(navVC.navigationBar.frame) + statusBarHeight)
-            navVC.presentViewController(imagePicker, animated: true, completion: {
-                imagePicker.navigationBar.setBackgroundImage(UIImage().getImageWithColor(UIColor.whiteColor(), size: navBarSize), forBarMetrics: .Default)
+            let statusBarHeight = UIApplication.shared.statusBarFrame.height
+            let navBarSize = CGSize(navVC.view.frame.width, navVC.navigationBar.frame.height + statusBarHeight)
+            navVC.present(imagePicker, animated: true, completion: {
+                imagePicker.navigationBar.setBackgroundImage(UIImage().getImageWithColor(color: UIColor.white, size: navBarSize), for: .default)
             })
         }
     }
     
     private func showAlertActionForType(type: UIImagePickerControllerSourceType) {
         var message = "Please enable Camera access in Settings->Privacy->Camera->M-Compass"
-        if(type == .PhotoLibrary) {
+        if(type == .photoLibrary) {
             message = "Please enable Photos access in Settings->Privacy->Photos->M-Compass"
         }
-        let alertInfoController = UIAlertController(title: nil, message: message, preferredStyle: .Alert)
-        alertInfoController.addAction(UIAlertAction(title: "OK", style: .Cancel, handler: nil))
+        let alertInfoController = UIAlertController(title: nil, message: message, preferredStyle: .alert)
+        alertInfoController.addAction(UIAlertAction(title: "OK", style: .cancel, handler: nil))
         if let navVC = presentingViewController {
-            navVC.presentViewController(alertInfoController, animated: true, completion: nil)
+            navVC.present(alertInfoController, animated: true, completion: nil)
         }
     }
     
@@ -72,12 +72,12 @@ class LoadImageCollectionViewCell: CircleImageCollectionViewCell, UIImagePickerC
         PHPhotoLibrary.requestAuthorization { status in
             Async.main{
                 switch status {
-                case .Authorized:
-                    self.showImagePickerWithSourceType(.PhotoLibrary)
-                case .Restricted:
-                    self.showAlertActionForType(.PhotoLibrary)
-                case .Denied:
-                    self.showAlertActionForType(.PhotoLibrary)
+                case .authorized:
+                    self.showImagePickerWithSourceType(type: .photoLibrary)
+                case .restricted:
+                    self.showAlertActionForType(type: .photoLibrary)
+                case .denied:
+                    self.showAlertActionForType(type: .photoLibrary)
                 default:
                     break
                 }
@@ -86,18 +86,18 @@ class LoadImageCollectionViewCell: CircleImageCollectionViewCell, UIImagePickerC
     }
     
     func checkCamera() {
-        let authStatus = AVCaptureDevice.authorizationStatusForMediaType(AVMediaTypeVideo)
+        let authStatus = AVCaptureDevice.authorizationStatus(forMediaType: AVMediaTypeVideo)
         switch authStatus {
-            case .Authorized: self.showImagePickerWithSourceType(.Camera)
-            case .Denied: showAlertActionForType(.Camera)
-            case .NotDetermined: alertPromptToAllowCameraAccessViaSetting()
-            default: showAlertActionForType(.Camera)
+            case .authorized: self.showImagePickerWithSourceType(type: .camera)
+            case .denied: showAlertActionForType(type: .camera)
+            case .notDetermined: alertPromptToAllowCameraAccessViaSetting()
+            default: showAlertActionForType(type: .camera)
         }
     }
     
     func alertPromptToAllowCameraAccessViaSetting() {
-        if AVCaptureDevice.devicesWithMediaType(AVMediaTypeVideo).count > 0 {
-            AVCaptureDevice.requestAccessForMediaType(AVMediaTypeVideo) { granted in
+        if AVCaptureDevice.devices(withMediaType: AVMediaTypeVideo).count > 0 {
+            AVCaptureDevice.requestAccess(forMediaType: AVMediaTypeVideo) { granted in
                 Async.main{
                     self.checkCamera()
                 }
@@ -113,12 +113,12 @@ class LoadImageCollectionViewCell: CircleImageCollectionViewCell, UIImagePickerC
         
         photoImg.image = photo
         
-        valueChanged(photo)
+        valueChanged(newValue: photo)
         
-        picker.dismissViewControllerAnimated(true, completion: nil)
+        picker.dismiss(animated: true, completion: nil)
     }
     
     func imagePickerControllerDidCancel(picker: UIImagePickerController) {
-        picker.dismissViewControllerAnimated(true, completion: nil)
+        picker.dismiss(animated: true, completion: nil)
     }
 }

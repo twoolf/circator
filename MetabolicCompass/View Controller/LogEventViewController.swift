@@ -21,7 +21,7 @@ class LogEventViewController: UIViewController {
         self.configureView()
     }
     
-    override func viewWillAppear(animated: Bool) {
+    override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
     }
     
@@ -29,13 +29,13 @@ class LogEventViewController: UIViewController {
         
         //UIApplication.sharedApplication().setStatusBarStyle(.LightContent, animated: false)
         
-        let navigationBar = UINavigationBar(frame: CGRectMake(0, 0, self.view.frame.size.width, 44))
+        let navigationBar = UINavigationBar(frame: CGRect(0, 0, self.view.frame.size.width, 44))
         navigationBar.translatesAutoresizingMaskIntoConstraints = false
         
         let navigationItems = UINavigationItem()
         
-        let left = UIBarButtonItem(title: "cancel", style: .Plain, target: self, action: "cancel:")
-        let right = UIBarButtonItem(title: "log", style: .Bordered, target: self, action: "add:")
+        let left = UIBarButtonItem(title: "cancel", style: .plain, target: self, action: "cancel:")
+        let right = UIBarButtonItem(title: "log", style: .bordered, target: self, action: "add:")
         
         navigationItems.title = "Log Event"
         navigationItems.leftBarButtonItem = left
@@ -47,38 +47,38 @@ class LogEventViewController: UIViewController {
         
         let navigationBarConstraints : [NSLayoutConstraint] = [
             
-            navigationBar.topAnchor.constraintEqualToAnchor(topLayoutGuide.bottomAnchor),
-            navigationBar.leftAnchor.constraintEqualToAnchor(view.leftAnchor),
-            navigationBar.rightAnchor.constraintEqualToAnchor(view.rightAnchor)
+            navigationBar.topAnchor.constraint(equalTo: topLayoutGuide.bottomAnchor),
+            navigationBar.leftAnchor.constraint(equalTo: view.leftAnchor),
+            navigationBar.rightAnchor.constraint(equalTo: view.rightAnchor)
         ]
         
         view.addConstraints(navigationBarConstraints)
         
         let mealTypeButton : UIButton = {
-            let button = MCButton(frame: CGRectMake(0, 0, 50, 50), buttonStyle: .Circular)
-            return button
+            let button = MCButton(frame: CGRect(0, 0, 50, 50), buttonStyle: .circular)
+            return button!
         }()
         
         let sleepTypeButton : UIButton = {
-            let button = MCButton(frame: CGRectMake(0, 0, 50, 50), buttonStyle: .Circular)
-            return button
+            let button = MCButton(frame: CGRect(0, 0, 50, 50), buttonStyle: .circular)
+            return button!
         }()
         
         let exerciseTypeButton : UIButton = {
-            let button = MCButton(frame: CGRectMake(0, 0, 50, 50), buttonStyle: .Circular)
-            return button
+            let button = MCButton(frame: CGRect(0, 0, 50, 50), buttonStyle: .circular)
+            return button!
         }()
         
         
         let eventTypeSelectorView : UIStackView = {
             let view = UIStackView(arrangedSubviews: [mealTypeButton, sleepTypeButton, exerciseTypeButton])
             view.translatesAutoresizingMaskIntoConstraints = false
-            view.axis = .Horizontal
-            view.distribution = UIStackViewDistribution.FillEqually
-            view.alignment = UIStackViewAlignment.Fill
+            view.axis = .horizontal
+            view.distribution = UIStackViewDistribution.fillEqually
+            view.alignment = UIStackViewAlignment.fill
             view.spacing = 15
             
-            view.backgroundColor = UIColor.magentaColor()
+            view.backgroundColor = UIColor.magenta
             return view
         }()
         
@@ -86,10 +86,10 @@ class LogEventViewController: UIViewController {
         view.addSubview(eventTypeSelectorView)
         
         let eventTypeSelectorViewConstraints : [NSLayoutConstraint] = [
-            eventTypeSelectorView.topAnchor.constraintEqualToAnchor(navigationBar.bottomAnchor, constant: 15),
-            eventTypeSelectorView.leftAnchor.constraintEqualToAnchor(view.leftAnchor, constant: 15),
-            eventTypeSelectorView.rightAnchor.constraintEqualToAnchor(view.rightAnchor, constant: -15),
-            eventTypeSelectorView.heightAnchor.constraintEqualToConstant(75)
+            eventTypeSelectorView.topAnchor.constraint(equalTo: navigationBar.bottomAnchor, constant: 15),
+            eventTypeSelectorView.leftAnchor.constraint(equalTo: view.leftAnchor, constant: 15),
+            eventTypeSelectorView.rightAnchor.constraint(equalTo: view.rightAnchor, constant: -15),
+            eventTypeSelectorView.heightAnchor.constraint(equalToConstant: 75)
         ]
         
         view.addConstraints(eventTypeSelectorViewConstraints)
@@ -101,10 +101,10 @@ class LogEventViewController: UIViewController {
         view.addSubview(coreInfoViewController.view)
         
         let coreInfoViewConstraints : [NSLayoutConstraint] = [
-            coreInfoViewController.view.topAnchor.constraintEqualToAnchor(eventTypeSelectorView.bottomAnchor),
-            coreInfoViewController.view.bottomAnchor.constraintEqualToAnchor(view.bottomAnchor, constant: -250),
-            coreInfoViewController.view.leftAnchor.constraintEqualToAnchor(view.leftAnchor),
-            coreInfoViewController.view.rightAnchor.constraintEqualToAnchor(view.rightAnchor)
+            coreInfoViewController.view.topAnchor.constraint(equalTo: eventTypeSelectorView.bottomAnchor),
+            coreInfoViewController.view.bottomAnchor.constraint(equalTo: view.bottomAnchor, constant: -250),
+            coreInfoViewController.view.leftAnchor.constraint(equalTo: view.leftAnchor),
+            coreInfoViewController.view.rightAnchor.constraint(equalTo: view.rightAnchor)
         ]
         
         view.addConstraints(coreInfoViewConstraints)
@@ -118,10 +118,10 @@ class LogEventViewController: UIViewController {
         view.addSubview(additionalInfoViewController.view)
         
         let additionalInfoViewConstraints : [NSLayoutConstraint] = [
-            additionalInfoViewController.view.topAnchor.constraintEqualToAnchor(coreInfoViewController.view.bottomAnchor),
-            additionalInfoViewController.view.bottomAnchor.constraintEqualToAnchor(view.bottomAnchor),
-            additionalInfoViewController.view.leftAnchor.constraintEqualToAnchor(view.leftAnchor),
-            additionalInfoViewController.view.rightAnchor.constraintEqualToAnchor(view.rightAnchor)
+            additionalInfoViewController.view.topAnchor.constraint(equalTo: coreInfoViewController.view.bottomAnchor),
+            additionalInfoViewController.view.bottomAnchor.constraint(equalTo: view.bottomAnchor),
+            additionalInfoViewController.view.leftAnchor.constraint(equalTo: view.leftAnchor),
+            additionalInfoViewController.view.rightAnchor.constraint(equalTo: view.rightAnchor)
         ]
         
         view.addConstraints(additionalInfoViewConstraints)
@@ -132,7 +132,7 @@ class LogEventViewController: UIViewController {
     }
     
     func cancel(sender: UIBarItem) {
-        self.dismissViewControllerAnimated(true, completion: nil)
+        self.dismiss(animated: true, completion: nil)
     }
     
     func add(sender: UIBarItem) {
@@ -230,7 +230,7 @@ class LogEventViewController: UIViewController {
          
          presenting.loadData()
          */
-        self.dismissViewControllerAnimated(true, completion: nil)
+        self.dismiss(animated: true, completion: nil)
         
     }
 }
@@ -245,8 +245,8 @@ final class EventCoreInfoFormViewController: FormViewController {
     
     var eventTitle : String?
     var eventType : EventType?
-    var timeOfDayOffsetInSeconds : NSTimeInterval?
-    var durationInSeconds : NSTimeInterval?
+    var timeOfDayOffsetInSeconds : TimeInterval?
+    var durationInSeconds : TimeInterval?
     var selectedDays: Set<Int> = []
     var note : String?
     
@@ -254,7 +254,7 @@ final class EventCoreInfoFormViewController: FormViewController {
     
     private func configure() {
         
-        tableView.scrollEnabled = false
+        tableView.isScrollEnabled = false
         
         //title = "Add Event"
         tableView.contentInset.top = 0
@@ -265,8 +265,8 @@ final class EventCoreInfoFormViewController: FormViewController {
         
         let eventTypeRow = SegmentedRowFormer<FormSegmentedCell>() {
             $0.titleLabel.text = "Type"
-            $0.titleLabel.textColor = UIColor.blackColor()
-            $0.titleLabel.font = .boldSystemFontOfSize(15)
+            $0.titleLabel.textColor = UIColor.black
+            $0.titleLabel.font = .boldSystemFont(ofSize: 15)
             }.configure {
                 $0.segmentTitles = ["Meal", "Sleep", "Exercise"]
                 $0.selectedIndex = UISegmentedControlNoSegment
@@ -284,26 +284,26 @@ final class EventCoreInfoFormViewController: FormViewController {
         }
         
         let titleRow = TextFieldRowFormer<FormTextFieldCell>() {
-            $0.textField.textColor = UIColor.blackColor()
-            $0.textField.font = .systemFontOfSize(15)
+            $0.textField.textColor = UIColor.black
+            $0.textField.font = .systemFont(ofSize: 15)
             }.configure {
                 $0.placeholder = "Title"
             }.onTextChanged { title in
                 self.eventTitle = title
         }
         
-        let formatTime: (Date -> String) = { time in
+        let formatTime: ((Date) -> String) = { time in
             let timeFormatter = DateFormatter()
             timeFormatter.dateFormat = "h:mm a"
-            return timeFormatter.stringFromDate(time)
+            return timeFormatter.string(from: time)
         }
         
         let startRow = InlineDatePickerRowFormer<FormInlineDatePickerCell>() {
             $0.titleLabel.text = "Start"
-            $0.titleLabel.textColor = UIColor.blackColor()
-            $0.titleLabel.font = .boldSystemFontOfSize(15)
-            $0.displayLabel.textColor = UIColor.blackColor()
-            $0.displayLabel.font = .systemFontOfSize(15)
+            $0.titleLabel.textColor = UIColor.black
+            $0.titleLabel.font = .boldSystemFont(ofSize: 15)
+            $0.displayLabel.textColor = UIColor.black
+            $0.displayLabel.font = .systemFont(ofSize: 15)
             }.inlineCellSetup {
                 /*
                  let components = NSDateComponents()
@@ -318,11 +318,11 @@ final class EventCoreInfoFormViewController: FormViewController {
                  $0.datePicker.setDate(NSDate(components: displayTimeComponents), animated: false)
                  */
                 
-                $0.datePicker.datePickerMode = .Time
+                $0.datePicker.datePickerMode = .time
                 $0.datePicker.minuteInterval = 30
                 //$0.datePicker.setDate(NSDate().startOf(.Minute, inRegion: NSDate().components.dateInRegion), animated: false)
             }.onDateChanged { time in
-                var offset : NSTimeInterval = 0
+                var offset : TimeInterval = 0
                 offset += Double(time.minute) * 60
                 offset += Double(time.hour) * 3600
                 self.timeOfDayOffsetInSeconds = offset
@@ -330,20 +330,20 @@ final class EventCoreInfoFormViewController: FormViewController {
         
         let endRow = InlineDatePickerRowFormer<FormInlineDatePickerCell>() {
             $0.titleLabel.text = "End"
-            $0.titleLabel.textColor = UIColor.blackColor()
-            $0.titleLabel.font = .boldSystemFontOfSize(15)
-            $0.displayLabel.textColor = UIColor.blackColor()
-            $0.displayLabel.font = .systemFontOfSize(15)
+            $0.titleLabel.textColor = UIColor.black
+            $0.titleLabel.font = .boldSystemFont(ofSize: 15)
+            $0.displayLabel.textColor = UIColor.black
+            $0.displayLabel.font = .systemFont(ofSize: 15)
             
             }.inlineCellSetup {
                 
-                $0.datePicker.datePickerMode = .Time
+                $0.datePicker.datePickerMode = .time
                 $0.datePicker.minuteInterval = 30
                 //let time = $0.datePicker.date.startOf(.Minute, inRegion: NSDate().inRegion().region)
                 //$0.datePicker.date = time
             }.onDateChanged { time in
                 if let start = self.timeOfDayOffsetInSeconds {
-                    var end : NSTimeInterval = 0
+                    var end : TimeInterval = 0
                     end += Double(time.minute) * 60
                     end += Double(time.hour) * 3600
                     self.durationInSeconds = end - start
@@ -352,7 +352,7 @@ final class EventCoreInfoFormViewController: FormViewController {
         
         let selectedDaysLabel = UILabel()
         selectedDaysLabel.translatesAutoresizingMaskIntoConstraints = false
-        selectedDaysLabel.font = .systemFontOfSize(15)
+        selectedDaysLabel.font = .systemFont(ofSize: 15)
         
         
         // Create Headers

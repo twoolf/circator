@@ -17,9 +17,9 @@ class RegistrationModel: UserInfoModel {
         
         var indexes = [String]()
         
-        for i in UserProfile.sharedInstance.requiredRange {
-            indexes.append(UserProfile.sharedInstance.profileFields[i])
-        }
+//        for i in UserProfile.sharedInstance.fnameIdx {
+            indexes.append(UserProfile.sharedInstance.profileFields[0])
+//        }
 
     }
     

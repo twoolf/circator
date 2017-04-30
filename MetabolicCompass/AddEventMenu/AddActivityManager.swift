@@ -65,7 +65,7 @@ open class AppPickerManager: PickerManager, PickerManagerSelectionDelegate {
             if let scheme = scheme as? String, let url = NSURL(string: "\(scheme)//") {
                 return UIApplication.shared.canOpenURL(url as URL)
             }
-            log.debug("App \(name) unavailable with scheme: \(scheme)", feature: "appIntegration")
+//            log.debug("App \(name) unavailable with scheme: \(scheme)", feature: "appIntegration")
             return false
         })
 
@@ -166,7 +166,7 @@ open class AppPickerManager: PickerManager, PickerManagerSelectionDelegate {
             }
             else {
                 Async.main {
-                    log.error("Could not find \(url)", feature: "appIntegration")
+//                    log.error("Could not find \(url)", feature: "appIntegration")
                     let msg = "We could not find your \(item) app, please restart Metabolic Compass if you've uninstalled it."
                     UINotifications.genericErrorOnView(view: self.notificationView, msg: msg)
                 }
@@ -174,7 +174,7 @@ open class AppPickerManager: PickerManager, PickerManagerSelectionDelegate {
         }
         else {
             Async.main {
-                log.error("Invalid URL scheme for \(data)", feature: "appIntegration")
+//                log.error("Invalid URL scheme for \(data)", feature: "appIntegration")
                 let msg = "Failed to open your \(item) app!"
                 UINotifications.genericErrorOnView(view: self.notificationView, msg: msg)
             }
@@ -185,7 +185,8 @@ open class AppPickerManager: PickerManager, PickerManagerSelectionDelegate {
 }
 
 
-open class AddActivityManager: UITableView, UITableViewDelegate, UITableViewDataSource, PickerManagerSelectionDelegate {
+//open class AddActivityManager: UITableView, UITableViewDelegate, UITableViewDataSource, PickerManagerSelectionDelegate {
+open class AddActivityManager: UITableView, UITableViewDelegate, UITableViewDataSource {
 
     public var menuItems: [PathMenuItem]
 
@@ -293,8 +294,8 @@ open class AddActivityManager: UITableView, UITableViewDelegate, UITableViewData
         quickAddButtons.append(SlideButtonArray(frame: CGRect.zero, buttonsTag: 4000, arrayRowIndex: 1))
 
         // Configure delegates.
-        quickAddButtons[0].delegate = self
-        quickAddButtons[1].delegate = self
+//        quickAddButtons[0].delegate = self
+//        quickAddButtons[1].delegate = self
 
         // Configure exclusive selection.
         quickAddButtons[0].exclusiveArrays.append(quickAddButtons[1])
@@ -373,29 +374,29 @@ open class AddActivityManager: UITableView, UITableViewDelegate, UITableViewData
         button.backgroundColor = .clear
         button.setImage(unchecked_image, for: .normal)
         button.setImage(checked_image, for: .selected)
-        button.addTarget(self, action: #selector(addFrequentActivity(_:)), for: .TouchUpInside)
+        button.addTarget(self, action: #selector(AddActivityManager.addFrequentActivity(sender:)), for: .touchUpInside)
 
         return [label, button]
     }
 
     public func addFrequentActivity(sender: UIButton) {
-        log.debug("Selected freq. activity \(sender.tag)", feature: "freqActivity")
+//        log.debug("Selected freq. activity \(sender.tag)", feature: "freqActivity")
         sender.isSelected = !sender.isSelected
     }
 
-    private func refreshFrequentActivities() {
+/*    private func refreshFrequentActivities() {
         let now = Date()
         let nowStart = now.startOf(component: .day)
 
         let cacheKey = frequentActivityCacheKey(date: nowStart)
 
-        log.debug("Refreshing activities \(self.nextActivityRowExpiry)", feature: "freqActivity")
+//        log.debug("Refreshing activities \(self.nextActivityRowExpiry)", feature: "freqActivity")
 
-        frequentActivitiesCache.setObject(forKey: cacheKey, cacheBlock: { (success, failure) in
+        frequentActivitiesCache.setObject({ (success, failure) in
             // if weekday populate from previous day and same day last week
             // else populate from the same day for the past 4 weekends
             var queryStartDates: [Date] = []
-
+            
             // Since sleep events may span the end of day boundary, we also include the previous day.
             if nowStart.weekday < 6 {
                 queryStartDates = [(nowStart - 1.weeks) - 1.days, nowStart - 1.weeks, nowStart - 2.days, nowStart - 1.days]
@@ -403,13 +404,13 @@ open class AddActivityManager: UITableView, UITableViewDelegate, UITableViewData
                 // TODO: the 3rd and 4th weeks will not be cached since MCHealthManager uses a 2-week cache by default.
                 queryStartDates = (1...4).flatMap { [(nowStart - $0.weeks) - 1.days, nowStart - $0.weeks] }
             }
-
+            
             var activities: [FrequentActivity] = []
-
+            
             var circadianEvents: [Date: [(Date, CircadianEvent)]] = [:]
             var queryErrors: [NSError?] = []
             let queryGroup = DispatchGroup()
-
+            
             queryStartDates.forEach { date in
                 queryGroup.enter()
                 MCHealthManager.sharedManager.fetchCircadianEventIntervals(date, endDate: date.endOf(component: .day), noTruncation: true)
@@ -424,17 +425,17 @@ open class AddActivityManager: UITableView, UITableViewDelegate, UITableViewData
                     queryGroup.leave()
                 }
             }
-
+            
             queryGroup.notify(queue: DispatchQueue.global(DispatchQueue.GlobalQueuePriority.default)) {
                 guard queryErrors.isEmpty else {
                     failure(queryErrors.first!)
                     return
                 }
-
+                
                 // Turn into activities by merging and accumulating circadian events.
                 //log.info("FAQ finished with \(circadianEvents.count) results")
                 //log.info("FAQ results \(circadianEvents)")
-
+                
                 var dateIndex = 0
                 while dateIndex < queryStartDates.count {
                     let nextDateIndex = dateIndex + 1
@@ -458,35 +459,37 @@ open class AddActivityManager: UITableView, UITableViewDelegate, UITableViewData
                     }
                     dateIndex += 1
                 }
-
+                
                 // Deduplicate activities relative to today.
                 var activitiesToday : [Int: FrequentActivity] = [:]
-
+                
                 activities.forEach { aInfo in
                     let secondsSinceDay = aInfo.start.timeIntervalSinceDate(aInfo.start.startOf(.Day))
                     let startInToday = nowStart.dateByAddingTimeInterval(secondsSinceDay)
-
+                    
                     let aInfo = FrequentActivity(desc: aInfo.desc, start: startInToday, duration: aInfo.duration)
                     let key = aInfo.start.hashValue + Int(aInfo.duration)
                     activitiesToday[key] = aInfo
                 }
-
+                
                 //log.info("FAQ dedup \(activitiesToday)")
-
+                
                 activities = activitiesToday.map({ $0.1 }).sort { $0.0.start < $0.1.start }
                 success(FrequentActivityInfo(activities: activities), CacheExpiry.Seconds(self.cacheDuration))
             } // end cacheBlock
-
-             completion: { (activityInfoFromCache, loadedFromCache, error) in
-                log.debug("Cache result: \(activityInfoFromCache?.activities.count ?? -1) (hit: \(loadedFromCache))", feature: "cache:freqActivity")
-
+        
+        
+    
+            completion: { (activityInfoFromCache, loadedFromCache, error) in
+//                log.debug("Cache result: \(activityInfoFromCache?.activities.count ?? -1) (hit: \(loadedFromCache))", feature: "cache:freqActivity")
+                
                 guard error == nil else {
                     log.error("Failed to populate frequent activities: \(error)")
                     self.frequentActivities = []
                     self.shadowActivities = []
                     return
                 }
-
+                
                 // Create a cell's content for each frequent activity.
                 if let aInfos = activityInfoFromCache?.activities {
                     self.shadowActivities = aInfos
@@ -498,19 +501,20 @@ open class AddActivityManager: UITableView, UITableViewDelegate, UITableViewData
                     // Advance the refresh guard if we have no cached activities
                     self.nextActivityRowExpiry = now + self.nextActivityExpiryIncrement
                 }
-
+                
                 // Refresh the table.
                 Async.main { self.reloadData() }
-        })
-    }
+            }
+        }), forKey: cacheKey
+    } */
 
     func numberOfSectionsInTableView(tableView: UITableView) -> Int {
         return addSectionTitles.count
     }
 
-    func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+    public func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         if section == frequentActivitySectionIdx {
-            log.debug("Activities #rows \(shadowActivities.count) \(frequentActivities.count)", feature: "freqActivity")
+//            log.debug("Activities #rows \(shadowActivities.count) \(frequentActivities.count)", feature: "freqActivity")
 
             let now = Date()
             let nowStart = now.startOf(component: .day)
@@ -528,7 +532,7 @@ open class AddActivityManager: UITableView, UITableViewDelegate, UITableViewData
                 if frequentActivities.isEmpty || frequentActivitiesCache.object(forKey: cacheKey) == nil {
                     //log.debug("Refreshing cache", feature: "cache:freqActivity")
                     frequentActivitiesCache.removeExpiredObjects()
-                    refreshFrequentActivities()
+//                    refreshFrequentActivities()
                     return frequentActivityCells.isEmpty ? 1 : frequentActivityCells.count
                 }
                 else {
@@ -553,7 +557,7 @@ open class AddActivityManager: UITableView, UITableViewDelegate, UITableViewData
                     nextActivityRowExpiry = now + nextActivityExpiryIncrement
                 }
             } else {
-                log.debug("Activities will expire at \(nextActivityRowExpiry) (now: \(now))", feature: "cache:freqActivity")
+//                log.debug("Activities will expire at \(nextActivityRowExpiry) (now: \(now))", feature: "cache:freqActivity")
             }
 
             return frequentActivityCells.isEmpty ? 1 : frequentActivityCells.count
@@ -568,7 +572,7 @@ open class AddActivityManager: UITableView, UITableViewDelegate, UITableViewData
         return addSectionTitles[section]
     }
 
-    func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+    public func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: addEventCellIdentifier, for: indexPath as IndexPath)
 
         for sv in cell.contentView.subviews { sv.removeFromSuperview() }
@@ -681,7 +685,7 @@ open class AddActivityManager: UITableView, UITableViewDelegate, UITableViewData
             button.setImage(UIImage(named: "icon-quick-add-tick"), for: .normal)
             button.imageView?.contentMode = .scaleAspectFit
 
-            button.addTarget(self, action: (section == frequentActivitySectionIdx ? #selector(handleFrequentAddTap(_:)) : #selector(self.handleQuickAddTap(_:))), for: .TouchUpInside)
+//            button.addTarget(self, action: (section == frequentActivitySectionIdx ? #selector(self.handleFrequentAddTap(sender:)) : #selector(self.handleQuickAddTap(_:))), for: .TouchUpInside)
 
             button.translatesAutoresizingMaskIntoConstraints = false
             cell.contentView.addSubview(button)
@@ -715,7 +719,7 @@ open class AddActivityManager: UITableView, UITableViewDelegate, UITableViewData
             }
         }
         manager?.finishProcessingSelection()
-        if error != nil { log.error(error!.localizedDescription) }
+        if error != nil { print(error!.localizedDescription) }
         else {
             NotificationCenter.default.post(name: NSNotification.Name(rawValue: MEMDidUpdateCircadianEvents), object: nil)
         }
@@ -732,7 +736,7 @@ open class AddActivityManager: UITableView, UITableViewDelegate, UITableViewData
 
         // Aggregate sleep, exercise and meal events.
         MCHealthManager.sharedManager.fetchSamples(typesAndPredicates) { (samples, error) -> Void in
-            guard error == nil else { log.error(error!.localizedDescription); return }
+            guard error == nil else { print(error!.localizedDescription); return }
             let overlaps = samples.reduce(false, { (acc, kv) in
                 guard !acc else { return acc }
                 return kv.1.reduce(acc, { (acc, s) in return acc || !( startTime >= s.endDate || endTime <= s.startDate ) })
@@ -750,60 +754,63 @@ open class AddActivityManager: UITableView, UITableViewDelegate, UITableViewData
 
     func addSleep(hoursSinceStart: Double, startDate: Date? = nil, completion: @escaping (NSError?) -> Void) {
 //        let startTime = startDate == nil ? (Int(hoursSinceStart * 60)).minutes.ago : startDate!
-        let startTime = startDate = nil ? Date().addingTimeInterval(Int(hoursSinceStart * 60)) : startDate!
+//        var startTime = startDate = nil ? Date().addingTimeInterval(Int(hoursSinceStart * 60)) : startDate!
         let endTime = startDate == nil ? Date() : startDate! + (Int(hoursSinceStart * 60)).minutes
 
-        log.debug("Saving sleep event: \(startTime) \(endTime)", feature: "addActivity")
+//        log.debug("Saving sleep event: \(startTime) \(endTime)", feature: "addActivity")
 
-        validateTimedEvent(startTime, endTime: endTime) { error in
+        validateTimedEvent(startTime: startDate!, endTime: endTime) { error in
             guard error == nil else {
                 completion(error)
                 return
             }
 
-            MCHealthManager.sharedManager.saveSleep(startTime, endDate: endTime, metadata: [:]) {
+            MCHealthManager.sharedManager.saveSleep(startDate!, endDate: endTime, metadata: [:]) {
                 (success, error) -> Void in
-                if error != nil { log.error(error!.localizedDescription) }
-                else { log.debug("Saved sleep event: \(startTime) \(endTime)", feature: "addActivity") }
-                completion(error)
+//                if error != nil { log.error(error!.localizedDescription) }
+                if error != nil { print("error in localized description") }
+//                else { log.debug("Saved sleep event: \(startDate) \(endTime)", feature: "addActivity") }
+                else { print("logged") }
+                completion(error as NSError?)
             }
         }
     }
 
     func addMeal(mealType: String, minutesSinceStart: Int, startDate: Date? = nil, completion: @escaping (NSError?) -> Void) {
 //        let startTime = startDate == nil ? minutesSinceStart.minutes.ago : startDate!
-        let startTime = startDate == nil ? Date().addingTimeInterval(minutesSinceStart) : startDate!
+        let startTime = startDate == nil ? Date().addingTimeInterval(TimeInterval(minutesSinceStart)) : startDate!
         let endTime = startDate == nil ? Date() : startDate! + (Int(minutesSinceStart)).minutes
         let metadata = ["Meal Type": mealType]
 
-        log.debug("Saving meal event: \(mealType) \(startTime) \(endTime)", feature: "addActivity")
+//        log.debug("Saving meal event: \(mealType) \(startTime) \(endTime)", feature: "addActivity")
 
-        validateTimedEvent(startTime, endTime: endTime) { error in
+        validateTimedEvent(startTime: startTime, endTime: endTime) { error in
             guard error == nil else {
                 completion(error)
                 return
             }
 
             MCHealthManager.sharedManager.savePreparationAndRecoveryWorkout(
-                startTime, endDate: endTime, distance: 0.0, distanceUnit: HKUnit(fromString: "km"),
-                kiloCalories: 0.0, metadata: metadata)
+                startTime, endDate: endTime, distance: 0.0, distanceUnit: HKUnit(from: "km"),
+                kiloCalories: 0.0, metadata: metadata as NSDictionary)
             {
                 (success, error) -> Void in
-                if error != nil { log.error(error!.localizedDescription) }
-                else { log.debug("Saved meal event as workout type: \(mealType) \(startTime) \(endTime)", feature: "addActivity") }
-                completion(error)
+                if error != nil { print("error!.localizedDescription") }
+//                else { print("Saved meal event as workout type: \(mealType) \(startTime) \(endTime)", feature: "addActivity") }
+                else { print("saved meal event")
+                completion(error as NSError?)
             }
         }
     }
 
     func addExercise(workoutType: HKWorkoutActivityType, minutesSinceStart: Int, startDate: Date? = nil, completion: @escaping (NSError?) -> Void) {
 //        let startTime = startDate == nil ? minutesSinceStart.minutes.ago : startDate!
-        let startTime = startDate == nil ? Date().addingTimeInterval(timeInterval: minutesSinceStart) : startDate!
+        let startTime = startDate == nil ? Date().addingTimeInterval(TimeInterval(minutesSinceStart)) : startDate!
         let endTime = startDate == nil ? Date() : startDate! + (Int(minutesSinceStart)).minutes
 
-        log.debug("Saving exercise event: \(workoutType) \(startTime) \(endTime)", feature: "addActivity")
+//        log.debug("Saving exercise event: \(workoutType) \(startTime) \(endTime)", feature: "addActivity")
 
-        validateTimedEvent(startTime, endTime: endTime) { error in
+        validateTimedEvent(startTime: startTime, endTime: endTime) { error in
             guard error == nil else {
                 completion(error)
                 return
@@ -811,12 +818,14 @@ open class AddActivityManager: UITableView, UITableViewDelegate, UITableViewData
 
             MCHealthManager.sharedManager.saveWorkout(
                 startTime, endDate: endTime, activityType: workoutType,
-                distance: 0.0, distanceUnit: HKUnit(fromString: "km"), kiloCalories: 0.0, metadata: [:])
+                distance: 0.0, distanceUnit: HKUnit(from: "km"), kiloCalories: 0.0, metadata: [:])
             {
                 (success, error ) -> Void in
-                if error != nil { log.error(error!.localizedDescription) }
-                else { log.debug("Saved exercise event as workout type: \(workoutType) \(startTime) \(endTime)", feature: "addActivity") }
-                completion(error)
+ //               if error != nil { log.error(error!.localizedDescription) }
+                if error != nil { print("localized error") }
+//                else { log.debug("Saved exercise event as workout type: \(workoutType) \(startTime) \(endTime)", feature: "addActivity") }
+                else { print("saved as workout type") }
+                completion(error as NSError?)
             }
         }
     }
@@ -887,7 +896,7 @@ open class AddActivityManager: UITableView, UITableViewDelegate, UITableViewData
     }
 
     func handleQuickAddTap(sender: UIButton) {
-        log.debug("Quick add button pressed", feature: "addActivity")
+//        log.debug("Quick add button pressed", feature: "addActivity")
 
         Async.main {
             sender.isEnabled = false
@@ -911,7 +920,7 @@ open class AddActivityManager: UITableView, UITableViewDelegate, UITableViewData
     }
 
     func handleFrequentAddTap(sender: UIButton) {
-        log.debug("Adding selected frequent activities", feature: "addActivity")
+//        log.debug("Adding selected frequent activities", feature: "addActivity")
 
         Async.main {
             sender.isEnabled = false
@@ -936,12 +945,13 @@ open class AddActivityManager: UITableView, UITableViewDelegate, UITableViewData
         var overlaps = false
         for i in (0..<activitiesToAdd.count) {
             let iSt = activitiesToAdd[i].start
-            let iEn = activitiesToAdd[i].start.dateByAddingTimeInterval(activitiesToAdd[i].duration)
+//            let iEn = activitiesToAdd[i].start.dateByAddingTimeInterval(activitiesToAdd[i].duration)
+//            let iEn = activitiesToAdd[i].start(activitiesToAdd[i].duration)
 
             for j in (i+1..<activitiesToAdd.count) {
                 let jSt = activitiesToAdd[j].start
-                let jEn = activitiesToAdd[j].start.dateByAddingTimeInterval(activitiesToAdd[j].duration)
-                overlaps = overlaps || !(jEn <= iSt || iEn <= jSt)
+//                let jEn = activitiesToAdd[j].start.dateByAddingTimeInterval(activitiesToAdd[j].duration)
+//                overlaps = overlaps || !(jEn <= iSt || iEn <= jSt)
             }
         }
         
@@ -954,7 +964,7 @@ open class AddActivityManager: UITableView, UITableViewDelegate, UITableViewData
             }
         } else {
             for aInfo in activitiesToAdd {
-                processSelection(nil, pickerManager: nil, itemType: aInfo.desc, startDate: aInfo.start, duration: aInfo.duration, durationInSecs: true)
+//                processSelection(nil, pickerManager: nil, itemType: aInfo.desc, startDate: aInfo.start, duration: aInfo.duration, durationInSecs: true)
             }
             Async.main {
                 sender.isEnabled = true
@@ -964,9 +974,10 @@ open class AddActivityManager: UITableView, UITableViewDelegate, UITableViewData
     }
 
     // MARK : - PickerManagerSelectionDelegate
-    func pickerItemSelected(pickerManager: PickerManager, itemType: String?, index: Int, item: String, data: AnyObject?) {
-        log.debug("Quick add picker selected \(itemType) \(item) \(data)", feature: "addActivity")
-        processSelection(nil, pickerManager: pickerManager, itemType: itemType, index: index, item: item, data: data)
+    //        log.debug("Quick add picker selected \(itemType) \(item) \(data)", feature: "addActivity")
+    func pickerItemSelected(pickerManager: PickerManager, itemType: String?, index: Int, item: String, data: AnyObject?) -> Void {
+//        processSelection(nil, pickerManager: pickerManager, itemType: itemType, index: index, item: item, data: data)
     }
     
+}
 }

@@ -12,12 +12,12 @@ import MetabolicCompassKit
 import HealthKit
 import MCCircadianQueries
 
-let defaultDuration = 1800 // Default event duration is 30 min
+let defaultDuration = 1800 // Default event duration is 30 min 
 
-class AddEventModel: NSObject {
+open class AddEventModel: NSObject {
 
     var dataWasChanged = false
-    var delegate: AddEventModelDelegate? = nil
+//    var delegate: AddEventModelDelegate? = nil
     var datePickerTags:[Int] = [2]  //default date picker row
     var countDownPickerTags: [Int] = [3,4] //default count down pickecr rows for meal screen
 
@@ -27,7 +27,7 @@ class AddEventModel: NSObject {
         }
     }
 
-    var eventDate: Date = floorDate(date: Date(), granularity: granularity5Mins) - defaultDuration.seconds {//default is current date
+    var eventDate: Date = floorDate(date: Date(), granularity: granularity5Mins) - defaultDuration.seconds {//default is current date  
         didSet {
             dataWasChanged = true
         }
@@ -36,7 +36,7 @@ class AddEventModel: NSObject {
     var mealType: MealType = .Empty {
         didSet {
             if let mealUsualDate = UserManager.sharedManager.getUsualMealTime(mealType: mealType.rawValue) {//if we have usual event date we should prefill it for user
-                eventDate = AddEventModel.applyTimeForDate(fromDate: mealUsualDate, toDate: eventDate)
+ //               eventDate = applyTimeForDate(fromDate: mealUsualDate, toDate: eventDate)
             } else {//reset event date to the default state. Current date
                 //it works in case when user selected event with existing usual time and then changed meal type
                 eventDate = floorDate(date: Date(), granularity: granularity5Mins)
@@ -44,52 +44,69 @@ class AddEventModel: NSObject {
         }
     }
     
-    var sleepStartDate: Date = AddEventModel.getDefaultStartSleepDate() {
+/*    var sleepStartDate: Date = AddEventModel.getDefaultStartSleepDate() {
         didSet {
             dataWasChanged = true
             self.delegate?.sleepTimeUpdated(updatedTime: getSleepTimeString())
         }
-    }
+    } */
     
-    var sleepEndDate: Date =  AddEventModel.getDefaultWokeUpDate() {
+ /*   func getDefaultWokeUpDate() -> Date {
+        if let whenWokeUp = UserManager.sharedManager.getUsualWokeUpTime() {
+            return applyTimeForDate(fromDate: whenWokeUp, toDate: Date())
+        } */
+        // If we have no date for usual sleep, use a constant. 
+        //        return getDefaultStartSleepDate() + 7.hours 
+        //        return DateInterval(start: Date(), duration: 12.hours)
+ //       return Date(timeInterval: 12, since: Date())
+//    }
+    
+/*    var sleepEndDate: Date =  AddEventModel.getDefaultWokeUpDate() {
         didSet {
             dataWasChanged = true
             self.delegate?.sleepTimeUpdated(updatedTime: getSleepTimeString())
         }
-    }
+    } */
 
-    func getSleepTimeString () -> NSAttributedString {
-        let dayHourMinuteSecond: NSCalendar.Unit = [.hour, .minute]
-        let difference = NSCalendar.currentCalendar.components([.year, .month, .day, .hour, .minute], fromDate: sleepStartDate, toDate: sleepEndDate, options: [])
-        let hour = difference.hour < 0 ? 0 : difference.hour
-        let minutes = difference.minute < 0 ? 0 : difference.minute
+//    open func getSleepTimeString () -> NSAttributedString {
+ //       let dayHourMinuteSecond: NSCalendar.Unit = [.hour, .minute]
+//        let difference = NSCalendar.currentCalendar.components([.year, .month, .day, .hour, .minute], fromDate: sleepStartDate, toDate: sleepEndDate, options: [])
+//        let difference = DateInterval(start: sleepStartDate, end: sleepEndDate)
+//        let difference = DateComponents(
+        
+//        let dateRangeStart = sleepStartDate
+//        let dateRangeEnd = sleepEndDate
+ //       let difference = Calendar.current.dateComponents([.year, .month, .day, .hour, .minute], from: dateRangeStart, to: dateRangeEnd)
+/*
+        let hour = difference.hour! < 0 ? 0 : difference.hour!
+        let minutes = difference.minute! < 0 ? 0 : difference.minute!
         let minutesSting = minutes < 10 ? "0\(minutes)" : "\(minutes)"
         let stringDifference = "\(hour)h \(minutesSting)m"
         let defaultFont = ScreenManager.appFontOfSize(size: 24)
-        let formatFont = ScreenManager.appFontOfSize(size: 15)
-        let attributedString = stringDifference.formatTextWithRegex("[-+]?(\\d*[.,])?\\d+",
-                                                                    format: [NSForegroundColorAttributeName: UIColor.whiteColor(), NSFontAttributeName : defaultFont],
-                                                                    defaultFormat: [NSForegroundColorAttributeName: UIColor.colorWithHexString("#ffffff", alpha: 0.3)!, NSFontAttributeName: formatFont])
-        return attributedString
-    }
+        let formatFont = ScreenManager.appFontOfSize(size: 15) */
+//        let attributedString = stringDifference.formatTextWithRegex(regex: "[-+]?(\\d*[.,])?\\d+",
+//                                                                    format: [NSForegroundColorAttributeName: UIColor.whiteColor, NSFontAttributeName : defaultFont],
+//                                                                    defaultFormat: [NSForegroundColorAttributeName: UIColor.colorWithHexString(rgb: "#ffffff", alpha: 0.3)!, NSFontAttributeName: formatFont])
+//        return attributedString
+ //   }
     
-    func getStartSleepForDayLabel () -> String {
+/*    open func getStartSleepForDayLabel () -> String {
         return dayStringForDate(date: sleepStartDate)
     }
     
-    func getEndSleepForDayLabel () -> String {
+    open func getEndSleepForDayLabel () -> String {
         return dayStringForDate(date: sleepEndDate)
     }
     
-    func getStartSleepTimeString () -> String {
+    open func getStartSleepTimeString () -> String {
         return timeStringForDate (date: sleepStartDate)
     }
     
-    func getSleepEndTimeString () -> String {
+    open func getSleepEndTimeString () -> String {
         return timeStringForDate(date: sleepEndDate)
-    }
+    } */
 
-    func getTextForTimeInterval () -> NSAttributedString {
+    open func getTextForTimeInterval () -> NSAttributedString {
         let hours = Int(duration/3600.0)
         let minutes = Int((duration - Double((hours * 3600)))/60)
         let minutesString = minutes < 10 ? " 0\(minutes)m" : " \(minutes)m"
@@ -100,64 +117,69 @@ class AddEventModel: NSObject {
                             defaultFormat: [NSForegroundColorAttributeName: UIColor.colorWithHexString(rgb: "#ffffff", alpha: 0.3)!])
     }
     
-    func getTextForTimeLabel() -> String {
+    open func getTextForTimeLabel() -> String {
         return timeStringForDate(date: eventDate)
     }
     
-    func getTextForDayLabel() -> String {
+    open func getTextForDayLabel() -> String {
         return dayStringForDate(date: eventDate)
     }
     
-    func datePickerRow(rowIndex: Int) -> Bool {
+    open func datePickerRow(rowIndex: Int) -> Bool {
         return datePickerTags.contains(rowIndex)
     }
     
-    func countDownPickerRow(rowIndex: Int) -> Bool {
+    open func countDownPickerRow(rowIndex: Int) -> Bool {
         return countDownPickerTags.contains(rowIndex)
     }
     
-    func timeStringForDate(date: Date) -> String {
+    open func timeStringForDate(date: Date) -> String {
         let minutesString = date.minute < 10 ? "0\(date.minute)" : "\(date.minute)"
         return "\((date.hour)):" + minutesString
     }
     
-    func dayStringForDate(date: Date) -> String {
+    open func dayStringForDate(date: Date) -> String {
         return "\((date.day)) \((date.monthName))"
     }
     
+    open func applyTimeForDate(fromDate: Date, toDate: Date) -> Date {
+        let calendar = NSCalendar.current
+        //        let components = calendar.components([.year, .month, .day, .hour, .minute], fromDate: toDate)
+        let components = DateInterval(start: Date(), end: Date().addDays(daysToAdd: 1))
+        //        components.hour = fromDate.hour
+        //        components.minute = fromDate.minute
+        //        return calendar.dateFromComponents(components)!
+        return components.end
+    }
+    
+    
     //MARK: Class methods
     
-    class func getDefaultStartSleepDate() -> Date {
+/*    class func getDefaultStartSleepDate() -> Date {
         if let whenToSleepDate = UserManager.sharedManager.getUsualWhenToSleepTime() {
             // If we have usual time user go to sleep, we use it as default value
             // If the value is after midday, we treat it as a date/time object for yesterday.
+            var whenToSleepDateAdd = whenToSleepDate + 1.days
             if whenToSleepDate.hour >= 12 {
-                return AddEventModel.applyTimeForDate(fromDate: whenToSleepDate, toDate: Date().addDays(daysToAdd: -1))
+//                return applyTimeForDate(fromDate: whenToSleepDate, toDate: whenToSleepDateAdd)
+                return applyTimeForDate(whenToSleepDate)
             } else {
-                return AddEventModel.applyTimeForDate(fromDate: whenToSleepDate, toDate: Date())
+//                return applyTimeForDate(fromDate: whenToSleepDate, toDate: whenToSleepDateAdd)
+                return applyTimeForDate(whenToSleepDate)
+//                return AddEventModel.
             }
 
         }
 
         // If we have no date for usual sleep, use a constant.
-        return Date().startOf(component: .day) - 1.hours
-    }
+//        return Date().startOf(component: .day) - 1.hours 
+//        return DateInterval(start: Date(), duration: 12.hours)
+//        return Date(timeInterval: 12.hours, since: whenToSleepDate)
+        return Date(timeInterval: 12.hours, since: Date())
+//        return DateInterval(start: Date(), duration: 12.hours)
     
-    class func getDefaultWokeUpDate() -> Date {
-        if let whenWokeUp = UserManager.sharedManager.getUsualWokeUpTime() {
-            return AddEventModel.applyTimeForDate(fromDate: whenWokeUp, toDate: Date())
-        }
-        // If we have no date for usual sleep, use a constant.
-        return getDefaultStartSleepDate() + 7.hours
     }
-    
-    class func applyTimeForDate(fromDate: Date, toDate: Date) -> Date {
-        let calendar = NSCalendar.current
-        let components = calendar.components([.year, .month, .day, .hour, .minute], fromDate: toDate)
-        components.hour = fromDate.hour
-        components.minute = fromDate.minute
-        return calendar.dateFromComponents(components)!
-    }
+    */
     
     //MARK: Save events
     
@@ -190,7 +212,7 @@ class AddEventModel: NSObject {
                     let mealType = self.mealType.rawValue
                     UserManager.sharedManager.setUsualMealTime(mealType: mealType, forDate: startTime)
                     completion(true, nil)
-                    log.info("Meal saved as workout type")
+//                    log.info("Meal saved as workout type")
             }
         }
     }
@@ -214,19 +236,22 @@ class AddEventModel: NSObject {
                     completion(false, error?.localizedDescription)
                     return
                 }
-                log.info("Saved as exercise workout type")
+//                log.info("Saved as exercise workout type")
                 completion(true, nil)
             }
         }
     }
     
-    func saveSleepEvent(completion:@escaping (_ success: Bool, _ errorMessage: String?) -> ()) {
+/*    func saveSleepEvent(completion:@escaping (_ success: Bool, _ errorMessage: String?) -> ()) {
         let dayHourMinuteSecond: NSCalendar.Unit = [.month, .day, .hour, .minute]
-        let difference = NSCalendar.currentCalendar.components(dayHourMinuteSecond, fromDate: sleepStartDate, toDate: sleepEndDate, options: [])
-        if difference.hour < 0 || difference.minute < 0 {
+//        let difference = DateComponents(dayHourMinuteSecond, fromDate: sleepStartDate, toDate: sleepEndDate, options: [])
+        let difference = DateInterval(start: sleepStartDate, end: sleepEndDate)
+        if difference.duration < 0 {
+ //       if difference.hour < 0 || difference.minute < 0 {
             completion(false, "\"Woke Up\" time can't be earlier then \"Went to Sleep\" time")
             return
-        } else if (sleepStartDate.day == sleepEndDate.day && difference.hour == 0 && difference.minute == 0 && difference.month == 0) {
+//        } else if (sleepStartDate.day == sleepEndDate.day && difference.hour == 0 && difference.minute == 0
+        } else if (sleepStartDate.day == sleepEndDate.day && difference.duration == 0) {
             completion(false, "Total time of sleeping must be at least 1 minute")
             return
         }
@@ -243,15 +268,15 @@ class AddEventModel: NSObject {
                     (success, error ) -> Void in
                     guard error == nil else {
                         completion(false, error?.localizedDescription)
-                        log.error(error!.localizedDescription); return
+ //                       log.error(error!.localizedDescription); return
                     }
                     UserManager.sharedManager.setUsualWhenToSleepTime(date: startTime)
                     UserManager.sharedManager.setUsualWokeUpTime(date: endTime)
-                    log.info("Saved as sleep event")
+//                    log.info("Saved as sleep event")
                     completion(true, nil)
             })
         }
-    }
+    } */
     
     //MARK: Validation
     func validateTimedEvent(startTime: Date, endTime: Date, completion: @escaping (_ success: Bool, _ errorMessage: String?) -> ()) {
@@ -263,7 +288,8 @@ class AddEventModel: NSObject {
         
         // Aggregate sleep, exercise and meal events.
         MCHealthManager.sharedManager.fetchSamples(typesAndPredicates) { (samples, error) -> Void in
-            guard error == nil else { log.error(error!.localizedDescription); return }
+//            guard error == nil else { log.error(error!.localizedDescription); return }
+            guard error == nil else { print("error line 267"); return }
             let overlaps = samples.reduce(false, { (acc, kv) in
                 guard !acc else { return acc }
                 return kv.1.reduce(acc, { (acc, s) in return acc || !( startTime >= s.endDate || endTime <= s.startDate ) })

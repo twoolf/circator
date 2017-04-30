@@ -22,19 +22,19 @@ class AnalysisViewController: UIViewController {
     @IBOutlet weak var containerView: UIView!
     
     override func viewDidLoad() {
-        let correlateController = UIStoryboard(name: "TabScreens", bundle: nil).instantiateViewController(withIdentifier: "correlatePlaceholder") as! CorrelationChartsViewController
-        self.addChildViewController(correlateController)
-        correlateController.view.translatesAutoresizingMaskIntoConstraints = false
-        self.addSubview(subView: correlateController.view, toView: self.containerView)
-        self.currentViewController = correlateController;
+//        let correlateController = UIStoryboard(name: "TabScreens", bundle: nil).instantiateViewController(withIdentifier: "correlatePlaceholder") as! CorrelationChartsViewController
+//        self.addChildViewController(correlateController)
+//        correlateController.view.translatesAutoresizingMaskIntoConstraints = false
+//        self.addSubview(subView: correlateController.view, toView: self.containerView)
+//        self.currentViewController = correlateController;
         super.viewDidLoad()
     }
     
     func switchToScatterPlotViewController() {
-        let newViewController = UIStoryboard(name: "TabScreens", bundle: nil).instantiateViewController(withIdentifier: "correlatePlaceholder") as! CorrelationChartsViewController
-        newViewController.view.translatesAutoresizingMaskIntoConstraints = false
-        cycleFromViewController(oldViewController: self.currentViewController!, toViewController: newViewController)
-        self.currentViewController = newViewController;
+//        let newViewController = UIStoryboard(name: "TabScreens", bundle: nil).instantiateViewController(withIdentifier: "correlatePlaceholder") as! CorrelationChartsViewController
+//        newViewController.view.translatesAutoresizingMaskIntoConstraints = false
+ //       cycleFromViewController(oldViewController: self.currentViewController!, toViewController: newViewController)
+//        self.currentViewController = newViewController;
     }
     
     func switchToFastingViewController() {

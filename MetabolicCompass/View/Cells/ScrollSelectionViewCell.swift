@@ -27,7 +27,7 @@ class ScrollSelectionViewCell: BaseCollectionViewCell, AKPickerViewDataSource, A
     var pickerShown : Bool {
         set {
             _pickerShown = newValue;
-            scrollContainerView?.hidden = !_pickerShown
+            scrollContainerView?.isHidden = !_pickerShown
             scrollContainerHeight.constant = _pickerShown ? 50.0 : 0.0
         }
         get { return _pickerShown }
@@ -45,17 +45,17 @@ class ScrollSelectionViewCell: BaseCollectionViewCell, AKPickerViewDataSource, A
         
         pickerView!.interitemSpacing = 50
         
-        let pickerFont = UIFont.systemFontOfSize(16.0)
+        let pickerFont = UIFont.systemFont(ofSize: 16.0)
         pickerView!.font = pickerFont
         pickerView!.highlightedFont = pickerFont
         
-        pickerView!.highlightedTextColor = UIColor.whiteColor()
-        pickerView!.textColor = UIColor.whiteColor().colorWithAlphaComponent(0.7)
-        scrollContainerView?.hidden = !_pickerShown
+        pickerView!.highlightedTextColor = UIColor.white
+        pickerView!.textColor = UIColor.white.withAlphaComponent(0.7)
+        scrollContainerView?.isHidden = !_pickerShown
     }
     
     
-    @objc func numberOfItemsInPickerView(pickerView: AKPickerView) -> Int {
+    @objc func numberOfItemsInPickerView(_ pickerView: AKPickerView) -> Int {
         return (maxValue - minValue) + 1
     }
     
@@ -73,6 +73,6 @@ class ScrollSelectionViewCell: BaseCollectionViewCell, AKPickerViewDataSource, A
     func pickerView(pickerView: AKPickerView, didSelectItem item: Int) {
         let value = item + minValue
         valueLbl.text = String(value)
-        valueChanged(value)
+        valueChanged(newValue: value as AnyObject?)
     }
 }

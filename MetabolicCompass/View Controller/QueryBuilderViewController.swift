@@ -40,14 +40,14 @@ class QueryBuilderViewController: UIViewController, UITextFieldDelegate {
     static let attributeOptions =
         PreviewManager.supportedTypes.flatMap { type in
 //            HMConstants.sharedInstance.hkToMCDB[type.identifier]
-            HMConstants.sharedInstance.hkToMCDB[HKDocumentTypeIdentifier]
+ //           HMConstants.sharedInstance.hkToMCDB[HKDocumentTypeIdentifier]
         }
 
     static let aggregateOperators = ["avg", "min", "max"]
 
     var buildMode : BuilderMode! = nil
 
-    var attribute : String = QueryBuilderViewController.attributeOptions.first!
+//    var attribute : String = QueryBuilderViewController.attributeOptions.first!
     var queryName : String = ""
     var aggregateSelected = 0
     var lowerBound : String? = nil
@@ -150,9 +150,9 @@ class QueryBuilderViewController: UIViewController, UITextFieldDelegate {
 
                 $0.inputAccessoryView = toolBar
                 $0.selectorView.tintColor = UIColor.ht_belizeHole()
-                $0.pickerItems = QueryBuilderViewController.attributeOptions.map { SelectorPickerItem(title: $0) }
+//                $0.pickerItems = QueryBuilderViewController.attributeOptions.map { SelectorPickerItem(title: $0) }
             }.onValueChanged { [weak self] item in
-                self?.attribute = item.title
+//                self?.attribute = item.title
         }
 
         let aggregatePickerRow = SegmentedRowFormer<FormSegmentedCell>(instantiateType: .Class) {
@@ -275,16 +275,16 @@ class QueryBuilderViewController: UIViewController, UITextFieldDelegate {
 
             // TODO: meal/activity info based on attribute information.
             var hkType : HKObjectType? = nil
-            let hkIdentifier = HMConstants.sharedInstance.mcdbToHK[attribute]!
+//            let hkIdentifier = HMConstants.sharedInstance.mcdbToHK[attribute_set]!
 
-            switch hkIdentifier {
+/*            switch hkIdentifier {
             case HKCategoryTypeIdentifier.sleepAnalysis.hashValue:
                 hkType = HKObjectType.categoryTypeForIdentifier(hkIdentifier)!
             case HKCategoryTypeIdentifier.appleStandHour.hashValue:
                 hkType = HKObjectType.categoryTypeForIdentifier(hkIdentifier)!
             default:
                 hkType = HKObjectType.quantityTypeForIdentifier(hkIdentifier)!
-            }
+            } */
 
             let mcQueryAttr : MCQueryAttribute = (hkType!, nil)
             let pred = (Aggregate(rawValue: aggregateSelected)!, mcQueryAttr, lowerBound, upperBound)
@@ -292,7 +292,7 @@ class QueryBuilderViewController: UIViewController, UITextFieldDelegate {
             dataTableView.predicates.append(pred)
             dataTableView.reloadData()
         } else {
-            log.error("Invalid predicate, no bounds are set.")
+//            log.error("Invalid predicate, no bounds are set.")
         }
     }
 

@@ -67,14 +67,14 @@ public class DeleteActivityManager: UITableView, PickerManagerSelectionDelegate 
     public init(frame: CGRect, style: UITableViewStyle, notificationView: UIView!) {
         self.notificationView = notificationView
         super.init(frame: frame, style: style)
-        self.setupFormer()
+        setupFormer()
     }
 
     required public init?(coder aDecoder: NSCoder) {
         super.init(coder: aDecoder)
     }
 
-    func setupFormer() {
+    open func setupFormer() {
         self.isHidden = true
         self.separatorStyle = .none
 
@@ -150,10 +150,10 @@ public class DeleteActivityManager: UITableView, PickerManagerSelectionDelegate 
                     button?.imageView?.contentMode = .scaleAspectFit
 
                     if sectionName == self.delPickerSections[0] {
-                        button?.addTarget(self, action: #selector(DeleteActivityManager.handleQuickDelRecentTap(_:)), for: .TouchUpInside)
+                        button?.addTarget(self, action: #selector(self.handleQuickDelRecentTap(sender:)), for: .touchUpInside)
 
                     } else {
-                        button?.addTarget(self, action: #selector(DeleteActivityManager.handleQuickDelDateTap(_:)), for: .TouchUpInside)
+                        button?.addTarget(self, action: #selector(self.handleQuickDelDateTap(sender: )), for: .touchUpInside)
                     }
                     return button!
                 }()
@@ -185,7 +185,8 @@ public class DeleteActivityManager: UITableView, PickerManagerSelectionDelegate 
 
     func circadianOpCompletion(sender: UIButton?, pickerManager: PickerManager?, error: NSError?) {
         pickerManager?.finishProcessingSelection()
-        if error != nil { log.error(error!.localizedDescription) }
+//        if error != nil { log.error(error!.localizedDescription) }
+        if error != nil { print("in error") }
         else {
             Async.main {
                 UINotifications.genericSuccessMsgOnView(view: self.notificationView ?? self.superview!, msg: "Successfully deleted events.")
@@ -199,12 +200,12 @@ public class DeleteActivityManager: UITableView, PickerManagerSelectionDelegate 
     }
 
     public func handleQuickDelRecentTap(sender: UIButton)  {
-        log.debug("Delete recent tapped", feature: "deleteActivity")
+//        log.debug("Delete recent tapped", feature: "deleteActivity")
         if let mins = delRecentManager.getSelectedValue() as? Int {
             let endDate = Date()
 //            let startDate = endDate.dateByAddingTimeInterval(-(Double(mins) * 60.0))
             let startDate = endDate.addHours(hoursToAdd: -(mins)*60)
-            log.debug("Delete circadian events between \(startDate) \(endDate)", feature: "deleteActivity")
+//            log.debug("Delete circadian events between \(startDate) \(endDate)", feature: "deleteActivity")
             Async.main { sender.isEnabled = false; sender.setNeedsDisplay() }
             MCHealthManager.sharedManager.deleteCircadianEvents(startDate, endDate: endDate) {
                 self.circadianOpCompletion(sender: sender, pickerManager: nil, error: $0)
@@ -216,7 +217,7 @@ public class DeleteActivityManager: UITableView, PickerManagerSelectionDelegate 
         let startDate = delDates[0]
         let endDate = delDates[1]
         if startDate < endDate {
-            log.debug("Delete circadian events between \(startDate) \(endDate)", feature: "deleteActivity")
+//            log.debug("Delete circadian events between \(startDate) \(endDate)", feature: "deleteActivity")
             Async.main { sender.isEnabled = false; sender.setNeedsDisplay() }
             MCHealthManager.sharedManager.deleteCircadianEvents(startDate, endDate: endDate) {
                 self.circadianOpCompletion(sender: sender, pickerManager: nil, error: $0)
@@ -227,12 +228,12 @@ public class DeleteActivityManager: UITableView, PickerManagerSelectionDelegate 
     }
 
     func pickerItemSelected(pickerManager: PickerManager, itemType: String?, index: Int, item: String, data: AnyObject?) {
-        log.debug("Delete recent picker selected \(item) \(data)", feature: "deleteActivity")
+//        log.debug("Delete recent picker selected \(item) \(data)", feature: "deleteActivity")
         if let mins = data as? Int {
             let endDate = Date()
 //            let startDate = endDate.dateByAddingTimeInterval(-(Double(mins) * 60.0))
             let startDate = endDate.addHours(hoursToAdd: -mins*60)
-            log.debug("Delete circadian events between \(startDate) \(endDate)", feature: "deleteActivity")
+//            log.debug("Delete circadian events between \(startDate) \(endDate)", feature: "deleteActivity")
 
             if let rootVC = UIApplication.shared.delegate?.window??.rootViewController {
                 var interval = "\(mins) minutes"

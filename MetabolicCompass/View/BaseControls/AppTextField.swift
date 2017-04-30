@@ -15,7 +15,7 @@ public class AppTextField: FontScaleTextField {
     
     var fontSize: CGFloat = 14.0 {
         didSet {
-            setupFontSize(fontSize)
+            setupFontSize(size: fontSize)
         }
     }
     
@@ -39,11 +39,11 @@ public class AppTextField: FontScaleTextField {
     
     private func setupFont() {
         fontSize = self.font?.pointSize ?? defaultFontSize
-        setupFontSize(fontSize)
+        setupFontSize(size: fontSize)
     }
     
     func setupFontSize(size: CGFloat) {
-        self.font = ScreenManager.appFontOfSize(fontSize)
+        self.font = ScreenManager.appFontOfSize(size: fontSize)
     }
     
     

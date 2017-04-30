@@ -131,7 +131,7 @@ class CorrelationViewController: UIViewController, ChartViewDelegate {
                         }
 
                     case let (.PlotPredicate(_, lpred), .PlotPredicate(_, rpred)):
-                        MCHealthManager.sharedManager.correlateStatisticsOfType(self.sampleTypes[0], withType: self.sampleTypes[1], pred1: lpred, pred2: rpred) {
+                        MCHealthManager.sharedManager.correlateStatisticsOfType(self.sampleTypes[0], withType: self.sampleTypes[1], pred1: lpred!, pred2: rpred!) {
                             (stat1, stat2, error) -> Void in
                             guard (error == nil) && !(stat1.isEmpty || stat2.isEmpty) else {
                                 Async.main {

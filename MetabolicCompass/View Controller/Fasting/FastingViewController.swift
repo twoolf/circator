@@ -315,8 +315,8 @@ public class FastingViewController : UIViewController, ChartViewDelegate {
             }
         }
 
-        let pieChartDataEntry = PieChartDataEntry(labels: xVals, dataSet: pieChartDataSet)
-        self.pieChart.data = pieChartDataEntry
+//        let pieChartDataEntry = PieChartDataEntry(labels: xVals, dataSet: pieChartDataSet)
+//        self.pieChart.data = pieChartDataEntry
         self.pieChart.setNeedsDisplay()
     }
 
@@ -339,7 +339,7 @@ public class FastingViewController : UIViewController, ChartViewDelegate {
             badge.image = UIImage(named: icon)
             badge.setNeedsDisplay()
         } else {
-            log.error("FASTING could not get streak badge/label")
+ //           log.error("FASTING could not get streak badge/label")
         }
     }
 
@@ -349,7 +349,7 @@ public class FastingViewController : UIViewController, ChartViewDelegate {
 
         AnalysisDataModel.sharedInstance.fastingModel.updateData { error in
             guard error == nil else {
-                log.error(error!.localizedDescription)
+//                log.error(error!.localizedDescription)
                 return
             }
 
@@ -397,26 +397,26 @@ public class FastingViewController : UIViewController, ChartViewDelegate {
     //MARK: ChartViewDelegate
     public func chartValueSelected(chartView: ChartViewBase, entry: ChartDataEntry, dataSetIndex: Int, highlight: Highlight) {
         var typeIdentifier : String = ""
-        switch AnalysisDataModel.sharedInstance.fastingModel.samplesCollectedDataEntries[entry.x].0 {
+/*        switch AnalysisDataModel.sharedInstance.fastingModel.samplesCollectedDataEntries[entry.x].0 {
         case .HKType(let sampleType):
             typeIdentifier = HMConstants.sharedInstance.healthKitShortNames[sampleType.identifier]!
         case .Other:
             typeIdentifier = "Other"
-        }
+        } */
 
         let numberFont = UIFont.systemFont(ofSize: 20, weight: UIFontWeightRegular)
         let smallFont = UIFont.systemFont(ofSize: 14, weight: UIFontWeightRegular)
 
-        let cString = typeIdentifier + "\n\(String(format: "%.1f%%", Double(entry.value) * 100.0))"
+//        let cString = typeIdentifier + "\n\(String(format: "%.1f%%", Double(entry.value) * 100.0))"
         let attrs : [String: AnyObject] = [
             NSFontAttributeName: numberFont,
             NSForegroundColorAttributeName: UIColor.white
         ]
 
-        let aString = NSMutableAttributedString(string: cString, attributes: attrs)
-        aString.addAttribute(NSFontAttributeName, value: smallFont, range: NSRange(location:0, length: typeIdentifier.characters.count))
+//        let aString = NSMutableAttributedString(string: cString, attributes: attrs)
+//        aString.addAttribute(NSFontAttributeName, value: smallFont, range: NSRange(location:0, length: typeIdentifier.characters.count))
 
-        pieChart.centerAttributedText = aString
+//        pieChart.centerAttributedText = aString
         pieChart.drawCenterTextEnabled = true
     }
 

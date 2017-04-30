@@ -27,7 +27,7 @@ public class AnalysisDataModel {
                 if let response = payload as? [String:AnyObject], let studystats = response["result"] as? [String:AnyObject] {
                     self.studyStatsModel = StudyStatsModel(ringIndexKeys: ringIndexKeys, studystats: studystats)
                 } else {
-                    log.error("Failed to refresh study stats from \(payload)")
+ //                   log.error("Failed to refresh study stats from \(payload)")
                 }
             }
             completion(success)

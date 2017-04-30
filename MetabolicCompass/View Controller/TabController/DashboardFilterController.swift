@@ -74,14 +74,14 @@ class DashboardFilterController: UIViewController, UITableViewDelegate, UITableV
         if let userSelectedRows = Defaults.object(forKey: selectedRowsDefaultsKey) as? [String: AnyObject] {
             selectedRows = userSelectedRows
         } else {
-            log.warning("Clearing defaults for \(selectedRowsDefaultsKey)")
+//            log.warning("Clearing defaults for \(selectedRowsDefaultsKey)")
             Defaults.remove(selectedRowsDefaultsKey)
         }
 
         if let userSectionsVisible = Defaults.object(forKey: sectionVisibilityDefaultsKey) as? [Bool] {
             sectionVisibility = userSectionsVisible
         } else {
-            log.warning("Clearing defaults for \(sectionVisibilityDefaultsKey)")
+//            log.warning("Clearing defaults for \(sectionVisibilityDefaultsKey)")
             Defaults.remove(sectionVisibilityDefaultsKey)
         }
     }
@@ -226,10 +226,10 @@ class DashboardFilterController: UIViewController, UITableViewDelegate, UITableV
                     conjunctDescriptions.append(ctitle)
                     currentConjuncts.append(predicate)
                 } else {
-                    log.error("No predicate found for filter at index: \(section) \(row)")
+//                    log.error("No predicate found for filter at index: \(section) \(row)")
                 }
             } else {
-                log.error("Invalid key/value pair as filter index: \(key) \(value)")
+//                log.error("Invalid key/value pair as filter index: \(key) \(value)")
             }
         }
 

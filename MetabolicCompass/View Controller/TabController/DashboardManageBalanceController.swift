@@ -2,7 +2,7 @@
 //  DashboardManageBalanceController.swift
 //  MetabolicCompass 
 //
-//  Created by Inaiur on 5/13/16.
+//  Created by Inaiur on 5/13/16. 
 //  Copyright © 2016 Yanif Ahmad, Tom Woolf. All rights reserved.
 //
 
@@ -18,8 +18,8 @@ class DashboardManageBalanceController: UIViewController, UITableViewDelegate, U
     
     let selectController: BalanceSampleListController = {
         let storyboard = UIStoryboard(name: "TabScreens", bundle: nil)
-        let controller = storyboard.instantiateViewControllerWithIdentifier("BalanceSampleListController") as! BalanceSampleListController
-        controller.modalPresentationStyle = .OverCurrentContext
+        let controller = storyboard.instantiateViewController(withIdentifier: "BalanceSampleListController") as! BalanceSampleListController
+        controller.modalPresentationStyle = .overCurrentContext
         return controller
     }()
     
@@ -39,8 +39,8 @@ class DashboardManageBalanceController: UIViewController, UITableViewDelegate, U
         
 //        self.navigationBar.titleTextAttributes = [NSForegroundColorAttributeName : ScreenManager.sharedInstance.appNavBarTextColor(),
 //                                                  NSFontAttributeName : ScreenManager.appNavBarFont()]
-        self.navigationBar.tintColor = UIColor.whiteColor()
-        self.navigationBar.barStyle = UIBarStyle.Black;
+        self.navigationBar.tintColor = UIColor.white
+        self.navigationBar.barStyle = UIBarStyle.black;
         
         self.tableView.dataSource = self;
         self.tableView.delegate   = self;
@@ -48,16 +48,16 @@ class DashboardManageBalanceController: UIViewController, UITableViewDelegate, U
         self.refreshContent()
     }
     
-    override func viewWillAppear(animated: Bool) {
+    override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
 
-        NotificationCenter.defaultCenter().addObserver(self, selector: #selector(contentDidChange), name: PMDidUpdateBalanceSampleTypesNotification, object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(contentDidChange), name: NSNotification.Name(rawValue: PMDidUpdateBalanceSampleTypesNotification), object: nil)
     }
     
-    override func viewWillDisappear(animated: Bool) {
+    override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
         
-        NSNotificationCenter.defaultCenter().removeObserver(self)
+        NotificationCenter.default.removeObserver(self)
     }
     
     //MARK: Working with content
@@ -90,13 +90,13 @@ class DashboardManageBalanceController: UIViewController, UITableViewDelegate, U
     }
     
     //MARK: controller methods
-    override func preferredStatusBarStyle() -> UIStatusBarStyle {
-        return .LightContent;
-    }
+/*    func preferredStatusBarStyle() -> UIStatusBarStyle {
+        return .lightContent;
+    } */
     
     //MARK: Actions
     @IBAction func onClose(sender: AnyObject) {
-        self.dismissViewControllerAnimated(true, completion: nil)
+        self.dismiss(animated: true, completion: nil)
         save()
     }
     
@@ -106,16 +106,16 @@ class DashboardManageBalanceController: UIViewController, UITableViewDelegate, U
         return 1
     }
     
-    func tableView(tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+    func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         return self.data.count
     }
     
-    func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell {
+    func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         
-        let cell = tableView.dequeueReusableCellWithIdentifier(cellIdentifier, forIndexPath: indexPath) as! ManageBalanceCell
+        let cell = tableView.dequeueReusableCell(withIdentifier: cellIdentifier, for: indexPath as IndexPath) as! ManageBalanceCell
         let item = self.data[indexPath.row]
-        cell.leftImage.image = appearanceProvider.imageForSampleType(item.type, active: true)
-        cell.titleLabel.text = appearanceProvider.titleForSampleType(item.type, active: true).string
+        cell.leftImage.image = appearanceProvider.imageForSampleType(sampleType: item.type, active: true)
+        cell.titleLabel.text = appearanceProvider.titleForSampleType(sampleType: item.type, active: true).string
         cell.sampleTypesIndex = indexPath.row
         cell.data = item
         return cell;
@@ -124,9 +124,9 @@ class DashboardManageBalanceController: UIViewController, UITableViewDelegate, U
     //MARK: UITableViewDelegate
     
     func tableView(tableView: UITableView, didSelectRowAtIndexPath indexPath: NSIndexPath) {
-        let selectedCell = tableView.cellForRowAtIndexPath(indexPath) as! ManageBalanceCell
+        let selectedCell = tableView.cellForRow(at: indexPath as IndexPath) as! ManageBalanceCell
         self.selectController.selectdType = selectedCell.data.object
         self.selectController.parentCell  = selectedCell
-        self.presentViewController(self.selectController, animated: true, completion: nil)
+        self.present(self.selectController, animated: true, completion: nil)
     }
 }

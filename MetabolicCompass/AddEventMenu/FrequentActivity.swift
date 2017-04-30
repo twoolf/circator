@@ -30,11 +30,11 @@ class FrequentActivity: NSObject, NSCoding {
         self.init(desc: desc, start: start, duration: duration)
     }
     
-    internal func initWithCoder(coder aDecoder: NSCoder) {
+/*    internal func init(coder aDecoder: NSCoder) {
 
-    }
+    } */
 
-    internal func encodeWithCoder(aCoder: NSCoder) {
+    internal func encode(with aCoder: NSCoder) {
         aCoder.encode(self.desc, forKey: FrequentActivity.descKey)
         aCoder.encode(self.start, forKey: FrequentActivity.startKey)
         aCoder.encode(self.duration, forKey: FrequentActivity.durationKey)
@@ -42,6 +42,10 @@ class FrequentActivity: NSObject, NSCoding {
 }
 
 class FrequentActivityInfo: NSObject, NSCoding {
+    public func encode(with aCoder: NSCoder) {
+        return print ("here at 46")
+    }
+
 
     static var activitiesKey = "activities"
 
