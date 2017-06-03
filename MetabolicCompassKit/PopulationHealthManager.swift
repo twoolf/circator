@@ -32,7 +32,7 @@ public class PopulationHealthManager: NSObject {
 
     public var aggregateCache: HMSampleCache
 
-    public var aggregateRefreshDate : Date! = nil
+    public var aggregateRefreshDate : Date = Date()
 
     public var mostRecentAggregates = [HKSampleType: [MCSample]]()
 
@@ -79,7 +79,7 @@ public class PopulationHealthManager: NSObject {
 
     // Retrieve aggregates for all previewed rows.
     // TODO: enable input of start time, end time and columns retrieved in the query view controllers.
-    public func fetchAggregates(previewTypes: [HKSampleType], completion: @escaping (NSError?) -> Void) {
+    public func fetchAggregates(previewTypes: [HKSampleType], completion: @escaping (Error?) -> Void) {
         var columnIndex = 0
         var columns : [String:Any] = [:]
 
@@ -231,7 +231,7 @@ public class PopulationHealthManager: NSObject {
             // No caching for filtered queries.
             Service.json(route: MCRouter.AggregateMeasures(params), statusCode: 200..<300, tag: "AGGPOST") {
                 _, response, result in
-                print("got joson update line 228 \(result.value)")
+                print("got json update line 228 \(result.value)")
                 guard !result.isSuccess else {
                     self.refreshAggregatesFromMsg(payload: result.value as AnyObject?, completion: completion)
                     return
@@ -248,7 +248,7 @@ public class PopulationHealthManager: NSObject {
     // where MCDBType is a union type, MCDBType = HKWorkoutActivityType | String (e.g., for meals)
     // and   Quantity is a String (e.g., distance, kcal_burned, step_count, flights)
     //
-    func refreshAggregatesFromMsg(payload: Any?, completion: @escaping (NSError?) -> Void) {
+    func refreshAggregatesFromMsg(payload: Any?, completion: @escaping (Error?) -> Void) {
         var populationAggregates : [HKSampleType: [MCSample]] = [:]
         var columnsByType: [HKSampleType: Any] = [:]
 

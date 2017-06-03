@@ -9,7 +9,7 @@
 import UIKit
 
 @objc protocol CheckBoxProtocol {
-    func checkBoxValueChanged(sender: CheckBox, newValue: Bool)
+    func checkBoxValueChanged(_ sender: CheckBox, newValue: Bool)
 }
 
 class CheckBox : AppButton {
@@ -29,11 +29,11 @@ class CheckBox : AppButton {
         }
     }
     
-    public func buttonClicked(sender: UIButton) {
+    public func buttonClicked(_ sender: UIButton) {
         isChecked = !isChecked
         
         if let _ = delegate {
-            delegate!.checkBoxValueChanged(sender: sender as! CheckBox, newValue: isChecked)
+            delegate!.checkBoxValueChanged(sender as! CheckBox, newValue: isChecked)
         }
     }
     
@@ -41,7 +41,7 @@ class CheckBox : AppButton {
         super.awakeFromNib()
         
 //        self.addTarget(self, action: #selector(CheckBox.buttonClicked(_:)), for: UIControlEvents.TouchUpInside)
-        self.addTarget(self, action: #selector(CheckBox.buttonClicked(sender:)), for: UIControlEvents.touchUpInside)
+        self.addTarget(self, action: #selector(CheckBox.buttonClicked(_:)), for: UIControlEvents.touchUpInside)
         self.isChecked = false
     }
     

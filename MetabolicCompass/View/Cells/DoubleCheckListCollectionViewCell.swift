@@ -84,7 +84,7 @@ class DoubleCheckListCollectionViewCell: BaseCollectionViewCell, CheckBoxProtoco
  
     // MARK: - CheckBox Protocol
     
-    func checkBoxValueChanged(sender: CheckBox, newValue: Bool) {
+    func checkBoxValueChanged(_ sender: CheckBox, newValue: Bool) {
         let anotherCheckBox = sender == firstCheckBox ? secondCheckBox : firstCheckBox
         anotherCheckBox?.isChecked = !newValue
         

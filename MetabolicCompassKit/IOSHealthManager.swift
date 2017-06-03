@@ -67,7 +67,7 @@ public class IOSHealthManager: NSObject, WCSessionDelegate {
             */
             try WCSession.default().updateApplicationContext(["context": applicationContext])
         } catch {
-            log.error((error as NSError).localizedDescription)
+            log.error((error as Error).localizedDescription)
         }
     }
 
@@ -79,12 +79,12 @@ public class IOSHealthManager: NSObject, WCSessionDelegate {
     {
         let hkAnchor = anchor ?? noAnchor
         let onAnchorQueryResults: HMAnchorQueryBlock = {
-            (query, addedObjects, deletedObjects, newAnchor, nsError) -> Void in
-            completion(addedObjects ?? [], deletedObjects ?? [], newAnchor, nsError)
+            (query, addedObjects, deletedObjects, newAnchor, Error) -> Void in
+            completion(addedObjects ?? [], deletedObjects ?? [], newAnchor, Error)
         }
-        let anchoredQuery = HKAnchoredObjectQuery(type: type, predicate: predicate, anchor: hkAnchor, limit: Int(maxResults), resultsHandler: onAnchorQueryResults)
+        let anchoredQuery = HKAnchoredObjectQuery(type: type, predicate: predicate, anchor: hkAnchor, limit: Int(maxResults), resultsHandler: onAnchorQueryResults as! (HKAnchoredObjectQuery, [HKSample]?, [HKDeletedObject]?, HKQueryAnchor?, Error?) -> Void)
         if callContinuously {
-            anchoredQuery.updateHandler = onAnchorQueryResults
+            anchoredQuery.updateHandler = onAnchorQueryResults as! (HKAnchoredObjectQuery, [HKSample]?, [HKDeletedObject]?, HKQueryAnchor?, Error?) -> Void
         }
         MCHealthManager.sharedManager.healthKitStore.execute(anchoredQuery)
     }
@@ -93,9 +93,9 @@ public class IOSHealthManager: NSObject, WCSessionDelegate {
                                                getAnchorCallback: @escaping (HKSampleType) -> (Bool, HKQueryAnchor?, NSPredicate?),
                                                anchorQueryCallback: @escaping HMAnchorSamplesCBlock) -> Void
     {
-        let onBackgroundStarted = {(success: Bool, nsError: NSError?) -> Void in
+        let onBackgroundStarted = {(success: Bool, Error: Error?) -> Void in
             guard success else {
-                log.error(nsError!.localizedDescription)
+                log.error(Error!.localizedDescription)
                 return
             }
 
@@ -150,14 +150,14 @@ public class IOSHealthManager: NSObject, WCSessionDelegate {
         MCHealthManager.sharedManager.healthKitStore.enableBackgroundDelivery(for: type, frequency: HKUpdateFrequency.immediate, withCompletion: onBackgroundStarted as! (Bool, Error?) -> Void)
     }
 
-    public func stopAllBackgroundObservers(completion: @escaping (Bool, NSError?) -> Void) {
+    public func stopAllBackgroundObservers(completion: @escaping (Bool, Error?) -> Void) {
         MCHealthManager.sharedManager.healthKitStore.disableAllBackgroundDelivery { (success, error) in
             if !(success && error == nil) { log.error(error!.localizedDescription) }
             else {
                 self.observerQueries.forEach { MCHealthManager.sharedManager.healthKitStore.stop($0) }
                 self.observerQueries.removeAll()
             }
-            completion(success, error as NSError?)
+            completion(success, error)
         }
     }
 

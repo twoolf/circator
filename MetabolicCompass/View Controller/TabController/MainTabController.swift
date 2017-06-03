@@ -42,7 +42,7 @@ class MainTabController: UITabBarController, UITabBarControllerDelegate, ManageE
         NotificationCenter.default.addObserver(self, selector: #selector(userDidLogin), name: NSNotification.Name(rawValue: UMDidLoginNotifiaction), object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(userDidLogout), name: NSNotification.Name(rawValue: UMDidLogoutNotification), object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(userAddedCircadianEvents), name: NSNotification.Name(rawValue: MEMDidUpdateCircadianEvents), object: nil)
-//        NotificationCenter.defaultCenter().addObserver(self, selector: #selector(syncBegan(_:)), name: SyncBeganNotification, object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(syncBegan), name: NSNotification.Name(rawValue: SyncBeganNotification), object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(syncEnded), name: NSNotification.Name(rawValue: SyncEndedNotification), object: nil)
     }
     
@@ -76,14 +76,14 @@ class MainTabController: UITabBarController, UITabBarControllerDelegate, ManageE
     }
     
     //MARK: UITabBarControllerDelegate
-    func tabBarController(tabBarController: UITabBarController, didSelectViewController viewController: UIViewController) {
+    private func tabBarController(tabBarController: UITabBarController, didSelectViewController viewController: UIViewController) {
         
         if let controller = viewController as? DashboardTabControllerViewController {
             controller.rootNavigationItem = self.navigationItem
         }
     }
     
-    func tabBarController(tabBarController: UITabBarController, shouldSelectViewController viewController: UIViewController) -> Bool {
+    private func tabBarController(tabBarController: UITabBarController, shouldSelectViewController viewController: UIViewController) -> Bool {
         if viewController is UIPageViewController {
             return false
         }
@@ -145,7 +145,7 @@ class MainTabController: UITabBarController, UITabBarControllerDelegate, ManageE
     func syncBegan(notification: NSNotification) {
         if let dict = notification.userInfo, let initial = dict["count"] as? Int {
             if !syncMode {
-//                NotificationCenter.defaultCenter().addObserver(self, selector: #selector(syncProgress(_:)), name: SyncProgressNotification, object: nil)
+                NotificationCenter.default.addObserver(self, selector: #selector(syncProgress), name: NSNotification.Name(rawValue: SyncProgressNotification), object: nil)
             }
             syncMode = true
             syncInitial = CGFloat(initial)
@@ -164,10 +164,10 @@ class MainTabController: UITabBarController, UITabBarControllerDelegate, ManageE
                     ARSLineProgress.showWithProgress(initialValue: 0.01, onView: self.syncOverlayView!.contentView)
                 }
             }
-//            log.debug("DATA SYNC starting", feature: "dataSync")
+            log.debug("DATA SYNC starting", feature: "dataSync")
         }
         else {
-//            log.error("DATA SYNC No initial upload size found", feature: "dataSync")
+            log.error("DATA SYNC No initial upload size found", feature: "dataSync")
         }
     }
 
@@ -195,7 +195,7 @@ class MainTabController: UITabBarController, UITabBarControllerDelegate, ManageE
                 self.syncOverlayView!.setNeedsDisplay()
             }
         }
-//        log.debug("DATA SYNC finished", feature: "dataSync")
+        log.debug("DATA SYNC finished", feature: "dataSync")
     }
 
     func syncProgress(notification: NSNotification) {
@@ -208,7 +208,7 @@ class MainTabController: UITabBarController, UITabBarControllerDelegate, ManageE
 
             let progress = max(0.01, 100.0 * (syncInitial - syncCounter) / syncInitial)
             ARSLineProgress.updateWithProgress(progress)
-//            log.debug("DATA SYNC progress \(progress)", feature: "dataSync")
+            log.debug("DATA SYNC progress \(progress)", feature: "dataSync")
 
             syncCheckpoint = syncCounter
             syncTerminator?.cancel()
@@ -328,7 +328,7 @@ class MainTabController: UITabBarController, UITabBarControllerDelegate, ManageE
                     self.dailyProgressVC?.contentDidUpdate()
                 }
             } else {
- //               log.warning("No DailyProgressViewController available", feature: "addActivityView")
+                log.warning("No DailyProgressViewController available", feature: "addActivityView")
             }
         }
         self.manageEventMenu?.logContentView(asAppear: false)
@@ -352,7 +352,7 @@ class MainTabController: UITabBarController, UITabBarControllerDelegate, ManageE
                     break
                 }
             }
-//            log.debug("Daily progress view controller after init: \(dailyProgressVC)", feature: "addActivityView")
+            log.debug("Daily progress view controller after init: \(dailyProgressVC ?? no_argument as AnyObject)", feature: "addActivityView")
         }
     }
 

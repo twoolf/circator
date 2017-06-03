@@ -3,7 +3,6 @@
 // Copyright (c) 2016 SROST. All rights reserved.
 //
 
-/*
 import Foundation
 import Charts
 import SwiftDate
@@ -21,8 +20,7 @@ class BarChartModel : NSObject {
 
     var rangeType: HealthManagerStatisticsRangeType = HealthManagerStatisticsRangeType.week
     var typesChartData: [String: ChartData] = [:]
-//    var chartDataOperationQueue: OperationQueue = OperationQueue
-    var chartDataOperationQueue: OperationQueue?
+    var _chartDataOperationQueue: OperationQueue = OperationQueue()
     
     private var chartTypeToQuantityType: [String: ChartType] = [HKQuantityTypeIdentifier.dietaryEnergyConsumed.rawValue : .BarChart,
                                                                 HKQuantityTypeIdentifier.basalEnergyBurned.rawValue : .BarChart,
@@ -51,38 +49,37 @@ class BarChartModel : NSObject {
     //MARK: Data for YEAR
     func getChartDataForYear(type: ChartType, values: [Double], minValues: [Double]?) -> ChartData {
 
-//        let xVals = getYearTitles()
-//        let xVals =
+        let xVals = getYearTitles()
         var yVals: [ChartDataEntry] = []
         if let minValues = minValues {
-            yVals = getYValuesForScatterChart(minValues: minValues, maxValues: values, period: .year)
+            yVals = getYValuesForScatterChart(minValues: minValues, maxValues: values, period: .year) as! [ChartDataEntry]
         } else {
             yVals = convertStatisticsValues(stisticsValues: values, forRange: .year)
         }
 
-//        return getChartDataFor(xVals: xVals, yVals: yVals, type: type)
+        return getChartDataFor(xVals: xVals, yVals: yVals, type: type) as! ChartData
     }
 
     //MARK: Data for MONTH
     func getChartDataForMonth(type: ChartType, values: [Double], minValues: [Double]?) -> ChartData {
-//        let xVals = getMonthTitles()
+        let xVals = getMonthTitles()
         var yVals = convertStatisticsValues(stisticsValues: values, forRange: .month)
         if let minValues = minValues {
-            yVals = getYValuesForScatterChart(minValues: minValues, maxValues: values, period: .month)
+            yVals = getYValuesForScatterChart(minValues: minValues, maxValues: values, period: .month) as! [ChartDataEntry]
         }
 
-//        return getChartDataFor(xVals: xVals, yVals: yVals, type: type)
+        return getChartDataFor(xVals: xVals, yVals: yVals, type: type) as! ChartData
     }
 
     //MARK: Data for WEEK
     func getChartDataForWeek(type: ChartType, values: [Double], minValues: [Double]?) -> ChartData {
-//        let xVals = getWeekTitles()
+        let xVals = getWeekTitles()
         var yVals = convertStatisticsValues(stisticsValues: values, forRange: .week)
         if let minValues = minValues {
-            yVals = getYValuesForScatterChart(minValues: minValues, maxValues: values, period: .week)
+            yVals = getYValuesForScatterChart(minValues: minValues, maxValues: values, period: .week) as! [ChartDataEntry]
         }
 
-//        return getChartDataFor(xVals: xVals, yVals: yVals, type: type)
+        return getChartDataFor(xVals: xVals, yVals: yVals, type: type) as! ChartData
     }
 
     //MARK: Prepare chart data
@@ -118,62 +115,53 @@ class BarChartModel : NSObject {
         for (index, minValue) in minValues.enumerated() {
             let maxValue = maxValues[index]
             if maxValue > 0 && minValue > 0 {
-//                yVals.append(BarChartDataEntry(values: [minValue, maxValue] , xIndex: index+indexIncrement))
-//                yVals.append(barChartDataWith(xVals: (index+indexIncrement  as String), yVals: [minValue, maxValue]))
-//                yVals.append(BarChartDataEntry(xVals: ((index+indexIncrement)  as String), yVals: [minValue, maxValue]))
+                yVals.append(BarChartDataEntry(x: Double(index), y: minValue))
             } else if maxValue > 0 {
-//                yVals.append(BarChartDataEntry(values: [maxValue] , xIndex: index+indexIncrement))
-//                yVals.append(barChartDataWith(xVals: (index+indexIncrement as String), yVals: [maxValue]))
-//                yVals.append(BarChartDataEntry(xVals: ((index+indexIncrement) as String), yVals: [maxValue]))
+                yVals.append(BarChartDataEntry(x: Double(index), y: maxValue))
             }
         }
         return yVals
     }
+    
 
-    func getChartDataFor(xVals: [String], yVals: [ChartDataEntry], type: ChartType) -> ChartData {
-//        switch type {
-//            case .BarChart:
-//                return barChartDataWith(xVals: xVals, yVals: yVals)
-//                return BarChartDataEntry(x: xVals, y: yVals)
-//            case .LineChart:
-//                return lineChartDataWith(xVals: xVals, yVals: yVals)
-//                return LineChartData(x: xVals, y: yVals)
-//            case .ScatterChart:
-//                return scatterChartDataWith(xVals: xVals, yVals: yVals)
-//                return scatterChartData(x: xVals, y: yVals)
-//        }
+
+    func getChartDataFor(xVals: [String], yVals: [ChartDataEntry], type: ChartType) -> AnyObject {
+        switch type {
+            case .BarChart:
+                return BarChartDataSet(values: yVals, label: "check")
+            case .LineChart:
+                return LineChartDataSet(values: yVals, label: "check2")
+            case .ScatterChart:
+                return ScatterChartDataSet(values: yVals, label: "check3")
+        }
     }
 
-    func getBloodPressureChartData(range: HealthManagerStatisticsRangeType, systolicMax: [Double], systolicMin: [Double], diastolicMax: [Double], diastolicMin: [Double]) -> ChartData{
+    func getBloodPressureChartData(range: HealthManagerStatisticsRangeType, systolicMax: [Double], systolicMin: [Double], diastolicMax: [Double], diastolicMin: [Double]) -> ChartDataSet {
         let systolicWeekData = getYValuesForScatterChart(minValues: systolicMin, maxValues: systolicMax, period: range)
         let diastolicWeekData = getYValuesForScatterChart(minValues: diastolicMin, maxValues: diastolicMax, period: range)
         var xVals: [String] = []
- //       switch range {
-//            case .week:
-//                xVals = BarChartModel.getWeekTitles()
-//           case .month:
-//                xVals = BarChartModel.getMonthTitles()
-//            case .year:
-//                xVals = BarChartModel.getYearTitles()
+        switch range {
+            case .week:
+                xVals = getWeekTitles()
+           case .month:
+                xVals = getMonthTitles()
+            case .year:
+                xVals = getYearTitles()
 
-//        }
-//        return scatterChartDataWith(xVals, yVals1: systolicWeekData, yVals2: diastolicWeekData) 
-//        return scatterChartDataWith(xVals: xVals, yVals1: systolicWeekData, yVals2: diastolicWeekData)
+        }
+        return ChartDataSet(values: systolicWeekData, label: "check3")
+    
+    }
 
-    func barChartDataWith(xVals: [String], yVals: [ChartDataEntry]) -> BarChartData {
+    func barChartDataWith(xVals: [String], yVals: [BarChartDataEntry]) -> BarChartDataSet {
         let daysDataSet = BarChartDataSet(values: yVals, label: "")
-//        daysDataSet.barSpace = 0.9
-//        daysDataSet.barWidth = 0.9
         daysDataSet.barBorderWidth = 0.1
         daysDataSet.colors = [UIColor.colorWithHexString(rgb: "#ffffff", alpha: 0.8)!]
         daysDataSet.drawValuesEnabled = false
-
-//        let barChartData = BarChartData(xVals: xVals, dataSets: [daysDataSet])
-//        let barChartData = barChartDataWith(xVals: xVals, yVals: [daysDataSet])
-//        return barChartData
+        return daysDataSet
     }
 
-    func lineChartDataWith(xVals: [String], yVals: [ChartDataEntry]) -> LineChartData {
+    func lineChartDataWith(xVals: [String], yVals: [ChartDataEntry]) -> LineChartDataSet {
         let lineChartDataSet = LineChartDataSet(values: yVals, label: "")
         lineChartDataSet.colors = [UIColor.white.withAlphaComponent(0.3)]
         lineChartDataSet.circleRadius = 3.0
@@ -183,10 +171,7 @@ class BarChartModel : NSObject {
         lineChartDataSet.circleColors = [UIColor.white]
         lineChartDataSet.drawHorizontalHighlightIndicatorEnabled = false
         lineChartDataSet.drawVerticalHighlightIndicatorEnabled = false
-
-//        let lineChartData = LineChartDataEntry(x: xVals, dataSets: [lineChartDataSet])
-//        let lineChartData = lineChartDataSet(xVals: xVals, dataSets: [lineChartDataSet])
-//        return lineChartData
+        return lineChartDataSet
     }
 
     func scatterChartDataWith(xVals: [String], yVals:[ChartDataEntry], dataSetType: DataSetType = DataSetType.HeartRate) -> ScatterChartData {
@@ -197,9 +182,7 @@ class BarChartModel : NSObject {
         dataSet.drawValuesEnabled = false
         dataSet.drawHorizontalHighlightIndicatorEnabled = false
         dataSet.drawVerticalHighlightIndicatorEnabled = false
-
-//        let chartData = ScatterChartData(xVals: xVals, dataSets: [dataSet])
-//        let chartData = scatterChartDataWith(xVals: xVals, yVals: [dataSet])
+        let chartData = ScatterChartData(dataSets: [dataSet])
         return chartData
     }
 
@@ -218,14 +201,13 @@ class BarChartModel : NSObject {
         dataSet2.drawValuesEnabled = false
         dataSet2.drawHorizontalHighlightIndicatorEnabled = false
         dataSet2.drawVerticalHighlightIndicatorEnabled = false
-
-//        let chartData = ScatterChartData(xVals: xVals, dataSets: [dataSet1, dataSet2])
-//        let chartData = scatterChartDataWith(xVals: xVals, yVals: [dataSet2, dataSet2])
+        let chartData = ScatterChartData(dataSets: [dataSet1])
         return chartData
     }
+    
     //TODO: Maybe we should remove this function 
     //Don't know for what this function exists. Can't find usage in the project.
-    func scatterChartDataWithMultipleEntries(xVals: [String], yVals:[[ChartDataEntry]], types: [DataSetType?]) -> ScatterChartData {
+/*    func scatterChartDataWithMultipleEntries(xVals: [String], yVals:[[ChartDataEntry]], types: [DataSetType?]) -> ScatterChartData {
         
         assert(xVals.count != yVals.count, "Data input is invalid, x and y value arrays count should be equal")
 
@@ -243,10 +225,172 @@ class BarChartModel : NSObject {
         
 //        let chartData = ScatterChartData(xVals: xVals, dataSets: dataSets)
 //        let chartData = scatterChartDataWith(xVals: xVals, yVals: dataSets)
+        let chartData = ScatterChartData(dataSets: [dataSets])
+        return chartData
+    } */
+    
+    // Parameters:
+    // - calcAvg1/2 indicates that for a dataset, we should compute an average for any stacked BarChartDataEntry prior to
+    //   processing for the scatter chart. By default, a BarChartEntry computes a sum for stacked chart entries.
+    func scatterChartDataWithMultipleDataSets(xVals: [String?], dataSets:[IChartDataSet], calcAvg: [Bool])
+        -> ScatterChartDataSet
+    {
+        var xValues : [String] = Array()
+        //dataSets[0] yAxis
+        //dataSets[1] xAxis
+        let finalDataSet = MCScatterChartDataSet()
+        finalDataSet.dataSetType = .HeartRate
+        finalDataSet.colors = [UIColor.white]
+        finalDataSet.drawValuesEnabled = false
+        finalDataSet.drawHorizontalHighlightIndicatorEnabled = false
+        finalDataSet.drawVerticalHighlightIndicatorEnabled = false
+        
+        //create xAxis labels
+        if var dSet1 = dataSets[0] as? ChartDataSet, let dSet2 = dataSets[1] as? ChartDataSet {
+            let cleanDSet1 = dSet1.values.map({ $0.hash }).filter({ _ in dSet1.entryCount > 0 })
+            let cleanDSet2 = dSet2.values.map({ $0.hash }).filter({ _ in dSet2.entryCount > 0 })
+//            let cleanDSet1 = dSet1.y.map({ $0.xIndex }).filter({ !dSet1.yValForXIndex($0).isNaN })
+//            let cleanDSet2 = dSet2.y.map({ $0.xIndex }).filter({ !dSet2.yValForXIndex($0).isNaN })
+//            let sortedIndices = Set<Int>(cleanDSet1).intersect(cleanDSet2).sort { $0.0 < $0.1 }
+//            let sortedIndices = Set<Int>(cleanDSet1).intersect(cleanDSet2).sort { $0.0 < $0.1 }
+            
+            let _ : (ChartDataSet, Int) -> ChartDataEntry? = { (dset, idx) in
+//                let entry = dset.entryForXIndex(idx)
+                let entry = dset.entryForIndex(idx)
+                //log.info("SCATTER MODEL lookup \(idx) \(dset.yVals.map { $0.xIndex}) \(entry)")
+//                return entry == nil ? entry : (entry!.xIndex == idx ? entry : nil)
+                return entry == nil ? entry : (entry!.hashValue == idx ? entry : nil)
+            }
+            
+            let averageEntry : (ChartDataEntry) -> ChartDataEntry = { entry in
+                switch entry {
+                case is BarChartDataEntry:
+                    let e = entry as! BarChartDataEntry
+                    if (e.yValues?.count ?? 0) > 0 {
+//                    if (e.values?.count ?? 0) > 0 {
+                        let sumCount = e.yValues!.reduce((0.0, 0.0), { (acc, x) in (acc.0 + x, acc.1 + 1) })
+                        let avg = sumCount.1 > 0 ? (sumCount.0 / sumCount.1) : 0
+//                        return BarChartDataEntry(values: [avg], xIndex: e.xIndex)
+                        return BarChartDataEntry(x: Double(e.x), yValues: [avg])
+                    } else {
+                        return entry
+                    }
+                    
+                default:
+                    return entry
+                }
+            }
+            
+//            let yVals1 = sortedIndices.flatMap { lookupXIndex(dSet1, $0) }
+//            let yVals2 = sortedIndices.flatMap { lookupXIndex(dSet2, $0) }
+//            dSet1 = ChartDataSet(yVals: calcAvg[0] ? yVals1.map(averageEntry) : yVals1)
+//            dSet2 = ChartDataSet(yVals: calcAvg[1] ? yVals2.map(averageEntry) : yVals2)
+            
+            //log.info("SCATTER MODEL common dataset sizes: \(dSet1.yVals.count) \(dSet2.yVals.count)")
+            //log.info("SCATTER MODEL common datasets: \(dSet1.yVals) \(dSet2.yVals)")
+            //sort values in the right way
+ //           dSet1.yVals.sortInPlace({ $0.0.value < $0.1.value })
+            
+            //prepare xAxis labels
+ /*           let xDoubleVals: Set<Double> = Set<Double>(dSet1.yVals.flatMap({ yValue in
+                let currentYValue = dSet2.yValForXIndex(yValue.xIndex)
+                if !currentYValue.isNaN {
+                    let numberIsDecimal = yValue.value - floor(yValue.value) > 0.001
+                    return numberIsDecimal ? Double(round(10*yValue.value)/10) : Double(Int(yValue.value))
+                }
+                //log.info("SCATTER MODEL found nan for labelling \(yValue) \(dSet2.yVals)")
+                return nil
+            })) */
+            
+//            xValues = xDoubleVals.sort({ $0.0 < $0.1 }).map({ "\($0)" })
+            
+/*            let groupByYValue: [Double: [Double]] = dSet1.yVals.reduce([:], combine: { (acc, entry1) in
+                var nacc = acc
+                let entry2 = dSet2.yValForXIndex(entry1.xIndex)
+                if !entry2.isNaN {
+                    nacc.updateValue(((nacc[entry1.value] ?? []) + [entry2]), forKey: entry1.value)
+                } else {
+                    //log.info("SCATTER MODEL found nan for \(entry1) \(dSet2.yVals)")
+                }
+                return nacc
+            }) */
+ //           let sortedByYValue = groupByYValue.sort { $0.0.0 < $0.1.0 }
+            
+            //log.info("SCATTER MODEL corr entries \(sortedByYValue)")
+/*            sortedByYValue.enumerate().forEach { (index, yAndXVals) in
+                let values = yAndXVals.1
+                if values.count > 0 {
+                    finalDataSet.addEntry(BarChartDataEntry(values: values, xIndex: index + 1))
+                } else {
+                    //log.info("SCATTER MODEL no entries for \(yAndXVals)")
+                }
+            }*/
+        }
+        
+        //log.info("SCATTER MODEL final dataset \(xValues.count) \(finalDataSet.entryCount)")
+        var newValues : [String] = Array()
+        newValues.append("")//gap from the left side
+        newValues += xValues
+        newValues.append("")//gap from the right side
+//        let chartData = ScatterChartData(xVals: newValues, dataSets: [finalDataSet])
+ //       let chartData = ScatterChartData(xVals: newValues, dataSets: dataSets)
+        let dSet1 = dataSets[0]
+        let chartData = ScatterChartDataSet(values: (dSet1 as! [ChartDataEntry]))
         return chartData
     }
     
-    // Parameters:
+    func lineChartWithMultipleDataSets(xVals: [String?], dataSets:[IChartDataSet], calcAvg: [Bool]) -> LineChartDataSet {
+        let averageEntry : (ChartDataEntry) -> ChartDataEntry = { entry in
+            switch entry {
+            case is BarChartDataEntry:
+                let e = entry as! BarChartDataEntry
+                if (e.yValues?.count ?? 0) > 0 {
+//                if (e.values?.count ?? 0) > 0 {
+                    let sumCount = e.yValues!.reduce((0.0, 0.0), { (acc, x) in (acc.0 + x, acc.1 + 1) })
+                    let avg = sumCount.1 > 0 ? (sumCount.0 / sumCount.1) : 0
+//                    return BarChartDataEntry(values: [avg], xIndex: e.xIndex)
+                    return BarChartDataEntry(x: Double(e.hashValue), yValues: [avg])
+                } else {
+                    return entry
+                }
+                
+            default:
+                return entry
+            }
+        }
+        
+        let lineChartDataSetWith : ([ChartDataEntry]) -> LineChartDataSet = { yVals in
+            let lineChartDataSet = LineChartDataSet(values: yVals, label: "")
+            lineChartDataSet.colors = [UIColor.white.withAlphaComponent(0.3)]
+            lineChartDataSet.circleRadius = 3.0
+            lineChartDataSet.drawValuesEnabled = false
+            lineChartDataSet.circleHoleRadius = 1.5
+            lineChartDataSet.circleHoleColor = UIColor(colorLiteralRed: 51.0/255.0, green: 138.0/255.0, blue: 255.0/255.0, alpha: 1.0)
+            lineChartDataSet.circleColors = [UIColor.white]
+            lineChartDataSet.drawHorizontalHighlightIndicatorEnabled = false
+            lineChartDataSet.drawVerticalHighlightIndicatorEnabled = false
+            return lineChartDataSet
+        }
+        
+        var ds0: LineChartDataSet = dataSets[0] as! LineChartDataSet
+        var ds1: LineChartDataSet = dataSets[1] as! LineChartDataSet
+        
+//        if calcAvg[0] { ds0 = lineChartDataSetWith(ds0.yValues.map(averageEntry)) }
+        if calcAvg[0] { ds0 = lineChartDataSetWith(ds0.values.map(averageEntry)) }
+        ds0.axisDependency = .left
+        ds0.colors = [UIColor.white]
+        
+        if calcAvg[1] { ds1 = lineChartDataSetWith(ds1.values.map(averageEntry)) }
+        ds1.axisDependency = .right
+        ds1.colors = [UIColor.red]
+        
+//        let chartData = ChartDataEntry(x: Double(xVals), y: [ds0, ds1] )
+//        let chartData = ChartDataSet(values: [ds0, ds1])
+//        let chartData = ChartDataEntry(x: ds0[0], y: ds1[0])
+        return ds0
+    }
+    
+ /*   // Parameters:
     // - calcAvg1/2 indicates that for a dataset, we should compute an average for any stacked BarChartDataEntry prior to
     //   processing for the scatter chart. By default, a BarChartEntry computes a sum for stacked chart entries.
     func scatterChartDataWithMultipleDataSets(xVals: [String?], dataSets:[IChartDataSet], calcAvg: [Bool])
@@ -281,7 +425,7 @@ class BarChartModel : NSObject {
 //                    if (e.values?.count ?? 0) > 0 {
 //                        let sumCount = e.values!.reduce((0.0, 0.0), combine: { (acc, x) in (acc.0 + x, acc.1 + 1) })
 //                        let avg = sumCount.1 > 0 ? (sumCount.0 / sumCount.1) : 0
-                        return BarChartDataEntry(values: [avg], xIndex: e.xIndex)
+//                        return BarChartDataEntry(values: [avg], xIndex: e.xIndex)
 //                    } else {
                         return entry
                     }
@@ -316,7 +460,7 @@ class BarChartModel : NSObject {
                 }
                 //log.info("SCATTER MODEL found nan for labelling \(yValue) \(dSet2.yVals)")
                 return nil
-            }))
+//            }
 
             xValues = xDoubleVals.sorted(by: { $0.0 < $0.1 }).map({ "\($0)" })
 
@@ -330,7 +474,7 @@ class BarChartModel : NSObject {
                     //log.info("SCATTER MODEL found nan for \(entry1) \(dSet2.yVals)")
                 }
                 return nacc
-            })
+//            })
 //            let sortedByYValue = groupByYValue.sorted { $0.0.0 < $0.1.0 }
 
             //log.info("SCATTER MODEL corr entries \(sortedByYValue)")
@@ -358,7 +502,7 @@ class BarChartModel : NSObject {
     }
     
     func lineChartWithMultipleDataSets(xVals: [String?], dataSets:[IChartDataSet], calcAvg: [Bool]) -> LineChartData? {
-        let averageEntry : (ChartDataEntry) -> ChartDataEntry = { entry in
+        let averageEntry : (ChartDataEntry) -> LineChartData = { entry in
             switch entry {
             case is BarChartDataEntry:
                 let e = entry as! BarChartDataEntry
@@ -401,9 +545,11 @@ class BarChartModel : NSObject {
         ds1.colors = [UIColor.red]
 
 //        let chartData = LineChartData(xVals: xVals, dataSets: [ds0, ds1])
-        let chartData = BarChartDataEntry(xVals: xVals as! [String], yVals: [ds0, ds1])
+//        let chartData = BarChartDataEntry(xVals: xVals as! [String], yVals: [ds0, ds1])
+//        let chartData = chartDataSet(values: [ds0, ds1], label: "check2")
+        let chartData = LineChartDataSet(values: ds0)
         return chartData
-    }
+    } */
 
     // MARK :- Get all data for type
     
@@ -413,7 +559,7 @@ class BarChartModel : NSObject {
         let chartType = _chartType == nil ? chartTypeForQuantityTypeIdentifier(qType: type) : _chartType
         let key = type + "\(self.rangeType.rawValue)"
         
-        //log.warning("Getting chart data for \(type)")
+        log.warning("Getting chart data for \(type)")
         
         if type == HKQuantityTypeIdentifier.heartRate.rawValue || type == HKQuantityTypeIdentifier.uvExposure.rawValue {
             // We should get max and min values. because for this type we are using scatter chart
@@ -429,9 +575,9 @@ class BarChartModel : NSObject {
             IOSHealthManager.sharedManager.getChartDataForQuantity(sampleType: HKObjectType.quantityType(forIdentifier: HKQuantityTypeIdentifier(rawValue: type))!, inPeriod: self.rangeType) { obj in
                 let values = obj as! [[Double]]
                 if values.count > 0 {
-                    self.typesChartData[key] = self.getBloodPressureChartData(range: self.rangeType,
-                                                                              systolicMax: values[0], systolicMin: values[1],
-                                                                              diastolicMax: values[2], diastolicMin: values[3])
+//                    self.typesChartData[key] = self.getBloodPressureChartData(range: self.rangeType, systolicMax: values[0], systolicMin: values[1], diastolicMax: values[2], diastolicMin: values[3])
+//                    self.typesChartData[key] = getBloodPressureChartData(range: rangeType, systolicMax: values[0], systolicMin: values[1], diastolicMax: values[2], diastolicMin: values[3])
+                        self.typesChartData[key] = self.getChartDataForRange(range: self.rangeType, type: chartType!, values: values[0], minValues: values[1])
                 }
                 completion(values.count > 0)
             }
@@ -449,13 +595,13 @@ class BarChartModel : NSObject {
         let chartGroup = DispatchGroup()
         for qType in PreviewManager.chartsSampleTypes {
             chartGroup.enter()
-            chartDataOperationQueue.addOperation({
-                getAllDataForCurrentPeriodForSample(qType: qType, _chartType: chartType) { _ in
+            _chartDataOperationQueue.addOperation({
+                self.getAllDataForCurrentPeriodForSample(qType: qType, _chartType: chartType) { _ in
                     chartGroup.leave()
                 }
             })
         }
-        dispatch_group_notify(chartGroup, DispatchQueue.global(DispatchQueue.GlobalQueuePriority.background, 0)) {
+        chartGroup.notify(qos: DispatchQoS.background, queue: DispatchQueue.main) {
             self.addCompletionForOperationQueue(completion: completion)
         }
     }
@@ -466,13 +612,13 @@ class BarChartModel : NSObject {
         let chartGroup = DispatchGroup()
         for qType in PreviewManager.chartsSampleTypes {
             chartGroup.enter()
-            chartDataOperationQueue.addOperation({ 
-                getAllDataForCurrentPeriodForSample(qType: qType, _chartType: nil) { _ in
+            _chartDataOperationQueue.addOperation({ 
+                self.getAllDataForCurrentPeriodForSample(qType: qType, _chartType: nil) { _ in
                     chartGroup.leave()
                 }
             })
         }
-        dispatch_group_notify(chartGroup, DispatchQueue.global(DispatchQueue.GlobalQueuePriority.background, 0)) {
+        chartGroup.notify(qos: DispatchQoS.background, queue: DispatchQueue.main) {
             self.addCompletionForOperationQueue(completion: completion)
         }
     }
@@ -547,7 +693,7 @@ class BarChartModel : NSObject {
         return monthTitles
     }
 
-    func getYearTitles () -> [String] {
+    func getYearTitles() -> [String] {
         let numOfMonth = 13
         let currentDate = Date()
         let dateYearAgo = currentDate - 1.years
@@ -583,7 +729,7 @@ class BarChartModel : NSObject {
         return .BarChart
     }
 
-    func convertDateToYearString (date: Date, forIndex index: Int) -> String {
+    func convertDateToYearString(date: Date, forIndex index: Int) -> String {
         let month = date.month
         let monthPlusThree = month + 3
 //        let cutRange = month.startIndex ..< month.startIndex.advancedBy(3)
@@ -599,11 +745,11 @@ class BarChartModel : NSObject {
         return Date().monthName
     }
 
-    func convertDateToWeekString (date: Date, forIndex index: Int) -> String {
+    func convertDateToWeekString(date: Date, forIndex index: Int) -> String {
         if index == 0 {
             let month = date.month
 //            let cutRange = month.startIndex ..< month.startIndex.advancedBy(3)
-            let cutRange = month ..< (month + 3)
+            _ = month ..< (month + 3)
 //            let monthName = date(getMonthTitles() > 3 ? month.substringWithRange(cutRange) : month
             return Date().weekdayName
         }
@@ -611,15 +757,15 @@ class BarChartModel : NSObject {
     }
     
     func addCompletionForOperationQueue(completion: @escaping () -> Void) {
-        chartDataOperationQueue.operations.onFinish(block: {
+        _chartDataOperationQueue.operations.onFinish(block: {
             OperationQueue.main.addOperation({
                 completion()
             })
         })
     }
     
-    func resetOperation () {
-        chartDataOperationQueue.cancelAllOperations()
-        chartDataOperationQueue = OperationQueue()
+    func resetOperation() {
+        _chartDataOperationQueue.cancelAllOperations()
+        _chartDataOperationQueue = OperationQueue()
     }
-} */
+}

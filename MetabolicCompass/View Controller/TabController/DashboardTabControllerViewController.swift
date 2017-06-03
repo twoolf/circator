@@ -28,9 +28,9 @@ class DashboardTabControllerViewController: UIViewController {
         self.updateNavigationItem()
     }
    
-/*    func preferredStatusBarStyle() -> UIStatusBarStyle {
+    private func preferredStatusBarStyle() -> UIStatusBarStyle {
         return .lightContent
-    } */
+    }
     
     func updateNavigationItem() {
         
@@ -55,7 +55,7 @@ class DashboardTabControllerViewController: UIViewController {
     private let manageDashboardControllerSegue = "ManageDashboardSegue"
     private let manageBalanceControllerSegue   = "ManageBalanceSegue"
     
-    func didSelectFiltersButton(sender: AnyObject) {
+    func didSelectFiltersButton(_ sender: AnyObject) {
         self.performSegue(withIdentifier: filterControllerSegue, sender: self)
     }
     
@@ -71,7 +71,7 @@ class DashboardTabControllerViewController: UIViewController {
         
     }
     
-    func didSelectManageButton(sender: AnyObject) {
+    func didSelectManageButton(_ sender: AnyObject) {
         self.performSegue(withIdentifier: self.manageSegueForIndex(index: self.segmentedControll.selectedSegmentIndex), sender: self)
     }
     
@@ -85,7 +85,7 @@ class DashboardTabControllerViewController: UIViewController {
         }
     }
 
-    @IBAction func didSelectDashboardType(sender: AnyObject) {
+    @IBAction func didSelectDashboardType(_ sender: AnyObject) {
         guard let segmentedControl: UISegmentedControl = sender as? UISegmentedControl else {
             return
         }

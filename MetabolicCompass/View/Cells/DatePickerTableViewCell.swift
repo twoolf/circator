@@ -26,7 +26,7 @@ class DatePickerTableViewCell: UITableViewCell {
         // Configure the view for the selected state
     }
 
-    @IBAction func pickerDateChanged(sender: UIDatePicker) {
+    @IBAction func pickerDateChanged(_ sender: UIDatePicker) {
         self.delegate?.picker(picker: sender, didSelectDate: sender.date)
     }
 }

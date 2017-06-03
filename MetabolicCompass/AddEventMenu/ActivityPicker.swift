@@ -67,11 +67,11 @@ open class PickerManager: NSObject, AKPickerViewDelegate, AKPickerViewDataSource
         return self.data.count
     }
 
-    func pickerView(pickerView: AKPickerView, titleForItem item: Int) -> String {
+    private func pickerView(pickerView: AKPickerView, titleForItem item: Int) -> String {
         return self.items[item]
     }
     
-    public func itemSelected(sender: UILongPressGestureRecognizer) {
+    public func itemSelected(_ sender: UILongPressGestureRecognizer) {
         if sender.state == .began {
             if let index = sender.view?.tag {
                 itemContentViews[index]?.superview?.layer.borderColor = UIColor.ht_jay().cgColor
@@ -85,7 +85,7 @@ open class PickerManager: NSObject, AKPickerViewDelegate, AKPickerViewDataSource
         }
     }
 
-    func pickerView(pickerView: AKPickerView, didSelectItem item: Int) {
+    private func pickerView(pickerView: AKPickerView, didSelectItem item: Int) {
         current = item
 
         for index in (0..<items.count) {
@@ -117,7 +117,8 @@ open class PickerManager: NSObject, AKPickerViewDelegate, AKPickerViewDataSource
             itemContentViews[item]?.superview?.layer.masksToBounds = true
 
 //            let press = UILongPressGestureRecognizer(target: self, action: #selector(PickerManager.itemSelected(_:)))
-            let press = UILongPressGestureRecognizer(target: self, action: #selector(PickerManager.itemSelected(sender:)))
+//            let press = UILongPressGestureRecognizer(target: self, action: #selector(PickerManager.itemSelected(sender:)))
+            let press = UILongPressGestureRecognizer(target: self, action: #selector(itemSelected))
             press.minimumPressDuration = EventPickerPressDuration
             press.delegate = self
             itemContentViews[item]?.superview?.tag = item
@@ -126,7 +127,7 @@ open class PickerManager: NSObject, AKPickerViewDelegate, AKPickerViewDataSource
         }
     }
 
-    func pickerView(pickerView: AKPickerView, configureLabel label: UILabel, forItem item: Int) {
+    private func pickerView(pickerView: AKPickerView, configureLabel label: UILabel, forItem item: Int) {
         configureItemContentView(view: label, item: item)
     }
 
@@ -135,7 +136,7 @@ open class PickerManager: NSObject, AKPickerViewDelegate, AKPickerViewDataSource
         if let delegate = delegate {
             if selected == current {
                 // Disable all recognizers and mark the selection as processing to prevent further interaction.
-//                log.info("Processing selection \(selected) disabling and invoking delegate")
+                log.info("Processing selection \(selected) disabling and invoking delegate")
                 selectionProcessing = true
                 itemContentViews.forEach {
                     if let view = $0 {
@@ -146,10 +147,10 @@ open class PickerManager: NSObject, AKPickerViewDelegate, AKPickerViewDataSource
                 delegate.pickerItemSelected(pickerManager: self, itemType: itemType, index: selected, item: getSelectedItem(), data: getSelectedValue())
             }
             else {
-//                log.error("PickerManager: Selected non-current index \(current) \(selected)")
+                log.error("PickerManager: Selected non-current index \(current) \(selected)")
             }
         } else {
-//            log.warning("PickerManager: No delegate found")
+            log.warning("PickerManager: No delegate found")
         }
     }
 

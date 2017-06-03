@@ -36,7 +36,7 @@ class LoginViewController: BaseViewController {
         navigationController?.setNavigationBarHidden(false, animated: false)
     }
 
-    func viewWillDisappear(animated: Bool) {
+    override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
         UIDevice.current.setValue(UIInterfaceOrientation.portrait.rawValue, forKey: "orientation")
     }
@@ -51,7 +51,10 @@ class LoginViewController: BaseViewController {
         loginModel.loginTable = loginTable
         loginModel.controllerView = self.view
         loginTable.dataSource = loginModel
-
+//        loginTable.register(UITableViewCell(), forCellReuseIdentifier: String(describing:InputTableCellWithImage()))
+//        self.loginTable.register(loginModel.loginTable, forCellReuseIdentifier: String(describing: InputTableCellWithImage()))
+//        self.loginTable.register(<#T##nib: UINib?##UINib?#>, forCellReuseIdentifier: <#T##String#>)
+//        self.loginTable.register(loginTable.self, forCellReuseIdentifier: "cell")
         self.setupScrollViewForKeyboardsActions(view: containerScrollView)
     }
 
@@ -103,13 +106,13 @@ class LoginViewController: BaseViewController {
                             // Raise a notification if there are other errors. 
                             if components.count > 1 {
                                 Answers.logLogin(withMethod: "SPL", success: false, customAttributes: nil)
-                                let componentNames = components.map { getComponentName(component: $0) }.joined(separator: ", ")
+                                let componentNames = components.map { getComponentName($0) }.joined(separator: ", ")
                                 let reason = components.isEmpty ? "" : " (missing \(componentNames))"
                                 UINotifications.loginFailed(vc: self, reason: "Failed to get account\(reason)")
                             }
                         } else {
                             Answers.logLogin(withMethod: "SPL", success: false, customAttributes: nil)
-                            let componentNames = components.map { getComponentName(component: $0) }.joined(separator: ", ")
+                            let componentNames = components.map { getComponentName($0) }.joined(separator: ", ")
                             let reason = components.isEmpty ? "" : " (missing \(componentNames))"
                             UINotifications.loginFailed(vc: self, reason: "Failed to get account\(reason)")
                         }
@@ -138,7 +141,7 @@ class LoginViewController: BaseViewController {
         }
     }
 
-    func doSignup(sender: UIButton) {
+    func doSignup(_ sender: UIButton) {
         let registerVC = RegisterViewController()
         registerVC.consentOnLoad = true
         self.navigationController?.pushViewController(registerVC, animated: true)

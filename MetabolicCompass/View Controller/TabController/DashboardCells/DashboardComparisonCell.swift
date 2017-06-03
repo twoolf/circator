@@ -65,10 +65,17 @@ class DashboardComparisonCell: UITableViewCell {
     private let staleDigitColor   = UIColor.yellow
 
     private func loadUserSamples(results: [MCSample]) {
+        
+        if let staleDateStart = results.last?.startDate {
+            let stale = (staleDateStart < Date().addDays(daysToAdd: -1)) ?? false
+            var text = DashboardComparisonCell.healthFormatter.stringFromSamples(samples: results)
+            if stale { text = text + "**" }
+        }
+        
  //       if let stale = (results.last?.startDate)  { stale.
  //       {  if stale < 1.days.ago) ?? false }
 
-        var text = DashboardComparisonCell.healthFormatter.stringFromSamples(samples: results)
+ //       _ = DashboardComparisonCell.healthFormatter.stringFromSamples(samples: results)
  //       if stale { text = text + "**" }
 
  //       let formatAttrs = [NSForegroundColorAttributeName: stale ? staleDigitColor : defaultDigitColor,

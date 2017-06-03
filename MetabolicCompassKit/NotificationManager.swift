@@ -195,7 +195,7 @@ public class NotificationManager {
     // Data collection message cycling
     var notificationGroups: [String: [UILocalNotification]] = [:]
 
-    var initStartOffset = 0
+    var initStartOffset = 0.0
     var initEndOffset = 0
     var initEndDeltaSecs = 0
     var maxDelta = 0.0
@@ -208,8 +208,11 @@ public class NotificationManager {
         if let ss = Defaults.object(forKey: NMStreakStartKey) as? [StreakType: Date] {
             streakStarts = ss
         } else {
-            streakStarts[.Fasting] = Date() - initStartOffset.days
-            streakStarts[.Contribution] = Date() - initStartOffset.days
+ //           streakStarts[.Fasting] = Date() - initStartOffset.days
+            streakStarts[.Fasting] = Date().addingTimeInterval(initStartOffset)
+ //           streakStarts[.Contribution] = Date() - initStartOffset.days
+            streakStarts[.Contribution] = Date().addingTimeInterval(initStartOffset)
+ //           Defaults.set(streakStarts, forKey: NMStreakStartKey)
             Defaults.set(streakStarts as? AnyObject, forKey: NMStreakStartKey)
             Defaults.synchronize()
         }
@@ -217,9 +220,11 @@ public class NotificationManager {
         if let se = Defaults.object(forKey: NMStreakEndKey) as? [StreakType: Date] {
             streakEnds = se
         } else {
-            streakEnds[.Fasting] = (Date() - initEndOffset.days) + initEndDeltaSecs.seconds
-            streakEnds[.Contribution] = (Date() - initEndOffset.days) + initEndDeltaSecs.seconds
-            Defaults.set(streakEnds as? AnyObject, forKey: NMStreakEndKey)
+//            streakEnds[.Fasting] = (Date() - initEndOffset.days) + initEndDeltaSecs.seconds
+            streakEnds[.Fasting] = Date().addingTimeInterval(TimeInterval(initEndOffset))
+//            streakEnds[.Contribution] = (Date() - initEndOffset.days) + initEndDeltaSecs.seconds
+            streakEnds[.Contribution] = Date().addingTimeInterval(TimeInterval(initEndOffset))
+            Defaults.set(streakEnds, forKey: NMStreakEndKey)
             Defaults.synchronize()
         }
 
@@ -227,7 +232,7 @@ public class NotificationManager {
             streakState = ss
         } else {
             streakState[.Fasting] = FastingState()
-            Defaults.set(streakState as? AnyObject, forKey: NMStreakStateKey)
+  //          Defaults.set(streakState, forKey: NMStreakStateKey)
             Defaults.synchronize()
         }
 
@@ -236,17 +241,17 @@ public class NotificationManager {
         } else {
             streakMax[.Fasting] = 0.0 + maxDelta
             streakMax[.Contribution] = 0.0 + maxDelta
-            Defaults.set(streakMax as? AnyObject, forKey: NMStreakMaxKey)
+ //           Defaults.set(streakMax, forKey: NMStreakMaxKey)
             Defaults.synchronize()
         }
 
-/*        log.debug([
+        log.debug([
             "sstart \(streakStarts)",
             "send \(streakEnds)",
             "sstate mfw \(streakState[.Fasting]!.dailyMFW)",
             "sstate dn \(streakState[.Fasting]!.daysNotified)",
             "smax \(streakMax)"
-            ].componentsJoinedByString("\n"), feature: "initManager") */
+            ].joined(separator: "\n"), "initManager")
 
     }
 
@@ -266,10 +271,10 @@ public class NotificationManager {
     }
 
     public func sync() {
-        Defaults.set(streakStarts as? AnyObject, forKey: NMStreakStartKey)
-        Defaults.set(streakEnds as? AnyObject, forKey: NMStreakEndKey)
-        Defaults.set(streakState as? AnyObject, forKey: NMStreakStateKey)
-        Defaults.set(streakMax as? AnyObject, forKey: NMStreakMaxKey)
+        Defaults.set(streakStarts, forKey: NMStreakStartKey)
+        Defaults.set(streakEnds, forKey: NMStreakEndKey)
+//        Defaults.set(streakState, forKey: NMStreakStateKey)
+//        Defaults.set(streakMax, forKey: NMStreakMaxKey)
         Defaults.synchronize()
     }
 
@@ -321,7 +326,7 @@ public class NotificationManager {
         // Maintain fasting streak.
         switch event {
         case .meal(_):
-//            log.debug("B1(a) \(startDate) \(streakEnds[.Fasting])", feature: "FStreak")
+            log.debug("B1(a) \(startDate) \(String(describing: streakEnds[.Fasting]))", "FStreak")
 
             if let fstStart = streakStarts[.Fasting],
                     let fstEnd = streakEnds[.Fasting],
@@ -340,7 +345,7 @@ public class NotificationManager {
             break
         }
 
-        log.debug("B2(a) \(startDate) \(streakEnds[.Fasting])", "FCStreak")
+        log.debug("B2(a) \(startDate) \(String(describing: streakEnds[.Fasting]))", "FCStreak")
 
         if let fstStart = streakStarts[.Fasting],
             let fstEnd = streakEnds[.Fasting],
@@ -531,7 +536,7 @@ public class NotificationManager {
         }
 
         if fire != nil {
-//            log.debug("L-notify for \(notification.fireDate?.toString())", "execNotify")
+            log.debug("L-notify for \(notification.fireDate?.weekdayName)", "execNotify")
             UIApplication.shared.scheduleLocalNotification(notification)
         } else {
             log.warning("Skip immediate notification during blackout period: \(body)", "execNotify")

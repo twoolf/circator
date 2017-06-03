@@ -36,7 +36,7 @@ class DashboardFilterCell: UITableViewCell {
         super.setSelected(selected, animated: animated)
     }
 
-    @IBAction func didPressButton(sender: AnyObject) {
+    @IBAction func didPressButton(_ sender: AnyObject) {
         self.checkBoxButton.isSelected = !self.checkBoxButton.isSelected;
         self.data?.selected = self.checkBoxButton.isSelected
 

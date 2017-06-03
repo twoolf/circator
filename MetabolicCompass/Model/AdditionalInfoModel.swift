@@ -70,7 +70,7 @@ class AdditionalInfoModel: NSObject {
                 profileFieldUnits = UserProfile.sharedInstance.profileUnitsMapping[profileFieldSpec.unitsTitle!]!
             }
 
-            var serviceUnits: HKUnit! = nil
+            let serviceUnits: HKUnit! = nil
  /*           if let (_, quantityType) = HMConstants.sharedInstance.mcdbActivityToHKQuantity[profileFieldName!] {
                 serviceUnits =  HKObjectType.quantityType(forIdentifier: HKQuantityTypeIdentifier(rawValue: quantityType))!.serviceUnit
             }
@@ -119,10 +119,10 @@ class AdditionalInfoModel: NSObject {
                     } else if let _ = HMConstants.sharedInstance.mcdbToHK[key], let profileValue = profileCache[key] {
                         item.value = convertFieldValue(fieldName: item.name, value: profileValue, toServiceUnits: false)
                     } else {
-//                        log.warning("AIM Invalid key \(key)")
+                        log.warning("AIM Invalid key \(key)")
                     }
                 } else {
-//                    log.warning("AIM no key found for \(item.name)")
+                    log.warning("AIM no key found for \(item.name)")
                 }
             }
         }
@@ -211,7 +211,7 @@ class AdditionalInfoModel: NSObject {
         if error != nil {
             completion(error, [:])
         } else {
-//            log.info("ADID result \(infoDict)")
+            log.info("ADID result \(infoDict)")
             completion(nil, infoDict)
         }
     }

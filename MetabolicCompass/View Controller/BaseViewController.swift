@@ -64,7 +64,7 @@ class BaseViewController: UIViewController, UIGestureRecognizerDelegate {
         self.navigationItem.backBarButtonItem = UIBarButtonItem(title:"", style:.plain, target:nil, action:nil)
         self.navigationItem.title = self.title?.localized.uppercased()
 
-        let navBarTextColor = ScreenManager.sharedInstance.appNavBarTextColor()
+        _ = ScreenManager.sharedInstance.appNavBarTextColor()
 
 //        self.navigationController?.navigationBar.tintColor = navBarTextColor
 //        self.navigationController?.navigationBar.titleTextAttributes = [ NSForegroundColorAttributeName : navBarTextColor, NSFontAttributeName : ScreenManager.appNavBarFont() ]
@@ -109,7 +109,7 @@ class BaseViewController: UIViewController, UIGestureRecognizerDelegate {
 
     // MARK: - UIGestureRecognizer Delegate
 
-    func gestureRecognizer(gestureRecognizer: UIGestureRecognizer, shouldReceiveTouch touch: UITouch) -> Bool {
+    private func gestureRecognizer(gestureRecognizer: UIGestureRecognizer, shouldReceiveTouch touch: UITouch) -> Bool {
         if let _ = touch.view as? UIButton {
             return false
         }

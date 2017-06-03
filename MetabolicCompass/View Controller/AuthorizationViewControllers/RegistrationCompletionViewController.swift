@@ -26,10 +26,10 @@ class RegistrationCompletionViewController: BaseViewController {
     }
     
 //    func preferredStatusBarStyle() -> UIStatusBarStyle {
-//        return .lightContent;
+//       return .lightContent
 //    }
     
-    @IBAction func noThanksAction(sender: UIButton) {
+    @IBAction func noThanksAction(_ sender: UIButton) {
         // back
         self.dismiss(animated: true, completion: nil)
         if let regVC = registerViewController {

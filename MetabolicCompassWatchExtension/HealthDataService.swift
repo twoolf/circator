@@ -47,7 +47,7 @@ class HealthDataService {
     init() {}
     
     /// This function asks HealthKit for authorization to read and write to the health store
-    func authorizeHealthKitAccess(completion: @escaping ((_ success:Bool, _ error:NSError?) -> Void)) {
+    func authorizeHealthKitAccess(completion: @escaping ((_ success:Bool, _ error:Error?) -> Void)) {
         let typesToShare = Set(
             [HKObjectType.workoutType(),
                 energyType,
@@ -63,12 +63,12 @@ class HealthDataService {
             ])
         
         healthKitStore.requestAuthorization(toShare: typesToShare, read: typesToSave) { success, error in
-            completion(success, error as NSError?)
+            completion(success, error as Error?)
         }
     }
     
     /// This function gets HKWorkouts from the Health Store that were created by this app
-    func readWorkouts(completion: @escaping (_ success: Bool, _ workouts:[HKWorkout], _ error: NSError?) -> Void) {
+    func readWorkouts(completion: @escaping (_ success: Bool, _ workouts:[HKWorkout], _ error: Error?) -> Void) {
         
         // Predicate indicating "this app"
         let sourcePredicate = HKQuery.predicateForObjects(from: HKSource.default())
@@ -84,11 +84,11 @@ class HealthDataService {
         { (sampleQuery, results, error ) -> Void in
             
             guard let samples = results as? [HKWorkout] else {
-                completion(false, [HKWorkout](), error as NSError?)
+                completion(false, [HKWorkout](), error)
                 return
             }
             
-            completion(error == nil, samples, error as NSError?)
+            completion(error == nil, samples, error)
         }
         healthKitStore.execute(sampleQuery)
     }
@@ -98,7 +98,7 @@ class HealthDataService {
                            intervalStart: Date,
                            intervalEnd: Date,
                            type: HKQuantityType,
-                           completion: @escaping (_ samples: [HKSample], _ error: NSError?) -> Void) {
+                           completion: @escaping (_ samples: [HKSample], _ error: Error?) -> Void) {
         
         // Start with the workout
         let workoutPredicate = HKQuery.predicateForObjects(from: workout)
@@ -111,7 +111,7 @@ class HealthDataService {
         let startDateSort = NSSortDescriptor(key: HKSampleSortIdentifierStartDate, ascending: true)
         
         let query = HKSampleQuery(sampleType: type, predicate: predicate, limit: 0, sortDescriptors: [startDateSort]) { (query, samples, error) -> Void in
-            completion(samples!, error as NSError?)
+            completion(samples!, error)
         }
         healthKitStore.execute(query)
     }
@@ -122,7 +122,7 @@ class HealthDataService {
                               intervalEnd: Date,
                               type: HKQuantityType,
                               options: HKStatisticsOptions,
-                              completion: @escaping (_ statistics: HKStatistics, _ error: NSError?) -> Void) {
+                              completion: @escaping (_ statistics: HKStatistics, _ error: Error?) -> Void) {
         
         // Start with the workout
         let workoutPredicate = HKQuery.predicateForObjects(from: workout)
@@ -134,7 +134,7 @@ class HealthDataService {
         let predicate = NSCompoundPredicate(type: .and, subpredicates: [workoutPredicate, datePredicate])
         
         let query = HKStatisticsQuery(quantityType: type, quantitySamplePredicate: predicate, options: options) { (query, stats, error) -> Void in
-            completion(stats!, error as NSError?)
+            completion(stats!, error)
         }
         healthKitStore.execute(query)
     }

@@ -21,7 +21,7 @@ class LoadImageCollectionViewCell: CircleImageCollectionViewCell, UIImagePickerC
         
     }
 
-    @IBAction func loadPhotoAction(sender: UIButton) {
+    @IBAction func loadPhotoAction(_ sender: UIButton) {
         if let navVC = presentingViewController {
             let actionSheet = UIAlertController(title: nil, message: nil, preferredStyle: .actionSheet)
             let cancelAction = UIAlertAction(title: "Cancel", style: .cancel, handler: nil)
@@ -107,7 +107,7 @@ class LoadImageCollectionViewCell: CircleImageCollectionViewCell, UIImagePickerC
     
     // MARK: - ImagePicker Delegate
     
-    func imagePickerController(picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [String : AnyObject]) {
+    @nonobjc func imagePickerController(picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [String : AnyObject]) {
         
         let photo = info[UIImagePickerControllerOriginalImage] as? UIImage
         
@@ -118,7 +118,7 @@ class LoadImageCollectionViewCell: CircleImageCollectionViewCell, UIImagePickerC
         picker.dismiss(animated: true, completion: nil)
     }
     
-    func imagePickerControllerDidCancel(picker: UIImagePickerController) {
+    private func imagePickerControllerDidCancel(picker: UIImagePickerController) {
         picker.dismiss(animated: true, completion: nil)
     }
 }

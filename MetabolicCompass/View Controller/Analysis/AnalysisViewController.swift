@@ -22,11 +22,11 @@ class AnalysisViewController: UIViewController {
     @IBOutlet weak var containerView: UIView!
     
     override func viewDidLoad() {
-//        let correlateController = UIStoryboard(name: "TabScreens", bundle: nil).instantiateViewController(withIdentifier: "correlatePlaceholder") as! CorrelationChartsViewController
-//        self.addChildViewController(correlateController)
-//        correlateController.view.translatesAutoresizingMaskIntoConstraints = false
-//        self.addSubview(subView: correlateController.view, toView: self.containerView)
-//        self.currentViewController = correlateController;
+        let correlateController = UIStoryboard(name: "TabScreens", bundle: nil).instantiateViewController(withIdentifier: "correlatePlaceholder") as! CorrelationChartsViewController
+        self.addChildViewController(correlateController)
+        correlateController.view.translatesAutoresizingMaskIntoConstraints = false
+        self.addSubview(subView: correlateController.view, toView: self.containerView)
+        self.currentViewController = correlateController;
         super.viewDidLoad()
     }
     
@@ -51,7 +51,7 @@ class AnalysisViewController: UIViewController {
         self.currentViewController = ourStudyViewController;
     }
 
-    @IBAction func segmentSelectedAction(segment: UISegmentedControl) {
+    @IBAction func segmentSelectedAction(_ segment: UISegmentedControl) {
         switch segment.selectedSegmentIndex {
         case AnalysisType.Correlate.rawValue:
             switchToScatterPlotViewController()

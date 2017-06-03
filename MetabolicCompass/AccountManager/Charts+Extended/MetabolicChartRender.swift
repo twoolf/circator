@@ -36,10 +36,10 @@ class MetabolicChartRender: RadarChartRenderer {
     
     internal struct Math
     {
-        internal static let FDEG2RAD = CGFloat(M_PI / 180.0)
-        internal static let FRAD2DEG = CGFloat(180.0 / M_PI)
-        internal static let DEG2RAD = M_PI / 180.0
-        internal static let RAD2DEG = 180.0 / M_PI
+        internal static let FDEG2RAD = CGFloat(Double.pi / 180.0)
+        internal static let FRAD2DEG = CGFloat(180.0 / Double.pi)
+        internal static let DEG2RAD = Double.pi / 180.0
+        internal static let RAD2DEG = 180.0 / Double.pi
     }
     
     override func drawValues(context: CGContext) {
@@ -176,7 +176,7 @@ class MetabolicChartRender: RadarChartRenderer {
             }
         }
         
-        if let set = dataSet
+        if dataSet != nil
         {
             var index = -1
             let (first, last, interval) = (0, data.dataSetCount, xIncrements)

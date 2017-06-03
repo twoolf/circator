@@ -50,8 +50,8 @@ public class FastingDataModel : NSObject {
         //self.logModel()
     }
 
-    public func updateData(completion: @escaping (NSError?) -> Void) {
-        var someError: [NSError?] = []
+    public func updateData(completion: @escaping (Error?) -> Void) {
+        var someError: [Error?] = []
         let group = DispatchGroup()
 
         group.enter()

@@ -41,7 +41,7 @@ public enum AccountComponent {
     case LastAcquired
 }
 
-public func getComponentName(component: AccountComponent) -> String {
+public func getComponentName(_ component: AccountComponent) -> String {
     switch component {
     case .Consent:
         return "consent"
@@ -58,7 +58,7 @@ public func getComponentName(component: AccountComponent) -> String {
     }
 }
 
-public func getComponentByName(name: String) -> AccountComponent? {
+public func getComponentByName(_ name: String) -> AccountComponent? {
     switch name {
     case "consent":
         return .Consent

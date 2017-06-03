@@ -18,6 +18,7 @@ class RegisterLoginLandingViewController: BaseViewController {
     let loginSegue = "LoginSegue"
     let registerSegue = "RegisterSegue"
     var reachability: Reachability! = nil
+//    var reachability: Bool = true
 
     //MARK: View life circle
     override func viewDidLoad() {
@@ -25,13 +26,14 @@ class RegisterLoginLandingViewController: BaseViewController {
         self.navigationController?.navigationBar.barStyle = UIBarStyle.black;
         self.navigationController?.navigationBar.tintColor = UIColor.white
 
-/*        do {
-            reachability = try Reachability.reachabilityForInternetConnection()
+        do {
+//            reachability = try Reachability.reachabilityForInternetConnection()
+            reachability = try Reachability()
         } catch {
             let msg = "Failed to create reachability detector"
 //            log.error(msg)
             fatalError(msg)
-        } */
+        }
     }
     
     override func viewWillAppear(_ animated: Bool) {
@@ -46,17 +48,33 @@ class RegisterLoginLandingViewController: BaseViewController {
     //MARK: Actions
 /*    @IBAction func onLogin(sender: AnyObject) {
         self.performSegue(withIdentifier: self.loginSegue, sender: self)
-    }
+    } */
     
-    @IBAction func onRegister(sender: AnyObject) {
+
+    @IBAction func onLogin(_ sender: BrightButton) {
+                self.performSegue(withIdentifier: self.loginSegue, sender: self)
+    }
+
+
+/*    @IBAction func onRegister(sender: AnyObject) {
         switch reachability.currentReachabilityStatus {
-        case .isNotReachable:
-            UINotifications.genericError(vc: self, msg: "We cannot register a new account without internet connectivity. Please try later.", pop: false, asNav: true)
+//        case .isNotReachable:
+//            UINotifications.genericError(vc: self, msg: "We cannot register a new account without internet connectivity. Please try later.", pop: false, asNav: true)
 
         default:
             self.performSegue(withIdentifier: self.registerSegue, sender: self)
         }
     } */
+
+    @IBAction func onRegister(_ sender: BrightButton) {
+        switch reachability.currentReachabilityStatus {
+            //        case .isNotReachable:
+            //            UINotifications.genericError(vc: self, msg: "We cannot register a new account without internet connectivity. Please try later.", pop: false, asNav: true)
+            
+        default:
+            self.performSegue(withIdentifier: self.registerSegue, sender: self)
+        }
+    }
     
     func prepareForSegue(segue: UIStoryboardSegue, sender: AnyObject?) {
         if (segue.identifier == self.loginSegue) {

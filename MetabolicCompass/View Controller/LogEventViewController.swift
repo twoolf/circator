@@ -131,11 +131,11 @@ class LogEventViewController: UIViewController {
         
     }
     
-    func cancel(sender: UIBarItem) {
+    func cancel(_ sender: UIBarItem) {
         self.dismiss(animated: true, completion: nil)
     }
     
-    func add(sender: UIBarItem) {
+    func add(_ sender: UIBarItem) {
         
         /*
          

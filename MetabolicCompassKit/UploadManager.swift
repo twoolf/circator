@@ -128,8 +128,10 @@ public class UMSampleUUID: Object {
     public static func uuidOfNSData(data: NSData) -> NSUUID {
 //        return NSUUID(UUIDBytes: UnsafePointer<UInt8>(data.bytes))
 //        return NSUUID(uuidBytes: data.bytes)
-        let uuidString = NSUUID().uuidString
-        return uuidString as! NSUUID
+//        let uuidString = NSUUID().uuidString
+//        return uuidString as! NSUUID
+        var ptr = data.bytes.assumingMemoryBound(to: UInt8.self)
+        return NSUUID(uuidBytes: ptr)
     }
 }
 
@@ -463,7 +465,7 @@ public class UploadManager: NSObject {
         do {
             addedJson = try added.map(self.jsonifySample)
         } catch let error {
-            log.error((error as NSError).localizedDescription)
+            log.error((error).localizedDescription)
             return nil
         }
 
@@ -526,7 +528,7 @@ public class UploadManager: NSObject {
                             let jsonObjs = try added[(i*blockSize)..<(min((i+1)*blockSize, added.count))].map(self.jsonifySample)
                             self.putBlockSample(jsonObjBlock: jsonObjs)
                         } catch {
-                            log.error((error as NSError).localizedDescription)
+                            log.error((error).localizedDescription)
                         }
                     }
                 }
@@ -535,7 +537,7 @@ public class UploadManager: NSObject {
                 jsons.forEach(self.putSample)
             }
         } catch {
-            log.error((error as NSError).localizedDescription)
+            log.error((error).localizedDescription)
         }
     }
 
@@ -925,7 +927,7 @@ public class UploadManager: NSObject {
         }
     }
 
-    public func deregisterUploadObservers(completion: @escaping (Bool, NSError?) -> Void) {
+    public func deregisterUploadObservers(completion: @escaping (Bool, Error?) -> Void) {
         MCHealthManager.sharedManager.authorizeHealthKit { (success, _) -> Void in
             guard success else { return }
             IOSHealthManager.sharedManager.stopAllBackgroundObservers { (success, error) in
@@ -1371,7 +1373,7 @@ public class UploadManager: NSObject {
     }
 
     private func writeDeviceMeasures(type: HKSampleType, deviceClass: String, deviceId: String, payload: AnyObject?,
-                                     completion: @escaping (Bool, Int?, Int?, NSError?) -> Void)
+                                     completion: @escaping (Bool, Int?, Int?, Error?) -> Void)
     {
         var failed = false
 
@@ -1397,7 +1399,7 @@ public class UploadManager: NSObject {
                 MCHealthManager.sharedManager.saveSamples(samples) { (success, err) in
                     guard success && err == nil else {
                         log.error("Failed to sync \(type.identifier) \(deviceClass) \(deviceId) to \(maxId)", "syncSeqIds")
-                        return completion(!failed, nil, measures.count, err as NSError?)
+                        return completion(!failed, nil, measures.count, err)
                     }
 
                     log.info("Advance pptr for \(type.identifier) \(deviceClass) \(deviceId) advance pptr to \(maxId)", "syncSeqIds")

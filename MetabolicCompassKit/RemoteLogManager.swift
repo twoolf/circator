@@ -5,7 +5,7 @@
 //  Created by Yanif Ahmad on 1/14/17.
 //  Copyright © 2017 Yanif Ahmad, Tom Woolf. All rights reserved.
 //
-/*
+
 import Foundation
 import MCCircadianQueries
 import Alamofire
@@ -200,72 +200,72 @@ public let RLogDidExpire = "RLogDidExpire"
 
 public class RemoteLogManager {
 
-//    public let log = RemoteLog.sharedInstance
+    public let log = RemoteLog.sharedInstance
 
     public static let sharedManager = RemoteLogManager(
         token: "INVALID"
     )
 
     private let defaultName = "Default"
-    private let defaultConfig: [String: AnyObject] = [
-        "API"               : LXPriorityLevel.Info.rawValue,
-        "RemoteLogManager"  : LXPriorityLevel.Debug.rawValue,
+    private let defaultConfig: Dictionary<String,Any> = [
+        "API"               : LXPriorityLevel.info,
+        "RemoteLogManager"  : LXPriorityLevel.debug,
 
-        "Login"             : [
-            "default"                       : LXPriorityLevel.Info.rawValue,
-            "loginExec"                     : LXPriorityLevel.Debug.rawValue,
-            "accountExec"                   : LXPriorityLevel.Debug.rawValue,
+//        "Login"             : LXPriorityLevel.info,
+        "Login"             :[
+            "default"                       : LXPriorityLevel.info,
+            "loginExec"                     : LXPriorityLevel.debug,
+            "accountExec"                   : LXPriorityLevel.debug,
         ],
 
         "HealthManager"     : [
-            "default"                       : LXPriorityLevel.Info.rawValue,
-            //"anchorQuery"                   : LXPriorityLevel.Debug.rawValue,
-            //"invalidateCache"               : LXPriorityLevel.Debug.rawValue,
-            //"fetchMostRecentSamples"        : LXPriorityLevel.Debug.rawValue,
-            //"cache:fetchMostRecentSamples"  : LXPriorityLevel.Debug.rawValue,
+            "default"                       : LXPriorityLevel.info,
+            "anchorQuery"                   : LXPriorityLevel.debug,
+            "invalidateCache"               : LXPriorityLevel.debug,
+            "fetchMostRecentSamples"        : LXPriorityLevel.debug,
+            "cache:fetchMostRecentSamples"  : LXPriorityLevel.debug,
         ],
 
         "UploadManager"     : [
-            "default"                       : LXPriorityLevel.Info.rawValue,
-            //"remoteAnchor"                  : LXPriorityLevel.Debug.rawValue,
-            //"getNextAnchor"                 : LXPriorityLevel.Debug.rawValue,
-            "syncSeqIds"                    : LXPriorityLevel.Debug.rawValue,
-            "status:syncSeqIds"             : LXPriorityLevel.Debug.rawValue,
+            "default"                       : LXPriorityLevel.info,
+            "remoteAnchor"                  : LXPriorityLevel.debug,
+            "getNextAnchor"                 : LXPriorityLevel.debug,
+            "syncSeqIds"                    : LXPriorityLevel.debug,
+            "status:syncSeqIds"             : LXPriorityLevel.debug,
         ],
 
         "NotificationManager" : [
-            "default"                       : LXPriorityLevel.Info.rawValue,
-
-            "initManager"                   : LXPriorityLevel.Debug.rawValue,
-            "FStreak"                       : LXPriorityLevel.Debug.rawValue,
-            "CStreak"                       : LXPriorityLevel.Debug.rawValue,
-            "FCStreak"                      : LXPriorityLevel.Debug.rawValue,
-            "execNotify"                    : LXPriorityLevel.Debug.rawValue,
-            "cancel:execNotify"             : LXPriorityLevel.Debug.rawValue,
+            "default"                       : LXPriorityLevel.info,
+            "initManager"                   : LXPriorityLevel.debug,
+            "FStreak"                       : LXPriorityLevel.debug,
+            "CStreak"                       : LXPriorityLevel.debug,
+            "FCStreak"                      : LXPriorityLevel.debug,
+            "execNotify"                    : LXPriorityLevel.debug,
+            "cancel:execNotify"             : LXPriorityLevel.debug,
         ],
 
         "PopulationHealthManager" : [
-            "default"                       : LXPriorityLevel.Info.rawValue,
-            "execPop"                       : LXPriorityLevel.Debug.rawValue,
+            "default"                       : LXPriorityLevel.info,
+            "execPop"                       : LXPriorityLevel.debug,
         ],
 
         "Dashboard"             : [
-            "default"                       : LXPriorityLevel.Info.rawValue,
-            "comparison"                    : LXPriorityLevel.Debug.rawValue,
+            "default"                       : LXPriorityLevel.info,
+            "comparison"                    : LXPriorityLevel.debug,
         ]
     ]
 
     init(token: String) {
-        let deviceId = UIDevice.currentDevice().identifierForVendor?.UUIDString ?? "<no-id>"
-        Async.customQueue(log.configQueue) {
+        let deviceId = UIDevice.current.identifierForVendor?.uuidString ?? "<no-id>"
+        Async.custom(queue: log.configQueue) {
             self.log.setDeviceId(deviceId)
             if self.log.url == nil { self.log.setURL(token); self.log.loadRemote() }
 
             // Set default config if we have an empty config, or if the config has expired.
             let now = Date()
-            let expiry = Defaults.objectForKey(RLogExpiryKey) as? Date ?? now
+            let expiry = Defaults.object(forKey: RLogExpiryKey) as? Date ?? now
             if now > expiry { self.resetConfig() }
-            else if self.log.configName == MCInitLogConfigName { self.log.setLogConfig(self.defaultName, cfg: self.defaultConfig) }
+            else if self.log.configName == MCInitLogConfigName { self.log.setLogConfig(self.defaultName, cfg: self.defaultConfig as [String : AnyObject]) }
 
             self.log.setLogModules(MCLogModules)
         }
@@ -277,15 +277,16 @@ public class RemoteLogManager {
         let nc: [(String, AnyObject)] = c.flatMap({ k,v in
             if let nested = v as? [String:AnyObject] {
                 let nv: [(String, AnyObject)] = nested.flatMap({ k2,v2 in
-                    if let l2 = v2 as? String, let p2 = self.log.priority(l2) { return (k2, p2.rawValue) }
+                    if let l2 = v2 as? String, let p2 = self.log.priority(l2) { return (k2, p2.rawValue as AnyObject) }
                     log.debug("Skipping log config entry: \(k), \(k2) => \(v2)")
                     failed = true
                     return nil
                 })
-                return (k, Dictionary(pairs: nv))
+//                return (k,(pairs: nv))
+                return (k, Dictionary(pairs: nv) as AnyObject)
             }
             else if let flat = v as? String, let p = self.log.priority(flat) {
-                return (k, p.rawValue)
+                return (k, (p.rawValue as AnyObject))
             }
             log.debug("Skipping log config entry: \(k) => \(v)")
             failed = true
@@ -295,22 +296,22 @@ public class RemoteLogManager {
     }
 
     public func reconfigure(completion: @escaping (Bool) -> Void) -> Void {
-        Service.json(MCRouter.RLogConfig, statusCode: 200..<300, tag: "GRLOG") {
+        Service.json(route: MCRouter.RLogConfig, statusCode: 200..<300, tag: "GRLOG") {
             _, _, result in
             let pullSuccess = result.isSuccess
             if let rv = result.value as? [String: AnyObject], pullSuccess {
                 self.log.debug("Log reconfiguration result: \(rv)")
                 if let n = rv["name"] as? String,
-                    let c = rv["config"] as? [String: AnyObject], let cfg = self.parseLogConfig(c)
+                    let c = rv["config"] as? [String: AnyObject], let cfg = self.parseLogConfig(c: c)
                 {
                     if let ttl = rv["ttl"] as? Int {
                         let ttlSecs = ttl * 60
                         let expiry = Date() + ttlSecs.seconds
                         self.log.debug("Reconfiguration TTL: \(ttl), date: \(expiry)")
-                        Defaults.setObject(expiry, forKey: RLogExpiryKey)
-                        NSTimer.scheduledTimerWithTimeInterval(Double(ttlSecs), target: self, selector: #selector(self.resetConfig), userInfo: nil, repeats: false)
+                        Defaults.set(expiry, forKey: RLogExpiryKey)
+                        Timer.scheduledTimer(timeInterval: Double(ttlSecs), target: self, selector: #selector(self.resetConfig), userInfo: nil, repeats: false)
                     }
-                    self.log.setLogConfig(n, cfg: cfg)
+                    self.log.setLogConfig(n, cfg: cfg as [String : AnyObject])
                 }
                 else {
                     self.log.error("Invalid remote logging config: \(rv)")
@@ -322,7 +323,7 @@ public class RemoteLogManager {
 
     @objc func resetConfig() {
         self.log.debug("Resetting remote log to a default configuration")
-        self.log.setLogConfig(self.defaultName, cfg: self.defaultConfig)
-        NotificationCenter.defaultCenter().postNotificationName(RLogDidExpire, object: self)
+        self.log.setLogConfig(self.defaultName, cfg: self.defaultConfig as [String : AnyObject])
+        NotificationCenter.default.post(name: NSNotification.Name(rawValue: RLogDidExpire), object: self)
     }
-} */
+}

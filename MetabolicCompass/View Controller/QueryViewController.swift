@@ -57,8 +57,9 @@ class QueryViewController: UITableViewController {
     override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         return QueryManager.sharedManager.getQueries().count
     }
+    
 
-    func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell {
+    override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: "queryCell", for: indexPath as IndexPath) as! MGSwipeTableCell
 
         let deleteButton = MGSwipeButton(title: "Delete", backgroundColor: .ht_pomegranate(), callback: {
@@ -104,10 +105,10 @@ class QueryViewController: UITableViewController {
         return cell
     }
 
-    func tableView(tableView: UITableView, didSelectRowAtIndexPath indexPath: NSIndexPath) {
-        if QueryManager.sharedManager.getSelectedQuery() == indexPath.row {
+/*    override func tableView(_ tableView: UITableView, didSelectRowAtIndexPath indexPath: IndexPath) {
+        if QueryManager.sharedManager.getSelectedQuery() == IndexPath {
             // Deselect query 
-            if let cell = tableView.cellForRow(at: indexPath as IndexPath) {
+            if let cell = tableView.cellForRow(at: IndexPath) {
                 QueryManager.sharedManager.deselectQuery()
                 cell.accessoryType = .none
                 cell.tintColor = UIColor.ht_sunflower()
@@ -119,15 +120,15 @@ class QueryViewController: UITableViewController {
                 oldcell.tintColor = UIColor.ht_sunflower()
             }
 
-            if let cell = tableView.cellForRow(at: indexPath as IndexPath) {
-                QueryManager.sharedManager.selectQuery(index: indexPath.row)
+            if let cell = tableView.cellForRow(at: IndexPath) {
+                QueryManager.sharedManager.selectQuery(index: IndexPath)
                 cell.accessoryType = .checkmark
                 cell.tintColor = UIColor.ht_belizeHole()
             }
         }
-    }
+    } */
 
-    func tableView(tableView: UITableView, willDisplayHeaderView view: UIView, forSection section: Int) {
+    override func tableView(_ tableView: UITableView, willDisplayHeaderView view: UIView, forSection section: Int) {
         let header: UITableViewHeaderFooterView = view as! UITableViewHeaderFooterView
         header.contentView.backgroundColor = Theme.universityDarkTheme.backgroundColor
         header.textLabel?.textColor = UIColor.white

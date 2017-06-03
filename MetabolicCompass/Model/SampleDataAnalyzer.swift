@@ -180,7 +180,7 @@ class PlotDataAnalyzer: SampleDataAnalyzer {
 //            return LineChartData(xVals: xVals, dataSet: dataSet)
 //            return LineChartData(dataSets: dataSet)
         } else if !samples.isEmpty {
-            let xVals: [String] = samples.map { (sample) -> String in
+            let _: [String] = samples.map { (sample) -> String in
                 return SampleFormatter.chartDateFormatter.string(from: sample.startDate)
             }
 
@@ -234,7 +234,7 @@ class PlotDataAnalyzer: SampleDataAnalyzer {
 //                return BubbleChartDataEntry(xVals: [String](), dataSet: nil)
                 return BubbleChartData()
             }
-            let xVals = ["Min", "1st", "2nd", "3rd", "4th", "Last 5th", "Max"]
+            _ = ["Min", "1st", "2nd", "3rd", "4th", "Last 5th", "Max"]
             dataEntries.append(BubbleChartDataEntry(x: 0, y: summaryDataSorted[0], size: CGFloat(summaryDataSorted[0])))
             for partition in 1...5 {
                 let prevFifth = summaryDataSorted.count / 5 * (partition - 1)
@@ -341,7 +341,7 @@ class PlotDataAnalyzer: SampleDataAnalyzer {
 
     func lineFromValues() -> ([String], [ChartDataEntry]) {
         let dates = datesFromValues()
-        let zeroDate = dates.first!
+        _ = dates.first!
 
         let xVals: [String] = dates.map { (date) -> String in
             SampleFormatter.chartDateFormatter.string(from: date)

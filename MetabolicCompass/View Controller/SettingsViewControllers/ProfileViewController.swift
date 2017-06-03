@@ -36,7 +36,7 @@ class ProfileViewController: BaseViewController {
         configureNavBar()
     }
 
-    func cancelAction(sender: UIBarButtonItem) {
+    func cancelAction(_ sender: UIBarButtonItem) {
         let confirmTitle = "Confirm cancel".localized
         let confirmMessage = "Your changes have not been saved yet. Exit without saving?".localized
 
@@ -54,7 +54,7 @@ class ProfileViewController: BaseViewController {
         present(confirmAlert, animated: true, completion: nil)
     }
 
-    func rightAction(sender: UIBarButtonItem) {
+    func rightAction(_ sender: UIBarButtonItem) {
 
         if !dataSource.editMode {
             changeMode()

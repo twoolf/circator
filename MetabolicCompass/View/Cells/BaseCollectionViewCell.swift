@@ -63,7 +63,7 @@ class BaseCollectionViewCell: UICollectionViewCell, UITextFieldDelegate {
     
     // MARK: - TextField Delegate
     
-    func textFieldShouldReturn(textField: UITextField) -> Bool {
+    internal func textFieldShouldReturn(_ textField: UITextField) -> Bool {
         textField.resignFirstResponder()
         return true
     }

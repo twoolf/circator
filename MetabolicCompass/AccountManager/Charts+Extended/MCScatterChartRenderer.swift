@@ -86,7 +86,7 @@ class MCScatterChartRenderer: ScatterChartRenderer {
                 } else {//we have more than one value to draw and we should connect them with a line
                     var prevPoint = CGPoint(-100, -100)
 //                    for value in entry.values! {
-                    for value in BarChartDataEntry.accessibilityElements()! {
+                    for _ in BarChartDataEntry.accessibilityElements()! {
 //                        point.x = CGFloat(e.xIndex)
                         point.x = CGFloat(e.x)
                         point.y = CGFloat(e.y) * CGFloat(phaseY)

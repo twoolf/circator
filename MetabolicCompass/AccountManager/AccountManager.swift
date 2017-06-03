@@ -91,27 +91,27 @@ class AccountManager: NSObject {
 
         assert(self.rootViewController != nil, "Please, specify root navigation controller")
         
-//        log.debug("Login start", feature: "loginExec")
+        log.debug("Login start", feature: "loginExec")
         guard isAuthorized else {
-//            log.debug("Login: No token found, launching dialog", feature: "loginExec")
+            log.debug("Login: No token found, launching dialog", feature: "loginExec")
             self.doLogin (animated: animated) { self.loginComplete() }
             return
         }
 
-//        log.debug("Login: checking HK/Cal auth", feature: "loginExec")
+        log.debug("Login: checking HK/Cal auth", feature: "loginExec")
         withHKCalAuth {
             UserManager.sharedManager.ensureAccessToken { error in
                 guard !error else {
-//                    log.debug("Login: HK/Cal auth failed, relaunching dialog", feature: "loginExec")
+                    log.debug("Login: HK/Cal auth failed, relaunching dialog", feature: "loginExec")
                     Async.main() { self.doLogin (animated: animated) { self.loginComplete() } }
                     return
                 }
 
                 // TODO: Yanif: handle partial failures when a subset of account components
                 // failures beyond the consent component.
-//                log.debug("Login: pulling account", feature: "loginExec")
+                log.debug("Login: pulling account", feature: "loginExec")
                 UserManager.sharedManager.pullFullAccount { res in
- //                   log.debug("Login pull account result: \(res)", feature: "loginExec")
+                    log.debug("Login pull account result: \(res)", feature: "loginExec")
                     if res.ok { self.loginComplete() }
                     else {
                         if res.info.hasContent {
@@ -126,19 +126,20 @@ class AccountManager: NSObject {
                                     self.loginComplete()
                                 } else {
                                     components = components.filter { $0 != .Consent }
- //                                   log.error(UMPullMultipleComponentsError(components.map(getComponentName)))
+                                    log.error(UMPullMultipleComponentsError(components.map(getComponentName)))
                                 }
                             }
                             else {
-//                                log.error(res.info)
+                                log.error(res.info)
                             }
                         }
                         else {
- //                           log.error("Failed to get initial user account")
+                            log.error("Failed to get initial user account")
                         }
                     }
                 }
             }
+            log.debug("before end of section")
         }
     }
 
@@ -146,18 +147,19 @@ class AccountManager: NSObject {
         MCHealthManager.sharedManager.authorizeHealthKit { (success, error) -> Void in
             guard error == nil else {
                 self.isHealthKitAuthorized = false
-//                log.error("HealthKit is not available: \(error!.localizedDescription)")
+                log.error("HealthKit is not available: \(error!.localizedDescription)")
                 return
             }
 
             self.isHealthKitAuthorized = true
             self.checkLocalNotifications()
             EventManager.sharedManager.checkCalendarAuthorizationStatus(completion: completion)
+            log.debug("after EventManager in withHKCalAuth")
         }
     }
 
     func registerLocalNotifications() {
-//        log.debug("Registering for local notifications", feature: "notifications")
+        log.debug("Registering for local notifications", feature: "notifications")
         resetLocalNotifications()
         let notificationType: UIUserNotificationType = [.alert, .badge, .sound]
 //        let notificationSettings: UIUserNotificationSettings = UIUserNotificationSettings(forTypes: notificationType, categories: nil)
@@ -166,13 +168,13 @@ class AccountManager: NSObject {
     }
 
     func resetLocalNotifications() {
-//        log.debug("Resetting local notifications", feature: "notifications")
+        log.debug("Resetting local notifications", feature: "notifications")
         Defaults.remove(AMNotificationsKey)
         Defaults.synchronize()
     }
 
     func checkLocalNotifications() {
-//        log.debug("Notifications status: \(Defaults.objectForKey(AMNotificationsKey))", feature: "notifications")
+        log.debug("Notifications status: \(Defaults.object(forKey: AMNotificationsKey) ?? no_argument as! AnyObject)", feature: "notifications")
         if let notificationsOn = Defaults.object(forKey: AMNotificationsKey) as? Bool, notificationsOn {
             return
         }
@@ -186,11 +188,11 @@ class AccountManager: NSObject {
         }
 
         if (self.uploadInProgress) {
- //           log.debug("Skipping consent upload, already in progress", feature: "uploadConsent")
+            log.debug("Skipping consent upload, already in progress", feature: "uploadConsent")
             return
         }
 
-//        log.debug("Uploading consent file", feature: "uploadConsent")
+        log.debug("Uploading consent file", feature: "uploadConsent")
         self.uploadInProgress = true
         UserManager.sharedManager.pushConsent(filePath: consentPath) { [weak self]res in
             if res.ok {

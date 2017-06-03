@@ -36,7 +36,7 @@ public class  RequestResult{
     }
     private var resType:ResultType
     
-    public var error:NSError? = nil
+    public var error:Error? = nil
     public var ok:Bool {
         switch resType {
         case .BoolWithMessage:
@@ -48,7 +48,7 @@ public class  RequestResult{
             let afStrRes = _obj as? Alamofire.Result<String>
             return afStrRes?.isSuccess ?? false
         case .Error:
-            let err = _obj as? NSError
+            let err = _obj as? Error
             return (err == nil)
         }
     }
@@ -63,12 +63,12 @@ public class  RequestResult{
             return _obj as? String ?? ""
         case .AFObject:
             let afRes = _obj as? Alamofire.Result<Any>
-            return ((afRes?.error)! as NSError).localizedDescription ?? ""
+            return ((afRes?.error)! as Error).localizedDescription ?? ""
         case .AFString:
             let afRes = _obj as? Alamofire.Result<String>
-            return ((afRes?.error)! as NSError).localizedDescription ?? ""
+            return ((afRes?.error)! as Error).localizedDescription ?? ""
         case .Error:
-            let err = _obj as? NSError
+            let err = _obj as? Error
             return err?.localizedDescription ?? ""
         }
     }
@@ -95,7 +95,7 @@ public class  RequestResult{
         resType = .AFString
         _obj = afStringResult
     }
-    init(error: NSError) {
+    init(error: Error) {
         resType = .Error
         _obj = error
     }

@@ -61,7 +61,10 @@ public let UMPullMultipleComponentsError : ([String]) -> String = { components i
 public let UMPullComponentErrorAsArray : (String) -> [AccountComponent] = { errorMsg in
     let prefix = "Failed to pull account components "
     var result : [AccountComponent] = []
-    if errorMsg.hasPrefix(prefix) {
+//    if errorMsg.hasPrefix(prefix) {
+//        let componentsStr = errorMsg.substringFromIndex(errorMsg.startIndex.advancedBy(prefix.characters.count - 1))
+//        let componentsStr = errorMsg(
+//        result = componentsStr.componentsSeparatedByString(",").flatMap(getComponentByName)
 //        let componentsStr = errorMsg.substringFromIndex(errorMsg.startIndex.advancedBy(prefix.characters.count - 1))
 //        let componentsStr = errorMsg.
 //        result = componentsStr.componentsSeparatedByString(",").flatMap(getComponentByName)
@@ -69,7 +72,7 @@ public let UMPullComponentErrorAsArray : (String) -> [AccountComponent] = { erro
 //        let componentsStr = errorMsg.substringFromIndex(errorMsg.startIndex.advancedBy(prefix.characters.count - 1))
 //        let componentsStr = errorMsg.substring(from: componentsStr.characters.count)
 //        result = componentsStr.componentsSeparatedByString(",").flatMap(getComponentByName)
-    }
+//    }
     return result
 }
 
@@ -230,10 +233,10 @@ public class UserManager {
     let componentUpdateQueue = DispatchQueue(label:"UserManangerUpdateQueue", attributes: .concurrent)
 
     init() {
-//        StormpathConfiguration.defaultConfiguration.APIURL = MCRouter.baseURL as URL
-        self.componentUpdateQueue.async {
-            StormpathConfiguration.defaultConfiguration.APIURL = MCRouter.baseURL as URL
-        }
+        StormpathConfiguration.defaultConfiguration.APIURL = MCRouter.baseURL as URL
+//        self.componentUpdateQueue.async {
+//            StormpathConfiguration.defaultConfiguration.APIURL = MCRouter.baseURL as URL
+//        }
     }
 
     // MARK: - Account status, and authentication
@@ -458,16 +461,17 @@ public class UserManager {
         logoutWithCompletion(completion: nil)
     }
 
-/*    public func register(firstName: String, lastName: String, consentPath: String, initialData: [String: String], completion: @escaping ((Account?, Bool, String?) -> Void)) {
+    public func register(firstName: String, lastName: String, consentPath: String, initialData: [String: String], completion: @escaping ((Account?, Bool, String?) -> Void)) {
         withUserPass(password: getPassword()) { (user,pass) in
-//            let account = registrationModel(email: user, password: pass)
+//            let account = RegistrationModel(email: user, password: pass)
+            let account = RegistrationForm(email: user, password: pass)
             account.givenName = firstName
             account.surname = lastName
             if let data = NSData(contentsOfFile: consentPath) {
                 let consentStr = data.base64EncodedString(options: NSData.Base64EncodingOptions())
                 account.customFields = ["consent": consentStr]
-                account.customFields.update(initialData)
-                Stormpath.sharedSession.register(account) { (account, error) -> Void in
+                account.customFields.update(other: initialData)
+                Stormpath.sharedSession.register(account: account) { (account, error) -> Void in
                     if error != nil { log.error("Register failed: \(error)") }
                     completion(account, error != nil, error?.localizedDescription)
                 }
@@ -477,7 +481,7 @@ public class UserManager {
                 completion(nil, true, msg)
             }
         }
-    } */
+    }
 
     public func withdraw(keepData: Bool, completion: @escaping SuccessCompletion) {
         let params = ["keep": keepData]
@@ -655,7 +659,7 @@ public class UserManager {
     // Consent and photo data are stored in wrapped form, and thus need no additional wrapping.
     private func wrapCache(component: AccountComponent) -> [String:AnyObject]?
     {
-        let componentName = getComponentName(component: component)
+        let componentName = getComponentName(component)
         if let componentData = componentCache[component] {
             switch component {
             case .Consent:
@@ -680,7 +684,7 @@ public class UserManager {
     // Consent and photo data are returned in wrapped form.
     private func unwrapResponse(component: AccountComponent, response: [String:AnyObject]) -> [String:AnyObject]?
     {
-        let componentName = getComponentName(component: component)
+        let componentName = getComponentName(component)
         switch component {
         case .Consent:
             fallthrough
@@ -766,7 +770,7 @@ public class UserManager {
     {
         if let path = filePath {
             if let data = NSData(contentsOfFile: path) {
-                let componentName = getComponentName(component: component)
+                let componentName = getComponentName(component)
                 let cache = [componentName: data.base64EncodedString(options: NSData.Base64EncodingOptions())]
                 pushAccountComponent(component: component, refresh: true, componentData: cache as [String : AnyObject], completion: completion)
             } else {
@@ -857,7 +861,7 @@ public class UserManager {
                             self.lastComponentLoadDate[component] = Date()
                         } else if requiredComponents.contains(component) {
                             // Indicate a failure if we cannot unwrap a required component from the response.
-                            failedComponents.append(getComponentName(component: component))
+                            failedComponents.append(getComponentName(component))
                             pullSuccess = false
                             break
                         }
@@ -1195,7 +1199,7 @@ public class UserManager {
 
             if let ph = photo {
                 // save photo
-                let imageData = UIImagePNGRepresentation(ph)
+                _ = UIImagePNGRepresentation(ph)
 //                result = imageData!.writeToURL(url, atomically: false)
             }
 

@@ -71,7 +71,7 @@ class BalanceSampleListController: UIViewController, UITableViewDelegate, UITabl
         // Dispose of any resources that can be recreated.
     }
     
-    @IBAction func onClose(sender: AnyObject) {
+    @IBAction func onClose(_ sender: AnyObject) {
         self.dismiss(animated: true, completion: nil)
         save()
     }
@@ -100,7 +100,7 @@ class BalanceSampleListController: UIViewController, UITableViewDelegate, UITabl
     }
     
     
-    func tableView(tableView: UITableView, didSelectRowAtIndexPath indexPath: NSIndexPath) {
+    private func tableView(_ tableView: UITableView, didSelectRowAtIndexPath indexPath: NSIndexPath) {
         
         let obj = tableView.cellForRow(at: indexPath as IndexPath) as? ManageDashboardCell
         guard let cell = obj else {
@@ -111,17 +111,16 @@ class BalanceSampleListController: UIViewController, UITableViewDelegate, UITabl
         for item in data {
             
             item.active = false
-//            if let otherCell = tableView.cellForRowAtIndexPath(IndexPath(forRow: index, inSection: 0)) as? ManageDashboardCell {
-//            if let otherCell = cellForRowAtIndexPath(tableView(tableView, cellForRowAt: index)) as? ManageDashboardCell {
- //               otherCell.button.selected = false
-//            }
+            if let otherCell = tableView.cellForRow(at: IndexPath(row: index, section: 0) ) as? ManageDashboardCell {
+                otherCell.button.isSelected = false
+            }
             
             index += 1
         }
         
         let item = self.data[indexPath.row]
-//        item.active = true
-//        cell.button.isSelected = true
+        item.active = true
+        cell.button.isSelected = true
         
         Async.main(after: 0.1) {
             var samples = PreviewManager.balanceSampleTypes

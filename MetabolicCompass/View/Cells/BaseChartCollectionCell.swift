@@ -101,13 +101,13 @@ class BaseChartCollectionCell: UICollectionViewCell {
             topLimit.lineWidth = 1
             topLimit.lineDashLengths = [3.0, 3.0]
 //            topLimit.lineColor = UIColor.colorWithHexString(rgb: "#338aff", alpha: 0.4)!
-            leftAxis.axisMaxValue = topLimitMax
+            leftAxis.axisMaximum = topLimitMax
             let minMultiplier = minOffsetFactor ?? 1.3
-            leftAxis.axisMinValue = minValue - (minMultiplier == 0 ? 0.0 : minValue * minMultiplier)
+            leftAxis.axisMinimum = minValue - (minMultiplier == 0 ? 0.0 : minValue * minMultiplier)
             leftAxis.addLimitLine(topLimit)
             
-            chartMinValueLabel.text = String(format:"%.0f", leftAxis.axisMinValue)
-            chartMaxValueLabel.text = String(format:"%.0f", leftAxis.axisMaxValue)
+            chartMinValueLabel.text = String(format:"%.0f", leftAxis.axisMinimum)
+            chartMaxValueLabel.text = String(format:"%.0f", leftAxis.axisMaximum)
         }
     }
 

@@ -83,7 +83,7 @@ public class ConsentManager: NSObject, ORKTaskViewControllerDelegate {
             print("Removing file at: \(consentFilePath)")
             try FileManager.default.removeItem(atPath: consentFilePath)
         }
-        catch let error as NSError {
+        catch let error {
             print("Failed to remove consent file: \(error)")
         }
     }

@@ -30,7 +30,7 @@ class ChartsViewController: UIViewController {
     private let scatterChartCellIdentifier = "ScatterChartCollectionCell"
     private let chartCollectionDataSource = ChartCollectionDataSource()
     private let chartCollectionDelegate = ChartCollectionDelegate()
-//    private let chartsModel = BarChartModel()
+    private let chartsModel = BarChartModel()
     private var segmentControl: UISegmentedControl? = nil
 
     // MARK :- View life cycle
@@ -39,7 +39,7 @@ class ChartsViewController: UIViewController {
         updateNavigationBar()
         registerCells()
 //        chartCollectionDataSource.model = chartsModel
-//        collectionView.delegate = chartCollectionDelegate
+        collectionView.delegate = chartCollectionDelegate
 //        collectionView.dataSource = chartCollectionDataSource
     }
 
@@ -88,6 +88,10 @@ class ChartsViewController: UIViewController {
 //            self.activityIndicator.stopAnimating()
 //            self.collectionView.reloadData()
 //        })
+        chartsModel.getAllDataForCurrentPeriod(completion: {
+            self.activityIndicator.stopAnimating()
+            self.collectionView.reloadData()
+        })
     }
 
     func registerCells () {
@@ -115,7 +119,7 @@ class ChartsViewController: UIViewController {
 //        self.navigationItem.rightBarButtonItem = corrButton
     }
 
-    @IBAction func rangeChanged(sender: UISegmentedControl) {
+    @IBAction func rangeChanged(_ sender: UISegmentedControl) {
         self.segmentControl = sender
 //        var showCorrelate = false
 //        let correlateSegment = sender.numberOfSegments-1

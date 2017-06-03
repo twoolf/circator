@@ -38,7 +38,7 @@ class AddMealDataSource: NSObject, UITableViewDataSource, UITableViewDelegate, P
         return dataSourceCells.count
     }
     
-    func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+    public func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         var cell: UITableViewCell? = nil
         let cellIdentifier = dataSourceCells[indexPath.row]
         cell = tableView.dequeueReusableCell(withIdentifier: cellIdentifier)
@@ -46,12 +46,12 @@ class AddMealDataSource: NSObject, UITableViewDataSource, UITableViewDelegate, P
         switch cellIdentifier {
             case startSleepCellIdentifier:
                 self.startSleepCell = cell as? StartSleepTableViewCell
-//                self.startSleepCell?.timeLabel.text = addEventModel?.getStartSleepTimeString()
- //               self.startSleepCell?.dayLabel.text = addEventModel?.getStartSleepForDayLabel()
+                self.startSleepCell?.timeLabel.text = addEventModel?.getStartSleepTimeString()
+                self.startSleepCell?.dayLabel.text = addEventModel?.getStartSleepForDayLabel()
             case endSleepCellIdentifier:
                 self.endSleepCell = cell as? EndSleepTableViewCell
-//                self.endSleepCell?.timeLabel.text = addEventModel?.getSleepEndTimeString()
-//                self.endSleepCell?.dayLabel.text = addEventModel?.getEndSleepForDayLabel()
+                self.endSleepCell?.timeLabel.text = addEventModel?.getSleepEndTimeString()
+                self.endSleepCell?.dayLabel.text = addEventModel?.getEndSleepForDayLabel()
             case typeCellIdentifier:
                 self.typeCell = cell as? TypeTableViewCell
                 self.typeCell?.typeLabel.text = addEventModel?.mealType.rawValue
@@ -73,7 +73,7 @@ class AddMealDataSource: NSObject, UITableViewDataSource, UITableViewDelegate, P
         default: break
             let datePickerCell = cell as! DatePickerTableViewCell
             datePickerCell.delegate = self
- /*               if addEventModel!.datePickerRow(rowIndex: indexPath.row) {//date and time
+                if addEventModel!.datePickerRow(rowIndex: indexPath.row) {//date and time
                     datePickerCell.datePicker.datePickerMode = .dateAndTime
                     datePickerCell.datePicker.minuteInterval = 5
                     datePickerCell.datePicker.tag = indexPath.row
@@ -94,19 +94,17 @@ class AddMealDataSource: NSObject, UITableViewDataSource, UITableViewDelegate, P
                     datePickerCell.datePicker.tag = indexPath.row
                     datePickerCell.datePicker.countDownDuration = (addEventModel?.duration)!
                 }
-            default:
-                break*/
         }
         return cell!
     }
     
     //MARK: UITableViewDelegate
     
-    func tableView(tableView: UITableView, didSelectRowAtIndexPath indexPath: NSIndexPath) {
+    private func tableView(_ tableView: UITableView, didSelectRowAtIndexPath indexPath: NSIndexPath) {
         displayPickerForRowAtIndexPath(indexPath: indexPath, inTable: tableView)
     }
 
-    func tableView(tableView: UITableView, heightForRowAtIndexPath indexPath: NSIndexPath) -> CGFloat {
+    private func tableView(_ tableView: UITableView, heightForRowAtIndexPath indexPath: NSIndexPath) -> CGFloat {
         var cellHeight:CGFloat = defaultCellHeight
         if dataSourceCells[indexPath.row] == pickerCellIdentifier || dataSourceCells[indexPath.row] == datePickerCellIdentifier {
             cellHeight = defaultPickerHeight
@@ -146,14 +144,13 @@ class AddMealDataSource: NSObject, UITableViewDataSource, UITableViewDelegate, P
         
         if !sameCellSelected {
             let row = before ? indexPath.row - 1 : indexPath.row
-//            self.pickerIndexPath = NSIndexPath(forRow: row+1, inSection: 0)
             self.pickerIndexPath = NSIndexPath(row: row+1, section: 0)
             dataSourceCells.insert(pickerIdentifier, at: self.pickerIndexPath!.row)
             tableView.insertRows(at: [self.pickerIndexPath! as IndexPath], with: .middle)            
             openDropDownImage(close: true, forCellAtIndexPath: indexPath, inTableView: tableView)
         } else {
-//            self.tableView(tableView, didDeselectRowAtIndexPath: indexPath)
-            self.tableView(tableView: tableView, didDeselectRowAtIndexPath: indexPath)
+            self.tableView(tableView, didDeselectRowAtIndexPath: indexPath)
+            self.tableView(tableView, didDeselectRowAtIndexPath: indexPath)
         }
         
         tableView.endUpdates()
@@ -162,7 +159,7 @@ class AddMealDataSource: NSObject, UITableViewDataSource, UITableViewDelegate, P
         }
     }
     
-    func tableView(tableView: UITableView, didDeselectRowAtIndexPath indexPath: NSIndexPath) {
+    private func tableView(_ tableView: UITableView, didDeselectRowAtIndexPath indexPath: NSIndexPath) {
         openDropDownImage(close: false, forCellAtIndexPath: indexPath, inTableView: tableView)
     }
     
@@ -203,14 +200,14 @@ class AddMealDataSource: NSObject, UITableViewDataSource, UITableViewDelegate, P
     
     //MARK: DatePickerTableViewCellDelegate 
     
-    func picker(picker: UIDatePicker, didSelectDate date: Date) {
+    public func picker(picker: UIDatePicker, didSelectDate date: Date) {
         if sleepMode {
-            let startSleepPickerTag = addEventModel?.datePickerTags.first
-        /*    switch picker.tag {
-                case startSleepPickerTag!://update end sleep date
+            _ = addEventModel?.datePickerTags.first
+            switch picker.tag {
+/*                case startSleepPickerTag!:     //update end sleep date
                     addEventModel?.sleepStartDate = picker.date
                     self.startSleepCell?.timeLabel.text = addEventModel?.getStartSleepTimeString()
-                    self.startSleepCell?.dayLabel.text = addEventModel?.getStartSleepForDayLabel()
+                    self.startSleepCell?.dayLabel.text = addEventModel?.getStartSleepForDayLabel() */
                 default://update end sleep date
                     addEventModel?.sleepEndDate = picker.date
                     self.endSleepCell?.timeLabel.text = addEventModel?.getSleepEndTimeString()
@@ -225,7 +222,7 @@ class AddMealDataSource: NSObject, UITableViewDataSource, UITableViewDelegate, P
                 addEventModel?.duration = picker.countDownDuration
                 self.durationCell?.durationLabel.attributedText = addEventModel?.getTextForTimeInterval()
             }
-        } */
+        }
     }
 }
-}
+

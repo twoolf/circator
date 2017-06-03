@@ -45,7 +45,7 @@ public class EventManager : NSObject, WCSessionDelegate {
 
 
     @available(iOS 9.3, *)
-    public func session(session: WCSession, activationDidCompleteWithState activationState: WCSessionActivationState, error: NSError?){
+    public func session(session: WCSession, activationDidCompleteWithState activationState: WCSessionActivationState, error: Error?){
     }
     
     public func sessionDidBecomeInactive(_ session: WCSession) {
@@ -100,7 +100,7 @@ public class EventManager : NSObject, WCSessionDelegate {
             (accessGranted, error) in
 
             guard error == nil else {
-//                log.error("Calendar access error: \(error)")
+                log.error("Calendar access error: \(error)")
                 return
             }
 

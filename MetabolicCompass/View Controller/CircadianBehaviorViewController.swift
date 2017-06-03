@@ -78,7 +78,7 @@ class CircadianBehaviorViewController: UITabBarController {
             break
         case "Repeated Events":
             self.navigationItem.title = "Repeated Events"
-            self.navigationItem.rightBarButtonItem = UIBarButtonItem.init(barButtonSystemItem: .add, target: self, action: Selector("addRepeatedEvent:"))
+            self.navigationItem.rightBarButtonItem = UIBarButtonItem.init(barButtonSystemItem: .add, target: self, action: Selector(("addRepeatedEvent:")))
             break
         default:
             break
@@ -93,7 +93,7 @@ class CircadianBehaviorViewController: UITabBarController {
         self.present(vc, animated: true, completion: nil)
     }
     
-    func addRepeatedEvent(sender: UIBarItem) {
+    func addRepeatedEvent(_ sender: UIBarItem) {
         
         let vc = self.selectedViewController as! RepeatedEventManagerViewController
         vc.addRepeatedEvent(sender: sender)

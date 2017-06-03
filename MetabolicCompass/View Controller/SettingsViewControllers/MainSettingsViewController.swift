@@ -257,7 +257,7 @@ class MainSettingsViewController: BaseViewController, UICollectionViewDataSource
         return cell
     }
 
-    func collectionView(collectionView: UICollectionView, didSelectItemAtIndexPath indexPath: NSIndexPath) {
+    private func collectionView(_ collectionView: UICollectionView, didSelectItemAtIndexPath indexPath: NSIndexPath) {
 
         let shareOurStoryCell = isCellShareOurStoryAtIndexPath(indexPath: indexPath)
         let asAboutCell = isCellAboutAtIndexPath(indexPath: indexPath)
@@ -285,7 +285,7 @@ class MainSettingsViewController: BaseViewController, UICollectionViewDataSource
     }
     
     
-    func collectionView(collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAtIndexPath indexPath: NSIndexPath) -> CGSize {
+    private func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAtIndexPath indexPath: NSIndexPath) -> CGSize {
         
         return defaultCellSize()
     }

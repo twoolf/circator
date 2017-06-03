@@ -145,7 +145,7 @@ class InboxManager {
         var calender = NSCalendar(calendarIdentifier: NSCalendar.Identifier.gregorian)!
 //        var components = calender.components(.minute, from: self.lastUpdated!, to: Date(), options: .wrapComponents)
         
-        var dateFormatter : DateFormatter = {
+        var _ : DateFormatter = {
             let formatter = DateFormatter()
             formatter.dateFormat = "EEEE mmmm, dd"
             return formatter
@@ -154,7 +154,7 @@ class InboxManager {
         if let then = self.lastUpdated {
             
             if then.minute! % 15 != 0 {
-                var difference = 15 - (then.minute! % 15)
+                _ = 15 - (then.minute! % 15)
 //                then.setValue(then.minute + difference, forComponent: .minute)
             }
             

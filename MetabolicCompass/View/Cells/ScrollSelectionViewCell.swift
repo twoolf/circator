@@ -59,7 +59,7 @@ class ScrollSelectionViewCell: BaseCollectionViewCell, AKPickerViewDataSource, A
         return (maxValue - minValue) + 1
     }
     
-    func pickerView(pickerView: AKPickerView, titleForItem item: Int) -> String {
+    private func pickerView(pickerView: AKPickerView, titleForItem item: Int) -> String {
         let value = item + minValue
         return String(value)
     }
@@ -70,7 +70,7 @@ class ScrollSelectionViewCell: BaseCollectionViewCell, AKPickerViewDataSource, A
         valueLbl.text = String(value)
     }
 
-    func pickerView(pickerView: AKPickerView, didSelectItem item: Int) {
+    private func pickerView(pickerView: AKPickerView, didSelectItem item: Int) {
         let value = item + minValue
         valueLbl.text = String(value)
         valueChanged(newValue: value as AnyObject?)

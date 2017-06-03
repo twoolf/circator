@@ -319,7 +319,7 @@ class DialViewController : UIViewController, ChartViewDelegate {
             }
 
         case 2:
-            if let opt = entry.data as? Double?, let steps = opt {
+            if let opt = entry.data as? Double?, let _ = opt {
 //                entryStr += "\n" + String(format: "%.6g", steps) + " steps"
             }
 

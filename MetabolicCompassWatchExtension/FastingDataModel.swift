@@ -31,7 +31,7 @@ public class FastingDataModel : NSObject {
     public var maxEntries: Int = 10
     public var collectedAsOtherThreshold: Double = 0.01
     
-    public var collectError: NSError?
+    public var collectError: Error?
     
     override public init() {
         super.init()
@@ -39,7 +39,7 @@ public class FastingDataModel : NSObject {
     }
     
     public func updateData() {
-        var someError: [NSError?] = []
+        var someError: [Error?] = []
         let group = DispatchGroup()
         
         group.enter()

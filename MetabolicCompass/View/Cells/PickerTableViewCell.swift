@@ -41,11 +41,11 @@ class PickerTableViewCell: UITableViewCell, UIPickerViewDataSource, UIPickerView
     }
     
     //MARK: UIPickerViewDelegate
-    func pickerView(pickerView: UIPickerView, titleForRow row: Int, forComponent component: Int) -> String? {
+    private func pickerView(pickerView: UIPickerView, titleForRow row: Int, forComponent component: Int) -> String? {
         return components[row]
     }
     
-    func pickerView(pickerView: UIPickerView, didSelectRow row: Int, inComponent component: Int) {
+    private func pickerView(pickerView: UIPickerView, didSelectRow row: Int, inComponent component: Int) {
         self.pickerCellDelegate?.pickerSelectedRowWithTitle(title: components[row])
     }
 }

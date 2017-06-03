@@ -37,13 +37,13 @@ class DashboardComparisonController: UIViewController, UITableViewDelegate, UITa
         let hOffset: CGFloat = screenSize.height < 569 ? 40.0 : 75.0
 
         let activityFrame = CGRect((screenSize.width - sz) / 2, (screenSize.height - (hOffset+sz)) / 2, sz, sz)
-//        self.activityIndicator = NVActivityIndicatorView(frame: activityFrame, type: .LineScale, color: UIColor.lightGrayColor())
+        self.activityIndicator = NVActivityIndicatorView(frame: activityFrame, type: .lineScale, color: UIColor.lightGray)
         self.view.addSubview(self.activityIndicator)
-
+        log.debug("right before AccountManager called")
         AccountManager.shared.loginAndInitialize(animated: false)
     }
 
-    func contentDidUpdate (notification: NSNotification) {
+    func contentDidUpdate (_ notification: NSNotification) {
         self.tableView.reloadData()
         self.stopActivityIndicator()
     }
@@ -62,10 +62,10 @@ class DashboardComparisonController: UIViewController, UITableViewDelegate, UITa
     
     override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
-        self.stopActivityIndicator(force: true)
+        self.stopActivityIndicator(true)
         AccountManager.shared.contentManager.stopBackgroundWork()
         NotificationCenter.default.removeObserver(self)
-//        logContentView(false)
+        logContentView(false)
     }
 
     func startActivityIndicator() {
@@ -79,16 +79,15 @@ class DashboardComparisonController: UIViewController, UITableViewDelegate, UITa
         }
     }
 
-    func stopActivityIndicator(force: Bool = false) {
+    func stopActivityIndicator(_ force: Bool = false) {
         activityCnt = force ? 0 : max(activityCnt - 1, 0)
         if (force || activityCnt == 0) && activityIndicator.animating { activityIndicator.stopAnimating() }
     }
 
-    func logContentView(asAppear: Bool = true) {
+    func logContentView(_ asAppear: Bool = true) {
         Answers.logContentView(withName: "Population",
                                        contentType: asAppear ? "Appear" : "Disappear",
-//                                       contentId: Date().string(DateFormat.custom("YYYY-MM-dd:HH")),
-                                        contentId: Date().string(),
+                                       contentId: Date().weekdayName,
                                        customAttributes: nil)
     }
 
@@ -114,13 +113,16 @@ class DashboardComparisonController: UIViewController, UITableViewDelegate, UITa
         let active = QueryManager.sharedManager.isQueriedType(sample: sampleType)
         cell.setPopulationFiltering(active: active)
 
-//        let timeSinceRefresh = DateComponents().timeIntervalSinceDate(PopulationHealthManager.sharedManager.aggregateRefreshDate ?? Date.distantPast())
+        let timeSinceRefresh = DateInterval(start: Date.distantPast, end: PopulationHealthManager.sharedManager.aggregateRefreshDate)
+//        let timeSinceRefresh = DateInterval().intersection(with: PopulationHealthManager.sharedManager.aggregateRefreshDate ?? Date.distantPast())
+//        let timeSinceRefresh = Date().addingTimeInterval(PopulationHealthManager.sharedManager.aggregateRefreshDate ?? Date.distantPast())
+//        let timeSinceRefresh = DateInterval().timeIntervalSinceDate(PopulationHealthManager.sharedManager.aggregateRefreshDate ?? Date.distantPast())
         let refreshPeriod = UserManager.sharedManager.getRefreshFrequency() ?? Int.max
-//        let stale = timeSinceRefresh > Double(refreshPeriod)
+        let stale = timeSinceRefresh > DateInterval(start: Date(), duration: TimeInterval(refreshPeriod))
 
         let individualSamples = ComparisonDataModel.sharedManager.recentSamples[sampleType] ?? [HKSample]()
         let populationSamples = ComparisonDataModel.sharedManager.recentAggregates[sampleType] ?? []
-//        cell.setUserData(individualSamples, populationAverageData: populationSamples, stalePopulation: stale)
+        cell.setUserData(userData: individualSamples, populationAverageData: populationSamples, stalePopulation: stale)
 
         if indexPath.section == 0 && comparisonTips[indexPath.row] == nil {
             let targetView = cell
@@ -130,7 +132,7 @@ class DashboardComparisonController: UIViewController, UITableViewDelegate, UITa
             let tipAsTop = PreviewManager.previewSampleTypes.count > 6 && indexPath.row > PreviewManager.previewSampleTypes.count - 4
             comparisonTips[indexPath.row] = TapTip(forView: targetView, withinView: tableView, text: desc, width: 350, numTaps: 2, numTouches: 1, asTop: tipAsTop)
             targetView.addGestureRecognizer(comparisonTips[indexPath.row]!.tapRecognizer)
-//            targetView.userInteractionEnabled = true
+            targetView.isUserInteractionEnabled = true
         }
 
         return cell

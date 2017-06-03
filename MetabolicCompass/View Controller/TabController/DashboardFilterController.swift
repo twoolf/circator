@@ -19,8 +19,8 @@ class DashboardFilterController: UIViewController, UITableViewDelegate, UITableV
 
     private var deselectAll = false
 
-    private let selectedRowsDefaultsKey = "\(UserManager.sharedManager.userId).selectedFilters"
-    private let sectionVisibilityDefaultsKey = "\(UserManager.sharedManager.userId).sectionsVisible"
+    private let selectedRowsDefaultsKey = "\(UserManager.sharedManager.userId ?? (no_argument as AnyObject) as! String).selectedFilters"
+    private let sectionVisibilityDefaultsKey = "\(UserManager.sharedManager.userId ?? (no_argument as AnyObject) as! String).sectionsVisible"
 
     // A hashtable specifying which row is selected in each section.
     private var selectedRows: [String:AnyObject] = [:]
@@ -74,14 +74,14 @@ class DashboardFilterController: UIViewController, UITableViewDelegate, UITableV
         if let userSelectedRows = Defaults.object(forKey: selectedRowsDefaultsKey) as? [String: AnyObject] {
             selectedRows = userSelectedRows
         } else {
-//            log.warning("Clearing defaults for \(selectedRowsDefaultsKey)")
+            log.warning("Clearing defaults for \(selectedRowsDefaultsKey)")
             Defaults.remove(selectedRowsDefaultsKey)
         }
 
         if let userSectionsVisible = Defaults.object(forKey: sectionVisibilityDefaultsKey) as? [Bool] {
             sectionVisibility = userSectionsVisible
         } else {
-//            log.warning("Clearing defaults for \(sectionVisibilityDefaultsKey)")
+            log.warning("Clearing defaults for \(sectionVisibilityDefaultsKey)")
             Defaults.remove(sectionVisibilityDefaultsKey)
         }
     }
@@ -126,20 +126,20 @@ class DashboardFilterController: UIViewController, UITableViewDelegate, UITableV
         if deselectAll {
             item.selected = false
             if cell.checkBoxButton.isSelected {
-                cell.didPressButton(sender: self)
+                cell.didPressButton(self)
             }
         }
         cell.data = item
         if let selectedRowForSection = selectedRows["\(indexPath.section)"] as? Int {
             if selectedRowForSection == indexPath.row && !cell.checkBoxButton.isSelected { // prevent deselect
-                cell.didPressButton(sender: self)
+                cell.didPressButton(self)
             }
         }
         return cell
     }
     
     //MARK: UITableViewDelegate
-    func tableView(tableView: UITableView, viewForHeaderInSection section: Int) -> UIView? {
+    internal func tableView(_ tableView: UITableView, viewForHeaderInSection section: Int) -> UIView? {
         let view = tableView.dequeueReusableHeaderFooterView(withIdentifier: headerIdentifier) as! DashboardFilterHeaderView
         view.captionLabel.text = self.data[section].title
 
@@ -160,7 +160,7 @@ class DashboardFilterController: UIViewController, UITableViewDelegate, UITableV
         return view;
     }
 
-    func tableView(tableView: UITableView, estimatedHeightForHeaderInSection section: Int) -> CGFloat {
+    internal func tableView(_ tableView: UITableView, estimatedHeightForHeaderInSection section: Int) -> CGFloat {
         return 40
     }
 
@@ -168,13 +168,13 @@ class DashboardFilterController: UIViewController, UITableViewDelegate, UITableV
         return UIView()
     }
 
-    func tableView(tableView: UITableView, didSelectRowAtIndexPath indexPath: NSIndexPath) {
+    private func tableView(_ tableView: UITableView, didSelectRowAtIndexPath indexPath: NSIndexPath) {
         let cell = tableView.cellForRow(at: indexPath as IndexPath) as? DashboardFilterCell
         let filterItems = self.data[indexPath.section].items
         let selectedItem = filterItems[indexPath.row]//See DashboardFilterCellData
         
         if selectedItem.selected { // item already selected so just remove it and deselect
-            cell?.didPressButton(sender: self)
+            cell?.didPressButton(self)
             deselectRow(section: indexPath.section, row: indexPath.row, refresh: true)
         } else {
             // Deselect all other items in this section. This enforces mutually exclusive filters.
@@ -189,12 +189,12 @@ class DashboardFilterController: UIViewController, UITableViewDelegate, UITableV
             }
 
             selectRow(section: indexPath.section, row: indexPath.row)
-            cell?.didPressButton(sender: self)//set cell as selected
+            cell?.didPressButton(self)//set cell as selected
         }
     }
     
     // MARK: Helpers
-    func toggleSectionVisibility(sender: UITapGestureRecognizer) {
+    func toggleSectionVisibility(_ sender: UITapGestureRecognizer) {
         if let section = sender.view?.tag {
             sectionVisibility[section] = !sectionVisibility[section]
             self.tableView.reloadData()
@@ -226,10 +226,10 @@ class DashboardFilterController: UIViewController, UITableViewDelegate, UITableV
                     conjunctDescriptions.append(ctitle)
                     currentConjuncts.append(predicate)
                 } else {
-//                    log.error("No predicate found for filter at index: \(section) \(row)")
+                    log.error("No predicate found for filter at index: \(section) \(row)")
                 }
             } else {
-//                log.error("Invalid key/value pair as filter index: \(key) \(value)")
+                log.error("Invalid key/value pair as filter index: \(key) \(value)")
             }
         }
 

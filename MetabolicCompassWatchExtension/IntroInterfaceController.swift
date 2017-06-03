@@ -38,7 +38,7 @@ class IntroInterfaceController: WKInterfaceController, WCSessionDelegate  {
     
     var model: FastingDataModel = FastingDataModel()
     
-    typealias HMCircadianAggregateBlock = (_ aggregates: [(Date, Double)], _ error: NSError?) -> Void
+    typealias HMCircadianAggregateBlock = (_ aggregates: [(Date, Double)], _ error: Error?) -> Void
     
     var session : WCSession!
     

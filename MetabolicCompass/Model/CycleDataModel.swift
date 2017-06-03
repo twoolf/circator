@@ -95,6 +95,11 @@ public class CycleDataModel : NSObject {
             fatalError("Unable to create CycleDataModel window cache.")
         }
         super.init()
+        NotificationCenter.default.addObserver(self, selector: #selector(invalidateActivityEntries), name: NSNotification.Name(rawValue: HMDidUpdateCircadianEvents), object: nil)
+        MCHealthManager.sharedManager.measureInvalidationsByType.forEach {
+            NotificationCenter.default.addObserver(self, selector: #selector(invalidateMeasureEntries), name: (NSNotification.Name(rawValue: $0)), object: nil)
+//            NotificationCenter.defaultCenter.addObserver(self, selector: #selector(invalidateMeasureEntries), name: (HMDidUpdateMeasuresPfx! + $0), object: nil)
+        }
 /*        NotificationCenter.default.addObserver(self, selector: #selector(invalidateActivityEntries), name: NSNotification.Name(rawValue: HMDidUpdateCircadianEvents), object: nil)
 //        MCHealthManager.sharedManager.measureInvalidationsByType.forEach {
 //        MCHealthManager.sharedManager.invalidateCacheForUpdates(<#T##type: HKSampleType##HKSampleType#>).forEach {
@@ -103,15 +108,15 @@ public class CycleDataModel : NSObject {
         } */
     }
 
-    public func updateData(completion: @escaping (NSError?) -> Void) {
+    public func updateData(completion: @escaping (Error?) -> Void) {
         let end = Date().endOf(component: .day)
         let start = (end - 1.months).startOf(component: .day)
 
-        var someError: [NSError?] = []
+        var someError: [Error?] = []
         let group = DispatchGroup()
 
         let initAcc: CycleAccum = (true, nil, [:])
-        let finalizer: (CycleAccum) -> CycleWindows = { $0.2 }
+        let _: (CycleAccum) -> CycleWindows = { $0.2 }
 
         let initWinAcc = [(0, 0.0, 0), (0, 0.0, 0), (0, 0.0, 0)]
 
@@ -128,7 +133,7 @@ public class CycleDataModel : NSObject {
             }
         }
 
-        let activityAggregator : (CycleAccum, (Date, CircadianEvent)) -> CycleAccum = { (acc, e) in
+        let _ : (CycleAccum, (Date, CircadianEvent)) -> CycleAccum = { (acc, e) in
             var (startOfInterval, eStart, windows) = acc
             if !startOfInterval && eStart != nil {
                 let evtIndex = eventIndex(e.1)
@@ -215,7 +220,7 @@ public class CycleDataModel : NSObject {
 
                 query.initialResultsHandler = { query, results, error in
                     guard error == nil else {
-                        failure(error as NSError?)
+                        failure(error)
                         return
                     }
                     let (winEntries, winMeta, winColors) = self.getChartMeasureEntries(startDate: start, endDate: end, sampleType: sampleType, statistics: results?.statistics() ?? [])

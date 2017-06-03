@@ -30,7 +30,7 @@ final class HealthConditions: NSObject {
         super.init()
     }
     
-    func readMostRecentSample(sampleType:HKSampleType , completion: ((HKSample?, NSError?) -> Void)!)
+    func readMostRecentSample(sampleType:HKSampleType , completion: ((HKSample?, Error?) -> Void)!)
     {
         var weight:HKQuantitySample?
         let height:HKQuantitySample?

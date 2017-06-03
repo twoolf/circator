@@ -451,7 +451,7 @@ open class RepeatedEventManagerViewController: UIViewController {
         self.present(vc, animated: true, completion: nil)
     }
     
-    public func setWeekdayView(sender: WeekdayButton!) {
+    public func setWeekdayView(_ sender: WeekdayButton!) {
         
         //sets weekday label to selected day
         self.weekdayLabel.text = sender.day.description
@@ -470,7 +470,7 @@ open class RepeatedEventManagerViewController: UIViewController {
     
     public func selectCurrentWeekday() {
         
-        self.setWeekdayView(sender: self.weekdayButtons[Date().weekday - 1])
+        self.setWeekdayView(self.weekdayButtons[Date().weekday - 1])
         
     }
     
@@ -808,7 +808,7 @@ open class RepeatedEventDetailViewController : UIViewController {
         
         let deleteButton = UIButton()
         deleteButton.translatesAutoresizingMaskIntoConstraints = false
-        print(deleteButton.titleLabel)
+        print(deleteButton.titleLabel ?? "default")
         deleteButton.titleLabel?.textAlignment = .center
         deleteButton.setTitle("Delete", for: .normal)
         deleteButton.setTitleColor(UIColor.red, for: .normal)
@@ -889,7 +889,7 @@ open class RepeatedEventDetailViewController : UIViewController {
         
     }
     
-    public func deleteEvent (sender: UIButton!) {
+    public func deleteEvent (_ sender: UIButton!) {
         
         let alertController = UIAlertController(title: nil, message: nil, preferredStyle: .actionSheet)
         let cancelAction = UIAlertAction(title: "Cancel", style: .cancel, handler: nil)
@@ -976,12 +976,12 @@ open class NewRepeatedEventViewController: UIViewController {
         
     }
     
-    public func cancel(sender: UIBarItem) {
+    public func cancel(_ sender: UIBarItem) {
         
         self.dismiss(animated: true, completion: nil)
     }
     
-    public func add(sender: UIBarItem) {
+    public func add(_ sender: UIBarItem) {
         
         var eventTitle : String?
         var eventType : EventType?
@@ -1299,7 +1299,7 @@ public class DaySelectionViewController: UIViewController {
         
     }
     
-    func back(sender: UIBarItem) {
+    func back(_ sender: UIBarItem) {
         self.dismiss(animated: true, completion: nil)
     }
     
@@ -1323,15 +1323,15 @@ public class DaySelectionViewController: UIViewController {
             self.tableView.isScrollEnabled = false
         }
         
-        func tableView(tableView: UITableView, heightForRowAtIndexPath indexPath: NSIndexPath) -> CGFloat {
+        override func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
             return 44.0
         }
         
-        func tableView(tableView: UITableView, heightForHeaderInSection section: Int) -> CGFloat {
+        override func tableView(_ tableView: UITableView, heightForHeaderInSection section: Int) -> CGFloat {
             return 22.0
         }
         
-        func tableView(tableView: UITableView, heightForFooterInSection section: Int) -> CGFloat {
+        override func tableView(_ tableView: UITableView, heightForFooterInSection section: Int) -> CGFloat {
             return view.bounds.height - UIApplication.shared.statusBarFrame.size.height - 44.0*7
             
         }
@@ -1344,14 +1344,14 @@ public class DaySelectionViewController: UIViewController {
             return 7
         }
         
-        func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell {
+        override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
             let cell = tableView.dequeueReusableCell(withIdentifier: "dayCell", for: indexPath as IndexPath)
             cell.textLabel?.text = type(of: self).dayNames[indexPath.row]
             cell.accessoryType = selectedIndices.contains(indexPath.row) ? .checkmark : .none
             return cell
         }
         
-        func tableView(tableView: UITableView, didSelectRowAtIndexPath indexPath: NSIndexPath) {
+        override func tableView(_ tableView: UITableView, accessoryButtonTappedForRowWith indexPath: IndexPath) {
             let cell = tableView.cellForRow(at: indexPath as IndexPath)!
             tableView.deselectRow(at: indexPath as IndexPath, animated: true)
             if selectedIndices.contains(indexPath.row) {

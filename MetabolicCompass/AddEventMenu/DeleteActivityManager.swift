@@ -183,7 +183,7 @@ public class DeleteActivityManager: UITableView, PickerManagerSelectionDelegate 
         delFormer.append(sectionFormer: deleteRecentSection, deleteByDateSection)
     }
 
-    func circadianOpCompletion(sender: UIButton?, pickerManager: PickerManager?, error: NSError?) {
+    func circadianOpCompletion(_ sender: UIButton?, pickerManager: PickerManager?, error: Error?) {
         pickerManager?.finishProcessingSelection()
 //        if error != nil { log.error(error!.localizedDescription) }
         if error != nil { print("in error") }
@@ -200,15 +200,15 @@ public class DeleteActivityManager: UITableView, PickerManagerSelectionDelegate 
     }
 
     public func handleQuickDelRecentTap(sender: UIButton)  {
-//        log.debug("Delete recent tapped", feature: "deleteActivity")
+        log.debug("Delete recent tapped", feature: "deleteActivity")
         if let mins = delRecentManager.getSelectedValue() as? Int {
             let endDate = Date()
 //            let startDate = endDate.dateByAddingTimeInterval(-(Double(mins) * 60.0))
             let startDate = endDate.addHours(hoursToAdd: -(mins)*60)
-//            log.debug("Delete circadian events between \(startDate) \(endDate)", feature: "deleteActivity")
+            log.debug("Delete circadian events between \(startDate) \(endDate)", feature: "deleteActivity")
             Async.main { sender.isEnabled = false; sender.setNeedsDisplay() }
             MCHealthManager.sharedManager.deleteCircadianEvents(startDate, endDate: endDate) {
-                self.circadianOpCompletion(sender: sender, pickerManager: nil, error: $0)
+                self.circadianOpCompletion(sender, pickerManager: nil, error: $0)
             }
         }
     }
@@ -217,10 +217,10 @@ public class DeleteActivityManager: UITableView, PickerManagerSelectionDelegate 
         let startDate = delDates[0]
         let endDate = delDates[1]
         if startDate < endDate {
-//            log.debug("Delete circadian events between \(startDate) \(endDate)", feature: "deleteActivity")
+            log.debug("Delete circadian events between \(startDate) \(endDate)", feature: "deleteActivity")
             Async.main { sender.isEnabled = false; sender.setNeedsDisplay() }
             MCHealthManager.sharedManager.deleteCircadianEvents(startDate, endDate: endDate) {
-                self.circadianOpCompletion(sender: sender, pickerManager: nil, error: $0)
+                self.circadianOpCompletion(sender, pickerManager: nil, error: $0)
             }
         } else {
             UINotifications.genericErrorOnView(view: self.notificationView ?? self.superview!, msg: "Start date must be before the end date")
@@ -228,12 +228,12 @@ public class DeleteActivityManager: UITableView, PickerManagerSelectionDelegate 
     }
 
     func pickerItemSelected(pickerManager: PickerManager, itemType: String?, index: Int, item: String, data: AnyObject?) {
-//        log.debug("Delete recent picker selected \(item) \(data)", feature: "deleteActivity")
+        log.debug("Delete recent picker selected \(item) \(data ?? no_argument as AnyObject)", feature: "deleteActivity")
         if let mins = data as? Int {
             let endDate = Date()
 //            let startDate = endDate.dateByAddingTimeInterval(-(Double(mins) * 60.0))
             let startDate = endDate.addHours(hoursToAdd: -mins*60)
-//            log.debug("Delete circadian events between \(startDate) \(endDate)", feature: "deleteActivity")
+            log.debug("Delete circadian events between \(startDate) \(endDate)", feature: "deleteActivity")
 
             if let rootVC = UIApplication.shared.delegate?.window??.rootViewController {
                 var interval = "\(mins) minutes"
@@ -251,7 +251,7 @@ public class DeleteActivityManager: UITableView, PickerManagerSelectionDelegate 
                 let okAction = UIAlertAction(title: "OK", style: .default) { (alertAction: UIAlertAction!) in
                     rootVC.dismiss(animated: true, completion: nil)
                     MCHealthManager.sharedManager.deleteCircadianEvents(startDate, endDate: endDate) {
-                        self.circadianOpCompletion(sender: nil, pickerManager: pickerManager, error: $0)
+                        self.circadianOpCompletion(nil, pickerManager: pickerManager, error: $0)
                     }
                 }
                 alertController.addAction(cancelAction)

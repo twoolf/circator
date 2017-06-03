@@ -89,19 +89,8 @@
 	<array>
 		<string>gotham-book.ttf</string>
 	</array>
-	<key>UILaunchImages</key>
-	<array>
-		<dict>
-			<key>UILaunchImageName</key>
-			<string>LaunchImage_320by568@2x.png</string>
-			<key>UILaunchImageOrientation</key>
-			<string>Portrait</string>
-			<key>UILaunchImageSize</key>
-			<string>{320, 568}</string>
-			<key>UILaunchimageMinimumOSVersion</key>
-			<string>7.0</string>
-		</dict>
-	</array>
+	<key>UILaunchStoryboardName</key>
+	<string>DashboardFilterHeaderView</string>
 	<key>UIRequiredDeviceCapabilities</key>
 	<array>
 		<string>armv7</string>

@@ -144,7 +144,7 @@ class UserInfoModel: NSObject {
             }
         }
 
-//        log.info("PROFILE ITEMS \(heightInchesComponent) \(profile[heightField.name]) \(profile[weightField.name])")
+        log.info("PROFILE ITEMS \(heightInchesComponent) \(profile[heightField.name]) \(profile[weightField.name])")
 
         return profile
     }
@@ -190,14 +190,14 @@ class UserInfoModel: NSObject {
     }
 
     func unitsDependedItemsIndexes() -> [NSIndexPath] {
-        var indexes = [NSIndexPath]()
+        let indexes = [NSIndexPath]()
 
         let weightIndex = items.index(of: weightField)
 //        indexes.append(IndexPath(forRow: weightIndex!, inSection: 0))
 //        indexes.append(IndexPath(forRow: weightIndex!))
 //        indexes.append(indexes)
 
-        let heightIndex = items.index(of: heightField)
+        _ = items.index(of: heightField)
 //        indexes.append(IndexPath(forRow: heightIndex!, inSection: 0))
 //        indexes.append(IndexPath(forRow: heightIndex!))
 //        indexes.append(indexes)
@@ -376,7 +376,7 @@ class UserInfoModel: NSObject {
         let minWeightInUserUnits = self.units == .Metric ? minWeight : minWeightImp
         let maxWeightInUserUnits = self.units == .Metric ? maxWeight : maxWeightImp
 
-//        log.info("VALIDATING WEIGHT \(weight) \(minWeightInUserUnits) \(maxWeightInUserUnits)")
+        log.info("VALIDATING WEIGHT \(weight) \(minWeightInUserUnits) \(maxWeightInUserUnits)")
         let isValid = isRequiredFloatValidInRange(value: weight, minValue: minWeightInUserUnits, maxValue: maxWeightInUserUnits)
 
         if !isValid {
@@ -399,7 +399,7 @@ class UserInfoModel: NSObject {
         var heightWithInches = height ?? 0.0
         if units == .Imperial { heightWithInches += Float(heightInches ?? 0) / 12.0 }
 
-//        log.info("VALIDATING HEIGHT \(heightWithInches) \(minHeightInUserUnits) \(maxHeightInUserUnits)")
+        log.info("VALIDATING HEIGHT \(heightWithInches) \(minHeightInUserUnits) \(maxHeightInUserUnits)")
         let isValid = isRequiredFloatValidInRange(value: heightWithInches, minValue: minHeightInUserUnits, maxValue: maxHeightInUserUnits)
 
         if !isValid {

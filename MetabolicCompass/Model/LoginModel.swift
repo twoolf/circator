@@ -18,7 +18,7 @@ class LoginModel : NSObject, UITableViewDataSource, UITextFieldDelegate {
 
     // MARK: - UITableViewDataSource
 
-    func numberOfSectionsInTableView(tableView: UITableView) -> Int {
+    func numberOfSections(in tableView: UITableView) -> Int {
         return 1
     }
 
@@ -26,8 +26,10 @@ class LoginModel : NSObject, UITableViewDataSource, UITextFieldDelegate {
         return 2
     }
 
+//    func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+//        let cell = tableView.dequeueReusableCell(withIdentifier: String(describing: InputTableCellWithImage()), for: indexPath as IndexPath) as! InputTableCellWithImage
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        let cell = tableView.dequeueReusableCell(withIdentifier: String(describing: InputTableCellWithImage()), for: indexPath as IndexPath) as! InputTableCellWithImage
+        let cell = tableView.dequeueReusableCell(withIdentifier: String(describing: InputTableCellWithImage()), for: indexPath) as! InputTableCellWithImage
         cell.cellInput.delegate = self
         cell.cellInput.tag = indexPath.row
         cell.cellInput.textColor = ScreenManager.sharedInstance.appBrightTextColor()
@@ -35,7 +37,6 @@ class LoginModel : NSObject, UITableViewDataSource, UITextFieldDelegate {
         if indexPath.row == 1 {
             cell.cellImage.image = UIImage(named: "icon-password")
             cell.cellInput.attributedPlaceholder = NSAttributedString(string: "Password", attributes: [NSForegroundColorAttributeName : ScreenManager.sharedInstance.appUnBrightTextColor()])
-//            cell.cellInput.secureTextEntry = true
             cell.cellInput.isSecureTextEntry = true
         } else {
             cell.cellImage.image = UIImage(named: "icon-email")
@@ -48,7 +49,7 @@ class LoginModel : NSObject, UITableViewDataSource, UITextFieldDelegate {
 
     // MARK: - UITextFieldDelegate
 
-    func textFieldShouldReturn(textField: UITextField) -> Bool {
+    internal func textFieldShouldReturn(_ textField: UITextField) -> Bool {
         textField.resignFirstResponder()
         return true
     }

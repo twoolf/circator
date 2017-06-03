@@ -26,13 +26,13 @@ class TwoLineCorrelcationCell: LineChartCollectionCell {
             topLimit.lineWidth = 1
             topLimit.lineDashLengths = [3.0, 3.0]
             topLimit.lineColor = UIColor.colorWithHexString(rgb: "#338aff", alpha: 0.4)!
-            rightAxis.axisMaxValue = topLimitMax
+            rightAxis.axisMaximum = topLimitMax
             let minMultiplier = minOffsetFactor ?? 1.3
-            rightAxis.axisMinValue = minValue - (minMultiplier == 0 ? 0.0 : minValue * minMultiplier)
+            rightAxis.axisMinimum = minValue - (minMultiplier == 0 ? 0.0 : minValue * minMultiplier)
             rightAxis.addLimitLine(topLimit)
 
-            secondaryChartMinValueLabel.text = String(format:"%.0f", rightAxis.axisMinValue)
-            secondaryChartMaxValueLabel.text = String(format:"%.0f", rightAxis.axisMaxValue)
+            secondaryChartMinValueLabel.text = String(format:"%.0f", rightAxis.axisMinimum)
+            secondaryChartMaxValueLabel.text = String(format:"%.0f", rightAxis.axisMaximum)
         }
     }
 

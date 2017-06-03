@@ -90,7 +90,7 @@ class DailyProgressViewController : UIViewController, DailyChartModelProtocol {
         self.dailyProgressChartView.changeColorCompletion = { _ in
             Async.main {
                 self.updateContentWithAnimation = false
-//                self.dailyChartModel.toggleHighlightFasting()
+                self.dailyChartModel.toggleHighlightFasting()
                 if self.dailyChartModel.highlightFasting {
                     self.fastingSquare.backgroundColor  = MetabolicDailyProgressChartView.highlightFastingColor
                     self.sleepSquare.backgroundColor    = MetabolicDailyProgressChartView.mutedSleepColor

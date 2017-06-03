@@ -270,7 +270,7 @@ class QueryBuilderViewController: UIViewController, UITextFieldDelegate {
         ])
     }
 
-    func addPredicate(sender: UIButton) {
+    func addPredicate(_ sender: UIButton) {
         if ( !(lowerBound == nil && upperBound == nil) ) {
 
             // TODO: meal/activity info based on attribute information.
@@ -297,7 +297,7 @@ class QueryBuilderViewController: UIViewController, UITextFieldDelegate {
     }
 
     // TODO: Yanif: creation and editing of start/end times and columns to fetch
-    func saveQuery(sender: UIButton) {
+    func saveQuery(_ sender: UIButton) {
         switch buildMode! {
         case .Creating:
             QueryManager.sharedManager.addQuery(name: self.queryName, query: Query.ConjunctiveQuery(nil, nil, nil, dataTableView.predicates))
@@ -333,7 +333,7 @@ class PredicateTableView : UITableView, UITableViewDelegate, UITableViewDataSour
         return predicates.count
     }
 
-    func tableView(tableView: UITableView, titleForHeaderInSection section: Int) -> String? {
+    internal func tableView(_ tableView: UITableView, titleForHeaderInSection section: Int) -> String? {
         return "Predicates"
     }
 
@@ -349,13 +349,13 @@ class PredicateTableView : UITableView, UITableViewDelegate, UITableViewDataSour
         var celltxt = "<invalid>"
         if let lbstr = lb {
             if let ubstr = ub {
-                celltxt = "\(lbstr) <= \(aggstr)(\(attrstr)) <= \(ubstr)"
+                celltxt = "\(lbstr) <= \(aggstr)(\(attrstr ?? (no_argument as AnyObject) as! String)) <= \(ubstr)"
             } else {
-                celltxt = "\(lbstr) <= \(aggstr)(\(attrstr))"
+                celltxt = "\(lbstr) <= \(aggstr)(\(attrstr ?? (no_argument as AnyObject) as! String))"
             }
         } else {
             if let ubstr = ub {
-                celltxt = "\(aggstr)(\(attrstr)) <= \(ubstr)"
+                celltxt = "\(aggstr)(\(attrstr ?? (no_argument as AnyObject) as! String)) <= \(ubstr)"
             }
         }
 
@@ -379,7 +379,7 @@ class PredicateTableView : UITableView, UITableViewDelegate, UITableViewDataSour
         return cell
     }
 
-    func tableView(tableView: UITableView, willDisplayHeaderView view: UIView, forSection section: Int) {
+    internal func tableView(_ tableView: UITableView, willDisplayHeaderView view: UIView, forSection section: Int) {
         let header: UITableViewHeaderFooterView = view as! UITableViewHeaderFooterView
         header.contentView.backgroundColor = Theme.universityDarkTheme.backgroundColor
         header.textLabel?.textColor = UIColor.white

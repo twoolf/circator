@@ -152,7 +152,8 @@ open class DailyChartModel : NSObject, UITableViewDataSource {
         var dateComponents = DateComponents()
         for _ in 0...6 {
             let date = calendar!.date(from: dateComponents)
-            dateComponents.day = dateComponents.day! - 1;
+ //           dateComponents.day = dateComponents.day - 1;
+            dateComponents.day = 1
             if let date = date {
                 lastSevenDays.append(date)
             }
@@ -282,7 +283,7 @@ open class DailyChartModel : NSObject, UITableViewDataSource {
                                 dayEvents.append(eventDuration)
                                 dayColors.append(self.getColorForEventType(eventType: eventType))
                             } else {
-//                                log.warning("DCM NO PREV on \(intervals)")
+                                log.warning("DCM NO PREV on \(intervals)")
                             }
                             break
                         }
@@ -317,7 +318,7 @@ open class DailyChartModel : NSObject, UITableViewDataSource {
             MCHealthManager.sharedManager.fetchCircadianEventIntervals(startDate) { (intervals, error) -> Void in
                 Async.main {
                     guard error == nil else {
-//                        log.error("Failed to fetch circadian events: \(error)")
+                        log.error("Failed to fetch circadian events: \(error ?? (no_argument as AnyObject) as! Error)")
                         return
                     }
                     if intervals.isEmpty {
@@ -458,9 +459,9 @@ open class DailyChartModel : NSObject, UITableViewDataSource {
                             self.eatingText = eatingTime.string(format: DateFormat.custom("HH 'h' mm 'm'"))
                         }
 
-                        var fastingHrs = Int(floor(stats.2))
+                        let fastingHrs = Int(floor(stats.2))
                         let fastingMins = (today + Int(round((stats.2) * 60.0)).minutes).string(format: DateFormat.custom("mm"))
-                        var fastingHrsStr = "\(fastingHrs) h \(fastingMins) m"
+                        _ = "\(fastingHrs) h \(fastingMins) m"
 
                         if let lastAte = lastAte {
 //                            let components = DateComponents(calendar: lastAte)

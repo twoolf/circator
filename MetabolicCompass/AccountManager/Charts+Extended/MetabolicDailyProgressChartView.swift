@@ -50,7 +50,7 @@ class MetabolicDailyProgressChartView : HorizontalBarChartView, DailyChartModelP
     }
     
     func prepareChart () {
-        self.descriptionText = ""
+        self.chartDescription?.text = ""
         self.drawValueAboveBarEnabled = true
         self.drawBarShadowEnabled = false
         self.scaleYEnabled = false
@@ -67,8 +67,8 @@ class MetabolicDailyProgressChartView : HorizontalBarChartView, DailyChartModelP
         
         let leftAxis = self.leftAxis;
         leftAxis.enabled = false
-        leftAxis.axisMinValue = 0.0
-        leftAxis.axisMaxValue = 24.0
+        leftAxis.axisMinimum = 0.0
+        leftAxis.axisMaximum = 24.0
         
         let formatter = NumberFormatter()
         formatter.positiveFormat = "#"
@@ -81,8 +81,8 @@ class MetabolicDailyProgressChartView : HorizontalBarChartView, DailyChartModelP
         rightAxis.drawGridLinesEnabled = true
 //        rightAxis.valueFormatter = formatter
 //        rightAxis.valueFormatter = formatter
-        rightAxis.axisMinValue = 0.0
-        rightAxis.axisMaxValue = 24.0
+        rightAxis.axisMinimum = 0.0
+        rightAxis.axisMaximum = 24.0
         rightAxis.gridLineWidth = 1
         rightAxis.gridLineDashPhase = 1
         rightAxis.gridLineDashLengths = [3.0]
@@ -118,9 +118,9 @@ class MetabolicDailyProgressChartView : HorizontalBarChartView, DailyChartModelP
 
     func updateChartData (animate: Bool = true, valuesAndColors: [Date: [(Double, UIColor)]]) {
         //days
-        let days = ["", "", "", "", "", "", ""]
-        var dataSetArray: [BarChartDataSet] = []
-        for (index, daysData) in valuesAndColors.sorted(by: { $0.0.0 < $0.1.0 }).enumerated() {
+//        let days = ["", "", "", "", "", "", ""]
+        var _: [BarChartDataSet] = []
+        for (_, _) in valuesAndColors.sorted(by: { $0.0.0 < $0.1.0 }).enumerated() {
 //            let entry = BarChartDataEntry.init(values: daysData.1.map { $0.0 }, xIndex: index)
 //            let set = BarChartDataSet.init(values: [entry], label: nil)
 //            set.barSpace = 55
@@ -135,12 +135,12 @@ class MetabolicDailyProgressChartView : HorizontalBarChartView, DailyChartModelP
 
         let labelsInHours: Int = 2
         let maxZoomWidthInHours: CGFloat = 2.0
-        let zoomFactor: CGFloat = 24.0 / maxZoomWidthInHours
+        let _: CGFloat = 24.0 / maxZoomWidthInHours
 
         let rightAxis = self.rightAxis
-        rightAxis.axisMinValue = max(0.0, self.data!.yMin - 1.0)
-        rightAxis.axisMaxValue = min(24.0, self.data!.yMax + 1.0)
-        rightAxis.labelCount = Int(rightAxis.axisMaxValue - rightAxis.axisMinValue) / labelsInHours
+        rightAxis.axisMinimum = max(0.0, self.data!.yMin - 1.0)
+        rightAxis.axisMaximum = min(24.0, self.data!.yMax + 1.0)
+        rightAxis.labelCount = Int(rightAxis.axisMaximum - rightAxis.axisMinimum) / labelsInHours
         if animate { self.animate(yAxisDuration: 1.0) }
 
 //        self.setVisibleXRange(minXRange: CGFloat(self.xAxis.axisRange/zoomFactor), maxXRange: CGFloat(self.xAxis.axisRange))

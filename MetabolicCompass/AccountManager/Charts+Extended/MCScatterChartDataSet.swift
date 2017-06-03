@@ -20,16 +20,16 @@ class MCScatterChartDataSet: ScatterChartDataSet {
     required init() {
         super.init()
     }
-    
-/*    override internal var yMin: Double {
+ 
+    override internal var yMin: Double {
         get {
-            var entryValues: [ScatterChartData] = []
-            for dataEntry in entryValues {
-                let entry = dataEntry
-                if let values = entry., values.count > 0 {
+            var entryValues: [Double] = []
+            for dataEntry in self.values {
+                let entry = dataEntry as? BarChartDataEntry
+                if let values = entry?.yValues, values.count > 0 {
                     entryValues += values
                 } else {
-                    entryValues.append(dataEntry.value)
+                    entryValues.append(dataEntry.y)
                 }
             }
             if entryValues.count > 0 {
@@ -39,15 +39,16 @@ class MCScatterChartDataSet: ScatterChartDataSet {
         }
     }
     
+
     override internal var yMax: Double {
         get {
             var entryValues: [Double] = []
-            for dataEntry in self.yVals {
+            for dataEntry in self.values {
                 let entry = dataEntry as? BarChartDataEntry
-                if let values = entry?.values, values.count > 0 {
+                if let values = entry?.yValues, values.count > 0 {
                     entryValues += values
                 } else {
-                    entryValues.append(dataEntry.value)
+                    entryValues.append(dataEntry.y)
                 }
             }
             if entryValues.count > 0 {
@@ -55,7 +56,8 @@ class MCScatterChartDataSet: ScatterChartDataSet {
             }
             return 0.0
         }
-    } */
+    }
+    
     
     override init(values yVals: [ChartDataEntry]?, label: String?) {
         super.init(values: yVals, label: label)
@@ -66,14 +68,16 @@ class MCScatterChartDataSet: ScatterChartDataSet {
     var dataSetType: DataSetType = .HeartRate {
         didSet {
             switch self.dataSetType {
-//                case .BloodPressureTop:
+                case .BloodPressureTop:
 //                    self.scatterShape = .Custom
-//                    self.customScatterShape = topBloodPressurePath()
-//                case .BloodPressureBottom:
+ //                   self.customScatterShape = topBloodPressurePath()
+                    self.scatterShapeSize = 3.0
+                case .BloodPressureBottom:
 //                    self.scatterShape = .Custom
-//                    self.customScatterShape = bottomBloodPressurePath()
+ //                   self.customScatterShape = bottomBloodPressurePath()
+                    self.scatterShapeSize = 9.0
                 default:
-//                    self.scatterShape = .Circle
+ //                   self.scatterShape = .Circle
                     self.scatterShapeSize = 6.0
                     self.scatterShapeHoleRadius = self.scatterShapeSize/4.0
                 }

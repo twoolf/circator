@@ -300,7 +300,8 @@ class RadarViewController : UIViewController, ChartViewDelegate {
         
         let xVals = sampleTypes.map { type in return HMConstants.sharedInstance.healthKitShortNames[type.identifier]! }
 
-//        let data = RadarChartDataEntry(xValues: Double(xVals), data: [indDataSet, popDataSet])
+//        let data = RadarChartDataEntry(value: Double(xVals), data: [indDataSet, popDataSet])
+//        let data = RadarChartDataEntry(value: 1.0, data: [indDataSet, popDataSet])
 //        data.setDrawValues(false)
 //        radarChart.data = data
 

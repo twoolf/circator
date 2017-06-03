@@ -34,7 +34,7 @@ class ForgotPasswordViewController: BaseViewController, UITextFieldDelegate {
     private let resetPasswordErrorGeneralMessage = "Reset Password error occurs. Please, try later.".localized
     private let resetPasswordSuccessMessage = "If an account exists for the email provided, you will receive a reset email soon.".localized
 
-    @IBAction func resetAction(sender: UIButton) {
+    @IBAction func resetAction(_ sender: UIButton) {
 
         startAction()
 
@@ -79,13 +79,13 @@ class ForgotPasswordViewController: BaseViewController, UITextFieldDelegate {
 
     }
 
-    @IBAction func backToLoginAction(sender: UIButton) {
+    @IBAction func backToLoginAction(_ sender: UIButton) {
         self.navigationController?.popViewController(animated: true)
     }
 
     // MARK: - TextField Delegate
 
-    func textFieldShouldReturn(textField: UITextField) -> Bool {
+    internal func textFieldShouldReturn(_ textField: UITextField) -> Bool {
         textField.resignFirstResponder()
         return true
     }

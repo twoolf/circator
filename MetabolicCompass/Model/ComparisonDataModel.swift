@@ -19,12 +19,12 @@ public class ComparisonDataModel : NSObject {
     public var recentSamples: [HKSampleType: [MCSample]] = [:]
     public var recentAggregates: [HKSampleType: [MCSample]] = [:]
 
-    public func updateIndividualData(types: [HKSampleType], completion: @escaping (NSError?) -> Void) {
+    public func updateIndividualData(types: [HKSampleType], completion: @escaping (Error?) -> Void) {
         AccountManager.shared.withHKCalAuth {
-//            log.debug("Fetching recent samples", feature: "comparison")
+            log.debug("Fetching recent samples", feature: "comparison")
             MCHealthManager.sharedManager.fetchMostRecentSamples(ofTypes: types) { (samplesByType, error) -> Void in
                 guard error == nil else { completion(error); return }
-//                log.debug("Done fetching recent samples", feature: "comparison")
+                log.debug("Done fetching recent samples", feature: "comparison")
                 self.recentSamples = samplesByType
                 NotificationCenter.default.post(name: NSNotification.Name(rawValue: HMDidUpdateRecentSamplesNotification), object: self)
                 completion(error)

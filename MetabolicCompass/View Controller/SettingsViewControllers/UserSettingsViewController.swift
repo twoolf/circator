@@ -162,11 +162,11 @@ class UserSettingsViewController: BaseViewController {
         NotificationCenter.default.post(name: NSNotification.Name(rawValue: USNDidUpdateBlackoutNotification), object: nil)
     }
 
-    func rightAction(sender: UIBarButtonItem) {
+    func rightAction(_ sender: UIBarButtonItem) {
         doSave()
     }
 
-    func leftAction(sender: UIBarButtonItem) {
+    func leftAction(_ sender: UIBarButtonItem) {
         if dataChanged() {
             let lsConfirmTitle = "Confirm cancel".localized
             let lsConfirmMessage = "Your changes have not been saved yet. Continue without saving?".localized
@@ -393,7 +393,7 @@ class UserSettingsViewController: BaseViewController {
         }
     }
 
-    func refreshRemoteLogConfig(sender: UIButton) {
+    func refreshRemoteLogConfig(_ sender: UIButton) {
 /*        if RemoteLogManager.sharedManager.log.remote() {
             log.info("RemoteLogManager reconfiguring...")
             RemoteLogManager.sharedManager.reconfigure { success in

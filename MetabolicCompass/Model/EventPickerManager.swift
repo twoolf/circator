@@ -15,12 +15,7 @@ import UIKit
  */
 //class EventPickerManager: NSObject, UIPickerViewDataSource, UIPickerViewDelegate {
 class EventPickerManager: NSObject, UIPickerViewDataSource {
-    @available(iOS 2.0, *)
-//    public func numberOfComponents(in pickerView: UIPickerView) -> Int {
-//        return 5
-//    }
 
-    
     enum Event {
         case Meal
         case Sleep
@@ -37,7 +32,7 @@ class EventPickerManager: NSObject, UIPickerViewDataSource {
     lazy var pickerView: UIPickerView = {
         let view = UIPickerView()
         view.dataSource = self
-//        view.delegate = self
+        view.delegate = self as! UIPickerViewDelegate
         return view
     }()
     
@@ -45,7 +40,7 @@ class EventPickerManager: NSObject, UIPickerViewDataSource {
     public func pickerView(_ pickerView: UIPickerView, widthForComponent component: Int) -> CGFloat {
         let view = UIPickerView()
         view.dataSource = self
-//        view.delegate = self
+        view.delegate = self as! UIPickerViewDelegate
         return view.alpha
     }
     
@@ -61,7 +56,7 @@ class EventPickerManager: NSObject, UIPickerViewDataSource {
     
     @available(iOS 6.0, *)
     public func pickerView(_ pickerView: UIPickerView, attributedTitleForRow row: Int, forComponent component: Int) -> NSAttributedString? {
-        return "NSAttributedstring" as! NSAttributedString
+        return ("NSAttributedstring" as! NSAttributedString)
     }
     
     @available(iOS 2.0, *)

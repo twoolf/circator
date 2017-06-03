@@ -26,7 +26,7 @@ public class ScreenManager {
     public class var scaleFactor:CGFloat {
         if _scaleFactor == nil{
            _scaleFactor = UIScreen.main.bounds.width / ScreenManager.baseScreenWidth
-           print("scaleFactor:\(_scaleFactor)")
+           print("scaleFactor:\(_scaleFactor ?? no_argument as AnyObject as! CGFloat)")
         }
         return _scaleFactor!
     }

@@ -59,7 +59,7 @@ class PhysiologicalDataViewController: BaseViewController {
         leftButton = createBarButtonItem(title: lsCancelTitle, action: #selector(leftAction))
     }
 
-    func rightAction(sender: UIBarButtonItem) {
+    func rightAction(_ sender: UIBarButtonItem) {
         if dataSource.editMode {
             dataSource.model.additionalInfoDict { (error, additionalInfo) in
                 guard error == nil else {
@@ -75,7 +75,7 @@ class PhysiologicalDataViewController: BaseViewController {
         }
     }
 
-    func leftAction(sender: UIBarButtonItem) {
+    func leftAction(_ sender: UIBarButtonItem) {
         let lsConfirmTitle = "Confirm cancel".localized
         let lsConfirmMessage = "Your changes have not been saved yet. Exit without saving?".localized
         let confirmAlert = UIAlertController(title: lsConfirmTitle, message: lsConfirmMessage, preferredStyle: UIAlertControllerStyle.alert)

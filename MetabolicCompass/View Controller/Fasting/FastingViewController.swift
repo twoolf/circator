@@ -408,7 +408,7 @@ public class FastingViewController : UIViewController, ChartViewDelegate {
         let smallFont = UIFont.systemFont(ofSize: 14, weight: UIFontWeightRegular)
 
 //        let cString = typeIdentifier + "\n\(String(format: "%.1f%%", Double(entry.value) * 100.0))"
-        let attrs : [String: AnyObject] = [
+        let _ : [String: AnyObject] = [
             NSFontAttributeName: numberFont,
             NSForegroundColorAttributeName: UIColor.white
         ]

@@ -95,7 +95,7 @@ class DashboardManageBalanceController: UIViewController, UITableViewDelegate, U
     } */
     
     //MARK: Actions
-    @IBAction func onClose(sender: AnyObject) {
+    @IBAction func onClose(_ sender: AnyObject) {
         self.dismiss(animated: true, completion: nil)
         save()
     }
@@ -123,7 +123,7 @@ class DashboardManageBalanceController: UIViewController, UITableViewDelegate, U
     
     //MARK: UITableViewDelegate
     
-    func tableView(tableView: UITableView, didSelectRowAtIndexPath indexPath: NSIndexPath) {
+    private func tableView(_ tableView: UITableView, didSelectRowAtIndexPath indexPath: NSIndexPath) {
         let selectedCell = tableView.cellForRow(at: indexPath as IndexPath) as! ManageBalanceCell
         self.selectController.selectdType = selectedCell.data.object
         self.selectController.parentCell  = selectedCell
