@@ -46,7 +46,7 @@ public let UMDidLogoutNotification = "didLogoutNotification"
 // Error generators.
 // These are public to allow other components to recreate and check error messages.
 public let UMPushInvalidBinaryFileError : (AccountComponent, String?) -> String = { (component, path) in
-    return "Invalid \(component) file at: \(path)"
+    return "Invalid \(component) file at: \(String(describing: path))"
 }
 
 public let UMPushReadBinaryFileError : (AccountComponent, String) -> String = { (component, path) in
@@ -61,18 +61,12 @@ public let UMPullMultipleComponentsError : ([String]) -> String = { components i
 public let UMPullComponentErrorAsArray : (String) -> [AccountComponent] = { errorMsg in
     let prefix = "Failed to pull account components "
     var result : [AccountComponent] = []
-//    if errorMsg.hasPrefix(prefix) {
-//        let componentsStr = errorMsg.substringFromIndex(errorMsg.startIndex.advancedBy(prefix.characters.count - 1))
-//        let componentsStr = errorMsg(
-//        result = componentsStr.componentsSeparatedByString(",").flatMap(getComponentByName)
-//        let componentsStr = errorMsg.substringFromIndex(errorMsg.startIndex.advancedBy(prefix.characters.count - 1))
-//        let componentsStr = errorMsg.
-//        result = componentsStr.componentsSeparatedByString(",").flatMap(getComponentByName)
-//        result = ["needs to be fixed"]
-//        let componentsStr = errorMsg.substringFromIndex(errorMsg.startIndex.advancedBy(prefix.characters.count - 1))
-//        let componentsStr = errorMsg.substring(from: componentsStr.characters.count)
-//        result = componentsStr.componentsSeparatedByString(",").flatMap(getComponentByName)
-//    }
+    if errorMsg.hasPrefix(prefix) {
+        let intOffSet = prefix.characters.count - 1
+        let indexString = errorMsg.index(errorMsg.startIndex, offsetBy: intOffSet)
+        let componentsStr = errorMsg.substring(from: indexString)
+        result = componentsStr.components(separatedBy: ",").flatMap(getComponentByName)
+    }
     return result
 }
 
@@ -230,10 +224,13 @@ public class UserManager {
     ]
 
     // Custom component update task queue
-    let componentUpdateQueue = DispatchQueue(label:"UserManangerUpdateQueue", attributes: .concurrent)
+    var componentUpdateQueue = DispatchQueue(label:"UserManangerUpdateQueue", attributes: .concurrent)
 
     init() {
         StormpathConfiguration.defaultConfiguration.APIURL = MCRouter.baseURL as URL
+        self.componentUpdateQueue = DispatchQueue(label: "UserManangerUpdateQueue")
+//        self.serialQueue = DispatchQueue(label: "UserManangerUpdateQueue")
+//        self.componentUpdateQueue = dispatch_queue_create("UserManangerUpdateQueue", DISPATCH_QUEUE_SERIAL)
 //        self.componentUpdateQueue.async {
 //            StormpathConfiguration.defaultConfiguration.APIURL = MCRouter.baseURL as URL
 //        }
@@ -314,7 +311,7 @@ public class UserManager {
                     log.error("setAccountData: \(error)")
                 }
             } else {
-                print("\(Locksmith.loadDataForUserAccount(userAccount: user))")
+                print("\(String(describing: Locksmith.loadDataForUserAccount(userAccount: user)))")
             }
         }
     }
@@ -1108,16 +1105,16 @@ public class UserManager {
         syncAccountComponent(component: .LastAcquired, completion: completion)
     }
 
-    public func setAcquisitionSeq(seqs: [String: AnyObject], sync: Bool = false) {
+    public func setAcquisitionSeq(_ seqs: [String: AnyObject], sync: Bool = false) {
         deferredPushOnAccountComponent(component: .LastAcquired, refresh: true, sync: sync, componentData: seqs)
     }
 
-    public func setAcquisitionSeq(typedSeqs: [HKSampleType: AnyObject], sync: Bool = false) {
+    public func setAcquisitionSeq(_ typedSeqs: [HKSampleType: AnyObject], sync: Bool = false) {
         var seqs: [String: AnyObject] = [:]
         for (type, seqData) in typedSeqs {
             seqs.updateValue(seqData, forKey: type.identifier)
         }
-//        setAcquisitionSeq(seqs, sync: sync)
+        setAcquisitionSeq(seqs, sync: sync)
 //        setAcquisitionSeq(seqs: seqs, sync: type.identifier)
     }
 

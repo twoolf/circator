@@ -51,11 +51,8 @@ class LoginViewController: BaseViewController {
         loginModel.loginTable = loginTable
         loginModel.controllerView = self.view
         loginTable.dataSource = loginModel
-//        loginTable.register(UITableViewCell(), forCellReuseIdentifier: String(describing:InputTableCellWithImage()))
-//        self.loginTable.register(loginModel.loginTable, forCellReuseIdentifier: String(describing: InputTableCellWithImage()))
-//        self.loginTable.register(<#T##nib: UINib?##UINib?#>, forCellReuseIdentifier: <#T##String#>)
-//        self.loginTable.register(loginTable.self, forCellReuseIdentifier: "cell")
         self.setupScrollViewForKeyboardsActions(view: containerScrollView)
+        modalPresentationCapturesStatusBarAppearance = true
     }
 
 
@@ -141,7 +138,7 @@ class LoginViewController: BaseViewController {
         }
     }
 
-    func doSignup(_ sender: UIButton) {
+    func doSignup(sender: UIButton) {
         let registerVC = RegisterViewController()
         registerVC.consentOnLoad = true
         self.navigationController?.pushViewController(registerVC, animated: true)

@@ -41,24 +41,24 @@ public class AdditionalInfoDataSource: BaseDataSource {
         collectionView?.register(physiologicalHeaderViewNib, forSupplementaryViewOfKind: UICollectionElementKindSectionHeader, withReuseIdentifier: "sectionHeaderView")
     }
 
-    internal func isSleepCellAtIndexPath(indexPath: NSIndexPath) -> Bool {
+    internal func isSleepCellAtIndexPath(indexPath: IndexPath) -> Bool {
         return indexPath.section == 0 && indexPath.row == 0
     }
 
     // MARK: - UICollectionView DataSource & Delegate
 
-    func numberOfSectionsInCollectionView(collectionView: UICollectionView) -> Int {
+    func numberOfSectionsInCollectionView(_ collectionView: UICollectionView) -> Int {
         return model.sections.count
     }
 
     override public func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        return model.numberOfItemsInSection(section: section)
+        return model.numberOfItemsInSection(section)
     }
 
     override public func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
-        let item = model.itemAtIndexPath(indexPath: indexPath as NSIndexPath)
+        let item = model.itemAtIndexPath(indexPath as IndexPath)
 
-        if isSleepCellAtIndexPath(indexPath: indexPath as NSIndexPath) {
+        if isSleepCellAtIndexPath(indexPath: indexPath as IndexPath) {
             // it is sleep cell
             let cell = collectionView.dequeueReusableCell(withReuseIdentifier: scrollSelectionCellIdentifier, for: indexPath as IndexPath) as! ScrollSelectionViewCell
 
@@ -77,12 +77,12 @@ public class AdditionalInfoDataSource: BaseDataSource {
                 cell.setSelectedValue(value: value)
             } else {
                 let defaultValue = 8
-                self.model.setNewValueForItem(atIndexPath: indexPath as NSIndexPath, newValue: defaultValue as AnyObject?)
+                self.model.setNewValueForItem(atIndexPath: indexPath as IndexPath, newValue: defaultValue as AnyObject?)
                 cell.setSelectedValue(value: defaultValue)
             }
             cell.changesHandler = { (cell: UICollectionViewCell, newValue: AnyObject?) -> () in
                 if let indexPath = self.collectionView!.indexPath(for: cell) {
-                    self.model.setNewValueForItem(atIndexPath: indexPath as NSIndexPath, newValue: newValue)
+                    self.model.setNewValueForItem(atIndexPath: indexPath as IndexPath, newValue: newValue)
                 }
             }
             return cell
@@ -133,7 +133,7 @@ public class AdditionalInfoDataSource: BaseDataSource {
 
         cell.changesHandler = { (cell: UICollectionViewCell, newValue: AnyObject?) -> () in
             if let indexPath = self.collectionView!.indexPath(for: cell) {
-                self.model.setNewValueForItem(atIndexPath: indexPath as NSIndexPath, newValue: newValue)
+                self.model.setNewValueForItem(atIndexPath: indexPath as IndexPath, newValue: newValue)
             }
         }
 
@@ -141,16 +141,16 @@ public class AdditionalInfoDataSource: BaseDataSource {
         return cell
     }
 
-    func collectionView(collectionView: UICollectionView, viewForSupplementaryElementOfKind kind: String, atIndexPath indexPath: NSIndexPath) -> UICollectionReusableView {
+    func collectionView(_ collectionView: UICollectionView, viewForSupplementaryElementOfKind kind: String, atIndexPath indexPath: IndexPath) -> UICollectionReusableView {
         if kind == UICollectionElementKindSectionHeader {
-            let headerView = collectionView.dequeueReusableSupplementaryView(ofKind: kind, withReuseIdentifier: "sectionHeaderView", for: indexPath as IndexPath) as! HeaderView
-            headerView.titleLbl.text = model.sectionTitleAtIndexPath(indexPath: indexPath)
+            let headerView = collectionView.dequeueReusableSupplementaryView(ofKind: kind, withReuseIdentifier: "sectionHeaderView", for: (indexPath as IndexPath) as IndexPath) as! HeaderView
+            headerView.titleLbl.text = model.sectionTitleAtIndexPath(indexPath as IndexPath)
             return headerView
         }
         return UICollectionReusableView()
     }
     
-    func collectionView(collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, referenceSizeForHeaderInSection section: Int) -> CGSize {
+    func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, referenceSizeForHeaderInSection section: Int) -> CGSize {
         return CGSize(collectionView.frame.width, 50)
     }
 
@@ -168,7 +168,7 @@ public class AdditionalInfoDataSource: BaseDataSource {
         return size
     }
 
-    func collectionView(collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAtIndexPath indexPath: NSIndexPath) -> CGSize {
+    func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAtIndexPath indexPath: IndexPath) -> CGSize {
         return isSleepCellAtIndexPath(indexPath: indexPath) ? intPickerCellSize() : defaultCellSize()
     }
 

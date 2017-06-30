@@ -45,7 +45,7 @@ class ExerciseStartTimeController: WKInterfaceController {
         exerciseStartTimeButton.setTitle("Saved")
         
         // setting up conversion of saved value from 'end of exercise' in 1st screen
-        let thisRegion = DateInRegion.self
+        _ = DateInRegion.self
         let calendar = Calendar.current
 //        var beginDate = Date.today(inRegion: thisRegion)
         var beginDate = Date()

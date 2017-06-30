@@ -34,7 +34,7 @@ class ChartCollectionDataSource: NSObject, UICollectionViewDataSource {
     public func numberOfSections(in collectionView: UICollectionView) -> Int{
         return 5
     }
-//    func collectionView(_ collectionView: UICollectionView, cellForItemAtIndexPath indexPath: NSIndexPath) -> UICollectionViewCell {
+
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         let cell: BaseChartCollectionCell
         
@@ -66,7 +66,7 @@ class ChartCollectionDataSource: NSObject, UICollectionViewDataSource {
 
     
 //    public func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
-    public func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> Void {
+    @nonobjc public func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> Void {
         let cell: BaseChartCollectionCell
         
         let type = data[indexPath.row]

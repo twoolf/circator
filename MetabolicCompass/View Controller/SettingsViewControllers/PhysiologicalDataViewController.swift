@@ -34,6 +34,7 @@ class PhysiologicalDataViewController: BaseViewController {
 
     override func viewDidLoad() {
         super.viewDidLoad()
+        self.view.layoutIfNeeded()
         dataSource.editMode = false
         setupScrollViewForKeyboardsActions(view: collectionView)
         dataSource.collectionView = self.collectionView
@@ -54,9 +55,9 @@ class PhysiologicalDataViewController: BaseViewController {
 //    }
 
     private func setupNavBar() {
-        rightButton = createBarButtonItem(title: lsEditTitle, action: #selector(rightAction))
+        rightButton = createBarButtonItem(lsEditTitle, action: #selector(self.rightAction))
         self.navigationItem.rightBarButtonItem = rightButton
-        leftButton = createBarButtonItem(title: lsCancelTitle, action: #selector(leftAction))
+        leftButton = createBarButtonItem(lsCancelTitle, action: #selector(self.leftAction))
     }
 
     func rightAction(_ sender: UIBarButtonItem) {

@@ -46,7 +46,7 @@ extension MetricDescriptions: NSCoding {
 extension MetricDescriptions {
     class func allMetrics() -> [MetricDescriptions] {
         guard let file = Bundle.main.path(forResource: "Metrics", ofType: "plist") else { return [] }
-        guard let metricStrings = NSArray(contentsOfFile: file) as? [String] else { return [] }
+        guard (NSArray(contentsOfFile: file) as? [String]) != nil else { return [] }
         let metrics = [MetricDescriptions(metric_name: "weight", HKSampleName: "HKSampleType", metric_units: "lbs")]
         /*        let metrics = metricStrings.map { s -> MetricDescriptions in
          let components = (s as NSString).componentsSeparatedByString(",")

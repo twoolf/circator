@@ -171,9 +171,9 @@ public class SampleFormatter: NSObject {
             guard diastolicSample != nil && systolicSample != nil else {
                 return emptyString
             }
-//            let diastolicNumber = SampleFormatter.integerFormatter.stringFromNumber(NSNumber(diastolicSample!.quantity.doubleValue(for: HKUnit.millimeterOfMercuryUnit())))!
-//            let systolicNumber = SampleFormatter.integerFormatter.stringFromNumber(NSNumber(systolicSample!.quantity.doubleValue(for: HKUnit.millimeterOfMercuryUnit())))!
-            return "\(systolicSample)/\(diastolicSample)"
+            let diastolicNumber = SampleFormatter.integerFormatter.string(from: NSNumber(value: diastolicSample!.quantity.doubleValue(for: HKUnit.millimeterOfMercury())))!
+            let systolicNumber = SampleFormatter.integerFormatter.string(from: NSNumber(value: systolicSample!.quantity.doubleValue(for: HKUnit.millimeterOfMercury())))!
+            return "\(systolicNumber)/\(diastolicNumber)"
 
         default:
             return emptyString
@@ -223,8 +223,8 @@ public class SampleFormatter: NSObject {
                         let systolicFromMatches = checkId == HKQuantityTypeIdentifier.bloodPressureSystolic.rawValue
                         let systolicValue = systolicFromMatches ? matches.last!.numeralValue! : fst.numeralValue!
                         let diastolicValue = systolicFromMatches ? fst.numeralValue! : matches.last!.numeralValue!
-//                        let systolicNumber = SampleFormatter.integerFormatter.stringFromNumber(NSNumber(systolicValue))!
-//                        let diastolicNumber = SampleFormatter.integerFormatter.stringFromNumber(NSNumber(diastolicValue))!
+                        _ = SampleFormatter.integerFormatter.string(from: NSNumber(value: systolicValue))!
+                        _ = SampleFormatter.integerFormatter.string(from: NSNumber(value: diastolicValue))!
                         return "\(systolicValue)/\(diastolicValue)"
                     }
                 }
@@ -259,8 +259,7 @@ public class SampleFormatter: NSObject {
     private func stringFromQuantity(quantity: HKQuantity, type: HKQuantityType) -> String {
         if let userUnit = UserManager.sharedManager.userUnitsForType(type: type) {
             let numericValue = quantity.doubleValue(for: userUnit)
-//            return stringFromNumberAndType(numericValue: numericValue, type: type)
-            return "fix"
+            return stringFromNumberAndType(numericValue: numericValue, type: type)
         }
         return emptyString
     }
@@ -275,15 +274,13 @@ public class SampleFormatter: NSObject {
     private func stringFromMCSample(sample: MCSample) -> String {
         if let type = sample.hkType, let quantity = sample.numeralValue, let userUnit = UserManager.sharedManager.userUnitsForType(type: type) {
             let convertedQuantity = HKQuantity(unit: type.defaultUnit!, doubleValue: quantity).doubleValue(for: userUnit)
-//            return stringFromNumberAndType(numericValue: convertedQuantity, type: type)
-            return "fix"
+            return stringFromNumberAndType(numericValue: convertedQuantity, type: type)
         }
         return emptyString
     }
 
-/*    private func stringFromNumberAndType(numericValue: Double, type: HKSampleType) -> String {
-//        if let fmtnum = SampleFormatter.numberFormatter.stringFromNumber(NSNumber(numericValue)) {
-        if let fmtnum = SampleFormatter.numberFormatter.string(from: (NSNumber(numericValue)) {
+    private func stringFromNumberAndType(numericValue: Double, type: HKSampleType) -> String {
+        if let fmtnum = SampleFormatter.numberFormatter.string(from: NSNumber(value: numericValue)) {
             switch type.identifier {
 
             case HKCategoryTypeIdentifier.sleepAnalysis.rawValue,
@@ -417,7 +414,7 @@ public class SampleFormatter: NSObject {
             }
         }
         return emptyString
-    } */
+    }
 }
 
 public class MetricSuffixFormatter: NSObject {

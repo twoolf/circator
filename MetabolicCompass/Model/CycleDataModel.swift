@@ -95,17 +95,10 @@ public class CycleDataModel : NSObject {
             fatalError("Unable to create CycleDataModel window cache.")
         }
         super.init()
-        NotificationCenter.default.addObserver(self, selector: #selector(invalidateActivityEntries), name: NSNotification.Name(rawValue: HMDidUpdateCircadianEvents), object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(self.invalidateActivityEntries), name: NSNotification.Name(rawValue: HMDidUpdateCircadianEvents), object: nil)
         MCHealthManager.sharedManager.measureInvalidationsByType.forEach {
-            NotificationCenter.default.addObserver(self, selector: #selector(invalidateMeasureEntries), name: (NSNotification.Name(rawValue: $0)), object: nil)
-//            NotificationCenter.defaultCenter.addObserver(self, selector: #selector(invalidateMeasureEntries), name: (HMDidUpdateMeasuresPfx! + $0), object: nil)
+            NotificationCenter.default.addObserver(self, selector: #selector(self.invalidateMeasureEntries), name: (NSNotification.Name(rawValue: HMDidUpdateMeasuresPfx + $0)), object: nil)
         }
-/*        NotificationCenter.default.addObserver(self, selector: #selector(invalidateActivityEntries), name: NSNotification.Name(rawValue: HMDidUpdateCircadianEvents), object: nil)
-//        MCHealthManager.sharedManager.measureInvalidationsByType.forEach {
-//        MCHealthManager.sharedManager.invalidateCacheForUpdates(<#T##type: HKSampleType##HKSampleType#>).forEach {
-        MCHealthManager.sharedManager.cache
-            NotificationCenter.defaultCenter().addObserver(self, selector: #selector(invalidateMeasureEntries), name: HMDidUpdateMeasuresPfx + $0, object: nil)
-        } */
     }
 
     public func updateData(completion: @escaping (Error?) -> Void) {
@@ -116,7 +109,7 @@ public class CycleDataModel : NSObject {
         let group = DispatchGroup()
 
         let initAcc: CycleAccum = (true, nil, [:])
-        let _: (CycleAccum) -> CycleWindows = { $0.2 }
+        let finalizer: (CycleAccum) -> CycleWindows = { $0.2 }
 
         let initWinAcc = [(0, 0.0, 0), (0, 0.0, 0), (0, 0.0, 0)]
 
@@ -133,7 +126,7 @@ public class CycleDataModel : NSObject {
             }
         }
 
-        let _ : (CycleAccum, (Date, CircadianEvent)) -> CycleAccum = { (acc, e) in
+        let activityAggregator : (CycleAccum, (Date, CircadianEvent)) -> CycleAccum = { (acc, e) in
             var (startOfInterval, eStart, windows) = acc
             if !startOfInterval && eStart != nil {
                 let evtIndex = eventIndex(e.1)
@@ -146,7 +139,6 @@ public class CycleDataModel : NSObject {
                     while eWindow < e.0 {
                         let st = firstStep ? eStart : eWindow
                         let nextWindow = eWindow + self.cycleWindowSize.seconds
-//                        let length = nextWindow < end ? nextWindow.timeIntervalSinceDate(st) : end.timeIntervalSinceDate(st)
                         let length = nextWindow < end ? nextWindow.timeIntervalSince(st!) : end.timeIntervalSince(st!)
 
                         let groupIndex = start + eWindow.hour.hours + eWindow.minute.minutes + eWindow.second.seconds
@@ -171,9 +163,9 @@ public class CycleDataModel : NSObject {
 
         // Retrieve activity entries from the cache.
         group.enter()
-//        cachedWindows.setObject(ForKey: WCActivityKey, cacheBlock: {
-/*        cachedWindows.setObject(cachedWindows{
-            (success, failure) in
+            
+        cachedWindows.setObject(forKey: WCActivityKey, cacheBlock: {
+            success, failure in
             MCHealthManager.sharedManager.fetchAggregatedCircadianEvents(
                 start, endDate: end, aggregator: activityAggregator, initialAccum: initAcc, initialResult: [:], final: finalizer)
             {
@@ -182,25 +174,25 @@ public class CycleDataModel : NSObject {
                     failure(error)
                     return
                 }
-                let (winEntries, winMeta, winColors) = self.getChartActivityEntries(start, endDate: end, windows: result)
-                success(CycleWindowInfo(entries: winEntries, metadata: winMeta, colors: winColors), .Seconds(self.cacheDuration))
+                let (winEntries, winMeta, winColors) = self.getChartActivityEntries(startDate: start, endDate: end, windows: result)
+                success(CycleWindowInfo(entries: winEntries, metadata: winMeta, colors: winColors), .seconds(self.cacheDuration))
             }
-        }, forKey: { (cachedVal, cacheHit, error) in
-                guard error == nil else {
-                    log.error(error!.localizedDescription)
-                    someError.append(error)
-                    dispatch_group_leave(group)
-                    return
+        }, completion: { (cachedVal, cacheHit, error) in
+            guard error == nil else {
+                log.error(error!.localizedDescription)
+                someError.append(error)
+                group.leave()
+                return
+            }
+            if let windows = cachedVal {
+                self.cycleSegments = zip(windows.winEntries, windows.winMetadata).enumerated().map {
+                    let entry = ChartDataEntry(x: $0.1.0, y: Double($0.0), data: $0.1.1)
+                    return (start + ($0.0 * self.cycleWindowSize).seconds, entry)
                 }
-                if let windows = cachedVal {
-                    self.cycleSegments = zip(windows.winEntries, windows.winMetadata).enumerate().map {
-                        let entry = ChartDataEntry(value: $0.1.0, xIndex: $0.0, data: $0.1.1)
-                        return (start + ($0.0 * self.cycleWindowSize).seconds, entry)
-                    }
-                    self.cycleColors = windows.winColors
-                }
-                dispatch_group_leave(group)
-        }) */
+                self.cycleColors = windows.winColors
+            }
+            group.leave()
+        })
 
         // Retrieve measure entries from the cache.
         let hrType = HKSampleType.quantityType(forIdentifier: HKQuantityTypeIdentifier.heartRate)!
@@ -245,18 +237,26 @@ public class CycleDataModel : NSObject {
             })
         }
 
-//        dispatch_group_notify(group, DispatchQueue.global(DispatchQueue.GlobalQueuePriority.background, 0)) {
-//        DispatchGroup.notify(group, DispatchQueue.global()) {
-//        let queue:DispatchQueue	= DispatchQueue.global(attributes: DispatchQueue.GlobalAttributes.qosDefault)
-//        let group:DispatchGroup	= DispatchGroup()
-//        DispatchGroup.notify(queue: DispatchQueue.global()) {
-/*        DispatchGroup.notify(queue: ) {
+        group.notify(queue: DispatchQueue.global(qos: .background)) {
             guard someError.count == 0 else {
                 completion(someError[0])
                 return
             }
             completion(nil)
-        } */
+        }
+        
+//        dispatch_group_notify(group, DispatchQueue.global(DispatchQueue.GlobalQueuePriority.background, 0)) {
+//        DispatchGroup.notify(group, DispatchQueue.global()) {
+//        let queue:DispatchQueue	= DispatchQueue.global(attributes: DispatchQueue.GlobalAttributes.qosDefault)
+//        let group:DispatchGroup	= DispatchGroup()
+//        DispatchGroup.notify(queue: DispatchQueue.global()) {
+ /*       DispatchGroup().notify(qos: DispatchQoS.background, queue: DispatchQueue.main) {
+            guard someError.count == 0 else {
+                completion(someError[0])
+                return
+            }
+            completion(nil)
+        }*/
     }
 
     // Create colors by composing each event type color component, normalized to window length * max count

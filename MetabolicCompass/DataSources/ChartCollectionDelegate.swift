@@ -10,17 +10,17 @@ import Foundation
 import UIKit
 
 class ChartCollectionDelegate: NSObject, UICollectionViewDelegateFlowLayout, UICollectionViewDelegate {
-    private func collectionView(collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAtIndexPath indexPath: NSIndexPath) -> CGSize {
+    internal func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
 //        return CGSize(collectionView.frame.widthCGRectGetWidth(collectionView.frame) - 20.0, 196)
 //        return CGRect(collectionView(collectionView: collectionView, layout: collectionView.frame, sizeForItemAtIndexPath: (-200, 196))
         return CGSize(dictionaryRepresentation: collectionView.frame.width as! CFDictionary)!
     }
     
-    private func collectionView(collectionView: UICollectionView, canFocusItemAtIndexPath indexPath: NSIndexPath) -> Bool {
+    @nonobjc internal func collectionView(_ collectionView: UICollectionView, canFocusItemAtIndexPath indexPath: IndexPath) -> Bool {
         return false
     }
     
-    private func collectionView(collectionView: UICollectionView, shouldSelectItemAtIndexPath indexPath: NSIndexPath) -> Bool {
+    @nonobjc internal func collectionView(_ collectionView: UICollectionView, shouldSelectItemAtIndexPath indexPath: IndexPath) -> Bool {
         return false
     }
 }

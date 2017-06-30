@@ -213,6 +213,7 @@ public class SlideButtonArray: UIView, SlideButtonArrayDelegate {
                 self.pickers[prevActiveButtonIndex].layer.opacity = 0.0
             }
             self.layoutIfNeeded()
+            self.setNeedsLayout()
         })
     }
 
@@ -244,6 +245,7 @@ public class SlideButtonArray: UIView, SlideButtonArrayDelegate {
                 self.buttons.enumerated().forEach { if $0.0 != self.activeButtonIndex { $0.1.layer.opacity = 0.0 } }
                 self.pickers[self.activeButtonIndex].layer.opacity = 1.0
                 self.layoutIfNeeded()
+                self.setNeedsLayout()
             })
         }
 

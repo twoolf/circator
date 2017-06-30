@@ -51,14 +51,14 @@ class IntroInterfaceController: WKInterfaceController, WCSessionDelegate  {
         }
     }
     
-    func session(session: WCSession, didReceiveApplicationContext applicationContext: [String : AnyObject]) {
+    private func session(session: WCSession, didReceiveApplicationContext applicationContext: [String : AnyObject]) {
         let displayDate = (applicationContext["dateKey"] as? String)
         
         let defaults = UserDefaults.standard
         defaults.set(displayDate, forKey: "dateKey")
     }
     
-    func session(session: WCSession, didReceiveUserInfo userInfo: [String : AnyObject]) {
+    private func session(session: WCSession, didReceiveUserInfo userInfo: [String : AnyObject]) {
         if let dateString = userInfo["dateKey"] as? String {
             
             let defaults = UserDefaults.standard
@@ -114,9 +114,9 @@ class IntroInterfaceController: WKInterfaceController, WCSessionDelegate  {
         }
         
         func reloadDataTake2() {
-         let stWorkout = 0.0
-         let stSleep = 0.33
-         let stFast = 0.66
+         _ = 0.0
+         _ = 0.33
+         _ = 0.66
          let stEat = 1.0
          typealias Event = (Date, Double)
          typealias IEvent = (Double, Double)?
@@ -128,7 +128,7 @@ class IntroInterfaceController: WKInterfaceController, WCSessionDelegate  {
          MCHealthManager.sharedManager.fetchCircadianEventIntervals(startDate) { (intervals, error) -> Void in
          DispatchQueue.main.async(execute: {
          guard error == nil else {
-         print("Failed to fetch circadian events: \(error)")
+         print("Failed to fetch circadian events: \(String(describing: error))")
          return
          }
          
@@ -161,7 +161,7 @@ class IntroInterfaceController: WKInterfaceController, WCSessionDelegate  {
          let eventMetabolicState = event.1
          
          let prevEvent = acc.3
-         let prevEndpointWasIntervalStart = acc.4
+         _ = acc.4
          let prevEndpointWasIntervalEnd = !acc.4
          var prevStateWasFasting = acc.6
          let isFasting = eventMetabolicState != stEat

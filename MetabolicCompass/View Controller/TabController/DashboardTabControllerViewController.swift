@@ -40,11 +40,11 @@ class DashboardTabControllerViewController: UIViewController {
         self.navigationItem.title = NSLocalizedString("DASHBOARD", comment: "dashboard screen title")
         
         let manageButton = ScreenManager.sharedInstance.appNavButtonWithTitle(title: NSLocalizedString("Manage", comment: "dashboard manage button"))
-        manageButton.addTarget(self, action: #selector(didSelectManageButton), for: .touchUpInside)
+        manageButton.addTarget(self, action: #selector(self.didSelectManageButton), for: .touchUpInside)
         self.leftNavButton = UIBarButtonItem(customView: manageButton)
         
         let filtersButton = ScreenManager.sharedInstance.appNavButtonWithTitle(title: NSLocalizedString("Filters", comment: "dashboard filter button"))
-        filtersButton.addTarget(self, action: #selector(didSelectFiltersButton), for: .touchUpInside)
+        filtersButton.addTarget(self, action: #selector(self.didSelectFiltersButton), for: .touchUpInside)
         self.rightNavButton = UIBarButtonItem(customView: filtersButton)
         
         navigationItem.leftBarButtonItem = self.leftNavButton
@@ -56,10 +56,14 @@ class DashboardTabControllerViewController: UIViewController {
     private let manageBalanceControllerSegue   = "ManageBalanceSegue"
     
     func didSelectFiltersButton(_ sender: AnyObject) {
-        self.performSegue(withIdentifier: filterControllerSegue, sender: self)
+//        self.performSegue(withIdentifier: filterControllerSegue, sender: self)
+        OperationQueue.main.addOperation {
+            [weak self] in self?.performSegue(withIdentifier: (self?.filterControllerSegue)!, sender: self)
+
+        }
     }
     
-    func manageSegueForIndex (index: NSInteger) -> String {
+    func manageSegueForIndex (_ index: NSInteger) -> String {
         switch index {
         case 0:
             return manageDashboardControllerSegue
@@ -72,7 +76,11 @@ class DashboardTabControllerViewController: UIViewController {
     }
     
     func didSelectManageButton(_ sender: AnyObject) {
-        self.performSegue(withIdentifier: self.manageSegueForIndex(index: self.segmentedControll.selectedSegmentIndex), sender: self)
+ //       self.performSegue(withIdentifier: self.manageSegueForIndex(self.segmentedControll.selectedSegmentIndex), sender: self)
+        OperationQueue.main.addOperation {
+            [weak self] in
+            self?.performSegue(withIdentifier: (self?.manageSegueForIndex((self?.segmentedControll.selectedSegmentIndex)!))!, sender: self)
+        }
     }
     
     private let dashboardSegueIdentifier = "DashboardSegue"

@@ -75,7 +75,7 @@ class BaseViewController: UIViewController, UIGestureRecognizerDelegate {
         // Dispose of any resources that can be recreated.
     }
 
-    func createBarButtonItem(title: String?, action: Selector) -> UIBarButtonItem{
+    func createBarButtonItem(_ title: String?, action: Selector) -> UIBarButtonItem{
         let bbItem = UIBarButtonItem(title: title, style: UIBarButtonItemStyle.plain, target: self, action: action)
         bbItem.setTitleTextAttributes([NSForegroundColorAttributeName: ScreenManager.appTitleTextColor()], for: UIControlState.normal)
         return bbItem
@@ -109,7 +109,7 @@ class BaseViewController: UIViewController, UIGestureRecognizerDelegate {
 
     // MARK: - UIGestureRecognizer Delegate
 
-    private func gestureRecognizer(gestureRecognizer: UIGestureRecognizer, shouldReceiveTouch touch: UITouch) -> Bool {
+    internal func gestureRecognizer(_ gestureRecognizer: UIGestureRecognizer, shouldReceive touch: UITouch) -> Bool {
         if let _ = touch.view as? UIButton {
             return false
         }

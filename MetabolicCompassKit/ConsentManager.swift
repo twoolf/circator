@@ -379,7 +379,7 @@ public class ConsentManager: NSObject, ORKTaskViewControllerDelegate {
         return consentTask
     }
     
-    public func checkConsentWithBaseViewController(viewController: UIViewController, consentBlock: ConsentBlock) {
+    public func checkConsentWithBaseViewController(_ viewController: UIViewController, consentBlock: ConsentBlock) {
         self.consentHandler = consentBlock
         guard UserManager.sharedManager.hasUserId() else {
             let taskViewController = ORKTaskViewController(task: consentTaskWithEligibilitySection(), taskRun: nil)
@@ -392,8 +392,50 @@ public class ConsentManager: NSObject, ORKTaskViewControllerDelegate {
     }
    
     // MARK: - Task view controller delegate
-
+    
     public func taskViewController(_ taskViewController: ORKTaskViewController, didFinishWith reason: ORKTaskViewControllerFinishReason, error: Error?) {
+        var completedToDocument = false
+        var givenName: String? = nil
+        var familyName: String? = nil
+        switch reason {
+        case .completed:
+            let document = consentDocument.copy() as! ORKConsentDocument
+            let result = taskViewController.result
+            if let consentStep = result.stepResult(forStepIdentifier: String(describing: Identifier.ConsentReviewStep)),
+                let signatureResult = consentStep.firstResult as? ORKConsentSignatureResult
+            {
+                completedToDocument = signatureResult.consented
+                givenName = signatureResult.signature?.givenName
+                familyName = signatureResult.signature?.familyName
+                
+                signatureResult.apply(to: document)
+                document.makePDF { (data, error) -> Void in
+                    guard error == nil else {
+                        return
+                    }
+                    let path = (NSTemporaryDirectory() as NSString).appendingPathComponent("consent.pdf")
+                    self.setConsentFilePath(consentFilePath: path)
+//                    data?.writeToFile(path, atomically: true)
+                    do {
+                      try data?.write(to:URL(fileURLWithPath: path), options: .atomic)
+                    } catch {
+                        print(error)
+                    }
+                }
+            }
+        case .discarded:
+            break
+        case .failed:
+            log.error("Consent view failed: \(error)")
+        case .saved:
+            break
+        }
+        taskViewController.dismiss(animated: true) {
+            self.consentHandler?(completedToDocument, givenName, familyName)
+        }
+    }
+
+ /*   public func taskViewController(_ taskViewController: ORKTaskViewController, didFinishWith reason: ORKTaskViewControllerFinishReason, error: Error?) {
      var completedToDocument = false
      var givenName: String? = nil
      var familyName: String? = nil
@@ -471,5 +513,5 @@ public class ConsentManager: NSObject, ORKTaskViewControllerDelegate {
         taskViewController.dismiss(animated: true) {
             self.consentHandler?(completedToDocument, givenName, familyName)
         }
-    } */
+    } */ */
 }

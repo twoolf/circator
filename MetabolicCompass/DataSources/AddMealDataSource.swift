@@ -29,7 +29,7 @@ class AddMealDataSource: NSObject, UITableViewDataSource, UITableViewDelegate, P
     private var startSleepCell: StartSleepTableViewCell? = nil
     private var endSleepCell: EndSleepTableViewCell? = nil
 
-    private var pickerIndexPath: NSIndexPath? = nil
+    private var pickerIndexPath: IndexPath? = nil
     private let defaultCellHeight: CGFloat = 80.0
     private let defaultPickerHeight: CGFloat = 216.0
     
@@ -72,6 +72,7 @@ class AddMealDataSource: NSObject, UITableViewDataSource, UITableViewDelegate, P
                 datePickerCell.delegate = self
         default: break
             let datePickerCell = cell as! DatePickerTableViewCell
+        
             datePickerCell.delegate = self
                 if addEventModel!.datePickerRow(rowIndex: indexPath.row) {//date and time
                     datePickerCell.datePicker.datePickerMode = .dateAndTime
@@ -100,11 +101,11 @@ class AddMealDataSource: NSObject, UITableViewDataSource, UITableViewDelegate, P
     
     //MARK: UITableViewDelegate
     
-    private func tableView(_ tableView: UITableView, didSelectRowAtIndexPath indexPath: NSIndexPath) {
+    internal func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         displayPickerForRowAtIndexPath(indexPath: indexPath, inTable: tableView)
     }
 
-    private func tableView(_ tableView: UITableView, heightForRowAtIndexPath indexPath: NSIndexPath) -> CGFloat {
+    @nonobjc internal func tableView(_ tableView: UITableView, heightForRowAtIndexPath indexPath: IndexPath) -> CGFloat {
         var cellHeight:CGFloat = defaultCellHeight
         if dataSourceCells[indexPath.row] == pickerCellIdentifier || dataSourceCells[indexPath.row] == datePickerCellIdentifier {
             cellHeight = defaultPickerHeight
@@ -114,7 +115,7 @@ class AddMealDataSource: NSObject, UITableViewDataSource, UITableViewDelegate, P
     
     //MARK: Working with picker
     
-    func removePickerForIndexPath (indexPath: NSIndexPath, inTable tableView: UITableView) {
+    func removePickerForIndexPath (_ indexPath: IndexPath, inTable tableView: UITableView) {
         tableView.beginUpdates()
         dataSourceCells.remove(at: self.pickerIndexPath!.row)
         tableView.deleteRows(at: [self.pickerIndexPath! as IndexPath], with: .middle)
@@ -122,7 +123,7 @@ class AddMealDataSource: NSObject, UITableViewDataSource, UITableViewDelegate, P
         self.pickerIndexPath = nil
     }
     
-    func displayPickerForRowAtIndexPath(indexPath: NSIndexPath, inTable tableView: UITableView) {
+    func displayPickerForRowAtIndexPath(indexPath: IndexPath, inTable tableView: UITableView) {
         var pickerIdentifier = ""
         let pickerRow = indexPath.row + 1
         
@@ -139,18 +140,18 @@ class AddMealDataSource: NSObject, UITableViewDataSource, UITableViewDelegate, P
         if hasPickerCell() {
             before = (pickerIndexPath?.row)! < indexPath.row
             sameCellSelected = (pickerIndexPath?.row)! - 1 == indexPath.row
-            removePickerForIndexPath(indexPath: indexPath, inTable: tableView)
+            removePickerForIndexPath(indexPath, inTable: tableView)
         }
         
         if !sameCellSelected {
             let row = before ? indexPath.row - 1 : indexPath.row
-            self.pickerIndexPath = NSIndexPath(row: row+1, section: 0)
+            self.pickerIndexPath = IndexPath(row: row+1, section: 0)
             dataSourceCells.insert(pickerIdentifier, at: self.pickerIndexPath!.row)
             tableView.insertRows(at: [self.pickerIndexPath! as IndexPath], with: .middle)            
             openDropDownImage(close: true, forCellAtIndexPath: indexPath, inTableView: tableView)
         } else {
-            self.tableView(tableView, didDeselectRowAtIndexPath: indexPath)
-            self.tableView(tableView, didDeselectRowAtIndexPath: indexPath)
+            self.tableView(tableView, didDeselectRowAt: indexPath)
+
         }
         
         tableView.endUpdates()
@@ -159,11 +160,11 @@ class AddMealDataSource: NSObject, UITableViewDataSource, UITableViewDelegate, P
         }
     }
     
-    private func tableView(_ tableView: UITableView, didDeselectRowAtIndexPath indexPath: NSIndexPath) {
+    internal func tableView(_ tableView: UITableView, didDeselectRowAt indexPath: IndexPath) {
         openDropDownImage(close: false, forCellAtIndexPath: indexPath, inTableView: tableView)
     }
     
-    func openDropDownImage(close: Bool, forCellAtIndexPath indexPath: NSIndexPath, inTableView table: UITableView) {
+    func openDropDownImage(close: Bool, forCellAtIndexPath indexPath: IndexPath, inTableView table: UITableView) {
         let cell = table.cellForRow(at: indexPath as IndexPath)
         if cell is BaseAddEventTableViewCell {
             let baseCell = cell as! BaseAddEventTableViewCell
@@ -203,11 +204,12 @@ class AddMealDataSource: NSObject, UITableViewDataSource, UITableViewDelegate, P
     public func picker(picker: UIDatePicker, didSelectDate date: Date) {
         if sleepMode {
             _ = addEventModel?.datePickerTags.first
+            let startSleepPickerTag = addEventModel?.datePickerTags.first
             switch picker.tag {
-/*                case startSleepPickerTag!:     //update end sleep date
+                case startSleepPickerTag!:     //update end sleep date
                     addEventModel?.sleepStartDate = picker.date
                     self.startSleepCell?.timeLabel.text = addEventModel?.getStartSleepTimeString()
-                    self.startSleepCell?.dayLabel.text = addEventModel?.getStartSleepForDayLabel() */
+                    self.startSleepCell?.dayLabel.text = addEventModel?.getStartSleepForDayLabel()
                 default://update end sleep date
                     addEventModel?.sleepEndDate = picker.date
                     self.endSleepCell?.timeLabel.text = addEventModel?.getSleepEndTimeString()

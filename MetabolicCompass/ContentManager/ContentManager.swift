@@ -51,7 +51,8 @@ class ContentManager: NSObject {
             return
         }
 
-        Async.main() {
+//        Async.main() {
+        OperationQueue.main.addOperation {
             if (self.isBackgroundWorkActive) {
                 return
             }
@@ -83,7 +84,8 @@ class ContentManager: NSObject {
     }
 
     func stopBackgroundWork() {
-        Async.main() {
+//        Async.main() {
+        OperationQueue.main.addOperation {
             // Clean up aggregate data fetched via the prior account.
             if let task = self.aggregateFetchTask {
                 log.debug("Stopping background work", feature: "accountExec")
@@ -95,7 +97,8 @@ class ContentManager: NSObject {
     }
 
     func stopObservation() {
-        Async.main() {
+ //       Async.main() {
+        OperationQueue.main.addOperation {
             if (!self.isObservationActive) {
                 return
             }

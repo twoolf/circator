@@ -22,7 +22,7 @@ class AdditionalSectionInfo: NSObject {
         title = sectionTitle
     }
 
-    func addItem(modelItem: ModelItem) {
+    func addItem(_ modelItem: ModelItem) {
         items.append(modelItem)
     }
 }
@@ -57,7 +57,7 @@ class AdditionalInfoModel: NSObject {
         }
     }
 
-    func convertFieldValue(fieldName: String, value: AnyObject, toServiceUnits: Bool = true) -> AnyObject {
+    func convertFieldValue(_ fieldName: String, value: AnyObject, toServiceUnits: Bool = true) -> AnyObject {
         var result = value
         let specs = UserProfile.sharedInstance.fields.filter{($0.fieldName == fieldName)}
         if let profileFieldSpec = specs.first {
@@ -115,9 +115,9 @@ class AdditionalInfoModel: NSObject {
                             let profileQuantity = profileCategory[categoryType] as? [String: AnyObject],
                             let profileValue = profileQuantity[categoryType]
                     {
-                        item.value = convertFieldValue(fieldName: item.name, value: profileValue, toServiceUnits: false)
+                        item.value = convertFieldValue(item.name, value: profileValue, toServiceUnits: false)
                     } else if let _ = HMConstants.sharedInstance.mcdbToHK[key], let profileValue = profileCache[key] {
-                        item.value = convertFieldValue(fieldName: item.name, value: profileValue, toServiceUnits: false)
+                        item.value = convertFieldValue(item.name, value: profileValue, toServiceUnits: false)
                     } else {
                         log.warning("AIM Invalid key \(key)")
                     }
@@ -141,21 +141,21 @@ class AdditionalInfoModel: NSObject {
         return section
     }
 
-    func numberOfItemsInSection(section: Int) -> Int {
+    func numberOfItemsInSection(_ section: Int) -> Int {
         return sections[section].items.count
     }
 
-    func itemAtIndexPath(indexPath: NSIndexPath) -> ModelItem {
+    func itemAtIndexPath(_ indexPath: IndexPath) -> ModelItem {
         let item = sections[indexPath.section].items[indexPath.row]
         return item
     }
 
-    func sectionTitleAtIndexPath(indexPath: NSIndexPath) -> String {
+    func sectionTitleAtIndexPath(_ indexPath: IndexPath) -> String {
         return sections[indexPath.section].title
     }
 
-    func setNewValueForItem(atIndexPath indexPath: NSIndexPath, newValue: AnyObject?) {
-        let item = self.itemAtIndexPath(indexPath: indexPath)
+    func setNewValueForItem(atIndexPath indexPath: IndexPath, newValue: AnyObject?) {
+        let item = self.itemAtIndexPath(indexPath)
         item.setNewValue(newValue: newValue)
     }
 
@@ -187,7 +187,7 @@ class AdditionalInfoModel: NSObject {
                         if var profileCategories = profileCache["activity_value"] as? [String: AnyObject],
                             var profileQuantities = profileCategories[categoryType] as? [String: AnyObject]
                         {
-                            profileQuantities.updateValue(self.convertFieldValue(fieldName: fieldName, value: value), forKey: categoryType)
+                            profileQuantities.updateValue(self.convertFieldValue(fieldName, value: value), forKey: categoryType)
                             profileCategories.updateValue(profileQuantities as AnyObject, forKey: categoryType)
                             infoDict["activity_value"] = profileCategories as AnyObject?
                         } else {
@@ -195,7 +195,7 @@ class AdditionalInfoModel: NSObject {
                         }
                     }
                     else if let _ = HMConstants.sharedInstance.mcdbToHK[profileFieldName!] {
-                        infoDict[profileFieldName!] = self.convertFieldValue(fieldName: item.name, value: value)
+                        infoDict[profileFieldName!] = self.convertFieldValue(item.name, value: value)
                     }
                     else {
                         error = "No schema mapping found for \(fieldName) in additional info model"

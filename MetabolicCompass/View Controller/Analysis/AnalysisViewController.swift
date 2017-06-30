@@ -31,10 +31,10 @@ class AnalysisViewController: UIViewController {
     }
     
     func switchToScatterPlotViewController() {
-//        let newViewController = UIStoryboard(name: "TabScreens", bundle: nil).instantiateViewController(withIdentifier: "correlatePlaceholder") as! CorrelationChartsViewController
-//        newViewController.view.translatesAutoresizingMaskIntoConstraints = false
- //       cycleFromViewController(oldViewController: self.currentViewController!, toViewController: newViewController)
-//        self.currentViewController = newViewController;
+        let newViewController = UIStoryboard(name: "TabScreens", bundle: nil).instantiateViewController(withIdentifier: "correlatePlaceholder") as! CorrelationChartsViewController
+        newViewController.view.translatesAutoresizingMaskIntoConstraints = false
+        cycleFromViewController(oldViewController: self.currentViewController!, toViewController: newViewController)
+        self.currentViewController = newViewController;
     }
     
     func switchToFastingViewController() {

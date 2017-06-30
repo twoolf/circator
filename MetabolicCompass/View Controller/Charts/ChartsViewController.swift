@@ -45,8 +45,8 @@ class ChartsViewController: UIViewController {
 
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-        NotificationCenter.default.addObserver(self, selector: #selector(updateChartDataWithClean), name: NSNotification.Name.UIApplicationWillEnterForeground, object: nil)
-        NotificationCenter.default.addObserver(self, selector: #selector(updateChartsData), name: NSNotification.Name(rawValue: HMDidUpdatedChartsData), object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(self.updateChartDataWithClean), name: NSNotification.Name.UIApplicationWillEnterForeground, object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(self.updateChartsData), name: NSNotification.Name(rawValue: HMDidUpdatedChartsData), object: nil)
         chartCollectionDataSource.updateData()
         updateChartsData()
         logContentView()
@@ -108,7 +108,7 @@ class ChartsViewController: UIViewController {
 
     func updateNavigationBar () {
         let manageButton = ScreenManager.sharedInstance.appNavButtonWithTitle(title: "Manage")
-        manageButton.addTarget(self, action: #selector(manageCharts), for: .touchUpInside)
+        manageButton.addTarget(self, action: #selector(self.manageCharts), for: .touchUpInside)
         let manageBarButton = UIBarButtonItem(customView: manageButton)
         self.navigationItem.leftBarButtonItem = manageBarButton
         self.navigationItem.title = NSLocalizedString("CHART", comment: "chart screen title")

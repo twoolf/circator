@@ -48,7 +48,7 @@ class SleepTimesInterfaceController: WKInterfaceController {
         sleepTimesButton.setTitle("Saved")
         
 // setting up conversion of saved value from 'waking from sleep' in 1st screen
-        let thisRegion = DateInRegion()
+        _ = DateInRegion()
         let calendar = Calendar.current
         var beginDate = Date()
         var beginComponents = calendar.dateComponents([.year, .month, .day, .hour, .minute], from: beginDate)

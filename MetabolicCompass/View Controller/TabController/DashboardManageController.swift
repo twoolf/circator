@@ -63,7 +63,7 @@ class DashboardManageController: UIViewController, UITableViewDelegate, UITableV
         save()
     }
     
-    func numberOfSectionsInTableView(tableView: UITableView) -> Int {
+    func numberOfSections(in tableView: UITableView) -> Int {
         return 1
     }
 
@@ -93,7 +93,7 @@ class DashboardManageController: UIViewController, UITableViewDelegate, UITableV
         return selected
     }
     
-    private func tableView(_ tableView: UITableView, didSelectRowAtIndexPath indexPath: NSIndexPath) {
+    internal func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         
         let obj = tableView.cellForRow(at: indexPath as IndexPath) as? ManageDashboardCell
         guard let cell = obj else {
@@ -110,19 +110,19 @@ class DashboardManageController: UIViewController, UITableViewDelegate, UITableV
         cell.updateSelectionStatus(selected: item.active, appearanceProvider: appearanceProvider, itemType: item.type)
     }
 
-    private func tableView(_ tableView: UITableView, canMoveRowAtIndexPath indexPath: NSIndexPath) -> Bool {
+    internal func tableView(_ tableView: UITableView, canMoveRowAt indexPath: IndexPath) -> Bool {
         return true
     }
     
-    private func tableView(_ tableView: UITableView, editingStyleForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCellEditingStyle {
+    internal func tableView(_ tableView: UITableView, editingStyleForRowAt indexPath: IndexPath) -> UITableViewCellEditingStyle {
         return .none
     }
     
-    private func tableView(_ tableView: UITableView, shouldIndentWhileEditingRowAtIndexPath indexPath: NSIndexPath) -> Bool {
+    internal func tableView(_ tableView: UITableView, shouldIndentWhileEditingRowAt indexPath: IndexPath) -> Bool {
         return false
     }
     
-    private func tableView(_ tableView: UITableView, moveRowAtIndexPath fromIndexPath: NSIndexPath, toIndexPath: NSIndexPath) {
+    internal func tableView(_ tableView: UITableView, moveRowAt fromIndexPath: IndexPath, to toIndexPath: IndexPath) {
         let itemToMove = self.data[fromIndexPath.row]
         self.data.remove(at: fromIndexPath.row)
         self.data.insert(itemToMove, at: toIndexPath.row)
@@ -132,7 +132,7 @@ class DashboardManageController: UIViewController, UITableViewDelegate, UITableV
         manageData.insert(manageItemToMove, at: toIndexPath.row)
     }
     
-    private func tableView(_ tableView: UITableView, willDisplayCell cell: UITableViewCell, forRowAtIndexPath indexPath: NSIndexPath) {
+    internal func tableView(_ tableView: UITableView, willDisplay cell: UITableViewCell, forRowAt indexPath: IndexPath) {
         cell.showsReorderControl = false
     }
 }

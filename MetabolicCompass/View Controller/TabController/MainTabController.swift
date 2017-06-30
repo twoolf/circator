@@ -39,11 +39,11 @@ class MainTabController: UITabBarController, UITabBarControllerDelegate, ManageE
                 controller.rootNavigationItem = self.navigationItem
             }
         }
-        NotificationCenter.default.addObserver(self, selector: #selector(userDidLogin), name: NSNotification.Name(rawValue: UMDidLoginNotifiaction), object: nil)
-        NotificationCenter.default.addObserver(self, selector: #selector(userDidLogout), name: NSNotification.Name(rawValue: UMDidLogoutNotification), object: nil)
-        NotificationCenter.default.addObserver(self, selector: #selector(userAddedCircadianEvents), name: NSNotification.Name(rawValue: MEMDidUpdateCircadianEvents), object: nil)
-        NotificationCenter.default.addObserver(self, selector: #selector(syncBegan), name: NSNotification.Name(rawValue: SyncBeganNotification), object: nil)
-        NotificationCenter.default.addObserver(self, selector: #selector(syncEnded), name: NSNotification.Name(rawValue: SyncEndedNotification), object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(self.userDidLogin), name: NSNotification.Name(rawValue: UMDidLoginNotifiaction), object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(self.userDidLogout), name: NSNotification.Name(rawValue: UMDidLogoutNotification), object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(self.userAddedCircadianEvents), name: NSNotification.Name(rawValue: MEMDidUpdateCircadianEvents), object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(self.syncBegan), name: NSNotification.Name(rawValue: SyncBeganNotification), object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(self.syncEnded), name: NSNotification.Name(rawValue: SyncEndedNotification), object: nil)
     }
     
     override func viewDidAppear(_ animated: Bool) {
@@ -76,14 +76,14 @@ class MainTabController: UITabBarController, UITabBarControllerDelegate, ManageE
     }
     
     //MARK: UITabBarControllerDelegate
-    private func tabBarController(tabBarController: UITabBarController, didSelectViewController viewController: UIViewController) {
+    internal func tabBarController(_ tabBarController: UITabBarController, didSelect viewController: UIViewController) {
         
         if let controller = viewController as? DashboardTabControllerViewController {
             controller.rootNavigationItem = self.navigationItem
         }
     }
     
-    private func tabBarController(tabBarController: UITabBarController, shouldSelectViewController viewController: UIViewController) -> Bool {
+    @nonobjc internal func tabBarController(_ tabBarController: UITabBarController, shouldSelectViewController viewController: UIViewController) -> Bool {
         if viewController is UIPageViewController {
             return false
         }
@@ -145,7 +145,7 @@ class MainTabController: UITabBarController, UITabBarControllerDelegate, ManageE
     func syncBegan(notification: NSNotification) {
         if let dict = notification.userInfo, let initial = dict["count"] as? Int {
             if !syncMode {
-                NotificationCenter.default.addObserver(self, selector: #selector(syncProgress), name: NSNotification.Name(rawValue: SyncProgressNotification), object: nil)
+                NotificationCenter.default.addObserver(self, selector: #selector(self.syncProgress), name: NSNotification.Name(rawValue: SyncProgressNotification), object: nil)
             }
             syncMode = true
             syncInitial = CGFloat(initial)
@@ -248,7 +248,7 @@ class MainTabController: UITabBarController, UITabBarControllerDelegate, ManageE
     }
 
     func hideManageEventIcons(hide: Bool) {
-        self.manageEventMenu?.hideView(hide: hide)
+        self.manageEventMenu?.hideView(hide)
     }
 
     // MARK:- ManageEventMenu construction
@@ -284,7 +284,8 @@ class MainTabController: UITabBarController, UITabBarControllerDelegate, ManageE
     // MARK :- ManageEventMenuDelegate implementation
     
     func manageEventMenu(menu: ManageEventMenu, didSelectIndex idx: Int) {
-        Async.main(after: 0.4) {
+//        Async.main(after: 0.4) {
+        OperationQueue.main.addOperation {
             self.hideManageEventIcons(hide: true)
             self.hideManageEventOverlay()
             let controller = UIStoryboard(name: "AddEvents", bundle: nil).instantiateViewController(withIdentifier: "AddMealNavViewController") as! UINavigationController
@@ -331,7 +332,7 @@ class MainTabController: UITabBarController, UITabBarControllerDelegate, ManageE
                 log.warning("No DailyProgressViewController available", feature: "addActivityView")
             }
         }
-        self.manageEventMenu?.logContentView(asAppear: false)
+        self.manageEventMenu?.logContentView(false)
     }
 
     func initializeDailyProgressVC() {

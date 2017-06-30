@@ -16,7 +16,7 @@ enum EventType: Int {
     case Sleep
 }
 
-class AddEventViewController: UIViewController, AddEventModelDelegate {
+public class AddEventViewController: UIViewController, AddEventModelDelegate {
 
     @IBOutlet weak var tableVIew: UITableView!
     @IBOutlet weak var eventImage: UIImageView!
@@ -26,7 +26,7 @@ class AddEventViewController: UIViewController, AddEventModelDelegate {
     let tableDataSource = AddMealDataSource()
     let addEventModel = AddEventModel()
     
-    override func viewDidLoad() {
+    override public func viewDidLoad() {
         super.viewDidLoad()
 
         let leftButton = UIBarButtonItem(image: UIImage(named: "close-button"), style: .plain, target: self, action: #selector(closeAction))
@@ -54,7 +54,7 @@ class AddEventViewController: UIViewController, AddEventModelDelegate {
                 tableDataSource.dataSourceCells = [startSleepCellIdentifier, endSleepCellIdentifier]//set base cells
                 eventImage.image = UIImage(named: "add-sleep-big-image")!
                 self.navigationItem.title = "ADD SLEEP TIME"
-//                sleepTimeLabel.attributedText = addEventModel.getSleepTimeString()
+                sleepTimeLabel.attributedText = addEventModel.getSleepTimeString()
             default:
                 self.navigationItem.title = "ADD MEAL TIME"
         }
@@ -88,7 +88,7 @@ class AddEventViewController: UIViewController, AddEventModelDelegate {
         self.tableVIew.register(endSleepCellNib, forCellReuseIdentifier: endSleepCellIdentifier)
     }
     
-    func closeAction () {
+    public func closeAction () {
         switch type {
             case .Meal:
                 if addEventModel.mealType != MealType.Empty {
@@ -114,11 +114,12 @@ class AddEventViewController: UIViewController, AddEventModelDelegate {
         self.present(alertController, animated: true, completion: nil)
     }
     
-    func doneAction () {
+    public func doneAction () {
         switch type {
             case .Meal:
                 addEventModel.saveMealEvent(completion: { (success, errorMessage) in
-                    Async.main {
+//                    Async.main {
+                    OperationQueue.main.addOperation {
                         guard success else {
                             self.showValidationAlert(message: errorMessage!)
                             return
@@ -128,7 +129,8 @@ class AddEventViewController: UIViewController, AddEventModelDelegate {
                 })
             case .Exercise:
                 addEventModel.saveExerciseEvent(completion: { (success, errorMessage) in
-                    Async.main{
+ //                   Async.main{
+                    OperationQueue.main.addOperation {
                         guard success else {
                             self.showValidationAlert(message: errorMessage!)
                             return
@@ -136,12 +138,10 @@ class AddEventViewController: UIViewController, AddEventModelDelegate {
                         self.dismiss(animated: true, completion: nil)
                     }
                 })
- //       case .default:
- //               return { print("default") 
             case .Sleep:
                 addEventModel.saveSleepEvent(completion: { (success, errorMessage) in
- //               addEventModel.saveExerciseEvent(completion: { (success, errorMessage) in
-                    Async.main {
+//                    Async.main {
+                    OperationQueue.main.addOperation {
                         guard success else {
                             self.showValidationAlert(message: errorMessage!)
                             return
@@ -162,7 +162,7 @@ class AddEventViewController: UIViewController, AddEventModelDelegate {
     
     //MARK: AddEventModelDelegate
     
-    func sleepTimeUpdated(updatedTime: NSAttributedString) {
+    func sleepTimeUpdated(_ updatedTime: NSAttributedString) {
         sleepTimeLabel.attributedText = updatedTime
     }
 }

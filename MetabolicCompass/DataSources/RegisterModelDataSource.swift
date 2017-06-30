@@ -39,25 +39,25 @@ class RegisterModelDataSource: BaseDataSource {
     }
 
     override func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
-        let field = model.itemAtIndexPath(indexPath: indexPath as NSIndexPath)
+        let field = model.itemAtIndexPath(indexPath: indexPath as IndexPath)
         var cell: BaseCollectionViewCell?
 
         let cellType = field.type
 
         switch (cellType) {
         case .Email, .Password, .FirstName, .LastName, .Weight, .Height, .HeightInches, .Age, .Other:
-            cell = inputCellForIndex(indexPath: indexPath as NSIndexPath, forField: field)
+            cell = inputCellForIndex(indexPath: indexPath as IndexPath, forField: field)
         case  .Gender, .Units:
-            cell = checkSelectionCellForIndex(indexPath: indexPath as NSIndexPath, forField: field)
+            cell = checkSelectionCellForIndex(indexPath: indexPath as IndexPath, forField: field)
         case .Photo:
-            cell = loadPhotoCellForIndex(indexPath: indexPath as NSIndexPath, forField: field)
+            cell = loadPhotoCellForIndex(indexPath: indexPath as IndexPath, forField: field)
         }
 
         cell!.changesHandler = { (cell: UICollectionViewCell, newValue: AnyObject?) -> () in
             if let indexPath = self.collectionView!.indexPath(for: cell) {
                 self.model.setAtItem(itemIndex: indexPath.row, newValue: newValue)
 
-                let field = self.model.itemAtIndexPath(indexPath: indexPath as NSIndexPath)
+                let field = self.model.itemAtIndexPath(indexPath: indexPath as IndexPath)
                 if field.type == .Units {
                     /*
                     let needsUpdateIndexPathes = self.model.unitsDependedItemsIndexes()
@@ -74,8 +74,8 @@ class RegisterModelDataSource: BaseDataSource {
     }
 
 
-    func collectionView(collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAtIndexPath indexPath: NSIndexPath) -> CGSize {
-        let field = model.itemAtIndexPath(indexPath: indexPath)
+    func collectionView(collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAtIndexPath indexPath: IndexPath) -> CGSize {
+        let field = model.itemAtIndexPath(indexPath: indexPath as IndexPath)
 
         if model.units == .Imperial && (field.type == .Weight || field.type == .Height || field.type == .HeightInches) {
             return field.type == .HeightInches ? smallHeightInchesCellSize() : (field.type == .Height ? smallHeightCellSize() : smallWeightCellSize())
@@ -96,7 +96,7 @@ class RegisterModelDataSource: BaseDataSource {
         return spaceBetweenCellsInOneRow
     }
 
-    func collectionView(collectionView: UICollectionView, viewForSupplementaryElementOfKind kind: String, atIndexPath indexPath: NSIndexPath) -> UICollectionReusableView {
+    func collectionView(collectionView: UICollectionView, viewForSupplementaryElementOfKind kind: String, atIndexPath indexPath: IndexPath) -> UICollectionReusableView {
         if kind == UICollectionElementKindSectionFooter {
             let footerView = collectionView.dequeueReusableSupplementaryView(ofKind: kind, withReuseIdentifier: "footerView", for: indexPath as IndexPath)
             return footerView
@@ -107,7 +107,7 @@ class RegisterModelDataSource: BaseDataSource {
 
     // MARK: - Cells configuration
 
-    private func inputCellForIndex(indexPath: NSIndexPath, forField field: ModelItem) -> BaseCollectionViewCell {
+    private func inputCellForIndex(indexPath: IndexPath, forField field: ModelItem) -> BaseCollectionViewCell {
         let cell = collectionView!.dequeueReusableCell(withReuseIdentifier: inputTextCellIdentifier, for: indexPath as IndexPath) as! InputCollectionViewCell
 
         cell.inputTxtField.textColor = selectedTextColor
@@ -179,7 +179,7 @@ class RegisterModelDataSource: BaseDataSource {
         return cell
     }
 
-    private func checkSelectionCellForIndex(indexPath: NSIndexPath, forField field: ModelItem) -> BaseCollectionViewCell {
+    private func checkSelectionCellForIndex(indexPath: IndexPath, forField field: ModelItem) -> BaseCollectionViewCell {
         let cell = collectionView!.dequeueReusableCell(withReuseIdentifier: doubleCheckBoxCellIdentifier, for: indexPath as IndexPath) as! DoubleCheckListCollectionViewCell
 
         if field.type == .Gender {
@@ -199,7 +199,7 @@ class RegisterModelDataSource: BaseDataSource {
         return cell
     }
 
-    private func loadPhotoCellForIndex(indexPath: NSIndexPath, forField field: ModelItem) -> BaseCollectionViewCell {
+    private func loadPhotoCellForIndex(indexPath: IndexPath, forField field: ModelItem) -> BaseCollectionViewCell {
         let cell = collectionView!.dequeueReusableCell(withReuseIdentifier: loadImageCellIdentifier, for: indexPath as IndexPath) as! LoadImageCollectionViewCell
         cell.presentingViewController = viewController!.navigationController
         return cell

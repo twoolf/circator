@@ -23,7 +23,7 @@ public protocol ManageEventMenuDelegate: class {
 }
 
 protocol PickerManagerSelectionDelegate {
-    func pickerItemSelected(pickerManager: PickerManager, itemType: String?, index: Int, item: String, data: AnyObject?) -> Void
+    func pickerItemSelected(_ pickerManager: PickerManager, itemType: String?, index: Int, item: String, data: AnyObject?) -> Void
 }
 
 open class PickerManager: NSObject, AKPickerViewDelegate, AKPickerViewDataSource, UIGestureRecognizerDelegate {
@@ -54,7 +54,7 @@ open class PickerManager: NSObject, AKPickerViewDelegate, AKPickerViewDataSource
         self.itemContentViews = [UIView!](repeating: nil, count: self.items.count)
     }
 
-    func refreshData(itemType: String? = nil, items: [String], data: [String:AnyObject]) {
+    func refreshData(_ itemType: String? = nil, items: [String], data: [String:AnyObject]) {
         self.itemType = itemType
         self.items = items
         self.data = data
@@ -67,7 +67,7 @@ open class PickerManager: NSObject, AKPickerViewDelegate, AKPickerViewDataSource
         return self.data.count
     }
 
-    private func pickerView(pickerView: AKPickerView, titleForItem item: Int) -> String {
+    public func pickerView(_ pickerView: AKPickerView, titleForItem item: Int) -> String {
         return self.items[item]
     }
     
@@ -85,7 +85,7 @@ open class PickerManager: NSObject, AKPickerViewDelegate, AKPickerViewDataSource
         }
     }
 
-    private func pickerView(pickerView: AKPickerView, didSelectItem item: Int) {
+    public func pickerView(_ pickerView: AKPickerView, didSelectItem item: Int) {
         current = item
 
         for index in (0..<items.count) {
@@ -98,7 +98,8 @@ open class PickerManager: NSObject, AKPickerViewDelegate, AKPickerViewDataSource
             }
         }
 
-        Async.main(after: 0.2) { 
+//        Async.main(after: 0.2) {
+        OperationQueue.main.addOperation {
             self.itemContentViews[item]?.tag = item
             self.itemContentViews[item]?.superview?.tag = item
             self.itemContentViews[item]?.superview?.layer.borderWidth = 2.0
@@ -108,7 +109,7 @@ open class PickerManager: NSObject, AKPickerViewDelegate, AKPickerViewDataSource
         }
     }
 
-    public func configureItemContentView(view: UIView, item: Int) {
+    public func configureItemContentView(_ view: UIView, item: Int) {
         if itemContentViews[item] == nil || itemContentViews[item] != view {
             itemContentViews[item] = view
             itemContentViews[item]?.tag = item
@@ -118,7 +119,7 @@ open class PickerManager: NSObject, AKPickerViewDelegate, AKPickerViewDataSource
 
 //            let press = UILongPressGestureRecognizer(target: self, action: #selector(PickerManager.itemSelected(_:)))
 //            let press = UILongPressGestureRecognizer(target: self, action: #selector(PickerManager.itemSelected(sender:)))
-            let press = UILongPressGestureRecognizer(target: self, action: #selector(itemSelected))
+            let press = UILongPressGestureRecognizer(target: self, action: #selector(PickerManager.itemSelected(_:)))
             press.minimumPressDuration = EventPickerPressDuration
             press.delegate = self
             itemContentViews[item]?.superview?.tag = item
@@ -127,8 +128,8 @@ open class PickerManager: NSObject, AKPickerViewDelegate, AKPickerViewDataSource
         }
     }
 
-    private func pickerView(pickerView: AKPickerView, configureLabel label: UILabel, forItem item: Int) {
-        configureItemContentView(view: label, item: item)
+    public func pickerView(_ pickerView: AKPickerView, configureLabel label: UILabel, forItem item: Int) {
+        configureItemContentView(label, item: item)
     }
 
     func startProcessingSelection(selected: Int) {
@@ -144,7 +145,7 @@ open class PickerManager: NSObject, AKPickerViewDelegate, AKPickerViewDataSource
                         view.superview?.gestureRecognizers?.forEach { g in g.isEnabled = false }
                     }
                 }
-                delegate.pickerItemSelected(pickerManager: self, itemType: itemType, index: selected, item: getSelectedItem(), data: getSelectedValue())
+                delegate.pickerItemSelected(self, itemType: itemType, index: selected, item: getSelectedItem(), data: getSelectedValue())
             }
             else {
                 log.error("PickerManager: Selected non-current index \(current) \(selected)")

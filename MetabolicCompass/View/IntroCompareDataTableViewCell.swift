@@ -71,7 +71,8 @@ class IntroCompareDataTableViewCell: UITableViewCell {
     static let healthFormatter = SampleFormatter()
 
     /// loading both User and Population samples
-    func setUserData(userData: [MCSample], populationAverageData: [MCSample], stalePopulation: Bool = false) {
+//    func setUserData(userData: [MCSample], populationAverageData: [MCSample], stalePopulation: Bool = false) {
+    func setUserData(userData: [MCSample], populationAverageData: [MCSample], stalePopulation: Bool = true) {
         loadUserSamples(results: userData, toLabel: userDataLabel)
         loadPopSamples(results: populationAverageData, toLabel: populationAverageLabel, stale: stalePopulation)
     }

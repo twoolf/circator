@@ -143,7 +143,7 @@ class DialViewController : UIViewController, ChartViewDelegate {
         pieTip = TapTip(forView: pieChart, withinView: view, text: pieTipMsg, numTouches: 2, asTop: false)
         pieChart.addGestureRecognizer(pieTip.tapRecognizer)
 
-        let toggleRecognizer = UITapGestureRecognizer(target: self, action: #selector(toggleDatasets))
+        let toggleRecognizer = UITapGestureRecognizer(target: self, action: #selector(self.toggleDatasets))
         toggleRecognizer.numberOfTapsRequired = 2
         pieChart.addGestureRecognizer(toggleRecognizer)
 
@@ -260,7 +260,8 @@ class DialViewController : UIViewController, ChartViewDelegate {
                 return
             }
 
-            Async.main {
+ //           Async.main {
+            OperationQueue.main.addOperation {
                 self.activityIndicator?.stopAnimating()
                 self.refreshPieChart()
                 self.refreshLegend()
@@ -272,7 +273,8 @@ class DialViewController : UIViewController, ChartViewDelegate {
         AnalysisDataModel.sharedInstance.cycleModel.segmentIndex =
             (AnalysisDataModel.sharedInstance.cycleModel.segmentIndex + 1) % 3
 
-        Async.main {
+//        Async.main {
+        OperationQueue.main.addOperation {
             self.refreshPieChart()
             self.refreshLegend()
         }

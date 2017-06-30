@@ -355,7 +355,8 @@ public class FastingViewController : UIViewController, ChartViewDelegate {
 
             //log.info("FastingViewController refreshing charts (\(NSDate().timeIntervalSinceDate(refreshStartDate)))")
 
-            Async.main {
+//            Async.main {
+            OperationQueue.main.addOperation {
                 self.activityIndicator.stopAnimating()
                 self.refreshPieChart()
 

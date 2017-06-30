@@ -41,17 +41,18 @@ class RegisterLoginLandingViewController: BaseViewController {
         navigationController?.setNavigationBarHidden(true, animated: false)
     }
     
-//    func preferredStatusBarStyle() -> UIStatusBarStyle {
-//        return .lightContent;
- //   }
-    
-    //MARK: Actions
-/*    @IBAction func onLogin(sender: AnyObject) {
-        self.performSegue(withIdentifier: self.loginSegue, sender: self)
+    /*func preferredStatusBarStyle() -> UIStatusBarStyle {
+        return .lightContent;
     } */
     
+    //MARK: Actions
+    @IBAction func onLogin(sender: AnyObject) {
+        self.performSegue(withIdentifier: self.loginSegue, sender: self)
+    }
+    /* was BrightButton */
+    
 
-    @IBAction func onLogin(_ sender: BrightButton) {
+    @IBAction func onLogin(_ sender: AnyObject) {
                 self.performSegue(withIdentifier: self.loginSegue, sender: self)
     }
 
@@ -64,9 +65,9 @@ class RegisterLoginLandingViewController: BaseViewController {
         default:
             self.performSegue(withIdentifier: self.registerSegue, sender: self)
         }
-    } */
+    }   /* was BrightButton */ */
 
-    @IBAction func onRegister(_ sender: BrightButton) {
+    @IBAction func onRegister(_ sender: AnyObject) {
         switch reachability.currentReachabilityStatus {
             //        case .isNotReachable:
             //            UINotifications.genericError(vc: self, msg: "We cannot register a new account without internet connectivity. Please try later.", pop: false, asNav: true)

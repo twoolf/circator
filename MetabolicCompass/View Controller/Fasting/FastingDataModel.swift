@@ -143,6 +143,15 @@ public class FastingDataModel : NSObject {
             self.fastExercise = tExercise
             group.leave()
         }
+        
+        group.notify(queue: DispatchQueue.global(qos: .background)) {
+            guard someError.count == 0 else {
+                completion(someError[0])
+                return
+            }
+            self.refreshChartEntries()
+            completion(nil)
+        }
 
 //        DispatchGroup.notify(qos: group, queue: DispatchQueue.global(DISPATCH_QUEUE_PRIORITY_BACKGROUND)) {
    /*    group.notify(qos: group, queue: DispatchQueue.main) {

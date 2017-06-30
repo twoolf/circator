@@ -85,7 +85,7 @@ class UserInfoModel: NSObject {
         return [ModelItem]()
     }
 
-    func itemAtIndexPath(indexPath: NSIndexPath) -> ModelItem {
+    func itemAtIndexPath(indexPath: IndexPath) -> ModelItem {
         return items[indexPath.row]
     }
 
@@ -144,7 +144,7 @@ class UserInfoModel: NSObject {
             }
         }
 
-        log.info("PROFILE ITEMS \(heightInchesComponent) \(profile[heightField.name]) \(profile[weightField.name])")
+        log.info("PROFILE ITEMS \(heightInchesComponent) \(String(describing: profile[heightField.name])) \(String(describing: profile[weightField.name]))")
 
         return profile
     }
@@ -189,8 +189,8 @@ class UserInfoModel: NSObject {
         }
     }
 
-    func unitsDependedItemsIndexes() -> [NSIndexPath] {
-        let indexes = [NSIndexPath]()
+    func unitsDependedItemsIndexes() -> [IndexPath] {
+        let indexes = [IndexPath]()
 
         let weightIndex = items.index(of: weightField)
 //        indexes.append(IndexPath(forRow: weightIndex!, inSection: 0))
@@ -376,7 +376,7 @@ class UserInfoModel: NSObject {
         let minWeightInUserUnits = self.units == .Metric ? minWeight : minWeightImp
         let maxWeightInUserUnits = self.units == .Metric ? maxWeight : maxWeightImp
 
-        log.info("VALIDATING WEIGHT \(weight) \(minWeightInUserUnits) \(maxWeightInUserUnits)")
+        log.info("VALIDATING WEIGHT \(String(describing: weight)) \(minWeightInUserUnits) \(maxWeightInUserUnits)")
         let isValid = isRequiredFloatValidInRange(value: weight, minValue: minWeightInUserUnits, maxValue: maxWeightInUserUnits)
 
         if !isValid {

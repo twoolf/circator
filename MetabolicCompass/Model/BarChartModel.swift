@@ -52,7 +52,7 @@ class BarChartModel : NSObject {
         let xVals = getYearTitles()
         var yVals: [ChartDataEntry] = []
         if let minValues = minValues {
-            yVals = getYValuesForScatterChart(minValues: minValues, maxValues: values, period: .year) as! [ChartDataEntry]
+            yVals = getYValuesForScatterChart(minValues: minValues, maxValues: values, period: .year)
         } else {
             yVals = convertStatisticsValues(stisticsValues: values, forRange: .year)
         }
@@ -65,7 +65,7 @@ class BarChartModel : NSObject {
         let xVals = getMonthTitles()
         var yVals = convertStatisticsValues(stisticsValues: values, forRange: .month)
         if let minValues = minValues {
-            yVals = getYValuesForScatterChart(minValues: minValues, maxValues: values, period: .month) as! [ChartDataEntry]
+            yVals = getYValuesForScatterChart(minValues: minValues, maxValues: values, period: .month)
         }
 
         return getChartDataFor(xVals: xVals, yVals: yVals, type: type) as! ChartData
@@ -76,7 +76,7 @@ class BarChartModel : NSObject {
         let xVals = getWeekTitles()
         var yVals = convertStatisticsValues(stisticsValues: values, forRange: .week)
         if let minValues = minValues {
-            yVals = getYValuesForScatterChart(minValues: minValues, maxValues: values, period: .week) as! [ChartDataEntry]
+            yVals = getYValuesForScatterChart(minValues: minValues, maxValues: values, period: .week)
         }
 
         return getChartDataFor(xVals: xVals, yVals: yVals, type: type) as! ChartData
@@ -246,7 +246,7 @@ class BarChartModel : NSObject {
         finalDataSet.drawVerticalHighlightIndicatorEnabled = false
         
         //create xAxis labels
-        if var dSet1 = dataSets[0] as? ChartDataSet, let dSet2 = dataSets[1] as? ChartDataSet {
+        if let dSet1 = dataSets[0] as? ChartDataSet, let dSet2 = dataSets[1] as? ChartDataSet {
             let cleanDSet1 = dSet1.values.map({ $0.hash }).filter({ _ in dSet1.entryCount > 0 })
             let cleanDSet2 = dSet2.values.map({ $0.hash }).filter({ _ in dSet2.entryCount > 0 })
 //            let cleanDSet1 = dSet1.y.map({ $0.xIndex }).filter({ !dSet1.yValForXIndex($0).isNaN })

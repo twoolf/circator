@@ -59,9 +59,10 @@ class UserSettingsViewController: BaseViewController {
 
     override func viewDidLoad() {
         super.viewDidLoad()
+        self.view.layoutIfNeeded()
         setupSettings()
         self.setupFormer()
-//        NotificationCenter.defaultCenter().addObserver(self, selector: #selector(self.refreshRemoteLogDisplay), name: RLogDidExpire, object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(self.refreshRemoteLogDisplay), name: NSNotification.Name(rawValue: RLogDidExpire), object: nil)
     }
 
     func toggleEditing(asEdited: Bool = true) {
@@ -116,8 +117,8 @@ class UserSettingsViewController: BaseViewController {
     }
 
     private func setupNavBar() {
-        if rightButton == nil { rightButton = createBarButtonItem(title: lsSaveTitle, action: #selector(rightAction)) }
-        if leftButton == nil { leftButton = createBarButtonItem(title: lsCancelTitle, action: #selector(leftAction)) }
+        if rightButton == nil { rightButton = createBarButtonItem(lsSaveTitle, action: #selector(rightAction)) }
+        if leftButton == nil { leftButton = createBarButtonItem(lsCancelTitle, action: #selector(leftAction)) }
         self.navigationItem.rightBarButtonItem = edited ? rightButton : nil
         self.navigationItem.leftBarButtonItem = edited ? leftButton : nil
     }

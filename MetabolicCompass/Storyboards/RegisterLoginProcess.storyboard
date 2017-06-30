@@ -28,37 +28,22 @@
                         <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
-                            <imageView userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" misplaced="YES" image="logo-landing" translatesAutoresizingMaskIntoConstraints="NO" id="N76-Si-E6h">
-                                <rect key="frame" x="10" y="104" width="300" height="199"/>
+                            <imageView userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="logo-landing" translatesAutoresizingMaskIntoConstraints="NO" id="N76-Si-E6h">
+                                <rect key="frame" x="37.5" y="104" width="300" height="233.5"/>
                                 <color key="backgroundColor" red="0.0" green="0.0" blue="0.0" alpha="0.0" colorSpace="custom" customColorSpace="sRGB"/>
                                 <constraints>
                                     <constraint firstAttribute="width" constant="300" id="djU-Ip-7Nc"/>
                                 </constraints>
                             </imageView>
-                            <view contentMode="scaleToFill" misplaced="YES" translatesAutoresizingMaskIntoConstraints="NO" id="K66-Ik-foC">
-                                <rect key="frame" x="40" y="303" width="240" height="97"/>
+                            <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="K66-Ik-foC">
+                                <rect key="frame" x="67.5" y="337.5" width="240" height="113.5"/>
                                 <color key="backgroundColor" red="0.0" green="0.0" blue="0.0" alpha="0.0" colorSpace="custom" customColorSpace="sRGB"/>
                                 <constraints>
                                     <constraint firstAttribute="width" constant="240" id="64f-Vn-2Hb"/>
                                 </constraints>
                             </view>
-                            <button opaque="NO" contentMode="scaleToFill" misplaced="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="sd1-bZ-oIV" customClass="BrightButton" customModule="MetabolicCompass">
-                                <rect key="frame" x="39" y="400" width="242" height="39"/>
-                                <color key="backgroundColor" red="0.20000000000000001" green="0.54117647058823526" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
-                                <state key="normal" title="Log in">
-                                    <color key="titleColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
-                                </state>
-                                <userDefinedRuntimeAttributes>
-                                    <userDefinedRuntimeAttribute type="number" keyPath="layer.cornerRadius">
-                                        <integer key="value" value="3"/>
-                                    </userDefinedRuntimeAttribute>
-                                </userDefinedRuntimeAttributes>
-                                <connections>
-                                    <action selector="onLogin:" destination="YLC-eZ-y2e" eventType="touchUpInside" id="gy9-0v-8Ms"/>
-                                </connections>
-                            </button>
-                            <button opaque="NO" contentMode="scaleToFill" misplaced="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="0Qt-Cl-J8O" customClass="BrightButton" customModule="MetabolicCompass" customModuleProvider="target">
-                                <rect key="frame" x="39" y="454" width="242" height="39"/>
+                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="0Qt-Cl-J8O" customClass="BrightButton" customModule="MetabolicCompass" customModuleProvider="target">
+                                <rect key="frame" x="39" y="505" width="297" height="39"/>
                                 <color key="backgroundColor" red="0.20000000000000001" green="0.54117647058823526" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                 <constraints>
                                     <constraint firstAttribute="height" constant="39" id="toY-GJ-1gN"/>
@@ -75,8 +60,8 @@
                                     <action selector="onRegister:" destination="YLC-eZ-y2e" eventType="touchUpInside" id="U61-Dd-WJQ"/>
                                 </connections>
                             </button>
-                            <button opaque="NO" contentMode="scaleToFill" misplaced="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="RTl-3I-Bn6">
-                                <rect key="frame" x="0.0" y="538" width="320" height="20"/>
+                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="RTl-3I-Bn6">
+                                <rect key="frame" x="0.0" y="637" width="375" height="20"/>
                                 <constraints>
                                     <constraint firstAttribute="height" constant="20" id="zzC-aj-59h"/>
                                 </constraints>
@@ -86,6 +71,21 @@
                                 </state>
                                 <connections>
                                     <action selector="privacyPolicy" destination="YLC-eZ-y2e" eventType="touchUpInside" id="0NP-5B-rKT"/>
+                                </connections>
+                            </button>
+                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="sd1-bZ-oIV" customClass="BrightButton" customModule="MetabolicCompass" customModuleProvider="target">
+                                <rect key="frame" x="39" y="451" width="297" height="39"/>
+                                <color key="backgroundColor" red="0.20000000000000001" green="0.54117647058823526" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                                <state key="normal" title="Log in">
+                                    <color key="titleColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                                </state>
+                                <userDefinedRuntimeAttributes>
+                                    <userDefinedRuntimeAttribute type="number" keyPath="layer.cornerRadius">
+                                        <integer key="value" value="3"/>
+                                    </userDefinedRuntimeAttribute>
+                                </userDefinedRuntimeAttributes>
+                                <connections>
+                                    <action selector="onLogin:" destination="YLC-eZ-y2e" eventType="touchUpInside" id="gy9-0v-8Ms"/>
                                 </connections>
                             </button>
                         </subviews>
@@ -131,37 +131,37 @@
                         <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
-                            <view contentMode="scaleToFill" misplaced="YES" translatesAutoresizingMaskIntoConstraints="NO" id="T2e-84-gjc">
-                                <rect key="frame" x="0.0" y="20" width="320" height="548"/>
+                            <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="T2e-84-gjc">
+                                <rect key="frame" x="0.0" y="20" width="375" height="647"/>
                                 <subviews>
-                                    <scrollView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" misplaced="YES" translatesAutoresizingMaskIntoConstraints="NO" id="mXR-U4-0It">
-                                        <rect key="frame" x="0.0" y="0.0" width="320" height="548"/>
+                                    <scrollView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="mXR-U4-0It">
+                                        <rect key="frame" x="0.0" y="0.0" width="375" height="647"/>
                                         <subviews>
-                                            <view contentMode="scaleToFill" misplaced="YES" translatesAutoresizingMaskIntoConstraints="NO" id="F7W-71-h9Z">
-                                                <rect key="frame" x="0.0" y="0.0" width="320" height="548"/>
+                                            <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="F7W-71-h9Z">
+                                                <rect key="frame" x="0.0" y="0.0" width="375" height="647"/>
                                                 <subviews>
-                                                    <imageView userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" misplaced="YES" image="logo-login" translatesAutoresizingMaskIntoConstraints="NO" id="eTk-Gq-Tph">
-                                                        <rect key="frame" x="53" y="46" width="215" height="170"/>
+                                                    <imageView userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="logo-login" translatesAutoresizingMaskIntoConstraints="NO" id="eTk-Gq-Tph">
+                                                        <rect key="frame" x="80.5" y="54" width="215" height="200"/>
                                                         <constraints>
                                                             <constraint firstAttribute="width" constant="215" id="sdv-jK-k1G"/>
                                                         </constraints>
                                                     </imageView>
-                                                    <view contentMode="scaleToFill" misplaced="YES" translatesAutoresizingMaskIntoConstraints="NO" id="w9k-zn-lxw" userLabel="View - middle offset">
-                                                        <rect key="frame" x="35" y="236" width="250" height="34"/>
+                                                    <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="w9k-zn-lxw" userLabel="View - middle offset">
+                                                        <rect key="frame" x="35" y="274" width="305" height="43"/>
                                                         <color key="backgroundColor" red="0.0" green="0.0" blue="0.0" alpha="0.0" colorSpace="custom" customColorSpace="sRGB"/>
                                                     </view>
-                                                    <tableView clipsSubviews="YES" contentMode="scaleToFill" misplaced="YES" alwaysBounceVertical="YES" scrollEnabled="NO" dataMode="prototypes" style="plain" separatorStyle="none" allowsSelection="NO" rowHeight="47" sectionHeaderHeight="1" sectionFooterHeight="1" translatesAutoresizingMaskIntoConstraints="NO" id="IDo-Kb-7sf">
-                                                        <rect key="frame" x="0.0" y="270" width="320" height="94"/>
+                                                    <tableView clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" scrollEnabled="NO" dataMode="prototypes" style="plain" separatorStyle="none" allowsSelection="NO" rowHeight="47" sectionHeaderHeight="1" sectionFooterHeight="1" translatesAutoresizingMaskIntoConstraints="NO" id="IDo-Kb-7sf">
+                                                        <rect key="frame" x="0.0" y="317" width="375" height="94"/>
                                                         <color key="backgroundColor" red="0.0" green="0.0" blue="0.0" alpha="0.0" colorSpace="custom" customColorSpace="sRGB"/>
                                                         <constraints>
                                                             <constraint firstAttribute="height" constant="94" id="gNw-cl-zjy"/>
                                                         </constraints>
                                                         <prototypes>
                                                             <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" selectionStyle="default" indentationWidth="10" reuseIdentifier="InputTableCellWithImage" id="5va-R0-cK8" customClass="InputTableCellWithImage" customModule="MetabolicCompass" customModuleProvider="target">
-                                                                <rect key="frame" x="0.0" y="1" width="320" height="47"/>
+                                                                <rect key="frame" x="0.0" y="1" width="375" height="47"/>
                                                                 <autoresizingMask key="autoresizingMask"/>
                                                                 <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="5va-R0-cK8" id="Xgr-b7-sg3">
-                                                                    <rect key="frame" x="0.0" y="0.0" width="320" height="47"/>
+                                                                    <rect key="frame" x="0.0" y="0.0" width="375" height="47"/>
                                                                     <autoresizingMask key="autoresizingMask"/>
                                                                     <subviews>
                                                                         <imageView userInteractionEnabled="NO" contentMode="center" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="kio-Dd-5OW">
@@ -172,14 +172,14 @@
                                                                             </constraints>
                                                                         </imageView>
                                                                         <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="cmx-t7-xs9">
-                                                                            <rect key="frame" x="40" y="46" width="240" height="1"/>
+                                                                            <rect key="frame" x="40" y="46" width="295" height="1"/>
                                                                             <color key="backgroundColor" red="1" green="1" blue="1" alpha="0.20000000000000001" colorSpace="custom" customColorSpace="sRGB"/>
                                                                             <constraints>
                                                                                 <constraint firstAttribute="height" constant="1" id="IXI-zp-mFZ"/>
                                                                             </constraints>
                                                                         </view>
                                                                         <textField opaque="NO" clipsSubviews="YES" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" textAlignment="natural" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="HqY-4n-ZRS">
-                                                                            <rect key="frame" x="71" y="8" width="209" height="30"/>
+                                                                            <rect key="frame" x="71" y="8" width="264" height="30"/>
                                                                             <constraints>
                                                                                 <constraint firstAttribute="height" constant="30" id="ncP-Hz-wSt"/>
                                                                             </constraints>
@@ -207,8 +207,8 @@
                                                             </tableViewCell>
                                                         </prototypes>
                                                     </tableView>
-                                                    <button opaque="NO" contentMode="scaleToFill" misplaced="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="zYU-TE-NmB" customClass="BrightButton" customModule="MetabolicCompass" customModuleProvider="target">
-                                                        <rect key="frame" x="40" y="394" width="240" height="39"/>
+                                                    <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="zYU-TE-NmB" customClass="BrightButton" customModule="MetabolicCompass" customModuleProvider="target">
+                                                        <rect key="frame" x="40" y="441" width="295" height="39"/>
                                                         <color key="backgroundColor" red="0.20000000000000001" green="0.54117647059999996" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                                         <constraints>
                                                             <constraint firstAttribute="height" constant="39" id="3gS-bC-MU4"/>
@@ -223,8 +223,8 @@
                                                             <action selector="loginAction" destination="8yI-Fi-ICu" eventType="touchUpInside" id="60j-Hz-tQg"/>
                                                         </connections>
                                                     </button>
-                                                    <button opaque="NO" contentMode="scaleToFill" misplaced="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="jTi-s5-wtV" customClass="AppButton" customModule="MetabolicCompass" customModuleProvider="target">
-                                                        <rect key="frame" x="40" y="491" width="240" height="30"/>
+                                                    <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="jTi-s5-wtV" customClass="AppButton" customModule="MetabolicCompass" customModuleProvider="target">
+                                                        <rect key="frame" x="40" y="590" width="295" height="30"/>
                                                         <constraints>
                                                             <constraint firstAttribute="height" constant="30" id="8rC-vC-Nv3"/>
                                                         </constraints>
@@ -236,8 +236,8 @@
                                                             <segue destination="Y3c-gq-NyR" kind="show" id="Rn1-Jb-tIh"/>
                                                         </connections>
                                                     </button>
-                                                    <view contentMode="scaleToFill" misplaced="YES" translatesAutoresizingMaskIntoConstraints="NO" id="1qG-qm-Xyo">
-                                                        <rect key="frame" x="0.0" y="0.0" width="320" height="46"/>
+                                                    <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="1qG-qm-Xyo">
+                                                        <rect key="frame" x="0.0" y="0.0" width="375" height="54"/>
                                                         <color key="backgroundColor" red="0.0" green="0.0" blue="0.0" alpha="0.0" colorSpace="custom" customColorSpace="sRGB"/>
                                                     </view>
                                                 </subviews>
@@ -315,24 +315,24 @@
                         <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
-                            <scrollView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" misplaced="YES" translatesAutoresizingMaskIntoConstraints="NO" id="9gU-eF-g8R">
-                                <rect key="frame" x="0.0" y="20" width="320" height="548"/>
+                            <scrollView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="9gU-eF-g8R">
+                                <rect key="frame" x="0.0" y="20" width="375" height="647"/>
                                 <subviews>
-                                    <view contentMode="scaleToFill" misplaced="YES" translatesAutoresizingMaskIntoConstraints="NO" id="Ava-j3-EYQ">
-                                        <rect key="frame" x="0.0" y="0.0" width="320" height="504"/>
+                                    <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="Ava-j3-EYQ">
+                                        <rect key="frame" x="0.0" y="0.0" width="375" height="603"/>
                                         <subviews>
-                                            <view contentMode="scaleToFill" misplaced="YES" translatesAutoresizingMaskIntoConstraints="NO" id="7X2-zQ-HIi">
-                                                <rect key="frame" x="0.0" y="0.0" width="320" height="46"/>
+                                            <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="7X2-zQ-HIi">
+                                                <rect key="frame" x="0.0" y="0.0" width="375" height="54"/>
                                                 <color key="backgroundColor" red="0.0" green="0.0" blue="0.0" alpha="0.0" colorSpace="custom" customColorSpace="sRGB"/>
                                             </view>
-                                            <imageView userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" misplaced="YES" image="logo-login" translatesAutoresizingMaskIntoConstraints="NO" id="Lus-uD-Ifb">
-                                                <rect key="frame" x="35" y="46" width="250" height="170"/>
+                                            <imageView userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="logo-login" translatesAutoresizingMaskIntoConstraints="NO" id="Lus-uD-Ifb">
+                                                <rect key="frame" x="62.5" y="54" width="250" height="200"/>
                                                 <constraints>
                                                     <constraint firstAttribute="width" constant="250" id="ha0-eP-Pi0"/>
                                                 </constraints>
                                             </imageView>
-                                            <view contentMode="scaleToFill" misplaced="YES" translatesAutoresizingMaskIntoConstraints="NO" id="BUX-uV-T4N" userLabel="email field">
-                                                <rect key="frame" x="40" y="295" width="240" height="30"/>
+                                            <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="BUX-uV-T4N" userLabel="email field">
+                                                <rect key="frame" x="40" y="334" width="295" height="30"/>
                                                 <subviews>
                                                     <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="icon-email" translatesAutoresizingMaskIntoConstraints="NO" id="htE-HD-nqS">
                                                         <rect key="frame" x="0.0" y="4" width="18" height="12"/>
@@ -341,14 +341,14 @@
                                                             <constraint firstAttribute="height" constant="12" id="hpm-GH-X7H"/>
                                                         </constraints>
                                                     </imageView>
-                                                    <textField opaque="NO" clipsSubviews="YES" contentMode="scaleToFill" misplaced="YES" contentHorizontalAlignment="left" contentVerticalAlignment="center" placeholder="E-mail" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="F92-M2-0CT">
-                                                        <rect key="frame" x="26" y="3" width="214" height="14"/>
+                                                    <textField opaque="NO" clipsSubviews="YES" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" placeholder="E-mail" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="F92-M2-0CT">
+                                                        <rect key="frame" x="26" y="3" width="269" height="14"/>
                                                         <color key="textColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                                         <fontDescription key="fontDescription" name="GothamBook" family="Gotham Book" pointSize="15"/>
                                                         <textInputTraits key="textInputTraits"/>
                                                     </textField>
-                                                    <view contentMode="scaleToFill" misplaced="YES" translatesAutoresizingMaskIntoConstraints="NO" id="JyF-9b-mxq" userLabel="separator">
-                                                        <rect key="frame" x="0.0" y="29" width="240" height="1"/>
+                                                    <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="JyF-9b-mxq" userLabel="separator">
+                                                        <rect key="frame" x="0.0" y="29" width="295" height="1"/>
                                                         <color key="backgroundColor" red="0.1803921568627451" green="0.26666666666666666" blue="0.41568627450980389" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                                         <constraints>
                                                             <constraint firstAttribute="height" constant="1" id="5dr-t3-vfu"/>
@@ -368,8 +368,8 @@
                                                     <constraint firstItem="JyF-9b-mxq" firstAttribute="leading" secondItem="htE-HD-nqS" secondAttribute="leading" id="s0d-sU-62n"/>
                                                 </constraints>
                                             </view>
-                                            <button opaque="NO" contentMode="scaleToFill" misplaced="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="aIe-zQ-QaK" customClass="BrightButton" customModule="MetabolicCompass" customModuleProvider="target">
-                                                <rect key="frame" x="40" y="355" width="240" height="39"/>
+                                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="aIe-zQ-QaK" customClass="BrightButton" customModule="MetabolicCompass" customModuleProvider="target">
+                                                <rect key="frame" x="40" y="394" width="295" height="39"/>
                                                 <color key="backgroundColor" red="0.20000000000000001" green="0.54117647059999996" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                                 <constraints>
                                                     <constraint firstAttribute="height" constant="39" id="4bP-Lm-jPX"/>
@@ -386,12 +386,12 @@
                                                     <action selector="resetAction:" destination="Y3c-gq-NyR" eventType="touchUpInside" id="2K5-mT-LKW"/>
                                                 </connections>
                                             </button>
-                                            <view contentMode="scaleToFill" misplaced="YES" translatesAutoresizingMaskIntoConstraints="NO" id="I1v-wj-2Gh" userLabel="View - middle offset">
-                                                <rect key="frame" x="40" y="236" width="240" height="51"/>
+                                            <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="I1v-wj-2Gh" userLabel="View - middle offset">
+                                                <rect key="frame" x="40" y="274" width="295" height="60"/>
                                                 <color key="backgroundColor" red="0.0" green="0.0" blue="0.0" alpha="0.0" colorSpace="custom" customColorSpace="sRGB"/>
                                             </view>
-                                            <button opaque="NO" contentMode="scaleToFill" misplaced="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="VQg-bf-aGX" customClass="AppButton" customModule="MetabolicCompass" customModuleProvider="target">
-                                                <rect key="frame" x="40" y="447" width="240" height="30"/>
+                                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="VQg-bf-aGX" customClass="AppButton" customModule="MetabolicCompass" customModuleProvider="target">
+                                                <rect key="frame" x="40" y="546" width="295" height="30"/>
                                                 <constraints>
                                                     <constraint firstAttribute="height" constant="30" id="obP-Cu-Fhv"/>
                                                 </constraints>
@@ -472,8 +472,8 @@
                         <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
-                            <collectionView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" misplaced="YES" dataMode="prototypes" translatesAutoresizingMaskIntoConstraints="NO" id="QLH-Tq-w8F">
-                                <rect key="frame" x="0.0" y="36" width="320" height="532"/>
+                            <collectionView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" dataMode="prototypes" translatesAutoresizingMaskIntoConstraints="NO" id="QLH-Tq-w8F">
+                                <rect key="frame" x="0.0" y="36" width="375" height="631"/>
                                 <color key="backgroundColor" red="0.0" green="0.0" blue="0.0" alpha="0.0" colorSpace="custom" customColorSpace="sRGB"/>
                                 <collectionViewFlowLayout key="collectionViewLayout" minimumLineSpacing="0.0" minimumInteritemSpacing="0.0" id="oZu-EI-EYb">
                                     <size key="itemSize" width="200" height="50"/>
@@ -483,7 +483,7 @@
                                 </collectionViewFlowLayout>
                                 <cells>
                                     <collectionViewCell opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" id="T76-Nf-SwW">
-                                        <rect key="frame" x="60" y="0.0" width="200" height="50"/>
+                                        <rect key="frame" x="87.5" y="0.0" width="200" height="50"/>
                                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                         <view key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center">
                                             <rect key="frame" x="0.0" y="0.0" width="200" height="50"/>
@@ -492,11 +492,11 @@
                                     </collectionViewCell>
                                 </cells>
                                 <collectionReusableView key="sectionFooterView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" reuseIdentifier="footerView" id="mHh-Zw-QFJ">
-                                    <rect key="frame" x="0.0" y="50" width="320" height="120"/>
+                                    <rect key="frame" x="0.0" y="50" width="375" height="120"/>
                                     <autoresizingMask key="autoresizingMask"/>
                                     <subviews>
                                         <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="XTA-yO-iNX" customClass="BrightButton" customModule="MetabolicCompass" customModuleProvider="target">
-                                            <rect key="frame" x="47" y="41" width="226" height="39"/>
+                                            <rect key="frame" x="47" y="41" width="281" height="39"/>
                                             <color key="backgroundColor" red="0.20000000000000001" green="0.54117647059999996" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                             <constraints>
                                                 <constraint firstAttribute="height" constant="39" id="fCG-bv-Ij5"/>
@@ -550,11 +550,11 @@
                         <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
-                            <view contentMode="scaleToFill" misplaced="YES" translatesAutoresizingMaskIntoConstraints="NO" id="Nkc-ed-rNq">
-                                <rect key="frame" x="16" y="205" width="288" height="159"/>
+                            <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="Nkc-ed-rNq">
+                                <rect key="frame" x="16" y="254.5" width="343" height="158.5"/>
                                 <subviews>
-                                    <button opaque="NO" contentMode="scaleToFill" misplaced="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="GJd-xL-dQA" customClass="BrightButton" customModule="MetabolicCompass" customModuleProvider="target">
-                                        <rect key="frame" x="0.0" y="120" width="288" height="39"/>
+                                    <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="GJd-xL-dQA" customClass="BrightButton" customModule="MetabolicCompass" customModuleProvider="target">
+                                        <rect key="frame" x="0.0" y="119.5" width="343" height="39"/>
                                         <color key="backgroundColor" red="0.20000000000000001" green="0.54117647059999996" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                         <constraints>
                                             <constraint firstAttribute="height" constant="39" id="Hl7-97-n8e"/>
@@ -573,8 +573,8 @@
                                             <segue destination="cr1-Aw-H8B" kind="show" identifier="AdditionInfoController" id="StD-tJ-vTl"/>
                                         </connections>
                                     </button>
-                                    <button opaque="NO" contentMode="scaleToFill" misplaced="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="jvl-2B-OaP" customClass="UnBrightButton" customModule="MetabolicCompass" customModuleProvider="target">
-                                        <rect key="frame" x="0.0" y="65" width="288" height="39"/>
+                                    <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="jvl-2B-OaP" customClass="UnBrightButton" customModule="MetabolicCompass" customModuleProvider="target">
+                                        <rect key="frame" x="0.0" y="64.5" width="343" height="39"/>
                                         <color key="backgroundColor" red="0.32549019607843138" green="0.40392156862745099" blue="0.52156862745098043" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                         <constraints>
                                             <constraint firstAttribute="height" constant="39" id="7j3-Yj-oV3"/>
@@ -593,8 +593,8 @@
                                             <action selector="registerAction:" destination="Wq1-CV-Iw6" eventType="touchUpInside" id="ueZ-26-mTW"/>
                                         </connections>
                                     </button>
-                                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" misplaced="YES" textAlignment="center" lineBreakMode="tailTruncation" numberOfLines="2" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="7QN-lz-ecO">
-                                        <rect key="frame" x="0.0" y="0.0" width="288" height="33"/>
+                                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" textAlignment="center" lineBreakMode="tailTruncation" numberOfLines="2" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="7QN-lz-ecO">
+                                        <rect key="frame" x="0.0" y="0.0" width="343" height="32.5"/>
                                         <string key="text">Do you want to provide
 additional information?</string>
                                         <fontDescription key="fontDescription" name="GothamBook" family="Gotham Book" pointSize="18"/>
@@ -644,8 +644,8 @@ additional information?</string>
                         <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
-                            <collectionView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" misplaced="YES" dataMode="prototypes" translatesAutoresizingMaskIntoConstraints="NO" id="ez5-DM-uTj">
-                                <rect key="frame" x="0.0" y="64" width="320" height="504"/>
+                            <collectionView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" dataMode="prototypes" translatesAutoresizingMaskIntoConstraints="NO" id="ez5-DM-uTj">
+                                <rect key="frame" x="0.0" y="64" width="375" height="603"/>
                                 <color key="backgroundColor" red="0.039215686270000001" green="0.1137254902" blue="0.26274509800000001" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                 <collectionViewFlowLayout key="collectionViewLayout" minimumLineSpacing="0.0" minimumInteritemSpacing="0.0" id="qI7-gf-xZ3">
                                     <size key="itemSize" width="280" height="50"/>
@@ -655,7 +655,7 @@ additional information?</string>
                                 </collectionViewFlowLayout>
                                 <cells>
                                     <collectionViewCell opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" id="da8-zu-62o">
-                                        <rect key="frame" x="20" y="40" width="280" height="50"/>
+                                        <rect key="frame" x="47.5" y="40" width="280" height="50"/>
                                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                         <view key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center">
                                             <rect key="frame" x="0.0" y="0.0" width="280" height="50"/>
@@ -663,7 +663,7 @@ additional information?</string>
                                         </view>
                                     </collectionViewCell>
                                     <collectionViewCell opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" id="hsf-sg-exU">
-                                        <rect key="frame" x="20" y="90" width="280" height="50"/>
+                                        <rect key="frame" x="47.5" y="90" width="280" height="50"/>
                                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                         <view key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center">
                                             <rect key="frame" x="0.0" y="0.0" width="280" height="50"/>
@@ -672,11 +672,11 @@ additional information?</string>
                                     </collectionViewCell>
                                 </cells>
                                 <collectionReusableView key="sectionHeaderView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" reuseIdentifier="headerView" id="PnE-fB-u1L" customClass="HeaderView" customModule="MetabolicCompass" customModuleProvider="target">
-                                    <rect key="frame" x="0.0" y="0.0" width="320" height="40"/>
+                                    <rect key="frame" x="0.0" y="0.0" width="375" height="40"/>
                                     <autoresizingMask key="autoresizingMask"/>
                                     <subviews>
-                                        <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" misplaced="YES" text="Label" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="mEN-Xg-3gs">
-                                            <rect key="frame" x="24" y="12" width="252" height="17"/>
+                                        <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Label" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="mEN-Xg-3gs">
+                                            <rect key="frame" x="24" y="12" width="327" height="17"/>
                                             <fontDescription key="fontDescription" type="system" pointSize="14"/>
                                             <color key="textColor" red="0.2627450980392157" green="0.47843137254901957" blue="0.87058823529411766" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                             <nil key="highlightedColor"/>

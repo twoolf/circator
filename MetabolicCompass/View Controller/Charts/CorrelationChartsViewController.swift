@@ -83,8 +83,8 @@ open class CorrelationChartsViewController: UIViewController, UITableViewDelegat
     
     override open func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-        NotificationCenter.default.addObserver(self, selector: #selector(updateChartDataWithClean), name: NSNotification.Name.UIApplicationWillEnterForeground, object: nil)
-        NotificationCenter.default.addObserver(self, selector: #selector(updateChartsData), name: NSNotification.Name(rawValue: HMDidUpdatedChartsData), object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(self.updateChartDataWithClean), name: NSNotification.Name.UIApplicationWillEnterForeground, object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(self.updateChartsData), name: NSNotification.Name(rawValue: HMDidUpdatedChartsData), object: nil)
         
         logContentView()
         updateChartsData()
@@ -190,7 +190,7 @@ open class CorrelationChartsViewController: UIViewController, UITableViewDelegat
             view.barTintColor = self.tableView.backgroundColor
             view.frame = CGRect(0, 0, 0, 44)
             view.barStyle = .black
-            let button = UIBarButtonItem(title: "Done", style: UIBarButtonItemStyle.plain, target: self, action:  #selector(hideTextField))
+            let button = UIBarButtonItem(title: "Done", style: UIBarButtonItemStyle.plain, target: self, action:  #selector(self.hideTextField))
             button.tintColor = UIColor.colorWithHexString(rgb: "#7E8FA6")
             view.tintColor = UIColor.colorWithHexString(rgb: "#7E8FA6")
             view.items = [
@@ -318,7 +318,7 @@ open class CorrelationChartsViewController: UIViewController, UITableViewDelegat
             view.barTintColor = self.tableView.backgroundColor
             view.frame = CGRect(0, 0, 0, 44)
             view.barStyle = .black
-            let button = UIBarButtonItem(title: "Done", style: UIBarButtonItemStyle.plain, target: self, action:  #selector(hideTextField))
+            let button = UIBarButtonItem(title: "Done", style: UIBarButtonItemStyle.plain, target: self, action:  #selector(self.hideTextField))
             button.tintColor = UIColor.colorWithHexString(rgb: "#7E8FA6")
             view.tintColor = UIColor.colorWithHexString(rgb: "#7E8FA6")
             view.items = [

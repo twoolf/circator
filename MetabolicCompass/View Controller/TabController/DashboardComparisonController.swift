@@ -54,9 +54,9 @@ class DashboardComparisonController: UIViewController, UITableViewDelegate, UITa
         self.updateContent()
 
         self.tableView.reloadData()
-        NotificationCenter.default.addObserver(self, selector: #selector(contentDidUpdate), name: NSNotification.Name(rawValue: HMDidUpdateRecentSamplesNotification), object: nil)
-        NotificationCenter.default.addObserver(self, selector: #selector(refreshData), name: NSNotification.Name(rawValue: HMDidUpdateAnyMeasures), object: nil)
-        NotificationCenter.default.addObserver(self, selector: #selector(updateContent), name: NSNotification.Name.UIApplicationDidBecomeActive, object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(self.contentDidUpdate), name: NSNotification.Name(rawValue: HMDidUpdateRecentSamplesNotification), object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(self.refreshData), name: NSNotification.Name(rawValue: HMDidUpdateAnyMeasures), object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(self.updateContent), name: NSNotification.Name.UIApplicationDidBecomeActive, object: nil)
         logContentView()
     }
     
@@ -118,11 +118,12 @@ class DashboardComparisonController: UIViewController, UITableViewDelegate, UITa
 //        let timeSinceRefresh = Date().addingTimeInterval(PopulationHealthManager.sharedManager.aggregateRefreshDate ?? Date.distantPast())
 //        let timeSinceRefresh = DateInterval().timeIntervalSinceDate(PopulationHealthManager.sharedManager.aggregateRefreshDate ?? Date.distantPast())
         let refreshPeriod = UserManager.sharedManager.getRefreshFrequency() ?? Int.max
-        let stale = timeSinceRefresh > DateInterval(start: Date(), duration: TimeInterval(refreshPeriod))
+ //       let stale = timeSinceRefresh > DateInterval(start: Date(), duration: TimeInterval(refreshPeriod))
+        let stale = true
 
         let individualSamples = ComparisonDataModel.sharedManager.recentSamples[sampleType] ?? [HKSample]()
         let populationSamples = ComparisonDataModel.sharedManager.recentAggregates[sampleType] ?? []
-        cell.setUserData(userData: individualSamples, populationAverageData: populationSamples, stalePopulation: stale)
+        cell.setUserData(individualSamples, populationAverageData: populationSamples, stalePopulation: stale)
 
         if indexPath.section == 0 && comparisonTips[indexPath.row] == nil {
             let targetView = cell

@@ -77,7 +77,7 @@ open class DailyChartModel : NSObject, UITableViewDataSource {
             fatalError("Unable to create DailyChartModel circadian cache.")
         }
         super.init()
-        NotificationCenter.default.addObserver(self, selector: #selector(invalidateCache), name: NSNotification.Name(rawValue: HMDidUpdateCircadianEvents), object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(self.invalidateCache), name: NSNotification.Name(rawValue: HMDidUpdateCircadianEvents), object: nil)
     }
     
     var daysArray: [Date] = { return DailyChartModel.getChartDateRange() }()
@@ -116,7 +116,7 @@ open class DailyChartModel : NSObject, UITableViewDataSource {
     public func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: dayCellIdentifier) as! DailyProgressDayTableViewCell
         cell.dayLabel.text = self.daysStringArray[indexPath.row]
-//        cell.dayLabel.textColor = indexPath.row == 0 ? UIColor.colorWithHexString(rgb: "#ffffff", alpha: 1) : UIColor.colorWithHexString(rgb: "#ffffff", alpha: 0.3)
+        cell.dayLabel.textColor = indexPath.row == 0 ? UIColor.colorWithHexString(rgb: "#ffffff", alpha: 1) : UIColor.colorWithHexString(rgb: "#ffffff", alpha: 0.3)
         return cell
     }
     
@@ -235,7 +235,8 @@ open class DailyChartModel : NSObject, UITableViewDataSource {
             if !lastDay { //we still have data to retrieve
                 let nextIndex = dateIndex! + 1
                 let lastElement = nextIndex == (self.daysArray.count - 1)
-                Async.main {
+//                Async.main {
+                OperationQueue.main.addOperation {
                     self.getDataForDay(day: self.daysArray[nextIndex], lastDay: lastElement)
                 }
             } else {//end of recursion
@@ -243,7 +244,8 @@ open class DailyChartModel : NSObject, UITableViewDataSource {
                     self.chartDataAndColors[key] = daysData.map { valAndColor in (valAndColor.0, self.selectColor(color: valAndColor.1)) }
                 }
 
-                Async.main {
+//                Async.main {
+                OperationQueue.main.addOperation {
                     self.delegate?.dataCollectingFinished?()
                 }
             }

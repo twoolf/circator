@@ -57,7 +57,7 @@ public class Theme: NSObject {
      sets up foreground colors for Metabolic Compass
 
      */
-    public class ForegroundColorGroup: ArrayLiteralConvertible {
+    public class ForegroundColorGroup: ExpressibleByArrayLiteral {
         let foregroundColors: [Color]
         
         public required convenience init(arrayLiteral elements: Color...) {

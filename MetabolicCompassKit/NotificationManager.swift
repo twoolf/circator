@@ -213,7 +213,9 @@ public class NotificationManager {
  //           streakStarts[.Contribution] = Date() - initStartOffset.days
             streakStarts[.Contribution] = Date().addingTimeInterval(initStartOffset)
  //           Defaults.set(streakStarts, forKey: NMStreakStartKey)
-            Defaults.set(streakStarts as? AnyObject, forKey: NMStreakStartKey)
+            print("streak start key \(NMStreakStartKey)")
+            print("streak start: \(streakStarts)")
+ //           Defaults.set(streakStarts, forKey: NMStreakStartKey)
             Defaults.synchronize()
         }
 
@@ -224,7 +226,7 @@ public class NotificationManager {
             streakEnds[.Fasting] = Date().addingTimeInterval(TimeInterval(initEndOffset))
 //            streakEnds[.Contribution] = (Date() - initEndOffset.days) + initEndDeltaSecs.seconds
             streakEnds[.Contribution] = Date().addingTimeInterval(TimeInterval(initEndOffset))
-            Defaults.set(streakEnds, forKey: NMStreakEndKey)
+ //           Defaults.set(streakEnds, forKey: NMStreakEndKey)
             Defaults.synchronize()
         }
 
@@ -271,8 +273,8 @@ public class NotificationManager {
     }
 
     public func sync() {
-        Defaults.set(streakStarts, forKey: NMStreakStartKey)
-        Defaults.set(streakEnds, forKey: NMStreakEndKey)
+//        Defaults.set(streakStarts, forKey: NMStreakStartKey)
+//        Defaults.set(streakEnds, forKey: NMStreakEndKey)
 //        Defaults.set(streakState, forKey: NMStreakStateKey)
 //        Defaults.set(streakMax, forKey: NMStreakMaxKey)
         Defaults.synchronize()
@@ -409,7 +411,7 @@ public class NotificationManager {
     }
 
     func incrContributionStreak(startDate: Date, endDate: Date) {
-        log.debug("CIncr \(startDate) \(streakEnds[.Contribution]) \(self.isDayAfter(a: streakEnds[.Contribution]!, b: startDate))", "CStreak")
+        log.debug("CIncr \(startDate) \(String(describing: streakEnds[.Contribution])) \(self.isDayAfter(a: streakEnds[.Contribution]!, b: startDate))", "CStreak")
 
         if let cstStart = streakStarts[.Contribution], let cstEnd = streakEnds[.Contribution], startDate >= cstEnd {
             if self.isDayAfter(a: cstEnd, b: startDate) {
@@ -497,7 +499,7 @@ public class NotificationManager {
         }
 
         let notificationId = streakType == .Fasting ? "FStreak" : "CStreak"
-        log.debug("Notify \(notificationId) \(notifyType) \(streakLength) \(rankIndex) \(buckets.index { $0.0 >= streakLength }) \(msg)", notificationId)
+        log.debug("Notify \(notificationId) \(notifyType) \(streakLength) \(String(describing: rankIndex)) \(String(describing: buckets.index { $0.0 >= streakLength })) \(msg)", notificationId)
 
         enqueueNotification(notificationId: notificationId, messages: [msg], immediate: true)
     }
@@ -536,7 +538,7 @@ public class NotificationManager {
         }
 
         if fire != nil {
-            log.debug("L-notify for \(notification.fireDate?.weekdayName)", "execNotify")
+            log.debug("L-notify for \(String(describing: notification.fireDate?.weekdayName))", "execNotify")
             UIApplication.shared.scheduleLocalNotification(notification)
         } else {
             log.warning("Skip immediate notification during blackout period: \(body)", "execNotify")

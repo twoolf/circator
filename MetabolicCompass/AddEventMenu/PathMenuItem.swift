@@ -10,8 +10,10 @@ import Foundation
 import UIKit
 
 public protocol PathMenuItemDelegate: class {
-    func pathMenuItemTouchesBegin(item: PathMenuItem)
-    func pathMenuItemTouchesEnd(item: PathMenuItem)
+//    func pathMenuItemTouchesBegin(item: PathMenuItem)
+//    func pathMenuItemTouchesEnd(item: PathMenuItem)
+    func TouchesBegin(on item: PathMenuItem)
+    func TouchesEnd(on item: PathMenuItem)
 }
 
 public class PathMenuItem: UIImageView {
@@ -19,10 +21,14 @@ public class PathMenuItem: UIImageView {
     public var contentImageView: UIImageView?
     public var contentLabel: UILabel!
 
-    public var startPoint: CGPoint?
-    public var endPoint: CGPoint?
-    public var nearPoint: CGPoint?
-    public var farPoint: CGPoint?
+    public var startPoint: CGPoint = CGPoint.zero
+    public var endPoint: CGPoint = CGPoint.zero
+    public var nearPoint: CGPoint = CGPoint.zero
+    public var farPoint: CGPoint = CGPoint.zero
+    //    public var startPoint: CGPoint?
+    //    public var endPoint: CGPoint?
+    //    public var nearPoint: CGPoint?
+    //    public var farPoint: CGPoint?
     
     public weak var delegate: PathMenuItemDelegate?
     
@@ -40,19 +46,19 @@ public class PathMenuItem: UIImageView {
         super.init(coder: aDecoder)
     }
    
-    convenience public init(image: UIImage,
-            highlightedImage himg: UIImage? = nil,
-                contentImage cimg: UIImage? = nil,
-    highlightedContentImage hcimg: UIImage? = nil,
+    public convenience init(image: UIImage,
+                            highlightedImage: UIImage? = nil,
+                            contentImage: UIImage? = nil,
+                            highlightedContentImage: UIImage? = nil,
                  contentText text: String?  = nil)
     {
 
         self.init(frame: CGRect.zero)
         self.image = image
-        self.highlightedImage = himg
+        self.highlightedImage = highlightedImage
 
-        self.contentImageView = UIImageView(image: cimg)
-        self.contentImageView?.highlightedImage = hcimg
+        self.contentImageView = UIImageView(image: contentImage)
+        self.contentImageView?.highlightedImage = highlightedContentImage
 
         self.contentLabel = UILabel(frame: CGRect.zero)
         self.contentLabel.text = text
@@ -85,7 +91,7 @@ public class PathMenuItem: UIImageView {
     override public func layoutSubviews() {
         super.layoutSubviews()
         if let image = image {
-            bounds = CGRect(0, 0, image.size.width, image.size.height)
+            bounds = CGRect(x: 0, y: 0, width: image.size.width, height: image.size.height)
         }
         
         if let imageView = contentImageView,
@@ -96,29 +102,38 @@ public class PathMenuItem: UIImageView {
         }
     }
     
-    public func touchesBegan(touches: Set<UITouch>, withEvent event: UIEvent?) {
+    public override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
         isHighlighted = true
-        delegate?.pathMenuItemTouchesBegin(item: self)
+        delegate?.TouchesBegin(on: self)
     }
     
-    public func touchesMoved(touches: Set<UITouch>, withEvent event: UIEvent?) {
+    public override func touchesMoved(_ touches: Set<UITouch>, with event: UIEvent?) {
         if let location = touches.first?.location(in: self) {
-            if !ScaleRect(rect: bounds, n: 2.0).contains(location) {
+            if !scale(rect: bounds, n: 2.0).contains(location) {
                 isHighlighted = false
             }
         }
     }
 
-    public func touchesEnded(touches: Set<UITouch>, withEvent event: UIEvent?) {
-        isHighlighted = false
+    public override func touchesEnded(_ touches: Set<UITouch>, with event: UIEvent?) {
         if let location = touches.first?.location(in: self) {
-            if ScaleRect(rect: bounds, n: 2.0).contains(location) {
-                delegate?.pathMenuItemTouchesEnd(item: self)
+            if scale(rect: bounds, n: 2.0).contains(location) {
+                isHighlighted = false
+                delegate?.TouchesEnd(on: self)
             }
         }
     }
     
     public override func touchesCancelled(_ touches: Set<UITouch>?, with event: UIEvent?) {
         isHighlighted = false
+    }
+    
+    private func scale(rect: CGRect, n: CGFloat) -> CGRect {
+        let width = rect.size.width
+        let height = rect.size.height
+        let x = (width - width * n) / 2
+        let y = (height - height * n) / 2
+        return CGRect(x: x, y: y, width: width * n, height: height * n)
+
     }
 }

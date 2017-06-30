@@ -32,7 +32,7 @@ class EventPickerManager: NSObject, UIPickerViewDataSource {
     lazy var pickerView: UIPickerView = {
         let view = UIPickerView()
         view.dataSource = self
-        view.delegate = self as! UIPickerViewDelegate
+        view.delegate = self as? UIPickerViewDelegate
         return view
     }()
     
@@ -40,7 +40,7 @@ class EventPickerManager: NSObject, UIPickerViewDataSource {
     public func pickerView(_ pickerView: UIPickerView, widthForComponent component: Int) -> CGFloat {
         let view = UIPickerView()
         view.dataSource = self
-        view.delegate = self as! UIPickerViewDelegate
+        view.delegate = self as? UIPickerViewDelegate
         return view.alpha
     }
     

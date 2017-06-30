@@ -32,11 +32,11 @@ final class HealthConditions: NSObject {
     
     func readMostRecentSample(sampleType:HKSampleType , completion: ((HKSample?, Error?) -> Void)!)
     {
-        var weight:HKQuantitySample?
-        let height:HKQuantitySample?
-        var bmi:Double = 22.0
-        let kUnknownString   = "Unknown"
-        var HKBMIString:String = "24.0"
+        var _:HKQuantitySample?
+        let _:HKQuantitySample?
+        var _:Double = 22.0
+        _   = "Unknown"
+        var _:String = "24.0"
         let healthKitStore:HKHealthStore = HKHealthStore()
         let past = Date.distantPast
         let now   = Date()
@@ -70,7 +70,7 @@ final class HealthConditions: NSObject {
             
             if( error != nil )
             {
-                print("Error reading weight from HealthKit Store: \(error?.localizedDescription)")
+                print("Error reading weight from HealthKit Store: \(String(describing: error?.localizedDescription))")
                 return;
             }
             
@@ -91,17 +91,17 @@ final class HealthConditions: NSObject {
     
     func updateHeight()
     {
-        var height, weight:HKQuantitySample?
+        var height:HKQuantitySample?
 //        _:Double = 22.0
         let kUnknownString   = "Unknown"
-        var HKBMIString:String = "24.0"
+        var _:String = "24.0"
 //        _:HKHealthStore = HKHealthStore()
         let sampleType = HKSampleType.quantityType(forIdentifier: HKQuantityTypeIdentifier.height)
         readMostRecentSample(sampleType: sampleType!, completion: { (mostRecentHeight, error) -> Void in
             
             if( error != nil )
             {
-                print("Error reading height from HealthKit Store: \(error?.localizedDescription)")
+                print("Error reading height from HealthKit Store: \(String(describing: error?.localizedDescription))")
                 return;
             }
             
@@ -134,8 +134,8 @@ final class HealthConditions: NSObject {
     
     func updateBMI()
     {
-        var height:HKQuantitySample? = nil
-        var weight:HKQuantitySample? = nil
+        let height:HKQuantitySample? = nil
+        let weight:HKQuantitySample? = nil
         var bmi:Double = 22.0
         var weightInKilograms = 6.0
         var heightInMeters = 2.0

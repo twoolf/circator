@@ -104,7 +104,7 @@ private let inputFontSize = ScreenManager.sharedInstance.profileInputFontSize()
     func doConsent() {
         stashedUserId = UserManager.sharedManager.getUserId()
         UserManager.sharedManager.resetFull()
-        ConsentManager.sharedManager.checkConsentWithBaseViewController(viewController: self.navigationController!) { [weak self] consentAndNames -> Void in
+        ConsentManager.sharedManager.checkConsentWithBaseViewController(self.navigationController!) { [weak self] consentAndNames -> Void in
             guard consentAndNames.0 else {
                 UserManager.sharedManager.resetFull()
                 if let user = self!.stashedUserId {

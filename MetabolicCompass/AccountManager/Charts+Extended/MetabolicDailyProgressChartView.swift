@@ -109,7 +109,7 @@ class MetabolicDailyProgressChartView : HorizontalBarChartView, DailyChartModelP
         self.tip = TapTip(forView: tipDummyLabel, withinView: self, text: desc, width: 350, numTaps: 2, numTouches: 2, asTop: false)
         self.addGestureRecognizer(tip.tapRecognizer)
 
-        changeColorRecognizer = UITapGestureRecognizer(target: self, action: #selector(toggleColors))
+        changeColorRecognizer = UITapGestureRecognizer(target: self, action: #selector(self.toggleColors))
         changeColorRecognizer.numberOfTapsRequired = 2
         self.addGestureRecognizer(changeColorRecognizer)
 

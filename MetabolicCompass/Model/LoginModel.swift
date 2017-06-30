@@ -11,6 +11,11 @@ import UIKit
 import MetabolicCompassKit
 
 class LoginModel : NSObject, UITableViewDataSource, UITextFieldDelegate {
+ //   @available(iOS 2.0, *)
+//    func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+//        return 2
+//    }
+
 
     var loginTable: UITableView?
     var controllerView: UIView?
@@ -28,8 +33,10 @@ class LoginModel : NSObject, UITableViewDataSource, UITextFieldDelegate {
 
 //    func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
 //        let cell = tableView.dequeueReusableCell(withIdentifier: String(describing: InputTableCellWithImage()), for: indexPath as IndexPath) as! InputTableCellWithImage
+//    func tableView(_ tableView: UITableView, cellForRowAt indexPath: NSIndexPath) -> UITableViewCell {
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        let cell = tableView.dequeueReusableCell(withIdentifier: String(describing: InputTableCellWithImage()), for: indexPath) as! InputTableCellWithImage
+        let cell = tableView.dequeueReusableCell(withIdentifier: String(describing: InputTableCellWithImage.self), for: indexPath) as! InputTableCellWithImage
+//        let cell = tableView.dequeueReusableCell(withIdentifier: String(describing: InputTableCellWithImage()), for: indexPath as IndexPath) as! InputTableCellWithImage
         cell.cellInput.delegate = self
         cell.cellInput.tag = indexPath.row
         cell.cellInput.textColor = ScreenManager.sharedInstance.appBrightTextColor()

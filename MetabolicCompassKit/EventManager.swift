@@ -100,7 +100,7 @@ public class EventManager : NSObject, WCSessionDelegate {
             (accessGranted, error) in
 
             guard error == nil else {
-                log.error("Calendar access error: \(error)")
+                log.error("Calendar access error: \(String(describing: error))")
                 return
             }
 

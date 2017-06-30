@@ -34,10 +34,10 @@ class MealInterfaceController: WKInterfaceController {
         }
         mealPicker.setItems(tempItems)
         
-        let thisRegion = DateInRegion()
+        _ = DateInRegion()
         var beginTimePointer = 24
         let calendar = Calendar.current
-        var beginDate = Date()
+        let beginDate = Date()
         let beginComponents = calendar.dateComponents([.year, .month, .day, .hour, .minute], from: beginDate)
         if beginComponents.minute! < 15 {
             beginTimePointer = 6*beginComponents.hour!

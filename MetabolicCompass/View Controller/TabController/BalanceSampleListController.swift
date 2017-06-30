@@ -62,9 +62,9 @@ class BalanceSampleListController: UIViewController, UITableViewDelegate, UITabl
         PreviewManager.updatePreviewSampleTypes(types: samples)
     }
     
-//    func preferredStatusBarStyle() -> UIStatusBarStyle {
-//        return .lightContent;
-//    }
+/*    func preferredStatusBarStyle() -> UIStatusBarStyle {
+        return .lightContent;
+    } */
     
     override func didReceiveMemoryWarning() {
         super.didReceiveMemoryWarning()
@@ -76,7 +76,7 @@ class BalanceSampleListController: UIViewController, UITableViewDelegate, UITabl
         save()
     }
     
-    func numberOfSectionsInTableView(tableView: UITableView) -> Int {
+    func numberOfSections(in tableView: UITableView) -> Int {
         return 1
     }
     
@@ -100,7 +100,7 @@ class BalanceSampleListController: UIViewController, UITableViewDelegate, UITabl
     }
     
     
-    private func tableView(_ tableView: UITableView, didSelectRowAtIndexPath indexPath: NSIndexPath) {
+    internal func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         
         let obj = tableView.cellForRow(at: indexPath as IndexPath) as? ManageDashboardCell
         guard let cell = obj else {
@@ -122,7 +122,8 @@ class BalanceSampleListController: UIViewController, UITableViewDelegate, UITabl
         item.active = true
         cell.button.isSelected = true
         
-        Async.main(after: 0.1) {
+//        Async.main(after: 0.1) {
+        OperationQueue.main.addOperation {
             var samples = PreviewManager.balanceSampleTypes
             let index   = PreviewManager.balanceSampleTypes.index(of: self.selectdType)!
             samples[index] = item.object

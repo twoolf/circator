@@ -40,7 +40,7 @@ class QueryViewController: UITableViewController {
         view.backgroundColor = Theme.universityDarkTheme.backgroundColor
         tableView.register(MGSwipeTableCell.self, forCellReuseIdentifier: "queryCell")
 
-        let addQueryButton = UIBarButtonItem(barButtonSystemItem: .add, target: self, action: "addQuery")
+        let addQueryButton = UIBarButtonItem(barButtonSystemItem: .add, target: self, action: #selector(QueryViewController.addQuery))
         navigationItem.rightBarButtonItem = addQueryButton
     }
 

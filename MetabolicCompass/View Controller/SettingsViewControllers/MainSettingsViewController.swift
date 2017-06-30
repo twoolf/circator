@@ -35,6 +35,7 @@ class MainSettingsViewController: BaseViewController, UICollectionViewDataSource
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        self.view.layoutIfNeeded()
 
         setupBackground()
 
@@ -43,8 +44,8 @@ class MainSettingsViewController: BaseViewController, UICollectionViewDataSource
         
         let titleCellNib = UINib(nibName: "TitleCollectionViewCell", bundle: nil)
         collectionView?.register(titleCellNib, forCellWithReuseIdentifier: titleCellIdentifier)
-//        navigationController!.navigationBar.titleTextAttributes = [NSForegroundColorAttributeName: ScreenManager.appTitleTextColor(), NSFontAttributeName: ScreenManager.appNavBarFont()]
-//        self.navigationController?.navigationBar.tintColor = ScreenManager.appNavigationBackColor()
+        navigationController!.navigationBar.titleTextAttributes = [NSForegroundColorAttributeName: ScreenManager.appTitleTextColor(), NSFontAttributeName: ScreenManager.appNavBarFont()]
+        self.navigationController?.navigationBar.tintColor = ScreenManager.appNavigationBackColor()
     }
 
     func logoutAction()  {
@@ -117,7 +118,7 @@ class MainSettingsViewController: BaseViewController, UICollectionViewDataSource
         let alertController = UIAlertController(title: nil, message: "Are you sure you wish to withdraw?", preferredStyle: .actionSheet)
 
         let doWithdraw = { keepData in
-            AccountManager.shared.doWithdraw(keepData: keepData) { success in
+            AccountManager.shared.doWithdraw(keepData) { success in
                 NotificationCenter.default.post(name: NSNotification.Name(rawValue: UMDidLogoutNotification), object: nil)
                 AccountManager.shared.loginOrRegister()
                 if success {
@@ -196,11 +197,11 @@ class MainSettingsViewController: BaseViewController, UICollectionViewDataSource
         return settingsItems
     }()
     
-    private func itemAtIndexPath(indexPath: NSIndexPath) -> SettingsItem {
+    private func itemAtIndexPath(indexPath: IndexPath) -> SettingsItem {
         return items[indexPath.row]
     }
 
-    private func cellHasSubviewAtIndexPath(indexPath: NSIndexPath) -> Bool {
+    private func cellHasSubviewAtIndexPath(indexPath: IndexPath) -> Bool {
         return !( isCellShareOurStoryAtIndexPath(indexPath: indexPath)
                     || isCellAboutAtIndexPath(indexPath: indexPath)
                     || isCellPrivacyPolicyAtIndexPath(indexPath: indexPath)
@@ -208,23 +209,23 @@ class MainSettingsViewController: BaseViewController, UICollectionViewDataSource
                     || isCellWithdrawAtIndexPath(indexPath: indexPath) )
     }
 
-    private func isCellShareOurStoryAtIndexPath(indexPath: NSIndexPath) -> Bool {
+    private func isCellShareOurStoryAtIndexPath(indexPath: IndexPath) -> Bool {
         return indexPath.row == shareOurStoryIndex
     }
 
-    private func isCellAboutAtIndexPath(indexPath: NSIndexPath) -> Bool {
+    private func isCellAboutAtIndexPath(indexPath: IndexPath) -> Bool {
         return indexPath.row == aboutItemIndex
     }
 
-    private func isCellPrivacyPolicyAtIndexPath(indexPath: NSIndexPath) -> Bool {
+    private func isCellPrivacyPolicyAtIndexPath(indexPath: IndexPath) -> Bool {
         return indexPath.row == privacyPolicyItemIndex
     }
 
-    private func isCellLogoutAtIndexPath(indexPath: NSIndexPath) -> Bool {
+    private func isCellLogoutAtIndexPath(indexPath: IndexPath) -> Bool {
         return indexPath.row == logoutItemIndex
     }
 
-    private func isCellWithdrawAtIndexPath(indexPath: NSIndexPath) -> Bool {
+    private func isCellWithdrawAtIndexPath(indexPath: IndexPath) -> Bool {
         return indexPath.row == withdrawItemIndex
     }
 
@@ -237,7 +238,7 @@ class MainSettingsViewController: BaseViewController, UICollectionViewDataSource
     
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         
-        let item = itemAtIndexPath(indexPath: indexPath as NSIndexPath)
+        let item = itemAtIndexPath(indexPath: indexPath as IndexPath)
         
         let cell = collectionView.dequeueReusableCell(withReuseIdentifier: titleCellIdentifier, for: indexPath as IndexPath) as! TitleCollectionViewCell
         
@@ -247,7 +248,7 @@ class MainSettingsViewController: BaseViewController, UICollectionViewDataSource
             cell.cellImage?.image = UIImage(named: imageName)
         }
         
-        if !cellHasSubviewAtIndexPath(indexPath: indexPath as NSIndexPath) {
+        if !cellHasSubviewAtIndexPath(indexPath: indexPath as IndexPath) {
             cell.hasAccessoryView = false
         }
         
@@ -257,11 +258,12 @@ class MainSettingsViewController: BaseViewController, UICollectionViewDataSource
         return cell
     }
 
-    private func collectionView(_ collectionView: UICollectionView, didSelectItemAtIndexPath indexPath: NSIndexPath) {
+    internal func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
 
-        let shareOurStoryCell = isCellShareOurStoryAtIndexPath(indexPath: indexPath)
-        let asAboutCell = isCellAboutAtIndexPath(indexPath: indexPath)
-        let asPrivacyPolicyCell = isCellPrivacyPolicyAtIndexPath(indexPath: indexPath)
+        print("selected cell: \(indexPath)")
+        let shareOurStoryCell = isCellShareOurStoryAtIndexPath(indexPath: indexPath as IndexPath)
+        let asAboutCell = isCellAboutAtIndexPath(indexPath: indexPath as IndexPath)
+        let asPrivacyPolicyCell = isCellPrivacyPolicyAtIndexPath(indexPath: indexPath as IndexPath)
 
         if shareOurStoryCell {
             socialAction()
@@ -269,23 +271,27 @@ class MainSettingsViewController: BaseViewController, UICollectionViewDataSource
         else if asAboutCell || asPrivacyPolicyCell  {
             webAction(asPrivacyPolicy: asPrivacyPolicyCell)
         }
-        else if isCellLogoutAtIndexPath(indexPath: indexPath) {
+        else if isCellLogoutAtIndexPath(indexPath: indexPath as IndexPath) {
             logoutAction()
         }
-        else if isCellWithdrawAtIndexPath(indexPath: indexPath) {
+        else if isCellWithdrawAtIndexPath(indexPath: indexPath as IndexPath) {
             withdrawAction()
         }
         else {
-            let item = itemAtIndexPath(indexPath: indexPath)
+            let item = itemAtIndexPath(indexPath: indexPath as IndexPath)
             
             if let segueIdentifier = item.segueIdentifier {
-                self.performSegue(withIdentifier: segueIdentifier, sender: nil)
+//                self.performSegue(withIdentifier: segueIdentifier, sender: nil)
+                OperationQueue.main.addOperation {
+                    [weak self] in self?.performSegue(withIdentifier: segueIdentifier, sender: nil)
+                    
+                }
             }
         }
     }
     
     
-    private func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAtIndexPath indexPath: NSIndexPath) -> CGSize {
+    internal func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
         
         return defaultCellSize()
     }

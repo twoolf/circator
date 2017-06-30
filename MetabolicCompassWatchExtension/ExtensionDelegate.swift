@@ -43,11 +43,11 @@ class ExtensionDelegate: NSObject, WKExtensionDelegate, WCSessionDelegate {
         }
     }
     
-    func session(session: WCSession,
+    private func session(session: WCSession,
                  didReceiveUserInfo userInfo: [String : AnyObject]) {
         DispatchQueue.main.async() { () -> Void in
             if let fastingHrs  = userInfo["fastingHrs"]  as? String,
-                let fastingMins = userInfo["fastingMins"] as? String {
+                let _ = userInfo["fastingMins"] as? String {
                 print("information transferred: \(fastingHrs)")
             }
         }

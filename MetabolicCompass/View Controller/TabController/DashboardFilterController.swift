@@ -44,9 +44,9 @@ class DashboardFilterController: UIViewController, UITableViewDelegate, UITableV
     override func viewDidLoad() {
         super.viewDidLoad()
         let rightButton = ScreenManager.sharedInstance.appNavButtonWithTitle(title: "Clear all")
-        rightButton.addTarget(self, action: #selector(clearAll), for: .touchUpInside)
+        rightButton.addTarget(self, action: #selector(self.clearAll), for: .touchUpInside)
         let rightBarButtonItem = UIBarButtonItem(customView: rightButton)
-        let leftButton = UIBarButtonItem(image: UIImage(named: "close-button"), style: .plain, target: self, action: #selector(closeAction))
+        let leftButton = UIBarButtonItem(image: UIImage(named: "close-button"), style: .plain, target: self, action: #selector(self.closeAction))
         
         self.navigationItem.leftBarButtonItem = leftButton
         self.navigationItem.rightBarButtonItem = rightBarButtonItem
@@ -109,7 +109,7 @@ class DashboardFilterController: UIViewController, UITableViewDelegate, UITableV
     //MARK: UITableViewDataSource
     private let dashboardFilterCellIdentifier = "DashboardFilterCell"
     
-    func numberOfSectionsInTableView(tableView: UITableView) -> Int {
+    func numberOfSections(in tableView: UITableView) -> Int {
         return data.count
     }
 
@@ -144,7 +144,7 @@ class DashboardFilterController: UIViewController, UITableViewDelegate, UITableV
         view.captionLabel.text = self.data[section].title
 
         if sectionGestureRecognizers[section] == nil {
-            let tapRecognizer = UITapGestureRecognizer(target: self, action: #selector(toggleSectionVisibility))
+            let tapRecognizer = UITapGestureRecognizer(target: self, action: #selector(self.toggleSectionVisibility))
             tapRecognizer.delegate = self
             tapRecognizer.numberOfTouchesRequired = 1
             tapRecognizer.numberOfTapsRequired = 2
@@ -168,14 +168,14 @@ class DashboardFilterController: UIViewController, UITableViewDelegate, UITableV
         return UIView()
     }
 
-    private func tableView(_ tableView: UITableView, didSelectRowAtIndexPath indexPath: NSIndexPath) {
+    internal func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         let cell = tableView.cellForRow(at: indexPath as IndexPath) as? DashboardFilterCell
         let filterItems = self.data[indexPath.section].items
         let selectedItem = filterItems[indexPath.row]//See DashboardFilterCellData
         
         if selectedItem.selected { // item already selected so just remove it and deselect
             cell?.didPressButton(self)
-            deselectRow(section: indexPath.section, row: indexPath.row, refresh: true)
+            deselectRow(indexPath.section, row: indexPath.row, refresh: true)
         } else {
             // Deselect all other items in this section. This enforces mutually exclusive filters.
             for (index, item) in filterItems.enumerated() {
@@ -184,11 +184,11 @@ class DashboardFilterController: UIViewController, UITableViewDelegate, UITableV
                     let IndexPathToUse = IndexPath(row: index, section: indexPath.section)
                     let currentlySelectedCell = tableView.cellForRow(at: IndexPathToUse)
 //                    currentlySelectedCell?.didPressButton(self)
-                    deselectRow(section: indexPath.section, row: index)
+                    deselectRow(indexPath.section, row: index)
                 }
             }
 
-            selectRow(section: indexPath.section, row: indexPath.row)
+            selectRow(indexPath.section, row: indexPath.row)
             cell?.didPressButton(self)//set cell as selected
         }
     }
@@ -201,12 +201,12 @@ class DashboardFilterController: UIViewController, UITableViewDelegate, UITableV
         }
     }
 
-    func selectRow(section: Int, row: Int) {
+    func selectRow(_ section: Int, row: Int) {
         selectedRows.updateValue(row as AnyObject, forKey: "\(section)")
         refreshQuery()
     }
 
-    func deselectRow(section: Int, row: Int, refresh: Bool = false) {
+    func deselectRow(_ section: Int, row: Int, refresh: Bool = false) {
         let key = "\(section)"
         if let selectedRowForSection = selectedRows[key] as? Int {
             if selectedRowForSection == row {
@@ -245,7 +245,7 @@ class DashboardFilterController: UIViewController, UITableViewDelegate, UITableV
 
     func addData () {
         let specs = (UserManager.sharedManager.useMetricUnits() ? metricFilterSpecs : imperialFilterSpecs) + commonFilterSpecs
-        self.data = filterSpecsToItems(specs: specs)
+        self.data = filterSpecsToItems(specs)
     }
 
 
@@ -327,7 +327,7 @@ class DashboardFilterController: UIViewController, UITableViewDelegate, UITableV
             [(0, 90, nil), (90, 140, nil), (140, 200, nil), (200, 1000, nil)]),
     ]
 
-    func filterSpecsToItems(specs: FilterSpecs) -> [DashboardFilterItem] {
+    func filterSpecsToItems(_ specs: FilterSpecs) -> [DashboardFilterItem] {
         return specs.map { (title, typeIdentifier, unit, itemSpecs) in
             return DashboardFilterItem(title: title, items: itemSpecs.map { (lower, upper, label) in
                 var itemTitle = ""

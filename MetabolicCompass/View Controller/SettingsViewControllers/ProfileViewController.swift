@@ -19,6 +19,7 @@ class ProfileViewController: BaseViewController {
 
     override func viewDidLoad() {
         super.viewDidLoad()
+        self.view.layoutIfNeeded()
 
         dataSource.viewController = self
 
@@ -30,8 +31,8 @@ class ProfileViewController: BaseViewController {
     }
 
     private func setupNavBar() {
-        rightBarBtn = createBarButtonItem(title: "", action: #selector(rightAction))
-        cancelBarBtn = createBarButtonItem(title: "Cancel".localized, action: #selector(cancelAction))
+        rightBarBtn = createBarButtonItem("", action: #selector(self.rightAction))
+        cancelBarBtn = createBarButtonItem("Cancel".localized, action: #selector(self.cancelAction))
         self.navigationItem.rightBarButtonItem = rightBarBtn
         configureNavBar()
     }

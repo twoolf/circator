@@ -163,11 +163,11 @@ public class QueryManager {
                 }).0
 
                 queriedTypes = types.isEmpty ? nil : types
-                log.info("New queried types \(queriedTypes)")
+                log.info("New queried types \(String(describing: queriedTypes))")
             }
         } else {
             queriedTypes = nil
-            log.info("Empty queried types \(queriedTypes)")
+            log.info("Empty queried types \(String(describing: queriedTypes))")
         }
     }
 }

@@ -235,6 +235,7 @@ public class UploadManager: NSObject {
 
     // Custom upload task queue
 //    let uploadQueue: DispatchQueue.async!
+    var uploadQueue = DispatchQueue(label: "UploadQueue")
 
     // Granola serializer
     public static let serializer = OMHSerializer()
@@ -257,6 +258,7 @@ public class UploadManager: NSObject {
 
     public override init() {
 //        self.uploadQueue = dispatch_queue_create("UploadQueue", DISPATCH_QUEUE_SERIAL)
+        self.uploadQueue = DispatchQueue(label: "UploadQueue")
         super.init()
     }
 
@@ -502,14 +504,14 @@ public class UploadManager: NSObject {
     public func putSample(jsonObj: [String: AnyObject]) -> () {
         Service.string(route: MCRouter.AddMeasures(jsonObj), statusCode: 200..<300, tag: "UPLOAD") {
             _, response, result in
-            log.debug("Upload: \(result.value)", "uploadStatus")
+            log.debug("Upload: \(String(describing: result.value))", "uploadStatus")
         }
     }
 
     public func putBlockSample(jsonObjBlock: [[String:AnyObject]]) -> () {
         Service.string(route: MCRouter.AddMeasures(["block":jsonObjBlock as AnyObject]), statusCode: 200..<300, tag: "UPLOAD") {
             _, response, result in
-            log.debug("Upload: \(result.value)", "uploadStatus")
+            log.debug("Upload: \(String(describing: result.value))", "uploadStatus")
         }
     }
 
@@ -685,7 +687,7 @@ public class UploadManager: NSObject {
 
                     Service.json(route: MCRouter.AddSeqMeasures(["block": block as AnyObject]), statusCode: 200..<300, tag: "UPLOADLOG") {
                         _, response, result in
-                        log.debug("Upload log entries: \(result.value)", "uploadExec")
+                        log.debug("Upload log entries: \(String(describing: result.value))", "uploadExec")
                         self.onCompletedUpload(success: result.isSuccess, sampleKeys: blockKeys)
                     }
                 }
@@ -813,7 +815,7 @@ public class UploadManager: NSObject {
 
         Service.json(route: MCRouter.RemoveMeasures(params), statusCode: 200..<300, tag: "DELPOST") {
             _, response, result in
-            log.debug("Deletions: \(result.value)", "deleteSamples")
+            log.debug("Deletions: \(String(describing: result.value))", "deleteSamples")
             if !result.isSuccess {
                 log.error("Failed to delete samples on the server, server may potentially diverge from device.", "deleteSamples")
             }
@@ -887,7 +889,7 @@ public class UploadManager: NSObject {
                         IOSHealthManager.sharedManager.startBackgroundObserverForType(type: type, getAnchorCallback: UploadManager.sharedManager.getNextAnchor)
                         { (added, deleted, newAnchor, error, completion) -> Void in
                             guard error == nil else {
-                                log.error("Failed to register observers: \(error)", "uploadObservers")
+                                log.error("Failed to register observers: \(String(describing: error))", "uploadObservers")
                                 completion()
                                 return
                             }
@@ -1068,7 +1070,7 @@ public class UploadManager: NSObject {
             self.writeDeviceMeasures(type: type, deviceClass: deviceClass, deviceId: deviceId, payload: result.value as AnyObject?) {
                 (success, completedSeq, payloadSize, err) in
                 guard success && err == nil else {
-                    log.error("Sync failed to parse and write measures: \(completedSeq) \(payloadSize)", "syncSeqIds")
+                    log.error("Sync failed to parse and write measures: \(String(describing: completedSeq)) \(payloadSize)", "syncSeqIds")
                     log.error(err!.localizedDescription, "syncSeqIds")
                     return
                 }
@@ -1076,7 +1078,7 @@ public class UploadManager: NSObject {
                 // Recur while we got a non-empty set of measures, and we have not yet reached our target remote seq.
                 // TODO: throttling.
 
-                log.info("Sync recur on \(queryOffset) \(completedSeq) \(localSeq) \(remoteSeq) \(payloadSize) for \(type.identifier) \(deviceClass) \(deviceId)", "syncSeqIds")
+                log.info("Sync recur on \(queryOffset) \(String(describing: completedSeq)) \(localSeq) \(remoteSeq) \(payloadSize) for \(type.identifier) \(deviceClass) \(deviceId)", "syncSeqIds")
 
                 if let numMeasures = payloadSize, let seq = completedSeq, numMeasures == limit && seq < remoteSeq {
                     let nextOffset = queryOffset + numMeasures
@@ -1086,7 +1088,7 @@ public class UploadManager: NSObject {
                     log.warning("Sync stopped for \(type.identifier) \(deviceClass) \(deviceId) at \(seq), offset \(queryOffset), #results \(numMeasures)", "syncSeqIds")
                 }
                 else {
-                    log.error("Sync stopped for \(type.identifier) \(deviceClass) \(deviceId) with \(completedSeq) \(payloadSize), offset \(queryOffset)", "syncSeqIds")
+                    log.error("Sync stopped for \(type.identifier) \(deviceClass) \(deviceId) with \(String(describing: completedSeq)) \(payloadSize), offset \(queryOffset)", "syncSeqIds")
                 }
             }
         }

@@ -47,7 +47,7 @@ class MealStartTimeController: WKInterfaceController {
         mealStartTimeButton.setTitle("Saved")
         
         // setting up conversion of saved value from 'waking from sleep' in 1st screen
-        let thisRegion = DateInRegion()
+        _ = DateInRegion()
         let calendar = Calendar.current
 //        var beginDate = NSDate.today(inRegion: thisRegion)
         var beginDate = Date()

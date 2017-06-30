@@ -74,7 +74,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, WCSessionDelegate
  //       createShortcutItems()
         
         window = UIWindow(frame: UIScreen.main.bounds)
-        window?.backgroundColor = UIColor.red
+        window?.backgroundColor = UIColor.blue
         
         // Override point for customization after application launch.
         // Sets background to a blank/empty image
@@ -117,6 +117,9 @@ class AppDelegate: UIResponder, UIApplicationDelegate, WCSessionDelegate
         window?.makeKeyAndVisible()
         
         var launchSuccess = true
+        if let shortcutItem = launchOptions?[UIApplicationLaunchOptionsKey.shortcutItem] as? UIApplicationShortcutItem {
+            launchSuccess = launchShortcutActivity(shortcutItem: shortcutItem)
+        }
  //       if let shortcutItem = launchOptions?[UIApplicationLaunchOptionsShortcutItemKey] as? UIApplicationShortcutItem {
   //          launchSuccess = launchShortcutActivity(shortcutItem)
    //     }
@@ -126,16 +129,16 @@ class AppDelegate: UIResponder, UIApplicationDelegate, WCSessionDelegate
  //       }
         
         // Add a recycling observer.
-        NotificationCenter.default.addObserver(self, selector: #selector(recycleNotification), name: NSNotification.Name(rawValue: USNDidUpdateBlackoutNotification), object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(self.recycleNotification), name: NSNotification.Name(rawValue: USNDidUpdateBlackoutNotification), object: nil)
         
         // Add a debugging observer.
-        NotificationCenter.default.addObserver(self, selector: #selector(errorNotification(notification:)), name: NSNotification.Name(rawValue: MCRemoteErrorNotification), object: nil)
-        NotificationCenter.default.addObserver(self, selector: #selector(errorNotification(notification:)), name: NSNotification.Name(rawValue: MCRemoteErrorNotification), object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(self.errorNotification(notification:)), name: NSNotification.Name(rawValue: MCRemoteErrorNotification), object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(self.errorNotification(notification:)), name: NSNotification.Name(rawValue: MCRemoteErrorNotification), object: nil)
         
         return launchSuccess
     }
     
-    private func application(application: UIApplication, supportedInterfaceOrientationsForWindow window: UIWindow?) -> UIInterfaceOrientationMask {
+    @nonobjc internal func application(_ application: UIApplication, supportedInterfaceOrientationsForWindow window: UIWindow?) -> UIInterfaceOrientationMask {
         //return checkOrientation(self.window?.rootViewController)
         return UIInterfaceOrientationMask.portrait
     }
@@ -177,7 +180,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, WCSessionDelegate
         // Called when the application is about to terminate. Save data if appropriate. See also applicationDidEnterBackground:.
     }
     
-    private func application(application: UIApplication, didRegisterUserNotificationSettings: UIUserNotificationSettings) {
+    @nonobjc internal func application(_ application: UIApplication, didRegisterUserNotificationSettings: UIUserNotificationSettings) {
         let enabled = didRegisterUserNotificationSettings.types != []
         log.info("APPDEL Enabling user notifications: \(enabled)")
         Defaults.set(enabled, forKey: AMNotificationsKey)
@@ -189,7 +192,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, WCSessionDelegate
         NotificationManager.sharedManager.showInApp(notification: notification)
     }
     
-    private func application(application: UIApplication, performActionForShortcutItem shortcutItem: UIApplicationShortcutItem, completionHandler: (Bool) -> Void) {
+    private func application(_ application: UIApplication, performActionForShortcutItem shortcutItem: UIApplicationShortcutItem, completionHandler: (Bool) -> Void) {
         log.debug("Shortcut \"\(shortcutItem.localizedTitle)\" pressed")
         completionHandler(self.launchShortcutActivity(shortcutItem: shortcutItem))
     }
@@ -224,8 +227,12 @@ class AppDelegate: UIResponder, UIApplicationDelegate, WCSessionDelegate
             return false
         }
         
-        window?.rootViewController?.present(controller, animated: true, completion: nil)
-        return true
+        OperationQueue.main.addOperation {
+            [weak self] in
+            self?.window?.rootViewController?.present(controller, animated: true, completion: nil)
+        }
+            return true
+
     }
     
     func recycleNotification() {

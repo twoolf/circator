@@ -219,7 +219,7 @@ class ComplicationController: NSObject, CLKComplicationDataSource {
         print("Budget exhausted")
     }
     
-    func getPlaceholderTemplate(complication: CLKComplication, withHandler handler: (CLKComplicationTemplate?) -> Void) {
+    func getPlaceholderTemplate(for complication: CLKComplication, withHandler handler: @escaping (CLKComplicationTemplate?) -> Void) {
         var template: CLKComplicationTemplate? = nil
         switch complication.family {
         case .modularSmall:

@@ -352,7 +352,7 @@ class PlotDataAnalyzer: SampleDataAnalyzer {
 //            let dayDiff = zeroDate.startOf(component: sample.0.startOf(component: .day))
 //            let dayDiff = zeroDate.startOf(component: sample.0.addHours(hoursToAdd: 12))
 //            let dayDiff = zeroDate.startOf(component: sample.0.timeIntervalSinceNow)
-            let dayDiff = Date()
+            _ = Date()
 //            return ChartDataEntry(x: sample.1, y: dayDiff)
             return ChartDataEntry()
         }

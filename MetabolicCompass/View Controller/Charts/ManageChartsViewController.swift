@@ -31,7 +31,7 @@ class ManageChartsViewController: UIViewController, UITableViewDataSource, UITab
         self.tableView.allowsSelectionDuringEditing = true
         self.navigationController?.navigationBar.barStyle = UIBarStyle.black;
         self.navigationItem.title = NSLocalizedString("MANAGE CHART", comment: "chart screen title")
-        let leftButton = UIBarButtonItem(image: UIImage(named: "close-button"), style: .plain, target: self, action: #selector(closeAction))
+        let leftButton = UIBarButtonItem(image: UIImage(named: "close-button"), style: .plain, target: self, action: #selector(self.closeAction))
         self.navigationItem.leftBarButtonItem = leftButton
     }
     
@@ -55,7 +55,7 @@ class ManageChartsViewController: UIViewController, UITableViewDataSource, UITab
     }
     
     //MARK: UITableViewDelegate
-    private func tableView(_ tableView: UITableView, didSelectRowAtIndexPath indexPath: NSIndexPath) {
+    internal func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         let obj = tableView.cellForRow(at: indexPath as IndexPath) as? ManageDashboardCell
         guard let cell = obj else {
             return
@@ -71,19 +71,19 @@ class ManageChartsViewController: UIViewController, UITableViewDataSource, UITab
         cell.updateSelectionStatus(selected: item.active, appearanceProvider: appearanceProvider, itemType: item.type)
     }
     
-    private func tableView(_ tableView: UITableView, canMoveRowAtIndexPath indexPath: NSIndexPath) -> Bool {
+    internal func tableView(_ tableView: UITableView, canMoveRowAt indexPath: IndexPath) -> Bool {
         return true
     }
     
-    private func tableView(_ tableView: UITableView, editingStyleForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCellEditingStyle {
+    @nonobjc internal func tableView(_ tableView: UITableView, editingStyleForRowAtIndexPath indexPath: IndexPath) -> UITableViewCellEditingStyle {
         return .none
     }
     
-    private func tableView(_ tableView: UITableView, shouldIndentWhileEditingRowAtIndexPath indexPath: NSIndexPath) -> Bool {
+    internal func tableView(_ tableView: UITableView, shouldIndentWhileEditingRowAt indexPath: IndexPath) -> Bool {
         return false
     }
     
-    private func tableView(_ tableView: UITableView, moveRowAtIndexPath fromIndexPath: NSIndexPath, toIndexPath: NSIndexPath) {
+    internal func tableView(_ tableView: UITableView, moveRowAt fromIndexPath: IndexPath, to toIndexPath: IndexPath) {
         let itemToMove = data[fromIndexPath.row]
         data.remove(at: fromIndexPath.row)
         data.insert(itemToMove, at: toIndexPath.row)
@@ -93,7 +93,7 @@ class ManageChartsViewController: UIViewController, UITableViewDataSource, UITab
         manageData.insert(manageItemToMove, at: toIndexPath.row)
     }
     
-    private func tableView(_ tableView: UITableView, willDisplayCell cell: UITableViewCell, forRowAtIndexPath indexPath: NSIndexPath) {
+    internal func tableView(_ tableView: UITableView, willDisplay cell: UITableViewCell, forRowAt indexPath: IndexPath) {
         cell.showsReorderControl = false
     }
     

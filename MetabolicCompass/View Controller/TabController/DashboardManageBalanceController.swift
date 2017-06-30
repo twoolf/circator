@@ -51,7 +51,7 @@ class DashboardManageBalanceController: UIViewController, UITableViewDelegate, U
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
 
-        NotificationCenter.default.addObserver(self, selector: #selector(contentDidChange), name: NSNotification.Name(rawValue: PMDidUpdateBalanceSampleTypesNotification), object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(self.contentDidChange), name: NSNotification.Name(rawValue: PMDidUpdateBalanceSampleTypesNotification), object: nil)
     }
     
     override func viewWillDisappear(_ animated: Bool) {
@@ -71,7 +71,8 @@ class DashboardManageBalanceController: UIViewController, UITableViewDelegate, U
     }
     
     func contentDidChange() {
-        Async.main {
+ //       Async.main {
+        OperationQueue.main.addOperation {
             self.refreshContent()
         }
     }
@@ -102,7 +103,7 @@ class DashboardManageBalanceController: UIViewController, UITableViewDelegate, U
     
     //MARK: UITableViewDataSource
     
-    func numberOfSectionsInTableView(tableView: UITableView) -> Int {
+    func numberOfSections(in tableView: UITableView) -> Int {
         return 1
     }
     
@@ -123,7 +124,7 @@ class DashboardManageBalanceController: UIViewController, UITableViewDelegate, U
     
     //MARK: UITableViewDelegate
     
-    private func tableView(_ tableView: UITableView, didSelectRowAtIndexPath indexPath: NSIndexPath) {
+    internal func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         let selectedCell = tableView.cellForRow(at: indexPath as IndexPath) as! ManageBalanceCell
         self.selectController.selectdType = selectedCell.data.object
         self.selectController.parentCell  = selectedCell

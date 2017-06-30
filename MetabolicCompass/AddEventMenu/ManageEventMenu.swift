@@ -138,15 +138,11 @@ public class ManageEventMenu: UIView, CAAnimationDelegate, PathMenuItemDelegate 
 
         self.addConstraints(segConstraints)
 
-
-//        self.addTableView = addEventTable(frame: CGRect.zero, style: .Grouped, menuItems: self.menuItems, notificationView: self.segmenter)
-//        self.delTableView = deleteEventTable(frame: CGRect.zero, style: .Grouped, menuItems: self.menuItems, notificationView: self.segmenter)
-
         self.addView = AddActivityManager(frame: CGRect.zero, style: .grouped, menuItems: self.menuItems, notificationView: self.segmenter)
         self.delView = DeleteActivityManager(frame: CGRect.zero, style: .grouped, notificationView: self.segmenter)
     }
 
-    public func logContentView(asAppear: Bool = true) {
+    public func logContentView(_ asAppear: Bool = true) {
         Answers.logContentView(withName: "Quick Add Activity",
                                        contentType: asAppear ? "Appear" : "Disappear",
 //                                       contentId: Date().toString(DateFormat.Custom("YYYY-MM-dd:HH")),
@@ -170,12 +166,12 @@ public class ManageEventMenu: UIView, CAAnimationDelegate, PathMenuItemDelegate 
         }
     }
 
-    public func hideView(hide: Bool = false) {
+    public func hideView(_ hide: Bool = false) {
         self.segmenter.isHidden = hide
-        refreshHiddenFromSegmenter(hide: hide)
+        refreshHiddenFromSegmenter(hide)
     }
 
-    public func refreshHiddenFromSegmenter(hide: Bool = false) {
+    public func refreshHiddenFromSegmenter(_ hide: Bool = false) {
         getCurrentManagerView()?.isHidden = hide
         getOtherManagerView()?.isHidden = true
     }
@@ -194,7 +190,7 @@ public class ManageEventMenu: UIView, CAAnimationDelegate, PathMenuItemDelegate 
         return startButton!.frame.contains(point)
     }
 
-    @nonobjc public func animationDidStop(anim: CAAnimation, finished flag: Bool) {
+    @nonobjc public func animationDidStop(_ anim: CAAnimation, finished flag: Bool) {
         if let animId = anim.value(forKey: "id") {
             if (animId as AnyObject).isEqual("lastAnimation") {
                 delegate?.manageEventMenuDidFinishAnimationClose(menu: self)
@@ -207,17 +203,17 @@ public class ManageEventMenu: UIView, CAAnimationDelegate, PathMenuItemDelegate 
 
     //MARK: UIGestureRecognizer
     
-    public func touchesBegan(touches: Set<UITouch>, withEvent event: UIEvent?) {
+    public override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
         handleTap()
     }
     
     //MARK: PathMenuItemDelegate
     
-    public func pathMenuItemTouchesBegin(item: PathMenuItem) {
+    public func TouchesBegin(on item: PathMenuItem) {
         if item == startButton { handleTap() }
     }
     
-    public func pathMenuItemTouchesEnd(item:PathMenuItem) {
+    public func TouchesEnd(on item: PathMenuItem) {
         if item == startButton { return }
 
         motionState = .Close

@@ -28,11 +28,11 @@ class AdditionalInfoViewController: BaseViewController {
     private func configureNavBar() {
         
         let cancelButton = ScreenManager.sharedInstance.appNavButtonWithTitle(title: "Cancel".localized)
-        cancelButton.addTarget(self, action: #selector(cancelAction), for: .touchUpInside)
+        cancelButton.addTarget(self, action: #selector(self.cancelAction), for: .touchUpInside)
         let cancelBarButton = UIBarButtonItem(customView: cancelButton)
 
         let nextButton = ScreenManager.sharedInstance.appNavButtonWithTitle(title: "Next".localized)
-        nextButton.addTarget(self, action: #selector(nextAction), for: .touchUpInside)
+        nextButton.addTarget(self, action: #selector(self.nextAction), for: .touchUpInside)
         let nextBarButton = UIBarButtonItem(customView: nextButton)
         
         self.navigationItem.rightBarButtonItems = [nextBarButton]

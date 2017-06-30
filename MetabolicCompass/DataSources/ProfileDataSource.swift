@@ -49,18 +49,18 @@ class ProfileDataSource: BaseDataSource {
     }
 
     override func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
-        let field = model.itemAtIndexPath(indexPath: indexPath as NSIndexPath)
+        let field = model.itemAtIndexPath(indexPath: (indexPath as IndexPath))
         var cell: BaseCollectionViewCell?
 
         let cellType = field.type
         if cellType == .Photo {
-             cell = loadPhotoCellForIndex(indexPath: indexPath as NSIndexPath, forField: field)
+             cell = loadPhotoCellForIndex(indexPath: indexPath as IndexPath, forField: field)
         } else {
             let cellEditMode = editMode && model.isItemEditable(item: field)
             if cellEditMode {
-                cell = infoEditableCellForIndex(indexPath: indexPath as NSIndexPath, forField: field)
+                cell = infoEditableCellForIndex(indexPath: indexPath as IndexPath, forField: field)
             } else {
-                cell = infoCellForIndex(indexPath: indexPath as NSIndexPath, forField: field)
+                cell = infoCellForIndex(indexPath: indexPath as IndexPath, forField: field)
             }
 
             // Adjust label spacing of weight and height cells.
@@ -78,7 +78,7 @@ class ProfileDataSource: BaseDataSource {
             if let indexPath = self.collectionView!.indexPath(for: cell) {
                 self.model.setAtItem(itemIndex: indexPath.row, newValue: newValue)
 
-                let field = self.model.itemAtIndexPath(indexPath: indexPath as NSIndexPath)
+                let field = self.model.itemAtIndexPath(indexPath: (indexPath as IndexPath))
                 if field.type == .Units {
                     /*
                     let needsUpdateIndexPathes = self.model.unitsDependedItemsIndexes()
@@ -98,8 +98,8 @@ class ProfileDataSource: BaseDataSource {
         return cell!
     }
 
-    func collectionView(collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAtIndexPath indexPath: NSIndexPath) -> CGSize {
-        let field = model.itemAtIndexPath(indexPath: indexPath)
+    func collectionView(collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAtIndexPath indexPath: IndexPath) -> CGSize {
+        let field = model.itemAtIndexPath(indexPath: (indexPath as IndexPath))
 
         if model.units == .Imperial && (field.type == .Weight || field.type == .Height || field.type == .HeightInches) {
             return field.type == .HeightInches ? smallHeightInchesCellSize() : smallWHCellSize()
@@ -126,7 +126,7 @@ class ProfileDataSource: BaseDataSource {
 
     // MARK: - Cells configuration
 
-    private func infoCellForIndex(indexPath: NSIndexPath, forField field: ModelItem, isEdiatble: Bool = false, keyboardType: UIKeyboardType = UIKeyboardType.default) -> BaseCollectionViewCell {
+    private func infoCellForIndex(indexPath: IndexPath, forField field: ModelItem, isEdiatble: Bool = false, keyboardType: UIKeyboardType = UIKeyboardType.default) -> BaseCollectionViewCell {
         let cell = collectionView!.dequeueReusableCell(withReuseIdentifier: infoCellIdentifier, for: indexPath as IndexPath) as! InfoCollectionViewCell
         
         cell.inputTxtField.textColor = selectedTextColor
@@ -178,8 +178,8 @@ class ProfileDataSource: BaseDataSource {
         return cell
     }
 
-    private func infoEditableCellForIndex(indexPath: NSIndexPath, forField field: ModelItem) -> BaseCollectionViewCell {
-        let field = model.itemAtIndexPath(indexPath: indexPath)
+    private func infoEditableCellForIndex(indexPath: IndexPath, forField field: ModelItem) -> BaseCollectionViewCell {
+        let field = model.itemAtIndexPath(indexPath: indexPath as IndexPath)
         let cellType = field.type
 
         if cellType == .Age || cellType == .Weight || cellType == .Height || cellType == .HeightInches {
@@ -194,7 +194,7 @@ class ProfileDataSource: BaseDataSource {
         return BaseCollectionViewCell()
     }
 
-    private func checkSelectionCellForIndex(indexPath: NSIndexPath, forField field: ModelItem) -> BaseCollectionViewCell {
+    private func checkSelectionCellForIndex(indexPath: IndexPath, forField field: ModelItem) -> BaseCollectionViewCell {
         let cell = collectionView!.dequeueReusableCell(withReuseIdentifier: doubleCheckBoxCellIdentifier, for: indexPath as IndexPath) as! DoubleCheckListTitledCollectionViewCell
 
         if field.type == .Gender {
@@ -218,7 +218,7 @@ class ProfileDataSource: BaseDataSource {
         return cell
     }
 
-    private func loadPhotoCellForIndex(indexPath: NSIndexPath, forField field: ModelItem) -> BaseCollectionViewCell {
+    private func loadPhotoCellForIndex(indexPath: IndexPath, forField field: ModelItem) -> BaseCollectionViewCell {
         var cell : CircleImageCollectionViewCell?
 
         if editMode {

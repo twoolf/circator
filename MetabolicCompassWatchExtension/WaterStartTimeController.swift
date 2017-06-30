@@ -43,7 +43,7 @@ class WaterStartTimeController: WKInterfaceController {
         waterTimesEnterStart.setTitle("Saved")
         
         // setting up conversion of saved value from 'finished drinking' in 1st screen
-        let thisRegion = DateInRegion()
+        _ = DateInRegion()
         let calendar = NSCalendar.current
 //        var beginDate = NSDate.today(inRegion: thisRegion)
         var beginDate = Date()
@@ -94,7 +94,7 @@ class WaterStartTimeController: WKInterfaceController {
         
         let waterDurationHours = beginComponents.hour! - closeComponents.hour!
         let waterDurationMinutes = beginComponents.minute! - closeComponents.minute!
-        let waterDurationTime = waterDurationHours*60+waterDurationMinutes
+        _ = waterDurationHours*60+waterDurationMinutes
         
         if (closeDate<beginDate){
             closeDate=closeDate + 1.hours

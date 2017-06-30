@@ -109,11 +109,11 @@ open class AppPickerManager: PickerManager, PickerManagerSelectionDelegate {
     }
 
     // MARK: - AKPickerViewDataSource View-centric interface
-    func pickerView(pickerView: AKPickerView, viewForItem item: Int) -> UIView {
+    func pickerView(_ pickerView: AKPickerView, viewForItem item: Int) -> UIView {
         return self.apps[item]
     }
 
-    func pickerView(pickerView: AKPickerView, cellForItem: UICollectionViewCell, constraintsForItem item: Int) -> [NSLayoutConstraint] {
+    func pickerView(_ pickerView: AKPickerView, cellForItem: UICollectionViewCell, constraintsForItem item: Int) -> [NSLayoutConstraint] {
         let height = cellHeight()
 
         let image = apps[item].subviews[0] as! UIImageView
@@ -141,11 +141,11 @@ open class AppPickerManager: PickerManager, PickerManagerSelectionDelegate {
         return constraints
     }
 
-    func pickerView(pickerView: AKPickerView, configureView view: UIView, forItem item: Int) {
-        configureItemContentView(view: view, item: item)
+    func pickerView(_ pickerView: AKPickerView, configureView view: UIView, forItem item: Int) {
+        configureItemContentView(view, item: item)
     }
 
-    func pickerView(pickerView: AKPickerView, contentHeightForItem item: Int) -> CGFloat {
+    func pickerView(_ pickerView: AKPickerView, contentHeightForItem item: Int) -> CGFloat {
         return cellHeight()
     }
 
@@ -159,7 +159,7 @@ open class AppPickerManager: PickerManager, PickerManagerSelectionDelegate {
     }
 
     // MARK : - PickerManagerSelectionDelegate
-    func pickerItemSelected(pickerManager: PickerManager, itemType: String?, index: Int, item: String, data: AnyObject?) {
+    func pickerItemSelected(_ pickerManager: PickerManager, itemType: String?, index: Int, item: String, data: AnyObject?) {
         if let scheme = data as? String, let url = NSURL(string: "\(scheme)//") {
             if UIApplication.shared.canOpenURL(url as URL) {
                 UIApplication.shared.openURL(url as URL)
@@ -348,7 +348,7 @@ open class AddActivityManager: UITableView, UITableViewDelegate, UITableViewData
         }
     }
 
-    func frequentActivityCellView(tag: Int, aInfo: FrequentActivity) -> [UIView] {
+    func frequentActivityCellView(_ tag: Int, aInfo: FrequentActivity) -> [UIView] {
         let fmt = DateFormat.custom("HH:mm")
         let endDate = aInfo.start.addingTimeInterval(aInfo.duration)
 
@@ -370,7 +370,7 @@ open class AddActivityManager: UITableView, UITableViewDelegate, UITableViewData
         button.backgroundColor = .clear
         button.setImage(unchecked_image, for: .normal)
         button.setImage(checked_image, for: .selected)
-        button.addTarget(self, action: #selector(addFrequentActivity), for: .touchUpInside)
+        button.addTarget(self, action: #selector(self.addFrequentActivity(_:)), for: .touchUpInside)
 
         return [label, button]
     }
@@ -412,8 +412,8 @@ open class AddActivityManager: UITableView, UITableViewDelegate, UITableViewData
                 MCHealthManager.sharedManager.fetchCircadianEventIntervals(date, endDate: date.endOf(component: .day), noTruncation: true)
                 { (intervals, error) in
                     guard error == nil else {
-                        log.error("Failed to fetch circadian events: \(error)", feature: "freqActivity")
-                        queryErrors.append(error as! NSError)
+                        log.error("Failed to fetch circadian events: \(String(describing: error))", feature: "freqActivity")
+                        queryErrors.append(error as? NSError)
                         queryGroup.leave()
                         return
                     }
@@ -480,7 +480,7 @@ open class AddActivityManager: UITableView, UITableViewDelegate, UITableViewData
                 log.debug("Cache result: \(activityInfoFromCache?.activities.count ?? -1) (hit: \(loadedFromCache))", feature: "cache:freqActivity")
                 
                 guard error == nil else {
-                    log.error("Failed to populate frequent activities: \(error)")
+                    log.error("Failed to populate frequent activities: \(String(describing: error))")
                     self.frequentActivities = []
                     self.shadowActivities = []
                     return
@@ -503,7 +503,7 @@ open class AddActivityManager: UITableView, UITableViewDelegate, UITableViewData
         })
     }
 
-    func numberOfSectionsInTableView(tableView: UITableView) -> Int {
+    @nonobjc public func numberOfSectionsInTableView(_ tableView: UITableView) -> Int {
         return addSectionTitles.count
     }
 
@@ -546,7 +546,7 @@ open class AddActivityManager: UITableView, UITableViewDelegate, UITableViewData
 
                     reorderedActivities.enumerated().forEach { (index, aInfo) in
                         self.frequentActivityByRow[index] = aInfo
-                        self.frequentActivityCells[index] = self.frequentActivityCellView(tag: index, aInfo: aInfo)
+                        self.frequentActivityCells[index] = self.frequentActivityCellView(index, aInfo: aInfo)
                     }
                     
                     nextActivityRowExpiry = now + nextActivityExpiryIncrement
@@ -680,7 +680,7 @@ open class AddActivityManager: UITableView, UITableViewDelegate, UITableViewData
             button.setImage(UIImage(named: "icon-quick-add-tick"), for: .normal)
             button.imageView?.contentMode = .scaleAspectFit
 
-            button.addTarget(self, action: (section == frequentActivitySectionIdx ? #selector(self.handleFrequentAddTap(sender:)) : #selector(AddActivityManager.handleQuickAddTap(sender:))), for: .touchUpInside)
+            button.addTarget(self, action: (section == frequentActivitySectionIdx ? #selector(self.handleFrequentAddTap(_:)) : #selector(AddActivityManager.handleQuickAddTap(_:))), for: .touchUpInside)
 
             button.translatesAutoresizingMaskIntoConstraints = false
             cell.contentView.addSubview(button)
@@ -699,7 +699,7 @@ open class AddActivityManager: UITableView, UITableViewDelegate, UITableViewData
         return cell;
     }
 
-    func circadianOpCompletion(sender: UIButton?, manager: PickerManager?, displayError: Bool, error: Error?) -> Void {
+    func circadianOpCompletion(_ sender: UIButton?, manager: PickerManager?, displayError: Bool, error: Error?) -> Void {
         Async.main {
             if error == nil {
                 UINotifications.genericSuccessMsgOnView(view: self.notificationView ?? self.superview!, msg: "Successfully added events.")
@@ -720,7 +720,7 @@ open class AddActivityManager: UITableView, UITableViewDelegate, UITableViewData
         }
     }
 
-    func validateTimedEvent(startTime: Date, endTime: Date, completion: @escaping (Error?) -> Void) {
+    func validateTimedEvent(_ startTime: Date, endTime: Date, completion: @escaping (Error?) -> Void) {
         // Fetch all sleep and workout data since yesterday.
         let (yesterday, now) = (Date().addDays(daysToAdd: -1), Date())
         let sleepTy = HKObjectType.categoryType(forIdentifier: HKCategoryTypeIdentifier.sleepAnalysis)!
@@ -754,7 +754,7 @@ open class AddActivityManager: UITableView, UITableViewDelegate, UITableViewData
 
         log.debug("Saving sleep event: \(startDate ?? (no_argument as AnyObject) as! Date) \(endTime)", feature: "addActivity")
 
-        validateTimedEvent(startTime: startDate!, endTime: endTime) { error in
+        validateTimedEvent(startDate!, endTime: endTime) { error in
             guard error == nil else {
                 completion(error)
                 return
@@ -764,14 +764,14 @@ open class AddActivityManager: UITableView, UITableViewDelegate, UITableViewData
                 (success, error) -> Void in
 //                if error != nil { log.error(error!.localizedDescription) }
                 if error != nil { print("error in localized description") }
-                else { log.debug("Saved sleep event: \(startDate) \(endTime)", feature: "addActivity") }
+                else { log.debug("Saved sleep event: \(String(describing: startDate)) \(endTime)", feature: "addActivity") }
 //                else { print("logged") }
                 completion(error)
             }
         }
     }
 
-    func addMeal(mealType: String, minutesSinceStart: Int, startDate: Date? = nil, completion: @escaping (Error?) -> Void) {
+    func addMeal(_ mealType: String, minutesSinceStart: Int, startDate: Date? = nil, completion: @escaping (Error?) -> Void) {
 //        let startTime = startDate == nil ? minutesSinceStart.minutes.ago : startDate!
         let startTime = startDate == nil ? Date().addingTimeInterval(TimeInterval(minutesSinceStart)) : startDate!
         let endTime = startDate == nil ? Date() : startDate! + (Int(minutesSinceStart)).minutes
@@ -779,7 +779,7 @@ open class AddActivityManager: UITableView, UITableViewDelegate, UITableViewData
 
         log.debug("Saving meal event: \(mealType) \(startTime) \(endTime)", feature: "addActivity")
 
-        validateTimedEvent(startTime: startTime, endTime: endTime) { error in
+        validateTimedEvent(startTime, endTime: endTime) { error in
             guard error == nil else {
                 completion(error)
                 return
@@ -806,7 +806,7 @@ open class AddActivityManager: UITableView, UITableViewDelegate, UITableViewData
 
         log.debug("Saving exercise event: \(workoutType) \(startTime) \(endTime)", feature: "addActivity")
 
-        validateTimedEvent(startTime: startTime, endTime: endTime) { error in
+        validateTimedEvent(startTime, endTime: endTime) { error in
             guard error == nil else {
                 completion(error)
                 return
@@ -826,7 +826,7 @@ open class AddActivityManager: UITableView, UITableViewDelegate, UITableViewData
         }
     }
 
-    func processSelection(sender: UIButton?, pickerManager: PickerManager?, itemType: String, startDate: Date? = nil, duration: Double, durationInSecs: Bool) {
+    func processSelection(_ sender: UIButton?, pickerManager: PickerManager?, itemType: String, startDate: Date? = nil, duration: Double, durationInSecs: Bool) {
         var asSleep = false
         var workoutType : HKWorkoutActivityType? = nil
         var mealType: String? = nil
@@ -853,45 +853,45 @@ open class AddActivityManager: UITableView, UITableViewDelegate, UITableViewData
 
         if asSleep {
             addSleep(hoursSinceStart: durationInSecs ? duration / 3600.0 : duration, startDate: startDate) {
-                self.circadianOpCompletion(sender: sender, manager: pickerManager, displayError: false, error: $0)
+                self.circadianOpCompletion(sender, manager: pickerManager, displayError: false, error: $0)
             }
         }
         else if let mt = mealType {
             let minutesSinceStart = Int(durationInSecs ? (duration / 60) : duration)
-            addMeal(mealType: mt, minutesSinceStart: minutesSinceStart, startDate: startDate) {
-                self.circadianOpCompletion(sender: sender, manager: pickerManager, displayError: false, error: $0)
+            addMeal(mt, minutesSinceStart: minutesSinceStart, startDate: startDate) {
+                self.circadianOpCompletion(sender, manager: pickerManager, displayError: false, error: $0)
             }
         }
         else if let wt = workoutType {
             let minutesSinceStart = Int(durationInSecs ? (duration / 60) : duration)
             addExercise(workoutType: wt, minutesSinceStart: minutesSinceStart, startDate: startDate) {
-                self.circadianOpCompletion(sender: sender, manager: pickerManager, displayError: false, error: $0)
+                self.circadianOpCompletion(sender, manager: pickerManager, displayError: false, error: $0)
             }
         }
         else {
             let msg = "Unknown activity type \(itemType)"
             let err = NSError(domain: HMErrorDomain, code: 1048576, userInfo: [NSLocalizedDescriptionKey: msg])
-            circadianOpCompletion(sender: sender, manager: pickerManager, displayError: true, error: err)
+            circadianOpCompletion(sender, manager: pickerManager, displayError: true, error: err)
         }
     }
 
 
-    func processSelection(sender: UIButton?, pickerManager: PickerManager,
+    func processSelection(_ sender: UIButton?, pickerManager: PickerManager,
                           itemType: String?, index: Int, item: String, data: AnyObject?)
     {
         if let itemType = itemType, let duration = data as? Double {
-            processSelection(sender: sender, pickerManager: pickerManager, itemType: itemType, duration: duration, durationInSecs: false)
+            processSelection(sender, pickerManager: pickerManager, itemType: itemType, duration: duration, durationInSecs: false)
         }
         else {
             let msg = itemType == nil ?
-                "Unknown quick add event type \(itemType)" : "Failed to convert duration into integer: \(data)"
+                "Unknown quick add event type \(String(describing: itemType))" : "Failed to convert duration into integer: \(data)"
 
             let err = NSError(domain: HMErrorDomain, code: 1048576, userInfo: [NSLocalizedDescriptionKey: msg])
-            circadianOpCompletion(sender: sender, manager: pickerManager, displayError: true, error: err)
+            circadianOpCompletion(sender, manager: pickerManager, displayError: true, error: err)
         }
     }
 
-    public func handleQuickAddTap(sender: UIButton) {
+    public func handleQuickAddTap(_ sender: UIButton) {
         log.debug("Quick add button pressed", feature: "addActivity")
 
         Async.main {
@@ -905,7 +905,7 @@ open class AddActivityManager: UITableView, UITableViewDelegate, UITableViewData
 
         if let s = selection {
 //            processSelection(sender, pickerManager: s.0, itemType: s.1, index: s.2, item: s.3, data: s.4)
-             processSelection(sender: sender, pickerManager: s.0, itemType: s.1, index: s.2, item: s.3, data: s.4)
+             processSelection(sender, pickerManager: s.0, itemType: s.1, index: s.2, item: s.3, data: s.4)
         } else {
             Async.main {
                 UINotifications.genericErrorOnView(view: self.notificationView ?? self.superview!, msg: "No event selected")
@@ -915,7 +915,7 @@ open class AddActivityManager: UITableView, UITableViewDelegate, UITableViewData
         }
     }
 
-    func handleFrequentAddTap(sender: UIButton) {
+    func handleFrequentAddTap(_ sender: UIButton) {
         log.debug("Adding selected frequent activities", feature: "addActivity")
 
         Async.main {
@@ -938,14 +938,16 @@ open class AddActivityManager: UITableView, UITableViewDelegate, UITableViewData
             }
         }
 
-        var overlaps = false
+        let overlaps = false
         for i in (0..<activitiesToAdd.count) {
             let iSt = activitiesToAdd[i].start
+            let iEn = activitiesToAdd[i].start.addingTimeInterval(activitiesToAdd[i].duration)
 //            let iEn = activitiesToAdd[i].start.dateByAddingTimeInterval(activitiesToAdd[i].duration)
 //            let iEn = activitiesToAdd[i].start(activitiesToAdd[i].duration)
 
             for j in (i+1..<activitiesToAdd.count) {
                 let jSt = activitiesToAdd[j].start
+                let jEn = activitiesToAdd[j].start.addingTimeInterval(activitiesToAdd[j].duration)
 //                let jEn = activitiesToAdd[j].start.dateByAddingTimeInterval(activitiesToAdd[j].duration)
 //                overlaps = overlaps || !(jEn <= iSt || iEn <= jSt)
             }
@@ -968,27 +970,8 @@ open class AddActivityManager: UITableView, UITableViewDelegate, UITableViewData
             }
         }
     }
-        
-/*    func pickerItemSelected(pickerManager: PickerManager, itemType: String?, index: Int, item: String, data: AnyObject?) -> Void {
-            processSelection(sender: nil, pickerManager: pickerManager, itemType: itemType, index: index, item: item, data: data)
-        } */
-        
-    func pickerItemSelected(pickerManager: PickerManager, itemType: String?, index: Int, item: String, data: AnyObject?) {
-            processSelection(sender: nil, pickerManager: pickerManager, itemType: itemType, index: index, item: item, data: data)
-        }
-        
-        
-
-    // MARK : - PickerManagerSelectionDelegate
-    //        log.debug("Quick add picker selected \(itemType) \(item) \(data)", feature: "addActivity")
- //   func pickerItemSelected(pickerManager: PickerManager, itemType: String?, index: Int, item: String, data: AnyObject?) -> Void {
-//        processSelection(nil, pickerManager: pickerManager, itemType: itemType, index: index, item: item, data: data)
-    //    processSelection(sender: nil, pickerManager: pickerManager, itemType: itemType, index: index, item: item, //data: data)
-  //      }
-  //  }
- //   func pickerItemSelected(pickerManager: PickerManager, itemType: String?, index: Int, item: String, data: AnyObject?) {
-//            processSelection(nil, pickerManager: pickerManager, itemType: itemType, index: index, item: item, data: data)
- //       }
     
- //  }
+    func pickerItemSelected(_ pickerManager: PickerManager, itemType: String?, index: Int, item: String, data: AnyObject?) {
+            processSelection(nil, pickerManager: pickerManager, itemType: itemType, index: index, item: item, data: data)
+        }
 }

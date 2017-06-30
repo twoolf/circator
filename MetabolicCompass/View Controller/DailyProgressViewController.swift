@@ -88,7 +88,8 @@ class DailyProgressViewController : UIViewController, DailyChartModelProtocol {
         self.dailyProgressChartDaysTable.dataSource = self.dailyChartModel
 
         self.dailyProgressChartView.changeColorCompletion = { _ in
-            Async.main {
+//            Async.main {
+            OperationQueue.main.addOperation {
                 self.updateContentWithAnimation = false
                 self.dailyChartModel.toggleHighlightFasting()
                 if self.dailyChartModel.highlightFasting {
@@ -111,13 +112,13 @@ class DailyProgressViewController : UIViewController, DailyChartModelProtocol {
         self.scrollRecentButton.setImage(UIImage(named: "icon-daily-progress-scroll-recent"), for: .normal)
         self.scrollOlderButton.setImage(UIImage(named: "icon-daily-progress-scroll-older"), for: .normal)
 
-        self.scrollRecentButton.addTarget(self, action: #selector(scrollRecent), for: .touchUpInside)
-        self.scrollOlderButton.addTarget(self, action: #selector(scrollOlder), for: .touchUpInside)
+        self.scrollRecentButton.addTarget(self, action: #selector(self.scrollRecent), for: .touchUpInside)
+        self.scrollOlderButton.addTarget(self, action: #selector(self.scrollOlder), for: .touchUpInside)
 
         self.scrollRecentButton.isEnabled = false
         self.scrollOlderButton.isEnabled = true
 
-        NotificationCenter.default.addObserver(self, selector: #selector(syncAddedCircadianEvents), name: NSNotification.Name(rawValue: SyncDidUpdateCircadianEvents), object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(self.syncAddedCircadianEvents), name: NSNotification.Name(rawValue: SyncDidUpdateCircadianEvents), object: nil)
 
     }
 
@@ -174,7 +175,8 @@ class DailyProgressViewController : UIViewController, DailyChartModelProtocol {
     }
 
     func contentDidUpdate(withDailyProgress dailyProgress: Bool = true) {
-        Async.main {
+//        Async.main {
+        OperationQueue.main.addOperation {
             if self.activityIndicator != nil {
                 self.activityIndicator.startAnimating()
                 self.loadStart = Date()
@@ -187,7 +189,8 @@ class DailyProgressViewController : UIViewController, DailyChartModelProtocol {
     //MARK: DailyChartModelProtocol
     
     func dataCollectingFinished() {
-        Async.main {
+//        Async.main {
+        OperationQueue.main.addOperation {
             self.activityIndicator.stopAnimating()
 
             if self.loadStart != nil {

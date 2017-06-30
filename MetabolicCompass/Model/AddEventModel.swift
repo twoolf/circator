@@ -39,7 +39,7 @@ open class AddEventModel: NSObject {
     var mealType: MealType = .Empty {
         didSet {
             if let mealUsualDate = UserManager.sharedManager.getUsualMealTime(mealType: mealType.rawValue) {//if we have usual event date we should prefill it for user
-                eventDate = AddEventModel.applyTimeForDate(fromDate: mealUsualDate as Date, toDate: eventDate)
+                eventDate = AddEventModel.applyTimeForDate(mealUsualDate as Date, toDate: eventDate)
             } else {//reset event date to the default state. Current date
                 //it works in case when user selected event with existing usual time and then changed meal type
                 eventDate = Date()
@@ -58,14 +58,14 @@ open class AddEventModel: NSObject {
             //                sleepEndDate = sleepStartDate + 1.minutes
             //            }
             dataWasChanged = true
-            self.delegate?.sleepTimeUpdated(updatedTime: getSleepTimeString())
+            self.delegate?.sleepTimeUpdated(getSleepTimeString())
         }
     }
     
     var sleepEndDate: Date =  AddEventModel.getDefaultWokeUpDate() {
         didSet {
             dataWasChanged = true
-            self.delegate?.sleepTimeUpdated(updatedTime: getSleepTimeString())
+            self.delegate?.sleepTimeUpdated(getSleepTimeString())
         }
     }
     
@@ -77,7 +77,7 @@ open class AddEventModel: NSObject {
 
         let hour = difference.hour! < 0 ? 0 : difference.hour
         let minutes = difference.minute! < 0 ? 0 : difference.minute
-        let minutesSting = minutes! < 10 ? "0\(minutes ?? no_argument as AnyObject as! Int)" : "\(minutes)"
+        let minutesSting = minutes! < 10 ? "0\(minutes ?? no_argument as AnyObject as! Int)" : "\(String(describing: minutes))"
         let stringDifference = "\(hour ?? no_argument as AnyObject as! Int)h \(minutesSting)m"
         let defaultFont = ScreenManager.appFontOfSize(size: 24)
         let formatFont = ScreenManager.appFontOfSize(size: 15)
@@ -96,11 +96,11 @@ open class AddEventModel: NSObject {
     }
     
     func getStartSleepTimeString () -> String {
-        return timeStringForDate (date: sleepStartDate)
+        return timeStringForDate (sleepStartDate)
     }
     
     func getSleepEndTimeString () -> String {
-        return timeStringForDate(date: sleepEndDate)
+        return timeStringForDate(sleepEndDate)
     }
     
     func getTextForTimeInterval () -> NSAttributedString {
@@ -115,7 +115,7 @@ open class AddEventModel: NSObject {
     }
     
     func getTextForTimeLabel() -> String {
-        return timeStringForDate(date: eventDate)
+        return timeStringForDate(eventDate)
     }
     
     func getTextForDayLabel() -> String {
@@ -130,7 +130,7 @@ open class AddEventModel: NSObject {
         return countDownPickerTags.contains(rowIndex)
     }
     
-    func timeStringForDate(date: Date) -> String {
+    func timeStringForDate(_ date: Date) -> String {
         let calendar = NSCalendar.current
         let unitFlags = Set<Calendar.Component>([.hour, .minute])
         let timeStringComponents = calendar.dateComponents(unitFlags, from: date)
@@ -151,19 +151,19 @@ open class AddEventModel: NSObject {
         if let whenToSleepDate = UserManager.sharedManager.getUsualWhenToSleepTime() {//if we have usual time user go to sleep
             //we will apply it as default value for when go to sleep date
             let yesterday = Date(timeInterval: -1, since: Date())
-            return AddEventModel.applyTimeForDate(fromDate: whenToSleepDate, toDate: yesterday)
+            return AddEventModel.applyTimeForDate(whenToSleepDate, toDate: yesterday)
         }
         return Date()//if we have no date for usual sleep then just use current date
     }
     
     class func getDefaultWokeUpDate() -> Date {
         if let whenWokeUp = UserManager.sharedManager.getUsualWokeUpTime() {
-            return AddEventModel.applyTimeForDate(fromDate: whenWokeUp, toDate: Date())
+            return AddEventModel.applyTimeForDate(whenWokeUp, toDate: Date())
         }
         return Date()
     }
     
-    class func applyTimeForDate(fromDate: Date, toDate: Date) -> Date {
+    class func applyTimeForDate(_ fromDate: Date, toDate: Date) -> Date {
         let calendar = NSCalendar.current
         let unitFlags = Set<Calendar.Component>([.year, .month, .day, .hour, .minute])
         let timeStringComponents = calendar.dateComponents(unitFlags, from: Date())
@@ -295,5 +295,5 @@ open class AddEventModel: NSObject {
 }
 
 protocol AddEventModelDelegate {
-    func sleepTimeUpdated(updatedTime: NSAttributedString)
+    func sleepTimeUpdated(_ updatedTime: NSAttributedString)
 }
