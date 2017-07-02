@@ -48,7 +48,7 @@ class CorrelationViewController: UIViewController, ChartViewDelegate {
     lazy var correlationChart: LineChartView = {
         let chart = LineChartView()
         chart.delegate = self
-        chart.descriptionText = ""
+//        chartDescription.text = ""
         chart.drawBordersEnabled = true
         chart.doubleTapToZoomEnabled = false
         chart.drawGridBackgroundEnabled = false
@@ -83,8 +83,8 @@ class CorrelationViewController: UIViewController, ChartViewDelegate {
                 let lsp = self.lspec ?? .PlotPredicate("", nil)
                 let rsp = self.rspec ?? .PlotPredicate("", nil)
 
-                let attr1 = self.attrNameOfSpec(spec: lsp, name: HMConstants.sharedInstance.healthKitShortNames[self.sampleTypes[0].identifier]!)
-                let attr2 = self.attrNameOfSpec(spec: rsp, name: HMConstants.sharedInstance.healthKitShortNames[self.sampleTypes[1].identifier]!)
+                let attr1 = self.attrNameOfSpec(lsp, name: HMConstants.sharedInstance.healthKitShortNames[self.sampleTypes[0].identifier]!)
+                let attr2 = self.attrNameOfSpec(rsp, name: HMConstants.sharedInstance.healthKitShortNames[self.sampleTypes[1].identifier]!)
                 self.correlationLabel.text = NSLocalizedString("\(attr2) Relative to Increasing \(attr1)", comment: "Plot view section title label")
 
                 Async.background {
@@ -99,7 +99,7 @@ class CorrelationViewController: UIViewController, ChartViewDelegate {
                                 }
                                 return
                             }
-                            self.correlateFastingSelf(aggregates: aggregates)
+                            self.correlateFastingSelf(aggregates)
                         }
 
                     case let (.PlotFasting, .PlotPredicate(_, predicate)):
@@ -113,7 +113,7 @@ class CorrelationViewController: UIViewController, ChartViewDelegate {
                                 }
                                 return
                             }
-                            self.correlateFasting(zipped: zipped)
+                            self.correlateFasting(zipped)
                         }
 
                     case let (.PlotPredicate(_, predicate), .PlotFasting):
@@ -127,7 +127,7 @@ class CorrelationViewController: UIViewController, ChartViewDelegate {
                                 }
                                 return
                             }
-                            self.correlateFasting(zipped: zipped, flip: true)
+                            self.correlateFasting(zipped, flip: true)
                         }
 
                     case let (.PlotPredicate(_, lpred), .PlotPredicate(_, rpred)):
@@ -141,7 +141,7 @@ class CorrelationViewController: UIViewController, ChartViewDelegate {
                                 }
                                 return
                             }
-                            self.correlateSamplePair(stat1: stat1, stat2: stat2)
+                            self.correlateSamplePair(stat1, stat2: stat2)
                         }
                     }
                 }
@@ -149,7 +149,7 @@ class CorrelationViewController: UIViewController, ChartViewDelegate {
         }
     }
 
-    func attrNameOfSpec(spec: PlotSpec, name: String) -> String {
+    func attrNameOfSpec(_ spec: PlotSpec, name: String) -> String {
         switch spec {
         case .PlotFasting:
             return "Fasting"
@@ -163,27 +163,27 @@ class CorrelationViewController: UIViewController, ChartViewDelegate {
     func specLabels() -> [String] {
         let lsp = self.lspec ?? .PlotPredicate("", nil)
         let rsp = self.rspec ?? .PlotPredicate("", nil)
-        return [attrNameOfSpec(spec: lsp, name: sampleTypes[0].displayText!), attrNameOfSpec(spec: rsp, name: sampleTypes[1].displayText!)]
+        return [attrNameOfSpec(lsp, name: sampleTypes[0].displayText!), attrNameOfSpec(rsp, name: sampleTypes[1].displayText!)]
 
     }
-    func correlateSamplePair(stat1: [MCSample], stat2: [MCSample]) {
+    func correlateSamplePair(_ stat1: [MCSample], stat2: [MCSample]) {
         let analyzer = CorrelationDataAnalyzer(labels: specLabels(), samples: [stat1, stat2])!
-        self.plotCorrelate(analyzer: analyzer)
+        self.plotCorrelate(analyzer)
     }
 
-    func correlateFastingSelf(aggregates: [(Date, Double)]) {
+    func correlateFastingSelf(_ aggregates: [(Date, Double)]) {
         let analyzer = CorrelationDataAnalyzer(labels: specLabels(), values: [aggregates, aggregates])!
-        self.plotCorrelate(analyzer: analyzer)
+        self.plotCorrelate(analyzer)
     }
 
-    func correlateFasting(zipped: [(Date, Double, MCSample)], flip: Bool = false) {
+    func correlateFasting(_ zipped: [(Date, Double, MCSample)], flip: Bool = false) {
         let labels = specLabels()
         let flippedLabels = [labels[1], labels[0]]
         let analyzer = CorrelationDataAnalyzer(labels: flip ? flippedLabels : labels, zipped: zipped)!
-        self.plotCorrelate(analyzer: analyzer)
+        self.plotCorrelate(analyzer)
     }
 
-    func plotCorrelate(analyzer: CorrelationDataAnalyzer) {
+    func plotCorrelate(_ analyzer: CorrelationDataAnalyzer) {
         let configurator: ((LineChartDataSet) -> Void)? = { dataSet in
             dataSet.drawCircleHoleEnabled = false
             dataSet.circleRadius = 6

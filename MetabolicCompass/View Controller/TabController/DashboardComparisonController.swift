@@ -117,7 +117,7 @@ class DashboardComparisonController: UIViewController, UITableViewDelegate, UITa
 //        let timeSinceRefresh = DateInterval().intersection(with: PopulationHealthManager.sharedManager.aggregateRefreshDate ?? Date.distantPast())
 //        let timeSinceRefresh = Date().addingTimeInterval(PopulationHealthManager.sharedManager.aggregateRefreshDate ?? Date.distantPast())
 //        let timeSinceRefresh = DateInterval().timeIntervalSinceDate(PopulationHealthManager.sharedManager.aggregateRefreshDate ?? Date.distantPast())
-        let refreshPeriod = UserManager.sharedManager.getRefreshFrequency() ?? Int.max
+        let refreshPeriod = UserManager.sharedManager.getRefreshFrequency() 
  //       let stale = timeSinceRefresh > DateInterval(start: Date(), duration: TimeInterval(refreshPeriod))
         let stale = true
 

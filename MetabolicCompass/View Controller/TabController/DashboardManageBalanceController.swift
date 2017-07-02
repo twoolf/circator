@@ -115,8 +115,8 @@ class DashboardManageBalanceController: UIViewController, UITableViewDelegate, U
         
         let cell = tableView.dequeueReusableCell(withIdentifier: cellIdentifier, for: indexPath as IndexPath) as! ManageBalanceCell
         let item = self.data[indexPath.row]
-        cell.leftImage.image = appearanceProvider.imageForSampleType(sampleType: item.type, active: true)
-        cell.titleLabel.text = appearanceProvider.titleForSampleType(sampleType: item.type, active: true).string
+        cell.leftImage.image = appearanceProvider.imageForSampleType(item.type, active: true)
+        cell.titleLabel.text = appearanceProvider.titleForSampleType(item.type, active: true).string
         cell.sampleTypesIndex = indexPath.row
         cell.data = item
         return cell;

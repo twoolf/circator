@@ -50,7 +50,7 @@ class ManageChartsViewController: UIViewController, UITableViewDataSource, UITab
         let cell = tableView.dequeueReusableCell(withIdentifier: cellIdentifier) as! ManageDashboardCell
         let item = data[indexPath.row]
         cell.showsReorderControl = false
-        cell.updateSelectionStatus(selected: item.active, appearanceProvider: appearanceProvider, itemType: item.type)
+        cell.updateSelectionStatus(item.active, appearanceProvider: appearanceProvider, itemType: item.type)
         return cell
     }
     
@@ -68,7 +68,7 @@ class ManageChartsViewController: UIViewController, UITableViewDataSource, UITab
         }
         
         item.active = !item.active
-        cell.updateSelectionStatus(selected: item.active, appearanceProvider: appearanceProvider, itemType: item.type)
+        cell.updateSelectionStatus(item.active, appearanceProvider: appearanceProvider, itemType: item.type)
     }
     
     internal func tableView(_ tableView: UITableView, canMoveRowAt indexPath: IndexPath) -> Bool {

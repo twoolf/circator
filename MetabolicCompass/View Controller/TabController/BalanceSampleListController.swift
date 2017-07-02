@@ -93,8 +93,8 @@ class BalanceSampleListController: UIViewController, UITableViewDelegate, UITabl
         let item = self.data[indexPath.row]
         cell.showsReorderControl         = false
         
-        cell.leftImageView.image = appearanceProvider.imageForSampleType(sampleType: item.type, active: false)
-        cell.captionLabel.text   = appearanceProvider.titleForSampleType(sampleType: item.type, active: false).string
+        cell.leftImageView.image = appearanceProvider.imageForSampleType(item.type, active: false)
+        cell.captionLabel.text   = appearanceProvider.titleForSampleType(item.type, active: false).string
         cell.button.isSelected     = item.active
         return cell;
     }
@@ -122,7 +122,6 @@ class BalanceSampleListController: UIViewController, UITableViewDelegate, UITabl
         item.active = true
         cell.button.isSelected = true
         
-//        Async.main(after: 0.1) {
         OperationQueue.main.addOperation {
             var samples = PreviewManager.balanceSampleTypes
             let index   = PreviewManager.balanceSampleTypes.index(of: self.selectdType)!

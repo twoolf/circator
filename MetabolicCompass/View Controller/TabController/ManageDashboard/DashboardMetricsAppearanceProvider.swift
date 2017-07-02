@@ -12,14 +12,14 @@ import MetabolicCompassKit
 
 class DashboardMetricsAppearanceProvider: NSObject {
     
-    func attributedText(text: String, forSampleType sampleType: String, active: Bool) -> NSAttributedString
+    func attributedText(_ text: String, forSampleType sampleType: String, active: Bool) -> NSAttributedString
     {
-        return NSAttributedString(string: text, attributes: [NSForegroundColorAttributeName: self.colorForSampleType(sampleType: sampleType, active: active)])
+        return NSAttributedString(string: text, attributes: [NSForegroundColorAttributeName: self.colorForSampleType(sampleType, active: active)])
     }
     
-    func colorForSampleType(sampleType: String, active: Bool) -> UIColor
+    func colorForSampleType(_ sampleType: String, active: Bool) -> UIColor
     {
-        return self.getColorForSampleType(sampleType: sampleType, active: active) ?? UIColor.white
+        return self.getColorForSampleType(sampleType, active: active) ?? UIColor.white
     }
     
     enum SampleGroupColor: UInt32 {
@@ -30,7 +30,7 @@ class DashboardMetricsAppearanceProvider: NSObject {
     }
     
     
-    private func getColorForSampleType(sampleType: String, active: Bool) -> UIColor?
+    private func getColorForSampleType(_ sampleType: String, active: Bool) -> UIColor?
     {
         if (!active) {
             return UIColor.lightGray
@@ -79,7 +79,7 @@ class DashboardMetricsAppearanceProvider: NSObject {
         }
     }
     
-    func typeFromString(string:String) -> String {
+    func typeFromString(_ string:String) -> String {
         switch string {
         case NSLocalizedString("Weight", comment: "user weight"):
             return HKQuantityTypeIdentifier.bodyMass.rawValue
@@ -137,7 +137,7 @@ class DashboardMetricsAppearanceProvider: NSObject {
         }
     }
     
-    func stringForSampleType(sampleType: String) -> String
+    func stringForSampleType(_ sampleType: String) -> String
     {
         switch sampleType {
         case HKQuantityTypeIdentifier.bodyMass.rawValue:
@@ -195,7 +195,7 @@ class DashboardMetricsAppearanceProvider: NSObject {
         }
     }
     
-    func stringForSampleTypeOfCorrelate(sampleType: String) -> String
+    func stringForSampleTypeOfCorrelate(_ sampleType: String) -> String
     {
         switch sampleType {
         case HKQuantityTypeIdentifier.bodyMass.rawValue:
@@ -249,21 +249,21 @@ class DashboardMetricsAppearanceProvider: NSObject {
         }
     }
     
-    func titleForSampleType(sampleType: String, active: Bool) -> NSAttributedString
+    func titleForSampleType(_ sampleType: String, active: Bool) -> NSAttributedString
     {
-        return self.attributedText(text: self.stringForSampleType(sampleType: sampleType), forSampleType: sampleType, active: active)
+        return self.attributedText(self.stringForSampleType(sampleType), forSampleType: sampleType, active: active)
     }
     
-    func titleForAnalysisChartOfType(sampleType: String) -> NSAttributedString {
-        return self.attributedText(text: self.stringForSampleTypeOfCorrelate(sampleType: sampleType), forSampleType: sampleType, active: false)
+    func titleForAnalysisChartOfType(_ sampleType: String) -> NSAttributedString {
+        return self.attributedText(self.stringForSampleTypeOfCorrelate(sampleType), forSampleType: sampleType, active: false)
     }
     
-    private func imageNameWithState(baseName: String, active: Bool) -> String
+    private func imageNameWithState(_ baseName: String, active: Bool) -> String
     {
         return baseName + (active ? "-normal": "-unactive");
     }
     
-    private func imageNameForSampleType(sampleType: String) -> String
+    private func imageNameForSampleType(_ sampleType: String) -> String
     {
         switch sampleType {
         case HKQuantityTypeIdentifier.bodyMass.rawValue:
@@ -319,9 +319,9 @@ class DashboardMetricsAppearanceProvider: NSObject {
         }
     }
 
-    func imageForSampleType(sampleType: String, active: Bool) -> UIImage?
+    func imageForSampleType(_ sampleType: String, active: Bool) -> UIImage?
     {
-        let imageName = self.imageNameWithState(baseName: self.imageNameForSampleType(sampleType: sampleType), active: active)
+        let imageName = self.imageNameWithState(self.imageNameForSampleType(sampleType), active: active)
         let image = UIImage(named: imageName)
         return image
     }

@@ -17,7 +17,7 @@ import UIKit
     return newImage; 
 }*/
 
-public func resizeImage(image : UIImage?, scaledToSize size : CGSize) -> UIImage {
+public func resizeImage(_ image : UIImage?, scaledToSize size : CGSize) -> UIImage {
     UIGraphicsBeginImageContextWithOptions(size, false, 0)
     image!.draw(in: CGRect(0, 0, size.width, size.height))
     let newImage = UIGraphicsGetImageFromCurrentImageContext()
@@ -60,10 +60,10 @@ class CircadianBehaviorViewController: UITabBarController {
     private func setupViewControllers() {
         
         let eventInboxViewController = EventInboxViewController()
-        eventInboxViewController.tabBarItem = UITabBarItem(title: "Event Inbox", image: resizeImage(image: UIImage(named: "download-box-4"), scaledToSize: CGSize(30, 30)), selectedImage: resizeImage(image: UIImage(named: "download-box-5"), scaledToSize: CGSize(30, 30)))
+        eventInboxViewController.tabBarItem = UITabBarItem(title: "Event Inbox", image: resizeImage(UIImage(named: "download-box-4"), scaledToSize: CGSize(30, 30)), selectedImage: resizeImage(UIImage(named: "download-box-5"), scaledToSize: CGSize(30, 30)))
         
         let repeatedEventManagerViewController = RepeatedEventManagerViewController.sharedManager
-        repeatedEventManagerViewController.tabBarItem = UITabBarItem(title: "Repeated Events", image: resizeImage(image: UIImage(named: "image-logo"), scaledToSize: CGSize(30, 30)), selectedImage: resizeImage(image: UIImage(named: "image-logo"), scaledToSize: CGSize(30, 30)))
+        repeatedEventManagerViewController.tabBarItem = UITabBarItem(title: "Repeated Events", image: resizeImage(UIImage(named: "image-logo"), scaledToSize: CGSize(30, 30)), selectedImage: resizeImage(UIImage(named: "image-logo"), scaledToSize: CGSize(30, 30)))
         
         let spacerForAddEventButton = UIViewController()
         self.viewControllers = [eventInboxViewController, spacerForAddEventButton, repeatedEventManagerViewController]

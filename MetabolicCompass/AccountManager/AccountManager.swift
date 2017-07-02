@@ -51,7 +51,6 @@ class AccountManager: NSObject {
         
         registerLoginLandingController.completion = completion
         
-//        Async.main(after: 1) {//select the first controller of the main tabbar contoller
         OperationQueue.main.addOperation {
             let mainTabbarController = self.rootViewController?.viewControllers[0] as! MainTabController
             mainTabbarController.selectedIndex = 0
@@ -61,7 +60,7 @@ class AccountManager: NSObject {
     }
 
     func doLogout(completion: ((Void) -> Void)?) {
-//        log.debug("User logging out", feature: "accountExec")
+        log.debug("User logging out", feature: "accountExec")
         UserManager.sharedManager.logoutWithCompletion(completion: completion)
         IOSHealthManager.sharedManager.reset()
         self.contentManager.stopBackgroundWork()
@@ -69,7 +68,7 @@ class AccountManager: NSObject {
     }
 
     func doWithdraw(_ keepData: Bool, completion: @escaping (Bool) -> Void) {
-//        log.debug("User withdrawing", feature: "accountExec")
+        log.debug("User withdrawing", feature: "accountExec")
         UserManager.sharedManager.withdraw(keepData: keepData, completion: completion)
         IOSHealthManager.sharedManager.reset()
         self.contentManager.stopBackgroundWork()
@@ -77,9 +76,8 @@ class AccountManager: NSObject {
     }
 
     private func loginComplete () {
-//        log.debug("User login complete", feature: "loginExec")
+        log.debug("User login complete", feature: "loginExec")
 
-//        Async.main() {
         OperationQueue.main.addOperation {
             NotificationCenter.default.post(name: NSNotification.Name(rawValue: self.didCompleteLoginNotification), object: nil)
         }

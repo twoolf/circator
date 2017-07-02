@@ -71,7 +71,7 @@ public class OurStudyViewController: UIViewController, ChartViewDelegate {
             let chart = PieChartView()
             chart.animate(xAxisDuration: 1.0, yAxisDuration: 1.0)
             chart.delegate = self
-            chart.descriptionText = ""
+//            chartDescription.text = ""
             chart.holeRadiusPercent = 0.7
             chart.backgroundColor = .clear
             chart.holeColor = .clear
@@ -558,14 +558,14 @@ public class OurStudyViewController: UIViewController, ChartViewDelegate {
                          NSFontAttributeName: UIFont(name: "GothamBook", size: studyLabelFontSize)!]
 
             let aStr = NSMutableAttributedString(string: "Study Progress: N/A, please try later", attributes: attrs)
-            self.phaseProgress.refreshTitle(title: aStr)
+            self.phaseProgress.refreshTitle(aStr)
         }
         else {
             let userCount = Double(activeUsers)
             let userTarget = OurStudyViewController.userGrowthTarget(activeUsers: userCount)
             self.phaseProgress.ratio = CGFloat(userCount / userTarget)
             self.phaseProgress.refreshData()
-            self.phaseProgress.refreshTitle(title: OurStudyViewController.userGrowthBarTitle(target: userTarget))
+            self.phaseProgress.refreshTitle(OurStudyViewController.userGrowthBarTitle(target: userTarget))
         }
     }
 

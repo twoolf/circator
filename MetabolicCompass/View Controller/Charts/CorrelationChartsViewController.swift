@@ -102,14 +102,14 @@ open class CorrelationChartsViewController: UIViewController, UITableViewDelegat
         
         if selectedPickerRows.count > 0 && pickerData.count > 0 {
             if selectedPickerRows[0] >= 0 && pickerData[0].count > selectedPickerRows[0] {
-                let typ = appearanceProvider.titleForAnalysisChartOfType(sampleType: pickerData[0][selectedPickerRows[0]].identifier).string
+                let typ = appearanceProvider.titleForAnalysisChartOfType(pickerData[0][selectedPickerRows[0]].identifier).string
                 contentType += " \(typ)"
             }
         }
         
         if selectedPickerRows.count > 1 && pickerData.count > 1 {
             if selectedPickerRows[1] >= 0 && pickerData[1].count > selectedPickerRows[1] {
-                let typ = appearanceProvider.titleForAnalysisChartOfType(sampleType: pickerData[1][selectedPickerRows[1]].identifier).string
+                let typ = appearanceProvider.titleForAnalysisChartOfType(pickerData[1][selectedPickerRows[1]].identifier).string
                 contentType += " vs \(typ)"
             }
         }
@@ -133,9 +133,9 @@ open class CorrelationChartsViewController: UIViewController, UITableViewDelegat
         
         if (self.selectedPickerRows[indexPath.row] >= 0) {
             let type = pickerData[indexPath.row][self.selectedPickerRows[indexPath.row]].identifier
-            let image = appearanceProvider.imageForSampleType(sampleType: pickerData[indexPath.row][self.selectedPickerRows[indexPath.row]].identifier, active: true)
+            let image = appearanceProvider.imageForSampleType(pickerData[indexPath.row][self.selectedPickerRows[indexPath.row]].identifier, active: true)
             cell.healthImageView?.image = image
-            cell.titleLabel.text = appearanceProvider.titleForSampleType(sampleType: type, active: false).string
+            cell.titleLabel.text = appearanceProvider.titleForSampleType(type, active: false).string
         } else {
             cell.titleLabel.text = "Choose metric"
             cell.healthImageView?.image = nil
@@ -161,7 +161,7 @@ open class CorrelationChartsViewController: UIViewController, UITableViewDelegat
     func reloadPickerToCurrentCell(indexPath:IndexPath) {
         let cell = tableView.cellForRow(at: indexPath as IndexPath) as! CorrelationTabeViewCell
         cell.setSelected(true, animated: true)
-        let typeSring = appearanceProvider.typeFromString(string: cell.titleLabel.text!)
+        let typeSring = appearanceProvider.typeFromString(cell.titleLabel.text!)
         _ = pickerIdentifiers[indexPath.row].index(of: typeSring)
 //        pickerData.selectRow(row!, inComponent: 0, animated: true)
     }
@@ -206,9 +206,9 @@ open class CorrelationChartsViewController: UIViewController, UITableViewDelegat
     
     func updateChartTitle() {
         var firstType = pickerData[0][selectedPickerRows[0]].identifier
-        firstType = appearanceProvider.titleForAnalysisChartOfType(sampleType: firstType).string
+        firstType = appearanceProvider.titleForAnalysisChartOfType(firstType).string
         var secondType = pickerData[1][selectedPickerRows[1]].identifier
-        secondType = appearanceProvider.titleForAnalysisChartOfType(sampleType: secondType).string
+        secondType = appearanceProvider.titleForAnalysisChartOfType(secondType).string
         
         let titleString = firstType
         (scatterCh.chartTitleLabel.text, correlCh.chartTitleLabel.text) = (secondType, titleString)

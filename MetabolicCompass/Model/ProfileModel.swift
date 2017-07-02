@@ -44,7 +44,7 @@ class ProfileModel: UserInfoModel {
                 item.setNewValue(newValue: profileInfo[firstNameField.name] as? String as AnyObject?? ?? "<unknown>" as AnyObject?)
             }
             else if item.type == .LastName {
-                item.setNewValue(newValue: profileInfo[lastNameField.name] as? String as AnyObject?? ?? "<unknown>" as AnyObject?)
+                item.setNewValue(newValue: (profileInfo[lastNameField.name] as? String as AnyObject??)! )
             }
             else if item.type == .Photo {
                 item.setNewValue(newValue: UserManager.sharedManager.userProfilePhoto())

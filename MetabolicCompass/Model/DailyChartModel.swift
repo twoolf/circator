@@ -84,7 +84,7 @@ open class DailyChartModel : NSObject, UITableViewDataSource {
     
     var daysStringArray: [String] = { return DailyChartModel.getChartDateRangeStrings() }()
 
-    public func invalidateCache(note: NSNotification) {
+    public func invalidateCache(_ note: NSNotification) {
         if let info = note.userInfo, let dates = info[HMCircadianEventsDateUpdateKey] as? Set<Date> {
             if dates.count > 0 {
                 for date in dates {
@@ -122,7 +122,7 @@ open class DailyChartModel : NSObject, UITableViewDataSource {
     
     //MARK: Working with events data
     
-    public func valueOfCircadianEvent(e: CircadianEvent) -> Double {
+    public func valueOfCircadianEvent(_ e: CircadianEvent) -> Double {
         switch e {
         case .meal:
             return stEat
@@ -141,7 +141,7 @@ open class DailyChartModel : NSObject, UITableViewDataSource {
     public func prepareChartData () {
 //        log.debug("Resetting chart data with \(self.chartDataAndColors.count) values", feature: "prepareChart")
         self.chartDataAndColors = [:]
-        getDataForDay(day: nil, lastDay: false)
+        getDataForDay(nil, lastDay: false)
         
     }
 
@@ -197,12 +197,12 @@ open class DailyChartModel : NSObject, UITableViewDataSource {
     public func getStartDate() -> Date? { return self.daysArray.first }
     public func getEndDate() -> Date? { return self.daysArray.last }
 
-    public func setEndDate(endDate: Date? = nil) {
+    public func setEndDate(_ endDate: Date? = nil) {
         self.daysArray = DailyChartModel.getChartDateRange(endDate: endDate)
         self.daysStringArray = DailyChartModel.getChartDateRangeStrings(endDate: endDate)
     }
 
-    public func refreshChartDateRange(lastViewDate: Date?) {
+    public func refreshChartDateRange(_ lastViewDate: Date?) {
         let now = Date()
 /*        if let last = lastViewDate, let end = getEndDate(), last.isInSameDayAsDate(end) && !last.isInSameDayasDate(now) {
             self.daysArray = DailyChartModel.getChartDateRange()
@@ -210,7 +210,7 @@ open class DailyChartModel : NSObject, UITableViewDataSource {
         } */
     }
 
-    public func getDataForDay(day: Date?, lastDay:Bool) {
+    public func getDataForDay(_ day: Date?, lastDay:Bool) {
         let startDay = day == nil ? self.daysArray.first! : day!
 //        let today = startDay.isInToday()
         let today = startDay.isToday
@@ -224,7 +224,7 @@ open class DailyChartModel : NSObject, UITableViewDataSource {
 //        self.cachedDailyProgress.setObject(forKey: <#T##String#>, cacheBlock: <#T##(@escaping ((NSCoding, CacheExpiry) -> Void), @escaping (Cache<NSCoding>.ErrorClosure)) -> Void#>, completion: <#T##(NSCoding?, Bool, NSError?) -> Void#>)(forKey: cacheKey, cacheBlock: { (success, error) in
 //        getDailyProgress().
         self.cachedDailyProgress.setObject(forKey: cacheKey, cacheBlock: { (success, error) in
-            self.getCircadianEventsForDay(day: startDay, completion: { (dayInfo) in
+            self.getCircadianEventsForDay(startDay, completion: { (dayInfo) in
                 success(dayInfo, .seconds(cacheDuration))
             })
         }, completion: { (dayInfoFromCache, loadedFromCache, error) in
@@ -237,7 +237,7 @@ open class DailyChartModel : NSObject, UITableViewDataSource {
                 let lastElement = nextIndex == (self.daysArray.count - 1)
 //                Async.main {
                 OperationQueue.main.addOperation {
-                    self.getDataForDay(day: self.daysArray[nextIndex], lastDay: lastElement)
+                    self.getDataForDay(self.daysArray[nextIndex], lastDay: lastElement)
                 }
             } else {//end of recursion
                 for (key, daysData) in self.chartDataAndColors {
@@ -252,7 +252,7 @@ open class DailyChartModel : NSObject, UITableViewDataSource {
         })
     }
     
-    public func getCircadianEventsForDay(day: Date, completion: @escaping (_ dayInfo: DailyProgressDayInfo) -> Void) {
+    public func getCircadianEventsForDay(_ day: Date, completion: @escaping (_ dayInfo: DailyProgressDayInfo) -> Void) {
         
 //        var endOfDay = date.endOfDay(date: day)
         var endOfDay = Date().endOfDay
@@ -279,21 +279,21 @@ open class DailyChartModel : NSObject, UITableViewDataSource {
                         let (eventDate, eventType) = event //assign tuple values to vars
                         if endOfDay.day < eventDate.day {
                             if let prev = previousEventDate {
-                                let endEventDate = self.endOfDay(date: prev)
-                                let eventDuration = self.getDifferenceForEvents(previousEventDate: prev, currentEventDate: endEventDate)
+                                let endEventDate = self.endOfDay(prev)
+                                let eventDuration = self.getDifferenceForEvents(prev, currentEventDate: endEventDate)
 
                                 dayEvents.append(eventDuration)
-                                dayColors.append(self.getColorForEventType(eventType: eventType))
+                                dayColors.append(self.getColorForEventType(eventType))
                             } else {
                                 log.warning("DCM NO PREV on \(intervals)")
                             }
                             break
                         }
                         if previousEventDate != nil && eventType == previousEventType {//we alredy have a prev event and can calculate how match time it took
-                            let eventDuration = self.getDifferenceForEvents(previousEventDate: previousEventDate, currentEventDate: eventDate)
+                            let eventDuration = self.getDifferenceForEvents(previousEventDate, currentEventDate: eventDate)
 
                             dayEvents.append(eventDuration)
-                            dayColors.append(self.getColorForEventType(eventType: eventType))
+                            dayColors.append(self.getColorForEventType(eventType))
                         }
                         previousEventDate = eventDate
                         previousEventType = eventType
@@ -357,7 +357,7 @@ open class DailyChartModel : NSObject, UITableViewDataSource {
                         let vals : [(x: Double, y: Double)] = intervals.map { event in
 //                            let startTimeInFractionalHours = event.0.addingTimeInterval(60.minutes) / 3600.0
                             let startTimeInFractionalHours = event.0.addHours(hoursToAdd: 1)
-                            let metabolicStateAsDouble = self.valueOfCircadianEvent(e: event.1)
+                            let metabolicStateAsDouble = self.valueOfCircadianEvent(event.1)
                             return (x: startTimeInFractionalHours as! Double, y: Double(metabolicStateAsDouble))
                         }
 
@@ -486,7 +486,7 @@ open class DailyChartModel : NSObject, UITableViewDataSource {
         }
     }
     
-    public func getColorForEventType(eventType: CircadianEvent) -> UIColor {
+    public func getColorForEventType(_ eventType: CircadianEvent) -> UIColor {
         var eventColor: UIColor = MetabolicDailyProgressChartView.fastingColor
         switch eventType {
         case .exercise:
@@ -506,10 +506,10 @@ open class DailyChartModel : NSObject, UITableViewDataSource {
     
     //MARK: Working with date
     
-    public func getDifferenceForEvents(previousEventDate:Date?, currentEventDate: Date) -> Double {
+    public func getDifferenceForEvents(_ previousEventDate:Date?, currentEventDate: Date) -> Double {
         var eventDuration = 0.0
         //if we have situation when event started at the end of the previos day and ended on next day
-        let dateForCurrentEvent = currentEventDate.day > (previousEventDate?.day)! ? endOfDay(date: previousEventDate!) : currentEventDate
+        let dateForCurrentEvent = currentEventDate.day > (previousEventDate?.day)! ? endOfDay(previousEventDate!) : currentEventDate
 //        let differenceComponets = previousEventDate?.difference(dateForCurrentEvent, unitFlags: [.Hour, .Minute])
         let differenceComponets = previousEventDate?.timeIntervalSince(dateForCurrentEvent)
 //        let differenceMinutes = Double((differenceComponets?.minute)!)
@@ -523,10 +523,10 @@ open class DailyChartModel : NSObject, UITableViewDataSource {
 //            eventDuration = minutes
 //        }
 //        return roundToPlaces(daoubleToRound: eventDuration, places: 2)
-    return roundToPlaces(daoubleToRound: 60.2, places: 2)
+    return roundToPlaces(60.2, places: 2)
     }
     
-    public func endOfDay(date: Date) -> Date {
+    public func endOfDay(_ date: Date) -> Date {
         let calendar = NSCalendar(calendarIdentifier: NSCalendar.Identifier.gregorian)
         var components = calendar!.components([.day, .year, .month, .hour, .minute, .second], from: date)
 //        components.timeZone = NSTimeZone(name: NSTimeZone.localTimeZone.abbreviation)
@@ -536,7 +536,7 @@ open class DailyChartModel : NSObject, UITableViewDataSource {
         return calendar!.date(from: components)!
     }
     
-    public func roundToPlaces(daoubleToRound: Double, places:Int) -> Double {
+    public func roundToPlaces(_ daoubleToRound: Double, places:Int) -> Double {
         let divisor = pow(10.0, Double(places))
         return round(daoubleToRound * divisor) / divisor
     }

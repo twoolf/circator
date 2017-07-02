@@ -60,7 +60,7 @@ class ChartCollectionDataSource: NSObject, UICollectionViewDataSource {
                 marker.yPixelRange = Double(cell.chartView.contentRect.height)
             }
         }
-        cell.chartTitleLabel.text = appearanceProvider.stringForSampleType(sampleType: typeToShow == HKQuantityTypeIdentifier.bloodPressureSystolic.rawValue ? HKCorrelationTypeIdentifier.bloodPressure.rawValue : typeToShow)
+        cell.chartTitleLabel.text = appearanceProvider.stringForSampleType(typeToShow == HKQuantityTypeIdentifier.bloodPressureSystolic.rawValue ? HKCorrelationTypeIdentifier.bloodPressure.rawValue : typeToShow)
         return cell
     }
 

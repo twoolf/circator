@@ -118,10 +118,9 @@ public class AddEventViewController: UIViewController, AddEventModelDelegate {
         switch type {
             case .Meal:
                 addEventModel.saveMealEvent(completion: { (success, errorMessage) in
-//                    Async.main {
                     OperationQueue.main.addOperation {
                         guard success else {
-                            self.showValidationAlert(message: errorMessage!)
+                            self.showValidationAlert(errorMessage!)
                             return
                         }
                         self.dismiss(animated: true, completion: nil)
@@ -129,10 +128,9 @@ public class AddEventViewController: UIViewController, AddEventModelDelegate {
                 })
             case .Exercise:
                 addEventModel.saveExerciseEvent(completion: { (success, errorMessage) in
- //                   Async.main{
                     OperationQueue.main.addOperation {
                         guard success else {
-                            self.showValidationAlert(message: errorMessage!)
+                            self.showValidationAlert(errorMessage!)
                             return
                         }
                         self.dismiss(animated: true, completion: nil)
@@ -140,10 +138,9 @@ public class AddEventViewController: UIViewController, AddEventModelDelegate {
                 })
             case .Sleep:
                 addEventModel.saveSleepEvent(completion: { (success, errorMessage) in
-//                    Async.main {
                     OperationQueue.main.addOperation {
                         guard success else {
-                            self.showValidationAlert(message: errorMessage!)
+                            self.showValidationAlert(errorMessage!)
                             return
                         }
                         self.dismiss(animated: true, completion: nil)
@@ -154,7 +151,7 @@ public class AddEventViewController: UIViewController, AddEventModelDelegate {
     
     //MARK: Validation alerts
     
-    func showValidationAlert(message: String) {
+    func showValidationAlert(_ message: String) {
         let alertController = UIAlertController(title: "", message: message, preferredStyle: .alert)
         alertController.addAction(UIAlertAction(title: "OK", style: .cancel, handler: nil))
         self.present(alertController, animated: true, completion: nil)
@@ -166,4 +163,3 @@ public class AddEventViewController: UIViewController, AddEventModelDelegate {
         sleepTimeLabel.attributedText = updatedTime
     }
 }
-//}

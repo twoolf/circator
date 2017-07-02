@@ -274,7 +274,7 @@ class QueryBuilderViewController: UIViewController, UITextFieldDelegate {
         if ( !(lowerBound == nil && upperBound == nil) ) {
 
             // TODO: meal/activity info based on attribute information.
-            var hkType : HKObjectType? = nil
+            let hkType : HKObjectType? = nil
 //            let hkIdentifier = HMConstants.sharedInstance.mcdbToHK[attribute_set]!
 
 /*            switch hkIdentifier {

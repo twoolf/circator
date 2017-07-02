@@ -27,7 +27,7 @@ class ManageDashboardCell: UITableViewCell {
         // Configure the view for the selected state
     }
     
-    func updateSelectionStatus (selected: Bool, appearanceProvider: DashboardMetricsAppearanceProvider, itemType: String)
+    func updateSelectionStatus (_ selected: Bool, appearanceProvider: DashboardMetricsAppearanceProvider, itemType: String)
     {
         self.button.isSelected = selected
         
@@ -38,8 +38,8 @@ class ManageDashboardCell: UITableViewCell {
             self.reorderImage?.image  = UIImage(named: "icon-manage-filters-unactive")
         }
         
-        self.leftImageView.image         = appearanceProvider.imageForSampleType(sampleType: itemType, active: selected)
-        self.captionLabel.attributedText = appearanceProvider.titleForSampleType(sampleType: itemType, active: selected)
+        self.leftImageView.image         = appearanceProvider.imageForSampleType(itemType, active: selected)
+        self.captionLabel.attributedText = appearanceProvider.titleForSampleType(itemType, active: selected)
         
     }
 

@@ -130,7 +130,7 @@ open class AppPickerManager: PickerManager, PickerManagerSelectionDelegate {
             cellForItem.contentView.topAnchor.constraint(equalTo: apps[item].topAnchor, constant: -10.0),
             cellForItem.contentView.bottomAnchor.constraint(equalTo: apps[item].bottomAnchor, constant: 10.0),
             cellForItem.contentView.centerXAnchor.constraint(equalTo: apps[item].centerXAnchor),
-            apps[item].heightAnchor.constraint(equalToConstant: height - 20.0),
+//            apps[item].heightAnchor.constraint(equalToConstant: height - 20.0),
             apps[item].centerXAnchor.constraint(equalTo: image.centerXAnchor),
             apps[item].centerXAnchor.constraint(equalTo: label.centerXAnchor),
             image.heightAnchor.constraint(equalToConstant: height - (label.font.lineHeight + 28.0)),
@@ -413,7 +413,7 @@ open class AddActivityManager: UITableView, UITableViewDelegate, UITableViewData
                 { (intervals, error) in
                     guard error == nil else {
                         log.error("Failed to fetch circadian events: \(String(describing: error))", feature: "freqActivity")
-                        queryErrors.append(error as? NSError)
+                        queryErrors.append(error as NSError?)
                         queryGroup.leave()
                         return
                     }
@@ -884,7 +884,7 @@ open class AddActivityManager: UITableView, UITableViewDelegate, UITableViewData
         }
         else {
             let msg = itemType == nil ?
-                "Unknown quick add event type \(String(describing: itemType))" : "Failed to convert duration into integer: \(data)"
+                "Unknown quick add event type \(String(describing: itemType))" : "Failed to convert duration into integer: \(String(describing: data))"
 
             let err = NSError(domain: HMErrorDomain, code: 1048576, userInfo: [NSLocalizedDescriptionKey: msg])
             circadianOpCompletion(sender, manager: pickerManager, displayError: true, error: err)

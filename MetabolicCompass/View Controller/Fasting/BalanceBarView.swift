@@ -74,7 +74,7 @@ public class BalanceBarView : UIView {
         self.isUserInteractionEnabled = true
     }
 
-    public func refreshTitle(title: NSAttributedString) {
+    public func refreshTitle(_ title: NSAttributedString) {
         barTitle.attributedText = title
         barTitle.setNeedsDisplay()
     }

@@ -31,8 +31,8 @@ class DashboardComparisonCell: UITableViewCell {
                 return
             }
             
-            sampleIcon.image = appearanceProvider.imageForSampleType(sampleType: sampleType!.identifier, active: true)
-            sampleName.attributedText = appearanceProvider.titleForSampleType(sampleType: sampleType!.identifier, active: true)
+            sampleIcon.image = appearanceProvider.imageForSampleType(sampleType!.identifier, active: true)
+            sampleName.attributedText = appearanceProvider.titleForSampleType(sampleType!.identifier, active: true)
         }
     }
     
@@ -90,7 +90,7 @@ class DashboardComparisonCell: UITableViewCell {
 
         localSampleValueTextField.attributedText =
             text.formatTextWithRegex(regex: "[-+]?(\\d*[.,/])?\\d+", format: formatAttrs, defaultFormat: defaultFormatAttrs)
-        print("local sample \(localSampleValueTextField.attributedText)")
+        print("local sample \(String(describing: localSampleValueTextField.attributedText))")
     }
     
     /// note setUserData above that uses this call
@@ -108,7 +108,7 @@ class DashboardComparisonCell: UITableViewCell {
 
         populationSampleValueTextField.attributedText =
             text.formatTextWithRegex(regex: "[-+]?(\\d*[.,/])?\\d+", format: formatAttrs, defaultFormat: defaultFormatAttrs)
-        print("population sample \(populationSampleValueTextField.attributedText)")
+        print("population sample \(String(describing: populationSampleValueTextField.attributedText))")
     }
     
     

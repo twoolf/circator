@@ -284,7 +284,6 @@ class MainTabController: UITabBarController, UITabBarControllerDelegate, ManageE
     // MARK :- ManageEventMenuDelegate implementation
     
     func manageEventMenu(menu: ManageEventMenu, didSelectIndex idx: Int) {
-//        Async.main(after: 0.4) {
         OperationQueue.main.addOperation {
             self.hideManageEventIcons(hide: true)
             self.hideManageEventOverlay()

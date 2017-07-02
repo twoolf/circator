@@ -138,17 +138,17 @@ class DailyProgressViewController : UIViewController, DailyChartModelProtocol {
 
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-        self.dailyChartModel.refreshChartDateRange(lastViewDate: lastViewDate)
+        self.dailyChartModel.refreshChartDateRange(lastViewDate)
         logContentView()
     }
 
     override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
         self.lastViewDate = Date()
-        logContentView(asAppear: false)
+        logContentView(false)
     }
 
-    func logContentView(asAppear: Bool = true) {
+    func logContentView(_ asAppear: Bool = true) {
         Answers.logContentView(withName: "Body Clock",
                                        contentType: asAppear ? "Appear" : "Disappear",
 //                                       contentId: Date().String(),
@@ -239,7 +239,7 @@ class DailyProgressViewController : UIViewController, DailyChartModelProtocol {
                 self.scrollRecentButton.isEnabled = !(newDate?.isInSameDayOf(date: today) ?? false)
                 self.scrollOlderButton.isEnabled = true
 
-                self.dailyChartModel.setEndDate(endDate: newDate)
+                self.dailyChartModel.setEndDate(newDate)
                 self.dailyProgressChartDaysTable.reloadData()
                 self.contentDidUpdate(withDailyProgress: false)
             }
@@ -257,7 +257,7 @@ class DailyProgressViewController : UIViewController, DailyChartModelProtocol {
                 self.scrollOlderButton.isEnabled = !(newDate?.isInSameDayOf(date: oldest) ?? false)
                 self.scrollRecentButton.isEnabled = true
 
-                self.dailyChartModel.setEndDate(endDate: newDate)
+                self.dailyChartModel.setEndDate(newDate)
                 self.dailyProgressChartDaysTable.reloadData()
                 self.contentDidUpdate(withDailyProgress: false)
             }

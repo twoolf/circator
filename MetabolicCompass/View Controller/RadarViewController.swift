@@ -79,11 +79,11 @@ class RadarViewController : UIViewController, ChartViewDelegate {
         chart.renderer = MetabolicChartRender(chart: chart, animator: chart.chartAnimator, viewPortHandler: chart.viewPortHandler)
         chart.animate(xAxisDuration: 1.0, yAxisDuration: 1.0)
         chart.delegate = self
-        chart.descriptionText = ""
+//        chartDescription.text = ""
         chart.rotationEnabled = false
         chart.highlightPerTapEnabled = false
 
-        chart.yAxis.axisMinValue = 0.1
+        chart.yAxis.axisMinimum = 0.1
         chart.yAxis.axisRange = 1.0
         chart.yAxis.drawLabelsEnabled = false
         chart.xAxis.drawLabelsEnabled = false
@@ -225,7 +225,7 @@ class RadarViewController : UIViewController, ChartViewDelegate {
 
     // MARK: - Radar chart
 
-    func normalizeType(type: HKSampleType, quantity: Double) -> Double {
+    func normalizeType(_ type: HKSampleType, quantity: Double) -> Double {
         if let sex = MCHealthManager.sharedManager.getBiologicalSex(),
                let paramdict = logisticParametersByType[sex.biologicalSex == HKBiologicalSex.male],
                let (x0, k) = paramdict[type.identifier]
@@ -237,34 +237,34 @@ class RadarViewController : UIViewController, ChartViewDelegate {
     
     private let appearanceProvider = DashboardMetricsAppearanceProvider()
 
-    func indEntry(i: Int) -> MetabolicDataEntry {
+    func indEntry(_ i: Int) -> MetabolicDataEntry {
         let type = PreviewManager.balanceSampleTypes[i]
         let samples = ComparisonDataModel.sharedManager.recentSamples[type] ?? []
         let val = healthFormatter.numberFromSamples(samples: samples)
         guard !val.isNaN else {
             return MetabolicDataEntry(value: 0.8, xIndex: i,
-                                      pointColor: appearanceProvider.colorForSampleType(sampleType: type.identifier, active: true),
-                                      image: appearanceProvider.imageForSampleType(sampleType: type.identifier, active: true))
+                                      pointColor: appearanceProvider.colorForSampleType(type.identifier, active: true),
+                                      image: appearanceProvider.imageForSampleType(type.identifier, active: true))
         }
-        let nval = normalizeType(type: type, quantity: val)
+        let nval = normalizeType(type, quantity: val)
         return MetabolicDataEntry(value: nval, xIndex: i,
-                                  pointColor: appearanceProvider.colorForSampleType(sampleType: type.identifier, active: true),
-                                  image: appearanceProvider.imageForSampleType(sampleType: type.identifier, active: true))
+                                  pointColor: appearanceProvider.colorForSampleType(type.identifier, active: true),
+                                  image: appearanceProvider.imageForSampleType(type.identifier, active: true))
     }
 
-    func popEntry(i: Int) -> MetabolicDataEntry {
+    func popEntry(_ i: Int) -> MetabolicDataEntry {
         let type = PreviewManager.balanceSampleTypes[i]
         let samples = ComparisonDataModel.sharedManager.recentAggregates[type] ?? []
         let val = healthFormatter.numberFromSamples(samples: samples)
         guard !val.isNaN else {
             return MetabolicDataEntry(value: 0.8, xIndex: i,
-                                      pointColor: appearanceProvider.colorForSampleType(sampleType: type.identifier, active: true),
-                                      image: appearanceProvider.imageForSampleType(sampleType: type.identifier, active: true))
+                                      pointColor: appearanceProvider.colorForSampleType(type.identifier, active: true),
+                                      image: appearanceProvider.imageForSampleType(type.identifier, active: true))
         }
-        let nval = normalizeType(type: type, quantity: val)
+        let nval = normalizeType(type, quantity: val)
         return MetabolicDataEntry(value: nval, xIndex: i,
-                                  pointColor: appearanceProvider.colorForSampleType(sampleType: type.identifier, active: true),
-                                  image: appearanceProvider.imageForSampleType(sampleType: type.identifier, active: true))
+                                  pointColor: appearanceProvider.colorForSampleType(type.identifier, active: true),
+                                  image: appearanceProvider.imageForSampleType(type.identifier, active: true))
     }
 
     func reloadData() {
