@@ -5,7 +5,7 @@ def shared_pods
     pod 'Alamofire' 
     pod 'ARSLineProgress' 
     pod 'AsyncKit' 
-    pod 'AsyncSwift', :git => 'https://github.com/duemunk/Async.git' 
+    pod 'AsyncSwift'
     pod 'AwesomeCache' 
     pod 'Charts' 
     pod 'CryptoSwift' 
@@ -18,7 +18,7 @@ def shared_pods
     pod 'HTPressableButton'
     pod 'JWTDecode'
     pod 'Locksmith' 
-    pod 'MCCircadianQueries', :git => 'https://github.com/twoolf/MCCircadianQueries.git'
+    pod 'MCCircadianQueries', :git => 'https://github.com/twoolf/MCCircadianQueries.git', :branch => 'swift3'
     pod 'MGSwipeTableCell' 
     pod 'Navajo-Swift' 
     pod 'NVActivityIndicatorView' 
@@ -27,7 +27,6 @@ def shared_pods
     pod 'ResearchKit', :git => 'https://github.com/twoolf/ResearchKit.git'
     pod 'Realm' 
     pod 'RealmSwift'
-    pod 'SORandom'
     pod 'Stormpath' 
     pod 'SwiftChart'
     pod 'SwiftDate', :git => 'https://github.com/malcommac/SwiftDate.git'
@@ -52,7 +51,7 @@ target 'MetabolicCompassWatchExtension' do
  pod 'SwiftDate', :git => 'https://github.com/malcommac/SwiftDate.git'
  pod 'SwiftyBeaver' 
  pod 'AwesomeCache' 
- pod 'MCCircadianQueries', :git => 'https://github.com/twoolf/MCCircadianQueries.git'
+ pod 'MCCircadianQueries', :git => 'https://github.com/twoolf/MCCircadianQueries.git', :branch => 'swift3'
 end
 
 target 'MetabolicCompassWatch' do
@@ -60,7 +59,7 @@ target 'MetabolicCompassWatch' do
  pod 'SwiftDate', :git => 'https://github.com/malcommac/SwiftDate.git' 
  pod 'SwiftyBeaver'  
  pod 'AwesomeCache' 
- pod 'MCCircadianQueries', :git => 'https://github.com/twoolf/MCCircadianQueries.git'
+ pod 'MCCircadianQueries', :git => 'https://github.com/twoolf/MCCircadianQueries.git', :branch => 'swift3'
 end
 
 
