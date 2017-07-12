@@ -171,7 +171,7 @@ public class CycleDataModel : NSObject {
             {
                 (result, error) in
                 guard error == nil else {
-                    failure(error)
+                    failure(error! as NSError)
                     return
                 }
                 let (winEntries, winMeta, winColors) = self.getChartActivityEntries(startDate: start, endDate: end, windows: result)
@@ -212,7 +212,7 @@ public class CycleDataModel : NSObject {
 
                 query.initialResultsHandler = { query, results, error in
                     guard error == nil else {
-                        failure(error)
+                        failure(error as! NSError)
                         return
                     }
                     let (winEntries, winMeta, winColors) = self.getChartMeasureEntries(startDate: start, endDate: end, sampleType: sampleType, statistics: results?.statistics() ?? [])

@@ -5,57 +5,57 @@
     
     
       
-      <testcase classname="fastlane.lanes" name="00: opt_out_usage" time="0.001331">
+      <testcase classname="fastlane.lanes" name="00: opt_out_usage" time="0.003182">
         
       </testcase>
     
       
-      <testcase classname="fastlane.lanes" name="01: Verifying required fastlane version" time="0.001199">
+      <testcase classname="fastlane.lanes" name="01: Verifying required fastlane version" time="0.003252">
         
       </testcase>
     
       
-      <testcase classname="fastlane.lanes" name="02: default_platform" time="0.000908">
+      <testcase classname="fastlane.lanes" name="02: default_platform" time="0.002488">
         
       </testcase>
     
       
-      <testcase classname="fastlane.lanes" name="03: cocoapods" time="40.076299">
+      <testcase classname="fastlane.lanes" name="03: cocoapods" time="48.726158">
         
       </testcase>
     
       
-      <testcase classname="fastlane.lanes" name="04: Switch to ios certs lane" time="0.0013">
+      <testcase classname="fastlane.lanes" name="04: Switch to ios certs lane" time="0.002661">
         
       </testcase>
     
       
-      <testcase classname="fastlane.lanes" name="05: match" time="50.127998">
+      <testcase classname="fastlane.lanes" name="05: match" time="63.027587">
         
       </testcase>
     
       
-      <testcase classname="fastlane.lanes" name="06: match" time="8.983076">
+      <testcase classname="fastlane.lanes" name="06: match" time="58.017095">
         
       </testcase>
     
       
-      <testcase classname="fastlane.lanes" name="07: match" time="8.51136">
+      <testcase classname="fastlane.lanes" name="07: match" time="64.289521">
         
       </testcase>
     
       
-      <testcase classname="fastlane.lanes" name="08: match" time="8.522431">
+      <testcase classname="fastlane.lanes" name="08: match" time="65.236216">
         
       </testcase>
     
       
-      <testcase classname="fastlane.lanes" name="09: match" time="8.948981">
+      <testcase classname="fastlane.lanes" name="09: match" time="73.250696">
         
       </testcase>
     
       
-      <testcase classname="fastlane.lanes" name="10: match" time="8.422089">
+      <testcase classname="fastlane.lanes" name="10: match" time="66.956364">
         
       </testcase>
     
