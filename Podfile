@@ -18,7 +18,7 @@ def shared_pods
     pod 'HTPressableButton'
     pod 'JWTDecode'
     pod 'Locksmith' 
-    pod 'MCCircadianQueries', :git => 'https://github.com/twoolf/MCCircadianQueries.git', :branch => 'swift3'
+    pod 'MCCircadianQueries', :git => 'https://github.com/OlenaSrost/MCCircadianQueries.git', :branch => 'swift3'
     pod 'MGSwipeTableCell' 
     pod 'Navajo-Swift' 
     pod 'NVActivityIndicatorView' 
@@ -51,7 +51,7 @@ target 'MetabolicCompassWatchExtension' do
  pod 'SwiftDate', :git => 'https://github.com/malcommac/SwiftDate.git'
  pod 'SwiftyBeaver' 
  pod 'AwesomeCache' 
- pod 'MCCircadianQueries', :git => 'https://github.com/twoolf/MCCircadianQueries.git', :branch => 'swift3'
+ pod 'MCCircadianQueries', :git => 'https://github.com/OlenaSrost/MCCircadianQueries.git', :branch => 'swift3'
 end
 
 target 'MetabolicCompassWatch' do
@@ -59,7 +59,7 @@ target 'MetabolicCompassWatch' do
  pod 'SwiftDate', :git => 'https://github.com/malcommac/SwiftDate.git' 
  pod 'SwiftyBeaver'  
  pod 'AwesomeCache' 
- pod 'MCCircadianQueries', :git => 'https://github.com/twoolf/MCCircadianQueries.git', :branch => 'swift3'
+ pod 'MCCircadianQueries', :git => 'https://github.com/OlenaSrost/MCCircadianQueries.git', :branch => 'swift3'
 end
 
 
