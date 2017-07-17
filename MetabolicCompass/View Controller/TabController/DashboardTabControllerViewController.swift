@@ -82,11 +82,9 @@ class DashboardTabControllerViewController: UIViewController {
     }
     
     private let dashboardSegueIdentifier = "DashboardSegue"
-    
-    func prepareForSegue(segue: UIStoryboardSegue, sender: AnyObject?)
-    {
-        if (segue.identifier == dashboardSegueIdentifier)
-        {
+
+    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
+        if (segue.identifier == dashboardSegueIdentifier) {
             containerController = segue.destination as? UITabBarController;
         }
     }

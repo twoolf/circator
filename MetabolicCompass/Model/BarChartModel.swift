@@ -78,12 +78,13 @@ class BarChartModel : NSObject {
         if let minValues = minValues {
             yVals = getYValuesForScatterChart(minValues: minValues, maxValues: values, period: .week)
         }
-
-        return getChartDataFor(xVals: xVals, yVals: yVals, type: type) as! ChartData
+        let set = getChartDataFor(xVals: xVals, yVals: yVals, type: type) as? ChartDataSet
+        return ChartData(dataSet: set)
     }
 
     //MARK: Prepare chart data
-    func convertStatisticsValues(stisticsValues: [Double], forRange range: HealthManagerStatisticsRangeType) -> [ChartDataEntry] {
+    func convertStatisticsValues(stisticsValues: [Double],
+                                 forRange range: HealthManagerStatisticsRangeType) -> [ChartDataEntry] {
         let indexIncrement = range == .month || range == .year ? 2 : 1;//For year and Month we add 2 for index because we have empty values on left and right to make a gap for xAxis
         //for week we have only one empty value left and right on xAxis
         var yVals: [ChartDataEntry] = []
