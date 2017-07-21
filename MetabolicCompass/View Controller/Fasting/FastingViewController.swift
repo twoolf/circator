@@ -21,27 +21,26 @@ import GameplayKit
 private let fastingViewLabelSize: CGFloat = 12.0
 private let fastingViewTextSize: CGFloat = 24.0
 
-
 public class FastingViewController : UIViewController, ChartViewDelegate {
 
     var scrollView: UIScrollView!
-
     var activityIndicator: UIActivityIndicatorView! = nil
 
     lazy var pieChart: PieChartView = {
         let chart = PieChartView()
         chart.animate(xAxisDuration: 1.0, yAxisDuration: 1.0)
         chart.delegate = self
-        chart.descriptionText = ""
         chart.backgroundColor = .clear
         chart.holeColor = .clear
         chart.drawMarkers = true
         chart.drawHoleEnabled = true
-//        chart.drawSliceTextEnabled = false
         chart.drawEntryLabelsEnabled = false
         chart.usePercentValuesEnabled = true
         chart.rotationEnabled = false
-        chart.legend.enabled = false
+        chart.legend.enabled = true
+        chart.legend.textColor = .white
+        chart.drawCenterTextEnabled = true
+        chart.chartDescription?.text = ""
         return chart
     }()
 
@@ -51,16 +50,13 @@ public class FastingViewController : UIViewController, ChartViewDelegate {
     lazy var pieChartColors: [NSUIColor] = {
         // Populate 15 colors. Add more if needed.
         var colors : [NSUIColor] = []
-
         colors.append(contentsOf: ChartColorTemplates.material())
         colors.append(contentsOf: ChartColorTemplates.colorful())
         colors.append(contentsOf: ChartColorTemplates.liberty())
         colors.append(contentsOf: ChartColorTemplates.pastel())
         colors.append(contentsOf: ChartColorTemplates.joyful())
         colors.append(contentsOf: ChartColorTemplates.vordiplom())
-
         return GKRandomSource.sharedRandom().arrayByShufflingObjects(in: colors) as! [NSUIColor]
-        return colors
     }()
 
     public static let orange = ChartColorTemplates.colorful()[1]
@@ -83,9 +79,9 @@ public class FastingViewController : UIViewController, ChartViewDelegate {
 
         let tooltip = "This compares the hours you spent fasting while asleep in the last week vs the hours spent fasting while awake"
         let bar = BalanceBarView(title: title,
-                                 color1: FastingViewController.orange,
-                                 color2: FastingViewController.blue,
-                                 tooltipText: tooltip)
+                                color1: FastingViewController.orange,
+                                color2: FastingViewController.blue,
+                                tooltipText: tooltip)
         return bar
     }()
 
@@ -130,17 +126,20 @@ public class FastingViewController : UIViewController, ChartViewDelegate {
             bodyFontSize: studyLabelFontSize, unitsFontSize: studyLabelFontSize, labelFontSize: studyLabelFontSize,
             labelSpacing: 0.0, value: 1.0, unit: "hours this week", prefix: "You've fasted", suffix: "")
 
-
     // Metrics.
 
-    lazy var cwfLabel: UIStackView = UIComponents.createNumberLabel(title: "Cumulative Weekly Fasting", labelFontSize: fastingViewLabelSize, value: 0.0, unit: "hrs")
-    lazy var wfvLabel: UIStackView = UIComponents.createNumberLabel(title: "Weekly Fasting Variability", labelFontSize: fastingViewLabelSize, value: 0.0, unit: "hrs")
+    lazy var cwfLabel: UIStackView = UIComponents.createNumberLabel(title: "Cumulative Weekly Fasting",
+                                                            labelFontSize: fastingViewLabelSize,
+                                                                    value: 0.0,
+                                                                     unit: "hrs")
+    lazy var wfvLabel: UIStackView = UIComponents.createNumberLabel(title: "Weekly Fasting Variability",
+                                                            labelFontSize: fastingViewLabelSize,
+                                                                    value: 0.0,
+                                                                     unit: "hrs")
 
     private let cwfTipMsg = "Your cumulative weekly fasting is the total number of hours that you've spent fasting over the last 7 days"
     private let wfvTipMsg = "Your weekly fasting variability shows you how much your fasting hours varies day-by-day. We calculate this over the last week."
-
     private let fastingStreakTipMsg = "This badge shows the level of fasting you've achieved for the last week."
-
     private var cwfTip: TapTip! = nil
     private var wfvTip: TapTip! = nil
     private var fastingStreakTip: TapTip! = nil
@@ -164,18 +163,15 @@ public class FastingViewController : UIViewController, ChartViewDelegate {
 
     func logContentView(asAppear: Bool = true) {
         Answers.logContentView(withName: "Fasting",
-                                       contentType: asAppear ? "Appear" : "Disappear",
-//                                       contentId: Date().toString(DateFormat.Custom("YYYY-MM-dd:HH")),
-            contentId: Date().string(),
-                                       customAttributes: nil)
+                            contentType: asAppear ? "Appear" : "Disappear",
+                              contentId: Date().string(),
+                       customAttributes: nil)
     }
 
     func setupActivityIndicator() {
         activityIndicator = UIActivityIndicatorView()
-
         activityIndicator.translatesAutoresizingMaskIntoConstraints = false
         view.addSubview(activityIndicator)
-
         let constraints: [NSLayoutConstraint] = [
             activityIndicator.topAnchor.constraint(equalTo: view.topAnchor),
             activityIndicator.bottomAnchor.constraint(equalTo: view.bottomAnchor),
@@ -203,11 +199,8 @@ public class FastingViewController : UIViewController, ChartViewDelegate {
     func setupScrollView() {
         scrollView = UIScrollView()
         scrollView.isUserInteractionEnabled = true
-
         view.addSubview(scrollView)
-
         scrollView.translatesAutoresizingMaskIntoConstraints = false
-
         let scrollConstraints: [NSLayoutConstraint] = [
             view.leadingAnchor.constraint(equalTo: scrollView.leadingAnchor),
             view.trailingAnchor.constraint(equalTo: scrollView.trailingAnchor),
@@ -219,17 +212,12 @@ public class FastingViewController : UIViewController, ChartViewDelegate {
 
     func setupView() {
         setupBackground()
-
         setupScrollView()
-
         refreshPieChart()
-
         let pieChartStack: UIStackView = UIComponents.createLabelledComponent(title: "Data Collected This Year", labelFontSize: fastingViewLabelSize, value: (), constructor: {
             _ in return self.pieChart
         })
-
         setupTooltips()
-
         let labelStack: UIStackView = {
             let stack = UIStackView(arrangedSubviews: [cwfLabel, wfvLabel])
             stack.axis = .horizontal
@@ -237,7 +225,6 @@ public class FastingViewController : UIViewController, ChartViewDelegate {
             stack.alignment = UIStackViewAlignment.fill
             return stack
         }()
-
         let stack: UIStackView = {
             let stack = UIStackView(arrangedSubviews: [pieChartStack, fastingStreakBadge, sleepAwakeBalance, eatExerciseBalance, labelStack])
             stack.axis = .vertical
@@ -245,11 +232,9 @@ public class FastingViewController : UIViewController, ChartViewDelegate {
             stack.alignment = UIStackViewAlignment.fill
             stack.spacing = 20
             return stack
-        }() 
-
+        }()
         stack.translatesAutoresizingMaskIntoConstraints = false
         scrollView.addSubview(stack)
-
         var constraints: [NSLayoutConstraint] = [
             stack.topAnchor.constraint(equalTo: scrollView.topAnchor),
             stack.leadingAnchor.constraint(equalTo: view.leadingAnchor),
@@ -263,18 +248,13 @@ public class FastingViewController : UIViewController, ChartViewDelegate {
         ]
 
         let badgeSize = ScreenManager.sharedInstance.badgeIconSize()
-
         if let imageLabelStack = fastingStreakBadge.subviews[1] as? UIStackView,
-            let badge = imageLabelStack.subviews[0] as? UIImageView
-        {
+           let badge = imageLabelStack.subviews[0] as? UIImageView {
             constraints.append(badge.widthAnchor.constraint(equalToConstant: badgeSize))
             constraints.append(badge.heightAnchor.constraint(equalTo: badge.widthAnchor))
         }
-
         view.addConstraints(constraints)
-
         setupActivityIndicator()
-
         view.setNeedsLayout()
         view.layoutIfNeeded()
     }
@@ -302,10 +282,8 @@ public class FastingViewController : UIViewController, ChartViewDelegate {
 
     func refreshPieChart() {
         let model = AnalysisDataModel.sharedInstance.fastingModel
-        let pieChartDataSet = PieChartDataSet(values: model.samplesCollectedDataEntries.map { $0.1 }, label: "Samples per type")
-        pieChartDataSet.colors = pieChartColors
-        pieChartDataSet.drawValuesEnabled = false
-
+        var pieValues = [PieChartDataEntry]()
+        let values = model.samplesCollectedDataEntries
         let xVals : [String] = model.samplesCollectedDataEntries.map {
             switch $0.0 {
             case .HKType(let sampleType):
@@ -314,48 +292,42 @@ public class FastingViewController : UIViewController, ChartViewDelegate {
                 return "Other"
             }
         }
-
-//        let pieChartDataEntry = PieChartDataEntry(labels: xVals, dataSet: pieChartDataSet)
-//        self.pieChart.data = pieChartDataEntry
-        self.pieChart.setNeedsDisplay()
+        for (idx, value) in values.enumerated() {
+            let pieValue = PieChartDataEntry(value: value.1.y, label: xVals[idx] )
+            pieValues.append(pieValue)
+        }
+        let pieChartDataSet = PieChartDataSet(values: pieValues, label: "Samples per type")
+        pieChartDataSet.colors = pieChartColors
+        pieChartDataSet.drawValuesEnabled = true
+        let pieChartData = PieChartData(dataSet: pieChartDataSet)
+        pieChart.data = pieChartData
+        pieChart.drawEntryLabelsEnabled = false
+        pieChart.drawCenterTextEnabled = true
+        pieChart.setNeedsDisplay()
     }
 
     func refreshFastingStreak(fastingLevel: Double) {
         if let descLabel = fastingStreakBadge.subviews[0] as? UILabel,
             let imageLabelStack = fastingStreakBadge.subviews[1] as? UIStackView,
             let badge = imageLabelStack.subviews[0] as? UIImageView,
-            let label = imageLabelStack.subviews[1] as? UILabel
-        {
+            let label = imageLabelStack.subviews[1] as? UILabel {
             let compact = UIScreen.main.bounds.size.height < 569
             let (_, icon, desc) = FastingViewController.fastingStreakClassAndIcon(fastingLevel: fastingLevel)
             let (descAttrText, lblAttrText) = FastingViewController.fastingStreakLabelText(fastingLevel: fastingLevel, description: desc, compact: compact, descFontSize: studyLabelFontSize, labelFontSize: studyLabelFontSize)
-
             descLabel.attributedText = descAttrText
             descLabel.setNeedsDisplay()
-
             label.attributedText = lblAttrText
             label.setNeedsDisplay()
-
             badge.image = UIImage(named: icon)
             badge.setNeedsDisplay()
-        } else {
- //           log.error("FASTING could not get streak badge/label")
         }
     }
 
     public func refreshData() {
-        //log.info("FastingViewController refreshing data")
-        //let refreshStartDate = NSDate()
-
-        AnalysisDataModel.sharedInstance.fastingModel.updateData { error in
-            guard error == nil else {
-//                log.error(error!.localizedDescription)
-                return
-            }
-
-            //log.info("FastingViewController refreshing charts (\(NSDate().timeIntervalSinceDate(refreshStartDate)))")
-
-//            Async.main {
+//        AnalysisDataModel.sharedInstance.fastingModel.updateData { error in
+//            guard error == nil else {
+//                return
+//            }
             OperationQueue.main.addOperation {
                 self.activityIndicator.stopAnimating()
                 self.refreshPieChart()
@@ -392,38 +364,20 @@ public class FastingViewController : UIViewController, ChartViewDelegate {
                     wfvSubLabel.setNeedsDisplay()
                 }
             }
-        }
+ //       }
     }
 
     //MARK: ChartViewDelegate
-    public func chartValueSelected(chartView: ChartViewBase, entry: ChartDataEntry, dataSetIndex: Int, highlight: Highlight) {
-        var typeIdentifier : String = ""
-/*        switch AnalysisDataModel.sharedInstance.fastingModel.samplesCollectedDataEntries[entry.x].0 {
-        case .HKType(let sampleType):
-            typeIdentifier = HMConstants.sharedInstance.healthKitShortNames[sampleType.identifier]!
-        case .Other:
-            typeIdentifier = "Other"
-        } */
 
+    public func chartValueSelected(_ chartView: ChartViewBase, entry: PieChartDataEntry, highlight: Highlight) {
         let numberFont = UIFont.systemFont(ofSize: 20, weight: UIFontWeightRegular)
-        let smallFont = UIFont.systemFont(ofSize: 14, weight: UIFontWeightRegular)
-
-//        let cString = typeIdentifier + "\n\(String(format: "%.1f%%", Double(entry.value) * 100.0))"
         let _ : [String: AnyObject] = [
             NSFontAttributeName: numberFont,
             NSForegroundColorAttributeName: UIColor.white
         ]
-
-//        let aString = NSMutableAttributedString(string: cString, attributes: attrs)
-//        aString.addAttribute(NSFontAttributeName, value: smallFont, range: NSRange(location:0, length: typeIdentifier.characters.count))
-
-//        pieChart.centerAttributedText = aString
-        pieChart.drawCenterTextEnabled = true
-    }
-
-    public func chartValueNothingSelected(chartView: ChartViewBase) {
-        pieChart.centerText = ""
-        pieChart.drawCenterTextEnabled = false
+        let attrString: NSMutableAttributedString = NSMutableAttributedString(string: entry.label!)
+        attrString.addAttribute(NSForegroundColorAttributeName, value: UIColor.white, range: NSMakeRange(0, attrString.length))
+        pieChart.centerAttributedText = attrString
     }
 
     class func fastingStreakClassAndIcon(fastingLevel: Double) -> (Double, String, String) {
@@ -433,8 +387,11 @@ public class FastingViewController : UIViewController, ChartViewDelegate {
         return FastingViewController.fastingStreakBadgeBuckets[rankIndex!]
     }
 
-    class func fastingStreakLabelText(fastingLevel: Double, description: String, compact: Bool,
-                                      descFontSize: CGFloat = 20.0, labelFontSize: CGFloat = 20.0)
+    class func fastingStreakLabelText(fastingLevel: Double,
+                                       description: String,
+                                           compact: Bool,
+                                      descFontSize: CGFloat = 20.0,
+                                     labelFontSize: CGFloat = 20.0)
         -> (NSAttributedString, NSAttributedString)
     {
         let descFont = UIFont(name: "GothamBook", size: descFontSize)!

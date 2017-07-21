@@ -84,7 +84,7 @@ public class FastingDataModel : NSObject {
         }
         */
 
-        group.enter()
+// group.enter()
         let dateAgo = Date().addDays(daysToAdd: -7)
 //        MCHealthManager.sharedManager.fetchMaxFastingTimes(1.weeks.ago) { (dailyMax, error) in
         MCHealthManager.sharedManager.fetchMaxFastingTimes(dateAgo as NSDate?) { (dailyMax, error) in
@@ -100,7 +100,7 @@ public class FastingDataModel : NSObject {
             group.leave()
         }
 
-        group.enter()
+//        group.enter()
         MCHealthManager.sharedManager.fetchWeeklyFastingVariability { (variability, error) in
             guard error == nil else {
 //                log.error(error!.localizedDescription)
@@ -114,7 +114,7 @@ public class FastingDataModel : NSObject {
             group.leave()
         }
 
-        group.enter()
+//        group.enter()
         MCHealthManager.sharedManager.fetchWeeklyFastType { (fSleep, fAwake, error) in
             guard error == nil else {
 //                log.error(error!.localizedDescription)
@@ -129,7 +129,7 @@ public class FastingDataModel : NSObject {
             group.leave()
         }
 
-        group.enter()
+ //       group.enter()
         MCHealthManager.sharedManager.fetchWeeklyEatAndExercise { (tEat, tExercise, error) in
             guard error == nil else {
 //                log.error(error!.localizedDescription)
