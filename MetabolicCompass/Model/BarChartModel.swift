@@ -611,14 +611,24 @@ class BarChartModel : NSObject {
         //always reset current operation queue before start new one
         resetOperation()
         let chartGroup = DispatchGroup()
+
+
+        //remove after testing
+
+        let stepType = HKSampleType.quantityType(forIdentifier: HKQuantityTypeIdentifier.stepCount)!
+        let sleepType = HKSampleType.categoryType(forIdentifier: HKCategoryTypeIdentifier.sleepAnalysis)!
+
+
         for qType in PreviewManager.chartsSampleTypes {
+            //if qType == stepType {
             chartGroup.enter()
             _chartDataOperationQueue.addOperation({ 
                 self.getAllDataForCurrentPeriodForSample(qType: qType, _chartType: nil) { _ in
                     chartGroup.leave()
                 }
             })
-        }
+       // }
+    }
         chartGroup.notify(qos: DispatchQoS.background, queue: DispatchQueue.main) {
             self.addCompletionForOperationQueue(completion: completion)
         }

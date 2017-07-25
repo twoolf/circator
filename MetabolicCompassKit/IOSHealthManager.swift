@@ -281,12 +281,11 @@ public class IOSHealthManager: NSObject, WCSessionDelegate {
                 }
 
 
-                DispatchGroup().notify(queue: DispatchQueue.main) {
+                bloodPressureGroup.notify(queue: DispatchQueue.main) {
                     let diastolicKey = MCHealthManager.sharedManager.getPeriodCacheKey(diastolicKeyPrefix.rawValue, aggOp: [.discreteMin, .discreteMax], period: period)
 
                     if let systolicAggArray = MCHealthManager.sharedManager.aggregateCache[key],
-                           let diastolicAggArray = MCHealthManager.sharedManager.aggregateCache[diastolicKey]
-                    {
+                           let diastolicAggArray = MCHealthManager.sharedManager.aggregateCache[diastolicKey] {
                         completion([systolicAggArray.aggregates.map { return finalizeAgg(.discreteMax, $0).numeralValue! },
                                     systolicAggArray.aggregates.map { return finalizeAgg(.discreteMin, $0).numeralValue! },
                                     diastolicAggArray.aggregates.map { return finalizeAgg(.discreteMax, $0).numeralValue! },
