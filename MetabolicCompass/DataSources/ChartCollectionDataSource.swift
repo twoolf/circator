@@ -31,9 +31,6 @@ class ChartCollectionDataSource: NSObject, UICollectionViewDataSource {
     }
     
     @available(iOS 6.0, *)
-    public func numberOfSections(in collectionView: UICollectionView) -> Int{
-        return 5
-    }
 
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         let cell: BaseChartCollectionCell
@@ -50,6 +47,7 @@ class ChartCollectionDataSource: NSObject, UICollectionViewDataSource {
         } else {//Scatter chart
             cell = collectionView.dequeueReusableCell(withReuseIdentifier: scatterChartCellIdentifier, for: indexPath as IndexPath) as! ScatterChartCollectionCell
         }
+
         cell.chartView.data = nil
         if let yMax = chartData?.yMax, let yMin = chartData?.yMin, yMax > 0 || yMin > 0 {
             cell.updateLeftAxisWith(minValue: chartData?.yMin, maxValue: chartData?.yMax)
@@ -62,40 +60,5 @@ class ChartCollectionDataSource: NSObject, UICollectionViewDataSource {
         }
         cell.chartTitleLabel.text = appearanceProvider.stringForSampleType(typeToShow == HKQuantityTypeIdentifier.bloodPressureSystolic.rawValue ? HKCorrelationTypeIdentifier.bloodPressure.rawValue : typeToShow)
         return cell
-    }
-
-    
-//    public func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
-    @nonobjc public func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> Void {
-        let cell: BaseChartCollectionCell
-        
-        let type = data[indexPath.row]
-        let typeToShow = type.identifier == HKCorrelationTypeIdentifier.bloodPressure.rawValue ? HKQuantityTypeIdentifier.bloodPressureSystolic.rawValue : type.identifier
-
-
-//        let key = typeToShow + "\((model?.rangeType.rawValue)!)"
-//        let chartData = model?.typesChartData[key]
-//        let chartType: ChartType = (model?.chartTypeForQuantityTypeIdentifier(qType: typeToShow))!
-//        let chartType: ChartType = (model?.getChartDataFor(xVals: [" not yet " ], yVals: [chartData!], type: typeToShow))
-/*        if(chartType == ChartType.BarChart) {
-            cell = collectionView.dequeueReusableCell(withReuseIdentifier: barChartCellIdentifier, for: indexPath as IndexPath) as! BarChartCollectionCell
-        } else if (chartType == ChartType.LineChart) {
-            cell = collectionView.dequeueReusableCell(withReuseIdentifier: lineChartCellIdentifier, for: indexPath as IndexPath) as! LineChartCollectionCell
-        } else {//Scatter chart
-            cell = collectionView.dequeueReusableCell(withReuseIdentifier: scatterChartCellIdentifier, for: indexPath as IndexPath) as! ScatterChartCollectionCell
-        } */
-//        cell.chartView.data = nil
-/*        if let yMax = chartData?.yMax, let yMin = chartData?.yMin, yMax > 0 || yMin > 0 {
-            cell.updateLeftAxisWith(minValue: chartData?.yMin, maxValue: chartData?.yMax)
-            cell.chartView.data = chartData
-            if let marker = cell.chartView.marker as? BalloonMarker {
-                marker.yMax = cell.chartView.leftAxis.axisMaxValue
-                marker.yMin = cell.chartView.leftAxis.axisMinValue
-                marker.yPixelRange = Double(cell.chartView.contentRect.height)
-            }
-        } */
-//        cell.chartTitleLabel.text = appearanceProvider.stringForSampleType(sampleType: typeToShow == HKQuantityTypeIdentifier.bloodPressureSystolic.rawValue ? HKCorrelationTypeIdentifier.bloodPressure.rawValue : typeToShow)
-//        return cell
-//        return UICollectionViewCell    }
     }
 }

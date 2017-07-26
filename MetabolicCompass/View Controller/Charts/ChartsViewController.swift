@@ -38,9 +38,9 @@ class ChartsViewController: UIViewController {
         super.viewDidLoad()
         updateNavigationBar()
         registerCells()
-//        chartCollectionDataSource.model = chartsModel
+        chartCollectionDataSource.model = chartsModel
         collectionView.delegate = chartCollectionDelegate
-//        collectionView.dataSource = chartCollectionDataSource
+        collectionView.dataSource = chartCollectionDataSource
     }
 
     override func viewWillAppear(_ animated: Bool) {
@@ -65,14 +65,13 @@ class ChartsViewController: UIViewController {
     func logContentView(asAppear: Bool = true) {
         Answers.logContentView(withName: "Charts",
                                        contentType: asAppear ? "Appear" : "Disappear",
-//                                       contentId: Date().toString(DateFormat.Custom("YYYY-MM-dd:HH")),
                                        contentId: Date().intervalString(toDate: Date()),
                                        customAttributes: ["range": rangeType.rawValue])
     }
 
     // MARK :- Base preparation
     func updateChartDataWithClean() {
-//        chartsModel.typesChartData = [:]
+
         IOSHealthManager.sharedManager.cleanCache()
         IOSHealthManager.sharedManager.collectDataForCharts()
         activityIndicator.startAnimating()
@@ -82,14 +81,9 @@ class ChartsViewController: UIViewController {
         if !activityIndicator.isAnimating {
             activityIndicator.startAnimating()
         }
-//        chartsModel.getAllDataForCurrentPeriod(completion: {
-//        chartsModel(updateChartsData()) {
-//            self.updateChartsData {
-//            self.activityIndicator.stopAnimating()
-//            self.collectionView.reloadData()
-//        })
         chartsModel.getAllDataForCurrentPeriod(completion: {
             self.activityIndicator.stopAnimating()
+            self.chartCollectionDataSource.model = self.chartsModel
             self.collectionView.reloadData()
         })
     }
@@ -97,7 +91,6 @@ class ChartsViewController: UIViewController {
     func registerCells () {
         let barChartCellNib = UINib(nibName: "BarChartCollectionCell", bundle: nil)
         collectionView.register(barChartCellNib, forCellWithReuseIdentifier: barChartCellIdentifier)
-//        collectionView?.register(barChartCellNib, forCellWithReuseIdentifier: barChartCellIdentifier)
 
         let lineChartCellNib = UINib(nibName: "LineChartCollectionCell", bundle: nil)
         collectionView?.register(lineChartCellNib, forCellWithReuseIdentifier: lineChartCellIdentifier)
