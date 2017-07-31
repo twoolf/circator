@@ -247,8 +247,7 @@ public class IOSHealthManager: NSObject, WCSessionDelegate {
 
         if  type == HKQuantityTypeIdentifier.heartRate.rawValue ||
             type == HKQuantityTypeIdentifier.uvExposure.rawValue ||
-            type == HKQuantityTypeIdentifier.bloodPressureSystolic.rawValue
-        {
+            type == HKQuantityTypeIdentifier.bloodPressureSystolic.rawValue {
             key = MCHealthManager.sharedManager.getPeriodCacheKey(keyPrefix, aggOp: [.discreteMin, .discreteMax], period: period)
             asMinMax = true
             asBP = type == HKQuantityTypeIdentifier.bloodPressureSystolic.rawValue
