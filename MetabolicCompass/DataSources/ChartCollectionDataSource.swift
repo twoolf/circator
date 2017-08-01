@@ -56,7 +56,6 @@ class ChartCollectionDataSource: NSObject, UICollectionViewDataSource {
         
         cell.chartView.data = nil
         if let yMax = chartData?.yMax, let yMin = chartData?.yMin, yMax > 0 || yMin > 0 {
-          //  cell.updateLeftAxisWith(minValue: chartData?.yMin, maxValue: chartData?.yMax)
             cell.chartView.data = chartData
             if let marker = cell.chartView.marker as? BalloonMarker {
                 marker.yMax = cell.chartView.leftAxis.axisMaximum

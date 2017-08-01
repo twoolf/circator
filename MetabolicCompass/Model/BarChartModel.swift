@@ -98,9 +98,9 @@ class BarChartModel : NSObject {
         lineSet.setColor(UIColor.red)
         return LineChartData(dataSet: lineSet)
         case .ScatterChart:
-        let scatterSet = ChartDataSet.init(values: yVals, label: "Check")
+        let scatterSet = ScatterChartDataSet.init(values: yVals, label: "Check")
         scatterSet.setColor(UIColor.green)
-        return ChartData.init(dataSet: scatterSet)
+        return ScatterChartData.init(dataSet: scatterSet)
         case .BarChart:
         let barSet = BarChartDataSet.init(values: yVals, label: "Check")
         barSet.setColor(UIColor.orange)
@@ -139,13 +139,14 @@ class BarChartModel : NSObject {
     }
 
     func getYValuesForScatterChart (minValues: [Double], maxValues: [Double], period: HealthManagerStatisticsRangeType) -> [ChartDataEntry] {
+        let xVals = getWeekTitles()
         var yVals: [ChartDataEntry] = []
         for (index, minValue) in minValues.enumerated() {
             let maxValue = maxValues[index]
             if maxValue > 0 && minValue > 0 {
-                yVals.append(BarChartDataEntry(x: Double(index), y: minValue))
+                yVals.append(ChartDataEntry(x: Double(index), y: minValue, data: xVals as AnyObject))
             } else if maxValue > 0 {
-                yVals.append(BarChartDataEntry(x: Double(index), y: maxValue))
+                yVals.append(ChartDataEntry(x: Double(index), y: maxValue, data: xVals as AnyObject))
             }
         }
         return yVals
@@ -643,16 +644,16 @@ class BarChartModel : NSObject {
       //  let stepType = HKSampleType.quantityType(forIdentifier: HKQuantityTypeIdentifier.stepCount)!
       //   let weightType = HKSampleType.quantityType(forIdentifier: HKQuantityTypeIdentifier.bodyMass)!
       //  let heartType = HKSampleType.quantityType(forIdentifier: HKQuantityTypeIdentifier.heartRate)!
-
+        let bloodPressure = HKSampleType.correlationType(forIdentifier: HKCorrelationTypeIdentifier.bloodPressure)!
         for qType in PreviewManager.chartsSampleTypes {
-//            if qType != heartType {
+   //         if qType == bloodPressure {
             chartGroup.enter()
             _chartDataOperationQueue.addOperation({ 
                 self.getAllDataForCurrentPeriodForSample(qType: qType, _chartType: nil) { _ in
                     chartGroup.leave()
                 }
             })
-//        }
+ //       }
     }
         chartGroup.notify(qos: DispatchQoS.background, queue: DispatchQueue.main) {
             self.addCompletionForOperationQueue(completion: completion)
@@ -783,11 +784,11 @@ class BarChartModel : NSObject {
 
     func convertDateToWeekString(date: Date, forIndex index: Int) -> String {
         if index == 0 {
-            let month = date.month
+            let month = date.monthName
 //            let cutRange = month.startIndex ..< month.startIndex.advancedBy(3)
-            _ = month ..< (month + 3)
+ //           _ = month ..< (month + 3)
 //            let monthName = date(getMonthTitles() > 3 ? month.substringWithRange(cutRange) : month
-            return "\(date.day) \(Date().monthName)"
+            return "\(date.day) \(month)"
         }
         return "\(date.day)"
     }
