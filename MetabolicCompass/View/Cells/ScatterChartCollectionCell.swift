@@ -15,6 +15,6 @@ class ScatterChartCollectionCell: BaseChartCollectionCell {
         super.awakeFromNib()
         let scatterChart = self.chartView as! ScatterChartView
         (scatterChart.marker as! BalloonMarker).scatterChartMarker = true
-        scatterChart.renderer = MCScatterChartRenderer(dataProvider: scatterChart, animator: scatterChart.chartAnimator, viewPortHandler: scatterChart.viewPortHandler)
+    //    scatterChart.renderer = MCScatterChartRenderer(dataProvider: scatterChart, animator: scatterChart.chartAnimator, viewPortHandler: scatterChart.viewPortHandler)
     }
 }

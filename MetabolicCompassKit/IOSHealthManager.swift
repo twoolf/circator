@@ -308,19 +308,48 @@ public class IOSHealthManager: NSObject, WCSessionDelegate {
                 }
             }
         } else {
-            MCHealthManager.sharedManager.getDailyStatisticsOfTypeForPeriod(keyPrefix, sampleType: sampleType, period: period, aggOp: .discreteAverage) { (_, error) in
+            MCHealthManager.sharedManager.getDailyStatisticsOfTypeForPeriod(keyPrefix,
+                                                                            sampleType: sampleType,
+                                                                                period: period,
+                                                                                 aggOp: .discreteAverage) { (_, error) in
                 guard error == nil || MCHealthManager.sharedManager.aggregateCache[key] != nil else {
                     completion([])
                     return
                 }
 
-                if let aggArray = MCHealthManager.sharedManager.aggregateCache[key] {
-                    completion(aggArray.aggregates.map { return finalize($0).numeralValue! })
-                }
+            if sampleType == HKSampleType.categoryType(forIdentifier: HKCategoryTypeIdentifier.sleepAnalysis) {
+            let array = self.arrayOfSleepAggregates(key: key)
+            completion(array.map{$0.numeralValue})
+        } else {
+            if let aggArray = MCHealthManager.sharedManager.aggregateCache[key] {
+                completion(aggArray.aggregates.map { return finalize($0).numeralValue! })
             }
         }
     }
-    
+}
+}
+
+    func arrayOfSleepAggregates(key: String) -> [MCAggregateSample] {
+        var array = [MCAggregateSample]()
+        if let aggArray = MCHealthManager.sharedManager.aggregateCache[key] {
+            for sample in aggArray.aggregates {
+                if !(sample.endDate - sample.startDate == 86400) {
+                    let value = Double(sample.endDate.timeIntervalSince(sample.startDate))
+                    let hoursValue = value / 3600
+                    let type = HKSampleType.categoryType(forIdentifier: HKCategoryTypeIdentifier.sleepAnalysis)
+                    let sample = MCAggregateSample(startDate: sample.startDate,
+                                                     endDate: sample.endDate,
+                                                       value: hoursValue,
+                                                  sampleType: type,
+                                                          op: sample.aggOp)
+                    array.append(sample)
+                }
+            }
+        }
+        return array
+    }
+
+
     //MARK: Working with cache
     public func cleanCache() {
         log.debug("Clearing HMAggregateCache", "clearCache")

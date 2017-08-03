@@ -19,7 +19,7 @@ class BaseChartCollectionCell: UICollectionViewCell {
     
     override func awakeFromNib() {
         super.awakeFromNib()
-        
+        chartView.minOffset = 20
         chartMinValueLabel.text = ""
         chartMaxValueLabel.text = ""
         chartBackgroundImage.layer.cornerRadius = 5.0
@@ -104,10 +104,10 @@ class BaseChartCollectionCell: UICollectionViewCell {
             leftAxis.axisMaximum = topLimitMax
             let minMultiplier = minOffsetFactor ?? 1.3
             leftAxis.axisMinimum = minValue - (minMultiplier == 0 ? 0.0 : minValue * minMultiplier)
-            leftAxis.addLimitLine(topLimit)
+ //           leftAxis.addLimitLine(topLimit)
             
-            chartMinValueLabel.text = String(format:"%.0f", leftAxis.axisMinimum)
-            chartMaxValueLabel.text = String(format:"%.0f", leftAxis.axisMaximum)
+   //         chartMinValueLabel.text = String(format:"%.0f", leftAxis.axisMinimum)
+   //         chartMaxValueLabel.text = String(format:"%.0f", leftAxis.axisMaximum)
         }
     }
 

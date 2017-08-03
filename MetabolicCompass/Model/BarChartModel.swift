@@ -165,21 +165,15 @@ class BarChartModel : NSObject {
         }
     }
 
-    func getBloodPressureChartData(range: HealthManagerStatisticsRangeType, systolicMax: [Double], systolicMin: [Double], diastolicMax: [Double], diastolicMin: [Double]) -> ChartDataSet {
+    func getBloodPressureChartData(range: HealthManagerStatisticsRangeType, systolicMax: [Double], systolicMin: [Double], diastolicMax: [Double], diastolicMin: [Double]) -> ScatterChartData {
         let systolicWeekData = getYValuesForScatterChart(minValues: systolicMin, maxValues: systolicMax, period: range)
         let diastolicWeekData = getYValuesForScatterChart(minValues: diastolicMin, maxValues: diastolicMax, period: range)
-        var xVals: [String] = []
-        switch range {
-            case .week:
-                xVals = getWeekTitles()
-           case .month:
-                xVals = getMonthTitles()
-            case .year:
-                xVals = getYearTitles()
-
-        }
-        return ChartDataSet(values: systolicWeekData, label: "check3")
-    
+        let systolicSet = ScatterChartDataSet(values: systolicWeekData, label: "check3")
+        let diastolicSet = ScatterChartDataSet(values: diastolicWeekData, label: "check3")
+        var array = [ScatterChartDataSet]()
+        array.append(systolicSet)
+        array.append(diastolicSet)
+        return ScatterChartData.init(dataSets: array)
     }
 
     func barChartDataWith(xVals: [String], yVals: [BarChartDataEntry]) -> BarChartDataSet {
@@ -604,7 +598,12 @@ class BarChartModel : NSObject {
             IOSHealthManager.sharedManager.getChartDataForQuantity(sampleType: HKObjectType.quantityType(forIdentifier: HKQuantityTypeIdentifier(rawValue: type))!, inPeriod: self.rangeType) { obj in
                 let values = obj as! [[Double]]
                 if values.count > 0 {
-                        self.typesChartData[key] = self.getChartDataForRange(range: self.rangeType, type: chartType!, values: values[0], minValues: values[1])
+           //             self.typesChartData[key] = self.getChartDataForRange(range: self.rangeType, type: chartType!, values: values[0], minValues: values[1])
+                    self.typesChartData[key] = self.getBloodPressureChartData(range: self.rangeType,
+                                                                   systolicMax: values[0],
+                                                                   systolicMin: values[1],
+                                                                  diastolicMax: values[2],
+                                                                  diastolicMin: values[3])
                 }
                 completion(values.count > 0)
             }
@@ -641,19 +640,21 @@ class BarChartModel : NSObject {
         //always reset current operation queue before start new one
         resetOperation()
         let chartGroup = DispatchGroup()
-      //  let stepType = HKSampleType.quantityType(forIdentifier: HKQuantityTypeIdentifier.stepCount)!
+        let stepType = HKSampleType.quantityType(forIdentifier: HKQuantityTypeIdentifier.stepCount)!
       //   let weightType = HKSampleType.quantityType(forIdentifier: HKQuantityTypeIdentifier.bodyMass)!
       //  let heartType = HKSampleType.quantityType(forIdentifier: HKQuantityTypeIdentifier.heartRate)!
-        let bloodPressure = HKSampleType.correlationType(forIdentifier: HKCorrelationTypeIdentifier.bloodPressure)!
+        let bloodType = HKSampleType.correlationType(forIdentifier: HKCorrelationTypeIdentifier.bloodPressure)!
+         let sleepType = HKSampleType.categoryType(forIdentifier: HKCategoryTypeIdentifier.sleepAnalysis)!
+
         for qType in PreviewManager.chartsSampleTypes {
-   //         if qType == bloodPressure {
+ //           if qType == sleepType {
             chartGroup.enter()
             _chartDataOperationQueue.addOperation({ 
                 self.getAllDataForCurrentPeriodForSample(qType: qType, _chartType: nil) { _ in
                     chartGroup.leave()
                 }
             })
- //       }
+//        }
     }
         chartGroup.notify(qos: DispatchQoS.background, queue: DispatchQueue.main) {
             self.addCompletionForOperationQueue(completion: completion)
