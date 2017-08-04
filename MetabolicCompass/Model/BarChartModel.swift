@@ -113,14 +113,10 @@ class BarChartModel : NSObject {
                                  forRange range: HealthManagerStatisticsRangeType,
                                            type: ChartType,
                                          create: ((Double, Double, ChartType) -> ChartDataEntry)) -> [ChartDataEntry] {
-        let indexIncrement = range == .month || range == .year ? 2 : 1;//For year and Month we add 2 for index because we have empty values on left and right to make a gap for xAxis
-        //for week we have only one empty value left and right on xAxis
         var yVals: [ChartDataEntry] = []
         for (index, value) in stisticsValues.enumerated() {
- //           if value > 0.0 {
-                let entry = create(Double(index + indexIncrement), value, type)
-                yVals.append(entry)
- //           }
+            let entry = create(Double(index), value, type)
+            yVals.append(entry)
         }
         return yVals
     }
@@ -650,12 +646,12 @@ class BarChartModel : NSObject {
         let chartGroup = DispatchGroup()
         let stepType = HKSampleType.quantityType(forIdentifier: HKQuantityTypeIdentifier.stepCount)!
          let weightType = HKSampleType.quantityType(forIdentifier: HKQuantityTypeIdentifier.bodyMass)!
-      //  let heartType = HKSampleType.quantityType(forIdentifier: HKQuantityTypeIdentifier.heartRate)!
+        let heartType = HKSampleType.quantityType(forIdentifier: HKQuantityTypeIdentifier.heartRate)!
         let bloodType = HKSampleType.correlationType(forIdentifier: HKCorrelationTypeIdentifier.bloodPressure)!
          let sleepType = HKSampleType.categoryType(forIdentifier: HKCategoryTypeIdentifier.sleepAnalysis)!
 
         for qType in PreviewManager.chartsSampleTypes {
- //           if qType == bloodType {
+  //          if qType == stepType {
             chartGroup.enter()
             _chartDataOperationQueue.addOperation({ 
                 self.getAllDataForCurrentPeriodForSample(qType: qType, _chartType: nil) { _ in
@@ -678,7 +674,7 @@ class BarChartModel : NSObject {
         var prevMonthDates: [Date] = []
         var currentMonthDates: [Date] = []
 
-        weekTitles.append("")//create a gap for the left side
+ //       weekTitles.append("")//create a gap for the left side
 
         for index in 1...7 {
             let day = weekAgoDate + index.days
@@ -697,7 +693,7 @@ class BarChartModel : NSObject {
             weekTitles.append(convertDateToWeekString(date: date, forIndex: index))
         }
 
-        weekTitles.append("")//create a gap for the right side
+ //       weekTitles.append("")//create a gap for the right side
         return weekTitles
     }
 
