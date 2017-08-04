@@ -117,10 +117,10 @@ class BarChartModel : NSObject {
         //for week we have only one empty value left and right on xAxis
         var yVals: [ChartDataEntry] = []
         for (index, value) in stisticsValues.enumerated() {
-            if value > 0.0 {
+ //           if value > 0.0 {
                 let entry = create(Double(index + indexIncrement), value, type)
                 yVals.append(entry)
-            }
+ //           }
         }
         return yVals
     }
@@ -147,6 +147,8 @@ class BarChartModel : NSObject {
                 yVals.append(ChartDataEntry(x: Double(index), y: minValue, data: xVals as AnyObject))
             } else if maxValue > 0 {
                 yVals.append(ChartDataEntry(x: Double(index), y: maxValue, data: xVals as AnyObject))
+            } else {
+                yVals.append(ChartDataEntry(x: Double(index), y: 0.0, data: xVals as AnyObject))
             }
         }
         return yVals
@@ -165,7 +167,11 @@ class BarChartModel : NSObject {
         }
     }
 
-    func getBloodPressureChartData(range: HealthManagerStatisticsRangeType, systolicMax: [Double], systolicMin: [Double], diastolicMax: [Double], diastolicMin: [Double]) -> ScatterChartData {
+    func getBloodPressureChartData(range: HealthManagerStatisticsRangeType,
+                             systolicMax: [Double],
+                             systolicMin: [Double],
+                            diastolicMax: [Double],
+                            diastolicMin: [Double]) -> ScatterChartData {
         let systolicWeekData = getYValuesForScatterChart(minValues: systolicMin, maxValues: systolicMax, period: range)
         let diastolicWeekData = getYValuesForScatterChart(minValues: diastolicMin, maxValues: diastolicMax, period: range)
         let systolicSet = ScatterChartDataSet(values: systolicWeekData, label: "check3")
@@ -588,30 +594,32 @@ class BarChartModel : NSObject {
             // We should get max and min values. because for this type we are using scatter chart
             IOSHealthManager.sharedManager.getChartDataForQuantity(sampleType: qType, inPeriod: self.rangeType) { obj in
                 let values = obj as! [[Double]]
-                if values.count > 0 {
-                    self.typesChartData[key] = self.getChartDataForRange(range: self.rangeType, type: chartType!, values: values[0], minValues: values[1])
+                let array = values.map {$0.map {$0.isNaN ? 0.0 : $0} }
+                if array.count > 0 {
+                    self.typesChartData[key] = self.getChartDataForRange(range: self.rangeType, type: chartType!, values: array[0], minValues: array[1])
                 }
-                completion(values.count > 0)
+                completion(array.count > 0)
             }
         } else if type == HKQuantityTypeIdentifier.bloodPressureSystolic.rawValue {
             // We should also get data for HKQuantityTypeIdentifierBloodPressureDiastolic
             IOSHealthManager.sharedManager.getChartDataForQuantity(sampleType: HKObjectType.quantityType(forIdentifier: HKQuantityTypeIdentifier(rawValue: type))!, inPeriod: self.rangeType) { obj in
                 let values = obj as! [[Double]]
-                if values.count > 0 {
-           //             self.typesChartData[key] = self.getChartDataForRange(range: self.rangeType, type: chartType!, values: values[0], minValues: values[1])
+                let array = values.map {$0.map {$0.isNaN ? 0.0 : $0} }
+                if array.count > 0 {
                     self.typesChartData[key] = self.getBloodPressureChartData(range: self.rangeType,
-                                                                   systolicMax: values[0],
-                                                                   systolicMin: values[1],
-                                                                  diastolicMax: values[2],
-                                                                  diastolicMin: values[3])
+                                                                   systolicMax: array[0],
+                                                                   systolicMin: array[1],
+                                                                  diastolicMax: array[2],
+                                                                  diastolicMin: array[3])
                 }
-                completion(values.count > 0)
+                completion(array.count > 0)
             }
         } else {
             IOSHealthManager.sharedManager.getChartDataForQuantity(sampleType: qType, inPeriod: self.rangeType) { obj in
                 let values = obj as! [Double]
-                self.typesChartData[key] = self.getChartDataForRange(range: self.rangeType, type: chartType!, values: values, minValues: nil)
-                completion(values.count > 0)
+                let arrray = values.map {$0.isNaN ? 0.0 : $0}
+                self.typesChartData[key] = self.getChartDataForRange(range: self.rangeType, type: chartType!, values: arrray, minValues: nil)
+                completion(arrray.count > 0)
             }
         }
     }
@@ -641,20 +649,20 @@ class BarChartModel : NSObject {
         resetOperation()
         let chartGroup = DispatchGroup()
         let stepType = HKSampleType.quantityType(forIdentifier: HKQuantityTypeIdentifier.stepCount)!
-      //   let weightType = HKSampleType.quantityType(forIdentifier: HKQuantityTypeIdentifier.bodyMass)!
+         let weightType = HKSampleType.quantityType(forIdentifier: HKQuantityTypeIdentifier.bodyMass)!
       //  let heartType = HKSampleType.quantityType(forIdentifier: HKQuantityTypeIdentifier.heartRate)!
         let bloodType = HKSampleType.correlationType(forIdentifier: HKCorrelationTypeIdentifier.bloodPressure)!
          let sleepType = HKSampleType.categoryType(forIdentifier: HKCategoryTypeIdentifier.sleepAnalysis)!
 
         for qType in PreviewManager.chartsSampleTypes {
- //           if qType == sleepType {
+ //           if qType == bloodType {
             chartGroup.enter()
             _chartDataOperationQueue.addOperation({ 
                 self.getAllDataForCurrentPeriodForSample(qType: qType, _chartType: nil) { _ in
                     chartGroup.leave()
                 }
             })
-//        }
+ //       }
     }
         chartGroup.notify(qos: DispatchQoS.background, queue: DispatchQueue.main) {
             self.addCompletionForOperationQueue(completion: completion)
