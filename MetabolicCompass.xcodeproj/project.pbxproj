@@ -2387,7 +2387,7 @@
 				PRODUCT_NAME = MetabolicCompass;
 				PROVISIONING_PROFILE = "$(APP_UUID)";
 				SWIFT_OBJC_BRIDGING_HEADER = "MetabolicCompass/MetabolicCompass-Bridging-Header.h";
-				SWIFT_OPTIMIZATION_LEVEL = "-Owholemodule";
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 				TARGETED_DEVICE_FAMILY = 1;
 				WATCHOS_DEPLOYMENT_TARGET = 3.0;
 			};
