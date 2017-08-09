@@ -79,7 +79,6 @@ class RadarViewController : UIViewController, ChartViewDelegate {
         chart.renderer = MetabolicChartRender(chart: chart, animator: chart.chartAnimator, viewPortHandler: chart.viewPortHandler)
         chart.animate(xAxisDuration: 1.0, yAxisDuration: 1.0)
         chart.delegate = self
-//        chartDescription.text = ""
         chart.rotationEnabled = false
         chart.highlightPerTapEnabled = false
 
@@ -87,14 +86,14 @@ class RadarViewController : UIViewController, ChartViewDelegate {
         chart.yAxis.axisRange = 1.0
         chart.yAxis.drawLabelsEnabled = false
         chart.xAxis.drawLabelsEnabled = false
-//        chart.webColor = UIColor.colorWithHexString(rgb: "#042652")!
+        chart.webColor = UIColor.colorWithHex(hex6: 0x042652)
         chart.webAlpha = 1.0
 
         let legend = chart.legend
         legend.enabled = true
         legend.position = ScreenManager.sharedInstance.radarLegendPosition()
         legend.font = ScreenManager.appFontOfSize(size: 12)
-//        legend.textColor = UIColor.colorWithHexString(rgb: "#ffffff", alpha: 0.3)!
+        legend.textColor = UIColor.colorWithHex(hex6: 0xffffff, alpha: 0.3)
         legend.xEntrySpace = 50.0
         legend.yEntrySpace = 5.0
         return chart
@@ -269,13 +268,10 @@ class RadarViewController : UIViewController, ChartViewDelegate {
 
     func reloadData() {
         let sampleTypeRange = 0..<(min(PreviewManager.balanceSampleTypes.count, 8))
-        let sampleTypes = sampleTypeRange.map { PreviewManager.balanceSampleTypes[$0] }
-
         let indData = sampleTypeRange.map(indEntry)
         let popData = sampleTypeRange.map(popEntry)
-
         let indDataSet = MetabolicChartDataSet(values: indData, label: NSLocalizedString("Individual value", comment: "Individual"))
-//        indDataSet.fillColor = UIColor.colorWithHexString(rgb: "#427DC9", alpha: 1.0)!
+        indDataSet.fillColor = UIColor.colorWithHex(hex6: 0x427DC9)
         indDataSet.setColor(indDataSet.fillColor)
         indDataSet.drawFilledEnabled = true
         indDataSet.lineWidth = 1.0
@@ -288,7 +284,6 @@ class RadarViewController : UIViewController, ChartViewDelegate {
         indDataSet.highlightCircleInnerRadius = 0
         indDataSet.highlightCircleOuterRadius = 5
         indDataSet.drawHighlightCircleEnabled = false
-        
         let popDataSet = MetabolicChartDataSet(values: popData, label: NSLocalizedString("Population value", comment: "Population"))
         popDataSet.fillColor = UIColor.lightGray
         popDataSet.setColor(popDataSet.fillColor.withAlphaComponent(0.75))
@@ -296,21 +291,18 @@ class RadarViewController : UIViewController, ChartViewDelegate {
         popDataSet.lineWidth = 1.0
         popDataSet.fillAlpha = 0.5
         popDataSet.drawHighlightCircleEnabled = false
-        
-        
-        let xVals = sampleTypes.map { type in return HMConstants.sharedInstance.healthKitShortNames[type.identifier]! }
-
-//        let data = RadarChartDataEntry(value: Double(xVals), data: [indDataSet, popDataSet])
-//        let data = RadarChartDataEntry(value: 1.0, data: [indDataSet, popDataSet])
-//        data.setDrawValues(false)
-//        radarChart.data = data
-
-//        radarChart.highlightValue(xIndex: 0, dataSetIndex: 0, callDelegate: false)
+        popDataSet.showPoints = true
+        popDataSet.highlightColor = UIColor.clear
+        popDataSet.highlightCircleFillColor = UIColor.red
+        popDataSet.highlightCircleStrokeColor = UIColor.white
+        let data = RadarChartData.init(dataSets: [indDataSet, popDataSet])
+        radarChart.data = data
+        radarChart.webColor = UIColor.colorWithHex(hex6: 0x427DC9)
+        radarChart.innerWebColor = NSUIColor.brown
+        data.setDrawValues(false)
         radarChart.xAxis.labelTextColor = .white
         radarChart.xAxis.labelFont = UIFont.systemFont(ofSize: 12, weight: UIFontWeightRegular)
         radarChart.yAxis.drawLabelsEnabled = false
         radarChart.notifyDataSetChanged()
-        radarChart.valuesToHighlight()
     }
-
 }

@@ -27,11 +27,13 @@ class DashboardMetricsAppearanceProvider: NSObject {
         case sgRed = 0xE2472C
         case sgYelow = 0xB68F14
         case sgMagenta = 0x8627B5
+        case sgPink = 0xBA1075
+        case sgGreen = 0x138F16
+        case sgOrange = 0xA57B55
     }
     
     
-    private func getColorForSampleType(_ sampleType: String, active: Bool) -> UIColor?
-    {
+    private func getColorForSampleType(_ sampleType: String, active: Bool) -> UIColor? {
         if (!active) {
             return UIColor.lightGray
         }
@@ -40,7 +42,7 @@ class DashboardMetricsAppearanceProvider: NSObject {
         case HKQuantityTypeIdentifier.bodyMass.rawValue,
              HKQuantityTypeIdentifier.bodyMassIndex.rawValue,
              HKQuantityTypeIdentifier.dietaryEnergyConsumed.rawValue:
-            return UIColor.colorWithHexString(rgb: "#388CFB")
+            return UIColor.colorWithHex(hex6: SampleGroupColor.sgBlue.rawValue)
             
         case HKQuantityTypeIdentifier.heartRate.rawValue,
              HKQuantityTypeIdentifier.stepCount.rawValue,
@@ -56,23 +58,22 @@ class DashboardMetricsAppearanceProvider: NSObject {
              HKQuantityTypeIdentifier.dietarySodium.rawValue,
              HKQuantityTypeIdentifier.dietaryCholesterol.rawValue,
              HKQuantityTypeIdentifier.dietaryCaffeine.rawValue:
-            return UIColor.colorWithHexString(rgb: "#8627B5")
+            return UIColor.colorWithHex(hex6: SampleGroupColor.sgMagenta.rawValue)
         
         case HKQuantityTypeIdentifier.dietaryProtein.rawValue,
              HKQuantityTypeIdentifier.dietaryFatTotal.rawValue,
              HKQuantityTypeIdentifier.dietaryCarbohydrates.rawValue:
-            return UIColor.colorWithHexString(rgb: "#138F16")
+            return UIColor.colorWithHex(hex6: SampleGroupColor.sgGreen.rawValue)
         
         case HKQuantityTypeIdentifier.dietaryFatPolyunsaturated.rawValue,
              HKQuantityTypeIdentifier.dietaryFatMonounsaturated.rawValue,
              HKQuantityTypeIdentifier.dietaryFatSaturated.rawValue,
              HKQuantityTypeIdentifier.dietaryFiber.rawValue:
-            return UIColor.colorWithHexString(rgb: "#A57B55")
+            return UIColor.colorWithHex(hex6: SampleGroupColor.sgOrange.rawValue)
         
         case HKQuantityTypeIdentifier.dietaryWater.rawValue,
              HKCorrelationTypeIdentifier.bloodPressure.rawValue:
-            return UIColor.colorWithHexString(rgb: "#BA1075")
-
+            return UIColor.colorWithHex(hex6: SampleGroupColor.sgPink.rawValue)
         default:
             return UIColor.white
             

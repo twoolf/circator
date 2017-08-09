@@ -15,7 +15,7 @@ class MetabolicDataEntry: ChartDataEntry {
     var image: UIImage?
     
     init(value: Double, xIndex: Int, pointColor: UIColor, image: UIImage?) {
-        super.init(x: value, y: Double(xIndex))
+        super.init(x: Double(xIndex), y: value)
         self.pointColor = pointColor
         self.image = image
     }
