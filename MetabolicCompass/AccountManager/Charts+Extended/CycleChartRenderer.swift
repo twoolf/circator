@@ -97,7 +97,7 @@ class CycleChartRender: PieChartRenderer {
                 }
                 else
                 {
-                    angle = absoluteAngles[xIndex - 1] * (phaseX as! CGFloat)
+                    angle = absoluteAngles[xIndex - 1] * CGFloat(phaseX)
                 }
 
                 let sliceAngle = drawAngles[xIndex]
@@ -109,7 +109,7 @@ class CycleChartRender: PieChartRenderer {
 
                 angle = angle + angleOffset
 
-                let transformedAngle = rotationAngle + angle * (phaseY as! CGFloat)
+                let transformedAngle = rotationAngle + angle * CGFloat(phaseY)
 
             
                 let value = usePercentValuesEnabled ? e.x / yValueSum * 100.0 : e.x

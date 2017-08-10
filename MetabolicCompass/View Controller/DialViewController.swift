@@ -173,7 +173,7 @@ class DialViewController : UIViewController, ChartViewDelegate {
     func refreshPieChart() {
         let model = AnalysisDataModel.sharedInstance.cycleModel
         var segments : [(Date, ChartDataEntry)] = []
-        var colors : [NSUIColor] = []
+        var colors : [UIColor] = []
 
         let hrType = HKSampleType.quantityType(forIdentifier: HKQuantityTypeIdentifier.heartRate)!
         let scType = HKSampleType.quantityType(forIdentifier: HKQuantityTypeIdentifier.stepCount)!
@@ -195,17 +195,11 @@ class DialViewController : UIViewController, ChartViewDelegate {
         pieChartDataSet.drawValuesEnabled = false
         pieChartDataSet.xValuePosition = .outsideSlice
         pieChartDataSet.valueLineColor = UIColor.lightGray
-
-        let xVals : [String?] = segments.enumerated().map {
-            if ($0.0 % (segments.count / 4)) == 0 {
-                return Optional($0.1.0.string())
-            }
-            return nil
-        }
-
-//        let pieChartDataEntry = PieChartDataEntry(x: xVals, yVals: pieChartDataSet)
-//        self.pieChart.data = PieChartDataEntry
-//        self.pieChart.setNeedsDisplay()
+        let pieChartData = PieChartData(dataSet: pieChartDataSet)
+        self.pieChart.data = pieChartData
+        self.pieChart.drawEntryLabelsEnabled = false
+        self.pieChart.drawCenterTextEnabled = true
+        self.pieChart.setNeedsDisplay()
     }
 
     func refreshLegend() {

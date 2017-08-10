@@ -81,7 +81,7 @@ public class CycleDataModel : NSObject {
     public let cycleWindowSize: Int = 900
 
     public var measureSegments: [HKSampleType: [(Date, ChartDataEntry)]] = [:]
-    public var measureColors: [HKSampleType: [NSUIColor]] = [:]
+    public var measureColors: [HKSampleType: [UIColor]] = [:]
 
     public var segmentIndex = 0
 
@@ -228,7 +228,13 @@ public class CycleDataModel : NSObject {
                     }
                     if let windows = cachedVal {
                         self.measureSegments[sampleType] = zip(windows.winEntries, windows.winMetadata).enumerated().map {
-                            let entry = ChartDataEntry(x: $0.1.0, y: Double($0.0), data: $0.1.1)
+//                            for (idx, value) in values.enumerated() {
+//                                let pieValue = PieChartDataEntry(value: value.1.y, label: xVals[idx] )
+//                                pieValues.append(pieValue)
+//                            }
+
+                         //   let entry = ChartDataEntry(x: $0.1.0, y: Double($0.0), data: $0.1.1)
+                            let entry = PieChartDataEntry.init(value: Double($0.0))
                             return (start + ($0.0 * self.cycleWindowSize).seconds, entry)
                         }
                         self.measureColors[sampleType] = windows.winColors
