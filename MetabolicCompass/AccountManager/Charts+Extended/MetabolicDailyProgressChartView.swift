@@ -18,35 +18,35 @@ class MetabolicDailyProgressChartView : HorizontalBarChartView, DailyChartModelP
     var changeColorCompletion: ((Void) -> Void)? = nil
 
     class var exerciseColor: UIColor {
-        return UIColor.colorWithHexString(rgb: "#20990b", alpha: 0.7)!
+        return UIColor.colorWithHex(hex6: 0x20990b, alpha: 0.7)
     }
     
     class var eatingColor: UIColor {
-        return UIColor.colorWithHexString(rgb: "#e84c2c", alpha: 0.7)!
+        return UIColor.colorWithHex(hex6: 0xe84c2c, alpha: 0.7)
     }
     
     class var sleepColor: UIColor {
-        return UIColor.colorWithHexString(rgb: "#338aff", alpha: 0.7)!
+        return UIColor.colorWithHex(hex6: 0x338aff, alpha: 0.7)
     }
     
     class var fastingColor: UIColor {
-        return UIColor.colorWithHexString(rgb: "#021e45", alpha: 0.7)!
+        return UIColor.colorWithHex(hex6: 0x021e45, alpha: 0.7)
     }
 
     class var mutedExerciseColor: UIColor {
-        return UIColor.colorWithHexString(rgb: "#021e46", alpha: 0.7)!
+        return UIColor.colorWithHex(hex6: 0x021e46, alpha: 0.7)
     }
 
     class var mutedEatingColor: UIColor {
-        return UIColor.colorWithHexString(rgb: "#021e47", alpha: 0.7)!
+        return UIColor.colorWithHex(hex6: 0x021e47, alpha: 0.7)
     }
 
     class var mutedSleepColor: UIColor {
-        return UIColor.colorWithHexString(rgb: "#021e48", alpha: 0.7)!
+        return UIColor.colorWithHex(hex6: 0x021e48, alpha: 0.7)
     }
 
     class var highlightFastingColor: UIColor {
-        return UIColor.colorWithHexString(rgb: "#ffca00", alpha: 0.7)!
+        return UIColor.colorWithHex(hex6: 0xffca00, alpha: 0.7)
     }
     
     func prepareChart () {
@@ -79,8 +79,7 @@ class MetabolicDailyProgressChartView : HorizontalBarChartView, DailyChartModelP
         rightAxis.labelFont = ScreenManager.appFontOfSize(size: 12.0)
         rightAxis.drawAxisLineEnabled = true
         rightAxis.drawGridLinesEnabled = true
-//        rightAxis.valueFormatter = formatter
-//        rightAxis.valueFormatter = formatter
+        rightAxis.valueFormatter = formatter as? IAxisValueFormatter
         rightAxis.axisMinimum = 0.0
         rightAxis.axisMaximum = 24.0
         rightAxis.gridLineWidth = 1

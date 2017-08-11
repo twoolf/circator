@@ -80,7 +80,6 @@ class DailyProgressViewController : UIViewController, DailyChartModelProtocol {
     override func viewDidLoad() {
         super.viewDidLoad()
         self.setupTooltips()
-//        self.fastingSquare.layer.borderColor = UIColor.colorWithHexString(rgb: "#ffffff", alpha: 0.3).cgColor
         self.fastingSquare.layer.borderColor = UIColor.colorWithHexString(rgb: "#ffffff", alpha: 0.3) as! CGColor?
         self.dailyChartModel.daysTableView = self.daysTableView
         self.dailyChartModel.delegate = self
@@ -88,7 +87,6 @@ class DailyProgressViewController : UIViewController, DailyChartModelProtocol {
         self.dailyProgressChartDaysTable.dataSource = self.dailyChartModel
 
         self.dailyProgressChartView.changeColorCompletion = { _ in
-//            Async.main {
             OperationQueue.main.addOperation {
                 self.updateContentWithAnimation = false
                 self.dailyChartModel.toggleHighlightFasting()
@@ -175,7 +173,6 @@ class DailyProgressViewController : UIViewController, DailyChartModelProtocol {
     }
 
     func contentDidUpdate(withDailyProgress dailyProgress: Bool = true) {
-//        Async.main {
         OperationQueue.main.addOperation {
             if self.activityIndicator != nil {
                 self.activityIndicator.startAnimating()
@@ -189,7 +186,6 @@ class DailyProgressViewController : UIViewController, DailyChartModelProtocol {
     //MARK: DailyChartModelProtocol
     
     func dataCollectingFinished() {
-//        Async.main {
         OperationQueue.main.addOperation {
             self.activityIndicator.stopAnimating()
 
@@ -249,7 +245,6 @@ class DailyProgressViewController : UIViewController, DailyChartModelProtocol {
     func scrollOlder() {
         var newDate: Date? = nil
         if let date = self.dailyChartModel.getEndDate() {
-//            let oldest = 3.months.ago
             let oldest = 3.months.ago()!
             if !date.isInSameDayOf(date: oldest) {
                 newDate = (date - 1.weeks) < oldest ? oldest : (date - 1.weeks)

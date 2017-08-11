@@ -189,7 +189,6 @@ class DialViewController : UIViewController, ChartViewDelegate {
             segments = model.measureSegments[scType] ?? []
             colors = model.measureColors[scType] ?? []
         }
-
         let pieChartDataSet = PieChartDataSet(values: segments.map { $0.1 }, label: "Circadian segments")
         pieChartDataSet.colors = colors
         pieChartDataSet.drawValuesEnabled = false
@@ -283,10 +282,12 @@ class DialViewController : UIViewController, ChartViewDelegate {
     }
 
     //MARK: ChartViewDelegate
-    func chartValueSelected(chartView: ChartViewBase, entry: ChartDataEntry, dataSetIndex: Int, highlight: Highlight) {
-//        var entryStr = AnalysisDataModel.sharedInstance.cycleModel.cycleSegments[entry.x].0.String(DateFormat.Custom("HH:mm")) ?? "" 
-        
-//        var entryStr = AnalysisDataModel.sharedInstance.cycleModel.cycleSegments[entry.hashValue].0.string ?? " "
+    func chartValueSelected(_ chartView: ChartViewBase, entry: ChartDataEntry, highlight: Highlight) {
+    var entryStr = ""
+    let model = AnalysisDataModel.sharedInstance.cycleModel
+    let hrType = HKSampleType.quantityType(forIdentifier: HKQuantityTypeIdentifier.heartRate)!
+    let scType = HKSampleType.quantityType(forIdentifier: HKQuantityTypeIdentifier.stepCount)!
+    var array = [(Date, ChartDataEntry)] ()
 
         let txtFont = UIFont.systemFont(ofSize: 20, weight: UIFontWeightRegular)
         let numberFont = UIFont.systemFont(ofSize: 14, weight: UIFontWeightRegular)
@@ -295,14 +296,20 @@ class DialViewController : UIViewController, ChartViewDelegate {
         var eatRange: NSRange! = nil
         var exRange: NSRange! = nil
 
-        switch AnalysisDataModel.sharedInstance.cycleModel.segmentIndex {
+        switch model.segmentIndex {
         case 0:
+        array = model.cycleSegments.filter { $0.1 == entry }
+            if array.count == 1 {
+                let date = array[0].0
+                entryStr = date.string(format: DateFormat.custom("HH:mm"))
+            }
+
             if let opt = entry.data as? [Int]?, let counts = opt {
                 let sleepCount = "\(counts[0])"
                 let eatCount = "\(counts[1])"
                 let exCount = "\(counts[2])"
 
-//                entryStr += "\n◻︎ \(sleepCount)  ◻︎ \(eatCount)  ◻︎ \(exCount)"
+                entryStr += "\n◻︎ \(sleepCount)  ◻︎ \(eatCount)  ◻︎ \(exCount)"
 
                 slRange = NSRange(location: 6, length: 2)
                 eatRange = NSRange(location: 11 + sleepCount.characters.count, length: 1)
@@ -310,13 +317,23 @@ class DialViewController : UIViewController, ChartViewDelegate {
             }
 
         case 1:
-            if let opt = entry.data as? Double?, let bpm = opt {
-//                entryStr += "\n" + String(format: "%.3g", bpm) + " bpm"
+            array = (model.measureSegments[hrType]!.filter { $0.1 == entry })
+            if array.count == 1 {
+                let date = array[0].0
+                entryStr = date.string(format: DateFormat.custom("HH:mm"))
+            }
+            if let opt = entry.y as? Double?, let bpm = opt {
+                entryStr += "\n" + String(format: "%.3g", bpm) + " bpm"
             }
 
         case 2:
-            if let opt = entry.data as? Double?, let _ = opt {
-//                entryStr += "\n" + String(format: "%.6g", steps) + " steps"
+            array = (model.measureSegments[scType]!.filter { $0.1 == entry })
+            if array.count == 1 {
+                let date = array[0].0
+                entryStr = date.string(format: DateFormat.custom("HH:mm"))
+            }
+            if let opt = entry.y as? Double?, let steps = opt {
+                entryStr += "\n" + String(format: "%.6g", steps) + " steps"
             }
 
         default:
@@ -328,9 +345,9 @@ class DialViewController : UIViewController, ChartViewDelegate {
             NSForegroundColorAttributeName: UIColor.white
         ]
 
- //       let aString = NSMutableAttributedString(string: entryStr, attributes: attrs)
+        let aString = NSMutableAttributedString(string: entryStr, attributes: attrs)
 
- /*       if aString.length > 5 {
+        if aString.length > 5 {
             aString.addAttribute(NSFontAttributeName, value: numberFont, range: NSMakeRange(6, aString.length - 6))
 
             if AnalysisDataModel.sharedInstance.cycleModel.segmentIndex == 0 {
@@ -347,13 +364,13 @@ class DialViewController : UIViewController, ChartViewDelegate {
                 aString.addAttributes(eatAttrs, range: eatRange)
                 aString.addAttributes(exAttrs, range: exRange)
             }
-        } */
+        }
 
         let paragraphStyle = NSMutableParagraphStyle()
         paragraphStyle.alignment = .center
- //       aString.addAttribute(NSParagraphStyleAttributeName, value: paragraphStyle, range: NSMakeRange(0, aString.length))
+        aString.addAttribute(NSParagraphStyleAttributeName, value: paragraphStyle, range: NSMakeRange(0, aString.length))
 
-//        pieChart.centerAttributedText = aString
+        pieChart.centerAttributedText = aString
         pieChart.drawCenterTextEnabled = true
     }
 
