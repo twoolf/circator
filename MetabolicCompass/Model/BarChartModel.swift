@@ -92,17 +92,22 @@ class BarChartModel : NSObject {
         if let minValues = minValues {
             yVals = getYValuesForScatterChart(minValues: minValues, maxValues: values, period: .week)
         }
+        let noZeroFormatter = NumberFormatter()
+        noZeroFormatter.zeroSymbol = ""
         switch type {
         case .LineChart:
         let lineSet = LineChartDataSet.init(values: yVals, label: "Check")
         lineSet.setColor(UIColor.red)
+        lineSet.valueFormatter = DefaultValueFormatter(formatter: noZeroFormatter)
         return LineChartData(dataSet: lineSet)
         case .ScatterChart:
         let scatterSet = ScatterChartDataSet.init(values: yVals, label: "Check")
+        scatterSet.valueFormatter = DefaultValueFormatter(formatter: noZeroFormatter)
         scatterSet.setColor(UIColor.green)
         return ScatterChartData.init(dataSet: scatterSet)
         case .BarChart:
         let barSet = BarChartDataSet.init(values: yVals, label: "Check")
+        barSet.valueFormatter = DefaultValueFormatter(formatter: noZeroFormatter)
         barSet.setColor(UIColor.orange)
         return BarChartData.init(dataSet: barSet)
         }
@@ -116,8 +121,11 @@ class BarChartModel : NSObject {
         var yVals: [ChartDataEntry] = []
         for (index, value) in stisticsValues.enumerated() {
             let entry = create(Double(index), value, type)
-            yVals.append(entry)
+      //      if value != 0 {
+                yVals.append(entry)
+     //       }
         }
+
         return yVals
     }
 
@@ -614,7 +622,9 @@ class BarChartModel : NSObject {
             IOSHealthManager.sharedManager.getChartDataForQuantity(sampleType: qType, inPeriod: self.rangeType) { obj in
                 let values = obj as! [Double]
                 let arrray = values.map {$0.isNaN ? 0.0 : $0}
-                self.typesChartData[key] = self.getChartDataForRange(range: self.rangeType, type: chartType!, values: arrray, minValues: nil)
+                if arrray.count > 0 {
+                    self.typesChartData[key] = self.getChartDataForRange(range: self.rangeType, type: chartType!, values: arrray, minValues: nil)
+                }
                 completion(arrray.count > 0)
             }
         }
@@ -645,20 +655,21 @@ class BarChartModel : NSObject {
         resetOperation()
         let chartGroup = DispatchGroup()
         let stepType = HKSampleType.quantityType(forIdentifier: HKQuantityTypeIdentifier.stepCount)!
-         let weightType = HKSampleType.quantityType(forIdentifier: HKQuantityTypeIdentifier.bodyMass)!
+        let weightType = HKSampleType.quantityType(forIdentifier: HKQuantityTypeIdentifier.bodyMass)!
         let heartType = HKSampleType.quantityType(forIdentifier: HKQuantityTypeIdentifier.heartRate)!
         let bloodType = HKSampleType.correlationType(forIdentifier: HKCorrelationTypeIdentifier.bloodPressure)!
-         let sleepType = HKSampleType.categoryType(forIdentifier: HKCategoryTypeIdentifier.sleepAnalysis)!
+        let sleepType = HKSampleType.categoryType(forIdentifier: HKCategoryTypeIdentifier.sleepAnalysis)!
+        let energyType = HKSampleType.quantityType(forIdentifier: HKQuantityTypeIdentifier.activeEnergyBurned)!
 
         for qType in PreviewManager.chartsSampleTypes {
-  //          if qType == stepType {
+ //           if qType == sleepType {
             chartGroup.enter()
             _chartDataOperationQueue.addOperation({ 
                 self.getAllDataForCurrentPeriodForSample(qType: qType, _chartType: nil) { _ in
                     chartGroup.leave()
                 }
             })
- //       }
+//        }
     }
         chartGroup.notify(qos: DispatchQoS.background, queue: DispatchQueue.main) {
             self.addCompletionForOperationQueue(completion: completion)

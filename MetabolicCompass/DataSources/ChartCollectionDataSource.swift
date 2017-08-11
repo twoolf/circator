@@ -48,22 +48,21 @@ class ChartCollectionDataSource: NSObject, UICollectionViewDataSource {
             cell = collectionView.dequeueReusableCell(withReuseIdentifier: scatterChartCellIdentifier, for: indexPath as IndexPath) as! ScatterChartCollectionCell
         }
 
+        cell.chartView.data = nil
+        if let yMax = chartData?.yMax, let yMin = chartData?.yMin, yMax > 0 || yMin > 0 {
+            cell.updateLeftAxisWith(minValue: chartData?.yMin, maxValue: chartData?.yMax)
+            cell.chartView.data = chartData
+//            if let marker = cell.chartView.marker as? BalloonMarker {
+//                marker.yMax = cell.chartView.leftAxis.axisMaximum
+//                marker.yMin = cell.chartView.leftAxis.axisMaximum
+//                marker.yPixelRange = Double(cell.chartView.contentRect.height)
+//            }
+        }
         let xValues = model?.getWeekTitles()
         let chartFormatter = BarChartFormatter(labels: xValues!)
         let xAxis = XAxis()
         xAxis.valueFormatter = chartFormatter
         cell.chartView.xAxis.valueFormatter = xAxis.valueFormatter
-        
-        cell.chartView.data = nil
-        if let yMax = chartData?.yMax, let yMin = chartData?.yMin, yMax > 0 || yMin > 0 {
-            cell.updateLeftAxisWith(minValue: chartData?.yMin, maxValue: chartData?.yMax)
-            cell.chartView.data = chartData
-            if let marker = cell.chartView.marker as? BalloonMarker {
-                marker.yMax = cell.chartView.leftAxis.axisMaximum
-                marker.yMin = cell.chartView.leftAxis.axisMaximum
-                marker.yPixelRange = Double(cell.chartView.contentRect.height)
-            }
-        }
         cell.chartTitleLabel.text = appearanceProvider.stringForSampleType(typeToShow == HKQuantityTypeIdentifier.bloodPressureSystolic.rawValue ? HKCorrelationTypeIdentifier.bloodPressure.rawValue : typeToShow)
         return cell
     }
@@ -74,7 +73,8 @@ private class BarChartFormatter: NSObject, IAxisValueFormatter {
     var labels: [String] = []
 
     func stringForValue(_ value: Double, axis: AxisBase?) -> String {
-        return labels[Int(value)]
+        let index = axis?.entries.index(of: value)
+        return labels[index!]
     }
 
     init(labels: [String]) {
