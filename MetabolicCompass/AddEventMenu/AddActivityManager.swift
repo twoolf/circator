@@ -747,38 +747,28 @@ open class AddActivityManager: UITableView, UITableViewDelegate, UITableViewData
     }
 
     func addSleep(hoursSinceStart: Double, startDate: Date? = nil, completion: @escaping (Error?) -> Void) {
-//        let startTime = startDate == nil ? (Int(hoursSinceStart * 60)).minutes.ago : startDate!
-        let startTime = startDate == nil ? Date().addingTimeInterval(hoursSinceStart)  : startDate!
-//        var startTime = startDate = nil ? Date().addingTimeInterval(Int(hoursSinceStart * 60)) : startDate!
-        let endTime = startDate == nil ? Date() : startDate! + (Int(hoursSinceStart * 60)).minutes
-
-        log.debug("Saving sleep event: \(startDate ?? (no_argument as AnyObject) as! Date) \(endTime)", feature: "addActivity")
-
-        validateTimedEvent(startDate!, endTime: endTime) { error in
+        let startTime = startDate == nil ? Date()  : startDate!
+        let endTime = startTime + (Int(hoursSinceStart * 60)).minutes
+        validateTimedEvent(startTime, endTime: endTime) { error in
             guard error == nil else {
                 completion(error)
                 return
             }
 
-            MCHealthManager.sharedManager.saveSleep(startDate!, endDate: endTime, metadata: [:]) {
+            MCHealthManager.sharedManager.saveSleep(startTime, endDate: endTime, metadata: [:]) {
                 (success, error) -> Void in
-//                if error != nil { log.error(error!.localizedDescription) }
                 if error != nil { print("error in localized description") }
-                else { log.debug("Saved sleep event: \(String(describing: startDate)) \(endTime)", feature: "addActivity") }
-//                else { print("logged") }
+                else { log.debug("Saved sleep event: \(String(describing: startTime)) \(endTime)", feature: "addActivity") }
                 completion(error)
             }
         }
     }
 
     func addMeal(_ mealType: String, minutesSinceStart: Int, startDate: Date? = nil, completion: @escaping (Error?) -> Void) {
-//        let startTime = startDate == nil ? minutesSinceStart.minutes.ago : startDate!
-        let startTime = startDate == nil ? Date().addingTimeInterval(TimeInterval(minutesSinceStart)) : startDate!
-        let endTime = startDate == nil ? Date() : startDate! + (Int(minutesSinceStart)).minutes
+        let startTime = startDate == nil ? Date()  : startDate!
+        let endTime = startTime + (Int(minutesSinceStart)).minutes
         let metadata = ["Meal Type": mealType]
-
         log.debug("Saving meal event: \(mealType) \(startTime) \(endTime)", feature: "addActivity")
-
         validateTimedEvent(startTime, endTime: endTime) { error in
             guard error == nil else {
                 completion(error)
@@ -791,7 +781,6 @@ open class AddActivityManager: UITableView, UITableViewDelegate, UITableViewData
             {
                 (success, error) -> Void in
                 if error != nil { print("error!.localizedDescription") }
-//                else { print("Saved meal event as workout type: \(mealType) \(startTime) \(endTime)", feature: "addActivity") }
                 else { print("saved meal event")
                 completion(error)
             }
@@ -800,9 +789,8 @@ open class AddActivityManager: UITableView, UITableViewDelegate, UITableViewData
     }
 
     func addExercise(workoutType: HKWorkoutActivityType, minutesSinceStart: Int, startDate: Date? = nil, completion: @escaping (Error?) -> Void) {
-//        let startTime = startDate == nil ? minutesSinceStart.minutes.ago : startDate!
-        let startTime = startDate == nil ? Date().addingTimeInterval(TimeInterval(minutesSinceStart)) : startDate!
-        let endTime = startDate == nil ? Date() : startDate! + (Int(minutesSinceStart)).minutes
+        let startTime = startDate == nil ? Date()  : startDate!
+        let endTime = startTime + (Int(minutesSinceStart)).minutes
 
         log.debug("Saving exercise event: \(workoutType) \(startTime) \(endTime)", feature: "addActivity")
 
@@ -817,9 +805,7 @@ open class AddActivityManager: UITableView, UITableViewDelegate, UITableViewData
                 distance: 0.0, distanceUnit: HKUnit(from: "km"), kiloCalories: 0.0, metadata: [:])
             {
                 (success, error ) -> Void in
- //               if error != nil { log.error(error!.localizedDescription) }
                 if error != nil { print("localized error") }
-//                else { log.debug("Saved exercise event as workout type: \(workoutType) \(startTime) \(endTime)", feature: "addActivity") }
                 else { print("saved as workout type") }
                 completion(error)
             }
