@@ -190,7 +190,7 @@ public class ManageEventMenu: UIView, CAAnimationDelegate, PathMenuItemDelegate 
         return startButton!.frame.contains(point)
     }
 
-    @nonobjc public func animationDidStop(_ anim: CAAnimation, finished flag: Bool) {
+    public func animationDidStop(_ anim: CAAnimation, finished flag: Bool) {
         if let animId = anim.value(forKey: "id") {
             if (animId as AnyObject).isEqual("lastAnimation") {
                 delegate?.manageEventMenuDidFinishAnimationClose(menu: self)
@@ -202,7 +202,7 @@ public class ManageEventMenu: UIView, CAAnimationDelegate, PathMenuItemDelegate 
     }
 
     //MARK: UIGestureRecognizer
-    
+
     public override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
         handleTap()
     }
@@ -320,7 +320,6 @@ public class ManageEventMenu: UIView, CAAnimationDelegate, PathMenuItemDelegate 
         if flag == 0 {
             animationgroup.setValue("lastAnimation", forKey: "id")
         }
-
         getCurrentManagerView()?.layer.add(animationgroup, forKey: "Close")
         getCurrentManagerView()?.layer.opacity = 0.0
 

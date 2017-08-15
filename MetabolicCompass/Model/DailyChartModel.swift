@@ -355,10 +355,10 @@ open class DailyChartModel : NSObject, UITableViewDataSource {
                         // workout = 0.0, sleep = 0.33, fast = 0.66, eat = 1.0 
                         //
                         let vals : [(x: Double, y: Double)] = intervals.map { event in
-//                            let startTimeInFractionalHours = event.0.addingTimeInterval(60.minutes) / 3600.0
-                            let startTimeInFractionalHours = event.0.addHours(hoursToAdd: 1)
+                            let startTimeInFractionalHours = event.0.timeIntervalSince(startDate) / 3600.0
+                         //   let startTimeInFractionalHours = event.0.addHours(hoursToAdd: 1)
                             let metabolicStateAsDouble = self.valueOfCircadianEvent(event.1)
-                            return (x: startTimeInFractionalHours as! Double, y: Double(metabolicStateAsDouble))
+                            return (x: startTimeInFractionalHours , y: Double(metabolicStateAsDouble))
                         }
 
                         // Calculate circadian event statistics based on the above array of events.
