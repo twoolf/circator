@@ -147,18 +147,15 @@ open class DailyChartModel : NSObject, UITableViewDataSource {
 
     open class func getChartDateRange(endDate: Date? = nil) -> [Date] {
         var lastSevenDays: [Date] = []
-        let calendar = NSCalendar(calendarIdentifier: NSCalendar.Identifier.gregorian)
-//        let dateComponents = (endDate ?? Date()).startOf(component: .day).components 
-        var dateComponents = DateComponents()
-        for _ in 0...6 {
-            let date = calendar!.date(from: dateComponents)
- //           dateComponents.day = dateComponents.day - 1;
-            dateComponents.day = 1
-            if let date = date {
-                lastSevenDays.append(date)
-            }
+        let cal = Calendar.current
+        var date = Date()
+        lastSevenDays.append(date)
+        for i in 1 ... 6 {
+
+            date = cal.date(byAdding: .day, value: -1, to: date)!
+            lastSevenDays.append(date)
         }
-        return lastSevenDays.reversed()
+        return lastSevenDays
     }
 
     open class func getChartDateRangeStrings(endDate: Date? = nil) -> [String] {
@@ -204,25 +201,19 @@ open class DailyChartModel : NSObject, UITableViewDataSource {
 
     public func refreshChartDateRange(_ lastViewDate: Date?) {
         let now = Date()
-/*        if let last = lastViewDate, let end = getEndDate(), last.isInSameDayAsDate(end) && !last.isInSameDayasDate(now) {
+ //       if let last = lastViewDate, let end = getEndDate(), last.isInSameDayAsDate(end) && !last.isInSameDayasDate(now) {
             self.daysArray = DailyChartModel.getChartDateRange()
             self.daysStringArray = DailyChartModel.getChartDateRangeStrings()
-        } */
+ //       }
     }
 
     public func getDataForDay(_ day: Date?, lastDay:Bool) {
         let startDay = day == nil ? self.daysArray.first! : day!
-//        let today = startDay.isInToday()
         let today = startDay.isToday
 
         let dateIndex = self.daysArray.index(of: startDay)
         let cacheKey = "\(startDay.month)_\(startDay.day)_\(startDay.year)"
         let cacheDuration = today ? 5.0 : 60.0 //if it's today we will add cache time for 10 seconds in other cases cache will be saved for 1 minute
-
-//        self.cachedDailyProgress.setObjectForKey(cacheKey, cacheBlock: { (success, error) in
-
-//        self.cachedDailyProgress.setObject(forKey: <#T##String#>, cacheBlock: <#T##(@escaping ((NSCoding, CacheExpiry) -> Void), @escaping (Cache<NSCoding>.ErrorClosure)) -> Void#>, completion: <#T##(NSCoding?, Bool, NSError?) -> Void#>)(forKey: cacheKey, cacheBlock: { (success, error) in
-//        getDailyProgress().
         self.cachedDailyProgress.setObject(forKey: cacheKey, cacheBlock: { (success, error) in
             self.getCircadianEventsForDay(startDay, completion: { (dayInfo) in
                 success(dayInfo, .seconds(cacheDuration))
@@ -235,7 +226,6 @@ open class DailyChartModel : NSObject, UITableViewDataSource {
             if !lastDay { //we still have data to retrieve
                 let nextIndex = dateIndex! + 1
                 let lastElement = nextIndex == (self.daysArray.count - 1)
-//                Async.main {
                 OperationQueue.main.addOperation {
                     self.getDataForDay(self.daysArray[nextIndex], lastDay: lastElement)
                 }
@@ -243,8 +233,6 @@ open class DailyChartModel : NSObject, UITableViewDataSource {
                 for (key, daysData) in self.chartDataAndColors {
                     self.chartDataAndColors[key] = daysData.map { valAndColor in (valAndColor.0, self.selectColor(color: valAndColor.1)) }
                 }
-
-//                Async.main {
                 OperationQueue.main.addOperation {
                     self.delegate?.dataCollectingFinished?()
                 }
@@ -356,7 +344,6 @@ open class DailyChartModel : NSObject, UITableViewDataSource {
                         //
                         let vals : [(x: Double, y: Double)] = intervals.map { event in
                             let startTimeInFractionalHours = event.0.timeIntervalSince(startDate) / 3600.0
-                         //   let startTimeInFractionalHours = event.0.addHours(hoursToAdd: 1)
                             let metabolicStateAsDouble = self.valueOfCircadianEvent(event.1)
                             return (x: startTimeInFractionalHours , y: Double(metabolicStateAsDouble))
                         }

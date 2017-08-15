@@ -80,7 +80,7 @@ class DailyProgressViewController : UIViewController, DailyChartModelProtocol {
     override func viewDidLoad() {
         super.viewDidLoad()
         self.setupTooltips()
-        self.fastingSquare.layer.borderColor = UIColor.colorWithHexString(rgb: "#ffffff", alpha: 0.3) as! CGColor?
+        self.fastingSquare.layer.borderColor = UIColor.colorWithHex(hex6: 0xffffff, alpha: 0.3).cgColor
         self.dailyChartModel.daysTableView = self.daysTableView
         self.dailyChartModel.delegate = self
         self.dailyChartModel.registerCells()
@@ -126,9 +126,9 @@ class DailyProgressViewController : UIViewController, DailyChartModelProtocol {
         let height = self.dailyProgressChartView.frame.height
         self.dailyProgressChartScrollView.contentSize = CGSize(width, height)
         self.dailyChartModel.updateRowHeight()
-        let mainScrollViewContentWidth = CGRect(dictionaryRepresentation: self.mainScrollView.frame as! CFDictionary)
-        let mainScrollViewContentHeight = self.mainScrollView.contentSize.height
-        self.mainScrollView.contentSize = CGSize(mainScrollViewContentWidth as! CGFloat, mainScrollViewContentHeight)
+        let mainScrollViewContentWidth = mainScrollView.frame.width
+        let mainScrollViewContentHeight = mainScrollView.frame.height
+        self.mainScrollView.contentSize = CGSize(mainScrollViewContentWidth, mainScrollViewContentHeight)
 
         // Update chart data
         self.contentDidUpdate()
