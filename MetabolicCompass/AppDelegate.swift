@@ -16,6 +16,8 @@ import Locksmith
 import SwiftDate
 import SwiftyUserDefaults
 import WatchConnectivity
+import Auth0
+
 let log = RemoteLogManager.sharedManager.log
 
 @UIApplicationMain
@@ -239,6 +241,11 @@ class AppDelegate: UIResponder, UIApplicationDelegate, WCSessionDelegate
             session.delegate = self
             session.activate()
         }
+    }
+
+    // Auto0
+    func application(_ app: UIApplication, open url: URL, options: [UIApplicationOpenURLOptionsKey : Any]) -> Bool {
+        return Auth0.resumeAuth(url, options: options)
     }
 }
 

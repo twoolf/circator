@@ -1,6 +1,7 @@
 use_frameworks!
-
 def shared_pods
+
+    pod 'Auth0', '~> 1.0'
     pod 'AKPickerView-Swift', :git => 'https://github.com/Akkyie/AKPickerView-Swift.git' 
     pod 'Alamofire' 
     pod 'ARSLineProgress' 
@@ -37,10 +38,12 @@ def shared_pods
 end
 
 target 'MetabolicCompassKit' do
+    platform :ios, '10.0'
     shared_pods
 end
 
 target 'MetabolicCompass' do
+    platform :ios, '10.0'
     shared_pods
     pod 'Crashlytics'
     pod 'Fabric'

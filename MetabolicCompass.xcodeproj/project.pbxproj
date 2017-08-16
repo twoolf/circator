@@ -131,6 +131,9 @@
 		78E7C21F1D32F83200DE0495 /* WorkoutConfiguration.swift in Sources */ = {isa = PBXBuildFile; fileRef = 78E7C20D1D32F83200DE0495 /* WorkoutConfiguration.swift */; };
 		78E7C2201D32F83200DE0495 /* WorkoutSessionService_Queries.swift in Sources */ = {isa = PBXBuildFile; fileRef = 78E7C20E1D32F83200DE0495 /* WorkoutSessionService_Queries.swift */; };
 		78E7C2211D32F83200DE0495 /* WorkoutSessionService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 78E7C20F1D32F83200DE0495 /* WorkoutSessionService.swift */; };
+		8132417D1F446759004B8339 /* AuthSessionManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8132417C1F446759004B8339 /* AuthSessionManager.swift */; };
+		8132417E1F446A2F004B8339 /* Auth0.plist in Resources */ = {isa = PBXBuildFile; fileRef = 8132417A1F444CA9004B8339 /* Auth0.plist */; };
+		8132417F1F4485DE004B8339 /* AuthSessionManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8132417C1F446759004B8339 /* AuthSessionManager.swift */; };
 		81C85A4D1F18BB43003F3D32 /* MetabolicCompass-Bridging-Header.h in Headers */ = {isa = PBXBuildFile; fileRef = 81C85A4C1F18BB43003F3D32 /* MetabolicCompass-Bridging-Header.h */; };
 		84207D1F1CCA1FEC00776848 /* RegisterLoginProcess.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 84207D1E1CCA1FEC00776848 /* RegisterLoginProcess.storyboard */; };
 		84207D241CCA3C3600776848 /* RegisterLoginLandingViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84207D231CCA3C3600776848 /* RegisterLoginLandingViewController.swift */; };
@@ -490,6 +493,8 @@
 		78E7C20E1D32F83200DE0495 /* WorkoutSessionService_Queries.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = WorkoutSessionService_Queries.swift; sourceTree = "<group>"; };
 		78E7C20F1D32F83200DE0495 /* WorkoutSessionService.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = WorkoutSessionService.swift; sourceTree = "<group>"; };
 		78F65A4C1C25126E0074449D /* QueryBuilderViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = QueryBuilderViewController.swift; sourceTree = "<group>"; };
+		8132417A1F444CA9004B8339 /* Auth0.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; name = Auth0.plist; path = ../Auth0.plist; sourceTree = "<group>"; };
+		8132417C1F446759004B8339 /* AuthSessionManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = AuthSessionManager.swift; path = Storyboards/AuthSessionManager.swift; sourceTree = "<group>"; };
 		81C85A4C1F18BB43003F3D32 /* MetabolicCompass-Bridging-Header.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "MetabolicCompass-Bridging-Header.h"; path = "MetabolicCompass/MetabolicCompass-Bridging-Header.h"; sourceTree = "<group>"; };
 		84207D1E1CCA1FEC00776848 /* RegisterLoginProcess.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; path = RegisterLoginProcess.storyboard; sourceTree = "<group>"; };
 		84207D231CCA3C3600776848 /* RegisterLoginLandingViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RegisterLoginLandingViewController.swift; sourceTree = "<group>"; };
@@ -810,6 +815,8 @@
 				5492C4111EC75F2E00E1AADB /* LaunchScreen.storyboard */,
 				5411C8281E7F436000E05EFF /* MetabolicCompass.entitlements */,
 				54205EC51E772631003E3EC4 /* Info.plist */,
+				8132417A1F444CA9004B8339 /* Auth0.plist */,
+				8132417C1F446759004B8339 /* AuthSessionManager.swift */,
 				E74A89771CE3260F0056A2D2 /* AccountManager */,
 				54205E5E1E76213B003E3EC4 /* AddEventMenu */,
 				7881A3E01BAF3B3E00ECB3C6 /* AppDelegate.swift */,
@@ -1599,6 +1606,7 @@
 				95748C471CCFC7AA0002F6A3 /* InputCollectionViewCell.xib in Resources */,
 				95F400981CE385C60060F28C /* CircleImageCollectionViewCell.xib in Resources */,
 				54205EAB1E7624CB003E3EC4 /* helvetica_neue_ce_55_roman-webfont.ttf in Resources */,
+				8132417E1F446A2F004B8339 /* Auth0.plist in Resources */,
 				843B40941D364BCE0044691C /* PhysiologicalHeaderView.xib in Resources */,
 				84EF0EB51D056FF800A25760 /* PickerTableViewCell.xib in Resources */,
 				E7592DB51CDB3A2400E313BB /* TabScreens.storyboard in Resources */,
@@ -1854,6 +1862,7 @@
 				E75E95B21CDCD6CB00A18756 /* DashboardMetricsAppearanceProvider.swift in Sources */,
 				95769B871CE49E4000F26668 /* PhysiologicalDataViewController.swift in Sources */,
 				E7E48DF11CE6033100DB020F /* ManageBalanceCell.swift in Sources */,
+				8132417D1F446759004B8339 /* AuthSessionManager.swift in Sources */,
 				54205E681E76213B003E3EC4 /* DeleteActivityManager.swift in Sources */,
 				78B734291C90B86D00693229 /* CorrelationViewController.swift in Sources */,
 				78CA69921DFA153E008B7BE8 /* ComparisonDataModel.swift in Sources */,
@@ -2011,6 +2020,7 @@
 				78D46C311E2AD6DE00913639 /* RemoteLogManager.swift in Sources */,
 				7816FFBB1C1E45D3002E2ED8 /* UserManager.swift in Sources */,
 				785978411C1BD4F1008377F9 /* EventManager.swift in Sources */,
+				8132417F1F4485DE004B8339 /* AuthSessionManager.swift in Sources */,
 				F4F4DA5A1C025BE30073E9EE /* PreviewManager.swift in Sources */,
 				F42F5B471BE2048400195490 /* Theme.swift in Sources */,
 				F42F5B461BE2048400195490 /* SampleFormatter.swift in Sources */,
