@@ -86,89 +86,93 @@ class LoginViewController: BaseViewController {
     // MARK: - Actions
 
     @IBAction func loginAction() {
-
-
-        guard let clientInfo = plistValues(bundle: Bundle.main) else { return }
-        Auth0
-            .webAuth()
-            .scope("openid profile offline_access")
-            .audience("https://" + clientInfo.domain + "/userinfo")
-            .start {
-                switch $0 {
-                case .failure(let error):
-                    // Handle the error
-                    print("Error: \(error)")
-                case .success(let credentials):
-                    guard let accessToken = credentials.accessToken, let refreshToken = credentials.refreshToken else { return }
-                    AuthSessionManager.shared.storeTokens(accessToken, refreshToken: refreshToken)
-                    AuthSessionManager.shared.retrieveProfile { error in
-                        DispatchQueue.main.async {
-                            self.loginComplete()
-                        }
-                    }
-                }
-        }
+        auth0login()
     }
-
-
-//        startAction()
-//        
-//        let loginCredentials = loginModel.getCredentials()
-//
-//        UserManager.sharedManager.ensureUserPass(user: loginCredentials.email, pass: loginCredentials.password) { error in
-//            guard !error else {
-//                UINotifications.invalidUserPass(vc: self.navigationController!)
-//                return
-//            }
-//            UserManager.sharedManager.loginWithPull { res in
-//                guard res.ok else {
-//                    if res.info.hasContent {
-//                        let components = UMPullComponentErrorAsArray(res.info)
-//                        
-//                        // Try to upload the consent file if we encounter a consent pull error.
-//                        if components.contains(.Consent) {
-//                            self.uploadLostConsentFile()
-//                            // Raise a notification if there are other errors. 
-//                            if components.count > 1 {
-//                                Answers.logLogin(withMethod: "SPL", success: false, customAttributes: nil)
-//                                let componentNames = components.map { getComponentName($0) }.joined(separator: ", ")
-//                                let reason = components.isEmpty ? "" : " (missing \(componentNames))"
-//                                UINotifications.loginFailed(vc: self, reason: "Failed to get account\(reason)")
-//                            }
-//                        } else {
-//                            Answers.logLogin(withMethod: "SPL", success: false, customAttributes: nil)
-//                            let componentNames = components.map { getComponentName($0) }.joined(separator: ", ")
-//                            let reason = components.isEmpty ? "" : " (missing \(componentNames))"
-//                            UINotifications.loginFailed(vc: self, reason: "Failed to get account\(reason)")
-//                        }
-//                    } else {
-//                        Answers.logLogin(withMethod: "SPL", success: false, customAttributes: nil)
-//                        UINotifications.invalidUserPass(vc: self)
-//                    }
-//
-//                    // Explicitly logout on an error to clear the UserManager's userid.
-//                    // This way the user does not see the dashboard on app relaunch.
-////                    log.info(res.info) 
-//                    UserManager.sharedManager.logout()
-//                    return
-//                }
-//                if UserManager.sharedManager.isItFirstLogin() {//if it's first login
-//                    if let additionalInfo = UserManager.sharedManager.getAdditionalProfileData() {//and user has an additional data. we will push it to the server
-//                        UserManager.sharedManager.pushProfile(componentData: additionalInfo , completion: { _ in
-//                            UserManager.sharedManager.removeFirstLogin()
-//                        })
-//                    } else {//in other case we just remove marker for first login
-//                        UserManager.sharedManager.removeFirstLogin()
-//                    }
-//                }
-//                self.loginComplete()
-//            }
-//        }
-//    }
 
     func doSignup(sender: UIButton) {
         let registerVC = RegisterViewController()
         registerVC.consentOnLoad = true
         self.navigationController?.pushViewController(registerVC, animated: true)
+    }
+
+    func auth0login() {
+            guard let clientInfo = plistValues(bundle: Bundle.main) else { return }
+            Auth0
+                .webAuth()
+                .scope("openid profile offline_access")
+                .audience("https://" + clientInfo.domain + "/userinfo")
+                .start {
+                    switch $0 {
+                    case .failure(let error):
+                        // Handle the error
+                        print("Error: \(error)")
+                    case .success(let credentials):
+                        guard let accessToken = credentials.accessToken, let refreshToken = credentials.refreshToken else { return }
+                        AuthSessionManager.shared.storeTokens(accessToken, refreshToken: refreshToken)
+                        AuthSessionManager.shared.retrieveProfile { error in
+                            DispatchQueue.main.async {
+                                self.login()
+                            }
+                        }
+                    }
+            }
+
+        }
+
+    func login() {
+        startAction()
+
+        let loginCredentials = loginModel.getCredentials()
+
+        UserManager.sharedManager.ensureUserPass(user: loginCredentials.email, pass: loginCredentials.password) { error in
+            guard !error else {
+                UINotifications.invalidUserPass(vc: self.navigationController!)
+                return
+            }
+            UserManager.sharedManager.loginWithPull { res in
+                guard res.ok else {
+                    if res.info.hasContent {
+                        let components = UMPullComponentErrorAsArray(res.info)
+
+                        // Try to upload the consent file if we encounter a consent pull error.
+                        if components.contains(.Consent) {
+                            self.uploadLostConsentFile()
+                            // Raise a notification if there are other errors.
+                            if components.count > 1 {
+                                Answers.logLogin(withMethod: "SPL", success: false, customAttributes: nil)
+                                let componentNames = components.map { getComponentName($0) }.joined(separator: ", ")
+                                let reason = components.isEmpty ? "" : " (missing \(componentNames))"
+                                UINotifications.loginFailed(vc: self, reason: "Failed to get account\(reason)")
+                            }
+                        } else {
+                            Answers.logLogin(withMethod: "SPL", success: false, customAttributes: nil)
+                            let componentNames = components.map { getComponentName($0) }.joined(separator: ", ")
+                            let reason = components.isEmpty ? "" : " (missing \(componentNames))"
+                            UINotifications.loginFailed(vc: self, reason: "Failed to get account\(reason)")
+                        }
+                    } else {
+                        Answers.logLogin(withMethod: "SPL", success: false, customAttributes: nil)
+                        UINotifications.invalidUserPass(vc: self)
+                    }
+
+                    // Explicitly logout on an error to clear the UserManager's userid.
+                    // This way the user does not see the dashboard on app relaunch.
+                    //                    log.info(res.info)
+                    UserManager.sharedManager.logout()
+                    return
+                }
+                if UserManager.sharedManager.isItFirstLogin() {//if it's first login
+                    if let additionalInfo = UserManager.sharedManager.getAdditionalProfileData() {//and user has an additional data. we will push it to the server
+                        UserManager.sharedManager.pushProfile(componentData: additionalInfo , completion: { _ in
+                            UserManager.sharedManager.removeFirstLogin()
+                        })
+                    } else {//in other case we just remove marker for first login
+                        UserManager.sharedManager.removeFirstLogin()
+                    }
+                }
+                self.loginComplete()
+            }
+        }
+
     }
 }

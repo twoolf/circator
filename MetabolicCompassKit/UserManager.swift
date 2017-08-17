@@ -409,9 +409,9 @@ public class UserManager {
                     completion(RequestResult(error:err!))
                     return
                 }
-
+                let token = AuthSessionManager.shared.keychain.string(forKey: "access_token")
                 log.info("Access token: \(Stormpath.sharedSession.accessToken)")
-                MCRouter.updateAuthToken(token: Stormpath.sharedSession.accessToken)
+                MCRouter.updateAuthToken(token: token)
                 completion(RequestResult())
             }
         }
