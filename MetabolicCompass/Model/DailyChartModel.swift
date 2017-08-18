@@ -155,7 +155,7 @@ open class DailyChartModel : NSObject, UITableViewDataSource {
             date = cal.date(byAdding: .day, value: -1, to: date)!
             lastSevenDays.append(date)
         }
-        return lastSevenDays
+        return lastSevenDays.reversed()
     }
 
     open class func getChartDateRangeStrings(endDate: Date? = nil) -> [String] {
