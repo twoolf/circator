@@ -2141,7 +2141,6 @@
 				COPY_PHASE_STRIP = NO;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				DEFINES_MODULE = YES;
-				ENABLE_BITCODE = NO;
 				ENABLE_NS_ASSERTIONS = NO;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
 				ENABLE_TESTABILITY = YES;
@@ -2213,7 +2212,6 @@
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				CURRENT_PROJECT_VERSION = 88;
 				DEVELOPMENT_TEAM = E4SL9A9Z96;
-				ENABLE_BITCODE = NO;
 				FRAMEWORK_SEARCH_PATHS = "$(inherited)";
 				GCC_OPTIMIZATION_LEVEL = 0;
 				GCC_PREPROCESSOR_DEFINITIONS = (
@@ -2283,13 +2281,14 @@
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = 2539C838C119BC28E649399D /* Pods-MetabolicCompassWatch.debug.xcconfig */;
 			buildSettings = {
-				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
+				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = NO;
 				ASSETCATALOG_COMPILER_APPICON_NAME = WatchAppIcon;
 				CODE_SIGN_ENTITLEMENTS = MetabolicCompassWatch/MetabolicCompassWatch.entitlements;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "iPhone Developer";
 				DEVELOPMENT_TEAM = E4SL9A9Z96;
+				ENABLE_BITCODE = YES;
 				GCC_OPTIMIZATION_LEVEL = 0;
 				IBSC_MODULE = MetabolicCompassWatch_Extension;
 				INFOPLIST_FILE = MetabolicCompassWatch/Info.plist;
@@ -2314,6 +2313,7 @@
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "iPhone Developer";
 				DEVELOPMENT_TEAM = E4SL9A9Z96;
+				ENABLE_BITCODE = YES;
 				GCC_OPTIMIZATION_LEVEL = 0;
 				INFOPLIST_FILE = MetabolicCompassWatchExtension/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @executable_path/../../Frameworks";
@@ -2352,7 +2352,6 @@
 				COPY_PHASE_STRIP = NO;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				DEFINES_MODULE = YES;
-				ENABLE_BITCODE = NO;
 				ENABLE_NS_ASSERTIONS = NO;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
 				GCC_C_LANGUAGE_STANDARD = gnu99;
@@ -2386,7 +2385,6 @@
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				CURRENT_PROJECT_VERSION = 88;
 				DEVELOPMENT_TEAM = E4SL9A9Z96;
-				ENABLE_BITCODE = NO;
 				FRAMEWORK_SEARCH_PATHS = "$(inherited)";
 				GCC_OPTIMIZATION_LEVEL = s;
 				GCC_WARN_ABOUT_DEPRECATED_FUNCTIONS = NO;
@@ -2470,7 +2468,6 @@
 				COPY_PHASE_STRIP = NO;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				DEFINES_MODULE = YES;
-				ENABLE_BITCODE = NO;
 				ENABLE_NS_ASSERTIONS = NO;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
 				ENABLE_TESTABILITY = YES;
@@ -2543,7 +2540,6 @@
 				"CODE_SIGN_IDENTITY[sdk=*]" = "iPhone Developer";
 				CURRENT_PROJECT_VERSION = 88;
 				DEVELOPMENT_TEAM = E4SL9A9Z96;
-				ENABLE_BITCODE = NO;
 				FRAMEWORK_SEARCH_PATHS = "$(inherited)";
 				GCC_OPTIMIZATION_LEVEL = 0;
 				GCC_PREPROCESSOR_DEFINITIONS = (
@@ -2613,13 +2609,14 @@
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = 3EC46147F1366E50C2854C0B /* Pods-MetabolicCompassWatch.debug-dev.xcconfig */;
 			buildSettings = {
-				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
+				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = NO;
 				ASSETCATALOG_COMPILER_APPICON_NAME = WatchAppIcon;
 				CODE_SIGN_ENTITLEMENTS = MetabolicCompassWatch/MetabolicCompassWatch.entitlements;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "iPhone Developer";
 				DEVELOPMENT_TEAM = E4SL9A9Z96;
+				ENABLE_BITCODE = YES;
 				GCC_OPTIMIZATION_LEVEL = 0;
 				IBSC_MODULE = MetabolicCompassWatch_Extension;
 				INFOPLIST_FILE = MetabolicCompassWatch/Info.plist;
@@ -2644,6 +2641,7 @@
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "iPhone Developer";
 				DEVELOPMENT_TEAM = E4SL9A9Z96;
+				ENABLE_BITCODE = YES;
 				GCC_OPTIMIZATION_LEVEL = 0;
 				INFOPLIST_FILE = MetabolicCompassWatchExtension/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @executable_path/../../Frameworks";
@@ -2702,6 +2700,7 @@
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "iPhone Developer";
 				DEVELOPMENT_TEAM = E4SL9A9Z96;
+				ENABLE_BITCODE = YES;
 				INFOPLIST_FILE = MetabolicCompassWatchExtension/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @executable_path/../../Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = edu.jhu.cs.damsl.MetabolicCompass.app.watch.extension;
@@ -2718,13 +2717,14 @@
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = 9308644153BA1ED8C25970CF /* Pods-MetabolicCompassWatch.release.xcconfig */;
 			buildSettings = {
-				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
+				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = NO;
 				ASSETCATALOG_COMPILER_APPICON_NAME = WatchAppIcon;
 				CODE_SIGN_ENTITLEMENTS = MetabolicCompassWatch/MetabolicCompassWatch.entitlements;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "iPhone Developer";
 				DEVELOPMENT_TEAM = E4SL9A9Z96;
+				ENABLE_BITCODE = YES;
 				IBSC_MODULE = MetabolicCompassWatch_Extension;
 				INFOPLIST_FILE = MetabolicCompassWatch/Info.plist;
 				PRODUCT_BUNDLE_IDENTIFIER = edu.jhu.cs.damsl.MetabolicCompass.app.watch;
