@@ -633,10 +633,7 @@ class BarChartModel : NSObject {
     func gettAllDataForSpecifiedType(chartType: ChartType, completion: @escaping () -> Void) {
         resetOperation()
         let chartGroup = DispatchGroup()
-//        let stepType = HKSampleType.quantityType(forIdentifier: HKQuantityTypeIdentifier.stepCount)!
-
         for qType in PreviewManager.chartsSampleTypes {
-//        if qType == stepType {
             chartGroup.enter()
             _chartDataOperationQueue.addOperation({
                 self.getAllDataForCurrentPeriodForSample(qType: qType, _chartType: chartType) { _ in
@@ -644,7 +641,6 @@ class BarChartModel : NSObject {
                 }
             })
         }
-//        }
         chartGroup.notify(qos: DispatchQoS.background, queue: DispatchQueue.main) {
             self.addCompletionForOperationQueue(completion: completion)
         }
@@ -660,16 +656,14 @@ class BarChartModel : NSObject {
         let bloodType = HKSampleType.correlationType(forIdentifier: HKCorrelationTypeIdentifier.bloodPressure)!
         let sleepType = HKSampleType.categoryType(forIdentifier: HKCategoryTypeIdentifier.sleepAnalysis)!
         let energyType = HKSampleType.quantityType(forIdentifier: HKQuantityTypeIdentifier.activeEnergyBurned)!
-
+        let polisaturatedType = HKSampleType.quantityType(forIdentifier: HKQuantityTypeIdentifier.dietaryFatPolyunsaturated)
         for qType in PreviewManager.chartsSampleTypes {
- //           if qType == sleepType {
             chartGroup.enter()
             _chartDataOperationQueue.addOperation({ 
                 self.getAllDataForCurrentPeriodForSample(qType: qType, _chartType: nil) { _ in
                     chartGroup.leave()
                 }
             })
-//        }
     }
         chartGroup.notify(qos: DispatchQoS.background, queue: DispatchQueue.main) {
             self.addCompletionForOperationQueue(completion: completion)
