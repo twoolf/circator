@@ -121,11 +121,15 @@ class BarChartModel : NSObject {
         var yVals: [ChartDataEntry] = []
         for (index, value) in stisticsValues.enumerated() {
             let entry = create(Double(index), value, type)
-      //      if value != 0 {
+            switch type {
+            case .LineChart, .ScatterChart:
+                if value != 0 {
+                    yVals.append(entry)
+                }
+            case .BarChart:
                 yVals.append(entry)
-     //       }
+            }
         }
-
         return yVals
     }
 
@@ -657,13 +661,18 @@ class BarChartModel : NSObject {
         let sleepType = HKSampleType.categoryType(forIdentifier: HKCategoryTypeIdentifier.sleepAnalysis)!
         let energyType = HKSampleType.quantityType(forIdentifier: HKQuantityTypeIdentifier.activeEnergyBurned)!
         let polisaturatedType = HKSampleType.quantityType(forIdentifier: HKQuantityTypeIdentifier.dietaryFatPolyunsaturated)
+        let dietaryFatType = HKSampleType.quantityType(forIdentifier: HKQuantityTypeIdentifier.dietaryFatTotal)
+        let proteinType = HKSampleType.quantityType(forIdentifier: HKQuantityTypeIdentifier.dietaryProtein)
+
         for qType in PreviewManager.chartsSampleTypes {
+  //          if qType == heartType {
             chartGroup.enter()
             _chartDataOperationQueue.addOperation({ 
                 self.getAllDataForCurrentPeriodForSample(qType: qType, _chartType: nil) { _ in
                     chartGroup.leave()
                 }
             })
+ //       }
     }
         chartGroup.notify(qos: DispatchQoS.background, queue: DispatchQueue.main) {
             self.addCompletionForOperationQueue(completion: completion)

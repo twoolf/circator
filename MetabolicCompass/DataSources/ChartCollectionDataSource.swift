@@ -47,17 +47,25 @@ class ChartCollectionDataSource: NSObject, UICollectionViewDataSource {
         } else {//Scatter chart
             cell = collectionView.dequeueReusableCell(withReuseIdentifier: scatterChartCellIdentifier, for: indexPath as IndexPath) as! ScatterChartCollectionCell
         }
-
         if let yMax = chartData?.yMax, let yMin = chartData?.yMin, yMax > 0 || yMin > 0 {
             cell.updateLeftAxisWith(minValue: chartData?.yMin, maxValue: chartData?.yMax)
-
         }
         cell.chartView.data = chartData
         let xValues = model?.getWeekTitles()
         let chartFormatter = BarChartFormatter(labels: xValues!)
         let xAxis = XAxis()
         xAxis.valueFormatter = chartFormatter
-        cell.chartView.xAxis.valueFormatter = xAxis.valueFormatter
+        switch chartType {
+        case .BarChart, .ScatterChart:
+            cell.chartView.xAxis.valueFormatter = xAxis.valueFormatter
+        case .LineChart:
+            guard let count = cell.chartView.data?.dataSets[0].entryCount else { return cell }
+            if count > 1 {
+                cell.chartView.xAxis.valueFormatter = IndexAxisValueFormatter(values: xValues!)
+            } else {
+                cell.chartView.xAxis.valueFormatter = xAxis.valueFormatter
+            }
+        }
         cell.chartTitleLabel.text = appearanceProvider.stringForSampleType(typeToShow == HKQuantityTypeIdentifier.bloodPressureSystolic.rawValue ? HKCorrelationTypeIdentifier.bloodPressure.rawValue : typeToShow)
         cell.chartView.setNeedsDisplay()
         return cell
@@ -67,12 +75,10 @@ class ChartCollectionDataSource: NSObject, UICollectionViewDataSource {
 private class BarChartFormatter: NSObject, IAxisValueFormatter {
 
     var labels: [String] = []
-
     func stringForValue(_ value: Double, axis: AxisBase?) -> String {
         let index = axis?.entries.index(of: value)
         return labels[index!]
     }
-
     init(labels: [String]) {
         super.init()
         self.labels = labels
