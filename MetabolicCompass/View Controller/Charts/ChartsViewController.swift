@@ -45,7 +45,7 @@ class ChartsViewController: UIViewController {
 
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-        NotificationCenter.default.addObserver(self, selector: #selector(self.updateChartDataWithClean), name: NSNotification.Name.UIApplicationWillEnterForeground, object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(self.updateChartsData), name: NSNotification.Name.UIApplicationWillEnterForeground, object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(self.updateChartsData), name: NSNotification.Name(rawValue: HMDidUpdatedChartsData), object: nil)
         chartCollectionDataSource.updateData()
         updateChartsData()
@@ -75,6 +75,7 @@ class ChartsViewController: UIViewController {
         IOSHealthManager.sharedManager.cleanCache()
         IOSHealthManager.sharedManager.collectDataForCharts()
         activityIndicator.startAnimating()
+        collectionView.reloadData()
     }
     
     func updateChartsData () {
