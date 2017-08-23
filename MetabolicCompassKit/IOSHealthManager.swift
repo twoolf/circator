@@ -333,17 +333,18 @@ public class IOSHealthManager: NSObject, WCSessionDelegate {
         var array = [MCAggregateSample]()
         if let aggArray = MCHealthManager.sharedManager.aggregateCache[key] {
             for sample in aggArray.aggregates {
-                if !(sample.endDate - sample.startDate == 86400) {
-                    let value = Double(sample.endDate.timeIntervalSince(sample.startDate))
-                    let hoursValue = value / 3600
-                    let type = HKSampleType.categoryType(forIdentifier: HKCategoryTypeIdentifier.sleepAnalysis)
-                    let sample = MCAggregateSample(startDate: sample.startDate,
+                let value = Double(sample.endDate.timeIntervalSince(sample.startDate))
+                var hoursValue = value / 3600
+                if sample.numeralValue == 0.0 {
+                    hoursValue = 0.0
+                }
+                let type = HKSampleType.categoryType(forIdentifier: HKCategoryTypeIdentifier.sleepAnalysis)
+                let sample = MCAggregateSample(startDate: sample.startDate,
                                                      endDate: sample.endDate,
                                                        value: hoursValue,
                                                   sampleType: type,
                                                           op: sample.aggOp)
-                    array.append(sample)
-                }
+                array.append(sample)
             }
         }
         return array
