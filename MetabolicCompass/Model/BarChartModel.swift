@@ -155,8 +155,6 @@ class BarChartModel : NSObject {
                 yVals.append(ChartDataEntry(x: Double(index), y: minValue, data: xVals as AnyObject))
             } else if maxValue > 0 {
                 yVals.append(ChartDataEntry(x: Double(index), y: maxValue, data: xVals as AnyObject))
-            } else {
-                yVals.append(ChartDataEntry(x: Double(index), y: 0.0, data: xVals as AnyObject))
             }
         }
         return yVals
