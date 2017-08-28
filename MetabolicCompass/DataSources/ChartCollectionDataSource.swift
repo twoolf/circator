@@ -51,13 +51,14 @@ class ChartCollectionDataSource: NSObject, UICollectionViewDataSource {
             cell.updateLeftAxisWith(minValue: chartData?.yMin, maxValue: chartData?.yMax)
         }
         cell.chartView.data = chartData
-        let xValues = model?.getWeekTitles()
+        let xValues = model?.getMonthTitles()
         let chartFormatter = BarChartFormatter(labels: xValues!)
         let xAxis = XAxis()
         xAxis.valueFormatter = chartFormatter
         switch chartType {
         case .BarChart, .ScatterChart:
-            cell.chartView.xAxis.valueFormatter = xAxis.valueFormatter
+           // cell.chartView.xAxis.valueFormatter = xAxis.valueFormatter
+            cell.chartView.xAxis.valueFormatter = IndexAxisValueFormatter(values: xValues!)
         case .LineChart:
             guard let count = cell.chartView.data?.dataSets[0].entryCount else { return cell }
             if count > 1 {

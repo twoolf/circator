@@ -76,9 +76,9 @@ class BarChartModel : NSObject {
 
     //MARK: Data for WEEK
     func getChartDataForWeek(type: ChartType, values: [Double], minValues: [Double]?) -> ChartData {
-        let xVals = getWeekTitles()
+        let xVals = getMonthTitles()
 
-        var yVals = convertStatisticsValues(stisticsValues: values, forRange: .week, type: type, create: {x, y, type in
+        var yVals = convertStatisticsValues(stisticsValues: values, forRange: .month, type: type, create: {x, y, type in
             switch type {
             case .BarChart:
                 return BarChartDataEntry.init(x: x, y: y, data: xVals as AnyObject)
@@ -90,7 +90,7 @@ class BarChartModel : NSObject {
         })
 
         if let minValues = minValues {
-            yVals = getYValuesForScatterChart(minValues: minValues, maxValues: values, period: .week)
+            yVals = getYValuesForScatterChart(minValues: minValues, maxValues: values, period: .month)
         }
         let noZeroFormatter = NumberFormatter()
         noZeroFormatter.zeroSymbol = ""
@@ -135,9 +135,9 @@ class BarChartModel : NSObject {
 
     func getChartDataForRange(range: HealthManagerStatisticsRangeType, type: ChartType, values: [Double], minValues: [Double]?) -> ChartData {
         switch range {
-            case .week:
-                return self.getChartDataForWeek(type: type, values: values, minValues: minValues)
             case .month:
+                return self.getChartDataForWeek(type: type, values: values, minValues: minValues)
+            case .week:
             return BarChartData()
               //  return self.getChartDataForMonth(type: type, values: values, minValues: minValues)
             case .year:
@@ -147,7 +147,7 @@ class BarChartModel : NSObject {
     }
 
     func getYValuesForScatterChart (minValues: [Double], maxValues: [Double], period: HealthManagerStatisticsRangeType) -> [ChartDataEntry] {
-        let xVals = getWeekTitles()
+        let xVals = getMonthTitles()
         var yVals: [ChartDataEntry] = []
         for (index, minValue) in minValues.enumerated() {
             let maxValue = maxValues[index]
@@ -589,7 +589,7 @@ class BarChartModel : NSObject {
     // MARK :- Get all data for type
     
     func getAllDataForCurrentPeriodForSample(qType : HKSampleType,  _chartType: ChartType?, completion: @escaping (Bool) -> Void) {
-        
+        self.rangeType = .month
         let type = qType.identifier == HKCorrelationTypeIdentifier.bloodPressure.rawValue ? HKQuantityTypeIdentifier.bloodPressureSystolic.rawValue : qType.identifier
         let chartType = _chartType == nil ? chartTypeForQuantityTypeIdentifier(qType: type) : _chartType
         let key = type + "\(self.rangeType.rawValue)"
@@ -663,12 +663,14 @@ class BarChartModel : NSObject {
         let proteinType = HKSampleType.quantityType(forIdentifier: HKQuantityTypeIdentifier.dietaryProtein)
 
         for qType in PreviewManager.chartsSampleTypes {
+     //       if qType == stepType {
             chartGroup.enter()
             _chartDataOperationQueue.addOperation({ 
                 self.getAllDataForCurrentPeriodForSample(qType: qType, _chartType: nil) { _ in
                     chartGroup.leave()
                 }
             })
+  //      }
     }
         chartGroup.notify(qos: DispatchQoS.background, queue: DispatchQueue.main) {
             self.addCompletionForOperationQueue(completion: completion)
@@ -715,10 +717,6 @@ class BarChartModel : NSObject {
         var prevMonthDates: [Date] = []
         var currentMonthDates: [Date] = []
 
-        //empty labels for left gap
-        monthTitles.append("")
-        monthTitles.append("")
-        monthTitles.append("")
 
         for index in 1...numberOfDays {
             let day = monthAgoDate + index.days
@@ -736,12 +734,6 @@ class BarChartModel : NSObject {
         for (index, date) in currentMonthDates.enumerated() {
             monthTitles.append(convertDateToWeekString(date: date, forIndex: index))
         }
-
-        //empty labels for right gap
-        monthTitles.append("")
-        monthTitles.append("")
-        monthTitles.append("")
-
         return monthTitles
     }
 
