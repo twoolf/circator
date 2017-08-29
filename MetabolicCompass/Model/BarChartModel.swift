@@ -134,20 +134,62 @@ class BarChartModel : NSObject {
     }
 
     func getChartDataForRange(range: HealthManagerStatisticsRangeType, type: ChartType, values: [Double], minValues: [Double]?) -> ChartData {
+
+        var xVals = [String] ()
         switch range {
-            case .week:
-                return self.getChartDataForWeek(type: type, values: values, minValues: minValues)
-            case .month:
-            return BarChartData()
-              //  return self.getChartDataForMonth(type: type, values: values, minValues: minValues)
-            case .year:
-            return BarChartData()
-              //  return self.getChartDataForYear(type: type, values: values, minValues: minValues)
+        case .week:
+            xVals = getWeekTitles()
+        case .month:
+            xVals = getMonthTitles()
+        case .year:
+            xVals = getYearTitles()
+        }
+
+        var yVals = convertStatisticsValues(stisticsValues: values, forRange: range, type: type, create: {x, y, type in
+            switch type {
+            case .BarChart:
+                return BarChartDataEntry.init(x: x, y: y, data: xVals as AnyObject)
+            case .LineChart:
+                return ChartDataEntry.init(x: x, y: y)
+            case .ScatterChart:
+                return ChartDataEntry.init(x: x, y: y)
+            }
+        })
+
+        if let minValues = minValues {
+            yVals = getYValuesForScatterChart(minValues: minValues, maxValues: values, period: range)
+        }
+        let noZeroFormatter = NumberFormatter()
+        noZeroFormatter.zeroSymbol = ""
+        switch type {
+        case .LineChart:
+            let lineSet = LineChartDataSet.init(values: yVals, label: "Check")
+            lineSet.setColor(UIColor.red)
+            lineSet.valueFormatter = DefaultValueFormatter(formatter: noZeroFormatter)
+            return LineChartData(dataSet: lineSet)
+        case .ScatterChart:
+            let scatterSet = ScatterChartDataSet.init(values: yVals, label: "Check")
+            scatterSet.valueFormatter = DefaultValueFormatter(formatter: noZeroFormatter)
+            scatterSet.setColor(UIColor.green)
+            return ScatterChartData.init(dataSet: scatterSet)
+        case .BarChart:
+            let barSet = BarChartDataSet.init(values: yVals, label: "Check")
+            barSet.valueFormatter = DefaultValueFormatter(formatter: noZeroFormatter)
+            barSet.setColor(UIColor.orange)
+            return BarChartData.init(dataSet: barSet)
         }
     }
 
     func getYValuesForScatterChart (minValues: [Double], maxValues: [Double], period: HealthManagerStatisticsRangeType) -> [ChartDataEntry] {
-        let xVals = getWeekTitles()
+        var xVals = [String] ()
+        switch period {
+        case .week:
+            xVals = getWeekTitles()
+        case .month:
+            xVals = getMonthTitles()
+        case .year:
+            xVals = getYearTitles()
+        }
         var yVals: [ChartDataEntry] = []
         for (index, minValue) in minValues.enumerated() {
             let maxValue = maxValues[index]
@@ -160,8 +202,6 @@ class BarChartModel : NSObject {
         return yVals
     }
     
-
-
     func getChartDataFor(xVals: [String], yVals: [ChartDataEntry], type: ChartType) -> AnyObject {
         switch type {
             case .BarChart:
@@ -663,12 +703,14 @@ class BarChartModel : NSObject {
         let proteinType = HKSampleType.quantityType(forIdentifier: HKQuantityTypeIdentifier.dietaryProtein)
 
         for qType in PreviewManager.chartsSampleTypes {
+ //           if qType == heartType {
             chartGroup.enter()
             _chartDataOperationQueue.addOperation({ 
                 self.getAllDataForCurrentPeriodForSample(qType: qType, _chartType: nil) { _ in
                     chartGroup.leave()
                 }
             })
+  //      }
     }
         chartGroup.notify(qos: DispatchQoS.background, queue: DispatchQueue.main) {
             self.addCompletionForOperationQueue(completion: completion)
@@ -717,9 +759,6 @@ class BarChartModel : NSObject {
 
         //empty labels for left gap
         monthTitles.append("")
-        monthTitles.append("")
-        monthTitles.append("")
-
         for index in 1...numberOfDays {
             let day = monthAgoDate + index.days
             if day.month < currentDate.month {
@@ -736,12 +775,6 @@ class BarChartModel : NSObject {
         for (index, date) in currentMonthDates.enumerated() {
             monthTitles.append(convertDateToWeekString(date: date, forIndex: index))
         }
-
-        //empty labels for right gap
-        monthTitles.append("")
-        monthTitles.append("")
-        monthTitles.append("")
-
         return monthTitles
     }
 
@@ -819,5 +852,16 @@ class BarChartModel : NSObject {
     func resetOperation() {
         _chartDataOperationQueue.cancelAllOperations()
         _chartDataOperationQueue = OperationQueue()
+    }
+
+    func titlesFor(range: HealthManagerStatisticsRangeType) -> [String] {
+        switch range {
+        case .week:
+            return getWeekTitles()
+        case .month:
+            return getMonthTitles()
+        case .year:
+            return getYearTitles()
+        }
     }
 }

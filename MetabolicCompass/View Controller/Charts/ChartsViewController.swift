@@ -118,13 +118,12 @@ class ChartsViewController: UIViewController {
 //        var showCorrelate = false
 //        let correlateSegment = sender.numberOfSegments-1
         switch sender.selectedSegmentIndex {
-            case HealthManagerStatisticsRangeType.month.rawValue: break
-//                chartsModel.rangeType = .month
+            case HealthManagerStatisticsRangeType.month.rawValue:
+                chartsModel.rangeType = .month
             case HealthManagerStatisticsRangeType.year.rawValue:
-//                chartsModel.rangeType = .year
-                break
-            default: break
-//                chartsModel.rangeType = .week
+                chartsModel.rangeType = .year
+            default:
+                chartsModel.rangeType = .week
         }
         logContentView()
         updateChartsData()

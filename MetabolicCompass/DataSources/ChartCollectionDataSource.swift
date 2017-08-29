@@ -44,20 +44,30 @@ class ChartCollectionDataSource: NSObject, UICollectionViewDataSource {
             cell = collectionView.dequeueReusableCell(withReuseIdentifier: barChartCellIdentifier, for: indexPath as IndexPath) as! BarChartCollectionCell
         } else if (chartType == ChartType.LineChart) {
             cell = collectionView.dequeueReusableCell(withReuseIdentifier: lineChartCellIdentifier, for: indexPath as IndexPath) as! LineChartCollectionCell
-        } else {//Scatter chart
+        } else {
             cell = collectionView.dequeueReusableCell(withReuseIdentifier: scatterChartCellIdentifier, for: indexPath as IndexPath) as! ScatterChartCollectionCell
         }
         if let yMax = chartData?.yMax, let yMin = chartData?.yMin, yMax > 0 || yMin > 0 {
             cell.updateLeftAxisWith(minValue: chartData?.yMin, maxValue: chartData?.yMax)
         }
         cell.chartView.data = chartData
-        let xValues = model?.getWeekTitles()
+        let xValues = model?.titlesFor(range: (model?.rangeType)!)
         let chartFormatter = BarChartFormatter(labels: xValues!)
         let xAxis = XAxis()
         xAxis.valueFormatter = chartFormatter
         switch chartType {
-        case .BarChart, .ScatterChart:
-            cell.chartView.xAxis.valueFormatter = xAxis.valueFormatter
+        case .BarChart:
+              cell.chartView.xAxis.valueFormatter = IndexAxisValueFormatter(values: xValues!)
+        case .ScatterChart:
+            guard let mod = model else { return cell }
+            switch mod.rangeType {
+            case .week:
+                cell.chartView.xAxis.valueFormatter = xAxis.valueFormatter
+            case .month:
+                cell.chartView.xAxis.valueFormatter = IndexAxisValueFormatter(values: xValues!)
+            case .year:
+                cell.chartView.xAxis.valueFormatter = xAxis.valueFormatter
+            }
         case .LineChart:
             guard let count = cell.chartView.data?.dataSets[0].entryCount else { return cell }
             if count > 1 {
