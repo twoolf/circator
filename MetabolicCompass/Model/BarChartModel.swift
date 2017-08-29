@@ -757,8 +757,6 @@ class BarChartModel : NSObject {
         var prevMonthDates: [Date] = []
         var currentMonthDates: [Date] = []
 
-        //empty labels for left gap
-        monthTitles.append("")
         for index in 1...numberOfDays {
             let day = monthAgoDate + index.days
             if day.month < currentDate.month {
