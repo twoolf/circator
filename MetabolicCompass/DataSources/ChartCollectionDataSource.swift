@@ -43,10 +43,13 @@ class ChartCollectionDataSource: NSObject, UICollectionViewDataSource {
         let chartData = model?.typesChartData[key]
         if(chartType == ChartType.BarChart) {
             cell = collectionView.dequeueReusableCell(withReuseIdentifier: barChartCellIdentifier, for: indexPath as IndexPath) as! BarChartCollectionCell
+            cell.chartView.xAxis.valueFormatter = nil
         } else if (chartType == ChartType.LineChart) {
             cell = collectionView.dequeueReusableCell(withReuseIdentifier: lineChartCellIdentifier, for: indexPath as IndexPath) as! LineChartCollectionCell
+            cell.chartView.xAxis.valueFormatter = nil
         } else {
             cell = collectionView.dequeueReusableCell(withReuseIdentifier: scatterChartCellIdentifier, for: indexPath as IndexPath) as! ScatterChartCollectionCell
+            cell.chartView.xAxis.valueFormatter = nil
         }
         if let yMax = chartData?.yMax, let yMin = chartData?.yMin, yMax > 0 || yMin > 0 {
             cell.updateLeftAxisWith(minValue: chartData?.yMin, maxValue: chartData?.yMax)
@@ -60,27 +63,11 @@ class ChartCollectionDataSource: NSObject, UICollectionViewDataSource {
 
         switch chartType {
         case .BarChart:
-              cell.chartView.xAxis.valueFormatter = IndexAxisValueFormatter(values: xValues!)
+        cell.chartView.xAxis.valueFormatter = xAxis.valueFormatter
         case .ScatterChart:
-            guard let mod = model else { return cell }
-            switch mod.rangeType {
-            case .week:
-                cell.chartView.xAxis.valueFormatter = xAxis.valueFormatter
-            case .month:
-                cell.chartView.xAxis.valueFormatter = IndexAxisValueFormatter(values: xValues!)
-            case .year:
-                cell.chartView.xAxis.valueFormatter = xAxis.valueFormatter
-            }
+        cell.chartView.xAxis.valueFormatter = xAxis.valueFormatter
         case .LineChart:
-            guard let mod = model else { return cell }
-            switch mod.rangeType {
-            case .week:
-                cell.chartView.xAxis.valueFormatter = xAxis.valueFormatter
-            case .month:
-                cell.chartView.xAxis.valueFormatter = IndexAxisValueFormatter(values: xValues!)
-            case .year:
-                cell.chartView.xAxis.valueFormatter = xAxis.valueFormatter
-            }
+            cell.chartView.xAxis.valueFormatter = xAxis.valueFormatter
         }
         cell.chartTitleLabel.text = appearanceProvider.stringForSampleType(typeToShow == HKQuantityTypeIdentifier.bloodPressureSystolic.rawValue ? HKCorrelationTypeIdentifier.bloodPressure.rawValue : typeToShow)
         cell.chartView.setNeedsDisplay()

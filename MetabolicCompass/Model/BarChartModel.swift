@@ -9,6 +9,7 @@ import SwiftDate
 import HealthKit
 import MetabolicCompassKit
 import MCCircadianQueries
+import Stormpath
 
 enum ChartType {
     case BarChart
@@ -703,14 +704,12 @@ class BarChartModel : NSObject {
         let proteinType = HKSampleType.quantityType(forIdentifier: HKQuantityTypeIdentifier.dietaryProtein)
 
         for qType in PreviewManager.chartsSampleTypes {
- //           if qType == heartType {
             chartGroup.enter()
             _chartDataOperationQueue.addOperation({ 
                 self.getAllDataForCurrentPeriodForSample(qType: qType, _chartType: nil) { _ in
                     chartGroup.leave()
                 }
             })
-  //      }
     }
         chartGroup.notify(qos: DispatchQoS.background, queue: DispatchQueue.main) {
             self.addCompletionForOperationQueue(completion: completion)
@@ -773,34 +772,28 @@ class BarChartModel : NSObject {
         for (index, date) in currentMonthDates.enumerated() {
             monthTitles.append(convertDateToWeekString(date: date, forIndex: index))
         }
+
+         monthTitles.append("")
         return monthTitles
     }
 
     func getYearTitles() -> [String] {
-        let numOfMonth = 13
+        let numOfDays = 366
         let currentDate = Date()
         let dateYearAgo = currentDate - 1.years
-        var prevYearMonthes: [Date] = []
-        var currentYearMonthes: [Date] = []
+        var prevYearDays: [Date] = []
+        var currentYearDays: [Date] = []
         var yearTitles: [String] = []
-
-        yearTitles.append(" ")//space for gap
-
-        for index in 0...(numOfMonth-1) {
-            let date = dateYearAgo + index.months
-            date.year < currentDate.year ? prevYearMonthes.append(date) : currentYearMonthes.append(date)
-        }
-
-        for (index, date) in prevYearMonthes.enumerated() {
-            yearTitles.append(convertDateToYearString(date: date, forIndex: index))
-        }
-
-        for (index, date) in currentYearMonthes.enumerated() {
-            yearTitles.append(convertDateToYearString(date: date, forIndex: index))
-        }
-
-        yearTitles.append(" ")//space for gap
-
+            for index in 0...(numOfDays - 1) {
+                let date = dateYearAgo + index.months
+                    date.year < currentDate.year ? prevYearDays.append(date) : currentYearDays.append(date)
+                }
+                for (index, date) in prevYearDays.enumerated() {
+                    yearTitles.append(convertDateToYearString(date: date, forIndex: index))
+                }
+                for (index, date) in currentYearDays.enumerated() {
+                    yearTitles.append(convertDateToYearString(date: date, forIndex: index))
+                }
         return yearTitles
     }
 
@@ -813,28 +806,17 @@ class BarChartModel : NSObject {
     }
 
     func convertDateToYearString(date: Date, forIndex index: Int) -> String {
-        let month = date.month
-        let monthPlusThree = month + 3
-//        let cutRange = month.startIndex ..< month.startIndex.advancedBy(3)
-//        let cutRange = month.startIndex ..< month.index(offsetBy: 3)
-        let cutRange = month ..< monthPlusThree
-//        let monthName = month.length > 3 ? month.substringWithRange(cutRange) : month
-
-        if index == 0 {
-//            return monthName + " \(date.year)"
-            return Date().monthName
+        let month = date.monthName
+         if index == 0 {
+            return month + String(date.year)
         }
 
-        return Date().monthName
+        return month
     }
 
     func convertDateToWeekString(date: Date, forIndex index: Int) -> String {
         if index == 0 {
             let month = date.monthName
-//            let cutRange = month.startIndex ..< month.startIndex.advancedBy(3)
- //           _ = month ..< (month + 3)
-//            let monthName = date(getMonthTitles() > 3 ? month.substringWithRange(cutRange) : month
-            return "\(date.day) \(month)"
         }
         return "\(date.day)"
     }
