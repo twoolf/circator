@@ -12,6 +12,7 @@ import Charts
 import HealthKit
 import MetabolicCompassKit
 
+
 class ChartCollectionDataSource: NSObject, UICollectionViewDataSource {
  
     internal var collectionData: [ChartData] = []
@@ -21,7 +22,8 @@ class ChartCollectionDataSource: NSObject, UICollectionViewDataSource {
     private let barChartCellIdentifier = "BarChartCollectionCell"
     private let lineChartCellIdentifier = "LineChartCollectionCell"
     private let scatterChartCellIdentifier = "ScatterChartCollectionCell"
-    
+
+
     func updateData () {
         data = PreviewManager.chartsSampleTypes
     }
@@ -34,7 +36,6 @@ class ChartCollectionDataSource: NSObject, UICollectionViewDataSource {
 
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         let cell: BaseChartCollectionCell
-        
         let type = data[indexPath.row]
         let typeToShow = type.identifier == HKCorrelationTypeIdentifier.bloodPressure.rawValue ? HKQuantityTypeIdentifier.bloodPressureSystolic.rawValue : type.identifier
         let chartType: ChartType = (model?.chartTypeForQuantityTypeIdentifier(qType: typeToShow))!
@@ -51,10 +52,12 @@ class ChartCollectionDataSource: NSObject, UICollectionViewDataSource {
             cell.updateLeftAxisWith(minValue: chartData?.yMin, maxValue: chartData?.yMax)
         }
         cell.chartView.data = chartData
+
         let xValues = model?.titlesFor(range: (model?.rangeType)!)
         let chartFormatter = BarChartFormatter(labels: xValues!)
         let xAxis = XAxis()
         xAxis.valueFormatter = chartFormatter
+
         switch chartType {
         case .BarChart:
               cell.chartView.xAxis.valueFormatter = IndexAxisValueFormatter(values: xValues!)
@@ -69,10 +72,13 @@ class ChartCollectionDataSource: NSObject, UICollectionViewDataSource {
                 cell.chartView.xAxis.valueFormatter = xAxis.valueFormatter
             }
         case .LineChart:
-            guard let count = cell.chartView.data?.dataSets[0].entryCount else { return cell }
-            if count > 1 {
+            guard let mod = model else { return cell }
+            switch mod.rangeType {
+            case .week:
+                cell.chartView.xAxis.valueFormatter = xAxis.valueFormatter
+            case .month:
                 cell.chartView.xAxis.valueFormatter = IndexAxisValueFormatter(values: xValues!)
-            } else {
+            case .year:
                 cell.chartView.xAxis.valueFormatter = xAxis.valueFormatter
             }
         }
@@ -86,8 +92,18 @@ private class BarChartFormatter: NSObject, IAxisValueFormatter {
 
     var labels: [String] = []
     func stringForValue(_ value: Double, axis: AxisBase?) -> String {
-        let index = axis?.entries.index(of: value)
-        return labels[index!]
+
+        let val = Double(round(100 * value) / 100)
+        var ind: Int?
+            if val.truncatingRemainder(dividingBy: 1) == 0 {
+                ind = Int(val)
+            }
+
+        guard let index = ind else {
+            return ""
+        }
+
+        return labels[index]
     }
     init(labels: [String]) {
         super.init()
