@@ -663,7 +663,11 @@ class BarChartModel : NSObject {
             }
         } else {
             IOSHealthManager.sharedManager.getChartDataForQuantity(sampleType: qType, inPeriod: self.rangeType) { obj in
-                let values = obj as! [Double]
+
+                var values = obj as! [Double]
+                if self.rangeType == .month {
+                    values.remove(at: 0)
+                }
                 let arrray = values.map {$0.isNaN ? 0.0 : $0}
                 if arrray.count > 0 {
                     self.typesChartData[key] = self.getChartDataForRange(range: self.rangeType, type: chartType!, values: arrray, minValues: nil)
@@ -704,12 +708,14 @@ class BarChartModel : NSObject {
         let proteinType = HKSampleType.quantityType(forIdentifier: HKQuantityTypeIdentifier.dietaryProtein)
 
         for qType in PreviewManager.chartsSampleTypes {
+  //          if qType == stepType {
             chartGroup.enter()
             _chartDataOperationQueue.addOperation({ 
                 self.getAllDataForCurrentPeriodForSample(qType: qType, _chartType: nil) { _ in
                     chartGroup.leave()
                 }
             })
+  //      }
     }
         chartGroup.notify(qos: DispatchQoS.background, queue: DispatchQueue.main) {
             self.addCompletionForOperationQueue(completion: completion)
