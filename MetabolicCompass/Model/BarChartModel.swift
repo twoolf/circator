@@ -411,8 +411,8 @@ class BarChartModel : NSObject {
 //        let chartData = ScatterChartData(xVals: newValues, dataSets: [finalDataSet])
  //       let chartData = ScatterChartData(xVals: newValues, dataSets: dataSets)
         let dSet1 = dataSets[0]
-        let chartData = ScatterChartDataSet(values: (dSet1 as! [ChartDataEntry]))
-        return chartData
+ //       let chartData = ScatterChartDataSet(values: (dSet1 as! [ChartDataEntry]))
+        return dSet1 as! ScatterChartDataSet
     }
     
     func lineChartWithMultipleDataSets(xVals: [String?], dataSets:[IChartDataSet], calcAvg: [Bool]) -> LineChartDataSet {
@@ -707,14 +707,14 @@ class BarChartModel : NSObject {
         let proteinType = HKSampleType.quantityType(forIdentifier: HKQuantityTypeIdentifier.dietaryProtein)
 
         for qType in PreviewManager.chartsSampleTypes {
-            if qType == weightType {
+ //           if qType == weightType {
             chartGroup.enter()
             _chartDataOperationQueue.addOperation({ 
                 self.getAllDataForCurrentPeriodForSample(qType: qType, _chartType: nil) { _ in
                     chartGroup.leave()
                 }
             })
-        }
+//        }
     }
         chartGroup.notify(qos: DispatchQoS.background, queue: DispatchQueue.main) {
             self.addCompletionForOperationQueue(completion: completion)
