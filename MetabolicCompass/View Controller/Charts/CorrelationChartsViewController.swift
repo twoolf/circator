@@ -96,7 +96,7 @@ open class CorrelationChartsViewController: UIViewController, UITableViewDelegat
         if (!activityIndicator.isAnimating) {
             activityIndicator.startAnimating()
         }
-        scatterChartsModel.gettAllDataForSpecifiedType(chartType: ChartType.ScatterChart) {
+        scatterChartsModel.gettAllDataForSpecifiedType(chartType: ChartType.LineChart) {
             self.lineChartsModel.gettAllDataForSpecifiedType(chartType: ChartType.LineChart) {
                 self.activityIndicator.stopAnimating()
                 self.updateChartData()
@@ -244,8 +244,23 @@ open class CorrelationChartsViewController: UIViewController, UITableViewDelegat
         if ((self.selectedPickerRows[0] >= 0) && (self.selectedPickerRows[1] >= 0)) {
             scatterCh.chartView.noDataText = "No data available"
             correlCh.chartView.noDataText = "No data available"
-            updateChartDataForChartsModel(model: scatterChartsModel)
-            updateChartDataForChartsModel(model: lineChartsModel)
+    //        updateChartDataForChartsModel(model: scatterChartsModel)
+  //          updateChartDataForChartsModel(model: lineChartsModel)
+            let pickerDataArray = pickerData[0]
+            let scatterType = pickerDataArray[selectedPickerRows[0]]
+            let lineType = pickerDataArray[selectedPickerRows[1]]
+            let scatterTypeToShow = scatterType.identifier == HKCorrelationTypeIdentifier.bloodPressure.rawValue ? HKQuantityTypeIdentifier.bloodPressureSystolic.rawValue : scatterType.identifier
+            let lineTypeToShow = lineType.identifier == HKCorrelationTypeIdentifier.bloodPressure.rawValue ? HKQuantityTypeIdentifier.bloodPressureSystolic.rawValue : lineType.identifier
+
+            let scatterKey = scatterTypeToShow + "\((scatterChartsModel.rangeType.rawValue))"
+            let lineKey = lineTypeToShow + "\((lineChartsModel.rangeType.rawValue))"
+            let scatterChartData = scatterChartsModel.typesChartData[scatterKey]
+            let lineChartData = lineChartsModel.typesChartData[lineKey]
+            let scatterChartSet = scatterChartData?.dataSets[0]
+            scatterChartSet?.setColor(UIColor.green)
+            let lineChartSet = lineChartData?.dataSets[0]
+            let chartData = LineChartData.init(dataSets: [scatterChartSet!, lineChartSet!])
+            correlCh.chartView.data = chartData
             updateChartTitle()
         } else {
             scatterCh.chartView.noDataText = "Choose both metrics"
@@ -289,7 +304,7 @@ open class CorrelationChartsViewController: UIViewController, UITableViewDelegat
                 return true
             }
             correlCh.chartView.data = chartData
-            scatterCh.chartView.data = chartData
+ //           scatterCh.chartView.data = chartData
 //            xValues = (chartData?.dataSets)! as! [String?]
             xValues = []
             dataSets.append((chartData?.dataSets[0])!)
@@ -310,7 +325,12 @@ open class CorrelationChartsViewController: UIViewController, UITableViewDelegat
         }
         
         if (model == scatterChartsModel) {
-            let chartData = model.scatterChartDataWithMultipleDataSets(xVals: xValues, dataSets: dataSets, calcAvg: calcAvg)
+            let chartData = ScatterChartData.init(dataSets: dataSets)
+            scatterCh.chartView.data = chartData
+            scatterCh.chartView.setNeedsDisplay()
+
+
+ //           let chartData = model.scatterChartDataWithMultipleDataSets(xVals: xValues, dataSets: dataSets, calcAvg: calcAvg)
 /*            if let yMax = chartData.yMax, let yMin = chartData.yMin, yMax > 0 || yMin > 0 {
                 scatterCh.chartView.data = nil
                 scatterCh.updateLeftAxisWith(minValue: chartData.yMin, maxValue: chartData.yMax, minOffsetFactor: 0.05, maxOffsetFactor: 0.05)
