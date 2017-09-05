@@ -36,6 +36,7 @@ open class CorrelationChartsViewController: UIViewController, UITableViewDelegat
     private let lineChartsModelBottom = BarChartModel()
     let TopCorrelationType = DefaultsKey<Int?>("TopCorrelationType")
     let BottomCorrelationType = DefaultsKey<Int?>("BottomCorrelationType")
+    var chartDataOperationQueue: OperationQueue = OperationQueue()
 
     var pickerView : UIPickerView {
         let picker = UIPickerView(frame:CGRect(0,0, self.view.frame.size.width, self.view.frame.size.height * 0.4))
@@ -94,14 +95,35 @@ open class CorrelationChartsViewController: UIViewController, UITableViewDelegat
         if (!activityIndicator.isAnimating) {
             activityIndicator.startAnimating()
         }
-        lineChartsModelTop.gettAllDataForSpecifiedType(chartType: ChartType.LineChart) {
-            self.lineChartsModelBottom.gettAllDataForSpecifiedType(chartType: ChartType.LineChart) {
-                self.activityIndicator.stopAnimating()
-                self.updateChartData()
+
+        let chartGroup = DispatchGroup()
+        chartGroup.enter()
+        chartDataOperationQueue.addOperation({
+            self.lineChartsModelTop.gettAllDataForSpecifiedType(chartType: ChartType.LineChart) {
+                chartGroup.leave()
             }
+        })
+
+        chartGroup.enter()
+        chartDataOperationQueue.addOperation({
+            self.lineChartsModelBottom.gettAllDataForSpecifiedType(chartType: ChartType.LineChart) {
+                chartGroup.leave()
+            }
+        })
+
+        chartGroup.enter()
+        chartDataOperationQueue.addOperation({
+            self.scatterChartsModel.gettAllDataForSpecifiedType(chartType: ChartType.ScatterChart) {
+                chartGroup.leave()
+            }
+        })
+
+        chartGroup.notify(qos: DispatchQoS.background, queue: DispatchQueue.main) {
+            self.activityIndicator.stopAnimating()
+            self.updateChartData()
         }
     }
-    
+
     override open func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         NotificationCenter.default.addObserver(self, selector: #selector(self.updateChartDataWithClean), name: NSNotification.Name.UIApplicationWillEnterForeground, object: nil)
@@ -243,20 +265,31 @@ open class CorrelationChartsViewController: UIViewController, UITableViewDelegat
             scatterCh.chartView.noDataText = "No data available"
             correlCh.chartView.noDataText = "No data available"
             let pickerDataArray = pickerData[0]
+
             let lineTopType = pickerDataArray[selectedPickerRows[0]]
             let lineBottomType = pickerDataArray[selectedPickerRows[1]]
+            let scatterType = pickerDataArray[selectedPickerRows[1]]
+
             let lineTopTypeToShow = lineTopType.identifier == HKCorrelationTypeIdentifier.bloodPressure.rawValue ? HKQuantityTypeIdentifier.bloodPressureSystolic.rawValue : lineTopType.identifier
             let lineBottomTypeToShow = lineBottomType.identifier == HKCorrelationTypeIdentifier.bloodPressure.rawValue ? HKQuantityTypeIdentifier.bloodPressureSystolic.rawValue : lineBottomType.identifier
+            let scatterTypeShow = scatterType.identifier == HKCorrelationTypeIdentifier.bloodPressure.rawValue ? HKQuantityTypeIdentifier.bloodPressureSystolic.rawValue : scatterType.identifier
+
 
             let lineTopKey = lineTopTypeToShow + "\((lineChartsModelTop.rangeType.rawValue))"
             let lineBottomKey = lineBottomTypeToShow + "\((lineChartsModelBottom.rangeType.rawValue))"
+            let scatterKey = scatterTypeShow + "\((scatterChartsModel.rangeType.rawValue))"
+
             let lineTopChartData = lineChartsModelTop.typesChartData[lineTopKey]
             let lineBottomChartData = lineChartsModelBottom.typesChartData[lineBottomKey]
+            let scatterChartData = scatterChartsModel.typesChartData[scatterKey]
+
             let lineTopChartSet = lineTopChartData?.dataSets[0]
             lineTopChartSet?.setColor(UIColor.green)
             let lineBottomChartSet = lineBottomChartData?.dataSets[0]
-            let chartData = LineChartData.init(dataSets: [lineTopChartSet!, lineBottomChartSet!])
-            correlCh.chartView.data = chartData
+            let lineChartData = LineChartData.init(dataSets: [lineTopChartSet!, lineBottomChartSet!])
+            correlCh.chartView.data = lineChartData
+            scatterCh.chartView.data = scatterChartData
+            
             updateChartTitle()
         } else {
             scatterCh.chartView.noDataText = "Choose both metrics"
