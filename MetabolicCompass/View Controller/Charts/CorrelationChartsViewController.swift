@@ -45,6 +45,11 @@ open class CorrelationChartsViewController: UIViewController, UITableViewDelegat
         picker.tintColor = UIColor.white
         picker.reloadAllComponents()
         picker.backgroundColor = self.tableView.backgroundColor
+        return picker
+    }
+
+    override open func viewDidLoad() {
+        super.viewDidLoad()
 
         for type in PreviewManager.manageChartsSampleTypes {
             if (type.identifier == HKCorrelationTypeIdentifier.bloodPressure.rawValue) {
@@ -55,30 +60,34 @@ open class CorrelationChartsViewController: UIViewController, UITableViewDelegat
             self.pickerIdentifiers[0].append(type.identifier)
             self.pickerIdentifiers[1].append(type.identifier)
         }
-        return picker
-    }
-
-    override open func viewDidLoad() {
-        super.viewDidLoad()
         
         self.selectedPickerRows[0] = Defaults[TopCorrelationType] != nil ? Defaults[TopCorrelationType]! : -1
         self.selectedPickerRows[1] = Defaults[BottomCorrelationType] != nil ? Defaults[BottomCorrelationType]! : -1
         self.pickerView.reloadAllComponents()
         self.tableView.reloadData()
         scatterCh = Bundle.main.loadNibNamed("ScatterCorrelcationCell", owner: self, options: nil)!.last as? ScatterCorrelcationCell
-        //disable adding lines between dots. works only if values are repeated
-        //(scatterCh.chartView.renderer as! MCScatterChartRenderer).shouldDrawConnectionLines = false
         correlCh = Bundle.main.loadNibNamed("TwoLineCorrelcationCell", owner: self, options: nil)!.last as? TwoLineCorrelcationCell
         scatterChartContainer.addSubview(scatterCh!)
         correlatoinChartContainer.addSubview(correlCh!)
         scatterCh?.frame = correlatoinChartContainer.bounds
         correlCh?.frame = correlatoinChartContainer.bounds
-        
+
+        let xValues = scatterChartsModel.titlesFor(range: (scatterChartsModel.rangeType))
+        let chartFormatter = CorrelateChartFormatter(labels: xValues)
+        let xAxis = XAxis()
+        xAxis.valueFormatter = chartFormatter
+
+        correlCh.chartView.xAxis.valueFormatter = xAxis.valueFormatter
+
+
         let px = 1 / UIScreen.main.scale
         let frame = CGRect(0, 0, self.tableView.frame.size.width, px)
         let line: UIView = UIView(frame: frame)
         self.tableView.tableHeaderView = line
         line.backgroundColor = self.tableView.separatorColor
+
+        correlCh.secondaryChartMinValueLabel.text = ""
+        correlCh.secondaryChartMaxValueLabel.text = ""
     }
     
     
@@ -171,7 +180,6 @@ open class CorrelationChartsViewController: UIViewController, UITableViewDelegat
     
     public func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = self.tableView.dequeueReusableCell(withIdentifier: "CorrelationCell" + "\(indexPath.row)", for: indexPath) as! CorrelationTabeViewCell
-        
         if (self.selectedPickerRows[indexPath.row] >= 0) {
             if self.selectedPickerRows[indexPath.row] > self.pickerData[indexPath.row].count - 1 {
                 return cell
@@ -309,107 +317,6 @@ open class CorrelationChartsViewController: UIViewController, UITableViewDelegat
         scatterCh.chartMinValueLabel.text = ""
         scatterCh.chartMaxValueLabel.text = ""
     }
-    
-    func updateChartDataForChartsModel(model: BarChartModel) -> Bool {
-        
-        var dataSets = [IChartDataSet]()
-        var calcAvg = [Bool]()
-        
-        var xValues = [String?]()
-        
-        for selectedRow in selectedPickerRows {
-            if selectedRow == -1 {
-                resetAllCharts()
-                return false
-            }
-            let pickerDataArray = pickerData[0]
-            if selectedRow > pickerDataArray.count - 1 {return false}
-            let type = pickerDataArray[selectedRow]
-            let typeToShow = type.identifier == HKCorrelationTypeIdentifier.bloodPressure.rawValue ? HKQuantityTypeIdentifier.bloodPressureSystolic.rawValue : type.identifier
-            let key = typeToShow + "\((model.rangeType.rawValue))"
-            let chartData = model.typesChartData[key]
-            if (chartData == nil) {
-                resetAllCharts()
-                return true
-            }
-            correlCh.chartView.data = chartData
- //           scatterCh.chartView.data = chartData
-//            xValues = (chartData?.dataSets)! as! [String?]
-            xValues = []
-            dataSets.append((chartData?.dataSets[0])!)
-            
-            let asAvg =
-                typeToShow == HKQuantityTypeIdentifier.heartRate.rawValue ||
-                    typeToShow == HKQuantityTypeIdentifier.uvExposure.rawValue ||
-                    typeToShow == HKQuantityTypeIdentifier.bloodPressureSystolic.rawValue
-            
-            calcAvg.append(asAvg)
-        }
-        
-        for dSet in dataSets {
-            if dSet.entryCount < 1 {//min 1 values should exits in
-                resetAllCharts()
-                return false
-            }
-        }
-        
-        if (model == scatterChartsModel) {
-            let chartData = ScatterChartData.init(dataSets: dataSets)
-            scatterCh.chartView.data = chartData
-            scatterCh.chartView.setNeedsDisplay()
-
-
- //           let chartData = model.scatterChartDataWithMultipleDataSets(xVals: xValues, dataSets: dataSets, calcAvg: calcAvg)
-/*            if let yMax = chartData.yMax, let yMin = chartData.yMin, yMax > 0 || yMin > 0 {
-                scatterCh.chartView.data = nil
-                scatterCh.updateLeftAxisWith(minValue: chartData.yMin, maxValue: chartData.yMax, minOffsetFactor: 0.05, maxOffsetFactor: 0.05)
-//                scatterCh.chartView.data = chartData
-                scatterCh.drawLimitLine()
-            } else {
-                resetAllCharts()
-            }
-        } else {
-            let chartData = model.lineChartWithMultipleDataSets(xVals: xValues, dataSets: dataSets, calcAvg: calcAvg)
-            if let ds0 = chartData.dataSets[0], let ds1 = chartData.dataSets[1],
-                let yMax = chartData.yMax, let yMin = chartData.yMin, yMax > 0 || yMin > 0
-            {
-                correlCh.chartView.data = nil
-                correlCh.updateLeftAxisWith(ds0.yMin, maxValue: ds0.yMax, minOffsetFactor: 0.03, maxOffsetFactor: 0.03)
-                correlCh.updateRightAxisWith(ds1.yMin, maxValue: ds1.yMax, minOffsetFactor: 0.03, maxOffsetFactor: 0.03)
-                correlCh.drawLimitLine()
-//                correlCh.chartView.data = chartData
-            } else {
-                resetAllCharts()
-            }
-        } */
-        return false
-    }
-    
-    var _ : UITextField = {
-        let tv = UITextField(frame: self.tableView.frame)
-        tv.tintColor = UIColor.clear
-        tv.inputView = self.pickerView
-        tv.inputAccessoryView = {
-            let view = UIToolbar()
-            view.isTranslucent = false
-            view.barTintColor = self.tableView.backgroundColor
-            view.frame = CGRect(0, 0, 0, 44)
-            view.barStyle = .black
-            let button = UIBarButtonItem(title: "Done", style: UIBarButtonItemStyle.plain, target: self, action:  #selector(self.hideTextField))
-            button.tintColor = UIColor.colorWithHexString(rgb: "#7E8FA6")
-            view.tintColor = UIColor.colorWithHexString(rgb: "#7E8FA6")
-            view.items = [
-                UIBarButtonItem(barButtonSystemItem: .flexibleSpace, target: nil, action: nil),
-                button
-            ]
-            return view
-        }()
-        self.tableView.addSubview(tv)
-        self.tableView.sendSubview(toBack: tv)
-        return tv
-    }()
-        return false
-    }
 }
 
 extension CorrelationChartsViewController : UIPickerViewDataSource {
@@ -446,3 +353,25 @@ extension CorrelationChartsViewController : UIPickerViewDelegate {
     }
 }
 
+private class CorrelateChartFormatter: NSObject, IAxisValueFormatter {
+
+    var labels: [String] = []
+    func stringForValue(_ value: Double, axis: AxisBase?) -> String {
+
+        let val = Double(round(100 * value) / 100)
+        var ind: Int?
+        if val.truncatingRemainder(dividingBy: 1) == 0 {
+            ind = Int(val)
+        }
+
+        guard let index = ind else {
+            return ""
+        }
+
+        return labels[index]
+    }
+    init(labels: [String]) {
+        super.init()
+        self.labels = labels
+    }
+}
