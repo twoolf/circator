@@ -314,17 +314,22 @@ open class CorrelationChartsViewController: UIViewController, UITableViewDelegat
     }
 
     func xValsForScatterChart(data: ChartDataSet) -> [String] {
-        var array = [String] ()
         if data.entryCount == 0 {
-            return ["", "", "", "", "", "", ""]
+            return Array(repeating: "", count: 7)
         }
-        for index in 0...data.entryCount {
-            let entry = data.entryForIndex(index)
-            let h = entry?.y
-            let title = h.map(String.init) ?? ""
-            array.append(title)
+
+        var values: [Double:Double] = [:]
+        let entriesRange = 0..<data.entryCount
+        entriesRange.forEach { index in
+            let entry = data.entryForIndex(index)!
+            values[entry.x] = entry.y
         }
-        return array
+
+        let range = 0...6
+        return range.map { index in
+            let y = values[Double(index)]
+            return y.map { String($0) } ?? ""
+        }
     }
 }
 
@@ -387,14 +392,7 @@ private class ScatterChartFormatter: NSObject, IAxisValueFormatter {
 
     var labels: [String] = []
     func stringForValue(_ value: Double, axis: AxisBase?) -> String {
-        let val = Double(round(100 * value) / 100)
-        var ind: Int?
-        if val.truncatingRemainder(dividingBy: 1) == 0 {
-            ind = Int(val)
-        }
-        guard let index = ind else {
-            return ""
-        }
+        guard  let index = axis?.entries.index(of: value) else {return ""}
         return labels[index]
     }
 
