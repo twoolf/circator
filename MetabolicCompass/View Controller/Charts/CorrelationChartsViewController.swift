@@ -136,7 +136,7 @@ open class CorrelationChartsViewController: UIViewController, UITableViewDelegat
         lineChartsModelBottom.typesChartData = [:]
         IOSHealthManager.sharedManager.cleanCache()
         IOSHealthManager.sharedManager.collectDataForCharts()
-        activityIndicator.startAnimating()
+        updateChartsData ()
     }
 
     func updateChartsData () {
