@@ -100,11 +100,10 @@ open class CorrelationChartsViewController: UIViewController, UITableViewDelegat
         correlCh.frame = correlatoinChartContainer.bounds
 
         let xValues = scatterChartsModel.titlesFor(range: (scatterChartsModel.rangeType))
-        let chartFormatter = CorrelateChartFormatter(labels: xValues)
+        let chartFormatter = LineChartFormatter(labels: xValues)
         let xAxis = XAxis()
         xAxis.valueFormatter = chartFormatter
-       // correlCh.chartView.xAxis.valueFormatter = xAxis.valueFormatter
-        correlCh.chartView.xAxis.valueFormatter = IndexAxisValueFormatter(values: xValues)
+        correlCh.chartView.xAxis.valueFormatter = xAxis.valueFormatter
 
         let px = 1 / UIScreen.main.scale
         let frame = CGRect(0, 0, self.tableView.frame.size.width, px)
@@ -278,12 +277,21 @@ open class CorrelationChartsViewController: UIViewController, UITableViewDelegat
             let lineBottomChartData = lineChartsModelBottom.typesChartData[lineBottomKey]
             let scatterChartData = scatterChartsModel.typesChartData[scatterKey]
 
+
+
             guard let lineTopChartSet = lineTopChartData?.dataSets[0] else { return }
             lineTopChartSet.setColor(UIColor.green)
             guard let lineBottomChartSet = lineBottomChartData?.dataSets[0] else { return }
             let lineChartData = LineChartData.init(dataSets: [lineTopChartSet, lineBottomChartSet])
             correlCh.chartView.data = lineChartData
             scatterCh.chartView.data = scatterChartData
+
+            let xVals = xValsForScatterChart(data: lineTopChartSet as! ChartDataSet)
+            let chartFormatter = ScatterChartFormatter(labels: xVals)
+            let xAxis = XAxis()
+            xAxis.valueFormatter = chartFormatter
+            scatterCh.chartView.xAxis.valueFormatter = xAxis.valueFormatter
+
 
             updateChartTitle()
         } else {
@@ -303,6 +311,20 @@ open class CorrelationChartsViewController: UIViewController, UITableViewDelegat
 
         scatterCh.chartMinValueLabel.text = ""
         scatterCh.chartMaxValueLabel.text = ""
+    }
+
+    func xValsForScatterChart(data: ChartDataSet) -> [String] {
+        var array = [String] ()
+        if data.entryCount == 0 {
+            return ["", "", "", "", "", "", ""]
+        }
+        for index in 0...data.entryCount {
+            let entry = data.entryForIndex(index)
+            let h = entry?.y
+            let title = h.map(String.init) ?? ""
+            array.append(title)
+        }
+        return array
     }
 }
 
@@ -340,7 +362,28 @@ extension CorrelationChartsViewController : UIPickerViewDelegate {
     }
 }
 
-private class CorrelateChartFormatter: NSObject, IAxisValueFormatter {
+private class LineChartFormatter: NSObject, IAxisValueFormatter {
+
+    var labels: [String] = []
+    func stringForValue(_ value: Double, axis: AxisBase?) -> String {
+        let val = Double(round(100 * value) / 100)
+        var ind: Int?
+        if val.truncatingRemainder(dividingBy: 1) == 0 {
+            ind = Int(val)
+        }
+        guard let index = ind else {
+            return ""
+        }
+        return labels[index]
+    }
+
+    init(labels: [String]) {
+        super.init()
+        self.labels = labels
+    }
+}
+
+private class ScatterChartFormatter: NSObject, IAxisValueFormatter {
 
     var labels: [String] = []
     func stringForValue(_ value: Double, axis: AxisBase?) -> String {

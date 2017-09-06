@@ -71,7 +71,6 @@ class BarChartModel : NSObject {
         if let minValues = minValues {
             yVals = getYValuesForScatterChart(minValues: minValues, maxValues: values, period: .month)
         }
-
         return getChartDataFor(xVals: xVals, yVals: yVals, type: type) as! ChartData
     }
 
