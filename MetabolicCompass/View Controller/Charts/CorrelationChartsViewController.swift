@@ -370,15 +370,9 @@ extension CorrelationChartsViewController : UIPickerViewDelegate {
 private class LineChartFormatter: NSObject, IAxisValueFormatter {
 
     var labels: [String] = []
+
     func stringForValue(_ value: Double, axis: AxisBase?) -> String {
-        let val = Double(round(100 * value) / 100)
-        var ind: Int?
-        if val.truncatingRemainder(dividingBy: 1) == 0 {
-            ind = Int(val)
-        }
-        guard let index = ind else {
-            return ""
-        }
+        guard  let index = axis?.entries.index(of: value) else {return ""}
         return labels[index]
     }
 
