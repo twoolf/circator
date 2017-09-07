@@ -169,6 +169,7 @@ class BarChartModel : NSObject {
             return LineChartData(dataSet: lineSet)
         case .ScatterChart:
             let scatterSet = ScatterChartDataSet.init(values: yVals, label: "Check")
+            scatterSet.setScatterShape(.circle)
             scatterSet.valueFormatter = DefaultValueFormatter(formatter: noZeroFormatter)
             scatterSet.setColor(UIColor.green)
             return ScatterChartData.init(dataSet: scatterSet)
