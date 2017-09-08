@@ -74,43 +74,16 @@ class BarChartModel : NSObject {
         return getChartDataFor(xVals: xVals, yVals: yVals, type: type) as! ChartData
     }
 
-    //MARK: Data for WEEK
-    func getChartDataForWeek(type: ChartType, values: [Double], minValues: [Double]?) -> ChartData {
-        let xVals = getWeekTitles()
-
-        var yVals = convertStatisticsValues(stisticsValues: values, forRange: .week, type: type, create: {x, y, type in
-            switch type {
-            case .BarChart:
-                return BarChartDataEntry.init(x: x, y: y, data: xVals as AnyObject)
-            case .LineChart:
-            return ChartDataEntry.init(x: x, y: y)
-            case .ScatterChart:
-            return ChartDataEntry.init(x: x, y: y)
+    func colorsForSet(entries: [ChartDataEntry]) -> [UIColor] {
+       var array = [UIColor] ()
+        for entry in entries {
+            if entry.y == 0 {
+                array.append(UIColor.clear)
+            } else {
+                array.append(UIColor.green)
             }
-        })
-
-        if let minValues = minValues {
-            yVals = getYValuesForScatterChart(minValues: minValues, maxValues: values, period: .week)
         }
-        let noZeroFormatter = NumberFormatter()
-        noZeroFormatter.zeroSymbol = ""
-        switch type {
-        case .LineChart:
-        let lineSet = LineChartDataSet.init(values: yVals, label: "Check")
-        lineSet.setColor(UIColor.red)
-        lineSet.valueFormatter = DefaultValueFormatter(formatter: noZeroFormatter)
-        return LineChartData(dataSet: lineSet)
-        case .ScatterChart:
-        let scatterSet = ScatterChartDataSet.init(values: yVals, label: "Check")
-        scatterSet.valueFormatter = DefaultValueFormatter(formatter: noZeroFormatter)
-        scatterSet.setColor(UIColor.green)
-        return ScatterChartData.init(dataSet: scatterSet)
-        case .BarChart:
-        let barSet = BarChartDataSet.init(values: yVals, label: "Check")
-        barSet.valueFormatter = DefaultValueFormatter(formatter: noZeroFormatter)
-        barSet.setColor(UIColor.orange)
-        return BarChartData.init(dataSet: barSet)
-        }
+        return array
     }
 
     //MARK: Prepare chart data
@@ -122,11 +95,11 @@ class BarChartModel : NSObject {
         for (index, value) in stisticsValues.enumerated() {
             let entry = create(Double(index), value, type)
             switch type {
-            case .LineChart, .ScatterChart:
+            case .LineChart:
                 if value != 0 {
                     yVals.append(entry)
                 }
-            case .BarChart:
+            case .BarChart, .ScatterChart:
                 yVals.append(entry)
             }
         }
@@ -169,9 +142,10 @@ class BarChartModel : NSObject {
             return LineChartData(dataSet: lineSet)
         case .ScatterChart:
             let scatterSet = ScatterChartDataSet.init(values: yVals, label: "Check")
+            let colors = colorsForSet(entries: yVals)
+            scatterSet.colors = colors
             scatterSet.setScatterShape(.circle)
             scatterSet.valueFormatter = DefaultValueFormatter(formatter: noZeroFormatter)
-            scatterSet.setColor(UIColor.green)
             return ScatterChartData.init(dataSet: scatterSet)
         case .BarChart:
             let barSet = BarChartDataSet.init(values: yVals, label: "Check")

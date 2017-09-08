@@ -61,11 +61,15 @@ class ChartCollectionDataSource: NSObject, UICollectionViewDataSource {
         let xAxis = XAxis()
         xAxis.valueFormatter = chartFormatter
 
+        let scatterFormatter = ScatChartFormatter(labels: xValues!)
+        let scatterXAxis = XAxis()
+        scatterXAxis.valueFormatter = scatterFormatter
+
         switch chartType {
         case .BarChart:
         cell.chartView.xAxis.valueFormatter = xAxis.valueFormatter
         case .ScatterChart:
-        cell.chartView.xAxis.valueFormatter = xAxis.valueFormatter
+        cell.chartView.xAxis.valueFormatter = scatterXAxis.valueFormatter
         case .LineChart:
             cell.chartView.xAxis.valueFormatter = xAxis.valueFormatter
         }
@@ -96,4 +100,18 @@ private class BarChartFormatter: NSObject, IAxisValueFormatter {
         super.init()
         self.labels = labels
     }
+}
+
+    private class ScatChartFormatter: NSObject, IAxisValueFormatter {
+
+        var labels: [String] = []
+        func stringForValue(_ value: Double, axis: AxisBase?) -> String {
+            guard  let index = axis?.entries.index(of: value) else {return ""}
+            return labels[index]
+        }
+
+        init(labels: [String]) {
+            super.init()
+            self.labels = labels
+        }
 }
