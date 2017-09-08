@@ -98,7 +98,7 @@ class ProfileDataSource: BaseDataSource {
         return cell!
     }
 
-    func collectionView(collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAtIndexPath indexPath: IndexPath) -> CGSize {
+    func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
         let field = model.itemAtIndexPath(indexPath: (indexPath as IndexPath))
 
         if model.units == .Imperial && (field.type == .Weight || field.type == .Height || field.type == .HeightInches) {
@@ -126,7 +126,10 @@ class ProfileDataSource: BaseDataSource {
 
     // MARK: - Cells configuration
 
-    private func infoCellForIndex(indexPath: IndexPath, forField field: ModelItem, isEdiatble: Bool = false, keyboardType: UIKeyboardType = UIKeyboardType.default) -> BaseCollectionViewCell {
+    private func infoCellForIndex(indexPath: IndexPath,
+                             forField field: ModelItem,
+                                 isEdiatble: Bool = false,
+                               keyboardType: UIKeyboardType = UIKeyboardType.default) -> BaseCollectionViewCell {
         let cell = collectionView!.dequeueReusableCell(withReuseIdentifier: infoCellIdentifier, for: indexPath as IndexPath) as! InfoCollectionViewCell
         
         cell.inputTxtField.textColor = selectedTextColor
