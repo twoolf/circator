@@ -681,14 +681,15 @@ class BarChartModel : NSObject {
         let proteinType = HKSampleType.quantityType(forIdentifier: HKQuantityTypeIdentifier.dietaryProtein)
 
         for qType in PreviewManager.chartsSampleTypes {
- //           if qType == weightType {
+            if qType == weightType {
             chartGroup.enter()
             _chartDataOperationQueue.addOperation({ 
                 self.getAllDataForCurrentPeriodForSample(qType: qType, _chartType: nil) { _ in
                     chartGroup.leave()
                 }
             })
-//        }
+
+            }
     }
         chartGroup.notify(qos: DispatchQoS.background, queue: DispatchQueue.main) {
             self.addCompletionForOperationQueue(completion: completion)
@@ -703,8 +704,6 @@ class BarChartModel : NSObject {
         var weekTitles: [String] = []
         var prevMonthDates: [Date] = []
         var currentMonthDates: [Date] = []
-
- //       weekTitles.append("")//create a gap for the left side
 
         for index in 1...7 {
             let day = weekAgoDate + index.days
@@ -723,14 +722,16 @@ class BarChartModel : NSObject {
             weekTitles.append(convertDateToWeekString(date: date, forIndex: index))
         }
 
- //       weekTitles.append("")//create a gap for the right side
         return weekTitles
     }
 
     func getMonthTitles () -> [String] {
         var monthTitles: [String] = []
         let currentDate = Date()
-        let numberOfDays = 31//max number of days in one month
+        let calendar = Calendar.current
+        let date = Date()
+        let interval = calendar.dateInterval(of: .month, for: date)!
+        let numberOfDays = calendar.dateComponents([.day], from: interval.start, to: interval.end).day!
         let monthAgoDate = currentDate - numberOfDays.days
         var prevMonthDates: [Date] = []
         var currentMonthDates: [Date] = []
@@ -757,7 +758,10 @@ class BarChartModel : NSObject {
     }
 
     func getYearTitles() -> [String] {
-        let numOfDays = 366
+        let calendar = Calendar.current
+        let date = Date()
+        let interval = calendar.dateInterval(of: .year, for: date)!
+        let numOfDays = calendar.dateComponents([.day], from: interval.start, to: interval.end).day!
         let currentDate = Date()
         let dateYearAgo = currentDate - 1.years
         var prevYearDays: [Date] = []
