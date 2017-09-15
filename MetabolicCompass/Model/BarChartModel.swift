@@ -768,7 +768,7 @@ class BarChartModel : NSObject {
         var currentYearDays: [Date] = []
         var yearTitles: [String] = []
             for index in 0...(numOfDays - 1) {
-                let date = dateYearAgo + index.months
+                let date = dateYearAgo + index.days
                     date.year < currentDate.year ? prevYearDays.append(date) : currentYearDays.append(date)
                 }
                 for (index, date) in prevYearDays.enumerated() {
