@@ -48,32 +48,6 @@ class BarChartModel : NSObject {
                                                                 HKQuantityTypeIdentifier.bloodPressureDiastolic.rawValue : .ScatterChart,
                                                                 HKQuantityTypeIdentifier.uvExposure.rawValue : .ScatterChart]
 
-    //MARK: Data for YEAR
-    func getChartDataForYear(type: ChartType, values: [Double], minValues: [Double]?) -> ChartData {
-
-        let xVals = getYearTitles()
-        var yVals: [ChartDataEntry] = []
-        if let minValues = minValues {
-            yVals = getYValuesForScatterChart(minValues: minValues, maxValues: values, period: .year)
-        } else {
-            yVals = convertStatisticsValues(stisticsValues: values, forRange: .year, type: type, create: {x, y, type in
-                return BarChartDataEntry.init(x: x, y: y)
-            })
-        }
-        return getChartDataFor(xVals: xVals, yVals: yVals, type: type) as! ChartData
-    }
-
-    //MARK: Data for MONTH
-    func getChartDataForMonth(type: ChartType, values: [Double], minValues: [Double]?) -> ChartData {
-        let xVals = getMonthTitles()
-        var yVals = convertStatisticsValues(stisticsValues: values, forRange: .month, type: type, create: {x, y, type in
-            return BarChartDataEntry.init(x: x, y: y)
-        })
-        if let minValues = minValues {
-            yVals = getYValuesForScatterChart(minValues: minValues, maxValues: values, period: .month)
-        }
-        return getChartDataFor(xVals: xVals, yVals: yVals, type: type) as! ChartData
-    }
 
     func colorsForSet(entries: [ChartDataEntry]) -> [UIColor] {
        var array = [UIColor] ()
@@ -108,7 +82,6 @@ class BarChartModel : NSObject {
     }
 
     func getChartDataForRange(range: HealthManagerStatisticsRangeType, type: ChartType, values: [Double], minValues: [Double]?) -> ChartData {
-
         var xVals = [String] ()
         switch range {
         case .week:
@@ -177,17 +150,6 @@ class BarChartModel : NSObject {
         }
         return yVals
     }
-    
-    func getChartDataFor(xVals: [String], yVals: [ChartDataEntry], type: ChartType) -> AnyObject {
-        switch type {
-            case .BarChart:
-                return BarChartDataSet.init(values: yVals, label: "MyCheck")
-            case .LineChart:
-                return LineChartDataSet.init(values: yVals, label: "MyCheck")
-            case .ScatterChart:
-                return ScatterChartDataSet.init(values: yVals, label: "MyCheck")
-        }
-    }
 
     func getBloodPressureChartData(range: HealthManagerStatisticsRangeType,
                              systolicMax: [Double],
@@ -198,6 +160,9 @@ class BarChartModel : NSObject {
         let diastolicWeekData = getYValuesForScatterChart(minValues: diastolicMin, maxValues: diastolicMax, period: range)
         let systolicSet = ScatterChartDataSet(values: systolicWeekData, label: "check3")
         let diastolicSet = ScatterChartDataSet(values: diastolicWeekData, label: "check3")
+        systolicSet.setScatterShape(.circle)
+        diastolicSet.setScatterShape(.circle)
+
         var array = [ScatterChartDataSet]()
         array.append(systolicSet)
         array.append(diastolicSet)
@@ -282,7 +247,7 @@ class BarChartModel : NSObject {
         let proteinType = HKSampleType.quantityType(forIdentifier: HKQuantityTypeIdentifier.dietaryProtein)
 
         for qType in PreviewManager.chartsSampleTypes {
-            if qType == heartType {
+       //     if qType == weightType {
             chartGroup.enter()
             _chartDataOperationQueue.addOperation({ 
                 self.getAllDataForCurrentPeriodForSample(qType: qType, _chartType: nil) { _ in
@@ -290,7 +255,7 @@ class BarChartModel : NSObject {
                 }
             })
 
-            }
+    //        }
     }
         chartGroup.notify(qos: DispatchQoS.background, queue: DispatchQueue.main) {
             self.addCompletionForOperationQueue(completion: completion)
@@ -329,7 +294,7 @@ class BarChartModel : NSObject {
     func getMonthTitles () -> [String] {
         var monthTitles: [String] = []
         let currentDate = Date()
-        let numberOfDays = 32
+        let numberOfDays = 31
         let monthAgoDate = currentDate - numberOfDays.days
         var prevMonthDates: [Date] = []
         var currentMonthDates: [Date] = []
@@ -349,7 +314,6 @@ class BarChartModel : NSObject {
         for (index, date) in currentMonthDates.enumerated() {
             monthTitles.append(convertDateToWeekString(date: date, forIndex: index))
         }
-     //   monthTitles.append("")
         return monthTitles
     }
 
@@ -385,12 +349,10 @@ class BarChartModel : NSObject {
     }
 
     func convertDateToYearString(date: Date, forIndex index: Int) -> String {
-
         let month =  String(date.monthName.characters.prefix(3))
-         if index == 0 {
+        if index == 0 {
             return month + String(date.year)
         }
-
         return month
     }
 

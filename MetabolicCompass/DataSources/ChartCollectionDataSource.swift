@@ -23,7 +23,6 @@ class ChartCollectionDataSource: NSObject, UICollectionViewDataSource {
     private let lineChartCellIdentifier = "LineChartCollectionCell"
     private let scatterChartCellIdentifier = "ScatterChartCollectionCell"
 
-
     func updateData () {
         data = PreviewManager.chartsSampleTypes
     }
@@ -61,20 +60,10 @@ class ChartCollectionDataSource: NSObject, UICollectionViewDataSource {
         let xAxis = XAxis()
         xAxis.valueFormatter = chartFormatter
 
-        let scatterFormatter = ScatChartFormatter(labels: xValues!)
-        let scatterXAxis = XAxis()
-        scatterXAxis.valueFormatter = scatterFormatter
-
         switch chartType {
         case .BarChart:
         cell.chartView.xAxis.valueFormatter = xAxis.valueFormatter
-        case .ScatterChart:
-        cell.chartView.xAxis.axisMinimum = 0.0
-        cell.chartView.xAxis.valueFormatter = scatterXAxis.valueFormatter
-        if (xValues?.count)! > 0 {
-            cell.chartView.xAxis.axisMaximum = Double ((xValues?.count)! - 1)
-        }
-        case .LineChart:
+        case .LineChart, .ScatterChart:
         cell.chartView.xAxis.axisMinimum = 0.0
         if (xValues?.count)! > 0 {
             cell.chartView.xAxis.axisMaximum = Double ((xValues?.count)! - 1)
@@ -94,20 +83,6 @@ private class BarChartFormatter: NSObject, IAxisValueFormatter {
         let index = axis?.entries.index(of: value)
         return labels[Int((axis?.entries[index!])!)]
     }
-    init(labels: [String]) {
-        super.init()
-        self.labels = labels
-    }
-}
-
-private class ScatChartFormatter: NSObject, IAxisValueFormatter {
-
-    var labels: [String] = []
-    func stringForValue(_ value: Double, axis: AxisBase?) -> String {
-        let index = axis?.entries.index(of: value)
-        return labels[Int((axis?.entries[index!])!)]
-    }
-
     init(labels: [String]) {
         super.init()
         self.labels = labels
