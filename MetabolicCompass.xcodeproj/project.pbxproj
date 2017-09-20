@@ -1353,7 +1353,7 @@
 					7881A3DC1BAF3B3E00ECB3C6 = {
 						CreatedOnToolsVersion = 7.0;
 						DevelopmentTeam = E4SL9A9Z96;
-						ProvisioningStyle = Manual;
+						ProvisioningStyle = Automatic;
 						SystemCapabilities = {
 							com.apple.ApplicationGroups.iOS = {
 								enabled = 1;
@@ -1905,8 +1905,7 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_LAUNCHIMAGE_NAME = "LaunchImage-2";
 				CODE_SIGN_ENTITLEMENTS = MetabolicCompass/MetabolicCompass.entitlements;
-				CODE_SIGN_IDENTITY = "iPhone Developer";
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Distribution";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				CURRENT_PROJECT_VERSION = 88;
 				DEVELOPMENT_TEAM = E4SL9A9Z96;
 				FRAMEWORK_SEARCH_PATHS = "$(inherited)";
@@ -1922,8 +1921,8 @@
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = edu.jhu.cs.damsl.MetabolicCompass.app;
 				PRODUCT_NAME = MetabolicCompass;
-				PROVISIONING_PROFILE = "341d1899-1752-4e72-945f-ed374bbb28f4";
-				PROVISIONING_PROFILE_SPECIFIER = "XC iOS: edu.jhu.cs.damsl.MetabolicCompass.app";
+				PROVISIONING_PROFILE = "";
+				PROVISIONING_PROFILE_SPECIFIER = "";
 				SWIFT_OBJC_BRIDGING_HEADER = "MetabolicCompass/MetabolicCompass-Bridging-Header.h";
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 				TARGETED_DEVICE_FAMILY = 1;
@@ -2029,8 +2028,7 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_LAUNCHIMAGE_NAME = "LaunchImage-2";
 				CODE_SIGN_ENTITLEMENTS = MetabolicCompass/MetabolicCompass.entitlements;
-				CODE_SIGN_IDENTITY = "iPhone Developer";
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Distribution";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				CURRENT_PROJECT_VERSION = 88;
 				DEVELOPMENT_TEAM = E4SL9A9Z96;
 				FRAMEWORK_SEARCH_PATHS = "$(inherited)";
@@ -2041,8 +2039,8 @@
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = edu.jhu.cs.damsl.MetabolicCompass.app;
 				PRODUCT_NAME = MetabolicCompass;
-				PROVISIONING_PROFILE = "461cae93-9ca9-490b-96be-00235464ca52";
-				PROVISIONING_PROFILE_SPECIFIER = "match AppStore MetabolicCompass";
+				PROVISIONING_PROFILE = "";
+				PROVISIONING_PROFILE_SPECIFIER = "";
 				SWIFT_OBJC_BRIDGING_HEADER = "MetabolicCompass/MetabolicCompass-Bridging-Header.h";
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 				TARGETED_DEVICE_FAMILY = 1;
@@ -2185,9 +2183,7 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_LAUNCHIMAGE_NAME = "LaunchImage-2";
 				CODE_SIGN_ENTITLEMENTS = MetabolicCompass/MetabolicCompass.entitlements;
-				CODE_SIGN_IDENTITY = "iPhone Developer";
-				"CODE_SIGN_IDENTITY[sdk=*]" = "iPhone Developer";
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Distribution";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				CURRENT_PROJECT_VERSION = 88;
 				DEVELOPMENT_TEAM = E4SL9A9Z96;
 				FRAMEWORK_SEARCH_PATHS = "$(inherited)";
@@ -2203,8 +2199,8 @@
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = edu.jhu.cs.damsl.MetabolicCompass.app;
 				PRODUCT_NAME = MetabolicCompass;
-				PROVISIONING_PROFILE = "341d1899-1752-4e72-945f-ed374bbb28f4";
-				PROVISIONING_PROFILE_SPECIFIER = "XC iOS: edu.jhu.cs.damsl.MetabolicCompass.app";
+				PROVISIONING_PROFILE = "";
+				PROVISIONING_PROFILE_SPECIFIER = "";
 				SWIFT_OBJC_BRIDGING_HEADER = "MetabolicCompass/MetabolicCompass-Bridging-Header.h";
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 				TARGETED_DEVICE_FAMILY = 1;

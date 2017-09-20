@@ -69,9 +69,17 @@ class ChartCollectionDataSource: NSObject, UICollectionViewDataSource {
         case .BarChart:
         cell.chartView.xAxis.valueFormatter = xAxis.valueFormatter
         case .ScatterChart:
+        cell.chartView.xAxis.axisMinimum = 0.0
         cell.chartView.xAxis.valueFormatter = scatterXAxis.valueFormatter
+        if (xValues?.count)! > 0 {
+            cell.chartView.xAxis.axisMaximum = Double ((xValues?.count)! - 1)
+        }
         case .LineChart:
-            cell.chartView.xAxis.valueFormatter = xAxis.valueFormatter
+        cell.chartView.xAxis.axisMinimum = 0.0
+        if (xValues?.count)! > 0 {
+            cell.chartView.xAxis.axisMaximum = Double ((xValues?.count)! - 1)
+        }
+        cell.chartView.xAxis.valueFormatter = xAxis.valueFormatter
         }
         cell.chartTitleLabel.text = appearanceProvider.stringForSampleType(typeToShow == HKQuantityTypeIdentifier.bloodPressureSystolic.rawValue ? HKCorrelationTypeIdentifier.bloodPressure.rawValue : typeToShow)
         cell.chartView.setNeedsDisplay()
@@ -83,18 +91,8 @@ private class BarChartFormatter: NSObject, IAxisValueFormatter {
 
     var labels: [String] = []
     func stringForValue(_ value: Double, axis: AxisBase?) -> String {
-
-        let val = Double(round(100 * value) / 100)
-        var ind: Int?
-            if val.truncatingRemainder(dividingBy: 1) == 0 {
-                ind = Int(val)
-            }
-
-        guard let index = ind else {
-            return ""
-        }
-
-        return labels[index]
+        let index = axis?.entries.index(of: value)
+        return labels[Int((axis?.entries[index!])!)]
     }
     init(labels: [String]) {
         super.init()
@@ -102,16 +100,16 @@ private class BarChartFormatter: NSObject, IAxisValueFormatter {
     }
 }
 
-    private class ScatChartFormatter: NSObject, IAxisValueFormatter {
+private class ScatChartFormatter: NSObject, IAxisValueFormatter {
 
-        var labels: [String] = []
-        func stringForValue(_ value: Double, axis: AxisBase?) -> String {
-            guard  let index = axis?.entries.index(of: value) else {return ""}
-            return labels[index]
-        }
+    var labels: [String] = []
+    func stringForValue(_ value: Double, axis: AxisBase?) -> String {
+        let index = axis?.entries.index(of: value)
+        return labels[Int((axis?.entries[index!])!)]
+    }
 
-        init(labels: [String]) {
-            super.init()
-            self.labels = labels
-        }
+    init(labels: [String]) {
+        super.init()
+        self.labels = labels
+    }
 }
