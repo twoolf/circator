@@ -40,23 +40,23 @@ class ChartCollectionDataSource: NSObject, UICollectionViewDataSource {
         let chartType: ChartType = (model?.chartTypeForQuantityTypeIdentifier(qType: typeToShow))!
         let key = typeToShow + "\((model?.rangeType.rawValue)!)"
         let chartData = model?.typesChartData[key]
-        if(chartType == ChartType.BarChart) {
+        switch chartType {
+        case .BarChart:
             cell = collectionView.dequeueReusableCell(withReuseIdentifier: barChartCellIdentifier, for: indexPath as IndexPath) as! BarChartCollectionCell
-            cell.chartView.xAxis.valueFormatter = nil
-        } else if (chartType == ChartType.LineChart) {
+        case .LineChart:
             cell = collectionView.dequeueReusableCell(withReuseIdentifier: lineChartCellIdentifier, for: indexPath as IndexPath) as! LineChartCollectionCell
-            cell.chartView.xAxis.valueFormatter = nil
-        } else {
+        case .ScatterChart:
             cell = collectionView.dequeueReusableCell(withReuseIdentifier: scatterChartCellIdentifier, for: indexPath as IndexPath) as! ScatterChartCollectionCell
-            cell.chartView.xAxis.valueFormatter = nil
         }
+        cell.chartView.xAxis.valueFormatter = nil
         if let yMax = chartData?.yMax, let yMin = chartData?.yMin, yMax > 0 || yMin > 0 {
             cell.updateLeftAxisWith(minValue: chartData?.yMin, maxValue: chartData?.yMax)
         }
         cell.chartView.data = chartData
 
-        let xValues = model?.titlesFor(range: (model?.rangeType)!)
-        let chartFormatter = BarChartFormatter(labels: xValues!)
+        guard let range = model?.rangeType else {return cell}
+        guard let xValues = model?.titlesFor(range: range) else {return cell}
+        let chartFormatter = BarChartFormatter(labels: xValues)
         let xAxis = XAxis()
         xAxis.valueFormatter = chartFormatter
 
@@ -65,8 +65,8 @@ class ChartCollectionDataSource: NSObject, UICollectionViewDataSource {
         cell.chartView.xAxis.valueFormatter = xAxis.valueFormatter
         case .LineChart, .ScatterChart:
         cell.chartView.xAxis.axisMinimum = 0.0
-        if (xValues?.count)! > 0 {
-            cell.chartView.xAxis.axisMaximum = Double ((xValues?.count)! - 1)
+        if xValues.count > 0 {
+            cell.chartView.xAxis.axisMaximum = Double (xValues.count - 1)
         }
         cell.chartView.xAxis.valueFormatter = xAxis.valueFormatter
         }

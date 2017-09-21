@@ -50,14 +50,7 @@ class BarChartModel : NSObject {
 
 
     func colorsForSet(entries: [ChartDataEntry]) -> [UIColor] {
-       var array = [UIColor] ()
-        for entry in entries {
-            if entry.y == 0 {
-                array.append(UIColor.clear)
-            } else {
-                array.append(UIColor.green)
-            }
-        }
+        let array = entries.map { $0.y == 0 ? UIColor.clear : UIColor.green}
         return array
     }
 
@@ -82,7 +75,8 @@ class BarChartModel : NSObject {
     }
 
     func getChartDataForRange(range: HealthManagerStatisticsRangeType, type: ChartType, values: [Double], minValues: [Double]?) -> ChartData {
-        var xVals = [String] ()
+        let xVals: [String]
+        let yVals: [ChartDataEntry]
         switch range {
         case .week:
             xVals = getWeekTitles()
@@ -92,45 +86,45 @@ class BarChartModel : NSObject {
             xVals = getYearTitles()
         }
 
-        var yVals = convertStatisticsValues(stisticsValues: values, forRange: range, type: type, create: {x, y, type in
-            switch type {
-            case .BarChart:
-                return BarChartDataEntry.init(x: x, y: y, data: xVals as AnyObject)
-            case .LineChart:
-                return ChartDataEntry.init(x: x, y: y)
-            case .ScatterChart:
-                return ChartDataEntry.init(x: x, y: y)
-            }
-        })
-
         if let minValues = minValues {
             yVals = getYValuesForScatterChart(minValues: minValues, maxValues: values, period: range)
+        } else {
+            yVals = convertStatisticsValues(stisticsValues: values, forRange: range, type: type, create: {x, y, type in
+                switch type {
+                case .BarChart:
+                    return BarChartDataEntry(x: x, y: y, data: xVals as AnyObject)
+                case .LineChart:
+                    return ChartDataEntry(x: x, y: y)
+                case .ScatterChart:
+                    return ChartDataEntry(x: x, y: y)
+                }
+            })
         }
         let noZeroFormatter = NumberFormatter()
         noZeroFormatter.zeroSymbol = ""
         switch type {
         case .LineChart:
-            let lineSet = LineChartDataSet.init(values: yVals, label: "Check")
-            lineSet.setColor(UIColor.red)
+            let lineSet = LineChartDataSet(values: yVals, label: "Check")
+            lineSet.setColor(.red)
             lineSet.valueFormatter = DefaultValueFormatter(formatter: noZeroFormatter)
             return LineChartData(dataSet: lineSet)
         case .ScatterChart:
-            let scatterSet = ScatterChartDataSet.init(values: yVals, label: "Check")
+            let scatterSet = ScatterChartDataSet(values: yVals, label: "Check")
             let colors = colorsForSet(entries: yVals)
             scatterSet.colors = colors
             scatterSet.setScatterShape(.circle)
             scatterSet.valueFormatter = DefaultValueFormatter(formatter: noZeroFormatter)
-            return ScatterChartData.init(dataSet: scatterSet)
+            return ScatterChartData(dataSet: scatterSet)
         case .BarChart:
-            let barSet = BarChartDataSet.init(values: yVals, label: "Check")
+            let barSet = BarChartDataSet(values: yVals, label: "Check")
             barSet.valueFormatter = DefaultValueFormatter(formatter: noZeroFormatter)
             barSet.setColor(UIColor.orange)
-            return BarChartData.init(dataSet: barSet)
+            return BarChartData(dataSet: barSet)
         }
     }
 
     func getYValuesForScatterChart (minValues: [Double], maxValues: [Double], period: HealthManagerStatisticsRangeType) -> [ChartDataEntry] {
-        var xVals = [String] ()
+        let xVals: [String]
         switch period {
         case .week:
             xVals = getWeekTitles()
@@ -166,7 +160,7 @@ class BarChartModel : NSObject {
         var array = [ScatterChartDataSet]()
         array.append(systolicSet)
         array.append(diastolicSet)
-        return ScatterChartData.init(dataSets: array)
+        return ScatterChartData(dataSets: array)
     }
 
     func getAllDataForCurrentPeriodForSample(qType : HKSampleType,  _chartType: ChartType?, completion: @escaping (Bool) -> Void) {
@@ -247,7 +241,7 @@ class BarChartModel : NSObject {
         let proteinType = HKSampleType.quantityType(forIdentifier: HKQuantityTypeIdentifier.dietaryProtein)
 
         for qType in PreviewManager.chartsSampleTypes {
-       //     if qType == weightType {
+  //          if qType == heartType {
             chartGroup.enter()
             _chartDataOperationQueue.addOperation({ 
                 self.getAllDataForCurrentPeriodForSample(qType: qType, _chartType: nil) { _ in
@@ -255,7 +249,7 @@ class BarChartModel : NSObject {
                 }
             })
 
-    //        }
+//            }
     }
         chartGroup.notify(qos: DispatchQoS.background, queue: DispatchQueue.main) {
             self.addCompletionForOperationQueue(completion: completion)
