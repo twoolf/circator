@@ -12,6 +12,7 @@ import Charts
 import HealthKit
 import MetabolicCompassKit
 
+
 class ChartCollectionDataSource: NSObject, UICollectionViewDataSource {
  
     internal var collectionData: [ChartData] = []
@@ -21,7 +22,7 @@ class ChartCollectionDataSource: NSObject, UICollectionViewDataSource {
     private let barChartCellIdentifier = "BarChartCollectionCell"
     private let lineChartCellIdentifier = "LineChartCollectionCell"
     private let scatterChartCellIdentifier = "ScatterChartCollectionCell"
-    
+
     func updateData () {
         data = PreviewManager.chartsSampleTypes
     }
@@ -34,37 +35,40 @@ class ChartCollectionDataSource: NSObject, UICollectionViewDataSource {
 
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         let cell: BaseChartCollectionCell
-        
         let type = data[indexPath.row]
         let typeToShow = type.identifier == HKCorrelationTypeIdentifier.bloodPressure.rawValue ? HKQuantityTypeIdentifier.bloodPressureSystolic.rawValue : type.identifier
         let chartType: ChartType = (model?.chartTypeForQuantityTypeIdentifier(qType: typeToShow))!
         let key = typeToShow + "\((model?.rangeType.rawValue)!)"
         let chartData = model?.typesChartData[key]
-        if(chartType == ChartType.BarChart) {
+        switch chartType {
+        case .BarChart:
             cell = collectionView.dequeueReusableCell(withReuseIdentifier: barChartCellIdentifier, for: indexPath as IndexPath) as! BarChartCollectionCell
-        } else if (chartType == ChartType.LineChart) {
+        case .LineChart:
             cell = collectionView.dequeueReusableCell(withReuseIdentifier: lineChartCellIdentifier, for: indexPath as IndexPath) as! LineChartCollectionCell
-        } else {//Scatter chart
+        case .ScatterChart:
             cell = collectionView.dequeueReusableCell(withReuseIdentifier: scatterChartCellIdentifier, for: indexPath as IndexPath) as! ScatterChartCollectionCell
         }
+        cell.chartView.xAxis.valueFormatter = nil
         if let yMax = chartData?.yMax, let yMin = chartData?.yMin, yMax > 0 || yMin > 0 {
             cell.updateLeftAxisWith(minValue: chartData?.yMin, maxValue: chartData?.yMax)
         }
         cell.chartView.data = chartData
-        let xValues = model?.getWeekTitles()
-        let chartFormatter = BarChartFormatter(labels: xValues!)
+
+        guard let range = model?.rangeType else {return cell}
+        guard let xValues = model?.titlesFor(range: range) else {return cell}
+        let chartFormatter = BarChartFormatter(labels: xValues)
         let xAxis = XAxis()
         xAxis.valueFormatter = chartFormatter
+
         switch chartType {
-        case .BarChart, .ScatterChart:
-            cell.chartView.xAxis.valueFormatter = xAxis.valueFormatter
-        case .LineChart:
-            guard let count = cell.chartView.data?.dataSets[0].entryCount else { return cell }
-            if count > 1 {
-                cell.chartView.xAxis.valueFormatter = IndexAxisValueFormatter(values: xValues!)
-            } else {
-                cell.chartView.xAxis.valueFormatter = xAxis.valueFormatter
-            }
+        case .BarChart:
+        cell.chartView.xAxis.valueFormatter = xAxis.valueFormatter
+        case .LineChart, .ScatterChart:
+        cell.chartView.xAxis.axisMinimum = 0.0
+        if xValues.count > 0 {
+            cell.chartView.xAxis.axisMaximum = Double (xValues.count - 1)
+        }
+        cell.chartView.xAxis.valueFormatter = xAxis.valueFormatter
         }
         cell.chartTitleLabel.text = appearanceProvider.stringForSampleType(typeToShow == HKQuantityTypeIdentifier.bloodPressureSystolic.rawValue ? HKCorrelationTypeIdentifier.bloodPressure.rawValue : typeToShow)
         cell.chartView.setNeedsDisplay()
@@ -77,7 +81,7 @@ private class BarChartFormatter: NSObject, IAxisValueFormatter {
     var labels: [String] = []
     func stringForValue(_ value: Double, axis: AxisBase?) -> String {
         let index = axis?.entries.index(of: value)
-        return labels[index!]
+        return labels[Int((axis?.entries[index!])!)]
     }
     init(labels: [String]) {
         super.init()

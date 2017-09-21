@@ -136,7 +136,7 @@ public class EventManager : NSObject, WCSessionDelegate {
             object: nil)
     }
 
-    @objc func refreshCalendarEvents(notification: NSNotification) {
+    func refreshCalendarEvents(notification: NSNotification) {
         fetchEventsfromCalendar(onRefresh: true)
     }
 
