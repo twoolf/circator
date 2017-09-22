@@ -124,6 +124,12 @@ class BarChartModel : NSObject {
     }
 
     func getYValuesForScatterChart (minValues: [Double], maxValues: [Double], period: HealthManagerStatisticsRangeType) -> [ChartDataEntry] {
+        var minVals = minValues
+        var maxVals = maxValues
+        if rangeType == .month && maxValues.count > 0 && minValues.count > 0 {
+            minVals.remove(at: 0)
+            maxVals.remove(at: 0)
+        }
         let xVals: [String]
         switch period {
         case .week:
@@ -134,8 +140,8 @@ class BarChartModel : NSObject {
             xVals = getYearTitles()
         }
         var yVals: [ChartDataEntry] = []
-        for (index, minValue) in minValues.enumerated() {
-            let maxValue = maxValues[index]
+        for (index, minValue) in minVals.enumerated() {
+            let maxValue = maxVals[index]
             if maxValue > 0 && minValue > 0 {
                 yVals.append(ChartDataEntry(x: Double(index), y: minValue, data: xVals as AnyObject))
             } else if maxValue > 0 {
