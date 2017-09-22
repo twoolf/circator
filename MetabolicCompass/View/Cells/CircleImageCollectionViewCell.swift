@@ -14,7 +14,6 @@ class CircleImageCollectionViewCell: BaseCollectionViewCell {
     
     override func awakeFromNib() {
         super.awakeFromNib()
-        
         photoImg.makeCircled()
     }
 

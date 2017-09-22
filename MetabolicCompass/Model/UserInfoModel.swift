@@ -23,7 +23,7 @@ class UserInfoModel: NSObject {
     let heightInchesIndex = 8
 
     lazy private(set) var loadPhotoField : ModelItem = {
-        return ModelItem(name: "Load photo".localized, title: "Load photo", type: .Photo, iconImageName: nil, value: nil)
+        return ModelItem(name: "Load photo".localized, title: "Load photo", type: .Photo, iconImageName: "iconNoPhoto", value: nil)
     }()
 
     lazy private(set) var emailField : ModelItem = {

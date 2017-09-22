@@ -227,13 +227,12 @@ class ProfileDataSource: BaseDataSource {
         if editMode {
             cell = collectionView!.dequeueReusableCell(withReuseIdentifier: loadProfileImageCellIdentifier, for: indexPath as IndexPath) as! LoadImageCollectionViewCell
             (cell as! LoadImageCollectionViewCell).presentingViewController = viewController?.navigationController
+            cell!.photoImg.image = field.value as? UIImage
         }
         else {
             cell = collectionView!.dequeueReusableCell(withReuseIdentifier: profileImageCellIdentifier, for: indexPath as IndexPath) as? CircleImageCollectionViewCell
+            cell!.photoImg.image = UIImage.init(named: field.iconImageName!)
         }
-
-        cell!.photoImg.image = field.value as? UIImage
-
         return cell!
     }
 

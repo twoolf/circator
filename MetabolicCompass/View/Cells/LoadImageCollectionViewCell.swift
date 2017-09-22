@@ -88,7 +88,7 @@ class LoadImageCollectionViewCell: CircleImageCollectionViewCell, UIImagePickerC
     func checkCamera() {
         let authStatus = AVCaptureDevice.authorizationStatus(forMediaType: AVMediaTypeVideo)
         switch authStatus {
-            case .authorized: self.showImagePickerWithSourceType(type: .camera)
+            case .authorized: showImagePickerWithSourceType(type: .camera)
             case .denied: showAlertActionForType(type: .camera)
             case .notDetermined: alertPromptToAllowCameraAccessViaSetting()
             default: showAlertActionForType(type: .camera)
@@ -106,15 +106,11 @@ class LoadImageCollectionViewCell: CircleImageCollectionViewCell, UIImagePickerC
     }
     
     // MARK: - ImagePicker Delegate
-    
-    @nonobjc func imagePickerController(picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [String : AnyObject]) {
-        
+
+    func imagePickerController(_ picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [String : Any]) {
         let photo = info[UIImagePickerControllerOriginalImage] as? UIImage
-        
         photoImg.image = photo
-        
         valueChanged(newValue: photo)
-        
         picker.dismiss(animated: true, completion: nil)
     }
     
