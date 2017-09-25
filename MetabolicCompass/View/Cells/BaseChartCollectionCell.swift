@@ -20,7 +20,9 @@ class BaseChartCollectionCell: UICollectionViewCell {
     override func awakeFromNib() {
         super.awakeFromNib()
         chartView.minOffset = 20
-        chartMinValueLabel.text = ""
+        if (chartMinValueLabel != nil) {
+            chartMinValueLabel.text = ""
+        }
         chartMaxValueLabel.text = ""
         chartBackgroundImage.layer.cornerRadius = 5.0
         chartBackgroundImage.layer.masksToBounds = true
