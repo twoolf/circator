@@ -124,12 +124,6 @@ class BarChartModel : NSObject {
     }
 
     func getYValuesForScatterChart (minValues: [Double], maxValues: [Double], period: HealthManagerStatisticsRangeType) -> [ChartDataEntry] {
-        var minVals = minValues
-        var maxVals = maxValues
-        if rangeType == .month && maxValues.count > 0 && minValues.count > 0 {
-            minVals.remove(at: 0)
-            maxVals.remove(at: 0)
-        }
         let xVals: [String]
         switch period {
         case .week:
@@ -140,8 +134,8 @@ class BarChartModel : NSObject {
             xVals = getYearTitles()
         }
         var yVals: [ChartDataEntry] = []
-        for (index, minValue) in minVals.enumerated() {
-            let maxValue = maxVals[index]
+        for (index, minValue) in minValues.enumerated() {
+            let maxValue = maxValues[index]
             if maxValue > 0 && minValue > 0 {
                 yVals.append(ChartDataEntry(x: Double(index), y: minValue, data: xVals as AnyObject))
             } else if maxValue > 0 {
@@ -203,10 +197,7 @@ class BarChartModel : NSObject {
             }
         } else {
             IOSHealthManager.sharedManager.getChartDataForQuantity(sampleType: qType, inPeriod: self.rangeType) { obj in
-                var values = obj as! [Double]
-                if self.rangeType == .month && values.count > 0 {
-                    values.remove(at: 0)
-                }
+                let values = obj as! [Double]
                 let arrray = values.map {$0.isNaN ? 0.0 : $0}
                 if arrray.count > 0 {
                     self.typesChartData[key] = self.getChartDataForRange(range: self.rangeType, type: chartType!, values: arrray, minValues: nil)
@@ -247,7 +238,7 @@ class BarChartModel : NSObject {
         let proteinType = HKSampleType.quantityType(forIdentifier: HKQuantityTypeIdentifier.dietaryProtein)
 
         for qType in PreviewManager.chartsSampleTypes {
-  //          if qType == heartType {
+  //          if qType == weightType {
             chartGroup.enter()
             _chartDataOperationQueue.addOperation({ 
                 self.getAllDataForCurrentPeriodForSample(qType: qType, _chartType: nil) { _ in
@@ -255,7 +246,7 @@ class BarChartModel : NSObject {
                 }
             })
 
-//            }
+   //         }
     }
         chartGroup.notify(qos: DispatchQoS.background, queue: DispatchQueue.main) {
             self.addCompletionForOperationQueue(completion: completion)
@@ -292,13 +283,16 @@ class BarChartModel : NSObject {
     }
 
     func getMonthTitles () -> [String] {
-        var monthTitles: [String] = []
+        let dateMonthAgo = Calendar.current.date(byAdding: .month, value: -1, to: Date())
+        let calendar = Calendar.current
         let currentDate = Date()
-        let numberOfDays = 31
-        let monthAgoDate = currentDate - numberOfDays.days
+        let interval = calendar.dateInterval(of: .month, for: dateMonthAgo!)
+        let numOfDays = calendar.dateComponents([.day], from: (interval?.start)!, to: (interval?.end)!).day!
+        var monthTitles: [String] = []
+        let monthAgoDate = currentDate - numOfDays.days
         var prevMonthDates: [Date] = []
         var currentMonthDates: [Date] = []
-        for index in 1...numberOfDays {
+        for index in 1...numOfDays {
             let day = monthAgoDate + index.days
             if day.month < currentDate.month {
                 prevMonthDates.append(day)
@@ -306,11 +300,9 @@ class BarChartModel : NSObject {
                 currentMonthDates.append(day)
             }
         }
-
         for (index, date) in prevMonthDates.enumerated() {
             monthTitles.append(convertDateToWeekString(date: date, forIndex: index))
         }
-
         for (index, date) in currentMonthDates.enumerated() {
             monthTitles.append(convertDateToWeekString(date: date, forIndex: index))
         }
@@ -323,13 +315,16 @@ class BarChartModel : NSObject {
         let interval = calendar.dateInterval(of: .year, for: date)!
         let numOfDays = calendar.dateComponents([.day], from: interval.start, to: interval.end).day!
         let currentDate = Date()
-        let dateYearAgo = currentDate - 1.years
+
+       let endDate = currentDate.startOf(component: .month) + 1.months
+
+        let dateYearAgo = endDate - numOfDays.days
         var prevYearDays: [Date] = []
         var currentYearDays: [Date] = []
         var yearTitles: [String] = []
             for index in 0...(numOfDays - 1) {
                 let date = dateYearAgo + index.days
-                    date.year < currentDate.year ? prevYearDays.append(date) : currentYearDays.append(date)
+                    date.year < endDate.year ? prevYearDays.append(date) : currentYearDays.append(date)
                 }
                 for (index, date) in prevYearDays.enumerated() {
                     yearTitles.append(convertDateToYearString(date: date, forIndex: index))

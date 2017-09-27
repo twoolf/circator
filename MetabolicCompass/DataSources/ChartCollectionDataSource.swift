@@ -59,17 +59,12 @@ class ChartCollectionDataSource: NSObject, UICollectionViewDataSource {
         let chartFormatter = BarChartFormatter(labels: xValues)
         let xAxis = XAxis()
         xAxis.valueFormatter = chartFormatter
-
-        switch chartType {
-        case .BarChart:
         cell.chartView.xAxis.valueFormatter = xAxis.valueFormatter
-        case .LineChart, .ScatterChart:
         cell.chartView.xAxis.axisMinimum = 0.0
         if xValues.count > 0 {
             cell.chartView.xAxis.axisMaximum = Double (xValues.count - 1)
         }
         cell.chartView.xAxis.valueFormatter = xAxis.valueFormatter
-        }
         cell.chartTitleLabel.text = appearanceProvider.stringForSampleType(typeToShow == HKQuantityTypeIdentifier.bloodPressureSystolic.rawValue ? HKCorrelationTypeIdentifier.bloodPressure.rawValue : typeToShow)
         cell.chartView.setNeedsDisplay()
         return cell
