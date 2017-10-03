@@ -237,7 +237,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, WCSessionDelegate
     
     private func setupWatchConnectivity() {
         if WCSession.isSupported() {
-            let session = WCSession.defaultSession()
+            let session = WCSession.default
             session.delegate = self
             session.activate()
         }

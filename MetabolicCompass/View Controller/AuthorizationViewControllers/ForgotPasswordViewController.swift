@@ -53,9 +53,8 @@ class ForgotPasswordViewController: BaseViewController, UITextFieldDelegate {
 
                 UserManager.sharedManager.resetPassword(email: email, completion: { (success, errorMessage) in
                     if success {
-
                         self.alertControllerOkButtonHandler = {
-                            self.navigationController?.popViewController(animated: true)
+                            (self.navigationController?.popViewController(animated: true))!
                         }
 
                         self.showAlert(withMessage: self.resetPasswordSuccessMessage, title: self.resetPasswordTitle)

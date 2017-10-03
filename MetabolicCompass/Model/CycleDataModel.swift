@@ -268,7 +268,17 @@ public class CycleDataModel : NSObject {
     // Create colors by composing each event type color component, normalized to window length * max count
     func getChartActivityEntries(startDate: Date, endDate: Date, windows: CycleWindows) -> ([Double], [AnyObject?], [NSUIColor]) {
         let secsPerDay = Double(24 * 60 * 60)
-        let maxCounts = windows.reduce([1, 1, 1], { acc, arg in acc.0.enumerated().map { max($0.1, acc.1.1[$0.0].2) } }).map { CGFloat($0) }
+ //       public typealias CycleWindows = [Date: [(Int, Double, Int)]]
+        let initial: [CGFloat] = [1,1,1]
+        let maxCounts = windows.reduce(initial, { result, window  in
+            return result.enumerated().map { (index, element) in
+                let samples = window.value
+                let sample = samples[index]
+                let last = CGFloat(sample.2)
+                return CGFloat(max(element, last))
+            }
+        })
+      //  let maxCounts = windows.reduce([1, 1, 1], { acc in acc.0.enumerated().map { max($0.1, acc.1.1[$0.0].2) } }).map { CGFloat($0) }
 
         var i = 0
         var t = startDate

@@ -81,7 +81,7 @@ class BaseViewController: UIViewController, UIGestureRecognizerDelegate {
         return bbItem
     }
 
-    var alertControllerOkButtonHandler: ((Void) -> Void)? = nil
+    var alertControllerOkButtonHandler: (() -> UIViewController)? = nil
 
     func showAlert(withMessage message: String, title : String? = nil) {
 
