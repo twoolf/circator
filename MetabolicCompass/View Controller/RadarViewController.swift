@@ -146,7 +146,7 @@ class RadarViewController : UIViewController, ChartViewDelegate {
                                        customAttributes: nil)
     }
 
-    func contentDidChange() {
+    @objc func contentDidChange() {
         Async.main {
             self.reloadData()
         }
@@ -301,7 +301,7 @@ class RadarViewController : UIViewController, ChartViewDelegate {
         radarChart.innerWebColor = NSUIColor.brown
         data.setDrawValues(false)
         radarChart.xAxis.labelTextColor = .white
-        radarChart.xAxis.labelFont = UIFont.systemFont(ofSize: 12, weight: UIFontWeightRegular)
+        radarChart.xAxis.labelFont = UIFont.systemFont(ofSize: 12, weight: UIFont.Weight.regular)
         radarChart.yAxis.drawLabelsEnabled = false
         radarChart.notifyDataSetChanged()
     }

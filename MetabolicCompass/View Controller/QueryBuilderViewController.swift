@@ -39,8 +39,9 @@ class QueryBuilderViewController: UIViewController, UITextFieldDelegate {
     // TODO: humanize attribute names.
     static let attributeOptions =
         PreviewManager.supportedTypes.flatMap { type in
-//            HMConstants.sharedInstance.hkToMCDB[type.identifier]
- //           HMConstants.sharedInstance.hkToMCDB[HKDocumentTypeIdentifier]
+           return ""
+       //     HMConstants.sharedInstance.hkToMCDB[type.identifier]
+       //     HMConstants.sharedInstance.hkToMCDB[HKDocumentTypeIdentifier]
         }
 
     static let aggregateOperators = ["avg", "min", "max"]
@@ -60,7 +61,7 @@ class QueryBuilderViewController: UIViewController, UITextFieldDelegate {
         button?.shadowColor = UIColor.ht_citrus()
         button?.shadowHeight = 4
         button?.setTitle("Add Predicate", for: .normal)
-        button?.titleLabel?.font = UIFont.systemFont(ofSize: lblFontSize, weight: UIFontWeightRegular)
+        button?.titleLabel?.font = UIFont.systemFont(ofSize: lblFontSize, weight: UIFont.Weight.regular)
         button?.addTarget(self, action: "addPredicate:", for: .touchUpInside)
         return button!
     }()
@@ -72,7 +73,7 @@ class QueryBuilderViewController: UIViewController, UITextFieldDelegate {
         button?.shadowColor = UIColor.ht_pomegranate()
         button?.shadowHeight = 4
         button?.setTitle("Save Query", for: .normal)
-        button?.titleLabel?.font = UIFont.systemFont(ofSize: lblFontSize, weight: UIFontWeightRegular)
+        button?.titleLabel?.font = UIFont.systemFont(ofSize: lblFontSize, weight: UIFont.Weight.regular)
         button?.addTarget(self, action: "saveQuery:", for: .touchUpInside)
         return button!
     }()
@@ -162,7 +163,7 @@ class QueryBuilderViewController: UIViewController, UITextFieldDelegate {
             $0.titleLabel.font = .boldSystemFont(ofSize: inputFontSize)
             $0.tintColor = .white
             }.configure {
-                let attr = NSDictionary(object: UIFont.systemFont(ofSize: inputFontSize), forKey: NSFontAttributeName as NSCopying)
+                let attr = NSDictionary(object: UIFont.systemFont(ofSize: inputFontSize), forKey: NSAttributedStringKey.font as NSCopying)
                 $0.cell.formSegmented().setTitleTextAttributes(attr as [NSObject : AnyObject], for: .normal)
                 $0.segmentTitles = QueryBuilderViewController.aggregateOperators
                 $0.selectedIndex = 0
@@ -182,7 +183,7 @@ class QueryBuilderViewController: UIViewController, UITextFieldDelegate {
             $0.tintColor = .blue
             }.configure {
                 $0.attributedPlaceholder = NSAttributedString(string:"0",
-                    attributes:[NSForegroundColorAttributeName: UIColor.white])
+                                                              attributes:[NSAttributedStringKey.foregroundColor: UIColor.white])
             }.onTextChanged { [weak self] txt in
                 self?.lowerBound = txt
         }
@@ -199,7 +200,7 @@ class QueryBuilderViewController: UIViewController, UITextFieldDelegate {
             $0.tintColor = .blue
             }.configure {
                 $0.attributedPlaceholder = NSAttributedString(string:"100",
-                    attributes:[NSForegroundColorAttributeName: UIColor.white])
+                                                              attributes:[NSAttributedStringKey.foregroundColor: UIColor.white])
             }.onTextChanged { [weak self] txt in
                 self?.upperBound = txt
         }
@@ -215,7 +216,7 @@ class QueryBuilderViewController: UIViewController, UITextFieldDelegate {
             $0.textField.returnKeyType = .next
             $0.tintColor = .blue
             }.configure {
-                $0.attributedPlaceholder = NSAttributedString(string:self.queryName, attributes:[NSForegroundColorAttributeName: UIColor.white])
+                $0.attributedPlaceholder = NSAttributedString(string:self.queryName, attributes:[NSAttributedStringKey.foregroundColor: UIColor.white])
             }.onTextChanged { [weak self] txt in
                 self?.queryName = txt
         }
@@ -224,7 +225,7 @@ class QueryBuilderViewController: UIViewController, UITextFieldDelegate {
         former.append(sectionFormer: section)
     }
 
-    func donePicker() {
+    @objc func donePicker() {
         self.view.endEditing(true)
     }
 

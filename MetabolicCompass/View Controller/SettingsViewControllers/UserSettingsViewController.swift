@@ -82,9 +82,9 @@ class UserSettingsViewController: BaseViewController {
         let paragraphStyle = NSMutableParagraphStyle()
         paragraphStyle.alignment = .right
 
-        let placeholderAttrs: [String: AnyObject] = [
-            NSForegroundColorAttributeName: UIColor.lightGray,
-            NSParagraphStyleAttributeName: paragraphStyle
+        let placeholderAttrs: [NSAttributedStringKey: Any] = [
+            NSAttributedStringKey(rawValue: NSAttributedStringKey.foregroundColor.rawValue): UIColor.lightGray,
+            NSAttributedStringKey.paragraphStyle: paragraphStyle
         ]
 
         hotwordInput.attributedPlaceholder = NSAttributedString(string: hotword, attributes: placeholderAttrs)
@@ -163,11 +163,11 @@ class UserSettingsViewController: BaseViewController {
         NotificationCenter.default.post(name: NSNotification.Name(rawValue: USNDidUpdateBlackoutNotification), object: nil)
     }
 
-    func rightAction(_ sender: UIBarButtonItem) {
+    @objc func rightAction(_ sender: UIBarButtonItem) {
         doSave()
     }
 
-    func leftAction(_ sender: UIBarButtonItem) {
+    @objc func leftAction(_ sender: UIBarButtonItem) {
         if dataChanged() {
             let lsConfirmTitle = "Confirm cancel".localized
             let lsConfirmMessage = "Your changes have not been saved yet. Continue without saving?".localized
@@ -215,9 +215,9 @@ class UserSettingsViewController: BaseViewController {
                     let paragraphStyle = NSMutableParagraphStyle()
                     paragraphStyle.alignment = .right
 
-                    let placeholderAttrs: [String: AnyObject] = [
-                        NSForegroundColorAttributeName: UIColor.lightGray,
-                        NSParagraphStyleAttributeName: paragraphStyle
+                    let placeholderAttrs: [NSAttributedStringKey: Any] = [
+                        NSAttributedStringKey.foregroundColor: UIColor.lightGray,
+                        NSAttributedStringKey.paragraphStyle: paragraphStyle
                     ]
 
                     $0.attributedPlaceholder = NSAttributedString(string: rowSpec.1, attributes: placeholderAttrs)
@@ -384,7 +384,7 @@ class UserSettingsViewController: BaseViewController {
         self.present(alertController, animated: true, completion: nil)
     }
 
-    func refreshRemoteLogDisplay() {
+    @objc func refreshRemoteLogDisplay() {
         Async.main(after: 0.2) {
 //            log.info("RemoteLogManager config name \(RemoteLogManager.sharedManager.log.configName)")
             self.remoteLogConfigLabel.cellUpdate {

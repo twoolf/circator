@@ -14,7 +14,7 @@ class DashboardMetricsAppearanceProvider: NSObject {
     
     func attributedText(_ text: String, forSampleType sampleType: String, active: Bool) -> NSAttributedString
     {
-        return NSAttributedString(string: text, attributes: [NSForegroundColorAttributeName: self.colorForSampleType(sampleType, active: active)])
+        return NSAttributedString(string: text, attributes: [NSAttributedStringKey.foregroundColor: self.colorForSampleType(sampleType, active: active)])
     }
     
     func colorForSampleType(_ sampleType: String, active: Bool) -> UIColor

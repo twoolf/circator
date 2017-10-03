@@ -133,7 +133,7 @@ class BalanceSampleListController: UIViewController, UITableViewDelegate, UITabl
             self.closeAction()
             return
         }
-        block()
+        block(())
     }
 
     @IBAction func closeAction() {

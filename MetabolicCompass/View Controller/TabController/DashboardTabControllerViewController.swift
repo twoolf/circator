@@ -55,7 +55,7 @@ class DashboardTabControllerViewController: UIViewController {
     private let manageDashboardControllerSegue = "ManageDashboardSegue"
     private let manageBalanceControllerSegue   = "ManageBalanceSegue"
     
-    func didSelectFiltersButton(_ sender: AnyObject) {
+    @objc func didSelectFiltersButton(_ sender: AnyObject) {
         OperationQueue.main.addOperation {
             [weak self] in self?.performSegue(withIdentifier: (self?.filterControllerSegue)!, sender: self)
 
@@ -74,7 +74,7 @@ class DashboardTabControllerViewController: UIViewController {
         
     }
     
-    func didSelectManageButton(_ sender: AnyObject) {
+    @objc func didSelectManageButton(_ sender: AnyObject) {
         OperationQueue.main.addOperation {
             [weak self] in
             self?.performSegue(withIdentifier: (self?.manageSegueForIndex((self?.segmentedControll.selectedSegmentIndex)!))!, sender: self)

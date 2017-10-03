@@ -287,7 +287,7 @@ public class NotificationManager {
             msg = inAppMsg
         }
 
-        let view = MessageView.viewFromNib(layout: .CardView)
+        let view = MessageView.viewFromNib(layout: .cardView)
         view.configureTheme(.info)
         view.configureContent(title: notification.alertTitle ?? "Metabolic Compass", body: msg)
         view.button?.isHidden = true

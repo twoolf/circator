@@ -101,7 +101,7 @@ public class SlideButtonArray: UIView, SlideButtonArrayDelegate {
             button.setTitle(spec.0, for: .normal)
             button.setTitleColor(UIColor.ht_midnightBlue(), for: .normal)
             button.titleLabel?.contentMode = .center
-            button.titleLabel?.font = UIFont.systemFont(ofSize: 12.0, weight: UIFontWeightBold)
+            button.titleLabel?.font = UIFont.systemFont(ofSize: 12.0, weight: UIFont.Weight.bold)
 
             let imageSize: CGSize = button.imageView!.image!.size
             button.titleEdgeInsets = UIEdgeInsetsMake(0.0, -imageSize.width, -((screenSize.height < 569 ? 0.62 : 0.7) * imageSize.height), 0.0)
@@ -254,7 +254,7 @@ public class SlideButtonArray: UIView, SlideButtonArrayDelegate {
         }
     }
 
-    public func handleTap(sender: UIButton) {
+   @objc public func handleTap(sender: UIButton) {
         if activeButtonIndex >= 0 {
             layoutDefault()
         } else {

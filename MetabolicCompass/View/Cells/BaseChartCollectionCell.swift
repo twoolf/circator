@@ -27,7 +27,7 @@ class BaseChartCollectionCell: UICollectionViewCell {
         chartBackgroundImage.layer.cornerRadius = 5.0
         chartBackgroundImage.layer.masksToBounds = true
         chartBackgroundImage.layer.borderWidth = 1.5
-        chartBackgroundImage.layer.borderColor = UIColor(colorLiteralRed: 51.0/255.0, green: 138.0/255.0, blue: 255.0/255.0, alpha: 1.0).cgColor
+        chartBackgroundImage.layer.borderColor = UIColor(red: 51.0/255.0, green: 138.0/255.0, blue: 255.0/255.0, alpha: 1.0).cgColor
         
         baseChartPreperation(chart: self.chartView)
         

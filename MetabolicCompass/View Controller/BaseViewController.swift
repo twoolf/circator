@@ -55,7 +55,7 @@ class BaseViewController: UIViewController, UIGestureRecognizerDelegate {
         hideKeyboard()
     }
 
-    func cancelKeyboard() {
+    @objc func cancelKeyboard() {
         hideKeyboard()
     }
 
@@ -77,7 +77,7 @@ class BaseViewController: UIViewController, UIGestureRecognizerDelegate {
 
     func createBarButtonItem(_ title: String?, action: Selector) -> UIBarButtonItem{
         let bbItem = UIBarButtonItem(title: title, style: UIBarButtonItemStyle.plain, target: self, action: action)
-        bbItem.setTitleTextAttributes([NSForegroundColorAttributeName: ScreenManager.appTitleTextColor()], for: UIControlState.normal)
+        bbItem.setTitleTextAttributes([NSAttributedStringKey.foregroundColor: ScreenManager.appTitleTextColor()], for: UIControlState.normal)
         return bbItem
     }
 
@@ -126,7 +126,7 @@ class BaseViewController: UIViewController, UIGestureRecognizerDelegate {
         NotificationCenter.default.addObserver(self, selector: #selector(self.keyboardWillHide(notification: )), name:NSNotification.Name.UIKeyboardWillHide, object: nil)
     }
 
-    open func keyboardWillShow(notification:NSNotification){
+    @objc open func keyboardWillShow(notification:NSNotification){
         if let _scrollView = scrollView {
             var userInfo = notification.userInfo!
             var keyboardFrame:CGRect = (userInfo[UIKeyboardFrameBeginUserInfoKey] as! NSValue).cgRectValue
@@ -143,7 +143,7 @@ class BaseViewController: UIViewController, UIGestureRecognizerDelegate {
         }
     }
 
-    func keyboardWillHide(notification:NSNotification) {
+    @objc func keyboardWillHide(notification:NSNotification) {
         switch scrollView {
         case is UICollectionView: break
 //            log.info("CollectionView hiding keyboard")

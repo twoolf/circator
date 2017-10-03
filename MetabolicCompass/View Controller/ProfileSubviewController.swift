@@ -68,7 +68,7 @@ class ProfileSubviewController : FormViewController {
                 $0.textField.keyboardType = UIKeyboardType.default
 
                 }.configure {
-                    let attrs = [NSForegroundColorAttributeName: plcColor]
+                    let attrs = [NSAttributedStringKey.foregroundColor: plcColor]
                     $0.attributedPlaceholder = NSAttributedString(string:placeholder, attributes: attrs)
 
                     if let k = UserProfile.sharedInstance.profileMapping[text], let v = profile[k] as? String {
@@ -99,7 +99,7 @@ class ProfileSubviewController : FormViewController {
         former.append(sectionFormer: profileSection)
     }
 
-    func updateProfile() {
+    @objc func updateProfile() {
 //        log.info("Updating profile..")
         navigationController?.popViewController(animated: true)
     }

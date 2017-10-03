@@ -94,7 +94,7 @@ class DashboardFilterController: UIViewController, UITableViewDelegate, UITableV
 
     //MARK: Actions
     
-    func clearAll () {
+    @objc func clearAll () {
         deselectAll = true
         selectedRows.removeAll()
         tableView.reloadData()
@@ -102,7 +102,7 @@ class DashboardFilterController: UIViewController, UITableViewDelegate, UITableV
         Async.main(after: 2.0) { self.deselectAll = false }
     }
     
-    func closeAction() {
+    @objc func closeAction() {
         self.dismiss(animated: true, completion: nil)
     }
     
@@ -193,8 +193,8 @@ class DashboardFilterController: UIViewController, UITableViewDelegate, UITableV
         }
     }
     
-    // MARK: Helpers
-    func toggleSectionVisibility(_ sender: UITapGestureRecognizer) {
+    // MARK: @objc Helpers
+    @objc func toggleSectionVisibility(_ sender: UITapGestureRecognizer) {
         if let section = sender.view?.tag {
             sectionVisibility[section] = !sectionVisibility[section]
             self.tableView.reloadData()

@@ -38,7 +38,7 @@ class PlotViewController: UIViewController, ChartViewDelegate {
 
     lazy var historyLabel: UILabel = {
         let label: UILabel = UILabel()
-        label.font = UIFont.systemFont(ofSize: 16, weight: UIFontWeightSemibold)
+        label.font = UIFont.systemFont(ofSize: 16, weight: UIFont.Weight.semibold)
         label.textColor = Theme.universityDarkTheme.backgroundColor
         label.textAlignment = .center
         label.text = NSLocalizedString("Personal History", comment: "Plot view section title label")
@@ -48,7 +48,7 @@ class PlotViewController: UIViewController, ChartViewDelegate {
     lazy var summaryLabel: UILabel = {
         let label: UILabel = UILabel()
         let number = 4
-        label.font = UIFont.systemFont(ofSize: 16, weight: UIFontWeightSemibold)
+        label.font = UIFont.systemFont(ofSize: 16, weight: UIFont.Weight.semibold)
         label.textColor = Theme.universityDarkTheme.backgroundColor
         label.textAlignment = .center
         label.text = NSLocalizedString("20% Increments of your Data", comment: "Summary view section title label")

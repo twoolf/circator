@@ -34,7 +34,7 @@ def shared_pods
     pod 'SwiftyBeaver'
     pod 'SwiftyJSON' 
     pod 'SwiftyUserDefaults', :git => 'https://github.com/radex/SwiftyUserDefaults.git'
-    pod 'SwiftMessages' 
+    pod 'SwiftMessages’, :git => 'https://github.com/SwiftKickMobile/SwiftMessages.git’, :branch => 'swift4.0’
 end
 
 target 'MetabolicCompassKit' do

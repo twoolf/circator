@@ -74,7 +74,7 @@ class LoginViewController: BaseViewController {
     }
 
     func loginComplete() {
-        if let comp = self.completion { comp() }
+        if let comp = self.completion { comp(()) }
         self.navigationController?.popToRootViewController(animated: true)
         
         Async.main {

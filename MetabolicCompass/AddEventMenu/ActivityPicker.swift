@@ -71,7 +71,7 @@ open class PickerManager: NSObject, AKPickerViewDelegate, AKPickerViewDataSource
         return self.items[item]
     }
     
-    public func itemSelected(_ sender: UILongPressGestureRecognizer) {
+    @objc public func itemSelected(_ sender: UILongPressGestureRecognizer) {
         if sender.state == .began {
             if let index = sender.view?.tag {
                 itemContentViews[index]?.superview?.layer.borderColor = UIColor.ht_jay().cgColor

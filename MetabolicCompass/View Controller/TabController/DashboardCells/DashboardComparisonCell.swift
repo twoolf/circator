@@ -82,11 +82,11 @@ class DashboardComparisonCell: UITableViewCell {
         let stale = true
         var text = DashboardComparisonCell.healthFormatter.stringFromSamples(samples: results)
 
-        let formatAttrs = [NSForegroundColorAttributeName: stale ? staleDigitColor : defaultDigitColor,
-                           NSFontAttributeName : ScreenManager.appFontOfSize(size: 16)]
+        let formatAttrs = [NSAttributedStringKey.foregroundColor: stale ? staleDigitColor : defaultDigitColor,
+                           NSAttributedStringKey.font : ScreenManager.appFontOfSize(size: 16)]
 
-        let defaultFormatAttrs = [NSForegroundColorAttributeName: defaultTextColor,
-                                  NSFontAttributeName : ScreenManager.appFontOfSize(size: 16)]
+        let defaultFormatAttrs = [NSAttributedStringKey.foregroundColor: defaultTextColor,
+                                  NSAttributedStringKey.font : ScreenManager.appFontOfSize(size: 16)]
 
         localSampleValueTextField.attributedText =
             text.formatTextWithRegex(regex: "[-+]?(\\d*[.,/])?\\d+", format: formatAttrs, defaultFormat: defaultFormatAttrs)
@@ -100,11 +100,11 @@ class DashboardComparisonCell: UITableViewCell {
         if stale { text = text + "**" }
         print("stale or not in population \(stale)")
 
-        let formatAttrs = [NSForegroundColorAttributeName: stale ? staleDigitColor : defaultDigitColor,
-                           NSFontAttributeName : ScreenManager.appFontOfSize(size: 16)]
+        let formatAttrs = [NSAttributedStringKey.foregroundColor: stale ? staleDigitColor : defaultDigitColor,
+                           NSAttributedStringKey.font : ScreenManager.appFontOfSize(size: 16)]
 
-        let defaultFormatAttrs = [NSForegroundColorAttributeName: defaultTextColor,
-                                  NSFontAttributeName : ScreenManager.appFontOfSize(size: 16)]
+        let defaultFormatAttrs = [NSAttributedStringKey.foregroundColor: defaultTextColor,
+                                  NSAttributedStringKey.font : ScreenManager.appFontOfSize(size: 16)]
 
         populationSampleValueTextField.attributedText =
             text.formatTextWithRegex(regex: "[-+]?(\\d*[.,/])?\\d+", format: formatAttrs, defaultFormat: defaultFormatAttrs)

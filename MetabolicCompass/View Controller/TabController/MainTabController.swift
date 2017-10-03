@@ -91,7 +91,7 @@ class MainTabController: UITabBarController, UITabBarControllerDelegate, ManageE
     }
     
     // MARK :- Notifications
-    func userDidLogin() {
+    @objc func userDidLogin() {
         Async.main(after: 0.5) {
             if self.manageEventMenu != nil {
                 self.manageEventMenu!.isHidden = false
@@ -101,11 +101,11 @@ class MainTabController: UITabBarController, UITabBarControllerDelegate, ManageE
         }
     }
 
-    func userDidLogout() {
+    @objc func userDidLogout() {
         self.manageEventMenu!.isHidden = true
     }
 
-    func userAddedCircadianEvents() {
+    @objc func userAddedCircadianEvents() {
         lastMenuUseAddedEvents = true
     }
 
@@ -142,7 +142,7 @@ class MainTabController: UITabBarController, UITabBarControllerDelegate, ManageE
         }
     }
 
-    func syncBegan(notification: NSNotification) {
+    @objc func syncBegan(notification: NSNotification) {
         if let dict = notification.userInfo, let initial = dict["count"] as? Int {
             if !syncMode {
                 NotificationCenter.default.addObserver(self, selector: #selector(self.syncProgress), name: NSNotification.Name(rawValue: SyncProgressNotification), object: nil)
@@ -181,7 +181,7 @@ class MainTabController: UITabBarController, UITabBarControllerDelegate, ManageE
         UINotifications.genericError(vc: self, msg: "Data syncing was too slow, we will continue it in the background.")
     }
 
-    func syncEnded() {
+    @objc func syncEnded() {
         if syncMode {
             NotificationCenter.default.removeObserver(self, name: NSNotification.Name(rawValue: SyncProgressNotification), object: nil)
         }
@@ -198,7 +198,7 @@ class MainTabController: UITabBarController, UITabBarControllerDelegate, ManageE
         log.debug("DATA SYNC finished", feature: "dataSync")
     }
 
-    func syncProgress(notification: NSNotification) {
+    @objc func syncProgress(notification: NSNotification) {
         if let dict = notification.userInfo, let c = dict["count"] as? Int {
             let counter = CGFloat(c)
             if counter > syncInitial {

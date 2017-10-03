@@ -87,7 +87,7 @@ class CircadianBehaviorViewController: UITabBarController {
         
     }
     
-    func logEvent() {
+    @objc func logEvent() {
         
         let vc = LogEventViewController()
         self.present(vc, animated: true, completion: nil)

@@ -156,8 +156,8 @@ class MetabolicDailyProgressChartView : HorizontalBarChartView, DailyChartModelP
 //        self.setVisibleXRange(minXRange: CGFloat(self.xAxis.axisRange/zoomFactor), maxXRange: CGFloat(self.xAxis.axisRange))
 }
 
-    func toggleColors() {
-        changeColorCompletion?()
+    @objc func toggleColors() {
+        changeColorCompletion?(())
     }
 
 }

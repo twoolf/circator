@@ -49,16 +49,16 @@ class DialViewController : UIViewController, ChartViewDelegate {
         label.font = UIFont(name: "GothamBook", size: dialLegendLabelSize)!
         label.textColor = .lightGray
 
-        let basicAttrs = [NSForegroundColorAttributeName: UIColor.white]
+        let basicAttrs = [NSAttributedStringKey.foregroundColor: UIColor.white]
 
-        let sleepAttrs = [NSForegroundColorAttributeName: MetabolicDailyProgressChartView.sleepColor,
-                          NSBackgroundColorAttributeName: MetabolicDailyProgressChartView.sleepColor]
+        let sleepAttrs = [NSAttributedStringKey.foregroundColor: MetabolicDailyProgressChartView.sleepColor,
+                          NSAttributedStringKey.backgroundColor: MetabolicDailyProgressChartView.sleepColor]
 
-        let eatAttrs = [NSForegroundColorAttributeName: MetabolicDailyProgressChartView.eatingColor,
-                        NSBackgroundColorAttributeName: MetabolicDailyProgressChartView.eatingColor]
+        let eatAttrs = [NSAttributedStringKey.foregroundColor: MetabolicDailyProgressChartView.eatingColor,
+                        NSAttributedStringKey.backgroundColor: MetabolicDailyProgressChartView.eatingColor]
 
-        let exAttrs = [NSForegroundColorAttributeName: MetabolicDailyProgressChartView.exerciseColor,
-                       NSBackgroundColorAttributeName: MetabolicDailyProgressChartView.exerciseColor]
+        let exAttrs = [NSAttributedStringKey.foregroundColor: MetabolicDailyProgressChartView.exerciseColor,
+                       NSAttributedStringKey.backgroundColor: MetabolicDailyProgressChartView.exerciseColor]
 
 
         let aString = NSMutableAttributedString(string: "◻︎ Sleep ◻︎ Eating ◻︎ Exercise", attributes: basicAttrs)
@@ -69,7 +69,7 @@ class DialViewController : UIViewController, ChartViewDelegate {
         let paragraphStyle = NSMutableParagraphStyle()
         paragraphStyle.lineSpacing = 5.0
         paragraphStyle.alignment = .center
-        aString.addAttribute(NSParagraphStyleAttributeName, value: paragraphStyle, range: NSMakeRange(0, aString.length))
+        aString.addAttribute(NSAttributedStringKey.paragraphStyle, value: paragraphStyle, range: NSMakeRange(0, aString.length))
 
         label.attributedText = aString
 
@@ -202,19 +202,19 @@ class DialViewController : UIViewController, ChartViewDelegate {
     }
 
     func refreshLegend() {
-        let basicAttrs = [NSForegroundColorAttributeName: UIColor.white]
+        let basicAttrs = [NSAttributedStringKey.foregroundColor: UIColor.white]
 
-        let segmentAttrs = [NSForegroundColorAttributeName: AnalysisDataModel.sharedInstance.cycleModel.segmentColor(),
-                            NSBackgroundColorAttributeName: AnalysisDataModel.sharedInstance.cycleModel.segmentColor()]
+        let segmentAttrs = [NSAttributedStringKey.foregroundColor: AnalysisDataModel.sharedInstance.cycleModel.segmentColor(),
+                            NSAttributedStringKey.backgroundColor: AnalysisDataModel.sharedInstance.cycleModel.segmentColor()]
 
-        let sleepAttrs = [NSForegroundColorAttributeName: MetabolicDailyProgressChartView.sleepColor,
-                          NSBackgroundColorAttributeName: MetabolicDailyProgressChartView.sleepColor]
+        let sleepAttrs = [NSAttributedStringKey.foregroundColor: MetabolicDailyProgressChartView.sleepColor,
+                          NSAttributedStringKey.backgroundColor: MetabolicDailyProgressChartView.sleepColor]
 
-        let eatAttrs = [NSForegroundColorAttributeName: MetabolicDailyProgressChartView.eatingColor,
-                        NSBackgroundColorAttributeName: MetabolicDailyProgressChartView.eatingColor]
+        let eatAttrs = [NSAttributedStringKey.foregroundColor: MetabolicDailyProgressChartView.eatingColor,
+                        NSAttributedStringKey.backgroundColor: MetabolicDailyProgressChartView.eatingColor]
 
-        let exAttrs = [NSForegroundColorAttributeName: MetabolicDailyProgressChartView.exerciseColor,
-                       NSBackgroundColorAttributeName: MetabolicDailyProgressChartView.exerciseColor]
+        let exAttrs = [NSAttributedStringKey.foregroundColor: MetabolicDailyProgressChartView.exerciseColor,
+                       NSAttributedStringKey.backgroundColor: MetabolicDailyProgressChartView.exerciseColor]
 
         let paragraphStyle = NSMutableParagraphStyle()
         paragraphStyle.lineSpacing = 5.0
@@ -226,19 +226,19 @@ class DialViewController : UIViewController, ChartViewDelegate {
             aString.addAttributes(sleepAttrs, range: NSRange(location:0, length: 1))
             aString.addAttributes(eatAttrs, range: NSRange(location:10, length: 1))
             aString.addAttributes(exAttrs, range: NSRange(location:21, length: 1))
-            aString.addAttribute(NSParagraphStyleAttributeName, value: paragraphStyle, range: NSMakeRange(0, aString.length))
+            aString.addAttribute(NSAttributedStringKey.paragraphStyle, value: paragraphStyle, range: NSMakeRange(0, aString.length))
             self.activityLegendLabel.attributedText = aString
 
         case 1:
             let aString = NSMutableAttributedString(string: "◻︎  Max Heart Rate", attributes: basicAttrs)
             aString.addAttributes(segmentAttrs, range: NSRange(location:0, length: 1))
-            aString.addAttribute(NSParagraphStyleAttributeName, value: paragraphStyle, range: NSMakeRange(0, aString.length))
+            aString.addAttribute(NSAttributedStringKey.paragraphStyle, value: paragraphStyle, range: NSMakeRange(0, aString.length))
             self.activityLegendLabel.attributedText = aString
 
         default:
             let aString = NSMutableAttributedString(string: "◻︎  Max Step Count", attributes: basicAttrs)
             aString.addAttributes(segmentAttrs, range: NSRange(location:0, length: 1))
-            aString.addAttribute(NSParagraphStyleAttributeName, value: paragraphStyle, range: NSMakeRange(0, aString.length))
+            aString.addAttribute(NSAttributedStringKey.paragraphStyle, value: paragraphStyle, range: NSMakeRange(0, aString.length))
             self.activityLegendLabel.attributedText = aString
         }
 
@@ -262,7 +262,7 @@ class DialViewController : UIViewController, ChartViewDelegate {
         }
     }
 
-    func toggleDatasets() {
+    @objc func toggleDatasets() {
         AnalysisDataModel.sharedInstance.cycleModel.segmentIndex =
             (AnalysisDataModel.sharedInstance.cycleModel.segmentIndex + 1) % 3
 
@@ -273,7 +273,7 @@ class DialViewController : UIViewController, ChartViewDelegate {
         }
     }
 
-    func invalidateView(note: NSNotification) {
+    @objc func invalidateView(note: NSNotification) {
         // Reload data if the view is currently visible.
         if ( self.isViewLoaded && (self.view.window != nil || self.visible) ) {
             self.refreshData()
@@ -289,8 +289,8 @@ class DialViewController : UIViewController, ChartViewDelegate {
     let scType = HKSampleType.quantityType(forIdentifier: HKQuantityTypeIdentifier.stepCount)!
     var array = [(Date, ChartDataEntry)] ()
 
-        let txtFont = UIFont.systemFont(ofSize: 20, weight: UIFontWeightRegular)
-        let numberFont = UIFont.systemFont(ofSize: 14, weight: UIFontWeightRegular)
+        let txtFont = UIFont.systemFont(ofSize: 20, weight: UIFont.Weight.regular)
+        let numberFont = UIFont.systemFont(ofSize: 14, weight: UIFont.Weight.regular)
 
         var slRange: NSRange! = nil
         var eatRange: NSRange! = nil
@@ -340,25 +340,25 @@ class DialViewController : UIViewController, ChartViewDelegate {
             break
         }
 
-        let attrs : [String: AnyObject] = [
-            NSFontAttributeName: txtFont,
-            NSForegroundColorAttributeName: UIColor.white
+        let attrs : [NSAttributedStringKey: Any] = [
+            NSAttributedStringKey.font: txtFont,
+            NSAttributedStringKey.foregroundColor: UIColor.white
         ]
 
         let aString = NSMutableAttributedString(string: entryStr, attributes: attrs)
 
         if aString.length > 5 {
-            aString.addAttribute(NSFontAttributeName, value: numberFont, range: NSMakeRange(6, aString.length - 6))
+            aString.addAttribute(NSAttributedStringKey.font, value: numberFont, range: NSMakeRange(6, aString.length - 6))
 
             if AnalysisDataModel.sharedInstance.cycleModel.segmentIndex == 0 {
-                let sleepAttrs = [NSForegroundColorAttributeName: MetabolicDailyProgressChartView.sleepColor,
-                                  NSBackgroundColorAttributeName: MetabolicDailyProgressChartView.sleepColor]
+                let sleepAttrs = [NSAttributedStringKey.foregroundColor: MetabolicDailyProgressChartView.sleepColor,
+                                  NSAttributedStringKey.backgroundColor: MetabolicDailyProgressChartView.sleepColor]
 
-                let eatAttrs = [NSForegroundColorAttributeName: MetabolicDailyProgressChartView.eatingColor,
-                                NSBackgroundColorAttributeName: MetabolicDailyProgressChartView.eatingColor]
+                let eatAttrs = [NSAttributedStringKey.foregroundColor: MetabolicDailyProgressChartView.eatingColor,
+                                NSAttributedStringKey.backgroundColor: MetabolicDailyProgressChartView.eatingColor]
 
-                let exAttrs = [NSForegroundColorAttributeName: MetabolicDailyProgressChartView.exerciseColor,
-                               NSBackgroundColorAttributeName: MetabolicDailyProgressChartView.exerciseColor]
+                let exAttrs = [NSAttributedStringKey.foregroundColor: MetabolicDailyProgressChartView.exerciseColor,
+                               NSAttributedStringKey.backgroundColor: MetabolicDailyProgressChartView.exerciseColor]
 
                 aString.addAttributes(sleepAttrs, range: slRange)
                 aString.addAttributes(eatAttrs, range: eatRange)
@@ -368,7 +368,7 @@ class DialViewController : UIViewController, ChartViewDelegate {
 
         let paragraphStyle = NSMutableParagraphStyle()
         paragraphStyle.alignment = .center
-        aString.addAttribute(NSParagraphStyleAttributeName, value: paragraphStyle, range: NSMakeRange(0, aString.length))
+        aString.addAttribute(NSAttributedStringKey.paragraphStyle, value: paragraphStyle, range: NSMakeRange(0, aString.length))
 
         pieChart.centerAttributedText = aString
         pieChart.drawCenterTextEnabled = true

@@ -40,14 +40,14 @@ class AdditionalInfoViewController: BaseViewController {
         self.navigationItem.title = NSLocalizedString("PHYSIOLOGICAL DATA", comment: "additional info data")
     }
     
-    func cancelAction () {
+    @objc func cancelAction () {
         self.dismiss(animated: true, completion: { [weak controller = self.registerViewController] in
             Answers.logCustomEvent(withName: "Register Additional", customAttributes: ["WithAdditional": false])
             controller?.registrationComplete()
         });
     }
     
-    func nextAction() {
+    @objc func nextAction() {
         startAction()
         dataSource.model.additionalInfoDict { (error, additionalInfo) in
             guard error == nil else {

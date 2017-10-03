@@ -130,7 +130,7 @@ open class CorrelationChartsViewController: UIViewController, UITableViewDelegat
         NotificationCenter.default.removeObserver(self)
     }
 
-    func updateChartDataWithClean() {
+    @objc func updateChartDataWithClean() {
         scatterChartsModel.typesChartData = [:]
         lineChartsModelTop.typesChartData = [:]
         lineChartsModelBottom.typesChartData = [:]
@@ -139,7 +139,7 @@ open class CorrelationChartsViewController: UIViewController, UITableViewDelegat
         updateChartsData ()
     }
 
-    func updateChartsData () {
+    @objc func updateChartsData () {
         if (!activityIndicator.isAnimating) {
             activityIndicator.startAnimating()
         }
@@ -238,7 +238,7 @@ open class CorrelationChartsViewController: UIViewController, UITableViewDelegat
         pickerView.selectRow(row, inComponent: 0, animated: true)
     }
 
-    func hideTextField() {
+    @objc func hideTextField() {
         assistTextField.resignFirstResponder()
     }
 

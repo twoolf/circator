@@ -111,7 +111,7 @@ class RegisterModelDataSource: BaseDataSource {
         let cell = collectionView!.dequeueReusableCell(withReuseIdentifier: inputTextCellIdentifier, for: indexPath as IndexPath) as! InputCollectionViewCell
 
         cell.inputTxtField.textColor = selectedTextColor
-        cell.inputTxtField.attributedPlaceholder = NSAttributedString(string: (field.type == .HeightInches ? "0-11 " : field.title), attributes: [NSForegroundColorAttributeName : unselectedTextColor, NSFontAttributeName: RegisterFont])
+        cell.inputTxtField.attributedPlaceholder = NSAttributedString(string: (field.type == .HeightInches ? "0-11 " : field.title), attributes: [NSAttributedStringKey.foregroundColor : unselectedTextColor, NSAttributedStringKey.font: RegisterFont])
 
         cell.inputTxtField.text = field.stringValue()
         cell.inputTxtField.font = ProfileFont
@@ -149,14 +149,14 @@ class RegisterModelDataSource: BaseDataSource {
                 cell.imageTxtSpacing?.constant = 8
                 cell.labelCellSpacing?.constant = 8
                 cell.nameLbl.font = RegisterUnitsFont
-                cell.inputTxtField.attributedPlaceholder = NSAttributedString(string: field.title, attributes: [NSForegroundColorAttributeName : unselectedTextColor, NSFontAttributeName: RegisterUnitsFont])
+                cell.inputTxtField.attributedPlaceholder = NSAttributedString(string: field.title, attributes: [NSAttributedStringKey.foregroundColor : unselectedTextColor, NSAttributedStringKey.font: RegisterUnitsFont])
 
             }
             else if field.type == .Weight {
                 //cell.imageTxtSpacing?.constant = 8
                 cell.labelCellSpacing?.constant = 8
                 cell.nameLbl.font = RegisterUnitsFont
-                cell.inputTxtField.attributedPlaceholder = NSAttributedString(string: field.title, attributes: [NSForegroundColorAttributeName : unselectedTextColor, NSFontAttributeName: RegisterUnitsFont])
+                cell.inputTxtField.attributedPlaceholder = NSAttributedString(string: field.title, attributes: [NSAttributedStringKey.foregroundColor : unselectedTextColor, NSAttributedStringKey.font: RegisterUnitsFont])
 
             }
         }

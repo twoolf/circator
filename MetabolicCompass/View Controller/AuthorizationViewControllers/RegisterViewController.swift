@@ -126,7 +126,7 @@ private let inputFontSize = ScreenManager.sharedInstance.profileInputFontSize()
 
     func registrationComplete() {
         self.navigationController?.popViewController(animated: true)
-        self.registerCompletion?()
+        self.registerCompletion?(())
     }
 
     // MARK: - Navigation

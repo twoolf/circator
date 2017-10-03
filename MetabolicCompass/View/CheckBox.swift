@@ -29,7 +29,7 @@ class CheckBox : AppButton {
         }
     }
     
-    public func buttonClicked(_ sender: UIButton) {
+    @objc public func buttonClicked(_ sender: UIButton) {
         isChecked = !isChecked
         
         if let _ = delegate {

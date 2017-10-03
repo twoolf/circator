@@ -119,7 +119,7 @@ public class ManageEventMenu: UIView, CAAnimationDelegate, PathMenuItemDelegate 
         self.startButton!.center = startPoint
         self.addSubview(startButton!)
 
-        let attrs = [NSFontAttributeName: UIFont.systemFont(ofSize: 17, weight: UIFontWeightRegular)]
+        let attrs = [NSAttributedStringKey.font: UIFont.systemFont(ofSize: 17, weight: UIFont.Weight.regular)]
         self.segmenter = UISegmentedControl(items: ["Add Activity", "Delete Activity"])
         self.segmenter.selectedSegmentIndex = 0
         self.segmenter.setTitleTextAttributes(attrs, for: .normal)
@@ -176,7 +176,7 @@ public class ManageEventMenu: UIView, CAAnimationDelegate, PathMenuItemDelegate 
         getOtherManagerView()?.isHidden = true
     }
 
-    public func segmentChanged(_ sender: UISegmentedControl) {
+    @objc public func segmentChanged(_ sender: UISegmentedControl) {
         Async.main {
             self.refreshHiddenFromSegmenter()
             self.updateViewFromSegmenter()
@@ -263,7 +263,7 @@ public class ManageEventMenu: UIView, CAAnimationDelegate, PathMenuItemDelegate 
         }
     }
     
-    public func expand() {
+    @objc public func expand() {
         if flag == 11 {
             timer?.invalidate()
             timer = nil
@@ -295,7 +295,7 @@ public class ManageEventMenu: UIView, CAAnimationDelegate, PathMenuItemDelegate 
         flag! += 1
     }
     
-    public func close() {
+   @objc public func close() {
         if flag! == -1 {
             timer?.invalidate()
             timer = nil

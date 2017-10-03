@@ -70,7 +70,7 @@ class DashboardManageBalanceController: UIViewController, UITableViewDelegate, U
         self.tableView.reloadData()
     }
     
-    func contentDidChange() {
+    @objc func contentDidChange() {
  //       Async.main {
         OperationQueue.main.addOperation {
             self.refreshContent()

@@ -104,7 +104,7 @@ open class AppPickerManager: PickerManager, PickerManagerSelectionDelegate {
         let height = cellHeight()
 
         let txt = label.text ?? ""
-        let size = txt.size(attributes: [NSFontAttributeName: label.font])
+        let size = txt.size(withAttributes: [NSAttributedStringKey.font: label.font])
         return max(max(size.width, image.image!.size.width), height)
     }
 
@@ -137,7 +137,7 @@ open class AppPickerManager: PickerManager, PickerManagerSelectionDelegate {
             label.widthAnchor.constraint(equalToConstant: width)
         ]
 
-        constraints[0].priority = 1000
+        constraints[0].priority = UILayoutPriority(rawValue: 1000)
         return constraints
     }
 
@@ -375,7 +375,7 @@ open class AddActivityManager: UITableView, UITableViewDelegate, UITableViewData
         return [label, button]
     }
 
-    public func addFrequentActivity(_ sender: UIButton) {
+    @objc public func addFrequentActivity(_ sender: UIButton) {
         log.debug("Selected freq. activity \(sender.tag)", feature: "freqActivity")
         sender.isSelected = !sender.isSelected
     }
@@ -470,7 +470,7 @@ open class AddActivityManager: UITableView, UITableViewDelegate, UITableViewData
                 
                 log.info("FAQ dedup \(activitiesToday)")
                 
-                activities = activitiesToday.map({ $0.1 }).sorted { $0.0.start < $0.1.start }
+                activities = activitiesToday.map({ $0.1 }).sorted { $0.start < $1.start }
                 success(FrequentActivityInfo(activities: activities), CacheExpiry.seconds(self.cacheDuration))
             } // end cacheBlock
         
@@ -542,7 +542,7 @@ open class AddActivityManager: UITableView, UITableViewDelegate, UITableViewData
                             return FrequentActivity(desc: aInfo.desc, start: aInfo.start - 1.days, duration: aInfo.duration)
                         }
                         return aInfo
-                    }).sorted(by: { $0.0.start < $0.1.start })
+                    }).sorted(by: {$0.start < $1.start })
 
                     reorderedActivities.enumerated().forEach { (index, aInfo) in
                         self.frequentActivityByRow[index] = aInfo
@@ -877,7 +877,7 @@ open class AddActivityManager: UITableView, UITableViewDelegate, UITableViewData
         }
     }
 
-    public func handleQuickAddTap(_ sender: UIButton) {
+    @objc public func handleQuickAddTap(_ sender: UIButton) {
         log.debug("Quick add button pressed", feature: "addActivity")
 
         Async.main {
@@ -890,7 +890,6 @@ open class AddActivityManager: UITableView, UITableViewDelegate, UITableViewData
         })
 
         if let s = selection {
-//            processSelection(sender, pickerManager: s.0, itemType: s.1, index: s.2, item: s.3, data: s.4)
              processSelection(sender, pickerManager: s.0, itemType: s.1, index: s.2, item: s.3, data: s.4)
         } else {
             Async.main {
@@ -901,7 +900,7 @@ open class AddActivityManager: UITableView, UITableViewDelegate, UITableViewData
         }
     }
 
-    func handleFrequentAddTap(_ sender: UIButton) {
+    @objc func handleFrequentAddTap(_ sender: UIButton) {
         log.debug("Adding selected frequent activities", feature: "addActivity")
 
         Async.main {

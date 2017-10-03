@@ -67,11 +67,11 @@ public class FastingViewController : UIViewController, ChartViewDelegate {
     // Balance bars.
 
     lazy var sleepAwakeBalance: BalanceBarView = {
-        let attrs1 = [NSForegroundColorAttributeName: FastingViewController.orange,
-                      NSBackgroundColorAttributeName: FastingViewController.orange]
+        let attrs1 = [NSAttributedStringKey.foregroundColor: FastingViewController.orange,
+                      NSAttributedStringKey.backgroundColor: FastingViewController.orange]
 
-        let attrs2 = [NSForegroundColorAttributeName: FastingViewController.blue,
-                      NSBackgroundColorAttributeName: FastingViewController.blue]
+        let attrs2 = [NSAttributedStringKey.foregroundColor: FastingViewController.blue,
+                      NSAttributedStringKey.backgroundColor: FastingViewController.blue]
 
         var title = NSMutableAttributedString(string: "Weekly fasting asleep (◻︎) vs awake (◻︎)")
         title.addAttributes(attrs1, range: NSRange(location:23, length: 1))
@@ -86,11 +86,11 @@ public class FastingViewController : UIViewController, ChartViewDelegate {
     }()
 
     lazy var eatExerciseBalance: BalanceBarView = {
-        let attrs1 = [NSForegroundColorAttributeName: FastingViewController.yellow,
-                      NSBackgroundColorAttributeName: FastingViewController.yellow]
+        let attrs1 = [NSAttributedStringKey.foregroundColor: FastingViewController.yellow,
+                      NSAttributedStringKey.backgroundColor: FastingViewController.yellow]
 
-        let attrs2 = [NSForegroundColorAttributeName: FastingViewController.green,
-                      NSBackgroundColorAttributeName: FastingViewController.green]
+        let attrs2 = [NSAttributedStringKey.foregroundColor: FastingViewController.green,
+                      NSAttributedStringKey.backgroundColor: FastingViewController.green]
 
         var title = NSMutableAttributedString(string: "Weekly eating (◻︎) vs exercise (◻︎)")
         title.addAttributes(attrs1, range: NSRange(location:15, length: 1))
@@ -370,13 +370,13 @@ public class FastingViewController : UIViewController, ChartViewDelegate {
     //MARK: ChartViewDelegate
 
     public func chartValueSelected(_ chartView: ChartViewBase, entry: PieChartDataEntry, highlight: Highlight) {
-        let numberFont = UIFont.systemFont(ofSize: 20, weight: UIFontWeightRegular)
+        let numberFont = UIFont.systemFont(ofSize: 20, weight: UIFont.Weight.regular)
         let _ : [String: AnyObject] = [
-            NSFontAttributeName: numberFont,
-            NSForegroundColorAttributeName: UIColor.white
+            NSAttributedStringKey.font.rawValue: numberFont,
+            NSAttributedStringKey.foregroundColor.rawValue: UIColor.white
         ]
         let attrString: NSMutableAttributedString = NSMutableAttributedString(string: entry.label!)
-        attrString.addAttribute(NSForegroundColorAttributeName, value: UIColor.white, range: NSMakeRange(0, attrString.length))
+        attrString.addAttribute(NSAttributedStringKey.foregroundColor, value: UIColor.white, range: NSMakeRange(0, attrString.length))
         pieChart.centerAttributedText = attrString
     }
 
@@ -400,25 +400,25 @@ public class FastingViewController : UIViewController, ChartViewDelegate {
         let vStr = String(format: "%.3g", fastingLevel)
 
         var descStr =  NSMutableAttributedString(string: "You've Fasted \(vStr) Hours This Week!", attributes: studyLabelAttrs)
-        descStr.addAttribute(NSFontAttributeName, value: descFont, range: NSMakeRange(0, descStr.length))
+        descStr.addAttribute(NSAttributedStringKey.font, value: descFont, range: NSMakeRange(0, descStr.length))
 
         var lblStr = NSMutableAttributedString(string: description)
-        lblStr.addAttribute(NSFontAttributeName, value: labelFont, range: NSMakeRange(0, lblStr.length))
+        lblStr.addAttribute(NSAttributedStringKey.font, value: labelFont, range: NSMakeRange(0, lblStr.length))
 
         if !compact {
             descStr = NSMutableAttributedString(string: "Your Fasting Streak", attributes: studyLabelAttrs)
-            descStr.addAttribute(NSFontAttributeName, value: descFont, range: NSMakeRange(0, descStr.length))
+            descStr.addAttribute(NSAttributedStringKey.font, value: descFont, range: NSMakeRange(0, descStr.length))
 
             lblStr = NSMutableAttributedString(string: "You've fasted \(vStr) hours this week. \(description)")
-            lblStr.addAttribute(NSFontAttributeName, value: labelFont, range: NSMakeRange(0, lblStr.length))
+            lblStr.addAttribute(NSAttributedStringKey.font, value: labelFont, range: NSMakeRange(0, lblStr.length))
         }
 
         let paragraphStyle = NSMutableParagraphStyle()
         paragraphStyle.lineSpacing = 4.0
         paragraphStyle.alignment = .center
 
-        descStr.addAttribute(NSParagraphStyleAttributeName, value: paragraphStyle, range: NSMakeRange(0, descStr.length))
-        lblStr.addAttribute(NSParagraphStyleAttributeName, value: paragraphStyle, range: NSMakeRange(0, lblStr.length))
+        descStr.addAttribute(NSAttributedStringKey.paragraphStyle, value: paragraphStyle, range: NSMakeRange(0, descStr.length))
+        lblStr.addAttribute(NSAttributedStringKey.paragraphStyle, value: paragraphStyle, range: NSMakeRange(0, lblStr.length))
         
         return (descStr, lblStr)
     }
