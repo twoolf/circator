@@ -306,11 +306,11 @@ open class CorrelationChartsViewController: UIViewController, UITableViewDelegat
         scatterCh.chartView.data = nil
         correlCh.chartView.data = nil
         correlCh.updateMinMaxTitlesWithValues(minValue: "", maxValue: "")
-        correlCh.chartMinValueLabel.text = ""
-        correlCh.chartMaxValueLabel.text = ""
+        correlCh.chartMinValueLabel?.text = ""
+        correlCh.chartMaxValueLabel?.text = ""
 
-        scatterCh.chartMinValueLabel.text = ""
-        scatterCh.chartMaxValueLabel.text = ""
+        scatterCh.chartMinValueLabel?.text = ""
+        scatterCh.chartMaxValueLabel?.text = ""
     }
 
     func xValsForScatterChart(data: ChartDataSet) -> [String] {
