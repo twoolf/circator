@@ -15,7 +15,7 @@ class MetabolicDailyProgressChartView : HorizontalBarChartView, DailyChartModelP
     var tipDummyLabel: UILabel! = nil
 
     var changeColorRecognizer: UITapGestureRecognizer! = nil
-    var changeColorCompletion: ((Void) -> Void)? = nil
+    var changeColorCompletion: (() -> Void)? = nil
 
     class var exerciseColor: UIColor {
         return UIColor.colorWithHex(hex6: 0x20990b, alpha: 0.7)
@@ -157,7 +157,6 @@ class MetabolicDailyProgressChartView : HorizontalBarChartView, DailyChartModelP
 }
 
     @objc func toggleColors() {
-        changeColorCompletion?(())
+          changeColorCompletion?()
     }
-
 }

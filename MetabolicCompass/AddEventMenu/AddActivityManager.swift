@@ -104,7 +104,7 @@ open class AppPickerManager: PickerManager, PickerManagerSelectionDelegate {
         let height = cellHeight()
 
         let txt = label.text ?? ""
-        let size = txt.size(withAttributes: [NSAttributedStringKey.font: label.font])
+        let size = txt.size(withAttributes: [.font: label.font])
         return max(max(size.width, image.image!.size.width), height)
     }
 
@@ -130,14 +130,13 @@ open class AppPickerManager: PickerManager, PickerManagerSelectionDelegate {
             cellForItem.contentView.topAnchor.constraint(equalTo: apps[item].topAnchor, constant: -10.0),
             cellForItem.contentView.bottomAnchor.constraint(equalTo: apps[item].bottomAnchor, constant: 10.0),
             cellForItem.contentView.centerXAnchor.constraint(equalTo: apps[item].centerXAnchor),
-//            apps[item].heightAnchor.constraint(equalToConstant: height - 20.0),
             apps[item].centerXAnchor.constraint(equalTo: image.centerXAnchor),
             apps[item].centerXAnchor.constraint(equalTo: label.centerXAnchor),
             image.heightAnchor.constraint(equalToConstant: height - (label.font.lineHeight + 28.0)),
             label.widthAnchor.constraint(equalToConstant: width)
         ]
 
-        constraints[0].priority = UILayoutPriority(rawValue: 1000)
+        constraints[0].priority = .defaultHigh
         return constraints
     }
 

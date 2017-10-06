@@ -70,8 +70,47 @@ end
 post_install do |installer|
   installer.pods_project.targets.each do |target|
       target.build_configurations.each do |config|
-          config.build_settings['SWIFT_VERSION'] = '3.0'
+          config.build_settings['SWIFT_VERSION'] = '3.2'
       end
+
+     if target.name == 'Charts' 
+            target.build_configurations.each do |config|
+                config.build_settings['SWIFT_VERSION'] = '4.0'
+            end
+        end
+
+    if target.name == ’SwiftyBeaver’ 
+        target.build_configurations.each do |config|
+           config.build_settings['SWIFT_VERSION'] = '4.0'
+        end
+    end
+
+    if target.name == ’CryptoSwift’ 
+        target.build_configurations.each do |config|
+           config.build_settings['SWIFT_VERSION'] = '4.0'
+        end
+    end
+
+    if target.name == ’SwiftDate’ 
+        target.build_configurations.each do |config|
+           config.build_settings['SWIFT_VERSION'] = '4.0'
+        end
+    end
+
+    if target.name == ’SwiftMessages’ 
+        target.build_configurations.each do |config|
+           config.build_settings['SWIFT_VERSION'] = '4.0'
+        end
+    end
+
+   if target.name == ’ResearchKit’ 
+        target.build_configurations.each do |config|
+           config.build_settings['GCC_NO_COMMON_BLOCKS'] = 'NO'
+        end
+    end
+
   end
 end
+
+
 

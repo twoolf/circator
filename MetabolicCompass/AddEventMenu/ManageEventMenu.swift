@@ -242,7 +242,7 @@ public class ManageEventMenu: UIView, CAAnimationDelegate, PathMenuItemDelegate 
             selector = #selector(expand)
             flag = 0
             motionState = .Expand
-            angle = CGFloat(M_PI_4) + CGFloat(Double.pi)
+            angle = CGFloat(Double.pi/4) + CGFloat(Double.pi)
         case .Expand:
             delegate?.manageEventMenuWillAnimateClose(menu: self)
             selector = #selector(close)

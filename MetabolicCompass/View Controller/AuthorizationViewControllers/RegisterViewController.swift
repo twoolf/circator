@@ -29,7 +29,7 @@ private let inputFontSize = ScreenManager.sharedInstance.profileInputFontSize()
     @IBOutlet weak var collectionView: UICollectionView!
 
     internal var consentOnLoad : Bool = false
-    internal var registerCompletion : ((Void) -> Void)?
+    internal var registerCompletion : (() -> Void)?
     private var stashedUserId : String?
     
     //MARK: View life circle
@@ -104,30 +104,29 @@ private let inputFontSize = ScreenManager.sharedInstance.profileInputFontSize()
     func doConsent() {
         stashedUserId = UserManager.sharedManager.getUserId()
         UserManager.sharedManager.resetFull()
-        ConsentManager.sharedManager.checkConsentWithBaseViewController(self.navigationController!) { (consent, firstName, lastName) in
+        ConsentManager.sharedManager.checkConsentWithBaseViewController(self.navigationController!) { [weak self] (consent, firstName, lastName) in
             guard consent else {
                 UserManager.sharedManager.resetFull()
-                if let user = self.stashedUserId {
+                if let user = self?.stashedUserId {
                     UserManager.sharedManager.setUserId(userId: user)
                 }
-                self.navigationController?.popViewController(animated: true)
+                self?.navigationController?.popViewController(animated: true)
                 return ()
             }
 
             // Note: add 1 to index, due to photo field.
-            if self != nil {
+            if let s = self {
                 let updatedData = firstName != nil || lastName != nil
-                if firstName != nil { self.dataSource.model.setAtItem(itemIndex: self.dataSource.model.firstNameIndex+1, newValue: firstName! as AnyObject?) }
-                if lastName != nil { self.dataSource.model.setAtItem(itemIndex: self.dataSource.model.lastNameIndex+1, newValue: lastName! as AnyObject?) }
-                if updatedData { self.collectionView.reloadData() }
+                    if firstName != nil { s.dataSource.model.setAtItem(itemIndex: s.dataSource.model.firstNameIndex + 1, newValue: firstName! as AnyObject?) }
+                    if lastName != nil { s.dataSource.model.setAtItem(itemIndex: s.dataSource.model.lastNameIndex + 1, newValue: lastName! as AnyObject?) }
+                if updatedData { s.collectionView.reloadData() }
             }
         }
-
     }
 
     func registrationComplete() {
         self.navigationController?.popViewController(animated: true)
-        self.registerCompletion?(())
+        self.registerCompletion?()
     }
 
     // MARK: - Navigation

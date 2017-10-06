@@ -40,7 +40,7 @@ class AccountManager: NSObject {
         registerVC.consentOnLoad = true
         registerVC.registerCompletion = {
             self.loginComplete()
-            } as (() -> Void)
+            }
         self.rootViewController?.pushViewController(registerVC, animated: true)
     }
 

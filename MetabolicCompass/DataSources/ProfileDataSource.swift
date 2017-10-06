@@ -66,7 +66,6 @@ class ProfileDataSource: BaseDataSource {
             // Adjust label spacing of weight and height cells.
             if cellType == .Weight || cellType == .Height || cellType == .HeightInches {
                 if let infoCell = cell as? InfoCollectionViewCell{
-                 //   let w = infoCell.inputTxtField.text?.size(attributes: infoCell.inputTxtField.typingAttributes).width
                     var attrs: [NSAttributedStringKey: Any] = [:]
                     infoCell.inputTxtField.typingAttributes?.forEach({ (key, value) in
                         attrs[NSAttributedStringKey(rawValue: key)] = value
@@ -94,7 +93,6 @@ class ProfileDataSource: BaseDataSource {
                     collectionView.reloadData()
                 }
                 if let infoCell = cell as? InfoCollectionViewCell{
-                  //  let w = infoCell.inputTxtField.text?.size(withAttributes: infoCell.inputTxtField.typingAttributes).width
                     var attrs: [NSAttributedStringKey: Any] = [:]
                     infoCell.inputTxtField.typingAttributes?.forEach({ (key, value) in
                         attrs[NSAttributedStringKey(rawValue: key)] = value

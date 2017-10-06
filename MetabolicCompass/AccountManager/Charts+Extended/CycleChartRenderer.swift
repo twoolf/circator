@@ -20,8 +20,7 @@ class CycleChartRender: PieChartRenderer {
         internal static let RAD2DEG = 180.0 / Double.pi
     }
 
-    override func drawValues(context: CGContext)
-    {
+    override func drawValues(context: CGContext) {
         guard let
             chart = chart,
             let data = chart.data,
@@ -41,8 +40,7 @@ class CycleChartRender: PieChartRenderer {
 
         var labelRadiusOffset = radius / 10.0 * 3.0
 
-        if chart.drawHoleEnabled
-        {
+        if chart.drawHoleEnabled {
             labelRadiusOffset = (radius - (radius * chart.holeRadiusPercent)) / 2.0
         }
 
@@ -52,8 +50,6 @@ class CycleChartRender: PieChartRenderer {
 
         let yValueSum = (data as! PieChartData).yValueSum
 
-//        let drawXVals = chart.isDrawSliceTextEnabled
-//        let drawXVals = chart.isdrawEntryLabelsEnabled
         let usePercentValuesEnabled = chart.usePercentValuesEnabled
 
         var angle: CGFloat = 0.0
@@ -62,14 +58,12 @@ class CycleChartRender: PieChartRenderer {
         context.saveGState()
         defer { context.restoreGState() }
 
-        for i in 0 ..< dataSets.count
-        {
+        for i in 0 ..< dataSets.count {
             guard let dataSet = dataSets[i] as? IPieChartDataSet else { continue }
 
             let drawYVals = dataSet.isDrawValuesEnabled
 
-            if (!drawYVals)
-            {
+            if (!drawYVals) {
                 continue
             }
 
@@ -81,10 +75,8 @@ class CycleChartRender: PieChartRenderer {
 
             guard let formatter = dataSet.valueFormatter else { continue }
 
-            for j in 0 ..< dataSet.entryCount
-            {
-                if (drawYVals && !drawYVals && (j >= data.dataSetCount || data.getDataSetByIndex(j) == nil))
-                {
+            for j in 0 ..< dataSet.entryCount {
+                if (drawYVals && !drawYVals && (j >= data.dataSetCount || data.getDataSetByIndex(j) == nil)) {
                     xIndex += 1
                     continue
                 }
@@ -110,24 +102,16 @@ class CycleChartRender: PieChartRenderer {
                 angle = angle + angleOffset
 
                 let transformedAngle = rotationAngle + angle * CGFloat(phaseY)
-
-            
                 let value = usePercentValuesEnabled ? e.x / yValueSum * 100.0 : e.x
-//                let valueText = formatter.stringFromNumber(value)!
-//                let valueText = formatter.stringForValue(value)!
                 let valueText = formatter.description
-
                 let sliceXBase = cos(transformedAngle * Math.FDEG2RAD)
                 let sliceYBase = sin(transformedAngle * Math.FDEG2RAD)
-
-//                let drawXOutside = drawXVals && xValuePosition == .OutsideSlice
                 let drawXOutside = drawYVals && xValuePosition == .outsideSlice
                 let drawYOutside = drawYVals && yValuePosition == .outsideSlice
                 let drawXInside = drawYVals && xValuePosition == .insideSlice
                 let drawYInside = drawYVals && yValuePosition == .insideSlice
 
-                if drawYOutside || drawYOutside
-                {
+                if drawYOutside || drawYOutside {
                     let valueLineLength1 = dataSet.valueLinePart1Length
                     let valueLineLength2 = dataSet.valueLinePart2Length
                     let valueLinePart1OffsetPercentage = dataSet.valueLinePart1OffsetPercentage
@@ -138,12 +122,10 @@ class CycleChartRender: PieChartRenderer {
 
                     var line1Radius: CGFloat
 
-                    if chart.drawHoleEnabled
-                    {
+                    if chart.drawHoleEnabled {
                         line1Radius = (radius - (radius * chart.holeRadiusPercent)) * valueLinePart1OffsetPercentage + (radius * chart.holeRadiusPercent)
                     }
-                    else
-                    {
+                    else {
                         line1Radius = radius * valueLinePart1OffsetPercentage
                     }
 
@@ -165,123 +147,112 @@ class CycleChartRender: PieChartRenderer {
                         align = .right
                         labelPoint = CGPoint(x: pt2.x - 5, y: pt2.y - lineHeight)
                     }
-                    else
-                    {
+                    else {
                         pt2 = CGPoint(x: pt1.x + polyline2Length, y: pt1.y)
                         align = .left
                         labelPoint = CGPoint(x: pt2.x + 5, y: pt2.y - lineHeight)
                     }
 
-                    if dataSet.valueLineColor != nil
-                    {
+                    if dataSet.valueLineColor != nil {
                         context.setStrokeColor(dataSet.valueLineColor!.cgColor)
                         context.setLineWidth(dataSet.valueLineWidth);
-
-
                         context.move(to: pt0)
                         context.addLine(to: pt0)
                         context.addLine(to: pt1)
-//                        CGContextmoveToPoint(context, pt0.x, pt0.y)
-//                        CGContextAddLine(context, pt1.x, pt1.y)
-//                        CGContextAddLine(context, pt2.x, pt2.y)
-
                         context.drawPath(using: CGPathDrawingMode.stroke);
                     }
 
-                    if drawXOutside && drawYOutside
-                    {
+                    if drawXOutside && drawYOutside {
                         ChartUtils.drawText(
                             context: context,
                             text: valueText,
                             point: labelPoint,
                             align: align,
-                            attributes: [NSAttributedStringKey.font: valueFont, NSAttributedStringKey.foregroundColor: dataSet.valueTextColorAt(j)]
+                            attributes: [.font: valueFont,
+                              .foregroundColor: dataSet.valueTextColorAt(j)]
                         )
 
-                        if (j < data.dataSetCount && data.getDataSetByIndex(j) != nil)
-                        {
+                    if (j < data.dataSetCount && data.getDataSetByIndex(j) != nil) {
                             ChartUtils.drawText(
                                 context: context,
-//                                text: data.xVals[j]!,
                                 text: data.getDataSetByIndex(j)! as! String,
                                 point: CGPoint(x: labelPoint.x, y: labelPoint.y + lineHeight),
                                 align: align,
-                                attributes: [NSAttributedStringKey.font: valueFont, NSAttributedStringKey.foregroundColor: dataSet.valueTextColorAt(j)]
+                                attributes: [.font: valueFont,
+                                  .foregroundColor: dataSet.valueTextColorAt(j)]
                             )
                         }
                     }
-                    else if drawXOutside
-                    {
+                    else if drawXOutside {
                         ChartUtils.drawText(
                             context: context,
                             text: data.getDataSetByIndex(j)! as! String,
                             point: CGPoint(x: labelPoint.x, y: labelPoint.y + lineHeight / 2.0),
                             align: align,
-                            attributes: [NSAttributedStringKey.font: valueFont, NSAttributedStringKey.foregroundColor: dataSet.valueTextColorAt(j)]
+                            attributes: [.font: valueFont,
+                              .foregroundColor: dataSet.valueTextColorAt(j)]
                         )
                     }
-                    else if drawYOutside
-                    {
+                    else if drawYOutside {
                         ChartUtils.drawText(
                             context: context,
                             text: valueText,
                             point: CGPoint(x: labelPoint.x, y: labelPoint.y + lineHeight / 2.0),
                             align: align,
-                            attributes: [NSAttributedStringKey.font: valueFont, NSAttributedStringKey.foregroundColor: dataSet.valueTextColorAt(j)]
+                            attributes: [.font: valueFont,
+                              .foregroundColor: dataSet.valueTextColorAt(j)]
                         )
                     }
                 }
 
-                if drawXInside || drawYInside
-                {
+                if drawXInside || drawYInside {
                     // calculate the text position
                     let x = labelRadius * sliceXBase + center.x
                     let y = labelRadius * sliceYBase + center.y - lineHeight
 
-                    if drawXInside && drawYInside
-                    {
+                    if drawXInside && drawYInside {
                         ChartUtils.drawText(
                             context: context,
                             text: valueText,
                             point: CGPoint(x: x, y: y),
                             align: .center,
-                            attributes: [NSAttributedStringKey.font: valueFont, NSAttributedStringKey.foregroundColor: dataSet.valueTextColorAt(j)]
+                            attributes: [.font: valueFont,
+                              .foregroundColor: dataSet.valueTextColorAt(j)]
                         )
 
-                        if j < data.dataSetCount && data.getDataSetByIndex(j) != nil
-                        {
+                        if j < data.dataSetCount && data.getDataSetByIndex(j) != nil {
                             ChartUtils.drawText(
                                 context: context,
                                 text: data.getDataSetByIndex(j)! as! String,
                                 point: CGPoint(x: x, y: y + lineHeight),
                                 align: .center,
-                                attributes: [NSAttributedStringKey.font: valueFont, NSAttributedStringKey.foregroundColor: dataSet.valueTextColorAt(j)]
+                                attributes: [.font: valueFont,
+                                  .foregroundColor: dataSet.valueTextColorAt(j)]
                             )
                         }
                     }
-                    else if drawXInside
-                    {
+                    else if drawXInside {
                         ChartUtils.drawText(
                             context: context,
                             text: data.getDataSetByIndex(j)! as! String,
                             point: CGPoint(x: x, y: y + lineHeight / 2.0),
                             align: .center,
-                            attributes: [NSAttributedStringKey.font: valueFont, NSAttributedStringKey.foregroundColor: dataSet.valueTextColorAt(j)]
+                            attributes: [.font: valueFont,
+                              .foregroundColor: dataSet.valueTextColorAt(j)]
                         )
                     }
-                    else if drawYInside
-                    {
+                    else if drawYInside {
                         ChartUtils.drawText(
                             context: context,
                             text: valueText,
                             point: CGPoint(x: x, y: y + lineHeight / 2.0),
                             align: .center,
-                            attributes: [NSAttributedStringKey.font: valueFont, NSAttributedStringKey.foregroundColor: dataSet.valueTextColorAt(j)]
+                            attributes: [.font: valueFont,
+                              .foregroundColor: dataSet.valueTextColorAt(j)]
                         )
                     }
                 }
                 xIndex += 1
-
             }
         }
     }

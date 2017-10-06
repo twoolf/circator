@@ -83,8 +83,8 @@ class UserSettingsViewController: BaseViewController {
         paragraphStyle.alignment = .right
 
         let placeholderAttrs: [NSAttributedStringKey: Any] = [
-            NSAttributedStringKey(rawValue: NSAttributedStringKey.foregroundColor.rawValue): UIColor.lightGray,
-            NSAttributedStringKey.paragraphStyle: paragraphStyle
+           .foregroundColor: UIColor.lightGray,
+            .paragraphStyle: paragraphStyle
         ]
 
         hotwordInput.attributedPlaceholder = NSAttributedString(string: hotword, attributes: placeholderAttrs)

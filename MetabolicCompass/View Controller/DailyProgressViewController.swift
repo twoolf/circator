@@ -86,7 +86,7 @@ class DailyProgressViewController : UIViewController, DailyChartModelProtocol {
         self.dailyChartModel.registerCells()
         self.dailyProgressChartDaysTable.dataSource = self.dailyChartModel
 
-        self.dailyProgressChartView.changeColorCompletion = { _ in
+        self.dailyProgressChartView.changeColorCompletion = { 
             OperationQueue.main.addOperation {
                 self.updateContentWithAnimation = false
                 self.dailyChartModel.toggleHighlightFasting()
