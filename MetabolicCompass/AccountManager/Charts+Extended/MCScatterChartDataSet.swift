@@ -61,7 +61,7 @@ class MCScatterChartDataSet: ScatterChartDataSet {
     
     override init(values yVals: [ChartDataEntry]?, label: String?) {
         super.init(values: yVals, label: label)
-        self.scatterShapeHoleColor = UIColor(colorLiteralRed: 51.0/255.0, green: 138.0/255.0, blue: 255.0/255.0, alpha: 1.0)
+        self.scatterShapeHoleColor = UIColor(red: 51.0/255.0, green: 138.0/255.0, blue: 255.0/255.0, alpha: 1.0)
         self.colors = [UIColor.white]
     }
     

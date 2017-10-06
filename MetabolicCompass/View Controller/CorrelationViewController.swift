@@ -34,7 +34,7 @@ class CorrelationViewController: UIViewController, ChartViewDelegate {
     
     lazy var correlationLabel: UILabel = {
         let label: UILabel = UILabel()
-        label.font = UIFont.systemFont(ofSize: 16, weight: UIFontWeightSemibold)
+        label.font = UIFont.systemFont(ofSize: 16, weight: UIFont.Weight.semibold)
         label.textColor = Theme.universityDarkTheme.backgroundColor
         label.textAlignment = .center
         label.text = NSLocalizedString("Attribute 2 Relative to Increasing Attribute 1", comment: "Plot view section title label")
@@ -209,7 +209,7 @@ class CorrelationViewController: UIViewController, ChartViewDelegate {
         let cdata = analyzer.correlationChartData
 //        self.correlationChart.data = cdata.yValCount == 0 ? nil : cdata
         self.correlationChart.data?.setValueTextColor(Theme.universityDarkTheme.bodyTextColor)
-        self.correlationChart.data?.setValueFont(UIFont.systemFont(ofSize: 10, weight: UIFontWeightThin))
+        self.correlationChart.data?.setValueFont(UIFont.systemFont(ofSize: 10, weight: UIFont.Weight.thin))
 
         Async.main {
             if let idx = self.pageIndex, let pv = self.parent as? PagesController {

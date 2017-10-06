@@ -82,8 +82,8 @@ open class AddEventModel: NSObject {
         let defaultFont = ScreenManager.appFontOfSize(size: 24)
         let formatFont = ScreenManager.appFontOfSize(size: 15)
         let attributedString = stringDifference.formatTextWithRegex(regex: "[-+]?(\\d*[.,])?\\d+",
-                                                                    format: [NSForegroundColorAttributeName: UIColor.white, NSFontAttributeName : defaultFont],
-                                                                    defaultFormat: [NSForegroundColorAttributeName: UIColor.colorWithHexString(rgb: "#ffffff", alpha: 0.3)!, NSFontAttributeName: formatFont])
+                                                                    format: [NSAttributedStringKey.foregroundColor: UIColor.white, NSAttributedStringKey.font : defaultFont],
+                                                                    defaultFormat: [NSAttributedStringKey.foregroundColor: UIColor.colorWithHexString(rgb: "#ffffff", alpha: 0.3)!, NSAttributedStringKey.font: formatFont])
         return attributedString
     }
     
@@ -110,8 +110,8 @@ open class AddEventModel: NSObject {
         let durationText = "\(Int(hours))h" + minutesString
         
         return durationText.formatTextWithRegex(regex: "[-+]?(\\d*[.,])?\\d+",
-                                                format: [NSForegroundColorAttributeName: UIColor.white],
-                                                defaultFormat: [NSForegroundColorAttributeName: UIColor.colorWithHexString(rgb: "#ffffff", alpha: 0.3)!])
+                                                format: [NSAttributedStringKey.foregroundColor: UIColor.white],
+                                        defaultFormat: [NSAttributedStringKey.foregroundColor: UIColor.colorWithHexString(rgb: "#ffffff", alpha: 0.3)!])
     }
     
     func getTextForTimeLabel() -> String {

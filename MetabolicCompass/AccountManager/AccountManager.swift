@@ -40,11 +40,11 @@ class AccountManager: NSObject {
         registerVC.consentOnLoad = true
         registerVC.registerCompletion = {
             self.loginComplete()
-        }
+            }
         self.rootViewController?.pushViewController(registerVC, animated: true)
     }
 
-    func doLogin(_ animated: Bool = true, completion: ((Void) -> Void)?) {
+    func doLogin(_ animated: Bool = true, completion: (() -> Void)?) {
         assert(Thread.isMainThread, "can be called from main thread only")
         let registerLandingStoryboard = UIStoryboard(name: "RegisterLoginProcess", bundle: nil)
         let registerLoginLandingController = registerLandingStoryboard.instantiateViewController(withIdentifier: "landingLoginRegister") as! RegisterLoginLandingViewController
@@ -59,7 +59,7 @@ class AccountManager: NSObject {
         self.rootViewController?.pushViewController(registerLoginLandingController, animated: animated)
     }
 
-    func doLogout(completion: ((Void) -> Void)?) {
+    func doLogout(completion: (() -> Void)?) {
         log.debug("User logging out", feature: "accountExec")
         UserManager.sharedManager.logoutWithCompletion(completion: completion)
         IOSHealthManager.sharedManager.reset()

@@ -200,7 +200,7 @@ public class DeleteActivityManager: UITableView, PickerManagerSelectionDelegate 
         }
     }
 
-    public func handleQuickDelRecentTap(_ sender: UIButton)  {
+    @objc public func handleQuickDelRecentTap(_ sender: UIButton)  {
         log.debug("Delete recent tapped", feature: "deleteActivity")
         if let mins = delRecentManager.getSelectedValue() as? Int {
             let endDate = Date()
@@ -214,7 +214,7 @@ public class DeleteActivityManager: UITableView, PickerManagerSelectionDelegate 
         }
     }
 
-    public func handleQuickDelDateTap(sender: UIButton) {
+    @objc public func handleQuickDelDateTap(sender: UIButton) {
         let startDate = delDates[0]
         let endDate = delDates[1]
         if startDate < endDate {

@@ -36,7 +36,7 @@ class ManageChartsViewController: UIViewController, UITableViewDataSource, UITab
     }
     
     //MARK: Actions
-    func closeAction () {
+    @objc func closeAction () {
         save()
         self.dismiss(animated: true, completion: nil)
     }

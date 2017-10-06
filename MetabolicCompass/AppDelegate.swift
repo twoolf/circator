@@ -86,8 +86,8 @@ class AppDelegate: UIResponder, UIApplicationDelegate, WCSessionDelegate
         // Set translucent. (Default value is already true, so this can be removed if desired.)
         UINavigationBar.appearance().isTranslucent = true
         UINavigationBar.appearance().titleTextAttributes = [
-            NSForegroundColorAttributeName: ScreenManager.appTitleTextColor(),
-            NSFontAttributeName: ScreenManager.appNavBarFont()
+            NSAttributedStringKey.foregroundColor: ScreenManager.appTitleTextColor(),
+            NSAttributedStringKey.font: ScreenManager.appNavBarFont()
         ]
         
         //set custom back button image
@@ -224,11 +224,11 @@ class AppDelegate: UIResponder, UIApplicationDelegate, WCSessionDelegate
 
     }
     
-    func recycleNotification() {
+    @objc func recycleNotification() {
         NotificationManager.sharedManager.onRecycleEvent()
     }
     
-    public func errorNotification(_ notification: NSNotification) {
+   @objc public func errorNotification(_ notification: NSNotification) {
         if let info = notification.userInfo, let event = info["event"] as? String, let attrs = info["attrs"] as? [String: AnyObject]
         {
             Answers.logCustomEvent(withName: event, customAttributes: attrs)
@@ -237,7 +237,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, WCSessionDelegate
     
     private func setupWatchConnectivity() {
         if WCSession.isSupported() {
-            let session = WCSession.default()
+            let session = WCSession.default
             session.delegate = self
             session.activate()
         }

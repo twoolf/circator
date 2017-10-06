@@ -20,7 +20,7 @@ public class BalloonMarker: MarkerImage
     private var _labelSize: CGSize = CGSize()
     private var _size: CGSize = CGSize()
     private var _paragraphStyle: NSMutableParagraphStyle?
-    private var _drawAttributes = [String : AnyObject]()
+    private var _drawAttributes = [NSAttributedStringKey : Any]()
 
     public var scatterChartMarker = false
     public var yMax = 1.0
@@ -97,11 +97,11 @@ public class BalloonMarker: MarkerImage
         } */
 
         _drawAttributes.removeAll()
-        _drawAttributes[NSFontAttributeName] = self.font
-        _drawAttributes[NSParagraphStyleAttributeName] = _paragraphStyle
-        _drawAttributes[NSForegroundColorAttributeName] = UIColor.white
+        _drawAttributes[NSAttributedStringKey.font] = self.font
+        _drawAttributes[NSAttributedStringKey.paragraphStyle] = _paragraphStyle
+        _drawAttributes[NSAttributedStringKey.foregroundColor] = UIColor.white
         
-        _labelSize = labelns?.size(attributes: _drawAttributes) ?? .zero
+        _labelSize = labelns?.size(withAttributes: _drawAttributes) ?? .zero
         _size.width = _labelSize.width + self.insets.left + self.insets.right
         _size.height = _labelSize.height + self.insets.top + self.insets.bottom
         _size.width = max(minimumSize.width, _size.width)

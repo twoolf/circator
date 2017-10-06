@@ -43,7 +43,7 @@ extension String {
             return NSLocalizedString(self, tableName: nil, bundle: Bundle.main, value: "", comment: "")
     }
     
-    func formatTextWithRegex(regex: String, format: [String: AnyObject], defaultFormat: [String: AnyObject]) -> NSAttributedString {
+    func formatTextWithRegex(regex: String, format: [NSAttributedStringKey: Any], defaultFormat: [NSAttributedStringKey: Any]) -> NSAttributedString {
         
         let text = self
         

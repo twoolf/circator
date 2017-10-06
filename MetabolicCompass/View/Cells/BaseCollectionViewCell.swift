@@ -43,7 +43,7 @@ class BaseCollectionViewCell: UICollectionViewCell, UITextFieldDelegate {
         separatorVisible = true
     }
         
-    func textFieldDidChange(textField: UITextField) {
+    @objc func textFieldDidChange(textField: UITextField) {
         valueChanged(newValue: textField.text as AnyObject?)
     }
     
@@ -56,7 +56,7 @@ class BaseCollectionViewCell: UICollectionViewCell, UITextFieldDelegate {
         textField.inputAccessoryView = toolbar
     }
     
-    func doneAction(Sender: UIBarButtonItem) {
+    @objc func doneAction(Sender: UIBarButtonItem) {
         self.endEditing(true)
     }
     

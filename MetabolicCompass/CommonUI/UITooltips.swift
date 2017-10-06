@@ -65,7 +65,7 @@ public class TapTip : NSObject, EasyTipViewDelegate {
         tapRecognizer.numberOfTouchesRequired = numTouches
     }
 
-    public func showTip() {
+    @objc public func showTip() {
         if !visible {
             visible = true
             tipView.show(forView: forView, withinSuperview: withinView)

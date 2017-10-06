@@ -1,3 +1,4 @@
+
 //
 //  RepeatedEventManagerViewController.swift
 //  MetabolicCompass
@@ -199,7 +200,7 @@ open class RepeatedEventsOrganizer : NSObject {
 
 open class RepeatedEventManagerViewController: UIViewController {
     
-    static let sharedManager = RepeatedEventManagerViewController()
+   @objc static let sharedManager = RepeatedEventManagerViewController()
     
     //UIButton subclass to associate button with selected weekday 
     public class WeekdayButton : UIButton {
@@ -407,7 +408,7 @@ open class RepeatedEventManagerViewController: UIViewController {
         
         self.weekdayLabel.translatesAutoresizingMaskIntoConstraints = false
         self.weekdayLabel.textAlignment = .center
-        self.weekdayLabel.font = UIFont.systemFont(ofSize: 20, weight: UIFontWeightSemibold)
+        self.weekdayLabel.font = UIFont.systemFont(ofSize: 20, weight: UIFont.Weight.semibold)
         self.weekdayLabel.textColor = UIColor(red: 83, green: 83, blue: 83, alpha: 0.75)
         self.weekdayLabel.backgroundColor = UIColor.clear
         
@@ -446,7 +447,7 @@ open class RepeatedEventManagerViewController: UIViewController {
         self.eventsListView.contentInset = UIEdgeInsetsMake(weekdayLabel.bounds.height + weekdayRowSelector.bounds.height + 15, 0, 0, 0)
     }
     
-    public func addRepeatedEvent(sender: UIBarItem) {
+    @objc public func addRepeatedEvent(sender: UIBarItem) {
         let vc = NewRepeatedEventViewController()
         self.present(vc, animated: true, completion: nil)
     }
@@ -497,7 +498,7 @@ open class RepeatedEventManagerViewController: UIViewController {
             super.init(coder: aDecoder)
         }
         
-        func eventDetailDoubleTap(sender: RepeatedEventItemView) {
+        @objc func eventDetailDoubleTap(sender: RepeatedEventItemView) {
             let vc = RepeatedEventDetailViewController(repeatedEvent: sender.event)
             (self.window?.rootViewController as! UINavigationController).pushViewController(vc, animated: true)
         }
@@ -525,7 +526,7 @@ open class RepeatedEventManagerViewController: UIViewController {
                     let timeLabel = UILabel()
                     timeLabel.translatesAutoresizingMaskIntoConstraints = false
                     timeLabel.text = hour
-                    timeLabel.font = UIFont.systemFont(ofSize: 11, weight: UIFontWeightSemibold)
+                    timeLabel.font = UIFont.systemFont(ofSize: 11, weight: UIFont.Weight.semibold)
                     timeLabel.textColor = UIColor.lightGray
                     
                     view.addSubview(timeLabel)
@@ -637,7 +638,7 @@ open class RepeatedEventItemView: UIButton {
         let eventTitle = UILabel()
         eventTitle.translatesAutoresizingMaskIntoConstraints = false
         eventTitle.text = self.event.event.name
-        eventTitle.font = UIFont.systemFont(ofSize: 14, weight: UIFontWeightSemibold)
+        eventTitle.font = UIFont.systemFont(ofSize: 14, weight: UIFont.Weight.semibold)
         eventTitle.textColor = UIColor.white
         
         let eventIcon = UIButton()
@@ -738,7 +739,7 @@ open class RepeatedEventDetailViewController : UIViewController {
         
         let eventTitleLabel = UILabel()
         eventTitleLabel.translatesAutoresizingMaskIntoConstraints = false
-        eventTitleLabel.font = UIFont.systemFont(ofSize: 26, weight: UIFontWeightSemibold)
+        eventTitleLabel.font = UIFont.systemFont(ofSize: 26, weight: UIFont.Weight.semibold)
         eventTitleLabel.textColor = UIColor.black
         eventTitleLabel.text = self.event!.event.name
         view.addSubview(eventTitleLabel)
@@ -752,7 +753,7 @@ open class RepeatedEventDetailViewController : UIViewController {
         
         let eventTimeLabel = UILabel()
         eventTimeLabel.translatesAutoresizingMaskIntoConstraints = false
-        eventTimeLabel.font = UIFont.systemFont(ofSize: 20, weight: UIFontWeightThin)
+        eventTimeLabel.font = UIFont.systemFont(ofSize: 20, weight: UIFont.Weight.thin)
         eventTimeLabel.textColor = UIColor.black
         
         //TODO
@@ -792,7 +793,7 @@ open class RepeatedEventDetailViewController : UIViewController {
         // days of the week
         let eventDaysLabel = UILabel()
         eventDaysLabel.translatesAutoresizingMaskIntoConstraints = false
-        eventDaysLabel.font = UIFont.systemFont(ofSize: 14, weight: UIFontWeightMedium)
+        eventDaysLabel.font = UIFont.systemFont(ofSize: 14, weight: UIFont.Weight.medium)
         eventDaysLabel.textColor = UIColor.black
         eventDaysLabel.numberOfLines = 0
         eventDaysLabel.lineBreakMode = .byWordWrapping
@@ -812,7 +813,7 @@ open class RepeatedEventDetailViewController : UIViewController {
         deleteButton.titleLabel?.textAlignment = .center
         deleteButton.setTitle("Delete", for: .normal)
         deleteButton.setTitleColor(UIColor.red, for: .normal)
-        deleteButton.titleLabel?.font = UIFont.systemFont(ofSize: 18, weight: UIFontWeightRegular)
+        deleteButton.titleLabel?.font = UIFont.systemFont(ofSize: 18, weight: UIFont.Weight.regular)
         
         deleteButton.addTarget(self, action: "deleteEvent:", for: .touchUpInside)
         
@@ -861,7 +862,7 @@ open class RepeatedEventDetailViewController : UIViewController {
         
         let eventNotes = UILabel()
         eventNotes.translatesAutoresizingMaskIntoConstraints = false
-        eventNotes.font = UIFont.systemFont(ofSize: 16, weight: UIFontWeightLight)
+        eventNotes.font = UIFont.systemFont(ofSize: 16, weight: UIFont.Weight.light)
         eventNotes.textColor = UIColor.black
         eventNotes.numberOfLines = 0
         eventNotes.lineBreakMode = .byWordWrapping
@@ -1025,7 +1026,7 @@ open class NewRepeatedEventViewController: UIViewController {
         
         if form?.durationInSeconds != nil {
             durationInSeconds = form?.durationInSeconds
-            if ((durationInSeconds?.negated()) != nil) {
+            if ((durationInSeconds?.negate()) != nil) {
                 UINotifications.genericError(vc: self, msg: "Event must end after it starts.")
                 return
             }
@@ -1100,8 +1101,8 @@ final class RepeatedEventFormViewController: FormViewController {
             }.configure {
                 $0.segmentTitles = ["Meal", "Sleep", "Exercise"]
                 $0.selectedIndex = UISegmentedControlNoSegment
-            }.onSegmentSelected { selection in
-                switch selection.0 {
+            }.onSegmentSelected { selection, cell in
+                switch selection {
                 case 0:
                     self.eventType = .Meal
                 case 1:

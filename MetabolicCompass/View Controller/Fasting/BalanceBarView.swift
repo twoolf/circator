@@ -43,13 +43,13 @@ public class BalanceBarView : UIView {
 
         backgroundColor = .clear
         barTitle.backgroundColor = .clear
-        barTitle.font = UIFont.systemFont(ofSize: fastingViewLabelSize, weight: UIFontWeightRegular)
+        barTitle.font = UIFont.systemFont(ofSize: fastingViewLabelSize, weight: UIFont.Weight.regular)
         barTitle.textColor = .lightGray
         barTitle.textAlignment = .center
         barTitle.attributedText = title
 
         barText.backgroundColor = .clear
-        barText.font = UIFont.systemFont(ofSize: fastingViewTextSize, weight: UIFontWeightBold)
+        barText.font = UIFont.systemFont(ofSize: fastingViewTextSize, weight: UIFont.Weight.bold)
         barText.textColor = .white
         barText.textAlignment = .center
 

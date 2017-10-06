@@ -126,7 +126,7 @@ public class ScreenManager {
         }
     }
 
-    public func radarLegendPosition() -> ChartLegend.Position {
+    public func radarLegendPosition() -> Legend.Position {
         return Legend.Position.belowChartCenter
     }
 
