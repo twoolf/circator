@@ -88,7 +88,7 @@ public class AddEventViewController: UIViewController, AddEventModelDelegate {
         self.tableVIew.register(endSleepCellNib, forCellReuseIdentifier: endSleepCellIdentifier)
     }
     
-    public func closeAction () {
+    @objc public func closeAction () {
         switch type {
             case .Meal:
                 if addEventModel.mealType != MealType.Empty {
@@ -114,7 +114,7 @@ public class AddEventViewController: UIViewController, AddEventModelDelegate {
         self.present(alertController, animated: true, completion: nil)
     }
     
-    public func doneAction () {
+    @objc public func doneAction () {
         switch type {
             case .Meal:
                 addEventModel.saveMealEvent(completion: { (success, errorMessage) in

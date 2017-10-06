@@ -83,7 +83,7 @@ class RegisterLoginLandingViewController: BaseViewController {
             loginViewController.completion = self.completion
         } else if (segue.identifier == self.registerSegue) {
             let regViewController = segue.destination as! RegisterViewController
-            regViewController.registerCompletion = { _ in
+            regViewController.registerCompletion = {
                 UINotifications.genericMsg(vc: self, msg: "Please remember to check your email for our account verification link.", pop: false, asNav: true, nohide: true)
             }
         }        

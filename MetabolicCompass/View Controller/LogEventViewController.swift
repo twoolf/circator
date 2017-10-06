@@ -270,8 +270,8 @@ final class EventCoreInfoFormViewController: FormViewController {
             }.configure {
                 $0.segmentTitles = ["Meal", "Sleep", "Exercise"]
                 $0.selectedIndex = UISegmentedControlNoSegment
-            }.onSegmentSelected { selection in
-                switch selection.0 {
+            }.onSegmentSelected { selection, cell  in
+                switch selection  {
                 case 0:
                     self.eventType = .Meal
                 case 1:

@@ -43,11 +43,11 @@ class LoginModel : NSObject, UITableViewDataSource, UITextFieldDelegate {
 
         if indexPath.row == 1 {
             cell.cellImage.image = UIImage(named: "icon-password")
-            cell.cellInput.attributedPlaceholder = NSAttributedString(string: "Password", attributes: [NSForegroundColorAttributeName : ScreenManager.sharedInstance.appUnBrightTextColor()])
+            cell.cellInput.attributedPlaceholder = NSAttributedString(string: "Password", attributes: [NSAttributedStringKey.foregroundColor : ScreenManager.sharedInstance.appUnBrightTextColor()])
             cell.cellInput.isSecureTextEntry = true
         } else {
             cell.cellImage.image = UIImage(named: "icon-email")
-            cell.cellInput.attributedPlaceholder = NSAttributedString(string: "E-mail", attributes: [NSForegroundColorAttributeName : ScreenManager.sharedInstance.appUnBrightTextColor()])
+            cell.cellInput.attributedPlaceholder = NSAttributedString(string: "E-mail", attributes: [NSAttributedStringKey.foregroundColor : ScreenManager.sharedInstance.appUnBrightTextColor()])
             cell.cellInput.keyboardType = UIKeyboardType.emailAddress
         }
         textfields.append(cell.cellInput)

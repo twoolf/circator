@@ -19,9 +19,9 @@ let studyContributionFontSize: CGFloat = 40.0
 let ringLabelFontSize: CGFloat = 12.0
 let studyLabelFontSize: CGFloat = 14.0
 
-let studyLabelAttrs: [String: AnyObject] = [
-    NSForegroundColorAttributeName: UIColor.white,
-    NSUnderlineStyleAttributeName: NSNumber(value: NSUnderlineStyle.styleSingle.rawValue)
+let studyLabelAttrs: [NSAttributedStringKey : Any] = [
+    NSAttributedStringKey.foregroundColor: UIColor.white,
+    NSAttributedStringKey.underlineStyle: NSNumber(value: NSUnderlineStyle.styleSingle.rawValue)
 ]
 
 public class OurStudyViewController: UIViewController, ChartViewDelegate {
@@ -39,9 +39,9 @@ public class OurStudyViewController: UIViewController, ChartViewDelegate {
     public static let clouds  = UIColor.ht_clouds()
 
     lazy var phaseProgress: BalanceBarView = {
-        let attrs = [NSForegroundColorAttributeName: UIColor.white,
-                      NSUnderlineStyleAttributeName: NSNumber(value: NSUnderlineStyle.styleSingle.rawValue),
-                      NSFontAttributeName: UIFont(name: "GothamBook", size: studyLabelFontSize)!]
+        let attrs = [NSAttributedStringKey.foregroundColor: UIColor.white,
+                     NSAttributedStringKey.underlineStyle: NSNumber(value: NSUnderlineStyle.styleSingle.rawValue),
+                     NSAttributedStringKey.font: UIFont(name: "GothamBook", size: studyLabelFontSize)!]
 
         let userCount = Double(AnalysisDataModel.sharedInstance.studyStatsModel.activeUsers)
         let userTarget = OurStudyViewController.userGrowthTarget(activeUsers: userCount)
@@ -553,9 +553,9 @@ public class OurStudyViewController: UIViewController, ChartViewDelegate {
             self.phaseProgress.ratio = 0.0
             self.phaseProgress.refreshData()
 
-            let attrs = [NSForegroundColorAttributeName: UIColor.white,
-                         NSUnderlineStyleAttributeName: NSNumber(value: NSUnderlineStyle.styleSingle.rawValue),
-                         NSFontAttributeName: UIFont(name: "GothamBook", size: studyLabelFontSize)!]
+            let attrs = [NSAttributedStringKey.foregroundColor: UIColor.white,
+                         NSAttributedStringKey.underlineStyle: NSNumber(value: NSUnderlineStyle.styleSingle.rawValue),
+                         NSAttributedStringKey.font: UIFont(name: "GothamBook", size: studyLabelFontSize)!]
 
             let aStr = NSMutableAttributedString(string: "Study Progress: N/A, please try later", attributes: attrs)
             self.phaseProgress.refreshTitle(aStr)
@@ -570,9 +570,9 @@ public class OurStudyViewController: UIViewController, ChartViewDelegate {
     }
 
     func refreshStudyRings(ringValues: [(Double, Double)]) {
-        let attrs = [NSFontAttributeName: UIFont(name: "GothamBook", size: studyLabelFontSize)!,
-                     NSForegroundColorAttributeName: UIColor.white,
-                     NSBackgroundColorAttributeName: UIColor.clear]
+        let attrs = [NSAttributedStringKey.font: UIFont(name: "GothamBook", size: studyLabelFontSize)!,
+                     NSAttributedStringKey.foregroundColor: UIColor.white,
+                     NSAttributedStringKey.backgroundColor: UIColor.clear]
         
         OurStudyViewController.ringNames.enumerated().forEach { (index, _) in
             let (value, maxValue) = ringValues[index]
@@ -611,9 +611,9 @@ public class OurStudyViewController: UIViewController, ChartViewDelegate {
 
     class func userGrowthBarTitle(target: Double) -> NSAttributedString {
         let phase = max(1, Int(log10(target)) - 1)
-        let attrs = [NSForegroundColorAttributeName: UIColor.white,
-                     NSUnderlineStyleAttributeName: NSNumber(value: NSUnderlineStyle.styleSingle.rawValue),
-                     NSFontAttributeName: UIFont(name: "GothamBook", size: studyLabelFontSize)!]
+        let attrs = [NSAttributedStringKey.foregroundColor: UIColor.white,
+                     NSAttributedStringKey.underlineStyle: NSNumber(value: NSUnderlineStyle.styleSingle.rawValue),
+                     NSAttributedStringKey.font: UIFont(name: "GothamBook", size: studyLabelFontSize)!]
 
         return NSMutableAttributedString(string: "Study Progress: Phase \(phase): \(Int(ceil(target))) users", attributes: attrs)
     }
@@ -649,11 +649,11 @@ public class OurStudyViewController: UIViewController, ChartViewDelegate {
 
             if prefixStr.characters.count > 0 {
                 let headRange = NSRange(location:0, length: prefixStr.characters.count + 1)
-                aStr.addAttribute(NSFontAttributeName, value: unitFont, range: headRange)
+                aStr.addAttribute(NSAttributedStringKey.font, value: unitFont, range: headRange)
             }
 
             let tailRange = NSRange(location: prefixStr.characters.count + vStr.characters.count + 1, length: suffixStr.characters.count + 1)
-            aStr.addAttribute(NSFontAttributeName, value: unitFont, range: tailRange)
+            aStr.addAttribute(NSAttributedStringKey.font, value: unitFont, range: tailRange)
         }
         else {
             aStr = NSMutableAttributedString(string: "Not available, please try later")
@@ -662,7 +662,7 @@ public class OurStudyViewController: UIViewController, ChartViewDelegate {
         let paragraphStyle = NSMutableParagraphStyle()
         paragraphStyle.lineSpacing = 2.0
         paragraphStyle.alignment = .center
-        aStr.addAttribute(NSParagraphStyleAttributeName, value: paragraphStyle, range: NSMakeRange(0, aStr.length))
+        aStr.addAttribute(NSAttributedStringKey.paragraphStyle, value: paragraphStyle, range: NSMakeRange(0, aStr.length))
 
         return aStr
     }
@@ -675,32 +675,32 @@ public class OurStudyViewController: UIViewController, ChartViewDelegate {
         let labelFont = UIFont(name: "GothamBook", size: labelFontSize)!
 
         var descStr =  NSMutableAttributedString(string: "You've Logged \(days) Straight Days!", attributes: studyLabelAttrs)
-        descStr.addAttribute(NSFontAttributeName, value: descFont, range: NSMakeRange(0, descStr.length))
+        descStr.addAttribute(NSAttributedStringKey.font, value: descFont, range: NSMakeRange(0, descStr.length))
 
         var lblStr = NSMutableAttributedString(string: description)
-        lblStr.addAttribute(NSFontAttributeName, value: labelFont, range: NSMakeRange(0, lblStr.length))
+        lblStr.addAttribute(NSAttributedStringKey.font, value: labelFont, range: NSMakeRange(0, lblStr.length))
 
         if days < 0 {
             descStr = NSMutableAttributedString(string: "Your Contributions Streak", attributes: studyLabelAttrs)
-            descStr.addAttribute(NSFontAttributeName, value: descFont, range: NSMakeRange(0, descStr.length))
+            descStr.addAttribute(NSAttributedStringKey.font, value: descFont, range: NSMakeRange(0, descStr.length))
 
             lblStr = NSMutableAttributedString(string: "Not available, please try later")
-            lblStr.addAttribute(NSFontAttributeName, value: labelFont, range: NSMakeRange(0, lblStr.length))
+            lblStr.addAttribute(NSAttributedStringKey.font, value: labelFont, range: NSMakeRange(0, lblStr.length))
         }
         else if !compact {
             descStr = NSMutableAttributedString(string: "Your Contributions Streak", attributes: studyLabelAttrs)
-            descStr.addAttribute(NSFontAttributeName, value: descFont, range: NSMakeRange(0, descStr.length))
+            descStr.addAttribute(NSAttributedStringKey.font, value: descFont, range: NSMakeRange(0, descStr.length))
 
             lblStr = NSMutableAttributedString(string: "You've logged \(days) straight days. \(description)")
-            lblStr.addAttribute(NSFontAttributeName, value: labelFont, range: NSMakeRange(0, lblStr.length))
+            lblStr.addAttribute(NSAttributedStringKey.font, value: labelFont, range: NSMakeRange(0, lblStr.length))
         }
 
         let paragraphStyle = NSMutableParagraphStyle()
         paragraphStyle.lineSpacing = 4.0
         paragraphStyle.alignment = .center
 
-        descStr.addAttribute(NSParagraphStyleAttributeName, value: paragraphStyle, range: NSMakeRange(0, descStr.length))
-        lblStr.addAttribute(NSParagraphStyleAttributeName, value: paragraphStyle, range: NSMakeRange(0, lblStr.length))
+        descStr.addAttribute(NSAttributedStringKey.paragraphStyle, value: paragraphStyle, range: NSMakeRange(0, descStr.length))
+        lblStr.addAttribute(NSAttributedStringKey.paragraphStyle, value: paragraphStyle, range: NSMakeRange(0, lblStr.length))
 
         return (descStr, lblStr)
     }
@@ -709,7 +709,7 @@ public class OurStudyViewController: UIViewController, ChartViewDelegate {
         let vString = "\(value)"
         let aString = NSMutableAttributedString(string: vString + " " + unit)
         let unitFont = UIFont(name: "GothamBook", size: unitsFontSize)!
-        aString.addAttribute(NSFontAttributeName, value: unitFont, range: NSRange(location:vString.characters.count+1, length: unit.characters.count))
+        aString.addAttribute(NSAttributedStringKey.font, value: unitFont, range: NSRange(location:vString.characters.count+1, length: unit.characters.count))
         return aString
     }
 }

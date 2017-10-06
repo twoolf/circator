@@ -86,7 +86,7 @@ class DailyProgressViewController : UIViewController, DailyChartModelProtocol {
         self.dailyChartModel.registerCells()
         self.dailyProgressChartDaysTable.dataSource = self.dailyChartModel
 
-        self.dailyProgressChartView.changeColorCompletion = { _ in
+        self.dailyProgressChartView.changeColorCompletion = { 
             OperationQueue.main.addOperation {
                 self.updateContentWithAnimation = false
                 self.dailyChartModel.toggleHighlightFasting()
@@ -202,16 +202,16 @@ class DailyProgressViewController : UIViewController, DailyChartModelProtocol {
 
     func dailyProgressStatCollected() {
         self.dailyEatingLabel.attributedText = self.dailyChartModel.eatingText.formatTextWithRegex(regex: "[-+]?(\\d*[.,])?\\d+",
-                                                                                                    format: [NSForegroundColorAttributeName: UIColor.white],
-                                                                                                    defaultFormat: [NSForegroundColorAttributeName: UIColor.colorWithHexString(rgb: "#ffffff", alpha: 0.3) as AnyObject])
+                                                                                                   format: [NSAttributedStringKey.foregroundColor: UIColor.white],
+                                                                                                   defaultFormat: [NSAttributedStringKey.foregroundColor: UIColor.colorWithHexString(rgb: "#ffffff", alpha: 0.3) as AnyObject])
         
         self.maxDailyFastingLabel.attributedText = self.dailyChartModel.fastingText.formatTextWithRegex(regex: "[-+]?(\\d*[.,])?\\d+",
-                                                                                                  format: [NSForegroundColorAttributeName: UIColor.white],
-                                                                                                  defaultFormat: [NSForegroundColorAttributeName: UIColor.colorWithHexString(rgb: "#ffffff", alpha: 0.3) as AnyObject])
+                                                                                                        format: [NSAttributedStringKey.foregroundColor: UIColor.white],
+                                                                                                        defaultFormat: [NSAttributedStringKey.foregroundColor: UIColor.colorWithHexString(rgb: "#ffffff", alpha: 0.3) as AnyObject])
         
         self.lastAteLabel.attributedText = self.dailyChartModel.lastAteText.formatTextWithRegex(regex: "[-+]?(\\d*[.,])?\\d+",
-                                                                                                format: [NSForegroundColorAttributeName: UIColor.white],
-                                                                                                defaultFormat: [NSForegroundColorAttributeName: UIColor.colorWithHexString(rgb: "#ffffff", alpha: 0.3) as AnyObject])
+                                                                                                format: [NSAttributedStringKey.foregroundColor: UIColor.white],
+                                                                                                defaultFormat: [NSAttributedStringKey.foregroundColor: UIColor.colorWithHexString(rgb: "#ffffff", alpha: 0.3) as AnyObject])
     }
     
     override func viewDidLayoutSubviews() {
@@ -223,7 +223,7 @@ class DailyProgressViewController : UIViewController, DailyChartModelProtocol {
         }
     }
 
-    func scrollRecent() {
+    @objc func scrollRecent() {
         var newDate: Date? = nil
         if let date = self.dailyChartModel.getEndDate() {
 //            if !date.isInToday() {
@@ -242,7 +242,7 @@ class DailyProgressViewController : UIViewController, DailyChartModelProtocol {
         }
     }
 
-    func scrollOlder() {
+    @objc func scrollOlder() {
         var newDate: Date? = nil
         if let date = self.dailyChartModel.getEndDate() {
             let oldest = 3.months.ago()!
@@ -259,7 +259,7 @@ class DailyProgressViewController : UIViewController, DailyChartModelProtocol {
         }
     }
 
-    func syncAddedCircadianEvents() {
+    @objc func syncAddedCircadianEvents() {
         Async.background(after: 1.0) {
             self.contentDidUpdate()
         }

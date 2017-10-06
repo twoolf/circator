@@ -22,8 +22,8 @@ class DashboardManageController: UIViewController, UITableViewDelegate, UITableV
     override func viewDidLoad() {
         super.viewDidLoad()
 
-        self.navigationBar.titleTextAttributes = [NSForegroundColorAttributeName : ScreenManager.sharedInstance.appNavBarTextColor(),
-                                                  NSFontAttributeName : ScreenManager.appNavBarFont()]
+        self.navigationBar.titleTextAttributes = [NSAttributedStringKey.foregroundColor : ScreenManager.sharedInstance.appNavBarTextColor(),
+                                                  NSAttributedStringKey.font : ScreenManager.appNavBarFont()]
         self.navigationBar.tintColor = UIColor.white
         self.navigationBar.barStyle = UIBarStyle.black;
         

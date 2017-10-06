@@ -44,7 +44,7 @@ class QueryViewController: UITableViewController {
         navigationItem.rightBarButtonItem = addQueryButton
     }
 
-    func addQuery() {
+   @objc func addQuery() {
         let builder = QueryBuilderViewController()
         builder.buildMode = BuilderMode.Creating
         navigationController?.pushViewController(builder, animated: true)

@@ -86,7 +86,7 @@ class LoadImageCollectionViewCell: CircleImageCollectionViewCell, UIImagePickerC
     }
     
     func checkCamera() {
-        let authStatus = AVCaptureDevice.authorizationStatus(forMediaType: AVMediaTypeVideo)
+        let authStatus = AVCaptureDevice.authorizationStatus(for: AVMediaType.video)
         switch authStatus {
             case .authorized: showImagePickerWithSourceType(type: .camera)
             case .denied: showAlertActionForType(type: .camera)
@@ -96,8 +96,8 @@ class LoadImageCollectionViewCell: CircleImageCollectionViewCell, UIImagePickerC
     }
     
     func alertPromptToAllowCameraAccessViaSetting() {
-        if AVCaptureDevice.devices(withMediaType: AVMediaTypeVideo).count > 0 {
-            AVCaptureDevice.requestAccess(forMediaType: AVMediaTypeVideo) { granted in
+        if AVCaptureDevice.devices(for: AVMediaType.video).count > 0 {
+            AVCaptureDevice.requestAccess(for: AVMediaType.video) { granted in
                 Async.main{
                     self.checkCamera()
                 }

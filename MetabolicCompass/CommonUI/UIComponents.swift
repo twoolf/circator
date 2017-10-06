@@ -14,7 +14,7 @@ class MCButton: HTPressableButton {}
 
 public class UIComponents {
 
-    static public func createLabelledComponent<T>(title: String, attrs: [String: AnyObject]? = nil,
+    static public func createLabelledComponent<T>(title: String, attrs: [NSAttributedStringKey: Any]? = nil,
                                                   labelOnTop: Bool = true, labelFontSize: CGFloat, labelSpacing: CGFloat = 8.0,
                                                   stackAlignment: UIStackViewAlignment = .fill, value: T, constructor: (T) -> UIView) -> UIStackView
     {
@@ -28,7 +28,7 @@ public class UIComponents {
             let paragraphStyle = NSMutableParagraphStyle()
             paragraphStyle.lineSpacing = 5.0
             paragraphStyle.alignment = .center
-            aString.addAttribute(NSParagraphStyleAttributeName, value: paragraphStyle, range: NSMakeRange(0, aString.length))
+            aString.addAttribute(NSAttributedStringKey.paragraphStyle, value: paragraphStyle, range: NSMakeRange(0, aString.length))
 
             label.attributedText = aString
 
@@ -62,7 +62,7 @@ public class UIComponents {
         return stack
     }
 
-    static public func createNumberLabel(title: String, titleAttrs: [String: AnyObject]? = nil,
+    static public func createNumberLabel(title: String, titleAttrs: [NSAttributedStringKey: Any]? = nil,
                                          bodyFontSize: CGFloat = 44.0, unitsFontSize: CGFloat = 20.0,
                                          labelOnTop: Bool = true, labelFontSize: CGFloat, labelSpacing: CGFloat = 8.0,
                                          value: Double, unit: String) -> UIStackView
@@ -79,12 +79,12 @@ public class UIComponents {
             let aString = NSMutableAttributedString(string: vString + " " + unit)
             let unitFont = UIFont(name: "GothamBook", size: unitsFontSize)!
 
-            aString.addAttribute(NSFontAttributeName, value: unitFont, range: NSRange(location:vString.characters.count+1, length: unit.characters.count))
+                                                        aString.addAttribute(NSAttributedStringKey.font, value: unitFont, range: NSRange(location:vString.characters.count+1, length: unit.characters.count))
 
             let paragraphStyle = NSMutableParagraphStyle()
             paragraphStyle.lineSpacing = 2.0
             paragraphStyle.alignment = .center
-            aString.addAttribute(NSParagraphStyleAttributeName, value: paragraphStyle, range: NSMakeRange(0, aString.length))
+                                                        aString.addAttribute(NSAttributedStringKey.paragraphStyle, value: paragraphStyle, range: NSMakeRange(0, aString.length))
 
             label.attributedText = aString
             return label
@@ -92,7 +92,7 @@ public class UIComponents {
     }
 
     static public func createNumberWithImageAndLabel(title: String, imageName: String,
-                                                     titleAttrs: [String: AnyObject]? = nil, bodyFontSize: CGFloat = 66.0, unitsFontSize: CGFloat = 20.0,
+                                                     titleAttrs: [NSAttributedStringKey: Any]? = nil, bodyFontSize: CGFloat = 66.0, unitsFontSize: CGFloat = 20.0,
                                                      labelOnTop: Bool = true, labelFontSize: CGFloat, labelSpacing: CGFloat = 8.0,
                                                      value: Double, unit: String, prefix: String? = nil, suffix: String? = nil) -> UIStackView
     {
@@ -113,16 +113,16 @@ public class UIComponents {
 
             if prefixStr.characters.count > 0 {
                 let headRange = NSRange(location:0, length: prefixStr.characters.count + 1)
-                aStr.addAttribute(NSFontAttributeName, value: unitFont, range: headRange)
+                aStr.addAttribute(NSAttributedStringKey.font, value: unitFont, range: headRange)
             }
 
             let tailRange = NSRange(location:prefixStr.characters.count + vStr.characters.count + 1, length: unit.characters.count + suffixStr.characters.count + 2)
-            aStr.addAttribute(NSFontAttributeName, value: unitFont, range: tailRange)
+            aStr.addAttribute(NSAttributedStringKey.font, value: unitFont, range: tailRange)
 
             let paragraphStyle = NSMutableParagraphStyle()
             paragraphStyle.lineSpacing = 2.0
             paragraphStyle.alignment = .center
-            aStr.addAttribute(NSParagraphStyleAttributeName, value: paragraphStyle, range: NSMakeRange(0, aStr.length))
+            aStr.addAttribute(NSAttributedStringKey.paragraphStyle, value: paragraphStyle, range: NSMakeRange(0, aStr.length))
 
             label.attributedText = aStr
 

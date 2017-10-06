@@ -190,10 +190,10 @@ public class FastingDataModel : NSObject {
             }
 
             if !typeFractionForOther.isEmpty {
-                let otherTotal = typeFractionForOther.reduce(0.0, { return $0.0 + $0.1.1 })
+                let otherTotal = typeFractionForOther.reduce(0.0, { return $0 + $1.1 })
                 let entry = ChartDataEntry(x: otherTotal / total, y: Double(self.samplesCollectedDataEntries.count))
                 self.samplesCollectedDataEntries.append((.Other, entry))
-            }
+            }//
         }
     }
 

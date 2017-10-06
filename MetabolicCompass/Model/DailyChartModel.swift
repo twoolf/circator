@@ -84,7 +84,7 @@ open class DailyChartModel : NSObject, UITableViewDataSource {
     
     var daysStringArray: [String] = { return DailyChartModel.getChartDateRangeStrings() }()
 
-    public func invalidateCache(_ note: NSNotification) {
+    @objc public func invalidateCache(_ note: NSNotification) {
         if let info = note.userInfo, let dates = info[HMCircadianEventsDateUpdateKey] as? Set<Date> {
             if dates.count > 0 {
                 for date in dates {

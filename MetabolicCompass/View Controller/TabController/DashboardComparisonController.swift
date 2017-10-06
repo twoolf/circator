@@ -43,7 +43,7 @@ class DashboardComparisonController: UIViewController, UITableViewDelegate, UITa
         AccountManager.shared.loginAndInitialize(animated: false)
     }
 
-    func contentDidUpdate (_ notification: NSNotification) {
+    @objc func contentDidUpdate (_ notification: NSNotification) {
         self.tableView.reloadData()
         self.stopActivityIndicator()
     }
@@ -91,12 +91,12 @@ class DashboardComparisonController: UIViewController, UITableViewDelegate, UITa
                                        customAttributes: nil)
     }
 
-    func updateContent() {
+    @objc func updateContent() {
         self.startActivityIndicator()
         AccountManager.shared.contentManager.initializeBackgroundWork()
     }
 
-    func refreshData() {
+    @objc func refreshData() {
         ComparisonDataModel.sharedManager.updateIndividualData(types: PreviewManager.previewSampleTypes) { _ in () }
     }
 

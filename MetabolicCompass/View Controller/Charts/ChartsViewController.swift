@@ -78,7 +78,7 @@ class ChartsViewController: UIViewController {
         collectionView.reloadData()
     }
     
-    func updateChartsData () {
+    @objc func updateChartsData () {
         if !activityIndicator.isAnimating {
             activityIndicator.startAnimating()
         }
@@ -129,7 +129,7 @@ class ChartsViewController: UIViewController {
         updateChartsData()
     }
 
-    func manageCharts () {
+    @objc func manageCharts () {
         let manageController = UIStoryboard(name: "TabScreens", bundle: nil).instantiateViewController(withIdentifier: "manageCharts")
         self.present(manageController, animated: true) {}
     }

@@ -29,7 +29,7 @@ private let inputFontSize = ScreenManager.sharedInstance.profileInputFontSize()
     @IBOutlet weak var collectionView: UICollectionView!
 
     internal var consentOnLoad : Bool = false
-    internal var registerCompletion : ((Void) -> Void)?
+    internal var registerCompletion : (() -> Void)?
     private var stashedUserId : String?
     
     //MARK: View life circle
@@ -104,21 +104,21 @@ private let inputFontSize = ScreenManager.sharedInstance.profileInputFontSize()
     func doConsent() {
         stashedUserId = UserManager.sharedManager.getUserId()
         UserManager.sharedManager.resetFull()
-        ConsentManager.sharedManager.checkConsentWithBaseViewController(self.navigationController!) { [weak self] consentAndNames -> Void in
-            guard consentAndNames.0 else {
+        ConsentManager.sharedManager.checkConsentWithBaseViewController(self.navigationController!) { [weak self] (consent, firstName, lastName) in
+            guard consent else {
                 UserManager.sharedManager.resetFull()
-                if let user = self!.stashedUserId {
+                if let user = self?.stashedUserId {
                     UserManager.sharedManager.setUserId(userId: user)
                 }
-                self!.navigationController?.popViewController(animated: true)
-                return
+                self?.navigationController?.popViewController(animated: true)
+                return ()
             }
 
             // Note: add 1 to index, due to photo field.
             if let s = self {
-                let updatedData = consentAndNames.1 != nil || consentAndNames.2 != nil
-                if consentAndNames.1 != nil { s.dataSource.model.setAtItem(itemIndex: s.dataSource.model.firstNameIndex+1, newValue: consentAndNames.1! as AnyObject?) }
-                if consentAndNames.2 != nil { s.dataSource.model.setAtItem(itemIndex: s.dataSource.model.lastNameIndex+1, newValue: consentAndNames.2! as AnyObject?) }
+                let updatedData = firstName != nil || lastName != nil
+                    if firstName != nil { s.dataSource.model.setAtItem(itemIndex: s.dataSource.model.firstNameIndex + 1, newValue: firstName! as AnyObject?) }
+                    if lastName != nil { s.dataSource.model.setAtItem(itemIndex: s.dataSource.model.lastNameIndex + 1, newValue: lastName! as AnyObject?) }
                 if updatedData { s.collectionView.reloadData() }
             }
         }

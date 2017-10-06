@@ -43,7 +43,7 @@ class PhysiologicalDataViewController: BaseViewController {
 
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-        dataSource.model.loadValues{ _ in
+        dataSource.model.loadValues{ 
             self.collectionView.reloadData()
         }
     }
@@ -60,7 +60,7 @@ class PhysiologicalDataViewController: BaseViewController {
         leftButton = createBarButtonItem(lsCancelTitle, action: #selector(self.leftAction))
     }
 
-    func rightAction(_ sender: UIBarButtonItem) {
+    @objc func rightAction(_ sender: UIBarButtonItem) {
         if dataSource.editMode {
             dataSource.model.additionalInfoDict { (error, additionalInfo) in
                 guard error == nil else {
@@ -76,7 +76,7 @@ class PhysiologicalDataViewController: BaseViewController {
         }
     }
 
-    func leftAction(_ sender: UIBarButtonItem) {
+    @objc func leftAction(_ sender: UIBarButtonItem) {
         let lsConfirmTitle = "Confirm cancel".localized
         let lsConfirmMessage = "Your changes have not been saved yet. Exit without saving?".localized
         let confirmAlert = UIAlertController(title: lsConfirmTitle, message: lsConfirmMessage, preferredStyle: UIAlertControllerStyle.alert)
