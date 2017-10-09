@@ -401,19 +401,10 @@ public class UserManager {
 
     public func loginWithCompletion(completion: @escaping SvcResultCompletion) {
         withUserPass (password: getPassword()) { (user, pass) in
-            Stormpath.sharedSession.login(username: user, password: pass) {
-                (success, err) -> Void in
-                guard success && err == nil else {
-                    log.error("Stormpath login failed: \(err!.localizedDescription)")
-                    self.resetFull()
-                    completion(RequestResult(error:err!))
-                    return
-                }
-                let token = AuthSessionManager.shared.keychain.string(forKey: "access_token")
-                log.info("Access token: \(Stormpath.sharedSession.accessToken)")
-                MCRouter.updateAuthToken(token: token)
-                completion(RequestResult())
-            }
+            let token = AuthSessionManager.shared.keychain.string(forKey: "access_token")
+            MCRouter.updateAuthToken(token: token)
+            let result = RequestResult()
+            completion(result)
         }
     }
 
