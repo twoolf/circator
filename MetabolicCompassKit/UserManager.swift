@@ -447,7 +447,7 @@ public class UserManager {
         }
     }
 
-    public func logoutWithCompletion(completion: ((Void) -> Void)?) {
+    public func logoutWithCompletion(completion: (() -> Void)?) {
         Stormpath.sharedSession.logout()
         MCRouter.updateAuthToken(token: nil)
         resetUser()

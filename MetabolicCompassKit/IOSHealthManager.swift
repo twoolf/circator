@@ -41,7 +41,7 @@ public class IOSHealthManager: NSObject, WCSessionDelegate {
 
     func connectWatch() {
         if WCSession.isSupported() {
-            let session = WCSession.default()
+            let session = WCSession.default
             session.delegate = self
             session.activate()
         }
@@ -49,7 +49,7 @@ public class IOSHealthManager: NSObject, WCSessionDelegate {
 
     func updateWatchContext() {
         // This release currently removed watch support
-        guard WCSession.isSupported() && WCSession.default().isWatchAppInstalled else {
+        guard WCSession.isSupported() && WCSession.default.isWatchAppInstalled else {
             return
         }
         do {
@@ -65,7 +65,7 @@ public class IOSHealthManager: NSObject, WCSessionDelegate {
                 ]
             }
             */
-            try WCSession.default().updateApplicationContext(["context": applicationContext])
+            try WCSession.default.updateApplicationContext(["context": applicationContext])
         } catch {
             log.error((error as Error).localizedDescription)
         }

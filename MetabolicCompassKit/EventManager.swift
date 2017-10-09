@@ -76,7 +76,7 @@ public class EventManager : NSObject, WCSessionDelegate {
         connectWatch()
     }
 
-    public func checkCalendarAuthorizationStatus(completion: @escaping ((Void) -> Void)) {
+    public func checkCalendarAuthorizationStatus(completion: @escaping (() -> Void)) {
         if self.pending { return }
         let status = EKEventStore.authorizationStatus(for: EKEntityType.event)
 
@@ -95,7 +95,7 @@ public class EventManager : NSObject, WCSessionDelegate {
         }
     }
 
-    func requestAccessToCalendar(completion: @escaping ((Void) -> Void)) {
+    func requestAccessToCalendar(completion: @escaping (() -> Void)) {
         eventKitStore.requestAccess(to: EKEntityType.event, completion: {
             (accessGranted, error) in
 
@@ -113,7 +113,7 @@ public class EventManager : NSObject, WCSessionDelegate {
         })
     }
 
-    func initializeCalendarSession(completion: ((Void) -> Void)) {
+    func initializeCalendarSession(completion: (() -> Void)) {
         self.calendar = eventKitStore.defaultCalendarForNewEvents
 
         // Perform an initial refresh.
@@ -156,7 +156,6 @@ public class EventManager : NSObject, WCSessionDelegate {
             var eventIndex : [DiningEventKey:[(Int, String)]] = [:]
             for ev in events {
                 let hotword = UserManager.sharedManager.getHotWords()
-//                if let rng = ev.title.lowercaseString.rangeOfString(hotword)
                     if let rng = ev.title.range(of: hotword)
                 {
                     let key = DiningEventKey(start: ev.startDate, end: ev.endDate)
@@ -179,12 +178,12 @@ public class EventManager : NSObject, WCSessionDelegate {
                     }
 
                     var edata = ev.title
-                    edata.removeSubrange(rng)
+                    edata?.removeSubrange(rng)
                     if var items = eventIndex[key] {
-                        items.append((eventId, edata))
+                        items.append((eventId, edata!))
                         eventIndex.updateValue(items, forKey: key)
                     } else {
-                        eventIndex.updateValue([(eventId, edata)], forKey: key)
+                        eventIndex.updateValue([(eventId, edata!)], forKey: key)
                     }
                 }
             }
@@ -269,7 +268,7 @@ public class EventManager : NSObject, WCSessionDelegate {
 
     func connectWatch() {
         if WCSession.isSupported() {
-            let session = WCSession.default()
+            let session = WCSession.default
             session.delegate = self
             session.activate()
         }

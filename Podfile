@@ -7,7 +7,7 @@ def shared_pods
     pod 'ARSLineProgress' 
     pod 'AsyncKit' 
     pod 'AsyncSwift'
-    pod 'AwesomeCache' 
+    pod 'AwesomeCache’, :git => ‘https://github.com/aschuch/AwesomeCache.git’, :branch => ‘master’
     pod 'Charts' 
     pod 'CryptoSwift' 
     pod 'Dodo' 
@@ -102,6 +102,19 @@ post_install do |installer|
            config.build_settings['SWIFT_VERSION'] = '4.0'
         end
     end
+
+    if target.name == ’FileKit’ 
+        target.build_configurations.each do |config|
+           config.build_settings['SWIFT_VERSION'] = '4.0'        
+	end
+   end
+
+   if target.name == ’Pages’ 
+        target.build_configurations.each do |config|
+           config.build_settings['SWIFT_VERSION'] = '4.0'        
+	end
+   end
+
 
    if target.name == ’ResearchKit’ 
         target.build_configurations.each do |config|

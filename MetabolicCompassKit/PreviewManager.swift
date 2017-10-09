@@ -113,7 +113,7 @@ public class PreviewManager: NSObject {
         ],
     ]
 
-    public static let rowIcons: [HKSampleType: UIImage] = { _ in
+    public static let rowIcons: [HKSampleType: UIImage] = {
         let previewIcons : [HKSampleType: String] = [
             HKObjectType.categoryType(forIdentifier: HKCategoryTypeIdentifier.sleepAnalysis)!             : "icon_sleep",
             HKObjectType.correlationType(forIdentifier: HKCorrelationTypeIdentifier.bloodPressure)!       : "icon_blood_pressure",

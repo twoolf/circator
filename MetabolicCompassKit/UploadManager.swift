@@ -28,7 +28,7 @@ public extension Collection where Index: Strideable {
     /// but not including the index N, and is false for all elements
     /// starting with index N.
     /// Behavior is undefined if there is no such N.
-    func binarySearch(predicate: (Generator.Element) -> Bool) -> Index {
+    func binarySearch(predicate: (Iterator.Element) -> Bool) -> Index {
         var low = startIndex
         var high = endIndex
         while low != high {
@@ -85,8 +85,8 @@ public let SyncEndedNotification = "SyncEndedNotification"
 public let SyncProgressNotification = "SyncProgressNotification"
 
 public class UMLogSequenceNumber: Object {
-    public dynamic var msid = String()
-    public dynamic var seqid: Int = 0
+    @objc public dynamic var msid = String()
+    @objc public dynamic var seqid: Int = 0
 
     public convenience init(type: HKSampleType) {
         self.init()
@@ -108,7 +108,7 @@ public class UMLogSequenceNumber: Object {
 }
 
 public class UMSampleUUID: Object {
-    dynamic var uuid = NSData()
+    @objc dynamic var uuid = NSData()
     public convenience init(insertion: HKObject) {
         self.init()
         self.uuid = UMSampleUUID.nsDataOfUUID(uuid: insertion.uuid as NSUUID)
@@ -136,16 +136,16 @@ public class UMSampleUUID: Object {
 }
 
 public class UMLogEntry: Object {
-    public dynamic var id: Int = 0
-    public dynamic var msid = String()
-    public dynamic var ts = Date()
-    public dynamic var anchor = NSData()
+    @objc public dynamic var id: Int = 0
+    @objc public dynamic var msid = String()
+    @objc public dynamic var ts = Date()
+    @objc public dynamic var anchor = NSData()
 
     let insert_uuids = List<UMSampleUUID>()
     let delete_uuids = List<UMSampleUUID>()
 
-    public dynamic var retry_ts = Date()
-    public dynamic var retry_count: Int = 1
+    @objc public dynamic var retry_ts = Date()
+    @objc public dynamic var retry_count: Int = 1
 
     // Note: because we may add a LSN for this type, this initializer must be called in a write block.
     public convenience init(realm: Realm!, sampleType: HKSampleType, ts: Date = Date(), anchor: HKQueryAnchor, added: [HKSample], deleted: [HKDeletedObject]) {
@@ -192,7 +192,7 @@ public class UMLogEntry: Object {
         self.compoundKey = compoundKeyValue()
     }
 
-    public dynamic var compoundKey: String = ""
+    @objc public dynamic var compoundKey: String = ""
 
     public func compoundKeyValue() -> String {
         return "\(ts.timeIntervalSince1970)\(msid)"
@@ -524,7 +524,7 @@ public class UploadManager: NSObject {
             let totalBlocks = ((added.count / blockSize)+1)
             if ( added.count > 20 ) {
                 for i in 0..<totalBlocks {
-                    autoreleasepool { _ in
+                    autoreleasepool { 
                         do {
                             log.debug("Uploading block \(i) / \(totalBlocks)", "uploadProgress")
                             let jsonObjs = try added[(i*blockSize)..<(min((i+1)*blockSize, added.count))].map(self.jsonifySample)
@@ -651,7 +651,7 @@ public class UploadManager: NSObject {
     func syncLogEntryBuffer() {
         if !logEntryBatchBuffer.isEmpty {
             log.debug("Sync start", "uploadExec")
-            autoreleasepool { _ in
+            autoreleasepool { 
                 let batchSize = min(logEntryBatchBuffer.count, logEntryUploadBatchSize)
                 let uploadSlice = logEntryBatchBuffer[0..<batchSize]
 
@@ -662,7 +662,7 @@ public class UploadManager: NSObject {
 
                 let blockBuildStart = Date()
                 uploadSlice.forEach { batch in
-                    autoreleasepool { _ in
+                    autoreleasepool { 
                         if let logEntry = realm.object(ofType: UMLogEntry.self, forPrimaryKey: batch.0 as AnyObject) {
                             if let params = self.jsonifyLogEntry(logEntry: logEntry, added: batch.1, deleted: batch.2) {
                                 log.debug("Serialized UMLogEntry \(batch.1.count) \(batch.2.count)", "uploadExec")
@@ -779,7 +779,7 @@ public class UploadManager: NSObject {
                     var deletedIndex = 0
 
                     (0..<totalBlocks).forEach { _ in
-                        autoreleasepool { _ in
+                        autoreleasepool { 
                             let lAdded = (addedIndex < added.count ? added[addedIndex..<min(addedIndex + uploadBlockSize, added.count)] : []).map { $0 }
 
                             let numDeleted = uploadBlockSize - lAdded.count

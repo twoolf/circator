@@ -250,8 +250,8 @@ public class NotificationManager {
         log.debug([
             "sstart \(streakStarts)",
             "send \(streakEnds)",
-            "sstate mfw \(streakState[.Fasting]!.dailyMFW)",
-            "sstate dn \(streakState[.Fasting]!.daysNotified)",
+    //        "sstate mfw \(streakState[.Fasting]!.dailyMFW)",
+   //       "sstate dn \(streakState[.Fasting]!.daysNotified)",
             "smax \(streakMax)"
             ].joined(separator: "\n"), "initManager")
 
@@ -303,7 +303,7 @@ public class NotificationManager {
     // Main entry trigger for circadian-event driven notification scheduling.
 
     public func onCircadianEvents(events: [HKSample]) {
-        if let newest = events.sorted(by: { $0.0.startDate > $0.1.startDate }).first {
+        if let newest = events.sorted(by: { $0.startDate > $1.startDate }).first {
             var cEvent: CircadianEvent! = nil
             if let mt = newest.metadata?["Meal Type"] as? String {
                 cEvent = .meal(mealType: MealType(rawValue: mt)!)

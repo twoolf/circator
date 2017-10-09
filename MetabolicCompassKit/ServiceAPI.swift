@@ -289,10 +289,10 @@ public protocol ServiceRequestResultDelegate {
 
 public class Service {
     public static var delegate:ServiceRequestResultDelegate?
-    internal static func string<S: Sequence where S.Iterator.Element == Int>
+    internal static func string<S: Sequence>
         (route: MCRouter, statusCode: S, tag: String,
          completion: @escaping (NSURLRequest?, HTTPURLResponse?, Alamofire.Result<String>) -> Void)
-        -> Alamofire.Request
+        -> Alamofire.Request where S.Iterator.Element == Int
     {
         return Alamofire.request(route).validate(statusCode: statusCode).responseString { response in
             log.debug("\(tag): " + (response.result.isSuccess ? "SUCCESS" : "FAILED"))
@@ -304,10 +304,10 @@ public class Service {
         }
     }
     
-    internal static func json<S: Sequence where S.Iterator.Element == Int>
+    internal static func json<S: Sequence>
         (route: MCRouter, statusCode: S, tag: String,
          completion: @escaping (NSURLRequest?, HTTPURLResponse?, Alamofire.Result<Any>) -> Void)
-        -> Alamofire.Request
+        -> Alamofire.Request where S.Iterator.Element == Int
     {
         return Alamofire.request(route).validate(statusCode: statusCode).responseJSON { response in
             log.debug("\(tag): " + (response.result.isSuccess ? "SUCCESS" : "FAILED"))
