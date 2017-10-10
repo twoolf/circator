@@ -12,6 +12,7 @@ import MCCircadianQueries
 import Alamofire
 import Locksmith
 import Stormpath
+import Auth0
 import CryptoSwift
 import SwiftDate
 import Async
@@ -227,8 +228,8 @@ public class UserManager {
     var componentUpdateQueue = DispatchQueue(label:"UserManangerUpdateQueue", attributes: .concurrent)
 
     init() {
-        StormpathConfiguration.defaultConfiguration.APIURL = MCRouter.baseURL as URL
-        self.componentUpdateQueue = DispatchQueue(label: "UserManangerUpdateQueue")
+//        StormpathConfiguration.defaultConfiguration.APIURL = MCRouter.baseURL as URL
+//        self.componentUpdateQueue = DispatchQueue(label: "UserManangerUpdateQueue")
 //        self.serialQueue = DispatchQueue(label: "UserManangerUpdateQueue")
 //        self.componentUpdateQueue = dispatch_queue_create("UserManangerUpdateQueue", DISPATCH_QUEUE_SERIAL)
 //        self.componentUpdateQueue.async {
@@ -246,7 +247,8 @@ public class UserManager {
     }
     
     public func isLoggedIn () -> Bool {
-        return Stormpath.sharedSession.accessToken != nil
+//        return Stormpath.sharedSession.accessToken != nil
+        return true
     }
     
     public func removeFirstLogin () {
@@ -343,7 +345,7 @@ public class UserManager {
             let account = UserAccount(username: user, password: "")
             do {
                 try account.deleteFromSecureStore()
-                Stormpath.sharedSession.logout()
+//                Stormpath.sharedSession.logout()
                 ConsentManager.sharedManager.resetConsentFilePath()
                 IOSHealthManager.sharedManager.reset()
                 PopulationHealthManager.sharedManager.reset()
@@ -439,7 +441,7 @@ public class UserManager {
     }
 
     public func logoutWithCompletion(completion: (() -> Void)?) {
-        Stormpath.sharedSession.logout()
+//        Stormpath.sharedSession.logout()
         MCRouter.updateAuthToken(token: nil)
         resetUser()
         if let comp = completion { comp() }
@@ -491,7 +493,18 @@ public class UserManager {
     // MARK: - Stormpath token management.
 
     public func getAccessToken() -> String? {
-        return Stormpath.sharedSession.accessToken
+        Auth0
+//            .users(token: accessToken)
+            .get("user identifier", fields: ["user_metadata"], include: true)
+            .start { result in
+                switch result {
+                case .success(let userInfo):
+                    print("user: \(userInfo)")
+                case .failure(let error):
+                    print(error)
+                }
+        }
+//        return Stormpath.sharedSession.accessToken
     }
 
     // Recursive checking of the access token's expiry.
@@ -513,7 +526,7 @@ public class UserManager {
             // TODO: this is a temporary workaround for issue #30, to support auto-login:
             // https://github.com/yanif/circator/issues/30
             var doReset = true
-            if let token = Stormpath.sharedSession.accessToken {
+ /*           if let token = Stormpath.sharedSession.accessToken {
                 do {
                     let jwt = try decode(jwt: token)
                     if let expiry = jwt.expiresAt?.timeIntervalSince1970 {
@@ -522,7 +535,7 @@ public class UserManager {
                         log.info("Setting expiry as \(expiry)")
                     }
                 } catch {}
-            }
+            } */
             if doReset { self.resetFull() }
             completion(doReset)
             NotificationCenter.default.post(name: NSNotification.Name(rawValue: UMDidLogoutNotification), object: nil)

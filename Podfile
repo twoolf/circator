@@ -8,8 +8,8 @@ def shared_pods
     pod 'AsyncKit' 
     pod 'AsyncSwift'
     pod 'AwesomeCache’, :git => ‘https://github.com/aschuch/AwesomeCache.git’, :branch => ‘master’
-    pod 'Charts' 
-    pod 'CryptoSwift' 
+    pod 'Charts', :git => 'https://github.com/danielgindi/Charts.git', :branch => 'master'
+    pod 'CryptoSwift', :git => 'https://github.com/krzyzanowskim/CryptoSwift.git', :branch => 'master'
     pod 'Dodo' 
     pod 'EasyAnimation' 
     pod 'EasyTipView' 
