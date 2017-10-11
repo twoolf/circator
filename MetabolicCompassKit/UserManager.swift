@@ -493,7 +493,7 @@ public class UserManager {
     // MARK: - Stormpath token management.
 
     public func getAccessToken() -> String? {
-        Auth0
+/*        Auth0
 //            .users(token: accessToken)
             .get("user identifier", fields: ["user_metadata"], include: true)
             .start { result in
@@ -504,7 +504,8 @@ public class UserManager {
                     print(error)
                 }
         }
-//        return Stormpath.sharedSession.accessToken
+//        return Stormpath.sharedSession.accessToken */
+        return "string_as_access_token"
     }
 
     // Recursive checking of the access token's expiry.
