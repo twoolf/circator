@@ -8,7 +8,7 @@ def shared_pods
     pod 'AsyncKit' 
     pod 'AsyncSwift'
     pod 'AwesomeCache’, :git => ‘https://github.com/aschuch/AwesomeCache.git’, :branch => ‘master’
-    pod 'Charts' 
+    pod 'Charts' , :git => 'https://github.com/OlenaSrost/Charts.git’
     pod 'CryptoSwift' 
     pod 'Dodo' 
     pod 'EasyAnimation' 
@@ -24,7 +24,7 @@ def shared_pods
     pod 'Navajo-Swift' 
     pod 'NVActivityIndicatorView' 
     pod 'Pages' 
-    pod 'ReachabilitySwift' 
+    pod 'ReachabilitySwift', '~> 3.0’ 
     pod 'ResearchKit', :git => 'https://github.com/twoolf/ResearchKit.git'
     pod 'Realm' 
     pod 'RealmSwift'
