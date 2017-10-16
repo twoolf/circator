@@ -86,7 +86,8 @@ class LoginViewController: BaseViewController {
     // MARK: - Actions
 
     @IBAction func loginAction() {
-        auth0login()
+   //     auth0Weblogin()
+        auth0CustomLogin()
     }
 
     func doSignup(sender: UIButton) {
@@ -95,7 +96,33 @@ class LoginViewController: BaseViewController {
         self.navigationController?.pushViewController(registerVC, animated: true)
     }
 
-    func auth0login() {
+
+
+    func auth0CustomLogin() {
+        let loginCredentials = loginModel.getCredentials()
+        Auth0
+            .authentication()
+            .login(
+                usernameOrEmail: loginCredentials.email!,
+                password: loginCredentials.password!,
+                realm: "Username-Password-Authentication",
+                scope: "openid profile")
+            .start { result in
+                DispatchQueue.main.async {
+                    switch result {
+                    case .success(let credentials):
+                    //    self.loginWithCredentials(credentials)
+                        self.login()
+                    case .failure(let error):
+                    //    self.showAlertForError(error)
+                        self.login()
+                    }
+                }
+        }
+    }
+
+
+    func auth0Weblogin() {
             guard let clientInfo = plistValues(bundle: Bundle.main) else { return }
             Auth0
                 .webAuth()
