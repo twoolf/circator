@@ -79,7 +79,7 @@ private let inputFontSize = ScreenManager.sharedInstance.profileInputFontSize()
         UserManager.sharedManager.overrideUserPass(user: userRegistrationModel.email, pass: userRegistrationModel.password)
         
         let initialProfile = self.dataSource.model.profileItems()
-        UserManager.sharedManager.register(firstName: userRegistrationModel.firstName!, lastName: userRegistrationModel.lastName!, consentPath: consentPath, initialData: initialProfile) { (_, error, errormsg) in
+/*        UserManager.sharedManager.register(firstName: userRegistrationModel.firstName!, lastName: userRegistrationModel.lastName!, consentPath: consentPath, initialData: initialProfile) { (_, error, errormsg) in
             guard !error else {
                 // Return from this function to allow the user to try registering again with the 'Done' button.
                 // We reset the user/pass so that any view exit leaves the app without a registered user.
@@ -98,7 +98,7 @@ private let inputFontSize = ScreenManager.sharedInstance.profileInputFontSize()
             // save user profile image
             UserManager.sharedManager.setUserProfilePhoto(photo: userRegistrationModel.photo)
             self.performSegue(withIdentifier: self.segueRegistrationCompletionIdentifier, sender: nil)
-        }
+        } */
     }
 
     func doConsent() {

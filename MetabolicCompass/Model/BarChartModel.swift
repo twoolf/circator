@@ -10,7 +10,7 @@ import SwiftDate
 import HealthKit
 import MetabolicCompassKit
 import MCCircadianQueries
-import Stormpath
+//import Stormpath
 
 enum ChartType {
     case BarChart

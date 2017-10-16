@@ -11,7 +11,7 @@ import HealthKit
 import MCCircadianQueries
 import Alamofire
 import Locksmith
-import Stormpath
+//import Stormpath
 import Auth0
 import CryptoSwift
 import SwiftDate
@@ -144,9 +144,9 @@ internal func sampleTypeOfSeqId(anchorIdentifier: String) -> HKSampleType? {
 
 
 /**
- This manages the users for Metabolic Compass. We need to enable users to maintain access to their data and to delete themselves from the study if they so desire. In addition we maintain, in this class, the ability to do this securely, using OAuth and our third party authenticator (Stormpath)
+ This manages the users for Metabolic Compass. We need to enable users to maintain access to their data and to delete themselves from the study if they so desire. In addition we maintain, in this class, the ability to do this securely, using OAuth and our third party authenticator (Auth0)
 
- - note: We use Stormpath and tokens for authentication
+ - note: We use Auth0 and tokens for authentication
  */
 public class UserManager {
 
@@ -228,7 +228,7 @@ public class UserManager {
     var componentUpdateQueue = DispatchQueue(label:"UserManangerUpdateQueue", attributes: .concurrent)
 
     init() {
-//        StormpathConfiguration.defaultConfiguration.APIURL = MCRouter.baseURL as URL
+//        Auth0Configuration.defaultConfiguration.APIURL = MCRouter.baseURL as URL
 //        self.componentUpdateQueue = DispatchQueue(label: "UserManangerUpdateQueue")
 //        self.serialQueue = DispatchQueue(label: "UserManangerUpdateQueue")
 //        self.componentUpdateQueue = dispatch_queue_create("UserManangerUpdateQueue", DISPATCH_QUEUE_SERIAL)
@@ -399,11 +399,12 @@ public class UserManager {
     }
 
 
-    // MARK: - Stormpath-based account creation and authentication
+    // MARK: - Auth0-based account creation and authentication
 
     public func loginWithCompletion(completion: @escaping SvcResultCompletion) {
         withUserPass (password: getPassword()) { (user, pass) in
             let token = AuthSessionManager.shared.keychain.string(forKey: "access_token")
+            print ("updated token, line 407: \(token)")
             MCRouter.updateAuthToken(token: token)
             let result = RequestResult()
             completion(result)
@@ -451,27 +452,27 @@ public class UserManager {
         logoutWithCompletion(completion: nil)
     }
 
-    public func register(firstName: String, lastName: String, consentPath: String, initialData: [String: String], completion: @escaping ((Account?, Bool, String?) -> Void)) {
+/*    public func register(firstName: String, lastName: String, consentPath: String, initialData: [String: String], completion: @escaping ((Account?, Bool, String?) -> Void)) {
         withUserPass(password: getPassword()) { (user,pass) in
-//            let account = RegistrationModel(email: user, password: pass)
-            let account = RegistrationForm(email: user, password: pass)
+            let account = RegistrationModel(email: user, password: pass)
+//            let account = RegistrationForm(email: user, password: pass)
             account.givenName = firstName
             account.surname = lastName
             if let data = NSData(contentsOfFile: consentPath) {
                 let consentStr = data.base64EncodedString(options: NSData.Base64EncodingOptions())
                 account.customFields = ["consent": consentStr]
                 account.customFields.update(other: initialData)
-                Stormpath.sharedSession.register(account: account) { (account, error) -> Void in
+/*                Stormpath.sharedSession.register(account: account) { (account, error) -> Void in
                     if error != nil { log.error("Register failed: \(error)") }
                     completion(account, error != nil, error?.localizedDescription)
-                }
+                }  */
             } else {
                 let msg = UMPushReadBinaryFileError(.Consent, consentPath)
                 log.error(msg)
                 completion(nil, true, msg)
             }
         }
-    }
+    }  */
 
     public func withdraw(keepData: Bool, completion: @escaping SuccessCompletion) {
         let params = ["keep": keepData]
@@ -484,13 +485,13 @@ public class UserManager {
 
 
     public func resetPassword(email: String, completion: @escaping ((Bool, String?) -> Void)) {
-        Stormpath.sharedSession.resetPassword(email: email) { (success, error) -> Void in
+/*        Stormpath.sharedSession.resetPassword(email: email) { (success, error) -> Void in
             if error != nil { log.error("Reset Password failed: \(error)") }
             completion(success, error?.localizedDescription)
-        }
+        } */
     }
 
-    // MARK: - Stormpath token management.
+    // MARK: - Auth0 token management.
 
     public func getAccessToken() -> String? {
 /*        Auth0
@@ -527,16 +528,28 @@ public class UserManager {
             // TODO: this is a temporary workaround for issue #30, to support auto-login:
             // https://github.com/yanif/circator/issues/30
             var doReset = true
- /*           if let token = Stormpath.sharedSession.accessToken {
-                do {
-                    let jwt = try decode(jwt: token)
-                    if let expiry = jwt.expiresAt?.timeIntervalSince1970 {
-                        doReset = false
-                        self.tokenExpiry = expiry
-                        log.info("Setting expiry as \(expiry)")
-                    }
-                } catch {}
-            } */
+//            if let token = Stormpath.sharedSession.accessToken {
+            let credentialsManager = CredentialsManager(authentication: Auth0.authentication())
+            credentialsManager.credentials { error, credentials in
+                guard error == nil, let credentials = credentials else {
+                    print("Error: \(error)")
+                    return
+                }
+                if let token = credentials.accessToken {
+                    print("accessToken: \(token)")
+                    do {
+                        let jwt = try decode(jwt: token)
+                        print("decoded accessToken: \(jwt)")
+                        if let expiry = jwt.expiresAt?.timeIntervalSince1970 {
+                            doReset = false
+                            self.tokenExpiry = expiry
+                            log.info("Setting expiry as \(expiry)")
+                        }
+                    } catch {}
+                }
+            }
+            
+
             if doReset { self.resetFull() }
             completion(doReset)
             NotificationCenter.default.post(name: NSNotification.Name(rawValue: UMDidLogoutNotification), object: nil)
@@ -561,16 +574,28 @@ public class UserManager {
     }
 
     public func ensureAccessToken(completion: @escaping ErrorCompletion) {
-        if let token = Stormpath.sharedSession.accessToken {
+        let credentialsManager = CredentialsManager(authentication: Auth0.authentication())
+        credentialsManager.credentials { error, credentials in
+            guard error == nil, let credentials = credentials else {
+                print("Error: \(error)")
+                return
+            }
+            if let token = credentials.accessToken {
+                print("access token (line 583): \(token)")
+                }
+            }
+        
+        
+ /*       if let token = Stormpath.sharedSession.accessToken {
             MCRouter.updateAuthToken(token: token)
             ensureAccessToken(tried: 0, completion: completion)
         } else {
             self.refreshAccessToken(completion: completion)
-        }
+        } */
     }
 
     public func refreshAccessToken(tried: Int, completion: @escaping ErrorCompletion) {
-        Stormpath.sharedSession.refreshAccessToken { (success, error) in
+/*        Stormpath.sharedSession.refreshAccessToken { (success, error) in
             guard success && error == nil else {
                 log.warning("Refresh failed: \(error!.localizedDescription)")
                 log.warning("Attempting login: \(self.hasAccount()) \(self.hasPassword())")
@@ -591,7 +616,7 @@ public class UserManager {
                 log.error("RefreshAccessToken failed, please login manually.")
                 completion(true)
             }
-        }
+        } */
     }
 
     public func refreshAccessToken(completion: @escaping ErrorCompletion) {

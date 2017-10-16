@@ -20,7 +20,7 @@ import SimpleKeychain
 /**
  This class is used to control the Login screens for the App.  By separating the logic into this view controller we enable changes to the login process to be clearly defined in this block of code.
 
-- note: for both signup and login; uses Stormpath for authentication
+- note: for both signup and login; uses Auth0 for authentication
  */
 class LoginViewController: BaseViewController {
 

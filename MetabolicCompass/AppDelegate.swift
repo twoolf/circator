@@ -243,7 +243,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, WCSessionDelegate
         }
     }
 
-    // Auto0
+    // Auth0
     func application(_ app: UIApplication, open url: URL, options: [UIApplicationOpenURLOptionsKey : Any]) -> Bool {
         return Auth0.resumeAuth(url, options: options)
     }
