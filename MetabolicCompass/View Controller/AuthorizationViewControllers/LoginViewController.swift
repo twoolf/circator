@@ -106,16 +106,21 @@ class LoginViewController: BaseViewController {
                 usernameOrEmail: loginCredentials.email!,
                 password: loginCredentials.password!,
                 realm: "Username-Password-Authentication",
-                scope: "openid profile")
+                scope: "openid profile offline_access")
             .start { result in
                 DispatchQueue.main.async {
                     switch result {
                     case .success(let credentials):
-                    //    self.loginWithCredentials(credentials)
-                        self.login()
+                        guard let accessToken = credentials.accessToken, let refreshToken = credentials.refreshToken else { return }
+                        AuthSessionManager.shared.storeTokens(accessToken, refreshToken: refreshToken)
+                        AuthSessionManager.shared.retrieveProfile { error in
+                            DispatchQueue.main.async {
+                                self.login()
+                            }
+                        }
                     case .failure(let error):
-                    //    self.showAlertForError(error)
-                        self.login()
+                        let message = error.localizedDescription
+                    //    alert error
                     }
                 }
         }
