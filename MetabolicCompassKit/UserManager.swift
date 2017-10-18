@@ -18,6 +18,7 @@ import Async
 import AsyncKit
 import JWTDecode
 import SwiftyUserDefaults
+import Auth0
 
 // Helper typealiases to indicate whether the bool argument expects an error or success status.
 public typealias ErrorCompletion = (Bool) -> Void
@@ -467,6 +468,31 @@ public class UserManager {
                 let msg = UMPushReadBinaryFileError(.Consent, consentPath)
                 log.error(msg)
                 completion(nil, true, msg)
+            }
+        }
+    }
+
+    public func registerAuth0(firstName: String, lastName: String, consentPath: String, initialData: [String: String]) {
+        withUserPass(password: getPassword()) { (user,pass) in
+            let data = NSData(contentsOfFile: consentPath)
+            let consentStr = data?.base64EncodedString(options: NSData.Base64EncodingOptions())
+            let userMetadata = ["first_name": firstName,
+                                 "last_name": lastName]
+        Auth0
+            .authentication()
+            .createUser(
+                email: user,
+                password: pass,
+                connection: "Username-Password-Authentication",
+                userMetadata: userMetadata
+            )
+            .start { result in
+                switch result {
+                case .success(let user):
+                    print("User Signed up: \(user)")
+                case .failure(let error):
+                    print("Failed with \(error)")
+                }
             }
         }
     }
