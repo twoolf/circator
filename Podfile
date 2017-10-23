@@ -49,21 +49,21 @@ target 'MetabolicCompass' do
     pod 'Fabric'
 end
 
-#target 'MetabolicCompassWatchExtension' do 
-# platform :watchos, '3.0'
-# pod 'SwiftDate', :git => 'https://github.com/malcommac/SwiftDate.git'
-# pod 'SwiftyBeaver' 
-# pod 'AwesomeCache' 
-# pod 'MCCircadianQueries', :git => 'https://github.com/OlenaSrost/MCCircadianQueries.git', :branch => 'swift3'
-#end
+target 'MetabolicCompassWatch Extension' do 
+ platform :watchos, '3.0'
+ pod 'SwiftDate', :git => 'https://github.com/malcommac/SwiftDate.git'
+ pod 'SwiftyBeaver' 
+ pod 'AwesomeCache' , :git => ‘https://github.com/aschuch/AwesomeCache.git’, :branch => ‘master’
+ pod 'MCCircadianQueries', :git => 'https://github.com/OlenaSrost/MCCircadianQueries.git', :branch => 'swift3'
+end
 
-#target 'MetabolicCompassWatch' do
-# platform :watchos, '3.0'
-# pod 'SwiftDate', :git => 'https://github.com/malcommac/SwiftDate.git' 
-# pod 'SwiftyBeaver'  
-# pod 'AwesomeCache' 
-# pod 'MCCircadianQueries', :git => 'https://github.com/OlenaSrost/MCCircadianQueries.git', :branch => 'swift3'
-#end
+target 'MetabolicCompassWatch' do
+ platform :watchos, '3.0'
+ pod 'SwiftDate', :git => 'https://github.com/malcommac/SwiftDate.git' 
+ pod 'SwiftyBeaver'  
+ pod 'AwesomeCache' , :git => ‘https://github.com/aschuch/AwesomeCache.git’, :branch => ‘master’
+ pod 'MCCircadianQueries', :git => 'https://github.com/OlenaSrost/MCCircadianQueries.git', :branch => 'swift3'
+end
 
 
 # Force swift 3.0 config
