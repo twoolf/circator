@@ -20,7 +20,7 @@ class MealTimesInterfaceController: WKInterfaceController {
     @IBOutlet var lunchButton: WKInterfaceButton!
     @IBOutlet var snackButton: WKInterfaceButton!
     
-    func awakeWithContext(context: AnyObject?) {
+    override func awake(withContext context: Any?) {
         super.awake(withContext: context)
     }
     

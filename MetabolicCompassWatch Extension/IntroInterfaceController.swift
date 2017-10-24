@@ -45,7 +45,7 @@ class IntroInterfaceController: WKInterfaceController, WCSessionDelegate  {
     override init() {
         super.init()
         if (WCSession.isSupported()) {
-            session = WCSession.default()
+            session = WCSession.default
             session.delegate = self
             session.activate()
         }
@@ -67,7 +67,7 @@ class IntroInterfaceController: WKInterfaceController, WCSessionDelegate  {
         }
     }
     
-    func awakeWithContext(context: AnyObject?) {
+    override func awake(withContext context: Any?) {
         super.awake(withContext: context)
     }
     
