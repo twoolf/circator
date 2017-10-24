@@ -116,7 +116,7 @@
                                 <action selector="mealSaveButton" destination="dUL-SX-553" id="AQq-j0-qCS"/>
                             </connections>
                         </button>
-                        <picker height="0.80000000000000004" alignment="left" style="sequence" focusStyle="sequence" id="1sl-PH-VyX">
+                        <picker height="0.80000000000000004" alignment="left" style="sequence" id="1sl-PH-VyX">
                             <connections>
                                 <action selector="onMealEntryWithValue:" destination="dUL-SX-553" id="94s-dd-yAd"/>
                             </connections>
