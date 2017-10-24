@@ -5,7 +5,7 @@
     </device>
     <dependencies>
         <deployment identifier="watchOS"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="13173"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="13174"/>
         <plugIn identifier="com.apple.InterfaceBuilder.IBWatchKitPlugin" version="13051"/>
     </dependencies>
     <scenes>
@@ -107,7 +107,7 @@
         <!--M-Compass-->
         <scene sceneID="pMY-eT-Nzc">
             <objects>
-                <controller identifier="MealInterfaceController" title="M-Compass" id="dUL-SX-553" customClass="MealInterfaceController" customModule="MetabolicCompassWatchExtension">
+                <controller identifier="MealInterfaceController" title="M-Compass" id="dUL-SX-553" customClass="MealInterfaceController" customModule="MetabolicCompassWatch_Extension">
                     <items>
                         <button width="0.80000000000000004" height="0.20000000000000001" alignment="center" verticalAlignment="bottom" title="Meal Started" id="ykV-3c-2BM">
                             <color key="titleColor" red="0.93725490199999995" green="0.93725490199999995" blue="0.95686274510000002" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
@@ -116,15 +116,15 @@
                                 <action selector="mealSaveButton" destination="dUL-SX-553" id="AQq-j0-qCS"/>
                             </connections>
                         </button>
-                        <picker height="0.80000000000000004" alignment="left" style="sequence" id="1sl-PH-VyX">
+                        <picker height="0.80000000000000004" alignment="left" style="sequence" focusStyle="sequence" id="1sl-PH-VyX">
                             <connections>
-                                <action selector="onMealEntry:" destination="dUL-SX-553" id="g3O-CA-Kt5"/>
+                                <action selector="onMealEntryWithValue:" destination="dUL-SX-553" id="94s-dd-yAd"/>
                             </connections>
                         </picker>
                     </items>
                     <connections>
                         <outlet property="enterButton" destination="ykV-3c-2BM" id="Nrk-1W-Kgs"/>
-                        <outlet property="mealPicker" destination="1sl-PH-VyX" id="FYe-o9-uci"/>
+                        <outlet property="mealPicker" destination="1sl-PH-VyX" id="p97-2G-0Tb"/>
                     </connections>
                 </controller>
             </objects>
@@ -133,7 +133,7 @@
         <!--M-Compass-->
         <scene sceneID="OEn-Jy-QbD">
             <objects>
-                <controller identifier="MealStartTimeController" title="M-Compass" id="uRt-F4-FMq" customClass="MealStartTimeController" customModule="MetabolicCompassWatchExtension">
+                <controller identifier="MealStartTimeController" title="M-Compass" id="uRt-F4-FMq" customClass="MealStartTimeController" customModule="MetabolicCompassWatch_Extension">
                     <items>
                         <button width="0.80000000000000004" height="0.20000000000000001" alignment="center" verticalAlignment="bottom" title="Meal Ended" id="Tf0-ui-XmJ">
                             <color key="backgroundColor" red="0.1803921568627451" green="0.80000000000000004" blue="0.44313725490196076" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>

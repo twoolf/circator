@@ -17,7 +17,7 @@ class MealStartTimeController: WKInterfaceController {
     @IBOutlet var mealStartTimeButton: WKInterfaceButton!
     
     var mealClose = 0
-    func awakeWithContext(context: AnyObject?) {
+    override func awake(withContext context: Any?) {
         super.awake(withContext: context)
         mealStartTimeButton.setTitle("Ended \(mealTypebyButton.mealType)")
         var tempItems: [WKPickerItem] = []

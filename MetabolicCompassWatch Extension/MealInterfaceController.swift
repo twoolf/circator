@@ -23,7 +23,7 @@ class MealInterfaceController: WKInterfaceController {
     @IBOutlet var enterButton: WKInterfaceButton!
     
     var mealTime = 0
-    func awakeWithContext(context: AnyObject?) {
+    override func awake(withContext context: Any?){
         super.awake(withContext: context)
         enterButton.setTitle("Started \(mealTypebyButton.mealType)")
         var tempItems: [WKPickerItem] = []
@@ -40,9 +40,9 @@ class MealInterfaceController: WKInterfaceController {
         let beginDate = Date()
         let beginComponents = calendar.dateComponents([.year, .month, .day, .hour, .minute], from: beginDate)
         if beginComponents.minute! < 15 {
-            beginTimePointer = 6*beginComponents.hour!
+            beginTimePointer = 6 * beginComponents.hour!
         } else {
-            beginTimePointer = 6*beginComponents.hour! + 3
+            beginTimePointer = 6 * beginComponents.hour! + 3
         }
         mealPicker.setSelectedItemIndex(beginTimePointer)
     }
