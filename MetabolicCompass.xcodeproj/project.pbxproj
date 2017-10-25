@@ -24,6 +24,9 @@
 		3FA4C2811F9F8093001F467F /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 3FA4C2801F9F8093001F467F /* Assets.xcassets */; };
 		3FA4C2841FA0B187001F467F /* SleepTimesInterfaceController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3FA4C2821FA0B186001F467F /* SleepTimesInterfaceController.swift */; };
 		3FA4C2851FA0B187001F467F /* SleepInterfaceController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3FA4C2831FA0B187001F467F /* SleepInterfaceController.swift */; };
+		3FA4C2891FA0C2A9001F467F /* WaterInterfaceController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3FA4C2861FA0C2A7001F467F /* WaterInterfaceController.swift */; };
+		3FA4C28A1FA0C2A9001F467F /* WaterStartTimeController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3FA4C2871FA0C2A8001F467F /* WaterStartTimeController.swift */; };
+		3FA4C28B1FA0C2A9001F467F /* WaterTimesInterfaceController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3FA4C2881FA0C2A8001F467F /* WaterTimesInterfaceController.swift */; };
 		54205E661E76213B003E3EC4 /* ActivityPicker.swift in Sources */ = {isa = PBXBuildFile; fileRef = 54205E5F1E76213B003E3EC4 /* ActivityPicker.swift */; };
 		54205E671E76213B003E3EC4 /* AddActivityManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 54205E601E76213B003E3EC4 /* AddActivityManager.swift */; };
 		54205E681E76213B003E3EC4 /* DeleteActivityManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 54205E611E76213B003E3EC4 /* DeleteActivityManager.swift */; };
@@ -352,6 +355,9 @@
 		3FA4C2801F9F8093001F467F /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		3FA4C2821FA0B186001F467F /* SleepTimesInterfaceController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SleepTimesInterfaceController.swift; sourceTree = "<group>"; };
 		3FA4C2831FA0B187001F467F /* SleepInterfaceController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SleepInterfaceController.swift; sourceTree = "<group>"; };
+		3FA4C2861FA0C2A7001F467F /* WaterInterfaceController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = WaterInterfaceController.swift; sourceTree = "<group>"; };
+		3FA4C2871FA0C2A8001F467F /* WaterStartTimeController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = WaterStartTimeController.swift; sourceTree = "<group>"; };
+		3FA4C2881FA0C2A8001F467F /* WaterTimesInterfaceController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = WaterTimesInterfaceController.swift; sourceTree = "<group>"; };
 		5411C8281E7F436000E05EFF /* MetabolicCompass.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = MetabolicCompass.entitlements; sourceTree = "<group>"; };
 		54205E5F1E76213B003E3EC4 /* ActivityPicker.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ActivityPicker.swift; sourceTree = "<group>"; };
 		54205E601E76213B003E3EC4 /* AddActivityManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AddActivityManager.swift; sourceTree = "<group>"; };
@@ -830,6 +836,9 @@
 		8147C0F01F9DE5FE00D69024 /* MetabolicCompassWatch Extension */ = {
 			isa = PBXGroup;
 			children = (
+				3FA4C2861FA0C2A7001F467F /* WaterInterfaceController.swift */,
+				3FA4C2871FA0C2A8001F467F /* WaterStartTimeController.swift */,
+				3FA4C2881FA0C2A8001F467F /* WaterTimesInterfaceController.swift */,
 				3FA4C2831FA0B187001F467F /* SleepInterfaceController.swift */,
 				3FA4C2821FA0B186001F467F /* SleepTimesInterfaceController.swift */,
 				3FA4C27E1F9F8060001F467F /* Assets.xcassets */,
@@ -2027,9 +2036,12 @@
 			buildActionMask = 2147483647;
 			files = (
 				3FA4C2841FA0B187001F467F /* SleepTimesInterfaceController.swift in Sources */,
+				3FA4C2891FA0C2A9001F467F /* WaterInterfaceController.swift in Sources */,
 				81948BBD1F9F413D0067DED6 /* MealTimesInterfaceController.swift in Sources */,
+				3FA4C28A1FA0C2A9001F467F /* WaterStartTimeController.swift in Sources */,
 				8147C0F61F9DE5FE00D69024 /* NotificationController.swift in Sources */,
 				8147C0F41F9DE5FE00D69024 /* ExtensionDelegate.swift in Sources */,
+				3FA4C28B1FA0C2A9001F467F /* WaterTimesInterfaceController.swift in Sources */,
 				3FA4C2851FA0B187001F467F /* SleepInterfaceController.swift in Sources */,
 				3FA4C27D1F9F6CEB001F467F /* MealStartTimeController.swift in Sources */,
 				81948BB31F9F33080067DED6 /* IntroInterfaceController.swift in Sources */,

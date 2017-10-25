@@ -22,9 +22,8 @@ class WaterInterfaceController: WKInterfaceController {
     
     var water = 0.0
     let healthKitStore:HKHealthStore = HKHealthStore()
-    let healthManager:HealthManager = HealthManager()
     
-    func awakeWithContext(context: AnyObject?) {
+    override func awake(withContext context: Any?) {
         super.awake(withContext: context)
         var tempItems: [WKPickerItem] = []
         for i in 0...8 {

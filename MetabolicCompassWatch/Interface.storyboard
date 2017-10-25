@@ -210,11 +210,11 @@
         <!--M-Compass-->
         <scene sceneID="jir-tl-faX">
             <objects>
-                <controller identifier="WaterInterfaceController" title="M-Compass" id="YiA-fx-NQl" customClass="WaterInterfaceController" customModule="MetabolicCompassWatchExtension">
+                <controller identifier="WaterInterfaceController" title="M-Compass" id="YiA-fx-NQl" customClass="WaterInterfaceController" customModule="MetabolicCompassWatch_Extension">
                     <items>
                         <picker height="0.80000000000000004" alignment="left" style="sequence" id="oZJ-jU-Zf2">
                             <connections>
-                                <action selector="onWaterEntry:" destination="YiA-fx-NQl" id="90T-0y-i3P"/>
+                                <action selector="onWaterEntryWithValue:" destination="YiA-fx-NQl" id="vs1-eV-BQV"/>
                             </connections>
                         </picker>
                         <button width="1" height="0.20000000000000001" alignment="center" title="Water Volume" id="TGU-lM-ujj">
@@ -349,7 +349,7 @@
         <!--M-Compass-->
         <scene sceneID="emA-xW-5ap">
             <objects>
-                <controller identifier="WaterTimesInterfaceController" title="M-Compass" id="7yX-Li-sdf" customClass="WaterTimesInterfaceController" customModule="MetabolicCompassWatchExtension">
+                <controller identifier="WaterTimesInterfaceController" title="M-Compass" id="7yX-Li-sdf" customClass="WaterTimesInterfaceController" customModule="MetabolicCompassWatch_Extension">
                     <items>
                         <button width="1" height="0.20000000000000001" alignment="center" verticalAlignment="bottom" title="Started Drinking" id="8Sm-H9-yge">
                             <color key="backgroundColor" red="0.20392156862745098" green="0.59607843137254901" blue="0.85882352941176465" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
@@ -360,7 +360,7 @@
                         </button>
                         <picker height="0.80000000000000004" alignment="left" style="sequence" id="4F8-Da-3So">
                             <connections>
-                                <action selector="onWaterTimePick:" destination="7yX-Li-sdf" id="t1S-4D-A24"/>
+                                <action selector="onWaterTimePickWithValue:" destination="7yX-Li-sdf" id="CiT-9B-DMF"/>
                             </connections>
                         </picker>
                     </items>
@@ -398,11 +398,11 @@
         <!--M-Compass-->
         <scene sceneID="SBZ-0X-1Sa">
             <objects>
-                <controller identifier="WaterStartTimeController" title="M-Compass" id="TxF-Mq-DhK" customClass="WaterStartTimeController" customModule="MetabolicCompassWatchExtension">
+                <controller identifier="WaterStartTimeController" title="M-Compass" id="TxF-Mq-DhK" customClass="WaterStartTimeController" customModule="MetabolicCompassWatch_Extension">
                     <items>
                         <picker height="0.80000000000000004" alignment="left" style="sequence" id="3sP-nz-pgd">
                             <connections>
-                                <action selector="onWaterStartTimePicker:" destination="TxF-Mq-DhK" id="ogS-Do-G4D"/>
+                                <action selector="onWaterStartTimePickerWithValue:" destination="TxF-Mq-DhK" id="fxR-NY-bay"/>
                             </connections>
                         </picker>
                         <button width="1" height="29.5" alignment="center" verticalAlignment="bottom" title="Finished Drinking" id="H7P-O2-Te0">

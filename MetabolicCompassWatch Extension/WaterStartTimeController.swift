@@ -17,7 +17,7 @@ class WaterStartTimeController: WKInterfaceController {
     @IBOutlet var waterTimesEnterStart: WKInterfaceButton!
     
     var waterClose = 0
-    func awakeWithContext(context: AnyObject?) {
+   override func awake(withContext context: Any?) {
         super.awake(withContext: context)
         var tempItems: [WKPickerItem] = []
         for i in 0...48 {
