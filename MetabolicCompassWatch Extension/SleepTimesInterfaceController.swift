@@ -22,7 +22,7 @@ class SleepTimesInterfaceController: WKInterfaceController {
     @IBOutlet var sleepTimesButton: WKInterfaceButton!
 
     var sleepClose = 0
-    func awakeWithContext(context: AnyObject?) {
+    override func awake(withContext context: Any?){
         super.awake(withContext: context)
         var tempItems: [WKPickerItem] = []
         for i in 0...48 {

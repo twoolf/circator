@@ -158,11 +158,11 @@
         <!--M-Compass-->
         <scene sceneID="0rq-CP-qZy">
             <objects>
-                <controller identifier="SleepInterfaceController" title="M-Compass" id="Sk5-u4-eDK" customClass="SleepInterfaceController" customModule="MetabolicCompassWatchExtension">
+                <controller identifier="SleepInterfaceController" title="M-Compass" id="Sk5-u4-eDK" customClass="SleepInterfaceController" customModule="MetabolicCompassWatch_Extension">
                     <items>
                         <picker height="0.80000000000000004" alignment="left" style="sequence" id="jNS-ju-jML">
                             <connections>
-                                <action selector="onSleepEntry:" destination="Sk5-u4-eDK" id="1Zk-3S-F0m"/>
+                                <action selector="onSleepEntryWithValue:" destination="Sk5-u4-eDK" id="8tj-QD-0IT"/>
                             </connections>
                         </picker>
                         <button width="1" height="0.20000000000000001" alignment="center" title="Went to Sleep" id="Xg7-hg-unT">
@@ -184,18 +184,18 @@
         <!--M-Compass-->
         <scene sceneID="Igg-p8-0k0">
             <objects>
-                <controller identifier="SleepTimesInterfaceController" title="M-Compass" id="4kd-6r-qyL" customClass="SleepTimesInterfaceController" customModule="MetabolicCompassWatchExtension">
+                <controller identifier="SleepTimesInterfaceController" title="M-Compass" id="4kd-6r-qyL" customClass="SleepTimesInterfaceController" customModule="MetabolicCompassWatch_Extension">
                     <items>
                         <picker height="0.80000000000000004" alignment="left" style="sequence" id="BXT-YD-1v7">
                             <connections>
-                                <action selector="onSleepTimePick:" destination="4kd-6r-qyL" id="BLM-oF-kRZ"/>
+                                <action selector="onSleepTimePickWithValue:" destination="4kd-6r-qyL" id="puJ-Sm-tNu"/>
                             </connections>
                         </picker>
                         <button width="1" height="0.20000000000000001" alignment="center" title="Woke from Sleep" id="VbU-zH-pMy">
                             <color key="titleColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                             <color key="backgroundColor" red="0.94509803921568625" green="0.76862745098039209" blue="0.058823529411764705" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                             <connections>
-                                <action selector="onButtonSave" destination="4kd-6r-qyL" id="psW-nV-n2H"/>
+                                <action selector="onButtonSave" destination="4kd-6r-qyL" id="MvA-Im-dlw"/>
                             </connections>
                         </button>
                     </items>
