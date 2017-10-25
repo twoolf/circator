@@ -143,7 +143,7 @@
                         </button>
                         <picker height="0.80000000000000004" alignment="left" style="sequence" id="Jm7-cO-4q1">
                             <connections>
-                                <action selector="onMealEntry:" destination="uRt-F4-FMq" id="NWV-94-jTX"/>
+                                <action selector="onMealEntryWithValue:" destination="uRt-F4-FMq" id="ke4-ZC-QxA"/>
                             </connections>
                         </picker>
                     </items>
