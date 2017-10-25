@@ -18,7 +18,7 @@ class ExerciseStartTimeController: WKInterfaceController {
     
     var exerciseClose = 0
 
-    func awakeWithContext(context: AnyObject?) {
+    override func awake(withContext context: Any?) {
         super.awake(withContext: context)
         exerciseStartTimeButton.setTitle("End \(exerciseTypebyButton.exerciseType) ")
         var tempItems: [WKPickerItem] = []

@@ -21,7 +21,7 @@ class ExerciseInterfaceController: WKInterfaceController {
     @IBOutlet var swimButton: WKInterfaceButton!
     @IBOutlet var walkButton: WKInterfaceButton!
     
-    func awakeWithContext(context: AnyObject?) {
+   override func awake(withContext context: Any?) {
         super.awake(withContext: context)
     }
     

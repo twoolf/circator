@@ -236,7 +236,7 @@
         <!--M-Compass-->
         <scene sceneID="rav-D0-NpW">
             <objects>
-                <controller identifier="ExerciseInterfaceController" title="M-Compass" id="uYH-JB-1gX" customClass="ExerciseInterfaceController" customModule="MetabolicCompassWatchExtension">
+                <controller identifier="ExerciseInterfaceController" title="M-Compass" id="uYH-JB-1gX" customClass="ExerciseInterfaceController" customModule="MetabolicCompassWatch_Extension">
                     <items>
                         <button width="1" height="0.20000000000000001" heightAdjustment="6" alignment="left" title="Running" id="8pr-71-C42">
                             <color key="backgroundColor" red="0.90588235294117647" green="0.29803921568627451" blue="0.23529411764705882" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
@@ -276,11 +276,11 @@
         <!--M-Compass-->
         <scene sceneID="8MO-dw-R00">
             <objects>
-                <controller identifier="ExerciseEndTimeController" title="M-Compass" id="wDG-ji-Wah" customClass="ExerciseEndTimeController" customModule="MetabolicCompassWatchExtension">
+                <controller identifier="ExerciseEndTimeController" title="M-Compass" id="wDG-ji-Wah" customClass="ExerciseEndTimeController" customModule="MetabolicCompassWatch_Extension">
                     <items>
                         <picker height="0.80000000000000004" alignment="left" style="sequence" id="V3f-6x-gu1">
                             <connections>
-                                <action selector="onExerciseStartTime:" destination="wDG-ji-Wah" id="Owp-g7-ZO8"/>
+                                <action selector="onExerciseStartTimeWithValue:" destination="wDG-ji-Wah" id="uOM-lj-mBj"/>
                             </connections>
                         </picker>
                         <button width="1" height="0.20000000000000001" alignment="left" title="Started Exercise" id="JN4-PW-LBe">
@@ -301,11 +301,11 @@
         <!--M-Compass-->
         <scene sceneID="Oz9-S1-5I5">
             <objects>
-                <controller identifier="ExerciseStartTimeController" title="M-Compass" id="Kk7-9z-hth" customClass="ExerciseStartTimeController" customModule="MetabolicCompassWatchExtension">
+                <controller identifier="ExerciseStartTimeController" title="M-Compass" id="Kk7-9z-hth" customClass="ExerciseStartTimeController" customModule="MetabolicCompassWatch_Extension">
                     <items>
                         <picker height="0.80000000000000004" alignment="left" style="sequence" id="dib-I6-Wrw">
                             <connections>
-                                <action selector="onExerciseStartPicker:" destination="Kk7-9z-hth" id="l11-Wm-Gd8"/>
+                                <action selector="onExerciseStartPickerWithValue:" destination="Kk7-9z-hth" id="Dui-2r-CaH"/>
                             </connections>
                         </picker>
                         <button width="1" height="0.20000000000000001" alignment="left" title="Stopped Exercise" id="cQr-1P-gO7">
