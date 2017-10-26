@@ -50,32 +50,28 @@ class ComplicationController: NSObject, CLKComplicationDataSource {
                                                withHandler handler: @escaping (CLKComplicationTemplate?) -> Void){
     }
     
-    public func getSupportedTimeTravelDirections(for complication: CLKComplication, withHandler handler: @escaping (CLKComplicationTimeTravelDirections) -> Void) {
+    public func getSupportedTimeTravelDirections(for complication: CLKComplication, withHandler handler: @escaping (CLKComplicationTimeTravelDirections) -> Swift.Void) {
         handler([.forward])
     }
 
     let userCalendar = Calendar.current
     let dateFormatter = DateFormatter()
-    
-    func getSupportedTimeTravelDirectionsForComplication(complication: CLKComplication, withHandler handler: (CLKComplicationTimeTravelDirections) -> Void) {
-        handler([.forward])
-    }
-    
-    func getTimelineStartDateForComplication(complication: CLKComplication, withHandler handler: (Date?) -> Void) {
+
+    public func getTimelineStartDate(for complication: CLKComplication, withHandler handler: @escaping (Date?) -> Swift.Void) {
         handler(Date() as Date)
     }
     
-    func getTimelineEndDateForComplication(complication: CLKComplication, withHandler handler: (Date?) -> Void) {
+    public func getTimelineEndDate(for complication: CLKComplication, withHandler handler: @escaping (Date?) -> Swift.Void) {
         let end = Date.distantFuture
         handler(end)
         return
     }
     
-    func getPrivacyBehaviorForComplication(complication: CLKComplication, withHandler handler: (CLKComplicationPrivacyBehavior) -> Void) {
+    public func getPrivacyBehavior(for complication: CLKComplication, withHandler handler: @escaping (CLKComplicationPrivacyBehavior) -> Swift.Void) {
         handler(.showOnLockScreen)
     }
     
-    func getCurrentTimelineEntry(for complication: CLKComplication, withHandler handler: @escaping ((CLKComplicationTimelineEntry?) -> Void)) {
+     public func getCurrentTimelineEntry(for complication: CLKComplication, withHandler handler: @escaping (CLKComplicationTimelineEntry?) -> Swift.Void) {
         var template: CLKComplicationTemplate? = nil
         
         switch complication.family {
@@ -135,11 +131,11 @@ class ComplicationController: NSObject, CLKComplicationDataSource {
         handler(CLKComplicationTimelineEntry(date: Date(), complicationTemplate: template!))
     }
 
-    func getTimelineEntriesForComplication(complication: CLKComplication, beforeDate date: Date, limit: Int, withHandler handler: (([CLKComplicationTimelineEntry]?) -> Void)) {
+   public func getTimelineEntries(for complication: CLKComplication, before date: Date, limit: Int, withHandler handler: @escaping ([CLKComplicationTimelineEntry]?) -> Swift.Void) {
         handler(nil)
     }
     
-    func getTimelineEntriesForComplication(complication: CLKComplication, afterDate date: Date, limit: Int, withHandler handler: (([CLKComplicationTimelineEntry]?) -> Void)) {
+    public func getTimelineEntries(for complication: CLKComplication, after date: Date, limit: Int, withHandler handler: @escaping ([CLKComplicationTimelineEntry]?) -> Swift.Void) {
         var entries = [CLKComplicationTimelineEntry]()
         
         switch complication.family {
@@ -208,18 +204,16 @@ class ComplicationController: NSObject, CLKComplicationDataSource {
     }
 
     
-    func getNextRequestedUpdateDateWithHandler(handler: (Date?) -> Void) {
+    public func getNextRequestedUpdateDate(handler: @escaping (Date?) -> Swift.Void) {
 //        let nextUpdate = Date() + 10.minutes
 //        let nextUpdate = Date().addingTimeInterval(10.minutes)
           let nextUpdate = Date().addMinutes(minutesToAdd: 10)
         handler(nextUpdate)
     }
     
-    func requestedUpdateBudgetExhausted() {
-        print("Budget exhausted")
-    }
+   
     
-    func getPlaceholderTemplate(for complication: CLKComplication, withHandler handler: @escaping (CLKComplicationTemplate?) -> Void) {
+    public func getPlaceholderTemplate(for complication: CLKComplication, withHandler handler: @escaping (CLKComplicationTemplate?) -> Swift.Void) {
         var template: CLKComplicationTemplate? = nil
         switch complication.family {
         case .modularSmall:
