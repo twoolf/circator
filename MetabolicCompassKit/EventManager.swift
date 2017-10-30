@@ -131,12 +131,12 @@ public class EventManager : NSObject, WCSessionDelegate {
     func registerCalendarObserver() {
         NotificationCenter.default.addObserver(
             self,
-            selector: "refreshCalendarEvents:",
+            selector: Selector.init("refreshCalendarEvents"),
             name: NSNotification.Name.EKEventStoreChanged,
             object: nil)
     }
 
-    func refreshCalendarEvents(notification: NSNotification) {
+    @objc func refreshCalendarEvents(notification: NSNotification) {
         fetchEventsfromCalendar(onRefresh: true)
     }
 
