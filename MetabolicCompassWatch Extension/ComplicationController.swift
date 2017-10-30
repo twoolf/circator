@@ -46,8 +46,13 @@ extension Date {
 
 class ComplicationController: NSObject, CLKComplicationDataSource {
  
+    public func requestedUpdateDidBegin() {
+        
+    }
+
     func getLocalizableSampleTemplate(for complication: CLKComplication,
                                                withHandler handler: @escaping (CLKComplicationTemplate?) -> Void){
+        
     }
     
     public func getSupportedTimeTravelDirections(for complication: CLKComplication, withHandler handler: @escaping (CLKComplicationTimeTravelDirections) -> Swift.Void) {

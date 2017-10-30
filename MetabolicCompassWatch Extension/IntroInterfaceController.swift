@@ -13,35 +13,14 @@ import HealthKit
 import SwiftDate
 import ClockKit
 import MCCircadianQueries
-//import SwiftyBeaver
 
-class IntroInterfaceController: WKInterfaceController, WCSessionDelegate, WKExtensionDelegate, URLSessionDownloadDelegate  {
+
+class IntroInterfaceController: WKInterfaceController, WCSessionDelegate {
     // MARK: WKExtensionDelegate
-    func handle(_ backgroundTasks: Set<WKRefreshBackgroundTask>) {
-        for task : WKRefreshBackgroundTask in backgroundTasks {
-            print("received background task: ", task)
-            // only handle these while running in the background
-            if (WKExtension.shared().applicationState == .background) {
-                if task is WKApplicationRefreshBackgroundTask {
-                    // this task is completed below, our app will then suspend while the download session runs
-                    print("application task received, start URL session")
-                }
-            }
-            else if let urlTask = task as? WKURLSessionRefreshBackgroundTask {
-                let backgroundConfigObject = URLSessionConfiguration.background(withIdentifier: urlTask.sessionIdentifier)
-                let backgroundSession = URLSession(configuration: backgroundConfigObject, delegate: self, delegateQueue: nil)
-                
-                print("Rejoining session ", backgroundSession)
-            }
-            // make sure to complete all tasks, even ones you don't handle
-            task.setTaskCompletedWithSnapshot(false)
-        }
-    }
-    func urlSession(_ session: URLSession, downloadTask: URLSessionDownloadTask, didFinishDownloadingTo location: URL) {
-        print("NSURLSession finished to url: ", location)
-    }
+    
     
     @available(watchOSApplicationExtension 2.2, *)
+    
     public func session(_ session: WCSession, activationDidCompleteWith activationState: WCSessionActivationState, error: Error?){
     }
     
@@ -76,14 +55,14 @@ class IntroInterfaceController: WKInterfaceController, WCSessionDelegate, WKExte
         }
     }
     
-    private func session(session: WCSession, didReceiveApplicationContext applicationContext: [String : AnyObject]) {
+    public func session(_ session: WCSession, didReceiveApplicationContext applicationContext: [String : Any]) {
         let displayDate = (applicationContext["dateKey"] as? String)
         
         let defaults = UserDefaults.standard
         defaults.set(displayDate, forKey: "dateKey")
     }
     
-    private func session(session: WCSession, didReceiveUserInfo userInfo: [String : AnyObject]) {
+    public func session(_ session: WCSession, didReceiveUserInfo userInfo: [String : Any] = [:]) {
         if let dateString = userInfo["dateKey"] as? String {
             
             let defaults = UserDefaults.standard
@@ -94,30 +73,29 @@ class IntroInterfaceController: WKInterfaceController, WCSessionDelegate, WKExte
     
     override func awake(withContext context: Any?) {
         super.awake(withContext: context)
-        WKExtension.shared().delegate = self
+
     }
     
     override func willActivate() {
         super.willActivate()
     }
     
-    override func didDeactivate() {
-        super.didDeactivate()
-        FastingDataModel()
-
-        func reloadComplications() {
-            let server = CLKComplicationServer.sharedInstance()
-            guard let complications = server.activeComplications, complications.count > 0 else {
-                //                log.error("hit a zero in reloadComplications")
-                return
-            }
-            
-            for complication in complications  {
-                server.reloadTimeline(for: complication)
-            }
+    func reloadComplications() {
+        let server = CLKComplicationServer.sharedInstance()
+        guard let complications = server.activeComplications, complications.count > 0 else {
+            //  log.error("hit a zero in reloadComplications")
+            return
         }
         
-        reloadComplications()
+        for complication in complications  {
+            server.reloadTimeline(for: complication)
+            //      server.extendTimeline(for: complication)
+        }
+    }
+    
+    override func didDeactivate() {
+        super.didDeactivate()
+       
         let stWorkout = 0.0
         let stSleep = 0.33
         let stFast = 0.66
@@ -254,7 +232,7 @@ class IntroInterfaceController: WKInterfaceController, WCSessionDelegate, WKExte
          }
          
          reloadDataTake2()
-  
+         reloadComplications()  
     }
 }
 
