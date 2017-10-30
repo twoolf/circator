@@ -164,7 +164,9 @@ class AccountManager: NSObject {
         let notificationType: UIUserNotificationType = [.alert, .badge, .sound]
 //        let notificationSettings: UIUserNotificationSettings = UIUserNotificationSettings(forTypes: notificationType, categories: nil)
         let notificationSettings: UIUserNotificationSettings = UIUserNotificationSettings(types: notificationType, categories: nil)
-        UIApplication.shared.registerUserNotificationSettings(notificationSettings)
+        DispatchQueue.main.async {
+            UIApplication.shared.registerUserNotificationSettings(notificationSettings)
+        }
     }
 
     func resetLocalNotifications() {

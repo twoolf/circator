@@ -144,9 +144,9 @@ internal func sampleTypeOfSeqId(anchorIdentifier: String) -> HKSampleType? {
 
 
 /**
- This manages the users for Metabolic Compass. We need to enable users to maintain access to their data and to delete themselves from the study if they so desire. In addition we maintain, in this class, the ability to do this securely, using OAuth and our third party authenticator (Stormpath)
+ This manages the users for Metabolic Compass. We need to enable users to maintain access to their data and to delete themselves from the study if they so desire. In addition we maintain, in this class, the ability to do this securely, using OAuth and our third party authenticator (Auth0)
 
- - note: We use Stormpath and tokens for authentication
+ - note: We use Auth0 and tokens for authentication
  */
 public class UserManager {
 
@@ -228,8 +228,8 @@ public class UserManager {
     var componentUpdateQueue = DispatchQueue(label:"UserManangerUpdateQueue", attributes: .concurrent)
 
     init() {
-        StormpathConfiguration.defaultConfiguration.APIURL = MCRouter.baseURL as URL
-        self.componentUpdateQueue = DispatchQueue(label: "UserManangerUpdateQueue")
+//        StormpathConfiguration.defaultConfiguration.APIURL = MCRouter.baseURL as URL
+//       self.componentUpdateQueue = DispatchQueue(label: "UserManangerUpdateQueue")
 //        self.serialQueue = DispatchQueue(label: "UserManangerUpdateQueue")
 //        self.componentUpdateQueue = dispatch_queue_create("UserManangerUpdateQueue", DISPATCH_QUEUE_SERIAL)
 //        self.componentUpdateQueue.async {
@@ -247,7 +247,8 @@ public class UserManager {
     }
     
     public func isLoggedIn () -> Bool {
-        return Stormpath.sharedSession.accessToken != nil
+//        return Stormpath.sharedSession.accessToken != nil
+        return true
     }
     
     public func removeFirstLogin () {
@@ -344,7 +345,7 @@ public class UserManager {
             let account = UserAccount(username: user, password: "")
             do {
                 try account.deleteFromSecureStore()
-                Stormpath.sharedSession.logout()
+//                Stormpath.sharedSession.logout()
                 ConsentManager.sharedManager.resetConsentFilePath()
                 IOSHealthManager.sharedManager.reset()
                 PopulationHealthManager.sharedManager.reset()
@@ -440,7 +441,7 @@ public class UserManager {
     }
 
     public func logoutWithCompletion(completion: (() -> Void)?) {
-        Stormpath.sharedSession.logout()
+ //       Stormpath.sharedSession.logout()
         MCRouter.updateAuthToken(token: nil)
         resetUser()
         if let comp = completion { comp() }
@@ -460,10 +461,10 @@ public class UserManager {
                 let consentStr = data.base64EncodedString(options: NSData.Base64EncodingOptions())
                 account.customFields = ["consent": consentStr]
                 account.customFields.update(other: initialData)
-                Stormpath.sharedSession.register(account: account) { (account, error) -> Void in
-                    if error != nil { log.error("Register failed: \(error)") }
-                    completion(account, error != nil, error?.localizedDescription)
-                }
+//                Stormpath.sharedSession.register(account: account) { (account, error) -> Void in
+//                    if error != nil { log.error("Register failed: \(error)") }
+//                    completion(account, error != nil, error?.localizedDescription)
+ //               }
             } else {
                 let msg = UMPushReadBinaryFileError(.Consent, consentPath)
                 log.error(msg)
@@ -517,7 +518,8 @@ public class UserManager {
     // MARK: - Stormpath token management.
 
     public func getAccessToken() -> String? {
-        return Stormpath.sharedSession.accessToken
+//        return Stormpath.sharedSession.accessToken
+          return AuthSessionManager.shared.keychain.string(forKey: "access_token")
     }
 
     // Recursive checking of the access token's expiry.
@@ -539,7 +541,8 @@ public class UserManager {
             // TODO: this is a temporary workaround for issue #30, to support auto-login:
             // https://github.com/yanif/circator/issues/30
             var doReset = true
-            if let token = Stormpath.sharedSession.accessToken {
+//            if let token = Stormpath.sharedSession.accessToken {
+            if let token = AuthSessionManager.shared.keychain.string(forKey: "access_token") {
                 do {
                     let jwt = try decode(jwt: token)
                     if let expiry = jwt.expiresAt?.timeIntervalSince1970 {
@@ -573,7 +576,8 @@ public class UserManager {
     }
 
     public func ensureAccessToken(completion: @escaping ErrorCompletion) {
-        if let token = Stormpath.sharedSession.accessToken {
+//        if let token = Stormpath.sharedSession.accessToken {
+        if let token = AuthSessionManager.shared.keychain.string(forKey: "access_token") {
             MCRouter.updateAuthToken(token: token)
             ensureAccessToken(tried: 0, completion: completion)
         } else {
@@ -595,9 +599,11 @@ public class UserManager {
                 return
             }
 
-            if let token = Stormpath.sharedSession.accessToken {
+//            if let token = Stormpath.sharedSession.accessToken {
+            if let token = AuthSessionManager.shared.keychain.string(forKey: "access_token") {
                 log.debug("Refreshed token: \(token)")
-                MCRouter.updateAuthToken(token: Stormpath.sharedSession.accessToken)
+//                MCRouter.updateAuthToken(token: Stormpath.sharedSession.accessToken)
+                MCRouter.updateAuthToken(token: AuthSessionManager.shared.keychain.string(forKey: "access_token"))
                 self.ensureAccessToken(tried: tried+1, completion: completion)
             } else {
                 log.error("RefreshAccessToken failed, please login manually.")

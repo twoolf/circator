@@ -12,7 +12,7 @@ import Locksmith
 /**
  This class sets up the user accounts. This information needs to be kept separate from the anonymous aggregated data.  For this reason we use a third party authenticator to enable the personally identifiable information to be kept separately from the longitudinal study data.
 
- - note: uses Stormpath for authentication   
+ - note: uses Auth0 for authentication   
  */
 struct UserAccount : ReadableSecureStorable,
                      CreateableSecureStorable,
