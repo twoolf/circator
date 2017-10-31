@@ -41,7 +41,6 @@ class RegisterModelDataSource: BaseDataSource {
     override func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         let field = model.itemAtIndexPath(indexPath: indexPath as IndexPath)
         var cell: BaseCollectionViewCell?
-
         let cellType = field.type
 
         switch (cellType) {
@@ -56,29 +55,22 @@ class RegisterModelDataSource: BaseDataSource {
         cell!.changesHandler = { (cell: UICollectionViewCell, newValue: AnyObject?) -> () in
             if let indexPath = self.collectionView!.indexPath(for: cell) {
                 self.model.setAtItem(itemIndex: indexPath.row, newValue: newValue)
-
                 let field = self.model.itemAtIndexPath(indexPath: indexPath as IndexPath)
                 if field.type == .Units {
-                    /*
-                    let needsUpdateIndexPathes = self.model.unitsDependedItemsIndexes()
-                    collectionView.reloadItemsAtIndexPaths(needsUpdateIndexPathes)
-                    */
                     self.model.switchItemUnits()
                     self.model.reloadItems()
                     collectionView.reloadData()
                 }
             }
         }
-
         return cell!
     }
 
 
-    func collectionView(collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAtIndexPath indexPath: IndexPath) -> CGSize {
+   func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
         let field = model.itemAtIndexPath(indexPath: indexPath as IndexPath)
-
         if model.units == .Imperial && (field.type == .Weight || field.type == .Height || field.type == .HeightInches) {
-            return field.type == .HeightInches ? smallHeightInchesCellSize() : (field.type == .Height ? smallHeightCellSize() : smallWeightCellSize())
+        return field.type == .HeightInches ? smallHeightInchesCellSize() : (field.type == .Height ? smallHeightCellSize() : smallWeightCellSize())
         }
 
         if field.type == .Weight || field.type == .Height {
@@ -96,12 +88,11 @@ class RegisterModelDataSource: BaseDataSource {
         return spaceBetweenCellsInOneRow
     }
 
-    func collectionView(collectionView: UICollectionView, viewForSupplementaryElementOfKind kind: String, atIndexPath indexPath: IndexPath) -> UICollectionReusableView {
+    func collectionView(_ collectionView: UICollectionView, viewForSupplementaryElementOfKind kind: String, at indexPath: IndexPath) -> UICollectionReusableView {
         if kind == UICollectionElementKindSectionFooter {
             let footerView = collectionView.dequeueReusableSupplementaryView(ofKind: kind, withReuseIdentifier: "footerView", for: indexPath as IndexPath)
             return footerView
         }
-
         return UICollectionReusableView()
     }
 
@@ -117,9 +108,9 @@ class RegisterModelDataSource: BaseDataSource {
         cell.inputTxtField.font = ProfileFont
 
         cell.nameLbl.font = RegisterFont
+        cell.inputTxtField.isSecureTextEntry = false
 
         if field.type == .Password {
-//            cell.inputTxtField.secureTextEntry = true
             cell.inputTxtField.isSecureTextEntry = true
         }
         else if field.type == .Email {
@@ -146,14 +137,14 @@ class RegisterModelDataSource: BaseDataSource {
             }
             else if field.type == .Height {
                 cell.imageLeadingConstraint?.constant = 0
-                cell.imageTxtSpacing?.constant = 8
+                cell.imageTxtSpacing?.constant = 2
                 cell.labelCellSpacing?.constant = 8
                 cell.nameLbl.font = RegisterUnitsFont
                 cell.inputTxtField.attributedPlaceholder = NSAttributedString(string: field.title, attributes: [NSAttributedStringKey.foregroundColor : unselectedTextColor, NSAttributedStringKey.font: RegisterUnitsFont])
 
             }
             else if field.type == .Weight {
-                //cell.imageTxtSpacing?.constant = 8
+                cell.imageTxtSpacing?.constant = 8
                 cell.labelCellSpacing?.constant = 8
                 cell.nameLbl.font = RegisterUnitsFont
                 cell.inputTxtField.attributedPlaceholder = NSAttributedString(string: field.title, attributes: [NSAttributedStringKey.foregroundColor : unselectedTextColor, NSAttributedStringKey.font: RegisterUnitsFont])
@@ -226,17 +217,17 @@ class RegisterModelDataSource: BaseDataSource {
     }
 
     private func smallWeightCellSize() -> CGSize {
-        let size = CGSize(4.5*(self.collectionView!.bounds.width - spaceBetweenCellsInOneRow) / 10.0, cellHeight)
+        let size = CGSize((self.collectionView!.bounds.width - spaceBetweenCellsInOneRow) / 3.0, cellHeight)
         return size
     }
 
     private func smallHeightCellSize() -> CGSize {
-        let size = CGSize(3.5*(self.collectionView!.bounds.width - spaceBetweenCellsInOneRow) / 10.0, cellHeight)
+        let size = CGSize((self.collectionView!.bounds.width - spaceBetweenCellsInOneRow) / 3.0, cellHeight)
         return size
     }
 
     private func smallHeightInchesCellSize() -> CGSize {
-        let size = CGSize(2*(self.collectionView!.bounds.width - spaceBetweenCellsInOneRow) / 10.0, cellHeight)
+        let size = CGSize((self.collectionView!.bounds.width - spaceBetweenCellsInOneRow) / 3.0, cellHeight)
         return size
     }
 
