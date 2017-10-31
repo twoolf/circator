@@ -9,7 +9,7 @@ def shared_pods
     pod 'AsyncSwift'
     pod 'AwesomeCache’, :git => ‘https://github.com/aschuch/AwesomeCache.git’, :branch => ‘master’
     pod 'Charts' , :git => 'https://github.com/OlenaSrost/Charts.git’
-    pod 'CryptoSwift' 
+    pod 'CryptoSwift'
     pod 'Dodo' 
     pod 'EasyAnimation' 
     pod 'EasyTipView' 

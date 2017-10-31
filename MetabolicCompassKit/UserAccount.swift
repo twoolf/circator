@@ -41,6 +41,14 @@ public enum AccountComponent {
     case LastAcquired
 }
 
+public enum Auth0Component {
+    case GrantType
+    case ClientId
+    case CodeVerifier
+    case Code
+    case RedirectUrl
+}
+
 public func getComponentName(_ component: AccountComponent) -> String {
     switch component {
     case .Consent:
@@ -72,5 +80,20 @@ public func getComponentByName(_ name: String) -> AccountComponent? {
         return .LastAcquired
     default:
         return nil
+    }
+}
+
+public func getAuth0ComponentName(_ component: Auth0Component) -> String {
+    switch component {
+    case .GrantType:
+        return "grant_type"
+    case .ClientId:
+        return "client_id"
+    case .CodeVerifier:
+        return "code_verifier"
+    case .Code:
+        return "code"
+    case .RedirectUrl:
+        return "redirect_uri"
     }
 }

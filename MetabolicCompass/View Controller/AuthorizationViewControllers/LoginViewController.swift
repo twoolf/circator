@@ -99,6 +99,8 @@ class LoginViewController: BaseViewController {
 
 
     func auth0CustomLogin() {
+        let verifier = PKCEFlowManager.shared?.codeVerifier
+        let challenge = PKCEFlowManager.shared?.codeChallenge
         let loginCredentials = loginModel.getCredentials()
         Auth0
             .authentication()
@@ -153,7 +155,6 @@ class LoginViewController: BaseViewController {
 
     func login() {
         startAction()
-
         let loginCredentials = loginModel.getCredentials()
 
         UserManager.sharedManager.ensureUserPass(user: loginCredentials.email, pass: loginCredentials.password) { error in

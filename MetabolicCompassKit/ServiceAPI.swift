@@ -21,7 +21,7 @@ private let wwwURL = NSURL(string: "https://www-dev.metaboliccompass.com")!
 private let srvURL = NSURL(string: "https://api.metaboliccompass.com")!
 private let wwwURL = NSURL(string: "https://www.metaboliccompass.com")!
 #endif
-
+private let auth0URL = NSURL(string: "https://metaboliccompass.auth0.com")!
 
 public class  RequestResult{
     private var _obj:Any? = nil
@@ -116,6 +116,7 @@ public enum MCRouter : URLRequestConvertible {
     public static let resetPassURL     = srvURL.appendingPathComponent("forgot")
     public static let aboutURL         = wwwURL.appendingPathComponent("about")
     public static let privacyPolicyURL = wwwURL.appendingPathComponent("privacy")
+    public static let auth0apiURL         = auth0URL
 
     static var OAuthToken: String?
     static var tokenExpireTime: TimeInterval = 0
@@ -131,7 +132,6 @@ public enum MCRouter : URLRequestConvertible {
     case AddSeqMeasures([String: AnyObject])
     case RemoveMeasures([String: AnyObject])
     case AggregateMeasures([String: AnyObject])
-
     case StudyStats
 
     // User and profile management API
@@ -148,7 +148,9 @@ public enum MCRouter : URLRequestConvertible {
 
     // Remote logging API 
     case RLogConfig
-
+  
+    case Auth0login([Auth0Component])
+    
     var method: HTTPMethod {
         switch self {
         case .GetMeasures:
@@ -183,6 +185,9 @@ public enum MCRouter : URLRequestConvertible {
 
         case .RLogConfig:
             return .get
+            
+        case .Auth0login:
+            return .post
         }
     }
 
@@ -217,6 +222,9 @@ public enum MCRouter : URLRequestConvertible {
 
         case .RLogConfig:
             return "/user/rlogconfig"
+            
+        case .Auth0login:
+            return ""
         }
     }
 
@@ -276,6 +284,9 @@ public enum MCRouter : URLRequestConvertible {
 
         case .RLogConfig:
             return mutableURLRequest
+            
+        case .Auth0login:
+            return try URLEncoding.default.encode(mutableURLRequest, with: nil)
         }
     }
 
@@ -320,7 +331,7 @@ public class Service {
         }
     }
   }
-    
+   
 }
 
 /*extension Alamofire.Request {

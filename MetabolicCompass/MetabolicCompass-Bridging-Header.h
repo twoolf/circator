@@ -12,6 +12,6 @@
 //#import "AppLogViewController.h"
 //#import "AppLogManager.h"
 //#import "AppLogNetworkRequestItem.h"
-
+#import <CommonCrypto/CommonCrypto.h>
 
 #endif /* MetabolicCompass_Bridging_Header_h */
