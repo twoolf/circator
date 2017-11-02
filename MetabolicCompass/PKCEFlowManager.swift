@@ -7,16 +7,16 @@
 //
 
 import Foundation
+import UIKit
 
 
 class PKCEFlowManager {
     static let shared = PKCEFlowManager()
     var codeVerifier: String
     var codeChallenge: String
-    var autorizationCode: String?
     let redirectUri = "edu.jhu.cs.damsl.MetabolicCompass.app://metaboliccompass.auth0.com/ios/edu.jhu.cs.damsl.MetabolicCompass.app/callback"
     let audience = "https://api-dev.metaboliccompass.com"
-    let scope = "offline_access"
+    let scope = "openid"
     let responseType = "code"
     let clientId = "FIwBsUv2cxpj1xoX3sjIeOyzm0Lq2Rqk"
     let codeChallengeMethod = "S256"
@@ -43,7 +43,7 @@ class PKCEFlowManager {
             .trimmingCharacters(in: .whitespaces)
     }
     
-    func receiveAutorizationCode() {
+    func receiveAutorizationCode(_ callback: @escaping (Data?) -> ()) {
         var components = URLComponents(string: "https://metaboliccompass.auth0.com/authorize")
         let audienceItem = URLQueryItem(name: "audience", value: audience)
         let scopeItem = URLQueryItem(name: "scope", value: scope)
@@ -56,8 +56,9 @@ class PKCEFlowManager {
         
         let url = components?.url
         var request = URLRequest(url: url!,
-                                 cachePolicy: .useProtocolCachePolicy,
-                                 timeoutInterval: 10.0)
+                         cachePolicy: .useProtocolCachePolicy,
+                     
+                         timeoutInterval: 10.0)
         request.httpMethod = "GET"
         let session = URLSession.shared
         let dataTask = session.dataTask(with: request as URLRequest, completionHandler: { (data, response, error) -> Void in
@@ -66,13 +67,16 @@ class PKCEFlowManager {
             } else {
                 let httpResponse = response as? HTTPURLResponse
                 print(httpResponse)
+                DispatchQueue.main.async {
+                    callback(data)
+                }
             }
         })
         
         dataTask.resume()
     }
     
-    func receiveAccessToken() {
+    func receiveAccessToken(autorizationCode: String) {
         let headers = ["content-type": "application/json"]
         let body = """
             {
@@ -101,7 +105,7 @@ class PKCEFlowManager {
                 print(httpResponse)
             }
         })
-        
+
         dataTask.resume()
     }
 }

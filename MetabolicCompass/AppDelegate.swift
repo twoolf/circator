@@ -242,9 +242,13 @@ class AppDelegate: UIResponder, UIApplicationDelegate, WCSessionDelegate
             session.activate()
         }
     }
-
+//  optional public func application(_ app: UIApplication, open url: URL, options: [UIApplicationOpenURLOptionsKey : Any] = [:]) -> Bool // no equiv. notification. return NO if the application can't open for some reason
     // Auto0
-    func application(_ app: UIApplication, open url: URL, options: [UIApplicationOpenURLOptionsKey : Any]) -> Bool {
+   public func application(_ app: UIApplication, open url: URL, options: [UIApplicationOpenURLOptionsKey : Any]) -> Bool {
+        guard let params = URLComponents.init(url: url, resolvingAgainstBaseURL: true) else {return false}
+        let autorizationCodeQueryItem = params.queryItems?.last
+        let autorizationCode = autorizationCodeQueryItem?.value
+        PKCEFlowManager.shared?.receiveAccessToken(autorizationCode: autorizationCode!)
         return Auth0.resumeAuth(url, options: options)
     }
 }

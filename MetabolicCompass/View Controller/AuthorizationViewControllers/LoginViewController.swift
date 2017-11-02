@@ -22,7 +22,7 @@ import SimpleKeychain
 
 - note: for both signup and login; uses Stormpath for authentication
  */
-class LoginViewController: BaseViewController {
+class LoginViewController: BaseViewController, UIWebViewDelegate {
 
     @IBOutlet weak var containerScrollView: UIScrollView!
 
@@ -96,36 +96,39 @@ class LoginViewController: BaseViewController {
         self.navigationController?.pushViewController(registerVC, animated: true)
     }
 
-
-
     func auth0CustomLogin() {
-        PKCEFlowManager.shared?.receiveAutorizationCode()
-        PKCEFlowManager.shared?.receiveAccessToken()
-        let loginCredentials = loginModel.getCredentials()
-        Auth0
-            .authentication()
-            .login(
-                usernameOrEmail: loginCredentials.email!,
-                password: loginCredentials.password!,
-                realm: "Username-Password-Authentication",
-                scope: "openid profile offline_access")
-            .start { result in
-                DispatchQueue.main.async {
-                    switch result {
-                    case .success(let credentials):
-                        guard let accessToken = credentials.accessToken, let refreshToken = credentials.refreshToken else { return }
-                        AuthSessionManager.shared.storeTokens(accessToken, refreshToken: refreshToken)
-                        AuthSessionManager.shared.retrieveProfile { error in
-                            DispatchQueue.main.async {
-                                self.login()
-                            }
-                        }
-                    case .failure(let error):
-                        let message = error.localizedDescription
-                    //    alert error
-                    }
-                }
+        PKCEFlowManager.shared?.receiveAutorizationCode { data in
+            let htmlString = String(data: data!, encoding: .utf8)
+            let webView = UIWebView(frame: self.view.bounds)
+            webView.loadHTMLString(htmlString!, baseURL: nil)
+            webView.delegate = self
+            self.view.addSubview(webView)
         }
+        let loginCredentials = loginModel.getCredentials()
+//        Auth0
+//            .authentication()
+//            .login(
+//                usernameOrEmail: loginCredentials.email!,
+//                password: loginCredentials.password!,
+//                realm: "Username-Password-Authentication",
+//                scope: "openid profile offline_access")
+//            .start { result in
+//                DispatchQueue.main.async {
+//                    switch result {
+//                    case .success(let credentials):
+//                        guard let accessToken = credentials.accessToken, let refreshToken = credentials.refreshToken else { return }
+//                        AuthSessionManager.shared.storeTokens(accessToken, refreshToken: refreshToken)
+//                        AuthSessionManager.shared.retrieveProfile { error in
+//                            DispatchQueue.main.async {
+//                                self.login()
+//                            }
+//                        }
+//                    case .failure(let error):
+//                        let message = error.localizedDescription
+//                    //    alert error
+//                    }
+//                }
+//        }
     }
 
 
