@@ -16,7 +16,7 @@ class PKCEFlowManager {
     var codeChallenge: String
     let redirectUri = "edu.jhu.cs.damsl.MetabolicCompass.app://metaboliccompass.auth0.com/ios/edu.jhu.cs.damsl.MetabolicCompass.app/callback"
     let audience = "https://api-dev.metaboliccompass.com"
-    let scope = "openid"
+    let scope = "openid profile offline_access"
     let responseType = "code"
     let clientId = "FIwBsUv2cxpj1xoX3sjIeOyzm0Lq2Rqk"
     let codeChallengeMethod = "S256"
@@ -76,25 +76,19 @@ class PKCEFlowManager {
         dataTask.resume()
     }
     
-    func receiveAccessToken(autorizationCode: String) {
+    func receiveAccessToken(authorizationCode: String) {
         let headers = ["content-type": "application/json"]
-        let body = """
-            {
-                "grant_type":"autorization_code",
-                "client_id": "FIwBsUv2cxpj1xoX3sjIeOyzm0Lq2Rqk",
-                "code_verifier": "Gi8lVllfjkRY850aUq8KD1qiazGTKzl06bZ9Q4y-ipg",
-                "code": "autorizationCode",
-                "redirect_uri": "redirectUri"
-            }
-        """
-        
+        let parameterDictionary = ["grant_type" : "authorization_code", "client_id" : clientId,  "code_verifier": codeVerifier, "code": authorizationCode, "redirect_uri": redirectUri]
+        guard let httpBody = try? JSONSerialization.data(withJSONObject: parameterDictionary, options: []) else {
+            return
+        }
         var request = URLRequest(url: URL(string: "https://metaboliccompass.auth0.com/oauth/token")!,
                                   cachePolicy: .useProtocolCachePolicy,
                               timeoutInterval: 10.0)
   
         request.httpMethod = "POST"
         request.allHTTPHeaderFields = headers
-        request.httpBody = body.data(using: .utf8)
+        request.httpBody = httpBody
         
         let session = URLSession.shared
         let dataTask = session.dataTask(with: request as URLRequest, completionHandler: { (data, response, error) -> Void in

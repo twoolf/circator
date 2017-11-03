@@ -248,7 +248,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, WCSessionDelegate
         guard let params = URLComponents.init(url: url, resolvingAgainstBaseURL: true) else {return false}
         let autorizationCodeQueryItem = params.queryItems?.last
         let autorizationCode = autorizationCodeQueryItem?.value
-        PKCEFlowManager.shared?.receiveAccessToken(autorizationCode: autorizationCode!)
+        PKCEFlowManager.shared?.receiveAccessToken(authorizationCode: autorizationCode!)
         return Auth0.resumeAuth(url, options: options)
     }
 }
