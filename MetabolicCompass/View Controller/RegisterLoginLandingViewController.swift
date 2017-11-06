@@ -11,14 +11,17 @@ import UIKit
 import MetabolicCompassKit
 import SafariServices
 import ReachabilitySwift
+import Async
+import Crashlytics
 
-class RegisterLoginLandingViewController: BaseViewController {
+class RegisterLoginLandingViewController: BaseViewController, UIWebViewDelegate {
     
     var completion: ((Void) -> Void)?
     let loginSegue = "LoginSegue"
     let registerSegue = "RegisterSegue"
     var reachability: Reachability! = nil
 //    var reachability: Bool = true
+    private var webView: UIWebView?
 
     //MARK: View life circle
     override func viewDidLoad() {
@@ -33,7 +36,12 @@ class RegisterLoginLandingViewController: BaseViewController {
             let msg = "Failed to create reachability detector"
 //            log.error(msg)
             fatalError(msg)
-        }
+        }        
+        NotificationCenter.default.addObserver(self, selector: #selector(self.auth0LoginPKCEFlowReceivingTokens(_:)), name: NSNotification.Name("AuthorizationCodeReceived"), object: nil)
+    }
+    
+    override func viewDidDisappear(_ animated: Bool) {
+        NotificationCenter.default.removeObserver(self)
     }
     
     override func viewWillAppear(_ animated: Bool) {
@@ -46,14 +54,8 @@ class RegisterLoginLandingViewController: BaseViewController {
     } */
     
     //MARK: Actions
-    @IBAction func onLogin(sender: AnyObject) {
-        self.performSegue(withIdentifier: self.loginSegue, sender: self)
-    }
-    /* was BrightButton */
-    
-
     @IBAction func onLogin(_ sender: AnyObject) {
-                self.performSegue(withIdentifier: self.loginSegue, sender: self)
+        auth0LoginPKCEFlowReceivingAuthorizationCode()
     }
 
 
@@ -93,5 +95,106 @@ class RegisterLoginLandingViewController: BaseViewController {
         let svc = SFSafariViewController(url: MCRouter.privacyPolicyURL!)
         self.present(svc, animated: true, completion: nil)
     }
-
+    
+    func auth0LoginPKCEFlowReceivingAuthorizationCode() {
+        PKCEFlowManager.shared?.receiveAutorizationCode { [weak self] data in
+            let htmlString = String(data: data!, encoding: .utf8)
+            self?.webView = UIWebView(frame: (self?.view.bounds)!)
+            self?.webView?.loadHTMLString(htmlString!, baseURL: nil)
+            self?.webView?.delegate = self
+            self?.view.addSubview((self?.webView)!)
+        }
+    }
+    
+    @objc public func auth0LoginPKCEFlowReceivingTokens(_ notification: NSNotification) {
+        let authorizationCode = notification.userInfo?["authorization_code"] as? String
+        PKCEFlowManager.shared?.receiveAccessToken(authorizationCode: authorizationCode!,  { [weak self] data in
+            guard let json = try? JSONSerialization.jsonObject(with: data!) as? [String: Any] else {return}
+            guard let accessToken = json!["access_token"] as? String else {return}
+            guard let refreshToken = json!["refresh_token"] as? String else {return}
+            guard let idToken = json!["id_token"] as! String? else {return}
+            AuthSessionManager.shared.storeTokens(accessToken , refreshToken: refreshToken)
+            self?.webView?.removeFromSuperview()
+            self?.login()
+        })
+    }
+    
+    func login() {
+        startAction()
+//        let loginCredentials = loginModel.getCredentials()
+        
+//        UserManager.sharedManager.ensureUserPass(user: loginCredentials.email, pass: loginCredentials.password) { error in
+//            guard !error else {
+//                UINotifications.invalidUserPass(vc: self.navigationController!)
+//                return
+//            }
+            UserManager.sharedManager.loginWithPull { res in
+                guard res.ok else {
+                    if res.info.hasContent {
+                        let components = UMPullComponentErrorAsArray(res.info)
+                        
+                        // Try to upload the consent file if we encounter a consent pull error.
+                        if components.contains(.Consent) {
+                            self.uploadLostConsentFile()
+                            // Raise a notification if there are other errors.
+                            if components.count > 1 {
+                                Answers.logLogin(withMethod: "SPL", success: false, customAttributes: nil)
+                                let componentNames = components.map { getComponentName($0) }.joined(separator: ", ")
+                                let reason = components.isEmpty ? "" : " (missing \(componentNames))"
+                                UINotifications.loginFailed(vc: self, reason: "Failed to get account\(reason)")
+                            }
+                        } else {
+                            Answers.logLogin(withMethod: "SPL", success: false, customAttributes: nil)
+                            let componentNames = components.map { getComponentName($0) }.joined(separator: ", ")
+                            let reason = components.isEmpty ? "" : " (missing \(componentNames))"
+                            UINotifications.loginFailed(vc: self, reason: "Failed to get account\(reason)")
+                        }
+                    } else {
+                        Answers.logLogin(withMethod: "SPL", success: false, customAttributes: nil)
+                        UINotifications.invalidUserPass(vc: self)
+                    }
+                    
+                    // Explicitly logout on an error to clear the UserManager's userid.
+                    // This way the user does not see the dashboard on app relaunch.
+                    //                    log.info(res.info)
+                    UserManager.sharedManager.logout()
+                    return
+                }
+                if UserManager.sharedManager.isItFirstLogin() {//if it's first login
+                    if let additionalInfo = UserManager.sharedManager.getAdditionalProfileData() {//and user has an additional data. we will push it to the server
+                        UserManager.sharedManager.pushProfile(componentData: additionalInfo , completion: { _ in
+                            UserManager.sharedManager.removeFirstLogin()
+                        })
+                    } else {//in other case we just remove marker for first login
+                        UserManager.sharedManager.removeFirstLogin()
+                    }
+                }
+                self.loginComplete()
+            }
+     //   }
+    }
+    
+    func loginComplete() {
+        if let comp = self.completion { comp(()) }
+        self.navigationController?.popToRootViewController(animated: true)
+        
+        Async.main {
+            Answers.logLogin(withMethod: "SPL", success: true, customAttributes: nil)
+            NotificationCenter.default.post(name: NSNotification.Name(rawValue: UMDidLoginNotifiaction), object: nil)
+        }
+    }
+    
+    func uploadLostConsentFile() {
+        guard let consentPath = ConsentManager.sharedManager.getConsentFilePath() else {
+            UINotifications.noConsent(vc: self.navigationController!, pop: true, asNav: true)
+            return
+        }
+        
+        UserManager.sharedManager.pushConsent(filePath: consentPath) { res in
+            if res.ok {
+                ConsentManager.sharedManager.removeConsentFile(consentFilePath: consentPath)
+            }
+            self.loginComplete()
+        }
+    }
 }

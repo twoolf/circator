@@ -57,7 +57,7 @@ import SimpleKeychain
         loginTable.dataSource = loginModel
         self.setupScrollViewForKeyboardsActions(view: containerScrollView)
         modalPresentationCapturesStatusBarAppearance = true
-        NotificationCenter.default.addObserver(self, selector: #selector(self.auth0PKCELogin(_:)), name: NSNotification.Name("AuthorizationCodeReceived"), object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(self.auth0LoginPKCEFlowReceivingTokens(_:)), name: NSNotification.Name("AuthorizationCodeReceived"), object: nil)
     }
 
     override func viewDidDisappear(_ animated: Bool) {
@@ -91,7 +91,7 @@ import SimpleKeychain
     // MARK: - Actions
 
     @IBAction func loginAction() {
-        auth0CustomLogin()
+        auth0LoginPKCEFlowReceivingAuthorizationCode()
     }
 
     func doSignup(sender: UIButton) {
@@ -100,7 +100,7 @@ import SimpleKeychain
         self.navigationController?.pushViewController(registerVC, animated: true)
     }
 
-    func auth0CustomLogin() {
+    func auth0LoginPKCEFlowReceivingAuthorizationCode() {
         PKCEFlowManager.shared?.receiveAutorizationCode { [weak self] data in
             let htmlString = String(data: data!, encoding: .utf8)
             self?.webView = UIWebView(frame: (self?.view.bounds)!)
@@ -110,7 +110,7 @@ import SimpleKeychain
         }
     }
 
-    @objc public func auth0PKCELogin(_ notification: NSNotification) {
+    @objc public func auth0LoginPKCEFlowReceivingTokens(_ notification: NSNotification) {
         let authorizationCode = notification.userInfo?["authorization_code"] as? String
         PKCEFlowManager.shared?.receiveAccessToken(authorizationCode: authorizationCode!,  { [weak self] data in
             guard let json = try? JSONSerialization.jsonObject(with: data!) as? [String: Any] else {return}
