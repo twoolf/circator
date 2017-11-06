@@ -76,7 +76,7 @@ class PKCEFlowManager {
         dataTask.resume()
     }
     
-    func receiveAccessToken(authorizationCode: String) {
+    func receiveAccessToken(authorizationCode: String, _ callback: @escaping (Data?) -> ()) {
         let headers = ["content-type": "application/json"]
         let parameterDictionary = ["grant_type" : "authorization_code", "client_id" : clientId,  "code_verifier": codeVerifier, "code": authorizationCode, "redirect_uri": redirectUri]
         guard let httpBody = try? JSONSerialization.data(withJSONObject: parameterDictionary, options: []) else {
@@ -95,11 +95,13 @@ class PKCEFlowManager {
             if (error != nil) {
                 print(error)
             } else {
+                DispatchQueue.main.async {
+                    callback(data)
+                }
                 let httpResponse = response as? HTTPURLResponse
                 print(httpResponse)
             }
         })
-
         dataTask.resume()
     }
 }

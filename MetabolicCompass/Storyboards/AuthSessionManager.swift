@@ -22,7 +22,7 @@ class AuthSessionManager {
 
     private init () { }
 
-    func storeTokens(_ accessToken: String, refreshToken: String? = nil) {
+   func storeTokens(_ accessToken: String, refreshToken: String? = nil) {
         self.keychain.setString(accessToken, forKey: "access_token")
         if let refreshToken = refreshToken {
             self.keychain.setString(refreshToken, forKey: "refresh_token")

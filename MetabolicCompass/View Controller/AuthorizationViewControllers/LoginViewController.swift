@@ -22,13 +22,15 @@ import SimpleKeychain
 
 - note: for both signup and login; uses Stormpath for authentication
  */
-class LoginViewController: BaseViewController, UIWebViewDelegate {
+ class LoginViewController: BaseViewController, UIWebViewDelegate {
 
     @IBOutlet weak var containerScrollView: UIScrollView!
 
     private var userCell: FormTextFieldCell?
     private var passCell: FormTextFieldCell?
     let loginModel: LoginModel = LoginModel()
+    
+    private var webView: UIWebView?
 
     @IBOutlet weak var loginTable: UITableView!
 
@@ -50,15 +52,18 @@ class LoginViewController: BaseViewController, UIWebViewDelegate {
 
     override func viewDidLoad() {
         super.viewDidLoad()
-
         loginModel.loginTable = loginTable
         loginModel.controllerView = self.view
         loginTable.dataSource = loginModel
         self.setupScrollViewForKeyboardsActions(view: containerScrollView)
         modalPresentationCapturesStatusBarAppearance = true
+        NotificationCenter.default.addObserver(self, selector: #selector(self.auth0PKCELogin(_:)), name: NSNotification.Name("AuthorizationCodeReceived"), object: nil)
     }
 
-
+    override func viewDidDisappear(_ animated: Bool) {
+        NotificationCenter.default.removeObserver(self)
+    }
+    
     func uploadLostConsentFile() {
         guard let consentPath = ConsentManager.sharedManager.getConsentFilePath() else {
             UINotifications.noConsent(vc: self.navigationController!, pop: true, asNav: true)
@@ -86,7 +91,6 @@ class LoginViewController: BaseViewController, UIWebViewDelegate {
     // MARK: - Actions
 
     @IBAction func loginAction() {
-   //     auth0Weblogin()
         auth0CustomLogin()
     }
 
@@ -97,65 +101,28 @@ class LoginViewController: BaseViewController, UIWebViewDelegate {
     }
 
     func auth0CustomLogin() {
-        PKCEFlowManager.shared?.receiveAutorizationCode { data in
+        PKCEFlowManager.shared?.receiveAutorizationCode { [weak self] data in
             let htmlString = String(data: data!, encoding: .utf8)
-            let webView = UIWebView(frame: self.view.bounds)
-            webView.loadHTMLString(htmlString!, baseURL: nil)
-            webView.delegate = self
-            self.view.addSubview(webView)
+            self?.webView = UIWebView(frame: (self?.view.bounds)!)
+            self?.webView?.loadHTMLString(htmlString!, baseURL: nil)
+            self?.webView?.delegate = self
+            self?.view.addSubview((self?.webView)!)
         }
-        let loginCredentials = loginModel.getCredentials()
-//        Auth0
-//            .authentication()
-//            .login(
-//                usernameOrEmail: loginCredentials.email!,
-//                password: loginCredentials.password!,
-//                realm: "Username-Password-Authentication",
-//                scope: "openid profile offline_access")
-//            .start { result in
-//                DispatchQueue.main.async {
-//                    switch result {
-//                    case .success(let credentials):
-//                        guard let accessToken = credentials.accessToken, let refreshToken = credentials.refreshToken else { return }
-//                        AuthSessionManager.shared.storeTokens(accessToken, refreshToken: refreshToken)
-//                        AuthSessionManager.shared.retrieveProfile { error in
-//                            DispatchQueue.main.async {
-//                                self.login()
-//                            }
-//                        }
-//                    case .failure(let error):
-//                        let message = error.localizedDescription
-//                    //    alert error
-//                    }
-//                }
-//        }
     }
 
-
-    func auth0Weblogin() {
-            guard let clientInfo = plistValues(bundle: Bundle.main) else { return }
-            Auth0
-                .webAuth()
-                .scope("openid profile offline_access")
-                .audience("https://" + clientInfo.domain + "/userinfo")
-                .start {
-                    switch $0 {
-                    case .failure(let error):
-                        // Handle the error
-                        print("Error: \(error)")
-                    case .success(let credentials):
-                        guard let accessToken = credentials.accessToken, let refreshToken = credentials.refreshToken else { return }
-                        AuthSessionManager.shared.storeTokens(accessToken, refreshToken: refreshToken)
-                        AuthSessionManager.shared.retrieveProfile { error in
-                            DispatchQueue.main.async {
-                                self.login()
-                            }
-                        }
-                    }
-            }
-
-        }
-
+    @objc public func auth0PKCELogin(_ notification: NSNotification) {
+        let authorizationCode = notification.userInfo?["authorization_code"] as? String
+        PKCEFlowManager.shared?.receiveAccessToken(authorizationCode: authorizationCode!,  { [weak self] data in
+            guard let json = try? JSONSerialization.jsonObject(with: data!) as? [String: Any] else {return}
+            guard let accessToken = json!["access_token"] as? String else {return}
+            guard let refreshToken = json!["refresh_token"] as? String else {return}
+            guard let idToken = json!["id_token"] as! String? else {return}
+            AuthSessionManager.shared.storeTokens(accessToken , refreshToken: refreshToken)
+            self?.webView?.removeFromSuperview()
+            self?.login()
+        })
+    }
+    
     func login() {
         startAction()
         let loginCredentials = loginModel.getCredentials()
@@ -209,6 +176,5 @@ class LoginViewController: BaseViewController, UIWebViewDelegate {
                 self.loginComplete()
             }
         }
-
     }
 }
