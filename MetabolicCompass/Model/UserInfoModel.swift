@@ -12,26 +12,16 @@ import Navajo_Swift
 
 class UserInfoModel: NSObject {
 
-    let emailIndex        = 0
-    let passwordIndex     = 1
-    let firstNameIndex    = 2
-    let lastNameIndex     = 3
-    let genderIndex       = 4
-    let ageIndex          = 5
-    let weightIndex       = 6
-    let heightIndex       = 7
-    let heightInchesIndex = 8
+    let firstNameIndex    = 0
+    let lastNameIndex     = 1
+    let genderIndex       = 2
+    let ageIndex          = 3
+    let weightIndex       = 4
+    let heightIndex       = 5
+    let heightInchesIndex = 6
 
     lazy private(set) var loadPhotoField : ModelItem = {
         return ModelItem(name: "Load photo".localized, title: "Load photo", type: .Photo, iconImageName: "iconNoPhoto", value: nil)
-    }()
-
-    lazy private(set) var emailField : ModelItem = {
-        return self.modelItem(withIndex: self.emailIndex, iconImageName: "icon-email", value: nil, type: .Email)
-    }()
-
-    lazy private(set) var passwordField : ModelItem = {
-        return self.modelItem(withIndex: self.passwordIndex, iconImageName: "icon-password", value: nil, type: .Password)
     }()
 
     lazy private(set) var firstNameField : ModelItem = {
@@ -43,7 +33,7 @@ class UserInfoModel: NSObject {
     }()
 
     lazy private(set) var genderField : ModelItem = {
-        return self.modelItem(withIndex: self.genderIndex, iconImageName: "icon-sex", value: Gender.Male.rawValue as AnyObject?, type: .Gender)
+        return self.modelItem(withIndex: self.genderIndex, iconImageName: "icon-sex", value: Gender.Male.rawValue as AnyObject, type: .Gender)
     }()
 
     lazy private(set) var ageField : ModelItem = {
@@ -105,7 +95,7 @@ class UserInfoModel: NSObject {
         var profile = [String : String]()
         var heightInchesComponent: String! = nil
         for item in newItems {            
-            if item.type == .FirstName || item.type == .LastName || item.type == .Email || item.type == .Password || item.type == .Photo
+            if item.type == .FirstName || item.type == .LastName || item.type == .Photo
             {
                  continue
             } else {
@@ -208,14 +198,6 @@ class UserInfoModel: NSObject {
 
     // MARK: - Getting properties
 
-    var email: String? {
-        return emailField.stringValue()
-    }
-
-    var password: String? {
-        return passwordField.stringValue()
-    }
-
     var firstName: String? {
         return firstNameField.stringValue()
     }
@@ -246,6 +228,8 @@ class UserInfoModel: NSObject {
 
     var gender: Gender {
         return Gender(rawValue: genderField.intValue()!)!
+//        let gender = genderField.intValue().flatMap { Gender(rawValue: $0) }
+//        return gender ?? .Male
     }
 
     var photo: UIImage? {
@@ -284,44 +268,6 @@ class UserInfoModel: NSObject {
 
     func isPhotoValid() -> Bool {
         return true
-    }
-
-    func isEmailValid() -> Bool {
-        var isValid = isRequiredStringValid(value: email)
-
-        if isValid {
-            isValid = email!.isValidAsEmail()
-
-            if !isValid {
-                validationMessage = emailInvalidFormat
-            }
-        }
-        else {
-            validationMessage = emptyFieldMessage
-        }
-
-        return isValid
-    }
-
-
-    func isPasswordValid() -> Bool {
-        if isRequiredStringValid(value: password) {
-            let lengthRule = NJOLengthRule(min: 8, max: 100)
-            let lowerRule  = NJORequiredCharacterRule(preset: .lowercaseCharacter)
-            let upperRule  = NJORequiredCharacterRule(preset: .uppercaseCharacter)
-            let numberRule = NJORequiredCharacterRule(preset: .decimalDigitCharacter)
-            let validator = NJOPasswordValidator(rules: [lengthRule, lowerRule, upperRule, numberRule])
-
-//            let failingRules = validator.validatePassword(password!)
-            let failingRules = validator.validate(password!)
-            if let _ = failingRules {
-                validationMessage = passwordInvalidFormat
-                return false
-            }
-            return true
-        }
-        validationMessage = emptyFieldMessage
-        return false
     }
 
     func isFirstNameValid() -> Bool {

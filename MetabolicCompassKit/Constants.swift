@@ -124,8 +124,6 @@ public struct UserProfile {
     ]
 
     public let profileMapping : [String: String]! = [
-        "Email"                    : "email",
-        "Password"                 : "password",
         "First name"               : "first_name",
         "Last name"                : "last_name",
         "Sex"                      : "sex",
@@ -166,8 +164,6 @@ public struct UserProfile {
     public var fields: [ProfileFieldData] = {
         var fields = [ProfileFieldData]()
 
-        fields.append(ProfileFieldData(fieldName: "Email",                    profileFieldName: "email",                       type: .String, unitsTitle: nil))
-        fields.append(ProfileFieldData(fieldName: "Password",                 profileFieldName: "password",                    type: .String, unitsTitle: nil))
         fields.append(ProfileFieldData(fieldName: "First name",               profileFieldName: "first_name",                  type: .String, unitsTitle: nil))
         fields.append(ProfileFieldData(fieldName: "Last name",                profileFieldName: "last_name",                   type: .String, unitsTitle: nil))
         fields.append(ProfileFieldData(fieldName: "Sex",                      profileFieldName: "sex",                         type: .Int, unitsTitle: nil))

@@ -17,7 +17,6 @@ class ProfileModel: UserInfoModel {
         fields.append(self.loadPhotoField)
         fields.append(self.firstNameField)
         fields.append(self.lastNameField)
-        fields.append(self.emailField)
         fields.append(self.genderField)
         fields.append(self.ageField)
         fields.append(self.unitsSystemField)
@@ -27,7 +26,6 @@ class ProfileModel: UserInfoModel {
         if self.units == .Imperial {
             fields.append(self.heightInchesField)
         }
-
         return fields
     }
 
@@ -49,9 +47,7 @@ class ProfileModel: UserInfoModel {
             else if item.type == .Photo {
                 item.setNewValue(newValue: UserManager.sharedManager.userProfilePhoto())
             }
-            else if item.type == .Email {
-                item.setNewValue(newValue: UserManager.sharedManager.getUserId() as AnyObject?)
-            } else {
+           else {
                 if item.type == .HeightInches {
                     var cmHeightAsDouble = 0.0
                     if let heightInfo = profileInfo[heightField.name] as? String, let heightAsDouble = Double(heightInfo) {
@@ -112,7 +108,7 @@ class ProfileModel: UserInfoModel {
         }
     }
 
-    private let uneditableFields:[UserInfoFieldType] = [.Email, .FirstName, .LastName]
+    private let uneditableFields:[UserInfoFieldType] = [.FirstName, .LastName]
 
     func isItemEditable(item: ModelItem) -> Bool {
         return !uneditableFields.contains(item.type)

@@ -44,7 +44,7 @@ class RegisterModelDataSource: BaseDataSource {
         let cellType = field.type
 
         switch (cellType) {
-        case .Email, .Password, .FirstName, .LastName, .Weight, .Height, .HeightInches, .Age, .Other:
+        case .FirstName, .LastName, .Weight, .Height, .HeightInches, .Age, .Other:
             cell = inputCellForIndex(indexPath: indexPath as IndexPath, forField: field)
         case  .Gender, .Units:
             cell = checkSelectionCellForIndex(indexPath: indexPath as IndexPath, forField: field)
@@ -110,13 +110,7 @@ class RegisterModelDataSource: BaseDataSource {
         cell.nameLbl.font = RegisterFont
         cell.inputTxtField.isSecureTextEntry = false
 
-        if field.type == .Password {
-            cell.inputTxtField.isSecureTextEntry = true
-        }
-        else if field.type == .Email {
-            cell.inputTxtField.keyboardType = UIKeyboardType.emailAddress
-        }
-        else if field.type == .Age {
+         if field.type == .Age {
             cell.inputTxtField.keyboardType = UIKeyboardType.numberPad
         }
 
@@ -176,7 +170,7 @@ class RegisterModelDataSource: BaseDataSource {
         if field.type == .Gender {
             cell.setFirstTitle(firstTitle: Gender.Male.title)
             cell.setSecondTitle(firstTitle: Gender.Female.title)
-            cell.setSelectedItem(selectedItemIndex: model.gender.rawValue)
+  //          cell.setSelectedItem(selectedItemIndex: model.gender.rawValue)
         }
         else if field.type == .Units {
             cell.setFirstTitle(firstTitle: UnitsSystem.Imperial.title)

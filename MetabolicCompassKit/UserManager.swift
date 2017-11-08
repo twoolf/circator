@@ -401,12 +401,12 @@ public class UserManager {
     // MARK: - Stormpath-based account creation and authentication
 
     public func loginWithCompletion(completion: @escaping SvcResultCompletion) {
-        withUserPass (password: getPassword()) { (user, pass) in
+     //   withUserPass (password: getPassword()) { (user, pass) in
             let token = AuthSessionManager.shared.keychain.string(forKey: "access_token")
             MCRouter.updateAuthToken(token: token)
             let result = RequestResult()
             completion(result)
-        }
+   //     }
     }
 
     public func loginWithPush(profile: [String: AnyObject], completion: @escaping SvcResultCompletion) {

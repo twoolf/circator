@@ -11,7 +11,7 @@ import MetabolicCompassKit
 
 
 enum UserInfoFieldType: Int {
-    case Photo = 0, Email, Password, FirstName, LastName, Gender, Age, Units, Weight, Height, HeightInches, Other
+    case Photo = 0, FirstName, LastName, Gender, Age, Units, Weight, Height, HeightInches, Other
 }
 
 

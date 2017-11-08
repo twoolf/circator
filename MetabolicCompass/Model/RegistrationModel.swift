@@ -32,8 +32,6 @@ class RegistrationModel: UserInfoModel {
         var fields = [ModelItem]()
         
         fields.append(self.loadPhotoField)
-        fields.append(self.emailField)
-        fields.append(self.passwordField)
         fields.append(self.firstNameField)
         fields.append(self.lastNameField)
         fields.append(self.genderField)
@@ -53,7 +51,7 @@ class RegistrationModel: UserInfoModel {
         
         resetValidationResults()
         
-        return isPhotoValid() && isEmailValid() && isPasswordValid() && isFirstNameValid() && isLastNameValid()
+        return isPhotoValid() && isFirstNameValid() && isLastNameValid()
                 && isAgeValid() && isWeightValid() && isHeightValid() && (self.units == .Metric ? true : isHeightInchesValid())
     }
 

@@ -76,8 +76,6 @@ private let inputFontSize = ScreenManager.sharedInstance.profileInputFontSize()
 
         sender.isEnabled = false
         UINotifications.genericMsg(vc: self.navigationController!, msg: "Registering account...")
-        UserManager.sharedManager.overrideUserPass(user: userRegistrationModel.email, pass: userRegistrationModel.password)
-        
         let initialProfile = self.dataSource.model.profileItems()
         UserManager.sharedManager.registerAuth0(firstName: userRegistrationModel.firstName!,
                                                  lastName: userRegistrationModel.lastName!,
