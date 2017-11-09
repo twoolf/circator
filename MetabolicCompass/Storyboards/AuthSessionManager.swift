@@ -19,6 +19,7 @@ class AuthSessionManager {
     static let shared = AuthSessionManager()
     let keychain = A0SimpleKeychain(service: "Auth0")
     var profile: UserInfo?
+    var userProfile: Profile?
 
     private init () { }
 

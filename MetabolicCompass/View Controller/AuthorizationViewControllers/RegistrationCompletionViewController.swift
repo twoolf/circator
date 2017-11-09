@@ -24,11 +24,7 @@ class RegistrationCompletionViewController: BaseViewController {
         super.viewDidAppear(animated)
         UINotifications.genericMsg(vc: self, msg: "We've emailed you an account verification link. Please check your inbox.", pop: false, asNav: true, nohide: true)
     }
-    
-//    func preferredStatusBarStyle() -> UIStatusBarStyle {
-//       return .lightContent
-//    }
-    
+        
     @IBAction func noThanksAction(_ sender: UIButton) {
         // back
         self.dismiss(animated: true, completion: nil)

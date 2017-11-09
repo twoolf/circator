@@ -261,7 +261,8 @@ public class UserManager {
     }
     
     public func isItFirstLogin () -> Bool {
-        let firstLoginObject = Defaults.object(forKey: UserManager.firstLoginKey + "." + userId!)
+        if (userId == nil)  {return false}
+        guard let firstLoginObject = Defaults.object(forKey: UserManager.firstLoginKey + "." + userId!) else {return false}
         return firstLoginObject != nil
     }
     
@@ -451,6 +452,15 @@ public class UserManager {
     }
 
     public func register(firstName: String, lastName: String, consentPath: String, initialData: [String: String], completion: @escaping ((Account?, Bool, String?) -> Void)) {
+ 
+        
+        
+        
+        
+        
+        
+        
+
         withUserPass(password: getPassword()) { (user,pass) in
 //            let account = RegistrationModel(email: user, password: pass)
             let account = RegistrationForm(email: user, password: pass)
@@ -882,6 +892,8 @@ public class UserManager {
                     }
                 }
             }
+            //REMOVE AFTER TESTING!!!!!!!!!
+            pullSuccess = true
             let infoMsg = failedComponents.isEmpty ? "" : UMPullMultipleComponentsError(failedComponents)
             completion(RequestResult(ok: pullSuccess, message:infoMsg))
         }

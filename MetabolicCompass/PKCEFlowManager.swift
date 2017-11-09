@@ -12,38 +12,44 @@ import UIKit
 
 class PKCEFlowManager {
     static let shared = PKCEFlowManager()
-    var codeVerifier: String
-    var codeChallenge: String
     let redirectUri = "edu.jhu.cs.damsl.MetabolicCompass.app://metaboliccompass.auth0.com/ios/edu.jhu.cs.damsl.MetabolicCompass.app/callback"
     let audience = "https://api-dev.metaboliccompass.com"
     let scope = "openid profile offline_access"
     let responseType = "code"
     let clientId = "FIwBsUv2cxpj1xoX3sjIeOyzm0Lq2Rqk"
     let codeChallengeMethod = "S256"
+    var codeVerifier: String?
+    var codeChallenge: String?
     
-    private init? () {
+    private init? () {}
+
+    func generateCodeVerifierAndCodeChallenge() {
         var buffer_ver = [UInt8](repeating: 0, count: 32)
         _ = SecRandomCopyBytes(kSecRandomDefault, buffer_ver.count, &buffer_ver)
-       codeVerifier = Data(bytes: buffer_ver).base64EncodedString()
+        let verifier = Data(bytes: buffer_ver).base64EncodedString()
             .replacingOccurrences(of: "+", with: "-")
             .replacingOccurrences(of: "/", with: "")
             .replacingOccurrences(of: "=", with: "")
             .trimmingCharacters(in: .whitespaces)
+        codeVerifier = verifier
         
-        guard let data = codeVerifier.data(using: .utf8) else { return nil }
+        guard let data = codeVerifier?.data(using: .utf8) else { return }
         var buffer_chal = [UInt8](repeating: 0,  count: Int(CC_SHA256_DIGEST_LENGTH))
         data.withUnsafeBytes {
             _ = CC_SHA256($0, CC_LONG(data.count), &buffer_chal)
         }
         let hash = Data(bytes: buffer_chal)
-       codeChallenge = hash.base64EncodedString()
+        codeChallenge = hash.base64EncodedString()
             .replacingOccurrences(of: "+", with: "-")
             .replacingOccurrences(of: "/", with: "")
             .replacingOccurrences(of: "=", with: "")
             .trimmingCharacters(in: .whitespaces)
+        print(codeVerifier)
+        print(codeChallenge)
     }
     
     func receiveAutorizationCode(_ callback: @escaping (Data?) -> ()) {
+        generateCodeVerifierAndCodeChallenge()
         var components = URLComponents(string: "https://metaboliccompass.auth0.com/authorize")
         let audienceItem = URLQueryItem(name: "audience", value: audience)
         let scopeItem = URLQueryItem(name: "scope", value: scope)

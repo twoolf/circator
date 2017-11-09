@@ -109,14 +109,31 @@ class RegisterLoginLandingViewController: BaseViewController, UIWebViewDelegate 
     @objc public func auth0LoginPKCEFlowReceivingTokens(_ notification: NSNotification) {
         let authorizationCode = notification.userInfo?["authorization_code"] as? String
         PKCEFlowManager.shared?.receiveAccessToken(authorizationCode: authorizationCode!,  { [weak self] data in
-            guard let json = try? JSONSerialization.jsonObject(with: data!) as? [String: Any] else {return}
-            guard let accessToken = json!["access_token"] as? String else {return}
-            guard let refreshToken = json!["refresh_token"] as? String else {return}
-            guard let idToken = json!["id_token"] as! String? else {return}
+            guard let json = try? JSONSerialization.jsonObject(with: data!) as? [String: Any] else {
+                self?.auth0authorizationFailed()
+                return
+            }
+            guard let accessToken = json!["access_token"] as? String else {
+                self?.auth0authorizationFailed()
+                return
+            }
+            guard let refreshToken = json!["refresh_token"] as? String else {
+                self?.auth0authorizationFailed()
+                return
+            }
+            guard let idToken = json!["id_token"] as? String? else {
+                self?.auth0authorizationFailed()
+                return
+            }
             AuthSessionManager.shared.storeTokens(accessToken , refreshToken: refreshToken)
             self?.webView?.removeFromSuperview()
             self?.login()
         })
+    }
+    
+    func auth0authorizationFailed(){
+        webView?.removeFromSuperview()
+        //alert
     }
     
     func login() {

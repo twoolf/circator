@@ -22,7 +22,7 @@ import SimpleKeychain
 
 - note: for both signup and login; uses Stormpath for authentication
  */
- class LoginViewController: BaseViewController, UIWebViewDelegate {
+ class  LoginViewController: BaseViewController, UIWebViewDelegate {
 
     @IBOutlet weak var containerScrollView: UIScrollView!
 
@@ -45,10 +45,6 @@ import SimpleKeychain
         super.viewWillDisappear(animated)
         UIDevice.current.setValue(UIInterfaceOrientation.portrait.rawValue, forKey: "orientation")
     }
-
-/*    func preferredStatusBarStyle() -> UIStatusBarStyle {
-        return .lightContent;
-    } */
 
     override func viewDidLoad() {
         super.viewDidLoad()
