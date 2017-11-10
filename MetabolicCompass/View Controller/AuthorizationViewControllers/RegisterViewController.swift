@@ -136,13 +136,15 @@ override func viewDidDisappear(_ animated: Bool) {
             }
         })
         dataTask.resume()
-
+        //will be used for the first login with method
+        UserManager.sharedManager.setAsFirstLogin()
+        // save user profile image
+        UserManager.sharedManager.setUserProfilePhoto(photo: dataSource.model.photo)
+        self.performSegue(withIdentifier: self.segueRegistrationCompletionIdentifier, sender: nil)
     }
     //MARK: Actions
     @IBAction func registerAction(_ sender: UIButton) {
         startAction()
-        auth0LoginPKCEFlowReceivingAuthorizationCode()
- 
         guard let consentPath = ConsentManager.sharedManager.getConsentFilePath() else {
             UINotifications.noConsent(vc: self.navigationController!, pop: true, asNav: true)
             return
@@ -154,37 +156,43 @@ override func viewDidDisappear(_ animated: Bool) {
             return
         }
 
-        sender.isEnabled = false
+   //     sender.isEnabled = false
         UINotifications.genericMsg(vc: self.navigationController!, msg: "Registering account...")
         let initialProfile = self.dataSource.model.profileItems()
+        
+         auth0LoginPKCEFlowReceivingAuthorizationCode()
 //        UserManager.sharedManager.registerAuth0(firstName: userRegistrationModel.firstName!,
 //                                                 lastName: userRegistrationModel.lastName!,
 //                                              consentPath: consentPath,
 //                                              initialData: initialProfile)
         
-        UserManager.sharedManager.register(firstName: userRegistrationModel.firstName!,
-                                            lastName: userRegistrationModel.lastName!,
-                                         consentPath: consentPath,
-                                         initialData: initialProfile) { (_, error, errormsg) in
-            guard !error else {
-                // Return from this function to allow the user to try registering again with the 'Done' button.
-                // We reset the user/pass so that any view exit leaves the app without a registered user.
-                // Re-entering this function will use overrideUserPass above to re-establish the account being registered.
-                UserManager.sharedManager.resetFull()
-                if let user = self.stashedUserId {
-                    UserManager.sharedManager.setUserId(userId: user)
-                }
-                UINotifications.registrationError(vc: self.navigationController!, msg: errormsg)
-                Answers.logSignUp(withMethod: "SPR", success: false, customAttributes: nil)
-                sender.isEnabled = true
-                return
-            }
-            //will be used for the first login with method
-            UserManager.sharedManager.setAsFirstLogin()
-            // save user profile image
-            UserManager.sharedManager.setUserProfilePhoto(photo: userRegistrationModel.photo)
-            self.performSegue(withIdentifier: self.segueRegistrationCompletionIdentifier, sender: nil)
-        }
+        
+        
+        
+        
+//        UserManager.sharedManager.register(firstName: userRegistrationModel.firstName!,
+//                                            lastName: userRegistrationModel.lastName!,
+//                                         consentPath: consentPath,
+//                                         initialData: initialProfile) { (_, error, errormsg) in
+//            guard !error else {
+//                // Return from this function to allow the user to try registering again with the 'Done' button.
+//                // We reset the user/pass so that any view exit leaves the app without a registered user.
+//                // Re-entering this function will use overrideUserPass above to re-establish the account being registered.
+//                UserManager.sharedManager.resetFull()
+//                if let user = self.stashedUserId {
+//                    UserManager.sharedManager.setUserId(userId: user)
+//                }
+//                UINotifications.registrationError(vc: self.navigationController!, msg: errormsg)
+//                Answers.logSignUp(withMethod: "SPR", success: false, customAttributes: nil)
+//                sender.isEnabled = true
+//                return
+//            }
+//            //will be used for the first login with method
+//            UserManager.sharedManager.setAsFirstLogin()
+//            // save user profile image
+//            UserManager.sharedManager.setUserProfilePhoto(photo: userRegistrationModel.photo)
+//            self.performSegue(withIdentifier: self.segueRegistrationCompletionIdentifier, sender: nil)
+//        }
     }
 
     func doConsent() {

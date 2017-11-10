@@ -256,6 +256,7 @@ public class UserManager {
     }
     
     public func setAsFirstLogin () {
+        if (userId == nil)  {return}
         Defaults.set("1", forKey: UserManager.firstLoginKey + "." + userId!)
         Defaults.synchronize()
     }
@@ -279,12 +280,13 @@ public class UserManager {
             setUsualWhenToSleepTime(date: defaultSleepStart)
             setUsualWokeUpTime(date: defaultSleepEnd)
         }
-
+        if (userId == nil) {return}
         Defaults.set(data, forKey: UserManager.additionalInfoDataKey + "." + userId!)
         Defaults.synchronize()
     }
     
     public func getAdditionalProfileData () -> [String: AnyObject]? {
+        if userId == nil {return [:]}
         return Defaults.object(forKey: UserManager.additionalInfoDataKey + "." + userId!) as? [String: AnyObject]
     }
     
