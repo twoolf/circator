@@ -23,7 +23,8 @@ class ProfileModel: UserInfoModel {
         fields.append(self.weightField)
         fields.append(self.heightField)
 
-        if self.units == .Imperial {
+        let units: UnitsSystem! = UserManager.sharedManager.useMetricUnits() ? UnitsSystem.Metric : UnitsSystem.Imperial
+        if units == .Imperial {
             fields.append(self.heightInchesField)
         }
         return fields
@@ -33,7 +34,6 @@ class ProfileModel: UserInfoModel {
         let profileInfo = UserManager.sharedManager.getProfileCache()
 
         let units: UnitsSystem! = UserManager.sharedManager.useMetricUnits() ? UnitsSystem.Metric : UnitsSystem.Imperial
-
         for item in items {
             if item.type == .Units {
                 item.setNewValue(newValue: units.rawValue as AnyObject?)

@@ -246,14 +246,11 @@ class ProfileDataSource: BaseDataSource {
 
     // MARK: - Cells sizes
     private let spaceBetweenCellsInOneRow: CGFloat = 0
-    //private let cellHeight: CGFloat = 65
     private let cellHighHeight: CGFloat = 140
     private let smallCellWidthShift: CGFloat = 16
-
-//    private  var cellHeight: CGFloat =  ((self.collectionView?.frame.size.height ?? cellHighHeight) - cellHighHeight) * 0.15 ///round((UIScreen.mainScreen().bounds.height - 200.0)
-
     private  var _cellHeight: CGFloat = 0.0
-    var cellHeight: CGFloat{
+
+    var cellHeight: CGFloat {
         if (_cellHeight ?? 0.0) == 0.0{
             _cellHeight = ((self.collectionView?.frame.size.height ?? cellHighHeight) - cellHighHeight) * 0.16
         }
