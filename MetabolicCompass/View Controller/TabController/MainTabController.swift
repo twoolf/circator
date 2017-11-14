@@ -76,14 +76,14 @@ class MainTabController: UITabBarController, UITabBarControllerDelegate, ManageE
     }
     
     //MARK: UITabBarControllerDelegate
-    internal func tabBarController(_ tabBarController: UITabBarController, didSelect viewController: UIViewController) {
+     func tabBarController(_ tabBarController: UITabBarController, didSelect viewController: UIViewController) {
         
         if let controller = viewController as? DashboardTabControllerViewController {
             controller.rootNavigationItem = self.navigationItem
         }
     }
     
-    @nonobjc internal func tabBarController(_ tabBarController: UITabBarController, shouldSelectViewController viewController: UIViewController) -> Bool {
+     func tabBarController(_ tabBarController: UITabBarController, shouldSelect viewController: UIViewController) -> Bool {
         if viewController is UIPageViewController {
             return false
         }
@@ -271,14 +271,16 @@ class MainTabController: UITabBarController, UITabBarControllerDelegate, ManageE
                                      contentImage: UIImage(named: "button-dashboard-add-data"),
                                      highlightedContentImage: UIImage(named: "button-dashboard-add-data"))
 
-        self.manageEventMenu = ManageEventMenu(frame: view.bounds, startItem: startItem, items: items)
+        let manageEventMenu = ManageEventMenu(frame: view.bounds, startItem: startItem, items: items)
 
-        self.manageEventMenu!.delegate = self
-        self.manageEventMenu!.startPoint = CGPoint(view.frame.width/2, view.frame.size.height - 26.0)
-        self.manageEventMenu!.timeOffset = 0.0
-        self.manageEventMenu!.animationDuration = 0.15
-        self.manageEventMenu!.isHidden = !UserManager.sharedManager.hasAccount()
-        self.view.window?.rootViewController?.view.addSubview(self.manageEventMenu!)
+        manageEventMenu.delegate = self
+        manageEventMenu.startPoint = CGPoint(view.frame.width/2, view.frame.size.height - 26.0)
+        manageEventMenu.timeOffset = 0.0
+        manageEventMenu.animationDuration = 0.15
+   //     self.manageEventMenu!.isHidden = !UserManager.sharedManager.hasAccount()
+        manageEventMenu.isHidden = false
+        self.manageEventMenu = manageEventMenu
+        self.view.window?.rootViewController?.view.addSubview(manageEventMenu)
     }
 
     // MARK :- ManageEventMenuDelegate implementation
