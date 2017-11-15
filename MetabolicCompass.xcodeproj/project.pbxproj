@@ -124,6 +124,7 @@
 		8147C0F41F9DE5FE00D69024 /* ExtensionDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8147C0F31F9DE5FE00D69024 /* ExtensionDelegate.swift */; };
 		8147C0F61F9DE5FE00D69024 /* NotificationController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8147C0F51F9DE5FE00D69024 /* NotificationController.swift */; };
 		8147C0FD1F9DE5FE00D69024 /* MetabolicCompassWatch.app in Embed Watch Content */ = {isa = PBXBuildFile; fileRef = 8147C0E01F9DE5FE00D69024 /* MetabolicCompassWatch.app */; };
+		818481C61FBC2CC50067B9AD /* HealthKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 818481C51FBC2CC50067B9AD /* HealthKit.framework */; };
 		81948BB31F9F33080067DED6 /* IntroInterfaceController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 81948BB21F9F33080067DED6 /* IntroInterfaceController.swift */; };
 		81948BB61F9F3B280067DED6 /* MetricsStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 81948BB41F9F3B280067DED6 /* MetricsStore.swift */; };
 		81948BB71F9F3B280067DED6 /* FastingDataModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 81948BB51F9F3B280067DED6 /* FastingDataModel.swift */; };
@@ -465,6 +466,8 @@
 		8147C0F51F9DE5FE00D69024 /* NotificationController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NotificationController.swift; sourceTree = "<group>"; };
 		8147C0F91F9DE5FE00D69024 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		8147C0FA1F9DE5FE00D69024 /* PushNotificationPayload.apns */ = {isa = PBXFileReference; lastKnownFileType = text; path = PushNotificationPayload.apns; sourceTree = "<group>"; };
+		818481C41FBC2CC50067B9AD /* MetabolicCompassWatch Extension.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = "MetabolicCompassWatch Extension.entitlements"; sourceTree = "<group>"; };
+		818481C51FBC2CC50067B9AD /* HealthKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = HealthKit.framework; path = Platforms/WatchOS.platform/Developer/SDKs/WatchOS4.1.sdk/System/Library/Frameworks/HealthKit.framework; sourceTree = DEVELOPER_DIR; };
 		81948BB21F9F33080067DED6 /* IntroInterfaceController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = IntroInterfaceController.swift; sourceTree = "<group>"; };
 		81948BB41F9F3B280067DED6 /* MetricsStore.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MetricsStore.swift; sourceTree = "<group>"; };
 		81948BB51F9F3B280067DED6 /* FastingDataModel.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FastingDataModel.swift; sourceTree = "<group>"; };
@@ -655,6 +658,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				E9E66B2B919D5C40C5D78903 /* Pods_MetabolicCompassWatch_Extension.framework in Frameworks */,
+				818481C61FBC2CC50067B9AD /* HealthKit.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -844,6 +848,7 @@
 		8147C0F01F9DE5FE00D69024 /* MetabolicCompassWatch Extension */ = {
 			isa = PBXGroup;
 			children = (
+				818481C41FBC2CC50067B9AD /* MetabolicCompassWatch Extension.entitlements */,
 				3FA4C2941FA2059C001F467F /* ComplicationController.swift */,
 				3FA4C28C1FA0CB8E001F467F /* ExerciseEndTimeController.swift */,
 				3FA4C28D1FA0CB8F001F467F /* ExerciseInterfaceController.swift */,
@@ -1168,6 +1173,7 @@
 		EA5EDF2A50FCED6ADBAA03DD /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				818481C51FBC2CC50067B9AD /* HealthKit.framework */,
 				543111DF1ED9C39700E448AC /* HealthKit.framework */,
 				78E5219F1C25687900FAE56A /* Pods.framework */,
 				7859783E1C1BC418008377F9 /* HealthKit.framework */,
@@ -1475,6 +1481,11 @@
 						CreatedOnToolsVersion = 9.0;
 						DevelopmentTeam = E4SL9A9Z96;
 						ProvisioningStyle = Automatic;
+						SystemCapabilities = {
+							com.apple.HealthKit.watchos = {
+								enabled = 1;
+							};
+						};
 					};
 					F42F5B311BE1FD1E00195490 = {
 						CreatedOnToolsVersion = 7.1;
@@ -2585,6 +2596,7 @@
 				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
 				CLANG_WARN_STRICT_PROTOTYPES = YES;
 				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CODE_SIGN_ENTITLEMENTS = "MetabolicCompassWatch Extension/MetabolicCompassWatch Extension.entitlements";
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_TEAM = E4SL9A9Z96;
 				GCC_C_LANGUAGE_STANDARD = gnu11;
@@ -2617,6 +2629,7 @@
 				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
 				CLANG_WARN_STRICT_PROTOTYPES = YES;
 				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CODE_SIGN_ENTITLEMENTS = "MetabolicCompassWatch Extension/MetabolicCompassWatch Extension.entitlements";
 				CODE_SIGN_STYLE = Automatic;
 				DEBUG_INFORMATION_FORMAT = dwarf;
 				DEVELOPMENT_TEAM = E4SL9A9Z96;
@@ -2657,6 +2670,7 @@
 				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
 				CLANG_WARN_STRICT_PROTOTYPES = YES;
 				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CODE_SIGN_ENTITLEMENTS = "MetabolicCompassWatch Extension/MetabolicCompassWatch Extension.entitlements";
 				CODE_SIGN_STYLE = Automatic;
 				DEBUG_INFORMATION_FORMAT = dwarf;
 				DEVELOPMENT_TEAM = E4SL9A9Z96;
