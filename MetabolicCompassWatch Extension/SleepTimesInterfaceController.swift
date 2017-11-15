@@ -99,9 +99,11 @@ class SleepTimesInterfaceController: WKInterfaceController {
                                       start: beginDate,
                                       end: closeDate,
                                       metadata:["Apple Watch Sleep Entry":"source"])
-        let healthKitStore:HKHealthStore = HKHealthStore()
-        healthKitStore.save(sample) { success, error in
-        }
+        let healthKitStore: HKHealthStore = HKHealthStore()
+        healthKitStore.save(sample, withCompletion: {(success, error) in
+            print (success)
+            print (error)
+        })
     }
     
     @IBAction func onButtonSave() {

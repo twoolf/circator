@@ -105,7 +105,7 @@ class WaterStartTimeController: WKInterfaceController {
                                       start: beginDate,
                                       end: closeDate,
                                       metadata:["Apple Watch" : "water entry"])
-        let healthKitStore:HKHealthStore = HKHealthStore()
+        let healthKitStore: HKHealthStore = HKHealthStore()
             healthKitStore.save(sample, withCompletion: {(success, error) in
                 print (success)
                 print (error)

@@ -109,9 +109,10 @@ class ExerciseStartTimeController: WKInterfaceController {
                                 device: HKDevice.local(),
                                 metadata: [mealTypebyButton.mealType:"source"])
         let healthKitStore:HKHealthStore = HKHealthStore()
-        healthKitStore.save(workout) { success, error in
-        }
-        
+        healthKitStore.save(workout, withCompletion: {(success, error) in
+            print (success)
+            print (error)
+        })
     }
     
     @IBAction func onExerciseStartPicker(value: Int) {
