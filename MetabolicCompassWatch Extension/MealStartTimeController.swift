@@ -140,9 +140,11 @@ class MealStartTimeController: WKInterfaceController {
                                 totalDistance: HKQuantity(unit:HKUnit.meter(), doubleValue:0.0),
                                 device: HKDevice.local(),
                                 metadata: [mealTypebyButton.mealType:"source"])
-        let healthKitStore:HKHealthStore = HKHealthStore()
-        healthKitStore.save(workout) { success, error in
-        }
+        let healthKitStore: HKHealthStore = HKHealthStore()
+        healthKitStore.save(workout, withCompletion: {(success, error) in
+            print (success)
+            print (error)
+        })
     }
     
     @IBAction func onMealEntry(value: Int) {
