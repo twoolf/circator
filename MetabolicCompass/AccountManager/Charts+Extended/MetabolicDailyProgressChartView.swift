@@ -116,44 +116,28 @@ class MetabolicDailyProgressChartView : HorizontalBarChartView, DailyChartModelP
     }
 
     func updateChartData (animate: Bool = true, valuesAndColors: [Date: [(Double, UIColor)]]) {
-        let values = valuesAndColors.flatMap{$0.value}
+
+        let values = valuesAndColors.flatMap{$0.1}.map{$0.0}
         var entries = [BarChartDataEntry]()
         for (index, value) in values.enumerated() {
-            let entry = BarChartDataEntry.init(x: Double(index), y: value.0)
+            let entry = BarChartDataEntry.init(x: Double(index), y: value)
             entries.append(entry)
         }
-
         let set = BarChartDataSet.init(values: entries, label: "")
-        
-        set.colors = values.map{$0.1}
+        set.colors = valuesAndColors.flatMap{$0.1}.map{$0.1}
         let data = BarChartData.init(dataSets: [set])
-        //days
-//        let days = ["", "", "", "", "", "", ""]
- //       var _: [BarChartDataSet] = []
- //       for (_, _) in valuesAndColors.sorted(by: { $0.0.0 < $0.1.0 }).enumerated() {
-//            let entry = BarChartDataEntry.init(values: daysData.1.map { $0.0 }, xIndex: index)
-//            let set = BarChartDataSet.init(values: [entry], label: nil)
-
- //            set. = 55
-//            set.drawValuesEnabled = false
-//            set.colors = daysData.1.map { $0.1 }
-//            dataSetArray.append(set)
-//        }
-//        let data = BarChartData.init(xVals: days, dataSets: dataSetArray)
-
         self.data = data
 
         let labelsInHours: Int = 2
         let maxZoomWidthInHours: CGFloat = 2.0
-        let _: CGFloat = 24.0 / maxZoomWidthInHours
+        let zoomFactor: Double = Double (24.0 / maxZoomWidthInHours)
 
         let rightAxis = self.rightAxis
         rightAxis.axisMinimum = max(0.0, self.data!.yMin - 1.0)
         rightAxis.axisMaximum = min(24.0, self.data!.yMax + 1.0)
         rightAxis.labelCount = Int(rightAxis.axisMaximum - rightAxis.axisMinimum) / labelsInHours
         if animate { self.animate(yAxisDuration: 1.0) }
-
-//        self.setVisibleXRange(minXRange: CGFloat(self.xAxis.axisRange/zoomFactor), maxXRange: CGFloat(self.xAxis.axisRange))
+        self.setVisibleXRange(minXRange: Double (self.xAxis.axisRange/zoomFactor), maxXRange: Double(self.xAxis.axisRange))
 }
 
     @objc func toggleColors() {
