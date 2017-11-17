@@ -1,3 +1,4 @@
+
 //
 //  MetabolicDailyProgressChartView.swift
 //  MetabolicCompass
@@ -117,15 +118,28 @@ class MetabolicDailyProgressChartView : HorizontalBarChartView, DailyChartModelP
 
     func updateChartData (animate: Bool = true, valuesAndColors: [Date: [(Double, UIColor)]]) {
 
-        let values = valuesAndColors.flatMap{$0.1}.map{$0.0}
-        var entries = [BarChartDataEntry]()
-        for (index, value) in values.enumerated() {
-            let entry = BarChartDataEntry.init(x: Double(index), y: value)
-            entries.append(entry)
+        var dataSetArray: [BarChartDataSet] = []
+        var i = 0
+        valuesAndColors.forEach { date, tuples in
+            i = i+1
+            var values: [Double] = []
+            var colors: [UIColor] = []
+
+            tuples.forEach { value, color in
+                values.append(value)
+                colors.append(color)
+            }
+            var entries: [BarChartDataEntry] = []
+            for (index, value) in values.enumerated(){
+               let entry = BarChartDataEntry.init(x: Double(i), y: value)
+               entries.append(entry)
+            }
+            let set = BarChartDataSet.init(values: entries, label: "")
+            set.drawValuesEnabled = false
+            set.colors = colors
+            dataSetArray.append(set)
         }
-        let set = BarChartDataSet.init(values: entries, label: "")
-        set.colors = valuesAndColors.flatMap{$0.1}.map{$0.1}
-        let data = BarChartData.init(dataSets: [set])
+        let data = BarChartData.init(dataSets: dataSetArray)
         self.data = data
 
         let labelsInHours: Int = 2
