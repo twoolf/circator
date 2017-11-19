@@ -124,6 +124,9 @@ class AppDelegate: UIResponder, UIApplicationDelegate, WCSessionDelegate
         NotificationCenter.default.addObserver(self, selector: #selector(self.errorNotification), name: NSNotification.Name(rawValue: MCRemoteErrorNotification), object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(self.errorNotification), name: NSNotification.Name(rawValue: MCRemoteErrorNotification), object: nil)
         
+        let locationManager = LocationManager.shared
+        locationManager.requestWhenInUseAuthorization()
+        
         return launchSuccess
     }
     
@@ -246,9 +249,9 @@ class AppDelegate: UIResponder, UIApplicationDelegate, WCSessionDelegate
     // Auto0
    public func application(_ app: UIApplication, open url: URL, options: [UIApplicationOpenURLOptionsKey : Any]) -> Bool {
         guard let params = URLComponents.init(url: url, resolvingAgainstBaseURL: true) else {return false}
-        let autorizationCodeQueryItem = params.queryItems?.last
-        let autorizationCode = autorizationCodeQueryItem?.value
-        NotificationCenter.default.post(name: NSNotification.Name("AuthorizationCodeReceived"), object: nil, userInfo: ["authorization_code": autorizationCode])
+        let authorizationCodeQueryItem = params.queryItems?.last
+        let authorizationCode = authorizationCodeQueryItem?.value
+        NotificationCenter.default.post(name: NSNotification.Name("AuthorizationCodeReceived"), object: nil, userInfo: ["authorization_code": authorizationCode])
         return Auth0.resumeAuth(url, options: options)
     }
 }

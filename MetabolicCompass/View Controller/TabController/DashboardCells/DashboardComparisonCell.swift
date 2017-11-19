@@ -55,7 +55,7 @@ class DashboardComparisonCell: UITableViewCell {
     }
 
     /// loading both User and Population samples
-    func setUserData(_ userData: [MCSample], populationAverageData: [MCSample], stalePopulation: Bool = false) {
+    func setUserData(_ userData: [MCSample], populationAverageData: [MCSample], stalePopulation: Bool = true) {
 //    func setUserData(userData: [MCSample], populationAverageData: [MCSample], stalePopulation: Bool = true) {
         loadUserSamples(results: userData)
         loadPopSamples(results: populationAverageData, stale: stalePopulation)

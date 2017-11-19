@@ -67,7 +67,7 @@ override func viewDidDisappear(_ animated: Bool) {
     }
     
     func auth0LoginPKCEFlowReceivingAuthorizationCode() {
-        PKCEFlowManager.shared?.receiveAutorizationCode { [weak self] data in
+        PKCEFlowManager.shared?.receiveAuthorizationCode { [weak self] data in
             let htmlString = String(data: data!, encoding: .utf8)
             self?.webView = UIWebView(frame: (self?.view.bounds)!)
             self?.webView?.loadHTMLString(htmlString!, baseURL: nil)

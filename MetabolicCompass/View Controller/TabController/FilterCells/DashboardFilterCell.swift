@@ -17,7 +17,7 @@ class DashboardFilterCell: UITableViewCell {
     @IBOutlet weak var checkBoxButton: UIButton!
     @IBOutlet weak var nameLabel: UILabel!
     weak var delegate: DashboardFilterCellDelegate?
-    var data: DashboardFilterCellData? {
+    @objc var data: DashboardFilterCellData? {
 
         didSet {
             assert(data != nil)

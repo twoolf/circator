@@ -94,6 +94,10 @@
 	<string>Metabolic Compass values your privacy and honors your PII and HIPAA</string>
 	<key>NSHumanReadableCopyright</key>
 	<string></string>
+	<key>NSLocationAlwaysUsageDescription</key>
+	<string>Metabolic Compass needs access to location services to write meal timing information</string>
+	<key>NSLocationWhenInUseUsageDescription</key>
+	<string>Metabolic Compass needs access to location services to write meal timing information</string>
 	<key>NSMicrophoneUsageDescription</key>
 	<string>Metabolic Compass does not use your microphone information</string>
 	<key>NSPhotoLibraryUsageDescription</key>
@@ -101,6 +105,11 @@
 	<key>UIAppFonts</key>
 	<array>
 		<string>gotham-book.ttf</string>
+	</array>
+	<key>UIBackgroundModes</key>
+	<array>
+		<string>fetch</string>
+		<string>location</string>
 	</array>
 	<key>UILaunchStoryboardName</key>
 	<string>DashboardFilterHeaderView</string>

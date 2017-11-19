@@ -18,8 +18,8 @@ private let apiPathComponent = "/api/v1"
 private let srvURL = NSURL(string: "https://api-dev.metaboliccompass.com")!
 private let wwwURL = NSURL(string: "https://www-dev.metaboliccompass.com")!
 #else
-private let srvURL = NSURL(string: "https://api.metaboliccompass.com")!
-private let wwwURL = NSURL(string: "https://www.metaboliccompass.com")!
+private let srvURL = NSURL(string: "https://api-dev.metaboliccompass.com")!
+private let wwwURL = NSURL(string: "https://www-dev.metaboliccompass.com")!
 #endif
 private let auth0URL = NSURL(string: "https://metaboliccompass.auth0.com")!
 

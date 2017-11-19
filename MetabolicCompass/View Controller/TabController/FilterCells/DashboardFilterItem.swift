@@ -10,7 +10,7 @@ import UIKit
 
 class DashboardFilterItem: NSObject {
     var title = ""
-    var items: [DashboardFilterCellData] = []
+    @objc var items: [DashboardFilterCellData] = []
 
     init(title: String, items: [DashboardFilterCellData]) {
         super.init()

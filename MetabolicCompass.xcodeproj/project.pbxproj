@@ -60,8 +60,10 @@
 		54205EC31E76266F003E3EC4 /* RegistrationCompletionViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 54205EBE1E76266F003E3EC4 /* RegistrationCompletionViewController.swift */; };
 		54205EC41E76F986003E3EC4 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7881A3E01BAF3B3E00ECB3C6 /* AppDelegate.swift */; };
 		545AB0FB1E8014C0006C45F6 /* LaunchImage_320by568@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 545AB0FA1E8014C0006C45F6 /* LaunchImage_320by568@2x.png */; };
+		547439691FC0929D00480B35 /* MapKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 547439681FC0929D00480B35 /* MapKit.framework */; };
 		5492C4131EC7610400E1AADB /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 5492C4111EC75F2E00E1AADB /* LaunchScreen.storyboard */; };
 		5492C4141EC7610A00E1AADB /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 5492C4111EC75F2E00E1AADB /* LaunchScreen.storyboard */; };
+		54CCACEB1FC076A0008FCAD8 /* LocationManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 54CCACEA1FC076A0008FCAD8 /* LocationManager.swift */; };
 		59B790B37AF560B8769AFDFD /* Pods_MetabolicCompass.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C0D2D970472A7AF509ED116B /* Pods_MetabolicCompass.framework */; };
 		767C7B9BC932F4CD2F635254 /* Pods_MetabolicCompassKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 9E2EC6EA764DDAA842127BE7 /* Pods_MetabolicCompassKit.framework */; };
 		78076E0B1DDE973700B6FB50 /* DialViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 78076E0A1DDE973700B6FB50 /* DialViewController.swift */; };
@@ -348,7 +350,9 @@
 		54205EC51E772631003E3EC4 /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		543111DF1ED9C39700E448AC /* HealthKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = HealthKit.framework; path = Platforms/WatchOS.platform/Developer/SDKs/WatchOS3.2.sdk/System/Library/Frameworks/HealthKit.framework; sourceTree = DEVELOPER_DIR; };
 		545AB0FA1E8014C0006C45F6 /* LaunchImage_320by568@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "LaunchImage_320by568@2x.png"; sourceTree = "<group>"; };
+		547439681FC0929D00480B35 /* MapKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = MapKit.framework; path = System/Library/Frameworks/MapKit.framework; sourceTree = SDKROOT; };
 		5492C4111EC75F2E00E1AADB /* LaunchScreen.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; path = LaunchScreen.storyboard; sourceTree = "<group>"; };
+		54CCACEA1FC076A0008FCAD8 /* LocationManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocationManager.swift; sourceTree = "<group>"; };
 		5DA66FB75347691C39718878 /* Pods-MetabolicCompass.debug-dev.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-MetabolicCompass.debug-dev.xcconfig"; path = "Pods/Target Support Files/Pods-MetabolicCompass/Pods-MetabolicCompass.debug-dev.xcconfig"; sourceTree = "<group>"; };
 		6813A7D41E9275BFE996DC67 /* Pods-MetabolicCompass.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-MetabolicCompass.release.xcconfig"; path = "Pods/Target Support Files/Pods-MetabolicCompass/Pods-MetabolicCompass.release.xcconfig"; sourceTree = "<group>"; };
 		78076E0A1DDE973700B6FB50 /* DialViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DialViewController.swift; sourceTree = "<group>"; };
@@ -584,6 +588,7 @@
 			files = (
 				F42F5B391BE1FD1E00195490 /* MetabolicCompassKit.framework in Frameworks */,
 				7859783F1C1BC418008377F9 /* HealthKit.framework in Frameworks */,
+				547439691FC0929D00480B35 /* MapKit.framework in Frameworks */,
 				59B790B37AF560B8769AFDFD /* Pods_MetabolicCompass.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -730,6 +735,7 @@
 				E74A89771CE3260F0056A2D2 /* AccountManager */,
 				54205E5E1E76213B003E3EC4 /* AddEventMenu */,
 				7881A3E01BAF3B3E00ECB3C6 /* AppDelegate.swift */,
+				54CCACEA1FC076A0008FCAD8 /* LocationManager.swift */,
 				54205E6D1E762162003E3EC4 /* Charts+Extended */,
 				F515CFC91CECC88000318CB6 /* CommonUI */,
 				E74A897A1CE338BA0056A2D2 /* ContentManager */,
@@ -1071,6 +1077,7 @@
 		EA5EDF2A50FCED6ADBAA03DD /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				547439681FC0929D00480B35 /* MapKit.framework */,
 				543111DF1ED9C39700E448AC /* HealthKit.framework */,
 				78E5219F1C25687900FAE56A /* Pods.framework */,
 				7859783E1C1BC418008377F9 /* HealthKit.framework */,
@@ -1365,10 +1372,16 @@
 							com.apple.ApplicationGroups.iOS = {
 								enabled = 1;
 							};
+							com.apple.BackgroundModes = {
+								enabled = 1;
+							};
 							com.apple.HealthKit = {
 								enabled = 1;
 							};
 							com.apple.Keychain = {
+								enabled = 1;
+							};
+							com.apple.Maps.iOS = {
 								enabled = 1;
 							};
 							com.apple.Push = {
@@ -1764,6 +1777,7 @@
 				54205EC11E76266F003E3EC4 /* LoginViewController.swift in Sources */,
 				9580D3A81CEB29DC0074178D /* AppLabel.swift in Sources */,
 				95C0B9A81CD25860006E523F /* BaseDataSource.swift in Sources */,
+				54CCACEB1FC076A0008FCAD8 /* LocationManager.swift in Sources */,
 				84EF0EB71D05710D00A25760 /* TypeTableViewCell.swift in Sources */,
 				786818881D33044A00CAE4ED /* BalanceBarView.swift in Sources */,
 				E7591D0E1CE1C7DE00DCBA39 /* LPRTableView.swift in Sources */,
@@ -1951,12 +1965,13 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 11.1;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				ONLY_ACTIVE_ARCH = YES;
 				PROVISIONING_PROFILE = "$(APP_UDID)";
 				SDKROOT = iphoneos;
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+				SWIFT_SWIFT3_OBJC_INFERENCE = On;
 				SWIFT_VERSION = 3.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
 				VALIDATE_PRODUCT = YES;
@@ -1984,7 +1999,7 @@
 				GENERATE_PROFILING_CODE = YES;
 				INFOPLIST_FILE = MetabolicCompassKit/Info.plist;
 				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
-				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 11.1;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = edu.jhu.cs.damsl.MetabolicCompass.kit;
 				PRODUCT_NAME = MetabolicCompassKit;
@@ -2020,7 +2035,7 @@
 				);
 				GCC_WARN_ABOUT_DEPRECATED_FUNCTIONS = NO;
 				INFOPLIST_FILE = MetabolicCompass/Info.plist;
-				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 11.1;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = edu.jhu.cs.damsl.MetabolicCompass.app;
 				PRODUCT_NAME = MetabolicCompass;
@@ -2113,11 +2128,12 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 11.1;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				PROVISIONING_PROFILE = "$(APP_UDID)";
 				SDKROOT = iphoneos;
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+				SWIFT_SWIFT3_OBJC_INFERENCE = On;
 				SWIFT_VERSION = 3.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
 				VALIDATE_PRODUCT = YES;
@@ -2139,7 +2155,7 @@
 				GCC_OPTIMIZATION_LEVEL = s;
 				GCC_WARN_ABOUT_DEPRECATED_FUNCTIONS = NO;
 				INFOPLIST_FILE = MetabolicCompass/Info.plist;
-				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 11.1;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = edu.jhu.cs.damsl.MetabolicCompass.app;
 				PRODUCT_NAME = MetabolicCompass;
@@ -2231,13 +2247,14 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 11.1;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				ONLY_ACTIVE_ARCH = YES;
 				OTHER_SWIFT_FLAGS = "-DDEVSERVICE";
 				PROVISIONING_PROFILE = "$(APP_UDID)";
 				SDKROOT = iphoneos;
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+				SWIFT_SWIFT3_OBJC_INFERENCE = On;
 				SWIFT_VERSION = 3.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
 				VALIDATE_PRODUCT = YES;
@@ -2265,7 +2282,7 @@
 				GENERATE_PROFILING_CODE = YES;
 				INFOPLIST_FILE = MetabolicCompassKit/Info.plist;
 				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
-				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 11.1;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = edu.jhu.cs.damsl.MetabolicCompass.kit;
 				PRODUCT_NAME = MetabolicCompassKit;
@@ -2301,7 +2318,7 @@
 				);
 				GCC_WARN_ABOUT_DEPRECATED_FUNCTIONS = NO;
 				INFOPLIST_FILE = MetabolicCompass/Info.plist;
-				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 11.1;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = edu.jhu.cs.damsl.MetabolicCompass.app;
 				PRODUCT_NAME = MetabolicCompass;
@@ -2379,7 +2396,7 @@
 				GENERATE_PROFILING_CODE = NO;
 				INFOPLIST_FILE = MetabolicCompassKit/Info.plist;
 				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
-				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 11.1;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = edu.jhu.cs.damsl.MetabolicCompass.kit;
 				PRODUCT_NAME = MetabolicCompassKit;

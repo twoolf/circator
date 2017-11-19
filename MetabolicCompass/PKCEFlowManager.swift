@@ -48,7 +48,7 @@ class PKCEFlowManager {
         print(codeChallenge)
     }
     
-    func receiveAutorizationCode(_ callback: @escaping (Data?) -> ()) {
+    func receiveAuthorizationCode(_ callback: @escaping (Data?) -> ()) {
         generateCodeVerifierAndCodeChallenge()
         var components = URLComponents(string: "https://metaboliccompass.auth0.com/authorize")
         let audienceItem = URLQueryItem(name: "audience", value: audience)
