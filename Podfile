@@ -2,7 +2,7 @@ use_frameworks!
 def shared_pods
 
     pod 'Auth0', '~> 1.0'
-    pod 'AKPickerView-Swift', :git => 'https://github.com/Akkyie/AKPickerView-Swift.git' 
+    pod 'AKPickerView-Swift', :git => 'https://github.com/Akkyie/AKPickerView-Swift.git'
     pod 'Alamofire' 
     pod 'ARSLineProgress' 
     pod 'AsyncKit' 
@@ -66,64 +66,34 @@ end
 #end
 
 
-# Force swift 3.0 config
-post_install do |installer|
-  installer.pods_project.targets.each do |target|
-      target.build_configurations.each do |config|
-          config.build_settings['SWIFT_VERSION'] = '3.2'
-      end
+# Force swift version config
 
-     if target.name == 'Charts' 
+post_install do |installer|
+  
+    swift4Targets = ['Charts', 'SwiftyBeaver', 'CryptoSwift', 'SwiftDate’ , ’SwiftMessages’ , ’FileKit’, ’Pages’, ’Former’]
+
+    installer.pods_project.targets.each do |target|
+
+	target.build_configurations.each do |config|
+          config.build_settings['SWIFT_VERSION'] = '3.2'
+     	 end
+
+
+        if swift4Targets.include? target.name
             target.build_configurations.each do |config|
                 config.build_settings['SWIFT_VERSION'] = '4.0'
             end
         end
 
-    if target.name == ’SwiftyBeaver’ 
-        target.build_configurations.each do |config|
-           config.build_settings['SWIFT_VERSION'] = '4.0'
+        if target.name == ’ResearchKit’
+            target.build_configurations.each do |config|
+                config.build_settings['GCC_NO_COMMON_BLOCKS'] = 'NO'
+            end
         end
     end
-
-    if target.name == ’CryptoSwift’ 
-        target.build_configurations.each do |config|
-           config.build_settings['SWIFT_VERSION'] = '4.0'
-        end
-    end
-
-    if target.name == ’SwiftDate’ 
-        target.build_configurations.each do |config|
-           config.build_settings['SWIFT_VERSION'] = '4.0'
-        end
-    end
-
-    if target.name == ’SwiftMessages’ 
-        target.build_configurations.each do |config|
-           config.build_settings['SWIFT_VERSION'] = '4.0'
-        end
-    end
-
-    if target.name == ’FileKit’ 
-        target.build_configurations.each do |config|
-           config.build_settings['SWIFT_VERSION'] = '4.0'        
-	end
-   end
-
-   if target.name == ’Pages’ 
-        target.build_configurations.each do |config|
-           config.build_settings['SWIFT_VERSION'] = '4.0'        
-	end
-   end
-
-
-   if target.name == ’ResearchKit’ 
-        target.build_configurations.each do |config|
-           config.build_settings['GCC_NO_COMMON_BLOCKS'] = 'NO'
-        end
-    end
-
-  end
 end
+
+
 
 
 
