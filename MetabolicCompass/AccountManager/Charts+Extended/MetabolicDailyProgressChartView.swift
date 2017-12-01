@@ -140,18 +140,13 @@ class MetabolicDailyProgressChartView : HorizontalBarChartView, DailyChartModelP
             dataSetArray.append(set)
         }
         let data = BarChartData.init(dataSets: dataSetArray)
+        data.groupWidth(groupSpace: 75, barSpace: 55)
         self.data = data
 
-        let labelsInHours: Int = 2
-        let maxZoomWidthInHours: CGFloat = 2.0
-        let zoomFactor: Double = Double (24.0 / maxZoomWidthInHours)
-
-        let rightAxis = self.rightAxis
         rightAxis.axisMinimum = max(0.0, self.data!.yMin - 1.0)
         rightAxis.axisMaximum = min(24.0, self.data!.yMax + 1.0)
-        rightAxis.labelCount = Int(rightAxis.axisMaximum - rightAxis.axisMinimum) / labelsInHours
-        if animate { self.animate(yAxisDuration: 1.0) }
-        self.setVisibleXRange(minXRange: Double (self.xAxis.axisRange/zoomFactor), maxXRange: Double(self.xAxis.axisRange))
+        rightAxis.labelCount = Int(rightAxis.axisMaximum - rightAxis.axisMinimum)
+        self.animate(yAxisDuration: 1.0)
 }
 
     @objc func toggleColors() {
