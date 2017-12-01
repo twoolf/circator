@@ -162,14 +162,6 @@ open class DailyChartModel : NSObject, UITableViewDataSource {
             }
         }
         return lastSevenDays.reversed()
-//        var date = Date()
-//        lastSevenDays.append(date)
-//        for _ in 1 ... 6 {
-//
-//            date = cal.date(byAdding: .day, value: -1, to: date)!
-//            lastSevenDays.append(date)
-//        }
-//        return lastSevenDays.reversed()
     }
 
     open class func getChartDateRangeStrings(endDate: Date? = nil) -> [String] {
@@ -217,85 +209,86 @@ open class DailyChartModel : NSObject, UITableViewDataSource {
     }
 
     public func getDataForDay(day: Date?, lastDay:Bool) {
-        let startDay = day == nil ? self.daysArray.first! : day!
-        let dateIndex = self.daysArray.index(of: startDay)
-        let endOfDay = self.endOfDay(startDay)
-        var dayEvents:[Double] = []
-        var dayColors:[UIColor] = []
-        var previousEventType: CircadianEvent?
-        var previousEventDate: Date? = nil
-        MCHealthManager.sharedManager.fetchCircadianEventIntervals(startDay, endDate: endOfDay, completion: { (intervals, error) in
-            guard error == nil else {
-                log.error("Failed to fetch circadian events: \(error)")
-                return
-            }
-            if intervals.isEmpty {//we have no data to display
-                //we will mark it as fasting and put 24h
-                dayEvents.append(24.0)
-                dayColors.append(UIColor.clear)
-            } else {
-                for event in intervals {
-                    let (eventDate, eventType) = event //assign tuple values to vars
-                    if endOfDay.day < eventDate.day {
-                        print(previousEventDate)
-                        let endEventDate = self.endOfDay(previousEventDate!)
-                        let eventDuration = self.getDifferenceForEvents(previousEventDate, currentEventDate: endEventDate)
-                        //                        print("\(eventType) - \(eventDuration)")
-                        dayEvents.append(eventDuration)
-                        dayColors.append(self.getColorForEventType(eventType))
-                        break
-                    }
-                    if previousEventDate != nil && eventType == previousEventType {//we alredy have a prev event and can calculate how match time it took
-                        let eventDuration = self.getDifferenceForEvents(previousEventDate, currentEventDate: eventDate)
-                        //                        print("\(eventType) - \(eventDuration)")
-                        dayEvents.append(eventDuration)
-                        dayColors.append(self.getColorForEventType(eventType))
-                    }
-                    previousEventDate = eventDate
-                    previousEventType = eventType
-                }
-            }
-            let lastElement = dateIndex == (self.daysArray.index(of: self.daysArray.last!)! - 1)
-            self.chartDataArray.append(dayEvents)
-            self.chartColorsArray.append(dayColors)
-            if !lastDay {//we still have data te retrive
-                self.getDataForDay(day: self.daysArray[dateIndex!+1], lastDay: lastElement)
-            } else {//end of recursion
-                Async.main {
-                    self.delegate?.dataCollectingFinished?()
-                }
-            }
-        })
 //        let startDay = day == nil ? self.daysArray.first! : day!
-//        let today = startDay.isToday
-//
 //        let dateIndex = self.daysArray.index(of: startDay)
-//        let cacheKey = "\(startDay.month)_\(startDay.day)_\(startDay.year)"
-//        let cacheDuration = today ? 5.0 : 60.0 //if it's today we will add cache time for 10 seconds in other cases cache will be saved for 1 minute
-//        self.cachedDailyProgress.setObject(forKey: cacheKey, cacheBlock: { (success, error) in
-//            self.getCircadianEventsForDay(startDay, completion: { (dayInfo) in
-//                success(dayInfo, .seconds(cacheDuration))
-//            })
-//        }, completion: { (dayInfoFromCache, loadedFromCache, error) in
-//            if (dayInfoFromCache != nil) {
-//                let dataAndColors = zip((dayInfoFromCache?.dayValues)!, (dayInfoFromCache?.dayColors)!).map { $0 }
-//                self.chartDataAndColors[startDay] = dataAndColors
+//        let endOfDay = self.endOfDay(startDay)
+//        var dayEvents:[Double] = []
+//        var dayColors:[UIColor] = []
+//        var previousEventType: CircadianEvent?
+//        var previousEventDate: Date? = nil
+//        MCHealthManager.sharedManager.fetchCircadianEventIntervals(startDay, endDate: endOfDay, completion: { (intervals, error) in
+//            guard error == nil else {
+//                log.error("Failed to fetch circadian events: \(error)")
+//                return
 //            }
-//            if !lastDay { //we still have data to retrieve
-//                let nextIndex = dateIndex! + 1
-//                let lastElement = nextIndex == (self.daysArray.count - 1)
-//                OperationQueue.main.addOperation {
-//                    self.getDataForDay(day: self.daysArray[nextIndex], lastDay: lastElement)
+//            if intervals.isEmpty {//we have no data to display
+//                //we will mark it as fasting and put 24h
+//                dayEvents.append(24.0)
+//                dayColors.append(UIColor.clear)
+//            } else {
+//                for event in intervals {
+//                    let (eventDate, eventType) = event //assign tuple values to vars
+//                    if endOfDay.day < eventDate.day {
+//                        print(previousEventDate)
+//                        let endEventDate = self.endOfDay(previousEventDate!)
+//                        let eventDuration = self.getDifferenceForEvents(previousEventDate, currentEventDate: endEventDate)
+//                        //                        print("\(eventType) - \(eventDuration)")
+//                        dayEvents.append(eventDuration)
+//                        dayColors.append(self.getColorForEventType(eventType))
+//                        break
+//                    }
+//                    if previousEventDate != nil && eventType == previousEventType {//we alredy have a prev event and can calculate how match time it took
+//                        let eventDuration = self.getDifferenceForEvents(previousEventDate, currentEventDate: eventDate)
+//                        //                        print("\(eventType) - \(eventDuration)")
+//                        dayEvents.append(eventDuration)
+//                        dayColors.append(self.getColorForEventType(eventType))
+//                    }
+//                    previousEventDate = eventDate
+//                    previousEventType = eventType
 //                }
+//            }
+//            let lastElement = dateIndex == (self.daysArray.index(of: self.daysArray.last!)! - 1)
+//            self.chartDataArray.append(dayEvents)
+//            self.chartColorsArray.append(dayColors)
+//            if !lastDay {//we still have data te retrive
+//                self.getDataForDay(day: self.daysArray[dateIndex!+1], lastDay: lastElement)
 //            } else {//end of recursion
-//                for (key, daysData) in self.chartDataAndColors {
-//                    self.chartDataAndColors[key] = daysData.map { valAndColor in (valAndColor.0, self.selectColor(color: valAndColor.1)) }
-//                }
-//                OperationQueue.main.addOperation {
+//                Async.main {
 //                    self.delegate?.dataCollectingFinished?()
 //                }
 //            }
 //        })
+
+        let startDay = day == nil ? self.daysArray.first! : day!
+        let today = startDay.isToday
+
+        let dateIndex = self.daysArray.index(of: startDay)
+        let cacheKey = "\(startDay.month)_\(startDay.day)_\(startDay.year)"
+        let cacheDuration = today ? 5.0 : 60.0 //if it's today we will add cache time for 10 seconds in other cases cache will be saved for 1 minute
+        self.cachedDailyProgress.setObject(forKey: cacheKey, cacheBlock: { (success, error) in
+            self.getCircadianEventsForDay(startDay, completion: { (dayInfo) in
+                success(dayInfo, .seconds(cacheDuration))
+            })
+        }, completion: { (dayInfoFromCache, loadedFromCache, error) in
+            if (dayInfoFromCache != nil) {
+                let dataAndColors = zip((dayInfoFromCache?.dayValues)!, (dayInfoFromCache?.dayColors)!).map { $0 }
+                self.chartDataAndColors[startDay] = dataAndColors
+            }
+            if !lastDay { //we still have data to retrieve
+                let nextIndex = dateIndex! + 1
+                let lastElement = nextIndex == (self.daysArray.count - 1)
+                OperationQueue.main.addOperation {
+                    self.getDataForDay(day: self.daysArray[nextIndex], lastDay: lastElement)
+                }
+            } else {//end of recursion
+                for (key, daysData) in self.chartDataAndColors {
+                    self.chartDataAndColors[key] = daysData.map { valAndColor in (valAndColor.0, self.selectColor(color: valAndColor.1)) }
+                }
+                OperationQueue.main.addOperation {
+                    self.delegate?.dataCollectingFinished?()
+                }
+            }
+        })
     }
     
     public func getCircadianEventsForDay(_ day: Date, completion: @escaping (_ dayInfo: DailyProgressDayInfo) -> Void) {
