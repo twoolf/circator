@@ -10,12 +10,6 @@ import UIKit
 import MCCircadianQueries
 
 class PickerTableViewCell: UITableViewCell, UIPickerViewDataSource, UIPickerViewDelegate {
-    @available(iOS 2.0, *)
-    public func numberOfComponents(in pickerView: UIPickerView) -> Int {
-        return 5
-    }
-
-
     @IBOutlet weak var pickerView: UIPickerView!
     
     var pickerCellDelegate: PickerTableViewCellDelegate? = nil
@@ -27,12 +21,11 @@ class PickerTableViewCell: UITableViewCell, UIPickerViewDataSource, UIPickerView
         self.contentView.isUserInteractionEnabled = false
         self.pickerView.dataSource = self
         self.pickerView.delegate = self
-        // Initialization code
     }
     
     //MARK: UIPickerViewDataSource
-    
-    func numberOfComponentsInPickerView(pickerView: UIPickerView) -> Int {
+
+    func numberOfComponents(in pickerView: UIPickerView) -> Int {
         return 1
     }
     
@@ -41,11 +34,10 @@ class PickerTableViewCell: UITableViewCell, UIPickerViewDataSource, UIPickerView
     }
     
     //MARK: UIPickerViewDelegate
-    private func pickerView(pickerView: UIPickerView, titleForRow row: Int, forComponent component: Int) -> String? {
+    public func pickerView(_ pickerView: UIPickerView, titleForRow row: Int, forComponent component: Int) -> String? {
         return components[row]
     }
-    
-    private func pickerView(pickerView: UIPickerView, didSelectRow row: Int, inComponent component: Int) {
+    public func pickerView(_ pickerView: UIPickerView, didSelectRow row: Int, inComponent component: Int) {
         self.pickerCellDelegate?.pickerSelectedRowWithTitle(title: components[row])
     }
 }

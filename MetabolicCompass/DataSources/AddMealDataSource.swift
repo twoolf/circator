@@ -70,10 +70,6 @@ class AddMealDataSource: NSObject, UITableViewDataSource, UITableViewDelegate, P
             case datePickerCellIdentifier:
                 let datePickerCell = cell as! DatePickerTableViewCell
                 datePickerCell.delegate = self
-        default: break
-            let datePickerCell = cell as! DatePickerTableViewCell
-        
-            datePickerCell.delegate = self
                 if addEventModel!.datePickerRow(rowIndex: indexPath.row) {//date and time
                     datePickerCell.datePicker.datePickerMode = .dateAndTime
                     datePickerCell.datePicker.minuteInterval = 5
@@ -81,10 +77,10 @@ class AddMealDataSource: NSObject, UITableViewDataSource, UITableViewDelegate, P
                     if sleepMode {
                         let startSleepPickerTag = addEventModel?.datePickerTags.first
                         switch indexPath.row {
-                            case startSleepPickerTag!:
-                                datePickerCell.datePicker.date = (addEventModel?.sleepStartDate)!
-                            default:
-                                datePickerCell.datePicker.date = (addEventModel?.sleepEndDate)!
+                        case startSleepPickerTag!:
+                            datePickerCell.datePicker.date = (addEventModel?.sleepStartDate)!
+                        default:
+                            datePickerCell.datePicker.date = (addEventModel?.sleepEndDate)!
                         }
                     } else {
                         datePickerCell.datePicker.date = (addEventModel?.eventDate)!
@@ -94,7 +90,8 @@ class AddMealDataSource: NSObject, UITableViewDataSource, UITableViewDelegate, P
                     datePickerCell.datePicker.minuteInterval = 5
                     datePickerCell.datePicker.tag = indexPath.row
                     datePickerCell.datePicker.countDownDuration = (addEventModel?.duration)!
-                }
+            }
+            default: return cell!
         }
         return cell!
     }
@@ -189,8 +186,8 @@ class AddMealDataSource: NSObject, UITableViewDataSource, UITableViewDelegate, P
                 addEventModel?.mealType = .Dinner
             case MealType.Snack.rawValue:
                 addEventModel?.mealType = .Snack
-            default:
-                addEventModel?.mealType = .Empty
+        default:
+            addEventModel?.mealType = .Empty
         }
         
         if title != MealType.Empty.rawValue {//update when cell with usuall time of event
