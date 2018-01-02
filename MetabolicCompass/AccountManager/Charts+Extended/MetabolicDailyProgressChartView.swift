@@ -2,21 +2,20 @@
 //  MetabolicDailyProgressChartView.swift
 //  MetabolicCompass
 //
-//  Created by Artem Usachov on 5/16/16. 
+//  Created by Artem Usachov on 5/16/16.
 //  Copyright © 2016 Yanif Ahmad, Tom Woolf. All rights reserved.
 //
-
 import Foundation
 import Charts
 
 class MetabolicDailyProgressChartView : HorizontalBarChartView, DailyChartModelProtocol {
-
+    
     var tip: TapTip! = nil
     var tipDummyLabel: UILabel! = nil
-
+    
     var changeColorRecognizer: UITapGestureRecognizer! = nil
     var changeColorCompletion: (() -> Void)? = nil
-
+    
     class var exerciseColor: UIColor {
         return UIColor.colorWithHex(hex6: 0x20990b, alpha: 0.7)
     }
@@ -32,19 +31,19 @@ class MetabolicDailyProgressChartView : HorizontalBarChartView, DailyChartModelP
     class var fastingColor: UIColor {
         return UIColor.colorWithHex(hex6: 0x021e45, alpha: 0.7)
     }
-
+    
     class var mutedExerciseColor: UIColor {
         return UIColor.colorWithHex(hex6: 0x021e46, alpha: 0.7)
     }
-
+    
     class var mutedEatingColor: UIColor {
         return UIColor.colorWithHex(hex6: 0x021e47, alpha: 0.7)
     }
-
+    
     class var mutedSleepColor: UIColor {
         return UIColor.colorWithHex(hex6: 0x021e48, alpha: 0.7)
     }
-
+    
     class var highlightFastingColor: UIColor {
         return UIColor.colorWithHex(hex6: 0xffca00, alpha: 0.7)
     }
@@ -90,7 +89,7 @@ class MetabolicDailyProgressChartView : HorizontalBarChartView, DailyChartModelP
         
         self.legend.formSize = 0;
         self.legend.font = UIFont.systemFont(ofSize: 0)
-
+        
         // Tip setup.
         tipDummyLabel = UILabel()
         tipDummyLabel.isUserInteractionEnabled = false
@@ -102,61 +101,58 @@ class MetabolicDailyProgressChartView : HorizontalBarChartView, DailyChartModelP
             centerYAnchor.constraint(equalTo: tipDummyLabel.centerYAnchor),
             tipDummyLabel.widthAnchor.constraint(equalToConstant: 1),
             tipDummyLabel.heightAnchor.constraint(equalToConstant: 1),
-        ])
-
+            ])
+        
         let desc = "Your Body Clock shows the times you slept, ate, exercised and fasted over the last week. You can pinch to zoom in on your activities, or double-tap to highlight fasting periods."
         self.tip = TapTip(forView: tipDummyLabel, withinView: self, text: desc, width: 350, numTaps: 2, numTouches: 2, asTop: false)
         self.addGestureRecognizer(tip.tapRecognizer)
-
+        
         changeColorRecognizer = UITapGestureRecognizer(target: self, action: #selector(self.toggleColors))
         changeColorRecognizer.numberOfTapsRequired = 2
         self.addGestureRecognizer(changeColorRecognizer)
-
+        
         self.isUserInteractionEnabled = true
     }
-
+    
     func updateChartData (animate: Bool = true, valuesAndColors: [Date: [(Double, UIColor)]]) {
-        let values = valuesAndColors.flatMap{$0.value}
-        var entries = [BarChartDataEntry]()
-        for (index, value) in values.enumerated() {
-            let entry = BarChartDataEntry.init(x: Double(index), y: value.0)
-            entries.append(entry)
-        }
-
-        let set = BarChartDataSet.init(values: entries, label: "")
         
-        set.colors = values.map{$0.1}
-        let data = BarChartData.init(dataSets: [set])
-        //days
-//        let days = ["", "", "", "", "", "", ""]
- //       var _: [BarChartDataSet] = []
- //       for (_, _) in valuesAndColors.sorted(by: { $0.0.0 < $0.1.0 }).enumerated() {
-//            let entry = BarChartDataEntry.init(values: daysData.1.map { $0.0 }, xIndex: index)
-//            let set = BarChartDataSet.init(values: [entry], label: nil)
-
- //            set. = 55
-//            set.drawValuesEnabled = false
-//            set.colors = daysData.1.map { $0.1 }
-//            dataSetArray.append(set)
-//        }
-//        let data = BarChartData.init(xVals: days, dataSets: dataSetArray)
-
+        var dataSetArray: [BarChartDataSet] = []
+        var i = 0
+        valuesAndColors.forEach { date, tuples in
+            i = i+1
+            var values: [Double] = []
+            var colors: [UIColor] = []
+            
+            tuples.forEach { value, color in
+                values.append(value)
+                colors.append(color)
+            }
+            var entries: [BarChartDataEntry] = []
+            for (index, value) in values.enumerated(){
+                let entry = BarChartDataEntry.init(x: Double(i), y: value)
+                entries.append(entry)
+            }
+            let set = BarChartDataSet.init(values: entries, label: "")
+            set.drawValuesEnabled = false
+            set.colors = colors
+            dataSetArray.append(set)
+        }
+        let data = BarChartData.init(dataSets: dataSetArray)
         self.data = data
-
+        
         let labelsInHours: Int = 2
         let maxZoomWidthInHours: CGFloat = 2.0
-        let _: CGFloat = 24.0 / maxZoomWidthInHours
-
+        let zoomFactor: Double = Double (24.0 / maxZoomWidthInHours)
+        
         let rightAxis = self.rightAxis
         rightAxis.axisMinimum = max(0.0, self.data!.yMin - 1.0)
         rightAxis.axisMaximum = min(24.0, self.data!.yMax + 1.0)
         rightAxis.labelCount = Int(rightAxis.axisMaximum - rightAxis.axisMinimum) / labelsInHours
         if animate { self.animate(yAxisDuration: 1.0) }
-
-//        self.setVisibleXRange(minXRange: CGFloat(self.xAxis.axisRange/zoomFactor), maxXRange: CGFloat(self.xAxis.axisRange))
-}
-
+        self.setVisibleXRange(minXRange: Double (self.xAxis.axisRange/zoomFactor), maxXRange: Double(self.xAxis.axisRange))
+    }
+    
     @objc func toggleColors() {
-          changeColorCompletion?()
+        changeColorCompletion?()
     }
 }

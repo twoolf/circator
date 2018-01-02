@@ -69,6 +69,7 @@ class PlotViewController: UIViewController, ChartViewDelegate {
 //        chart.leftAxis.valueFormatter = SampleFormatter.numberFormatter
 //        chart.leftAxis.startAtZeroEnabled = false
 //        chart.axisMinimum = false
+        chart.leftAxis.axisMinimum = 0.0
         chart.rightAxis.enabled = false
 
         chart.xAxis.avoidFirstLastClippingEnabled = true
@@ -92,6 +93,7 @@ class PlotViewController: UIViewController, ChartViewDelegate {
 
 //        chart.leftAxis.startAtZeroEnabled = false
 //        chart.leftAxis.axisMinimum = false
+        chart.leftAxis.axisMinimum = 0.0
         chart.leftAxis.labelTextColor = Theme.universityDarkTheme.backgroundColor
 //        chart.leftAxis.valueFormatter = SampleFormatter.numberFormatter
         chart.rightAxis.enabled = false

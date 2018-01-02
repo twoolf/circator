@@ -1,4 +1,5 @@
 use_frameworks!
+project '/Users/twoolf/Metabolic_Compass_for_Fastlane/circator/MetabolicCompass.xcodeproj'
 def shared_pods
 
     pod 'Auth0', '~> 1.0'
@@ -9,11 +10,11 @@ def shared_pods
     pod 'AsyncSwift'
     pod 'AwesomeCache’, :git => ‘https://github.com/aschuch/AwesomeCache.git’, :branch => ‘master’
     pod 'Charts' , :git => 'https://github.com/OlenaSrost/Charts.git’
-    pod 'CryptoSwift' 
+    pod 'CryptoSwift', :git => 'https://github.com/krzyzanowskim/CryptoSwift.git', :branch => 'master'
     pod 'Dodo' 
     pod 'EasyAnimation' 
     pod 'EasyTipView' 
-    pod 'FileKit' 
+    pod 'FileKit', :git => 'https://github.com/nvzqz/FileKit.git', :branch => 'master'
     pod 'Former' 
     pod 'Granola', :git => 'https://github.com/yanif/Granola.git'
     pod 'HTPressableButton'
@@ -31,19 +32,19 @@ def shared_pods
     pod 'Stormpath' 
     pod 'SwiftChart'
     pod 'SwiftDate', :git => 'https://github.com/malcommac/SwiftDate.git'
-    pod 'SwiftyBeaver'
+    pod 'SwiftyBeaver', :git => 'https://github.com/SwiftyBeaver/SwiftyBeaver.git', :branch => 'master'
     pod 'SwiftyJSON' 
     pod 'SwiftyUserDefaults', :git => 'https://github.com/radex/SwiftyUserDefaults.git'
     pod 'SwiftMessages’, :git => 'https://github.com/SwiftKickMobile/SwiftMessages.git’, :branch => 'swift4.0’
 end
 
 target 'MetabolicCompassKit' do
-    platform :ios, '10.0'
+    platform :ios, '11.0'
     shared_pods
 end
 
 target 'MetabolicCompass' do
-    platform :ios, '10.0'
+    platform :ios, '11.0'
     shared_pods
     pod 'Crashlytics'
     pod 'Fabric'
@@ -52,16 +53,16 @@ end
 target 'MetabolicCompassWatch Extension' do 
  platform :watchos, '3.0'
  pod 'SwiftDate', :git => 'https://github.com/malcommac/SwiftDate.git'
- pod 'SwiftyBeaver' 
- pod 'AwesomeCache' , :git => ‘https://github.com/aschuch/AwesomeCache.git’, :branch => ‘master’
+ pod 'SwiftyBeaver', :git => 'https://github.com/SwiftyBeaver/SwiftyBeaver.git', :branch => 'master' 
+ pod 'AwesomeCache', :git => ‘https://github.com/aschuch/AwesomeCache.git’, :branch => ‘master’
  pod 'MCCircadianQueries', :git => 'https://github.com/OlenaSrost/MCCircadianQueries.git', :branch => 'swift3'
 end
 
 target 'MetabolicCompassWatch' do
  platform :watchos, '3.0'
  pod 'SwiftDate', :git => 'https://github.com/malcommac/SwiftDate.git' 
- pod 'SwiftyBeaver'  
- pod 'AwesomeCache' , :git => ‘https://github.com/aschuch/AwesomeCache.git’, :branch => ‘master’
+ pod 'SwiftyBeaver', :git => 'https://github.com/SwiftyBeaver/SwiftyBeaver.git', :branch => 'master'  
+ pod 'AwesomeCache', :git => ‘https://github.com/aschuch/AwesomeCache.git’, :branch => ‘master’ 
  pod 'MCCircadianQueries', :git => 'https://github.com/OlenaSrost/MCCircadianQueries.git', :branch => 'swift3'
 end
 

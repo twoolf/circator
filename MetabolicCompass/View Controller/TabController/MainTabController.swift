@@ -5,28 +5,27 @@
 //  Created by Inaiur on 5/5/16.
 //  Copyright © 2016 Yanif Ahmad, Tom Woolf. All rights reserved.
 //
-
 import UIKit
 import Async
 import MetabolicCompassKit
 import ARSLineProgress
 
 class MainTabController: UITabBarController, UITabBarControllerDelegate, ManageEventMenuDelegate {
-
+    
     private var manageEventOverlayView: UIVisualEffectView? = nil
     private var manageEventMenu: ManageEventMenu? = nil
-
+    
     private var syncOverlayView: UIVisualEffectView? = nil
     private var syncMode: Bool = false
     private var syncInitial: CGFloat = 0
     private var syncCounter: CGFloat = 0
-
+    
     private var syncCheckpoint: CGFloat = 0
     private var syncTerminator: Async? = nil
-
+    
     private var lastMenuUseAddedEvents = false
     private var dailyProgressVC: DailyProgressViewController? = nil
-
+    
     //MARK: View life cycle
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -51,16 +50,16 @@ class MainTabController: UITabBarController, UITabBarControllerDelegate, ManageE
         self.addSyncOverlay()
         self.addManageEventOverlay()
     }
-
+    
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         self.navigationController?.navigationBar.isHidden = true
         self.navigationController?.navigationBar.barStyle = .black
     }
-
-/*    func preferredStatusBarStyle() -> UIStatusBarStyle {
-        return .lightContent;
-    } */
+    
+    /*    func preferredStatusBarStyle() -> UIStatusBarStyle {
+     return .lightContent;
+     } */
     
     func configureTabBar() {
         
@@ -76,14 +75,14 @@ class MainTabController: UITabBarController, UITabBarControllerDelegate, ManageE
     }
     
     //MARK: UITabBarControllerDelegate
-    internal func tabBarController(_ tabBarController: UITabBarController, didSelect viewController: UIViewController) {
+    func tabBarController(_ tabBarController: UITabBarController, didSelect viewController: UIViewController) {
         
         if let controller = viewController as? DashboardTabControllerViewController {
             controller.rootNavigationItem = self.navigationItem
         }
     }
     
-    @nonobjc internal func tabBarController(_ tabBarController: UITabBarController, shouldSelectViewController viewController: UIViewController) -> Bool {
+    func tabBarController(_ tabBarController: UITabBarController, shouldSelect viewController: UIViewController) -> Bool {
         if viewController is UIPageViewController {
             return false
         }
@@ -100,17 +99,16 @@ class MainTabController: UITabBarController, UITabBarControllerDelegate, ManageE
             }
         }
     }
-
+    
     @objc func userDidLogout() {
         self.manageEventMenu!.isHidden = true
     }
-
+    
     @objc func userAddedCircadianEvents() {
         lastMenuUseAddedEvents = true
     }
-
+    
     // MARK :- Remote sync overlay
-
     func addSyncOverlay () {
         if self.syncOverlayView == nil {
             let overlay = UIVisualEffectView(effect: UIBlurEffect(style: .dark))
@@ -120,7 +118,7 @@ class MainTabController: UITabBarController, UITabBarControllerDelegate, ManageE
             overlay.isHidden = true
             self.view.window?.rootViewController?.view.addSubview(overlay)
             self.syncOverlayView = overlay
-
+            
             // Add overlay title
             let titleLabel = UILabel()
             titleLabel.text = "DATA SYNC"
@@ -130,7 +128,7 @@ class MainTabController: UITabBarController, UITabBarControllerDelegate, ManageE
             titleLabel.sizeToFit()
             titleLabel.frame = CGRect(0, 35, overlay.frame.width, titleLabel.frame.height)
             overlay.contentView.addSubview(titleLabel)
-
+            
             let descLabel = UILabel()
             descLabel.text = "Please wait while we upload your health data"
             descLabel.font = ScreenManager.appFontOfSize(size: 14)
@@ -141,7 +139,7 @@ class MainTabController: UITabBarController, UITabBarControllerDelegate, ManageE
             overlay.contentView.addSubview(descLabel)
         }
     }
-
+    
     @objc func syncBegan(notification: NSNotification) {
         if let dict = notification.userInfo, let initial = dict["count"] as? Int {
             if !syncMode {
@@ -150,13 +148,13 @@ class MainTabController: UITabBarController, UITabBarControllerDelegate, ManageE
             syncMode = true
             syncInitial = CGFloat(initial)
             syncCounter = syncInitial
-
+            
             syncCheckpoint = syncCounter
             syncTerminator = Async.background(after: 60.0) {
                 let progress = (self.syncCheckpoint - self.syncCounter) / self.syncCheckpoint
                 if progress < 0.001 { self.syncCancel() }
             }
-
+            
             Async.main {
                 if let hidden = self.syncOverlayView?.isHidden, hidden {
                     self.syncOverlayView!.isHidden = false
@@ -170,7 +168,7 @@ class MainTabController: UITabBarController, UITabBarControllerDelegate, ManageE
             log.error("DATA SYNC No initial upload size found", feature: "dataSync")
         }
     }
-
+    
     func syncCancel() {
         Async.main(after: 3.0) {
             if let hidden = self.syncOverlayView?.isHidden, !hidden {
@@ -180,7 +178,7 @@ class MainTabController: UITabBarController, UITabBarControllerDelegate, ManageE
         }
         UINotifications.genericError(vc: self, msg: "Data syncing was too slow, we will continue it in the background.")
     }
-
+    
     @objc func syncEnded() {
         if syncMode {
             NotificationCenter.default.removeObserver(self, name: NSNotification.Name(rawValue: SyncProgressNotification), object: nil)
@@ -197,7 +195,7 @@ class MainTabController: UITabBarController, UITabBarControllerDelegate, ManageE
         }
         log.debug("DATA SYNC finished", feature: "dataSync")
     }
-
+    
     @objc func syncProgress(notification: NSNotification) {
         if let dict = notification.userInfo, let c = dict["count"] as? Int {
             let counter = CGFloat(c)
@@ -205,11 +203,11 @@ class MainTabController: UITabBarController, UITabBarControllerDelegate, ManageE
                 syncInitial = counter
             }
             syncCounter = counter
-
+            
             let progress = max(0.01, 100.0 * (syncInitial - syncCounter) / syncInitial)
             ARSLineProgress.updateWithProgress(progress)
             log.debug("DATA SYNC progress \(progress)", feature: "dataSync")
-
+            
             syncCheckpoint = syncCounter
             syncTerminator?.cancel()
             syncTerminator = Async.background(after: 60.0) {
@@ -218,7 +216,7 @@ class MainTabController: UITabBarController, UITabBarControllerDelegate, ManageE
             }
         }
     }
-
+    
     // MARK :- Manage event overlay
     
     func addManageEventOverlay () {
@@ -246,41 +244,42 @@ class MainTabController: UITabBarController, UITabBarControllerDelegate, ManageE
     func hideManageEventOverlay() {
         self.manageEventOverlayView?.isHidden = true
     }
-
+    
     func hideManageEventIcons(hide: Bool) {
         self.manageEventMenu?.hideView(hide)
     }
-
+    
     // MARK:- ManageEventMenu construction
-
     func addMenuToView () {
         let addExercisesImage = UIImage(named:"icon-add-exercises")!
         let addExercisesItem = PathMenuItem(image: addExercisesImage, highlightedImage: nil, contentImage: nil, contentText: "Exercise")
-
+        
         let addMealImage = UIImage(named:"icon-add-food")!
         let addMealItem = PathMenuItem(image: addMealImage, highlightedImage: nil, contentImage: nil, contentText: "Meals")
-
+        
         let addSleepImage = UIImage(named:"icon-add-sleep")!
         let addSleepItem = PathMenuItem(image: addSleepImage, highlightedImage: nil, contentImage: nil, contentText: "Sleep")
-
-
+        
+        
         let items = [addMealItem, addExercisesItem, addSleepItem]
-
+        
         let startItem = PathMenuItem(image: UIImage(named: "button-dashboard-add-data")!,
                                      highlightedImage: UIImage(named: "button-dashboard-add-data"),
                                      contentImage: UIImage(named: "button-dashboard-add-data"),
                                      highlightedContentImage: UIImage(named: "button-dashboard-add-data"))
-
-        self.manageEventMenu = ManageEventMenu(frame: view.bounds, startItem: startItem, items: items)
-
-        self.manageEventMenu!.delegate = self
-        self.manageEventMenu!.startPoint = CGPoint(view.frame.width/2, view.frame.size.height - 26.0)
-        self.manageEventMenu!.timeOffset = 0.0
-        self.manageEventMenu!.animationDuration = 0.15
-        self.manageEventMenu!.isHidden = !UserManager.sharedManager.hasAccount()
-        self.view.window?.rootViewController?.view.addSubview(self.manageEventMenu!)
+        
+        let manageEventMenu = ManageEventMenu(frame: view.bounds, startItem: startItem, items: items)
+        
+        manageEventMenu.delegate = self
+        manageEventMenu.startPoint = CGPoint(view.frame.width/2, view.frame.size.height - 26.0)
+        manageEventMenu.timeOffset = 0.0
+        manageEventMenu.animationDuration = 0.15
+        //     self.manageEventMenu!.isHidden = !UserManager.sharedManager.hasAccount()
+        manageEventMenu.isHidden = false
+        self.manageEventMenu = manageEventMenu
+        self.view.window?.rootViewController?.view.addSubview(manageEventMenu)
     }
-
+    
     // MARK :- ManageEventMenuDelegate implementation
     
     func manageEventMenu(menu: ManageEventMenu, didSelectIndex idx: Int) {
@@ -290,14 +289,14 @@ class MainTabController: UITabBarController, UITabBarControllerDelegate, ManageE
             let controller = UIStoryboard(name: "AddEvents", bundle: nil).instantiateViewController(withIdentifier: "AddMealNavViewController") as! UINavigationController
             let rootController = controller.viewControllers[0] as! AddEventViewController
             switch idx {
-                case EventType.Meal.rawValue:
-                    rootController.type = .Meal
-                case EventType.Exercise.rawValue:
-                    rootController.type = .Exercise
-                case EventType.Sleep.rawValue:
-                    rootController.type = .Sleep
-                default:
-                    break
+            case EventType.Meal.rawValue:
+                rootController.type = .Meal
+            case EventType.Exercise.rawValue:
+                rootController.type = .Exercise
+            case EventType.Sleep.rawValue:
+                rootController.type = .Sleep
+            default:
+                break
             }
             self.selectedViewController?.present(controller, animated: true, completion: nil)
         }
@@ -310,17 +309,17 @@ class MainTabController: UITabBarController, UITabBarControllerDelegate, ManageE
     }
     
     func manageEventMenuWillAnimateClose(menu: ManageEventMenu) {
-
+        
     }
-
+    
     func manageEventMenuDidFinishAnimationOpen(menu: ManageEventMenu) {
         self.manageEventMenu?.logContentView()
     }
-
+    
     func manageEventMenuDidFinishAnimationClose(menu: ManageEventMenu) {
         self.hideManageEventOverlay()
         hideManageEventIcons(hide: true)
-
+        
         if lastMenuUseAddedEvents {
             initializeDailyProgressVC()
             if dailyProgressVC != nil {
@@ -333,7 +332,7 @@ class MainTabController: UITabBarController, UITabBarControllerDelegate, ManageE
         }
         self.manageEventMenu?.logContentView(false)
     }
-
+    
     func initializeDailyProgressVC() {
         if dailyProgressVC == nil {
             for svc in self.selectedViewController!.childViewControllers {
@@ -355,7 +354,7 @@ class MainTabController: UITabBarController, UITabBarControllerDelegate, ManageE
             log.debug("Daily progress view controller after init: \(dailyProgressVC ?? no_argument as AnyObject)", feature: "addActivityView")
         }
     }
-
+    
     //MARK: Deinit
     deinit {
         NotificationCenter.default.removeObserver(self)

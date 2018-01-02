@@ -2,10 +2,9 @@
 //  DailyChartModel.swift
 //  MetabolicCompass
 //
-//  Created by Artem Usachov on 5/16/16. 
+//  Created by Artem Usachov on 5/16/16.
 //  Copyright © 2016 Yanif Ahmad, Tom Woolf. All rights reserved.
 //
-
 import Foundation
 import UIKit
 import HealthKit
@@ -48,13 +47,13 @@ open class DailyProgressDayInfo: NSObject, NSCoding {
 typealias MCDailyProgressCache = Cache<DailyProgressDayInfo>
 
 open class DailyChartModel : NSObject, UITableViewDataSource {
-
+    
     /// initializations of these variables creates offsets so plots of event transitions are square waves
     private let stWorkout = 0.0
     private let stSleep = 0.33
     private let stFast = 0.66
     private let stEat = 1.0
-
+    
     private let dayCellIdentifier = "dayCellIdentifier"
     private let emptyValueString = "- h - m"
     
@@ -66,10 +65,10 @@ open class DailyChartModel : NSObject, UITableViewDataSource {
     var lastAteText: String = ""
     var eatingText: String = ""
     var daysTableView: UITableView?
-
+    
     public var highlightFasting: Bool = false
-
-
+    
+    
     override init() {
         do {
             self.cachedDailyProgress = try MCDailyProgressCache(name: "MCDaylyProgressCache")
@@ -83,36 +82,34 @@ open class DailyChartModel : NSObject, UITableViewDataSource {
     var daysArray: [Date] = { return DailyChartModel.getChartDateRange() }()
     
     var daysStringArray: [String] = { return DailyChartModel.getChartDateRangeStrings() }()
-
+    
     @objc public func invalidateCache(_ note: NSNotification) {
         if let info = note.userInfo, let dates = info[HMCircadianEventsDateUpdateKey] as? Set<Date> {
             if dates.count > 0 {
                 for date in dates {
                     let cacheKey = "\(date.month)_\(date.day)_\(date.year)"
-//                    log.debug("Invalidating daily progress cache for \(cacheKey)", feature: "invalidateCache")
                     cachedDailyProgress.removeObject(forKey: cacheKey)
                 }
                 prepareChartData()
             }
         }
     }
-
+    
     public func updateRowHeight (){
         self.daysTableView?.rowHeight = self.daysTableView!.frame.height/7.0
         self.daysTableView?.reloadData()
     }
-
+    
     public func registerCells() {
         let dayCellNib = UINib(nibName: "DailyProgressDayTableViewCell", bundle: nil)
         self.daysTableView?.register(dayCellNib, forCellReuseIdentifier: dayCellIdentifier)
     }
-
+    
     // MARK: -  UITableViewDataSource
-
     public func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         return self.daysStringArray.count
     }
-
+    
     public func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: dayCellIdentifier) as! DailyProgressDayTableViewCell
         cell.dayLabel.text = self.daysStringArray[indexPath.row]
@@ -139,39 +136,36 @@ open class DailyChartModel : NSObject, UITableViewDataSource {
     }
     
     public func prepareChartData () {
-//        log.debug("Resetting chart data with \(self.chartDataAndColors.count) values", feature: "prepareChart")
         self.chartDataAndColors = [:]
-        getDataForDay(nil, lastDay: false)
-        
+        getDataForDay(day: nil, lastDay: false)
+        //        getDataForDay(nil, lastDay: false)
     }
-
+    
     open class func getChartDateRange(endDate: Date? = nil) -> [Date] {
         var lastSevenDays: [Date] = []
         let cal = Calendar.current
-        var date = Date()
+        var date = Date().startOfDay
         lastSevenDays.append(date)
         for i in 1 ... 6 {
-
+            
             date = cal.date(byAdding: .day, value: -1, to: date)!
             lastSevenDays.append(date)
         }
         return lastSevenDays.reversed()
     }
-
+    
     open class func getChartDateRangeStrings(endDate: Date? = nil) -> [String] {
         let formatter = DateFormatter()
         formatter.dateFormat = "MMM\ndd"
-
+        
         // Note: we reverse the strings array since days are from recent (top) to oldest (bottom)
         return getChartDateRange(endDate: endDate).map { date in
             let dateString = formatter.string(from: date)
             if date.day % 10 == 1 {
                 if date.day == 11 {
-//                    return dateString.stringByAppendingString(" th")
                     return dateString.appending(" th")
                 } else {
-//                    return dateString.stringByAppendingString(" st")
-                  return dateString.appending(" st")
+                    return dateString.appending(" st")
                 }
             } else if date.day % 10 == 2 {
                 if date.day == 12 {
@@ -188,29 +182,26 @@ open class DailyChartModel : NSObject, UITableViewDataSource {
             } else {
                 return dateString.appending(" th")
             }
-        }.reversed()
+            }.reversed()
     }
-
+    
     public func getStartDate() -> Date? { return self.daysArray.first }
     public func getEndDate() -> Date? { return self.daysArray.last }
-
+    
     public func setEndDate(_ endDate: Date? = nil) {
         self.daysArray = DailyChartModel.getChartDateRange(endDate: endDate)
         self.daysStringArray = DailyChartModel.getChartDateRangeStrings(endDate: endDate)
     }
-
+    
     public func refreshChartDateRange(_ lastViewDate: Date?) {
-        let now = Date()
- //       if let last = lastViewDate, let end = getEndDate(), last.isInSameDayAsDate(end) && !last.isInSameDayasDate(now) {
-            self.daysArray = DailyChartModel.getChartDateRange()
-            self.daysStringArray = DailyChartModel.getChartDateRangeStrings()
- //       }
+        self.daysArray = DailyChartModel.getChartDateRange()
+        self.daysStringArray = DailyChartModel.getChartDateRangeStrings()
     }
-
-    public func getDataForDay(_ day: Date?, lastDay:Bool) {
+    
+    public func getDataForDay(day: Date?, lastDay:Bool) {
         let startDay = day == nil ? self.daysArray.first! : day!
         let today = startDay.isToday
-
+        
         let dateIndex = self.daysArray.index(of: startDay)
         let cacheKey = "\(startDay.month)_\(startDay.day)_\(startDay.year)"
         let cacheDuration = today ? 5.0 : 60.0 //if it's today we will add cache time for 10 seconds in other cases cache will be saved for 1 minute
@@ -227,7 +218,7 @@ open class DailyChartModel : NSObject, UITableViewDataSource {
                 let nextIndex = dateIndex! + 1
                 let lastElement = nextIndex == (self.daysArray.count - 1)
                 OperationQueue.main.addOperation {
-                    self.getDataForDay(self.daysArray[nextIndex], lastDay: lastElement)
+                    self.getDataForDay(day: self.daysArray[nextIndex], lastDay: lastElement)
                 }
             } else {//end of recursion
                 for (key, daysData) in self.chartDataAndColors {
@@ -241,25 +232,23 @@ open class DailyChartModel : NSObject, UITableViewDataSource {
     }
     
     public func getCircadianEventsForDay(_ day: Date, completion: @escaping (_ dayInfo: DailyProgressDayInfo) -> Void) {
-        
-//        var endOfDay = date.endOfDay(date: day)
-        var endOfDay = Date().endOfDay
+        var endOfDay = day.endOfDay
         let dayPlus24 = (day.startOf(component: .day) + 24.hours) - 1.seconds
-
+        
         // Force to 24 hours to handle time zone changes that result in a non-24hr day.
         if dayPlus24 != endOfDay { endOfDay = dayPlus24 }
-
+        
         var dayEvents:[Double] = []
         var dayColors:[UIColor] = []
         var previousEventType: CircadianEvent?
         var previousEventDate: Date? = nil
-
+        
         // Run the query in a user interactive thread to prioritize the data model update over
         // any concurrent observer queries (i.e., when resuming the app from the background).
         Async.userInteractive {
             MCHealthManager.sharedManager.fetchCircadianEventIntervals(day, endDate: endOfDay, completion: { (intervals, error) in
                 guard error == nil else {
-//                    log.error("Failed to fetch circadian events: \(error)")
+                    //                    log.error("Failed to fetch circadian events: \(error)")
                     return
                 }
                 if !intervals.isEmpty {
@@ -269,7 +258,7 @@ open class DailyChartModel : NSObject, UITableViewDataSource {
                             if let prev = previousEventDate {
                                 let endEventDate = self.endOfDay(prev)
                                 let eventDuration = self.getDifferenceForEvents(prev, currentEventDate: endEventDate)
-
+                                
                                 dayEvents.append(eventDuration)
                                 dayColors.append(self.getColorForEventType(eventType))
                             } else {
@@ -279,7 +268,7 @@ open class DailyChartModel : NSObject, UITableViewDataSource {
                         }
                         if previousEventDate != nil && eventType == previousEventType {//we alredy have a prev event and can calculate how match time it took
                             let eventDuration = self.getDifferenceForEvents(previousEventDate, currentEventDate: eventDate)
-
+                            
                             dayEvents.append(eventDuration)
                             dayColors.append(self.getColorForEventType(eventType))
                         }
@@ -299,11 +288,11 @@ open class DailyChartModel : NSObject, UITableViewDataSource {
         typealias Event = (Date, Double)
         typealias IEvent = (Double, Double)
         
-        /// Fetch all sleep and workout data since yesterday, and then aggregate sleep, exercise and meal events. 
-//        let yesterday = 1.days.ago
+        /// Fetch all sleep and workout data since yesterday, and then aggregate sleep, exercise and meal events.
+        //        let yesterday = 1.days.ago
         let yesterday = Date(timeIntervalSinceNow: -60 * 60 * 24)
         let startDate = yesterday
-
+        
         Async.userInteractive {
             MCHealthManager.sharedManager.fetchCircadianEventIntervals(startDate) { (intervals, error) -> Void in
                 Async.main {
@@ -340,14 +329,14 @@ open class DailyChartModel : NSObject, UITableViewDataSource {
                         //
                         // y-values are a double value indicating the y-offset corresponding
                         // to a eat/sleep/fast/exercise value where:
-                        // workout = 0.0, sleep = 0.33, fast = 0.66, eat = 1.0 
+                        // workout = 0.0, sleep = 0.33, fast = 0.66, eat = 1.0
                         //
                         let vals : [(x: Double, y: Double)] = intervals.map { event in
                             let startTimeInFractionalHours = event.0.timeIntervalSince(startDate) / 3600.0
                             let metabolicStateAsDouble = self.valueOfCircadianEvent(event.1)
                             return (x: startTimeInFractionalHours , y: Double(metabolicStateAsDouble))
                         }
-
+                        
                         // Calculate circadian event statistics based on the above array of events.
                         // Again recall that this is an array of event endpoints, where each pair of
                         // consecutive elements defines a single event interval.
@@ -368,99 +357,97 @@ open class DailyChartModel : NSObject, UITableViewDataSource {
                         //
                         let initialAccumulator : (Double, Double, Double, IEvent?, Bool, Double, Bool) =
                             (0.0, 0.0, 0.0, nil, true, 0.0, false)
-//let test = yesterday.addingTimeInterval(<#T##timeInterval: TimeInterval##TimeInterval#>)
+                        //let test = yesterday.addingTimeInterval(<#T##timeInterval: TimeInterval##TimeInterval#>)
                         let stats = vals.filter { $0.0 >= yesterday.julianDay} .reduce(initialAccumulator, { (acc, event) in
-                                // Named accumulator components
-                                var newEatingTime = acc.0
-                                let lastEatingTime = acc.1
-                                var maxFastingWindow = acc.2
-                                var currentFastingWindow = acc.5
-
-                                // Named components from the current event.
-                                let eventEndpointDate = event.0
-                                let eventMetabolicState = event.1
-
-                                // Information from previous event endpoint.
-                                let prevEvent = acc.3
-                                //                                let prevEndpointWasIntervalStart = acc.4
-                                let prevEndpointWasIntervalEnd = !acc.4
-                                var prevStateWasFasting = acc.6
-
-                                // Define the fasting state as any non-eating state
-                                let isFasting = eventMetabolicState != self.stEat
-
-                                // If this endpoint starts a new event interval, update the accumulator.
-                                if prevEndpointWasIntervalEnd {
-                                    let prevEventEndpointDate = prevEvent?.0
-                                    let duration = eventEndpointDate - prevEventEndpointDate!
-
-                                    if prevStateWasFasting && isFasting {
-                                        // If we were fasting in the previous event, and are also fasting in this
-                                        // event, we extend the currently ongoing fasting period.
-
-                                        // Increment the current fasting window.
-                                        currentFastingWindow += duration
-
-                                        // Revise the max fasting window if the current fasting window is now larger.
-                                        maxFastingWindow = maxFastingWindow > currentFastingWindow ? maxFastingWindow : currentFastingWindow
-
-                                    } else if isFasting {
-                                        // Otherwise if we started fasting in this event, we reset
-                                        // the current fasting period.
-
-                                        // Reset the current fasting window
-                                        currentFastingWindow = duration
-
-                                        // Revise the max fasting window if the current fasting window is now larger.
-                                        maxFastingWindow = maxFastingWindow > currentFastingWindow ? maxFastingWindow : currentFastingWindow
-
-                                    } else if eventMetabolicState == self.stEat {
-                                        // Otherwise if we are eating, we increment the total time spent eating.
-                                        newEatingTime += duration
-                                    }
-                                } else {
-                                    prevStateWasFasting = prevEvent == nil ? false : prevEvent?.1 != self.stEat
+                            // Named accumulator components
+                            var newEatingTime = acc.0
+                            let lastEatingTime = acc.1
+                            var maxFastingWindow = acc.2
+                            var currentFastingWindow = acc.5
+                            
+                            // Named components from the current event.
+                            let eventEndpointDate = event.0
+                            let eventMetabolicState = event.1
+                            
+                            // Information from previous event endpoint.
+                            let prevEvent = acc.3
+                            //                                let prevEndpointWasIntervalStart = acc.4
+                            let prevEndpointWasIntervalEnd = !acc.4
+                            var prevStateWasFasting = acc.6
+                            
+                            // Define the fasting state as any non-eating state
+                            let isFasting = eventMetabolicState != self.stEat
+                            
+                            // If this endpoint starts a new event interval, update the accumulator.
+                            if prevEndpointWasIntervalEnd {
+                                let prevEventEndpointDate = prevEvent?.0
+                                let duration = eventEndpointDate - prevEventEndpointDate!
+                                
+                                if prevStateWasFasting && isFasting {
+                                    // If we were fasting in the previous event, and are also fasting in this
+                                    // event, we extend the currently ongoing fasting period.
+                                    // Increment the current fasting window.
+                                    currentFastingWindow += duration
+                                    
+                                    // Revise the max fasting window if the current fasting window is now larger.
+                                    maxFastingWindow = maxFastingWindow > currentFastingWindow ? maxFastingWindow : currentFastingWindow
+                                    
+                                } else if isFasting {
+                                    // Otherwise if we started fasting in this event, we reset
+                                    // the current fasting period.
+                                    // Reset the current fasting window
+                                    currentFastingWindow = duration
+                                    
+                                    // Revise the max fasting window if the current fasting window is now larger.
+                                    maxFastingWindow = maxFastingWindow > currentFastingWindow ? maxFastingWindow : currentFastingWindow
+                                    
+                                } else if eventMetabolicState == self.stEat {
+                                    // Otherwise if we are eating, we increment the total time spent eating.
+                                    newEatingTime += duration
                                 }
-
-                                let newLastEatingTime = eventMetabolicState == self.stEat ? eventEndpointDate : lastEatingTime
-
-                                // Return a new accumulator.
-                                return (
-                                    newEatingTime,
-                                    newLastEatingTime,
-                                    maxFastingWindow,
-                                    event,
-                                    prevEndpointWasIntervalEnd,
-                                    currentFastingWindow,
-                                    prevStateWasFasting
-                                )
+                            } else {
+                                prevStateWasFasting = prevEvent == nil ? false : prevEvent?.1 != self.stEat
+                            }
+                            
+                            let newLastEatingTime = eventMetabolicState == self.stEat ? eventEndpointDate : lastEatingTime
+                            
+                            // Return a new accumulator.
+                            return (
+                                newEatingTime,
+                                newLastEatingTime,
+                                maxFastingWindow,
+                                event,
+                                prevEndpointWasIntervalEnd,
+                                currentFastingWindow,
+                                prevStateWasFasting
+                            )
                         })
-
-//                        let today = Date().startOf(.Day, inRegion: Region())
+                        
+                        //                        let today = Date().startOf(.Day, inRegion: Region())
                         let today = Date()
                         let lastAte : Date? = stats.1 == 0 ? nil : ( startDate + Int(round(stats.1 * 3600.0)).seconds)
-
+                        
                         let eatingTime = roundDate(date: (today + Int(stats.0 * 3600.0).seconds), granularity: granularity1Min)
                         if eatingTime.hour == 0 && eatingTime.minute == 0 {
                             self.eatingText = self.emptyValueString
                         } else {
-//                            self.eatingText = eatingTime.string(DateFormat.custom("HH 'h' mm 'm'"))!
+                            //                            self.eatingText = eatingTime.string(DateFormat.custom("HH 'h' mm 'm'"))!
                             self.eatingText = eatingTime.string(format: DateFormat.custom("HH 'h' mm 'm'"))
                         }
-
+                        
                         let fastingHrs = Int(floor(stats.2))
                         let fastingMins = (today + Int(round((stats.2) * 60.0)).minutes).string(format: DateFormat.custom("mm"))
                         _ = "\(fastingHrs) h \(fastingMins) m"
-
+                        
                         if let lastAte = lastAte {
-//                            let components = DateComponents(calendar: lastAte)
+                            //                            let components = DateComponents(calendar: lastAte)
                             let components = DateComponents().ago(from: lastAte)!
                             if components.day > 0 {
                                 let mins = (today + components.minute.minutes).string()
                                 self.lastAteText = "\(components.day * 24 + components.hour) h \(mins)"
                             } else {
-//                                self.lastAteText = (today + components).toString(DateFormat.Custom("HH 'h' mm 'm'"))!
-//                                self.lastAteText = (today).toString(DateFormat.Custom("HH 'h' mm 'm'"))!
+                                //                                self.lastAteText = (today + components).toString(DateFormat.Custom("HH 'h' mm 'm'"))!
+                                //                                self.lastAteText = (today).toString(DateFormat.Custom("HH 'h' mm 'm'"))!
                             }
                         } else {
                             self.lastAteText = self.emptyValueString
@@ -493,30 +480,26 @@ open class DailyChartModel : NSObject, UITableViewDataSource {
     
     //MARK: Working with date
     
-    public func getDifferenceForEvents(_ previousEventDate:Date?, currentEventDate: Date) -> Double {
+    public func getDifferenceForEvents(_ previousEventDate: Date?, currentEventDate: Date) -> Double {
         var eventDuration = 0.0
         //if we have situation when event started at the end of the previos day and ended on next day
-        let dateForCurrentEvent = currentEventDate.day > (previousEventDate?.day)! ? endOfDay(previousEventDate!) : currentEventDate
-//        let differenceComponets = previousEventDate?.difference(dateForCurrentEvent, unitFlags: [.Hour, .Minute])
-        let differenceComponets = previousEventDate?.timeIntervalSince(dateForCurrentEvent)
-//        let differenceMinutes = Double((differenceComponets?.minute)!)
-//        let differenceMinutes = Double((differenceComponets?.nextUp)
-//        let minutes = Double(differenceMinutes / 60.0)//we need to devide by 60 because 60 is 100% (minutes in hour)
-//        if ((differenceComponets?.hour)! > 0) {//more then 1h
-//            let hours = Double((differenceComponets?.hour)!)
-//            let hours = Double((differe))
-//            eventDuration = hours + minutes
-//        } else {//less then 1h
-//            eventDuration = minutes
-//        }
-//        return roundToPlaces(daoubleToRound: eventDuration, places: 2)
-    return roundToPlaces(60.2, places: 2)
+        let dateForCurrentEvent = currentEventDate.day > (previousEventDate?.day)! ? self.endOfDay(previousEventDate!) : currentEventDate
+        let differenceComponets = Calendar.current.dateComponents([.hour, .minute], from: previousEventDate!, to: dateForCurrentEvent)
+        let differenceMinutes = Double(differenceComponets.minute!)
+        let minutes = Double(differenceMinutes / 60.0)//we need to devide by 60 because 60 is 100% (minutes in hour)
+        if (differenceComponets.hour! > 0) { //more then 1h
+            let hours = Double((differenceComponets.hour)!)
+            eventDuration = hours + minutes
+        } else { //less then 1h
+            eventDuration = minutes
+        }
+        return self.roundToPlaces(eventDuration, places: 2)
     }
     
     public func endOfDay(_ date: Date) -> Date {
         let calendar = NSCalendar(calendarIdentifier: NSCalendar.Identifier.gregorian)
         var components = calendar!.components([.day, .year, .month, .hour, .minute, .second], from: date)
-//        components.timeZone = NSTimeZone(name: NSTimeZone.localTimeZone.abbreviation)
+        //        components.timeZone = NSTimeZone(name: NSTimeZone.localTimeZone.abbreviation)
         components.hour = 23
         components.minute = 59
         components.second = 59
@@ -527,20 +510,20 @@ open class DailyChartModel : NSObject, UITableViewDataSource {
         let divisor = pow(10.0, Double(places))
         return round(daoubleToRound * divisor) / divisor
     }
-
+    
     public func selectColor(color: UIColor) -> UIColor {
-//        if ColorEqualToColor(color.cgColor, MetabolicDailyProgressChartView.mutedExerciseColor.cgColor)
+        //        if ColorEqualToColor(color.cgColor, MetabolicDailyProgressChartView.mutedExerciseColor.cgColor)
         if color == MetabolicDailyProgressChartView.mutedExerciseColor
-//            || ColorEqualToColor(color.cgColor, MetabolicDailyProgressChartView.exerciseColor.cgColor)
+            //            || ColorEqualToColor(color.cgColor, MetabolicDailyProgressChartView.exerciseColor.cgColor)
             || color == MetabolicDailyProgressChartView.exerciseColor
         {
             return highlightFasting ? MetabolicDailyProgressChartView.mutedExerciseColor : MetabolicDailyProgressChartView.exerciseColor
         }
-/*        if color == MetabolicDailyProgressChartView.mutedSleepColor
-            || color == MetabolicDailyProgressChartView.sleepColor
-        {
-            return toggleHighlightFasting ? MetabolicDailyProgressChartView.mutedSleepColor : MetabolicDailyProgressChartView.sleepColor
-        } */
+        /*        if color == MetabolicDailyProgressChartView.mutedSleepColor
+         || color == MetabolicDailyProgressChartView.sleepColor
+         {
+         return toggleHighlightFasting ? MetabolicDailyProgressChartView.mutedSleepColor : MetabolicDailyProgressChartView.sleepColor
+         } */
         if color == MetabolicDailyProgressChartView.mutedEatingColor
             || color == MetabolicDailyProgressChartView.eatingColor
         {
@@ -553,11 +536,11 @@ open class DailyChartModel : NSObject, UITableViewDataSource {
         }
         return color
     }
-
+    
     open func toggleHighlightFasting() {
         highlightFasting = !highlightFasting
     }
-
+    
     //MARK: Deinit
     deinit {
         NotificationCenter.default.removeObserver(self)
