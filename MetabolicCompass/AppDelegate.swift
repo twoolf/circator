@@ -181,7 +181,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, WCSessionDelegate
         NotificationManager.sharedManager.showInApp(notification: notification)
     }
     
-    private func application(_ application: UIApplication, performActionForShortcutItem shortcutItem: UIApplicationShortcutItem, completionHandler: (Bool) -> Void) {
+    func application(_ application: UIApplication, performActionFor shortcutItem: UIApplicationShortcutItem, completionHandler: @escaping (Bool) -> Void) {
         log.debug("Shortcut \"\(shortcutItem.localizedTitle)\" pressed")
         completionHandler(self.launchShortcutActivity(shortcutItem))
     }
