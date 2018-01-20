@@ -44,8 +44,8 @@ class PKCEFlowManager {
             .replacingOccurrences(of: "/", with: "")
             .replacingOccurrences(of: "=", with: "")
             .trimmingCharacters(in: .whitespaces)
-        print(codeVerifier)
-        print(codeChallenge)
+        print("codeVerifier: '\(codeVerifier!)'")
+        print("codeChallenge: '\(codeChallenge!)'")
     }
     
     func receiveAutorizationCode(_ callback: @escaping (Data?) -> ()) {
@@ -66,13 +66,16 @@ class PKCEFlowManager {
                      
                          timeoutInterval: 10.0)
         request.httpMethod = "GET"
+        
+        print("\n\nRequesting Authorization code with URL: '\(url!)\n\n'")
+        
         let session = URLSession.shared
         let dataTask = session.dataTask(with: request as URLRequest, completionHandler: { (data, response, error) -> Void in
             if (error != nil) {
-                print(error)
+                print("Authorization code request error '\(error!)'")
             } else {
                 let httpResponse = response as? HTTPURLResponse
-                print(httpResponse)
+                print("Authorization code response '\(httpResponse!)'")
                 DispatchQueue.main.async {
                     callback(data)
                 }
@@ -86,6 +89,7 @@ class PKCEFlowManager {
         let headers = ["content-type": "application/json"]
         let parameterDictionary = ["grant_type" : "authorization_code", "client_id" : clientId,  "code_verifier": codeVerifier, "code": authorizationCode, "redirect_uri": redirectUri]
         guard let httpBody = try? JSONSerialization.data(withJSONObject: parameterDictionary, options: []) else {
+            //TODO: add proper error support
             return
         }
         var request = URLRequest(url: URL(string: "https://metaboliccompass.auth0.com/oauth/token")!,
@@ -96,16 +100,27 @@ class PKCEFlowManager {
         request.allHTTPHeaderFields = headers
         request.httpBody = httpBody
         
+        print("Access Token Request JSON dictionary source:\n \(parameterDictionary)")
+        
+        print("""
+            \n\nRequesting Access Token with URL: '\(request.url!)\n
+            headers: '\(headers)'\n
+            HTTP Body: '\(httpBody)'\n\n
+            """)
+        
         let session = URLSession.shared
         let dataTask = session.dataTask(with: request as URLRequest, completionHandler: { (data, response, error) -> Void in
             if (error != nil) {
-                print(error)
+                print("Authentication Token request error '\(error!)'")
             } else {
+                
+                print("Data: \(data)")
+                
                 DispatchQueue.main.async {
                     callback(data)
                 }
                 let httpResponse = response as? HTTPURLResponse
-                print(httpResponse)
+                print("Authentication Token request response '\(httpResponse!)'")
             }
         })
         dataTask.resume()

@@ -53,6 +53,8 @@ import SimpleKeychain
         loginTable.dataSource = loginModel
         self.setupScrollViewForKeyboardsActions(view: containerScrollView)
         modalPresentationCapturesStatusBarAppearance = true
+        
+        
         NotificationCenter.default.addObserver(self, selector: #selector(self.auth0LoginPKCEFlowReceivingTokens(_:)), name: NSNotification.Name("AuthorizationCodeReceived"), object: nil)
     }
 

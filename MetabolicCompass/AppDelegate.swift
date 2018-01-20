@@ -248,6 +248,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, WCSessionDelegate
         guard let params = URLComponents.init(url: url, resolvingAgainstBaseURL: true) else {return false}
         let autorizationCodeQueryItem = params.queryItems?.last
         let autorizationCode = autorizationCodeQueryItem?.value
+        print("Got Redirect with URL '\(url)'\n authorization_code: '\(autorizationCode)'")
         NotificationCenter.default.post(name: NSNotification.Name("AuthorizationCodeReceived"), object: nil, userInfo: ["authorization_code": autorizationCode])
         return Auth0.resumeAuth(url, options: options)
     }

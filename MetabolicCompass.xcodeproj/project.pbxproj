@@ -18,7 +18,6 @@
 		1C2DA1441D47A72100C738DF /* health_data_mock.json in Resources */ = {isa = PBXBuildFile; fileRef = 1C2DA1401D47A72100C738DF /* health_data_mock.json */; };
 		1C7107BE1D4B14B500C2B3D4 /* CorrelationChartsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1C7107BD1D4B14B500C2B3D4 /* CorrelationChartsViewController.swift */; };
 		1C7107C01D4B411C00C2B3D4 /* CorrelationTabeViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1C7107BF1D4B411C00C2B3D4 /* CorrelationTabeViewCell.swift */; };
-		3FC350CE1FA895450092790D /* Auth0Debug.plist in Resources */ = {isa = PBXBuildFile; fileRef = 3FC350CD1FA895450092790D /* Auth0Debug.plist */; };
 		3FC350D01FA8C2490092790D /* PKCEFlowManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3FC350CF1FA8C2490092790D /* PKCEFlowManager.swift */; };
 		54205E661E76213B003E3EC4 /* ActivityPicker.swift in Sources */ = {isa = PBXBuildFile; fileRef = 54205E5F1E76213B003E3EC4 /* ActivityPicker.swift */; };
 		54205E671E76213B003E3EC4 /* AddActivityManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 54205E601E76213B003E3EC4 /* AddActivityManager.swift */; };
@@ -106,7 +105,6 @@
 		78D46C311E2AD6DE00913639 /* RemoteLogManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 78D46C301E2AD6DE00913639 /* RemoteLogManager.swift */; };
 		78D47DD31D57BE2700F432D1 /* DashboardFilterHeaderView.xib in Resources */ = {isa = PBXBuildFile; fileRef = 78D47DD21D57BE2700F432D1 /* DashboardFilterHeaderView.xib */; };
 		8132417D1F446759004B8339 /* AuthSessionManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8132417C1F446759004B8339 /* AuthSessionManager.swift */; };
-		8132417E1F446A2F004B8339 /* Auth0Release.plist in Resources */ = {isa = PBXBuildFile; fileRef = 8132417A1F444CA9004B8339 /* Auth0Release.plist */; };
 		8132417F1F4485DE004B8339 /* AuthSessionManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8132417C1F446759004B8339 /* AuthSessionManager.swift */; };
 		81C85A4D1F18BB43003F3D32 /* MetabolicCompass-Bridging-Header.h in Headers */ = {isa = PBXBuildFile; fileRef = 81C85A4C1F18BB43003F3D32 /* MetabolicCompass-Bridging-Header.h */; };
 		84207D1F1CCA1FEC00776848 /* RegisterLoginProcess.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 84207D1E1CCA1FEC00776848 /* RegisterLoginProcess.storyboard */; };
@@ -304,7 +302,6 @@
 		2E3C407321A82C5357CA149E /* Pods-MetabolicCompassKit.debug-dev.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-MetabolicCompassKit.debug-dev.xcconfig"; path = "Pods/Target Support Files/Pods-MetabolicCompassKit/Pods-MetabolicCompassKit.debug-dev.xcconfig"; sourceTree = "<group>"; };
 		3038FCE41B08C288606ADAD8 /* Pods-MetabolicCompassWatchExtension.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-MetabolicCompassWatchExtension.debug.xcconfig"; path = "Pods/Target Support Files/Pods-MetabolicCompassWatchExtension/Pods-MetabolicCompassWatchExtension.debug.xcconfig"; sourceTree = "<group>"; };
 		3EC46147F1366E50C2854C0B /* Pods-MetabolicCompassWatch.debug-dev.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-MetabolicCompassWatch.debug-dev.xcconfig"; path = "Pods/Target Support Files/Pods-MetabolicCompassWatch/Pods-MetabolicCompassWatch.debug-dev.xcconfig"; sourceTree = "<group>"; };
-		3FC350CD1FA895450092790D /* Auth0Debug.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = Auth0Debug.plist; sourceTree = SOURCE_ROOT; };
 		3FC350CF1FA8C2490092790D /* PKCEFlowManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PKCEFlowManager.swift; sourceTree = "<group>"; };
 		5411C8281E7F436000E05EFF /* MetabolicCompass.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = MetabolicCompass.entitlements; sourceTree = "<group>"; };
 		54205E5F1E76213B003E3EC4 /* ActivityPicker.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ActivityPicker.swift; sourceTree = "<group>"; };
@@ -422,7 +419,6 @@
 		78E7C20E1D32F83200DE0495 /* WorkoutSessionService_Queries.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = WorkoutSessionService_Queries.swift; sourceTree = "<group>"; };
 		78E7C20F1D32F83200DE0495 /* WorkoutSessionService.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = WorkoutSessionService.swift; sourceTree = "<group>"; };
 		78F65A4C1C25126E0074449D /* QueryBuilderViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = QueryBuilderViewController.swift; sourceTree = "<group>"; };
-		8132417A1F444CA9004B8339 /* Auth0Release.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; name = Auth0Release.plist; path = ../Auth0Release.plist; sourceTree = "<group>"; };
 		8132417C1F446759004B8339 /* AuthSessionManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = AuthSessionManager.swift; path = Storyboards/AuthSessionManager.swift; sourceTree = "<group>"; };
 		81C85A4C1F18BB43003F3D32 /* MetabolicCompass-Bridging-Header.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "MetabolicCompass-Bridging-Header.h"; path = "MetabolicCompass/MetabolicCompass-Bridging-Header.h"; sourceTree = "<group>"; };
 		84207D1E1CCA1FEC00776848 /* RegisterLoginProcess.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; path = RegisterLoginProcess.storyboard; sourceTree = "<group>"; };
@@ -719,12 +715,10 @@
 		7881A3DF1BAF3B3E00ECB3C6 /* MetabolicCompass */ = {
 			isa = PBXGroup;
 			children = (
-				3FC350CD1FA895450092790D /* Auth0Debug.plist */,
 				545AB0FA1E8014C0006C45F6 /* LaunchImage_320by568@2x.png */,
 				5492C4111EC75F2E00E1AADB /* LaunchScreen.storyboard */,
 				5411C8281E7F436000E05EFF /* MetabolicCompass.entitlements */,
 				54205EC51E772631003E3EC4 /* Info.plist */,
-				8132417A1F444CA9004B8339 /* Auth0Release.plist */,
 				8132417C1F446759004B8339 /* AuthSessionManager.swift */,
 				3FC350CF1FA8C2490092790D /* PKCEFlowManager.swift */,
 				E74A89771CE3260F0056A2D2 /* AccountManager */,
@@ -1427,7 +1421,6 @@
 				84EF0EC81D0580C500A25760 /* WhenTableViewCell.xib in Resources */,
 				842B7DD31D0960CB007F2126 /* ScatterChartCollectionCell.xib in Resources */,
 				95748C511CCFC7D90002F6A3 /* DoubleCheckListCollectionViewCell.xib in Resources */,
-				3FC350CE1FA895450092790D /* Auth0Debug.plist in Resources */,
 				95635AA41CD3ACF300BCC467 /* ScrollSelectionViewCell.xib in Resources */,
 				54205EA81E7624CB003E3EC4 /* Gotham XLight Italic.otf in Resources */,
 				958568101CD1020600EDD385 /* LoadImageCollectionViewCell.xib in Resources */,
@@ -1451,7 +1444,6 @@
 				95748C471CCFC7AA0002F6A3 /* InputCollectionViewCell.xib in Resources */,
 				95F400981CE385C60060F28C /* CircleImageCollectionViewCell.xib in Resources */,
 				54205EAB1E7624CB003E3EC4 /* helvetica_neue_ce_55_roman-webfont.ttf in Resources */,
-				8132417E1F446A2F004B8339 /* Auth0Release.plist in Resources */,
 				843B40941D364BCE0044691C /* PhysiologicalHeaderView.xib in Resources */,
 				84EF0EB51D056FF800A25760 /* PickerTableViewCell.xib in Resources */,
 				E7592DB51CDB3A2400E313BB /* TabScreens.storyboard in Resources */,
@@ -1511,7 +1503,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n";
+			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
 			showEnvVarsInLog = 0;
 		};
 		3FC350CC1FA8942D0092790D /* Auth0 Plist */ = {
@@ -1674,7 +1666,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n";
+			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
 			showEnvVarsInLog = 0;
 		};
 /* End PBXShellScriptBuildPhase section */
