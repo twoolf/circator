@@ -117,7 +117,7 @@ class MetabolicDailyProgressChartView : HorizontalBarChartView, DailyChartModelP
     }
 
     func updateChartData (animate: Bool = true, valuesAndColors: [Date: [(Double, UIColor)]]) {
-
+        var entriesArray: [BarChartDataEntry] = []
         var dataSetArray: [BarChartDataSet] = []
         var i = 0
         valuesAndColors.forEach { date, tuples in
@@ -129,15 +129,22 @@ class MetabolicDailyProgressChartView : HorizontalBarChartView, DailyChartModelP
                 values.append(value)
                 colors.append(color)
             }
-            var entries: [BarChartDataEntry] = []
-            for (index, value) in values.enumerated(){
-                let entry = BarChartDataEntry.init(x: Double(i), y: value)
-                entries.append(entry)
-            }
-            let set = BarChartDataSet.init(values: entries, label: "")
+            let entry = BarChartDataEntry.init(x: Double (i), yValues: values)
+            let set = BarChartDataSet.init(values: [entry], label: nil)
             set.drawValuesEnabled = false
             set.colors = colors
             dataSetArray.append(set)
+
+//            var entries: [BarChartDataEntry] = []
+//            for (index, value) in values.enumerated(){
+//                let entry = BarChartDataEntry.init(x: Double(i), y: value)
+//                entries.append(entry)
+//            }
+//
+//            let set = BarChartDataSet.init(values: entries, label: "")
+//            set.drawValuesEnabled = false
+//            set.colors = colors
+//            dataSetArray.append(set)
         }
         let data = BarChartData.init(dataSets: dataSetArray)
         self.data = data

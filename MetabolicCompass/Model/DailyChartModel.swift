@@ -303,43 +303,44 @@ open class DailyChartModel : NSObject, UITableViewDataSource {
         var previousEventType: CircadianEvent?
         var previousEventDate: Date? = nil
 
-        // Run the query in a user interactive thread to prioritize the data model update over
-        // any concurrent observer queries (i.e., when resuming the app from the background).
+
         Async.userInteractive {
             MCHealthManager.sharedManager.fetchCircadianEventIntervals(day, endDate: endOfDay, completion: { (intervals, error) in
                 guard error == nil else {
-//                    log.error("Failed to fetch circadian events: \(error)")
+                    log.error("Failed to fetch circadian events: \(error)")
                     return
                 }
-                if !intervals.isEmpty {
-                    for event in intervals {
-                        let (eventDate, eventType) = event //assign tuple values to vars
-                        if endOfDay.day < eventDate.day {
-                            if let prev = previousEventDate {
-                                let endEventDate = self.endOfDay(prev)
-                                let eventDuration = self.getDifferenceForEvents(prev, currentEventDate: endEventDate)
+                self.fetchSamples() { [weak self] callbackIntervals in
+                    if !callbackIntervals.isEmpty {
+                        for event in callbackIntervals {
+                            let (eventDate, eventType) = event //assign tuple values to vars
+                            if endOfDay.day < eventDate.day {
+                                if let prev = previousEventDate {
+                                    let endEventDate = self?.endOfDay(prev)
+                                    let eventDuration = self?.getDifferenceForEvents(prev, currentEventDate: endEventDate!)
 
-                                dayEvents.append(eventDuration)
-                                dayColors.append(self.getColorForEventType(eventType))
-                            } else {
-                                log.warning("DCM NO PREV on \(intervals)")
+                                    dayEvents.append(eventDuration!)
+                                    dayColors.append((self?.getColorForEventType(eventType))!)
+                                } else {
+                                    log.warning("DCM NO PREV on \(intervals)")
+                                }
+                                break
                             }
-                            break
-                        }
-                        if previousEventDate != nil && eventType == previousEventType {//we alredy have a prev event and can calculate how match time it took
-                            let eventDuration = self.getDifferenceForEvents(previousEventDate, currentEventDate: eventDate)
+                            if previousEventDate != nil && eventType == previousEventType {//we alredy have a prev event and can calculate how match time it took
+                                let eventDuration = self?.getDifferenceForEvents(previousEventDate, currentEventDate: eventDate)
 
-                            dayEvents.append(eventDuration)
-                            dayColors.append(self.getColorForEventType(eventType))
+                                dayEvents.append(eventDuration!)
+                                dayColors.append((self?.getColorForEventType(eventType))!)
+                            }
+                            previousEventDate = eventDate
+                            previousEventType = eventType
                         }
-                        previousEventDate = eventDate
-                        previousEventType = eventType
+                        let dayInfo = DailyProgressDayInfo(colors: dayColors, values: dayEvents)
+                        completion(dayInfo)
+                        return
                     }
-                    let dayInfo = DailyProgressDayInfo(colors: dayColors, values: dayEvents)
-                    completion(dayInfo)
-                    return
+                    completion(DailyProgressDayInfo(colors: [UIColor.clear], values: [24.0]))
                 }
-                completion(DailyProgressDayInfo(colors: [UIColor.clear], values: [24.0]))
             })
         }
     }
@@ -348,8 +349,7 @@ open class DailyChartModel : NSObject, UITableViewDataSource {
         typealias Event = (Date, Double)
         typealias IEvent = (Double, Double)
         
-        /// Fetch all sleep and workout data since yesterday, and then aggregate sleep, exercise and meal events. 
-//        let yesterday = 1.days.ago
+        /// Fetch all sleep and workout data since yesterday, and then aggregate sleep, exercise and meal events.
         let yesterday = Date(timeIntervalSinceNow: -60 * 60 * 24)
         let startDate = yesterday
 
@@ -360,65 +360,27 @@ open class DailyChartModel : NSObject, UITableViewDataSource {
                         log.error("Failed to fetch circadian events: \(error ?? (no_argument as AnyObject) as! Error)")
                         return
                     }
-                    if intervals.isEmpty {
-                        self.fastingText = self.emptyValueString
-                        self.eatingText = self.emptyValueString
-                        self.lastAteText = self.emptyValueString
-                        self.delegate?.dailyProgressStatCollected?()
-                    } else {
-                        // Create an array of circadian events for charting as x-y values
-                        // for the charting library.
-                        //
-                        // Each input event is a pair of NSDate and metabolic state (i.e.,
-                        // whether you are eating/fasting/sleeping/exercising).
-                        //
-                        // Conceptually, circadian events are intervals with a starting date
-                        // and ending date. We represent these endpoints (i.e., starting vs ending)
-                        // as consecutive array elements. For example the following array represents
-                        // an eating event (as two array elements) following by a sleeping event
-                        // (also as two array elements):
-                        //
-                        // [('2016-01-01 20:00', .Meal), ('2016-01-01 20:45', .Meal),
-                        //  ('2016-01-01 23:00', .Sleep), ('2016-01-02 07:00', .Sleep)]
-                        //
-                        // In the output, x-values indicate when the event occurred relative
-                        // to a date 24 hours ago (i.e., 24-x hours ago)
-                        // That is, an x-value of:
-                        // a) 1.5 indicates the event occurred 22.5 hours ago
-                        // b) 3.0 indicates the event occurred 21.0 hours ago
-                        //
-                        // y-values are a double value indicating the y-offset corresponding
-                        // to a eat/sleep/fast/exercise value where:
-                        // workout = 0.0, sleep = 0.33, fast = 0.66, eat = 1.0 
-                        //
-                        let vals : [(x: Double, y: Double)] = intervals.map { event in
-                            let startTimeInFractionalHours = event.0.timeIntervalSince(startDate) / 3600.0
-                            let metabolicStateAsDouble = self.valueOfCircadianEvent(event.1)
-                            return (x: startTimeInFractionalHours , y: Double(metabolicStateAsDouble))
-                        }
+                    var fetchIntervals:[(Date, CircadianEvent)] = []
+                    self.fetchSamples() { [weak self] callbackIntervals in
+                        fetchIntervals = callbackIntervals
+                        if fetchIntervals.isEmpty {
+                            self?.fastingText = (self?.emptyValueString)!
+                            self?.eatingText = (self?.emptyValueString)!
+                            self?.lastAteText = (self?.emptyValueString)!
+                            self?.delegate?.dailyProgressStatCollected?()
+                        } else {
+                            let vals : [(x: Double, y: Double)] = fetchIntervals.map { event in
+                                let date =  event.0
+                                let start = date.startOfDay
+                                let startTimeInFractionalHours = event.0.timeIntervalSince(start) / 3600.0
+                                let metabolicStateAsDouble = self?.valueOfCircadianEvent(event.1)
+                                return (x: startTimeInFractionalHours , y: Double(metabolicStateAsDouble!))
+                            }
 
-                        // Calculate circadian event statistics based on the above array of events.
-                        // Again recall that this is an array of event endpoints, where each pair of
-                        // consecutive elements defines a single event interval.
-                        //
-                        // This aggregates/folds over the array, updating an accumulator with the following fields:
-                        //
-                        // i. a running sum of eating time
-                        // ii. the last eating time
-                        // iii. the max fasting window
-                        //
-                        // Computing these statistics require information from the previous events in the array,
-                        // so we also include the following fields in the accumulator:
-                        //
-                        // iv. the previous event
-                        // v. a bool indicating whether the current event starts an interval
-                        // vi. the accumulated fasting window
-                        // vii. a bool indicating if we are in an accumulating fasting interval
-                        //
-                        let initialAccumulator : (Double, Double, Double, IEvent?, Bool, Double, Bool) =
-                            (0.0, 0.0, 0.0, nil, true, 0.0, false)
-//let test = yesterday.addingTimeInterval(<#T##timeInterval: TimeInterval##TimeInterval#>)
-                        let stats = vals.filter { $0.0 >= yesterday.julianDay} .reduce(initialAccumulator, { (acc, event) in
+                            let initialAccumulator : (Double, Double, Double, IEvent?, Bool, Double, Bool) =
+                                (0.0, 0.0, 0.0, nil, true, 0.0, false)
+
+                            let stats = vals.filter { $0.0 >= yesterday.julianDay} .reduce(initialAccumulator, { (acc, event) in
                                 // Named accumulator components
                                 var newEatingTime = acc.0
                                 let lastEatingTime = acc.1
@@ -436,7 +398,7 @@ open class DailyChartModel : NSObject, UITableViewDataSource {
                                 var prevStateWasFasting = acc.6
 
                                 // Define the fasting state as any non-eating state
-                                let isFasting = eventMetabolicState != self.stEat
+                                let isFasting = eventMetabolicState != self?.stEat
 
                                 // If this endpoint starts a new event interval, update the accumulator.
                                 if prevEndpointWasIntervalEnd {
@@ -463,15 +425,15 @@ open class DailyChartModel : NSObject, UITableViewDataSource {
                                         // Revise the max fasting window if the current fasting window is now larger.
                                         maxFastingWindow = maxFastingWindow > currentFastingWindow ? maxFastingWindow : currentFastingWindow
 
-                                    } else if eventMetabolicState == self.stEat {
+                                    } else if eventMetabolicState == self?.stEat {
                                         // Otherwise if we are eating, we increment the total time spent eating.
                                         newEatingTime += duration
                                     }
                                 } else {
-                                    prevStateWasFasting = prevEvent == nil ? false : prevEvent?.1 != self.stEat
+                                    prevStateWasFasting = prevEvent == nil ? false : prevEvent?.1 != self?.stEat
                                 }
 
-                                let newLastEatingTime = eventMetabolicState == self.stEat ? eventEndpointDate : lastEatingTime
+                                let newLastEatingTime = eventMetabolicState == self?.stEat ? eventEndpointDate : lastEatingTime
 
                                 // Return a new accumulator.
                                 return (
@@ -483,40 +445,37 @@ open class DailyChartModel : NSObject, UITableViewDataSource {
                                     currentFastingWindow,
                                     prevStateWasFasting
                                 )
-                        })
+                            })
+                            let today = Date()
+                            let lastAte : Date? = stats.1 == 0 ? nil : ( startDate + Int(round(stats.1 * 3600.0)).seconds)
 
-//                        let today = Date().startOf(.Day, inRegion: Region())
-                        let today = Date()
-                        let lastAte : Date? = stats.1 == 0 ? nil : ( startDate + Int(round(stats.1 * 3600.0)).seconds)
-
-                        let eatingTime = roundDate(date: (today + Int(stats.0 * 3600.0).seconds), granularity: granularity1Min)
-                        if eatingTime.hour == 0 && eatingTime.minute == 0 {
-                            self.eatingText = self.emptyValueString
-                        } else {
-//                            self.eatingText = eatingTime.string(DateFormat.custom("HH 'h' mm 'm'"))!
-                            self.eatingText = eatingTime.string(format: DateFormat.custom("HH 'h' mm 'm'"))
-                        }
-
-                        let fastingHrs = Int(floor(stats.2))
-                        let fastingMins = (today + Int(round((stats.2) * 60.0)).minutes).string(format: DateFormat.custom("mm"))
-                        _ = "\(fastingHrs) h \(fastingMins) m"
-
-                        if let lastAte = lastAte {
-//                            let components = DateComponents(calendar: lastAte)
-                            let components = DateComponents().ago(from: lastAte)!
-                            if components.day > 0 {
-                                let mins = (today + components.minute.minutes).string()
-                                self.lastAteText = "\(components.day * 24 + components.hour) h \(mins)"
+                            let eatingTime = roundDate(date: (today + Int(stats.0 * 3600.0).seconds), granularity: granularity1Min)
+                            if eatingTime.hour == 0 && eatingTime.minute == 0 {
+                                self?.eatingText = (self?.emptyValueString)!
                             } else {
-//                                self.lastAteText = (today + components).toString(DateFormat.Custom("HH 'h' mm 'm'"))!
-//                                self.lastAteText = (today).toString(DateFormat.Custom("HH 'h' mm 'm'"))!
+                                self?.eatingText = eatingTime.string(format: DateFormat.custom("HH 'h' mm 'm'"))
                             }
-                        } else {
-                            self.lastAteText = self.emptyValueString
+
+                            let fastingHrs = Int(floor(stats.2))
+                            let fastingMins = (today + Int(round((stats.2) * 60.0)).minutes).string(format: DateFormat.custom("mm"))
+                            _ = "\(fastingHrs) h \(fastingMins) m"
+
+                            if let lastAte = lastAte {
+                                let components = DateComponents().ago(from: lastAte)!
+                                if components.day > 0 {
+                                    let mins = (today + components.minute.minutes).string()
+                                    self?.lastAteText = "\(components.day * 24 + components.hour) h \(mins)"
+                                } else {
+                                    //                                self.lastAteText = (today + components).toString(DateFormat.Custom("HH 'h' mm 'm'"))!
+                                    //                                self.lastAteText = (today).toString(DateFormat.Custom("HH 'h' mm 'm'"))!
+                                }
+                            } else {
+                                self?.lastAteText = (self?.emptyValueString)!
+                            }
+                            self?.delegate?.dailyProgressStatCollected?()
                         }
-                        
-                        self.delegate?.dailyProgressStatCollected?()
                     }
+
                 }
             }
         }
@@ -607,4 +566,43 @@ open class DailyChartModel : NSObject, UITableViewDataSource {
     deinit {
         NotificationCenter.default.removeObserver(self)
     }
+
+    func fetchSamples(completion: @escaping ([(Date, CircadianEvent)]) -> ()) {
+        let healthStore = HKHealthStore()
+        let now = Date()
+        let calendar = NSCalendar(calendarIdentifier: NSCalendar.Identifier.gregorian)
+        let components = calendar!.components([.day, .year, .month, .hour, .minute, .second], from: now)
+
+        guard let endDate = calendar?.date(from: components) else {
+            fatalError("*** Unable to create the start date ***")
+        }
+
+        let startDate = calendar?.date(byAdding: .day, value: -7, to: endDate, options: [])
+  //      let sampleType = HKWorkoutType.workoutType()
+        let sampleType = HKSampleType.categoryType(forIdentifier: HKCategoryTypeIdentifier.sleepAnalysis)!
+
+        let predicate = HKQuery.predicateForSamples(withStart: startDate, end: endDate, options: [])
+        var intervals:[(Date, CircadianEvent)] = []
+        let query = HKSampleQuery(sampleType: sampleType, predicate: predicate, limit: Int(HKObjectQueryNoLimit), sortDescriptors: nil) {
+            query, results, error in
+
+            guard let samples = results as? [MCSample] else {
+                fatalError("An error occured fetching the user's tracked food. In your app, try to handle this error gracefully. The error was: \(error?.localizedDescription)");
+            }
+
+        intervals = samples.map{ sample in
+                var event: CircadianEvent
+                if sample.hkType?.identifier == "HKWorkoutTypeIdentifier" {
+                    let type: HKWorkoutActivityType = .preparationAndRecovery
+                    event = .exercise(exerciseType:type)
+                } else {
+                    event = .sleep
+                }
+                return (sample.startDate, event)
+            }
+            completion (intervals)
+        }
+        healthStore.execute(query)
+    }
 }
+
