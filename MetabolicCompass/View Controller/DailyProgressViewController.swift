@@ -193,10 +193,13 @@ class DailyProgressViewController : UIViewController, DailyChartModelProtocol {
 //                log.debug("BODY CLOCK query time: \((Date().timeIntervalSinceReferenceDate - self.loadStart.timeIntervalSinceReferenceDate))", feature: "dataLoad")
             }
 
-            self.dailyProgressChartView.updateChartData(animate: self.updateContentWithAnimation,
-                valuesAndColors: self.dailyChartModel.chartDataAndColors)
-            self.updateContentWithAnimation = true
-            self.dailyProgressChartView.setNeedsDisplay()
+            self.dailyChartModel.prepareDataForChart(completion: {[weak self] data in
+                self?.dailyChartModel.chartDataAndColors = data
+                self?.dailyProgressChartView.updateChartData(animate: (self?.updateContentWithAnimation)!,
+                                                             valuesAndColors: (self?.dailyChartModel.chartDataAndColors)!)
+                self?.updateContentWithAnimation = true
+                self?.dailyProgressChartView.setNeedsDisplay()
+            })
         }
     }
 
