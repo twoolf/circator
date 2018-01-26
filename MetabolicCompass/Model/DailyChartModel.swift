@@ -606,21 +606,29 @@ open class DailyChartModel : NSObject, UITableViewDataSource {
     }
 
     func fetchMCSamples(startDate: Date, endDate:Date, completion: @escaping ([MCSample]) -> ()) {
+        var allSamples: ([MCSample]) = []
         let healthStore = HKHealthStore()
-
-        let sampleType = HKSampleType.categoryType(forIdentifier: HKCategoryTypeIdentifier.sleepAnalysis)!
-
+        let sleepType = HKSampleType.categoryType(forIdentifier: HKCategoryTypeIdentifier.sleepAnalysis)!
+        let workoutType = HKWorkoutType.workoutType()
+        let sampleTypes = [sleepType, workoutType]
         let predicate = HKQuery.predicateForSamples(withStart: startDate, end: endDate, options: [])
-
-        let query = HKSampleQuery(sampleType: sampleType, predicate: predicate, limit: Int(HKObjectQueryNoLimit), sortDescriptors: nil) {
-            query, results, error in
-
-            guard let samples = results as? [MCSample] else {
-                fatalError("An error occured fetching the user's tracked food. In your app, try to handle this error gracefully. The error was: \(error?.localizedDescription)");
+        let group = DispatchGroup()
+        sampleTypes.forEach{ type in
+            group.enter()
+            let query = HKSampleQuery(sampleType: type, predicate: predicate, limit: Int(HKObjectQueryNoLimit), sortDescriptors: nil) {
+                query, results, error in
+                guard let samples = results as? [MCSample] else {
+                    fatalError("An error occured fetching the user's tracked food. In your app, try to handle this error gracefully. The error was: \(error?.localizedDescription)");
+                }
+                allSamples = allSamples + samples
+                group.leave()
             }
-            completion (samples)
+            healthStore.execute(query)
         }
-        healthStore.execute(query)
+
+        group.notify(queue: .main) {
+            completion(allSamples)
+        }
     }
 
     func prepareDataForChart(completion: @escaping ([Date: [(Double, UIColor)]]) -> ()) {
@@ -630,12 +638,23 @@ open class DailyChartModel : NSObject, UITableViewDataSource {
             let startDate = day.startOfDay
             let endDate = day.endOfDay
             group.enter()
-            self.fetchMCSamples(startDate: startDate, endDate: endDate)  { [weak self] samples in
+            self.fetchMCSamples(startDate: startDate, endDate: endDate)  { samples in
                 var values: [(Double, UIColor)] = []
                 values = samples.map  {sample in
                     let duration = sample.endDate.timeIntervalSince(sample.startDate) / 3600
-                    let color = UIColor.blue
-                    return (duration, color)
+                    var color = UIColor.clear
+                    if sample.hkType?.identifier == HKWorkoutType.workoutType().identifier {
+                        if let workoutType = sample as? HKWorkout {
+                            if workoutType.metadata?["Meal Type"] != nil {
+                                color = .red
+                            } else {
+                                color = .green
+                            }
+                        }
+                    } else {
+                        color = .blue
+                    }
+                     return (duration, color)
                 }
                 dict[day] = values
                 group.leave()

@@ -134,17 +134,6 @@ class MetabolicDailyProgressChartView : HorizontalBarChartView, DailyChartModelP
             set.drawValuesEnabled = false
             set.colors = colors
             dataSetArray.append(set)
-
-//            var entries: [BarChartDataEntry] = []
-//            for (index, value) in values.enumerated(){
-//                let entry = BarChartDataEntry.init(x: Double(i), y: value)
-//                entries.append(entry)
-//            }
-//
-//            let set = BarChartDataSet.init(values: entries, label: "")
-//            set.drawValuesEnabled = false
-//            set.colors = colors
-//            dataSetArray.append(set)
         }
         let data = BarChartData.init(dataSets: dataSetArray)
         self.data = data
