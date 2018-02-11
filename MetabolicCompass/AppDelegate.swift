@@ -17,8 +17,11 @@ import SwiftDate
 import SwiftyUserDefaults
 import WatchConnectivity
 import Auth0
+import SwiftyBeaver
 
+// Init Logs
 let log = RemoteLogManager.sharedManager.log
+let localLog = SwiftyBeaver.self
 
 @UIApplicationMain
 /**
@@ -52,9 +55,18 @@ class AppDelegate: UIResponder, UIApplicationDelegate, WCSessionDelegate
     func application(_ application: UIApplication,
                               didFinishLaunchingWithOptions launchOptions: [UIApplicationLaunchOptionsKey : Any]? ) -> Bool
     {
+        // Configure Local and Remote logs, Crashes data collection
         Fabric.with([Crashlytics.self,Answers.self])
         log.info("Using service URL: \(MCRouter.baseURL)")
-        print("inside didFinishLaunchingWithOptions")
+        
+        // Configure SwiftyBeaver
+        let console = ConsoleDestination()
+        console.format = "$DHH:mm:ss$d $L $M"
+        console.useTerminalColors = true
+        console.asynchronously = false
+        localLog.addDestination(console)
+        
+        localLog.info("inside didFinishLaunchingWithOptions")
         
         if ((Defaults.object(forKey: firstRunKey) == nil)) {
             UserManager.sharedManager.resetFull()
@@ -248,6 +260,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, WCSessionDelegate
         guard let params = URLComponents.init(url: url, resolvingAgainstBaseURL: true) else {return false}
         let autorizationCodeQueryItem = params.queryItems?.last
         let autorizationCode = autorizationCodeQueryItem?.value
+        print("Got Redirect with URL '\(url)'\n authorization_code: '\(autorizationCode)'")
         NotificationCenter.default.post(name: NSNotification.Name("AuthorizationCodeReceived"), object: nil, userInfo: ["authorization_code": autorizationCode])
         return Auth0.resumeAuth(url, options: options)
     }

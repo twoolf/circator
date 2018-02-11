@@ -113,6 +113,9 @@ class RegisterLoginLandingViewController: BaseViewController, UIWebViewDelegate 
                 self?.auth0authorizationFailed()
                 return
             }
+            
+            print("Access Token JSON: \(json)")
+            
             guard let accessToken = json!["access_token"] as? String else {
                 self?.auth0authorizationFailed()
                 return
