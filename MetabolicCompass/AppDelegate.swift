@@ -17,8 +17,11 @@ import SwiftDate
 import SwiftyUserDefaults
 import WatchConnectivity
 import Auth0
+import SwiftyBeaver
 
+// Init Logs
 let log = RemoteLogManager.sharedManager.log
+let localLog = SwiftyBeaver.self
 
 @UIApplicationMain
 /**
@@ -52,9 +55,18 @@ class AppDelegate: UIResponder, UIApplicationDelegate, WCSessionDelegate
     func application(_ application: UIApplication,
                               didFinishLaunchingWithOptions launchOptions: [UIApplicationLaunchOptionsKey : Any]? ) -> Bool
     {
+        // Configure Local and Remote logs, Crashes data collection
         Fabric.with([Crashlytics.self,Answers.self])
         log.info("Using service URL: \(MCRouter.baseURL)")
-        print("inside didFinishLaunchingWithOptions")
+        
+        // Configure SwiftyBeaver
+        let console = ConsoleDestination()
+        console.format = "$DHH:mm:ss$d $L $M"
+        console.useTerminalColors = true
+        console.asynchronously = false
+        localLog.addDestination(console)
+        
+        localLog.info("inside didFinishLaunchingWithOptions")
         
         if ((Defaults.object(forKey: firstRunKey) == nil)) {
             UserManager.sharedManager.resetFull()
