@@ -9,12 +9,15 @@
 import Foundation
 import UIKit
 
+import Auth0
 
 class PKCEFlowManager {
     static let shared = PKCEFlowManager()
     let redirectUri = "edu.jhu.cs.damsl.MetabolicCompass.app://metaboliccompass.auth0.com/ios/edu.jhu.cs.damsl.MetabolicCompass.app/callback"
-    let audience = "https://api-dev.metaboliccompass.com"
-    let scope = "openid profile offline_access"
+//    let audience = "https://api-dev.metaboliccompass.com"
+    let audience = "https://metaboliccompass.auth0.com/api/v2/"
+    
+    let scope = "openid profile offline_access update:current_user_metadata"
     let responseType = "code"
     let clientId = "FIwBsUv2cxpj1xoX3sjIeOyzm0Lq2Rqk"
     let codeChallengeMethod = "S256"
@@ -41,7 +44,7 @@ class PKCEFlowManager {
         let hash = Data(bytes: buffer_chal)
         codeChallenge = hash.base64EncodedString()
             .replacingOccurrences(of: "+", with: "-")
-            .replacingOccurrences(of: "/", with: "")
+            .replacingOccurrences(of: "/", with: "_")
             .replacingOccurrences(of: "=", with: "")
             .trimmingCharacters(in: .whitespaces)
         localLog.debug("codeVerifier: '\(codeVerifier!)'")
