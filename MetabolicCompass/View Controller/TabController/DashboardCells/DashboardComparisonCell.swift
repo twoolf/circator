@@ -90,7 +90,7 @@ class DashboardComparisonCell: UITableViewCell {
 
         localSampleValueTextField.attributedText =
             text.formatTextWithRegex(regex: "[-+]?(\\d*[.,/])?\\d+", format: formatAttrs, defaultFormat: defaultFormatAttrs)
-        print("local sample \(String(describing: localSampleValueTextField.attributedText))")
+//        print("local sample \(String(describing: localSampleValueTextField.attributedText))")
     }
     
     /// note setUserData above that uses this call
@@ -98,7 +98,7 @@ class DashboardComparisonCell: UITableViewCell {
         
         var text = DashboardComparisonCell.healthFormatter.stringFromSamples(samples: results)
         if stale { text = text + "**" }
-        print("stale or not in population \(stale)")
+//        print("stale or not in population \(stale)")
 
         let formatAttrs = [NSAttributedStringKey.foregroundColor: stale ? staleDigitColor : defaultDigitColor,
                            NSAttributedStringKey.font : ScreenManager.appFontOfSize(size: 16)]
@@ -108,7 +108,7 @@ class DashboardComparisonCell: UITableViewCell {
 
         populationSampleValueTextField.attributedText =
             text.formatTextWithRegex(regex: "[-+]?(\\d*[.,/])?\\d+", format: formatAttrs, defaultFormat: defaultFormatAttrs)
-        print("population sample \(String(describing: populationSampleValueTextField.attributedText))")
+//        print("population sample \(String(describing: populationSampleValueTextField.attributedText))")
     }
     
     

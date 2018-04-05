@@ -38,7 +38,7 @@ class MetabolicChart : Chart {
 //            return d.toString(DateFormat.Custom("HH:mm"))!
 //        }
         
-        self.yLabels = [Float(stWorkout), Float(stSleep), Float(stFast), Float(stEat)]
+        self.yLabels = [stWorkout, stSleep, stFast, stEat]
         self.yLabelsOnRightSide = true
         
     }

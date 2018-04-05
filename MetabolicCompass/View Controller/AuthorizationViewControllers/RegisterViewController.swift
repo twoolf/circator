@@ -58,9 +58,9 @@ private let inputFontSize = ScreenManager.sharedInstance.profileInputFontSize()
         self.doConsent()   
     }
     
-override func viewDidDisappear(_ animated: Bool) {
-    NotificationCenter.default.removeObserver(self)
-}
+    override func viewDidDisappear(_ animated: Bool) {
+        NotificationCenter.default.removeObserver(self)
+    }
     func auth0authorizationFailed(){
         webView?.removeFromSuperview()
         //alert
@@ -118,7 +118,7 @@ override func viewDidDisappear(_ animated: Bool) {
             return
         }
         
-        var request = URLRequest(url: URL(string: "https://metaboliccompass.auth0.com/api/v2/users/user_id")!,
+        var request = URLRequest(url: URL(string: "https://metaboliccompass.auth0.com/api/v2/users/auth0%7C5ac396c0c85e20778efd15e9")!,
                                      cachePolicy: .useProtocolCachePolicy,
                                  timeoutInterval: 10.0)
         

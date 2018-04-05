@@ -502,7 +502,7 @@ open class AddActivityManager: UITableView, UITableViewDelegate, UITableViewData
         })
     }
 
-    @nonobjc public func numberOfSectionsInTableView(_ tableView: UITableView) -> Int {
+    public func numberOfSections(in tableView: UITableView) -> Int {
         return addSectionTitles.count
     }
 
