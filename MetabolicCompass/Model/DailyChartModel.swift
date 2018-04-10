@@ -151,7 +151,7 @@ open class DailyChartModel : NSObject, UITableViewDataSource {
         var lastSevenDays: [Date] = []
         var calendar = Calendar.current
         calendar.timeZone = .current
-        var dateComponents = calendar.dateComponents([.year, .month, .day, .hour, .minute], from: Date())
+        var dateComponents = calendar.dateComponents([.year, .month, .day, .hour, .minute], from: endDate ?? Date())
         dateComponents.hour = 0
         dateComponents.minute = 0
         dateComponents.second = 0
@@ -591,10 +591,9 @@ open class DailyChartModel : NSObject, UITableViewDataSource {
             let endDate = day.endOfDay
             group.enter()
             self.fetchHKSamples(startDate: startDate, endDate: endDate)  { samples in
-                var circadianSamples = samples.flatMap  { CircadianSample(sample: $0) }
+                var circadianSamples = samples.flatMap  { CircadianSample(sample: $0) }.sorted {$0.startDate < $1.startDate}
                 circadianSamples = truncate(samples: circadianSamples, from: startDate, to: endDate)
                 circadianSamples = fillWithFasting(samples: circadianSamples, from: startDate, to: endDate)
-                
                 dict[day] = circadianSamples.map  {sample in
                     return (sample.duration, self.getColorForEventType(sample.event))
                 }
