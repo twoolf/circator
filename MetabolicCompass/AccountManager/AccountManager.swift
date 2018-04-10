@@ -143,7 +143,7 @@ class AccountManager: NSObject {
         }
     }
 
-    func withHKCalAuth(completion: @escaping (Void) -> Void) {
+    func withHKCalAuth(completion: @escaping () -> Void) {
         MCHealthManager.sharedManager.authorizeHealthKit { (success, error) -> Void in
             guard error == nil else {
                 self.isHealthKitAuthorized = false

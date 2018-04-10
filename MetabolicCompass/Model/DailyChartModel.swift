@@ -142,7 +142,8 @@ open class DailyChartModel : NSObject, UITableViewDataSource {
     public func prepareChartData () {
         Async.main(after: 0.5) {
             self.chartDataAndColors = [:]
-            self.getDataForDay(day: nil, lastDay: false)
+            self.delegate?.dataCollectingFinished?()
+//            self.getDataForDay(day: nil, lastDay: false)
         }
     }
 
@@ -208,88 +209,38 @@ open class DailyChartModel : NSObject, UITableViewDataSource {
         self.daysStringArray = DailyChartModel.getChartDateRangeStrings()
     }
 
-    public func getDataForDay(day: Date?, lastDay:Bool) {
+//    public func getDataForDay(day: Date?, lastDay:Bool) {
 //        let startDay = day == nil ? self.daysArray.first! : day!
+//        let today = startDay.isToday
+//
 //        let dateIndex = self.daysArray.index(of: startDay)
-//        let endOfDay = self.endOfDay(startDay)
-//        var dayEvents:[Double] = []
-//        var dayColors:[UIColor] = []
-//        var previousEventType: CircadianEvent?
-//        var previousEventDate: Date? = nil
-//        MCHealthManager.sharedManager.fetchCircadianEventIntervals(startDay, endDate: endOfDay, completion: { (intervals, error) in
-//            guard error == nil else {
-//                log.error("Failed to fetch circadian events: \(error)")
-//                return
+//        let cacheKey = "\(startDay.month)_\(startDay.day)_\(startDay.year)"
+//        let cacheDuration = today ? 5.0 : 60.0 //if it's today we will add cache time for 10 seconds in other cases cache will be saved for 1 minute
+//        self.cachedDailyProgress.setObject(forKey: cacheKey, cacheBlock: { (success, error) in
+//            self.getCircadianEventsForDay(startDay, completion: { (dayInfo) in
+//                success(dayInfo, .seconds(cacheDuration))
+//            })
+//        }, completion: { (dayInfoFromCache, loadedFromCache, error) in
+//            if (dayInfoFromCache != nil) {
+//                let dataAndColors = zip((dayInfoFromCache?.dayValues)!, (dayInfoFromCache?.dayColors)!).map { $0 }
+//                self.chartDataAndColors[startDay] = dataAndColors
 //            }
-//            if intervals.isEmpty {//we have no data to display
-//                //we will mark it as fasting and put 24h
-//                dayEvents.append(24.0)
-//                dayColors.append(UIColor.clear)
-//            } else {
-//                for event in intervals {
-//                    let (eventDate, eventType) = event //assign tuple values to vars
-//                    if endOfDay.day < eventDate.day {
-//                        print(previousEventDate)
-//                        let endEventDate = self.endOfDay(previousEventDate!)
-//                        let eventDuration = self.getDifferenceForEvents(previousEventDate, currentEventDate: endEventDate)
-//                        //                        print("\(eventType) - \(eventDuration)")
-//                        dayEvents.append(eventDuration)
-//                        dayColors.append(self.getColorForEventType(eventType))
-//                        break
-//                    }
-//                    if previousEventDate != nil && eventType == previousEventType {//we alredy have a prev event and can calculate how match time it took
-//                        let eventDuration = self.getDifferenceForEvents(previousEventDate, currentEventDate: eventDate)
-//                        //                        print("\(eventType) - \(eventDuration)")
-//                        dayEvents.append(eventDuration)
-//                        dayColors.append(self.getColorForEventType(eventType))
-//                    }
-//                    previousEventDate = eventDate
-//                    previousEventType = eventType
+//            if !lastDay { //we still have data to retrieve
+//                let nextIndex = dateIndex! + 1
+//                let lastElement = nextIndex == (self.daysArray.count - 1)
+//                OperationQueue.main.addOperation {
+//                    self.getDataForDay(day: self.daysArray[nextIndex], lastDay: lastElement)
 //                }
-//            }
-//            let lastElement = dateIndex == (self.daysArray.index(of: self.daysArray.last!)! - 1)
-//            self.chartDataArray.append(dayEvents)
-//            self.chartColorsArray.append(dayColors)
-//            if !lastDay {//we still have data te retrive
-//                self.getDataForDay(day: self.daysArray[dateIndex!+1], lastDay: lastElement)
 //            } else {//end of recursion
-//                Async.main {
+//                for (key, daysData) in self.chartDataAndColors {
+//                    self.chartDataAndColors[key] = daysData.map { valAndColor in (valAndColor.0, self.selectColor(color: valAndColor.1)) }
+//                }
+//                OperationQueue.main.addOperation {
 //                    self.delegate?.dataCollectingFinished?()
 //                }
 //            }
 //        })
-
-        let startDay = day == nil ? self.daysArray.first! : day!
-        let today = startDay.isToday
-
-        let dateIndex = self.daysArray.index(of: startDay)
-        let cacheKey = "\(startDay.month)_\(startDay.day)_\(startDay.year)"
-        let cacheDuration = today ? 5.0 : 60.0 //if it's today we will add cache time for 10 seconds in other cases cache will be saved for 1 minute
-        self.cachedDailyProgress.setObject(forKey: cacheKey, cacheBlock: { (success, error) in
-            self.getCircadianEventsForDay(startDay, completion: { (dayInfo) in
-                success(dayInfo, .seconds(cacheDuration))
-            })
-        }, completion: { (dayInfoFromCache, loadedFromCache, error) in
-            if (dayInfoFromCache != nil) {
-                let dataAndColors = zip((dayInfoFromCache?.dayValues)!, (dayInfoFromCache?.dayColors)!).map { $0 }
-                self.chartDataAndColors[startDay] = dataAndColors
-            }
-            if !lastDay { //we still have data to retrieve
-                let nextIndex = dateIndex! + 1
-                let lastElement = nextIndex == (self.daysArray.count - 1)
-                OperationQueue.main.addOperation {
-                    self.getDataForDay(day: self.daysArray[nextIndex], lastDay: lastElement)
-                }
-            } else {//end of recursion
-                for (key, daysData) in self.chartDataAndColors {
-                    self.chartDataAndColors[key] = daysData.map { valAndColor in (valAndColor.0, self.selectColor(color: valAndColor.1)) }
-                }
-                OperationQueue.main.addOperation {
-                    self.delegate?.dataCollectingFinished?()
-                }
-            }
-        })
-    }
+//    }
     
     public func getCircadianEventsForDay(_ day: Date, completion: @escaping (_ dayInfo: DailyProgressDayInfo) -> Void) {
         var endOfDay = day.endOfDay
@@ -578,7 +529,7 @@ open class DailyChartModel : NSObject, UITableViewDataSource {
         }
 
         let startDate = calendar?.date(byAdding: .day, value: -7, to: endDate, options: [])
-  //      let sampleType = HKWorkoutType.workoutType()
+//        let sampleType = HKWorkoutType.workoutType()
         let sampleType = HKSampleType.categoryType(forIdentifier: HKCategoryTypeIdentifier.sleepAnalysis)!
 
         let predicate = HKQuery.predicateForSamples(withStart: startDate, end: endDate, options: [])
@@ -605,22 +556,23 @@ open class DailyChartModel : NSObject, UITableViewDataSource {
         healthStore.execute(query)
     }
 
-    func fetchMCSamples(startDate: Date, endDate:Date, completion: @escaping ([MCSample]) -> ()) {
-        var allSamples: ([MCSample]) = []
+    func fetchHKSamples(startDate: Date, endDate:Date, completion: @escaping ([HKSample]) -> ()) {
+        var allSamples: ([HKSample]) = []
         let healthStore = HKHealthStore()
         let sleepType = HKSampleType.categoryType(forIdentifier: HKCategoryTypeIdentifier.sleepAnalysis)!
         let workoutType = HKWorkoutType.workoutType()
         let sampleTypes = [sleepType, workoutType]
         let predicate = HKQuery.predicateForSamples(withStart: startDate, end: endDate, options: [])
         let group = DispatchGroup()
+        
         sampleTypes.forEach{ type in
             group.enter()
             let query = HKSampleQuery(sampleType: type, predicate: predicate, limit: Int(HKObjectQueryNoLimit), sortDescriptors: nil) {
                 query, results, error in
-                guard let samples = results as? [MCSample] else {
-                    fatalError("An error occured fetching the user's tracked food. In your app, try to handle this error gracefully. The error was: \(error?.localizedDescription)");
+                
+                if let samples = results {
+                    allSamples = allSamples + samples
                 }
-                allSamples = allSamples + samples
                 group.leave()
             }
             healthStore.execute(query)
@@ -630,7 +582,7 @@ open class DailyChartModel : NSObject, UITableViewDataSource {
             completion(allSamples)
         }
     }
-
+    
     func prepareDataForChart(completion: @escaping ([Date: [(Double, UIColor)]]) -> ()) {
         var dict: [Date: [(Double, UIColor)]] = [:]
         let group = DispatchGroup()
@@ -638,25 +590,14 @@ open class DailyChartModel : NSObject, UITableViewDataSource {
             let startDate = day.startOfDay
             let endDate = day.endOfDay
             group.enter()
-            self.fetchMCSamples(startDate: startDate, endDate: endDate)  { samples in
-                var values: [(Double, UIColor)] = []
-                values = samples.map  {sample in
-                    let duration = sample.endDate.timeIntervalSince(sample.startDate) / 3600
-                    var color = UIColor.clear
-                    if sample.hkType?.identifier == HKWorkoutType.workoutType().identifier {
-                        if let workoutType = sample as? HKWorkout {
-                            if workoutType.metadata?["Meal Type"] != nil {
-                                color = .red
-                            } else {
-                                color = .green
-                            }
-                        }
-                    } else {
-                        color = .blue
-                    }
-                     return (duration, color)
+            self.fetchHKSamples(startDate: startDate, endDate: endDate)  { samples in
+                var circadianSamples = samples.flatMap  { CircadianSample(sample: $0) }
+                circadianSamples = truncate(samples: circadianSamples, from: startDate, to: endDate)
+                circadianSamples = fillWithFasting(samples: circadianSamples, from: startDate, to: endDate)
+                
+                dict[day] = circadianSamples.map  {sample in
+                    return (sample.duration, self.getColorForEventType(sample.event))
                 }
-                dict[day] = values
                 group.leave()
             }
         }
@@ -664,7 +605,109 @@ open class DailyChartModel : NSObject, UITableViewDataSource {
         group.notify(queue: .main) {
            completion(dict)
         }
-
     }
+}
+
+struct CircadianSample {
+    let startDate : Date
+    let endDate : Date
+    let event : CircadianEvent
+    
+    var duration : Double {
+        return self.endDate.timeIntervalSince(self.startDate) / 3600
+    }
+    
+    init(event: CircadianEvent, startDate: Date, endDate: Date) {
+        self.startDate = startDate
+        self.endDate = endDate
+        self.event = event
+    }
+    
+    init?(sample: HKSample) {
+        startDate = sample.startDate
+        endDate = sample.endDate
+        
+        guard let type = sample.hkType else {return nil}
+        switch type {
+        case is HKWorkoutType:
+            guard let workout = sample as? HKWorkout else { return nil }
+            
+            if workout.workoutActivityType == .preparationAndRecovery,
+                let meta = workout.metadata,
+                let mealStr = meta["Meal Type"] as? String,
+                let mealType = MCCircadianQueries.MealType(rawValue: mealStr) {
+                event = .meal(mealType: mealType)
+            } else {
+                event = .exercise(exerciseType: workout.workoutActivityType)
+            }
+        case is HKCategoryType:
+            guard type.identifier == HKCategoryTypeIdentifier.sleepAnalysis.rawValue else { return nil }
+            event = .sleep
+        default:
+            return nil
+        }
+    }
+}
+
+extension CircadianSample: CustomStringConvertible {
+    var description: String {
+        var type = ""
+        switch event {
+        case .meal(let mealType):
+            type = "Meal(\(mealType.rawValue))"
+        case .fast:
+            type = "Fast"
+        case .sleep:
+            type = "Sleep"
+        case .exercise:
+            type = "Excersise"
+        }
+        
+        return "\(type) from \(startDate) to \(endDate)"
+    }
+}
+
+func truncate(samples: [CircadianSample], from startDate: Date, to endDate: Date) -> [CircadianSample]
+{
+    return samples.filter {
+        return $0.startDate < endDate && $0.endDate > startDate
+    }
+    .map {
+            var result = $0
+            if (result.startDate < startDate) {
+                result = CircadianSample(event: result.event, startDate: startDate, endDate: result.endDate)
+            }
+            
+            if (result.endDate > endDate) {
+                result = CircadianSample(event: result.event, startDate: result.startDate, endDate: endDate)
+            }
+            return result
+    }
+}
+
+func fillWithFasting(samples: [CircadianSample], from startDate: Date, to endDate: Date) -> [CircadianSample]
+{
+    guard let firstSample = samples.first, let lastSample = samples.last else {return [CircadianSample(event: .fast, startDate: startDate, endDate: endDate)]}
+    
+    var results = [CircadianSample]()
+   
+    if firstSample.startDate != startDate {
+        results.append(CircadianSample(event: .fast, startDate: startDate, endDate: firstSample.startDate))
+    }
+    
+    for (index, sample) in samples.enumerated() {
+        results.append(sample)
+        if index + 1 < samples.count {
+            let nextSample = samples[index+1]
+            if nextSample.startDate != sample.endDate {
+                results.append(CircadianSample(event: .fast, startDate: sample.endDate, endDate: nextSample.startDate))
+            }
+        }
+    }    
+    
+    if lastSample.endDate != endDate {
+        results.append(CircadianSample(event: .fast, startDate: lastSample.endDate, endDate: endDate))
+    }
+    return results
 }
 
