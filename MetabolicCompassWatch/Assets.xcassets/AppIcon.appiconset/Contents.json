@@ -55,6 +55,11 @@
       "subtype" : "42mm"
     },
     {
+      "idiom" : "watch-marketing",
+      "size" : "1024x1024",
+      "scale" : "1x"
+    },
+    {
       "role" : "longLook",
       "size" : "44x44",
       "idiom" : "watch",

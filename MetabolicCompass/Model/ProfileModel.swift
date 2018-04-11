@@ -1,19 +1,18 @@
 //
 //  ProfileModel.swift
-//  MetabolicCompass 
+//  MetabolicCompass
 //
-//  Created by Anna Tkach on 5/11/16. 
+//  Created by Anna Tkach on 5/11/16.
 //  Copyright © 2016 Yanif Ahmad, Tom Woolf. All rights reserved.
 //
-
 import UIKit
 import MetabolicCompassKit
 
 class ProfileModel: UserInfoModel {
-
+    
     override func modelItems() -> [ModelItem] {
         var fields = [ModelItem]()
-
+        
         fields.append(self.loadPhotoField)
         fields.append(self.firstNameField)
         fields.append(self.lastNameField)
@@ -29,10 +28,10 @@ class ProfileModel: UserInfoModel {
         }
         return fields
     }
-
+    
     func setupValues() {
         let profileInfo = UserManager.sharedManager.getProfileCache()
-
+        
         let units: UnitsSystem! = UserManager.sharedManager.useMetricUnits() ? UnitsSystem.Metric : UnitsSystem.Imperial
         for item in items {
             if item.type == .Units {
@@ -59,9 +58,9 @@ class ProfileModel: UserInfoModel {
                     else if let heightAsInt = profileInfo[heightField.name] as? Int {
                         cmHeightAsDouble = Double(heightAsInt)
                     }
-
+                    
                     let heightFtIn = UnitsUtils.heightValue(valueInDefaultSystem: Float(cmHeightAsDouble), withUnits: units)
-//                    item.setNewValue(newValue: Int(floor((heightFtIn % 1.0) * 12.0)) as AnyObject?)
+                    //                    item.setNewValue(newValue: Int(floor((heightFtIn % 1.0) * 12.0)) as AnyObject?)
                     item.setNewValue(newValue: Int(floor((heightFtIn .truncatingRemainder(dividingBy: 1.0)) * 12.0)) as AnyObject?)
                 }
                 else if let profileItemInfo = profileInfo[item.name]{
@@ -104,7 +103,7 @@ class ProfileModel: UserInfoModel {
                     log.warning("Could not find profile field for \(item.name)")
                 }
             }
-
+            
         }
     }
 
@@ -113,7 +112,7 @@ class ProfileModel: UserInfoModel {
     func isItemEditable(item: ModelItem) -> Bool {
         return !uneditableFields.contains(item.type)
     }
-
+    
     override func profileItems() -> [String : String] {
         var newItems : [ModelItem] = [ModelItem]()
         for item in items {
@@ -127,6 +126,6 @@ class ProfileModel: UserInfoModel {
     override func isModelValid() -> Bool {
         resetValidationResults()
         return isPhotoValid() && /* isEmailValid() && isPasswordValid() && isFirstNameValid() && isLastNameValid() && */ isAgeValid()
-                    && isWeightValid() && isHeightValid() && (self.units == .Metric ? true : isHeightInchesValid())
+            && isWeightValid() && isHeightValid() && (self.units == .Metric ? true : isHeightInchesValid())
     }
 }

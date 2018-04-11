@@ -248,6 +248,7 @@ public class UserManager {
     
     public func isLoggedIn () -> Bool {
         return Stormpath.sharedSession.accessToken != nil
+//        return true
     }
     
     public func removeFirstLogin () {
