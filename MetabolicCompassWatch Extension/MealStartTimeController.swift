@@ -139,7 +139,7 @@ class MealStartTimeController: WKInterfaceController {
                                 totalEnergyBurned: HKQuantity(unit:HKUnit.calorie(), doubleValue:0.0),
                                 totalDistance: HKQuantity(unit:HKUnit.meter(), doubleValue:0.0),
                                 device: HKDevice.local(),
-                                metadata: [mealTypebyButton.mealType:"source"])
+                                metadata: [ "Meal Type" : mealTypebyButton.mealType])
         let healthKitStore: HKHealthStore = HKHealthStore()
         healthKitStore.save(workout, withCompletion: {(success, error) in
             print (success)
