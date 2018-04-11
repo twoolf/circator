@@ -117,33 +117,30 @@ class MetabolicDailyProgressChartView : HorizontalBarChartView, DailyChartModelP
     }
 
     func updateChartData (animate: Bool = true, valuesAndColors: [Date: [(Double, UIColor)]]) {
-
         var dataSetArray: [BarChartDataSet] = []
         var i = 0
-        valuesAndColors.forEach { date, tuples in
+        
+        valuesAndColors.keys.sorted().forEach { (date) in
             i = i+1
             var values: [Double] = []
             var colors: [UIColor] = []
-
-            tuples.forEach { value, color in
+            valuesAndColors[date]?.forEach { value, color in
                 values.append(value)
                 colors.append(color)
             }
-            var entries: [BarChartDataEntry] = []
-            for (index, value) in values.enumerated(){
-               let entry = BarChartDataEntry.init(x: Double(i), y: value)
-               entries.append(entry)
-            }
-            let set = BarChartDataSet.init(values: entries, label: "")
+            
+            let entry = BarChartDataEntry.init(x: Double (i), yValues: values)
+            let set = BarChartDataSet.init(values: [entry], label: nil)
             set.drawValuesEnabled = false
             set.colors = colors
             dataSetArray.append(set)
         }
+        
         let data = BarChartData.init(dataSets: dataSetArray)
         self.data = data
 
         let labelsInHours: Int = 2
-        let maxZoomWidthInHours: CGFloat = 2.0
+        let maxZoomWidthInHours: CGFloat = 4.0
         let zoomFactor: Double = Double (24.0 / maxZoomWidthInHours)
 
         let rightAxis = self.rightAxis
