@@ -224,6 +224,8 @@
 		95F400AB1CE385E80060F28C /* ProfileViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 95F400A91CE385E80060F28C /* ProfileViewController.swift */; };
 		95F400AD1CE38F2F0060F28C /* ModelItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = 95F400AC1CE38F2F0060F28C /* ModelItem.swift */; };
 		B452E5592086019600BE60E3 /* RegistrationFooterView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B452E5582086019600BE60E3 /* RegistrationFooterView.swift */; };
+		B452E55C208640AE00BE60E3 /* awsconfiguration.json in Resources */ = {isa = PBXBuildFile; fileRef = B452E55A208640AC00BE60E3 /* awsconfiguration.json */; };
+		B452E55D208640AE00BE60E3 /* Auth0.plist in Resources */ = {isa = PBXBuildFile; fileRef = B452E55B208640AD00BE60E3 /* Auth0.plist */; };
 		E74A89761CE308800056A2D2 /* UIColor+Extended.swift in Sources */ = {isa = PBXBuildFile; fileRef = E74A89751CE308800056A2D2 /* UIColor+Extended.swift */; };
 		E74A89791CE3265C0056A2D2 /* AccountManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = E74A89781CE3265C0056A2D2 /* AccountManager.swift */; };
 		E74A897C1CE338D30056A2D2 /* ContentManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = E74A897B1CE338D30056A2D2 /* ContentManager.swift */; };
@@ -573,6 +575,8 @@
 		9E2EC6EA764DDAA842127BE7 /* Pods_MetabolicCompassKit.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_MetabolicCompassKit.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		A09295FBE518AADED957B5BD /* Pods-MetabolicCompassKit.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-MetabolicCompassKit.release.xcconfig"; path = "Pods/Target Support Files/Pods-MetabolicCompassKit/Pods-MetabolicCompassKit.release.xcconfig"; sourceTree = "<group>"; };
 		B452E5582086019600BE60E3 /* RegistrationFooterView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RegistrationFooterView.swift; sourceTree = "<group>"; };
+		B452E55A208640AC00BE60E3 /* awsconfiguration.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; name = awsconfiguration.json; path = PrivateData/credentials/awsconfiguration.json; sourceTree = SOURCE_ROOT; };
+		B452E55B208640AD00BE60E3 /* Auth0.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; name = Auth0.plist; path = PrivateData/credentials/Auth0.plist; sourceTree = SOURCE_ROOT; };
 		B91691D0A77B11A59BA41669 /* Pods-MetabolicCompassWatch Extension.debug-dev.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-MetabolicCompassWatch Extension.debug-dev.xcconfig"; path = "Pods/Target Support Files/Pods-MetabolicCompassWatch Extension/Pods-MetabolicCompassWatch Extension.debug-dev.xcconfig"; sourceTree = "<group>"; };
 		C0D2D970472A7AF509ED116B /* Pods_MetabolicCompass.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_MetabolicCompass.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		C8CC31943A1BC382E580C503 /* Pods_MetabolicCompassWatch_Extension.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_MetabolicCompassWatch_Extension.framework; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -783,6 +787,8 @@
 		7881A3DF1BAF3B3E00ECB3C6 /* MetabolicCompass */ = {
 			isa = PBXGroup;
 			children = (
+				B452E55B208640AD00BE60E3 /* Auth0.plist */,
+				B452E55A208640AC00BE60E3 /* awsconfiguration.json */,
 				545AB0FA1E8014C0006C45F6 /* LaunchImage_320by568@2x.png */,
 				5492C4111EC75F2E00E1AADB /* LaunchScreen.storyboard */,
 				5411C8281E7F436000E05EFF /* MetabolicCompass.entitlements */,
@@ -1545,11 +1551,13 @@
 				54205EA71E7624CB003E3EC4 /* Gotham Medium.otf in Resources */,
 				54205EAD1E7624CB003E3EC4 /* HelveticaLTStd-Roman.otf in Resources */,
 				842B7DC91D0960A7007F2126 /* BarChartCollectionCell.xib in Resources */,
+				B452E55D208640AE00BE60E3 /* Auth0.plist in Resources */,
 				54205EAC1E7624CB003E3EC4 /* HelveticaLTStd-Blk.otf in Resources */,
 				54205EA61E7624CB003E3EC4 /* Gotham Book.otf in Resources */,
 				54205EAA1E7624CB003E3EC4 /* GothamExLight Italic.otf in Resources */,
 				95F4009A1CE385C60060F28C /* InfoCollectionViewCell.xib in Resources */,
 				95C0B9A41CD2563B006E523F /* TitledInputCollectionViewCell.xib in Resources */,
+				B452E55C208640AE00BE60E3 /* awsconfiguration.json in Resources */,
 				84EF0EAD1D05606300A25760 /* AddEvents.storyboard in Resources */,
 				54205EA91E7624CB003E3EC4 /* gotham-book.ttf in Resources */,
 				11FE4B931D50A5B4007A8D8E /* TwoLineCorrelcationCell.xib in Resources */,
