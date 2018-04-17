@@ -1,0 +1,218 @@
+PODS:
+  - AKPickerView-Swift (2.0.1)
+  - Alamofire (4.7.1)
+  - ARSLineProgress (2.2.0)
+  - AsyncKit (2.0.1)
+  - AsyncSwift (2.0.4)
+  - Auth0 (1.10.1):
+    - SimpleKeychain
+  - AwesomeCache (5.0)
+  - AWSAuthCore (2.6.14):
+    - AWSCore (= 2.6.14)
+  - AWSCognito (2.6.14):
+    - AWSCore (= 2.6.14)
+  - AWSCore (2.6.14)
+  - AWSMobileClient (2.6.14):
+    - AWSAuthCore (= 2.6.14)
+  - AWSS3 (2.6.14):
+    - AWSCore (= 2.6.14)
+  - Charts (3.0.4):
+    - Charts/Core (= 3.0.4)
+  - Charts/Core (3.0.4)
+  - Crashlytics (3.10.1):
+    - Fabric (~> 1.7.5)
+  - CryptoSwift (0.8.3)
+  - Dodo (11.0.2)
+  - EasyAnimation (2.0.2)
+  - EasyTipView (1.0.2)
+  - Fabric (1.7.6)
+  - FileKit (5.0.0)
+  - Former (1.6.1)
+  - Granola (0.4.1):
+    - ObjectiveSugar (~> 1.1)
+  - HTPressableButton (1.3.3):
+    - HTPressableButton/All (= 1.3.3)
+  - HTPressableButton/All (1.3.3)
+  - JWTDecode (2.1.1)
+  - Locksmith (4.0.0)
+  - MCCircadianQueries (0.2.1):
+    - AsyncSwift (~> 2.0.1)
+    - AwesomeCache
+    - SwiftDate (~> 4.0)
+    - SwiftyUserDefaults (~> 3.0)
+  - MGSwipeTableCell (1.6.6)
+  - Navajo-Swift (2.0.0)
+  - NVActivityIndicatorView (4.1.1):
+    - NVActivityIndicatorView/Presenter (= 4.1.1)
+  - NVActivityIndicatorView/Presenter (4.1.1)
+  - ObjectiveSugar (1.1.0)
+  - Pages (2.0.2)
+  - ReachabilitySwift (3)
+  - Realm (3.3.2):
+    - Realm/Headers (= 3.3.2)
+  - Realm/Headers (3.3.2)
+  - RealmSwift (3.3.2):
+    - Realm (= 3.3.2)
+  - ResearchKit (1.3)
+  - SimpleKeychain (0.8.0)
+  - Stormpath (3.0.1)
+  - SwiftChart (1.0.1)
+  - SwiftDate (4.5.1)
+  - SwiftMessages (4.0.0)
+  - SwiftyBeaver (1.5.2)
+  - SwiftyJSON (4.0.0)
+  - SwiftyUserDefaults (3.0.1)
+
+DEPENDENCIES:
+  - AKPickerView-Swift (from `https://github.com/Akkyie/AKPickerView-Swift.git`)
+  - Alamofire
+  - ARSLineProgress
+  - AsyncKit
+  - AsyncSwift
+  - Auth0 (~> 1.0)
+  - AwesomeCache (from `https://github.com/aschuch/AwesomeCache.git`, branch `master`)
+  - AWSCognito (~> 2.6.13)
+  - AWSMobileClient (~> 2.6.13)
+  - AWSS3 (~> 2.6.13)
+  - Charts (from `https://github.com/OlenaSrost/Charts.git`)
+  - Crashlytics
+  - CryptoSwift
+  - Dodo
+  - EasyAnimation
+  - EasyTipView
+  - Fabric
+  - FileKit (from `https://github.com/nvzqz/FileKit.git`, branch `master`)
+  - Former
+  - Granola (from `https://github.com/yanif/Granola.git`)
+  - HTPressableButton
+  - JWTDecode
+  - Locksmith
+  - MCCircadianQueries (from `https://github.com/OlenaSrost/MCCircadianQueries.git`, branch `swift3`)
+  - MGSwipeTableCell
+  - Navajo-Swift
+  - NVActivityIndicatorView
+  - Pages
+  - ReachabilitySwift (~> 3.0)
+  - Realm
+  - RealmSwift
+  - ResearchKit (from `https://github.com/twoolf/ResearchKit.git`)
+  - Stormpath
+  - SwiftChart
+  - SwiftDate (from `https://github.com/malcommac/SwiftDate.git`)
+  - SwiftMessages (from `https://github.com/SwiftKickMobile/SwiftMessages.git`, branch `swift4.0`)
+  - SwiftyBeaver (from `https://github.com/SwiftyBeaver/SwiftyBeaver.git`, branch `master`)
+  - SwiftyJSON
+  - SwiftyUserDefaults (from `https://github.com/radex/SwiftyUserDefaults.git`)
+
+EXTERNAL SOURCES:
+  AKPickerView-Swift:
+    :git: https://github.com/Akkyie/AKPickerView-Swift.git
+  AwesomeCache:
+    :branch: master
+    :git: https://github.com/aschuch/AwesomeCache.git
+  Charts:
+    :git: https://github.com/OlenaSrost/Charts.git
+  FileKit:
+    :branch: master
+    :git: https://github.com/nvzqz/FileKit.git
+  Granola:
+    :git: https://github.com/yanif/Granola.git
+  MCCircadianQueries:
+    :branch: swift3
+    :git: https://github.com/OlenaSrost/MCCircadianQueries.git
+  ResearchKit:
+    :git: https://github.com/twoolf/ResearchKit.git
+  SwiftDate:
+    :git: https://github.com/malcommac/SwiftDate.git
+  SwiftMessages:
+    :branch: swift4.0
+    :git: https://github.com/SwiftKickMobile/SwiftMessages.git
+  SwiftyBeaver:
+    :branch: master
+    :git: https://github.com/SwiftyBeaver/SwiftyBeaver.git
+  SwiftyUserDefaults:
+    :git: https://github.com/radex/SwiftyUserDefaults.git
+
+CHECKOUT OPTIONS:
+  AKPickerView-Swift:
+    :commit: 1ee8c7310bdef0f31f8fb92fbab0ab05978539f6
+    :git: https://github.com/Akkyie/AKPickerView-Swift.git
+  AwesomeCache:
+    :commit: 592a9e8e8e421de8b29fbc8464ada1aaf8d0d5d7
+    :git: https://github.com/aschuch/AwesomeCache.git
+  Charts:
+    :commit: af3e386d681e11c2ef24e7f43be8cbe2ca63b6d1
+    :git: https://github.com/OlenaSrost/Charts.git
+  FileKit:
+    :commit: 93505a1ad04b4a2de01abd751ace4f05c6db16a5
+    :git: https://github.com/nvzqz/FileKit.git
+  Granola:
+    :commit: 43cfc970de76197888d7f61a4493bd02d960e738
+    :git: https://github.com/yanif/Granola.git
+  MCCircadianQueries:
+    :commit: 74ab8b06b70f96a4f5297a5eb2d400ac2bf37983
+    :git: https://github.com/OlenaSrost/MCCircadianQueries.git
+  ResearchKit:
+    :commit: 3bf331c47e3bfaf6ef2d422dc2f9f9aa7939499c
+    :git: https://github.com/twoolf/ResearchKit.git
+  SwiftDate:
+    :commit: a6ec382004f45f45a78b172d0a85a6594a0054ae
+    :git: https://github.com/malcommac/SwiftDate.git
+  SwiftMessages:
+    :commit: 7546cce5bb95dbb9b1cc76ff997162d98ede5ede
+    :git: https://github.com/SwiftKickMobile/SwiftMessages.git
+  SwiftyBeaver:
+    :commit: eab0b9d8280a2ba349fa2975b4d7b2f6305330fc
+    :git: https://github.com/SwiftyBeaver/SwiftyBeaver.git
+  SwiftyUserDefaults:
+    :commit: 14b629b035bf6355b46ece22c3851068a488a895
+    :git: https://github.com/radex/SwiftyUserDefaults.git
+
+SPEC CHECKSUMS:
+  AKPickerView-Swift: 4969de689bee54f720dd64700f7aaab02a8f2ddc
+  Alamofire: 68d7d521118d49c615a8d2214d87cdf525599d30
+  ARSLineProgress: ec2160ed0530a6e3afe2981ad28837d10d650cd1
+  AsyncKit: 3817ed496961ea2595d80fe2ff8939398e72f82e
+  AsyncSwift: 65775a7b32e740609b24969ece3de58723b9dc3e
+  Auth0: 9d36ee6f452b7bd0af3907cb6c674425599e6f0e
+  AwesomeCache: c4a73e97b03901ea46084902b61cd5902a54dd88
+  AWSAuthCore: b13b0cb87abac6d44c52d8b965bbdb4cd0842017
+  AWSCognito: 12fcffc5751f65a39a65dbb9ab413134fd580cfb
+  AWSCore: 8c883c2623d314dd82cca3809527784e1d1a02e5
+  AWSMobileClient: 4467dd19e5e50d9a115b37e7be3ffb689c0b285c
+  AWSS3: a8cf89448c74637e34c46839ce5b5f7850f206e6
+  Charts: c5f4491efc3a24de9213fe3e68484bfdff881cfb
+  Crashlytics: aee1a064cbbf99b32efa3f056a5f458d846bc8ff
+  CryptoSwift: 033efc3523865d19cc6ab6612fa17a62613b5dfa
+  Dodo: d7e393c79aaaf3c51ed1311933493b6f1ccdde62
+  EasyAnimation: 977ef673efe8ce62447807eedb380a77b189dc80
+  EasyTipView: b93a19be981cc2221d6d7191d49872f547e0bebf
+  Fabric: f8d42c893bb187326a7968b62abe55c36a987a46
+  FileKit: 00156eb15be3bf1c0e090ef30df3b559111e86c0
+  Former: 830077d303185f56bcde1be0158b31f0626f1be4
+  Granola: 07d8cc4bdf005228118161eb182cd34eaf169a03
+  HTPressableButton: 3109ba7972247ddbd387c8a22b0341b02369b31e
+  JWTDecode: 83e8b381aafe27158d9f692cbdca2b12d61d460c
+  Locksmith: e9bebbaaa4cee3c511bc358a44f843c3fe00e21f
+  MCCircadianQueries: 3a8cb5d326e244648d2362fccf7d2c474ee48b4f
+  MGSwipeTableCell: c3bc6e261e7bc06c112909fe3fb8205de286082c
+  Navajo-Swift: 0f48998c95b0e8b17756e85dae018adbb2000735
+  NVActivityIndicatorView: 60109b9bf46efc2e71ab81453196ccdfdfeea870
+  ObjectiveSugar: a6a25f23d657c19df0a0b972466d5b5ca9f5295c
+  Pages: 5564ac6035c48fef7a837049314f57507d263b11
+  ReachabilitySwift: f5b9bb30a0777fac8f09ce8b067e32faeb29bb64
+  Realm: d927fbf66df5532cfafc08afb5f7e53ded37b894
+  RealmSwift: 4e903a494e05d866581d69ad6f7e7b879d446baf
+  ResearchKit: a291db406fa628507f3131020887e2179ed7a755
+  SimpleKeychain: 84c748463eec601dfee5e7990f55cc82edc5488d
+  Stormpath: 611ada2806a55db28b8fc1a069198d19295ec38f
+  SwiftChart: ba767a678d568a5ee22d419e146a0582865e1aff
+  SwiftDate: f74d61db9aa6d67e408e86f98138ff33cde702a7
+  SwiftMessages: e9ae56244859ad352b4382f4663ba76bb9b237f4
+  SwiftyBeaver: a40e808c88e11c8deda9b84d55f8707c1005ada8
+  SwiftyJSON: 070dabdcb1beb81b247c65ffa3a79dbbfb3b48aa
+  SwiftyUserDefaults: 38267a30d58b7c8570995cd5defd354e43f056c6
+
+PODFILE CHECKSUM: 5f75a27a72fcff70710bcda069e7d477ef123d60
+
+COCOAPODS: 1.4.0

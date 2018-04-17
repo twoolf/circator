@@ -14,14 +14,12 @@ import ReachabilitySwift
 import Async
 import Crashlytics
 
-class RegisterLoginLandingViewController: BaseViewController, UIWebViewDelegate {
+class RegisterLoginLandingViewController: BaseViewController {
     
-    var completion: ((Void) -> Void)?
+    var completion: (() -> Void)?
     let loginSegue = "LoginSegue"
     let registerSegue = "RegisterSegue"
-    var reachability: Reachability! = nil
-//    var reachability: Bool = true
-    private var webView: UIWebView?
+    var reachability: Reachability? = nil
 
     //MARK: View life circle
     override func viewDidLoad() {
@@ -29,15 +27,7 @@ class RegisterLoginLandingViewController: BaseViewController, UIWebViewDelegate 
         self.navigationController?.navigationBar.barStyle = UIBarStyle.black;
         self.navigationController?.navigationBar.tintColor = UIColor.white
 
-        do {
-//            reachability = try Reachability.reachabilityForInternetConnection()
-            reachability = try Reachability()
-        } catch {
-            let msg = "Failed to create reachability detector"
-//            log.error(msg)
-            fatalError(msg)
-        }        
-        NotificationCenter.default.addObserver(self, selector: #selector(self.auth0LoginPKCEFlowReceivingTokens(_:)), name: NSNotification.Name("AuthorizationCodeReceived"), object: nil)
+        reachability = Reachability()
     }
     
     override func viewDidDisappear(_ animated: Bool) {
@@ -49,94 +39,67 @@ class RegisterLoginLandingViewController: BaseViewController, UIWebViewDelegate 
         navigationController?.setNavigationBarHidden(true, animated: false)
     }
     
-    /*func preferredStatusBarStyle() -> UIStatusBarStyle {
+    func preferredStatusBarStyle() -> UIStatusBarStyle {
         return .lightContent;
-    } */
+    }
     
     //MARK: Actions
     @IBAction func onLogin(_ sender: AnyObject) {
-        auth0LoginPKCEFlowReceivingAuthorizationCode()
-    }
-
-
-/*    @IBAction func onRegister(sender: AnyObject) {
-        switch reachability.currentReachabilityStatus {
-//        case .isNotReachable:
-//            UINotifications.genericError(vc: self, msg: "We cannot register a new account without internet connectivity. Please try later.", pop: false, asNav: true)
-
-        default:
-            self.performSegue(withIdentifier: self.registerSegue, sender: self)
-        }
-    }   /* was BrightButton */ */
-
-    @IBAction func onRegister(_ sender: AnyObject) {
-        switch reachability.currentReachabilityStatus {
-            //        case .isNotReachable:
-            //            UINotifications.genericError(vc: self, msg: "We cannot register a new account without internet connectivity. Please try later.", pop: false, asNav: true)
-            
-        default:
-            self.performSegue(withIdentifier: self.registerSegue, sender: self)
+        UserManager.sharedManager.loginAuth0 { (hasConscent, error) in
+            if let error = error {
+                UINotifications.loginFailed(vc: self, reason: error.localizedDescription)
+            } else if let hasConscent = hasConscent {
+                if hasConscent {
+                    self.login()
+                } else {
+                    self.processNoConscent()
+                }
+            } else {
+                UINotifications.loginFailed(vc: self, reason: NSLocalizedString("Unknown error", comment: "Unknown error"))
+            }
         }
     }
     
-    func prepareForSegue(segue: UIStoryboardSegue, sender: AnyObject?) {
+    func processNoConscent() {
+        let alert = UIAlertController(title: NSLocalizedString("Warning", comment: "Warning message title"),
+                                      message: NSLocalizedString("Looks like we dont have you conscent or user was just register, do yo want to update conscent or cancel login?", comment: "Alert message when user doesn't have conscent signed"),
+                                      preferredStyle: .alert)
+        alert.addAction(UIAlertAction(title: NSLocalizedString("Update", comment: "Update user profile action"), style: .default, handler: {[weak self] (_) in
+            self?.performRegistration(updateExisting: true)
+        }))
+        alert.addAction(UIAlertAction(title: NSLocalizedString("Cancel", comment: "Cencel"), style: .cancel, handler: nil))
+        self.present(alert, animated: true, completion: nil)
+    }
+    
+    @IBAction func onRegister(_ sender: AnyObject) {
+        performRegistration(updateExisting: false)
+    }
+    
+    func performRegistration(updateExisting: Bool) {
+        switch reachability?.currentReachabilityStatus ?? .reachableViaWWAN {
+        case .notReachable:
+            UINotifications.genericError(vc: self, msg: "We cannot register a new account without internet connectivity. Please try later.", pop: false, asNav: true)
+        default:
+            self.performSegue(withIdentifier: self.registerSegue, sender: updateExisting)
+        }
+    }
+    
+    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
         if (segue.identifier == self.loginSegue) {
             let loginViewController = segue.destination as! LoginViewController
             loginViewController.completion = self.completion
         } else if (segue.identifier == self.registerSegue) {
             let regViewController = segue.destination as! RegisterViewController
+            regViewController.updatingExistingUser = sender as! Bool
             regViewController.registerCompletion = {
                 UINotifications.genericMsg(vc: self, msg: "Please remember to check your email for our account verification link.", pop: false, asNav: true, nohide: true)
             }
-        }        
+        }
     }
     
     @IBAction func privacyPolicy() {
         let svc = SFSafariViewController(url: MCRouter.privacyPolicyURL!)
         self.present(svc, animated: true, completion: nil)
-    }
-    
-    func auth0LoginPKCEFlowReceivingAuthorizationCode() {
-        PKCEFlowManager.shared?.receiveAutorizationCode { [weak self] data in
-            let htmlString = String(data: data!, encoding: .utf8)
-            self?.webView = UIWebView(frame: (self?.view.bounds)!)
-            self?.webView?.loadHTMLString(htmlString!, baseURL: nil)
-            self?.webView?.delegate = self
-            self?.view.addSubview((self?.webView)!)
-        }
-    }
-    
-    @objc public func auth0LoginPKCEFlowReceivingTokens(_ notification: NSNotification) {
-        let authorizationCode = notification.userInfo?["authorization_code"] as? String
-        PKCEFlowManager.shared?.receiveAccessToken(authorizationCode: authorizationCode!,  { [weak self] data in
-            guard let json = try? JSONSerialization.jsonObject(with: data!) as? [String: Any] else {
-                self?.auth0authorizationFailed()
-                return
-            }
-            
-            print("Access Token JSON: \(json)")
-            
-            guard let accessToken = json!["access_token"] as? String else {
-                self?.auth0authorizationFailed()
-                return
-            }
-            guard let refreshToken = json!["refresh_token"] as? String else {
-                self?.auth0authorizationFailed()
-                return
-            }
-            guard let idToken = json!["id_token"] as? String? else {
-                self?.auth0authorizationFailed()
-                return
-            }
-            AuthSessionManager.shared.storeTokens(accessToken , refreshToken: refreshToken)
-            self?.webView?.removeFromSuperview()
-            self?.login()
-        })
-    }
-    
-    func auth0authorizationFailed(){
-        webView?.removeFromSuperview()
-        //alert
     }
     
     func login() {
@@ -195,7 +158,7 @@ class RegisterLoginLandingViewController: BaseViewController, UIWebViewDelegate 
     }
     
     func loginComplete() {
-        if let comp = self.completion { comp(()) }
+        if let comp = self.completion { comp() }
         self.navigationController?.popToRootViewController(animated: true)
         
         Async.main {

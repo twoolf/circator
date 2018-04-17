@@ -95,27 +95,24 @@ class UserInfoModel: NSObject {
         var profile = [String : String]()
         var heightInchesComponent: String! = nil
         for item in newItems {            
-            if item.type == .FirstName || item.type == .LastName || item.type == .Photo
+            if item.type == .Photo
             {
-                 continue
+                continue
             } else {
                 if item.type == .HeightInches {
                     heightInchesComponent = item.stringValue()
                 }
-
                 else if item.type == .Gender {
                     if let value = item.intValue() {
                         let gender = Gender(rawValue: value)!.title
                         profile[item.name] = gender
                     }
                 }
-                
                 else if item.type == .Units {
                     if let value = item.intValue() {
                         profile[item.name] = value == 1 ? "true" : "false"
                     }
                 }
-
                 else if let value = item.stringValue() {
                     profile[item.name] = value
                 }

@@ -15,6 +15,7 @@ let RegisterUnitsFont = UIFont(name: "GothamBook", size: 13.0)!
 class RegisterModelDataSource: BaseDataSource {
 
     let model = RegistrationModel()
+    var updateExistingUser = false
 
     private let loadImageCellIdentifier = "loadImageCell"
     private let inputTextCellIdentifier = "inputTextCell"
@@ -89,8 +90,15 @@ class RegisterModelDataSource: BaseDataSource {
     }
 
     func collectionView(_ collectionView: UICollectionView, viewForSupplementaryElementOfKind kind: String, at indexPath: IndexPath) -> UICollectionReusableView {
+        
         if kind == UICollectionElementKindSectionFooter {
-            let footerView = collectionView.dequeueReusableSupplementaryView(ofKind: kind, withReuseIdentifier: "footerView", for: indexPath as IndexPath)
+            let footerView = collectionView.dequeueReusableSupplementaryView(ofKind: kind, withReuseIdentifier: "footerView", for: indexPath as IndexPath) as! RegistrationFooterView
+            
+            if updateExistingUser {
+                footerView.registerButton.setTitle(NSLocalizedString("Update", comment: "Update user info button"), for: .normal)
+            } else {
+                footerView.registerButton.setTitle(NSLocalizedString("Register", comment: "Register button"), for: .normal)
+            }
             return footerView
         }
         return UICollectionReusableView()

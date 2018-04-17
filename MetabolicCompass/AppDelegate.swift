@@ -18,6 +18,7 @@ import SwiftyUserDefaults
 import WatchConnectivity
 import Auth0
 import SwiftyBeaver
+import AWSMobileClient
 
 // Init Logs
 let log = RemoteLogManager.sharedManager.log
@@ -136,12 +137,12 @@ class AppDelegate: UIResponder, UIApplicationDelegate, WCSessionDelegate
         NotificationCenter.default.addObserver(self, selector: #selector(self.errorNotification), name: NSNotification.Name(rawValue: MCRemoteErrorNotification), object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(self.errorNotification), name: NSNotification.Name(rawValue: MCRemoteErrorNotification), object: nil)
         
+        launchSuccess = launchSuccess && AWSMobileClient.sharedInstance().interceptApplication(application, didFinishLaunchingWithOptions: launchOptions)
         return launchSuccess
     }
     
     @nonobjc internal func application(_ application: UIApplication, supportedInterfaceOrientationsForWindow window: UIWindow?) -> UIInterfaceOrientationMask {
         return checkOrientation(self.window?.rootViewController)
-        return UIInterfaceOrientationMask.portrait
     }
     
     func checkOrientation(_ viewController: UIViewController?) -> UIInterfaceOrientationMask {
@@ -254,16 +255,9 @@ class AppDelegate: UIResponder, UIApplicationDelegate, WCSessionDelegate
             session.activate()
         }
     }
-//  optional public func application(_ app: UIApplication, open url: URL, options: [UIApplicationOpenURLOptionsKey : Any] = [:]) -> Bool // no equiv. notification. return NO if the application can't open for some reason
-    // Auto0
-   public func application(_ app: UIApplication, open url: URL, options: [UIApplicationOpenURLOptionsKey : Any]) -> Bool {
-        guard let params = URLComponents.init(url: url, resolvingAgainstBaseURL: true) else {return false}
-        let autorizationCodeQueryItem = params.queryItems?.last
-        let autorizationCode = autorizationCodeQueryItem?.value
-        print("Got Redirect with URL '\(url)'\n authorization_code: '\(autorizationCode)'")
-        NotificationCenter.default.post(name: NSNotification.Name("AuthorizationCodeReceived"), object: nil, userInfo: ["authorization_code": autorizationCode])
     
-        return true
+   public func application(_ app: UIApplication, open url: URL, options: [UIApplicationOpenURLOptionsKey : Any]) -> Bool {
+        return Auth0.resumeAuth(url, options: options)
     }
 }
 

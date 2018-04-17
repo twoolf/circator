@@ -19,6 +19,8 @@ import AsyncKit
 import JWTDecode
 import SwiftyUserDefaults
 import Auth0
+import AWSS3
+import AWSCore
 
 // Helper typealiases to indicate whether the bool argument expects an error or success status.
 public typealias ErrorCompletion = (Bool) -> Void
@@ -44,6 +46,13 @@ public let UMPullFullAccountInfoString = "Retrieved full account"
 public let UMDidLoginNotifiaction = "didLoginNotifiaction"
 public let UMDidLogoutNotification = "didLogoutNotification"
 
+enum UserManagerError: Error {
+    case failedToUploadConscent
+    case failedToCheckConscent
+    case failedToLoadMetadata
+    case failedToAuthorizeWithAuth0
+}
+
 // Error generators.
 // These are public to allow other components to recreate and check error messages.
 public let UMPushInvalidBinaryFileError : (AccountComponent, String?) -> String = { (component, path) in
@@ -63,9 +72,9 @@ public let UMPullComponentErrorAsArray : (String) -> [AccountComponent] = { erro
     let prefix = "Failed to pull account components "
     var result : [AccountComponent] = []
     if errorMsg.hasPrefix(prefix) {
-        let intOffSet = prefix.characters.count - 1
+        let intOffSet = prefix.count - 1
         let indexString = errorMsg.index(errorMsg.startIndex, offsetBy: intOffSet)
-        let componentsStr = errorMsg.substring(from: indexString)
+        let componentsStr = errorMsg[...indexString]
         result = componentsStr.components(separatedBy: ",").flatMap(getComponentByName)
     }
     return result
@@ -158,6 +167,7 @@ public class UserManager {
     public static let defaultHotwords = "food log"
     public static let initialProfileDataKey = "initialProfileData"
     public static let additionalInfoDataKey = "additionalInfoData"
+    public static let conscentMetadataKey = "conscentS3Key"
     private static let firstLoginKey = "firstLoginKey"
 
     // Primary user
@@ -247,8 +257,9 @@ public class UserManager {
     }
     
     public func isLoggedIn () -> Bool {
-        return Stormpath.sharedSession.accessToken != nil
+        return false
 //        return true
+//        return Stormpath.sharedSession.accessToken != nil
     }
     
     public func removeFirstLogin () {
@@ -412,17 +423,7 @@ public class UserManager {
             completion(result)
    //     }
     }
-
-    public func loginWithPush(profile: [String: AnyObject], completion: @escaping SvcResultCompletion) {
-        loginWithCompletion { res in
-            guard res.ok else {
-                completion(res)
-                return
-            }
-            self.pushProfile(componentData: profile, completion: completion)
-        }
-    }
-
+    
     public func loginWithPull(completion: @escaping SvcResultCompletion) {
         loginWithCompletion { res in
             guard res.ok  else {
@@ -432,84 +433,65 @@ public class UserManager {
             self.pullFullAccount(completion: completion)
         }
     }
+    
+//
+//    public func loginWithPush(profile: [String: AnyObject], completion: @escaping SvcResultCompletion) {
+//        loginWithCompletion { res in
+//            guard res.ok else {
+//                completion(res)
+//                return
+//            }
+//            self.pushProfile(componentData: profile, completion: completion)
+//        }
+//    }
+//
 
-    public func login(userPass: String, completion: @escaping SvcResultCompletion) {
-        withUserId { user in
-            if !self.validateAccount(userPass: userPass) {
-                self.resetAccount()
-                self.createAccount(userId: user, userPass: userPass)
-            }
-            self.loginWithPull(completion: completion)
-        }
-    }
-
+//
+//    public func login(userPass: String, completion: @escaping SvcResultCompletion) {
+//        withUserId { user in
+//            if !self.validateAccount(userPass: userPass) {
+//                self.resetAccount()
+//                self.createAccount(userId: user, userPass: userPass)
+//            }
+//            self.loginWithPull(completion: completion)
+//        }
+//    }
+//
     public func logoutWithCompletion(completion: (() -> Void)?) {
-        Stormpath.sharedSession.logout()
-        MCRouter.updateAuthToken(token: nil)
-        resetUser()
-        if let comp = completion { comp() }
+        //TODO: Implement Auth0 log out
+        
+//        Stormpath.sharedSession.logout()
+//        MCRouter.updateAuthToken(token: nil)
+//        resetUser()
+//        if let comp = completion { comp() }
     }
-
+//
     public func logout() {
         logoutWithCompletion(completion: nil)
     }
-
-    public func register(firstName: String, lastName: String, consentPath: String, initialData: [String: String], completion: @escaping ((Account?, Bool, String?) -> Void)) {
- 
-        
-        
-        
-        
-        
-        
-        
-
-        withUserPass(password: getPassword()) { (user,pass) in
-//            let account = RegistrationModel(email: user, password: pass)
-            let account = RegistrationForm(email: user, password: pass)
-            account.givenName = firstName
-            account.surname = lastName
-            if let data = NSData(contentsOfFile: consentPath) {
-                let consentStr = data.base64EncodedString(options: NSData.Base64EncodingOptions())
-                account.customFields = ["consent": consentStr]
-                account.customFields.update(other: initialData)
-                Stormpath.sharedSession.register(account: account) { (account, error) -> Void in
-                    if error != nil { log.error("Register failed: \(error)") }
-                    completion(account, error != nil, error?.localizedDescription)
-                }
-            } else {
-                let msg = UMPushReadBinaryFileError(.Consent, consentPath)
-                log.error(msg)
-                completion(nil, true, msg)
-            }
-        }
-    }
-
-    public func registerAuth0(firstName: String, lastName: String, consentPath: String, initialData: [String: String]) {
-        withUserPass(password: getPassword()) { (user,pass) in
-            let data = NSData(contentsOfFile: consentPath)
-            let consentStr = data?.base64EncodedString(options: NSData.Base64EncodingOptions())
-            let userMetadata = ["first_name": firstName,
-                                 "last_name": lastName]
-        Auth0
-            .authentication()
-            .createUser(
-                email: user,
-                password: pass,
-                connection: "Username-Password-Authentication",
-                userMetadata: userMetadata
-            )
-            .start { result in
-                switch result {
-                case .success(let user):
-                    print("User Signed up: \(user)")
-                case .failure(let error):
-                    print("Failed with \(error)")
-                }
-            }
-        }
-    }
-
+//
+//    public func register(firstName: String, lastName: String, consentPath: String, initialData: [String: String], completion: @escaping ((Account?, Bool, String?) -> Void)) {
+//        withUserPass(password: getPassword()) { (user,pass) in
+////            let account = RegistrationModel(email: user, password: pass)
+//            let account = RegistrationForm(email: user, password: pass)
+//            account.givenName = firstName
+//            account.surname = lastName
+//            if let data = NSData(contentsOfFile: consentPath) {
+//                let consentStr = data.base64EncodedString(options: NSData.Base64EncodingOptions())
+//                account.customFields = ["consent": consentStr]
+//                account.customFields.update(other: initialData)
+//                Stormpath.sharedSession.register(account: account) { (account, error) -> Void in
+//                    if error != nil { log.error("Register failed: \(error)") }
+//                    completion(account, error != nil, error?.localizedDescription)
+//                }
+//            } else {
+//                let msg = UMPushReadBinaryFileError(.Consent, consentPath)
+//                log.error(msg)
+//                completion(nil, true, msg)
+//            }
+//        }
+//    }
+//
     public func withdraw(keepData: Bool, completion: @escaping SuccessCompletion) {
         let params = ["keep": keepData]
         Service.string(route: MCRouter.DeleteAccount(params as [String : AnyObject]), statusCode: 200..<300, tag: "WITHDRAW") {
@@ -518,21 +500,182 @@ public class UserManager {
             completion(result.isSuccess)
         }
     }
-
-
+//
+//
     public func resetPassword(email: String, completion: @escaping ((Bool, String?) -> Void)) {
-        Stormpath.sharedSession.resetPassword(email: email) { (success, error) -> Void in
-            if error != nil { log.error("Reset Password failed: \(error)") }
-            completion(success, error?.localizedDescription)
+        //TODO: Remove controller that called this method !!!
+        
+//        Stormpath.sharedSession.resetPassword(email: email) { (success, error) -> Void in
+//            if error != nil { log.error("Reset Password failed: \(error)") }
+//            completion(success, error?.localizedDescription)
+//        }
+    }
+    
+    // MARK: Auth0 authorization
+    
+    public func loginAuth0(completion: @escaping (Bool?, Error?) -> ()) {
+        
+        authorizeAuth0(audience: "https://metaboliccompass.auth0.com/api/v2/",
+                       scope: "openid profile offline_access update:current_user_metadata") { (credentials, error) in
+                        if let credentials = credentials {
+                            self.storeAuth0(credentials: credentials)
+                            self.checkConscent(completion: completion)
+                        } else {
+                            completion(false, error)
+                        }
+        }
+    }
+    
+    private func checkConscent(completion: @escaping (Bool?, Error?) -> ()) {
+        guard let idToken = auth0Credentials?.idToken,
+            let decodedId = try? decode(jwt: idToken),
+            let userId = decodedId.subject else {
+                completion(nil, UserManagerError.failedToAuthorizeWithAuth0)
+                return
+        }
+        
+        Auth0
+            .users(token: idToken)
+            .get(userId, fields: ["user_metadata"])
+            .start { (result) in
+                switch(result) {
+                case .success(let profile):
+                    if let metadata = profile["user_metadata"] as? [String : String] {
+                        if let _ = metadata[UserManager.conscentMetadataKey] {
+                            self.authorizeMCApi(completion: { (error) in
+                                if let error = error {
+                                    completion(nil, error)
+                                } else {
+                                    completion(true, nil)
+                                }
+                            })
+                        } else {
+                            completion(false, nil)
+                        }
+                    } else {
+                        completion(nil, UserManagerError.failedToLoadMetadata)
+                    }
+                case .failure(_):
+                    completion(nil, UserManagerError.failedToLoadMetadata)
+                }
+        }
+    }
+
+    public func registerAuth0(firstName: String, lastName: String, consentPath: String, initialData: [String: String], completion: @escaping (Error?) -> ()) {
+        let audienceAuth0 = "https://metaboliccompass.auth0.com/api/v2/"
+        let scopeAuth0 = "openid profile offline_access update:current_user_metadata"
+        
+        authorizeAuth0(audience: audienceAuth0, scope: scopeAuth0) { (credentials, error) in
+            if let credentials = credentials {
+                self.storeAuth0(credentials: credentials)
+                self.updateAuth0Metadata(consentPath: consentPath, initialData: initialData, completion: completion)
+            } else {
+                completion(error)
+            }
+        }
+    }
+    
+    public func updateAuth0ExistingUser(firstName: String, lastName: String, consentPath: String, initialData: [String: String], completion: @escaping (Error?) -> ()) {
+        self.updateAuth0Metadata(consentPath: consentPath, initialData: initialData, completion: completion)
+    }    
+    
+    func authorizeMCApi(completion: @escaping (Error?) -> ()) {
+        let audienceMC = "https://api-dev.metaboliccompass.com"
+        let scopeMC = "openid profile offline_access update:current_user_metadata"
+        
+        authorizeAuth0(audience: audienceMC, scope: scopeMC) { (credentials, error) in
+            if let credentials = credentials {
+                self.storeMC(credentials: credentials)
+                completion(nil)
+            } else {
+                completion(error)
+            }
+        }
+    }
+    
+    private func authorizeAuth0(audience: String, scope: String, completion : @escaping (Credentials?, Error?) ->()) {
+        Auth0
+            .webAuth()
+            .audience(audience)
+            .scope(scope)
+            .start { (result) in
+                switch result {
+                case .success(let credentials):
+                    completion(credentials, nil)
+                case .failure(let error):
+                    completion(nil, error)
+                }
+        }
+    }
+    
+    func updateAuth0Metadata(consentPath: String, initialData: [String: String], completion: @escaping (Error?) -> ()) {
+        guard let idToken = auth0Credentials?.idToken,
+            let decodedId = try? decode(jwt: idToken),
+            let userId = decodedId.subject else {
+                completion(UserManagerError.failedToAuthorizeWithAuth0)
+                return
+        }
+        
+        uploadConscent(consentPath: consentPath) { (error, conscentAwsKey) in
+            guard let conscentKey = conscentAwsKey, error == nil else {
+                completion(UserManagerError.failedToUploadConscent)
+                return
+            }
+            
+            var userMetadata = initialData
+            userMetadata[UserManager.conscentMetadataKey] = conscentKey
+            
+            Auth0
+                .users(token: idToken)
+                .patch(userId, userMetadata: userMetadata)
+                .start { (result) in
+                    switch result {
+                    case .success(_):
+                        self.authorizeMCApi(completion: completion)
+                    case .failure(let error):
+                        completion(error)
+                    }
+            }
+        }
+    }
+    
+    private var auth0Credentials : Credentials?
+    private var mcAPICredentials : Credentials?
+    
+    func storeAuth0(credentials: Credentials) {
+        auth0Credentials = credentials
+    }
+    
+    func storeMC(credentials: Credentials) {
+        mcAPICredentials = credentials
+    }
+    
+    // MARK: AWS S3 functions
+    
+    func uploadConscent(consentPath: String, completion: @escaping (Error?, String?) -> ()) {
+        let expression = AWSS3TransferUtilityUploadExpression()
+        
+        let transferUtility = AWSS3TransferUtility.default()
+        let conscentKey = "uploads/\(UUID().uuidString).pdf"
+        
+        transferUtility.uploadFile(URL(fileURLWithPath: consentPath),
+                                   key: conscentKey,
+                                   contentType: "application/pdf",
+                                   expression:  expression) { (task, error) in
+                                    if error != nil {
+                                        completion(error, nil)
+                                    } else {
+                                        completion(nil, conscentKey)
+                                    }
         }
     }
 
     // MARK: - Stormpath token management.
 
-    public func getAccessToken() -> String? {
-        return Stormpath.sharedSession.accessToken
-    }
-
+//    public func getAccessToken() -> String? {
+//        return Stormpath.sharedSession.accessToken
+//    }
+//
     // Recursive checking of the access token's expiry.
     // This method retrieves the expiry time for the current access token using the
     // REST API's expiry route.
@@ -546,6 +689,7 @@ public class UserManager {
     // TODO: Yanif: remove checking local expiration, since this should never be feasible.
     //
     public func ensureAccessToken(tried: Int, completion: @escaping ErrorCompletion) {
+        //TODO: Implement with Auth0
         guard tried < UserManager.maxTokenRetries else {
             log.error("Failed to get access token within \(UserManager.maxTokenRetries) iterations")
             // Get the expiry time locally from the token if available.
@@ -586,12 +730,15 @@ public class UserManager {
     }
 
     public func ensureAccessToken(completion: @escaping ErrorCompletion) {
-        if let token = Stormpath.sharedSession.accessToken {
-            MCRouter.updateAuthToken(token: token)
-            ensureAccessToken(tried: 0, completion: completion)
-        } else {
-            self.refreshAccessToken(completion: completion)
-        }
+
+        completion(false)
+
+//        if let token = Stormpath.sharedSession.accessToken {
+//            MCRouter.updateAuthToken(token: token)
+//            ensureAccessToken(tried: 0, completion: completion)
+//        } else {
+//            self.refreshAccessToken(completion: completion)
+//        }
     }
 
     public func refreshAccessToken(tried: Int, completion: @escaping ErrorCompletion) {
@@ -1227,24 +1374,27 @@ public class UserManager {
         if let url = userProfilePhotoUrl() {
 
             if let ph = photo {
-                // save photo
-                _ = UIImagePNGRepresentation(ph)
-//                result = imageData!.writeToURL(url, atomically: false)
+                if let imageData = UIImagePNGRepresentation(ph) {
+                    do {
+                        try imageData.write(to: url)
+                        result = true
+                    } catch {
+                        result = false
+                    }
+                } else {
+                    result = false
+                }
             }
-
             else {
-                // remove if exists
-
                 let fileManager = FileManager.default
 
                 let urlPathStr = url.absoluteString
 
-                if fileManager.fileExists(atPath: urlPathStr!) {
+                if fileManager.fileExists(atPath: urlPathStr) {
                     do {
-                        try fileManager.removeItem(atPath: urlPathStr!)
+                        try fileManager.removeItem(atPath: urlPathStr)
                         result = true
                     } catch {
-                        print("File does not exists \(error)")
                         result = false
                     }
                 }
@@ -1258,24 +1408,19 @@ public class UserManager {
 
     public func userProfilePhoto() -> UIImage? {
         if let url = userProfilePhotoUrl() {
-            let image = UIImage(contentsOfFile: url.path!)
+            let image = UIImage(contentsOfFile: url.path)
             return image
         }
         return nil
     }
 
-    private func userProfilePhotoUrl() -> NSURL? {
-
+    private func userProfilePhotoUrl() -> URL? {
         if let user = self.userId {
-            _ =  user + ".png"
-
+            let photoFileName =  user + ".png"
             let documentsURL = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask)[0]
-
-//            let imageURL = documentsURL.URLByAppendingPathComponent(photoFileName)
-
-//            return imageURL
+            let imageURL = documentsURL.appendingPathComponent(photoFileName)
+            return imageURL
         }
-
         return nil
     }
 

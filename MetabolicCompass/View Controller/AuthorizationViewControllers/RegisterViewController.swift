@@ -19,7 +19,7 @@ import Auth0
 private let lblFontSize = ScreenManager.sharedInstance.profileLabelFontSize()
 private let inputFontSize = ScreenManager.sharedInstance.profileInputFontSize()
 
- class RegisterViewController : BaseViewController, UIWebViewDelegate {
+ class RegisterViewController : BaseViewController {
 
     override class var storyboardName : String {
         return "RegisterLoginProcess"
@@ -28,17 +28,17 @@ private let inputFontSize = ScreenManager.sharedInstance.profileInputFontSize()
     var dataSource = RegisterModelDataSource()
 
     @IBOutlet weak var collectionView: UICollectionView!
-
+    
+    var updatingExistingUser = false
+    
     internal var consentOnLoad : Bool = false
     internal var registerCompletion : (() -> Void)?
     private var stashedUserId : String?
-    private var webView: UIWebView?
     
     //MARK: View life circle
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         navigationController?.setNavigationBarHidden(false, animated: false)
-        NotificationCenter.default.addObserver(self, selector: #selector(self.auth0LoginPKCEFlowReceivingTokens(_:)), name: NSNotification.Name("AuthorizationCodeReceived"), object: nil)
     }
 
     override func viewWillDisappear(_ animated: Bool) {
@@ -47,8 +47,8 @@ private let inputFontSize = ScreenManager.sharedInstance.profileInputFontSize()
         
     }
     override func viewDidLoad() {
-        super.viewDidLoad()
-
+        super.viewDidLoad()        
+        dataSource.updateExistingUser = updatingExistingUser
         setupScrollViewForKeyboardsActions(view: collectionView)
 
         dataSource.viewController = self
@@ -58,90 +58,6 @@ private let inputFontSize = ScreenManager.sharedInstance.profileInputFontSize()
         self.doConsent()   
     }
     
-    override func viewDidDisappear(_ animated: Bool) {
-        NotificationCenter.default.removeObserver(self)
-    }
-    func auth0authorizationFailed(){
-        webView?.removeFromSuperview()
-        //alert
-    }
-    
-    func auth0LoginPKCEFlowReceivingAuthorizationCode() {
-        PKCEFlowManager.shared?.receiveAutorizationCode { [weak self] data in
-            let htmlString = String(data: data!, encoding: .utf8)
-            self?.webView = UIWebView(frame: (self?.view.bounds)!)
-            self?.webView?.loadHTMLString(htmlString!, baseURL: nil)
-            self?.webView?.delegate = self
-            self?.view.addSubview((self?.webView)!)
-        }
-    }
-    
-    @objc public func auth0LoginPKCEFlowReceivingTokens(_ notification: NSNotification) {
-        let authorizationCode = notification.userInfo?["authorization_code"] as? String
-        PKCEFlowManager.shared?.receiveAccessToken(authorizationCode: authorizationCode!,  { [weak self] data in
-            guard let json = try? JSONSerialization.jsonObject(with: data!) as? [String: Any] else {
-                self?.auth0authorizationFailed()
-                return
-            }
-            guard let accessToken = json!["access_token"] as? String else {
-                self?.auth0authorizationFailed()
-                return
-           }
-            guard let refreshToken = json!["refresh_token"] as? String else {
-                self?.auth0authorizationFailed()
-                return
-            }
-            guard let idToken = json!["id_token"] as? String? else {
-                self?.auth0authorizationFailed()
-                return
-            }
-            AuthSessionManager.shared.storeTokens(accessToken , refreshToken: refreshToken)
-            self?.webView?.removeFromSuperview()
-            self?.updateUserProfile()
-        })
-    }
-    
-    func updateUserProfile() {
-        guard let accessToken = AuthSessionManager.shared.keychain.string(forKey: "access_token") else {
-            return            
-        }
-
-        let headers = [
-            "authorization": "Bearer \(accessToken)",
-            "content-type": "application/json"
-        ]
-        let parameters = [
-            "user_metadata": ["hobby": "surfing"]
-            ] as [String : Any]
-        
-        guard let httpBody = try? JSONSerialization.data(withJSONObject: parameters, options: []) else {
-            return
-        }
-        
-        var request = URLRequest(url: URL(string: "https://metaboliccompass.auth0.com/api/v2/users/auth0%7C5ac396c0c85e20778efd15e9")!,
-                                     cachePolicy: .useProtocolCachePolicy,
-                                 timeoutInterval: 10.0)
-        
-        request.httpMethod = "PATCH"
-        request.allHTTPHeaderFields = headers
-        request.httpBody = httpBody
-        
-        let session = URLSession.shared
-        let dataTask = session.dataTask(with: request as URLRequest, completionHandler: { (data, response, error) -> Void in
-            if (error != nil) {
-                print(error)
-            } else {
-                let httpResponse = response as? HTTPURLResponse
-                print(httpResponse)
-            }
-        })
-        dataTask.resume()
-        //will be used for the first login with method
-        UserManager.sharedManager.setAsFirstLogin()
-        // save user profile image
-        UserManager.sharedManager.setUserProfilePhoto(photo: dataSource.model.photo)
-        self.performSegue(withIdentifier: self.segueRegistrationCompletionIdentifier, sender: nil)
-    }
     //MARK: Actions
     @IBAction func registerAction(_ sender: UIButton) {
         startAction()
@@ -155,44 +71,44 @@ private let inputFontSize = ScreenManager.sharedInstance.profileInputFontSize()
             self.showAlert(withMessage: userRegistrationModel.validationMessage!, title: "Registration Error".localized)
             return
         }
-
-   //     sender.isEnabled = false
+        
         UINotifications.genericMsg(vc: self.navigationController!, msg: "Registering account...")
         let initialProfile = self.dataSource.model.profileItems()
         
-         auth0LoginPKCEFlowReceivingAuthorizationCode()
-//        UserManager.sharedManager.registerAuth0(firstName: userRegistrationModel.firstName!,
-//                                                 lastName: userRegistrationModel.lastName!,
-//                                              consentPath: consentPath,
-//                                              initialData: initialProfile)
         
         
+        let callback : (Error?) -> () = { error in
+            guard error == nil else {
+                // Return from this function to allow the user to try registering again with the 'Done' button.
+                // We reset the user/pass so that any view exit leaves the app without a registered user.
+                // Re-entering this function will use overrideUserPass above to re-establish the account being registered.
+                UserManager.sharedManager.resetFull()
+                if let user = self.stashedUserId {
+                    UserManager.sharedManager.setUserId(userId: user)
+                }
+                UINotifications.registrationError(vc: self.navigationController!, msg: NSLocalizedString("Registration error", comment: "Registration error"))
+                Answers.logSignUp(withMethod: "SPR", success: false, customAttributes: nil)
+                return
+            }
+            
+            UserManager.sharedManager.setAsFirstLogin()
+            _ = UserManager.sharedManager.setUserProfilePhoto(photo: userRegistrationModel.photo)
+            self.performSegue(withIdentifier: self.segueRegistrationCompletionIdentifier, sender: nil)
+        }
         
-        
-        
-//        UserManager.sharedManager.register(firstName: userRegistrationModel.firstName!,
-//                                            lastName: userRegistrationModel.lastName!,
-//                                         consentPath: consentPath,
-//                                         initialData: initialProfile) { (_, error, errormsg) in
-//            guard !error else {
-//                // Return from this function to allow the user to try registering again with the 'Done' button.
-//                // We reset the user/pass so that any view exit leaves the app without a registered user.
-//                // Re-entering this function will use overrideUserPass above to re-establish the account being registered.
-//                UserManager.sharedManager.resetFull()
-//                if let user = self.stashedUserId {
-//                    UserManager.sharedManager.setUserId(userId: user)
-//                }
-//                UINotifications.registrationError(vc: self.navigationController!, msg: errormsg)
-//                Answers.logSignUp(withMethod: "SPR", success: false, customAttributes: nil)
-//                sender.isEnabled = true
-//                return
-//            }
-//            //will be used for the first login with method
-//            UserManager.sharedManager.setAsFirstLogin()
-//            // save user profile image
-//            UserManager.sharedManager.setUserProfilePhoto(photo: userRegistrationModel.photo)
-//            self.performSegue(withIdentifier: self.segueRegistrationCompletionIdentifier, sender: nil)
-//        }
+        if updatingExistingUser {
+            UserManager.sharedManager.updateAuth0ExistingUser(firstName: userRegistrationModel.firstName!,
+                                                              lastName: userRegistrationModel.lastName!,
+                                                              consentPath: consentPath,
+                                                              initialData: initialProfile,
+                                                              completion: callback)
+        } else {
+            UserManager.sharedManager.registerAuth0(firstName: userRegistrationModel.firstName!,
+                                                    lastName: userRegistrationModel.lastName!,
+                                                    consentPath: consentPath,
+                                                    initialData: initialProfile,
+                                                    completion: callback)
+        }
     }
 
     func doConsent() {
@@ -209,11 +125,11 @@ private let inputFontSize = ScreenManager.sharedInstance.profileInputFontSize()
             }
 
             // Note: add 1 to index, due to photo field.
-            if let s = self {
+            if let strongSelf = self {
                 let updatedData = firstName != nil || lastName != nil
-                    if firstName != nil { s.dataSource.model.setAtItem(itemIndex: s.dataSource.model.firstNameIndex + 1, newValue: firstName! as AnyObject?) }
-                    if lastName != nil { s.dataSource.model.setAtItem(itemIndex: s.dataSource.model.lastNameIndex + 1, newValue: lastName! as AnyObject?) }
-                if updatedData { s.collectionView.reloadData() }
+                    if firstName != nil { strongSelf.dataSource.model.setAtItem(itemIndex: strongSelf.dataSource.model.firstNameIndex + 1, newValue: firstName! as AnyObject?) }
+                    if lastName != nil { strongSelf.dataSource.model.setAtItem(itemIndex: strongSelf.dataSource.model.lastNameIndex + 1, newValue: lastName! as AnyObject?) }
+                if updatedData { strongSelf.collectionView.reloadData() }
             }
         }
     }
@@ -240,5 +156,4 @@ private let inputFontSize = ScreenManager.sharedInstance.profileInputFontSize()
             }
         }
     }
-
 }

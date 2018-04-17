@@ -1,6 +1,5 @@
 use_frameworks!
 def shared_pods
-
     pod 'Auth0', '~> 1.0'
     pod 'AKPickerView-Swift', :git => 'https://github.com/Akkyie/AKPickerView-Swift.git'
     pod 'Alamofire' 
@@ -35,6 +34,9 @@ def shared_pods
     pod 'SwiftyJSON' 
     pod 'SwiftyUserDefaults', :git => 'https://github.com/radex/SwiftyUserDefaults.git'
     pod 'SwiftMessages’, :git => 'https://github.com/SwiftKickMobile/SwiftMessages.git’, :branch => 'swift4.0’
+    pod 'AWSMobileClient', '~> 2.6.13'
+    pod 'AWSS3', '~> 2.6.13'   # For file transfers
+    pod 'AWSCognito', '~> 2.6.13'   #For data sync
 end
 
 target 'MetabolicCompassKit' do
@@ -70,7 +72,7 @@ end
 
 post_install do |installer|
   
-    swift4Targets = ['Charts', 'SwiftyBeaver', 'SwiftyBeaver-iOS', 'SwiftyBeaver-watchOS', 'CryptoSwift', 'SwiftDate’, ’SwiftDate-iOS’, ’SwiftDate-watchOS’ , ’SwiftMessages’ , ’FileKit’, ’Pages’, ’Former’]
+    swift4Targets = ['Charts', 'SwiftyBeaver', 'SwiftyBeaver-iOS', 'SwiftyBeaver-watchOS', 'CryptoSwift', 'SwiftDate’, ’SwiftDate-iOS’, ’SwiftDate-watchOS’ , ’SwiftMessages’ , ’FileKit’, ’Pages’, ’Former’, ’AWSMobileClient’, 'AWSCognito', 'AWSS3']
 
     installer.pods_project.targets.each do |target|
 

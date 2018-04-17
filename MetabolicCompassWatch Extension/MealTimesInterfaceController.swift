@@ -31,7 +31,7 @@ class MealTimesInterfaceController: WKInterfaceController {
     override func didDeactivate() {
         super.didDeactivate()
     }
-    
+
     @IBAction func onDinner() {
         mealTypebyButton.mealType = "Dinner"
         pushController(withName: "MealInterfaceController", context: self)
