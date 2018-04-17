@@ -1,0 +1,3 @@
+[submodule "PrivateData"]
+	path = PrivateData
+	url = git@github.com:twoolf/circator-certs.git
