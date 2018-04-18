@@ -46,16 +46,18 @@ class RegisterLoginLandingViewController: BaseViewController {
     //MARK: Actions
     @IBAction func onLogin(_ sender: AnyObject) {
         UserManager.sharedManager.loginAuth0 { (hasConscent, error) in
-            if let error = error {
-                UINotifications.loginFailed(vc: self, reason: error.localizedDescription)
-            } else if let hasConscent = hasConscent {
-                if hasConscent {
-                    self.login()
+            DispatchQueue.main.async {
+                if let error = error {
+                    UINotifications.loginFailed(vc: self, reason: error.localizedDescription)
+                } else if let hasConscent = hasConscent {
+                    if hasConscent {
+                        self.login()
+                    } else {
+                        self.processNoConscent()
+                    }
                 } else {
-                    self.processNoConscent()
+                    UINotifications.loginFailed(vc: self, reason: NSLocalizedString("Unknown error", comment: "Unknown error"))
                 }
-            } else {
-                UINotifications.loginFailed(vc: self, reason: NSLocalizedString("Unknown error", comment: "Unknown error"))
             }
         }
     }

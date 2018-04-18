@@ -297,150 +297,112 @@ open class DailyChartModel : NSObject, UITableViewDataSource {
     }
     
     public func getDailyProgress() {
-        typealias Event = (Date, Double)
-        typealias IEvent = (Double, Double)
+        /// Fetch all sleep and workout data since midnight and then calculate daily eating time.
+        let startDate = Date().startOfDay
+        let group = DispatchGroup()
         
-        /// Fetch all sleep and workout data since yesterday, and then aggregate sleep, exercise and meal events.
-        let yesterday = Date(timeIntervalSinceNow: -60 * 60 * 24)
-        let startDate = yesterday
-        
-        
+        group.enter()
         Async.userInteractive {
             self.fetchCircadianSamples(startDate: startDate, endDate: Date()) {[weak self] (samples) in
+                guard let `self` = self else {return}
+                
                 if samples.isEmpty {
-                    self?.fastingText = (self?.emptyValueString)!
-                    self?.eatingText = (self?.emptyValueString)!
-                    self?.lastAteText = (self?.emptyValueString)!
-                    self?.delegate?.dailyProgressStatCollected?()
+                    self.eatingText = self.emptyValueString
                 } else {
-                    let vals : [(x: Double, y: Double)] = samples.flatMap { sample -> [(x: Double, y: Double)] in
-                        let start = sample.startDate.startOfDay
-                        let startTimeInFractionalHours = sample.startDate.timeIntervalSince(start) / 3600.0
-                        let endTimeInFractionalHours = sample.endDate.timeIntervalSince(start) / 3600.0
-                        
-                        let metabolicStateAsDouble = self?.valueOfCircadianEvent(sample.event)
-                        
-                        return [(x: startTimeInFractionalHours , y: Double(metabolicStateAsDouble!)), (x: endTimeInFractionalHours , y: Double(metabolicStateAsDouble!))]
-                    }
-                    
-                    let initialAccumulator : (Double, Double, Double, IEvent?, Bool, Double, Bool) =
-                        (0.0, 0.0, 0.0, nil, true, 0.0, false)
-                    
-                    let stats = vals.filter { $0.0 >= yesterday.julianDay} .reduce(initialAccumulator, { (acc, event) in
-                        // Named accumulator components
-                        var newEatingTime = acc.0
-                        let lastEatingTime = acc.1
-                        var maxFastingWindow = acc.2
-                        var currentFastingWindow = acc.5
-                        
-                        // Named components from the current event.
-                        let eventEndpointDate = event.0
-                        let eventMetabolicState = event.1
-                        
-                        // Information from previous event endpoint.
-                        let prevEvent = acc.3
-                        //                                let prevEndpointWasIntervalStart = acc.4
-                        let prevEndpointWasIntervalEnd = !acc.4
-                        var prevStateWasFasting = acc.6
-                        
-                        // Define the fasting state as any non-eating state
-                        let isFasting = eventMetabolicState != self?.stEat
-                        
-                        // If this endpoint starts a new event interval, update the accumulator.
-                        if prevEndpointWasIntervalEnd {
-                            let prevEventEndpointDate = prevEvent?.0
-                            let duration = eventEndpointDate - prevEventEndpointDate!
-                            
-                            if prevStateWasFasting && isFasting {
-                                // If we were fasting in the previous event, and are also fasting in this
-                                // event, we extend the currently ongoing fasting period.
-                                
-                                // Increment the current fasting window.
-                                currentFastingWindow += duration
-                                
-                                // Revise the max fasting window if the current fasting window is now larger.
-                                maxFastingWindow = maxFastingWindow > currentFastingWindow ? maxFastingWindow : currentFastingWindow
-                                
-                            } else if isFasting {
-                                // Otherwise if we started fasting in this event, we reset
-                                // the current fasting period.
-                                
-                                // Reset the current fasting window
-                                currentFastingWindow = duration
-                                
-                                // Revise the max fasting window if the current fasting window is now larger.
-                                maxFastingWindow = maxFastingWindow > currentFastingWindow ? maxFastingWindow : currentFastingWindow
-                                
-                            } else if eventMetabolicState == self?.stEat {
-                                // Otherwise if we are eating, we increment the total time spent eating.
-                                newEatingTime += duration
+                    var eatingInterval : (Date, Date)? = nil
+                    for sample in samples {
+                        if case CircadianEvent.meal(_) = sample.event {
+                            if let currentInterval = eatingInterval {
+                                eatingInterval = (currentInterval.0, sample.endDate)
+                            } else {
+                                eatingInterval = (sample.startDate, sample.endDate)
                             }
-                        } else {
-                            prevStateWasFasting = prevEvent == nil ? false : prevEvent?.1 != self?.stEat
                         }
-                        
-                        let newLastEatingTime = eventMetabolicState == self?.stEat ? eventEndpointDate : lastEatingTime
-                        
-                        // Return a new accumulator.
-                        return (
-                            newEatingTime,
-                            newLastEatingTime,
-                            maxFastingWindow,
-                            event,
-                            prevEndpointWasIntervalEnd,
-                            currentFastingWindow,
-                            prevStateWasFasting
-                        )
-                    })
-                    let today = Date()
-                    let lastAte : Date? = stats.1 == 0 ? nil : ( startDate + Int(round(stats.1 * 3600.0)).seconds)
-                    
-                    let eatingTime = roundDate(date: (today + Int(stats.0 * 3600.0).seconds), granularity: granularity1Min)
-                    if eatingTime.hour == 0 && eatingTime.minute == 0 {
-                        self?.eatingText = (self?.emptyValueString)!
-                    } else {
-                        self?.eatingText = eatingTime.string(format: DateFormat.custom("HH 'h' mm 'm'"))
                     }
-                    
-                    let fastingHrs = Int(floor(stats.2))
-                    let fastingMins = (today + Int(round((stats.2) * 60.0)).minutes).string(format: DateFormat.custom("mm"))
-                    _ = "\(fastingHrs) h \(fastingMins) m"
-                    
-                    if let lastAte = lastAte {
-                        let components = DateComponents().ago(from: lastAte)!
-                        if components.day > 0 {
-                            let mins = (today + components.minute.minutes).string()
-                            self?.lastAteText = "\(components.day * 24 + components.hour) h \(mins)"
-                        } else {
-                            //                                self.lastAteText = (today + components).toString(DateFormat.Custom("HH 'h' mm 'm'"))!
-                            //                                self.lastAteText = (today).toString(DateFormat.Custom("HH 'h' mm 'm'"))!
-                        }
-                    } else {
-                        self?.lastAteText = (self?.emptyValueString)!
-                    }
-                    self?.delegate?.dailyProgressStatCollected?()
+
+                    self.eatingText = self.timeString(from: eatingInterval)
+                    group.leave()
                 }
             }
         }
         
+        let weekAgo = Date(timeIntervalSinceNow: -60 * 60 * 24 * 7)
         
-
-//        Async.userInteractive {
-//            MCHealthManager.sharedManager.fetchCircadianEventIntervals(startDate) { (intervals, error) -> Void in
-//                Async.main {
-//                    guard error == nil else {
-//                        log.error("Failed to fetch circadian events: \(error ?? (no_argument as AnyObject) as! Error)")
-//                        return
-//                    }
-//                    var fetchIntervals:[(Date, CircadianEvent)] = []
-//                    self.fetchSamples() { [weak self] callbackIntervals in
-//                        fetchIntervals = callbackIntervals
-//
-//                    }
-//
-//                }
-//            }
-//        }
+        group.enter()
+        Async.userInteractive {
+            self.fetchCircadianSamples(startDate: weekAgo, endDate: Date()) {[weak self] (samples) in
+                guard let `self` = self else {return}
+                if samples.isEmpty {
+                    self.lastAteText = self.emptyValueString
+                    self.fastingText = self.emptyValueString
+                } else {
+                    var lastEatingInterval : (Date, Date)? = nil
+                    var maxFastingInterval : (Date, Date)? = nil
+                    
+                    var currentFastingIntreval : (Date, Date)? = nil
+                    
+                    for sample in samples {
+                        if case CircadianEvent.meal(_) = sample.event {
+                            if let currentFast = currentFastingIntreval {
+                                currentFastingIntreval = (currentFast.0, sample.startDate)
+                                if (self.intervalDuration(from: currentFastingIntreval) > self.intervalDuration(from: maxFastingInterval)) {
+                                    maxFastingInterval = currentFastingIntreval
+                                }
+                                currentFastingIntreval = nil
+                            }
+                            
+                            if let currentEatingInterval = lastEatingInterval {
+                                if sample.endDate > currentEatingInterval.0 {
+                                    lastEatingInterval = (sample.endDate, Date())
+                                }
+                            } else {
+                                lastEatingInterval = (sample.endDate, Date())
+                            }
+                        } else {
+                            if let currentFast = currentFastingIntreval {
+                                currentFastingIntreval = (currentFast.0, sample.endDate)
+                            } else {
+                                currentFastingIntreval = (sample.startDate, sample.endDate)
+                            }
+                            if (self.intervalDuration(from: currentFastingIntreval) > self.intervalDuration(from: maxFastingInterval)) {
+                                maxFastingInterval = currentFastingIntreval
+                            }
+                        }
+                    }
+                    
+                    self.lastAteText = self.timeString(from: lastEatingInterval)
+                    self.fastingText = self.timeString(from: maxFastingInterval)
+                }
+                
+                group.leave()
+            }
+        }
+        
+        group.notify(queue: .main) {
+            self.delegate?.dailyProgressStatCollected?()
+        }
+    }
+    
+    private func intervalDuration(from interval : (Date, Date)?) -> TimeInterval {
+        guard let interval = interval else { return 0 }
+        return interval.1.timeIntervalSince(interval.0)
+    }
+    
+    
+    private func timeString(from dateInterval: (Date, Date)?) -> String {
+        if let dateInterval = dateInterval {
+            let timeInterval = Int(dateInterval.1.timeIntervalSince(dateInterval.0))
+            let minutes = (timeInterval / 60) % 60
+            let hours = (timeInterval / 3600)
+            
+            if hours == 0 && minutes == 0 {
+                return self.emptyValueString
+            } else {
+                return String(format: "%02d h %02d m", hours, minutes)
+            }
+        } else {
+            return self.emptyValueString
+        }
     }
     
     public func getColorForEventType(_ eventType: CircadianEvent) -> UIColor {
