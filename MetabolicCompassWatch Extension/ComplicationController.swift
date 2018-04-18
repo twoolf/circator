@@ -52,7 +52,50 @@ class ComplicationController: NSObject, CLKComplicationDataSource {
 
     func getLocalizableSampleTemplate(for complication: CLKComplication,
                                                withHandler handler: @escaping (CLKComplicationTemplate?) -> Void){
-        
+        var template: CLKComplicationTemplate? = nil
+        switch complication.family {
+        case .modularSmall:
+            let newTemplate = CLKComplicationTemplateModularSmallStackText()
+            newTemplate.line1TextProvider = CLKSimpleTextProvider(text: "fast")
+            newTemplate.line2TextProvider = CLKSimpleTextProvider(text: "line2")
+            newTemplate.tintColor = UIColor(red:0, green:0.85, blue:0.76, alpha:1)
+            template = newTemplate
+        case .modularLarge:
+            let newTemplate = CLKComplicationTemplateModularLargeStandardBody()
+            newTemplate.headerImageProvider = CLKImageProvider(onePieceImage: UIImage(named: "Complication/Utilitarian")!)
+            newTemplate.headerTextProvider = CLKSimpleTextProvider(text: "MCompass")
+            newTemplate.body1TextProvider = CLKSimpleTextProvider(text: "Fast Time")
+            newTemplate.body2TextProvider = CLKSimpleTextProvider(text: "Eating Time")
+            newTemplate.body1TextProvider.tintColor = UIColor(red:0.58, green:0.93, blue:0, alpha:1)
+            newTemplate.body2TextProvider?.tintColor = UIColor(red:0, green:0.85, blue:0.76, alpha:1)
+            template = newTemplate
+        case .utilitarianSmall:
+            let newTemplate = CLKComplicationTemplateUtilitarianSmallFlat()
+            newTemplate.imageProvider = CLKImageProvider(onePieceImage: UIImage(named: "Complication/Utilitarian")!)
+            newTemplate.textProvider = CLKSimpleTextProvider(text: "00:00:00")
+            newTemplate.imageProvider?.tintColor = UIColor(red:0.58, green:0.93, blue:0, alpha:1)
+            newTemplate.textProvider.tintColor = UIColor(red:0, green:0.85, blue:0.76, alpha:1)
+            template = newTemplate
+        case .utilitarianLarge:
+            let newTemplate = CLKComplicationTemplateUtilitarianLargeFlat()
+            newTemplate.imageProvider = CLKImageProvider(onePieceImage: UIImage(named: "Complication/Utilitarian")!)
+            newTemplate.textProvider = CLKSimpleTextProvider(text: "00:00")
+            newTemplate.imageProvider?.tintColor = UIColor(red:0.58, green:0.93, blue:0, alpha:1)
+            newTemplate.textProvider.tintColor = UIColor(red:0, green:0.85, blue:0.76, alpha:1)
+            template = newTemplate
+        case .circularSmall:
+            let newTemplate = CLKComplicationTemplateCircularSmallSimpleText()
+            newTemplate.textProvider = CLKSimpleTextProvider(text: "00:00")
+            newTemplate.tintColor = UIColor(red:0, green:0.85, blue:0.76, alpha:1)
+            template = newTemplate
+        default:
+            let newTemplate = CLKComplicationTemplateModularSmallStackText()
+            newTemplate.line1TextProvider = CLKSimpleTextProvider(text: "fast")
+            newTemplate.line2TextProvider = CLKSimpleTextProvider(text: "line2")
+            newTemplate.tintColor = UIColor(red:0, green:0.85, blue:0.76, alpha:1)
+            template = newTemplate
+        }
+        handler(template)
     }
     
     public func getSupportedTimeTravelDirections(for complication: CLKComplication, withHandler handler: @escaping (CLKComplicationTimeTravelDirections) -> Swift.Void) {
@@ -214,55 +257,6 @@ class ComplicationController: NSObject, CLKComplicationDataSource {
 //        let nextUpdate = Date().addingTimeInterval(10.minutes)
           let nextUpdate = Date().addMinutes(minutesToAdd: 10)
         handler(nextUpdate)
-    }
-    
-   
-    
-    public func getPlaceholderTemplate(for complication: CLKComplication, withHandler handler: @escaping (CLKComplicationTemplate?) -> Swift.Void) {
-        var template: CLKComplicationTemplate? = nil
-        switch complication.family {
-        case .modularSmall:
-            let newTemplate = CLKComplicationTemplateModularSmallStackText()
-            newTemplate.line1TextProvider = CLKSimpleTextProvider(text: "fast")
-            newTemplate.line2TextProvider = CLKSimpleTextProvider(text: "line2")
-            newTemplate.tintColor = UIColor(red:0, green:0.85, blue:0.76, alpha:1)
-            template = newTemplate
-        case .modularLarge:
-            let newTemplate = CLKComplicationTemplateModularLargeStandardBody()
-            newTemplate.headerImageProvider = CLKImageProvider(onePieceImage: UIImage(named: "Complication/Utilitarian")!)
-            newTemplate.headerTextProvider = CLKSimpleTextProvider(text: "MCompass")
-            newTemplate.body1TextProvider = CLKSimpleTextProvider(text: "Fast Time")
-            newTemplate.body2TextProvider = CLKSimpleTextProvider(text: "Eating Time")
-            newTemplate.body1TextProvider.tintColor = UIColor(red:0.58, green:0.93, blue:0, alpha:1)
-            newTemplate.body2TextProvider?.tintColor = UIColor(red:0, green:0.85, blue:0.76, alpha:1)
-            template = newTemplate
-        case .utilitarianSmall:
-            let newTemplate = CLKComplicationTemplateUtilitarianSmallFlat()
-            newTemplate.imageProvider = CLKImageProvider(onePieceImage: UIImage(named: "Complication/Utilitarian")!)
-            newTemplate.textProvider = CLKSimpleTextProvider(text: "00:00:00")
-            newTemplate.imageProvider?.tintColor = UIColor(red:0.58, green:0.93, blue:0, alpha:1)
-            newTemplate.textProvider.tintColor = UIColor(red:0, green:0.85, blue:0.76, alpha:1)
-            template = newTemplate
-        case .utilitarianLarge:
-            let newTemplate = CLKComplicationTemplateUtilitarianLargeFlat()
-            newTemplate.imageProvider = CLKImageProvider(onePieceImage: UIImage(named: "Complication/Utilitarian")!)
-            newTemplate.textProvider = CLKSimpleTextProvider(text: "00:00")
-            newTemplate.imageProvider?.tintColor = UIColor(red:0.58, green:0.93, blue:0, alpha:1)
-            newTemplate.textProvider.tintColor = UIColor(red:0, green:0.85, blue:0.76, alpha:1)
-            template = newTemplate
-        case .circularSmall:
-            let newTemplate = CLKComplicationTemplateCircularSmallSimpleText()
-            newTemplate.textProvider = CLKSimpleTextProvider(text: "00:00")
-            newTemplate.tintColor = UIColor(red:0, green:0.85, blue:0.76, alpha:1)
-            template = newTemplate
-        default:
-            let newTemplate = CLKComplicationTemplateModularSmallStackText()
-            newTemplate.line1TextProvider = CLKSimpleTextProvider(text: "fast")
-            newTemplate.line2TextProvider = CLKSimpleTextProvider(text: "line2")
-            newTemplate.tintColor = UIColor(red:0, green:0.85, blue:0.76, alpha:1)
-            template = newTemplate
-        }
-        handler(template)
     }
 }
 
