@@ -257,9 +257,10 @@ public class UserManager {
     }
     
     public func isLoggedIn () -> Bool {
+        if let accessToken = AuthSessionManager.shared.mcAccessToken, !accessToken.isEmpty {
+            return true
+        }
         return false
-//        return true
-//        return Stormpath.sharedSession.accessToken != nil
     }
     
     public func removeFirstLogin () {
@@ -404,20 +405,11 @@ public class UserManager {
         }
     }
 
-    // Set the username and password in keychain.
-    public func overrideUserPass(user: String?, pass: String?) {
-        withUserPass(username: user, password: pass) { (newUser, newPass) in
-            UserManager.sharedManager.setUserId(userId: newUser)
-            UserManager.sharedManager.setPassword(userPass: newPass)
-        }
-    }
-
-
     // MARK: - Stormpath-based account creation and authentication
 
     public func loginWithCompletion(completion: @escaping SvcResultCompletion) {
      //   withUserPass (password: getPassword()) { (user, pass) in
-            let token = AuthSessionManager.shared.keychain.string(forKey: "access_token")
+            let token = AuthSessionManager.shared.mcAccessToken
             MCRouter.updateAuthToken(token: token)
             let result = RequestResult()
             completion(result)
@@ -648,6 +640,16 @@ public class UserManager {
     
     func storeMC(credentials: Credentials) {
         mcAPICredentials = credentials
+        
+        if let idToken = credentials.idToken,
+            let decodedId = try? decode(jwt: idToken),
+            let userId = decodedId.subject {
+            
+            setUserId(userId: userId)
+            
+            setPassword(userPass: "") //TODO: Remove this hack . called to create USerAccount in secure store
+        }
+        AuthSessionManager.shared.storeTokens(credentials.accessToken ?? "", refreshToken: credentials.refreshToken)
     }
     
     // MARK: AWS S3 functions
@@ -730,15 +732,14 @@ public class UserManager {
     }
 
     public func ensureAccessToken(completion: @escaping ErrorCompletion) {
-
-        completion(false)
-
-//        if let token = Stormpath.sharedSession.accessToken {
-//            MCRouter.updateAuthToken(token: token)
-//            ensureAccessToken(tried: 0, completion: completion)
-//        } else {
-//            self.refreshAccessToken(completion: completion)
-//        }
+        if let token = Stormpath.sharedSession.accessToken {
+            MCRouter.updateAuthToken(token: token)
+            completion(false)
+            //            ensureAccessToken(tried: 0, completion: completion) //TODO: check if we need to restore this
+        } else {
+            completion(true)
+//            self.refreshAccessToken(completion: completion) //TODO: check if we need to restore this
+        }
     }
 
     public func refreshAccessToken(tried: Int, completion: @escaping ErrorCompletion) {
@@ -1022,7 +1023,7 @@ public class UserManager {
     // Retrieves multiple account components in a single request.
     private func pullMultipleAccountComponents(components: [AccountComponent], requiredComponents: [AccountComponent], completion: @escaping SvcResultCompletion) {
         Service.json(route: MCRouter.GetUserAccountData(components), statusCode: 200..<300, tag: "GALLACC") {
-            _, response, result in
+            request, response, result in
             var pullSuccess = result.isSuccess
             var failedComponents : [String] = []
             if pullSuccess {
@@ -1042,16 +1043,14 @@ public class UserManager {
                     }
                 }
             }
-            //REMOVE AFTER TESTING!!!!!!!!!
-            pullSuccess = true
             let infoMsg = failedComponents.isEmpty ? "" : UMPullMultipleComponentsError(failedComponents)
             completion(RequestResult(ok: pullSuccess, message:infoMsg))
         }
     }
 
     public func pullFullAccount(completion: @escaping SvcResultCompletion) {
-        pullMultipleAccountComponents(components: [ .Consent, .Photo, .Profile, .Settings, .ArchiveSpan, .LastAcquired],
-                                      requiredComponents: [.Consent, .Profile, .Settings],
+        pullMultipleAccountComponents(components: [/* .Consent,*/ .Photo, .Profile, .Settings, .ArchiveSpan, .LastAcquired],
+                                      requiredComponents: [/*.Consent,*/ .Profile, .Settings],
                                       completion: completion)
     }
 

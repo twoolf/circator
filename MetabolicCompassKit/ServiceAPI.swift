@@ -15,7 +15,7 @@ public typealias SvcResultCompletion = (RequestResult) -> Void
 private let apiPathComponent = "/api/v1"
 
 #if DEVSERVICE
-private let srvURL = NSURL(string: "https://api.metaboliccompass.com")!
+private let srvURL = NSURL(string: "https://api-dev.metaboliccompass.com")!
 private let wwwURL = NSURL(string: "https://www-dev.metaboliccompass.com")!
 #else
 private let srvURL = NSURL(string: "https://api.metaboliccompass.com")!
