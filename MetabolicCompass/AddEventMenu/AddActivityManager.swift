@@ -700,6 +700,7 @@ open class AddActivityManager: UITableView, UITableViewDelegate, UITableViewData
 
     func circadianOpCompletion(_ sender: UIButton?, manager: PickerManager?, displayError: Bool, error: Error?) -> Void {
         Async.main {
+            manager?.finishProcessingSelection()
             if error == nil {
                 UINotifications.genericSuccessMsgOnView(view: self.notificationView ?? self.superview!, msg: "Successfully added events.")
             }
@@ -712,7 +713,7 @@ open class AddActivityManager: UITableView, UITableViewDelegate, UITableViewData
                 sender.setNeedsDisplay()
             }
         }
-        manager?.finishProcessingSelection()
+
         if error != nil { print(error!.localizedDescription) }
         else {
             NotificationCenter.default.post(name: NSNotification.Name(rawValue: MEMDidUpdateCircadianEvents), object: nil)
