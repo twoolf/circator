@@ -304,14 +304,21 @@ public class UserManager {
     }
     
     public func getUserId() -> String?     { return userId }
-    public func setUserId(userId: String)  { self.userId = userId }
+    public func setUserId(userId: String)  {
+        self.userId = userId
+        if hasAccount() {
+            setAccountData(items: ["userId": userId as AnyObject])
+        } else {
+            withUserId { user in self.createAccount(userId: user) }
+        }
+    }
     public func resetUserId()              { self.userId = nil }
 
     // MARK: - Account metadata accessors for fields stored in keychain.
 
     public func getAccountData() -> [String:AnyObject]? {
         if let user = userId {
-            let account = UserAccount(username: user, password: "")
+            let account = UserAccount(username: user)
             let lockbox = account.readFromSecureStore()
             return lockbox?.data as [String : AnyObject]?
         }
@@ -335,14 +342,14 @@ public class UserManager {
 
     public func hasAccount() -> Bool {
         if let user = userId {
-            let account = UserAccount(username: user, password: "")
+            let account = UserAccount(username: user)
             return account.readFromSecureStore() != nil
         }
         return false
     }
 
-    func createAccount(userId: String, userPass: String) {
-        let account = UserAccount(username: userId, password: userPass)
+    func createAccount(userId: String) {
+        let account = UserAccount(username: userId)
         do {
             try account.createInSecureStore()
         } catch {
@@ -350,14 +357,9 @@ public class UserManager {
         }
     }
 
-    func validateAccount(userPass: String) -> Bool {
-        if let pass = getPassword() { return pass == userPass }
-        return false
-    }
-
     func resetAccount() {
         withUserId { user in
-            let account = UserAccount(username: user, password: "")
+            let account = UserAccount(username: user)
             do {
                 try account.deleteFromSecureStore()
                 Stormpath.sharedSession.logout()
@@ -369,51 +371,15 @@ public class UserManager {
             }
         }
     }
-
-    public func getPassword() -> String? {
-        if let data = getAccountData(), let pass = data["password"] as? String {
-            return pass
-        }
-        return nil
-    }
-
-    public func hasPassword() -> Bool {
-        if let data = getAccountData(), let pass = data["password"] as? String {
-            return !pass.isEmpty
-        }
-        return false
-    }
     
-    public func setPassword(userPass: String) {
-        if hasAccount() {
-            setAccountData(items: ["password": userPass as AnyObject])
-        } else {
-            withUserId { user in self.createAccount(userId: user, userPass: userPass) }
-        }
-    }
-
-    // Set a username and password in keychain, invoking a completion with an error status.
-    public func ensureUserPass(user: String?, pass: String?, completion: ErrorCompletion) {
-        if let u = user, let p = pass {
-            guard !(u.isEmpty || p.isEmpty) else {
-                completion(true)
-                return
-            }
-            UserManager.sharedManager.setUserId(userId: u)
-            UserManager.sharedManager.setPassword(userPass: p)
-            completion(false)
-        }
-    }
-
     // MARK: - Stormpath-based account creation and authentication
 
     public func loginWithCompletion(completion: @escaping SvcResultCompletion) {
-     //   withUserPass (password: getPassword()) { (user, pass) in
+        //TODO: Maybe remove looks redundant
             let token = AuthSessionManager.shared.mcAccessToken
             MCRouter.updateAuthToken(token: token)
             let result = RequestResult()
             completion(result)
-   //     }
     }
     
     public func loginWithPull(completion: @escaping SvcResultCompletion) {
@@ -426,29 +392,6 @@ public class UserManager {
         }
     }
     
-//
-//    public func loginWithPush(profile: [String: AnyObject], completion: @escaping SvcResultCompletion) {
-//        loginWithCompletion { res in
-//            guard res.ok else {
-//                completion(res)
-//                return
-//            }
-//            self.pushProfile(componentData: profile, completion: completion)
-//        }
-//    }
-//
-
-//
-//    public func login(userPass: String, completion: @escaping SvcResultCompletion) {
-//        withUserId { user in
-//            if !self.validateAccount(userPass: userPass) {
-//                self.resetAccount()
-//                self.createAccount(userId: user, userPass: userPass)
-//            }
-//            self.loginWithPull(completion: completion)
-//        }
-//    }
-//
     public func logoutWithCompletion(completion: (() -> Void)?) {
         //TODO: Implement Auth0 log out
         
@@ -461,29 +404,7 @@ public class UserManager {
     public func logout() {
         logoutWithCompletion(completion: nil)
     }
-//
-//    public func register(firstName: String, lastName: String, consentPath: String, initialData: [String: String], completion: @escaping ((Account?, Bool, String?) -> Void)) {
-//        withUserPass(password: getPassword()) { (user,pass) in
-////            let account = RegistrationModel(email: user, password: pass)
-//            let account = RegistrationForm(email: user, password: pass)
-//            account.givenName = firstName
-//            account.surname = lastName
-//            if let data = NSData(contentsOfFile: consentPath) {
-//                let consentStr = data.base64EncodedString(options: NSData.Base64EncodingOptions())
-//                account.customFields = ["consent": consentStr]
-//                account.customFields.update(other: initialData)
-//                Stormpath.sharedSession.register(account: account) { (account, error) -> Void in
-//                    if error != nil { log.error("Register failed: \(error)") }
-//                    completion(account, error != nil, error?.localizedDescription)
-//                }
-//            } else {
-//                let msg = UMPushReadBinaryFileError(.Consent, consentPath)
-//                log.error(msg)
-//                completion(nil, true, msg)
-//            }
-//        }
-//    }
-//
+
     public func withdraw(keepData: Bool, completion: @escaping SuccessCompletion) {
         let params = ["keep": keepData]
         Service.string(route: MCRouter.DeleteAccount(params as [String : AnyObject]), statusCode: 200..<300, tag: "WITHDRAW") {
@@ -492,8 +413,6 @@ public class UserManager {
             completion(result.isSuccess)
         }
     }
-//
-//
     
     // MARK: Auth0 authorization
     
@@ -636,10 +555,7 @@ public class UserManager {
         if let idToken = credentials.idToken,
             let decodedId = try? decode(jwt: idToken),
             let userId = decodedId.subject {
-            
             setUserId(userId: userId)
-            
-            setPassword(userPass: "") //TODO: Remove this hack . called to create USerAccount in secure store
         }
         AuthSessionManager.shared.storeTokens(credentials.accessToken ?? "", refreshToken: credentials.refreshToken)
     }
@@ -666,10 +582,6 @@ public class UserManager {
 
     // MARK: - Stormpath token management.
 
-//    public func getAccessToken() -> String? {
-//        return Stormpath.sharedSession.accessToken
-//    }
-//
     // Recursive checking of the access token's expiry.
     // This method retrieves the expiry time for the current access token using the
     // REST API's expiry route.
@@ -738,9 +650,9 @@ public class UserManager {
         Stormpath.sharedSession.refreshAccessToken { (success, error) in
             guard success && error == nil else {
                 log.warning("Refresh failed: \(error!.localizedDescription)")
-                log.warning("Attempting login: \(self.hasAccount()) \(self.hasPassword())")
+                log.warning("Attempting login: \(self.hasAccount())")
 
-                if self.hasAccount() && self.hasPassword() {
+                if self.hasAccount() {
                     self.loginWithPull { res in completion(res.fail) }
                 } else {
                     completion(true)
@@ -1330,16 +1242,6 @@ public class UserManager {
     func withUserId (completion: ((String) -> Void)) {
         if let user = userId { completion(user) }
         else { log.error("No user id available") }
-    }
-
-    func withUserPass (password: String?, completion: ((String, String) -> Void)) {
-        if let user = userId, let pass = password { completion(user, pass) }
-        else { log.error("No user/password available") }
-    }
-
-    func withUserPass (username: String?, password: String?, completion: ((String, String) -> Void)) {
-        if let user = username, let pass = password { completion(user, pass) }
-        else { log.error("No user/password available") }
     }
 
     // Resets all user-specific data, but preserves the last user id.

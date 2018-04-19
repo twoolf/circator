@@ -21,14 +21,13 @@ struct UserAccount : ReadableSecureStorable,
 {
 //    public var data: [String : Any]
     let username: String
-    let password: String
 
     let service = "MetabolicCompass"
 
     var account: String { return username }
 
     public var data: [String: Any] {
-        return ["password" : password as Any]
+        return [:]
     }
 }
 
