@@ -16,12 +16,27 @@ enum SessionManagerError: Error {
 }
 
 class AuthSessionManager {
+    private static let wasCleanedUpOnFirstLaunchKey = "AuthSessionManager_WasCleanedUpOnFirstLaunch"
     static let shared = AuthSessionManager()
-    let keychain = A0SimpleKeychain(service: "Auth0")
+    private let keychain = A0SimpleKeychain(service: "Auth0")
     var profile: UserInfo?
     var userProfile: Profile?
 
-    private init () { }
+    private init () {
+        if !UserDefaults.standard.bool(forKey: AuthSessionManager.wasCleanedUpOnFirstLaunchKey) {
+            cleanupTokens()
+            UserDefaults.standard.set(true, forKey: AuthSessionManager.wasCleanedUpOnFirstLaunchKey)
+            UserDefaults.standard.synchronize()
+        }
+    }
+    
+    public var mcAccessToken : String? {
+        return keychain.string(forKey: "access_token")
+    }
+    
+    private func cleanupTokens() {
+        self.keychain.clearAll()
+    }
 
    func storeTokens(_ accessToken: String, refreshToken: String? = nil) {
         self.keychain.setString(accessToken, forKey: "access_token")
@@ -30,66 +45,46 @@ class AuthSessionManager {
         }
     }
 
-    func retrieveProfile(_ callback: @escaping (Error?) -> ()) {
-        guard let accessToken = self.keychain.string(forKey: "access_token") else {
-            return callback(SessionManagerError.noAccessToken)
-        }
-        Auth0
-            .authentication()
-            .userInfo(withAccessToken: accessToken)
-            .start { result in
-                switch(result) {
-                case .success(let profile):
-                    self.profile = profile
-                    callback(nil)
-                case .failure(_):
-                    self.refreshToken(callback)
-                }
-        }
-    }
-
-    func refreshToken(_ callback: @escaping (Error?) -> ()) {
-        guard let refreshToken = self.keychain.string(forKey: "refresh_token") else {
-            return callback(SessionManagerError.noRefreshToken)
-        }
-        Auth0
-            .authentication()
-            .renew(withRefreshToken: refreshToken, scope: "openid profile offline_access")
-            .start { result in
-                switch(result) {
-                case .success(let credentials):
-                    guard let accessToken = credentials.accessToken else { return }
-                    self.storeTokens(accessToken)
-                    self.retrieveProfile(callback)
-                case .failure(let error):
-                    callback(error)
-                    self.logout()
-                }
-        }
-    }
+//    func retrieveProfile(_ callback: @escaping (Error?) -> ()) {
+//        guard let accessToken = self.keychain.string(forKey: "access_token") else {
+//            return callback(SessionManagerError.noAccessToken)
+//        }
+//        Auth0
+//            .authentication()
+//            .userInfo(withAccessToken: accessToken)
+//            .start { result in
+//                switch(result) {
+//                case .success(let profile):
+//                    self.profile = profile
+//                    callback(nil)
+//                case .failure(_):
+//                    self.refreshToken(callback)
+//                }
+//        }
+//    }
+//
+//    func refreshToken(_ callback: @escaping (Error?) -> ()) {
+//        guard let refreshToken = self.keychain.string(forKey: "refresh_token") else {
+//            return callback(SessionManagerError.noRefreshToken)
+//        }
+//        Auth0
+//            .authentication()
+//            .renew(withRefreshToken: refreshToken, scope: "openid profile offline_access")
+//            .start { result in
+//                switch(result) {
+//                case .success(let credentials):
+//                    guard let accessToken = credentials.accessToken else { return }
+//                    self.storeTokens(accessToken)
+//                    self.retrieveProfile(callback)
+//                case .failure(let error):
+//                    callback(error)
+//                    self.logout()
+//                }
+//        }
+//    }
 
     func logout() {
-        self.keychain.clearAll()
+        cleanupTokens()
     }
 
-}
-
-func plistValues(bundle: Bundle) -> (clientId: String, domain: String)? {
-    guard
-        let path = bundle.path(forResource: "Auth0", ofType: "plist"),
-        let values = NSDictionary(contentsOfFile: path) as? [String: Any]
-        else {
-            print("Missing Auth0.plist file with 'ClientId' and 'Domain' entries in main bundle!")
-            return nil
-    }
-
-    guard
-        let clientId = values["ClientId"] as? String,
-        let domain = values["Domain"] as? String
-        else {
-            print("Auth0.plist file at \(path) is missing 'ClientId' and/or 'Domain' entries!")
-            print("File currently has the following entries: \(values)")
-            return nil
-    }
-    return (clientId: clientId, domain: domain)
 }

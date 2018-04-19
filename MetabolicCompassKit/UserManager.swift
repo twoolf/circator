@@ -494,14 +494,6 @@ public class UserManager {
     }
 //
 //
-    public func resetPassword(email: String, completion: @escaping ((Bool, String?) -> Void)) {
-        //TODO: Remove controller that called this method !!!
-        
-//        Stormpath.sharedSession.resetPassword(email: email) { (success, error) -> Void in
-//            if error != nil { log.error("Reset Password failed: \(error)") }
-//            completion(success, error?.localizedDescription)
-//        }
-    }
     
     // MARK: Auth0 authorization
     
@@ -732,7 +724,7 @@ public class UserManager {
     }
 
     public func ensureAccessToken(completion: @escaping ErrorCompletion) {
-        if let token = Stormpath.sharedSession.accessToken {
+        if let token = AuthSessionManager.shared.mcAccessToken {
             MCRouter.updateAuthToken(token: token)
             completion(false)
             //            ensureAccessToken(tried: 0, completion: completion) //TODO: check if we need to restore this

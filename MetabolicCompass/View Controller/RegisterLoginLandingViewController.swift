@@ -17,7 +17,6 @@ import Crashlytics
 class RegisterLoginLandingViewController: BaseViewController {
     
     var completion: (() -> Void)?
-    let loginSegue = "LoginSegue"
     let registerSegue = "RegisterSegue"
     var reachability: Reachability? = nil
 
@@ -87,10 +86,7 @@ class RegisterLoginLandingViewController: BaseViewController {
     }
     
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
-        if (segue.identifier == self.loginSegue) {
-            let loginViewController = segue.destination as! LoginViewController
-            loginViewController.completion = self.completion
-        } else if (segue.identifier == self.registerSegue) {
+        if (segue.identifier == self.registerSegue) {
             let regViewController = segue.destination as! RegisterViewController
             regViewController.updatingExistingUser = sender as! Bool
             regViewController.registerCompletion = {

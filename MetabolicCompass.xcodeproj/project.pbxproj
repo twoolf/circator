@@ -66,8 +66,6 @@
 		54205EB51E7625E4003E3EC4 /* PhysioParameterCollectionViewCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 54205EB31E7625E4003E3EC4 /* PhysioParameterCollectionViewCell.xib */; };
 		54205EB81E76265F003E3EC4 /* AddEventViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 54205EB71E76265F003E3EC4 /* AddEventViewController.swift */; };
 		54205EBF1E76266F003E3EC4 /* AdditionalInfoViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 54205EBA1E76266F003E3EC4 /* AdditionalInfoViewController.swift */; };
-		54205EC01E76266F003E3EC4 /* ForgotPasswordViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 54205EBB1E76266F003E3EC4 /* ForgotPasswordViewController.swift */; };
-		54205EC11E76266F003E3EC4 /* LoginViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 54205EBC1E76266F003E3EC4 /* LoginViewController.swift */; };
 		54205EC21E76266F003E3EC4 /* RegisterViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 54205EBD1E76266F003E3EC4 /* RegisterViewController.swift */; };
 		54205EC31E76266F003E3EC4 /* RegistrationCompletionViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 54205EBE1E76266F003E3EC4 /* RegistrationCompletionViewController.swift */; };
 		54205EC41E76F986003E3EC4 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7881A3E01BAF3B3E00ECB3C6 /* AppDelegate.swift */; };
@@ -406,8 +404,6 @@
 		54205EB31E7625E4003E3EC4 /* PhysioParameterCollectionViewCell.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = PhysioParameterCollectionViewCell.xib; sourceTree = "<group>"; };
 		54205EB71E76265F003E3EC4 /* AddEventViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AddEventViewController.swift; sourceTree = "<group>"; };
 		54205EBA1E76266F003E3EC4 /* AdditionalInfoViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AdditionalInfoViewController.swift; sourceTree = "<group>"; };
-		54205EBB1E76266F003E3EC4 /* ForgotPasswordViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ForgotPasswordViewController.swift; sourceTree = "<group>"; };
-		54205EBC1E76266F003E3EC4 /* LoginViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LoginViewController.swift; sourceTree = "<group>"; };
 		54205EBD1E76266F003E3EC4 /* RegisterViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RegisterViewController.swift; sourceTree = "<group>"; };
 		54205EBE1E76266F003E3EC4 /* RegistrationCompletionViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RegistrationCompletionViewController.swift; sourceTree = "<group>"; };
 		54205EC51E772631003E3EC4 /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
@@ -737,8 +733,6 @@
 			isa = PBXGroup;
 			children = (
 				54205EBA1E76266F003E3EC4 /* AdditionalInfoViewController.swift */,
-				54205EBB1E76266F003E3EC4 /* ForgotPasswordViewController.swift */,
-				54205EBC1E76266F003E3EC4 /* LoginViewController.swift */,
 				54205EBD1E76266F003E3EC4 /* RegisterViewController.swift */,
 				54205EBE1E76266F003E3EC4 /* RegistrationCompletionViewController.swift */,
 			);
@@ -1994,7 +1988,6 @@
 				E7592DBA1CDB704600E313BB /* DashboardTabControllerViewController.swift in Sources */,
 				842B7DD01D0960CB007F2126 /* LineChartCollectionCell.swift in Sources */,
 				E75E95A31CDCA8DD00A18756 /* DashboardFilterCell.swift in Sources */,
-				54205EC11E76266F003E3EC4 /* LoginViewController.swift in Sources */,
 				9580D3A81CEB29DC0074178D /* AppLabel.swift in Sources */,
 				95C0B9A81CD25860006E523F /* BaseDataSource.swift in Sources */,
 				84EF0EB71D05710D00A25760 /* TypeTableViewCell.swift in Sources */,
@@ -2032,7 +2025,6 @@
 				84EF0EBB1D05722700A25760 /* DurationTableViewCell.swift in Sources */,
 				7881A3E11BAF3B3E00ECB3C6 /* AppDelegate.swift in Sources */,
 				54205E7E1E762162003E3EC4 /* MetabolicDataEntry.swift in Sources */,
-				54205EC01E76266F003E3EC4 /* ForgotPasswordViewController.swift in Sources */,
 				84DC44F61D0704340091900F /* StartSleepTableViewCell.swift in Sources */,
 				9585680F1CD1020600EDD385 /* LoadImageCollectionViewCell.swift in Sources */,
 				E75E95AE1CDCD5A700A18756 /* DashboardMetricsConfigItem.swift in Sources */,
