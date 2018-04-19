@@ -1078,8 +1078,8 @@ public class UserManager {
 
         let cache = getArchiveSpanCache()
         if let k = seqIdOfSampleTypeId(typeIdentifier: type.identifier),
-               let s = cache[HMHRangeStartKey]?[k] as? TimeInterval,
-               let e = cache[HMHRangeEndKey]?[k] as? TimeInterval
+            let s = (cache[HMHRangeStartKey] as? [String: AnyObject])?[k] as? TimeInterval,
+               let e = (cache[HMHRangeEndKey] as? [String: AnyObject])?[k] as? TimeInterval
         {
             return (s, e)
         }
@@ -1108,7 +1108,7 @@ public class UserManager {
     public func getHistoricalRangeStartForType(type: HKSampleType) -> TimeInterval? {
         let cache = getArchiveSpanCache()
         if let k = seqIdOfSampleTypeId(typeIdentifier: type.identifier) {
-            return cache[HMHRangeStartKey]?[k] as? TimeInterval
+            return (cache[HMHRangeStartKey] as? [String: AnyObject])?[k] as? TimeInterval
         }
         return nil
     }
@@ -1133,7 +1133,7 @@ public class UserManager {
     public func getHistoricalRangeMinForType(type: HKSampleType) -> TimeInterval? {
         let cache = getArchiveSpanCache()
         if let k = seqIdOfSampleTypeId(typeIdentifier: type.identifier) {
-            return cache[HMHRangeMinKey]?[k] as? TimeInterval
+            return (cache[HMHRangeMinKey] as? [String: AnyObject])?[k] as? TimeInterval
         }
         return nil
     }
