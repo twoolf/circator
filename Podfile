@@ -27,7 +27,6 @@ def shared_pods
     pod 'ResearchKit', :git => 'https://github.com/twoolf/ResearchKit.git'
     pod 'Realm' 
     pod 'RealmSwift'
-    pod 'Stormpath' 
     pod 'SwiftChart'
     pod 'SwiftDate', :git => 'https://github.com/malcommac/SwiftDate.git'
     pod 'SwiftyBeaver', :git => 'https://github.com/SwiftyBeaver/SwiftyBeaver.git', :branch => 'master'
