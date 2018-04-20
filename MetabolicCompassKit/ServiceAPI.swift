@@ -9,6 +9,7 @@
 import Foundation
 import HealthKit
 import Alamofire
+import Auth0
 
 public typealias SvcResultCompletion = (RequestResult) -> Void
 
@@ -118,14 +119,6 @@ public enum MCRouter : URLRequestConvertible {
     public static let privacyPolicyURL = wwwURL.appendingPathComponent("privacy")
     public static let auth0apiURL         = auth0URL
 
-    static var OAuthToken: String?
-    static var tokenExpireTime: TimeInterval = 0
-
-    static func updateAuthToken (token: String?) {
-        OAuthToken = token
-        tokenExpireTime = token != nil ? Date().timeIntervalSince1970 + 3600: 0
-    }
-
     // Data API
     case GetMeasures([String: AnyObject])
     case AddMeasures([String: AnyObject])
@@ -231,43 +224,30 @@ public enum MCRouter : URLRequestConvertible {
     // MARK: URLRequestConvertible
 
     public func asURLRequest() throws -> URLRequest {
-//        let mutableURLRequest = NSMutableURLRequest(URL: MCRouter.apiURL!.URLByAppendingPathComponent(path)!)
-        let baseURL = try MCRouter.baseURL
-        var mutableURLRequest = URLRequest(url: baseURL.appendingPathComponent(path)!)
-//        mutableURLRequest.appendingPathComponent(method.rawValue)
+        var mutableURLRequest = URLRequest(url: MCRouter.baseURL.appendingPathComponent(path)!)
 
         mutableURLRequest.httpMethod = method.rawValue
-        if let token = MCRouter.OAuthToken {
-            mutableURLRequest.setValue("Bearer \(token)", forHTTPHeaderField: "Authorization")
-        }
-
+        
         switch self {
         case .GetMeasures(let parameters):
-//            return Alamofire.ParameterEncoding.URL.encode(mutableURLRequest, parameters: parameters).0
             return try URLEncoding.default.encode(mutableURLRequest, with: parameters)
 
         case .AddMeasures(let parameters):
-//            return Alamofire.ParameterEncoding.JSON.encode(mutableURLRequest, parameters: parameters).0
-//            return try URLEncoding.default.encode(mutableURLRequest, with: parameters)
             return try URLEncoding.default.encode(mutableURLRequest, with: parameters)
 
         case .AddSeqMeasures(let parameters):
-//            return Alamofire.ParameterEncoding.JSON.encode(mutableURLRequest, parameters: parameters).0
             return try URLEncoding.default.encode(mutableURLRequest, with: parameters)
 
         case .RemoveMeasures(let parameters):
-//            return Alamofire.ParameterEncoding.JSON.encode(mutableURLRequest, parameters: parameters).0
             return try URLEncoding.default.encode(mutableURLRequest, with: parameters)
 
         case .AggregateMeasures(let parameters):
-//            return Alamofire.ParameterEncoding.URL.encode(mutableURLRequest, parameters: parameters).0
             return try URLEncoding.default.encode(mutableURLRequest, with: parameters)
 
         case .StudyStats:
-            return try mutableURLRequest
+            return mutableURLRequest
 
         case .DeleteAccount(let parameters):
-//            return Alamofire.ParameterEncoding.JSON.encode(mutableURLRequest, parameters: parameters).0
             return try URLEncoding.default.encode(mutableURLRequest, with: parameters)
 
         case .GetUserAccountData(let components):
@@ -275,12 +255,10 @@ public enum MCRouter : URLRequestConvertible {
             return try URLEncoding.default.encode(mutableURLRequest as URLRequestConvertible, with: parameters)
 
         case .SetUserAccountData(let parameters):
-//            return Alamofire.ParameterEncoding.JSON.encode(mutableURLRequest, parameters: parameters).0
             return try URLEncoding.default.encode(mutableURLRequest, with: parameters)
 
         case .TokenExpiry:
-            return try mutableURLRequest
-//            return try URLEncoding.default.encode(<#T##urlRequest: URLRequestConvertible##URLRequestConvertible#>, with: <#T##Parameters?#>)
+            return mutableURLRequest
 
         case .RLogConfig:
             return mutableURLRequest
@@ -297,120 +275,116 @@ public protocol ServiceRequestResultDelegate {
     func didFinishStringRequest(request:NSURLRequest?, response:HTTPURLResponse?, result:Alamofire.Result<String>)
 }
 
-
-public class Service {
-    public static var delegate:ServiceRequestResultDelegate?
-    internal static func string<S: Sequence>
-        (route: MCRouter, statusCode: S, tag: String,
-         completion: @escaping (NSURLRequest?, HTTPURLResponse?, Alamofire.Result<String>) -> Void)
+public class Service: RequestRetrier, RequestAdapter {
+    public func adapt(_ urlRequest: URLRequest) throws -> URLRequest {
+        var urlRequest = urlRequest
+        tokenLockQueue.sync {
+            if let token = OAuthToken {
+                urlRequest.addValue("Bearer \(token)", forHTTPHeaderField: "Authorization")
+            }
+        }
+        return urlRequest
+    }
+    
+    
+    private var OAuthToken: String?
+    private var OAuthRefreshToken: String?
+    
+    func updateAuthToken (token: String?, refreshToken: String?) {
+        tokenLockQueue.sync {
+            OAuthToken = token
+            OAuthRefreshToken = refreshToken
+        }
+    }
+    
+    private let tokenLockQueue = DispatchQueue(label: "sessionManagerLockQueue")
+    static let shared = Service()
+    public var delegate:ServiceRequestResultDelegate?
+    private let sessionManager: SessionManager
+    
+    init() {
+        sessionManager = SessionManager.default
+        sessionManager.retrier = self
+        sessionManager.adapter = self
+    }
+    
+    internal func string<S: Sequence>(route: MCRouter, statusCode: S, tag: String,
+                                             tokenRefreshed: Bool = false,
+                                            completion: @escaping (NSURLRequest?, HTTPURLResponse?, Alamofire.Result<String>) -> Void)
         -> Alamofire.Request where S.Iterator.Element == Int
     {
-        return Alamofire.request(route).validate(statusCode: statusCode).responseString { response in
+        return sessionManager.request(route).validate(statusCode: statusCode).responseString { response in
             log.debug("\(tag): " + (response.result.isSuccess ? "SUCCESS" : "FAILED"))
-            if Service.delegate != nil{
-                Service.delegate!.didFinishStringRequest(request: response.request as NSURLRequest?, response:response.response, result:response.result)
+            if self.delegate != nil{
+                self.delegate!.didFinishStringRequest(request: response.request as NSURLRequest?, response:response.response, result:response.result)
             }
             log.debug("\n***result:\(response.result)")
             completion(response.request as NSURLRequest?, response.response, response.result)
         }
     }
     
-    internal static func json<S: Sequence>
-        (route: MCRouter, statusCode: S, tag: String,
-         completion: @escaping (NSURLRequest?, HTTPURLResponse?, Alamofire.Result<Any>) -> Void)
-        -> Alamofire.Request where S.Iterator.Element == Int
+    internal func json<S: Sequence>(route: MCRouter, statusCode: S, tag: String,
+                                           tokenRefreshed: Bool = false,
+                                           completion: @escaping (NSURLRequest?, HTTPURLResponse?, Alamofire.Result<Any>) -> Void)
+                                           -> Alamofire.Request where S.Iterator.Element == Int
     {
-        return Alamofire.request(route).validate(statusCode: statusCode).responseJSON { response in
+        return sessionManager.request(route).validate(statusCode: statusCode).responseJSON { response in
             log.debug("\(tag): " + (response.result.isSuccess ? "SUCCESS" : "FAILED"))
-            if let json = response.result.value {
-                if Service.delegate != nil{
-                    Service.delegate!.didFinishJSONRequest(request: response.request as NSURLRequest?, response:response.response, result:response.result)
+            if response.result.value != nil {
+                if self.delegate != nil{
+                    self.delegate!.didFinishJSONRequest(request: response.request as NSURLRequest?, response:response.response, result:response.result)
                 }
                 log.debug("\n***result:\(response.result)")
-            completion(response.request as NSURLRequest?, response.response, response.result)
+                completion(response.request as NSURLRequest?, response.response, response.result)
+            } else {
+                completion(response.request as NSURLRequest?, response.response, response.result)
+            }
         }
     }
-  }
-   
-}
-
-/*extension Alamofire.Request {
-    public func logResponseString(tag: String, completion: (NSURLRequest?, NSHTTPURLResponse?, Alamofire.Result<String,NSError>) -> Void)
-        ->
-    {
-        return self.responseString() { req, resp, result in
-            log.debug("\(tag): " + (result.isSuccess ? "SUCCESS" : "FAILED"))
-            if Service.delegate != nil{
-                Service.delegate!.didFinishStringRequest(req, response:resp, result:result)
-            }
-            log.debug("\n***result:\(result)")
-            completion(req, resp, result)
-        }
-    } */
     
-/*    public func logResponseJSON(tag: String, completion: (NSURLRequest?, NSHTTPURLResponse?, Alamofire.Result<AnyObject,NSError>) -> Void)
-        -> Self
-    {
-        return self.responseJSON() { req, resp, result in
-            log.debug("\(tag): " + (result.isSuccess ? "SUCCESS" : "FAILED"))
-            if Service.delegate != nil{
-                Service.delegate!.didFinishJSONRequest(req, response:resp, result:result)
+    typealias RenewCallback = (Bool)->()
+    let renewLockQueue = DispatchQueue(label: "syncCallbacksQueue")
+    var renewCallbacks = [RenewCallback]()
+    private let maxRetryCount = 1
+    
+    public func should(_ manager: SessionManager, retry request: Alamofire.Request, with error: Error, completion: @escaping RequestRetryCompletion) {
+        if let response = request.task?.response as? HTTPURLResponse, response.statusCode == 401, request.retryCount < maxRetryCount {
+            self.renewToken { success in
+                if success {
+                    completion(true, 0.1)
+                } else {
+                    completion(false, 0.0)
+                }
             }
-            log.debug("\n***result:\(result)")
-            if !result.isSuccess {
-                log.debug("\n***response:\(resp)")
-                log.debug("\n***error:\(result.error)")
-            }
-            completion(req, resp, result)
+        } else {
+            completion(false, 0.0)
         }
     }
-}*/
 
-/*extension Alamofire.Request {
-    public func logResponseString(tag: String, completion: (NSURLRequest?, NSHTTPURLResponse?, Alamofire.Result<String, NSError>) -> Void)
-         -> Self
-         {
-         return self.responseString() { req, resp, result.value in
-         log.debug("\(tag): " + (result.isSuccess ? "SUCCESS" : "FAILED"))
-         if Service.delegate != nil{
-         Service.delegate!.didFinishStringRequest(req, response:resp, result:result)
-         }
-         log.debug("\n***result:\(result)")
-         completion(req, resp, result)
-         }
-         }
-         
-    public func logResponseJSON(tag: String, completion: (NSURLRequest?, NSHTTPURLResponse?, Alamofire.Result<AnyObject, NSError>) -> Void)
-         -> Self
-         {
-         return self.responseJSON() { req, resp, result in
-         log.debug("\(tag): " + (result.isSuccess ? "SUCCESS" : "FAILED"))
-         if Service.delegate != nil{
-         Service.delegate!.didFinishJSONRequest(req, response:resp, result:result)
-         }
-         log.debug("\n***result:\(result)")
-         if !result.isSuccess {
-         log.debug("\n***response:\(resp)")
-         log.debug("\n***error:\(result.error)")
-         }
-         completion(req, resp, result)
-         }
-         }
+    private func renewToken(callback : @escaping RenewCallback) {
+        renewLockQueue.sync {
+            self.renewCallbacks.append(callback)
+            if self.renewCallbacks.count == 1 {
+                Auth0
+                    .authentication()
+                    .renew(withRefreshToken: self.OAuthRefreshToken ?? "")
+                    .start { result in
+                        switch(result) {
+                        case .success(let credentials):
+                            AuthSessionManager.shared.storeTokens(credentials.accessToken ?? "")
+                            self.updateAuthToken(token: credentials.accessToken, refreshToken: self.OAuthRefreshToken)
+                            self.renewLockQueue.sync {
+                                self.renewCallbacks.forEach { $0(true) }
+                                self.renewCallbacks.removeAll()
+                            }
+                        case .failure:
+                            self.renewLockQueue.sync {
+                                self.renewCallbacks.forEach { $0(false) }
+                                self.renewCallbacks.removeAll()
+                            }
+                        }
+                }
+            }
+        }
     }
-} */
-
-/*        return Alamofire.request(route).validate(statusCode: statusCode).responseString { response in
- switch response.result {
- case .Success(let value):
- completion(response.request!, response.response!, value)
- case .Failure:
- completion(response.request!, response.response!, response.result as! String)
- } */
-
-/*        return Alamofire.request(route).validate(statusCode: statusCode).responseJSON { response in
- switch response.result {
- case .Success(let value):
- completion(response.request!, response.response!, value)
- case .Failure(let error):
- completion(response.request!, response.response!, error)
- } */
+}

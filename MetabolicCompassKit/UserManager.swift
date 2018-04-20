@@ -376,8 +376,7 @@ public class UserManager {
 
     public func loginWithCompletion(completion: @escaping SvcResultCompletion) {
         //TODO: Maybe remove looks redundant
-            let token = AuthSessionManager.shared.mcAccessToken
-            MCRouter.updateAuthToken(token: token)
+            Service.shared.updateAuthToken(token: AuthSessionManager.shared.mcAccessToken, refreshToken:  AuthSessionManager.shared.mcRefreshTokenToken)
             let result = RequestResult()
             completion(result)
     }
@@ -407,7 +406,7 @@ public class UserManager {
 
     public func withdraw(keepData: Bool, completion: @escaping SuccessCompletion) {
         let params = ["keep": keepData]
-        Service.string(route: MCRouter.DeleteAccount(params as [String : AnyObject]), statusCode: 200..<300, tag: "WITHDRAW") {
+        Service.shared.string(route: MCRouter.DeleteAccount(params as [String : AnyObject]), statusCode: 200..<300, tag: "WITHDRAW") {
             _, response, result in
             if result.isSuccess { self.resetFull() }
             completion(result.isSuccess)
@@ -618,7 +617,7 @@ public class UserManager {
             return
         }
 
-        Service.json(route: MCRouter.TokenExpiry, statusCode: 200..<300, tag: "ACCTOK") {
+        Service.shared.json(route: MCRouter.TokenExpiry, statusCode: 200..<300, tag: "ACCTOK") {
             _, response, result in
             guard result.isSuccess else {
                 self.refreshAccessToken(tried: tried, completion: completion)
@@ -637,7 +636,7 @@ public class UserManager {
 
     public func ensureAccessToken(completion: @escaping ErrorCompletion) {
         if let token = AuthSessionManager.shared.mcAccessToken {
-            MCRouter.updateAuthToken(token: token)
+            Service.shared.updateAuthToken(token: token, refreshToken:  AuthSessionManager.shared.mcRefreshTokenToken)
             completion(false)
             //            ensureAccessToken(tried: 0, completion: completion) //TODO: check if we need to restore this
         } else {
@@ -662,7 +661,7 @@ public class UserManager {
 
             if let token = Stormpath.sharedSession.accessToken {
                 log.debug("Refreshed token: \(token)")
-                MCRouter.updateAuthToken(token: Stormpath.sharedSession.accessToken)
+//                MCRouter.updateAuthToken(token: Stormpath.sharedSession.accessToken)
                 self.ensureAccessToken(tried: tried+1, completion: completion)
             } else {
                 log.error("RefreshAccessToken failed, please login manually.")
@@ -804,7 +803,7 @@ public class UserManager {
     {
         let componentData = wrapCache(component: component)
         if let _componentData = componentData {
-            Service.string(route: MCRouter.SetUserAccountData(_componentData), statusCode: 200..<300, tag: "SYNCACC") {
+            _ = Service.shared.string(route: MCRouter.SetUserAccountData(_componentData), statusCode: 200..<300, tag: "SYNCACC") {
                 _, response, result in completion(RequestResult(afStringResult:result))
             }
         }
@@ -867,7 +866,7 @@ public class UserManager {
     // Retrieves an account component from the backend service.
     private func pullAccountComponent(component: AccountComponent, completion: @escaping SvcResultCompletion)
     {
-        Service.json(route: MCRouter.GetUserAccountData([component]), statusCode: 200..<300, tag: "GACC\(component)") {
+        _ = Service.shared.json(route: MCRouter.GetUserAccountData([component]), statusCode: 200..<300, tag: "GACC\(component)") {
             _, _, result in
             var pullSuccess = result.isSuccess
             if pullSuccess {
@@ -926,7 +925,7 @@ public class UserManager {
 
     // Retrieves multiple account components in a single request.
     private func pullMultipleAccountComponents(components: [AccountComponent], requiredComponents: [AccountComponent], completion: @escaping SvcResultCompletion) {
-        Service.json(route: MCRouter.GetUserAccountData(components), statusCode: 200..<300, tag: "GALLACC") {
+        _ = Service.shared.json(route: MCRouter.GetUserAccountData(components), statusCode: 200..<300, tag: "GALLACC") {
             request, response, result in
             var pullSuccess = result.isSuccess
             var failedComponents : [String] = []
@@ -953,8 +952,8 @@ public class UserManager {
     }
 
     public func pullFullAccount(completion: @escaping SvcResultCompletion) {
-        pullMultipleAccountComponents(components: [/* .Consent,*/ .Photo, .Profile, .Settings, .ArchiveSpan, .LastAcquired],
-                                      requiredComponents: [/*.Consent,*/ .Profile, .Settings],
+        pullMultipleAccountComponents(components: [.Photo, .Profile, .Settings, .ArchiveSpan, .LastAcquired],
+                                      requiredComponents: [.Profile, .Settings],
                                       completion: completion)
     }
 

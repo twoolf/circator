@@ -34,6 +34,10 @@ class AuthSessionManager {
         return keychain.string(forKey: "access_token")
     }
     
+    public var mcRefreshTokenToken : String? {
+        return keychain.string(forKey: "refresh_token")
+    }
+    
     private func cleanupTokens() {
         self.keychain.clearAll()
     }
@@ -44,44 +48,6 @@ class AuthSessionManager {
             self.keychain.setString(refreshToken, forKey: "refresh_token")
         }
     }
-
-//    func retrieveProfile(_ callback: @escaping (Error?) -> ()) {
-//        guard let accessToken = self.keychain.string(forKey: "access_token") else {
-//            return callback(SessionManagerError.noAccessToken)
-//        }
-//        Auth0
-//            .authentication()
-//            .userInfo(withAccessToken: accessToken)
-//            .start { result in
-//                switch(result) {
-//                case .success(let profile):
-//                    self.profile = profile
-//                    callback(nil)
-//                case .failure(_):
-//                    self.refreshToken(callback)
-//                }
-//        }
-//    }
-//
-//    func refreshToken(_ callback: @escaping (Error?) -> ()) {
-//        guard let refreshToken = self.keychain.string(forKey: "refresh_token") else {
-//            return callback(SessionManagerError.noRefreshToken)
-//        }
-//        Auth0
-//            .authentication()
-//            .renew(withRefreshToken: refreshToken, scope: "openid profile offline_access")
-//            .start { result in
-//                switch(result) {
-//                case .success(let credentials):
-//                    guard let accessToken = credentials.accessToken else { return }
-//                    self.storeTokens(accessToken)
-//                    self.retrieveProfile(callback)
-//                case .failure(let error):
-//                    callback(error)
-//                    self.logout()
-//                }
-//        }
-//    }
 
     func logout() {
         cleanupTokens()

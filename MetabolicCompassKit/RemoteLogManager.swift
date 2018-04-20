@@ -296,7 +296,7 @@ public class RemoteLogManager {
     }
 
     public func reconfigure(completion: @escaping (Bool) -> Void) -> Void {
-        Service.json(route: MCRouter.RLogConfig, statusCode: 200..<300, tag: "GRLOG") {
+        _ = Service.shared.json(route: MCRouter.RLogConfig, statusCode: 200..<300, tag: "GRLOG") {
             _, _, result in
             let pullSuccess = result.isSuccess
             if let rv = result.value as? [String: AnyObject], pullSuccess {

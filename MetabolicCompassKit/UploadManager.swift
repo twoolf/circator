@@ -502,14 +502,14 @@ public class UploadManager: NSObject {
     }
 
     public func putSample(jsonObj: [String: AnyObject]) -> () {
-        Service.string(route: MCRouter.AddMeasures(jsonObj), statusCode: 200..<300, tag: "UPLOAD") {
+        Service.shared.string(route: MCRouter.AddMeasures(jsonObj), statusCode: 200..<300, tag: "UPLOAD") {
             _, response, result in
             log.debug("Upload: \(String(describing: result.value))", "uploadStatus")
         }
     }
 
     public func putBlockSample(jsonObjBlock: [[String:AnyObject]]) -> () {
-        Service.string(route: MCRouter.AddMeasures(["block":jsonObjBlock as AnyObject]), statusCode: 200..<300, tag: "UPLOAD") {
+        Service.shared.string(route: MCRouter.AddMeasures(["block":jsonObjBlock as AnyObject]), statusCode: 200..<300, tag: "UPLOAD") {
             _, response, result in
             log.debug("Upload: \(String(describing: result.value))", "uploadStatus")
         }
@@ -685,7 +685,7 @@ public class UploadManager: NSObject {
                 if block.count > 0 {
                     log.debug("Syncing \(block.count) log entries with keys \(blockKeys.joined(separator: ", "))", "uploadExec")
 
-                    Service.json(route: MCRouter.AddSeqMeasures(["block": block as AnyObject]), statusCode: 200..<300, tag: "UPLOADLOG") {
+                    Service.shared.json(route: MCRouter.AddSeqMeasures(["block": block as AnyObject]), statusCode: 200..<300, tag: "UPLOADLOG") {
                         _, response, result in
                         log.debug("Upload log entries: \(String(describing: result.value))", "uploadExec")
                         self.onCompletedUpload(success: result.isSuccess, sampleKeys: blockKeys)
@@ -813,7 +813,7 @@ public class UploadManager: NSObject {
             "columns" : measures as AnyObject
         ]
 
-        Service.json(route: MCRouter.RemoveMeasures(params), statusCode: 200..<300, tag: "DELPOST") {
+        Service.shared.json(route: MCRouter.RemoveMeasures(params), statusCode: 200..<300, tag: "DELPOST") {
             _, response, result in
             log.debug("Deletions: \(String(describing: result.value))", "deleteSamples")
             if !result.isSuccess {
@@ -1055,7 +1055,7 @@ public class UploadManager: NSObject {
 
         log.debug("Sync \(type.identifier) \(deviceClass) \(deviceId) from \(localSeq) to \(remoteSeq) with params \(params)", "syncSeqIds")
 
-        Service.json(route: MCRouter.GetMeasures(params), statusCode: 200..<300, tag: "GETMEAS") {
+        _ = Service.shared.json(route: MCRouter.GetMeasures(params), statusCode: 200..<300, tag: "GETMEAS") {
             _, response, result in
 
             guard result.isSuccess else {

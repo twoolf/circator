@@ -213,7 +213,7 @@ public class PopulationHealthManager: NSObject {
 
             if !queryColumns.isEmpty {
                 params.updateValue(queryColumns as AnyObject, forKey: "columns")
-                Service.json(route: MCRouter.AggregateMeasures(params), statusCode: 200..<300, tag: "AGGPOST") {
+                _ = Service.shared.json(route: MCRouter.AggregateMeasures(params), statusCode: 200..<300, tag: "AGGPOST") {
                     _, response, result in
                     print("got joson update line 212 \(String(describing: result.value))")
                     guard !result.isSuccess else {
@@ -229,7 +229,7 @@ public class PopulationHealthManager: NSObject {
         }
         else {
             // No caching for filtered queries.
-            Service.json(route: MCRouter.AggregateMeasures(params), statusCode: 200..<300, tag: "AGGPOST") {
+            _ = Service.shared.json(route: MCRouter.AggregateMeasures(params), statusCode: 200..<300, tag: "AGGPOST") {
                 _, response, result in
                 print("got json update line 228 \(String(describing: result.value))")
                 guard !result.isSuccess else {
@@ -398,7 +398,7 @@ public class PopulationHealthManager: NSObject {
 
     // MARK : - Study stats queries
     public func fetchStudyStats(completion: @escaping (Bool, AnyObject?) -> Void) {
-        Service.json(route: MCRouter.StudyStats, statusCode: 200..<300, tag: "GETSTUDYSTATS") {
+        _ = Service.shared.json(route: MCRouter.StudyStats, statusCode: 200..<300, tag: "GETSTUDYSTATS") {
             _, response, result in
             completion(result.isSuccess, result.value as AnyObject?)
         }
