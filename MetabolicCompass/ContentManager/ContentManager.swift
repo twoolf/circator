@@ -27,7 +27,7 @@ class ContentManager: NSObject {
     override init() {
         do {
 //            self.reachability = try Reachability.reachabilityForInternetConnection()
-            self.reachability = try Reachability.init()
+            self.reachability = Reachability()
             super.init()
 
             self.reachability.whenReachable = self.handleReachable

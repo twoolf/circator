@@ -200,7 +200,7 @@ class UserSettingsViewController: BaseViewController {
 
         let appRows = [
             ("Siri Hotword", hotword),
-            ("Cloud Sync Rate (secs)", "\(refresh)")
+            ("Cloud Sync Rate (secs)", "\(refresh ?? 0)")
             ].enumerated().map { (index: Int, rowSpec: (String, String)) in
             return TextFieldRowFormer<FormTextFieldCell>() {
                 $0.backgroundColor = .clear
@@ -309,7 +309,7 @@ class UserSettingsViewController: BaseViewController {
                         button?.shadowHeight = 0
                         button?.setImage(UIImage(named: "icon-debug-refresh"), for: .normal)
                         button?.imageView?.contentMode = .scaleAspectFit
- //                       button?.addTarget(self, action: #selector(self.refreshRemoteLogConfig(_:)), for: .TouchUpInside)
+                        button?.addTarget(self, action: #selector(self.refreshRemoteLogConfig(_:)), for: .touchUpInside)
                         return button!
                     }()
 
@@ -371,7 +371,7 @@ class UserSettingsViewController: BaseViewController {
 
         let proceedAction = UIAlertAction(title: "Yes", style: .default) {
             (alertAction: UIAlertAction!) in
- //           RemoteLogManager.sharedManager.log.setRemote(activate)
+            RemoteLogManager.sharedManager.log.setRemote(activate)
         }
 
         let cancelAction = UIAlertAction(title: "No", style: .cancel) {
@@ -388,14 +388,14 @@ class UserSettingsViewController: BaseViewController {
         Async.main(after: 0.2) {
 //            log.info("RemoteLogManager config name \(RemoteLogManager.sharedManager.log.configName)")
             self.remoteLogConfigLabel.cellUpdate {
- //               $0.subTextLabel.text = RemoteLogManager.sharedManager.log.configName
+                $0.subTextLabel.text = RemoteLogManager.sharedManager.log.configName
                 $0.subTextLabel.setNeedsDisplay()
             }
         }
     }
 
-    func refreshRemoteLogConfig(_ sender: UIButton) {
-/*        if RemoteLogManager.sharedManager.log.remote() {
+    @objc func refreshRemoteLogConfig(_ sender: UIButton) {
+        if RemoteLogManager.sharedManager.log.remote() {
             log.info("RemoteLogManager reconfiguring...")
             RemoteLogManager.sharedManager.reconfigure { success in
                 log.info("RemoteLogManager reconfiguration \(success ? "successful" : "failed")!")
@@ -403,6 +403,6 @@ class UserSettingsViewController: BaseViewController {
             }
         } else {
             log.info("Skipping RemoteLogManager configuration refresh (not in remote mode)")
-        } */
+        }
     }
 }

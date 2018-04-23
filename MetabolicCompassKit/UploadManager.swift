@@ -32,10 +32,9 @@ public extension Collection where Index: Strideable {
         var low = startIndex
         var high = endIndex
         while low != high {
-//            let mid = low.advancedBy(low.distanceTo(high) / 2)
-            let mid = low.advanced(by: low.distance(to: high))
+            let mid = index(low, offsetBy: distance(from: low, to: high)/2)
             if predicate(self[mid]) {
-                low = mid.advanced(by: 1)
+                low = index(after: mid)
             } else {
                 high = mid
             }
@@ -257,7 +256,6 @@ public class UploadManager: NSObject {
     var deviceSync: Async? = nil
 
     public override init() {
-//        self.uploadQueue = dispatch_queue_create("UploadQueue", DISPATCH_QUEUE_SERIAL)
         self.uploadQueue = DispatchQueue(label: "UploadQueue")
         super.init()
     }
@@ -502,14 +500,14 @@ public class UploadManager: NSObject {
     }
 
     public func putSample(jsonObj: [String: AnyObject]) -> () {
-        Service.shared.string(route: MCRouter.AddMeasures(jsonObj), statusCode: 200..<300, tag: "UPLOAD") {
+        _ = Service.shared.string(route: MCRouter.AddMeasures(jsonObj), statusCode: 200..<300, tag: "UPLOAD") {
             _, response, result in
             log.debug("Upload: \(String(describing: result.value))", "uploadStatus")
         }
     }
 
     public func putBlockSample(jsonObjBlock: [[String:AnyObject]]) -> () {
-        Service.shared.string(route: MCRouter.AddMeasures(["block":jsonObjBlock as AnyObject]), statusCode: 200..<300, tag: "UPLOAD") {
+        _ = Service.shared.string(route: MCRouter.AddMeasures(["block":jsonObjBlock as AnyObject]), statusCode: 200..<300, tag: "UPLOAD") {
             _, response, result in
             log.debug("Upload: \(String(describing: result.value))", "uploadStatus")
         }
@@ -596,7 +594,7 @@ public class UploadManager: NSObject {
                             log.debug("Enqueueing retried upload \(logEntry.id) \(logEntry.compoundKey) with \(samples.count) inserts, \(deleted.count) deletions", "uploadRetries")
 
                             let added: [HKSample] = samples.map { $0 as! HKSample }
-//                            self.batchLogEntryUpload(logEntryKey: logEntry.compoundKey, added: added, deleted: deleted)
+                            self.batchLogEntryUpload(logEntryKey: logEntry.compoundKey, added: added, deleted: deleted)
 
                             try! realm.write {
                                 if logEntry.retry_count < maxRetries {
@@ -685,7 +683,7 @@ public class UploadManager: NSObject {
                 if block.count > 0 {
                     log.debug("Syncing \(block.count) log entries with keys \(blockKeys.joined(separator: ", "))", "uploadExec")
 
-                    Service.shared.json(route: MCRouter.AddSeqMeasures(["block": block as AnyObject]), statusCode: 200..<300, tag: "UPLOADLOG") {
+                    _ = Service.shared.json(route: MCRouter.AddSeqMeasures(["block": block as AnyObject]), statusCode: 200..<300, tag: "UPLOADLOG") {
                         _, response, result in
                         log.debug("Upload log entries: \(String(describing: result.value))", "uploadExec")
                         self.onCompletedUpload(success: result.isSuccess, sampleKeys: blockKeys)
@@ -694,17 +692,17 @@ public class UploadManager: NSObject {
                 else {
                     log.debug("Skipping log entry sync, no log entries to upload", "uploadExec")
                 }
-
+                
                 // Recur as an upload loop while we still have elements in the upload queue.
                 logEntryBatchBuffer.removeFirst(batchSize)
                 if !logEntryBatchBuffer.isEmpty {
                     log.debug("Remaining batches: \(logEntryBatchBuffer.count)", "uploadExec")
                     logEntryUploadAsync?.cancel()
-//                    logEntryUploadAsync = Async(self.uploadQueue, after: logEntryUploadDelay) {
+                    logEntryUploadAsync = Async.custom(queue: self.uploadQueue, after: logEntryUploadDelay) {
                         self.syncLogEntryBuffer()
                     }
                 }
-//            }
+            }
         } else {
             log.debug("Skipping syncLogEntryBuffer, empty upload buffer", "uploadExec")
         }
@@ -738,9 +736,10 @@ public class UploadManager: NSObject {
 
 
         logEntryUploadAsync?.cancel()
-//        logEntryUploadAsync = Async(self.uploadQueue, after: logEntryUploadDelay) {
- //           self.syncLogEntryBuffer() 
- //       }
+        
+        logEntryUploadAsync = Async.custom(queue: self.uploadQueue, after: logEntryUploadDelay) {
+            self.syncLogEntryBuffer()
+        }
 
         // Post notifications if we have a substantial amount of work.
         if !syncMode && logEntryBatchBuffer.count > syncNotificationLimit {
@@ -772,7 +771,7 @@ public class UploadManager: NSObject {
                     realm.add(logEntry)
 
                     // Add to upload queue
-//                    batchLogEntryUpload(logEntryKey: logEntry.compoundKey, added: added, deleted: deleted.map { $0.uuid as! NSUUID })
+                    batchLogEntryUpload(logEntryKey: logEntry.compoundKey, added: added, deleted: deleted.map { $0.uuid as NSUUID })
                 }
                 else {
                     var addedIndex = 0
@@ -792,7 +791,7 @@ public class UploadManager: NSObject {
                             deletedIndex += lDeleted.count
 
                             // Add to upload queue
-//                            batchLogEntryUpload(logEntryKey: logEntry.compoundKey, added: lAdded, deleted: lDeleted.map { $0.uuid as! NSUUID })
+                            batchLogEntryUpload(logEntryKey: logEntry.compoundKey, added: lAdded, deleted: lDeleted.map { $0.uuid as NSUUID })
                         }
                     }
                 }
@@ -813,7 +812,7 @@ public class UploadManager: NSObject {
             "columns" : measures as AnyObject
         ]
 
-        Service.shared.json(route: MCRouter.RemoveMeasures(params), statusCode: 200..<300, tag: "DELPOST") {
+        _ = Service.shared.json(route: MCRouter.RemoveMeasures(params), statusCode: 200..<300, tag: "DELPOST") {
             _, response, result in
             log.debug("Deletions: \(String(describing: result.value))", "deleteSamples")
             if !result.isSuccess {
@@ -864,7 +863,7 @@ public class UploadManager: NSObject {
         if let _ = UserManager.sharedManager.getHistoricalRangeForType(type: type),
             let _ = UserManager.sharedManager.getHistoricalRangeMinForType(type: type)
         {
-//            self.uploadInitialAnchorForType(type: type, completion: completion)
+            self.uploadInitialAnchorForType(type: type, completion: completion)
         } else {
             log.warning("No historical range found for \(tname)", "uploadAcqRange")
             completion(true, nil)
@@ -911,7 +910,7 @@ public class UploadManager: NSObject {
                             }
 
                             if ( userAdded.count > 0 || deleted.count > 0 ) {
-//                                UploadManager.sharedManager.uploadAnchorCallback(type: type, anchor: newAnchor, added: userAdded, deleted: deleted)
+                                UploadManager.sharedManager.uploadAnchorCallback(type: type, anchor: newAnchor, added: userAdded, deleted: deleted)
                             }
                             else {
                                 // Advance the anchor for this type so that we don't see the synchronized entries again.
@@ -937,7 +936,7 @@ public class UploadManager: NSObject {
                     log.error(error!.localizedDescription)
                     return
                 }
-//                logEntryUploadAsync?.cancel()
+                self.logEntryUploadAsync?.cancel()
                 completion(success, error)
             }
         }
@@ -1017,25 +1016,25 @@ public class UploadManager: NSObject {
     }
 
     public func syncDeviceMeasuresPeriodically() {
-//        self.deviceSync = Async.background(after: 30.0) {
+        self.deviceSync = Async.background(after: 30.0) {
             // Refresh last acquired
             UserManager.sharedManager.pullAcquisitionSeq { result in
                 guard result.error == nil else {
 
                     // TODO: exponential backoff.
                     log.warning("Failed to get acquisition state", "syncSeqIds")
- //                   self.syncDeviceMeasuresPeriodically()
+                    self.syncDeviceMeasuresPeriodically()
                     return
                 }
 
                 // Invoke sync
-//                self.syncDeviceMeasures(type: HKWorkoutType.workoutType(), deviceClass: "alexa", deviceId: "0")
+                self.syncDeviceMeasures(type: HKWorkoutType.workoutType(), deviceClass: "alexa", deviceId: "0")
 
                 // Tail call
-//                self.syncDeviceMeasuresPeriodically()
+                self.syncDeviceMeasuresPeriodically()
             }
         }
-//    }
+    }
 
     func syncToSeqId(type: HKSampleType, deviceClass: String, deviceId: String,
                      queryOffset: Int, localSeq: Int, remoteSeq: Int, columns: [String: AnyObject])
