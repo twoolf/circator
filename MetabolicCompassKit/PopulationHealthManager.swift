@@ -64,7 +64,7 @@ public class PopulationHealthManager: NSObject {
     }
 
     private func cacheKeyForType(type: HKSampleType) -> String? {
-        if let column = HMConstants.sharedInstance.hkToMCDB[type.hashValue] {
+        if let column = HMConstants.sharedInstance.hkToMCDB[type.identifier.hashValue] {
             return column
         }
         else if let _ = HMConstants.sharedInstance.hkQuantityToMCDBActivity[type.identifier] {
@@ -122,7 +122,7 @@ public class PopulationHealthManager: NSObject {
                                 }
                             }
                         } else {
-                            if let column = HMConstants.sharedInstance.hkToMCDB[hksType.hashValue] {
+                            if let column = HMConstants.sharedInstance.hkToMCDB[hksType.identifier.hashValue] {
                                 columns[String(columnIndex)] = column
                                 columnIndex += 1
                             } else if hksType.identifier == HKCorrelationTypeIdentifier.bloodPressure.rawValue {
@@ -168,7 +168,7 @@ public class PopulationHealthManager: NSObject {
 
         if columns.isEmpty {
             for hksType in previewTypes {
-                if let column = HMConstants.sharedInstance.hkToMCDB[hksType.hashValue] {
+                if let column = HMConstants.sharedInstance.hkToMCDB[hksType.identifier.hashValue] {
                     columns[String(columnIndex)] = column
                     columnIndex += 1
                 }
@@ -203,9 +203,7 @@ public class PopulationHealthManager: NSObject {
             let queryColumns = Dictionary(pairs: columns.filter { (idx, val) in
                 switch val {
                 case is String:
-//                    return aggregateCache.objectForKey(val as! String) == nil
-                    return (aggregateCache.object(forKey: val as! String) != nil)
-                    
+                    return (aggregateCache.object(forKey: val as! String) == nil)
                 default:
                     return true
                 }
@@ -215,7 +213,7 @@ public class PopulationHealthManager: NSObject {
                 params.updateValue(queryColumns as AnyObject, forKey: "columns")
                 _ = Service.shared.json(route: MCRouter.AggregateMeasures(params), statusCode: 200..<300, tag: "AGGPOST") {
                     _, response, result in
-                    print("got joson update line 212 \(String(describing: result.value))")
+                    print("got json update line 212 \(String(describing: result.value))")
                     guard !result.isSuccess else {
                         self.refreshAggregatesFromMsg(payload: result.value as AnyObject?, completion: completion)
                         return
@@ -302,7 +300,9 @@ public class PopulationHealthManager: NSObject {
                                 sampleType = HKObjectType.categoryType(forIdentifier: HKCategoryTypeIdentifier.appleStandHour)!
 // will want to adjust this
                             default:
-                                sampleType = HKObjectType.categoryType(forIdentifier: HKCategoryTypeIdentifier.mindfulSession)!
+                                // THis is pretty dirty hack that was implemented because we can't properly restore HKSampleType from its identifier hashValue
+                                // to properly fix this we need to refactor MCQueries module (it looks like a bad idea to use hashValues as keys, because swift docuemntation states that it can be different between different app launch and we can't properly restore original type from hash)
+                                sampleType = quantityType(from: typeIdentifier)
                             }
 
                             if let sampleValue = val as? Double {
@@ -387,6 +387,19 @@ public class PopulationHealthManager: NSObject {
             NotificationCenter.default.post(name: NSNotification.Name(rawValue: HMDidUpdateRecentSamplesNotification), object: self)
             completion(error)
         }
+    }
+    
+    // THis is pretty dirty hack that was implemented because we can't properly restore HKSampleType from its identifier hashValue
+    // to properly fix this we need to refactor MCQueries module (it looks like a bad idea to use hashValues as keys, because swift docuemntation states that it can be different between different app launch and we can't properly restore original type from hash)
+    func quantityType(from hashValue: Int) -> HKSampleType? {
+        for hkObjType in HMConstants.sharedInstance.healthKitTypesToRead ?? [] {
+            if let sampleType = hkObjType as? HKSampleType {
+                if sampleType.identifier.hashValue == hashValue {
+                    return sampleType
+                }
+            }
+        }
+        return nil
     }
 
     func doubleAsAggregate(sampleType: HKSampleType, sampleValue: Double) -> MCAggregateSample {

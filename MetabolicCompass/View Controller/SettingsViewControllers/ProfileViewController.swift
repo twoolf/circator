@@ -78,7 +78,7 @@ class ProfileViewController: BaseViewController {
 
             if res.ok {
                 // save new photo
-                UserManager.sharedManager.setUserProfilePhoto(photo: self.dataSource.model.loadPhotoField.value as? UIImage)
+                _ = UserManager.sharedManager.setUserProfilePhoto(photo: self.dataSource.model.loadPhotoField.value as? UIImage)
 
                 self.changeMode()
             }

@@ -957,7 +957,7 @@ public class UploadManager: NSObject {
     func columnGroupsOfType(type: HKSampleType) -> [[String]] {
         var columnGroups : [[String]] = []
 
-        if let column = HMConstants.sharedInstance.hkToMCDB[type.identifier.hash] {
+        if let column = HMConstants.sharedInstance.hkToMCDB[type.identifier.hashValue] {
             columnGroups.append([column])
         }
         else if let (activity_category, quantity) = HMConstants.sharedInstance.hkQuantityToMCDBActivity[type.identifier] {
@@ -984,7 +984,7 @@ public class UploadManager: NSObject {
         var columnIndex = 0
         var columns : [String:Any] = [:]
 
-        if let column = HMConstants.sharedInstance.hkToMCDB[type.identifier.hash] {
+        if let column = HMConstants.sharedInstance.hkToMCDB[type.identifier.hashValue] {
             columns[String(columnIndex)] = column
             columnIndex += 1
         }
