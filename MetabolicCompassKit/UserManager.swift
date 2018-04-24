@@ -383,13 +383,12 @@ public class UserManager {
     }
     
     public func logoutWithCompletion(completion: (() -> Void)?) {
-        //TODO: Implement Auth0 log out
-        
-//        MCRouter.updateAuthToken(token: nil)
-//        resetUser()
-//        if let comp = completion { comp() }
+        Service.shared.updateAuthToken(token: nil, refreshToken: nil)
+        AuthSessionManager.shared.logout()
+        resetUser()
+        if let comp = completion { comp() }
     }
-//
+
     public func logout() {
         logoutWithCompletion(completion: nil)
     }
