@@ -91,6 +91,7 @@ class RegisterLoginLandingViewController: BaseViewController {
             regViewController.updatingExistingUser = sender as! Bool
             regViewController.registerCompletion = {
                 UINotifications.genericMsg(vc: self, msg: "Please remember to check your email for our account verification link.", pop: false, asNav: true, nohide: true)
+                self.loginComplete()
             }
         }
     }
@@ -102,29 +103,16 @@ class RegisterLoginLandingViewController: BaseViewController {
     
     func login() {
         startAction()
-//        let loginCredentials = loginModel.getCredentials()
-        
-//        UserManager.sharedManager.ensureUserPass(user: loginCredentials.email, pass: loginCredentials.password) { error in
-//            guard !error else {
-//                UINotifications.invalidUserPass(vc: self.navigationController!)
-//                return
-//            }
-            UserManager.sharedManager.loginWithPull { res in
-                guard res.ok else {
-                    if res.info.hasContent {
-                        let components = UMPullComponentErrorAsArray(res.info)
-                        
-                        // Try to upload the consent file if we encounter a consent pull error.
-                        if components.contains(.Consent) {
-                            self.uploadLostConsentFile()
-                            // Raise a notification if there are other errors.
-                            if components.count > 1 {
-                                Answers.logLogin(withMethod: "SPL", success: false, customAttributes: nil)
-                                let componentNames = components.map { getComponentName($0) }.joined(separator: ", ")
-                                let reason = components.isEmpty ? "" : " (missing \(componentNames))"
-                                UINotifications.loginFailed(vc: self, reason: "Failed to get account\(reason)")
-                            }
-                        } else {
+        UserManager.sharedManager.loginWithPull { res in
+            guard res.ok else {
+                if res.info.hasContent {
+                    let components = UMPullComponentErrorAsArray(res.info)
+                    
+                    // Try to upload the consent file if we encounter a consent pull error.
+                    if components.contains(.Consent) {
+                        self.uploadLostConsentFile()
+                        // Raise a notification if there are other errors.
+                        if components.count > 1 {
                             Answers.logLogin(withMethod: "SPL", success: false, customAttributes: nil)
                             let componentNames = components.map { getComponentName($0) }.joined(separator: ", ")
                             let reason = components.isEmpty ? "" : " (missing \(componentNames))"
@@ -132,27 +120,32 @@ class RegisterLoginLandingViewController: BaseViewController {
                         }
                     } else {
                         Answers.logLogin(withMethod: "SPL", success: false, customAttributes: nil)
-                        UINotifications.invalidUserPass(vc: self)
+                        let componentNames = components.map { getComponentName($0) }.joined(separator: ", ")
+                        let reason = components.isEmpty ? "" : " (missing \(componentNames))"
+                        UINotifications.loginFailed(vc: self, reason: "Failed to get account\(reason)")
                     }
-                    
-                    // Explicitly logout on an error to clear the UserManager's userid.
-                    // This way the user does not see the dashboard on app relaunch.
-                    //                    log.info(res.info)
-                    UserManager.sharedManager.logout()
-                    return
+                } else {
+                    Answers.logLogin(withMethod: "SPL", success: false, customAttributes: nil)
+                    UINotifications.invalidUserPass(vc: self)
                 }
-                if UserManager.sharedManager.isItFirstLogin() {//if it's first login
-                    if let additionalInfo = UserManager.sharedManager.getAdditionalProfileData() {//and user has an additional data. we will push it to the server
-                        UserManager.sharedManager.pushProfile(componentData: additionalInfo , completion: { _ in
-                            UserManager.sharedManager.removeFirstLogin()
-                        })
-                    } else {//in other case we just remove marker for first login
-                        UserManager.sharedManager.removeFirstLogin()
-                    }
-                }
-                self.loginComplete()
+                
+                // Explicitly logout on an error to clear the UserManager's userid.
+                // This way the user does not see the dashboard on app relaunch.
+                //                    log.info(res.info)
+                UserManager.sharedManager.logout()
+                return
             }
-     //   }
+            if UserManager.sharedManager.isItFirstLogin() {//if it's first login
+                if let additionalInfo = UserManager.sharedManager.getAdditionalProfileData() {//and user has an additional data. we will push it to the server
+                    UserManager.sharedManager.pushProfile(componentData: additionalInfo , completion: { _ in
+                        UserManager.sharedManager.removeFirstLogin()
+                    })
+                } else {//in other case we just remove marker for first login
+                    UserManager.sharedManager.removeFirstLogin()
+                }
+            }
+            self.loginComplete()
+        }
     }
     
     func loginComplete() {

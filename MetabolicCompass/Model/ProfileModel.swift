@@ -107,7 +107,7 @@ class ProfileModel: UserInfoModel {
         }
     }
 
-    private let uneditableFields:[UserInfoFieldType] = []
+    private let uneditableFields:[UserInfoFieldType] = [.FirstName, .LastName]
 
     func isItemEditable(item: ModelItem) -> Bool {
         return !uneditableFields.contains(item.type)

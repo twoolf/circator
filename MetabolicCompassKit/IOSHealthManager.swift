@@ -115,21 +115,21 @@ public class IOSHealthManager: NSObject, WCSessionDelegate {
                     let (needsOldestSamples, anchor, predicate) = getAnchorCallback(type)
                     if needsOldestSamples {
                         Async.background(after: 0.5) {
-                            log.debug("Registering bulk ingestion availability for: \(tname)", "registerObservers")
+//                            log.debug("Registering bulk ingestion availability for: \(tname)", "registerObservers")
                             MCHealthManager.sharedManager.getOldestSampleDateForType(type) { date in
                                 if let minDate = date {
-                                    log.debug("Lower bound date for \(type.displayText ?? type.identifier): \(minDate)", "registerObservers")
+//                                    log.debug("Lower bound date for \(type.displayText ?? type.identifier): \(minDate)", "registerObservers")
                                     UserManager.sharedManager.setHistoricalRangeMinForType(type: type, min: minDate as Date, sync: true)
                                 }
                             }
                         }
                     }
 
-                    log.debug("Anchor query for \(tname)", "anchorQuery")
+//                    log.debug("Anchor query for \(tname)", "anchorQuery")
                     self.fetchAnchoredSamplesOfType(type: type, predicate: predicate, anchor: anchor, maxResults: maxResultsPerQuery, callContinuously: false) {
                         (added, deleted, newAnchor, error) -> Void in
 
-                        log.debug("Anchor query completion for \(tname), size: +\(added.count) -\(deleted.count)", "anchorQuery")
+//                        log.debug("Anchor query completion for \(tname), size: +\(added.count) -\(deleted.count)", "anchorQuery")
                         if added.count > 0 || deleted.count > 0 {
                             MCHealthManager.sharedManager.invalidateCacheForUpdates(type, added: (asCircadian ? added : nil))
                         }
@@ -183,7 +183,7 @@ public class IOSHealthManager: NSObject, WCSessionDelegate {
             let keyPrefix = type
 
             for period in periods {
-                log.debug("Collecting chart data for \(keyPrefix) \(period)", "fetchCharts")
+//                log.debug("Collecting chart data for \(keyPrefix) \(period)", "fetchCharts")
 
                 group.enter()
                 // We should get max and min values. because for this type we are using scatter chart
@@ -256,9 +256,9 @@ public class IOSHealthManager: NSObject, WCSessionDelegate {
         }
 
         if let aggArray = MCHealthManager.sharedManager.aggregateCache[key] {
-            log.debug("Cache hit for \(key) (size \(aggArray.aggregates.count))", "fetchCharts")
+//            log.debug("Cache hit for \(key) (size \(aggArray.aggregates.count))", "fetchCharts")
         } else {
-            log.debug("Cache miss for \(key)", "fetchCharts")
+//            log.debug("Cache miss for \(key)", "fetchCharts")
         }
 
         if asMinMax {
@@ -353,7 +353,7 @@ public class IOSHealthManager: NSObject, WCSessionDelegate {
 
     //MARK: Working with cache
     public func cleanCache() {
-        log.debug("Clearing HMAggregateCache", "clearCache")
+//        log.debug("Clearing HMAggregateCache", "clearCache")
         MCHealthManager.sharedManager.aggregateCache.removeAllObjects()
     }
 }

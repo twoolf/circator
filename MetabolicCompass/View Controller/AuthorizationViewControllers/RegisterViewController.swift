@@ -93,7 +93,9 @@ private let inputFontSize = ScreenManager.sharedInstance.profileInputFontSize()
             
             UserManager.sharedManager.setAsFirstLogin()
             _ = UserManager.sharedManager.setUserProfilePhoto(photo: userRegistrationModel.photo)
-            self.performSegue(withIdentifier: self.segueRegistrationCompletionIdentifier, sender: nil)
+            DispatchQueue.main.async {
+                self.performSegue(withIdentifier: self.segueRegistrationCompletionIdentifier, sender: nil)
+            }
         }
         
         if updatingExistingUser {
@@ -143,7 +145,8 @@ private let inputFontSize = ScreenManager.sharedInstance.profileInputFontSize()
 
     let segueRegistrationCompletionIdentifier = "completionRegistrationSeque"
 
-    func prepareForSegue(segue: UIStoryboardSegue, sender: AnyObject?) {
+    
+    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
         if segue.identifier == segueRegistrationCompletionIdentifier {
             segue.destination.modalPresentationStyle = .overCurrentContext
             if let vc = segue.destination as? RegistrationCompletionViewController {

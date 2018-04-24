@@ -247,7 +247,7 @@ class ProfileDataSource: BaseDataSource {
     private let smallCellWidthShift: CGFloat = 16
     private  var _cellHeight: CGFloat = 0.0
     var cellHeight: CGFloat {
-        if (_cellHeight ?? 0.0) == 0.0{
+        if _cellHeight == 0.0{
             _cellHeight = ((self.collectionView?.frame.size.height ?? cellHighHeight) - cellHighHeight) * 0.16
         }
         return _cellHeight
