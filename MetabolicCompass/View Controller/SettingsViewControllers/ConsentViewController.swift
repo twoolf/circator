@@ -16,27 +16,31 @@ class ConsentViewController: BaseViewController {
 
     override func viewDidLoad() {
         super.viewDidLoad()
-
-        let consentDict = UserManager.sharedManager.getConsent()
-        if let pdfstr = consentDict["consent"] as? String,
-            let pdfdata = NSData(base64Encoded: pdfstr, options: NSData.Base64DecodingOptions())
-        {
-            let url = NSURL.fileURL(withPath: Bundle.main.bundlePath)
-            webView.load(pdfdata as Data, mimeType: "application/pdf", textEncodingName: "UTF-8", baseURL: url)
-        } else {
-            let label = UILabel()
-            label.font = UIFont(name: "GothamBook", size: 20)!
-            label.textColor = .black
-            label.textAlignment = .center
-            label.text = "Unable to show consent PDF"
-
-            label.translatesAutoresizingMaskIntoConstraints = false
-            self.view.addSubview(label)
-            self.view.addConstraints([
-                label.centerXAnchor.constraint(equalTo: view.layoutMarginsGuide.centerXAnchor),
-                label.centerYAnchor.constraint(equalTo: view.layoutMarginsGuide.centerYAnchor),
-                label.heightAnchor.constraint(equalToConstant: 100)
-            ])
+        
+        UserManager.sharedManager.getConsentData {[weak self] (data) in
+            DispatchQueue.main.async {
+                guard let strongSelf = self else {return}
+                if let pdfdata = data
+                {
+                    let url = NSURL.fileURL(withPath: Bundle.main.bundlePath)
+                    strongSelf.webView.load(pdfdata, mimeType: "application/pdf", textEncodingName: "UTF-8", baseURL: url)
+                } else {
+                    
+                    let label = UILabel()
+                    label.font = UIFont(name: "GothamBook", size: 20)!
+                    label.textColor = .black
+                    label.textAlignment = .center
+                    label.text = "Unable to show consent PDF"
+                    
+                    label.translatesAutoresizingMaskIntoConstraints = false
+                    strongSelf.view.addSubview(label)
+                    strongSelf.view.addConstraints([
+                        label.centerXAnchor.constraint(equalTo: strongSelf.view.layoutMarginsGuide.centerXAnchor),
+                        label.centerYAnchor.constraint(equalTo: strongSelf.view.layoutMarginsGuide.centerYAnchor),
+                        label.heightAnchor.constraint(equalToConstant: 100)
+                        ])
+                }
+            }
         }
     }
 

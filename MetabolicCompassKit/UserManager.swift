@@ -166,7 +166,7 @@ public class UserManager {
     public static let defaultHotwords = "food log"
     public static let initialProfileDataKey = "initialProfileData"
     public static let additionalInfoDataKey = "additionalInfoData"
-    public static let conscentMetadataKey = "conscentS3Key"
+    public static let consentMetadataKey = "conscentS3Key"
     private static let firstLoginKey = "firstLoginKey"
 
     // Primary user
@@ -438,7 +438,7 @@ public class UserManager {
                 switch(result) {
                 case .success(let profile):
                     if let metadata = profile["user_metadata"] as? [String : String] {
-                        if let _ = metadata[UserManager.conscentMetadataKey] {
+                        if let _ = metadata[UserManager.consentMetadataKey] {
                             self.setAccountData(items: metadata as [String : AnyObject])
                             self.refreshComponentCache(component: .PersonalProfile, componentData: metadata as [String : AnyObject])
                             self.authorizeMCApi(completion: { (error) in
@@ -515,14 +515,14 @@ public class UserManager {
                 return
         }
         
-        uploadConscent(consentPath: consentPath) { (error, conscentAwsKey) in
+        uploadConsent(consentPath: consentPath) { (error, conscentAwsKey) in
             guard let conscentKey = conscentAwsKey, error == nil else {
                 completion(UserManagerError.failedToUploadConscent)
                 return
             }
             
             var userMetadata = initialData
-            userMetadata[UserManager.conscentMetadataKey] = conscentKey
+            userMetadata[UserManager.consentMetadataKey] = conscentKey
             Auth0
                 .users(token: idToken)
                 .patch(userId, userMetadata: userMetadata)
@@ -573,17 +573,18 @@ public class UserManager {
             let decodedId = try? decode(jwt: idToken),
             let userId = decodedId.subject {
             setUserId(userId: userId)
+            setAccountData(items: getPersonalProfileCache())//After registration we need to setup cahced metadata to keychain
         }
         AuthSessionManager.shared.storeTokens(credentials.accessToken ?? "", refreshToken: credentials.refreshToken)
     }
     
     // MARK: AWS S3 functions
     
-    func uploadConscent(consentPath: String, completion: @escaping (Error?, String?) -> ()) {
+    func uploadConsent(consentPath: String, completion: @escaping (Error?, String?) -> ()) {
         let expression = AWSS3TransferUtilityUploadExpression()
         
         let transferUtility = AWSS3TransferUtility.default()
-        let conscentKey = "uploads/\(UUID().uuidString).pdf"
+        let conscentKey = "public/\(UUID().uuidString).pdf"
         
         transferUtility.uploadFile(URL(fileURLWithPath: consentPath),
                                    key: conscentKey,
@@ -895,7 +896,20 @@ public class UserManager {
 
 
     // MARK: - Consent accessors
-    public func getConsent() -> [String: AnyObject] { return getCachedComponent(component: .Consent) }
+    public func getConsentData(completion: @escaping (Data?) -> ()) {
+        guard let consentKey = getPersonalProfileCache()[UserManager.consentMetadataKey] as? String else {
+            completion(nil)
+            return
+        }
+        
+        AWSS3TransferUtility.default().downloadData(forKey: consentKey, expression: nil) { (task, url, data, error) in
+            if error != nil {
+                completion(nil)
+            } else {
+                completion(data)
+            }
+        }
+    }
 
     public func syncConsent(completion: @escaping SvcResultCompletion) {
         syncAccountComponent(component: .Consent, completion: completion)
