@@ -86,16 +86,21 @@ class UserInfoModel: NSObject {
     }
 
     func profileItems() -> [String : String] {
-        return profileItems(newItems: items)
+        return profileItems(newItems: items, excludeTypes: [.Photo])
+    }
+    
+    //This function returns profile items without user's personal data
+    func hipaaCompliantProfileItems() -> [String : String] {
+        return profileItems(newItems: items, excludeTypes: [.Photo, .FirstName, .LastName])
     }
 
     // Note, this returns a profile in the standard units of the MC webservice (i.e., metric).
     // This allows us to directly push the results of this function to the webservice.
-    func profileItems(newItems: [ModelItem]) -> [String : String]  {
+    func profileItems(newItems: [ModelItem], excludeTypes : [UserInfoFieldType] = []) -> [String : String]  {
         var profile = [String : String]()
         var heightInchesComponent: String! = nil
         for item in newItems {            
-            if item.type == .Photo
+            if excludeTypes.contains(item.type)
             {
                 continue
             } else {
@@ -152,10 +157,8 @@ class UserInfoModel: NSObject {
 
             // Set to whole number of feet, and save remainder in inches field.
             if units == .Imperial {
-//                heightField.setNewValue(newValue: floor(convertedValue))
-                heightField.setNewValue(newValue: convertedValue as AnyObject?)
-//                heightInchesField.setNewValue(newValue: Int(floor((convertedValue % 1.0) * 12.0)) as AnyObject?)
-                heightInchesField.setNewValue(newValue: Int((convertedValue) * 12.0) as AnyObject?)
+                heightField.setNewValue(newValue: floor(convertedValue) as AnyObject)
+                heightInchesField.setNewValue(newValue: Int(floor(convertedValue.truncatingRemainder(dividingBy: 1) * 12.0)) as AnyObject)
             } else {
                 heightField.setNewValue(newValue: (round(1000.0*Double(convertedValue))/1000.0) as AnyObject?)
             }

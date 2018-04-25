@@ -116,7 +116,7 @@
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="UFG-Go-QgB" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="-241" y="382"/>
+            <point key="canvasLocation" x="-631" y="393"/>
         </scene>
         <!--Register-->
         <scene sceneID="jgF-cm-qRn">
@@ -197,7 +197,7 @@
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="V1Q-u2-gqb" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="236" y="1180"/>
+            <point key="canvasLocation" x="287" y="393"/>
         </scene>
         <!--Registration Completion View Controller-->
         <scene sceneID="OhR-m3-yA2">
@@ -291,7 +291,7 @@ additional information?</string>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="crt-SO-lbt" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="1224" y="1180"/>
+            <point key="canvasLocation" x="2033" y="393"/>
         </scene>
         <!--REGISTER-->
         <scene sceneID="8Im-BR-ouu">
@@ -370,7 +370,7 @@ additional information?</string>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="ujV-7q-VW1" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="1647" y="1180"/>
+            <point key="canvasLocation" x="2898" y="393"/>
         </scene>
         <!--Navigation Controller-->
         <scene sceneID="aFt-Kk-Hv1">
@@ -388,7 +388,7 @@ additional information?</string>
                 </navigationController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="LXG-MM-gz0" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="658" y="1180"/>
+            <point key="canvasLocation" x="1094" y="393"/>
         </scene>
     </scenes>
     <resources>

@@ -31,6 +31,7 @@ class ProfileModel: UserInfoModel {
     
     func setupValues() {
         let profileInfo = UserManager.sharedManager.getProfileCache()
+        let personalProfileInfo = UserManager.sharedManager.getPersonalProfileCache()
         
         let units: UnitsSystem! = UserManager.sharedManager.useMetricUnits() ? UnitsSystem.Metric : UnitsSystem.Imperial
         for item in items {
@@ -38,10 +39,10 @@ class ProfileModel: UserInfoModel {
                 item.setNewValue(newValue: units.rawValue as AnyObject?)
             }
             else if item.type == .FirstName {
-                item.setNewValue(newValue: profileInfo[firstNameField.name] as? String as AnyObject?? ?? "<unknown>" as AnyObject?)
+                item.setNewValue(newValue: personalProfileInfo[firstNameField.name])
             }
             else if item.type == .LastName {
-                item.setNewValue(newValue: (profileInfo[lastNameField.name] as? String as AnyObject??)! )
+                item.setNewValue(newValue: personalProfileInfo[lastNameField.name])
             }
             else if item.type == .Photo {
                 item.setNewValue(newValue: UserManager.sharedManager.userProfilePhoto())

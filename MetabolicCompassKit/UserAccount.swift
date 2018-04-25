@@ -32,6 +32,7 @@ struct UserAccount : ReadableSecureStorable,
 public enum AccountComponent {
     case Consent
     case Photo
+    case PersonalProfile
     case Profile
     case Settings
     case ArchiveSpan
@@ -60,6 +61,8 @@ public func getComponentName(_ component: AccountComponent) -> String {
         return "archive_span"
     case .LastAcquired:
         return "last_acquired"
+    case .PersonalProfile:
+        return "personal_data"
     }
 }
 

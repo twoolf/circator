@@ -204,12 +204,13 @@ public class UserManager {
     
     // Account component dictionary cache.
     private(set) public var componentCache : [AccountComponent: [String: AnyObject]] = [
-        .Consent      : [:],
-        .Photo        : [:],
-        .Profile      : [:],
-        .Settings     : [:],
-        .ArchiveSpan  : [HMHRangeMinKey: [String:AnyObject]() as AnyObject, HMHRangeStartKey: [String:AnyObject]() as AnyObject, HMHRangeEndKey: [String:AnyObject]() as AnyObject],
-        .LastAcquired : [:]
+        .Consent         : [:],
+        .Photo           : [:],
+        .Profile         : [:],
+        .Settings        : [:],
+        .ArchiveSpan     : [HMHRangeMinKey: [String:AnyObject]() as AnyObject, HMHRangeStartKey: [String:AnyObject]() as AnyObject, HMHRangeEndKey: [String:AnyObject]() as AnyObject],
+        .LastAcquired    : [:],
+        .PersonalProfile : [:]
     ]
 
     // Track when the remote account component was last retrieved
@@ -433,6 +434,7 @@ public class UserManager {
                 case .success(let profile):
                     if let metadata = profile["user_metadata"] as? [String : String] {
                         if let _ = metadata[UserManager.conscentMetadataKey] {
+                            self.refreshComponentCache(component: .PersonalProfile, componentData: metadata as [String : AnyObject])
                             self.authorizeMCApi(completion: { (error) in
                                 if let error = error {
                                     completion(nil, error)
@@ -515,13 +517,13 @@ public class UserManager {
             
             var userMetadata = initialData
             userMetadata[UserManager.conscentMetadataKey] = conscentKey
-            
             Auth0
                 .users(token: idToken)
                 .patch(userId, userMetadata: userMetadata)
                 .start { (result) in
                     switch result {
                     case .success(_):
+                        self.refreshComponentCache(component: .PersonalProfile, componentData: userMetadata as [String : AnyObject])
                         self.authorizeMCApi(completion: completion)
                     case .failure(let error):
                         completion(error)
@@ -572,10 +574,8 @@ public class UserManager {
         if let token = AuthSessionManager.shared.mcAccessToken {
             Service.shared.updateAuthToken(token: token, refreshToken:  AuthSessionManager.shared.mcRefreshTokenToken)
             completion(false)
-            //            ensureAccessToken(tried: 0, completion: completion) //TODO: check if we need to restore this
         } else {
             completion(true)
-//            self.refreshAccessToken(completion: completion) //TODO: check if we need to restore this
         }
     }
 
@@ -657,6 +657,8 @@ public class UserManager {
                 return [componentName: self.uploadArchiveSpanExtractor(data: componentData) as AnyObject]
             case .LastAcquired:
                 return [componentName: self.uploadLastAcquiredExtractor(data: componentData) as AnyObject]
+            case .PersonalProfile:
+                return componentData
             }
         }
         return nil
@@ -699,6 +701,8 @@ public class UserManager {
             if let componentData = response[componentName] as? [String:AnyObject] {
                 return self.downloadLastAcquiredExtractor(data: componentData)
             }
+            return nil
+        case .PersonalProfile:
             return nil
         }
     }
@@ -896,6 +900,8 @@ public class UserManager {
 
     // MARK: - Profile accessors
 
+    public func getPersonalProfileCache() -> [String: AnyObject] { return getCachedComponent(component: .PersonalProfile) }
+    
     public func getProfileCache() -> [String: AnyObject] { return getCachedComponent(component: .Profile) }
 
     public func syncProfile(completion: @escaping SvcResultCompletion) {

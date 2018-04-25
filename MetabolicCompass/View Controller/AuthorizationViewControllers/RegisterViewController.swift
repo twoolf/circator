@@ -73,9 +73,7 @@ private let inputFontSize = ScreenManager.sharedInstance.profileInputFontSize()
         }
         
         UINotifications.genericMsg(vc: self.navigationController!, msg: "Registering account...")
-        let initialProfile = self.dataSource.model.profileItems()
-        
-        
+        let initialProfile = userRegistrationModel.profileItems()
         
         let callback : (Error?) -> () = { error in
             guard error == nil else {
@@ -91,11 +89,14 @@ private let inputFontSize = ScreenManager.sharedInstance.profileInputFontSize()
                 return
             }
             
-            UserManager.sharedManager.setAsFirstLogin()
-            _ = UserManager.sharedManager.setUserProfilePhoto(photo: userRegistrationModel.photo)
-            DispatchQueue.main.async {
-                self.performSegue(withIdentifier: self.segueRegistrationCompletionIdentifier, sender: nil)
-            }
+            UserManager.sharedManager.pushProfile(componentData: userRegistrationModel.hipaaCompliantProfileItems() as [String : AnyObject], completion: { (result) in
+                UserManager.sharedManager.setAsFirstLogin()
+                _ = UserManager.sharedManager.setUserProfilePhoto(photo: userRegistrationModel.photo)
+                DispatchQueue.main.async {
+                    self.performSegue(withIdentifier: self.segueRegistrationCompletionIdentifier, sender: nil)
+                }
+
+            })
         }
         
         if updatingExistingUser {
