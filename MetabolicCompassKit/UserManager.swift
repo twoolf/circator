@@ -239,6 +239,9 @@ public class UserManager {
 
     init() {
         self.componentUpdateQueue = DispatchQueue(label: "UserManangerUpdateQueue")
+        if let personalData = getAccountData() {
+            refreshComponentCache(component: .PersonalProfile, componentData: personalData)
+        }
     }
 
     // MARK: - Account status, and authentication
@@ -312,9 +315,7 @@ public class UserManager {
 
     public func getAccountData() -> [String:AnyObject]? {
         if let user = userId {
-            let account = UserAccount(username: user)
-            let lockbox = account.readFromSecureStore()
-            return lockbox?.data as [String : AnyObject]?
+            return try Locksmith.loadDataForUserAccount(userAccount: user) as? [String : AnyObject]
         }
         return nil
     }
@@ -329,7 +330,11 @@ public class UserManager {
                     log.error("setAccountData: \(error)")
                 }
             } else {
-                print("\(String(describing: Locksmith.loadDataForUserAccount(userAccount: user)))")
+                do {
+                    try Locksmith.saveData(data: items, forUserAccount: user)
+                } catch {
+                    log.error("setAccountData: \(error)")
+                }
             }
         }
     }
@@ -434,6 +439,7 @@ public class UserManager {
                 case .success(let profile):
                     if let metadata = profile["user_metadata"] as? [String : String] {
                         if let _ = metadata[UserManager.conscentMetadataKey] {
+                            self.setAccountData(items: metadata as [String : AnyObject])
                             self.refreshComponentCache(component: .PersonalProfile, componentData: metadata as [String : AnyObject])
                             self.authorizeMCApi(completion: { (error) in
                                 if let error = error {
@@ -523,6 +529,7 @@ public class UserManager {
                 .start { (result) in
                     switch result {
                     case .success(_):
+                        self.setAccountData(items: userMetadata as [String : AnyObject])
                         self.refreshComponentCache(component: .PersonalProfile, componentData: userMetadata as [String : AnyObject])
                         self.authorizeMCApi(completion: completion)
                     case .failure(let error):
@@ -546,6 +553,7 @@ public class UserManager {
             .start { (result) in
                 switch result {
                 case .success(_):
+                    self.setAccountData(items: profileData as [String : AnyObject])
                     self.refreshComponentCache(component: .PersonalProfile, componentData: profileData as [String : AnyObject])
                     completion(nil)
                 case .failure(let error):
