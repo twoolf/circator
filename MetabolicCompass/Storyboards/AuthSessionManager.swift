@@ -19,8 +19,6 @@ class AuthSessionManager {
     private static let wasCleanedUpOnFirstLaunchKey = "AuthSessionManager_WasCleanedUpOnFirstLaunch"
     static let shared = AuthSessionManager()
     private let keychain = A0SimpleKeychain(service: "Auth0")
-    var profile: UserInfo?
-    var userProfile: Profile?
 
     private init () {
         if !UserDefaults.standard.bool(forKey: AuthSessionManager.wasCleanedUpOnFirstLaunchKey) {
@@ -38,8 +36,16 @@ class AuthSessionManager {
         return keychain.string(forKey: "refresh_token")
     }
     
+    public var auth0IdToken : String? {
+        return keychain.string(forKey: "auth0_id_token")
+    }
+    
     private func cleanupTokens() {
         self.keychain.clearAll()
+    }
+    
+    func storeAuth0IdToken(idToken: String) {
+        self.keychain.setString(idToken, forKey: "auth0_id_token")
     }
 
    func storeTokens(_ accessToken: String, refreshToken: String? = nil) {

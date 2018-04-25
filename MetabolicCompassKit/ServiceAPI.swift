@@ -233,12 +233,15 @@ public enum MCRouter : URLRequestConvertible {
             return try URLEncoding.default.encode(mutableURLRequest, with: parameters)
 
         case .AddMeasures(let parameters):
+            //MAybe JSON
             return try URLEncoding.default.encode(mutableURLRequest, with: parameters)
 
         case .AddSeqMeasures(let parameters):
+            //MAybe JSON
             return try URLEncoding.default.encode(mutableURLRequest, with: parameters)
 
         case .RemoveMeasures(let parameters):
+            //MAybe JSON
             return try URLEncoding.default.encode(mutableURLRequest, with: parameters)
 
         case .AggregateMeasures(let parameters):
@@ -248,6 +251,7 @@ public enum MCRouter : URLRequestConvertible {
             return mutableURLRequest
 
         case .DeleteAccount(let parameters):
+            //MAybe JSON
             return try URLEncoding.default.encode(mutableURLRequest, with: parameters)
 
         case .GetUserAccountData(let components):
@@ -255,7 +259,7 @@ public enum MCRouter : URLRequestConvertible {
             return try URLEncoding.default.encode(mutableURLRequest as URLRequestConvertible, with: parameters)
 
         case .SetUserAccountData(let parameters):
-            return try URLEncoding.default.encode(mutableURLRequest, with: parameters)
+            return try Alamofire.JSONEncoding.default.encode(mutableURLRequest, with: parameters)
 
         case .TokenExpiry:
             return mutableURLRequest

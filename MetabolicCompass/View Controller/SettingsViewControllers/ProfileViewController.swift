@@ -73,23 +73,28 @@ class ProfileViewController: BaseViewController {
 
         sender.isEnabled = false
         let newProfileInfo = dataSource.model.profileItems()
-
-        UserManager.sharedManager.pushProfile(componentData: newProfileInfo as [String : AnyObject], completion: { res in
-
-            if res.ok {
-                // save new photo
-                _ = UserManager.sharedManager.setUserProfilePhoto(photo: self.dataSource.model.loadPhotoField.value as? UIImage)
-
-                self.changeMode()
+        
+        UserManager.sharedManager.updateAuth0UserProfile(profileData: newProfileInfo) { (error) in
+            if error != nil {
+                self.showAlert(withMessage: "Unable to sync your profile remotely. Please, try later".localized)
+                sender.isEnabled = true
+            } else {
+                UserManager.sharedManager.pushProfile(componentData: newProfileInfo as [String : AnyObject], completion: { res in
+                    if res.ok {
+                        // save new photo
+                        _ = UserManager.sharedManager.setUserProfilePhoto(photo: self.dataSource.model.loadPhotoField.value as? UIImage)
+                        
+                        self.changeMode()
+                    }
+                    else {
+                        let message = res.info.hasContent ? res.info : "Unable to sync your profile remotely. Please, try later".localized
+                        self.showAlert(withMessage: message)
+                    }
+                    
+                    sender.isEnabled = true
+                })
             }
-            else {
-                let message = res.info.hasContent ? res.info : "Unable to sync your profile remotely. Please, try later".localized
-                self.showAlert(withMessage: message)
-            }
-
-            sender.isEnabled = true
-        })
-
+        }
     }
 
     private func changeMode() {

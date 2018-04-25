@@ -419,7 +419,7 @@ public class UserManager {
     }
     
     private func checkConscent(completion: @escaping (Bool?, Error?) -> ()) {
-        guard let idToken = auth0Credentials?.idToken,
+        guard let idToken = AuthSessionManager.shared.auth0IdToken,
             let decodedId = try? decode(jwt: idToken),
             let userId = decodedId.subject else {
                 completion(nil, UserManagerError.failedToAuthorizeWithAuth0)
@@ -501,8 +501,8 @@ public class UserManager {
         }
     }
     
-    func updateAuth0Metadata(consentPath: String, initialData: [String: String], completion: @escaping (Error?) -> ()) {
-        guard let idToken = auth0Credentials?.idToken,
+    private func updateAuth0Metadata(consentPath: String, initialData: [String: String], completion: @escaping (Error?) -> ()) {
+        guard let idToken = AuthSessionManager.shared.auth0IdToken,
             let decodedId = try? decode(jwt: idToken),
             let userId = decodedId.subject else {
                 completion(UserManagerError.failedToAuthorizeWithAuth0)
@@ -532,16 +532,35 @@ public class UserManager {
         }
     }
     
-    private var auth0Credentials : Credentials?
-    private var mcAPICredentials : Credentials?
+    public func updateAuth0UserProfile(profileData: [String: String], completion: @escaping (Error?) -> ()) {
+        guard let idToken = AuthSessionManager.shared.auth0IdToken,
+            let decodedId = try? decode(jwt: idToken),
+            let userId = decodedId.subject else {
+                completion(UserManagerError.failedToAuthorizeWithAuth0)
+                return
+        }
+        
+        Auth0
+            .users(token: idToken)
+            .patch(userId, userMetadata: profileData)
+            .start { (result) in
+                switch result {
+                case .success(_):
+                    self.refreshComponentCache(component: .PersonalProfile, componentData: profileData as [String : AnyObject])
+                    completion(nil)
+                case .failure(let error):
+                    completion(error)
+                }
+        }
+    }
     
     func storeAuth0(credentials: Credentials) {
-        auth0Credentials = credentials
+        if let idToken = credentials.idToken {
+            AuthSessionManager.shared.storeAuth0IdToken(idToken: idToken)
+        }
     }
     
     func storeMC(credentials: Credentials) {
-        mcAPICredentials = credentials
-        
         if let idToken = credentials.idToken,
             let decodedId = try? decode(jwt: idToken),
             let userId = decodedId.subject {
