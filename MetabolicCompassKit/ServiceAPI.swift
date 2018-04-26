@@ -135,10 +135,7 @@ public enum MCRouter : URLRequestConvertible {
         // the component-specific nesting (e.g, ["consent": "<base64 string>"])
 
     case DeleteAccount([String: AnyObject])
-
-    // Token management API
-    case TokenExpiry
-
+    
     // Remote logging API 
     case RLogConfig
   
@@ -172,9 +169,6 @@ public enum MCRouter : URLRequestConvertible {
 
         case .SetUserAccountData:
             return .post
-
-        case .TokenExpiry:
-            return .get
 
         case .RLogConfig:
             return .get
@@ -210,9 +204,6 @@ public enum MCRouter : URLRequestConvertible {
         case .GetUserAccountData(_), .SetUserAccountData(_):
             return "/user/account"
 
-        case .TokenExpiry:
-            return "/user/expiry"
-
         case .RLogConfig:
             return "/user/rlogconfig"
             
@@ -233,16 +224,13 @@ public enum MCRouter : URLRequestConvertible {
             return try URLEncoding.default.encode(mutableURLRequest, with: parameters)
 
         case .AddMeasures(let parameters):
-            //MAybe JSON
-            return try URLEncoding.default.encode(mutableURLRequest, with: parameters)
+            return try Alamofire.JSONEncoding.default.encode(mutableURLRequest, with: parameters)
 
         case .AddSeqMeasures(let parameters):
-            //MAybe JSON
-            return try URLEncoding.default.encode(mutableURLRequest, with: parameters)
+            return try Alamofire.JSONEncoding.default.encode(mutableURLRequest, with: parameters)
 
         case .RemoveMeasures(let parameters):
-            //MAybe JSON
-            return try URLEncoding.default.encode(mutableURLRequest, with: parameters)
+            return try Alamofire.JSONEncoding.default.encode(mutableURLRequest, with: parameters)
 
         case .AggregateMeasures(let parameters):
             return try URLEncoding.default.encode(mutableURLRequest, with: parameters)
@@ -251,8 +239,7 @@ public enum MCRouter : URLRequestConvertible {
             return mutableURLRequest
 
         case .DeleteAccount(let parameters):
-            //MAybe JSON
-            return try URLEncoding.default.encode(mutableURLRequest, with: parameters)
+            return try Alamofire.JSONEncoding.default.encode(mutableURLRequest, with: parameters)
 
         case .GetUserAccountData(let components):
             let parameters = ["components": components.map(getComponentName)]
@@ -260,9 +247,6 @@ public enum MCRouter : URLRequestConvertible {
 
         case .SetUserAccountData(let parameters):
             return try Alamofire.JSONEncoding.default.encode(mutableURLRequest, with: parameters)
-
-        case .TokenExpiry:
-            return mutableURLRequest
 
         case .RLogConfig:
             return mutableURLRequest
