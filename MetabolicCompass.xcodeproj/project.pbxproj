@@ -1327,7 +1327,6 @@
 				784F60361C66C8CA0040F11B /* ShellScript */,
 				A4267121D1DE8613571AA298 /* [CP] Embed Pods Frameworks */,
 				5B1DC96E5F5BAB05E34885C9 /* [CP] Copy Pods Resources */,
-				3FC350CC1FA8942D0092790D /* Auth0 Plist */,
 			);
 			buildRules = (
 			);
@@ -1654,20 +1653,6 @@
 			shellPath = /bin/sh;
 			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
 			showEnvVarsInLog = 0;
-		};
-		3FC350CC1FA8942D0092790D /* Auth0 Plist */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputPaths = (
-			);
-			name = "Auth0 Plist";
-			outputPaths = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "RESOURCE_PATH=$SRCROOT\n\nFILENAME_IN_BUNDLE=Auth0.plist\n\nBUILD_APP_DIR=${BUILT_PRODUCTS_DIR}/${PRODUCT_NAME}.app\n\nif [ \"$CONFIGURATION\" == \"Release\" ]; then\ncp $RESOURCE_PATH/Auth0Release.plist $BUILD_APP_DIR/$FILENAME_IN_BUNDLE\nelse\ncp $RESOURCE_PATH/Auth0Debug.plist $BUILD_APP_DIR/$FILENAME_IN_BUNDLE\nfi";
 		};
 		52DC24114DAE10DBE74DB4C2 /* [CP] Copy Pods Resources */ = {
 			isa = PBXShellScriptBuildPhase;

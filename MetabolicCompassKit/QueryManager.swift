@@ -313,6 +313,6 @@ func serializeMCQueryPredicateREST(p: MCQueryPredicate) -> [String: Any] {
         return ["activity_value": [activity_type: spec]]
     }
 
-    let mcAttrType = HMConstants.sharedInstance.hkToMCDB[p.1.0.identifier.hashValue]!
+    let mcAttrType = HMConstants.sharedInstance.hkToMCDB[p.1.0.identifier]!
     return [mcAttrType: spec]
 }

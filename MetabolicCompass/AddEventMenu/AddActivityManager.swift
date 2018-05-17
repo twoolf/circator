@@ -150,13 +150,13 @@ open class AppPickerManager: PickerManager, PickerManagerSelectionDelegate {
 
     func pickerView(pickerView: AKPickerView, contentWidthForItem item: Int) -> CGFloat {
         let height = cellHeight()
-
+        
         if let label = apps[item].subviews[1] as? UILabel, let image = apps[item].subviews[0] as? UIImageView {
             return cellWidth(label: label, image: image, item: item)
         }
         return height
     }
-
+    
     // MARK : - PickerManagerSelectionDelegate
     func pickerItemSelected(_ pickerManager: PickerManager, itemType: String?, index: Int, item: String, data: AnyObject?) {
         if let scheme = data as? String, let url = NSURL(string: "\(scheme)//") {

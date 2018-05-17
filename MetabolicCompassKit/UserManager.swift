@@ -104,7 +104,7 @@ extension Dictionary {
 
 // Namespace helpers.
 internal func seqIdOfSampleTypeId(typeIdentifier: String) -> String? {
-    if let key = HMConstants.sharedInstance.hkToMCDB[typeIdentifier.hashValue] {
+    if let key = HMConstants.sharedInstance.hkToMCDB[typeIdentifier] {
         return key
     }
     else if let (category,_) = HMConstants.sharedInstance.hkQuantityToMCDBActivity[typeIdentifier] {

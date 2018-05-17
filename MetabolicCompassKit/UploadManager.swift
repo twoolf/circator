@@ -957,7 +957,7 @@ public class UploadManager: NSObject {
     func columnGroupsOfType(type: HKSampleType) -> [[String]] {
         var columnGroups : [[String]] = []
 
-        if let column = HMConstants.sharedInstance.hkToMCDB[type.identifier.hashValue] {
+        if let column = HMConstants.sharedInstance.hkToMCDB[type.identifier] {
             columnGroups.append([column])
         }
         else if let (activity_category, quantity) = HMConstants.sharedInstance.hkQuantityToMCDBActivity[type.identifier] {
@@ -965,8 +965,8 @@ public class UploadManager: NSObject {
         }
         else if type.identifier == HKCorrelationTypeIdentifier.bloodPressure.rawValue {
             // Issue queries for both systolic and diastolic.
-            columnGroups.append([HMConstants.sharedInstance.hkToMCDB[HKQuantityTypeIdentifier.bloodPressureDiastolic.hashValue]!,
-                                 HMConstants.sharedInstance.hkToMCDB[HKQuantityTypeIdentifier.bloodPressureSystolic.hashValue]!])
+            columnGroups.append([HMConstants.sharedInstance.hkToMCDB[HKQuantityTypeIdentifier.bloodPressureDiastolic.rawValue]!,
+                                 HMConstants.sharedInstance.hkToMCDB[HKQuantityTypeIdentifier.bloodPressureSystolic.rawValue]!])
         }
         else if type.identifier == HKWorkoutType.workoutType().identifier {
             columnGroups.append(["meal_duration", "food_type", "activity_duration", "activity_type", "activity_value"])
@@ -984,7 +984,7 @@ public class UploadManager: NSObject {
         var columnIndex = 0
         var columns : [String:Any] = [:]
 
-        if let column = HMConstants.sharedInstance.hkToMCDB[type.identifier.hashValue] {
+        if let column = HMConstants.sharedInstance.hkToMCDB[type.identifier] {
             columns[String(columnIndex)] = column
             columnIndex += 1
         }
@@ -996,8 +996,8 @@ public class UploadManager: NSObject {
         }
         else if type.identifier == HKCorrelationTypeIdentifier.bloodPressure.rawValue {
             // Issue queries for both systolic and diastolic.
-            columns[String(columnIndex)]   = HMConstants.sharedInstance.hkToMCDB[HKQuantityTypeIdentifier.bloodPressureDiastolic.hashValue]!
-            columns[String(columnIndex+1)] = HMConstants.sharedInstance.hkToMCDB[HKQuantityTypeIdentifier.bloodPressureSystolic.hashValue]!
+            columns[String(columnIndex)]   = HMConstants.sharedInstance.hkToMCDB[HKQuantityTypeIdentifier.bloodPressureDiastolic.rawValue]!
+            columns[String(columnIndex+1)] = HMConstants.sharedInstance.hkToMCDB[HKQuantityTypeIdentifier.bloodPressureSystolic.rawValue]!
             columnIndex += 2
         }
         else if type.identifier == HKWorkoutType.workoutType().identifier {
@@ -1245,7 +1245,7 @@ public class UploadManager: NSObject {
 
                         if let value = dvalue, let typeIdentifier = HMConstants.sharedInstance.mcdbToHK[column] {
                             switch typeIdentifier {
-                            case HKCategoryTypeIdentifier.sleepAnalysis.hashValue:
+                            case HKCategoryTypeIdentifier.sleepAnalysis.rawValue:
                                 let sampleType = HKObjectType.categoryType(forIdentifier: HKCategoryTypeIdentifier.sleepAnalysis)!
                                 let ts_end = ts.addingTimeInterval(value)
 
@@ -1254,7 +1254,7 @@ public class UploadManager: NSObject {
 
                                 samples.append(hkSample)
 
-                            case HKCategoryTypeIdentifier.appleStandHour.hashValue:
+                            case HKCategoryTypeIdentifier.appleStandHour.rawValue:
                                 let sampleType = HKObjectType.categoryType(forIdentifier: HKCategoryTypeIdentifier.appleStandHour)!
                                 let ts_end = ts.addingTimeInterval(value)
 

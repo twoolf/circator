@@ -48,21 +48,17 @@ public struct UserProfile {
 
     public static let sharedInstance = UserProfile()
 
-    public let emailIdx : Int = 0
-    public let passwIdx : Int = 1
-    public let fnameIdx : Int = 2
-    public let lnameIdx : Int = 3
-    public let updateableIdx : Int = 4
+    public let fnameIdx : Int = 0
+    public let lnameIdx : Int = 1
+    public let updateableIdx : Int = 2
 
-    public let requiredRange      : Range = 0..<8
-    public let updateableReqRange : Range = 4..<8
-    public let recommendedRange   : Range = 8..<14
-    public let optionalRange      : Range = 14..<29
-    public let updateableRange    : Range = 4..<29
+    public let requiredRange      : Range = 0..<6
+    public let updateableReqRange : Range = 2..<6
+    public let recommendedRange   : Range = 6..<12
+    public let optionalRange      : Range = 12..<27
+    public let updateableRange    : Range = 2..<27
 
     public let profileFields : [String]! = [
-        "Email",
-        "Password",
         "First name",
         "Last name",
         "Sex",
@@ -92,8 +88,6 @@ public struct UserProfile {
         "Daily Water"]
 
     public let profilePlaceholders : [String]! = [
-        "example@gmail.com",
-        "Required",
         "Jane or John",
         "Doe",
         "Female or male",

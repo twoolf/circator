@@ -29,7 +29,7 @@ class AdditionalSectionInfo: NSObject {
 
 class AdditionalInfoModel: NSObject {
 
-    private let defaultPlaceholder = "Add your value".localized
+    private let defaultPlaceholder = "Add value".localized
 
     private(set) var sections = [AdditionalSectionInfo]()
 
@@ -70,19 +70,19 @@ class AdditionalInfoModel: NSObject {
                 profileFieldUnits = UserProfile.sharedInstance.profileUnitsMapping[profileFieldSpec.unitsTitle!]!
             }
 
-            let serviceUnits: HKUnit! = nil
- /*           if let (_, quantityType) = HMConstants.sharedInstance.mcdbActivityToHKQuantity[profileFieldName!] {
+            var serviceUnits: HKUnit! = nil
+            if let (_, quantityType) = HMConstants.sharedInstance.mcdbActivityToHKQuantity[profileFieldName!] {
                 serviceUnits =  HKObjectType.quantityType(forIdentifier: HKQuantityTypeIdentifier(rawValue: quantityType))!.serviceUnit
             }
             else if let type = HMConstants.sharedInstance.mcdbToHK[profileFieldName!] {
-                if type == HKCategoryTypeIdentifierAppleStandHour ||
-                    type == HKCategoryTypeIdentifierSleepAnalysis
+                if type == HKCategoryTypeIdentifier.appleStandHour.rawValue ||
+                    type == HKCategoryTypeIdentifier.sleepAnalysis.rawValue
                 {
-                    serviceUnits = HKObjectType.categoryTypeForIdentifier(type)!.serviceUnit
+                    serviceUnits = HKObjectType.categoryType(forIdentifier: HKCategoryTypeIdentifier(rawValue: type))!.serviceUnit
                 } else {
-                    serviceUnits =  HKObjectType.quantityTypeForIdentifier(type)!.serviceUnit
+                    serviceUnits =  HKObjectType.quantityType(forIdentifier: HKQuantityTypeIdentifier(rawValue: type))!.serviceUnit
                 }
-            } */
+            }
 
             if serviceUnits != nil {
                 let srcUnits = toServiceUnits ? profileFieldUnits : serviceUnits
@@ -131,12 +131,12 @@ class AdditionalInfoModel: NSObject {
     private func section(withTitle title: String, inRange range: Range<Int>) -> AdditionalSectionInfo {
         let section = AdditionalSectionInfo(title: title)
 
- /*       for i in range {
+        for i in [Int](range.lowerBound..<range.upperBound) {
             let fieldItem = UserProfile.sharedInstance.fields[i]
             let item = ModelItem(name: fieldItem.fieldName, title: defaultPlaceholder, type: .Other, iconImageName: nil, value: nil, unitsTitle: fieldItem.unitsTitle)
             item.dataType = fieldItem.type
             section.addItem(item)
-        } */
+        }
 
         return section
     }

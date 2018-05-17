@@ -64,7 +64,7 @@ public class PopulationHealthManager: NSObject {
     }
 
     private func cacheKeyForType(type: HKSampleType) -> String? {
-        if let column = HMConstants.sharedInstance.hkToMCDB[type.identifier.hashValue] {
+        if let column = HMConstants.sharedInstance.hkToMCDB[type.identifier] {
             return column
         }
         else if let _ = HMConstants.sharedInstance.hkQuantityToMCDBActivity[type.identifier] {
@@ -122,15 +122,15 @@ public class PopulationHealthManager: NSObject {
                                 }
                             }
                         } else {
-                            if let column = HMConstants.sharedInstance.hkToMCDB[hksType.identifier.hashValue] {
+                            if let column = HMConstants.sharedInstance.hkToMCDB[hksType.identifier] {
                                 columns[String(columnIndex)] = column
                                 columnIndex += 1
                             } else if hksType.identifier == HKCorrelationTypeIdentifier.bloodPressure.rawValue {
                                 // Issue queries for both systolic and diastolic.
-                                columns[String(columnIndex)] = HMConstants.sharedInstance.hkToMCDB[HKQuantityTypeIdentifier.bloodPressureDiastolic.hashValue]!
+                                columns[String(columnIndex)] = HMConstants.sharedInstance.hkToMCDB[HKQuantityTypeIdentifier.bloodPressureDiastolic.rawValue]!
                                 columnIndex += 1
 
-                                columns[String(columnIndex)] = HMConstants.sharedInstance.hkToMCDB[HKQuantityTypeIdentifier.bloodPressureSystolic.hashValue]!
+                                columns[String(columnIndex)] = HMConstants.sharedInstance.hkToMCDB[HKQuantityTypeIdentifier.bloodPressureSystolic.rawValue]!
                                 columnIndex += 1
                             } else {
                                 log.warning("Cannot perform population query for \(hksType.identifier)")
@@ -168,7 +168,7 @@ public class PopulationHealthManager: NSObject {
 
         if columns.isEmpty {
             for hksType in previewTypes {
-                if let column = HMConstants.sharedInstance.hkToMCDB[hksType.identifier.hashValue] {
+                if let column = HMConstants.sharedInstance.hkToMCDB[hksType.identifier] {
                     columns[String(columnIndex)] = column
                     columnIndex += 1
                 }
@@ -178,10 +178,10 @@ public class PopulationHealthManager: NSObject {
                 }
                 else if hksType.hashValue == HKCorrelationTypeIdentifier.bloodPressure.hashValue {
                     // Issue queries for both systolic and diastolic.
-                    columns[String(columnIndex)] = HMConstants.sharedInstance.hkToMCDB[HKQuantityTypeIdentifier.bloodPressureDiastolic.hashValue]!
+                    columns[String(columnIndex)] = HMConstants.sharedInstance.hkToMCDB[HKQuantityTypeIdentifier.bloodPressureDiastolic.rawValue]!
                     columnIndex += 1
 
-                    columns[String(columnIndex)] = HMConstants.sharedInstance.hkToMCDB[HKQuantityTypeIdentifier.bloodPressureSystolic.hashValue]!
+                    columns[String(columnIndex)] = HMConstants.sharedInstance.hkToMCDB[HKQuantityTypeIdentifier.bloodPressureSystolic.rawValue]!
                     columnIndex += 1
                 }
                 else {
@@ -293,16 +293,14 @@ public class PopulationHealthManager: NSObject {
                         {
                             var sampleType: HKSampleType! = nil
                             switch typeIdentifier {
-                            case HKCategoryTypeIdentifier.sleepAnalysis.hashValue:
+                            case HKCategoryTypeIdentifier.sleepAnalysis.rawValue:
                                 sampleType = HKObjectType.categoryType(forIdentifier: HKCategoryTypeIdentifier.sleepAnalysis)!
 
-                            case HKCategoryTypeIdentifier.appleStandHour.hashValue:
+                            case HKCategoryTypeIdentifier.appleStandHour.rawValue:
                                 sampleType = HKObjectType.categoryType(forIdentifier: HKCategoryTypeIdentifier.appleStandHour)!
 // will want to adjust this
                             default:
-                                // THis is pretty dirty hack that was implemented because we can't properly restore HKSampleType from its identifier hashValue
-                                // to properly fix this we need to refactor MCQueries module (it looks like a bad idea to use hashValues as keys, because swift docuemntation states that it can be different between different app launch and we can't properly restore original type from hash)
-                                sampleType = quantityType(from: typeIdentifier)
+                                sampleType = HKObjectType.quantityType(forIdentifier: HKQuantityTypeIdentifier(rawValue: typeIdentifier))
                             }
 
                             if let sampleValue = val as? Double {
@@ -311,14 +309,14 @@ public class PopulationHealthManager: NSObject {
                                 columnsByType[sampleType] = column as AnyObject?
 
                                 // Population correlation type entry for systolic/diastolic blood pressure sample.
-                                if typeIdentifier == HKQuantityTypeIdentifier.bloodPressureSystolic.hashValue
-                                    || typeIdentifier == HKQuantityTypeIdentifier.bloodPressureDiastolic.hashValue
+                                if typeIdentifier == HKQuantityTypeIdentifier.bloodPressureSystolic.rawValue
+                                    || typeIdentifier == HKQuantityTypeIdentifier.bloodPressureDiastolic.rawValue
                                 {
                                     let bpType = HKObjectType.correlationType(forIdentifier: HKCorrelationTypeIdentifier.bloodPressure)!
                                     let sType = HKObjectType.quantityType(forIdentifier: HKQuantityTypeIdentifier.bloodPressureSystolic)!
                                     let dType = HKObjectType.quantityType(forIdentifier: HKQuantityTypeIdentifier.bloodPressureDiastolic)!
 
-                                    let bpIndex = typeIdentifier == HKQuantityTypeIdentifier.bloodPressureSystolic.hashValue ? 0 : 1
+                                    let bpIndex = typeIdentifier == HKQuantityTypeIdentifier.bloodPressureSystolic.rawValue ? 0 : 1
                                     if populationAggregates[bpType] == nil {
                                         populationAggregates[bpType] = [
                                             MCAggregateSample(value: Double.nan, sampleType: sType, op: sType.aggregationOptions),
@@ -387,19 +385,6 @@ public class PopulationHealthManager: NSObject {
             NotificationCenter.default.post(name: NSNotification.Name(rawValue: HMDidUpdateRecentSamplesNotification), object: self)
             completion(error)
         }
-    }
-    
-    // THis is pretty dirty hack that was implemented because we can't properly restore HKSampleType from its identifier hashValue
-    // to properly fix this we need to refactor MCQueries module (it looks like a bad idea to use hashValues as keys, because swift docuemntation states that it can be different between different app launch and we can't properly restore original type from hash)
-    func quantityType(from hashValue: Int) -> HKSampleType? {
-        for hkObjType in HMConstants.sharedInstance.healthKitTypesToRead ?? [] {
-            if let sampleType = hkObjType as? HKSampleType {
-                if sampleType.identifier.hashValue == hashValue {
-                    return sampleType
-                }
-            }
-        }
-        return nil
     }
 
     func doubleAsAggregate(sampleType: HKSampleType, sampleValue: Double) -> MCAggregateSample {

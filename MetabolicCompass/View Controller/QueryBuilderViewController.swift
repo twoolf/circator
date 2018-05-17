@@ -345,7 +345,7 @@ class PredicateTableView : UITableView, UITableViewDelegate, UITableViewDataSour
         let (aggr,mcattr,lb,ub) = predicates[indexPath.row]
         let aggstr = QueryBuilderViewController.aggregateOperators[aggr.rawValue]
 //        let attrstr = HMConstants.sharedInstance.hkToMCDB[mcattr.0.identifier]
-        let attrstr = HMConstants.sharedInstance.hkToMCDB[mcattr.0.identifier.hashValue]
+        let attrstr = HMConstants.sharedInstance.hkToMCDB[mcattr.0.identifier]
 
         var celltxt = "<invalid>"
         if let lbstr = lb {

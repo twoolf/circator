@@ -47,7 +47,8 @@ public class AdditionalInfoDataSource: BaseDataSource {
 
     // MARK: - UICollectionView DataSource & Delegate
 
-    func numberOfSectionsInCollectionView(_ collectionView: UICollectionView) -> Int {
+    
+    func numberOfSections(in collectionView: UICollectionView) -> Int {
         return model.sections.count
     }
 
@@ -93,11 +94,11 @@ public class AdditionalInfoDataSource: BaseDataSource {
         cell.titleLbl.text = item.name
         if let strValue = item.stringValue() {
             cell.inputTxtField.text = strValue
-            //cell.inputTxtField.font = ScreenManager.appFontOfSize(15.0)
+            cell.inputTxtField.font = ScreenManager.appFontOfSize(size: 15.0)
         }
         else {
             cell.inputTxtField.text = nil
-            //cell.inputTxtField.font = ScreenManager.appFontOfSize(13.0)
+            cell.inputTxtField.font = ScreenManager.appFontOfSize(size: 13.0)
         }
 
         cell.smallDescriptionLbl.text = item.unitsTitle
@@ -140,8 +141,8 @@ public class AdditionalInfoDataSource: BaseDataSource {
         cell.isUserInteractionEnabled = editMode
         return cell
     }
-
-    func collectionView(_ collectionView: UICollectionView, viewForSupplementaryElementOfKind kind: String, atIndexPath indexPath: IndexPath) -> UICollectionReusableView {
+    
+    func collectionView(_ collectionView: UICollectionView, viewForSupplementaryElementOfKind kind: String, at indexPath: IndexPath) -> UICollectionReusableView {
         if kind == UICollectionElementKindSectionHeader {
             let headerView = collectionView.dequeueReusableSupplementaryView(ofKind: kind, withReuseIdentifier: "sectionHeaderView", for: (indexPath as IndexPath) as IndexPath) as! HeaderView
             headerView.titleLbl.text = model.sectionTitleAtIndexPath(indexPath as IndexPath)
@@ -168,7 +169,7 @@ public class AdditionalInfoDataSource: BaseDataSource {
         return size
     }
 
-    func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAtIndexPath indexPath: IndexPath) -> CGSize {
+    func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
         return isSleepCellAtIndexPath(indexPath: indexPath) ? intPickerCellSize() : defaultCellSize()
     }
 
