@@ -135,20 +135,22 @@ class RegisterLoginLandingViewController: BaseViewController {
                 UserManager.sharedManager.logout()
                 return
             }
-            if UserManager.sharedManager.isItFirstLogin() {//if it's first login
-                if let additionalInfo = UserManager.sharedManager.getAdditionalProfileData() {//and user has an additional data. we will push it to the server
-                    UserManager.sharedManager.pushProfile(componentData: additionalInfo , completion: { _ in
-                        UserManager.sharedManager.removeFirstLogin()
-                    })
-                } else {//in other case we just remove marker for first login
-                    UserManager.sharedManager.removeFirstLogin()
-                }
-            }
+            
             self.loginComplete()
         }
     }
     
     func loginComplete() {
+        if UserManager.sharedManager.isItFirstLogin() {//if it's first login
+            if let additionalInfo = UserManager.sharedManager.getAdditionalProfileData() {//and user has an additional data. we will push it to the server
+                UserManager.sharedManager.pushProfile(componentData: additionalInfo , completion: { _ in
+                    UserManager.sharedManager.removeFirstLogin()
+                })
+            } else {//in other case we just remove marker for first login
+                UserManager.sharedManager.removeFirstLogin()
+            }
+        }        
+        
         if let comp = self.completion { comp() }
         self.navigationController?.popToRootViewController(animated: true)
         
