@@ -89,7 +89,21 @@ class AddMealDataSource: NSObject, UITableViewDataSource, UITableViewDelegate, P
                     datePickerCell.datePicker.datePickerMode = .countDownTimer
                     datePickerCell.datePicker.minuteInterval = 5
                     datePickerCell.datePicker.tag = indexPath.row
-                    datePickerCell.datePicker.countDownDuration = (addEventModel?.duration)!
+                    
+                    let duration = addEventModel?.duration ?? 5 * 60
+                    datePickerCell.datePicker.countDownDuration = duration
+                    
+                    
+                    //There is an issue with UIDatePicker in countdown mode when it is presented on UITableViewCell
+                    //Following code was added to workaround this issue
+                    //See details here: https://stackoverflow.com/questions/28295013/uidate-picker-valuechanged-does-not-update-the-first-spin-but-does-every-spin-a
+                    var dateComp = DateComponents()
+                    let hours = Int(duration/3600.0)
+                    dateComp.hour = hours
+                    dateComp.minute = Int((duration - Double((hours * 3600)))/60)
+                    let date  = NSCalendar.current.date(from: dateComp)
+                    datePickerCell.datePicker.setDate(date!, animated: true)
+                    
             }
             default: return cell!
         }
