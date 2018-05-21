@@ -204,8 +204,7 @@ public class DeleteActivityManager: UITableView, PickerManagerSelectionDelegate 
         log.debug("Delete recent tapped", feature: "deleteActivity")
         if let mins = delRecentManager.getSelectedValue() as? Int {
             let endDate = Date()
-//            let startDate = endDate.dateByAddingTimeInterval(-(Double(mins) * 60.0))
-            let startDate = endDate.addHours(hoursToAdd: -(mins)*60)
+            let startDate = endDate.addingTimeInterval(-(Double(mins) * 60.0))
             log.debug("Delete circadian events between \(startDate) \(endDate)", feature: "deleteActivity")
             Async.main {sender.isEnabled = false; sender.setNeedsDisplay() }
             MCHealthManager.sharedManager.deleteCircadianEvents(startDate, endDate: endDate) {
