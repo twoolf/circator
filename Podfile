@@ -39,12 +39,12 @@ def shared_pods
 end
 
 target 'MetabolicCompassKit' do
-    platform :ios, '11.0'
+    platform :ios, '10.0'
     shared_pods
 end
 
 target 'MetabolicCompass' do
-    platform :ios, '11.0'
+    platform :ios, '10.0'
     shared_pods
     pod 'Crashlytics'
     pod 'Fabric'
