@@ -261,6 +261,8 @@
 		F515CFCB1CECC88000318CB6 /* ScreenManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = F515CFCA1CECC88000318CB6 /* ScreenManager.swift */; };
 		F56CC2B41CF6077000040604 /* FontScaleLabel.swift in Sources */ = {isa = PBXBuildFile; fileRef = F56CC2B31CF6077000040604 /* FontScaleLabel.swift */; };
 		F56CC2B61CF6078500040604 /* FontScaleTextField.swift in Sources */ = {isa = PBXBuildFile; fileRef = F56CC2B51CF6078500040604 /* FontScaleTextField.swift */; };
+		FA14BB8220B58DBC00A61E4B /* CircadianSamplesManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = FA14BB8120B58DBC00A61E4B /* CircadianSamplesManager.swift */; };
+		FA14BB8320B5919800A61E4B /* CircadianSamplesManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = FA14BB8120B58DBC00A61E4B /* CircadianSamplesManager.swift */; };
 		FA3BF341E0ED3395ACE340B2 /* Pods_MetabolicCompassWatch.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 03BD80ED1CBCAB53BBBCD8B1 /* Pods_MetabolicCompassWatch.framework */; };
 /* End PBXBuildFile section */
 
@@ -617,6 +619,7 @@
 		F515CFCA1CECC88000318CB6 /* ScreenManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ScreenManager.swift; sourceTree = "<group>"; };
 		F56CC2B31CF6077000040604 /* FontScaleLabel.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FontScaleLabel.swift; sourceTree = "<group>"; };
 		F56CC2B51CF6078500040604 /* FontScaleTextField.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FontScaleTextField.swift; sourceTree = "<group>"; };
+		FA14BB8120B58DBC00A61E4B /* CircadianSamplesManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CircadianSamplesManager.swift; sourceTree = "<group>"; };
 		FCBA5612AFA84799D8B22810 /* Pods-MetabolicCompassWatch Extension.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-MetabolicCompassWatch Extension.release.xcconfig"; path = "Pods/Target Support Files/Pods-MetabolicCompassWatch Extension/Pods-MetabolicCompassWatch Extension.release.xcconfig"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -1231,6 +1234,7 @@
 				958568021CD0B18900EDD385 /* RegistrationModel.swift */,
 				F42F5ADC1BDC85AF00195490 /* SampleDataAnalyzer.swift */,
 				95F400A21CE385D50060F28C /* UserInfoModel.swift */,
+				FA14BB8120B58DBC00A61E4B /* CircadianSamplesManager.swift */,
 			);
 			path = Model;
 			sourceTree = "<group>";
@@ -1929,6 +1933,7 @@
 				54205E771E762162003E3EC4 /* CycleChartRenderer.swift in Sources */,
 				842B7DBA1D095F5A007F2126 /* ChartCollectionDataSource.swift in Sources */,
 				78969D961D6A22A200E867C3 /* UIComponents.swift in Sources */,
+				FA14BB8220B58DBC00A61E4B /* CircadianSamplesManager.swift in Sources */,
 				84B727AF1D13E62200839E54 /* LogEventViewController.swift in Sources */,
 				842B7DCB1D0960C0007F2126 /* BaseChartCollectionCell.swift in Sources */,
 				84EF0ECA1D058A9000A25760 /* BaseAddEventTableViewCell.swift in Sources */,
@@ -2066,6 +2071,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				FA14BB8320B5919800A61E4B /* CircadianSamplesManager.swift in Sources */,
 				3FA4C2841FA0B187001F467F /* SleepTimesInterfaceController.swift in Sources */,
 				3FA4C2891FA0C2A9001F467F /* WaterInterfaceController.swift in Sources */,
 				81948BBD1F9F413D0067DED6 /* MealTimesInterfaceController.swift in Sources */,

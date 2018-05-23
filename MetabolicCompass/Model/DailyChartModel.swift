@@ -50,10 +50,6 @@ typealias MCDailyProgressCache = Cache<DailyProgressDayInfo>
 open class DailyChartModel : NSObject, UITableViewDataSource {
 
     /// initializations of these variables creates offsets so plots of event transitions are square waves
-    private let stWorkout = 0.0
-    private let stSleep = 0.33
-    private let stFast = 0.66
-    private let stEat = 1.0
 
     private let dayCellIdentifier = "dayCellIdentifier"
     private let emptyValueString = "- h - m"
@@ -122,22 +118,6 @@ open class DailyChartModel : NSObject, UITableViewDataSource {
     }
     
     //MARK: Working with events data
-    
-    public func valueOfCircadianEvent(_ e: CircadianEvent) -> Double {
-        switch e {
-        case .meal:
-            return stEat
-            
-        case .fast:
-            return stFast
-            
-        case .exercise:
-            return stWorkout
-            
-        case .sleep:
-            return stSleep
-        }
-    }
     
     public func prepareChartData () {
         Async.main(after: 0.5) {
@@ -258,7 +238,7 @@ open class DailyChartModel : NSObject, UITableViewDataSource {
         Async.userInteractive {
             MCHealthManager.sharedManager.fetchCircadianEventIntervals(day, endDate: endOfDay, completion: { (intervals, error) in
                 guard error == nil else {
-                    log.error("Failed to fetch circadian events: \(error)")
+                    log.error("Failed to fetch circadian events: \(String(describing: error))")
                     return
                 }
                 self.fetchSamples() { [weak self] callbackIntervals in
@@ -303,7 +283,7 @@ open class DailyChartModel : NSObject, UITableViewDataSource {
         
         group.enter()
         Async.userInteractive {
-            self.fetchCircadianSamples(startDate: startDate, endDate: Date()) {[weak self] (samples) in
+            CircadianSamplesManager.sharedInstance.fetchCircadianSamples(startDate: startDate, endDate: Date()) {[weak self] (samples) in
                 guard let `self` = self else {return}
                 
                 if samples.isEmpty {
@@ -330,7 +310,7 @@ open class DailyChartModel : NSObject, UITableViewDataSource {
         
         group.enter()
         Async.userInteractive {
-            self.fetchCircadianSamples(startDate: weekAgo, endDate: Date()) {[weak self] (samples) in
+            CircadianSamplesManager.sharedInstance.fetchCircadianSamples(startDate: weekAgo, endDate: Date()) {[weak self] (samples) in
                 guard let `self` = self else {return}
                 if samples.isEmpty {
                     self.lastAteText = self.emptyValueString
@@ -345,7 +325,7 @@ open class DailyChartModel : NSObject, UITableViewDataSource {
                         if case CircadianEvent.meal(_) = sample.event {
                             if let currentFast = currentFastingIntreval {
                                 currentFastingIntreval = (currentFast.0, sample.startDate)
-                                if (self.intervalDuration(from: currentFastingIntreval) > self.intervalDuration(from: maxFastingInterval)) {
+                                if (CircadianSamplesManager.intervalDuration(from: currentFastingIntreval) > CircadianSamplesManager.intervalDuration(from: maxFastingInterval)) {
                                     maxFastingInterval = currentFastingIntreval
                                 }
                                 currentFastingIntreval = nil
@@ -364,7 +344,7 @@ open class DailyChartModel : NSObject, UITableViewDataSource {
                             } else {
                                 currentFastingIntreval = (sample.startDate, sample.endDate)
                             }
-                            if (self.intervalDuration(from: currentFastingIntreval) > self.intervalDuration(from: maxFastingInterval)) {
+                            if (CircadianSamplesManager.intervalDuration(from: currentFastingIntreval) > CircadianSamplesManager.intervalDuration(from: maxFastingInterval)) {
                                 maxFastingInterval = currentFastingIntreval
                             }
                         }
@@ -381,13 +361,7 @@ open class DailyChartModel : NSObject, UITableViewDataSource {
         group.notify(queue: .main) {
             self.delegate?.dailyProgressStatCollected?()
         }
-    }
-    
-    private func intervalDuration(from interval : (Date, Date)?) -> TimeInterval {
-        guard let interval = interval else { return 0 }
-        return interval.1.timeIntervalSince(interval.0)
-    }
-    
+    }    
     
     private func timeString(from dateInterval: (Date, Date)?) -> String {
         if let dateInterval = dateInterval {
@@ -529,42 +503,7 @@ open class DailyChartModel : NSObject, UITableViewDataSource {
         healthStore.execute(query)
     }
 
-    func fetchCircadianSamples(startDate: Date, endDate:Date, completion: @escaping ([CircadianSample]) -> ()) {
-        self.fetchHKSamples(startDate: startDate, endDate: endDate)  { samples in
-            var circadianSamples = samples.flatMap  { CircadianSample(sample: $0) }.sorted {$0.startDate < $1.startDate}
-            circadianSamples = truncate(samples: circadianSamples, from: startDate, to: endDate)
-            circadianSamples = fillWithFasting(samples: circadianSamples, from: startDate, to: endDate)
-            completion(circadianSamples)
-        }
-    }
-    
-    func fetchHKSamples(startDate: Date, endDate:Date, completion: @escaping ([HKSample]) -> ()) {
-        var allSamples: ([HKSample]) = []
-        let healthStore = HKHealthStore()
-        let sleepType = HKSampleType.categoryType(forIdentifier: HKCategoryTypeIdentifier.sleepAnalysis)!
-        let workoutType = HKWorkoutType.workoutType()
-        let sampleTypes = [sleepType, workoutType]
-        let predicate = HKQuery.predicateForSamples(withStart: startDate, end: endDate, options: [])
-        let group = DispatchGroup()
-        
-        sampleTypes.forEach{ type in
-            group.enter()
-            let query = HKSampleQuery(sampleType: type, predicate: predicate, limit: Int(HKObjectQueryNoLimit), sortDescriptors: nil) {
-                query, results, error in
-                
-                if let samples = results {
-                    allSamples = allSamples + samples
-                }
-                group.leave()
-            }
-            healthStore.execute(query)
-        }
 
-        group.notify(queue: .main) {
-            completion(allSamples)
-        }
-    }
-    
     func prepareDataForChart(completion: @escaping ([Date: [(Double, UIColor)]]) -> ()) {
         var dict: [Date: [(Double, UIColor)]] = [:]
         let group = DispatchGroup()
@@ -573,7 +512,7 @@ open class DailyChartModel : NSObject, UITableViewDataSource {
             let endDate = day.endOfDay
             group.enter()
             
-            self.fetchCircadianSamples(startDate: startDate, endDate: endDate, completion: { (circadianSamples) in
+            CircadianSamplesManager.sharedInstance.fetchCircadianSamples(startDate: startDate, endDate: endDate, completion: { (circadianSamples) in
                 dict[day] = circadianSamples.map  {sample in
                     return (sample.duration, self.getColorForEventType(sample.event))
                 }
@@ -587,106 +526,4 @@ open class DailyChartModel : NSObject, UITableViewDataSource {
     }
 }
 
-struct CircadianSample {
-    let startDate : Date
-    let endDate : Date
-    let event : CircadianEvent
-    
-    var duration : Double {
-        return self.endDate.timeIntervalSince(self.startDate) / 3600
-    }
-    
-    init(event: CircadianEvent, startDate: Date, endDate: Date) {
-        self.startDate = startDate
-        self.endDate = endDate
-        self.event = event
-    }
-    
-    init?(sample: HKSample) {
-        startDate = sample.startDate
-        endDate = sample.endDate
-        
-        guard let type = sample.hkType else {return nil}
-        switch type {
-        case is HKWorkoutType:
-            guard let workout = sample as? HKWorkout else { return nil }
-            
-            if workout.workoutActivityType == .preparationAndRecovery,
-                let meta = workout.metadata,
-                let mealStr = meta["Meal Type"] as? String,
-                let mealType = MCCircadianQueries.MealType(rawValue: mealStr) {
-                event = .meal(mealType: mealType)
-            } else {
-                event = .exercise(exerciseType: workout.workoutActivityType)
-            }
-        case is HKCategoryType:
-            guard type.identifier == HKCategoryTypeIdentifier.sleepAnalysis.rawValue else { return nil }
-            event = .sleep
-        default:
-            return nil
-        }
-    }
-}
-
-extension CircadianSample: CustomStringConvertible {
-    var description: String {
-        var type = ""
-        switch event {
-        case .meal(let mealType):
-            type = "Meal(\(mealType.rawValue))"
-        case .fast:
-            type = "Fast"
-        case .sleep:
-            type = "Sleep"
-        case .exercise:
-            type = "Excersise"
-        }
-        
-        return "\(type) from \(startDate) to \(endDate)"
-    }
-}
-
-func truncate(samples: [CircadianSample], from startDate: Date, to endDate: Date) -> [CircadianSample]
-{
-    return samples.filter {
-        return $0.startDate < endDate && $0.endDate > startDate
-    }
-    .map {
-            var result = $0
-            if (result.startDate < startDate) {
-                result = CircadianSample(event: result.event, startDate: startDate, endDate: result.endDate)
-            }
-            
-            if (result.endDate > endDate) {
-                result = CircadianSample(event: result.event, startDate: result.startDate, endDate: endDate)
-            }
-            return result
-    }
-}
-
-func fillWithFasting(samples: [CircadianSample], from startDate: Date, to endDate: Date) -> [CircadianSample]
-{
-    guard let firstSample = samples.first, let lastSample = samples.last else {return [CircadianSample(event: .fast, startDate: startDate, endDate: endDate)]}
-    
-    var results = [CircadianSample]()
-   
-    if firstSample.startDate != startDate {
-        results.append(CircadianSample(event: .fast, startDate: startDate, endDate: firstSample.startDate))
-    }
-    
-    for (index, sample) in samples.enumerated() {
-        results.append(sample)
-        if index + 1 < samples.count {
-            let nextSample = samples[index+1]
-            if nextSample.startDate != sample.endDate {
-                results.append(CircadianSample(event: .fast, startDate: sample.endDate, endDate: nextSample.startDate))
-            }
-        }
-    }    
-    
-    if lastSample.endDate != endDate {
-        results.append(CircadianSample(event: .fast, startDate: lastSample.endDate, endDate: endDate))
-    }
-    return results
-}
 

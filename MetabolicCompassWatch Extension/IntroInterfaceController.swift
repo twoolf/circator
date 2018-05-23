@@ -95,144 +95,73 @@ class IntroInterfaceController: WKInterfaceController, WCSessionDelegate {
     
     override func didDeactivate() {
         super.didDeactivate()
-       
-        let stWorkout = 0.0
-        let stSleep = 0.33
-        let stFast = 0.66
-        let stEat = 1.0
         
-        func valueOfCircadianEvent(e: CircadianEvent) -> Double {
-            switch e {
-            case .meal:
-                return stEat
+         reloadData()
+         reloadComplications()  
+    }
+    
+    func reloadData() {
+        let weekAgo = Date(timeIntervalSinceNow: -60 * 60 * 24 * 7)
+        
+        CircadianSamplesManager.sharedInstance.fetchCircadianSamples(startDate: weekAgo, endDate: Date()) {[weak self] (samples) in
+            guard let `self` = self else {return}
+            if !samples.isEmpty {
+                var lastEatingInterval : (Date, Date)? = nil
+                var maxFastingInterval : (Date, Date)? = nil
                 
-            case .fast:
-                return stFast
+                var currentFastingIntreval : (Date, Date)? = nil
                 
-            case .exercise:
-                return stWorkout
+                for sample in samples {
+                    if case CircadianEvent.meal(_) = sample.event {
+                        if let currentFast = currentFastingIntreval {
+                            currentFastingIntreval = (currentFast.0, sample.startDate)
+                            if (CircadianSamplesManager.intervalDuration(from: currentFastingIntreval) > CircadianSamplesManager.intervalDuration(from: maxFastingInterval)) {
+                                maxFastingInterval = currentFastingIntreval
+                            }
+                            currentFastingIntreval = nil
+                        }
+                        
+                        if let currentEatingInterval = lastEatingInterval {
+                            if sample.endDate > currentEatingInterval.0 {
+                                lastEatingInterval = (sample.endDate, Date())
+                            }
+                        } else {
+                            lastEatingInterval = (sample.endDate, Date())
+                        }
+                    } else {
+                        if let currentFast = currentFastingIntreval {
+                            currentFastingIntreval = (currentFast.0, sample.endDate)
+                        } else {
+                            currentFastingIntreval = (sample.startDate, sample.endDate)
+                        }
+                        if (CircadianSamplesManager.intervalDuration(from: currentFastingIntreval) > CircadianSamplesManager.intervalDuration(from: maxFastingInterval)) {
+                            maxFastingInterval = currentFastingIntreval
+                        }
+                    }
+                }
                 
-            case .sleep:
-                return stSleep
+                MetricsStore.sharedInstance.lastAteAsDate = lastEatingInterval?.0 ?? Date()
+                MetricsStore.sharedInstance.fastingTime = "- h - m"
+                
+                if let maxInterval = maxFastingInterval {
+                    MetricsStore.sharedInstance.fastingTime = self.timeString(from: maxInterval)
+                }
+                
+                self.reloadComplications()
             }
         }
+    }
+    
+    private func timeString(from dateInterval: (Date, Date)) -> String {
+        let timeInterval = Int(dateInterval.1.timeIntervalSince(dateInterval.0))
+        let minutes = (timeInterval / 60) % 60
+        let hours = (timeInterval / 3600)
         
-        func reloadDataTake2() {
-         _ = 0.0
-         _ = 0.33
-         _ = 0.66
-         let stEat = 1.0
-         typealias Event = (Date, Double)
-         typealias IEvent = (Double, Double)?
-         
-//         let yesterday = Date().
-//         let startDate = yesterday
-         let startDate = Date().startOfDay
-         
-         MCHealthManager.sharedManager.fetchCircadianEventIntervals(startDate) { (intervals, error) -> Void in
-         DispatchQueue.main.async(execute: {
-         guard error == nil else {
-         print("Failed to fetch circadian events: \(String(describing: error))")
-         return
-         }
-         
-         if intervals.isEmpty {
-         print("series is Empty")
-         
-         } else {
-         
-         let vals : [(x: Double, y: Double)] = intervals.map { event in
-//         let startTimeInFractionalHours = event.0.timeIntervalSinceDate(startDate) / 3600.0
-         let startTimeInFractionalHours = 15.0
-         let metabolicStateAsDouble = valueOfCircadianEvent(e: event.1)
-         return (x: startTimeInFractionalHours, y: metabolicStateAsDouble)
-         }
-         
-         let initialAccumulator : (Double, Double, Double, IEvent, Bool, Double, Bool) =
-         (0.0, 0.0, 0.0, nil, true, 0.0, false)
-         
-//         let stats = vals.filter { $0.0 >= yesterday.timeIntervalSinceDate(startDate) }
-         let stats = vals.filter { $0.0 >= Date().timeIntervalSince(startDate) }
-         .reduce(initialAccumulator, { (acc, event) in
-         // Named accumulator components
-         var newEatingTime = acc.0
-         let lastEatingTime = acc.1
-         var maxFastingWindow = acc.2
-         var currentFastingWindow = acc.5
-         
-         // Named components from the current event.
-         let eventEndpointDate = event.0
-         let eventMetabolicState = event.1
-         
-         let prevEvent = acc.3
-         _ = acc.4
-         let prevEndpointWasIntervalEnd = !acc.4
-         var prevStateWasFasting = acc.6
-         let isFasting = eventMetabolicState != stEat
-         if prevEndpointWasIntervalEnd {
-         let prevEventEndpointDate = prevEvent!.0
-         let duration = eventEndpointDate - prevEventEndpointDate
-         
-         if prevStateWasFasting && isFasting {
-         currentFastingWindow += duration
-         maxFastingWindow = maxFastingWindow > currentFastingWindow ? maxFastingWindow : currentFastingWindow
-         
-         } else if isFasting {
-         currentFastingWindow = duration
-         maxFastingWindow = maxFastingWindow > currentFastingWindow ? maxFastingWindow : currentFastingWindow
-         
-         } else if eventMetabolicState == stEat {
-         newEatingTime += duration
-         }
-         } else {
-         prevStateWasFasting = prevEvent == nil ? false : prevEvent!.1 != stEat
-         }
-         
-         let newLastEatingTime = eventMetabolicState == stEat ? eventEndpointDate : lastEatingTime
-         
-         // Return a new accumulator.
-         return (
-         newEatingTime,
-         newLastEatingTime,
-         maxFastingWindow,
-         event,
-         prevEndpointWasIntervalEnd,
-         currentFastingWindow,
-         prevStateWasFasting
-         )
-         })
-         
-         let today = Date().startOfDay
-         let lastAte : Date? = stats.1 == 0 ? nil : ( startDate + Int(round(stats.1 * 3600.0)).seconds )
-         if (lastAte != nil) {
-         MetricsStore.sharedInstance.lastAteAsDate = lastAte!
-         }
-         else {
-         MetricsStore.sharedInstance.lastAteAsDate = Date()
-         }
-            
-         let fastingHrs = Int(floor(stats.2))
-         let fastingMins = (today + Int(round((stats.2 .truncatingRemainder(dividingBy: 1.0)) * 60.0)).minutes).string()
-         MetricsStore.sharedInstance.fastingTime = "\(fastingHrs):\(fastingMins)"
-         
-         let currentFastingHrs = Int(floor(stats.5))
-         let currentFastingMins = (today + Int(round((stats.5 .truncatingRemainder(dividingBy: 1.0)) * 60.0)).minutes).string()
-         
-         MetricsStore.sharedInstance.currentFastingTime = "\(currentFastingHrs):\(currentFastingMins)"
-         
-         let newLastEatingTimeHrs = Int(floor(stats.1))
-         let newLastEatingTimeMins = (today + Int(round((stats.1 .truncatingRemainder(dividingBy: 1.0)) * 60.0)).minutes).string()
-         
-         MetricsStore.sharedInstance.lastEatingTime = "\(newLastEatingTimeHrs):\(newLastEatingTimeMins)"
-         
-         }
-         
-         })
-         }
-         }
-         
-         reloadDataTake2()
-         reloadComplications()  
+        if hours == 0 && minutes == 0 {
+            return "- h - m"
+        } else {
+            return String(format: "%02d h %02d m", hours, minutes)
+        }
     }
 }
 
