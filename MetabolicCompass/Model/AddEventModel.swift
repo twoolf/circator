@@ -77,10 +77,9 @@ open class AddEventModel: NSObject {
         let unitFlags = Set<Calendar.Component>([.hour, .minute])
         let difference = calendar.dateComponents(unitFlags, from: sleepStartDate, to: sleepEndDate)
 
-        let hour = difference.hour! < 0 ? 0 : difference.hour
-        let minutes = difference.minute! < 0 ? 0 : difference.minute
-        let minutesSting = minutes! < 10 ? "0\(minutes ?? no_argument as AnyObject as! Int)" : "\(String(describing: minutes))"
-        let stringDifference = "\(hour ?? no_argument as AnyObject as! Int)h \(minutesSting)m"
+        let hour : Int = difference.hour! < 0 ? 0 : (difference.hour ?? 0)
+        let minutes : Int = difference.minute! < 0 ? 0 : (difference.minute ?? 0)
+        let stringDifference = String(format: "%dh %.2dm", hour, minutes)
         let defaultFont = ScreenManager.appFontOfSize(size: 24)
         let formatFont = ScreenManager.appFontOfSize(size: 15)
         let attributedString = stringDifference.formatTextWithRegex(regex: "[-+]?(\\d*[.,])?\\d+",
