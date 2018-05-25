@@ -10,9 +10,37 @@ import Foundation
 import HealthKit
 import MetabolicCompassKit
 import MCCircadianQueries
+import WatchConnectivity
 
-class MCAppHealthManager {
+class MCAppHealthManager : NSObject, WCSessionDelegate {
+    func session(_ session: WCSession, activationDidCompleteWith activationState: WCSessionActivationState, error: Error?) {
+        print("Watch session activated")
+    }
+    
+    func sessionDidBecomeInactive(_ session: WCSession) {
+        print("Watch session become active")
+    }
+    
+    func sessionDidDeactivate(_ session: WCSession) {
+        print("Watch session deactivates")
+    }
+    
     static let shared = MCAppHealthManager()
+    
+    private let watchSession : WCSession?
+    override init() {
+        if WCSession.isSupported() {
+            watchSession = WCSession.default
+        } else {
+            watchSession = nil
+        }
+        super.init()
+        if let session = watchSession {
+            session.delegate = self
+            session.activate()
+        }
+        
+    }
     
     func addSleep(startTime: Date, endTime: Date, callback: @escaping (Bool, String?) -> ()) {
         validateTimedEvent(startTime: startTime, endTime: endTime) { (success, errorMessage) -> Void in
@@ -26,6 +54,7 @@ class MCAppHealthManager {
                     callback(false, error?.localizedDescription)
                     log.error(error as! String); return
                 }
+                self.updateWatchComplication(str: "Sleep")
                 UserManager.sharedManager.setUsualWhenToSleepTime(date: startTime)
                 UserManager.sharedManager.setUsualWokeUpTime(date: endTime)
                 log.info("Saved as sleep event")
@@ -49,6 +78,7 @@ class MCAppHealthManager {
                     callback(false, error?.localizedDescription)
                     return
                 }
+                self.updateWatchComplication(str: "Excersise")
                 log.info("Saved as exercise workout type")
                 callback(true, nil)
             }
@@ -69,6 +99,7 @@ class MCAppHealthManager {
                         callback(false, error?.localizedDescription)
                         return
                     }
+                    self.updateWatchComplication(str: "MEal")
                     UserManager.sharedManager.setUsualMealTime(mealType: mealType, forDate: startTime)
                     callback(true, nil)
                     log.info("Meal saved as workout type")
@@ -76,8 +107,16 @@ class MCAppHealthManager {
         }
     }
     
+    //MARK: Watch notifications
+    
+    func updateWatchComplication(str: String) {
+        if let session = watchSession, session.activationState == .activated {
+            session.transferCurrentComplicationUserInfo(["NeedUpdate" : true, "key" : str])
+        }
+    }
+    
     //MARK: Validation
-    func validateTimedEvent(startTime: Date, endTime: Date, completion: @escaping (_ success: Bool, _ errorMessage: String?) -> ()) {
+    private func validateTimedEvent(startTime: Date, endTime: Date, completion: @escaping (_ success: Bool, _ errorMessage: String?) -> ()) {
         // Fetch all sleep and workout data since yesterday.
         let sleepTy = HKObjectType.categoryType(forIdentifier: HKCategoryTypeIdentifier.sleepAnalysis)!
         let workoutTy = HKWorkoutType.workoutType()

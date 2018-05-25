@@ -8,6 +8,7 @@
 
 import ClockKit
 import SwiftDate
+import WatchConnectivity
 
 extension Date {
     func isAfterDate(dateToCompare: Date) -> Bool {
@@ -44,11 +45,31 @@ extension Date {
     }
 }
 
-class ComplicationController: NSObject, CLKComplicationDataSource {
+class ComplicationController: NSObject, CLKComplicationDataSource, WCSessionDelegate {
  
-    public func requestedUpdateDidBegin() {
-        
+    func session(_ session: WCSession, activationDidCompleteWith activationState: WCSessionActivationState, error: Error?) {
     }
+    
+    public func session(_ session: WCSession, didReceiveUserInfo userInfo: [String : Any] = [:]) {
+        //        print("Did receive user info")
+        MetricsStore.sharedInstance.fastingTime = userInfo["key"] as! String
+        //        reloadComplications()
+        
+        ComplicationDataManager.reloadComplications()
+    }
+    
+    func applicationDidFinishLaunching() {
+    }
+    
+    override init() {
+        super.init()
+        if WCSession.isSupported() {
+            let session  = WCSession.default
+            session.delegate = self
+            session.activate()
+        }
+    }
+    
 
     func getLocalizableSampleTemplate(for complication: CLKComplication,
                                                withHandler handler: @escaping (CLKComplicationTemplate?) -> Void){

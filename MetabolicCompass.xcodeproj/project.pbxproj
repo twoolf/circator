@@ -265,6 +265,7 @@
 		FA14BB8320B5919800A61E4B /* CircadianSamplesManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = FA14BB8120B58DBC00A61E4B /* CircadianSamplesManager.swift */; };
 		FA3BF341E0ED3395ACE340B2 /* Pods_MetabolicCompassWatch.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 03BD80ED1CBCAB53BBBCD8B1 /* Pods_MetabolicCompassWatch.framework */; };
 		FAED109420B82FFB00FC6C3D /* MCAppHealthManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = FAED109320B82FFB00FC6C3D /* MCAppHealthManager.swift */; };
+		FAFFA9FB20B857D700BCC52B /* ComplicationDataManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = FAFFA9FA20B857D700BCC52B /* ComplicationDataManager.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -622,6 +623,7 @@
 		F56CC2B51CF6078500040604 /* FontScaleTextField.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FontScaleTextField.swift; sourceTree = "<group>"; };
 		FA14BB8120B58DBC00A61E4B /* CircadianSamplesManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CircadianSamplesManager.swift; sourceTree = "<group>"; };
 		FAED109320B82FFB00FC6C3D /* MCAppHealthManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MCAppHealthManager.swift; sourceTree = "<group>"; };
+		FAFFA9FA20B857D700BCC52B /* ComplicationDataManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ComplicationDataManager.swift; sourceTree = "<group>"; };
 		FCBA5612AFA84799D8B22810 /* Pods-MetabolicCompassWatch Extension.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-MetabolicCompassWatch Extension.release.xcconfig"; path = "Pods/Target Support Files/Pods-MetabolicCompassWatch Extension/Pods-MetabolicCompassWatch Extension.release.xcconfig"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -874,6 +876,7 @@
 				8147C0F51F9DE5FE00D69024 /* NotificationController.swift */,
 				8147C0F91F9DE5FE00D69024 /* Info.plist */,
 				8147C0FA1F9DE5FE00D69024 /* PushNotificationPayload.apns */,
+				FAFFA9FA20B857D700BCC52B /* ComplicationDataManager.swift */,
 			);
 			path = "MetabolicCompassWatch Extension";
 			sourceTree = "<group>";
@@ -1489,6 +1492,9 @@
 						DevelopmentTeam = E4SL9A9Z96;
 						ProvisioningStyle = Automatic;
 						SystemCapabilities = {
+							com.apple.BackgroundModes.watchos.extension = {
+								enabled = 0;
+							};
 							com.apple.HealthKit.watchos = {
 								enabled = 1;
 							};
@@ -2078,6 +2084,7 @@
 				FA14BB8320B5919800A61E4B /* CircadianSamplesManager.swift in Sources */,
 				3FA4C2841FA0B187001F467F /* SleepTimesInterfaceController.swift in Sources */,
 				3FA4C2891FA0C2A9001F467F /* WaterInterfaceController.swift in Sources */,
+				FAFFA9FB20B857D700BCC52B /* ComplicationDataManager.swift in Sources */,
 				81948BBD1F9F413D0067DED6 /* MealTimesInterfaceController.swift in Sources */,
 				3FA4C2911FA0CB90001F467F /* ExerciseStartTimeController.swift in Sources */,
 				3FA4C28A1FA0C2A9001F467F /* WaterStartTimeController.swift in Sources */,

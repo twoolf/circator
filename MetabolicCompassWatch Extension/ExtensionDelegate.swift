@@ -12,22 +12,30 @@ import WatchConnectivity
 @available(watchOSApplicationExtension 4.0, *)
 @available(watchOSApplicationExtension 4.0, *)
 @available(watchOSApplicationExtension 4.0, *)
-class ExtensionDelegate: NSObject, WKExtensionDelegate, WCSessionDelegate {
-    func session(_ session: WCSession, activationDidCompleteWith activationState: WCSessionActivationState, error: Error?) {
-        
-    }
-    
-    public func session(_ session: WCSession, didReceiveUserInfo userInfo: [String : Any] = [:]) {
-        
-        
-    }
-    func applicationDidFinishLaunching() {
-        if WCSession.isSupported() {
-            let session  = WCSession.default
-            session.delegate = self
-            session.activate()
-        }
-    }
+class ExtensionDelegate: NSObject, WKExtensionDelegate {
+//    func session(_ session: WCSession, activationDidCompleteWith activationState: WCSessionActivationState, error: Error?) {
+//    }
+//
+//    public func session(_ session: WCSession, didReceiveUserInfo userInfo: [String : Any] = [:]) {
+////        print("Did receive user info")
+//        MetricsStore.sharedInstance.fastingTime = userInfo["key"] as! String
+////        reloadComplications()
+//
+//        ComplicationDataManager.reloadComplications()
+//    }
+//
+//    func applicationDidFinishLaunching() {
+//    }
+//
+//    override init() {
+//        super.init()
+//        if WCSession.isSupported() {
+//            let session  = WCSession.default
+//            session.delegate = self
+//            session.activate()
+//        }
+//    }
+//
 
     func applicationDidBecomeActive() {
         // Restart any tasks that were paused (or not yet started) while the application was inactive. If the application was previously in the background, optionally refresh the user interface.
@@ -44,36 +52,16 @@ class ExtensionDelegate: NSObject, WKExtensionDelegate, WCSessionDelegate {
             // Use a switch statement to check the task type
             switch task {
             case let backgroundTask as WKApplicationRefreshBackgroundTask:
-                // Be sure to complete the background task once you’re done.
-                if #available(watchOSApplicationExtension 4.0, *) {
-                    backgroundTask.setTaskCompletedWithSnapshot(false)
-                } else {
-                    // Fallback on earlier versions
-                }
+                backgroundTask.setTaskCompletedWithSnapshot(false)
             case let snapshotTask as WKSnapshotRefreshBackgroundTask:
                 // Snapshot tasks have a unique completion call, make sure to set your expiration date
                 snapshotTask.setTaskCompleted(restoredDefaultState: true, estimatedSnapshotExpiration: Date.distantFuture, userInfo: nil)
             case let connectivityTask as WKWatchConnectivityRefreshBackgroundTask:
-                // Be sure to complete the connectivity task once you’re done.
-                if #available(watchOSApplicationExtension 4.0, *) {
-                    connectivityTask.setTaskCompletedWithSnapshot(false)
-                } else {
-                    // Fallback on earlier versions
-                }
+                connectivityTask.setTaskCompletedWithSnapshot(false)
             case let urlSessionTask as WKURLSessionRefreshBackgroundTask:
-                // Be sure to complete the URL session task once you’re done.
-                if #available(watchOSApplicationExtension 4.0, *) {
-                    urlSessionTask.setTaskCompletedWithSnapshot(false)
-                } else {
-                    // Fallback on earlier versions
-                }
+                urlSessionTask.setTaskCompletedWithSnapshot(false)
             default:
-                // make sure to complete unhandled task types
-                if #available(watchOSApplicationExtension 4.0, *) {
-                    task.setTaskCompletedWithSnapshot(false)
-                } else {
-                    // Fallback on earlier versions
-                }
+                task.setTaskCompletedWithSnapshot(false)
             }
         }
     }

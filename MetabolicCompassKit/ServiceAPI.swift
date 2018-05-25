@@ -291,7 +291,8 @@ public class Service: RequestRetrier, RequestAdapter {
     private let sessionManager: SessionManager
     
     init() {
-        sessionManager = SessionManager.default
+//        sessionManager = SessionManager.default
+        sessionManager = SessionManager(configuration: URLSessionConfiguration.default, serverTrustPolicyManager: ServerTrustPolicyManager(policies: ["api-dev.metaboliccompass.com": .disableEvaluation]))
         sessionManager.retrier = self
         sessionManager.adapter = self
     }
