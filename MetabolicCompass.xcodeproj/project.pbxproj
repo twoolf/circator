@@ -264,6 +264,7 @@
 		FA14BB8220B58DBC00A61E4B /* CircadianSamplesManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = FA14BB8120B58DBC00A61E4B /* CircadianSamplesManager.swift */; };
 		FA14BB8320B5919800A61E4B /* CircadianSamplesManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = FA14BB8120B58DBC00A61E4B /* CircadianSamplesManager.swift */; };
 		FA3BF341E0ED3395ACE340B2 /* Pods_MetabolicCompassWatch.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 03BD80ED1CBCAB53BBBCD8B1 /* Pods_MetabolicCompassWatch.framework */; };
+		FAED109420B82FFB00FC6C3D /* MCAppHealthManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = FAED109320B82FFB00FC6C3D /* MCAppHealthManager.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -620,6 +621,7 @@
 		F56CC2B31CF6077000040604 /* FontScaleLabel.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FontScaleLabel.swift; sourceTree = "<group>"; };
 		F56CC2B51CF6078500040604 /* FontScaleTextField.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FontScaleTextField.swift; sourceTree = "<group>"; };
 		FA14BB8120B58DBC00A61E4B /* CircadianSamplesManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CircadianSamplesManager.swift; sourceTree = "<group>"; };
+		FAED109320B82FFB00FC6C3D /* MCAppHealthManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MCAppHealthManager.swift; sourceTree = "<group>"; };
 		FCBA5612AFA84799D8B22810 /* Pods-MetabolicCompassWatch Extension.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-MetabolicCompassWatch Extension.release.xcconfig"; path = "Pods/Target Support Files/Pods-MetabolicCompassWatch Extension/Pods-MetabolicCompassWatch Extension.release.xcconfig"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -1235,6 +1237,7 @@
 				F42F5ADC1BDC85AF00195490 /* SampleDataAnalyzer.swift */,
 				95F400A21CE385D50060F28C /* UserInfoModel.swift */,
 				FA14BB8120B58DBC00A61E4B /* CircadianSamplesManager.swift */,
+				FAED109320B82FFB00FC6C3D /* MCAppHealthManager.swift */,
 			);
 			path = Model;
 			sourceTree = "<group>";
@@ -1928,6 +1931,7 @@
 				958568051CD0BF6300EDD385 /* BaseViewController.swift in Sources */,
 				54205E7A1E762162003E3EC4 /* MCScatterChartRenderer.swift in Sources */,
 				84B727B11D13FB5A00839E54 /* ManageChartsViewController.swift in Sources */,
+				FAED109420B82FFB00FC6C3D /* MCAppHealthManager.swift in Sources */,
 				95C0B9A31CD2563B006E523F /* TitledInputCollectionViewCell.swift in Sources */,
 				958568121CD12B5200EDD385 /* RegisterModelDataSource.swift in Sources */,
 				54205E771E762162003E3EC4 /* CycleChartRenderer.swift in Sources */,

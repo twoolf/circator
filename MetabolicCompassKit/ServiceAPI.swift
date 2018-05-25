@@ -64,10 +64,10 @@ public class  RequestResult{
             return _obj as? String ?? ""
         case .AFObject:
             let afRes = _obj as? Alamofire.Result<Any>
-            return ((afRes?.error)! as Error).localizedDescription ?? ""
+            return ((afRes?.error)! as Error).localizedDescription
         case .AFString:
             let afRes = _obj as? Alamofire.Result<String>
-            return ((afRes?.error)! as Error).localizedDescription ?? ""
+            return ((afRes?.error)! as Error).localizedDescription
         case .Error:
             let err = _obj as? Error
             return err?.localizedDescription ?? ""

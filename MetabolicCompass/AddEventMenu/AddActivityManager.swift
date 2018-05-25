@@ -720,46 +720,16 @@ open class AddActivityManager: UITableView, UITableViewDelegate, UITableViewData
         }
     }
 
-    func validateTimedEvent(_ startTime: Date, endTime: Date, completion: @escaping (Error?) -> Void) {
-        // Fetch all sleep and workout data since yesterday.
-        let (yesterday, now) = (Date().addDays(daysToAdd: -1), Date())
-        let sleepTy = HKObjectType.categoryType(forIdentifier: HKCategoryTypeIdentifier.sleepAnalysis)!
-        let workoutTy = HKWorkoutType.workoutType()
-        let datePredicate = HKQuery.predicateForSamples(withStart: yesterday, end: now, options: [])
-        let typesAndPredicates = [sleepTy: datePredicate, workoutTy: datePredicate]
-
-        // Aggregate sleep, exercise and meal events.
-        MCHealthManager.sharedManager.fetchSamples(typesAndPredicates) { (samples, error) -> Void in
-            guard error == nil else { print(error!.localizedDescription); return }
-            let overlaps = samples.reduce(false, { (acc, kv) in
-                guard !acc else { return acc }
-                return kv.1.reduce(acc, { (acc, s) in return acc || !( startTime >= s.endDate || endTime <= s.startDate ) })
-            })
-
-            if !overlaps { completion(nil) }
-            else {
-                let msg = "This event overlaps with another, please try again"
-                let err = NSError(domain: HMErrorDomain, code: 1048576, userInfo: [NSLocalizedDescriptionKey: msg])
-                UINotifications.genericErrorOnView(view: self.notificationView ?? self.superview!, msg: msg)
-                completion(err)
-            }
-        }
-    }
-
     func addSleep(hoursSinceStart: Double, startDate: Date? = nil, completion: @escaping (Error?) -> Void) {
         let startTime = startDate == nil ? Date()  : startDate!
         let endTime = startTime + (Int(hoursSinceStart * 60)).minutes
-        validateTimedEvent(startTime, endTime: endTime) { error in
-            guard error == nil else {
+        
+        MCAppHealthManager.shared.addSleep(startTime: startTime, endTime: endTime) { (sucess, errorMessage) in
+            if let errorMessage = errorMessage {
+                let error = NSError(domain: "MC", code: 42, userInfo: [NSLocalizedDescriptionKey: errorMessage])
                 completion(error)
-                return
-            }
-
-            MCHealthManager.sharedManager.saveSleep(startTime, endDate: endTime, metadata: [:]) {
-                (success, error) -> Void in
-                if error != nil { print("error in localized description") }
-                else { log.debug("Saved sleep event: \(String(describing: startTime)) \(endTime)", feature: "addActivity") }
-                completion(error)
+            } else {
+                completion(nil)
             }
         }
     }
@@ -767,25 +737,16 @@ open class AddActivityManager: UITableView, UITableViewDelegate, UITableViewData
     func addMeal(_ mealType: String, minutesSinceStart: Int, startDate: Date? = nil, completion: @escaping (Error?) -> Void) {
         let startTime = startDate == nil ? Date()  : startDate!
         let endTime = startTime + (Int(minutesSinceStart)).minutes
-        let metadata = ["Meal Type": mealType]
         log.debug("Saving meal event: \(mealType) \(startTime) \(endTime)", feature: "addActivity")
-        validateTimedEvent(startTime, endTime: endTime) { error in
-            guard error == nil else {
+        
+        MCAppHealthManager.shared.addMeal(startTime: startTime, endTime: endTime, mealType: mealType) { (sucess, errorMessage) in
+            if let errorMessage = errorMessage {
+                let error = NSError(domain: "MC", code: 42, userInfo: [NSLocalizedDescriptionKey: errorMessage])
                 completion(error)
-                return
-            }
-
-            MCHealthManager.sharedManager.savePreparationAndRecoveryWorkout(
-                startTime, endDate: endTime, distance: 0.0, distanceUnit: HKUnit(from: "km"),
-                kiloCalories: 0.0, metadata: metadata as NSDictionary)
-            {
-                (success, error) -> Void in
-                if error != nil { print("error!.localizedDescription") }
-                else { print("saved meal event")
-                completion(error)
+            } else {
+                completion(nil)
             }
         }
-    }
     }
 
     func addExercise(workoutType: HKWorkoutActivityType, minutesSinceStart: Int, startDate: Date? = nil, completion: @escaping (Error?) -> Void) {
@@ -794,20 +755,12 @@ open class AddActivityManager: UITableView, UITableViewDelegate, UITableViewData
 
         log.debug("Saving exercise event: \(workoutType) \(startTime) \(endTime)", feature: "addActivity")
 
-        validateTimedEvent(startTime, endTime: endTime) { error in
-            guard error == nil else {
+        MCAppHealthManager.shared.addExercise(workoutType: workoutType, startTime: startTime, endTime: endTime) { (sucess, errorMessage) in
+            if let errorMessage = errorMessage {
+                let error = NSError(domain: "MC", code: 42, userInfo: [NSLocalizedDescriptionKey: errorMessage])
                 completion(error)
-                return
-            }
-
-            MCHealthManager.sharedManager.saveWorkout(
-                startTime, endDate: endTime, activityType: workoutType,
-                distance: 0.0, distanceUnit: HKUnit(from: "km"), kiloCalories: 0.0, metadata: [:])
-            {
-                (success, error ) -> Void in
-                if error != nil { print("localized error") }
-                else { print("saved as workout type") }
-                completion(error)
+            } else {
+                completion(nil)
             }
         }
     }

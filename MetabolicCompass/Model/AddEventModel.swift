@@ -50,9 +50,11 @@ open class AddEventModel: NSObject {
             }
             if let mealUsualDate = UserManager.sharedManager.getUsualMealTime(mealType: mealType.rawValue) {//if we have usual event date we should prefill it for user
                 eventDate = AddEventModel.applyTimeForDate(mealUsualDate, toDate: eventDate)
+                eventDateWasChanged = false
             } else {//reset event date to the default state. Current date
                 //it works in case when user selected event with existing usual time and then changed meal type
                 eventDate = Date()
+                eventDateWasChanged = false
             }
         }
     }
@@ -183,48 +185,16 @@ open class AddEventModel: NSObject {
         
         let startTime = eventDate
         let endTime = Date(timeInterval: roundedDuration, since: startTime)
-        let metaMeals = ["Meal Type": mealType.rawValue]
-        validateTimedEvent(startTime: startTime, endTime: endTime) { (success, errorMessage) -> Void in
-            guard success else {
-                completion(false, errorMessage)
-                return
-            }
-            MCHealthManager.sharedManager.savePreparationAndRecoveryWorkout(
-                startTime as Date, endDate: endTime, distance: 0.0, distanceUnit: HKUnit(from: "km"),
-                kiloCalories: 0.0, metadata: metaMeals as NSDictionary) { (success, error ) -> Void in
-                    guard error == nil else {
-                        completion(false, error?.localizedDescription)
-                        return
-                    }
-                    //storing usual data for meal type
-                    let mealType = self.mealType.rawValue
-                    UserManager.sharedManager.setUsualMealTime(mealType: mealType, forDate: startTime)
-                    completion(true, nil)
-                    log.info("Meal saved as workout type")
-            }
-        }
+        
+        
+        MCAppHealthManager.shared.addMeal(startTime: startTime, endTime: endTime, mealType: mealType.rawValue, callback: completion)
     }
     
     func saveExerciseEvent(completion:@escaping (_ success: Bool, _ errorMessage: String?) -> ()) {
         let startTime = eventDate
         let endTime = Date(timeInterval: roundedDuration, since: startTime)
-        validateTimedEvent(startTime: startTime, endTime: endTime) { (success, errorMessage) -> Void in
-            guard success else {
-                completion(false, errorMessage)
-                return
-            }
-            MCHealthManager.sharedManager.saveRunningWorkout(
-                startTime as Date, endDate: endTime, distance: 0.0, distanceUnit: HKUnit(from: "km"),
-                kiloCalories: 0.0, metadata: [:]) {
-                    (success, error ) -> Void in
-                    guard error == nil else {
-                        completion(false, error?.localizedDescription)
-                        return
-                    }
-                    log.info("Saved as exercise workout type")
-                    completion(true, nil)
-            }
-        }
+        
+        MCAppHealthManager.shared.addExercise(workoutType: .running, startTime: startTime, endTime: endTime, callback: completion)
     }
     
     func saveSleepEvent(completion:@escaping (_ success: Bool, _ errorMessage: String?) -> ()) {
@@ -242,49 +212,7 @@ open class AddEventModel: NSObject {
             return
         }
         
-        let startTime = sleepStartDate
-        let endTime = sleepEndDate
-        
-        validateTimedEvent(startTime: startTime, endTime: endTime) { (success, errorMessage) -> Void in
-            guard success else {
-                completion(false, errorMessage)
-                return
-            }
-            MCHealthManager.sharedManager.saveSleep(startTime, endDate: endTime, metadata: [:], completion: {
-                (success, error ) -> Void in
-                guard error == nil else {
-                    completion(false, error?.localizedDescription)
-                    log.error(error as! String); return
-                }
-                UserManager.sharedManager.setUsualWhenToSleepTime(date: startTime)
-                UserManager.sharedManager.setUsualWokeUpTime(date: endTime)
-                log.info("Saved as sleep event")
-                completion(true, nil)
-            })
-        }
-    }
-    
-    //MARK: Validation
-    func validateTimedEvent(startTime: Date, endTime: Date, completion: @escaping (_ success: Bool, _ errorMessage: String?) -> ()) {
-        // Fetch all sleep and workout data since yesterday.
-        let sleepTy = HKObjectType.categoryType(forIdentifier: HKCategoryTypeIdentifier.sleepAnalysis)!
-        let workoutTy = HKWorkoutType.workoutType()
-        let datePredicate = HKQuery.predicateForSamples(withStart: startTime, end: endTime, options: [])
-        let typesAndPredicates = [sleepTy: datePredicate, workoutTy: datePredicate]
-        
-        // Aggregate sleep, exercise and meal events.
-        MCHealthManager.sharedManager.fetchSamples(typesAndPredicates) { (samples, error) -> Void in
-            guard error == nil else { log.error("error"); return }
-            let overlaps = samples.reduce(false, { (acc, kv) in
-                guard !acc else { return acc }
-                return kv.1.reduce(acc, { (acc, s) in return acc || !( startTime >= s.endDate || endTime <= s.startDate ) })
-            })
-            if !overlaps {
-                completion(true, nil)
-            } else {
-                completion(false, "This event overlaps with another, please try again")
-            }
-        }
+        MCAppHealthManager.shared.addSleep(startTime:  sleepStartDate, endTime:  sleepEndDate, callback: completion)
     }
 }
 
