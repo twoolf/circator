@@ -246,14 +246,6 @@ class ComplicationController: NSObject, CLKComplicationDataSource {
             entries.append(CLKComplicationTimelineEntry(date: endingTime, complicationTemplate: newTemplate))
         }
     }
-
-    
-    public func getNextRequestedUpdateDate(handler: @escaping (Date?) -> Swift.Void) {
-//        let nextUpdate = Date() + 10.minutes
-//        let nextUpdate = Date().addingTimeInterval(10.minutes)
-          let nextUpdate = Date().addMinutes(minutesToAdd: 10)
-        handler(nextUpdate)
-    }
 }
 
 

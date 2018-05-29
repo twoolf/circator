@@ -34,20 +34,6 @@ class IntroInterfaceController: WKInterfaceController {
     
     override func didDeactivate() {
         super.didDeactivate()
-        ComplicationDataManager.generateDataForComplication { (data) in
-            ComplicationDataManager.applyComplication(data: data)
-            self.reloadComplications()
-        }
-    }
-    private func reloadComplications() {
-        let server = CLKComplicationServer.sharedInstance()
-        guard let complications = server.activeComplications, complications.count > 0 else {
-            return
-        }
-        
-        for complication in complications  {
-            server.reloadTimeline(for: complication)
-        }
     }
 }
 
