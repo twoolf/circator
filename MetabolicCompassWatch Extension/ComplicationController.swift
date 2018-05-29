@@ -45,32 +45,7 @@ extension Date {
     }
 }
 
-class ComplicationController: NSObject, CLKComplicationDataSource, WCSessionDelegate {
- 
-    func session(_ session: WCSession, activationDidCompleteWith activationState: WCSessionActivationState, error: Error?) {
-    }
-    
-    public func session(_ session: WCSession, didReceiveUserInfo userInfo: [String : Any] = [:]) {
-        //        print("Did receive user info")
-        MetricsStore.sharedInstance.fastingTime = userInfo["key"] as! String
-        //        reloadComplications()
-        
-        ComplicationDataManager.reloadComplications()
-    }
-    
-    func applicationDidFinishLaunching() {
-    }
-    
-    override init() {
-        super.init()
-        if WCSession.isSupported() {
-            let session  = WCSession.default
-            session.delegate = self
-            session.activate()
-        }
-    }
-    
-
+class ComplicationController: NSObject, CLKComplicationDataSource {
     func getLocalizableSampleTemplate(for complication: CLKComplication,
                                                withHandler handler: @escaping (CLKComplicationTemplate?) -> Void){
         var template: CLKComplicationTemplate? = nil

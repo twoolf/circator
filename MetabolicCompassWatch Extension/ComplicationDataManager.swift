@@ -7,27 +7,16 @@
 //
 
 import Foundation
-import ClockKit
+//import ClockKit
 import HealthKit
 import SwiftDate
 import MCCircadianQueries
 
+private let LastAteKey = "LastAteKey"
+private let FastingTimeKey = "FastingTimeKey"
 
 class ComplicationDataManager {
-
-    static func reloadComplications() {
-        let server = CLKComplicationServer.sharedInstance()
-        guard let complications = server.activeComplications, complications.count > 0 else {
-            return
-        }
-        
-        for complication in complications  {
-            server.reloadTimeline(for: complication)
-        }
-    }
-    
-    
-    static func reloadData() {
+    static func generateDataForComplication(completion: @escaping ([String: Any])->()) {
         let weekAgo = Date(timeIntervalSinceNow: -60 * 60 * 24 * 7)
         
         CircadianSamplesManager.sharedInstance.fetchCircadianSamples(startDate: weekAgo, endDate: Date()) { (samples) in
@@ -66,18 +55,26 @@ class ComplicationDataManager {
                     }
                 }
                 
-                MetricsStore.sharedInstance.lastAteAsDate = lastEatingInterval?.0 ?? Date()
-//                MetricsStore.sharedInstance.fastingTime = "- h - m"
-//                
-//                if let maxInterval = maxFastingInterval {
-//                    MetricsStore.sharedInstance.fastingTime = self.timeString(from: maxInterval)
-//                }
                 
-                self.reloadComplications()
+                var result = [String: Any]()
+                result[LastAteKey] = lastEatingInterval?.0 ?? Date()
+                result[FastingTimeKey] = "- h - m"
+                if let maxInterval = maxFastingInterval {
+                    result[FastingTimeKey] = self.timeString(from: maxInterval)
+                }
+                completion(result)
             }
         }
     }
     
+    static func applyComplication(data: [String: Any]) {
+        if let lastAte = data[LastAteKey] as? Date {
+            MetricsStore.sharedInstance.lastAteAsDate = lastAte
+        }
+        if let fastingTime = data[FastingTimeKey] as? String {
+            MetricsStore.sharedInstance.fastingTime = fastingTime
+        }
+    }
     
     private static func timeString(from dateInterval: (Date, Date)) -> String {
         let timeInterval = Int(dateInterval.1.timeIntervalSince(dateInterval.0))
@@ -90,6 +87,4 @@ class ComplicationDataManager {
             return String(format: "%02d h %02d m", hours, minutes)
         }
     }
-    
-    
 }

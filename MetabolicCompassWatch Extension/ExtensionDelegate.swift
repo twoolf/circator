@@ -9,33 +9,34 @@
 import WatchKit
 import WatchConnectivity
 
-@available(watchOSApplicationExtension 4.0, *)
-@available(watchOSApplicationExtension 4.0, *)
-@available(watchOSApplicationExtension 4.0, *)
-class ExtensionDelegate: NSObject, WKExtensionDelegate {
-//    func session(_ session: WCSession, activationDidCompleteWith activationState: WCSessionActivationState, error: Error?) {
-//    }
-//
-//    public func session(_ session: WCSession, didReceiveUserInfo userInfo: [String : Any] = [:]) {
-////        print("Did receive user info")
-//        MetricsStore.sharedInstance.fastingTime = userInfo["key"] as! String
-////        reloadComplications()
-//
-//        ComplicationDataManager.reloadComplications()
-//    }
-//
-//    func applicationDidFinishLaunching() {
-//    }
-//
-//    override init() {
-//        super.init()
-//        if WCSession.isSupported() {
-//            let session  = WCSession.default
-//            session.delegate = self
-//            session.activate()
-//        }
-//    }
-//
+class ExtensionDelegate: NSObject, WKExtensionDelegate, WCSessionDelegate {
+    
+    private var connectivityBackgroundTasks: [WKWatchConnectivityRefreshBackgroundTask] = []
+    
+    func session(_ session: WCSession, activationDidCompleteWith activationState: WCSessionActivationState, error: Error?) {
+    }
+
+    public func session(_ session: WCSession, didReceiveUserInfo userInfo: [String : Any] = [:]) {
+        ComplicationDataManager.applyComplication(data: userInfo)
+        reloadComplications()
+        if !session.hasContentPending {
+            connectivityBackgroundTasks.forEach({ (task) in
+                task.setTaskCompletedWithSnapshot(false)
+            })
+        }
+    }
+
+    func applicationDidFinishLaunching() {
+    }
+
+    override init() {
+        super.init()
+        if WCSession.isSupported() {
+            let session  = WCSession.default
+            session.delegate = self
+            session.activate()
+        }
+    }
 
     func applicationDidBecomeActive() {
         // Restart any tasks that were paused (or not yet started) while the application was inactive. If the application was previously in the background, optionally refresh the user interface.
@@ -57,7 +58,14 @@ class ExtensionDelegate: NSObject, WKExtensionDelegate {
                 // Snapshot tasks have a unique completion call, make sure to set your expiration date
                 snapshotTask.setTaskCompleted(restoredDefaultState: true, estimatedSnapshotExpiration: Date.distantFuture, userInfo: nil)
             case let connectivityTask as WKWatchConnectivityRefreshBackgroundTask:
-                connectivityTask.setTaskCompletedWithSnapshot(false)
+                connectivityBackgroundTasks.append(connectivityTask)
+                if WCSession.isSupported() {
+                    let session  = WCSession.default
+                    session.delegate = self
+                    if session.activationState != .activated {
+                        session.activate()
+                    }
+                }
             case let urlSessionTask as WKURLSessionRefreshBackgroundTask:
                 urlSessionTask.setTaskCompletedWithSnapshot(false)
             default:
@@ -65,5 +73,15 @@ class ExtensionDelegate: NSObject, WKExtensionDelegate {
             }
         }
     }
-
+    
+    private func reloadComplications() {
+        let server = CLKComplicationServer.sharedInstance()
+        guard let complications = server.activeComplications, complications.count > 0 else {
+            return
+        }
+        
+        for complication in complications  {
+            server.reloadTimeline(for: complication)
+        }
+    }
 }

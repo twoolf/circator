@@ -54,7 +54,7 @@ class MCAppHealthManager : NSObject, WCSessionDelegate {
                     callback(false, error?.localizedDescription)
                     log.error(error as! String); return
                 }
-                self.updateWatchComplication(str: "Sleep")
+                self.updateWatchComplication()
                 UserManager.sharedManager.setUsualWhenToSleepTime(date: startTime)
                 UserManager.sharedManager.setUsualWokeUpTime(date: endTime)
                 log.info("Saved as sleep event")
@@ -78,7 +78,7 @@ class MCAppHealthManager : NSObject, WCSessionDelegate {
                     callback(false, error?.localizedDescription)
                     return
                 }
-                self.updateWatchComplication(str: "Excersise")
+                self.updateWatchComplication()
                 log.info("Saved as exercise workout type")
                 callback(true, nil)
             }
@@ -99,7 +99,7 @@ class MCAppHealthManager : NSObject, WCSessionDelegate {
                         callback(false, error?.localizedDescription)
                         return
                     }
-                    self.updateWatchComplication(str: "MEal")
+                    self.updateWatchComplication()
                     UserManager.sharedManager.setUsualMealTime(mealType: mealType, forDate: startTime)
                     callback(true, nil)
                     log.info("Meal saved as workout type")
@@ -109,9 +109,13 @@ class MCAppHealthManager : NSObject, WCSessionDelegate {
     
     //MARK: Watch notifications
     
-    func updateWatchComplication(str: String) {
+    func updateWatchComplication() {
         if let session = watchSession, session.activationState == .activated {
-            session.transferCurrentComplicationUserInfo(["NeedUpdate" : true, "key" : str])
+            ComplicationDataManager.generateDataForComplication(completion: { (data) in
+                DispatchQueue.main.async {
+                    session.transferCurrentComplicationUserInfo(data)
+                }
+            })
         }
     }
     

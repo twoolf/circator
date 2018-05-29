@@ -266,6 +266,8 @@
 		FA3BF341E0ED3395ACE340B2 /* Pods_MetabolicCompassWatch.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 03BD80ED1CBCAB53BBBCD8B1 /* Pods_MetabolicCompassWatch.framework */; };
 		FAED109420B82FFB00FC6C3D /* MCAppHealthManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = FAED109320B82FFB00FC6C3D /* MCAppHealthManager.swift */; };
 		FAFFA9FB20B857D700BCC52B /* ComplicationDataManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = FAFFA9FA20B857D700BCC52B /* ComplicationDataManager.swift */; };
+		FAFFA9FC20BD0EB000BCC52B /* ComplicationDataManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = FAFFA9FA20B857D700BCC52B /* ComplicationDataManager.swift */; };
+		FAFFA9FD20BD0F5800BCC52B /* MetricsStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 81948BB41F9F3B280067DED6 /* MetricsStore.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -1979,6 +1981,7 @@
 				E75E95A71CDCB18D00A18756 /* DashboardFilterHeaderView.swift in Sources */,
 				78969D941D69891C00E867C3 /* OurStudyViewController.swift in Sources */,
 				1C7107BE1D4B14B500C2B3D4 /* CorrelationChartsViewController.swift in Sources */,
+				FAFFA9FC20BD0EB000BCC52B /* ComplicationDataManager.swift in Sources */,
 				84EF0EB11D056F4B00A25760 /* PickerTableViewCell.swift in Sources */,
 				E7592DBA1CDB704600E313BB /* DashboardTabControllerViewController.swift in Sources */,
 				842B7DD01D0960CB007F2126 /* LineChartCollectionCell.swift in Sources */,
@@ -1996,6 +1999,7 @@
 				846E488C1D5AFF8E004CB794 /* AnalysisViewController.swift in Sources */,
 				54205E661E76213B003E3EC4 /* ActivityPicker.swift in Sources */,
 				786DEBB61D48FA7A00D6654E /* UITooltips.swift in Sources */,
+				FAFFA9FD20BD0F5800BCC52B /* MetricsStore.swift in Sources */,
 				84B727AD1D13E5B100839E54 /* RepeatedEventManagerViewController.swift in Sources */,
 				54205E7F1E762162003E3EC4 /* MetabolicRadarChartView.swift in Sources */,
 				F42F5ADD1BDC85AF00195490 /* SampleDataAnalyzer.swift in Sources */,
