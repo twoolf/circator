@@ -32,7 +32,7 @@ def shared_pods
     pod 'SwiftyBeaver', :git => 'https://github.com/SwiftyBeaver/SwiftyBeaver.git', :branch => 'master'
     pod 'SwiftyJSON' 
     pod 'SwiftyUserDefaults', :git => 'https://github.com/radex/SwiftyUserDefaults.git'
-    pod 'SwiftMessages’, :git => 'https://github.com/SwiftKickMobile/SwiftMessages.git’, :branch => 'swift4.0’
+    pod 'SwiftMessages’, '~> 4.1.0'
     pod 'AWSMobileClient', '~> 2.6.13'
     pod 'AWSS3', '~> 2.6.13'   # For file transfers
     pod 'AWSCognito', '~> 2.6.13'   #For data sync

@@ -57,7 +57,9 @@ PODS:
   - SimpleKeychain (0.8.0)
   - SwiftChart (1.0.1)
   - SwiftDate (4.5.1)
-  - SwiftMessages (4.0.0)
+  - SwiftMessages (4.1.4):
+    - SwiftMessages/App (= 4.1.4)
+  - SwiftMessages/App (4.1.4)
   - SwiftyBeaver (1.5.2)
   - SwiftyJSON (4.0.0)
   - SwiftyUserDefaults (3.0.1)
@@ -97,7 +99,7 @@ DEPENDENCIES:
   - ResearchKit (from `https://github.com/twoolf/ResearchKit.git`)
   - SwiftChart
   - SwiftDate (from `https://github.com/malcommac/SwiftDate.git`)
-  - SwiftMessages (from `https://github.com/SwiftKickMobile/SwiftMessages.git`, branch `swift4.0`)
+  - SwiftMessages (~> 4.1.0)
   - SwiftyBeaver (from `https://github.com/SwiftyBeaver/SwiftyBeaver.git`, branch `master`)
   - SwiftyJSON
   - SwiftyUserDefaults (from `https://github.com/radex/SwiftyUserDefaults.git`)
@@ -122,9 +124,6 @@ EXTERNAL SOURCES:
     :git: https://github.com/twoolf/ResearchKit.git
   SwiftDate:
     :git: https://github.com/malcommac/SwiftDate.git
-  SwiftMessages:
-    :branch: swift4.0
-    :git: https://github.com/SwiftKickMobile/SwiftMessages.git
   SwiftyBeaver:
     :branch: master
     :git: https://github.com/SwiftyBeaver/SwiftyBeaver.git
@@ -156,9 +155,6 @@ CHECKOUT OPTIONS:
   SwiftDate:
     :commit: a6ec382004f45f45a78b172d0a85a6594a0054ae
     :git: https://github.com/malcommac/SwiftDate.git
-  SwiftMessages:
-    :commit: 7546cce5bb95dbb9b1cc76ff997162d98ede5ede
-    :git: https://github.com/SwiftKickMobile/SwiftMessages.git
   SwiftyBeaver:
     :commit: eab0b9d8280a2ba349fa2975b4d7b2f6305330fc
     :git: https://github.com/SwiftyBeaver/SwiftyBeaver.git
@@ -205,11 +201,11 @@ SPEC CHECKSUMS:
   SimpleKeychain: 84c748463eec601dfee5e7990f55cc82edc5488d
   SwiftChart: ba767a678d568a5ee22d419e146a0582865e1aff
   SwiftDate: f74d61db9aa6d67e408e86f98138ff33cde702a7
-  SwiftMessages: e9ae56244859ad352b4382f4663ba76bb9b237f4
+  SwiftMessages: 2c33fdee8b8f38dfc7e1036684456b505891da8c
   SwiftyBeaver: a40e808c88e11c8deda9b84d55f8707c1005ada8
   SwiftyJSON: 070dabdcb1beb81b247c65ffa3a79dbbfb3b48aa
   SwiftyUserDefaults: 38267a30d58b7c8570995cd5defd354e43f056c6
 
-PODFILE CHECKSUM: cd1241709930bde704ddac2c5a70bd957d10cd68
+PODFILE CHECKSUM: 4be438c8c0e2cac5483167d9a28bf26fa9e332f1
 
 COCOAPODS: 1.4.0
