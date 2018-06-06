@@ -142,10 +142,10 @@ open class AddEventModel: NSObject {
     }
     
     func dayStringForDate(date: Date) -> String {
-        let calendar = NSCalendar.current
-        let unitFlags = Set<Calendar.Component>([.month, .day])
-        let timeStringComponents = calendar.dateComponents(unitFlags, from: date)
-        return "\((timeStringComponents.day) ?? no_argument as AnyObject as! Int) \((timeStringComponents.month) ?? no_argument as AnyObject as! Int)"
+        let formatter  = DateFormatter()
+        formatter.setLocalizedDateFormatFromTemplate("MMMd")
+        
+        return formatter.string(from: date)
     }
     
     //MARK: Class methods
