@@ -52,7 +52,7 @@ class MCAppHealthManager : NSObject, WCSessionDelegate {
                 (success, error ) -> Void in
                 guard error == nil else {
                     callback(false, error?.localizedDescription)
-                    log.error(error as! String); return
+                    return
                 }
                 self.updateWatchComplication()
                 UserManager.sharedManager.setUsualWhenToSleepTime(date: startTime)
