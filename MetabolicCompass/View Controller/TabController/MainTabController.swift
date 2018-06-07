@@ -41,8 +41,8 @@ class MainTabController: UITabBarController, UITabBarControllerDelegate, ManageE
         NotificationCenter.default.addObserver(self, selector: #selector(self.userDidLogin), name: NSNotification.Name(rawValue: UMDidLoginNotifiaction), object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(self.userDidLogout), name: NSNotification.Name(rawValue: UMDidLogoutNotification), object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(self.userAddedCircadianEvents), name: NSNotification.Name(rawValue: MEMDidUpdateCircadianEvents), object: nil)
-        NotificationCenter.default.addObserver(self, selector: #selector(self.syncBegan), name: NSNotification.Name(rawValue: SyncBeganNotification), object: nil)
-        NotificationCenter.default.addObserver(self, selector: #selector(self.syncEnded), name: NSNotification.Name(rawValue: SyncEndedNotification), object: nil)
+//        NotificationCenter.default.addObserver(self, selector: #selector(self.syncBegan), name: NSNotification.Name(rawValue: SyncBeganNotification), object: nil)
+//        NotificationCenter.default.addObserver(self, selector: #selector(self.syncEnded), name: NSNotification.Name(rawValue: SyncEndedNotification), object: nil)
     }
     
     override func viewDidAppear(_ animated: Bool) {
