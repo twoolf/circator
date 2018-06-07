@@ -264,6 +264,7 @@
 		FA14BB8220B58DBC00A61E4B /* CircadianSamplesManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = FA14BB8120B58DBC00A61E4B /* CircadianSamplesManager.swift */; };
 		FA14BB8320B5919800A61E4B /* CircadianSamplesManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = FA14BB8120B58DBC00A61E4B /* CircadianSamplesManager.swift */; };
 		FA3BF341E0ED3395ACE340B2 /* Pods_MetabolicCompassWatch.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 03BD80ED1CBCAB53BBBCD8B1 /* Pods_MetabolicCompassWatch.framework */; };
+		FAB0989F20C9509000595922 /* CwlMutex.swift in Sources */ = {isa = PBXBuildFile; fileRef = FAB0989D20C94D2400595922 /* CwlMutex.swift */; };
 		FAED109420B82FFB00FC6C3D /* MCAppHealthManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = FAED109320B82FFB00FC6C3D /* MCAppHealthManager.swift */; };
 		FAFFA9FB20B857D700BCC52B /* ComplicationDataManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = FAFFA9FA20B857D700BCC52B /* ComplicationDataManager.swift */; };
 		FAFFA9FC20BD0EB000BCC52B /* ComplicationDataManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = FAFFA9FA20B857D700BCC52B /* ComplicationDataManager.swift */; };
@@ -624,6 +625,7 @@
 		F56CC2B31CF6077000040604 /* FontScaleLabel.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FontScaleLabel.swift; sourceTree = "<group>"; };
 		F56CC2B51CF6078500040604 /* FontScaleTextField.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FontScaleTextField.swift; sourceTree = "<group>"; };
 		FA14BB8120B58DBC00A61E4B /* CircadianSamplesManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CircadianSamplesManager.swift; sourceTree = "<group>"; };
+		FAB0989D20C94D2400595922 /* CwlMutex.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CwlMutex.swift; sourceTree = "<group>"; };
 		FAED109320B82FFB00FC6C3D /* MCAppHealthManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MCAppHealthManager.swift; sourceTree = "<group>"; };
 		FAFFA9FA20B857D700BCC52B /* ComplicationDataManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ComplicationDataManager.swift; sourceTree = "<group>"; };
 		FCBA5612AFA84799D8B22810 /* Pods-MetabolicCompassWatch Extension.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-MetabolicCompassWatch Extension.release.xcconfig"; path = "Pods/Target Support Files/Pods-MetabolicCompassWatch Extension/Pods-MetabolicCompassWatch Extension.release.xcconfig"; sourceTree = "<group>"; };
@@ -1027,6 +1029,7 @@
 		9585680A1CD0EDAC00EDD385 /* Utils */ = {
 			isa = PBXGroup;
 			children = (
+				FAB0989D20C94D2400595922 /* CwlMutex.swift */,
 				F5057FEA1CEF058900F66EB0 /* TextInputFilter.swift */,
 			);
 			path = Utils;
@@ -2126,6 +2129,7 @@
 				54205E851E76229F003E3EC4 /* AppLog.swift in Sources */,
 				F42F5B451BE2048400195490 /* IOSHealthManager.swift in Sources */,
 				783E53D21C75856200BEBF33 /* DataGenerator.swift in Sources */,
+				FAB0989F20C9509000595922 /* CwlMutex.swift in Sources */,
 				7843F9121C1FAD9900AB8978 /* ServiceAPI.swift in Sources */,
 				786DF10D1C72AFE0007C2D4C /* Constants.swift in Sources */,
 				7863EA9C1C27302B0038DE7A /* ConsentManager.swift in Sources */,

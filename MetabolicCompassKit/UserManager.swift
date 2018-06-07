@@ -159,6 +159,8 @@ internal func sampleTypeOfSeqId(anchorIdentifier: String) -> HKSampleType? {
 public class UserManager {
 
     public static let sharedManager = UserManager()
+    
+    private let cacheAccessMutex = PThreadMutex()
 
     // Constants.
     public static let maxTokenRetries  = 2
@@ -671,25 +673,28 @@ public class UserManager {
     private func wrapCache(component: AccountComponent) -> [String:AnyObject]?
     {
         let componentName = getComponentName(component)
-        if let componentData = componentCache[component] {
-            switch component {
-            case .Consent:
-                return componentData
-            case .Photo:
-                return componentData
-            case .Profile:
-                return [componentName: self.uploadProfileExtractor(data: componentData) as AnyObject]
-            case .Settings:
-                return [componentName: self.uploadSettingsExtractor(data: componentData) as AnyObject]
-            case .ArchiveSpan:
-                return [componentName: self.uploadArchiveSpanExtractor(data: componentData) as AnyObject]
-            case .LastAcquired:
-                return [componentName: self.uploadLastAcquiredExtractor(data: componentData) as AnyObject]
-            case .PersonalProfile:
-                return componentData
+        
+        return cacheAccessMutex.sync { () -> [String:AnyObject]? in
+            if let componentData = componentCache[component] {
+                switch component {
+                case .Consent:
+                    return componentData
+                case .Photo:
+                    return componentData
+                case .Profile:
+                    return [componentName: self.uploadProfileExtractor(data: componentData) as AnyObject]
+                case .Settings:
+                    return [componentName: self.uploadSettingsExtractor(data: componentData) as AnyObject]
+                case .ArchiveSpan:
+                    return [componentName: self.uploadArchiveSpanExtractor(data: componentData) as AnyObject]
+                case .LastAcquired:
+                    return [componentName: self.uploadLastAcquiredExtractor(data: componentData) as AnyObject]
+                case .PersonalProfile:
+                    return componentData
+                }
             }
+            return nil
         }
-        return nil
     }
 
     // Returns an unwrapped component as dictionary, stripping any component name from the argument.
@@ -842,17 +847,23 @@ public class UserManager {
     }
 
     private func refreshComponentCache(component: AccountComponent, componentData: [String:AnyObject]) {
-        for (k,v) in componentData {
-            componentCache[component]?.updateValue(v, forKey: k)
+        cacheAccessMutex.sync {
+            for (k,v) in componentData {
+                componentCache[component]?.updateValue(v, forKey: k)
+            }
         }
     }
 
     private func getCachedComponent(component: AccountComponent) -> [String: AnyObject] {
-        return componentCache[component]!
+        return cacheAccessMutex.sync {
+            return componentCache[component]!
+        }
     }
 
     private func resetCachedComponent(component: AccountComponent) {
-        componentCache.updateValue([:], forKey: component)
+        _ = cacheAccessMutex.sync {
+            componentCache.updateValue([:], forKey: component)
+        }
     }
 
     // Batch reset of all components.

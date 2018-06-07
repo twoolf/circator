@@ -82,9 +82,9 @@ public class IOSHealthManager: NSObject, WCSessionDelegate {
             (query, addedObjects, deletedObjects, newAnchor, Error) -> Void in
             completion(addedObjects ?? [], deletedObjects ?? [], newAnchor, Error)
         }
-        let anchoredQuery = HKAnchoredObjectQuery(type: type, predicate: predicate, anchor: hkAnchor, limit: Int(maxResults), resultsHandler: onAnchorQueryResults as! (HKAnchoredObjectQuery, [HKSample]?, [HKDeletedObject]?, HKQueryAnchor?, Error?) -> Void)
+        let anchoredQuery = HKAnchoredObjectQuery(type: type, predicate: predicate, anchor: hkAnchor, limit: Int(maxResults), resultsHandler: onAnchorQueryResults )
         if callContinuously {
-            anchoredQuery.updateHandler = onAnchorQueryResults as! (HKAnchoredObjectQuery, [HKSample]?, [HKDeletedObject]?, HKQueryAnchor?, Error?) -> Void
+            anchoredQuery.updateHandler = onAnchorQueryResults 
         }
         MCHealthManager.sharedManager.healthKitStore.execute(anchoredQuery)
     }
@@ -147,7 +147,7 @@ public class IOSHealthManager: NSObject, WCSessionDelegate {
             self.observerQueries.append(obsQuery)
             MCHealthManager.sharedManager.healthKitStore.execute(obsQuery)
         }
-        MCHealthManager.sharedManager.healthKitStore.enableBackgroundDelivery(for: type, frequency: HKUpdateFrequency.immediate, withCompletion: onBackgroundStarted as! (Bool, Error?) -> Void)
+        MCHealthManager.sharedManager.healthKitStore.enableBackgroundDelivery(for: type, frequency: HKUpdateFrequency.immediate, withCompletion: onBackgroundStarted)
     }
 
     public func stopAllBackgroundObservers(completion: @escaping (Bool, Error?) -> Void) {
