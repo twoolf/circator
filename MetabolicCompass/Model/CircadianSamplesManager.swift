@@ -74,7 +74,13 @@ struct CircadianSample {
     
     init?(sample: HKSample) {
         startDate = sample.startDate
-        endDate = sample.endDate
+        
+        if sample.startDate == sample.endDate, let workout = sample as? HKWorkout {
+            endDate = startDate.addingTimeInterval(workout.duration)
+        } else {
+            endDate = sample.endDate
+        }
+
         
         guard let type = sample.hkType else {return nil}
         switch type {
@@ -95,6 +101,11 @@ struct CircadianSample {
         default:
             return nil
         }
+    }
+    
+    
+    func intersects(with sample: CircadianSample) -> Bool {
+        return sample.startDate <= self.endDate && self.startDate <= sample.endDate
     }
 }
 
@@ -148,8 +159,16 @@ func fillWithFasting(samples: [CircadianSample], from startDate: Date, to endDat
         results.append(sample)
         if index + 1 < samples.count {
             let nextSample = samples[index+1]
-            if nextSample.startDate != sample.endDate {
-                results.append(CircadianSample(event: .fast, startDate: sample.endDate, endDate: nextSample.startDate))
+            var currentSample = sample
+            // In case samples intersects we will truncate first sample to the start of next sample. And ignore such edge case when next sample contains fully inside previous
+            if nextSample.intersects(with: currentSample) {
+                results.removeLast()
+                currentSample = CircadianSample(event: currentSample.event, startDate: currentSample.startDate, endDate: nextSample.startDate)
+                results.append(currentSample)
+            }
+            
+            if nextSample.startDate != currentSample.endDate {
+                results.append(CircadianSample(event: .fast, startDate: currentSample.endDate, endDate: nextSample.startDate))
             }
         }
     }

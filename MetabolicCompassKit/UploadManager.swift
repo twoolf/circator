@@ -915,7 +915,7 @@ public class UploadManager: NSObject {
                             else {
                                 // Advance the anchor for this type so that we don't see the synchronized entries again.
                                 if let anchor = newAnchor, withSyncInfo {
-                                    setAnchorForType(anchor: anchor, forType: type)
+                                    self.setAnchorForType(anchor: anchor, forType: type)
                                 }
 
                                 log.debug("Skipping upload for \(typeId): \(userAdded.count) insertions \(deleted.count) deletions", "uploadObservers")
