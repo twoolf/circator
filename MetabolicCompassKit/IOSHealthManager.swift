@@ -6,6 +6,7 @@
 //  Copyright © 2015 Yanif Ahmad, Tom Woolf. All rights reserved.
 //
 
+import Foundation
 import Darwin
 import HealthKit
 import WatchConnectivity
@@ -25,8 +26,12 @@ public class IOSHealthManager: NSObject, WCSessionDelegate {
     }
     public static let sharedManager = IOSHealthManager()
     var observerQueries: [HKQuery] = []
+    
+    let anchoredQueriesQueue : OperationQueue
 
     private override init() {
+        anchoredQueriesQueue = OperationQueue()
+        anchoredQueriesQueue.maxConcurrentOperationCount = 5
         super.init()
         connectWatch()
     }
@@ -108,28 +113,29 @@ public class IOSHealthManager: NSObject, WCSessionDelegate {
 
                 // Run the anchor query as a background task, to support interactive queries for UI
                 // components that run at higher priority.
-                Async.background {
+                
+                self.anchoredQueriesQueue.addOperation {
                     let tname = type.displayText ?? type.identifier
                     let asCircadian = type.identifier == HKWorkoutTypeIdentifier.description || type.identifier == HKCategoryTypeIdentifier.sleepAnalysis.rawValue
 
                     let (needsOldestSamples, anchor, predicate) = getAnchorCallback(type)
                     if needsOldestSamples {
                         Async.background(after: 0.5) {
-//                            log.debug("Registering bulk ingestion availability for: \(tname)", "registerObservers")
+                            log.debug("Registering bulk ingestion availability for: \(tname)", "registerObservers")
                             MCHealthManager.sharedManager.getOldestSampleDateForType(type) { date in
                                 if let minDate = date {
-//                                    log.debug("Lower bound date for \(type.displayText ?? type.identifier): \(minDate)", "registerObservers")
+                                    log.debug("Lower bound date for \(type.displayText ?? type.identifier): \(minDate)", "registerObservers")
                                     UserManager.sharedManager.setHistoricalRangeMinForType(type: type, min: minDate as Date, sync: true)
                                 }
                             }
                         }
                     }
 
-//                    log.debug("Anchor query for \(tname)", "anchorQuery")
+                    log.debug("Anchor query for \(tname)", "anchorQuery")
                     self.fetchAnchoredSamplesOfType(type: type, predicate: predicate, anchor: anchor, maxResults: maxResultsPerQuery, callContinuously: false) {
                         (added, deleted, newAnchor, error) -> Void in
 
-//                        log.debug("Anchor query completion for \(tname), size: +\(added.count) -\(deleted.count)", "anchorQuery")
+                        log.debug("Anchor query completion for \(tname), size: +\(added.count) -\(deleted.count)", "anchorQuery")
                         if added.count > 0 || deleted.count > 0 {
                             MCHealthManager.sharedManager.invalidateCacheForUpdates(type, added: (asCircadian ? added : nil))
                         }

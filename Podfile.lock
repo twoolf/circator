@@ -147,7 +147,7 @@ CHECKOUT OPTIONS:
     :commit: 9d93a4af3d719e12eac2ee84a11752a5171856cd
     :git: https://github.com/yanif/Granola.git
   MCCircadianQueries:
-    :commit: 11a1770b51c3c473c0b991ed79284752466f9b7d
+    :commit: dcca78e6e448e000c164c60cde51ec88590acf7a
     :git: https://github.com/OlenaSrost/MCCircadianQueries.git
   ResearchKit:
     :commit: 3bf331c47e3bfaf6ef2d422dc2f9f9aa7939499c
