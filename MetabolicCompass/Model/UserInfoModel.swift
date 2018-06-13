@@ -131,7 +131,7 @@ class UserInfoModel: NSObject {
                 profile[weightField.name] = String(format: "%.5g", w)
             }
             if profile[heightField.name] != nil {
-                let h = UnitsUtils.heightValueInDefaultSystem(fromValue: (height ?? 0.0) + (Float(heightInches ?? 0) / 12.0), inUnitsSystem: units)
+                let h : Float = UnitsUtils.heightValueInDefaultSystem(fromValue: (height ?? 0.0) + (Float(heightInches ?? 0) / 12.0), inUnitsSystem: units)
                 profile[heightField.name] = String(format: "%.4g", h)
             }
         }
