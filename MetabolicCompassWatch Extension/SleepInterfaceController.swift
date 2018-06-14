@@ -24,26 +24,19 @@ class SleepInterfaceController: WKInterfaceController {
     var sleep = 0
       override func awake(withContext context: Any?){
         super.awake(withContext: context)
-        var tempItems: [WKPickerItem] = []
-        for i in 0...48 {
-            let item = WKPickerItem()
-            item.contentImage = WKImage(imageName: "Time\(i)")
-            tempItems.append(item)
-        }
 
-        _ = DateInRegion()
+        sleepPicker.setupForSleep()
+        
         var beginTimePointer = 24
         let calendar = Calendar.current
         let beginDate = Date()
-//        let beginComponents = calendar.components([.Year, .Month, .Day, .Hour, .Minute], fromDate: beginDate)
         let beginComponents = calendar.dateComponents([.year, .month, .day, .hour, .minute], from: beginDate)
         if beginComponents.minute! < 15 {
             beginTimePointer = 2*beginComponents.hour!
         } else {
             beginTimePointer = 2*beginComponents.hour! + 1
         }
-        sleepPicker.setItems(tempItems)
-        sleepPicker.setSelectedItemIndex(beginTimePointer-16)
+        sleepPicker.setUnwrappedSleepHalfHour(value: beginTimePointer - 16)
     }
     
     override func willActivate() {
@@ -55,7 +48,8 @@ class SleepInterfaceController: WKInterfaceController {
     }
     
     @IBAction func onSleepEntry(value: Int) {
-        sleep = value
+        sleep = sleepPicker.wrappedSleepHalfHour(from: value)
+        print("Sleep \(sleep)")
     }
     @IBAction func sleepSaveButton() {
         sleepTimesStruc.sleepBegin = sleep

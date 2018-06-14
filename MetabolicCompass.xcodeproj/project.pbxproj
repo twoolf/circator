@@ -264,6 +264,7 @@
 		FA14BB8220B58DBC00A61E4B /* CircadianSamplesManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = FA14BB8120B58DBC00A61E4B /* CircadianSamplesManager.swift */; };
 		FA14BB8320B5919800A61E4B /* CircadianSamplesManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = FA14BB8120B58DBC00A61E4B /* CircadianSamplesManager.swift */; };
 		FA3BF341E0ED3395ACE340B2 /* Pods_MetabolicCompassWatch.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 03BD80ED1CBCAB53BBBCD8B1 /* Pods_MetabolicCompassWatch.framework */; };
+		FA4F61FE20D2699B00C6A0BA /* WKInterfacePicker+Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = FA4F61FD20D2699B00C6A0BA /* WKInterfacePicker+Extensions.swift */; };
 		FAB0989F20C9509000595922 /* CwlMutex.swift in Sources */ = {isa = PBXBuildFile; fileRef = FAB0989D20C94D2400595922 /* CwlMutex.swift */; };
 		FAED109420B82FFB00FC6C3D /* MCAppHealthManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = FAED109320B82FFB00FC6C3D /* MCAppHealthManager.swift */; };
 		FAFFA9FB20B857D700BCC52B /* ComplicationDataManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = FAFFA9FA20B857D700BCC52B /* ComplicationDataManager.swift */; };
@@ -625,6 +626,7 @@
 		F56CC2B31CF6077000040604 /* FontScaleLabel.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FontScaleLabel.swift; sourceTree = "<group>"; };
 		F56CC2B51CF6078500040604 /* FontScaleTextField.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FontScaleTextField.swift; sourceTree = "<group>"; };
 		FA14BB8120B58DBC00A61E4B /* CircadianSamplesManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CircadianSamplesManager.swift; sourceTree = "<group>"; };
+		FA4F61FD20D2699B00C6A0BA /* WKInterfacePicker+Extensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "WKInterfacePicker+Extensions.swift"; sourceTree = "<group>"; };
 		FAB0989D20C94D2400595922 /* CwlMutex.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CwlMutex.swift; sourceTree = "<group>"; };
 		FAED109320B82FFB00FC6C3D /* MCAppHealthManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MCAppHealthManager.swift; sourceTree = "<group>"; };
 		FAFFA9FA20B857D700BCC52B /* ComplicationDataManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ComplicationDataManager.swift; sourceTree = "<group>"; };
@@ -881,6 +883,7 @@
 				8147C0F91F9DE5FE00D69024 /* Info.plist */,
 				8147C0FA1F9DE5FE00D69024 /* PushNotificationPayload.apns */,
 				FAFFA9FA20B857D700BCC52B /* ComplicationDataManager.swift */,
+				FA4F61FD20D2699B00C6A0BA /* WKInterfacePicker+Extensions.swift */,
 			);
 			path = "MetabolicCompassWatch Extension";
 			sourceTree = "<group>";
@@ -2094,6 +2097,7 @@
 				FAFFA9FB20B857D700BCC52B /* ComplicationDataManager.swift in Sources */,
 				81948BBD1F9F413D0067DED6 /* MealTimesInterfaceController.swift in Sources */,
 				3FA4C2911FA0CB90001F467F /* ExerciseStartTimeController.swift in Sources */,
+				FA4F61FE20D2699B00C6A0BA /* WKInterfacePicker+Extensions.swift in Sources */,
 				3FA4C28A1FA0C2A9001F467F /* WaterStartTimeController.swift in Sources */,
 				8147C0F61F9DE5FE00D69024 /* NotificationController.swift in Sources */,
 				8147C0F41F9DE5FE00D69024 /* ExtensionDelegate.swift in Sources */,
@@ -2208,7 +2212,7 @@
 				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				ONLY_ACTIVE_ARCH = YES;
-				OTHER_SWIFT_FLAGS = "-DDEVSERVICE -Xfrontend -warn-long-expression-type-checking=100 -Xfrontend -warn-long-function-bodies=100";
+				OTHER_SWIFT_FLAGS = "-DDEVSERVICE -Xfrontend -warn-long-expression-type-checking=200 -Xfrontend -warn-long-function-bodies=100";
 				PROVISIONING_PROFILE = "$(APP_UDID)";
 				SDKROOT = iphoneos;
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";

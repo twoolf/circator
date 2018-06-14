@@ -24,14 +24,8 @@ class SleepTimesInterfaceController: WKInterfaceController {
     var sleepClose = 0
     override func awake(withContext context: Any?){
         super.awake(withContext: context)
-        var tempItems: [WKPickerItem] = []
-        for i in 0...48 {
-            let item = WKPickerItem()
-            item.contentImage = WKImage(imageName: "Time\(i)")
-            tempItems.append(item)
-        }
-        sleepTimesPicker.setItems(tempItems)
-        sleepTimesPicker.setSelectedItemIndex((sleepTimesStruc.sleepBegin)+16)
+        sleepTimesPicker.setupForSleep()
+        sleepTimesPicker.setUnwrappedSleepHalfHour(value: sleepTimesStruc.sleepBegin+16)
     }
     
     override func willActivate() {
@@ -48,18 +42,14 @@ class SleepTimesInterfaceController: WKInterfaceController {
         sleepTimesButton.setTitle("Saved")
         
 // setting up conversion of saved value from 'waking from sleep' in 1st screen
-        _ = DateInRegion()
         let calendar = Calendar.current
         var beginDate = Date()
         var beginComponents = calendar.dateComponents([.year, .month, .day, .hour, .minute], from: beginDate)
         var timeConvertBegin:Int = 0
         var timeAddHalfHourBegin:Int = 0
 
-        // note: imageset (0-47) is keyed into 24-hour schedule
-        //  so 0=midnight, 2=1AM, 4=2AM, etc
         if sleepTimesStruc.sleepBegin % 2 == 0 {
             timeConvertBegin = ( (sleepTimesStruc.sleepBegin)/2 )
-
         } else {
             timeConvertBegin = ( (sleepTimesStruc.sleepBegin-1)/2 )
             timeAddHalfHourBegin=30
@@ -67,9 +57,7 @@ class SleepTimesInterfaceController: WKInterfaceController {
         beginComponents.hour = timeConvertBegin
         beginComponents.minute = timeAddHalfHourBegin
         beginDate = calendar.date(from: beginComponents)!
-//        beginDate = calendar.dateFromComponents(beginComponents)!
-  
-//        var closeDate = NSDate.today(inRegion: thisRegion)
+
         var closeDate = Date().endOfDay
         var timeConvertClose:Int = 0
         var timeAddHalfHourClose:Int = 0
@@ -85,12 +73,10 @@ class SleepTimesInterfaceController: WKInterfaceController {
         closeComponents.hour = timeConvertClose
         closeComponents.minute = timeAddHalfHourClose
         closeDate = calendar.date(from: closeComponents)!
-//        closeDate = calendar.dateFromComponents(closeComponents)!
         
         if closeDate < beginDate {
             beginComponents.day = beginComponents.day!-1
             beginDate = calendar.date(from: beginComponents)!
-//            beginDate = calendar.dateFromComponents(beginComponents)!
         }
         
         let type = HKObjectType.categoryType(forIdentifier: HKCategoryTypeIdentifier.sleepAnalysis)!
@@ -114,6 +100,7 @@ class SleepTimesInterfaceController: WKInterfaceController {
     }
     
     @IBAction func onSleepTimePick(value: Int) {
-        sleepClose = value
+        sleepClose = sleepTimesPicker.wrappedSleepHalfHour(from: value
+        )
     }
 }
