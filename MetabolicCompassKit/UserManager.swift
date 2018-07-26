@@ -161,7 +161,9 @@ public class UserManager {
     public static let sharedManager = UserManager()
     
     private let cacheAccessMutex = PThreadMutex()
-
+    private let audienceAuth0 = MCRouter.baseURL.absoluteString ?? ""
+    private let audienceMC    = MCRouter.auth0apiURL.absoluteString ?? ""
+    
     // Constants.
     public static let maxTokenRetries  = 2
     public static let defaultRefreshFrequency = 30
@@ -276,7 +278,7 @@ public class UserManager {
     public func isItFirstLogin () -> Bool {
         if (userId == nil)  {return false}
         guard let firstLoginObject = Defaults.object(forKey: UserManager.firstLoginKey + "." + userId!) else {return false}
-        return firstLoginObject != nil
+        return true
     }
     
     public func saveAdditionalProfileData (data: [String: AnyObject]) {
@@ -414,7 +416,7 @@ public class UserManager {
     
     public func loginAuth0(completion: @escaping (Bool?, Error?) -> ()) {
         
-        authorizeAuth0(audience: "https://metaboliccompass.auth0.com/api/v2/",
+        authorizeAuth0(audience: audienceAuth0,
                        scope: "openid profile offline_access update:current_user_metadata") { (credentials, error) in
                         if let credentials = credentials {
                             self.storeAuth0(credentials: credentials)
@@ -463,7 +465,6 @@ public class UserManager {
     }
 
     public func registerAuth0(firstName: String, lastName: String, consentPath: String, initialData: [String: String], completion: @escaping (Error?) -> ()) {
-        let audienceAuth0 = "https://metaboliccompass.auth0.com/api/v2/"
         let scopeAuth0 = "openid profile offline_access update:current_user_metadata"
         
         authorizeAuth0(audience: audienceAuth0, scope: scopeAuth0) { (credentials, error) in
@@ -481,7 +482,6 @@ public class UserManager {
     }    
     
     func authorizeMCApi(completion: @escaping (Error?) -> ()) {
-        let audienceMC = "https://api-dev.metaboliccompass.com"
         let scopeMC = "openid profile offline_access update:current_user_metadata"
         
         authorizeAuth0(audience: audienceMC, scope: scopeMC) { (credentials, error) in
