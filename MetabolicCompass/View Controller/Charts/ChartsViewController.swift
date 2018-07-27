@@ -20,10 +20,10 @@ enum DataRangeType : Int {
     case Year
 }
 
-class ChartsViewController: UIViewController {
-
+final class ChartsViewController: UIViewController, AppActivityIndicatorContainer {
+    private(set) var activityIndicator: AppActivityIndicator?
+    
     @IBOutlet weak var collectionView: UICollectionView!
-    @IBOutlet weak var activityIndicator: UIActivityIndicatorView!
     private var rangeType = DataRangeType.Week
     private let barChartCellIdentifier = "BarChartCollectionCell"
     private let lineChartCellIdentifier = "LineChartCollectionCell"
@@ -36,6 +36,7 @@ class ChartsViewController: UIViewController {
     // MARK :- View life cycle
     override func viewDidLoad() {
         super.viewDidLoad()
+        self.activityIndicator = AppActivityIndicator.forView(container: view)
         updateNavigationBar()
         registerCells()
         chartCollectionDataSource.model = chartsModel
@@ -45,7 +46,7 @@ class ChartsViewController: UIViewController {
 
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-        NotificationCenter.default.addObserver(self, selector: #selector(self.updateChartsData), name: NSNotification.Name.UIApplicationWillEnterForeground, object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(self.updateChartDataWithClean), name: NSNotification.Name.UIApplicationWillEnterForeground, object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(self.updateChartsData), name: NSNotification.Name(rawValue: HMDidUpdatedChartsData), object: nil)
         chartCollectionDataSource.updateData()
         updateChartsData()
@@ -70,22 +71,20 @@ class ChartsViewController: UIViewController {
     }
 
     // MARK :- Base preparation
-    func updateChartDataWithClean() {
-
+    @IBAction private func updateChartDataWithClean() {
         IOSHealthManager.sharedManager.cleanCache()
-        IOSHealthManager.sharedManager.collectDataForCharts()
-        activityIndicator.startAnimating()
-        collectionView.reloadData()
+        IOSHealthManager.sharedManager.collectDataForCharts(shouldCleanCache: false)
+        updateChartsData()
     }
     
-    @objc func updateChartsData () {
-        if !activityIndicator.isAnimating {
-            activityIndicator.startAnimating()
+    @IBAction private func updateChartsData () {
+        if !isInProgress() {
+            showActivity()
         }
-        chartsModel.getAllDataForCurrentPeriod(completion: {
-            self.activityIndicator.stopAnimating()
-            self.chartCollectionDataSource.model = self.chartsModel
-            self.collectionView.reloadData()
+        chartsModel.getAllDataForCurrentPeriod(completion: { [weak self] in
+            self?.hideActivity()
+            self?.chartCollectionDataSource.model = self?.chartsModel
+            self?.collectionView.reloadData()
         })
     }
 

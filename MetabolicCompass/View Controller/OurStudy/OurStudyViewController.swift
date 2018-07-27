@@ -24,7 +24,8 @@ let studyLabelAttrs: [NSAttributedStringKey : Any] = [
     NSAttributedStringKey.underlineStyle: NSNumber(value: NSUnderlineStyle.styleSingle.rawValue)
 ]
 
-public class OurStudyViewController: UIViewController, ChartViewDelegate {
+public class OurStudyViewController: UIViewController, ChartViewDelegate, AppActivityIndicatorContainer {
+    private(set) var activityIndicator: AppActivityIndicator?
 
     var scrollView: UIScrollView!
 
@@ -230,11 +231,9 @@ public class OurStudyViewController: UIViewController, ChartViewDelegate {
     var userRankingTip: TapTip! = nil
     var contributionStreakTip: TapTip! = nil
 
-    var activityIndicator: UIActivityIndicatorView! = nil
-
     override public func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-        self.activityIndicator.startAnimating()
+        showActivity()
         self.logContentView()
         self.refreshData()
     }
@@ -246,7 +245,7 @@ public class OurStudyViewController: UIViewController, ChartViewDelegate {
 
     override public func viewDidLoad() {
         super.viewDidLoad()
-
+        
         setupView()
         setupActivityIndicator()
 
@@ -262,18 +261,7 @@ public class OurStudyViewController: UIViewController, ChartViewDelegate {
     }
 
     func setupActivityIndicator() {
-        activityIndicator = UIActivityIndicatorView()
-
-        activityIndicator.translatesAutoresizingMaskIntoConstraints = false
-        view.addSubview(activityIndicator)
-
-        let constraints: [NSLayoutConstraint] = [
-            activityIndicator.topAnchor.constraint(equalTo: view.topAnchor),
-            activityIndicator.bottomAnchor.constraint(equalTo: view.bottomAnchor),
-            activityIndicator.leadingAnchor.constraint(equalTo: view.leadingAnchor),
-            activityIndicator.trailingAnchor.constraint(equalTo: view.trailingAnchor)
-        ]
-        view.addConstraints(constraints)
+        self.activityIndicator = AppActivityIndicator.forView(container: view)
     }
 
     func setupBackground() {
@@ -488,7 +476,7 @@ public class OurStudyViewController: UIViewController, ChartViewDelegate {
 //                log.error("STUDYSTATS Failed to refresh from server")
             }
 
-            self.activityIndicator.stopAnimating()
+            self.hideActivity()
         }
     }
 

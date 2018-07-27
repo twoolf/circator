@@ -17,10 +17,11 @@ import AKPickerView_Swift
 import SwiftyUserDefaults
 import Async
 
-open class CorrelationChartsViewController: UIViewController, UITableViewDelegate, UITableViewDataSource {
+open class CorrelationChartsViewController: UIViewController, UITableViewDelegate, UITableViewDataSource, AppActivityIndicatorContainer {
 
+    private(set) var activityIndicator: AppActivityIndicator?
+    
     //MARK: - IB VARS
-    @IBOutlet weak var activityIndicator: UIActivityIndicatorView!
     @IBOutlet weak var tableView: UITableView!
     @IBOutlet weak var scatterChartContainer: UIView!
     @IBOutlet weak var correlatoinChartContainer: UIView!
@@ -79,6 +80,9 @@ open class CorrelationChartsViewController: UIViewController, UITableViewDelegat
 
     override open func viewDidLoad() {
         super.viewDidLoad()
+        
+        self.activityIndicator = AppActivityIndicator.forView(container: view)
+        
         for type in PreviewManager.manageChartsSampleTypes {
             if (type.identifier == HKCorrelationTypeIdentifier.bloodPressure.rawValue) {
                 continue
@@ -135,13 +139,13 @@ open class CorrelationChartsViewController: UIViewController, UITableViewDelegat
         lineChartsModelTop.typesChartData = [:]
         lineChartsModelBottom.typesChartData = [:]
         IOSHealthManager.sharedManager.cleanCache()
-        IOSHealthManager.sharedManager.collectDataForCharts()
-        updateChartsData ()
+        IOSHealthManager.sharedManager.collectDataForCharts(shouldCleanCache: false)
+        updateChartsData()
     }
 
     @objc func updateChartsData () {
-        if (!activityIndicator.isAnimating) {
-            activityIndicator.startAnimating()
+        if (!isInProgress()) {
+            showActivity()
         }
 
         let chartGroup = DispatchGroup()
@@ -166,9 +170,9 @@ open class CorrelationChartsViewController: UIViewController, UITableViewDelegat
             }
         })
 
-        chartGroup.notify(qos: DispatchQoS.background, queue: DispatchQueue.main) {
-            self.activityIndicator.stopAnimating()
-            self.updateChartData()
+        chartGroup.notify(qos: DispatchQoS.background, queue: DispatchQueue.main) { [weak self] in
+            self?.hideActivity()
+            self?.updateChartData()
         }
     }
 
@@ -218,9 +222,10 @@ open class CorrelationChartsViewController: UIViewController, UITableViewDelegat
     }
 
     public func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        print("tableView didSelectRowAt \(indexPath)")
+        assistTextField.isUserInteractionEnabled = true
         if (selectedIndexPath == indexPath) {
-            selectedIndexPath = nil
-            assistTextField.resignFirstResponder()
+            hideTextField()
         } else {
             selectedIndexPath = indexPath
             assistTextField.becomeFirstResponder()
@@ -239,6 +244,8 @@ open class CorrelationChartsViewController: UIViewController, UITableViewDelegat
     }
 
     @objc func hideTextField() {
+        selectedIndexPath = nil
+        assistTextField.isUserInteractionEnabled = false
         assistTextField.resignFirstResponder()
     }
 
@@ -276,10 +283,11 @@ open class CorrelationChartsViewController: UIViewController, UITableViewDelegat
             let lineTopChartData = lineChartsModelTop.typesChartData[lineTopKey]
             let lineBottomChartData = lineChartsModelBottom.typesChartData[lineBottomKey]
             let scatterChartData = scatterChartsModel.typesChartData[scatterKey]
-
-
-
-            guard let lineTopChartSet = lineTopChartData?.dataSets[0] else { return }
+            
+            guard let lineTopChartSet = lineTopChartData?.dataSets[0] else {
+                print("step")
+                return
+            }
             lineTopChartSet.setColor(UIColor.green)
             guard let lineBottomChartSet = lineBottomChartData?.dataSets[0] else { return }
             let lineChartData = LineChartData.init(dataSets: [lineTopChartSet, lineBottomChartSet])
@@ -291,12 +299,12 @@ open class CorrelationChartsViewController: UIViewController, UITableViewDelegat
             let xAxis = XAxis()
             xAxis.valueFormatter = chartFormatter
             scatterCh.chartView.xAxis.valueFormatter = xAxis.valueFormatter
-
-
+            
             updateChartTitle()
         } else {
-            scatterCh.chartView.noDataText = "Choose both metrics"
-            correlCh.chartView.noDataText = "Choose both metrics"
+            let noDataText = NSLocalizedString("Choose both metrics", comment: "")
+            scatterCh.chartView.noDataText = noDataText
+            correlCh.chartView.noDataText  = noDataText
             resetAllCharts()
             return
         }
@@ -355,14 +363,15 @@ extension CorrelationChartsViewController: UIPickerViewDataSource {
 
 extension CorrelationChartsViewController : UIPickerViewDelegate {
     public func pickerView(_ pickerView: UIPickerView, didSelectRow row: Int, inComponent component: Int) {
-        self.selectedPickerRows[self.selectedIndexPath!.row] = row
-        if (self.selectedIndexPath!.row > 0) {
+        guard let selectedIndexPath = self.selectedIndexPath else { return }
+        self.selectedPickerRows[selectedIndexPath.row] = row
+        if (selectedIndexPath.row > 0) {
             Defaults[BottomCorrelationType] = row
         }
         else {
             Defaults[TopCorrelationType] = row
         }
-        self.tableView.reloadRows(at: [self.selectedIndexPath! as IndexPath], with: .none)
+        self.tableView.reloadRows(at: [selectedIndexPath as IndexPath], with: .none)
         updateChartData()
     }
 }

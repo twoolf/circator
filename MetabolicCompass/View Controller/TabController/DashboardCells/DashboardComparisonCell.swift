@@ -56,7 +56,6 @@ class DashboardComparisonCell: UITableViewCell {
 
     /// loading both User and Population samples
     func setUserData(_ userData: [MCSample], populationAverageData: [MCSample], stalePopulation: Bool = false) {
-//    func setUserData(userData: [MCSample], populationAverageData: [MCSample], stalePopulation: Bool = true) {
         loadUserSamples(results: userData)
         loadPopSamples(results: populationAverageData, stale: stalePopulation)
     }
@@ -82,18 +81,22 @@ class DashboardComparisonCell: UITableViewCell {
                                   NSAttributedStringKey.font : ScreenManager.appFontOfSize(size: 16)]
 
         localSampleValueTextField.attributedText =
-            text.formatTextWithRegex(regex: "[-+]?(\\d*[.,/])?\\d+", format: formatAttrs, defaultFormat: defaultFormatAttrs)
+        text.formatTextWithRegex(regex: "[-+]?(\\d*[.,/])?\\d+", format: formatAttrs, defaultFormat: defaultFormatAttrs)
 //        print("local sample \(String(describing: localSampleValueTextField.attributedText))")
     }
     
     /// note setUserData above that uses this call
     private func loadPopSamples(results: [MCSample], stale: Bool) {
+        var nstale = true
+        if let staleDateStart = results.last?.startDate {
+            nstale = (staleDateStart < Date().addDays(daysToAdd: -1))
+        }
         
         var text = DashboardComparisonCell.healthFormatter.stringFromSamples(samples: results)
-        if stale { text = text + "**" }
+        if nstale { text = text + "**" }
 //        print("stale or not in population \(stale)")
 
-        let formatAttrs = [NSAttributedStringKey.foregroundColor: stale ? staleDigitColor : defaultDigitColor,
+        let formatAttrs = [NSAttributedStringKey.foregroundColor: nstale ? staleDigitColor : defaultDigitColor,
                            NSAttributedStringKey.font : ScreenManager.appFontOfSize(size: 16)]
 
         let defaultFormatAttrs = [NSAttributedStringKey.foregroundColor: defaultTextColor,

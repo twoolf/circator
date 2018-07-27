@@ -15,30 +15,25 @@ import SwiftDate
 import Crashlytics
 import NVActivityIndicatorView
 
-class DashboardComparisonController: UIViewController, UITableViewDelegate, UITableViewDataSource {
+class DashboardComparisonController: UIViewController, UITableViewDelegate, UITableViewDataSource, AppActivityIndicatorContainer {
     private let dashboardComparisonCellIdentifier = "ComparisonCell"
     @IBOutlet weak var tableView: UITableView!
 
-    var activityIndicator: NVActivityIndicatorView! = nil
+    private(set) var activityIndicator: AppActivityIndicator?
     var activityCnt: Int = 0
-    var activityAsync: Async! = nil
+    var activityAsync: Async? = nil
 
     var comparisonTips: [Int:TapTip] = [:]
 
     override func viewDidLoad() {
         super.viewDidLoad()
+        
+        self.activityIndicator = AppActivityIndicator.forView(container: view)
 
         self.tableView.dataSource      = self
         self.tableView.delegate        = self
         self.tableView.allowsSelection = false
-
-        let sz: CGFloat = 25
-        let screenSize = UIScreen.main.bounds.size
-        let hOffset: CGFloat = screenSize.height < 569 ? 40.0 : 75.0
-
-        let activityFrame = CGRect((screenSize.width - sz) / 2, (screenSize.height - (hOffset+sz)) / 2, sz, sz)
-        self.activityIndicator = NVActivityIndicatorView(frame: activityFrame, type: .lineScale, color: UIColor.lightGray)
-        self.view.addSubview(self.activityIndicator)
+        
         log.debug("right before AccountManager called")
         AccountManager.shared.loginAndInitialize(animated: false)
     }
@@ -51,37 +46,44 @@ class DashboardComparisonController: UIViewController, UITableViewDelegate, UITa
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
 
-        self.updateContent()
-
-        self.tableView.reloadData()
         NotificationCenter.default.addObserver(self, selector: #selector(self.contentDidUpdate), name: NSNotification.Name(rawValue: HMDidUpdateRecentSamplesNotification), object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(self.refreshData), name: NSNotification.Name(rawValue: HMDidUpdateAnyMeasures), object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(self.updateContent), name: NSNotification.Name.UIApplicationDidBecomeActive, object: nil)
+        
+//        self.updateContent()
+
+        self.tableView.reloadData()
         logContentView()
     }
     
     override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
+        NotificationCenter.default.removeObserver(self)
+        
         self.stopActivityIndicator(true)
         AccountManager.shared.contentManager.stopBackgroundWork()
-        NotificationCenter.default.removeObserver(self)
         logContentView(false)
     }
 
     func startActivityIndicator() {
-        activityIndicator.startAnimating()
-        activityCnt += 2
+        showActivity()
+        activityCnt += 1
 
-        if activityAsync != nil { activityAsync.cancel() }
-        activityAsync = Async.main(after: 20.0) {
-            self.activityCnt = 0
-            if self.activityCnt == 0 && self.activityIndicator.animating { self.activityIndicator.stopAnimating() }
+        activityAsync?.cancel()
+        activityAsync = nil
+        activityAsync = Async.main(after: 20.0) { [weak self] in
+            self?.stopActivityIndicator(true)
         }
     }
 
     func stopActivityIndicator(_ force: Bool = false) {
         activityCnt = force ? 0 : max(activityCnt - 1, 0)
-        if (force || activityCnt == 0) && activityIndicator.animating { activityIndicator.stopAnimating() }
+        if (force || activityCnt == 0) && isInProgress() {
+            activityCnt = 0
+            activityAsync?.cancel()
+            activityAsync = nil
+            hideActivity()
+        }
     }
 
     func logContentView(_ asAppear: Bool = true) {
@@ -113,12 +115,12 @@ class DashboardComparisonController: UIViewController, UITableViewDelegate, UITa
         let active = QueryManager.sharedManager.isQueriedType(sample: sampleType)
         cell.setPopulationFiltering(active: active)
 
-        let timeSinceRefresh = DateInterval(start: Date.distantPast, end: PopulationHealthManager.sharedManager.aggregateRefreshDate)
+//        let timeSinceRefresh = DateInterval(start: Date.distantPast, end: PopulationHealthManager.sharedManager.aggregateRefreshDate)
 //        let timeSinceRefresh = DateInterval().intersection(with: PopulationHealthManager.sharedManager.aggregateRefreshDate ?? Date.distantPast())
 //        let timeSinceRefresh = Date().addingTimeInterval(PopulationHealthManager.sharedManager.aggregateRefreshDate ?? Date.distantPast())
 //        let timeSinceRefresh = DateInterval().timeIntervalSinceDate(PopulationHealthManager.sharedManager.aggregateRefreshDate ?? Date.distantPast())
-        let refreshPeriod = UserManager.sharedManager.getRefreshFrequency() 
- //       let stale = timeSinceRefresh > DateInterval(start: Date(), duration: TimeInterval(refreshPeriod))
+//        let refreshPeriod = UserManager.sharedManager.getRefreshFrequency()
+//        let stale = timeSinceRefresh > DateInterval(start: Date(), duration: TimeInterval(refreshPeriod))
         let stale = true
 
         let individualSamples = ComparisonDataModel.sharedManager.recentSamples[sampleType] ?? [HKSample]()

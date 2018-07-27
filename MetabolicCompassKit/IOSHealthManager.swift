@@ -170,10 +170,59 @@ public class IOSHealthManager: NSObject, WCSessionDelegate {
     
     // MARK: - Chart data access
 
-    public func collectDataForCharts() {
+    private func iterate(periods: [HealthManagerStatisticsRangeType], forType sampleType: HKSampleType, inGroup group: DispatchGroup) {
+        let type = sampleType.identifier == HKCorrelationTypeIdentifier.bloodPressure.rawValue ? HKQuantityTypeIdentifier.bloodPressureSystolic.rawValue : sampleType.identifier
+        
+        let keyPrefix = type
+        
+        for period in periods {
+            //                log.debug("Collecting chart data for \(keyPrefix) \(period)", "fetchCharts")
+            
+            group.enter()
+            // We should get max and min values. because for this type we are using scatter chart
+            switch type {
+            case HKQuantityTypeIdentifier.heartRate.rawValue, HKQuantityTypeIdentifier.uvExposure.rawValue:
+                MCHealthManager.sharedManager.getMinMaxOfTypeForPeriod(keyPrefix, sampleType: sampleType, period: period) {
+                    if $2 != nil { log.error($2!.localizedDescription) }
+                    group.leave()
+                }
+            case HKQuantityTypeIdentifier.bloodPressureSystolic.rawValue:
+                // We should also get data for HKQuantityTypeIdentifierBloodPressureDiastolic
+                let diastolicKeyPrefix = HKQuantityTypeIdentifier.bloodPressureDiastolic
+                let bloodPressureGroup = DispatchGroup()
+                
+                bloodPressureGroup.enter()
+                MCHealthManager.sharedManager.getMinMaxOfTypeForPeriod(keyPrefix, sampleType: HKObjectType.quantityType(forIdentifier: HKQuantityTypeIdentifier(rawValue: type))!, period: period) {
+                    if $2 != nil { log.error($2!.localizedDescription) }
+                    bloodPressureGroup.leave()
+                }
+                
+                let diastolicType = HKQuantityTypeIdentifier.bloodPressureDiastolic
+                bloodPressureGroup.enter()
+                MCHealthManager.sharedManager.getMinMaxOfTypeForPeriod(diastolicKeyPrefix.rawValue, sampleType: HKObjectType.quantityType(forIdentifier: diastolicType)!, period: period) {
+                    if $2 != nil { log.error($2!.localizedDescription) }
+                    bloodPressureGroup.leave()
+                }
+                
+                group.notify(queue: DispatchQueue.main) {
+                    group.leave() //leave main group
+                }
+            default:
+                MCHealthManager.sharedManager.getDailyStatisticsOfTypeForPeriod(keyPrefix, sampleType: sampleType, period: period, aggOp: .discreteAverage) {
+                    if $1 != nil { log.error($1!.localizedDescription) }
+                    group.leave() //leave main group
+                }
+            }
+        }
+    }
+    
+    public func collectDataForCharts(shouldCleanCache: Bool = true) {
+        
         log.debug("Clearing HMAggregateCache expired objects", "clearCache")
-        MCHealthManager.sharedManager.aggregateCache.removeExpiredObjects()
-        MCHealthManager.sharedManager.circadianCache.removeExpiredObjects()
+        if shouldCleanCache {
+            MCHealthManager.sharedManager.aggregateCache.removeExpiredObjects()
+            MCHealthManager.sharedManager.circadianCache.removeExpiredObjects()
+        }
 
         let periods: [HealthManagerStatisticsRangeType] = [
             HealthManagerStatisticsRangeType.week
@@ -184,49 +233,7 @@ public class IOSHealthManager: NSObject, WCSessionDelegate {
         let group = DispatchGroup()
 
         for sampleType in PreviewManager.manageChartsSampleTypes {
-            let type = sampleType.identifier == HKCorrelationTypeIdentifier.bloodPressure.rawValue ? HKQuantityTypeIdentifier.bloodPressureSystolic.rawValue : sampleType.identifier
-
-            let keyPrefix = type
-
-            for period in periods {
-//                log.debug("Collecting chart data for \(keyPrefix) \(period)", "fetchCharts")
-
-                group.enter()
-                // We should get max and min values. because for this type we are using scatter chart
-                if type == HKQuantityTypeIdentifier.heartRate.rawValue || type == HKQuantityTypeIdentifier.uvExposure.rawValue {
-                    MCHealthManager.sharedManager.getMinMaxOfTypeForPeriod(keyPrefix, sampleType: sampleType, period: period) {
-                        if $2 != nil { log.error($2!.localizedDescription) }
-                        group.leave()
-                    }
-                } else if type == HKQuantityTypeIdentifier.bloodPressureSystolic.rawValue {
-                    // We should also get data for HKQuantityTypeIdentifierBloodPressureDiastolic
-                    let diastolicKeyPrefix = HKQuantityTypeIdentifier.bloodPressureDiastolic
-                    let bloodPressureGroup = DispatchGroup()
-
-                    bloodPressureGroup.enter()
-                    MCHealthManager.sharedManager.getMinMaxOfTypeForPeriod(keyPrefix, sampleType: HKObjectType.quantityType(forIdentifier: HKQuantityTypeIdentifier(rawValue: type))!, period: period) {
-                        if $2 != nil { log.error($2!.localizedDescription) }
-                        bloodPressureGroup.leave()
-                    }
-
-                    let diastolicType = HKQuantityTypeIdentifier.bloodPressureDiastolic
-                    bloodPressureGroup.enter()
-                    MCHealthManager.sharedManager.getMinMaxOfTypeForPeriod(diastolicKeyPrefix.rawValue, sampleType: HKObjectType.quantityType(forIdentifier: diastolicType)!, period: period) {
-                        if $2 != nil { log.error($2!.localizedDescription) }
-                        bloodPressureGroup.leave()
-                    }
-
-                    group.notify(queue: DispatchQueue.main) {
-                        group.leave() //leave main group
-                    }
-
-                } else {
-                    MCHealthManager.sharedManager.getDailyStatisticsOfTypeForPeriod(keyPrefix, sampleType: sampleType, period: period, aggOp: .discreteAverage) {
-                        if $1 != nil { log.error($1!.localizedDescription) }
-                        group.leave() //leave main group
-                    }
-                }
-            }
+            self.iterate(periods: periods, forType: sampleType, inGroup: group)
         }
 
         // After completion, notify that we finished collecting statistics for all types
@@ -261,11 +268,11 @@ public class IOSHealthManager: NSObject, WCSessionDelegate {
             key = MCHealthManager.sharedManager.getPeriodCacheKey(keyPrefix, aggOp: .discreteAverage, period: period)
         }
 
-        if let aggArray = MCHealthManager.sharedManager.aggregateCache[key] {
+//        if let aggArray = MCHealthManager.sharedManager.aggregateCache[key] {
 //            log.debug("Cache hit for \(key) (size \(aggArray.aggregates.count))", "fetchCharts")
-        } else {
+//        } else {
 //            log.debug("Cache miss for \(key)", "fetchCharts")
-        }
+//        }
 
         if asMinMax {
             if asBP {
@@ -361,6 +368,7 @@ public class IOSHealthManager: NSObject, WCSessionDelegate {
     public func cleanCache() {
 //        log.debug("Clearing HMAggregateCache", "clearCache")
         MCHealthManager.sharedManager.aggregateCache.removeAllObjects()
+        MCHealthManager.sharedManager.circadianCache.removeAllObjects()
     }
 }
 

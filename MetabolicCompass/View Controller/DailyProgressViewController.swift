@@ -37,7 +37,8 @@ struct DeviceType
     static let IS_IPAD              = UIDevice.current.userInterfaceIdiom == .pad && ScreenSize.SCREEN_MAX_LENGTH == 1024.0
 }
 
-class DailyProgressViewController : UIViewController, DailyChartModelProtocol {
+class DailyProgressViewController : UIViewController, DailyChartModelProtocol, AppActivityIndicatorContainer {
+    private(set) var activityIndicator: AppActivityIndicator?
     
     var dailyChartModel = DailyChartModel()
 
@@ -46,7 +47,6 @@ class DailyProgressViewController : UIViewController, DailyChartModelProtocol {
     @IBOutlet weak var dailyProgressChartScrollView: UIScrollView!
     @IBOutlet weak var dailyProgressChartDaysTable: UITableView!
     @IBOutlet weak var mainScrollView: UIScrollView!
-    @IBOutlet weak var activityIndicator: UIActivityIndicatorView!
 
     @IBOutlet weak var fastingSquare: UIView!
     @IBOutlet weak var sleepSquare: UIView!
@@ -73,12 +73,13 @@ class DailyProgressViewController : UIViewController, DailyChartModelProtocol {
     private var updateContentWithAnimation = true
 
     private var lastViewDate: Date! = nil
-    private var loadStart: Date! = nil
 
     //MARK: View life circle
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        self.activityIndicator = AppActivityIndicator.forView(container: view)
+        
         self.setupTooltips()
         self.fastingSquare.layer.borderColor = UIColor.colorWithHex(hex6: 0xffffff, alpha: 0.3).cgColor
         self.dailyChartModel.daysTableView = self.daysTableView
@@ -174,10 +175,8 @@ class DailyProgressViewController : UIViewController, DailyChartModelProtocol {
 
     func contentDidUpdate(withDailyProgress dailyProgress: Bool = true) {
         OperationQueue.main.addOperation {
-            if self.activityIndicator != nil {
-                self.activityIndicator.startAnimating()
-                self.loadStart = Date()
-            }
+            self.showActivity()
+            
             self.dailyChartModel.prepareChartData()
             if dailyProgress { self.dailyChartModel.getDailyProgress() }
         }
@@ -187,11 +186,7 @@ class DailyProgressViewController : UIViewController, DailyChartModelProtocol {
     
     func dataCollectingFinished() {
         OperationQueue.main.addOperation {
-            self.activityIndicator.stopAnimating()
-
-            if self.loadStart != nil {
-//                log.debug("BODY CLOCK query time: \((Date().timeIntervalSinceReferenceDate - self.loadStart.timeIntervalSinceReferenceDate))", feature: "dataLoad")
-            }
+            self.hideActivity()
 
             self.dailyChartModel.prepareDataForChart(completion: {[weak self] data in
                 self?.dailyChartModel.chartDataAndColors = data

@@ -78,7 +78,7 @@ class BaseChartCollectionCell: UICollectionViewCell {
         let rightAxis = chart.rightAxis
         rightAxis.enabled = false
         
-        chart.descriptionText = ""
+        chart.chartDescription?.text = ""
         chart.noDataText = "No data available"
 //        chart.infoFont = ScreenManager.appFontOfSize(15)
 //        chart.infoTextColor = UIColor.colorWithHexString("#ffffff", alpha: 0.7)

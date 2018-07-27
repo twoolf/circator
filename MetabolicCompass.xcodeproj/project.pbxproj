@@ -223,6 +223,7 @@
 		B452E5592086019600BE60E3 /* RegistrationFooterView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B452E5582086019600BE60E3 /* RegistrationFooterView.swift */; };
 		B452E55C208640AE00BE60E3 /* awsconfiguration.json in Resources */ = {isa = PBXBuildFile; fileRef = B452E55A208640AC00BE60E3 /* awsconfiguration.json */; };
 		B452E55D208640AE00BE60E3 /* Auth0.plist in Resources */ = {isa = PBXBuildFile; fileRef = B452E55B208640AD00BE60E3 /* Auth0.plist */; };
+		CEA4A1B2210B5DA4002EFD43 /* AppActivityIndicator.swift in Sources */ = {isa = PBXBuildFile; fileRef = CEA4A1B1210B5DA4002EFD43 /* AppActivityIndicator.swift */; };
 		E74A89761CE308800056A2D2 /* UIColor+Extended.swift in Sources */ = {isa = PBXBuildFile; fileRef = E74A89751CE308800056A2D2 /* UIColor+Extended.swift */; };
 		E74A89791CE3265C0056A2D2 /* AccountManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = E74A89781CE3265C0056A2D2 /* AccountManager.swift */; };
 		E74A897C1CE338D30056A2D2 /* ContentManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = E74A897B1CE338D30056A2D2 /* ContentManager.swift */; };
@@ -584,6 +585,7 @@
 		C8CC31943A1BC382E580C503 /* Pods_MetabolicCompassWatch_Extension.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_MetabolicCompassWatch_Extension.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		C9B2B7CA51B0B7DBD01033FB /* Pods-MetabolicCompassWatchExtension.debug-dev.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-MetabolicCompassWatchExtension.debug-dev.xcconfig"; path = "Pods/Target Support Files/Pods-MetabolicCompassWatchExtension/Pods-MetabolicCompassWatchExtension.debug-dev.xcconfig"; sourceTree = "<group>"; };
 		CB09F654AB4B00C79306C728 /* Pods.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		CEA4A1B1210B5DA4002EFD43 /* AppActivityIndicator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppActivityIndicator.swift; sourceTree = "<group>"; };
 		D9D6184575B5760B8930E413 /* Pods_MetabolicCompassWatchExtension.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_MetabolicCompassWatchExtension.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		E395FD1E10455EE2FAB912A9 /* Pods-MetabolicCompassWatch Extension.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-MetabolicCompassWatch Extension.debug.xcconfig"; path = "Pods/Target Support Files/Pods-MetabolicCompassWatch Extension/Pods-MetabolicCompassWatch Extension.debug.xcconfig"; sourceTree = "<group>"; };
 		E74A89751CE308800056A2D2 /* UIColor+Extended.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "UIColor+Extended.swift"; sourceTree = "<group>"; };
@@ -1267,6 +1269,7 @@
 				F43A7C5C1BBDF43600B6FA56 /* PlotButton.swift */,
 				84B727A61D13E56E00839E54 /* SunpathBackgroundView.swift */,
 				951BA49E1CE630A70036600A /* UnBrightButton.swift */,
+				CEA4A1B1210B5DA4002EFD43 /* AppActivityIndicator.swift */,
 			);
 			path = View;
 			sourceTree = "<group>";
@@ -1278,6 +1281,7 @@
 				846E488A1D5AFEB5004CB794 /* Analysis */,
 				54205EB91E76266F003E3EC4 /* AuthorizationViewControllers */,
 				958568041CD0BF6300EDD385 /* BaseViewController.swift */,
+				78969D921D6988A000E867C3 /* Our Study */,
 				842B7DB51D095ED6007F2126 /* Charts */,
 				84B727A81D13E5B100839E54 /* CircadianBehaviorViewController.swift */,
 				F42F5B941BE2C89200195490 /* CorrelationViewController.swift */,
@@ -1288,7 +1292,6 @@
 				84B727A91D13E5B100839E54 /* EventInboxViewController.swift */,
 				786818841D33040200CAE4ED /* Fasting */,
 				84B727AE1D13E62200839E54 /* LogEventViewController.swift */,
-				78969D921D6988A000E867C3 /* Our Study */,
 				F44B1A2C1BDAC20D002238E6 /* PlotViewController.swift */,
 				786817601C6CF37D0018ABB5 /* ProfileSubviewController.swift */,
 				7861300C1C25E05600F50DB3 /* QueryViewController.swift */,
@@ -2028,6 +2031,7 @@
 				54205E6A1E76213B003E3EC4 /* ManageEventMenu.swift in Sources */,
 				84EF0EBB1D05722700A25760 /* DurationTableViewCell.swift in Sources */,
 				7881A3E11BAF3B3E00ECB3C6 /* AppDelegate.swift in Sources */,
+				CEA4A1B2210B5DA4002EFD43 /* AppActivityIndicator.swift in Sources */,
 				54205E7E1E762162003E3EC4 /* MetabolicDataEntry.swift in Sources */,
 				84DC44F61D0704340091900F /* StartSleepTableViewCell.swift in Sources */,
 				9585680F1CD1020600EDD385 /* LoadImageCollectionViewCell.swift in Sources */,

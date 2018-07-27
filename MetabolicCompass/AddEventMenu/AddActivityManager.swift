@@ -673,10 +673,11 @@ open class AddActivityManager: UITableView, UITableViewDelegate, UITableViewData
         if section == 0 || section == frequentActivitySectionIdx {
             for sv in cell.contentView.subviews { sv.removeFromSuperview() }
 
-            let button = UIButton(frame: CGRect(0, 0, 44, 44))
+            let button = UIButton(frame: CGRect(0, 0, 30, 30))
             button.backgroundColor = .clear
 
-            button.setImage(UIImage(named: "icon-quick-add-tick"), for: .normal)
+            button.setImage(#imageLiteral(resourceName: "add_icon-icon"), for: .normal)
+            button.tintColor = UIColor.white
             button.imageView?.contentMode = .scaleAspectFit
 
             button.addTarget(self, action: (section == frequentActivitySectionIdx ? #selector(self.handleFrequentAddTap(_:)) : #selector(AddActivityManager.handleQuickAddTap(_:))), for: .touchUpInside)
@@ -684,12 +685,12 @@ open class AddActivityManager: UITableView, UITableViewDelegate, UITableViewData
             button.translatesAutoresizingMaskIntoConstraints = false
             cell.contentView.addSubview(button)
 
+            let anchorView = cell.contentView
             let buttonConstraints : [NSLayoutConstraint] = [
-                cell.contentView.topAnchor.constraint(equalTo: button.topAnchor, constant: -20),
-                cell.contentView.bottomAnchor.constraint(equalTo: button.bottomAnchor, constant: 10),
-                cell.contentView.trailingAnchor.constraint(equalTo: button.trailingAnchor, constant: 20),
-                button.widthAnchor.constraint(equalToConstant: 44),
-                button.heightAnchor.constraint(equalToConstant: 44)
+                anchorView.centerYAnchor.constraint(equalTo: button.centerYAnchor, constant: 0.0),
+                anchorView.trailingAnchor.constraint(equalTo: button.trailingAnchor, constant: 20),
+                button.widthAnchor.constraint(equalToConstant: 30),
+                button.heightAnchor.constraint(equalToConstant: 30)
             ]
 
             cell.contentView.addConstraints(buttonConstraints)

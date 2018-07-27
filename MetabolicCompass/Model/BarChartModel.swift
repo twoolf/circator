@@ -168,9 +168,10 @@ class BarChartModel : NSObject {
         let chartType = _chartType == nil ? chartTypeForQuantityTypeIdentifier(qType: type) : _chartType
         let key = type + "\(self.rangeType.rawValue)"
         
-        log.warning("Getting chart data for \(type)")
+//        log.warning("Getting chart data for \(type)")
         
-        if type == HKQuantityTypeIdentifier.heartRate.rawValue || type == HKQuantityTypeIdentifier.uvExposure.rawValue {
+        switch type {
+        case HKQuantityTypeIdentifier.heartRate.rawValue, HKQuantityTypeIdentifier.uvExposure.rawValue:
             // We should get max and min values. because for this type we are using scatter chart
             IOSHealthManager.sharedManager.getChartDataForQuantity(sampleType: qType, inPeriod: self.rangeType) { obj in
                 let values = obj as! [[Double]]
@@ -180,7 +181,7 @@ class BarChartModel : NSObject {
                 }
                 completion(array.count > 0)
             }
-        } else if type == HKQuantityTypeIdentifier.bloodPressureSystolic.rawValue {
+        case HKQuantityTypeIdentifier.bloodPressureSystolic.rawValue:
             // We should also get data for HKQuantityTypeIdentifierBloodPressureDiastolic
             IOSHealthManager.sharedManager.getChartDataForQuantity(sampleType: HKObjectType.quantityType(forIdentifier: HKQuantityTypeIdentifier(rawValue: type))!, inPeriod: self.rangeType) { obj in
                 let values = obj as! [[Double]]
@@ -194,7 +195,7 @@ class BarChartModel : NSObject {
                 }
                 completion(array.count > 0)
             }
-        } else {
+        default:
             IOSHealthManager.sharedManager.getChartDataForQuantity(sampleType: qType, inPeriod: self.rangeType) { obj in
                 let values = obj as! [Double]
                 let arrray = values.map {$0.isNaN ? 0.0 : $0}
@@ -226,27 +227,15 @@ class BarChartModel : NSObject {
         //always reset current operation queue before start new one
         resetOperation()
         let chartGroup = DispatchGroup()
-        let stepType = HKSampleType.quantityType(forIdentifier: HKQuantityTypeIdentifier.stepCount)!
-        let weightType = HKSampleType.quantityType(forIdentifier: HKQuantityTypeIdentifier.bodyMass)!
-        let heartType = HKSampleType.quantityType(forIdentifier: HKQuantityTypeIdentifier.heartRate)!
-        let bloodType = HKSampleType.correlationType(forIdentifier: HKCorrelationTypeIdentifier.bloodPressure)!
-        let sleepType = HKSampleType.categoryType(forIdentifier: HKCategoryTypeIdentifier.sleepAnalysis)!
-        let energyType = HKSampleType.quantityType(forIdentifier: HKQuantityTypeIdentifier.activeEnergyBurned)!
-        let polisaturatedType = HKSampleType.quantityType(forIdentifier: HKQuantityTypeIdentifier.dietaryFatPolyunsaturated)
-        let dietaryFatType = HKSampleType.quantityType(forIdentifier: HKQuantityTypeIdentifier.dietaryFatTotal)
-        let proteinType = HKSampleType.quantityType(forIdentifier: HKQuantityTypeIdentifier.dietaryProtein)
 
         for qType in PreviewManager.chartsSampleTypes {
-  //          if qType == weightType {
-            chartGroup.enter()
-            _chartDataOperationQueue.addOperation({ 
+            _chartDataOperationQueue.addOperation({
+                chartGroup.enter()
                 self.getAllDataForCurrentPeriodForSample(qType: qType, _chartType: nil) { _ in
                     chartGroup.leave()
                 }
             })
-
-   //         }
-    }
+        }
         chartGroup.notify(qos: DispatchQoS.background, queue: DispatchQueue.main) {
             self.addCompletionForOperationQueue(completion: completion)
         }
@@ -343,7 +332,7 @@ class BarChartModel : NSObject {
     }
 
     func convertDateToYearString(date: Date, forIndex index: Int) -> String {
-        let month =  String(date.monthName.characters.prefix(3))
+        let month =  String(date.monthName.prefix(3))
         if index == 0 {
             return month + String(date.year)
         }
@@ -352,7 +341,7 @@ class BarChartModel : NSObject {
 
     func convertDateToWeekString(date: Date, forIndex index: Int) -> String {
         if date.day == 1 {
-            let month = String(date.monthName.characters.prefix(3))
+            let month = String(date.monthName.prefix(3))
             return String(date.day) + month
         }
         return "\(date.day)"
