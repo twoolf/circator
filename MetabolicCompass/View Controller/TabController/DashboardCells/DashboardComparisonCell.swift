@@ -67,20 +67,13 @@ class DashboardComparisonCell: UITableViewCell {
 
     private func loadUserSamples(results: [MCSample]) {
         
+        var stale = true
         if let staleDateStart = results.last?.startDate {
-//            let stale = (staleDateStart < Date().addDays(daysToAdd: -1))
-            let stale = true
-            var text = DashboardComparisonCell.healthFormatter.stringFromSamples(samples: results)
-            if stale { text = text + "**" }
+            stale = (staleDateStart < Date().addDays(daysToAdd: -1))
         }
-        
- //       if let stale = (results.last?.startDate)  { stale.
- //       {  if stale < 1.days.ago) ?? false }
 
- //       _ = DashboardComparisonCell.healthFormatter.stringFromSamples(samples: results)
  //       if stale { text = text + "**" }
-        let stale = true
-        var text = DashboardComparisonCell.healthFormatter.stringFromSamples(samples: results)
+        let text = DashboardComparisonCell.healthFormatter.stringFromSamples(samples: results)
 
         let formatAttrs = [NSAttributedStringKey.foregroundColor: stale ? staleDigitColor : defaultDigitColor,
                            NSAttributedStringKey.font : ScreenManager.appFontOfSize(size: 16)]
