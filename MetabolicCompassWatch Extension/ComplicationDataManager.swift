@@ -2,7 +2,7 @@
 //  ComplicationDataManager.swift
 //  MetabolicCompassWatch Extension
 //
-//  Created by Olearis on 5/25/18.
+//  Created by SROST Studio on 5/25/18.
 //  Copyright © 2018 Yanif Ahmad, Tom Woolf. All rights reserved.
 //
 

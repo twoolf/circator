@@ -2,7 +2,7 @@
 //  AppActivityIndicator.swift
 //  AppActivityIndicator.swift
 //
-//  Created by User on 7/27/18.
+//  Created by SROST Studio on 7/27/18.
 //  Copyright (c) 2018 Yanif Ahmad, Tom Woolf. All rights reserved.
 //
 //

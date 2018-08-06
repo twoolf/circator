@@ -2,7 +2,7 @@
 //  WKInterfacePicker+Extensions.swift
 //  MetabolicCompassWatch Extension
 //
-//  Created by Olearis on 6/14/18.
+//  Created by SROST Studio on 6/14/18.
 //  Copyright © 2018 Yanif Ahmad, Tom Woolf. All rights reserved.
 //
 
