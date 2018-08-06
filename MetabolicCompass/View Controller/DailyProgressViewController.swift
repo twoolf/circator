@@ -135,14 +135,22 @@ class DailyProgressViewController : UIViewController, DailyChartModelProtocol, A
         self.contentDidUpdate()
     }
 
+    @IBAction private func refreshContent() {
+        self.dailyChartModel.refreshChartDateRange(lastViewDate)
+        self.contentDidUpdate()
+    }
+    
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         self.dailyChartModel.refreshChartDateRange(lastViewDate)
+        NotificationCenter.default.addObserver(self, selector: #selector(self.refreshContent), name: NSNotification.Name.UIApplicationDidBecomeActive, object: nil)
         logContentView()
     }
 
     override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
+        NotificationCenter.default.removeObserver(self, name: .UIApplicationDidBecomeActive, object: nil)
+        
         self.lastViewDate = Date()
         logContentView(false)
     }
