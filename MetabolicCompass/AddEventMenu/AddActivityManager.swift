@@ -846,7 +846,8 @@ open class AddActivityManager: UITableView, UITableViewDelegate, UITableViewData
         })
 
         if let s = selection {
-             processSelection(sender, pickerManager: s.0, itemType: s.1, index: s.2, item: s.3, data: s.4)
+            processSelection(sender, pickerManager: s.0, itemType: s.1, index: s.2, item: s.3, data: s.4)
+            quickAddButtons.forEach { $0.layoutDefault() }
         } else {
             Async.main {
                 UINotifications.genericErrorOnView(view: self.notificationView ?? self.superview!, msg: "No event selected")
