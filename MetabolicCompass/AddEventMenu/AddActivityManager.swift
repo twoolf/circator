@@ -221,9 +221,11 @@ open class AddActivityManager: UITableView, UITableViewDelegate, UITableViewData
     private var frequentActivitySectionIdx = 3
 
     // Section title and index constants.
-    private let sectionTitlesWithApps = ["Just-In-Time Activity", "Retrospective Activity", "Your Apps", "Frequent Activities"]
-    private let sectionTitlesNoApps = ["Just-In-Time Activity", "Retrospective Activity", "Frequent Activities"]
-
+//    private let sectionTitlesWithApps = ["Just-In-Time Activity", "Retrospective Activity", "Your Apps", "Frequent Activities"]
+//    private let sectionTitlesNoApps = ["Just-In-Time Activity", "Retrospective Activity", "Frequent Activities"]
+    private let sectionTitlesWithApps = ["Just-In-Time Activity", "Retrospective Activity"]
+    private let sectionTitlesNoApps = ["Just-In-Time Activity", "Retrospective Activity"]
+    
     private let sectionRowsWithApps = [2, 1, 1, 0]
     private let sectionRowsNoApps = [2, 1, 0]
 
