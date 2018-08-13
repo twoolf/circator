@@ -7,6 +7,7 @@
 //
 
 import Foundation
+import MCCircadianQueries
 
 class FrequentActivity: NSObject, NSCoding {
     var desc: String
@@ -41,7 +42,7 @@ class FrequentActivity: NSObject, NSCoding {
     }
 }
 
-class FrequentActivityInfo: NSObject, NSCoding {
+class FrequentActivityInfo: NSObject, CachableObject {
     public func encode(with aCoder: NSCoder) {
         return print ("here at 46")
     }
@@ -66,5 +67,9 @@ class FrequentActivityInfo: NSObject, NSCoding {
 
     internal func encodeWithCoder(aCoder: NSCoder) {
         aCoder.encode(self.activities, forKey: FrequentActivityInfo.activitiesKey)
+    }
+    
+    override init() {
+        super.init()
     }
 }

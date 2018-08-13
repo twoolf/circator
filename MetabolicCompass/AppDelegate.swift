@@ -60,6 +60,8 @@ class AppDelegate: UIResponder, UIApplicationDelegate, WCSessionDelegate
         Fabric.with([Crashlytics.self,Answers.self])
         log.info("Using service URL: \(MCRouter.baseURL)")
         
+        CacheConfigurations.configureCache()
+        
         // Configure SwiftyBeaver
         let console = ConsoleDestination()
         console.format = "$DHH:mm:ss$d $L $M"

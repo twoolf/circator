@@ -11,7 +11,7 @@ import HealthKit
 import MCCircadianQueries
 import MetabolicCompassKit
 import Charts
-import AwesomeCache
+//import AwesomeCache
 import SwiftDate
 
 private let WCActivityKey = "Circ"
@@ -27,7 +27,7 @@ public let CDMNeedsRefresh = "CDMNeedsRefresh"
 public typealias CycleWindows = [Date: [(Int, Double, Int)]]
 public typealias CycleAccum = (Bool, Date?, CycleWindows)
 
-class CycleWindowInfo : NSObject, NSCoding {
+class CycleWindowInfo : NSObject, CachableObject {
     public func encode(with aCoder: NSCoder) {
         return print ("at line 32")
     }
@@ -40,6 +40,10 @@ class CycleWindowInfo : NSObject, NSCoding {
     internal var winEntries: [Double] = []
     internal var winMetadata: [AnyObject?] = []
     internal var winColors: [NSUIColor] = []
+    
+    override init() {
+        super.init()
+    }
 
     init(entries: [Double], metadata: [AnyObject?], colors: [NSUIColor]) {
         self.winEntries = entries

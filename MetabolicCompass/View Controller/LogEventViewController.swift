@@ -159,11 +159,11 @@ class LogEventViewController: UIViewController {
          let presenting = relvc as! RepeatedEventsListViewController
          
          if coreInfo?.eventTitle != nil {
-         if coreInfo?.eventTitle?.characters.count > 16 {
+         if coreInfo?.eventTitle?.count > 16 {
          UINotifications.genericError(self, msg: "Event title is too long.")
          return
          }
-         if coreInfo?.eventTitle?.characters.count < 1 {
+         if coreInfo?.eventTitle?.count < 1 {
          UINotifications.genericError(self, msg: "Event title required.")
          return
          }

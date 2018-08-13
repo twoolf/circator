@@ -26,15 +26,15 @@ extension UITextField {
     
     func replaceRange(range:NSRange, replacementString:String, limitedToLength:Int){
         let text = self.text ?? ""
-        let curLength =  text.characters.count
+        let curLength =  text.count
         let allowedRepLength = limitedToLength - (curLength - range.length)
-        let repLength = replacementString.characters.count
+        let repLength = replacementString.count
         var validRepString = replacementString
         if repLength > allowedRepLength{
             validRepString = (replacementString as NSString).substring(to: allowedRepLength)
         }
         (text as NSString).replacingCharacters(in: range, with: validRepString);
-        self.setCursorPosition(position: range.location + validRepString.characters.count)
+        self.setCursorPosition(position: range.location + validRepString.count)
     }
 
 }

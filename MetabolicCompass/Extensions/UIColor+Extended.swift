@@ -33,7 +33,7 @@ extension UIColor {
 //                return nil
 //        }
         
-/*        switch (hexString.characters.count) {
+/*        switch (hexString.count) {
         case 6:
             return UIColor.colorWithHex(hex6: hexValue, alpha: alpha)
         default:

@@ -290,7 +290,7 @@ class UserInfoModel: NSObject {
         var isValid = isRequiredStringValid(value: string)
 
         if isValid {
-            isValid = string!.characters.count > minLength
+            isValid = string!.count > minLength
 
             if !isValid {
                 validationMessage = incorrectMessage
@@ -367,7 +367,7 @@ class UserInfoModel: NSObject {
         if let stringValue = value {
             let trimmedString = stringValue.trimmed()
 
-            return trimmedString.characters.count > 0
+            return trimmedString.count > 0
         }
         return false
     }

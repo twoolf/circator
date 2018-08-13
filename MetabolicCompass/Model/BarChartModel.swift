@@ -177,7 +177,8 @@ class BarChartModel : NSObject {
                 let values = obj as! [[Double]]
                 let array = values.map {$0.map {$0.isNaN ? 0.0 : $0} }
                 if array.count > 0 {
-                    self.typesChartData[key] = self.getChartDataForRange(range: self.rangeType, type: chartType!, values: array[0], minValues: array[1])
+                    let data = self.getChartDataForRange(range: self.rangeType, type: chartType!, values: array[0], minValues: array[1])
+                    self.typesChartData[key] = data
                 }
                 completion(array.count > 0)
             }
@@ -187,11 +188,12 @@ class BarChartModel : NSObject {
                 let values = obj as! [[Double]]
                 let array = values.map {$0.map {$0.isNaN ? 0.0 : $0} }
                 if array.count > 0 {
-                    self.typesChartData[key] = self.getBloodPressureChartData(range: self.rangeType,
-                                                                   systolicMax: array[0],
-                                                                   systolicMin: array[1],
-                                                                  diastolicMax: array[2],
-                                                                  diastolicMin: array[3])
+                    let data = self.getBloodPressureChartData(range: self.rangeType,
+                                                              systolicMax: array[0],
+                                                              systolicMin: array[1],
+                                                              diastolicMax: array[2],
+                                                              diastolicMin: array[3])
+                    self.typesChartData[key] = data
                 }
                 completion(array.count > 0)
             }
@@ -200,7 +202,8 @@ class BarChartModel : NSObject {
                 let values = obj as! [Double]
                 let arrray = values.map {$0.isNaN ? 0.0 : $0}
                 if arrray.count > 0 {
-                    self.typesChartData[key] = self.getChartDataForRange(range: self.rangeType, type: chartType!, values: arrray, minValues: nil)
+                    let data = self.getChartDataForRange(range: self.rangeType, type: chartType!, values: arrray, minValues: nil)
+                    self.typesChartData[key] = data
                 }
                 completion(arrray.count > 0)
             }

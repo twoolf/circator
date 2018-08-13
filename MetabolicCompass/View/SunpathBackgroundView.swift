@@ -17,7 +17,7 @@ extension UIColor {
         guard hexString.characters[hexString.startIndex] == Character("#") else {
             return nil
         }
-        guard hexString.characters.count == "#000000".characters.count else {
+        guard hexString.count == "#000000".count else {
             return nil
         }
         let digits = hexString.substringFromIndex(hexString.startIndex.advancedBy(1))

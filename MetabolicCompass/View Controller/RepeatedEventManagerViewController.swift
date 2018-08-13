@@ -996,11 +996,11 @@ open class NewRepeatedEventViewController: UIViewController {
         //believe there are few bugs here, needs more rigorous testing to ensure events are added properly with various test cases
         
         if form?.eventTitle != nil {
-            if (form?.eventTitle?.characters.count)! > 16 {
+            if (form?.eventTitle?.count)! > 16 {
                 UINotifications.genericError(vc: self, msg: "Event title is too long.")
                 return
             }
-            if (form?.eventTitle?.characters.count)! < 1 {
+            if (form?.eventTitle?.count)! < 1 {
                 UINotifications.genericError(vc: self, msg: "Event title required.")
                 return
             }

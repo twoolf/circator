@@ -1,4 +1,9 @@
 use_frameworks!
+
+def circadian_queries
+    pod 'MCCircadianQueries', :git => 'https://github.com/OlenaSrost/MCCircadianQueries.git', :branch => 'cache_improvements'
+end
+
 def shared_pods
     pod 'Auth0', '~> 1.0'
     pod 'AKPickerView-Swift', :git => 'https://github.com/Akkyie/AKPickerView-Swift.git'
@@ -18,7 +23,7 @@ def shared_pods
     pod 'HTPressableButton'
     pod 'JWTDecode'
     pod 'Locksmith' 
-    pod 'MCCircadianQueries', :git => 'https://github.com/OlenaSrost/MCCircadianQueries.git', :branch => 'swift3'
+    
     pod 'MGSwipeTableCell' 
     pod 'Navajo-Swift' 
     pod 'NVActivityIndicatorView' 
@@ -36,6 +41,7 @@ def shared_pods
     pod 'AWSMobileClient', '~> 2.6.13'
     pod 'AWSS3', '~> 2.6.13'   # For file transfers
     pod 'AWSCognito', '~> 2.6.13'   #For data sync
+    circadian_queries
 end
 
 target 'MetabolicCompassKit' do
@@ -55,15 +61,15 @@ target 'MetabolicCompassWatch Extension' do
  pod 'SwiftDate', :git => 'https://github.com/malcommac/SwiftDate.git'
  pod 'SwiftyBeaver', :git => 'https://github.com/SwiftyBeaver/SwiftyBeaver.git', :branch => 'master' 
  pod 'AwesomeCache', :git => ‘https://github.com/aschuch/AwesomeCache.git’, :branch => ‘master’
- pod 'MCCircadianQueries', :git => 'https://github.com/OlenaSrost/MCCircadianQueries.git', :branch => 'swift3'
+ circadian_queries
 end
 
 target 'MetabolicCompassWatch' do
  platform :watchos, '3.0'
  pod 'SwiftDate', :git => 'https://github.com/malcommac/SwiftDate.git' 
  pod 'SwiftyBeaver', :git => 'https://github.com/SwiftyBeaver/SwiftyBeaver.git', :branch => 'master'  
- pod 'AwesomeCache', :git => ‘https://github.com/aschuch/AwesomeCache.git’, :branch => ‘master’ 
- pod 'MCCircadianQueries', :git => 'https://github.com/OlenaSrost/MCCircadianQueries.git', :branch => 'swift3'
+ pod 'AwesomeCache', :git => ‘https://github.com/aschuch/AwesomeCache.git’, :branch => ‘master’
+ circadian_queries
 end
 
 

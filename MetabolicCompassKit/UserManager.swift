@@ -406,7 +406,7 @@ public class UserManager {
     public func withdraw(keepData: Bool, completion: @escaping SuccessCompletion) {
         let params = ["keep": keepData]
         _ = Service.shared.string(route: MCRouter.DeleteAccount(params as [String : AnyObject]), statusCode: 200..<300, tag: "WITHDRAW") {
-            _, response, result in
+            request, response, result in
             if result.isSuccess { self.resetFull() }
             completion(result.isSuccess)
         }

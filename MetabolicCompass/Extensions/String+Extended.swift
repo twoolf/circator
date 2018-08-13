@@ -75,11 +75,11 @@ extension String {
     }
     
     var length: Int {
-        return self.characters.count
+        return self.count
     }
     
     var hasContent: Bool {
-        return self.characters.count > 0
+        return self.count > 0
     }
 
 }

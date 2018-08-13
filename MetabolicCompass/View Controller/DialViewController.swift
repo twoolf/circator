@@ -312,8 +312,8 @@ class DialViewController : UIViewController, ChartViewDelegate {
                 entryStr += "\n◻︎ \(sleepCount)  ◻︎ \(eatCount)  ◻︎ \(exCount)"
 
                 slRange = NSRange(location: 6, length: 2)
-                eatRange = NSRange(location: 11 + sleepCount.characters.count, length: 1)
-                exRange = NSRange(location: 16 + sleepCount.characters.count + eatCount.characters.count, length: 1)
+                eatRange = NSRange(location: 11 + sleepCount.count, length: 1)
+                exRange = NSRange(location: 16 + sleepCount.count + eatCount.count, length: 1)
             }
 
         case 1:

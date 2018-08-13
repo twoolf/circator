@@ -635,12 +635,12 @@ public class OurStudyViewController: UIViewController, ChartViewDelegate, AppAct
 
             let unitFont = UIFont(name: "GothamBook", size: unitsFontSize)!
 
-            if prefixStr.characters.count > 0 {
-                let headRange = NSRange(location:0, length: prefixStr.characters.count + 1)
+            if prefixStr.count > 0 {
+                let headRange = NSRange(location:0, length: prefixStr.count + 1)
                 aStr.addAttribute(NSAttributedStringKey.font, value: unitFont, range: headRange)
             }
 
-            let tailRange = NSRange(location: prefixStr.characters.count + vStr.characters.count + 1, length: suffixStr.characters.count + 1)
+            let tailRange = NSRange(location: prefixStr.count + vStr.count + 1, length: suffixStr.count + 1)
             aStr.addAttribute(NSAttributedStringKey.font, value: unitFont, range: tailRange)
         }
         else {
@@ -697,7 +697,7 @@ public class OurStudyViewController: UIViewController, ChartViewDelegate, AppAct
         let vString = "\(value)"
         let aString = NSMutableAttributedString(string: vString + " " + unit)
         let unitFont = UIFont(name: "GothamBook", size: unitsFontSize)!
-        aString.addAttribute(NSAttributedStringKey.font, value: unitFont, range: NSRange(location:vString.characters.count+1, length: unit.characters.count))
+        aString.addAttribute(NSAttributedStringKey.font, value: unitFont, range: NSRange(location:vString.count+1, length: unit.count))
         return aString
     }
 }

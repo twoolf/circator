@@ -38,7 +38,7 @@ PODS:
   - MCCircadianQueries (0.2.1):
     - AsyncSwift (~> 2.0.1)
     - AwesomeCache
-    - SwiftDate (~> 4.0)
+    - SwiftDate
     - SwiftyUserDefaults (~> 3.0)
   - MGSwipeTableCell (1.6.6)
   - Navajo-Swift (2.0.0)
@@ -88,7 +88,7 @@ DEPENDENCIES:
   - HTPressableButton
   - JWTDecode
   - Locksmith
-  - MCCircadianQueries (from `https://github.com/OlenaSrost/MCCircadianQueries.git`, branch `swift3`)
+  - MCCircadianQueries (from `https://github.com/OlenaSrost/MCCircadianQueries.git`, branch `cache_improvements`)
   - MGSwipeTableCell
   - Navajo-Swift
   - NVActivityIndicatorView
@@ -118,7 +118,7 @@ EXTERNAL SOURCES:
   Granola:
     :git: https://github.com/yanif/Granola.git
   MCCircadianQueries:
-    :branch: swift3
+    :branch: cache_improvements
     :git: https://github.com/OlenaSrost/MCCircadianQueries.git
   ResearchKit:
     :git: https://github.com/twoolf/ResearchKit.git
@@ -147,7 +147,7 @@ CHECKOUT OPTIONS:
     :commit: 9d93a4af3d719e12eac2ee84a11752a5171856cd
     :git: https://github.com/yanif/Granola.git
   MCCircadianQueries:
-    :commit: dcca78e6e448e000c164c60cde51ec88590acf7a
+    :commit: ec68bafa1df585d81676c13dd4130e5bfc7d3106
     :git: https://github.com/OlenaSrost/MCCircadianQueries.git
   ResearchKit:
     :commit: 3bf331c47e3bfaf6ef2d422dc2f9f9aa7939499c
@@ -188,7 +188,7 @@ SPEC CHECKSUMS:
   HTPressableButton: 3109ba7972247ddbd387c8a22b0341b02369b31e
   JWTDecode: 83e8b381aafe27158d9f692cbdca2b12d61d460c
   Locksmith: e9bebbaaa4cee3c511bc358a44f843c3fe00e21f
-  MCCircadianQueries: 3a8cb5d326e244648d2362fccf7d2c474ee48b4f
+  MCCircadianQueries: 9718a3aba153a37cf3c4d84f46a7c77b6bf8ecee
   MGSwipeTableCell: c3bc6e261e7bc06c112909fe3fb8205de286082c
   Navajo-Swift: 0f48998c95b0e8b17756e85dae018adbb2000735
   NVActivityIndicatorView: 60109b9bf46efc2e71ab81453196ccdfdfeea870
@@ -206,6 +206,6 @@ SPEC CHECKSUMS:
   SwiftyJSON: 070dabdcb1beb81b247c65ffa3a79dbbfb3b48aa
   SwiftyUserDefaults: 38267a30d58b7c8570995cd5defd354e43f056c6
 
-PODFILE CHECKSUM: 4be438c8c0e2cac5483167d9a28bf26fa9e332f1
+PODFILE CHECKSUM: c412cc84e04898d561251b72109d6089eb7013ec
 
 COCOAPODS: 1.4.0

@@ -12,7 +12,7 @@ import HealthKit
 import MetabolicCompassKit
 import SwiftDate
 import Async
-import AwesomeCache
+//import AwesomeCache
 import MCCircadianQueries
 
 @objc protocol DailyChartModelProtocol {
@@ -20,13 +20,17 @@ import MCCircadianQueries
     @objc optional func dailyProgressStatCollected()
 }
 
-open class DailyProgressDayInfo: NSObject, NSCoding {
+open class DailyProgressDayInfo: NSObject, CachableObject {
     
     static var dayColorsKey = "dayColors"
     static var dayValuesKey = "dayValues"
     
     internal var dayColors: [UIColor] = [UIColor.clear]
     internal var dayValues: [Double] = [24.0]
+    
+    override init() {
+        super.init()
+    }
 
     init(colors: [UIColor], values: [Double]) {
         self.dayColors = colors
