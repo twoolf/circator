@@ -127,6 +127,8 @@ class AppDelegate: UIResponder, UIApplicationDelegate, WCSessionDelegate
         window?.rootViewController = navController
         window?.makeKeyAndVisible()
         
+        AccountManager.shared.loginAndInitialize(animated: false)
+        
         var launchSuccess = true
         if let shortcutItem = launchOptions?[UIApplicationLaunchOptionsKey.shortcutItem] as? UIApplicationShortcutItem {
             launchSuccess = launchShortcutActivity(shortcutItem)

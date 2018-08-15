@@ -26,14 +26,14 @@
                                 <rect key="frame" x="0.0" y="0.0" width="414" height="736"/>
                                 <subviews>
                                     <imageView userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="logo-landing" translatesAutoresizingMaskIntoConstraints="NO" id="HLd-O3-dV7">
-                                        <rect key="frame" x="57" y="84" width="300" height="257.33333333333331"/>
+                                        <rect key="frame" x="57" y="115" width="300" height="257.33333333333331"/>
                                         <color key="backgroundColor" red="0.0" green="0.0" blue="0.0" alpha="0.0" colorSpace="custom" customColorSpace="sRGB"/>
                                         <constraints>
                                             <constraint firstAttribute="width" constant="300" id="xjL-w6-IPZ"/>
                                         </constraints>
                                     </imageView>
                                     <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="gul-KP-1y6">
-                                        <rect key="frame" x="87" y="341.33333333333331" width="240" height="125.33333333333331"/>
+                                        <rect key="frame" x="87" y="372.33333333333331" width="240" height="125.33333333333331"/>
                                         <color key="backgroundColor" red="0.0" green="0.0" blue="0.0" alpha="0.0" colorSpace="custom" customColorSpace="sRGB"/>
                                         <constraints>
                                             <constraint firstAttribute="width" constant="240" id="DkC-GQ-97f"/>
@@ -45,8 +45,9 @@
                                     <constraint firstItem="HLd-O3-dV7" firstAttribute="centerX" secondItem="dOV-EV-vxb" secondAttribute="centerX" id="HYL-E0-F9Z"/>
                                     <constraint firstItem="gul-KP-1y6" firstAttribute="centerX" secondItem="dOV-EV-vxb" secondAttribute="centerX" id="Q5m-Qf-1xJ"/>
                                     <constraint firstItem="gul-KP-1y6" firstAttribute="top" secondItem="HLd-O3-dV7" secondAttribute="bottom" id="TtT-E1-1of"/>
+                                    <constraint firstItem="HLd-O3-dV7" firstAttribute="centerY" secondItem="dOV-EV-vxb" secondAttribute="centerY" multiplier="1:1.51" id="Vr6-7B-pWz"/>
                                     <constraint firstItem="gul-KP-1y6" firstAttribute="height" secondItem="dOV-EV-vxb" secondAttribute="height" multiplier="0.17" id="WIy-ll-u35"/>
-                                    <constraint firstItem="HLd-O3-dV7" firstAttribute="top" secondItem="dOV-EV-vxb" secondAttribute="top" constant="84" id="XOB-U6-ePy"/>
+                                    <constraint firstItem="HLd-O3-dV7" firstAttribute="top" relation="greaterThanOrEqual" secondItem="dOV-EV-vxb" secondAttribute="top" priority="800" constant="10" id="XOB-U6-ePy"/>
                                     <constraint firstItem="HLd-O3-dV7" firstAttribute="height" secondItem="dOV-EV-vxb" secondAttribute="height" multiplier="0.35" id="skg-qT-16b"/>
                                 </constraints>
                             </view>

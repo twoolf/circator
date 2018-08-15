@@ -99,8 +99,9 @@
                             <constraint firstItem="uwe-Bv-2eF" firstAttribute="top" secondItem="RTl-3I-Bn6" secondAttribute="bottom" constant="10" id="HQb-8s-7NO"/>
                             <constraint firstItem="0Qt-Cl-J8O" firstAttribute="leading" secondItem="jz9-mN-bKE" secondAttribute="leading" constant="39" id="NHX-Zw-dNe"/>
                             <constraint firstItem="0Qt-Cl-J8O" firstAttribute="top" secondItem="sd1-bZ-oIV" secondAttribute="bottom" constant="15" id="Qq6-Eq-Ork"/>
-                            <constraint firstItem="N76-Si-E6h" firstAttribute="top" secondItem="Vov-hw-vBg" secondAttribute="bottom" constant="84" id="XoZ-rk-J8C"/>
+                            <constraint firstItem="N76-Si-E6h" firstAttribute="top" relation="greaterThanOrEqual" secondItem="Vov-hw-vBg" secondAttribute="bottom" priority="800" constant="10" id="XoZ-rk-J8C"/>
                             <constraint firstAttribute="trailing" secondItem="0Qt-Cl-J8O" secondAttribute="trailing" constant="39" id="akh-Ww-oWE"/>
+                            <constraint firstItem="N76-Si-E6h" firstAttribute="centerY" secondItem="jz9-mN-bKE" secondAttribute="centerY" multiplier="1:1.51" id="cyf-Cx-Z8T"/>
                             <constraint firstItem="N76-Si-E6h" firstAttribute="centerX" secondItem="jz9-mN-bKE" secondAttribute="centerX" id="gDU-eG-u9x"/>
                             <constraint firstItem="K66-Ik-foC" firstAttribute="centerX" secondItem="jz9-mN-bKE" secondAttribute="centerX" id="k9v-9T-Ufj"/>
                             <constraint firstItem="sd1-bZ-oIV" firstAttribute="trailing" secondItem="0Qt-Cl-J8O" secondAttribute="trailing" id="kMd-cU-l4y"/>

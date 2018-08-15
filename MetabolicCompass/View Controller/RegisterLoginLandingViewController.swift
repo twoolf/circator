@@ -141,6 +141,10 @@ class RegisterLoginLandingViewController: BaseViewController {
     }
     
     func loginComplete() {
+        func postLoginAction() {
+            AccountManager.shared.loginAndInitialize()
+        }
+        
         if UserManager.sharedManager.isItFirstLogin() {//if it's first login
             if let additionalInfo = UserManager.sharedManager.getAdditionalProfileData() {//and user has an additional data. we will push it to the server
                 UserManager.sharedManager.pushProfile(componentData: additionalInfo , completion: { _ in
@@ -149,14 +153,14 @@ class RegisterLoginLandingViewController: BaseViewController {
             } else {//in other case we just remove marker for first login
                 UserManager.sharedManager.removeFirstLogin()
             }
-        }        
+        }
         
         if let comp = self.completion { comp() }
         self.navigationController?.popToRootViewController(animated: true)
-        
         Async.main {
             Answers.logLogin(withMethod: "SPL", success: true, customAttributes: nil)
             NotificationCenter.default.post(name: NSNotification.Name(rawValue: UMDidLoginNotifiaction), object: nil)
+            postLoginAction()
         }
     }
     

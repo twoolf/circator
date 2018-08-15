@@ -35,7 +35,7 @@ class DashboardComparisonController: UIViewController, UITableViewDelegate, UITa
         self.tableView.allowsSelection = false
         
         log.debug("right before AccountManager called")
-        AccountManager.shared.loginAndInitialize(animated: false)
+//        AccountManager.shared.loginAndInitialize(animated: false)
     }
 
     @objc func contentDidUpdate (_ notification: NSNotification) {
