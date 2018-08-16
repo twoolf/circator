@@ -127,6 +127,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, WCSessionDelegate
         window?.rootViewController = navController
         window?.makeKeyAndVisible()
         
+        log.debug("right before AccountManager called")
         AccountManager.shared.loginAndInitialize(animated: false)
         
         var launchSuccess = true

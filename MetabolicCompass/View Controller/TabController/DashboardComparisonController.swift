@@ -34,8 +34,6 @@ class DashboardComparisonController: UIViewController, UITableViewDelegate, UITa
         self.tableView.delegate        = self
         self.tableView.allowsSelection = false
         
-        log.debug("right before AccountManager called")
-//        AccountManager.shared.loginAndInitialize(animated: false)
     }
 
     @objc func contentDidUpdate (_ notification: NSNotification) {
@@ -50,7 +48,7 @@ class DashboardComparisonController: UIViewController, UITableViewDelegate, UITa
         NotificationCenter.default.addObserver(self, selector: #selector(self.refreshData), name: NSNotification.Name(rawValue: HMDidUpdateAnyMeasures), object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(self.updateContent), name: NSNotification.Name.UIApplicationDidBecomeActive, object: nil)
         
-//        self.updateContent()
+        self.updateContent()
 
         self.tableView.reloadData()
         logContentView()

@@ -317,18 +317,20 @@ public class Service: RequestRetrier, RequestAdapter {
                                            completion: @escaping (NSURLRequest?, HTTPURLResponse?, Alamofire.Result<Any>) -> Void)
                                            -> Alamofire.Request where S.Iterator.Element == Int
     {
-        return sessionManager.request(route).validate(statusCode: statusCode).responseJSON { response in
-            log.debug("\(tag): " + (response.result.isSuccess ? "SUCCESS" : "FAILED"))
-            if response.result.value != nil {
-                if self.delegate != nil{
-                    self.delegate!.didFinishJSONRequest(request: response.request as NSURLRequest?, response:response.response, result:response.result)
+        return sessionManager.request(route)
+            .validate(statusCode: statusCode)
+            .responseJSON { response in
+                log.debug("\(tag): " + (response.result.isSuccess ? "SUCCESS" : "FAILED"))
+                if response.result.value != nil {
+                    if self.delegate != nil{
+                        self.delegate!.didFinishJSONRequest(request: response.request as NSURLRequest?, response:response.response, result:response.result)
+                    }
+                    log.debug("\n***result:\(response.result)")
+                    completion(response.request as NSURLRequest?, response.response, response.result)
+                } else {
+                    completion(response.request as NSURLRequest?, response.response, response.result)
                 }
-                log.debug("\n***result:\(response.result)")
-                completion(response.request as NSURLRequest?, response.response, response.result)
-            } else {
-                completion(response.request as NSURLRequest?, response.response, response.result)
             }
-        }
     }
     
     typealias RenewCallback = (Bool)->()
@@ -336,8 +338,10 @@ public class Service: RequestRetrier, RequestAdapter {
     var renewCallbacks = [RenewCallback]()
     private let maxRetryCount = 1
     
+    // MARK:
     public func should(_ manager: SessionManager, retry request: Alamofire.Request, with error: Error, completion: @escaping RequestRetryCompletion) {
-        if let response = request.task?.response as? HTTPURLResponse, response.statusCode == 401, request.retryCount < maxRetryCount {
+        if let response = request.task?.response as? HTTPURLResponse,
+            (response.statusCode == 401), (request.retryCount < maxRetryCount) {
             self.renewToken { success in
                 if success {
                     completion(true, 0.1)
@@ -346,7 +350,8 @@ public class Service: RequestRetrier, RequestAdapter {
                 }
             }
         } else {
-            completion(false, 0.0)
+            let shouldRetry = (request.retryCount < maxRetryCount)
+            completion(shouldRetry, shouldRetry ? 0.1 : 0.0)
         }
     }
 

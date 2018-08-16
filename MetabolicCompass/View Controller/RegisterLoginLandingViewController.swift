@@ -142,6 +142,7 @@ class RegisterLoginLandingViewController: BaseViewController {
     
     func loginComplete() {
         func postLoginAction() {
+            log.debug("right before AccountManager called")
             AccountManager.shared.loginAndInitialize()
         }
         
