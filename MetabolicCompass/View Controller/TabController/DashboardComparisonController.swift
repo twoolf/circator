@@ -48,7 +48,7 @@ class DashboardComparisonController: UIViewController, UITableViewDelegate, UITa
         NotificationCenter.default.addObserver(self, selector: #selector(self.refreshData), name: NSNotification.Name(rawValue: HMDidUpdateAnyMeasures), object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(self.updateContent), name: NSNotification.Name.UIApplicationDidBecomeActive, object: nil)
         
-        self.updateContent()
+//        self.updateContent()
 
         self.tableView.reloadData()
         logContentView()

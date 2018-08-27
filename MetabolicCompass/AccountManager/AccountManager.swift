@@ -78,8 +78,11 @@ class AccountManager: NSObject {
     private func loginComplete () {
         log.debug("User login complete", feature: "loginExec")
 
-        OperationQueue.main.addOperation {
-            NotificationCenter.default.post(name: NSNotification.Name(rawValue: self.didCompleteLoginNotification), object: nil)
+        OperationQueue.main.addOperation { [weak self] in
+            if let `self` = self {
+                self.contentManager.initializeBackgroundWork()
+                NotificationCenter.default.post(name: NSNotification.Name(rawValue: self.didCompleteLoginNotification), object: nil)
+            }
         }
     }
 

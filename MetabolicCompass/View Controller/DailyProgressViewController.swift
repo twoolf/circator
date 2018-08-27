@@ -117,6 +117,8 @@ class DailyProgressViewController : UIViewController, DailyChartModelProtocol, A
         self.scrollRecentButton.isEnabled = false
         self.scrollOlderButton.isEnabled = true
 
+        self.contentDidUpdate()
+        
         NotificationCenter.default.addObserver(self, selector: #selector(self.syncAddedCircadianEvents), name: NSNotification.Name(rawValue: SyncDidUpdateCircadianEvents), object: nil)
 
     }
