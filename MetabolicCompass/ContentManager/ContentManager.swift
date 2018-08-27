@@ -83,6 +83,18 @@ class ContentManager: NSObject {
         }
     }
 
+    internal func fetchIndividualData() {
+        OperationQueue.main.addOperation {
+            self.fetchInitialAggregates()
+            
+            ComparisonDataModel.sharedManager
+            .updateIndividualData(types: PreviewManager.previewSampleTypes) { _ in
+                log.debug("Prefetching charts", feature: "accountExec")
+                IOSHealthManager.sharedManager.collectDataForCharts()
+            }
+        }
+    }
+    
     func stopBackgroundWork() {
 //        Async.main() {
         OperationQueue.main.addOperation {

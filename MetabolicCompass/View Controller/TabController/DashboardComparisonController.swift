@@ -34,21 +34,31 @@ class DashboardComparisonController: UIViewController, UITableViewDelegate, UITa
         self.tableView.delegate        = self
         self.tableView.allowsSelection = false
         
+        NotificationCenter.default.addObserver(self, selector: #selector(self.fetchIndividualData), name: NSNotification.Name(rawValue: PMDidUpdatePreviewSampleTypes), object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(self.contentDidUpdate), name: NSNotification.Name(rawValue: HMDidUpdateRecentSamplesNotification), object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(self.refreshData), name: NSNotification.Name(rawValue: HMDidUpdateAnyMeasures), object: nil)
     }
 
     @objc func contentDidUpdate (_ notification: NSNotification) {
-        self.tableView.reloadData()
-        self.stopActivityIndicator()
+        
+        func postUpdateActions() {
+            self.tableView.reloadData()
+            self.stopActivityIndicator()
+        }
+        
+        if Thread.isMainThread {
+            postUpdateActions()
+        } else {
+            DispatchQueue.main.async {
+                postUpdateActions()
+            }
+        }
     }
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
 
-        NotificationCenter.default.addObserver(self, selector: #selector(self.contentDidUpdate), name: NSNotification.Name(rawValue: HMDidUpdateRecentSamplesNotification), object: nil)
-        NotificationCenter.default.addObserver(self, selector: #selector(self.refreshData), name: NSNotification.Name(rawValue: HMDidUpdateAnyMeasures), object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(self.updateContent), name: NSNotification.Name.UIApplicationDidBecomeActive, object: nil)
-        
-//        self.updateContent()
 
         self.tableView.reloadData()
         logContentView()
@@ -56,7 +66,7 @@ class DashboardComparisonController: UIViewController, UITableViewDelegate, UITa
     
     override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
-        NotificationCenter.default.removeObserver(self)
+        NotificationCenter.default.removeObserver(self, name: NSNotification.Name.UIApplicationDidBecomeActive, object: nil)
         
         self.stopActivityIndicator(true)
         AccountManager.shared.contentManager.stopBackgroundWork()
@@ -100,6 +110,10 @@ class DashboardComparisonController: UIViewController, UITableViewDelegate, UITa
         ComparisonDataModel.sharedManager.updateIndividualData(types: PreviewManager.previewSampleTypes) { _ in () }
     }
 
+    @IBAction private func fetchIndividualData() {
+        AccountManager.shared.contentManager.fetchIndividualData()
+    }
+    
     //MARK: UITableViewDataSource
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         return PreviewManager.previewSampleTypes.count

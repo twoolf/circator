@@ -25,6 +25,8 @@ Controls the HealthKit metrics that will be displayed on picker wheels, tablevie
 
  */
 
+public let PMDidUpdatePreviewSampleTypes = "pm.didUpdatePreviewSampleTypes"
+
 public class PreviewManager: NSObject {
     public static let previewSampleMeals = [
         "Breakfast",
@@ -148,11 +150,19 @@ public class PreviewManager: NSObject {
     }
     
     //MARK: Preview Sample Types
-    public static var previewSampleTypes: [HKSampleType] {
+    
+    private static var savedPreviewSampleTypes: [HKSampleType]? {
         if let rawTypes = Defaults[PMSampleTypesKey] {
             return rawTypes.map { (data) -> HKSampleType in
                 return NSKeyedUnarchiver.unarchiveObject(with: data as! Data) as! HKSampleType
             }
+        }
+        return nil
+    }
+    
+    public static var previewSampleTypes: [HKSampleType] {
+        if let savedPreviewSampleTypes = self.savedPreviewSampleTypes {
+            return savedPreviewSampleTypes
         } else {
             let defaultTypes = self.initialPreviewTypes
             self.updatePreviewSampleTypes(types: defaultTypes)
@@ -166,7 +176,11 @@ public class PreviewManager: NSObject {
             return NSKeyedArchiver.archivedData(withRootObject: sampleType)
         }
 
+        let shouldNotify = (self.savedPreviewSampleTypes != nil) && (self.savedPreviewSampleTypes?.count ?? 0) < rawTypes.count
         Defaults[PMSampleTypesKey] = rawTypes
+        if shouldNotify {
+            NotificationCenter.default.post(name: NSNotification.Name(rawValue: PMDidUpdatePreviewSampleTypes), object: self)
+        }
     }
     
     public static var managePreviewSampleTypes: [HKSampleType] {

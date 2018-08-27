@@ -9,6 +9,7 @@
 import UIKit
 import HealthKit
 import MetabolicCompassKit
+import MCCircadianQueries
 
 class DashboardManageController: UIViewController, UITableViewDelegate, UITableViewDataSource {
 
@@ -18,6 +19,8 @@ class DashboardManageController: UIViewController, UITableViewDelegate, UITableV
     
     private var manageData: [HKSampleType] = []
     private let appearanceProvider = DashboardMetricsAppearanceProvider()
+    
+    private var initialSelectedCount: Int = 0
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -31,8 +34,12 @@ class DashboardManageController: UIViewController, UITableViewDelegate, UITableV
         self.tableView.delegate   = self;
         self.tableView.allowsSelectionDuringEditing = true
 
+        self.initialSelectedCount = 0
         for type in PreviewManager.managePreviewSampleTypes {
             let active = PreviewManager.previewSampleTypes.contains(type)
+            if active {
+                self.initialSelectedCount += 1
+            }
             data.append(DashboardMetricsConfigItem(type: type.identifier, active: active, object: type))
             manageData.append(type)
         }
@@ -42,16 +49,17 @@ class DashboardManageController: UIViewController, UITableViewDelegate, UITableV
     
     func save() {
         
-        var samples = [HKSampleType]()
+        let samples: [HKSampleType] =
+        self.data.flatMap { item in
+            item.active ? item.object : nil
+        }
         
-        for item in self.data {
-            if (item.active) {
-                samples.append(item.object)
-            }
+        guard samples.count != self.initialSelectedCount else {
+            return
         }
         
         PreviewManager.updatePreviewSampleTypes(types: samples)
-        PreviewManager.updateManagePreviewSampleTypes(types: manageData)
+        PreviewManager.updateManagePreviewSampleTypes(types: self.manageData)
     }
     
 /*    func preferredStatusBarStyle() -> UIStatusBarStyle {
