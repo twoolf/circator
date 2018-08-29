@@ -407,7 +407,7 @@ public class UserManager {
         let params = ["keep": keepData]
         _ = Service.shared.string(route: MCRouter.DeleteAccount(params as [String : AnyObject]), statusCode: 200..<300, tag: "WITHDRAW") {
             request, response, result in
-            if result.isSuccess { self.resetFull() }
+            if result.isSuccess { self.resetFull(); self.logout() }
             completion(result.isSuccess)
         }
     }
