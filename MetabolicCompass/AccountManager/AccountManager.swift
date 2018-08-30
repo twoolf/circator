@@ -44,7 +44,7 @@ class AccountManager: NSObject {
         self.rootViewController?.pushViewController(registerVC, animated: true)
     }
 
-    func doLogin(_ animated: Bool = true, completion: (() -> Void)?) {
+    func doLogin(_ animated: Bool = true, completion: (() -> Void)? = nil, operationFinish: ((UIViewController?)-> Void)? = nil) {
         assert(Thread.isMainThread, "can be called from main thread only")
         let registerLandingStoryboard = UIStoryboard(name: "RegisterLoginProcess", bundle: nil)
         let registerLoginLandingController = registerLandingStoryboard.instantiateViewController(withIdentifier: "landingLoginRegister") as! RegisterLoginLandingViewController
@@ -56,7 +56,12 @@ class AccountManager: NSObject {
             mainTabbarController.selectedIndex = 0
         }
         
+        CATransaction.begin()
+        CATransaction.setCompletionBlock {
+            operationFinish?(registerLoginLandingController)
+        }
         self.rootViewController?.pushViewController(registerLoginLandingController, animated: animated)
+        CATransaction.commit()
     }
 
     func doLogout(completion: (() -> Void)?) {
@@ -97,7 +102,7 @@ class AccountManager: NSObject {
         log.debug("Login start", feature: "loginExec")
         guard isAuthorized else {
             log.debug("Login: No token found, launching dialog", feature: "loginExec")
-            self.doLogin (animated) { self.loginComplete() }
+            self.doLogin(animated, completion: { self.loginComplete() })
             return
         }
 
@@ -106,7 +111,7 @@ class AccountManager: NSObject {
             UserManager.sharedManager.ensureAccessToken { error in
                 guard !error else {
                     log.debug("Login: HK/Cal auth failed, relaunching dialog", feature: "loginExec")
-                    Async.main() { self.doLogin (animated) { self.loginComplete() } }
+                    Async.main() { self.doLogin(animated, completion: { self.loginComplete() }) }
                     return
                 }
 

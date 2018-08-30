@@ -120,10 +120,14 @@ class MainSettingsViewController: BaseViewController, UICollectionViewDataSource
         let doWithdraw = { keepData in
             AccountManager.shared.doWithdraw(keepData) { success in
                 NotificationCenter.default.post(name: NSNotification.Name(rawValue: UMDidLogoutNotification), object: nil)
-                AccountManager.shared.loginOrRegister()
+                
                 if success {
-                    let msg = "Thanks for using Metabolic Compass!"
-                    UINotifications.genericMsg(vc: self.navigationController!, msg: msg, pop: true, asNav: true)
+                    AccountManager.shared.doLogin(true, operationFinish: { controller in
+                        if let controller = controller {
+                            let msg = "Thanks for using Metabolic Compass!"
+                            UINotifications.genericMsg(vc: controller, msg: msg, pop: true, asNav: true)
+                        }
+                    })
                 } else {
                     let msg = "Failed to withdraw, please try again later"
                     UINotifications.genericError(vc: self.navigationController!, msg: msg, pop: false, asNav: true)
