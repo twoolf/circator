@@ -26,7 +26,7 @@ class MetabolicCompassTests: XCTestCase {
                 log.error("Unable to access HealthKit")
                 return
             }
-            EventManager.sharedManager.checkCalendarAuthorizationStatus { _ in log.info("Accessed HKCal") }
+//            EventManager.sharedManager.checkCalendarAuthorizationStatus { _ in log.info("Accessed HKCal") }  // disabled for now
         }
     }
     
