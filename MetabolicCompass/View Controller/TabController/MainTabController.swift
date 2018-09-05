@@ -322,13 +322,13 @@ class MainTabController: UITabBarController, UITabBarControllerDelegate, ManageE
         
         if lastMenuUseAddedEvents {
             initializeDailyProgressVC()
-            if dailyProgressVC != nil {
-                Async.background(after: 1.0) {
-                    self.dailyProgressVC?.contentDidUpdate()
-                }
-            } else {
-                log.warning("No DailyProgressViewController available", feature: "addActivityView")
-            }
+//            if dailyProgressVC != nil {
+//                Async.background(after: 1.0) {
+//                    self.dailyProgressVC?.contentDidUpdate()
+//                }
+//            } else {
+//                log.warning("No DailyProgressViewController available", feature: "addActivityView")
+//            }
         }
         self.manageEventMenu?.logContentView(false)
     }

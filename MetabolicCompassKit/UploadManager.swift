@@ -129,7 +129,7 @@ public class UMSampleUUID: Object {
 //        return NSUUID(uuidBytes: data.bytes)
 //        let uuidString = NSUUID().uuidString
 //        return uuidString as! NSUUID
-        var ptr = data.bytes.assumingMemoryBound(to: UInt8.self)
+        let ptr = data.bytes.assumingMemoryBound(to: UInt8.self)
         return NSUUID(uuidBytes: ptr)
     }
 }

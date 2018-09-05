@@ -12,6 +12,8 @@ import MetabolicCompassKit
 import Async
 import SwiftDate
 import Crashlytics
+import HealthKit
+import MCCircadianQueries
 
 enum UIUserInterfaceIdiom : Int
 {
@@ -120,7 +122,9 @@ class DailyProgressViewController : UIViewController, DailyChartModelProtocol, A
         self.contentDidUpdate()
         
         NotificationCenter.default.addObserver(self, selector: #selector(self.syncAddedCircadianEvents), name: NSNotification.Name(rawValue: SyncDidUpdateCircadianEvents), object: nil)
-
+    
+        let types: [HKSampleType] = HMConstants.sharedInstance.healthKitTypesToObserve
+        HKUpdatesController.add(observer: self, forKey: "DailyProgressViewController", observingTypes: types)
     }
 
     override func viewDidAppear(_ animated: Bool) {
@@ -134,7 +138,7 @@ class DailyProgressViewController : UIViewController, DailyChartModelProtocol, A
         self.mainScrollView.contentSize = CGSize(mainScrollViewContentWidth, mainScrollViewContentHeight)
 
         // Update chart data
-        self.contentDidUpdate(loading: false)
+//        self.contentDidUpdate(loading: false)
     }
 
     @IBAction private func refreshContent() {
@@ -145,13 +149,13 @@ class DailyProgressViewController : UIViewController, DailyChartModelProtocol, A
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         self.dailyChartModel.refreshChartDateRange(lastViewDate)
-        NotificationCenter.default.addObserver(self, selector: #selector(self.refreshContent), name: NSNotification.Name.UIApplicationDidBecomeActive, object: nil)
+//        NotificationCenter.default.addObserver(self, selector: #selector(self.refreshContent), name: NSNotification.Name.UIApplicationDidBecomeActive, object: nil)
         logContentView()
     }
 
     override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
-        NotificationCenter.default.removeObserver(self, name: .UIApplicationDidBecomeActive, object: nil)
+//        NotificationCenter.default.removeObserver(self, name: .UIApplicationDidBecomeActive, object: nil)
         
         self.lastViewDate = Date()
         logContentView(false)
@@ -280,4 +284,10 @@ class DailyProgressViewController : UIViewController, DailyChartModelProtocol, A
         NotificationCenter.default.removeObserver(self)
     }
 
+}
+
+extension DailyProgressViewController: HKUpdatesObserver {
+    func updatesAvailable(for type: HKSampleType) {
+        self.contentDidUpdate(loading: false)
+    }
 }
