@@ -416,10 +416,11 @@ public class UserManager {
     
     public func loginAuth0(completion: @escaping (Bool?, Error?) -> ()) {
         
-        authorizeAuth0(audience: audienceAuth0,
-                       scope: "openid profile offline_access update:current_user_metadata") { (credentials, error) in
+        authorizeAuth0(audience: audienceMC,
+                       scope: scopeAuth0) { (credentials, error) in
                         if let credentials = credentials {
                             self.storeAuth0(credentials: credentials)
+                            self.storeMC(credentials: credentials)
                             self.checkConscent(completion: completion)
                         } else {
                             completion(false, error)
@@ -445,13 +446,14 @@ public class UserManager {
                         if let _ = metadata[UserManager.consentMetadataKey] {
                             self.setAccountData(items: metadata as [String : AnyObject])
                             self.refreshComponentCache(component: .PersonalProfile, componentData: metadata as [String : AnyObject])
-                            self.authorizeMCApi(completion: { (error) in
-                                if let error = error {
-                                    completion(nil, error)
-                                } else {
-                                    completion(true, nil)
-                                }
-                            })
+                            completion(true, nil)
+//                            self.authorizeMCApi(completion: { error in
+//                                if let `error` = error {
+//                                    completion(false, error)
+//                                } else {
+//                                    completion(true, nil)
+//                                }
+//                            })
                         } else {
                             completion(false, nil)
                         }
@@ -464,12 +466,14 @@ public class UserManager {
         }
     }
 
+    private let scopeAuth0 = "openid profile offline_access update:current_user_metadata&write:measures&read:measures&write:light&read:light&write:listen&read:listen"
     public func registerAuth0(firstName: String, lastName: String, consentPath: String, initialData: [String: String], completion: @escaping (Error?) -> ()) {
-        let scopeAuth0 = "openid profile offline_access update:current_user_metadata"
+//        let scopeAuth0 = "openid profile offline_access update:current_user_metadata"
         
-        authorizeAuth0(audience: audienceAuth0, scope: scopeAuth0) { (credentials, error) in
+        authorizeAuth0(audience: audienceMC, scope: scopeAuth0) { (credentials, error) in
             if let credentials = credentials {
                 self.storeAuth0(credentials: credentials)
+                self.storeMC(credentials: credentials)
                 self.updateAuth0Metadata(consentPath: consentPath, initialData: initialData, completion: completion)
             } else {
                 completion(error)
@@ -484,7 +488,7 @@ public class UserManager {
     func authorizeMCApi(completion: @escaping (Error?) -> ()) {
         let scopeMC = "openid profile offline_access update:current_user_metadata"
         
-        authorizeAuth0(audience: audienceMC, scope: scopeMC) { (credentials, error) in
+        authorizeAuth0(audience: audienceMC, scope: scopeMC, parameters: ["prompt": "none"]) { (credentials, error) in
             if let credentials = credentials {
                 self.storeMC(credentials: credentials)
                 completion(nil)
@@ -494,9 +498,10 @@ public class UserManager {
         }
     }
     
-    private func authorizeAuth0(audience: String, scope: String, completion : @escaping (Credentials?, Error?) ->()) {
+    private func authorizeAuth0(audience: String, scope: String, parameters: [String: String] = [:], completion : @escaping (Credentials?, Error?) ->()) {
         Auth0
             .webAuth()
+            .parameters(parameters)
             .audience(audience)
             .scope(scope)
             .start { (result) in
@@ -533,7 +538,8 @@ public class UserManager {
                     case .success(_):
                         self.setAccountData(items: userMetadata as [String : AnyObject])
                         self.refreshComponentCache(component: .PersonalProfile, componentData: userMetadata as [String : AnyObject])
-                        self.authorizeMCApi(completion: completion)
+//                        self.authorizeMCApi(completion: completion)
+                        completion(nil)
                     case .failure(let error):
                         completion(error)
                     }

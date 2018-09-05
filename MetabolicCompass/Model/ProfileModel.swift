@@ -64,7 +64,7 @@ class ProfileModel: UserInfoModel {
                     //                    item.setNewValue(newValue: Int(floor((heightFtIn % 1.0) * 12.0)) as AnyObject?)
                     item.setNewValue(newValue: Int(floor((heightFtIn .truncatingRemainder(dividingBy: 1.0)) * 12.0)) as AnyObject?)
                 }
-                else if let profileItemInfo = profileInfo[item.name]{
+                else if let profileItemInfo = profileInfo[item.name] ?? personalProfileInfo[item.name] {
                     if item.type == .Gender {
                         let gender = Gender.valueByTitle(title: profileItemInfo as! String)
                         item.setNewValue(newValue: gender.rawValue as AnyObject?)
