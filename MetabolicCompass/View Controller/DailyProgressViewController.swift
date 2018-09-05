@@ -134,7 +134,7 @@ class DailyProgressViewController : UIViewController, DailyChartModelProtocol, A
         self.mainScrollView.contentSize = CGSize(mainScrollViewContentWidth, mainScrollViewContentHeight)
 
         // Update chart data
-        self.contentDidUpdate()
+        self.contentDidUpdate(loading: false)
     }
 
     @IBAction private func refreshContent() {
@@ -182,14 +182,16 @@ class DailyProgressViewController : UIViewController, DailyChartModelProtocol, A
         lastAteContainer.addGestureRecognizer(lastAteTip.tapRecognizer)
         lastAteContainer.isUserInteractionEnabled = true
     }
-
-    func contentDidUpdate(withDailyProgress dailyProgress: Bool = true) {
-        OperationQueue.main.addOperation {
-            self.showActivity()
+    
+    func contentDidUpdate(withDailyProgress dailyProgress: Bool = true, loading: Bool = true) {
+        let operation = BlockOperation {
+            if loading { self.showActivity() }
             
             self.dailyChartModel.prepareChartData()
             if dailyProgress { self.dailyChartModel.getDailyProgress() }
         }
+        let operationKey = "DailyProgress.contentDidUpdate"
+        OperationsController.add(operation, forKey: operationKey)
     }
     
     //MARK: DailyChartModelProtocol
@@ -200,7 +202,7 @@ class DailyProgressViewController : UIViewController, DailyChartModelProtocol, A
 
             self.dailyChartModel.prepareDataForChart(completion: {[weak self] data in
                 self?.dailyChartModel.chartDataAndColors = data
-                self?.dailyProgressChartView.updateChartData(animate: (self?.updateContentWithAnimation)!,
+                self?.dailyProgressChartView.updateChartData(animate: false,
                                                              valuesAndColors: (self?.dailyChartModel.chartDataAndColors)!)
                 self?.updateContentWithAnimation = true
                 self?.dailyProgressChartView.setNeedsDisplay()
