@@ -161,6 +161,7 @@ class AccountManager: NSObject {
 
             self.isHealthKitAuthorized = true
             self.checkLocalNotifications()
+            completion()
 //            EventManager.sharedManager.checkCalendarAuthorizationStatus(completion: completion) // disabled for now
             log.debug("after EventManager in withHKCalAuth")
         }
