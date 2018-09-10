@@ -19,6 +19,7 @@ import WatchConnectivity
 import Auth0
 import SwiftyBeaver
 import AWSMobileClient
+import UserNotifications
 
 // Init Logs
 let log = RemoteLogManager.sharedManager.log
@@ -78,7 +79,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, WCSessionDelegate
         }
         
         // Set up notifications after launching the app.
-        UIApplication.shared.cancelAllLocalNotifications()
+        UNUserNotificationCenter.current().removeAllPendingNotificationRequests()
         AccountManager.shared.resetLocalNotifications()
         recycleNotification()
         UINotifications.configureNotifications()
