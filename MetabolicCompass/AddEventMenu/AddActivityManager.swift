@@ -724,8 +724,8 @@ open class AddActivityManager: UITableView, UITableViewDelegate, UITableViewData
     }
 
     func addSleep(hoursSinceStart: Double, startDate: Date? = nil, completion: @escaping (Error?) -> Void) {
-        let startTime = startDate == nil ? Date()  : startDate!
-        let endTime = startTime + (Int(hoursSinceStart * 60)).minutes
+        let endTime = startDate ?? Date()
+        let startTime = endTime - (Int(hoursSinceStart * 60)).minutes
         
         MCAppHealthManager.shared.addSleep(startTime: startTime, endTime: endTime) { (sucess, errorMessage) in
             if let errorMessage = errorMessage {
@@ -738,8 +738,8 @@ open class AddActivityManager: UITableView, UITableViewDelegate, UITableViewData
     }
 
     func addMeal(_ mealType: String, minutesSinceStart: Int, startDate: Date? = nil, completion: @escaping (Error?) -> Void) {
-        let startTime = startDate == nil ? Date()  : startDate!
-        let endTime = startTime + (Int(minutesSinceStart)).minutes
+        let endTime = startDate ?? Date()
+        let startTime = endTime - (Int(minutesSinceStart)).minutes
         log.debug("Saving meal event: \(mealType) \(startTime) \(endTime)", feature: "addActivity")
         
         MCAppHealthManager.shared.addMeal(startTime: startTime, endTime: endTime, mealType: mealType) { (sucess, errorMessage) in
@@ -753,9 +753,8 @@ open class AddActivityManager: UITableView, UITableViewDelegate, UITableViewData
     }
 
     func addExercise(workoutType: HKWorkoutActivityType, minutesSinceStart: Int, startDate: Date? = nil, completion: @escaping (Error?) -> Void) {
-        let startTime = startDate == nil ? Date()  : startDate!
-        let endTime = startTime + (Int(minutesSinceStart)).minutes
-
+        let endTime = startDate ?? Date()
+        let startTime = endTime - (Int(minutesSinceStart)).minutes
         log.debug("Saving exercise event: \(workoutType) \(startTime) \(endTime)", feature: "addActivity")
 
         MCAppHealthManager.shared.addExercise(workoutType: workoutType, startTime: startTime, endTime: endTime) { (sucess, errorMessage) in
@@ -792,7 +791,7 @@ open class AddActivityManager: UITableView, UITableViewDelegate, UITableViewData
         default:
             break
         }
-
+        
         if asSleep {
             addSleep(hoursSinceStart: durationInSecs ? duration / 3600.0 : duration, startDate: startDate) {
                 self.circadianOpCompletion(sender, manager: pickerManager, displayError: false, error: $0)
