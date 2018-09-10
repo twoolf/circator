@@ -55,16 +55,17 @@ public class OurStudyViewController: UIViewController, ChartViewDelegate, AppAct
         return bar
     }()
 
-    static let ringNames = ["Total Study\nData Entries", "Week-over-Week\nData Growth", "Mean Daily\nUser Entries"]
-    static let ringUnits = ["", "%", ""]
-    static let ringValueDefaults = [(1100, 10000), (20.0, 100.0), (5, 20)]
+    static let ringNames = ["Mean Daily User Entries", "Total Study\nData Entries", "Week-over-Week\nData Growth"]
+    static let ringUnits = ["", "", "%"]
+    static let ringValueDefaults = [(5, 20), (1100, 10000), (20.0, 100.0)]
+    
 
-    let ringIndexKeys = ["total_samples", "wow_growth", "mean_daily_entries"]
+    let ringIndexKeys = ["mean_daily_entries", "total_samples", "wow_growth"]
 
     static let ringDescriptions = [
+        "This ring shows the average number of daily entries contributed by each user in our study",
         "This ring shows the total number of data entries uploaded by all users in our study relative to our next target.",
-        "This ring shows the week-over-week percentage growth in the data entries contributed by our users",
-        "This ring shows the average number of daily entries contributed by each user in our study"
+        "This ring shows the week-over-week percentage growth in the data entries contributed by our users"
     ]
 
     lazy var rings: [PieChartView] = {
@@ -92,9 +93,9 @@ public class OurStudyViewController: UIViewController, ChartViewDelegate, AppAct
 
     lazy var pieChartColors: [[UIColor?]] = {
         return [
+            [OurStudyViewController.clouds, OurStudyViewController.purple],
             [OurStudyViewController.yellow, OurStudyViewController.green],
-            [OurStudyViewController.orange, OurStudyViewController.blue],
-            [OurStudyViewController.clouds, OurStudyViewController.purple]
+            [OurStudyViewController.orange, OurStudyViewController.blue]
         ]
     }()
 
@@ -360,7 +361,7 @@ public class OurStudyViewController: UIViewController, ChartViewDelegate, AppAct
         rings.enumerated().forEach { (index, pieChart) in
             let chart: UIStackView =
                 UIComponents.createLabelledComponent(
-                    title: OurStudyViewController.ringNames[index], labelOnTop: index != 2, labelFontSize: ringLabelFontSize, labelSpacing: 0.0, value: (), constructor: {
+                    title: OurStudyViewController.ringNames[index], labelOnTop: true, labelFontSize: ringLabelFontSize, labelSpacing: 0.0, value: (), constructor: {
                         _ in return pieChart
                 })
 
@@ -376,31 +377,58 @@ public class OurStudyViewController: UIViewController, ChartViewDelegate, AppAct
             tipView.addGestureRecognizer(tip.tapRecognizer)
 
             var constraints: [NSLayoutConstraint] = []
-            if index == 0 {
+            
+            if index == 1 {
                 constraints.append(contentsOf: [
-                    chart.topAnchor.constraint(equalTo: compositeView.topAnchor, constant: 10),
-                    chart.heightAnchor.constraint(greaterThanOrEqualTo: compositeView.heightAnchor, multiplier: 0.66),
+                    chart.topAnchor.constraint(equalTo: firstChart.bottomAnchor),
+                    chart.heightAnchor.constraint(equalTo: firstChart.heightAnchor),
                     chart.leadingAnchor.constraint(equalTo: compositeView.leadingAnchor, constant: -5),
-                    chart.widthAnchor.constraint(equalTo: compositeView.widthAnchor, multiplier: 0.45)
+                    chart.widthAnchor.constraint(equalTo: firstChart.widthAnchor)
                     ])
-            } else if index == 1 {
+            } else if index == 2 {
                 constraints.append(contentsOf: [
-                    chart.topAnchor.constraint(equalTo: compositeView.topAnchor, constant: 10),
+                    chart.topAnchor.constraint(equalTo: firstChart.bottomAnchor),
                     chart.heightAnchor.constraint(equalTo: firstChart.heightAnchor),
                     chart.trailingAnchor.constraint(equalTo: compositeView.trailingAnchor, constant: 5),
                     chart.widthAnchor.constraint(equalTo: firstChart.widthAnchor)
                     ])
-
-            } else if index == 2 {
-                ring2TopConstraint = chart.topAnchor.constraint(equalTo: firstChart.bottomAnchor)
+                
+            } else if index == 0 {
+                ring2TopConstraint = chart.topAnchor.constraint(equalTo: compositeView.topAnchor, constant: 10)
                 constraints.append(contentsOf: [
                     ring2TopConstraint,
-                    chart.heightAnchor.constraint(equalTo: firstChart.heightAnchor),
+                    chart.heightAnchor.constraint(greaterThanOrEqualTo: compositeView.heightAnchor, multiplier: 0.66),
                     chart.centerXAnchor.constraint(equalTo: compositeView.centerXAnchor),
-                    chart.widthAnchor.constraint(equalTo: firstChart.widthAnchor)
+                    chart.widthAnchor.constraint(equalTo: compositeView.widthAnchor, multiplier: 0.45)
                     ])
-
+                
             }
+            
+//            if index == 0 {
+//                constraints.append(contentsOf: [
+//                    chart.topAnchor.constraint(equalTo: compositeView.topAnchor, constant: 10),
+//                    chart.heightAnchor.constraint(greaterThanOrEqualTo: compositeView.heightAnchor, multiplier: 0.66),
+//                    chart.leadingAnchor.constraint(equalTo: compositeView.leadingAnchor, constant: -5),
+//                    chart.widthAnchor.constraint(equalTo: compositeView.widthAnchor, multiplier: 0.45)
+//                    ])
+//            } else if index == 1 {
+//                constraints.append(contentsOf: [
+//                    chart.topAnchor.constraint(equalTo: compositeView.topAnchor, constant: 10),
+//                    chart.heightAnchor.constraint(equalTo: firstChart.heightAnchor),
+//                    chart.trailingAnchor.constraint(equalTo: compositeView.trailingAnchor, constant: 5),
+//                    chart.widthAnchor.constraint(equalTo: firstChart.widthAnchor)
+//                    ])
+//
+//            } else if index == 2 {
+//                ring2TopConstraint = chart.topAnchor.constraint(equalTo: firstChart.bottomAnchor)
+//                constraints.append(contentsOf: [
+//                    ring2TopConstraint,
+//                    chart.heightAnchor.constraint(equalTo: firstChart.heightAnchor),
+//                    chart.centerXAnchor.constraint(equalTo: compositeView.centerXAnchor),
+//                    chart.widthAnchor.constraint(equalTo: firstChart.widthAnchor)
+//                    ])
+//
+//            }
             compositeView.addConstraints(constraints)
         }
 
@@ -418,6 +446,7 @@ public class OurStudyViewController: UIViewController, ChartViewDelegate, AppAct
             labelledRings.leadingAnchor.constraint(equalTo: view.leadingAnchor),
             labelledRings.widthAnchor.constraint(equalTo: view.widthAnchor),
             labelledRings.heightAnchor.constraint(equalTo: view.widthAnchor, multiplier: ringHeightMultiplier),
+            
             labelStack.topAnchor.constraint(equalTo: labelledRings.bottomAnchor, constant: 40.0),
             labelStack.bottomAnchor.constraint(equalTo: scrollView.bottomAnchor),
             labelStack.leadingAnchor.constraint(equalTo: view.leadingAnchor),
@@ -433,7 +462,7 @@ public class OurStudyViewController: UIViewController, ChartViewDelegate, AppAct
         view.layoutIfNeeded()
 
         if ring2TopConstraint != nil && rings.count > 0 {
-            ring2TopConstraint.constant = -(rings[0].frame.height / 2.5)
+//            ring2TopConstraint.constant = -(rings[0].frame.height / 2.5)
         }
         view.layoutIfNeeded()
     }
