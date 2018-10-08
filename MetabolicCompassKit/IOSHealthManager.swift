@@ -325,21 +325,22 @@ public class IOSHealthManager: NSObject, WCSessionDelegate {
                                                                             sampleType: sampleType,
                                                                                 period: period,
                                                                                  aggOp: .discreteAverage) { (_, error) in
-                guard error == nil || MCHealthManager.sharedManager.aggregateCache[key] != nil else {
+                guard (error == nil) || (MCHealthManager.sharedManager.aggregateCache[key] != nil) else {
                     completion([])
                     return
                 }
 
-            if sampleType == HKSampleType.categoryType(forIdentifier: HKCategoryTypeIdentifier.sleepAnalysis) {
-            let array = self.arrayOfSleepAggregates(key: key)
-            completion(array.map{$0.numeralValue})
-        } else {
-            if let aggArray = MCHealthManager.sharedManager.aggregateCache[key] {
-                completion(aggArray.aggregates.map { return finalize($0).numeralValue! })
+                if sampleType == HKSampleType.categoryType(forIdentifier: HKCategoryTypeIdentifier.sleepAnalysis) {
+                    let array = self.arrayOfSleepAggregates(key: key)
+                    completion(array.map{$0.numeralValue})
+                } else {
+                    if let aggArray = MCHealthManager.sharedManager.aggregateCache[key] {
+                        let result = aggArray.aggregates.map { return finalize($0).numeralValue! }
+                        completion(result)
+                    }
+                }
             }
         }
-    }
-}
 }
 
     func arrayOfSleepAggregates(key: String) -> [MCAggregateSample] {

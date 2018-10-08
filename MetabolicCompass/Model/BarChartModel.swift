@@ -20,8 +20,23 @@ enum ChartType {
 class BarChartModel : NSObject {
 
     var rangeType: HealthManagerStatisticsRangeType = HealthManagerStatisticsRangeType.week
-    var typesChartData: [String: ChartData] = [:]
-    var _chartDataOperationQueue: OperationQueue = OperationQueue()
+    private var typesChartDataQueue = DispatchQueue(label: "BarChartModel.typesChartDataQueue")
+    private var _typesChartData: [String: ChartData] = [:]
+    
+    var typesChartData: [String: ChartData] {
+        get { return typesChartDataQueue.sync {  _typesChartData } }
+        set { typesChartDataQueue.sync {  _typesChartData = newValue } }
+    }
+    
+    private func createQueue() -> OperationQueue {
+        let operationQueue = OperationQueue()
+        return operationQueue
+    }
+    
+    var _chartDataOperationQueue: OperationQueue = {
+        let operationQueue = OperationQueue()
+        return operationQueue
+    }()
     
     private var chartTypeToQuantityType: [String: ChartType] = [HKQuantityTypeIdentifier.dietaryEnergyConsumed.rawValue : .BarChart,
                                                                 HKQuantityTypeIdentifier.basalEnergyBurned.rawValue : .BarChart,
@@ -201,11 +216,12 @@ class BarChartModel : NSObject {
             IOSHealthManager.sharedManager.getChartDataForQuantity(sampleType: qType, inPeriod: self.rangeType) { obj in
                 let values = obj as! [Double]
                 let arrray = values.map {$0.isNaN ? 0.0 : $0}
-                if arrray.count > 0 {
+                let condition = (arrray.count > 0)
+                if condition {
                     let data = self.getChartDataForRange(range: self.rangeType, type: chartType!, values: arrray, minValues: nil)
                     self.typesChartData[key] = data
                 }
-                completion(arrray.count > 0)
+                completion(condition)
             }
         }
     }
@@ -360,7 +376,7 @@ class BarChartModel : NSObject {
     
     func resetOperation() {
         _chartDataOperationQueue.cancelAllOperations()
-        _chartDataOperationQueue = OperationQueue()
+        _chartDataOperationQueue = createQueue()
     }
 
     func titlesFor(range: HealthManagerStatisticsRangeType) -> [String] {

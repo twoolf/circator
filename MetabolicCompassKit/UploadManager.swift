@@ -578,34 +578,39 @@ public class UploadManager: NSObject {
                     // than the realm instance outside the above loop.
                     log.debug("Retry upload in fetchSamplesByUUID completion for \(entryKey)", "uploadRetries")
                     let realm = try! Realm()
+                    let logkey = entryKey as AnyObject
                     if error != nil {
                         log.error(error!.localizedDescription)
                         // Refetch the obejct since we are in a background thread from the health manager.
-                        if let logEntry = realm.object(ofType: UMLogEntry.self, forPrimaryKey: entryKey as AnyObject) {
+                        if let logEntry = realm.object(ofType: UMLogEntry.self, forPrimaryKey: logkey) {
                             try! realm.write {
-                                realm.delete(logEntry)
+                                if let logEntry = realm.object(ofType: UMLogEntry.self, forPrimaryKey: logkey) {
+                                    realm.delete(logEntry)
+                                }
                             }
                         } else {
                             log.debug("No realm object found for deleting \(entryKey)", "uploadRealmSync")
                         }
                     }
                     else {
-                        if let logEntry = realm.object(ofType: UMLogEntry.self, forPrimaryKey: entryKey as AnyObject) {
+                        if let logEntry = realm.object(ofType: UMLogEntry.self, forPrimaryKey: logkey) {
                             log.debug("Enqueueing retried upload \(logEntry.id) \(logEntry.compoundKey) with \(samples.count) inserts, \(deleted.count) deletions", "uploadRetries")
 
                             let added: [HKSample] = samples.map { $0 as! HKSample }
                             self.batchLogEntryUpload(logEntryKey: logEntry.compoundKey, added: added, deleted: deleted)
 
                             try! realm.write {
-                                if logEntry.retry_count < maxRetries {
-                                    // Plan for the next retry regardless of whether the above log entry upload request fails.
-                                    let backoff = max(maxBackoff, self.rngSource.nextInt(upperBound: logEntry.retry_count) * retryPeriodBase)
-                                    logEntry.retry_ts = now + backoff.seconds
-                                    logEntry.retry_count += 1
-                                    log.debug("Backed off log entry \(logEntry.id) \(logEntry.compoundKey) to \(logEntry.retry_count) \(logEntry.retry_ts)", "uploadRetries")
-                                } else {
-                                    log.debug("Too many retries for \(logEntry.id) \(logEntry.compoundKey) \(logEntry.retry_count), deleting...", "uploadRetries")
-                                    realm.delete(logEntry)
+                                if let logEntry = realm.object(ofType: UMLogEntry.self, forPrimaryKey: logkey) {
+                                    if logEntry.retry_count < maxRetries {
+                                        // Plan for the next retry regardless of whether the above log entry upload request fails.
+                                        let backoff = max(maxBackoff, self.rngSource.nextInt(upperBound: logEntry.retry_count) * retryPeriodBase)
+                                        logEntry.retry_ts = now + backoff.seconds
+                                        logEntry.retry_count += 1
+                                        log.debug("Backed off log entry \(logEntry.id) \(logEntry.compoundKey) to \(logEntry.retry_count) \(logEntry.retry_ts)", "uploadRetries")
+                                    } else {
+                                        log.debug("Too many retries for \(logEntry.id) \(logEntry.compoundKey) \(logEntry.retry_count), deleting...", "uploadRetries")
+                                        realm.delete(logEntry)
+                                    }
                                 }
                             }
                         } else {
