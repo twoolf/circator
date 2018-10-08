@@ -39,7 +39,7 @@ open class CorrelationChartsViewController: UIViewController, UITableViewDelegat
     var chartDataOperationQueue: OperationQueue = OperationQueue()
 
     var pickerView: UIPickerView {
-        let picker = UIPickerView(frame:CGRect(0,0, view.frame.size.width, view.frame.size.height * 0.4))
+        let picker = UIPickerView(frame:.zero)
         picker.delegate = self
         picker.dataSource = self
         picker.tintColor = UIColor.white
