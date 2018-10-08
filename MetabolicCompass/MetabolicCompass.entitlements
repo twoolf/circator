@@ -10,7 +10,7 @@
 	<array/>
 	<key>keychain-access-groups</key>
 	<array>
-		<string>$(AppIdentifierPrefix)edu.jhu.cs.damsl.MetabolicCompass.app</string>
+		<string>$(AppIdentifierPrefix)com.Daiware.metaboliccompass.MetabolicCompass.app</string>
 	</array>
 </dict>
 </plist>
