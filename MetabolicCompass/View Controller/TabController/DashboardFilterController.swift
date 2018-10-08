@@ -40,6 +40,10 @@ class DashboardFilterController: UIViewController, UITableViewDelegate, UITableV
         }
     }
 
+    private var contentManager: ContentManager {
+        return  AccountManager.shared.contentManager
+    }
+    
     //MARK: View life circle
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -87,6 +91,13 @@ class DashboardFilterController: UIViewController, UITableViewDelegate, UITableV
     }
 
     func saveSettings() {
+        var shouldRefresh = true
+        if let prev = Defaults.object(forKey: selectedRowsDefaultsKey) as? [String: AnyObject] {
+            shouldRefresh = (selectedRows.keys.count != prev.keys.count)
+        }
+        if shouldRefresh {
+           self.contentManager.fetchAggregatesPeriodically()
+        }
         Defaults.set(selectedRows, forKey: selectedRowsDefaultsKey)
         Defaults.set(sectionVisibility, forKey: sectionVisibilityDefaultsKey)
         Defaults.synchronize()
