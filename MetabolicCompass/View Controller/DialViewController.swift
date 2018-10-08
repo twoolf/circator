@@ -30,7 +30,7 @@ class DialViewController : UIViewController, ChartViewDelegate {
         chart.renderer = CycleChartRender(chart: chart, animator: chart.chartAnimator, viewPortHandler: chart.viewPortHandler)
         chart.animate(xAxisDuration: 1.0, yAxisDuration: 1.0)
         chart.delegate = self
-//        chartDescription.text = ""
+        chart.chartDescription?.text = ""
         chart.backgroundColor = .clear
         chart.holeColor = .clear
         chart.drawMarkers = true
