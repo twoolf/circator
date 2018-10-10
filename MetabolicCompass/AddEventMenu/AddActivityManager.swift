@@ -835,10 +835,8 @@ open class AddActivityManager: UITableView, UITableViewDelegate, UITableViewData
     @objc public func handleQuickAddTap(_ sender: UIButton) {
         log.debug("Quick add button pressed", feature: "addActivity")
 
-        Async.main {
-            sender.isEnabled = false
-            sender.setNeedsDisplay()
-        }
+        sender.isEnabled = false
+        sender.setNeedsDisplay()
 
         let selection = quickAddButtons.reduce(nil, { (acc, buttonArray) in
             return acc != nil ? acc : buttonArray.getSelection()
@@ -859,10 +857,8 @@ open class AddActivityManager: UITableView, UITableViewDelegate, UITableViewData
     @objc func handleFrequentAddTap(_ sender: UIButton) {
         log.debug("Adding selected frequent activities", feature: "addActivity")
 
-        Async.main {
-            sender.isEnabled = false
-            sender.setNeedsDisplay()
-        }
+        sender.isEnabled = false
+        sender.setNeedsDisplay()
 
         // Iterate through all freq activity cells, check if button is selected, warn on overlap, and then add.
         var activitiesToAdd: [FrequentActivity] = []
@@ -872,13 +868,17 @@ open class AddActivityManager: UITableView, UITableViewDelegate, UITableViewData
                 if let aInfo = self.frequentActivityByRow[kv.0] {
                     activitiesToAdd.append(aInfo)
                 }
-                Async.main {
-                    button.isSelected = false
-                    button.setNeedsDisplay()
-                }
+                button.isSelected = false
+                button.setNeedsDisplay()
             }
         }
-
+        
+        Async.main {
+            sender.isEnabled = true
+            sender.setNeedsDisplay()
+        }
+        
+/*
         let overlaps = false
         for i in (0..<activitiesToAdd.count) {
             let iSt = activitiesToAdd[i].start
@@ -910,6 +910,7 @@ open class AddActivityManager: UITableView, UITableViewDelegate, UITableViewData
                 sender.setNeedsDisplay()
             }
         }
+        */
     }
     
     func pickerItemSelected(_ pickerManager: PickerManager, itemType: String?, index: Int, item: String, data: AnyObject?) {

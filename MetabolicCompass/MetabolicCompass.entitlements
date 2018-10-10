@@ -7,10 +7,12 @@
 	<key>com.apple.developer.healthkit</key>
 	<true/>
 	<key>com.apple.security.application-groups</key>
-	<array/>
+	<array>
+		<string>group.com.Daiware.metaboliccompass</string>
+	</array>
 	<key>keychain-access-groups</key>
 	<array>
-		<string>$(AppIdentifierPrefix)com.Daiware.metaboliccompass.MetabolicCompass.app</string>
+		<string>$(AppIdentifierPrefix)com.Daiware.metaboliccompass</string>
 	</array>
 </dict>
 </plist>

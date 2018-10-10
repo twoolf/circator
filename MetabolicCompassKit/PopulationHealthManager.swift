@@ -190,7 +190,7 @@ public class PopulationHealthManager: NSObject {
             }
         }
 
-        var params : [String:AnyObject] = [
+        let params : [String:AnyObject] = [
             "tstart"       : Int(floor(tstart.timeIntervalSince1970)) as AnyObject,
             "tend"         : Int(ceil(tend.timeIntervalSince1970)) as AnyObject,
             "columns"      : columns as AnyObject,
@@ -199,42 +199,19 @@ public class PopulationHealthManager: NSObject {
 
         // log.info("Running popquery \(params)")
 
-        if userfilter.isEmpty {
-            let queryColumns = Dictionary(pairs: columns.filter { (idx, val) in
-                switch val {
-                case is String:
-                    return (aggregateCache.object(forKey: val as! String) == nil)
-                default:
-                    return true
-                }
-            })
-
-            if !queryColumns.isEmpty {
-                params.updateValue(queryColumns as AnyObject, forKey: "columns")
-                _ = Service.shared.json(route: MCRouter.AggregateMeasures(params), statusCode: 200..<300, tag: "AGGPOST") {
-                    _, response, result in
-                    print("PopulationHealthManager fetchAggregates: got json update line 212 \(String(describing: result.value))")
-                    guard !result.isSuccess else {
-                        self.refreshAggregatesFromMsg(payload: result.value as AnyObject?, completion: completion)
-                        return
-                    }
-                }
-            }
-            else {
-                NotificationCenter.default.post(name: NSNotification.Name(rawValue: HMDidUpdateRecentSamplesNotification), object: self)
-                completion(nil)
-            }
-        }
-        else {
-            // No caching for filtered queries.
+        if !columns.isEmpty {
             _ = Service.shared.json(route: MCRouter.AggregateMeasures(params), statusCode: 200..<300, tag: "AGGPOST") {
                 _, response, result in
-                print("got json update line 228 \(String(describing: result.value))")
+                print("PopulationHealthManager fetchAggregates: got json update line 212 \(String(describing: result.value))")
                 guard !result.isSuccess else {
                     self.refreshAggregatesFromMsg(payload: result.value as AnyObject?, completion: completion)
                     return
                 }
             }
+        }
+        else {
+            NotificationCenter.default.post(name: NSNotification.Name(rawValue: HMDidUpdateRecentSamplesNotification), object: self)
+            completion(nil)
         }
     }
 

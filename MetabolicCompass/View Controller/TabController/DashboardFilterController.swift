@@ -95,12 +95,12 @@ class DashboardFilterController: UIViewController, UITableViewDelegate, UITableV
         if let prev = Defaults.object(forKey: selectedRowsDefaultsKey) as? [String: AnyObject] {
             shouldRefresh = (selectedRows.keys.count != prev.keys.count)
         }
-        if shouldRefresh {
-           self.contentManager.fetchAggregatesPeriodically()
-        }
         Defaults.set(selectedRows, forKey: selectedRowsDefaultsKey)
         Defaults.set(sectionVisibility, forKey: sectionVisibilityDefaultsKey)
         Defaults.synchronize()
+        if shouldRefresh {
+            self.contentManager.fetchInitialAggregates()
+        }
     }
 
     //MARK: Actions
