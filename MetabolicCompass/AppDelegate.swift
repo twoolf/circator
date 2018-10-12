@@ -20,6 +20,7 @@ import Auth0
 import SwiftyBeaver
 import AWSMobileClient
 import UserNotifications
+import Instabug
 
 // Init Logs
 let log = RemoteLogManager.sharedManager.log
@@ -59,6 +60,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, WCSessionDelegate
     {
         // Configure Local and Remote logs, Crashes data collection
         Fabric.with([Crashlytics.self,Answers.self])
+        Instabug.start(withToken: "e151674e0732dc20463f73c407298bfb", invocationEvents: [.shake])
         log.info("Using service URL: \(MCRouter.baseURL)")
         
         CacheConfigurations.configureCache()

@@ -33,6 +33,7 @@ PODS:
   - HTPressableButton (1.3.3):
     - HTPressableButton/All (= 1.3.3)
   - HTPressableButton/All (1.3.3)
+  - Instabug (8.0.15)
   - JWTDecode (2.1.1)
   - Locksmith (4.0.0)
   - MCCircadianQueries (0.2.2):
@@ -87,6 +88,7 @@ DEPENDENCIES:
   - Former
   - Granola (from `https://github.com/yanif/Granola.git`)
   - HTPressableButton
+  - Instabug
   - JWTDecode
   - Locksmith
   - MCCircadianQueries (from `https://github.com/OlenaSrost/MCCircadianQueries.git`, branch `cache_improvements`)
@@ -187,6 +189,7 @@ SPEC CHECKSUMS:
   Former: 830077d303185f56bcde1be0158b31f0626f1be4
   Granola: 07d8cc4bdf005228118161eb182cd34eaf169a03
   HTPressableButton: 3109ba7972247ddbd387c8a22b0341b02369b31e
+  Instabug: 1f26cca29ec1fc49ba7dffbc5533734c14f8c28d
   JWTDecode: 83e8b381aafe27158d9f692cbdca2b12d61d460c
   Locksmith: e9bebbaaa4cee3c511bc358a44f843c3fe00e21f
   MCCircadianQueries: c39a1cbb02efec0438b6b5c51046c3363056a4e1
@@ -207,6 +210,6 @@ SPEC CHECKSUMS:
   SwiftyJSON: 070dabdcb1beb81b247c65ffa3a79dbbfb3b48aa
   SwiftyUserDefaults: 38267a30d58b7c8570995cd5defd354e43f056c6
 
-PODFILE CHECKSUM: 180bc117cee37a3318838cbfbefac56c79161eb9
+PODFILE CHECKSUM: b2c3a9bd1cdf183415b73b786f1eedc91aa06b5e
 
 COCOAPODS: 1.4.0
