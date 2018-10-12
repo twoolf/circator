@@ -110,7 +110,7 @@ class MainSettingsViewController: BaseViewController, UICollectionViewDataSource
     }
 
     func webAction(asPrivacyPolicy: Bool) {
-        let vc = SFSafariViewController(url: (asPrivacyPolicy ? MCRouter.privacyPolicyURL : MCRouter.aboutURL)!, entersReaderIfAvailable: false)
+        let vc = SFSafariViewController(url: (asPrivacyPolicy ? MCRouter.privacyPolicyURL : MCRouter.aboutURL), entersReaderIfAvailable: false)
         present(vc, animated: true, completion: nil)
     }
 

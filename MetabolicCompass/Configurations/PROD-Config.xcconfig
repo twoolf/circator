@@ -1,0 +1,11 @@
+//
+//  PROD-Config.xcconfig
+//  MetabolicCompass
+//
+//  Created by User on 10/11/18.
+//  Copyright © 2018 Yanif Ahmad, Tom Woolf. All rights reserved.
+//
+
+scheme = https:/
+srvURL = $(scheme)/api.metaboliccompass.com
+wwwURL = $(scheme)/www.metaboliccompass.com

@@ -15,14 +15,41 @@ public typealias SvcResultCompletion = (RequestResult) -> Void
 
 private let apiPathComponent = "/api/v1"
 
-//#if DEVSERVICE
-private let srvURL = NSURL(string: "https://api-dev.metaboliccompass.com")!
-private let wwwURL = NSURL(string: "https://dev.metaboliccompass.com")!
-//#else
-//private let srvURL = NSURL(string: "https://api.metaboliccompass.com")!
-//private let wwwURL = NSURL(string: "https://www.metaboliccompass.com")!
-//#endif
-private let auth0URL = NSURL(string: "https://metaboliccompass.auth0.com")!
+public struct Environment {
+    public enum PlistKey: String {
+        case srvURL
+        case wwwURL
+    }
+    
+    let srvURL: URL
+    let wwwURL: URL
+    
+    
+    private static let customInfoKey = "Custom"
+    private static var infoDict: [String: Any]  {
+        get {
+            if let dict = Bundle.main.infoDictionary?[customInfoKey] as? [String: Any] {
+                return dict
+            }else {
+                fatalError("Plist file not found")
+            }
+        }
+    }
+    
+    init() {
+        let infoDict = Environment.infoDict
+        guard let srvURLString = infoDict[PlistKey.srvURL.rawValue] as? String,
+            let wwwURLString = infoDict[PlistKey.srvURL.rawValue] as? String,
+            let srvURL = URL(string: srvURLString),
+            let wwwURL = URL(string: wwwURLString)
+            else {
+            fatalError("srvURL and wwwURL should be in config file")
+        }
+        
+        self.srvURL = srvURL
+        self.wwwURL = wwwURL
+    }
+}
 
 public class  RequestResult{
     private var _obj:Any? = nil
@@ -112,12 +139,13 @@ public class  RequestResult{
  - remark: authentication using OAuthToken
  */
 public enum MCRouter : URLRequestConvertible {
-    public static let baseURL          = srvURL
-    public static let apiURL           = srvURL.appendingPathComponent(apiPathComponent)
-    public static let resetPassURL     = srvURL.appendingPathComponent("forgot")
-    public static let aboutURL         = wwwURL.appendingPathComponent("about")
-    public static let privacyPolicyURL = wwwURL.appendingPathComponent("privacy")
-    public static let auth0apiURL         = auth0URL
+    private static let environment = Environment()
+    public static var baseURL: URL { return environment.srvURL }
+    public static var baseWWWUrl: URL { return environment.srvURL }
+    public static let apiURL: URL = baseURL.appendingPathComponent(apiPathComponent)
+    public static let resetPassURL: URL = baseURL.appendingPathComponent("forgot")
+    public static let aboutURL: URL = baseWWWUrl.appendingPathComponent("about")
+    public static let privacyPolicyURL: URL = baseWWWUrl.appendingPathComponent("privacy")
 
     // Data API
     case GetMeasures([String: AnyObject])
@@ -215,7 +243,7 @@ public enum MCRouter : URLRequestConvertible {
     // MARK: URLRequestConvertible
 
     public func asURLRequest() throws -> URLRequest {
-        var mutableURLRequest = URLRequest(url: MCRouter.baseURL.appendingPathComponent(path)!)
+        var mutableURLRequest = URLRequest(url: MCRouter.baseURL.appendingPathComponent(path))
 
         mutableURLRequest.httpMethod = method.rawValue
         

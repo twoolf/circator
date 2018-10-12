@@ -42,7 +42,14 @@
 		</dict>
 	</array>
 	<key>CFBundleVersion</key>
-	<string>132</string>
+	<string>136</string>
+	<key>Custom</key>
+	<dict>
+		<key>srvURL</key>
+		<string>${srvURL}</string>
+		<key>wwwURL</key>
+		<string>${wwwURL}</string>
+	</dict>
 	<key>Fabric</key>
 	<dict>
 		<key>APIKey</key>

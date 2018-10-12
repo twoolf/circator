@@ -79,7 +79,7 @@ DEPENDENCIES:
   - Charts (from `https://github.com/OlenaSrost/Charts.git`)
   - Crashlytics
   - CryptoSwift
-  - Dodo
+  - Dodo (~> 11.0)
   - EasyAnimation
   - EasyTipView
   - Fabric
@@ -207,6 +207,6 @@ SPEC CHECKSUMS:
   SwiftyJSON: 070dabdcb1beb81b247c65ffa3a79dbbfb3b48aa
   SwiftyUserDefaults: 38267a30d58b7c8570995cd5defd354e43f056c6
 
-PODFILE CHECKSUM: cec95c8237d8c298ab3241bd84ff660bff109496
+PODFILE CHECKSUM: 180bc117cee37a3318838cbfbefac56c79161eb9
 
 COCOAPODS: 1.4.0

@@ -14,7 +14,7 @@ def shared_pods
     pod 'AwesomeCache’, :git => ‘https://github.com/aschuch/AwesomeCache.git’, :branch => ‘master’
     pod 'Charts' , :git => 'https://github.com/OlenaSrost/Charts.git’
     pod 'CryptoSwift' 
-    pod 'Dodo' 
+    pod 'Dodo', '~> 11.0'
     pod 'EasyAnimation' 
     pod 'EasyTipView' 
     pod 'FileKit', :git => 'https://github.com/nvzqz/FileKit.git', :branch => 'master'
@@ -54,6 +54,7 @@ target 'MetabolicCompass' do
     shared_pods
     pod 'Crashlytics'
     pod 'Fabric'
+    pod 'Instabug'
 end
 
 target 'MetabolicCompassWatch Extension' do 
@@ -77,7 +78,7 @@ end
 
 post_install do |installer|
   
-    swift4Targets = ['Charts', 'SwiftyBeaver', 'SwiftyBeaver-iOS', 'SwiftyBeaver-watchOS', 'CryptoSwift', 'SwiftDate’, ’SwiftDate-iOS’, ’SwiftDate-watchOS’ , ’SwiftMessages’ , ’FileKit’, ’Pages’, ’Former’, ’AWSMobileClient’, 'AWSCognito', 'AWSS3']
+    swift4Targets = ['Charts', 'SwiftyBeaver', 'SwiftyBeaver-iOS', 'SwiftyBeaver-watchOS', 'CryptoSwift', 'SwiftDate’, ’SwiftDate-iOS’, ’SwiftDate-watchOS’ , ’SwiftMessages’ , ’FileKit’, ’Pages’, ’Former’, ’AWSMobileClient’, 'AWSCognito', 'AWSS3', 'Dodo']
 
     installer.pods_project.targets.each do |target|
 

@@ -161,8 +161,7 @@ public class UserManager {
     public static let sharedManager = UserManager()
     
     private let cacheAccessMutex = PThreadMutex()
-    private let audienceAuth0 = (MCRouter.auth0apiURL.absoluteString ?? "") + "/api/v2/"
-    private let audienceMC    = MCRouter.baseURL.absoluteString ?? ""
+    private let audienceMC    = MCRouter.baseURL.absoluteString
     
     // Constants.
     public static let maxTokenRetries  = 2

@@ -97,7 +97,7 @@ class RegisterLoginLandingViewController: BaseViewController {
     }
     
     @IBAction func privacyPolicy() {
-        let svc = SFSafariViewController(url: MCRouter.privacyPolicyURL!)
+        let svc = SFSafariViewController(url: MCRouter.privacyPolicyURL)
         self.present(svc, animated: true, completion: nil)
     }
     
