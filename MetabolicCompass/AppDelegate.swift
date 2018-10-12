@@ -21,6 +21,7 @@ import SwiftyBeaver
 import AWSMobileClient
 import UserNotifications
 import Instabug
+import Firebase
 
 // Init Logs
 let log = RemoteLogManager.sharedManager.log
@@ -62,6 +63,8 @@ class AppDelegate: UIResponder, UIApplicationDelegate, WCSessionDelegate
         Fabric.with([Crashlytics.self,Answers.self])
         Instabug.start(withToken: "e151674e0732dc20463f73c407298bfb", invocationEvents: [.shake])
         log.info("Using service URL: \(MCRouter.baseURL)")
+        
+        FirebaseApp.configure()
         
         CacheConfigurations.configureCache()
         

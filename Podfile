@@ -55,6 +55,7 @@ target 'MetabolicCompass' do
     pod 'Crashlytics'
     pod 'Fabric'
     pod 'Instabug'
+    pod 'Firebase/Core'
 end
 
 target 'MetabolicCompassWatch Extension' do 

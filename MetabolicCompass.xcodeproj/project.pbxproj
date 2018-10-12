@@ -223,6 +223,8 @@
 		B452E5592086019600BE60E3 /* RegistrationFooterView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B452E5582086019600BE60E3 /* RegistrationFooterView.swift */; };
 		B452E55C208640AE00BE60E3 /* awsconfiguration.json in Resources */ = {isa = PBXBuildFile; fileRef = B452E55A208640AC00BE60E3 /* awsconfiguration.json */; };
 		CE237FA9213D3B8600CBDFCE /* OperationsController.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE237FA8213D3B8600CBDFCE /* OperationsController.swift */; };
+		CE4816982170B0A300109976 /* Auth0.plist in Resources */ = {isa = PBXBuildFile; fileRef = CE4816972170B0A300109976 /* Auth0.plist */; };
+		CE48169A2170BE6C00109976 /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = CE4816992170BE6C00109976 /* GoogleService-Info.plist */; };
 		CE8F2817216F8B49004882A5 /* QAConfig.xcconfig in Resources */ = {isa = PBXBuildFile; fileRef = CE8F2816216F8B49004882A5 /* QAConfig.xcconfig */; };
 		CE8F2819216F8B67004882A5 /* PROD-Config.xcconfig in Resources */ = {isa = PBXBuildFile; fileRef = CE8F2818216F8B67004882A5 /* PROD-Config.xcconfig */; };
 		CEA4A1B2210B5DA4002EFD43 /* AppActivityIndicator.swift in Sources */ = {isa = PBXBuildFile; fileRef = CEA4A1B1210B5DA4002EFD43 /* AppActivityIndicator.swift */; };
@@ -595,6 +597,8 @@
 		C9B2B7CA51B0B7DBD01033FB /* Pods-MetabolicCompassWatchExtension.debug-dev.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-MetabolicCompassWatchExtension.debug-dev.xcconfig"; path = "Pods/Target Support Files/Pods-MetabolicCompassWatchExtension/Pods-MetabolicCompassWatchExtension.debug-dev.xcconfig"; sourceTree = "<group>"; };
 		CB09F654AB4B00C79306C728 /* Pods.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		CE237FA8213D3B8600CBDFCE /* OperationsController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OperationsController.swift; sourceTree = "<group>"; };
+		CE4816972170B0A300109976 /* Auth0.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; name = Auth0.plist; path = PrivateData/credentials/Auth0Creds/Auth0.plist; sourceTree = SOURCE_ROOT; };
+		CE4816992170BE6C00109976 /* GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; name = "GoogleService-Info.plist"; path = "../../../../Downloads/safari downloads/GoogleService-Info.plist"; sourceTree = "<group>"; };
 		CE73197C216F7E6F004393CC /* Auth0Prod.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Auth0Prod.plist; sourceTree = "<group>"; };
 		CE73197D216F7E6F004393CC /* Auth0Dev.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Auth0Dev.plist; sourceTree = "<group>"; };
 		CE8F2816216F8B49004882A5 /* QAConfig.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = QAConfig.xcconfig; sourceTree = "<group>"; };
@@ -817,6 +821,7 @@
 				5492C4111EC75F2E00E1AADB /* LaunchScreen.storyboard */,
 				5411C8281E7F436000E05EFF /* MetabolicCompass.entitlements */,
 				54205EC51E772631003E3EC4 /* Info.plist */,
+				CE4816992170BE6C00109976 /* GoogleService-Info.plist */,
 				8132417C1F446759004B8339 /* AuthSessionManager.swift */,
 				E74A89771CE3260F0056A2D2 /* AccountManager */,
 				54205E5E1E76213B003E3EC4 /* AddEventMenu */,
@@ -1105,6 +1110,7 @@
 		CE73197B216F7E6F004393CC /* Auth0Creds */ = {
 			isa = PBXGroup;
 			children = (
+				CE4816972170B0A300109976 /* Auth0.plist */,
 				CE73197C216F7E6F004393CC /* Auth0Prod.plist */,
 				CE73197D216F7E6F004393CC /* Auth0Dev.plist */,
 			);
@@ -1382,8 +1388,8 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = 7881A4051BAF3B3E00ECB3C6 /* Build configuration list for PBXNativeTarget "MetabolicCompass" */;
 			buildPhases = (
-				CE73197A216F7E35004393CC /* ShellScript */,
 				D27711D4603B9B95EC8D9939 /* [CP] Check Pods Manifest.lock */,
+				CE73197A216F7E35004393CC /* ConfigurationCopy */,
 				7881A3D91BAF3B3E00ECB3C6 /* Sources */,
 				7881A3DA1BAF3B3E00ECB3C6 /* Frameworks */,
 				7881A3DB1BAF3B3E00ECB3C6 /* Resources */,
@@ -1594,6 +1600,8 @@
 			buildActionMask = 2147483647;
 			files = (
 				95D142BD1CE60312006A9118 /* DoubleCheckListTitledCollectionViewCell.xib in Resources */,
+				CE48169A2170BE6C00109976 /* GoogleService-Info.plist in Resources */,
+				CE4816982170B0A300109976 /* Auth0.plist in Resources */,
 				11FE4B8F1D507F1D007A8D8E /* ScatterCorrelcationCell.xib in Resources */,
 				CE8F2819216F8B67004882A5 /* PROD-Config.xcconfig in Resources */,
 				842B7DD11D0960CB007F2126 /* LineChartCollectionCell.xib in Resources */,
@@ -1860,6 +1868,10 @@
 				"${BUILT_PRODUCTS_DIR}/SwiftyBeaver-iOS/SwiftyBeaver.framework",
 				"${BUILT_PRODUCTS_DIR}/SwiftyJSON/SwiftyJSON.framework",
 				"${BUILT_PRODUCTS_DIR}/SwiftyUserDefaults-iOS/SwiftyUserDefaults.framework",
+				"${BUILT_PRODUCTS_DIR}/GoogleUtilities/GoogleUtilities.framework",
+				"${PODS_ROOT}/Instabug/Instabug.framework",
+				"${PODS_ROOT}/Instabug/Instabug.framework.dSYM",
+				"${BUILT_PRODUCTS_DIR}/nanopb/nanopb.framework",
 			);
 			name = "[CP] Embed Pods Frameworks";
 			outputPaths = (
@@ -1903,24 +1915,29 @@
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/SwiftyBeaver.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/SwiftyJSON.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/SwiftyUserDefaults.framework",
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/GoogleUtilities.framework",
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/Instabug.framework",
+				"${DWARF_DSYM_FOLDER_PATH}/Instabug.framework.dSYM",
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/nanopb.framework",
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
 			shellScript = "\"${SRCROOT}/Pods/Target Support Files/Pods-MetabolicCompass/Pods-MetabolicCompass-frameworks.sh\"\n";
 			showEnvVarsInLog = 0;
 		};
-		CE73197A216F7E35004393CC /* ShellScript */ = {
+		CE73197A216F7E35004393CC /* ConfigurationCopy */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
 			);
 			inputPaths = (
 			);
+			name = ConfigurationCopy;
 			outputPaths = (
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "RESOURCE_PATH=$SRCROOT/PrivateData/credentials/Auth0Creds\n\nFILENAME_IN_BUNDLE=Auth0.plist\n\nBUILD_APP_DIR=${BUILT_PRODUCTS_DIR}/${PRODUCT_NAME}.app\n\nif [[ \"$CONFIGURATION\" == \"QAProd\" ]] || [[ \"$CONFIGURATION\" == \"QA-Dev\" ]]; then\ncp $RESOURCE_PATH/Auth0Dev.plist $BUILD_APP_DIR/$FILENAME_IN_BUNDLE\nelse\ncp $RESOURCE_PATH/Auth0Prod.plist $BUILD_APP_DIR/$FILENAME_IN_BUNDLE\nfi";
+			shellScript = "RESOURCE_PATH=$SRCROOT/PrivateData/credentials/Auth0Creds\n\nFILENAME_IN_BUNDLE=Auth0.plist\n\nif [[ \"$CONFIGURATION\" == \"QAProd\" ]] || [[ \"$CONFIGURATION\" == \"QA-Dev\" ]]; then\ncp $RESOURCE_PATH/Auth0Dev.plist $RESOURCE_PATH/$FILENAME_IN_BUNDLE\nelse\ncp $RESOURCE_PATH/Auth0Prod.plist $RESOURCE_PATH/$FILENAME_IN_BUNDLE\nfi";
 		};
 		D27711D4603B9B95EC8D9939 /* [CP] Check Pods Manifest.lock */ = {
 			isa = PBXShellScriptBuildPhase;

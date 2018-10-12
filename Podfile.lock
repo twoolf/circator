@@ -27,7 +27,51 @@ PODS:
   - EasyTipView (1.0.2)
   - Fabric (1.7.6)
   - FileKit (5.0.0)
+  - Firebase/Core (5.10.0):
+    - Firebase/CoreOnly
+    - FirebaseAnalytics (= 5.2.0)
+  - Firebase/CoreOnly (5.10.0):
+    - FirebaseCore (= 5.1.5)
+  - FirebaseAnalytics (5.2.0):
+    - FirebaseCore (~> 5.1)
+    - FirebaseInstanceID (~> 3.2)
+    - GoogleAppMeasurement (~> 5.2)
+    - GoogleUtilities/AppDelegateSwizzler (~> 5.2)
+    - GoogleUtilities/MethodSwizzler (~> 5.2)
+    - GoogleUtilities/Network (~> 5.2)
+    - GoogleUtilities/NSData+zlib (~> 5.2)
+    - nanopb (~> 0.3)
+  - FirebaseCore (5.1.5):
+    - GoogleUtilities/Logger (~> 5.2)
+  - FirebaseInstanceID (3.2.2):
+    - FirebaseCore (~> 5.1)
+    - GoogleUtilities/Environment (~> 5.3)
+    - GoogleUtilities/UserDefaults (~> 5.3)
   - Former (1.6.1)
+  - GoogleAppMeasurement (5.2.0):
+    - GoogleUtilities/AppDelegateSwizzler (~> 5.2)
+    - GoogleUtilities/MethodSwizzler (~> 5.2)
+    - GoogleUtilities/Network (~> 5.2)
+    - GoogleUtilities/NSData+zlib (~> 5.2)
+    - nanopb (~> 0.3)
+  - GoogleUtilities/AppDelegateSwizzler (5.3.2):
+    - GoogleUtilities/Environment
+    - GoogleUtilities/Logger
+    - GoogleUtilities/Network
+  - GoogleUtilities/Environment (5.3.2)
+  - GoogleUtilities/Logger (5.3.2):
+    - GoogleUtilities/Environment
+  - GoogleUtilities/MethodSwizzler (5.3.2):
+    - GoogleUtilities/Logger
+  - GoogleUtilities/Network (5.3.2):
+    - GoogleUtilities/Logger
+    - GoogleUtilities/NSData+zlib
+    - GoogleUtilities/Reachability
+  - GoogleUtilities/NSData+zlib (5.3.2)
+  - GoogleUtilities/Reachability (5.3.2):
+    - GoogleUtilities/Logger
+  - GoogleUtilities/UserDefaults (5.3.2):
+    - GoogleUtilities/Logger
   - Granola (0.4.1):
     - ObjectiveSugar (~> 1.1)
   - HTPressableButton (1.3.3):
@@ -43,6 +87,11 @@ PODS:
     - SwiftDate
     - SwiftyUserDefaults (~> 3.0)
   - MGSwipeTableCell (1.6.6)
+  - nanopb (0.3.8):
+    - nanopb/decode (= 0.3.8)
+    - nanopb/encode (= 0.3.8)
+  - nanopb/decode (0.3.8)
+  - nanopb/encode (0.3.8)
   - Navajo-Swift (2.0.0)
   - NVActivityIndicatorView (4.1.1):
     - NVActivityIndicatorView/Presenter (= 4.1.1)
@@ -85,6 +134,7 @@ DEPENDENCIES:
   - EasyTipView
   - Fabric
   - FileKit (from `https://github.com/nvzqz/FileKit.git`, branch `master`)
+  - Firebase/Core
   - Former
   - Granola (from `https://github.com/yanif/Granola.git`)
   - HTPressableButton
@@ -186,7 +236,13 @@ SPEC CHECKSUMS:
   EasyTipView: b93a19be981cc2221d6d7191d49872f547e0bebf
   Fabric: f8d42c893bb187326a7968b62abe55c36a987a46
   FileKit: 00156eb15be3bf1c0e090ef30df3b559111e86c0
+  Firebase: 6691d47562a780c26281ce8464518faafc90c610
+  FirebaseAnalytics: 831f1f127f4a75698e9875a87bf7e2668730d953
+  FirebaseCore: c6079de64c1a87000e52e9b408dddcadc901177f
+  FirebaseInstanceID: 78ba376fcd5b94c001f9999b2cbd3d1f1e56e78d
   Former: 830077d303185f56bcde1be0158b31f0626f1be4
+  GoogleAppMeasurement: 2b3a023a61239c8d002e6e4fcf4abce8eddce0e0
+  GoogleUtilities: 82f04aeff8426309dbdbc75f6c8accd1e584a5da
   Granola: 07d8cc4bdf005228118161eb182cd34eaf169a03
   HTPressableButton: 3109ba7972247ddbd387c8a22b0341b02369b31e
   Instabug: 1f26cca29ec1fc49ba7dffbc5533734c14f8c28d
@@ -194,6 +250,7 @@ SPEC CHECKSUMS:
   Locksmith: e9bebbaaa4cee3c511bc358a44f843c3fe00e21f
   MCCircadianQueries: c39a1cbb02efec0438b6b5c51046c3363056a4e1
   MGSwipeTableCell: c3bc6e261e7bc06c112909fe3fb8205de286082c
+  nanopb: 5601e6bca2dbf1ed831b519092ec110f66982ca3
   Navajo-Swift: 0f48998c95b0e8b17756e85dae018adbb2000735
   NVActivityIndicatorView: 60109b9bf46efc2e71ab81453196ccdfdfeea870
   ObjectiveSugar: a6a25f23d657c19df0a0b972466d5b5ca9f5295c
@@ -210,6 +267,6 @@ SPEC CHECKSUMS:
   SwiftyJSON: 070dabdcb1beb81b247c65ffa3a79dbbfb3b48aa
   SwiftyUserDefaults: 38267a30d58b7c8570995cd5defd354e43f056c6
 
-PODFILE CHECKSUM: b2c3a9bd1cdf183415b73b786f1eedc91aa06b5e
+PODFILE CHECKSUM: daa4546f6748c4aa9098b42623368a65507bbbd8
 
 COCOAPODS: 1.4.0
