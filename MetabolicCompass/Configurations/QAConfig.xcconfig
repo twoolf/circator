@@ -9,4 +9,4 @@
 scheme = https:/
 srvURL = $(scheme)/api-dev.metaboliccompass.com
 wwwURL = $(scheme)/dev.metaboliccompass.com
-display_name = QA-Compass
+display_name = Metabolic-Compass-Dev
