@@ -224,7 +224,7 @@
 		B0EC1CFC52F4A456819B962C /* Pods_MetabolicCompassKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 61F6371D09F547A578C801CF /* Pods_MetabolicCompassKit.framework */; };
 		B452E5592086019600BE60E3 /* RegistrationFooterView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B452E5582086019600BE60E3 /* RegistrationFooterView.swift */; };
 		B452E55C208640AE00BE60E3 /* awsconfiguration.json in Resources */ = {isa = PBXBuildFile; fileRef = B452E55A208640AC00BE60E3 /* awsconfiguration.json */; };
-		CE231E71218AFEA800013827 /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = CE231E70218AFEA800013827 /* GoogleService-Info.plist */; };
+		CE231E73218B04E100013827 /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = CE231E72218B04E100013827 /* GoogleService-Info.plist */; };
 		CE237FA9213D3B8600CBDFCE /* OperationsController.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE237FA8213D3B8600CBDFCE /* OperationsController.swift */; };
 		CE4816982170B0A300109976 /* Auth0.plist in Resources */ = {isa = PBXBuildFile; fileRef = CE4816972170B0A300109976 /* Auth0.plist */; };
 		CE8F2817216F8B49004882A5 /* QAConfig.xcconfig in Resources */ = {isa = PBXBuildFile; fileRef = CE8F2816216F8B49004882A5 /* QAConfig.xcconfig */; };
@@ -587,7 +587,7 @@
 		BDBC0A3E8FF6183F0A3262FD /* Pods_MetabolicCompassWatch_Extension.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_MetabolicCompassWatch_Extension.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		CAEAD2AE664F244984245B06 /* Pods-MetabolicCompassWatch.qa-dev.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-MetabolicCompassWatch.qa-dev.xcconfig"; path = "Pods/Target Support Files/Pods-MetabolicCompassWatch/Pods-MetabolicCompassWatch.qa-dev.xcconfig"; sourceTree = "<group>"; };
 		CB09F654AB4B00C79306C728 /* Pods.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods.framework; sourceTree = BUILT_PRODUCTS_DIR; };
-		CE231E70218AFEA800013827 /* GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
+		CE231E72218B04E100013827 /* GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; name = "GoogleService-Info.plist"; path = "PrivateData/credentials/GoogleService-Info.plist"; sourceTree = SOURCE_ROOT; };
 		CE237FA8213D3B8600CBDFCE /* OperationsController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OperationsController.swift; sourceTree = "<group>"; };
 		CE4816972170B0A300109976 /* Auth0.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; name = Auth0.plist; path = PrivateData/credentials/Auth0Creds/Auth0.plist; sourceTree = SOURCE_ROOT; };
 		CE73197C216F7E6F004393CC /* Auth0Prod.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Auth0Prod.plist; sourceTree = "<group>"; };
@@ -836,7 +836,7 @@
 				5492C4111EC75F2E00E1AADB /* LaunchScreen.storyboard */,
 				5411C8281E7F436000E05EFF /* MetabolicCompass.entitlements */,
 				54205EC51E772631003E3EC4 /* Info.plist */,
-				CE231E70218AFEA800013827 /* GoogleService-Info.plist */,
+				CE231E72218B04E100013827 /* GoogleService-Info.plist */,
 				8132417C1F446759004B8339 /* AuthSessionManager.swift */,
 				E74A89771CE3260F0056A2D2 /* AccountManager */,
 				54205E5E1E76213B003E3EC4 /* AddEventMenu */,
@@ -1584,7 +1584,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				95D142BD1CE60312006A9118 /* DoubleCheckListTitledCollectionViewCell.xib in Resources */,
-				CE231E71218AFEA800013827 /* GoogleService-Info.plist in Resources */,
+				CE231E73218B04E100013827 /* GoogleService-Info.plist in Resources */,
 				CE4816982170B0A300109976 /* Auth0.plist in Resources */,
 				11FE4B8F1D507F1D007A8D8E /* ScatterCorrelcationCell.xib in Resources */,
 				CE8F2819216F8B67004882A5 /* PROD-Config.xcconfig in Resources */,
