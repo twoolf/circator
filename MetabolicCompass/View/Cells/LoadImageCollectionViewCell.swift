@@ -8,7 +8,6 @@
 
 import UIKit
 import AVFoundation
-import Photos
 import Async
 
 class LoadImageCollectionViewCell: CircleImageCollectionViewCell, UIImagePickerControllerDelegate, UINavigationControllerDelegate {
@@ -21,6 +20,11 @@ class LoadImageCollectionViewCell: CircleImageCollectionViewCell, UIImagePickerC
         
     }
 
+    @IBAction func loadPhotoAction(_ sender: UIButton) {
+        
+    }
+    
+    /*
     @IBAction func loadPhotoAction(_ sender: UIButton) {
         if let navVC = presentingViewController {
             let actionSheet = UIAlertController(title: nil, message: nil, preferredStyle: .actionSheet)
@@ -39,7 +43,7 @@ class LoadImageCollectionViewCell: CircleImageCollectionViewCell, UIImagePickerC
             navVC.present(actionSheet, animated: true, completion: nil)
         }
     }
-
+     
     private func showImagePickerWithSourceType(type: UIImagePickerControllerSourceType) {
         if let navVC = presentingViewController {
             let imagePicker = UIImagePickerController()
@@ -117,4 +121,5 @@ class LoadImageCollectionViewCell: CircleImageCollectionViewCell, UIImagePickerC
     private func imagePickerControllerDidCancel(picker: UIImagePickerController) {
         picker.dismiss(animated: true, completion: nil)
     }
+    */
 }

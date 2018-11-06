@@ -31,7 +31,7 @@ class RegistrationModel: UserInfoModel {
     override func modelItems() -> [ModelItem] {
         var fields = [ModelItem]()
         
-        fields.append(self.loadPhotoField)
+//        fields.append(self.loadPhotoField)
         fields.append(self.firstNameField)
         fields.append(self.lastNameField)
         fields.append(self.genderField)
