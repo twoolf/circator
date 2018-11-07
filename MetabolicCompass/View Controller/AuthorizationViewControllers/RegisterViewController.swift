@@ -130,8 +130,8 @@ private let inputFontSize = ScreenManager.sharedInstance.profileInputFontSize()
             // Note: add 1 to index, due to photo field.
             if let strongSelf = self {
                 let updatedData = firstName != nil || lastName != nil
-                    if firstName != nil { strongSelf.dataSource.model.setAtItem(itemIndex: strongSelf.dataSource.model.firstNameIndex + 1, newValue: firstName! as AnyObject?) }
-                    if lastName != nil { strongSelf.dataSource.model.setAtItem(itemIndex: strongSelf.dataSource.model.lastNameIndex + 1, newValue: lastName! as AnyObject?) }
+                    if firstName != nil { strongSelf.dataSource.model.setAtItem(itemIndex: strongSelf.dataSource.model.firstNameIndex, newValue: firstName! as AnyObject?) }
+                    if lastName != nil { strongSelf.dataSource.model.setAtItem(itemIndex: strongSelf.dataSource.model.lastNameIndex, newValue: lastName! as AnyObject?) }
                 if updatedData { strongSelf.collectionView.reloadData() }
             }
         }

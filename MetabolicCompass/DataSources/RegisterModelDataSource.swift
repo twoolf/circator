@@ -78,9 +78,9 @@ class RegisterModelDataSource: BaseDataSource {
             return smallCellSize()
         }
 
-        if field.type == .Photo {
-            return highCellSize()
-        }
+//        if field.type == .Photo {
+//            return highCellSize()
+//        }
 
         return defaultCellSize()
     }
